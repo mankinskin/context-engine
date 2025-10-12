@@ -8,7 +8,7 @@ members = [
   "context-trace",
   "refactor-tool",
 ]
-exclude = ["./tracing-egui", "./petgraph", "./minimal_options"]
+exclude = ["./petgraph", "./justlog"]
 
 [profile.dev]
 debug = true
