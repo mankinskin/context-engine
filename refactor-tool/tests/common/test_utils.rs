@@ -401,26 +401,6 @@ impl TestWorkspace {
         let source_analysis_before = analyze_ast(&source_lib_path)
             .context("Failed to analyze source crate before refactoring")?;
 
-        //let target_analysis_before = match &self.crate_paths {
-        //    CratePaths::SelfCrate { .. } => None,
-        //    CratePaths::CrossCrate {
-        //        target_crate_path, ..
-        //    } => {
-        //        let target_lib_path =
-        //            target_crate_path.join("src").join("lib.rs");
-        //        let target_main_path =
-        //            target_crate_path.join("src").join("main.rs");
-
-        //        if target_lib_path.exists() {
-        //            Some(analyze_ast(&target_lib_path)?)
-        //        } else if target_main_path.exists() {
-        //            Some(analyze_ast(&target_main_path)?)
-        //        } else {
-        //            None
-        //        }
-        //    },
-        //};
-
         // Run refactor tool
         let refactor_result = self.execute_refactor(scenario);
         let refactor_success = refactor_result.is_ok();

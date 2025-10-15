@@ -1,6 +1,8 @@
-#[cfg(not(test))]
 use anyhow::Result;
-use clap::{Parser, Subcommand};
+use clap::{
+    Parser,
+    Subcommand,
+};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
@@ -259,127 +261,6 @@ pub struct ImportArgs {
     pub verbose: bool,
 }
 
-impl ImportArgs {
-    /// Infer workspace root from crate paths if not explicitly provided
-    #[cfg(not(test))]
-    pub fn get_workspace_root(&self) -> Result<PathBuf> {
-        // If workspace was explicitly set (not the default "."), use it
-        let current_dir = std::env::current_dir()?;
-        let workspace_canonical = self
-            .workspace_root
-            .canonicalize()
-            .unwrap_or_else(|_| self.workspace_root.clone());
-        let current_canonical =
-            current_dir.canonicalize().unwrap_or(current_dir);
-
-        let workspace_is_default = workspace_canonical == current_canonical;
-
-        if !workspace_is_default {
-            return Ok(self.workspace_root.clone());
-        }
-
-        // Try to infer workspace from crate paths
-        if self.self_refactor {
-            // Self-refactor mode: infer from single crate path
-            let crate_name = self.get_self_crate()?;
-            self.infer_workspace_from_crate_path(&crate_name)
-        } else {
-            // Cross-crate mode: infer from both crate paths and validate they're in same workspace
-            let source_crate = self.get_source_crate()?;
-            let target_crate = self.get_target_crate()?;
-
-            let source_workspace =
-                self.infer_workspace_from_crate_path(&source_crate)?;
-            let target_workspace =
-                self.infer_workspace_from_crate_path(&target_crate)?;
-
-            // Check if both crates are in the same workspace
-            let source_canonical = source_workspace
-                .canonicalize()
-                .unwrap_or_else(|_| source_workspace.clone());
-            let target_canonical = target_workspace
-                .canonicalize()
-                .unwrap_or_else(|_| target_workspace.clone());
-
-            if source_canonical != target_canonical {
-                return Err(anyhow::anyhow!(
-                    "Configuration error: Crates are in different workspaces.\n\
-                     Source crate '{}' workspace: {}\n\
-                     Target crate '{}' workspace: {}\n\
-                     Please specify a common workspace root using --workspace-root or --workspace.",
-                    source_crate, source_canonical.display(),
-                    target_crate, target_canonical.display()
-                ));
-            }
-
-            Ok(source_workspace)
-        }
-    }
-
-    /// Infer workspace root from a single crate path
-    #[cfg(not(test))]
-    fn infer_workspace_from_crate_path(
-        &self,
-        crate_name: &str,
-    ) -> Result<PathBuf> {
-        let crate_path = PathBuf::from(crate_name);
-
-        // If it's just a name (no path separators), assume current directory
-        if crate_path.components().count() == 1 {
-            return Ok(PathBuf::from("."));
-        }
-
-        // If it's a relative path, get the parent directory as workspace
-        if crate_path.is_relative() {
-            if let Some(parent) = crate_path.parent() {
-                Ok(parent.to_path_buf())
-            } else {
-                Ok(PathBuf::from("."))
-            }
-        } else {
-            // For absolute paths, we can't easily infer workspace, use current directory
-            Ok(PathBuf::from("."))
-        }
-    }
-
-    /// Get the source crate name, preferring the flag over the positional argument
-    #[cfg(not(test))]
-    pub fn get_source_crate(&self) -> Result<String> {
-        if let Some(source) = &self.source_crate {
-            Ok(source.clone())
-        } else if !self.positional.is_empty() {
-            Ok(self.positional[0].clone())
-        } else {
-            Err(anyhow::anyhow!("Source crate must be specified either via --source-crate/--source flag or as the first positional argument"))
-        }
-    }
-
-    /// Get the target crate name, preferring the flag over the positional argument
-    #[cfg(not(test))]
-    pub fn get_target_crate(&self) -> Result<String> {
-        if let Some(target) = &self.target_crate {
-            Ok(target.clone())
-        } else if self.positional.len() >= 2 {
-            Ok(self.positional[1].clone())
-        } else {
-            Err(anyhow::anyhow!("Target crate must be specified either via --target-crate/--target flag or as the second positional argument"))
-        }
-    }
-
-    /// Get the crate name for self-refactor mode
-    #[cfg(not(test))]
-    pub fn get_self_crate(&self) -> Result<String> {
-        if let Some(source) = &self.source_crate {
-            Ok(source.clone())
-        } else if !self.positional.is_empty() {
-            Ok(self.positional[0].clone())
-        } else {
-            Err(anyhow::anyhow!("Crate must be specified either via --source-crate/--source flag or as the first positional argument when using --self"))
-        }
-    }
-}
-
-#[cfg(test)]
 impl ImportArgs {
     /// Test version of get_workspace_root
     pub fn get_workspace_root(&self) -> anyhow::Result<PathBuf> {

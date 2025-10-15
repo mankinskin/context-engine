@@ -1,6 +1,5 @@
 use std::num::NonZeroUsize;
 
-use crate::trace::new::{EditKind};
 use crate::{
     HashMap,
     HashSet,
@@ -8,10 +7,14 @@ use crate::{
         SubLocation,
         child::ChildLocation,
     },
-    trace::cache::{
-        TraceCache,
-        key::directed::DirectedKey,
+    trace::{
+        cache::{
+            TraceCache,
+            key::directed::DirectedKey,
+        },
+        new::EditKind,
     },
+    *,
 };
 
 pub type Offset = NonZeroUsize;

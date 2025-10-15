@@ -1,10 +1,9 @@
-use crate::trace::has_graph::HasGraph;
 use std::{
     collections::VecDeque,
     fmt::Debug,
 };
 
-use crate::trace::state::{ChildState};
+use crate::*;
 
 pub type ChildQueue<S = ChildState> = VecDeque<S>;
 

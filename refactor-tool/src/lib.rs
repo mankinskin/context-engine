@@ -11,25 +11,41 @@
 // Core refactoring functionality - always available
 pub use crate::{
     analysis::{
-        crates::{CrateAnalyzer, CrateNames, CratePaths},
+        crates::{
+            CrateAnalyzer,
+            CrateNames,
+            CratePaths,
+        },
         imports::analyze_imports,
     },
     core::{
         path::is_super_import,
         unified_adapter::{
-            ComparisonResult, RefactorConfigExt, UnifiedApiAdapter,
+            ComparisonResult,
+            RefactorConfigExt,
+            UnifiedApiAdapter,
         },
-        RefactorApi, RefactorConfig, RefactorConfigBuilder, RefactorResult,
+        RefactorApi,
+        RefactorConfig,
+        RefactorConfigBuilder,
+        RefactorResult,
     },
     syntax::{
         import_export_extensions::{
-            CrateNamesExt, ImportExportContextExt, ImportExportUtils,
-            ImportOptimization, ImportTreeExt, ImportTreeStats,
+            CrateNamesExt,
+            ImportExportContextExt,
+            ImportExportUtils,
+            ImportOptimization,
+            ImportTreeExt,
+            ImportTreeStats,
             ProcessingResultsExt,
         },
         import_export_processor::{
-            ExportAnalysis, ImportExportContext, ImportExportProcessor,
-            ImportTree, ProcessingResults,
+            ExportAnalysis,
+            ImportExportContext,
+            ImportExportProcessor,
+            ImportTree,
+            ProcessingResults,
         },
         parser::ImportParser,
     },
@@ -37,24 +53,23 @@ pub use crate::{
 
 // Feature-gated APIs
 #[cfg(feature = "ai")]
-pub use crate::ai::{AiClient, AiClientFactory};
+pub use crate::ai::{
+    AiClient,
+    AiClientFactory,
+};
 
 #[cfg(feature = "embedded-llm")]
-pub use crate::server::{CandleServer, ServerConfig};
+pub use crate::server::{
+    CandleServer,
+    ServerConfig,
+};
 
 // Module declarations
 mod analysis;
 mod common;
 mod io;
 
-#[cfg(test)]
-pub mod core;
-#[cfg(test)]
-pub mod syntax;
-
-#[cfg(not(test))]
 mod core;
-#[cfg(not(test))]
 mod syntax;
 
 // Feature-gated modules
@@ -65,5 +80,4 @@ mod ai;
 pub mod server;
 
 // CLI module is private - only used by main.rs
-#[cfg(not(test))]
 mod cli;

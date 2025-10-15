@@ -3,10 +3,11 @@
 #![cfg_attr(any(test, debug_assertions), allow(unused))]
 #![cfg_attr(any(test, debug_assertions), allow(dead_code))]
 
-#[cfg(not(test))]
 use anyhow::Result;
-#[cfg(not(test))]
-use clap::{CommandFactory, Parser};
+use clap::{
+    CommandFactory,
+    Parser,
+};
 
 // Import the new modular structure
 mod ai;
@@ -16,21 +17,22 @@ mod common;
 mod core;
 mod io;
 mod server;
-#[cfg(test)]
-pub mod syntax;
-#[cfg(not(test))]
 mod syntax;
 
-#[cfg(not(test))]
-use cli::args::{Args, Commands};
+use cli::args::{
+    Args,
+    Commands,
+};
 
-#[cfg(not(test))]
 use cli::commands::{
-    download_model, init_config, list_models, run_analysis, run_refactor,
+    download_model,
+    init_config,
+    list_models,
+    run_analysis,
+    run_refactor,
     run_server,
 };
 
-#[cfg(not(test))]
 fn validate_import_args(import_args: &cli::args::ImportArgs) -> Result<()> {
     if import_args.self_refactor {
         // For self-refactor mode, we need a crate name
@@ -43,7 +45,6 @@ fn validate_import_args(import_args: &cli::args::ImportArgs) -> Result<()> {
     }
 }
 
-#[cfg(not(test))]
 fn main() -> Result<()> {
     let args = Args::parse();
 

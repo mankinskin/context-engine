@@ -6,19 +6,42 @@
 //! into a single, coherent API.
 
 use crate::{
-    analysis::crates::{CrateNames, CratePaths},
-    analysis::exports::ExportAnalyzer,
+    analysis::{
+        crates::{
+            CrateNames,
+            CratePaths,
+        },
+        exports::ExportAnalyzer,
+    },
     syntax::{
-        parser::{ImportInfo, ImportParser},
+        parser::{
+            ImportInfo,
+            ImportParser,
+        },
         super_strategy::SuperNormalizationStrategy,
-        transformer::{ImportReplacementStrategy, ReplacementAction},
-        visitor::{merge_pub_uses, parse_existing_pub_uses},
+        transformer::{
+            ImportReplacementStrategy,
+            ReplacementAction,
+        },
+        visitor::{
+            merge_pub_uses,
+            parse_existing_pub_uses,
+        },
     },
 };
-use anyhow::{Context as _, Result};
+use anyhow::{
+    Context as _,
+    Result,
+};
 use std::{
-    collections::{BTreeSet, HashMap},
-    path::{Path, PathBuf},
+    collections::{
+        BTreeSet,
+        HashMap,
+    },
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 use syn::File;
 
@@ -363,8 +386,11 @@ impl ImportTreeProcessor {
         let lib_rs_path = source_path.join("src").join("lib.rs");
 
         // Parse existing exports
-        let content = std::fs::read_to_string(&lib_rs_path)
-            .context("Failed to read lib.rs for export analysis")?;
+        let content =
+            std::fs::read_to_string(&lib_rs_path).context(format!(
+                "Failed to read {} for export analysis",
+                lib_rs_path.to_string_lossy()
+            ))?;
         let syntax_tree: File = syn::parse_file(&content)
             .context("Failed to parse lib.rs syntax tree")?;
 
@@ -701,7 +727,8 @@ impl ImportExportProcessor {
         // Apply the changes to files using the transformer
         if !replacement_results.is_empty() {
             use crate::syntax::transformer::{
-                replace_imports_with_strategy, CrossCrateReplacementStrategy,
+                replace_imports_with_strategy,
+                CrossCrateReplacementStrategy,
                 SelfCrateReplacementStrategy,
             };
             let flat_imports = import_tree.to_flat_imports();
