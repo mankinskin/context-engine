@@ -10,7 +10,7 @@ use crate::graph::vertex::{
     pattern::Pattern,
 };
 
-use crate::graph::child::{Child};
+use crate::graph::vertex::child::Child;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct PatternRangeLocation {

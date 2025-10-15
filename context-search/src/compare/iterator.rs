@@ -1,13 +1,15 @@
-use crate::compare::state::ChildMatchState::{
-    self,
-    Match,
-    Mismatch,
+use crate::compare::state::{
+    ChildMatchState::{
+        self,
+        Match,
+        Mismatch,
+    },
+    CompareState,
 };
 use context_trace::*;
 
 use std::fmt::Debug;
 
-use crate::state::{CompareState};
 use crate::compare::state::CompareNext::*;
 
 #[derive(Debug)]

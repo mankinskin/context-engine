@@ -1,7 +1,8 @@
 use context_trace::*;
 
-use crate::vertex::{VertexSplits};
 use std::fmt::Debug;
+
+use crate::split::vertex::VertexSplits;
 
 pub trait PatternSplits: Debug + Clone {
     type Pos;

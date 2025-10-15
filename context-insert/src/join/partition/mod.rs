@@ -15,7 +15,13 @@ use crate::{
             role::RangeRole,
         },
     },
-    join::context::node::context::NodeJoinCtx,
+    join::{
+        context::{
+            node::context::NodeJoinCtx,
+            pattern::borders::JoinBorders,
+        },
+        joined::partition::JoinedPartition,
+    },
 };
 use context_trace::*;
 use info::{
@@ -23,7 +29,7 @@ use info::{
     pattern_info::JoinPatternInfo,
 };
 
-use crate::join::context::pattern::{PatternJoinCtx};
+use crate::join::context::pattern::PatternJoinCtx;
 
 pub trait JoinPartition<R: RangeRole<Mode = Join>>: InfoPartition<R>
 where

@@ -3,9 +3,13 @@ use std::{
     collections::BinaryHeap,
 };
 
-use crate::traversal::state::traversal::TraversalState;
-
-use crate::{StateContainer};
+use crate::traversal::{
+    container::{
+        extend::ExtendStates,
+        StateContainer,
+    },
+    state::traversal::TraversalState,
+};
 
 #[derive(Debug, Default)]
 pub struct BftQueue {
@@ -19,9 +23,13 @@ impl StateContainer for BftQueue {
 }
 
 impl FromIterator<(usize, TraversalState)> for BftQueue {
-    fn from_iter<T: IntoIterator<Item = (usize, TraversalState)>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = (usize, TraversalState)>>(
+        iter: T
+    ) -> Self {
         Self {
-            queue: FromIterator::from_iter(iter.into_iter().map(|(d, s)| QueueEntry(d, s))),
+            queue: FromIterator::from_iter(
+                iter.into_iter().map(|(d, s)| QueueEntry(d, s)),
+            ),
         }
     }
 }

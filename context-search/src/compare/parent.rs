@@ -1,4 +1,7 @@
-use crate::traversal::state::cursor::PatternCursor;
+use crate::{
+    compare::state::CompareState,
+    traversal::state::cursor::PatternCursor,
+};
 use context_trace::*;
 use derive_more::{
     Deref,
@@ -6,7 +9,6 @@ use derive_more::{
 };
 use std::fmt::Debug;
 
-use crate::state::{CompareState};
 use crate::compare::state::PathPairMode::GraphMajor;
 use context_trace::{
     graph::vertex::child::Child,

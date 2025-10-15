@@ -6,6 +6,7 @@ use crate::{
             FinishedKind,
             FinishedState,
         },
+        FoldCtx,
         IntoFoldCtx,
     },
     traversal::{
@@ -21,8 +22,6 @@ use crate::{
     },
 };
 use std::fmt::Debug;
-
-use crate::{FoldCtx};
 
 pub type FoldResult = Result<FinishedState, ErrorState>;
 

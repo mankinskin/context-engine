@@ -1,7 +1,8 @@
 use std::ops::ControlFlow;
 
-use crate::{RootedRangePath};
 use crate::{
+    IndexRoot,
+    RootedRolePath,
     direction::{
         Direction,
         Left,
@@ -59,6 +60,14 @@ use crate::{
         structs::{
             query_range_path::RangePath,
             role_path::RolePath,
+            rooted::{
+                RootedRangePath,
+                role_path::IndexRolePath,
+                root::{
+                    PathRoot,
+                    RootedPath,
+                },
+            },
             sub_path::SubPath,
         },
     },

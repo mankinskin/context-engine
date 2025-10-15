@@ -30,12 +30,15 @@ use crate::{
             move_path::root::MoveRootIndex,
             pop::PathPop,
         },
-        structs::rooted::root::RootedPath,
+        structs::rooted::{
+            role_path::CalcWidth,
+            root::RootedPath,
+        },
     },
     trace::has_graph::HasGraph,
 };
 
-use crate::path::rooted::pattern_range::{PatternRangePath};
+use crate::path::structs::rooted::pattern_range::PatternRangePath;
 
 pub trait FoldablePath:
 BaseQuery

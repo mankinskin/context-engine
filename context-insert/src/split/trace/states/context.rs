@@ -5,7 +5,6 @@ use derive_more::derive::{
     DerefMut,
 };
 
-use crate::{SplitStates, SplitTraceCtx};
 use crate::split::{
     cache::{
         position::{
@@ -15,7 +14,11 @@ use crate::split::{
         vertex::SplitVertexCache,
     },
     cleaned_position_splits,
-    trace::HasGraph,
+    trace::{
+        HasGraph,
+        SplitTraceCtx,
+        states::SplitStates,
+    },
     vertex::output::InnerNode,
 };
 use context_trace::*;
@@ -103,10 +106,13 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
             },
             Err(location) => {
                 self.states.leaves.push(PosKey::new(index, offset));
-                SplitPositionCache::new(prev, vec![SubSplitLocation {
-                    location,
-                    inner_offset: None,
-                }])
+                SplitPositionCache::new(
+                    prev,
+                    vec![SubSplitLocation {
+                        location,
+                        inner_offset: None,
+                    }],
+                )
             },
         }
     }

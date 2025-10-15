@@ -3,6 +3,8 @@ use std::borrow::Borrow;
 use derive_more::Deref;
 
 use crate::{
+    IndexRoot,
+    PatternRangePath,
     graph::{
         getters::ErrorReason,
         vertex::{
@@ -18,6 +20,7 @@ use crate::{
                 IntoPattern,
                 Pattern,
             },
+            wide::Wide,
         },
     },
     impl_child,
@@ -55,14 +58,18 @@ use crate::{
                 CalcOffset,
                 RolePath,
             },
+            rooted::{
+                RootedRangePath,
+                root::{
+                    PathRoot,
+                    RootedPath,
+                },
+            },
             sub_path::SubPath,
         },
     },
     trace::has_graph::HasGraph,
 };
-
-use crate::{RootedRangePath};
-use crate::graph::vertex::wide::Wide;
 
 pub trait CalcWidth: CalcOffset + RootedPath {
     fn calc_width<G: HasGraph>(

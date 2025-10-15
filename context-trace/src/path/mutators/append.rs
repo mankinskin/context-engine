@@ -1,7 +1,9 @@
-use crate::structs::role_path::{RolePath};
 use crate::{
+    End,
+    PathRole,
     graph::vertex::location::child::ChildLocation,
     path::structs::{
+        role_path::RolePath,
         rooted::{
             index_range::IndexRangePath,
             pattern_range::PatternRangePath,

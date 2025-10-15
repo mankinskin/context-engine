@@ -1,6 +1,12 @@
-use crate::graph::pattern::{pattern_width, Pattern};
 use crate::{
-    graph::vertex::data::VertexData,
+    Child,
+    graph::vertex::{
+        data::VertexData,
+        pattern::{
+            Pattern,
+            pattern_width,
+        },
+    },
     trace::cache::key::directed::{
         down::DownKey,
         up::UpKey,

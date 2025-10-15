@@ -1,4 +1,3 @@
-use crate::split::position::{PosKey, SplitPositionCache};
 use crate::{
     interval::partition::{
         Partition,
@@ -21,6 +20,10 @@ use crate::{
         },
     },
     split::{
+        cache::position::{
+            PosKey,
+            SplitPositionCache,
+        },
         position_splits,
         trace::SplitTraceState,
         vertex::output::RootMode,

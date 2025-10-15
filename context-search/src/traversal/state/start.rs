@@ -1,4 +1,3 @@
-use crate::traversal::cursor::{PatternCursor};
 use crate::{
     fold::{
         foldable::ErrorState,
@@ -7,6 +6,7 @@ use crate::{
     r#match::iterator::CompareParentBatch,
     traversal::{
         policy::DirectedTraversalPolicy,
+        state::cursor::PatternCursor,
         TraversalKind,
     },
 };

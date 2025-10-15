@@ -13,7 +13,6 @@ use derive_new::new;
 use itertools::Itertools;
 use linked_hash_map::LinkedHashMap;
 
-use crate::join::context::context::{NodeJoinCtx};
 use crate::{
     interval::partition::{
         Infix,
@@ -23,7 +22,10 @@ use crate::{
             range::role::In,
         },
     },
-    join::partition::Join,
+    join::{
+        context::node::context::NodeJoinCtx,
+        partition::Join,
+    },
     split::{
         Split,
         cache::{
@@ -94,11 +96,8 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
             for start in 0..num_offsets - len + 1 {
                 let range = start..start + len;
 
-                let lo = offsets
-                    .iter()
-                    .map(PosSplitCtx::from)
-                    .nth(start)
-                    .unwrap();
+                let lo =
+                    offsets.iter().map(PosSplitCtx::from).nth(start).unwrap();
                 let ro = offsets
                     .iter()
                     .map(PosSplitCtx::from)

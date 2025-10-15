@@ -14,6 +14,7 @@ use crate::{
             node::context::NodeJoinCtx,
             pattern::borders::JoinBorders,
         },
+        joined::patterns::JoinedPatterns,
         partition::{
             Join,
             info::JoinPartitionInfo,
@@ -23,8 +24,6 @@ use crate::{
 use context_trace::*;
 use std::borrow::Borrow;
 use tracing::debug;
-
-use crate::join::patterns::{JoinedPatterns};
 
 #[derive(Debug)]
 pub struct JoinedPartition<R: RangeRole> {

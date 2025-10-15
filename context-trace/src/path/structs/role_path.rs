@@ -4,6 +4,7 @@ use std::{
 };
 
 use crate::{
+    RootedRolePath,
     graph::vertex::location::child::ChildLocation,
     path::{
         accessors::{
@@ -37,8 +38,10 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-use crate::path::rooted::index_range::{IndexRangePath};
-use crate::path::RolePathUtils;
+use crate::path::{
+    RolePathUtils,
+    structs::rooted::index_range::IndexRangePath,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct RolePath<R: PathRole> {

@@ -1,9 +1,9 @@
-use crate::join::node::context::{NodeJoinCtx};
 use itertools::Itertools;
 use linked_hash_set::LinkedHashSet;
 
 use crate::{
     interval::IntervalGraph,
+    join::context::node::context::NodeJoinCtx,
     split::{
         SplitMap,
         cache::position::PosKey,

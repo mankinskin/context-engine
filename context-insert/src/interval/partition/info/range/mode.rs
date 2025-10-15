@@ -7,13 +7,14 @@ use crate::interval::partition::info::range::{
     ModeRangeInfo,
     TraceRangeInfo,
     role::{
+        In,
         ModeOf,
+        Post,
+        Pre,
         RangeRole,
     },
 };
 use context_trace::*;
-
-use crate::interval::partition::info::role::{In, Post, Pre};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Trace;

@@ -9,9 +9,11 @@ use derive_new::new;
 use crate::{
     graph::vertex::child::Child,
     path::mutators::move_path::key::TokenPosition,
+    trace::cache::key::directed::{
+        HasTokenPosition,
+        down::DownPosition,
+    },
 };
-
-use crate::{HasTokenPosition};
 
 #[derive(Clone, Debug, Copy, Hash, Eq, PartialEq, From)]
 pub struct UpPosition(pub TokenPosition);

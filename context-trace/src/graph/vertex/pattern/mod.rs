@@ -7,12 +7,15 @@ use std::{
     iter::IntoIterator,
 };
 
-use crate::graph::vertex::{
-    pattern::pattern_range::PatternRangeIndex,
-    wide::Wide,
+use crate::{
+    ToChild,
+    graph::vertex::{
+        pattern::pattern_range::PatternRangeIndex,
+        wide::Wide,
+    },
 };
 
-use crate::graph::vertex::child::{Child};
+use crate::graph::vertex::child::Child;
 
 pub mod id;
 pub mod pattern_range;

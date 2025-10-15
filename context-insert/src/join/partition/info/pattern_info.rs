@@ -24,12 +24,13 @@ use crate::{
             node::context::NodeJoinCtx,
             pattern::borders::JoinBorders,
         },
-        partition::Join,
+        partition::{
+            Join,
+            info::inner_range::JoinInnerRangeInfo,
+        },
     },
 };
 use context_trace::*;
-
-use crate::join::partition::inner_range::{JoinInnerRangeInfo};
 
 #[derive(Debug, Clone)]
 pub struct JoinPatternInfo<R: RangeRole<Mode = Join>> {

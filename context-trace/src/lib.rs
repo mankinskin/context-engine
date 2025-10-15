@@ -196,6 +196,7 @@ pub use crate::{
                     TargetKey,
                 },
             },
+            new::EditKind,
             position::{
                 Offset,
                 PositionCache,

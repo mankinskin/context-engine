@@ -5,8 +5,13 @@ use derive_more::derive::{
     DerefMut,
 };
 
-use crate::split::vertex::{VertexSplitCtx};
-use crate::split::vertex::output::NodeType;
+use crate::split::{
+    cache::position::PosKey,
+    vertex::{
+        VertexSplitCtx,
+        output::NodeType,
+    },
+};
 use context_trace::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

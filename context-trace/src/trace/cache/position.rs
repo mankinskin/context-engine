@@ -1,21 +1,6 @@
 use std::num::NonZeroUsize;
 
-use crate::{
-    HashMap,
-    HashSet,
-    graph::vertex::location::{
-        SubLocation,
-        child::ChildLocation,
-    },
-    trace::{
-        cache::{
-            TraceCache,
-            key::directed::DirectedKey,
-        },
-        new::EditKind,
-    },
-    *,
-};
+use crate::*;
 
 pub type Offset = NonZeroUsize;
 

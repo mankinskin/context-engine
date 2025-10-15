@@ -1,5 +1,5 @@
-use crate::path::move_path::root::{MoveRootIndex};
 use crate::{
+    PathAppend,
     direction::Right,
     path::{
         BasePath,
@@ -21,6 +21,7 @@ use crate::{
             },
             root::GraphRoot,
         },
+        mutators::move_path::root::MoveRootIndex,
     },
     trace::has_graph::HasGraph,
 };

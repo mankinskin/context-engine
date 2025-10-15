@@ -4,10 +4,13 @@ use std::{
     slice::SliceIndex,
 };
 
-use crate::{Pattern};
-use crate::graph::{
-    getters::ErrorReason,
-    vertex::PatternId,
+use crate::{
+    Child,
+    Pattern,
+    graph::{
+        getters::ErrorReason,
+        vertex::PatternId,
+    },
 };
 
 pub fn get_child_pattern_range<'a, R: PatternRangeIndex>(
@@ -15,8 +18,13 @@ pub fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     p: &'a Pattern,
     range: R,
 ) -> Result<&'a <R as SliceIndex<[Child]>>::Output, ErrorReason> {
-    p.get(range.clone())
-        .ok_or_else(|| ErrorReason::InvalidPatternRange(*id, p.clone(), format!("{:#?}", range)))
+    p.get(range.clone()).ok_or_else(|| {
+        ErrorReason::InvalidPatternRange(
+            *id,
+            p.clone(),
+            format!("{:#?}", range),
+        )
+    })
 }
 
 pub trait PatternRangeIndex<T = Child>:
@@ -31,15 +39,15 @@ pub trait PatternRangeIndex<T = Child>:
 }
 
 impl<
-        T,
-        R: SliceIndex<[T], Output = [T]>
-            + RangeBounds<usize>
-            + Iterator<Item = usize>
-            + Debug
-            + Clone
-            + Send
-            + Sync,
-    > PatternRangeIndex<T> for R
+    T,
+    R: SliceIndex<[T], Output = [T]>
+        + RangeBounds<usize>
+        + Iterator<Item = usize>
+        + Debug
+        + Clone
+        + Send
+        + Sync,
+> PatternRangeIndex<T> for R
 {
 }
 pub trait StartInclusive {

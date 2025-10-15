@@ -1,6 +1,6 @@
 use std::ops::ControlFlow;
 
-use crate::path::mutators::path::{MovePath};
+use crate::path::mutators::move_path::path::MovePath;
 
 use crate::{
     direction::Right,

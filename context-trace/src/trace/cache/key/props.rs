@@ -1,11 +1,14 @@
-use crate::graph::vertex::location::child::ChildLocation;
+use crate::{
+    UpKey,
+    graph::vertex::location::child::ChildLocation,
+};
 
 pub trait LeafKey {
     fn leaf_location(&self) -> ChildLocation;
 }
 use crate::path::mutators::move_path::key::TokenPosition;
 
-use crate::trace::cache::directed::{DirectedKey};
+use crate::trace::cache::key::directed::DirectedKey;
 
 /// get the token position in a query
 pub trait CursorPosition {

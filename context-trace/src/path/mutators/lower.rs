@@ -1,8 +1,11 @@
 use std::ops::ControlFlow;
 
-use crate::structs::role_path::{RolePath};
 use crate::{
-    path::structs::sub_path::SubPath,
+    End,
+    path::structs::{
+        role_path::RolePath,
+        sub_path::SubPath,
+    },
     trace::has_graph::HasGraph,
 };
 

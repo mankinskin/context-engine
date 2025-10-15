@@ -1,9 +1,12 @@
-use crate::traversal::state::{
-    cursor::PatternCursor,
-    end::{
-        EndKind,
-        EndReason,
-        EndState,
+use crate::{
+    compare::parent::ParentCompareState,
+    traversal::state::{
+        cursor::PatternCursor,
+        end::{
+            EndKind,
+            EndReason,
+            EndState,
+        },
     },
 };
 use context_trace::*;
@@ -18,8 +21,6 @@ use std::{
 };
 use CompareNext::*;
 use PathPairMode::*;
-
-use crate::parent::{ParentCompareState};
 
 pub type CompareQueue = VecDeque<CompareState>;
 

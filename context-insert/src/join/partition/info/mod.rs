@@ -12,6 +12,7 @@ use crate::{
             partition::JoinedPartition,
             patterns::JoinedPatterns,
         },
+        partition::Join,
     },
 };
 use derive_more::derive::{
@@ -22,7 +23,6 @@ use derive_more::derive::{
 };
 use derive_new::new;
 
-use crate::{Join};
 pub mod inner_range;
 pub mod pattern_info;
 

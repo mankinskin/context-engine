@@ -3,8 +3,8 @@ use std::{
     ops::ControlFlow,
 };
 
-use crate::{RootedRangePath};
 use crate::{
+    RootedRolePath,
     direction::{
         Right,
         pattern::PatternDirection,
@@ -63,6 +63,17 @@ use crate::{
             role_path::{
                 CalcOffset,
                 RolePath,
+            },
+            rooted::{
+                RootedRangePath,
+                role_path::{
+                    CalcWidth,
+                    PatternRolePath,
+                },
+                root::{
+                    PathRoot,
+                    RootedPath,
+                },
             },
             sub_path::SubPath,
         },

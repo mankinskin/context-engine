@@ -1,7 +1,9 @@
 use std::collections::BTreeSet;
 
-use crate::context::{SplitCacheCtx};
-use crate::interval::IntervalGraph;
+use crate::{
+    interval::IntervalGraph,
+    split::context::SplitCacheCtx,
+};
 use context_trace::*;
 
 #[derive(Debug)]

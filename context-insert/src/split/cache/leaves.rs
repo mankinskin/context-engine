@@ -1,12 +1,13 @@
-use crate::split::vertex::output::CompleteLocations;
+use crate::split::{
+    PosKey,
+    vertex::output::CompleteLocations,
+};
 use context_trace::*;
 use derive_more::{
     Deref,
     DerefMut,
     From,
 };
-
-use crate::split::position::{PosKey};
 
 #[derive(Default, Debug, Deref, DerefMut, From, Clone, PartialEq, Eq)]
 pub struct Leaves(Vec<PosKey>);

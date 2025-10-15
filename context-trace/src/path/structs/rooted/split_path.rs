@@ -1,6 +1,7 @@
 use derive_more::Deref;
 
 use crate::{
+    IndexRoot,
     graph::vertex::location::child::ChildLocation,
     impl_root,
     path::{
@@ -12,12 +13,18 @@ use crate::{
             role::PathRole,
             root::GraphRootPattern,
         },
-        structs::sub_path::SubPath,
+        structs::{
+            rooted::{
+                role_path::RootedRolePath,
+                root::{
+                    PathRoot,
+                    RootedPath,
+                },
+            },
+            sub_path::SubPath,
+        },
     },
-    *,
 };
-
-use crate::path::structs::role_path::RootedRolePath;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RootedSplitPath<Root: PathRoot = IndexRoot> {
