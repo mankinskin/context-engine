@@ -6,22 +6,31 @@ pub struct TraversalState {
     pub prev: DirectedKey,
     pub kind: InnerKind,
 }
+impl HasRootPos for TraversalState {
+    fn root_pos(&self) -> &TokenPosition {
+        match &self.kind {
+            InnerKind::Parent(state) => state.root_pos(),
+            InnerKind::Child(state) => state.root_pos(),
+        }
+    }
+    fn root_pos_mut(&mut self) -> &mut TokenPosition {
+        match &mut self.kind {
+            InnerKind::Parent(state) => state.root_pos_mut(),
+            InnerKind::Child(state) => state.root_pos_mut(),
+        }
+    }
+}
 impl TraversalState {
     pub fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
-            InnerKind::Parent(state) => Some(state.path.root_child_location()),
+            InnerKind::Parent(state) =>
+                Some(state.rooted_path().root_child_location()),
             InnerKind::Child(state) =>
-                state.path.role_leaf_child_location::<End>(),
+                state.rooted_path().role_leaf_child_location::<End>(),
         }
     }
     pub fn prev_key(&self) -> DirectedKey {
         self.prev.clone()
-    }
-    pub fn root_pos(&self) -> TokenPosition {
-        match &self.kind {
-            InnerKind::Parent(state) => state.root_pos,
-            InnerKind::Child(state) => state.root_pos,
-        }
     }
 
     pub fn state_direction(&self) -> StateDirection {

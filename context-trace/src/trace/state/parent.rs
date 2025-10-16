@@ -86,17 +86,13 @@ impl IntoAdvanced for ParentState {
                 root_pos,
                 //cursor,
             } = self;
-            //let index = pattern[next_i];
-            //println!("{:#?}", (&pattern, entry, index));
             Ok(RootChildState {
-                child: ChildState {
+                child_state: ChildState {
                     base: BaseState {
                         prev_pos,
                         root_pos,
                         path: path.into_range(next_i),
-                        //cursor,
                     },
-                    //target: DownKey::new(index, root_pos.into()),
                 },
                 root_parent,
             })

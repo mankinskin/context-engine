@@ -113,7 +113,7 @@ where
         self.insert_token_data(token, data)
     }
     /// insert multiple token nodes
-    pub(crate) fn insert_tokens(
+    pub fn insert_tokens(
         &mut self,
         tokens: impl IntoIterator<Item = Token<G::Token>>,
     ) -> Vec<Child> {
@@ -187,7 +187,7 @@ where
     }
     /// add pattern to existing node
     //#[track_caller]
-    pub(crate) fn add_patterns_with_update(
+    pub fn add_patterns_with_update(
         &mut self,
         index: impl HasVertexIndex,
         patterns: impl IntoIterator<Item = Pattern>,
@@ -200,7 +200,7 @@ where
     }
     /// create new node from a pattern
     #[track_caller]
-    pub(crate) fn insert_pattern_with_id(
+    pub fn insert_pattern_with_id(
         &mut self,
         pattern: impl IntoPattern,
     ) -> (Child, Option<PatternId>) {
@@ -236,7 +236,7 @@ where
         (index, pattern_id)
     }
     /// create new node from a pattern
-    pub(crate) fn insert_pattern(
+    pub fn insert_pattern(
         &mut self,
         pattern: impl IntoPattern,
     ) -> Child {
@@ -250,7 +250,7 @@ where
     ) -> Child {
         self.force_insert_pattern_with_id(indices).0
     }
-    pub(crate) fn insert_patterns_with_ids(
+    pub fn insert_patterns_with_ids(
         &mut self,
         patterns: impl IntoIterator<Item = Pattern>,
     ) -> (Child, Vec<PatternId>) {
@@ -268,7 +268,7 @@ where
     }
     /// create new node from multiple patterns
     //#[track_caller]
-    pub(crate) fn insert_patterns(
+    pub fn insert_patterns(
         &mut self,
         patterns: impl IntoIterator<Item = impl IntoPattern>,
     ) -> Child {

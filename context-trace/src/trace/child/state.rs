@@ -1,4 +1,5 @@
 use crate::{
+    RootChildIndex,
     graph::{
         getters::vertex::VertexSet,
         vertex::{
@@ -12,8 +13,8 @@ use crate::{
     path::{
         RolePathUtils,
         accessors::{
-            child::RootChildIndex,
-            has_path::HasRootedRolePath,
+            child::LeafChild,
+            has_path::IntoRootedRolePath,
             role::End,
             root::GraphRoot,
         },
@@ -63,8 +64,8 @@ use std::{
 pub struct RootChildState {
     #[deref]
     #[deref_mut]
-    pub(crate) child: ChildState,
-    pub(crate) root_parent: ParentState,
+    pub child_state: ChildState,
+    pub root_parent: ParentState,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
@@ -76,12 +77,11 @@ pub struct ChildState {
 impl ChildState {
     pub fn parent_state(&self) -> ParentState {
         ParentState {
-            path: self.base.path.rooted_role_path(),
+            path: self.base.path.get_rooted_role_path(),
             ..self.base.clone()
         }
     }
 }
-use crate::path::accessors::child::LeafChild;
 impl PathAppend for ChildState {
     fn path_append(
         &mut self,

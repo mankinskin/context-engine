@@ -8,9 +8,9 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub(crate) trait CanAdvance: Advance + Clone {
+pub trait CanAdvance: Advance + Clone {
     fn can_advance<G: HasGraph>(
-        &mut self,
+        &self,
         trav: &G,
     ) -> bool {
         self.clone().move_path(trav).is_continue()

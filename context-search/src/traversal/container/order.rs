@@ -23,6 +23,6 @@ impl<T: TraversalOrder> TraversalOrder for &T {
 
 impl TraversalOrder for ChildLocation {
     fn sub_index(&self) -> usize {
-        self.sub_index
+        HasSubIndex::sub_index(self)
     }
 }

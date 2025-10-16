@@ -15,9 +15,9 @@ use crate::{
         child::Child,
         location::child::ChildLocation,
     },
-    path::{
-        accessors::child::RootChildIndex,
-        structs::role_path::RolePath,
+    path::structs::{
+        role_path::RolePath,
+        rooted::role_path::RootChildIndex,
     },
     trace::has_graph::HasGraph,
 };

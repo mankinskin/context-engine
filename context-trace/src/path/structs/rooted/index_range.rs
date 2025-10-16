@@ -20,8 +20,6 @@ use crate::{
         accessors::{
             child::{
                 PathChild,
-                RootChildIndex,
-                RootChildIndexMut,
                 root::{
                     GraphRootChild,
                     RootChild,
@@ -31,6 +29,7 @@ use crate::{
                 HasMatchPaths,
                 HasPath,
                 HasRolePath,
+                IntoRolePath,
             },
             role::{
                 End,
@@ -62,6 +61,8 @@ use crate::{
                 RootedRangePath,
                 role_path::{
                     IndexRolePath,
+                    RootChildIndex,
+                    RootChildIndexMut,
                     RootedRolePath,
                 },
                 root::{
@@ -91,8 +92,8 @@ impl RangePath for IndexRangePath {
     ) -> Self {
         Self {
             root,
-            start: SubPath::new(entry).into(),
-            end: SubPath::new(exit).into(),
+            start: SubPath::new_empty(entry).into(),
+            end: SubPath::new_empty(exit).into(),
         }
     }
 }
@@ -133,12 +134,14 @@ where
     }
 }
 
-impl HasRolePath<Start> for IndexRangePath {
-    fn role_path(&self) -> &RolePath<Start> {
-        &self.start
+impl IntoRolePath<End> for IndexRangePath {
+    fn into_role_path(self) -> RolePath<End> {
+        self.end
     }
-    fn role_path_mut(&mut self) -> &mut RolePath<Start> {
-        &mut self.start
+}
+impl IntoRolePath<Start> for IndexRangePath {
+    fn into_role_path(self) -> RolePath<Start> {
+        self.start
     }
 }
 
@@ -163,15 +166,6 @@ where
         trav: &G,
     ) -> Option<Child> {
         PathChild::<R>::path_child(self.role_path(), trav)
-    }
-}
-
-impl HasRolePath<End> for IndexRangePath {
-    fn role_path(&self) -> &RolePath<End> {
-        &self.end
-    }
-    fn role_path_mut(&mut self) -> &mut RolePath<End> {
-        &mut self.end
     }
 }
 

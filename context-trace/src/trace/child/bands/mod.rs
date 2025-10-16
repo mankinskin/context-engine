@@ -1,4 +1,5 @@
 use crate::{
+    IndexRoot,
     direction::{
         Direction,
         pattern::PatternDirection,
@@ -97,7 +98,7 @@ pub(crate) trait HasChildRoleIters: ToChild {
 
         prefix_iter
             .fold_while(
-                RootedRolePath::new(entry),
+                RootedRolePath::new_location(entry),
                 |mut acc, (prefix_location, pre)| {
                     acc.path_append(prefix_location);
                     if pre == prefix {

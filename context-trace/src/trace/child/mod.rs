@@ -21,7 +21,7 @@ use crate::{
 use std::fmt::Debug;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub(crate) struct ChildTracePos {
+pub struct ChildTracePos {
     pub(crate) inner_offset: Option<NonZeroUsize>,
     pub(crate) sub_index: usize,
 }
@@ -35,15 +35,18 @@ impl From<(usize, Option<NonZeroUsize>)> for ChildTracePos {
 }
 impl From<SubSplitLocation> for (PatternId, ChildTracePos) {
     fn from(sub: SubSplitLocation) -> Self {
-        (sub.location.pattern_id, ChildTracePos {
-            inner_offset: sub.inner_offset,
-            sub_index: sub.location.sub_index,
-        })
+        (
+            sub.location.pattern_id,
+            ChildTracePos {
+                inner_offset: sub.inner_offset,
+                sub_index: sub.location.sub_index,
+            },
+        )
     }
 }
 
 /// Side refers to border (front is indexing before front border, back is indexing after back border)
-pub(crate) trait TraceSide:
+pub trait TraceSide:
     std::fmt::Debug + Sync + Send + Unpin + Clone + 'static
 {
     fn trace_child_pos(

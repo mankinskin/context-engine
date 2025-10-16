@@ -1,5 +1,11 @@
 use context_trace::{
-    path::RolePathUtils,
+    path::{
+        accessors::has_path::{
+            HasRolePath,
+            HasRootedRolePath,
+        },
+        RolePathUtils,
+    },
     *,
 };
 use postfix::PostfixEnd;
@@ -60,10 +66,10 @@ impl EndKind {
         root_pos: TokenPosition,
         trav: &G,
     ) -> Self {
-        path.role_path.simplify(trav);
+        path.role_path_mut().simplify(trav);
         match (
             path.is_at_border::<_, Start>(trav.graph()),
-            path.role_path.raw_child_path().is_empty(),
+            path.raw_child_path().is_empty(),
         ) {
             (true, true) => EndKind::Complete(path.root_parent()),
             _ => EndKind::Postfix(PostfixEnd { path, root_pos }),
@@ -97,15 +103,15 @@ impl Traceable for TraceStart<'_> {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        if let Some(mut p) = match &self.0.kind {
-            EndKind::Postfix(p) => Some(p.clone()),
+        if let Some(mut p) = match self.0.kind.clone() {
+            EndKind::Postfix(p) => Some(p),
             EndKind::Range(p) => Some(PostfixEnd {
-                path: p.path.rooted_role_path(),
+                path: p.path.into_rooted_role_path(),
                 root_pos: p.root_pos,
             }),
             _ => None,
         } {
-            p.path.role_path.sub_path.path.drain(0..self.1);
+            p.rooted_role_path_mut().drain(0..self.1);
             p.trace(ctx);
         }
     }
@@ -139,11 +145,12 @@ impl EndState {
         reason: EndReason,
         parent: ParentCompareState,
     ) -> Self {
+        let root_pos = *parent.parent_state.root_pos();
         Self {
             reason,
             kind: EndKind::from_start_path(
-                parent.parent_state.path,
-                parent.parent_state.root_pos,
+                parent.parent_state.into_rooted_path(),
+                root_pos,
                 &trav,
             ),
             cursor: parent.cursor,
@@ -183,23 +190,21 @@ impl EndState {
         }
     }
     pub fn start_len(&self) -> usize {
-        self.start_path()
-            .map(|p| p.sub_path.len())
-            .unwrap_or_default()
+        self.start_path().map(|p| p.len()).unwrap_or_default()
     }
-    pub fn start_path(&self) -> Option<RootedSplitPathRef<'_>> {
+    pub fn start_path(&self) -> Option<&'_ StartPath> {
         match &self.kind {
             EndKind::Range(e) => Some(e.path.start_path()),
-            EndKind::Postfix(e) => Some((&e.path).into()),
+            EndKind::Postfix(e) => Some(e.path.start_path()),
             EndKind::Prefix(_) => None,
             EndKind::Complete(_) => None,
         }
     }
-    pub fn end_path(&self) -> Option<RootedSplitPathRef<'_>> {
+    pub fn end_path(&self) -> Option<&'_ EndPath> {
         match &self.kind {
             EndKind::Range(e) => Some(e.path.end_path()),
             EndKind::Postfix(_) => None,
-            EndKind::Prefix(e) => Some((&e.path).into()),
+            EndKind::Prefix(e) => Some(e.path.end_path()),
             EndKind::Complete(_) => None,
         }
     }

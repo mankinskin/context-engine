@@ -1,9 +1,9 @@
 use crate::{
     direction::{
-        pattern::PatternDirection,
         Direction,
         Left,
         Right,
+        pattern::PatternDirection,
     },
     graph::vertex::{
         location::child::ChildLocation,
@@ -91,6 +91,3 @@ impl PathBorder for Start {
 impl PathBorder for End {
     type BorderDirection = Front;
 }
-//impl<D: > PathBorder<D> for EndPath {
-//    type BorderDirection = Front;
-//}

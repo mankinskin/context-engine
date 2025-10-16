@@ -5,14 +5,16 @@ use crate::{
     },
     path::{
         accessors::{
-            child::RootChildIndex,
             role::PathRole,
             root::{
                 GraphRootPattern,
                 PatternRoot,
             },
         },
-        structs::rooted::root::RootedPath,
+        structs::rooted::{
+            role_path::RootChildIndex,
+            root::RootedPath,
+        },
     },
     trace::has_graph::HasGraph,
 };

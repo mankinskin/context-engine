@@ -1,9 +1,9 @@
 use crate::graph::vertex::pattern::Pattern;
 
 use crate::{
-    Direction,
     Left,
     Right,
+    direction::Direction,
 };
 
 pub trait PatternDirection: Direction {

@@ -66,6 +66,14 @@ pub struct SubChild {
     pub(crate) child: Child,
     pub(crate) location: SubLocation,
 }
+pub trait HasChild {
+    fn child(&self) -> Child;
+}
+impl HasChild for SubChild {
+    fn child(&self) -> Child {
+        self.child
+    }
+}
 
 #[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct Child {

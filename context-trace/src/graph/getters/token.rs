@@ -104,7 +104,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .collect::<Result<Pattern, _>>()
     }
     #[track_caller]
-    pub(crate) fn expect_token_children(
+    pub fn expect_token_children(
         &self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
     ) -> Pattern {

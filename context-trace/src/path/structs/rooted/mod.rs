@@ -4,27 +4,34 @@ pub(crate) mod role_path;
 pub(crate) mod root;
 pub(crate) mod split_path;
 
-use root::{
-    PathRoot,
-    RootedPath,
-};
-use split_path::RootedSplitPathRef;
-
-use crate::path::{
-    accessors::role::{
-        End,
-        Start,
-    },
-    structs::{
-        role_path::RolePath,
-        rooted::{
-            pattern_range::PatternRangePath,
-            role_path::{
-                PatternStartPath,
-                RootedEndPath,
+use crate::{
+    EndPath,
+    HasEndPath,
+    HasStartPath,
+    StartPath,
+    path::{
+        accessors::{
+            has_path::HasRolePath,
+            role::{
+                End,
+                Start,
+            },
+        },
+        structs::{
+            role_path::RolePath,
+            rooted::{
+                pattern_range::PatternRangePath,
+                role_path::{
+                    PatternStartPath,
+                    RootedEndPath,
+                },
             },
         },
     },
+};
+use root::{
+    PathRoot,
+    RootedPath,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,6 +39,19 @@ pub struct RootedRangePath<Root: PathRoot> {
     pub(crate) root: Root,
     pub(crate) start: RolePath<Start>,
     pub(crate) end: RolePath<End>,
+}
+impl<Root: PathRoot> RootedRangePath<Root> {
+    pub fn new(
+        root: impl Into<Root>,
+        start: RolePath<Start>,
+        end: RolePath<End>,
+    ) -> Self {
+        Self {
+            root: root.into(),
+            start,
+            end,
+        }
+    }
 }
 impl<R: PathRoot> RootedPath for RootedRangePath<R> {
     type Root = R;
@@ -52,23 +72,55 @@ impl From<PatternStartPath> for PatternRangePath {
     fn from(value: PatternStartPath) -> Self {
         Self {
             start: value.role_path,
-            end: RolePath::new(value.root.len()),
+            end: RolePath::new_empty(value.root.len()),
             root: value.root,
         }
     }
 }
-
-impl<R: PathRoot> RootedRangePath<R> {
-    pub fn start_path(&self) -> RootedSplitPathRef<'_, R> {
-        RootedSplitPathRef {
-            root: &self.root,
-            sub_path: &self.start.sub_path,
-        }
+impl<Root: PathRoot> HasStartPath for RootedRangePath<Root> {
+    fn start_path(&self) -> &StartPath {
+        &self.start
     }
-    pub fn end_path(&self) -> RootedSplitPathRef<'_, R> {
-        RootedSplitPathRef {
-            root: &self.root,
-            sub_path: &self.end.sub_path,
-        }
+    fn start_path_mut(&mut self) -> &mut StartPath {
+        &mut self.start
+    }
+}
+impl<Root: PathRoot> HasEndPath for RootedRangePath<Root> {
+    fn end_path(&self) -> &EndPath {
+        &self.end
+    }
+    fn end_path_mut(&mut self) -> &mut EndPath {
+        &mut self.end
+    }
+}
+//impl<R: PathRoot> RootedRangePath<R> {
+//    pub fn start_path(&self) -> RootedSplitPathRef<'_, R> {
+//        RootedSplitPathRef {
+//            root: &self.root,
+//            sub_path: &self.start.sub_path,
+//        }
+//    }
+//    pub fn end_path(&self) -> RootedSplitPathRef<'_, R> {
+//        RootedSplitPathRef {
+//            root: &self.root,
+//            sub_path: &self.end.sub_path,
+//        }
+//    }
+//}
+
+impl<R: PathRoot> HasRolePath<Start> for RootedRangePath<R> {
+    fn role_path(&self) -> &RolePath<Start> {
+        &self.start
+    }
+    fn role_path_mut(&mut self) -> &mut RolePath<Start> {
+        &mut self.start
+    }
+}
+impl<R: PathRoot> HasRolePath<End> for RootedRangePath<R> {
+    fn role_path(&self) -> &RolePath<End> {
+        &self.end
+    }
+    fn role_path_mut(&mut self) -> &mut RolePath<End> {
+        &mut self.end
     }
 }

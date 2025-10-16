@@ -1,32 +1,37 @@
-use std::ops::Deref;
+use derive_more::{
+    Debug,
+    Deref,
+    DerefMut,
+};
 
 use crate::{
     graph::vertex::location::child::ChildLocation,
-    path::accessors::{
-        child::RootChildIndex,
-        role::PathRole,
+    path::{
+        accessors::role::PathRole,
+        structs::rooted::role_path::RootChildIndex,
     },
 };
 
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Deref, DerefMut)]
 pub struct SubPath {
     pub(crate) root_entry: usize,
+    #[deref]
+    #[deref_mut]
     pub(crate) path: Vec<ChildLocation>,
 }
 
-impl Deref for SubPath {
-    type Target = Vec<ChildLocation>;
-    fn deref(&self) -> &Self::Target {
-        &self.path
-    }
-}
-
 impl SubPath {
-    pub(crate) fn new(root_entry: usize) -> Self {
+    pub fn new_empty(root_entry: usize) -> Self {
         Self {
             root_entry,
-            path: vec![],
+            path: Default::default(),
         }
+    }
+    pub fn new(
+        root_entry: usize,
+        path: Vec<ChildLocation>,
+    ) -> Self {
+        Self { root_entry, path }
     }
     pub(crate) fn pop_while(
         &mut self,

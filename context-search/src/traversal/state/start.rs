@@ -10,7 +10,10 @@ use crate::{
         TraversalKind,
     },
 };
-use context_trace::*;
+use context_trace::{
+    trace::state::IntoParentState,
+    *,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct StartCtx<K: TraversalKind> {
@@ -36,7 +39,7 @@ impl<K: TraversalKind> StartCtx<K> {
             let batch = K::Policy::gen_parent_batch(
                 &self.trav,
                 self.index,
-                |trav, p| self.index.into_primer(trav, p),
+                |trav, p| self.index.into_parent_state(trav, p),
             );
 
             Ok(CompareParentBatch { batch, cursor })
@@ -48,38 +51,6 @@ impl<K: TraversalKind> StartCtx<K> {
                 })),
                 found: Some(FinishedKind::Complete(self.index)),
             })
-        }
-    }
-}
-pub trait IntoPrimer: Sized {
-    fn into_primer<G: HasGraph>(
-        self,
-        trav: &G,
-        parent_entry: ChildLocation,
-    ) -> ParentState;
-}
-impl IntoPrimer for Child {
-    fn into_primer<G: HasGraph>(
-        self,
-        _trav: &G,
-        parent_entry: ChildLocation,
-    ) -> ParentState {
-        let width = self.width().into();
-        ParentState {
-            prev_pos: width,
-            root_pos: width,
-            path: RootedRolePath {
-                root: IndexRoot {
-                    location: parent_entry.into_pattern_location(),
-                },
-                role_path: RolePath {
-                    sub_path: SubPath {
-                        root_entry: parent_entry.sub_index,
-                        path: vec![],
-                    },
-                    _ty: Default::default(),
-                },
-            },
         }
     }
 }

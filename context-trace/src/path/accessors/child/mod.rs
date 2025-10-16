@@ -8,9 +8,15 @@ use crate::{
         child::Child,
         location::child::ChildLocation,
     },
-    path::accessors::{
-        has_path::HasPath,
-        role::PathRole,
+    path::{
+        accessors::{
+            has_path::HasPath,
+            role::PathRole,
+        },
+        structs::rooted::role_path::{
+            RootChildIndex,
+            RootChildIndexMut,
+        },
     },
     trace::has_graph::HasGraph,
 };
@@ -55,14 +61,4 @@ pub trait PathChild<R: PathRole>: HasPath<R> {
         self.path_child_location()
             .map(|loc| *trav.graph().expect_child_at(loc))
     }
-}
-
-/// access to the position of a child
-#[auto_impl(&, & mut)]
-pub trait RootChildIndex<R> {
-    fn root_child_index(&self) -> usize;
-}
-
-pub(crate) trait RootChildIndexMut<R>: RootChildIndex<R> {
-    fn root_child_index_mut(&mut self) -> &mut usize;
 }

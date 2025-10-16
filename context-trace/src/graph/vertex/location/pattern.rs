@@ -6,27 +6,34 @@ use std::{
 
 use crate::graph::vertex::{
     PatternId,
-    location::ChildLocation,
+    location::{
+        ChildLocation,
+        HasParent,
+    },
     pattern::Pattern,
 };
 
 use crate::graph::vertex::child::Child;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub(crate) struct PatternRangeLocation {
-    pub(crate) parent: Child,
-    pub(crate) id: PatternId,
-    pub(crate) range: Range<usize>,
+    pub parent: Child,
+    pub id: PatternId,
+    pub range: Range<usize>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 pub struct PatternLocation {
-    pub(crate) parent: Child,
-    pub(crate) id: PatternId,
+    pub parent: Child,
+    pub id: PatternId,
 }
 
+impl HasParent for PatternLocation {
+    fn parent(&self) -> &Child {
+        &self.parent
+    }
+}
 impl PatternLocation {
-    pub(crate) fn new(
+    pub fn new(
         parent: Child,
         id: PatternId,
     ) -> Self {
@@ -52,7 +59,6 @@ impl PatternLocation {
             range,
         }
     }
-    //#[allow(unused)]
     //pub(crate) fn get_pattern<
     //    'a: 'g,
     //    'g,
@@ -61,7 +67,6 @@ impl PatternLocation {
     //>(&'a self, trav: &'a Trav) -> Option<&Pattern> {
     //    trav.graph().get_pattern_at(self).ok()
     //}
-    //#[allow(unused)]
     //pub(crate) fn expect_pattern<
     //    'a: 'g,
     //    'g,
@@ -98,4 +103,8 @@ impl IntoPatternLocation for PatternLocation {
     fn into_pattern_location(self) -> PatternLocation {
         self
     }
+}
+
+pub trait HasPatternLocation {
+    fn pattern_location(&self) -> &PatternLocation;
 }

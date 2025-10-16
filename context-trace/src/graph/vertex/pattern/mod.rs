@@ -33,7 +33,7 @@ impl PatternWidth for Pattern {
     }
 }
 /// trait for types which can be converted to a pattern with a known size
-pub(crate) trait IntoPattern: Sized
+pub trait IntoPattern: Sized
 //IntoIterator<Item = Self::Elem, IntoIter = Self::Iter> + Sized + Borrow<[Child]> + Debug
 {
     //type Iter: ExactSizeIterator + DoubleEndedIterator<Item = Self::Elem>;

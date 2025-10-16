@@ -3,32 +3,46 @@ use std::ops::{
     DerefMut,
 };
 
-use crate::graph::getters::vertex::VertexSet;
-use crate::graph::vertex::child::Child;
-use crate::graph::vertex::has_vertex_index::HasVertexIndex;
-use crate::graph::vertex::key::VertexKey;
 use crate::graph::{
     Hypergraph,
+    getters::vertex::VertexSet,
     kind::GraphKind,
+    vertex::{
+        child::Child,
+        data::VertexData,
+        has_vertex_index::HasVertexIndex,
+        key::VertexKey,
+    },
 };
-use crate::graph::vertex::data::VertexData;
 
 pub(crate) trait HasVertexDataMut: HasVertexData {
-    fn vertex_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+    fn vertex_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         self,
         graph: &'a mut R,
     ) -> &'a mut VertexData
     where
         Self: 'a;
-        
-    fn vertex_ref_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+
+    fn vertex_ref_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         &'a mut self,
         graph: &'a mut R,
     ) -> &'a mut VertexData;
 }
 
 impl HasVertexDataMut for Child {
-    fn vertex_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+    fn vertex_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         self,
         graph: &'a mut R,
     ) -> &'a mut VertexData
@@ -37,7 +51,11 @@ impl HasVertexDataMut for Child {
     {
         graph.expect_vertex_mut(self.vertex_index())
     }
-    fn vertex_ref_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+    fn vertex_ref_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         &'a mut self,
         graph: &'a mut R,
     ) -> &'a mut VertexData {
@@ -46,7 +64,11 @@ impl HasVertexDataMut for Child {
 }
 
 impl<V: HasVertexDataMut> HasVertexDataMut for &'_ mut V {
-    fn vertex_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+    fn vertex_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         self,
         graph: &'a mut R,
     ) -> &'a mut VertexData
@@ -55,7 +77,11 @@ impl<V: HasVertexDataMut> HasVertexDataMut for &'_ mut V {
     {
         V::vertex_ref_mut(self, graph)
     }
-    fn vertex_ref_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
+    fn vertex_ref_mut<
+        'a,
+        G: GraphKind + 'a,
+        R: Deref<Target = Hypergraph<G>> + DerefMut,
+    >(
         &'a mut self,
         graph: &'a mut R,
     ) -> &'a mut VertexData {
@@ -79,7 +105,7 @@ impl<V: HasVertexDataMut> HasVertexDataMut for &'_ mut V {
 //    }
 //}
 
-pub(crate) trait HasVertexData: Sized {
+pub trait HasVertexData: Sized {
     fn vertex<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>>>(
         self,
         graph: &'a R,

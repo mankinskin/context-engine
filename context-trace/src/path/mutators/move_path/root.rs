@@ -5,10 +5,6 @@ use crate::{
     },
     path::{
         accessors::{
-            child::{
-                RootChildIndex,
-                RootChildIndexMut,
-            },
             role::{
                 End,
                 PathRole,
@@ -16,7 +12,11 @@ use crate::{
             root::RootPattern,
         },
         structs::rooted::{
-            role_path::RootedRolePath,
+            role_path::{
+                RootChildIndex,
+                RootChildIndexMut,
+                RootedRolePath,
+            },
             root::PathRoot,
         },
     },

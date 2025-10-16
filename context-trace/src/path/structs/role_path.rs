@@ -1,9 +1,12 @@
-use std::{
-    borrow::Borrow,
-    ops::Deref,
+use std::borrow::Borrow;
+
+use derive_more::{
+    Deref,
+    DerefMut,
 };
 
 use crate::{
+    EndPath,
     graph::vertex::location::child::ChildLocation,
     path::{
         accessors::{
@@ -11,8 +14,6 @@ use crate::{
             child::{
                 LeafChildPosMut,
                 PathChild,
-                RootChildIndex,
-                RootChildIndexMut,
             },
             has_path::{
                 HasPath,
@@ -31,7 +32,11 @@ use crate::{
         },
         structs::{
             rooted::{
-                role_path::RootedRolePath,
+                role_path::{
+                    RootChildIndex,
+                    RootChildIndexMut,
+                    RootedRolePath,
+                },
                 root::PathRoot,
             },
             sub_path::SubPath,
@@ -45,16 +50,27 @@ use crate::path::{
     structs::rooted::index_range::IndexRangePath,
 };
 
-#[derive(Clone, Debug, PartialEq, Eq, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Default, Deref, DerefMut)]
 pub struct RolePath<R: PathRole> {
+    #[deref]
+    #[deref_mut]
     pub(crate) sub_path: SubPath,
     pub(crate) _ty: std::marker::PhantomData<R>,
 }
 
 impl<R: PathRole> RolePath<R> {
-    pub(crate) fn new(entry: usize) -> Self {
+    pub fn new_empty(entry: usize) -> Self {
         Self {
-            sub_path: SubPath::new(entry),
+            sub_path: SubPath::new(entry, Default::default()),
+            _ty: Default::default(),
+        }
+    }
+    pub fn new(
+        entry: usize,
+        path: Vec<ChildLocation>,
+    ) -> Self {
+        Self {
+            sub_path: SubPath::new(entry, path),
             _ty: Default::default(),
         }
     }
@@ -93,15 +109,6 @@ impl<R: PathRole> CalcOffset for RolePath<R> {
 impl<R: PathRole> RootChildIndex<R> for RolePath<R> {
     fn root_child_index(&self) -> usize {
         self.sub_path.root_entry
-    }
-}
-impl LeafChildPosMut<End> for RolePath<End> {
-    fn leaf_child_pos_mut(&mut self) -> &mut usize {
-        if !self.path().is_empty() {
-            &mut self.path_child_location_mut().unwrap().sub_index
-        } else {
-            self.root_child_index_mut()
-        }
     }
 }
 impl<R: PathRole> RootChildIndexMut<R> for RolePath<R> {
@@ -150,44 +157,11 @@ impl<R: PathRole> PathSimplify for RolePath<R> {
     }
 }
 
-impl<R: PathRole> Deref for RolePath<R> {
-    type Target = SubPath;
-    fn deref(&self) -> &Self::Target {
-        &self.sub_path
-    }
-}
-
-impl From<IndexRangePath> for RolePath<Start> {
-    fn from(p: IndexRangePath) -> Self {
-        p.start
-    }
-}
-
 impl<R: PathRole> From<SubPath> for RolePath<R> {
     fn from(sub_path: SubPath) -> Self {
         Self {
             sub_path,
             _ty: Default::default(),
         }
-    }
-}
-
-impl From<IndexRangePath> for RolePath<End> {
-    fn from(p: IndexRangePath) -> Self {
-        p.end
-    }
-}
-//impl<R> WideMut for RolePath<R> {
-//    fn width_mut(&mut self) -> &mut usize {
-//        &mut self.width
-//    }
-//}
-
-impl FromAdvanced<IndexRangePath> for RolePath<Start> {
-    fn from_advanced<G: HasGraph>(
-        path: IndexRangePath,
-        _trav: &G,
-    ) -> Self {
-        path.start
     }
 }

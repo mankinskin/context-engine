@@ -1,10 +1,17 @@
-use derive_more::derive::From;
+use derive_more::{
+    Deref,
+    DerefMut,
+    derive::From,
+};
 
 use crate::{
+    Child,
     graph::vertex::{
         location::{
+            HasParent,
             child::ChildLocation,
             pattern::{
+                HasPatternLocation,
                 IntoPatternLocation,
                 PatternLocation,
             },
@@ -14,9 +21,24 @@ use crate::{
     path::accessors::root::RootPattern,
 };
 
-#[derive(Clone, Debug, PartialEq, Eq, From)]
+#[derive(Clone, Debug, PartialEq, Eq, From, Deref, DerefMut)]
 pub struct IndexRoot {
     pub(crate) location: PatternLocation,
+}
+impl HasPatternLocation for IndexRoot {
+    fn pattern_location(&self) -> &PatternLocation {
+        &self.location
+    }
+}
+impl HasParent for IndexRoot {
+    fn parent(&self) -> &Child {
+        self.location.parent()
+    }
+}
+impl From<IndexRoot> for PatternLocation {
+    fn from(value: IndexRoot) -> Self {
+        value.location
+    }
 }
 pub trait PathRoot: Clone + RootPattern {}
 

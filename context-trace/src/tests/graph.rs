@@ -1,13 +1,63 @@
 #[cfg(test)]
 use {
     crate::graph::{
+        Hypergraph,
         kind::BaseGraphKind,
         vertex::token::Token,
-        Hypergraph,
     },
     itertools::Itertools,
 };
 
+#[macro_export]
+macro_rules! insert_patterns {
+    ($graph:ident,
+        $(
+            $name:ident => [
+                $([$($pat:expr),*]),*$(,)?
+            ]
+        ),*$(,)?
+    ) => {
+
+        $(
+            let $name = $graph.insert_patterns([$(vec![$($pat),*]),*]);
+        )*
+    };
+    ($graph:ident,
+        $(
+            $name:ident =>
+                [$($pat:expr),*]
+        ),*$(,)?
+    ) => {
+
+        $(
+            let $name = $graph.insert_pattern([$($pat),*]);
+        )*
+    };
+    ($graph:ident,
+        $(
+            ($name:ident, $idname:ident) => [
+                $([$($pat:expr),*]),*$(,)?
+            ]
+        ),*$(,)?
+    ) => {
+
+        $(
+            let ($name, $idname) = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns_with_ids([$(vec![$($pat),*]),*]);
+        )*
+    };
+    ($graph:ident,
+        $(
+            ($name:ident, $idname:ident) =>
+                [$($pat:expr),*]
+        ),*$(,)?
+    ) => {
+
+        $(
+            let ($name, $idname) = $crate::HasGraphMut::graph_mut(&mut $graph).insert_pattern_with_id([$($pat),*]);
+            let $idname = $idname.unwrap();
+        )*
+    };
+}
 #[test]
 fn test_to_petgraph() {
     let mut graph = Hypergraph::<BaseGraphKind>::default();

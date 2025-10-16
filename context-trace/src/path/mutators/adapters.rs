@@ -7,7 +7,6 @@ use crate::{
         accessors::{
             child::{
                 LeafChild,
-                RootChildIndexMut,
                 root::{
                     GraphRootChild,
                     RootChild,
@@ -22,6 +21,7 @@ use crate::{
             root::GraphRoot,
         },
         mutators::move_path::root::MoveRootIndex,
+        structs::rooted::role_path::RootChildIndexMut,
     },
     trace::has_graph::HasGraph,
 };

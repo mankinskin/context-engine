@@ -16,46 +16,7 @@ use {
             },
         },
     },
-    context_trace::{
-        graph::{
-            getters::{
-                ErrorReason,
-                IndexWithPath,
-            },
-            kind::BaseGraphKind,
-            vertex::{
-                child::Child,
-                location::{
-                    child::ChildLocation,
-                    pattern::PatternLocation,
-                    SubLocation,
-                },
-                token::Token,
-            },
-            Hypergraph,
-            HypergraphRef,
-        },
-        path::structs::{
-            role_path::RolePath,
-            rooted::{
-                role_path::RootedRolePath,
-                root::IndexRoot,
-            },
-            sub_path::SubPath,
-        },
-        tests::env::{
-            Env1,
-            TestEnv,
-        },
-        trace::cache::{
-            key::directed::DirectedKey,
-            position::PositionCache,
-            vertex::VertexCache,
-            TraceCache,
-        },
-        HashMap,
-        HashSet,
-    },
+    context_trace::*,
     itertools::*,
     pretty_assertions::{
         assert_eq,
@@ -179,6 +140,8 @@ fn find_ancestor1() {
 
 #[test]
 fn find_ancestor2() {
+    use context_trace::*;
+
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let (a, b, _w, x, y, z) = graph
         .insert_tokens([
@@ -223,37 +186,19 @@ fn find_ancestor2() {
                 kind: EndKind::Postfix(PostfixEnd {
                     //inner_width: 2,
                     root_pos: 2.into(),
-                    path: RootedRolePath {
-                        root: IndexRoot {
-                            location: PatternLocation {
-                                parent: xabyz,
-                                id: xaby_z_id,
-                            },
-                        },
-                        role_path: RolePath {
-                            sub_path: SubPath {
-                                root_entry: 0,
-                                path: vec![ChildLocation {
-                                    parent: xaby,
-                                    pattern_id: xa_by_id,
-                                    sub_index: 1,
-                                },],
-                            },
-                            _ty: Default::default(),
-                        },
-                    },
+                    path: RootedRolePath::new(
+                        PatternLocation::new(xabyz, xaby_z_id,),
+                        RolePath::new(
+                            0,
+                            vec![ChildLocation::new(xaby, xa_by_id, 1,)],
+                        ),
+                    )
                 }),
                 cursor: PatternCursor {
-                    path: RootedRolePath {
-                        root: query.clone(),
-                        role_path: RolePath {
-                            sub_path: SubPath {
-                                root_entry: 1,
-                                path: vec![],
-                            },
-                            _ty: Default::default(),
-                        },
-                    },
+                    path: RootedRolePath::new(
+                        query.clone(),
+                        RolePath::new_empty(1),
+                    ),
                     relative_pos: 3.into(),
                 },
             })),
@@ -266,13 +211,13 @@ fn find_ancestor2() {
                             top_down: FromIterator::from_iter([]),
                             bottom_up: FromIterator::from_iter([(
                                 2.into(), // width of by
-                                PositionCache {
-                                    bottom: HashMap::from_iter([(
+                                PositionCache::new(
+                                    Default::default(),
+                                    HashMap::from_iter([(
                                         DirectedKey::up(xaby, 2), // width of by
                                         SubLocation::new(xaby_z_id, 0),
                                     ),]),
-                                    top: Default::default(),
-                                }
+                                )
                             )]),
                         }
                     ),
@@ -283,13 +228,13 @@ fn find_ancestor2() {
                             top_down: FromIterator::from_iter([]),
                             bottom_up: FromIterator::from_iter([(
                                 2.into(), // width of by
-                                PositionCache {
-                                    bottom: HashMap::from_iter([(
+                                PositionCache::new(
+                                    HashSet::from_iter([]),
+                                    HashMap::from_iter([(
                                         DirectedKey::up(by, 2), // width of by
                                         SubLocation::new(xa_by_id, 1)
                                     )]),
-                                    top: HashSet::from_iter([]),
-                                }
+                                )
                             )]),
                         }
                     ),
@@ -355,37 +300,19 @@ fn find_ancestor3() {
                 reason: EndReason::QueryEnd,
                 kind: EndKind::Postfix(PostfixEnd {
                     root_pos: 2.into(),
-                    path: RootedRolePath {
-                        root: IndexRoot {
-                            location: PatternLocation {
-                                parent: xaby,
-                                id: xab_y_id,
-                            },
-                        },
-                        role_path: RolePath {
-                            sub_path: SubPath {
-                                root_entry: 0,
-                                path: vec![ChildLocation {
-                                    parent: xab,
-                                    pattern_id: x_ab_id,
-                                    sub_index: 1,
-                                },],
-                            },
-                            _ty: Default::default(),
-                        },
-                    },
+                    path: RootedRolePath::new(
+                        PatternLocation::new(xaby, xab_y_id),
+                        RolePath::new(
+                            0,
+                            vec![ChildLocation::new(xab, x_ab_id, 1)],
+                        ),
+                    )
                 }),
                 cursor: PatternCursor {
-                    path: RootedRolePath {
-                        root: query.clone(),
-                        role_path: RolePath {
-                            sub_path: SubPath {
-                                root_entry: 1,
-                                path: vec![],
-                            },
-                            _ty: Default::default(),
-                        },
-                    },
+                    path: RootedRolePath::new(
+                        query.clone(),
+                        RolePath::new_empty(1),
+                    ),
                     relative_pos: 3.into(),
                 },
             })),
@@ -398,13 +325,13 @@ fn find_ancestor3() {
                             top_down: FromIterator::from_iter([]),
                             bottom_up: FromIterator::from_iter([(
                                 2.into(),
-                                PositionCache {
-                                    bottom: HashMap::from_iter([(
+                                PositionCache::new(
+                                    Default::default(),
+                                    HashMap::from_iter([(
                                         DirectedKey::up(xab, 2),
                                         SubLocation::new(xab_y_id, 0),
                                     ),]),
-                                    top: Default::default(),
-                                }
+                                )
                             )]),
                         }
                     ),
@@ -415,13 +342,13 @@ fn find_ancestor3() {
                             top_down: FromIterator::from_iter([]),
                             bottom_up: FromIterator::from_iter([(
                                 2.into(),
-                                PositionCache {
-                                    bottom: HashMap::from_iter([(
+                                PositionCache::new(
+                                    HashSet::from_iter([]),
+                                    HashMap::from_iter([(
                                         DirectedKey::up(ab, 2),
                                         SubLocation::new(x_ab_id, 1),
                                     )]),
-                                    top: HashSet::from_iter([]),
-                                }
+                                )
                             )]),
                         }
                     ),

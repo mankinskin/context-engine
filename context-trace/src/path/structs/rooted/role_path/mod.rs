@@ -1,8 +1,19 @@
+pub(crate) mod calc;
+pub(crate) mod range;
+
+use auto_impl::auto_impl;
+use derive_more::{
+    Deref,
+    DerefMut,
+};
 use std::borrow::Borrow;
 
-use derive_more::Deref;
-
 use crate::{
+    EndPath,
+    HasEndPath,
+    HasStartPath,
+    RolePathUtils,
+    StartPath,
     graph::{
         getters::ErrorReason,
         vertex::{
@@ -27,8 +38,6 @@ use crate::{
             child::{
                 LeafChild,
                 PathChild,
-                RootChildIndex,
-                RootChildIndexMut,
                 root::{
                     GraphRootChild,
                     PatternRootChild,
@@ -38,6 +47,7 @@ use crate::{
                 HasPath,
                 HasRolePath,
                 HasSinglePath,
+                IntoRolePath,
             },
             role::{
                 End,
@@ -59,6 +69,7 @@ use crate::{
             rooted::{
                 RootedRangePath,
                 pattern_range::PatternRangePath,
+                role_path::calc::CalcWidth,
                 root::{
                     IndexRoot,
                     PathRoot,
@@ -71,32 +82,90 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub trait CalcWidth: CalcOffset + RootedPath {
-    fn calc_width<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize;
+#[derive(Debug, Clone, PartialEq, Eq, Default, Deref, DerefMut)]
+pub struct RootedRolePath<R: PathRole, Root: PathRoot> {
+    pub(crate) root: Root,
+    #[deref]
+    #[deref_mut]
+    pub(crate) role_path: RolePath<R>,
 }
-impl<Role: PathRole, Root: PathRoot> CalcOffset for RootedRolePath<Role, Root> {
-    fn calc_offset<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize {
-        self.role_path.calc_offset(trav)
+impl<Root: PathRoot, R: PathRole> RootedRolePath<R, Root> {
+    pub fn new(
+        root: impl Into<Root>,
+        role_path: RolePath<R>,
+    ) -> Self {
+        Self {
+            root: root.into(),
+            role_path,
+        }
     }
 }
-impl<Role: PathRole, Root: PathRoot> CalcWidth for RootedRolePath<Role, Root>
+impl<Root: PathRoot> HasStartPath for RootedStartPath<Root> {
+    fn start_path(&self) -> &StartPath {
+        &self.role_path
+    }
+    fn start_path_mut(&mut self) -> &mut StartPath {
+        &mut self.role_path
+    }
+}
+impl<Root: PathRoot> HasEndPath for RootedEndPath<Root> {
+    fn end_path(&self) -> &EndPath {
+        &self.role_path
+    }
+    fn end_path_mut(&mut self) -> &mut EndPath {
+        &mut self.role_path
+    }
+}
+
+impl<R: PathRole, Root: PathRoot> HasRolePath<R> for RootedRolePath<R, Root> {
+    fn role_path(&self) -> &RolePath<R> {
+        &self.role_path
+    }
+    fn role_path_mut(&mut self) -> &mut RolePath<R> {
+        &mut self.role_path
+    }
+}
+impl<R: PathRole, Root: PathRoot> IntoRolePath<R> for RootedRolePath<R, Root> {
+    fn into_role_path(self) -> RolePath<R> {
+        self.role_path
+    }
+}
+impl<Root: PathRoot> CalcWidth for RootedRangePath<Root>
 where
-    Self: LeafChild<Role>,
+    Self: LeafChild<Start> + LeafChild<End>,
 {
     fn calc_width<G: HasGraph>(
         &self,
         trav: G,
     ) -> usize {
-        self.calc_offset(&trav) + self.leaf_child(&trav).width()
+        self.calc_offset(&trav)
+            + self.role_leaf_child::<Start, _>(&trav).width()
+            + if self.role_root_child_index::<Start>()
+                != self.role_root_child_index::<End>()
+            {
+                self.role_leaf_child::<End, _>(&trav).width()
+            } else {
+                0
+            }
     }
 }
 
+pub(crate) type IndexRolePath<R> = RootedRolePath<R, IndexRoot>;
+
+pub(crate) type PatternRolePath<R> = RootedRolePath<R, Pattern>;
+
+pub(crate) type RootedStartPath<R> = RootedRolePath<Start, R>;
+pub(crate) type RootedEndPath<R> = RootedRolePath<End, R>;
+pub type IndexStartPath = IndexRolePath<Start>;
+pub type IndexEndPath = IndexRolePath<End>;
+pub(crate) type PatternStartPath = PatternRolePath<Start>;
+pub type PatternEndPath = PatternRolePath<End>;
+
+impl<R: PathRole> IndexRolePath<R> {
+    pub fn new_location(first: ChildLocation) -> Self {
+        Self::from(first)
+    }
+}
 impl<R: PathRole> PathChild<R> for IndexRolePath<R>
 where
     Self: HasRolePath<R>,
@@ -121,32 +190,10 @@ where
     }
 }
 
-pub(crate) type IndexRolePath<R> = RootedRolePath<R, IndexRoot>;
-pub(crate) type PatternRolePath<R> = RootedRolePath<R, Pattern>;
-
-pub(crate) type RootedStartPath<R> = RootedRolePath<Start, R>;
-pub(crate) type RootedEndPath<R> = RootedRolePath<End, R>;
-pub type IndexStartPath = IndexRolePath<Start>;
-pub type IndexEndPath = IndexRolePath<End>;
-pub(crate) type PatternStartPath = PatternRolePath<Start>;
-pub type PatternEndPath = PatternRolePath<End>;
-
-#[derive(Debug, Clone, PartialEq, Eq, Default, Deref)]
-pub struct RootedRolePath<R: PathRole, Root: PathRoot> {
-    pub(crate) root: Root,
-    #[deref]
-    pub(crate) role_path: RolePath<R>,
-}
-
-impl<R: PathRole> RootedRolePath<R, IndexRoot> {
-    pub(crate) fn new(first: ChildLocation) -> Self {
-        Self::from(first)
-    }
-}
 impl<R: PathRole> From<ChildLocation> for IndexRolePath<R> {
     fn from(first: ChildLocation) -> Self {
         Self {
-            role_path: RolePath::from(SubPath::new(first.sub_index)),
+            role_path: RolePath::new_empty(first.sub_index),
             root: IndexRoot::from(first.into_pattern_location()),
         }
     }
@@ -158,7 +205,7 @@ impl<Root: PathRoot, R: PathRole> From<(Root, RolePath<R>)>
         Self { root, role_path }
     }
 }
-impl<R: PathRoot> RootedRolePath<Start, R> {
+impl<R: PathRoot> RootedStartPath<R> {
     pub(crate) fn into_range(
         self,
         exit: usize,
@@ -176,7 +223,7 @@ impl<R: PathRoot> RootedRolePath<Start, R> {
         }
     }
 }
-impl<R: PathRoot> RootedRolePath<End, R> {
+impl<R: PathRoot> RootedEndPath<R> {
     pub(crate) fn into_range(
         self,
         entry: usize,
@@ -193,6 +240,16 @@ impl<R: PathRoot> RootedRolePath<End, R> {
             end: self.role_path,
         }
     }
+}
+
+/// access to the position of a child
+#[auto_impl(&, & mut)]
+pub trait RootChildIndex<R> {
+    fn root_child_index(&self) -> usize;
+}
+
+pub(crate) trait RootChildIndexMut<R>: RootChildIndex<R> {
+    fn root_child_index_mut(&mut self) -> &mut usize;
 }
 
 impl<R: PathRole, Root: PathRoot> RootChildIndexMut<R>
@@ -269,14 +326,6 @@ impl<R: PathRole, Root: PathRoot> HasSinglePath for RootedRolePath<R, Root> {
         self.role_path.sub_path.path.borrow()
     }
 }
-impl<R: PathRole, Root: PathRoot> HasRolePath<R> for RootedRolePath<R, Root> {
-    fn role_path(&self) -> &RolePath<R> {
-        &self.role_path
-    }
-    fn role_path_mut(&mut self) -> &mut RolePath<R> {
-        &mut self.role_path
-    }
-}
 
 impl<Role: PathRole, Root: PathRoot> RootPattern
     for RootedRolePath<Role, Root>
@@ -336,7 +385,7 @@ impl FoldablePath for PatternEndPath {
     fn complete(query: impl IntoPattern) -> Self {
         let pattern = query.into_pattern();
         Self {
-            role_path: RolePath::from(SubPath::new(pattern.len() - 1)),
+            role_path: RolePath::new_empty(pattern.len() - 1),
             root: pattern,
         }
     }
@@ -344,7 +393,7 @@ impl FoldablePath for PatternEndPath {
         let pattern = query.into_pattern();
         let len = pattern.len();
         let p = Self {
-            role_path: RolePath::from(SubPath::new(0)),
+            role_path: RolePath::new_empty(0),
             root: pattern,
         };
         match len {

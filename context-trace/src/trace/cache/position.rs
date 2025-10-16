@@ -2,6 +2,7 @@ use std::num::NonZeroUsize;
 
 use crate::{
     graph::vertex::location::SubLocation,
+    trace::cache::new::EditKind,
     *,
 };
 
@@ -24,7 +25,25 @@ pub(crate) enum AddChildLocation {
     Prev(ChildLocation),
 }
 impl PositionCache {
-    pub(crate) fn new(
+    pub fn with_top(top: HashSet<DirectedKey>) -> Self {
+        Self {
+            top,
+            bottom: Default::default(),
+        }
+    }
+    pub fn with_bottom(bottom: HashMap<DirectedKey, SubLocation>) -> Self {
+        Self {
+            top: Default::default(),
+            bottom,
+        }
+    }
+    pub fn new(
+        top: HashSet<DirectedKey>,
+        bottom: HashMap<DirectedKey, SubLocation>,
+    ) -> Self {
+        Self { top, bottom }
+    }
+    pub fn build_edge(
         cache: &mut TraceCache,
         state: EditKind,
         add_edges: bool,

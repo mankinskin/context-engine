@@ -25,12 +25,20 @@ use crate::{
         TravDir,
     },
 };
+pub trait HasSubIndex {
+    fn sub_index(&self) -> usize;
+}
+impl HasSubIndex for ChildLocation {
+    fn sub_index(&self) -> usize {
+        self.sub_index
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ChildLocation {
-    pub(crate) parent: Child,
-    pub(crate) pattern_id: PatternId,
-    pub(crate) sub_index: usize,
+    pub parent: Child,
+    pub pattern_id: PatternId,
+    pub sub_index: usize,
 }
 impl MoveLeaf<Right> for ChildLocation {
     fn move_leaf<G: HasGraph>(

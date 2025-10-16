@@ -1,4 +1,8 @@
 #![allow(unused)]
+use context_trace::trace::cache::{
+    position::PositionCache,
+    vertex::VertexCache,
+};
 use std::iter::FromIterator;
 
 use context_trace::*;
@@ -106,13 +110,13 @@ fn prefix1() {
                             bottom_up: FromIterator::from_iter([]),
                             top_down: FromIterator::from_iter([(
                                 4.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::down(*e, 4),
                                         SubLocation::new(*e_f_id, 0),
                                     )]),
-                                }
+                                )
                             )]),
                         }
                     ),
@@ -123,13 +127,13 @@ fn prefix1() {
                             bottom_up: FromIterator::from_iter([]),
                             top_down: FromIterator::from_iter([(
                                 4.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::down(*ef, 4),
                                         SubLocation::new(*abcd_ef_id, 1),
                                     )]),
-                                }
+                                )
                             )]),
                         },
                     ),
@@ -199,13 +203,13 @@ fn postfix1() {
                             index: *abcdef,
                             bottom_up: FromIterator::from_iter([(
                                 4.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::up(*cdef, 4),
                                         SubLocation::new(*ab_cdef_id, 1)
                                     )]),
-                                }
+                                )
                             )]),
                             top_down: FromIterator::from_iter([]),
                         },
@@ -216,13 +220,13 @@ fn postfix1() {
                             index: *abcdefghi,
                             bottom_up: FromIterator::from_iter([(
                                 4.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::up(*abcdef, 4),
                                         SubLocation::new(*abcdef_ghi_id, 0)
                                     )]),
-                                }
+                                )
                             )]),
                             top_down: FromIterator::from_iter([]),
                         },
@@ -297,23 +301,23 @@ fn range1() {
                             index: *abcdef,
                             bottom_up: FromIterator::from_iter([(
                                 3.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::up(*abcd, 3),
                                         SubLocation::new(*abcd_ef_id, 0)
                                     )]),
-                                }
+                                )
                             )]),
                             top_down: FromIterator::from_iter([(
                                 3.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::down(*ef, 3),
                                         SubLocation::new(*abcd_ef_id, 1)
-                                    )]),
-                                }
+                                    )])
+                                )
                             )]),
                         },
                     ),
@@ -323,13 +327,13 @@ fn range1() {
                             index: *abcd,
                             bottom_up: FromIterator::from_iter([(
                                 3.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::up(*bcd, 3),
                                         SubLocation::new(*a_bcd_id, 1)
                                     )]),
-                                }
+                                )
                             )]),
                             top_down: FromIterator::from_iter([]),
                         },
@@ -341,13 +345,13 @@ fn range1() {
                             bottom_up: FromIterator::from_iter([]),
                             top_down: FromIterator::from_iter([(
                                 3.into(),
-                                PositionCache {
-                                    top: FromIterator::from_iter([]),
-                                    bottom: FromIterator::from_iter([(
+                                PositionCache::new(
+                                    FromIterator::from_iter([]),
+                                    FromIterator::from_iter([(
                                         DirectedKey::down(*e, 3),
                                         SubLocation::new(*e_f_id, 0)
                                     )]),
-                                }
+                                )
                             )]),
                         }
                     ),

@@ -91,7 +91,7 @@ impl<G: HasGraph> RootCursor<G> {
         }
     }
     fn advanced(&mut self) -> ControlFlow<Option<EndReason>> {
-        if self.state.base.path.can_advance(&self.trav) {
+        if self.state.rooted_path().can_advance(&self.trav) {
             match self.query_advanced() {
                 Continue(_) => {
                     let _ = self.path_advanced();
@@ -109,7 +109,7 @@ impl<G: HasGraph> RootCursor<G> {
         self.state.cursor.advance(&self.trav)
     }
     fn path_advanced(&mut self) -> ControlFlow<()> {
-        self.state.base.path.advance(&self.trav)
+        self.state.rooted_path_mut().advance(&self.trav)
     }
     pub fn find_end(mut self) -> Result<EndState, Self> {
         match self.find_map(|flow| match flow {
@@ -118,14 +118,12 @@ impl<G: HasGraph> RootCursor<G> {
         }) {
             Some(reason) => {
                 let CompareState {
-                    child_state:
-                        ChildState {
-                            base: BaseState { path, root_pos, .. },
-                            ..
-                        },
+                    child_state,
                     cursor,
                     ..
                 } = *self.state;
+                let root_pos = *child_state.root_pos();
+                let path = child_state.rooted_path().clone();
                 let target_index = path.role_leaf_child::<End, _>(&self.trav);
                 let pos = cursor.relative_pos;
                 let target = DownKey::new(target_index, pos.into());

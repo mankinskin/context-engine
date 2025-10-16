@@ -18,7 +18,7 @@ use crate::{
         RolePathUtils,
         accessors::{
             child::LeafChild,
-            has_path::HasRootedRolePath,
+            has_path::IntoRootedRolePath,
             role::{
                 End,
                 Start,
@@ -31,7 +31,7 @@ use crate::{
             pop::PathPop,
         },
         structs::rooted::{
-            role_path::CalcWidth,
+            role_path::calc::CalcWidth,
             root::RootedPath,
         },
     },
@@ -63,7 +63,7 @@ BaseQuery
     }
 }
 pub(crate) trait RangePath:
-    RootedPath + HasRootedRolePath<Start> + HasRootedRolePath<End>
+    RootedPath + IntoRootedRolePath<Start> + IntoRootedRolePath<End>
 {
     fn new_range(
         root: Self::Root,

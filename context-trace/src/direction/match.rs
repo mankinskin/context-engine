@@ -12,6 +12,7 @@ use crate::{
     HashMap,
     HashSet,
     direction::{
+        Direction,
         Left,
         Right,
     },
@@ -41,8 +42,6 @@ use crate::{
         },
     },
 };
-
-use crate::Direction;
 
 fn to_matching_iterator<'a, I: HasVertexIndex + 'a, J: HasVertexIndex + 'a>(
     a: impl Iterator<Item = &'a I>,

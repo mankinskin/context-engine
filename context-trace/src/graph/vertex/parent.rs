@@ -1,4 +1,5 @@
 use crate::{
+    HasSubIndex,
     HashMap,
     HashSet,
     graph::vertex::{
@@ -18,7 +19,19 @@ pub struct PatternIndex {
     pub(crate) pattern_id: PatternId,
     pub(crate) sub_index: usize,
 }
-
+pub trait HasPatternId {
+    fn pattern_id(&self) -> PatternId;
+}
+impl HasPatternId for PatternIndex {
+    fn pattern_id(&self) -> PatternId {
+        self.pattern_id
+    }
+}
+impl HasSubIndex for PatternIndex {
+    fn sub_index(&self) -> usize {
+        self.sub_index
+    }
+}
 impl PatternIndex {
     pub(crate) fn new(
         pattern_id: PatternId,
@@ -50,6 +63,9 @@ impl Parent {
             width,
             pattern_indices: Default::default(),
         }
+    }
+    pub fn pattern_indices(&self) -> &HashSet<PatternIndex> {
+        &self.pattern_indices
     }
     pub(crate) fn get_width(&self) -> usize {
         self.width

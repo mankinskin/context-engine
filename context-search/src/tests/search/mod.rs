@@ -19,47 +19,7 @@ use {
     },
     context_trace::tests::env::Env1,
 
-    context_trace::{
-        graph::{
-            getters::{
-                ErrorReason,
-                IndexWithPath,
-            },
-            kind::BaseGraphKind,
-            vertex::{
-                location::{
-                    child::ChildLocation,
-                    pattern::PatternLocation,
-                    SubLocation,
-                },
-                token::Token,
-            },
-            HypergraphRef,
-        },
-        path::structs::{
-            role_path::RolePath,
-            rooted::{
-                role_path::RootedRolePath,
-                root::IndexRoot,
-                RootedRangePath,
-            },
-            sub_path::SubPath,
-        },
-        tests::env::TestEnv,
-        trace::{
-            cache::{
-                key::directed::{
-                    down::DownKey,
-                    DirectedKey,
-                },
-                position::PositionCache,
-                vertex::VertexCache,
-            },
-            has_graph::HasGraph,
-        },
-        HashMap,
-        HashSet,
-    },
+    context_trace::*,
     itertools::*,
     pretty_assertions::assert_eq,
 
@@ -136,13 +96,10 @@ fn find_pattern1() {
             index: xab,
             bottom_up: FromIterator::from_iter([(
                 1.into(),
-                PositionCache {
-                    bottom: HashMap::from_iter([(
-                        DirectedKey::up(a, 1),
-                        SubLocation::new(x_a_b_id.unwrap(), 1)
-                    )]),
-                    top: HashSet::from_iter([]),
-                }
+                PositionCache::with_bottom(HashMap::from_iter([(
+                    DirectedKey::up(a, 1),
+                    SubLocation::new(x_a_b_id.unwrap(), 1)
+                )]))
             )]),
             top_down: FromIterator::from_iter([]),
         }
@@ -153,23 +110,17 @@ fn find_pattern1() {
             index: xabyz,
             bottom_up: FromIterator::from_iter([(
                 2.into(),
-                PositionCache {
-                    bottom: HashMap::from_iter([(
-                        DirectedKey::up(xab, 1),
-                        SubLocation::new(xab_yz_id.unwrap(), 0)
-                    )]),
-                    top: HashSet::from_iter([]),
-                }
+                PositionCache::with_bottom(HashMap::from_iter([(
+                    DirectedKey::up(xab, 1),
+                    SubLocation::new(xab_yz_id.unwrap(), 0)
+                )]))
             )]),
             top_down: FromIterator::from_iter([(
                 2.into(),
-                PositionCache {
-                    bottom: HashMap::from_iter([(
-                        DirectedKey::down(yz, 2),
-                        SubLocation::new(xab_yz_id.unwrap(), 1)
-                    )]),
-                    top: HashSet::from_iter([]),
-                }
+                PositionCache::with_bottom(HashMap::from_iter([(
+                    DirectedKey::down(yz, 2),
+                    SubLocation::new(xab_yz_id.unwrap(), 1)
+                )]))
             )]),
         }
     );
@@ -180,13 +131,10 @@ fn find_pattern1() {
             bottom_up: FromIterator::from_iter([]),
             top_down: FromIterator::from_iter([(
                 2.into(),
-                PositionCache {
-                    bottom: HashMap::from_iter([(
-                        DirectedKey::down(y, 2),
-                        SubLocation::new(y_z_id.unwrap(), 0)
-                    )]),
-                    top: HashSet::from_iter([]),
-                }
+                PositionCache::with_bottom(HashMap::from_iter([(
+                    DirectedKey::down(y, 2),
+                    SubLocation::new(y_z_id.unwrap(), 0)
+                )]))
             )]),
         }
     );
@@ -198,48 +146,23 @@ fn find_pattern1() {
             kind: EndKind::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
-                path: RootedRangePath {
-                    root: IndexRoot {
-                        location: PatternLocation {
-                            parent: xabyz,
-                            id: xab_yz_id.unwrap(),
-                        },
-                    },
-                    start: RolePath {
-                        sub_path: SubPath {
-                            root_entry: 0,
-                            path: vec![ChildLocation {
-                                parent: xab,
-                                pattern_id: x_a_b_id.unwrap(),
-                                sub_index: 1,
-                            },],
-                        },
-                        _ty: Default::default(),
-                    },
-                    end: RolePath {
-                        sub_path: SubPath {
-                            root_entry: 1,
-                            path: vec![ChildLocation {
-                                parent: yz,
-                                pattern_id: y_z_id.unwrap(),
-                                sub_index: 0,
-                            },],
-                        },
-                        _ty: Default::default(),
-                    },
-                },
+                path: RootedRangePath::new(
+                    PatternLocation::new(xabyz, xab_yz_id.unwrap()),
+                    RolePath::new(
+                        0,
+                        vec![ChildLocation::new(xab, x_a_b_id.unwrap(), 1)],
+                    ),
+                    RolePath::new(
+                        1,
+                        vec![ChildLocation::new(yz, y_z_id.unwrap(), 0)],
+                    ),
+                ),
             }),
             cursor: PatternCursor {
-                path: RootedRolePath {
-                    root: query.clone(),
-                    role_path: RolePath {
-                        sub_path: SubPath {
-                            root_entry: 2,
-                            path: vec![],
-                        },
-                        _ty: Default::default(),
-                    },
-                },
+                path: RootedRolePath::new(
+                    query.clone(),
+                    RolePath::new(2, vec![]),
+                ),
                 relative_pos: 3.into(),
             },
         }))

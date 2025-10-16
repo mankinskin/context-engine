@@ -1,7 +1,10 @@
 use crate::{
     compare::parent::ParentCompareState,
     traversal::state::{
-        cursor::PatternCursor,
+        cursor::{
+            self,
+            PatternCursor,
+        },
         end::{
             EndKind,
             EndReason,
@@ -84,7 +87,7 @@ impl CompareState {
                 .into_iter()
                 .map(|(sub, child_state)| Self {
                     target: DownKey::new(
-                        sub.child,
+                        sub.child(),
                         (*self.cursor.cursor_pos()).into(),
                     ),
                     child_state,
@@ -98,7 +101,7 @@ impl CompareState {
                 .into_iter()
                 .map(|(sub, cursor)| Self {
                     target: DownKey::new(
-                        sub.child,
+                        sub.child(),
                         (*cursor.cursor_pos()).into(),
                     ),
                     child_state: self.child_state.clone(),
@@ -113,7 +116,7 @@ impl CompareState {
         trav: &G,
     ) -> CompareNext {
         use Ordering::*;
-        let path_leaf = self.path.role_leaf_child::<End, _>(trav);
+        let path_leaf = self.rooted_path().role_leaf_child::<End, _>(trav);
         let query_leaf = self.cursor.role_leaf_child::<End, _>(trav);
 
         if path_leaf == query_leaf {
@@ -145,20 +148,12 @@ impl CompareState {
     ) -> EndState {
         use EndKind::*;
         use EndReason::*;
-        let CompareState {
-            child_state:
-                ChildState {
-                    base:
-                        BaseState {
-                            mut path,
-                            mut root_pos,
-                            prev_pos,
-                        },
-                    ..
-                },
-            cursor,
-            ..
-        } = self;
+        let BaseState {
+            prev_pos,
+            mut path,
+            mut root_pos,
+        } = self.child_state.base;
+
         // TODO: Fix this
         let index = loop {
             if path.role_root_child_index::<Start>()
@@ -166,16 +161,18 @@ impl CompareState {
             {
                 if (&mut root_pos, &mut path).path_lower(trav).is_break() {
                     let graph = trav.graph();
-                    let pattern =
-                        graph.expect_pattern_at(path.clone().root.location);
-                    let entry = path.start.sub_path.root_entry;
-                    root_pos = prev_pos;
+                    let pattern = graph.expect_pattern_at(
+                        path.clone().path_root().pattern_location(),
+                    );
+                    let entry = path.start_path().root_child_index();
+                    *root_pos = *prev_pos;
                     break Some(pattern[entry]);
                 }
             } else {
                 break None;
             }
         };
+        let cursor = self.cursor;
         let kind = if let Some(index) = index {
             Complete(index)
         } else {

@@ -3,6 +3,7 @@ use std::fmt::Debug;
 
 use crate::traversal::container::order::TraversalOrder;
 use context_trace::{
+    graph::vertex::parent::HasPatternId,
     path::mutators::raise::PathRaise,
     *,
 };
@@ -18,7 +19,7 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
     ) -> Option<ParentBatch> {
         let batch = Self::gen_parent_batch(
             trav,
-            parent.path.root_parent(),
+            parent.rooted_path().root_parent(),
             |trav, p| {
                 let mut parent = parent.clone();
                 parent.path_raise(trav, p);
@@ -46,9 +47,9 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
                 .get_parents()
                 .iter()
                 .flat_map(|(i, parent)| {
-                    let p = Child::new(i, parent.width);
-                    parent.pattern_indices.iter().cloned().map(move |pi| {
-                        ChildLocation::new(p, pi.pattern_id, pi.sub_index)
+                    let p = Child::new(i, parent.width());
+                    parent.pattern_indices().iter().map(move |pi| {
+                        ChildLocation::new(p, pi.pattern_id(), pi.sub_index())
                     })
                 })
                 .sorted_by(|a, b| TraversalOrder::cmp(a, b))

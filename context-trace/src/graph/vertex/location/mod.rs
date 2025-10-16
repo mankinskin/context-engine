@@ -6,19 +6,25 @@ use std::{
 use child::*;
 use pattern::*;
 
-use crate::{PatternId};
+use crate::{
+    Child,
+    PatternId,
+};
 
 pub(crate) mod child;
 pub(crate) mod pattern;
 
+pub trait HasParent {
+    fn parent(&self) -> &Child;
+}
 #[derive(Clone, Debug, PartialEq, Eq, Copy, Hash)]
-pub(crate) struct SubLocation {
+pub struct SubLocation {
     pub(crate) pattern_id: PatternId,
     pub(crate) sub_index: usize,
 }
 
 impl SubLocation {
-    pub(crate) fn new(
+    pub fn new(
         pattern_id: PatternId,
         sub_index: usize,
     ) -> Self {
