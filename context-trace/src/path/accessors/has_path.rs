@@ -35,10 +35,12 @@ pub trait HasRolePath<R: PathRole> {
     fn role_path_mut(&mut self) -> &mut RolePath<R>;
 }
 
-pub trait HasMatchPaths: HasRolePath<Start> + HasRolePath<End> {
+pub(crate) trait HasMatchPaths:
+    HasRolePath<Start> + HasRolePath<End>
+{
     fn into_paths(self) -> (RolePath<Start>, RolePath<End>);
 }
 
-pub trait HasSinglePath {
+pub(crate) trait HasSinglePath {
     fn single_path(&self) -> &[ChildLocation];
 }

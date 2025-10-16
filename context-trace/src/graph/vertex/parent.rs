@@ -1,12 +1,12 @@
 use crate::{
+    HashMap,
+    HashSet,
     graph::vertex::{
+        PatternId,
         data::VertexData,
         pattern::Pattern,
         wide::Wide,
-        PatternId,
     },
-    HashMap,
-    HashSet,
 };
 use serde::{
     Deserialize,
@@ -15,12 +15,12 @@ use serde::{
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct PatternIndex {
-    pub pattern_id: PatternId,
-    pub sub_index: usize,
+    pub(crate) pattern_id: PatternId,
+    pub(crate) sub_index: usize,
 }
 
 impl PatternIndex {
-    pub fn new(
+    pub(crate) fn new(
         pattern_id: PatternId,
         sub_index: usize,
     ) -> Self {
@@ -35,9 +35,9 @@ impl PatternIndex {
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Parent {
     /// width of the parent
-    pub width: usize,
+    pub(crate) width: usize,
     /// positions of child in parent patterns
-    pub pattern_indices: HashSet<PatternIndex>,
+    pub(crate) pattern_indices: HashSet<PatternIndex>,
 }
 impl Wide for Parent {
     fn width(&self) -> usize {
@@ -45,19 +45,19 @@ impl Wide for Parent {
     }
 }
 impl Parent {
-    pub fn new(width: usize) -> Self {
+    pub(crate) fn new(width: usize) -> Self {
         Self {
             width,
             pattern_indices: Default::default(),
         }
     }
-    pub fn get_width(&self) -> usize {
+    pub(crate) fn get_width(&self) -> usize {
         self.width
     }
-    pub fn any_pattern_index(&self) -> PatternIndex {
+    pub(crate) fn any_pattern_index(&self) -> PatternIndex {
         *self.pattern_indices.iter().next().unwrap()
     }
-    pub fn add_pattern_index(
+    pub(crate) fn add_pattern_index(
         &mut self,
         pattern_id: PatternId,
         sub_index: usize,
@@ -67,7 +67,7 @@ impl Parent {
             sub_index,
         });
     }
-    pub fn remove_pattern_index(
+    pub(crate) fn remove_pattern_index(
         &mut self,
         pattern_id: PatternId,
         sub_index: usize,
@@ -77,13 +77,13 @@ impl Parent {
             sub_index,
         });
     }
-    pub fn exists_at_pos(
+    pub(crate) fn exists_at_pos(
         &self,
         p: usize,
     ) -> bool {
         self.pattern_indices.iter().any(|i| i.sub_index == p)
     }
-    pub fn exists_at_pos_in_pattern(
+    pub(crate) fn exists_at_pos_in_pattern(
         &self,
         pattern_id: PatternId,
         sub_index: usize,
@@ -93,7 +93,7 @@ impl Parent {
             sub_index,
         })
     }
-    pub fn get_index_at_pos(
+    pub(crate) fn get_index_at_pos(
         &self,
         p: usize,
     ) -> Option<PatternIndex> {
@@ -102,23 +102,27 @@ impl Parent {
             .find(|i| i.sub_index == p)
             .cloned()
     }
-    pub fn get_index_at_postfix_of(
+    pub(crate) fn get_index_at_postfix_of(
         &self,
         v: &VertexData,
     ) -> Option<PatternIndex> {
         self.pattern_indices
             .iter()
-            .find(|i| v.expect_child_pattern(&i.pattern_id).len() == i.sub_index + 1)
+            .find(|i| {
+                v.expect_child_pattern(&i.pattern_id).len() == i.sub_index + 1
+            })
             .cloned()
     }
     /// filter for pattern indices which occur at start of their patterns
-    pub fn filter_pattern_indices_at_prefix(&self) -> impl Iterator<Item = &PatternIndex> {
+    pub(crate) fn filter_pattern_indices_at_prefix(
+        &self
+    ) -> impl Iterator<Item = &PatternIndex> {
         self.pattern_indices
             .iter()
             .filter(move |pattern_index| pattern_index.sub_index == 0)
     }
     /// filter for pattern indices which occur at end of given patterns
-    pub fn filter_pattern_indices_at_end_in_patterns<'a>(
+    pub(crate) fn filter_pattern_indices_at_end_in_patterns<'a>(
         &'a self,
         patterns: &'a HashMap<PatternId, Pattern>,
     ) -> impl Iterator<Item = &'a PatternIndex> {
@@ -131,7 +135,7 @@ impl Parent {
         })
     }
     // filter for pattern indices which occur in given patterns
-    //pub fn filter_pattern_indices_in_patterns<'a>(
+    //pub(crate) fn filter_pattern_indices_in_patterns<'a>(
     //    &'a self,
     //    patterns: &'a HashMap<PatternId, Pattern>,
     //) -> impl Iterator<Item = &'a (PatternId, usize)> {

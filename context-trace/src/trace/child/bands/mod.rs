@@ -34,9 +34,9 @@ use policy::{
 };
 use std::collections::VecDeque;
 
-pub mod policy;
+pub(crate) mod policy;
 
-pub trait BandIterator<'a, G: HasGraph + 'a>:
+pub(crate) trait BandIterator<'a, G: HasGraph + 'a>:
     Iterator<Item = (ChildLocation, Child)>
 {
     type Policy: BandExpandingPolicy<G>;
@@ -65,7 +65,7 @@ pub trait BandIterator<'a, G: HasGraph + 'a>:
     }
 }
 use crate::trace::has_graph::TravDir;
-pub trait HasChildRoleIters: ToChild {
+pub(crate) trait HasChildRoleIters: ToChild {
     fn postfix_iter<'a, G: HasGraph + 'a>(
         &self,
         trav: G,
@@ -112,20 +112,20 @@ pub trait HasChildRoleIters: ToChild {
 }
 impl<T: ToChild> HasChildRoleIters for T {}
 
-pub type PostfixIterator<'a, G> = BandExpandingIterator<
+pub(crate) type PostfixIterator<'a, G> = BandExpandingIterator<
     'a,
     G,
     PostfixExpandingPolicy<DirectionOf<<G as HasGraph>::Kind>>,
 >;
 
-pub type PrefixIterator<'a, G> = BandExpandingIterator<
+pub(crate) type PrefixIterator<'a, G> = BandExpandingIterator<
     'a,
     G,
     PrefixExpandingPolicy<DirectionOf<<G as HasGraph>::Kind>>,
 >;
 
 #[derive(Debug)]
-pub struct BandExpandingIterator<'a, G, P>
+pub(crate) struct BandExpandingIterator<'a, G, P>
 where
     G: HasGraph + 'a,
     P: BandExpandingPolicy<G>,

@@ -24,9 +24,21 @@ pub fn tokenizing_iter<T: Tokenize, C: AsToken<T>>(
 
 /// Trait for token that can be mapped in a sequence
 pub trait Tokenize:
-    TokenData + Wide + Hash + Eq + Copy + Debug + Send + Sync + 'static + Unpin + Serialize
+    TokenData
+    + Wide
+    + Hash
+    + Eq
+    + Copy
+    + Debug
+    + Send
+    + Sync
+    + 'static
+    + Unpin
+    + Serialize
 {
-    fn tokenize<T: AsToken<Self>, I: Iterator<Item = T>>(seq: I) -> Vec<Token<Self>> {
+    fn tokenize<T: AsToken<Self>, I: Iterator<Item = T>>(
+        seq: I
+    ) -> Vec<Token<Self>> {
         let mut v = vec![];
         v.extend(tokenizing_iter(seq));
         //v.push(Token::End);
@@ -38,8 +50,18 @@ pub trait Tokenize:
 }
 
 impl<
-        T: TokenData + Wide + Hash + Eq + Copy + Debug + Send + Sync + 'static + Unpin + Serialize,
-    > Tokenize for T
+    T: TokenData
+        + Wide
+        + Hash
+        + Eq
+        + Copy
+        + Debug
+        + Send
+        + Sync
+        + 'static
+        + Unpin
+        + Serialize,
+> Tokenize for T
 {
 }
 
@@ -48,7 +70,7 @@ pub trait TokenData: Debug + PartialEq + Clone + Wide {}
 impl<T: Debug + PartialEq + Clone + Wide> TokenData for T {}
 
 #[derive(Hash, Debug, Clone, PartialEq, Eq, Copy)]
-pub struct NoToken;
+pub(crate) struct NoToken;
 
 impl Wide for NoToken {
     fn width(&self) -> usize {
@@ -57,16 +79,16 @@ impl Wide for NoToken {
 }
 
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
-pub enum NewTokenIndex {
+pub(crate) enum NewTokenIndex {
     New(crate::graph::vertex::VertexIndex),
     Known(crate::graph::vertex::VertexIndex),
 }
 
 impl NewTokenIndex {
-    pub fn is_known(&self) -> bool {
+    pub(crate) fn is_known(&self) -> bool {
         matches!(self, Self::Known(_))
     }
-    pub fn is_new(&self) -> bool {
+    pub(crate) fn is_new(&self) -> bool {
         matches!(self, Self::New(_))
     }
 }
@@ -104,7 +126,7 @@ impl Borrow<crate::graph::vertex::VertexIndex> for &'_ mut NewTokenIndex {
     }
 }
 
-pub type NewTokenIndices = Vec<NewTokenIndex>;
+pub(crate) type NewTokenIndices = Vec<NewTokenIndex>;
 
 pub trait AsToken<T: Tokenize> {
     fn as_token(&self) -> Token<T>;
@@ -128,13 +150,13 @@ impl<T: Tokenize> AsToken<T> for T {
 }
 
 #[derive(Debug, Clone)]
-pub struct CtxInfo<T: Tokenize> {
-    pub token: Token<T>,
-    pub incoming_groups: Vec<Vec<Token<T>>>,
-    pub outgoing_groups: Vec<Vec<Token<T>>>,
+pub(crate) struct CtxInfo<T: Tokenize> {
+    pub(crate) token: Token<T>,
+    pub(crate) incoming_groups: Vec<Vec<Token<T>>>,
+    pub(crate) outgoing_groups: Vec<Vec<Token<T>>>,
 }
 
-pub trait CtxLink: Sized + Clone {
+pub(crate) trait CtxLink: Sized + Clone {
     fn index(&self) -> &EdgeIndex;
     fn into_index(self) -> EdgeIndex {
         *self.index()
@@ -147,7 +169,7 @@ impl CtxLink for EdgeIndex {
     }
 }
 
-pub trait CtxMapping<E: CtxLink> {
+pub(crate) trait CtxMapping<E: CtxLink> {
     /// Get distance groups for incoming edges
     fn incoming(&self) -> &Vec<E>;
     fn outgoing(&self) -> &Vec<E>;
@@ -168,7 +190,7 @@ pub trait CtxMapping<E: CtxLink> {
     //}
 }
 
-pub trait TokenCtx<T: Tokenize, E: CtxLink>: Sized {
+pub(crate) trait TokenCtx<T: Tokenize, E: CtxLink>: Sized {
     type Mapping: CtxMapping<E>;
     fn token(&self) -> &Token<T>;
     fn into_token(self) -> Token<T>;
@@ -192,7 +214,11 @@ pub trait TokenCtx<T: Tokenize, E: CtxLink>: Sized {
     //}
 }
 
-pub fn groups_to_string<T: Tokenize, E: CtxLink, C: TokenCtx<T, E> + Display>(
+pub(crate) fn groups_to_string<
+    T: Tokenize,
+    E: CtxLink,
+    C: TokenCtx<T, E> + Display,
+>(
     groups: Vec<Vec<C>>
 ) -> String {
     let mut lines = Vec::new();

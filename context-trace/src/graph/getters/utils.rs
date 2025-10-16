@@ -25,7 +25,7 @@ use std::{
 };
 
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn get_common_pattern_in_parent(
+    pub(crate) fn get_common_pattern_in_parent(
         &self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
         parent: impl HasVertexIndex,
@@ -53,7 +53,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .ok_or(ErrorReason::NoChildPatterns)
     }
     #[track_caller]
-    pub fn expect_common_pattern_in_parent(
+    pub(crate) fn expect_common_pattern_in_parent(
         &self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
         parent: impl HasVertexIndex,
@@ -61,7 +61,7 @@ impl<G: GraphKind> Hypergraph<G> {
         self.get_common_pattern_in_parent(pattern, parent)
             .expect("No common pattern in parent for children.")
     }
-    pub fn get_pattern_range<R: PatternRangeIndex>(
+    pub(crate) fn get_pattern_range<R: PatternRangeIndex>(
         &self,
         id: impl IntoPatternLocation,
         range: R,
@@ -71,7 +71,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .get_child_pattern_range(&loc.id, range)
     }
     #[track_caller]
-    pub fn expect_pattern_range<R: PatternRangeIndex>(
+    pub(crate) fn expect_pattern_range<R: PatternRangeIndex>(
         &self,
         id: impl IntoPatternLocation,
         range: R,
@@ -82,7 +82,7 @@ impl<G: GraphKind> Hypergraph<G> {
     }
     /// get sub-vertex at range relative to index
     /// FIXME: can crash if range does not have an exact match in the root vertex
-    pub fn get_vertex_subrange(
+    pub(crate) fn get_vertex_subrange(
         &self,
         vertex: impl HasVertexData,
         range: Range<usize>,

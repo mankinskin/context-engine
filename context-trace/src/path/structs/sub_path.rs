@@ -10,8 +10,8 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct SubPath {
-    pub root_entry: usize,
-    pub path: Vec<ChildLocation>,
+    pub(crate) root_entry: usize,
+    pub(crate) path: Vec<ChildLocation>,
 }
 
 impl Deref for SubPath {
@@ -22,13 +22,13 @@ impl Deref for SubPath {
 }
 
 impl SubPath {
-    pub fn new(root_entry: usize) -> Self {
+    pub(crate) fn new(root_entry: usize) -> Self {
         Self {
             root_entry,
             path: vec![],
         }
     }
-    pub fn pop_while(
+    pub(crate) fn pop_while(
         &mut self,
         condition: impl Fn(&ChildLocation) -> bool,
     ) {

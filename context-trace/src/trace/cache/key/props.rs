@@ -20,11 +20,11 @@ macro_rules! impl_cursor_pos {
     {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? CursorPosition for $target:ty, $self_:ident => $func:expr
     } => {
-        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::trace::cache::key::props::CursorPosition for $target {
-            fn cursor_pos(& $self_) -> &$crate::path::mutators::move_path::key::TokenPosition {
+        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::CursorPosition for $target {
+            fn cursor_pos(& $self_) -> &$crate::TokenPosition {
                 &$func
             }
-            fn cursor_pos_mut(&mut $self_) -> &mut $crate::path::mutators::move_path::key::TokenPosition {
+            fn cursor_pos_mut(&mut $self_) -> &mut $crate::TokenPosition {
                 &mut $func
             }
         }

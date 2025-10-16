@@ -3,8 +3,6 @@ use std::borrow::Borrow;
 use derive_more::Deref;
 
 use crate::{
-    IndexRoot,
-    PatternRangePath,
     graph::{
         getters::ErrorReason,
         vertex::{
@@ -60,7 +58,9 @@ use crate::{
             },
             rooted::{
                 RootedRangePath,
+                pattern_range::PatternRangePath,
                 root::{
+                    IndexRoot,
                     PathRoot,
                     RootedPath,
                 },
@@ -121,25 +121,25 @@ where
     }
 }
 
-pub type IndexRolePath<R> = RootedRolePath<R, IndexRoot>;
-pub type PatternRolePath<R> = RootedRolePath<R, Pattern>;
+pub(crate) type IndexRolePath<R> = RootedRolePath<R, IndexRoot>;
+pub(crate) type PatternRolePath<R> = RootedRolePath<R, Pattern>;
 
-pub type RootedStartPath<R> = RootedRolePath<Start, R>;
-pub type RootedEndPath<R> = RootedRolePath<End, R>;
+pub(crate) type RootedStartPath<R> = RootedRolePath<Start, R>;
+pub(crate) type RootedEndPath<R> = RootedRolePath<End, R>;
 pub type IndexStartPath = IndexRolePath<Start>;
 pub type IndexEndPath = IndexRolePath<End>;
-pub type PatternStartPath = PatternRolePath<Start>;
+pub(crate) type PatternStartPath = PatternRolePath<Start>;
 pub type PatternEndPath = PatternRolePath<End>;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deref)]
 pub struct RootedRolePath<R: PathRole, Root: PathRoot> {
-    pub root: Root,
+    pub(crate) root: Root,
     #[deref]
-    pub role_path: RolePath<R>,
+    pub(crate) role_path: RolePath<R>,
 }
 
 impl<R: PathRole> RootedRolePath<R, IndexRoot> {
-    pub fn new(first: ChildLocation) -> Self {
+    pub(crate) fn new(first: ChildLocation) -> Self {
         Self::from(first)
     }
 }
@@ -159,7 +159,7 @@ impl<Root: PathRoot, R: PathRole> From<(Root, RolePath<R>)>
     }
 }
 impl<R: PathRoot> RootedRolePath<Start, R> {
-    pub fn into_range(
+    pub(crate) fn into_range(
         self,
         exit: usize,
     ) -> RootedRangePath<R> {
@@ -177,7 +177,7 @@ impl<R: PathRoot> RootedRolePath<Start, R> {
     }
 }
 impl<R: PathRoot> RootedRolePath<End, R> {
-    pub fn into_range(
+    pub(crate) fn into_range(
         self,
         entry: usize,
     ) -> RootedRangePath<R> {

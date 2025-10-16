@@ -3,7 +3,7 @@ use crate::graph::vertex::{
     pattern::Pattern,
 };
 
-pub trait Merge {
+pub(crate) trait Merge {
     fn split_front(self) -> Option<(Child, Pattern)>;
     fn split_back(self) -> Option<(Child, Pattern)>;
 }

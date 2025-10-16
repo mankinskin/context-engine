@@ -26,7 +26,7 @@ lazy_static::lazy_static! {
     static ref PANIC_INFO: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
 }
 #[allow(unused)]
-pub fn gen_graph() -> Result<HypergraphRef<char>, HypergraphRef<char>> {
+pub(crate) fn gen_graph() -> Result<HypergraphRef<char>, HypergraphRef<char>> {
     let batch_size = 10;
     let batch_count = 1;
     let fuzz_len = batch_size * batch_count;

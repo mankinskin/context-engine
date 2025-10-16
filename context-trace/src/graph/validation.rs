@@ -7,7 +7,7 @@ use crate::graph::{
 };
 
 #[derive(Debug, Clone)]
-pub enum ValidationError {
+pub(crate) enum ValidationError {
     InvalidPatternRange(String, PatternLocation, usize, usize),
     InvalidPattern(PatternLocation),
 }
@@ -16,7 +16,7 @@ impl<G> crate::graph::Hypergraph<G>
 where
     G: GraphKind,
 {
-    pub fn validate_pattern_indexing_range_at(
+    pub(crate) fn validate_pattern_indexing_range_at(
         &self,
         location: impl IntoPatternLocation,
         start: usize,
@@ -33,7 +33,7 @@ where
             ))
         }
     }
-    pub fn validate_pattern_range_at(
+    pub(crate) fn validate_pattern_range_at(
         &self,
         location: impl IntoPatternLocation,
         start: usize,

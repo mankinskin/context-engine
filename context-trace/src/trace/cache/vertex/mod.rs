@@ -1,5 +1,8 @@
 use crate::{
-    trace::cache::key::directed::HasTokenPosition,
+    trace::cache::key::directed::{
+        DirectedPosition,
+        HasTokenPosition,
+    },
     *,
 };
 
@@ -33,7 +36,7 @@ impl VertexCache {
             DirectedPosition::TopDown(_) => &self.top_down,
         }
     }
-    pub fn dir_mut(
+    pub(crate) fn dir_mut(
         &mut self,
         pos: &DirectedPosition,
     ) -> &mut DirectedPositions {
@@ -42,19 +45,19 @@ impl VertexCache {
             DirectedPosition::TopDown(_) => &mut self.top_down,
         }
     }
-    pub fn get(
+    pub(crate) fn get(
         &self,
         pos: &DirectedPosition,
     ) -> Option<&PositionCache> {
         self.dir(pos).get(pos.pos())
     }
-    pub fn get_mut(
+    pub(crate) fn get_mut(
         &mut self,
         pos: &DirectedPosition,
     ) -> Option<&mut PositionCache> {
         self.dir_mut(pos).get_mut(pos.pos())
     }
-    pub fn insert(
+    pub(crate) fn insert(
         &mut self,
         pos: &DirectedPosition,
         cache: PositionCache,

@@ -15,7 +15,7 @@ use crate::{
 };
 pub mod mock;
 
-pub(crate) mod grammar;
+pub mod grammar;
 #[macro_use]
 pub mod graph;
 
@@ -109,9 +109,12 @@ pub fn assert_parents(
             .clone()
             .into_iter()
             .collect::<HashMap<_, _>>(),
-        HashMap::from_iter([(parent.vertex_index(), Parent {
-            pattern_indices: pattern_indices.into_iter().collect(),
-            width: parent.width(),
-        })])
+        HashMap::from_iter([(
+            parent.vertex_index(),
+            Parent {
+                pattern_indices: pattern_indices.into_iter().collect(),
+                width: parent.width(),
+            }
+        )])
     );
 }

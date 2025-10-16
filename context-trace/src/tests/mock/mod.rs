@@ -1,4 +1,4 @@
-//pub(crate) mod gen_graph;
+//pub(crate)(crate) mod gen_graph;
 //use gen_graph::*;
 
 use crate::graph::vertex::{
@@ -10,7 +10,7 @@ use crate::graph::vertex::{
 mod tests;
 
 #[allow(unused)]
-pub fn pattern_from_widths(widths: impl IntoIterator<Item = usize>) -> Pattern {
+pub(crate) fn pattern_from_widths(widths: impl IntoIterator<Item = usize>) -> Pattern {
     widths
         .into_iter()
         .enumerate()

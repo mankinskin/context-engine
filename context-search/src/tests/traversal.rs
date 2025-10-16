@@ -31,16 +31,8 @@ use tracing::{
 #[allow(unused)]
 use {
     context_trace::{
-        graph::vertex::{
-            child::Child,
-            pattern::pattern_width,
-        },
+        graph::vertex::child::Child,
         tests::mock,
-        trace::child::{
-            TraceBack,
-            TraceFront,
-            TraceSide,
-        },
     },
     std::{
         borrow::Borrow,

@@ -16,7 +16,7 @@ use crate::{
 
 #[derive(Clone, Debug, PartialEq, Eq, From)]
 pub struct IndexRoot {
-    pub location: PatternLocation,
+    pub(crate) location: PatternLocation,
 }
 pub trait PathRoot: Clone + RootPattern {}
 

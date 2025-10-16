@@ -8,7 +8,7 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub trait CanAdvance: Advance + Clone {
+pub(crate) trait CanAdvance: Advance + Clone {
     fn can_advance<G: HasGraph>(
         &mut self,
         trav: &G,

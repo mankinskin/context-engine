@@ -1,7 +1,24 @@
-use derive_more::{Display, From};
-use serde::{Deserialize, Serialize};
+use derive_more::{
+    Display,
+    From,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use uuid::Uuid;
-#[derive(Hash, Debug, PartialEq, Eq, From, Serialize, Deserialize, Clone, Copy, Display)]
+#[derive(
+    Hash,
+    Debug,
+    PartialEq,
+    Eq,
+    From,
+    Serialize,
+    Deserialize,
+    Clone,
+    Copy,
+    Display,
+)]
 pub struct VertexKey(Uuid);
 impl Default for VertexKey {
     fn default() -> Self {
@@ -9,7 +26,7 @@ impl Default for VertexKey {
     }
 }
 //#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy, new, Serialize, Deserialize)]
-//pub enum VertexKey<T: Tokenize = TokenOf<BaseGraphKind>> {
+//pub(crate) enum VertexKey<T: Tokenize = TokenOf<BaseGraphKind>> {
 //    Pattern(Child),
 //    Token(Token<T>, VertexIndex)
 //}
@@ -29,4 +46,3 @@ impl Default for VertexKey {
 //        }
 //    }
 //}
-

@@ -13,26 +13,26 @@ use crate::graph::vertex::{
 use crate::graph::vertex::child::Child;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
-pub struct PatternRangeLocation {
-    pub parent: Child,
-    pub id: PatternId,
-    pub range: Range<usize>,
+pub(crate) struct PatternRangeLocation {
+    pub(crate) parent: Child,
+    pub(crate) id: PatternId,
+    pub(crate) range: Range<usize>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct PatternLocation {
-    pub parent: Child,
-    pub id: PatternId,
+    pub(crate) parent: Child,
+    pub(crate) id: PatternId,
 }
 
 impl PatternLocation {
-    pub fn new(
+    pub(crate) fn new(
         parent: Child,
         id: PatternId,
     ) -> Self {
         Self { parent, id }
     }
-    pub fn to_child_location(
+    pub(crate) fn to_child_location(
         &self,
         sub_index: usize,
     ) -> ChildLocation {
@@ -42,7 +42,7 @@ impl PatternLocation {
             sub_index,
         }
     }
-    pub fn with_range(
+    pub(crate) fn with_range(
         self,
         range: Range<usize>,
     ) -> PatternRangeLocation {
@@ -53,7 +53,7 @@ impl PatternLocation {
         }
     }
     //#[allow(unused)]
-    //pub fn get_pattern<
+    //pub(crate) fn get_pattern<
     //    'a: 'g,
     //    'g,
     //    T: Tokenize,
@@ -62,7 +62,7 @@ impl PatternLocation {
     //    trav.graph().get_pattern_at(self).ok()
     //}
     //#[allow(unused)]
-    //pub fn expect_pattern<
+    //pub(crate) fn expect_pattern<
     //    'a: 'g,
     //    'g,
     //    T: Tokenize,
@@ -70,13 +70,13 @@ impl PatternLocation {
     //>(&'a self, trav: &'a Trav) -> &Pattern {
     //    trav.graph().expect_pattern_at(self)
     //}
-    pub fn get_pattern_in<'a>(
+    pub(crate) fn get_pattern_in<'a>(
         &self,
         patterns: &'a crate::graph::vertex::ChildPatterns,
     ) -> Option<&'a Pattern> {
         patterns.get(&self.id)
     }
-    pub fn expect_pattern_in<'a>(
+    pub(crate) fn expect_pattern_in<'a>(
         &self,
         patterns: &'a crate::graph::vertex::ChildPatterns,
     ) -> &'a Pattern {

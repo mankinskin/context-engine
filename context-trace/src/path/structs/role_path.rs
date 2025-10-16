@@ -4,7 +4,6 @@ use std::{
 };
 
 use crate::{
-    RootedRolePath,
     graph::vertex::location::child::ChildLocation,
     path::{
         accessors::{
@@ -31,7 +30,10 @@ use crate::{
             simplify::PathSimplify,
         },
         structs::{
-            rooted::root::PathRoot,
+            rooted::{
+                role_path::RootedRolePath,
+                root::PathRoot,
+            },
             sub_path::SubPath,
         },
     },
@@ -45,24 +47,24 @@ use crate::path::{
 
 #[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct RolePath<R: PathRole> {
-    pub sub_path: SubPath,
-    pub _ty: std::marker::PhantomData<R>,
+    pub(crate) sub_path: SubPath,
+    pub(crate) _ty: std::marker::PhantomData<R>,
 }
 
 impl<R: PathRole> RolePath<R> {
-    pub fn new(entry: usize) -> Self {
+    pub(crate) fn new(entry: usize) -> Self {
         Self {
             sub_path: SubPath::new(entry),
             _ty: Default::default(),
         }
     }
-    pub fn path(&self) -> &Vec<ChildLocation> {
+    pub(crate) fn path(&self) -> &Vec<ChildLocation> {
         &self.sub_path.path
     }
-    pub fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+    pub(crate) fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
         &mut self.sub_path.path
     }
-    pub fn into_rooted<Root: PathRoot>(
+    pub(crate) fn into_rooted<Root: PathRoot>(
         self,
         root: Root,
     ) -> RootedRolePath<R, Root> {

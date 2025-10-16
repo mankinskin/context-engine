@@ -1,6 +1,6 @@
-pub mod bands;
-pub mod iterator;
-pub mod state;
+pub(crate) mod bands;
+pub(crate) mod iterator;
+pub(crate) mod state;
 
 use std::{
     cmp::Ordering,
@@ -21,9 +21,9 @@ use crate::{
 use std::fmt::Debug;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct ChildTracePos {
-    pub inner_offset: Option<NonZeroUsize>,
-    pub sub_index: usize,
+pub(crate) struct ChildTracePos {
+    pub(crate) inner_offset: Option<NonZeroUsize>,
+    pub(crate) sub_index: usize,
 }
 impl From<(usize, Option<NonZeroUsize>)> for ChildTracePos {
     fn from((sub_index, inner_offset): (usize, Option<NonZeroUsize>)) -> Self {
@@ -43,7 +43,7 @@ impl From<SubSplitLocation> for (PatternId, ChildTracePos) {
 }
 
 /// Side refers to border (front is indexing before front border, back is indexing after back border)
-pub trait TraceSide:
+pub(crate) trait TraceSide:
     std::fmt::Debug + Sync + Send + Unpin + Clone + 'static
 {
     fn trace_child_pos(
@@ -53,7 +53,7 @@ pub trait TraceSide:
 }
 
 #[derive(Debug, Clone)]
-pub struct TraceBack;
+pub(crate) struct TraceBack;
 
 impl TraceSide for TraceBack {
     fn trace_child_pos(
@@ -83,7 +83,7 @@ impl TraceSide for TraceBack {
 }
 
 #[derive(Debug, Clone)]
-pub struct TraceFront;
+pub(crate) struct TraceFront;
 
 impl TraceSide for TraceFront {
     fn trace_child_pos(

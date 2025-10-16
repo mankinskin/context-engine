@@ -63,8 +63,8 @@ use std::{
 pub struct RootChildState {
     #[deref]
     #[deref_mut]
-    pub child: ChildState,
-    pub root_parent: ParentState,
+    pub(crate) child: ChildState,
+    pub(crate) root_parent: ParentState,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]

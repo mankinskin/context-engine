@@ -253,20 +253,20 @@ impl<G: GraphKind> VertexSet<Child> for Hypergraph<G> {
     }
 }
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn get_index_for_key(
+    pub(crate) fn get_index_for_key(
         &self,
         key: &VertexKey,
     ) -> Result<VertexIndex, ErrorReason> {
         self.graph.get_index_of(key).ok_or(ErrorReason::UnknownKey)
     }
     #[track_caller]
-    pub fn expect_index_for_key(
+    pub(crate) fn expect_index_for_key(
         &self,
         key: &VertexKey,
     ) -> VertexIndex {
         self.get_index_for_key(key).expect("Key does not exist")
     }
-    pub fn get_key_for_index(
+    pub(crate) fn get_key_for_index(
         &self,
         index: impl HasVertexIndex,
     ) -> Result<VertexKey, ErrorReason> {
@@ -276,30 +276,30 @@ impl<G: GraphKind> Hypergraph<G> {
             .ok_or(ErrorReason::UnknownKey)
     }
     #[track_caller]
-    pub fn expect_key_for_index(
+    pub(crate) fn expect_key_for_index(
         &self,
         index: impl HasVertexIndex,
     ) -> VertexKey {
         self.get_key_for_index(index).expect("Key does not exist")
     }
 
-    pub fn next_vertex_index(&self) -> VertexIndex {
+    pub(crate) fn next_vertex_index(&self) -> VertexIndex {
         self.graph.len()
     }
-    pub fn vertex_iter(
+    pub(crate) fn vertex_iter(
         &self
     ) -> impl Iterator<Item = (&VertexKey, &VertexData)> {
         self.graph.iter()
     }
-    pub fn vertex_iter_mut(
+    pub(crate) fn vertex_iter_mut(
         &mut self
     ) -> impl Iterator<Item = (&VertexKey, &mut VertexData)> {
         self.graph.iter_mut()
     }
-    pub fn vertex_data_iter(&self) -> impl Iterator<Item = &VertexData> {
+    pub(crate) fn vertex_data_iter(&self) -> impl Iterator<Item = &VertexData> {
         self.graph.values()
     }
-    pub fn vertex_data_iter_mut(
+    pub(crate) fn vertex_data_iter_mut(
         &mut self
     ) -> impl Iterator<Item = &mut VertexData> {
         self.graph.values_mut()

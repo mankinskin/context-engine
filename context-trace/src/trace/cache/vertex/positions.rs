@@ -2,7 +2,6 @@ use crate::{
     HashMap,
     path::mutators::move_path::key::TokenPosition,
     trace::cache::position::PositionCache,
-    *,
 };
 use derive_more::derive::{
     Deref,

@@ -2,12 +2,12 @@ use parent::Parent;
 use pattern::Pattern;
 
 use crate::{
+    HashMap,
     graph::vertex::{
         data::VertexData,
         key::VertexKey,
         pattern::id::PatternId,
     },
-    HashMap,
 };
 
 pub mod child;
@@ -23,7 +23,8 @@ pub mod token;
 pub mod wide;
 
 pub type VertexEntry<'x> = indexmap::map::Entry<'x, VertexKey, VertexData>;
-pub type IndexedVertexEntry<'x> = indexmap::map::IndexedEntry<'x, VertexKey, VertexData>;
+pub type IndexedVertexEntry<'x> =
+    indexmap::map::IndexedEntry<'x, VertexKey, VertexData>;
 pub type VertexIndex = usize;
 pub type VertexParents = HashMap<VertexIndex, Parent>;
 pub type ChildPatterns = HashMap<PatternId, Pattern>;

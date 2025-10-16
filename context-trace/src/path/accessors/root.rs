@@ -14,7 +14,7 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub trait GraphRootPattern: GraphRoot + RootPattern {
+pub(crate) trait GraphRootPattern: GraphRoot + RootPattern {
     fn root_pattern_location(&self) -> PatternLocation;
     fn graph_root_pattern<'a: 'g, 'g, G: HasGraph + 'a>(
         &self,
@@ -94,13 +94,13 @@ macro_rules! impl_root {
     {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? RootPattern for $target:ty, $self_:ident, $trav:ident => $func:expr
     } => {
-        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::path::accessors::root::RootPattern for $target {
+        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::RootPattern for $target {
             fn root_pattern<
                 'a: 'g,
                 'b: 'g,
                 'g,
-                G: $crate::trace::has_graph::HasGraph + 'a
-            >(&'b $self_, $trav: &'g G::Guard<'a>) -> &'g $crate::graph::vertex::pattern::Pattern {
+                G: $crate::HasGraph + 'a
+            >(&'b $self_, $trav: &'g G::Guard<'a>) -> &'g $crate::Pattern {
                 $func
             }
         }
@@ -108,7 +108,7 @@ macro_rules! impl_root {
     {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? PatternRoot for $target:ty, $self_:ident => $func:expr
     } => {
-        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::path::accessors::root::PatternRoot for $target {
+        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::PatternRoot for $target {
             fn pattern_root_pattern(& $self_) -> &Pattern {
                 $func
             }
@@ -118,7 +118,7 @@ macro_rules! impl_root {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? GraphRootPattern for $target:ty, $self_:ident => $func:expr
     } => {
         impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> GraphRootPattern for $target {
-            fn root_pattern_location(& $self_) -> $crate::graph::vertex::location::pattern::PatternLocation {
+            fn root_pattern_location(& $self_) -> $crate::PatternLocation {
                 $func
             }
         }
@@ -126,8 +126,8 @@ macro_rules! impl_root {
     {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? GraphRoot for $target:ty, $self_:ident => $func:expr
     } => {
-        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::path::accessors::root::GraphRoot for $target {
-            fn root_parent(& $self_) -> $crate::graph::vertex::child::Child {
+        impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::GraphRoot for $target {
+            fn root_parent(& $self_) -> $crate::Child {
                 $func
             }
         }

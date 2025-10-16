@@ -1,38 +1,41 @@
 use crate::graph::{
-        getters::{vertex::VertexSet, ErrorReason},
-        kind::GraphKind,
-        vertex::{
-            child::Child,
-            data::VertexData,
-            key::VertexKey,
-            pattern::{
-                IntoPattern,
-                Pattern,
-            },
-            token::{
-                AsToken,
-                Token,
-            },
-            IndexPattern,
-            VertexIndex,
+    Hypergraph,
+    getters::{
+        ErrorReason,
+        vertex::VertexSet,
+    },
+    kind::GraphKind,
+    vertex::{
+        IndexPattern,
+        VertexIndex,
+        child::Child,
+        data::VertexData,
+        key::VertexKey,
+        pattern::{
+            IntoPattern,
+            Pattern,
         },
-        Hypergraph,
-    };
+        token::{
+            AsToken,
+            Token,
+        },
+    },
+};
 
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn get_token_data(
+    pub(crate) fn get_token_data(
         &self,
         token: &Token<G::Token>,
     ) -> Result<&VertexData, ErrorReason> {
         self.get_vertex(self.get_token_index(token)?)
     }
-    pub fn get_token_data_mut(
+    pub(crate) fn get_token_data_mut(
         &mut self,
         token: &Token<G::Token>,
     ) -> Result<&mut VertexData, ErrorReason> {
         self.get_vertex_mut(self.get_token_index(token)?)
     }
-    pub fn get_token_index(
+    pub(crate) fn get_token_index(
         &self,
         token: impl AsToken<G::Token>,
     ) -> Result<VertexIndex, ErrorReason> {
@@ -41,7 +44,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .get_index_of(&self.get_token_key(token.as_token())?)
             .unwrap())
     }
-    pub fn get_token_key(
+    pub(crate) fn get_token_key(
         &self,
         token: impl AsToken<G::Token>,
     ) -> Result<VertexKey, ErrorReason> {
@@ -50,27 +53,27 @@ impl<G: GraphKind> Hypergraph<G> {
             .copied()
             .ok_or(ErrorReason::UnknownToken)
     }
-    pub fn get_token_child(
+    pub(crate) fn get_token_child(
         &self,
         token: impl AsToken<G::Token>,
     ) -> Result<Child, ErrorReason> {
         self.get_token_index(token).map(|i| Child::new(i, 1))
     }
     #[track_caller]
-    pub fn expect_token_index(
+    pub(crate) fn expect_token_index(
         &self,
         token: impl AsToken<G::Token>,
     ) -> VertexIndex {
         self.get_token_index(token).expect("Token does not exist")
     }
     #[track_caller]
-    pub fn expect_token_child(
+    pub(crate) fn expect_token_child(
         &self,
         token: impl AsToken<G::Token>,
     ) -> Child {
         Child::new(self.expect_token_index(token), 1)
     }
-    pub fn to_token_keys_iter<'a>(
+    pub(crate) fn to_token_keys_iter<'a>(
         &'a self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>> + 'a,
     ) -> impl Iterator<Item = Result<VertexKey, ErrorReason>> + 'a {
@@ -78,7 +81,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .into_iter()
             .map(move |token| self.get_token_key(token))
     }
-    pub fn to_token_index_iter<'a>(
+    pub(crate) fn to_token_index_iter<'a>(
         &'a self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>> + 'a,
     ) -> impl Iterator<Item = Result<VertexIndex, ErrorReason>> + 'a {
@@ -86,7 +89,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .into_iter()
             .map(move |token| self.get_token_index(token))
     }
-    pub fn to_token_children_iter<'a>(
+    pub(crate) fn to_token_children_iter<'a>(
         &'a self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>> + 'a,
     ) -> impl Iterator<Item = Result<Child, ErrorReason>> + 'a {
@@ -101,7 +104,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .collect::<Result<Pattern, _>>()
     }
     #[track_caller]
-    pub fn expect_token_children(
+    pub(crate) fn expect_token_children(
         &self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
     ) -> Pattern {
@@ -109,7 +112,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .expect("Failed to convert tokens to children")
             .into_pattern()
     }
-    pub fn get_token_indices(
+    pub(crate) fn get_token_indices(
         &self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
     ) -> Result<IndexPattern, ErrorReason> {
@@ -121,7 +124,7 @@ impl<G: GraphKind> Hypergraph<G> {
         }
         Ok(v)
     }
-    pub fn expect_token_indices(
+    pub(crate) fn expect_token_indices(
         &self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
     ) -> IndexPattern {

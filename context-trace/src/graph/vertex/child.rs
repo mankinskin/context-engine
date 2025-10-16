@@ -63,8 +63,8 @@ impl Borrow<ChildWidth> for Child {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SubChild {
-    pub child: Child,
-    pub location: SubLocation,
+    pub(crate) child: Child,
+    pub(crate) location: SubLocation,
 }
 
 #[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
@@ -83,28 +83,28 @@ impl Child {
             width: ChildWidth(width),
         }
     }
-    pub fn get_width(&self) -> usize {
+    pub(crate) fn get_width(&self) -> usize {
         self.width.0
     }
-    pub fn to_pattern_location(
+    pub(crate) fn to_pattern_location(
         self,
         pattern_id: PatternId,
     ) -> PatternLocation {
         PatternLocation::new(self, pattern_id)
     }
-    pub fn to_child_location(
+    pub(crate) fn to_child_location(
         self,
         sub: SubLocation,
     ) -> ChildLocation {
         ChildLocation::new(self, sub.pattern_id, sub.sub_index)
     }
-    pub fn down_key(
+    pub(crate) fn down_key(
         self,
         pos: impl Into<DownPosition>,
     ) -> DownKey {
         DownKey::new(self, pos.into())
     }
-    pub fn up_key(
+    pub(crate) fn up_key(
         self,
         pos: impl Into<UpPosition>,
     ) -> UpKey {

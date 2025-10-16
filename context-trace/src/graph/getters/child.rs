@@ -17,7 +17,7 @@ use crate::graph::{
 };
 
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn get_child_at(
+    pub(crate) fn get_child_at(
         &self,
         location: impl IntoChildLocation,
     ) -> Result<&Child, ErrorReason> {
@@ -27,7 +27,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .get(location.sub_index)
             .ok_or(ErrorReason::NoChildPatterns) // todo: better error
     }
-    pub fn get_child_mut_at(
+    pub(crate) fn get_child_mut_at(
         &mut self,
         location: impl IntoChildLocation,
     ) -> Result<&mut Child, ErrorReason> {
@@ -48,7 +48,7 @@ impl<G: GraphKind> Hypergraph<G> {
         })
     }
     #[track_caller]
-    pub fn expect_child_mut_at(
+    pub(crate) fn expect_child_mut_at(
         &mut self,
         location: impl IntoChildLocation,
     ) -> &mut Child {
@@ -57,7 +57,7 @@ impl<G: GraphKind> Hypergraph<G> {
             panic!("Child not found at location {:#?}", location)
         })
     }
-    pub fn expect_is_at_end(
+    pub(crate) fn expect_is_at_end(
         &self,
         location: &ChildLocation,
     ) -> bool {
@@ -65,26 +65,26 @@ impl<G: GraphKind> Hypergraph<G> {
             .expect_pattern_len(&location.pattern_id)
             == location.sub_index + 1
     }
-    pub fn expect_child_offset(
+    pub(crate) fn expect_child_offset(
         &self,
         loc: &ChildLocation,
     ) -> usize {
         self.expect_vertex(loc.vertex_index())
             .expect_child_offset(&loc.to_sub_location())
     }
-    pub fn expect_child(
+    pub(crate) fn expect_child(
         &self,
         index: impl HasVertexIndex,
     ) -> Child {
         self.to_child(index)
     }
-    pub fn to_child(
+    pub(crate) fn to_child(
         &self,
         index: impl HasVertexIndex,
     ) -> Child {
         Child::new(index.vertex_index(), self.expect_index_width(&index))
     }
-    pub fn to_children(
+    pub(crate) fn to_children(
         &self,
         indices: impl IntoIterator<Item = impl HasVertexIndex>,
     ) -> Pattern {

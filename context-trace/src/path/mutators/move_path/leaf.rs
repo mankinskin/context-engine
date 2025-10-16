@@ -9,14 +9,14 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub trait MoveLeaf<D: Direction> {
+pub(crate) trait MoveLeaf<D: Direction> {
     fn move_leaf<G: HasGraph>(
         &mut self,
         trav: &G,
     ) -> ControlFlow<()>;
 }
 
-pub trait AdvanceLeaf: MoveLeaf<Right> {
+pub(crate) trait AdvanceLeaf: MoveLeaf<Right> {
     fn advance_leaf<G: HasGraph>(
         &mut self,
         trav: &G,
@@ -27,7 +27,7 @@ pub trait AdvanceLeaf: MoveLeaf<Right> {
 
 impl<T: MoveLeaf<Right>> AdvanceLeaf for T {}
 
-pub trait RetractLeaf: MoveLeaf<Left> {
+pub(crate) trait RetractLeaf: MoveLeaf<Left> {
     fn retract_leaf<G: HasGraph>(
         &mut self,
         trav: &G,

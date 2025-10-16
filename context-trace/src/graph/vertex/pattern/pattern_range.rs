@@ -13,7 +13,7 @@ use crate::{
     },
 };
 
-pub fn get_child_pattern_range<'a, R: PatternRangeIndex>(
+pub(crate) fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     id: &PatternId,
     p: &'a Pattern,
     range: R,
@@ -27,7 +27,7 @@ pub fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     })
 }
 
-pub trait PatternRangeIndex<T = Child>:
+pub(crate) trait PatternRangeIndex<T = Child>:
     SliceIndex<[T], Output = [T]>
     + RangeBounds<usize>
     + Iterator<Item = usize>
@@ -50,7 +50,7 @@ impl<
 > PatternRangeIndex<T> for R
 {
 }
-pub trait StartInclusive {
+pub(crate) trait StartInclusive {
     fn start(&self) -> usize;
 }
 impl StartInclusive for std::ops::RangeInclusive<usize> {
@@ -73,7 +73,7 @@ impl StartInclusive for std::ops::Range<usize> {
         self.start
     }
 }
-pub trait EndInclusive {
+pub(crate) trait EndInclusive {
     fn end(&self) -> usize;
 }
 impl EndInclusive for std::ops::RangeInclusive<usize> {

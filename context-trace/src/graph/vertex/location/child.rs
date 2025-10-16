@@ -28,9 +28,9 @@ use crate::{
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ChildLocation {
-    pub parent: Child,
-    pub pattern_id: PatternId,
-    pub sub_index: usize,
+    pub(crate) parent: Child,
+    pub(crate) pattern_id: PatternId,
+    pub(crate) sub_index: usize,
 }
 impl MoveLeaf<Right> for ChildLocation {
     fn move_leaf<G: HasGraph>(
@@ -79,53 +79,53 @@ impl ChildLocation {
             sub_index,
         }
     }
-    pub fn get_child_in<'a>(
+    pub(crate) fn get_child_in<'a>(
         &self,
         patterns: &'a ChildPatterns,
     ) -> Option<&'a Child> {
         self.get_pattern_in(patterns)
             .and_then(|p| self.get_child_in_pattern(p))
     }
-    pub fn expect_child_in<'a>(
+    pub(crate) fn expect_child_in<'a>(
         &self,
         patterns: &'a ChildPatterns,
     ) -> &'a Child {
         self.get_child_in(patterns)
             .expect("Expected Child not present in ChildPatterns!")
     }
-    pub fn get_child_in_pattern<'a>(
+    pub(crate) fn get_child_in_pattern<'a>(
         &self,
         pattern: &'a Pattern,
     ) -> Option<&'a Child> {
         pattern.get(self.sub_index)
     }
-    pub fn expect_child_in_pattern<'a>(
+    pub(crate) fn expect_child_in_pattern<'a>(
         &self,
         pattern: &'a Pattern,
     ) -> &'a Child {
         self.get_child_in_pattern(pattern)
             .expect("Expected Child not present in ChildPatterns!")
     }
-    pub fn get_pattern_in<'a>(
+    pub(crate) fn get_pattern_in<'a>(
         &self,
         patterns: &'a ChildPatterns,
     ) -> Option<&'a Pattern> {
         patterns.get(&self.pattern_id)
     }
-    pub fn expect_pattern_in<'a>(
+    pub(crate) fn expect_pattern_in<'a>(
         &self,
         patterns: &'a ChildPatterns,
     ) -> &'a Pattern {
         self.get_pattern_in(patterns)
             .expect("Expected Pattern not present in ChildPatterns!")
     }
-    pub fn to_child_location(
+    pub(crate) fn to_child_location(
         self,
         sub_index: usize,
     ) -> ChildLocation {
         ChildLocation { sub_index, ..self }
     }
-    pub fn to_pattern_location(
+    pub(crate) fn to_pattern_location(
         self,
         id: PatternId,
     ) -> PatternLocation {
@@ -134,7 +134,7 @@ impl ChildLocation {
             id,
         }
     }
-    pub fn to_sub_location(self) -> SubLocation {
+    pub(crate) fn to_sub_location(self) -> SubLocation {
         SubLocation {
             pattern_id: self.pattern_id,
             sub_index: self.sub_index,

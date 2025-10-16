@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 pub mod r#match;
 pub mod pattern;
-//pub(crate) mod merge;
+//pub(crate)(crate) mod merge;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Left;

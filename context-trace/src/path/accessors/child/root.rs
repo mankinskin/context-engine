@@ -78,7 +78,9 @@ impl<R: PathRole> GraphRootChild<R> for ChildLocation {
     }
 }
 // used to get a direct child of a pattern
-pub trait PatternRootChild<R>: RootChildIndex<R> + PatternRoot {
+pub(crate) trait PatternRootChild<R>:
+    RootChildIndex<R> + PatternRoot
+{
     fn pattern_root_child(&self) -> Child {
         PatternRoot::pattern_root_pattern(self)[self.root_child_index()]
     }

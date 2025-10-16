@@ -1,4 +1,7 @@
-use context_trace::*;
+use context_trace::{
+    path::RolePathUtils,
+    *,
+};
 use postfix::PostfixEnd;
 use prefix::PrefixEnd;
 use range::RangeEnd;

@@ -12,7 +12,6 @@ use crate::{
             props::TargetKey,
         },
     },
-    *,
 };
 
 use derive_more::From;
@@ -35,12 +34,12 @@ impl TargetKey for EditKind {
 
 #[derive(Clone, Debug, PartialEq, Eq, new)]
 pub struct NewTraceEdge<D: TraceDirection> {
-    pub prev: D::Key,
-    pub target: D::Key,
-    pub location: ChildLocation,
+    pub(crate) prev: D::Key,
+    pub(crate) target: D::Key,
+    pub(crate) location: ChildLocation,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct RootEdit {
-    pub entry_key: UpKey,
-    pub entry_location: ChildLocation,
+pub(crate) struct RootEdit {
+    pub(crate) entry_key: UpKey,
+    pub(crate) entry_location: ChildLocation,
 }

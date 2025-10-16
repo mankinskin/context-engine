@@ -1,5 +1,3 @@
-use crate::*;
-
 use crate::{
     HashMap,
     graph::vertex::{
@@ -70,7 +68,7 @@ impl TraceCache {
         ve.insert(&key.pos, pe);
         self.entries.insert(key.index.vertex_index(), ve);
     }
-    pub fn force_mut(
+    pub(crate) fn force_mut(
         &mut self,
         key: &DirectedKey,
     ) -> &mut PositionCache {
@@ -87,62 +85,62 @@ impl TraceCache {
         }
         self.expect_mut(key)
     }
-    pub fn get_vertex(
+    pub(crate) fn get_vertex(
         &self,
         key: &Child,
     ) -> Option<&VertexCache> {
         self.entries.get(&key.index.vertex_index())
     }
-    pub fn get_vertex_mut(
+    pub(crate) fn get_vertex_mut(
         &mut self,
         key: &Child,
     ) -> Option<&mut VertexCache> {
         self.entries.get_mut(&key.index.vertex_index())
     }
-    pub fn expect_vertex(
+    pub(crate) fn expect_vertex(
         &self,
         key: &Child,
     ) -> &VertexCache {
         self.get_vertex(key).unwrap()
     }
-    pub fn expect_vertex_mut(
+    pub(crate) fn expect_vertex_mut(
         &mut self,
         key: &Child,
     ) -> &mut VertexCache {
         self.get_vertex_mut(key).unwrap()
     }
-    pub fn get(
+    pub(crate) fn get(
         &self,
         key: &DirectedKey,
     ) -> Option<&PositionCache> {
         self.get_vertex(&key.index).and_then(|ve| ve.get(&key.pos))
     }
-    pub fn get_mut(
+    pub(crate) fn get_mut(
         &mut self,
         key: &DirectedKey,
     ) -> Option<&mut PositionCache> {
         self.get_vertex_mut(&key.index)
             .and_then(|ve| ve.get_mut(&key.pos))
     }
-    pub fn expect(
+    pub(crate) fn expect(
         &self,
         key: &DirectedKey,
     ) -> &PositionCache {
         self.get(key).unwrap()
     }
-    pub fn expect_mut(
+    pub(crate) fn expect_mut(
         &mut self,
         key: &DirectedKey,
     ) -> &mut PositionCache {
         self.get_mut(key).unwrap()
     }
-    pub fn exists_vertex(
+    pub(crate) fn exists_vertex(
         &self,
         key: &Child,
     ) -> bool {
         self.entries.contains_key(&key.vertex_index())
     }
-    pub fn exists(
+    pub(crate) fn exists(
         &self,
         key: &DirectedKey,
     ) -> bool {

@@ -1,7 +1,10 @@
 use std::cmp::Ordering;
 
 use crate::traversal::state::end::EndState;
-use context_trace::*;
+use context_trace::{
+    trace::cache::vertex::VertexCache,
+    *,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FinalState<'a> {

@@ -17,14 +17,14 @@ use crate::{
 
 use crate::graph::vertex::child::Child;
 
-pub mod id;
-pub mod pattern_range;
+pub(crate) mod id;
+pub(crate) mod pattern_range;
 
 pub type Pattern = Vec<Child>;
-pub type PatternView<'a> = &'a [Child];
-pub type Patterns = Vec<Pattern>;
+pub(crate) type PatternView<'a> = &'a [Child];
+pub(crate) type Patterns = Vec<Pattern>;
 
-pub trait PatternWidth: IntoPattern {
+pub(crate) trait PatternWidth: IntoPattern {
     fn pattern_width(&self) -> usize;
 }
 impl PatternWidth for Pattern {
@@ -33,7 +33,7 @@ impl PatternWidth for Pattern {
     }
 }
 /// trait for types which can be converted to a pattern with a known size
-pub trait IntoPattern: Sized
+pub(crate) trait IntoPattern: Sized
 //IntoIterator<Item = Self::Elem, IntoIter = Self::Iter> + Sized + Borrow<[Child]> + Debug
 {
     //type Iter: ExactSizeIterator + DoubleEndedIterator<Item = Self::Elem>;
@@ -106,50 +106,50 @@ impl<T: IntoPattern + Clone> IntoPattern for &'_ T {
 //}
 
 /// trait for types which can be converted to a pattern with a known size
-pub trait AsPatternMut: BorrowMut<Vec<Child>> + Debug {}
+pub(crate) trait AsPatternMut: BorrowMut<Vec<Child>> + Debug {}
 
 impl<T> AsPatternMut for T where T: BorrowMut<Vec<Child>> + Debug {}
 
-pub fn pattern_width<T: Borrow<Child>>(
+pub(crate) fn pattern_width<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>
 ) -> usize {
     pat.into_iter().map(|c| c.borrow().width()).sum()
 }
 
-pub fn pattern_pre_ctx<T: Borrow<Child>>(
+pub(crate) fn pattern_pre_ctx<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pat.into_iter().take(sub_index)
 }
 
-pub fn pattern_post_ctx<T: Borrow<Child>>(
+pub(crate) fn pattern_post_ctx<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pattern_post(pat, sub_index + 1)
 }
-pub fn pattern_post<T: Borrow<Child>>(
+pub(crate) fn pattern_post<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pat.into_iter().skip(sub_index)
 }
-pub fn pattern_pre<T: Borrow<Child>>(
+pub(crate) fn pattern_pre<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pattern_pre_ctx(pat, sub_index + 1)
 }
 
-pub fn prefix<T: ToChild + Clone>(
+pub(crate) fn prefix<T: ToChild + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> Vec<T> {
     pattern.get(0..index).unwrap_or(pattern).to_vec()
 }
 
-pub fn infix<T: ToChild + Clone>(
+pub(crate) fn infix<T: ToChild + Clone>(
     pattern: &'_ [T],
     start: usize,
     end: usize,
@@ -157,7 +157,7 @@ pub fn infix<T: ToChild + Clone>(
     pattern.get(start..end).unwrap_or(&[]).to_vec()
 }
 
-pub fn postfix<T: ToChild + Clone>(
+pub(crate) fn postfix<T: ToChild + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> Vec<T> {
@@ -166,7 +166,7 @@ pub fn postfix<T: ToChild + Clone>(
 
 #[track_caller]
 #[tracing::instrument(skip(pattern, range, replace))]
-pub fn replace_in_pattern(
+pub(crate) fn replace_in_pattern(
     mut pattern: impl AsPatternMut,
     range: impl PatternRangeIndex,
     replace: impl IntoPattern,
@@ -177,7 +177,7 @@ pub fn replace_in_pattern(
         .collect()
 }
 
-pub fn single_child_patterns(
+pub(crate) fn single_child_patterns(
     halves: Vec<Pattern>
 ) -> Result<Child, Vec<Pattern>> {
     match (halves.len(), halves.first()) {
@@ -187,7 +187,7 @@ pub fn single_child_patterns(
     }
 }
 
-pub fn single_child_pattern(half: Pattern) -> Result<Child, Pattern> {
+pub(crate) fn single_child_pattern(half: Pattern) -> Result<Child, Pattern> {
     match (half.len(), half.first()) {
         (1, Some(first)) => Ok(*first),
         _ => Err(half),
@@ -195,21 +195,21 @@ pub fn single_child_pattern(half: Pattern) -> Result<Child, Pattern> {
 }
 
 /// Split a pattern before the specified index
-pub fn split_pattern_at_index<T: ToChild + Clone>(
+pub(crate) fn split_pattern_at_index<T: ToChild + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> (Vec<T>, Vec<T>) {
     (prefix(pattern, index), postfix(pattern, index))
 }
 
-pub fn split_context<T: ToChild + Clone>(
+pub(crate) fn split_context<T: ToChild + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> (Vec<T>, Vec<T>) {
     (prefix(pattern, index), postfix(pattern, index + 1))
 }
 
-pub fn double_split_context(
+pub(crate) fn double_split_context(
     pattern: PatternView<'_>,
     left_index: usize,
     right_index: usize,

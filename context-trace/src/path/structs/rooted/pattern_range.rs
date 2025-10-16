@@ -4,7 +4,6 @@ use std::{
 };
 
 use crate::{
-    RootedRolePath,
     direction::{
         Right,
         pattern::PatternDirection,
@@ -69,6 +68,7 @@ use crate::{
                 role_path::{
                     CalcWidth,
                     PatternRolePath,
+                    RootedRolePath,
                 },
                 root::{
                     PathRoot,
@@ -85,7 +85,7 @@ use crate::{
 };
 
 pub type PatternRangePath = RootedRangePath<Pattern>;
-pub type PatternPrefixPath = RootedRolePath<Start, Pattern>;
+pub(crate) type PatternPrefixPath = RootedRolePath<Start, Pattern>;
 pub type PatternPostfixPath = RootedRolePath<End, Pattern>;
 
 impl RootChildIndexMut<End> for PatternRangePath {

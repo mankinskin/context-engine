@@ -75,7 +75,7 @@ impl Wide for DownKey {
     }
 }
 
-pub trait WideMut: Wide {
+pub(crate) trait WideMut: Wide {
     fn width_mut(&mut self) -> &mut usize;
 }
 //impl<P: WideMut> WideMut for OriginPath<P> {

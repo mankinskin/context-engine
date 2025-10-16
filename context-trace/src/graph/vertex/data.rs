@@ -68,12 +68,12 @@ use std::{
 
 use crate::graph::vertex::child::SubChild;
 
-pub fn clone_child_patterns(
+pub(crate) fn clone_child_patterns(
     children: &'_ ChildPatterns
 ) -> impl Iterator<Item = Pattern> + '_ {
     children.values().cloned()
 }
-pub fn localized_children_iter_for_index(
+pub(crate) fn localized_children_iter_for_index(
     parent: impl ToChild,
     children: &ChildPatterns,
 ) -> impl IntoIterator<Item = (ChildLocation, &Child)> {
@@ -87,21 +87,21 @@ pub fn localized_children_iter_for_index(
 
 #[derive(Debug, PartialEq, Eq, Clone, Builder, Serialize, Deserialize)]
 pub struct VertexData {
-    pub width: usize,
-    pub index: VertexIndex,
+    pub(crate) width: usize,
+    pub(crate) index: VertexIndex,
 
     #[builder(default)]
-    pub key: VertexKey,
+    pub(crate) key: VertexKey,
 
     #[builder(default)]
-    pub parents: VertexParents,
+    pub(crate) parents: VertexParents,
 
     #[builder(default)]
-    pub children: ChildPatterns,
+    pub(crate) children: ChildPatterns,
 }
 
 impl VertexData {
-    pub fn new(
+    pub(crate) fn new(
         index: VertexIndex,
         width: usize,
     ) -> Self {
@@ -113,10 +113,10 @@ impl VertexData {
             children: ChildPatterns::default(),
         }
     }
-    pub fn get_width(&self) -> usize {
+    pub(crate) fn get_width(&self) -> usize {
         self.width
     }
-    pub fn get_parent(
+    pub(crate) fn get_parent(
         &self,
         index: impl HasVertexIndex,
     ) -> Result<&Parent, ErrorReason> {
@@ -125,7 +125,7 @@ impl VertexData {
             .get(&index)
             .ok_or(ErrorReason::ErrorReasoningParent(index))
     }
-    pub fn get_parent_mut(
+    pub(crate) fn get_parent_mut(
         &mut self,
         index: impl HasVertexIndex,
     ) -> Result<&mut Parent, ErrorReason> {
@@ -135,14 +135,14 @@ impl VertexData {
             .ok_or(ErrorReason::ErrorReasoningParent(index))
     }
     #[track_caller]
-    pub fn expect_parent(
+    pub(crate) fn expect_parent(
         &self,
         index: impl HasVertexIndex,
     ) -> &Parent {
         self.get_parent(index).unwrap()
     }
     #[track_caller]
-    pub fn expect_parent_mut(
+    pub(crate) fn expect_parent_mut(
         &mut self,
         index: impl HasVertexIndex,
     ) -> &mut Parent {
@@ -151,10 +151,10 @@ impl VertexData {
     pub fn get_parents(&self) -> &VertexParents {
         &self.parents
     }
-    pub fn get_parents_mut(&mut self) -> &mut VertexParents {
+    pub(crate) fn get_parents_mut(&mut self) -> &mut VertexParents {
         &mut self.parents
     }
-    pub fn get_child_pattern_range<R: PatternRangeIndex>(
+    pub(crate) fn get_child_pattern_range<R: PatternRangeIndex>(
         &self,
         id: &PatternId,
         range: R,
@@ -168,7 +168,7 @@ impl VertexData {
         })
     }
     #[track_caller]
-    pub fn expect_child_pattern_range<R: PatternRangeIndex>(
+    pub(crate) fn expect_child_pattern_range<R: PatternRangeIndex>(
         &self,
         id: &PatternId,
         range: R,
@@ -177,7 +177,7 @@ impl VertexData {
         pattern::pattern_range::get_child_pattern_range(id, p, range.clone())
             .expect("Range in pattern")
     }
-    pub fn get_child_pattern_position(
+    pub(crate) fn get_child_pattern_position(
         &self,
         id: &PatternId,
         pos: IndexPosition,
@@ -187,7 +187,7 @@ impl VertexData {
             .and_then(|p| p.get(pos))
             .ok_or(ErrorReason::NoChildPatterns)
     }
-    pub fn get_child_pattern_with_prefix_width(
+    pub(crate) fn get_child_pattern_with_prefix_width(
         &self,
         width: NonZeroUsize,
     ) -> Option<(&PatternId, &Pattern)> {
@@ -195,7 +195,7 @@ impl VertexData {
             .iter()
             .find(|(_pid, pat)| pat[0].width() == width.get())
     }
-    pub fn get_child_pattern(
+    pub(crate) fn get_child_pattern(
         &self,
         id: &PatternId,
     ) -> Result<&Pattern, ErrorReason> {
@@ -203,7 +203,7 @@ impl VertexData {
             .get(id)
             .ok_or(ErrorReason::InvalidPattern(*id))
     }
-    pub fn get_child_at(
+    pub(crate) fn get_child_at(
         &self,
         location: &SubLocation,
     ) -> Result<&Child, ErrorReason> {
@@ -213,13 +213,13 @@ impl VertexData {
             .get(location.sub_index)
             .ok_or(ErrorReason::InvalidChild(location.sub_index))
     }
-    pub fn expect_child_at(
+    pub(crate) fn expect_child_at(
         &self,
         location: &SubLocation,
     ) -> &Child {
         self.get_child_at(location).unwrap()
     }
-    pub fn get_child_mut_at(
+    pub(crate) fn get_child_mut_at(
         &mut self,
         location: &SubLocation,
     ) -> Result<&mut Child, ErrorReason> {
@@ -229,20 +229,20 @@ impl VertexData {
             .get_mut(location.sub_index)
             .ok_or(ErrorReason::InvalidChild(location.sub_index))
     }
-    pub fn expect_child_mut_at(
+    pub(crate) fn expect_child_mut_at(
         &mut self,
         location: &SubLocation,
     ) -> &mut Child {
         self.get_child_mut_at(location).unwrap()
     }
     #[track_caller]
-    pub fn expect_pattern_len(
+    pub(crate) fn expect_pattern_len(
         &self,
         id: &PatternId,
     ) -> usize {
         self.expect_child_pattern(id).len()
     }
-    pub fn expect_child_offset(
+    pub(crate) fn expect_child_offset(
         &self,
         loc: &SubLocation,
     ) -> usize {
@@ -250,13 +250,13 @@ impl VertexData {
             &self.expect_child_pattern(&loc.pattern_id)[0..loc.sub_index],
         )
     }
-    pub fn find_child_pattern_id(
+    pub(crate) fn find_child_pattern_id(
         &self,
         f: impl FnMut(&(&PatternId, &Pattern)) -> bool,
     ) -> Option<PatternId> {
         self.children.iter().find(f).map(|r| *r.0)
     }
-    pub fn get_child_pattern_mut(
+    pub(crate) fn get_child_pattern_mut(
         &mut self,
         id: &PatternId,
     ) -> Result<&mut Pattern, ErrorReason> {
@@ -265,13 +265,13 @@ impl VertexData {
             .ok_or(ErrorReason::NoChildPatterns)
     }
     #[track_caller]
-    pub fn expect_any_child_pattern(&self) -> (&PatternId, &Pattern) {
+    pub(crate) fn expect_any_child_pattern(&self) -> (&PatternId, &Pattern) {
         self.children.iter().next().unwrap_or_else(|| {
             panic!("Pattern vertex has no children {:#?}", self,)
         })
     }
     #[track_caller]
-    pub fn expect_child_pattern(
+    pub(crate) fn expect_child_pattern(
         &self,
         id: &PatternId,
     ) -> &Pattern {
@@ -283,7 +283,7 @@ impl VertexData {
         })
     }
     #[track_caller]
-    pub fn expect_child_pattern_mut(
+    pub(crate) fn expect_child_pattern_mut(
         &mut self,
         id: &PatternId,
     ) -> &mut Pattern {
@@ -291,24 +291,24 @@ impl VertexData {
             panic!("Child pattern with id {} does not exist in in vertex", id,)
         })
     }
-    pub fn get_child_patterns(&self) -> &ChildPatterns {
+    pub(crate) fn get_child_patterns(&self) -> &ChildPatterns {
         &self.children
     }
-    pub fn get_child_patterns_mut(&mut self) -> &mut ChildPatterns {
+    pub(crate) fn get_child_patterns_mut(&mut self) -> &mut ChildPatterns {
         &mut self.children
     }
-    pub fn get_child_pattern_iter(
+    pub(crate) fn get_child_pattern_iter(
         &'_ self
     ) -> impl Iterator<Item = Pattern> + '_ {
         clone_child_patterns(&self.children)
     }
-    pub fn get_child_pattern_set(&self) -> HashSet<Pattern> {
+    pub(crate) fn get_child_pattern_set(&self) -> HashSet<Pattern> {
         self.get_child_pattern_iter().collect()
     }
-    pub fn get_child_pattern_vec(&self) -> Vec<Pattern> {
+    pub(crate) fn get_child_pattern_vec(&self) -> Vec<Pattern> {
         self.get_child_pattern_iter().collect()
     }
-    pub fn add_pattern_no_update(
+    pub(crate) fn add_pattern_no_update(
         &mut self,
         id: PatternId,
         pat: Pattern,
@@ -319,7 +319,7 @@ impl VertexData {
         self.children.insert(id, pat.into_pattern());
         self.validate();
     }
-    pub fn add_patterns_no_update(
+    pub(crate) fn add_patterns_no_update(
         &mut self,
         patterns: impl IntoIterator<Item = (PatternId, Pattern)>,
     ) {
@@ -332,11 +332,11 @@ impl VertexData {
         self.validate();
     }
     #[track_caller]
-    pub fn validate_links(&self) {
+    pub(crate) fn validate_links(&self) {
         assert!(self.children.len() != 1 || self.parents.len() != 1);
     }
     #[track_caller]
-    pub fn validate_patterns(&self) {
+    pub(crate) fn validate_patterns(&self) {
         self.children.iter().fold(
             Vec::new(),
             |mut acc: Vec<Vec<usize>>, (pid, p)| {
@@ -363,13 +363,13 @@ impl VertexData {
         );
     }
     #[track_caller]
-    pub fn validate(&self) {
+    pub(crate) fn validate(&self) {
         //self.validate_links();
         if !self.children.is_empty() {
             self.validate_patterns();
         }
     }
-    pub fn add_parent(
+    pub(crate) fn add_parent(
         &mut self,
         loc: ChildLocation,
     ) {
@@ -383,7 +383,7 @@ impl VertexData {
         // not while indexing
         //self.validate_links();
     }
-    pub fn remove_parent(
+    pub(crate) fn remove_parent(
         &mut self,
         vertex: impl HasVertexIndex,
     ) {
@@ -391,7 +391,7 @@ impl VertexData {
         // not while indexing
         //self.validate_links();
     }
-    pub fn remove_parent_index(
+    pub(crate) fn remove_parent_index(
         &mut self,
         vertex: impl HasVertexIndex,
         pattern: PatternId,
@@ -407,7 +407,7 @@ impl VertexData {
         // not while indexing
         //self.validate_links();
     }
-    pub fn get_parents_below_width(
+    pub(crate) fn get_parents_below_width(
         &self,
         width_ceiling: Option<usize>,
     ) -> impl Iterator<Item = (&VertexIndex, &Parent)> + Clone {
@@ -423,7 +423,7 @@ impl VertexData {
             Either::Right(parents.iter())
         }
     }
-    pub fn to_pattern_strings<G: GraphKind>(
+    pub(crate) fn to_pattern_strings<G: GraphKind>(
         &self,
         g: &Hypergraph<G>,
     ) -> Vec<Vec<String>>
@@ -438,10 +438,10 @@ impl VertexData {
             })
             .collect::<Vec<_>>()
     }
-    //pub fn get_parents_at_prefix(&self) -> HashMap<VertexIndex, PatternId> {
+    //pub(crate) fn get_parents_at_prefix(&self) -> HashMap<VertexIndex, PatternId> {
     //    self.get_parents_with_index_at(0)
     //}
-    //pub fn get_parents_at_postfix(
+    //pub(crate) fn get_parents_at_postfix(
     //    &self,
     //    graph: &crate::graph::Hypergraph,
     //) -> HashMap<VertexIndex, PatternId> {
@@ -454,7 +454,7 @@ impl VertexData {
     //        })
     //        .collect()
     //}
-    //pub fn get_parents_with_index_at(
+    //pub(crate) fn get_parents_with_index_at(
     //    &self,
     //    offset: usize,
     //) -> HashMap<VertexIndex, PatternId> {
@@ -467,7 +467,7 @@ impl VertexData {
     //        })
     //        .collect()
     //}
-    //pub fn filter_parent_to(
+    //pub(crate) fn filter_parent_to(
     //    &self,
     //    parent: impl HasVertexIndex,
     //    cond: impl Fn(&&Parent) -> bool,
@@ -478,7 +478,7 @@ impl VertexData {
     //        .filter(cond)
     //        .ok_or(ErrorReason::ErrorReasoningParent(index))
     //}
-    //pub fn get_parent_to_ending_at(
+    //pub(crate) fn get_parent_to_ending_at(
     //    &self,
     //    parent_key: impl HasVertexKey,
     //    offset: usize,
@@ -490,7 +490,7 @@ impl VertexData {
     //            .unwrap_or(false)
     //    })
     //}
-    pub fn get_parent_to_starting_at(
+    pub(crate) fn get_parent_to_starting_at(
         &self,
         parent_index: impl HasVertexIndex,
         index_offset: usize,
@@ -501,13 +501,13 @@ impl VertexData {
             .and_then(|parent| parent.get_index_at_pos(index_offset))
             .ok_or(ErrorReason::ErrorReasoningParent(index))
     }
-    pub fn get_parent_at_prefix_of(
+    pub(crate) fn get_parent_at_prefix_of(
         &self,
         index: impl HasVertexIndex,
     ) -> Result<PatternIndex, ErrorReason> {
         self.get_parent_to_starting_at(index, 0)
     }
-    pub fn get_parent_at_postfix_of(
+    pub(crate) fn get_parent_at_postfix_of(
         &self,
         vertex: &VertexData,
     ) -> Result<PatternIndex, ErrorReason> {
@@ -516,7 +516,7 @@ impl VertexData {
             .and_then(|parent| parent.get_index_at_postfix_of(vertex))
             .ok_or(ErrorReason::ErrorReasoningParent(vertex.vertex_index()))
     }
-    //pub fn find_ancestor_with_range(
+    //pub(crate) fn find_ancestor_with_range(
     //    &self,
     //    half: Pattern,
     //    range: impl PatternRangeIndex,
@@ -532,7 +532,7 @@ impl VertexData {
     //        })
     //        .ok_or(ErrorReason::NoChildPatterns)
     //}
-    pub fn largest_postfix(&self) -> (PatternId, Child) {
+    pub(crate) fn largest_postfix(&self) -> (PatternId, Child) {
         let (id, c) = self
             .children
             .iter()
@@ -551,15 +551,15 @@ impl VertexData {
             .unwrap();
         (*id, *c)
     }
-    pub fn all_children_iter(&self) -> impl IntoIterator<Item = &Child> {
+    pub(crate) fn all_children_iter(&self) -> impl IntoIterator<Item = &Child> {
         self.children.iter().flat_map(|(_, pat)| pat.iter())
     }
-    pub fn all_localized_children_iter(
+    pub(crate) fn all_localized_children_iter(
         &self
     ) -> impl IntoIterator<Item = (ChildLocation, &Child)> {
         localized_children_iter_for_index(self.to_child(), &self.children)
     }
-    pub fn top_down_containment_nodes(&self) -> Vec<(usize, Child)> {
+    pub(crate) fn top_down_containment_nodes(&self) -> Vec<(usize, Child)> {
         self.children
             .iter()
             .flat_map(|(_, pat)| {
@@ -571,7 +571,7 @@ impl VertexData {
             .sorted_by_key(|&(off, _)| off)
             .collect_vec()
     }
-    pub fn selected_children(
+    pub(crate) fn selected_children(
         &self,
         selector: impl Fn(&PatternId, &Pattern) -> Option<usize>,
     ) -> Vec<SubChild> {
@@ -588,12 +588,12 @@ impl VertexData {
             })
             .collect_vec()
     }
-    pub fn prefix_children<G: HasGraph>(&self) -> Vec<SubChild> {
+    pub(crate) fn prefix_children<G: HasGraph>(&self) -> Vec<SubChild> {
         self.selected_children(|_, pattern| {
             Some(TravDir::<G>::head_index(pattern))
         })
     }
-    pub fn postfix_children<G: HasGraph>(&self) -> Vec<SubChild>
+    pub(crate) fn postfix_children<G: HasGraph>(&self) -> Vec<SubChild>
     where
         <<G::Kind as GraphKind>::Direction as Direction>::Opposite:
             PatternDirection,
@@ -602,7 +602,7 @@ impl VertexData {
             Some(TravDir::<G>::last_index(pattern))
         })
     }
-    pub fn offset_children(
+    pub(crate) fn offset_children(
         &self,
         offset: Offset,
     ) -> Vec<SubChild> {

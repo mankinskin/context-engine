@@ -14,7 +14,7 @@ use crate::direction::{
 #[derive(
     Clone, Debug, Copy, Hash, Eq, PartialEq, Add, Sub, Deref, DerefMut, Default,
 )]
-pub struct TokenPosition(pub usize);
+pub struct TokenPosition(pub(crate) usize);
 
 impl From<TokenPosition> for usize {
     fn from(val: TokenPosition) -> Self {
@@ -83,7 +83,7 @@ impl<D: Direction, T: MoveKey<D>> MoveKey<D> for &'_ mut T {
     }
 }
 
-pub trait AdvanceKey: MoveKey<Right> {
+pub(crate) trait AdvanceKey: MoveKey<Right> {
     fn advance_key(
         &mut self,
         delta: usize,
@@ -94,7 +94,7 @@ pub trait AdvanceKey: MoveKey<Right> {
 
 impl<T: MoveKey<Right>> AdvanceKey for T {}
 
-pub trait RetractKey: MoveKey<Left> {
+pub(crate) trait RetractKey: MoveKey<Left> {
     fn retract_key(
         &mut self,
         delta: usize,

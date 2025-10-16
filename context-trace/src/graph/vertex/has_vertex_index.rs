@@ -47,7 +47,7 @@ pub trait ToChild: HasVertexIndex + Wide + Debug {
 
 impl<T: HasVertexIndex + Wide + Debug> ToChild for T {}
 
-//pub trait MaybeIndexed<T: Tokenize> {
+//pub(crate) trait MaybeIndexed<T: Tokenize> {
 //    type Inner: HasVertexIndex;
 //    fn into_inner(self) -> Result<Self::Inner, T>;
 //}

@@ -16,13 +16,13 @@ use crate::trace::pattern::{
 };
 
 #[derive(Debug, Clone, Copy)]
-pub struct NodeTraceCtx<'p> {
-    pub patterns: &'p ChildPatterns,
-    pub index: Child,
+pub(crate) struct NodeTraceCtx<'p> {
+    pub(crate) patterns: &'p ChildPatterns,
+    pub(crate) index: Child,
 }
 
 impl<'p> NodeTraceCtx<'p> {
-    pub fn new<K: GraphKind>(
+    pub(crate) fn new<K: GraphKind>(
         graph: &'p Hypergraph<K>,
         index: Child,
     ) -> Self {
@@ -63,7 +63,7 @@ impl GetPatternTraceCtx for NodeTraceCtx<'_> {
     }
 }
 
-pub trait AsNodeTraceCtx {
+pub(crate) trait AsNodeTraceCtx {
     fn as_trace_context<'a>(&'a self) -> NodeTraceCtx<'a>
     where
         Self: 'a;

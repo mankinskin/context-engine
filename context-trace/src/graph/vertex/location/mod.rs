@@ -8,17 +8,17 @@ use pattern::*;
 
 use crate::{PatternId};
 
-pub mod child;
-pub mod pattern;
+pub(crate) mod child;
+pub(crate) mod pattern;
 
 #[derive(Clone, Debug, PartialEq, Eq, Copy, Hash)]
-pub struct SubLocation {
-    pub pattern_id: PatternId,
-    pub sub_index: usize,
+pub(crate) struct SubLocation {
+    pub(crate) pattern_id: PatternId,
+    pub(crate) sub_index: usize,
 }
 
 impl SubLocation {
-    pub fn new(
+    pub(crate) fn new(
         pattern_id: PatternId,
         sub_index: usize,
     ) -> Self {

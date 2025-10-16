@@ -10,9 +10,9 @@ use crate::{
 };
 use std::fmt::Display;
 
-pub type Labelled<T> = T;
+pub(crate) type Labelled<T> = T;
 
-pub fn labelled_key<G: HasGraph, T>(
+pub(crate) fn labelled_key<G: HasGraph, T>(
     _trav: &G,
     index: T,
 ) -> Labelled<T>

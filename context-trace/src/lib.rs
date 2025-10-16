@@ -49,68 +49,57 @@ pub use tests::{
     init_tracing,
 };
 
-// Auto-generated pub use statements
+// Essential public re-exports for context-search
 pub use crate::{
     direction::{
-        Direction,
         Left,
         Right,
     },
+    graph::getters::vertex::VertexSet,
+    // Only the items that are already public or made public
+    graph::vertex::{
+        VertexIndex,
+        child::Child,
+        has_vertex_index::{
+            HasVertexIndex,
+            ToChild,
+        },
+        location::child::ChildLocation,
+        pattern::{
+            Pattern,
+            id::PatternId,
+        },
+        token::tokenizing_iter,
+        wide::Wide,
+    },
+    // ===== Missing imports from context-search =====
     graph::{
         Hypergraph,
         HypergraphRef,
         getters::{
             ErrorReason,
             IndexWithPath,
-            vertex::VertexSet,
         },
-        kind::{
-            BaseGraphKind,
-            TokenOf,
-        },
-        vertex::{
-            ChildPatterns,
-            VertexIndex,
-            child::{
-                Child,
-                ChildWidth,
-            },
-            data::VertexData,
-            has_vertex_data::{
-                HasVertexData,
-                HasVertexDataMut,
-            },
-            has_vertex_index::{
-                HasVertexIndex,
-                ToChild,
-            },
-            location::{
-                SubLocation,
-                child::ChildLocation,
-                pattern::IntoPatternLocation,
-            },
-            parent::{
-                Parent,
-                PatternIndex,
-            },
-            pattern::{
-                IntoPattern,
-                Pattern,
-                id::PatternId,
-                pattern_range::PatternRangeIndex,
-                pattern_width,
-            },
-            token::{
-                AsToken,
-                NewTokenIndex,
-                NewTokenIndices,
-                tokenizing_iter,
-            },
-            wide::Wide,
-        },
+        kind::TokenOf,
+        vertex::token::AsToken,
     },
+    path::accessors::has_path::HasRootedRolePath,
+    path::accessors::role::{
+        End,
+        PathRole,
+        Start,
+    },
+    path::accessors::root::RootPattern,
+    path::accessors::root::{
+        GraphRoot,
+        PatternRoot,
+    },
+    path::mutators::lower::PathLower,
+    path::mutators::move_path::advance::Advance,
+    path::mutators::move_path::key::TokenPosition,
+    path::mutators::simplify::PathSimplify,
+    path::structs::role_path::CalcOffset,
     path::{
-        RolePathUtils,
         accessors::{
             child::{
                 PathChild,
@@ -121,40 +110,17 @@ pub use crate::{
                 },
             },
             complete::PathComplete,
-            has_path::{
-                HasPath,
-                HasRootedRolePath,
-            },
-            role::{
-                End,
-                PathRole,
-                Start,
-            },
-            root::{
-                GraphRoot,
-                RootPattern,
-            },
+            has_path::HasPath,
         },
         mutators::{
             adapters::IntoAdvanced,
             append::PathAppend,
-            lower::PathLower,
             move_path::{
-                advance::{
-                    Advance,
-                    CanAdvance,
-                },
-                key::{
-                    MoveKey,
-                    TokenPosition,
-                },
+                key::MoveKey,
                 path::MovePath,
-                retract::Retract,
                 root::MoveRootIndex,
             },
             pop::PathPop,
-            raise::PathRaise,
-            simplify::PathSimplify,
         },
         structs::{
             query_range_path::FoldablePath,
@@ -177,6 +143,9 @@ pub use crate::{
             sub_path::SubPath,
         },
     },
+    trace::child::state::PrefixStates,
+    // Core types that are already properly exposed
+    trace::child::state::RootChildState,
     trace::{
         StateDirection,
         TraceCtx,
@@ -185,44 +154,23 @@ pub use crate::{
             key::{
                 directed::{
                     DirectedKey,
-                    DirectedPosition,
+                    HasTokenPosition,
                     down::DownKey,
                     up::UpKey,
                 },
                 props::{
                     CursorPosition,
-                    LeafKey,
                     RootKey,
                     TargetKey,
                 },
             },
-            new::EditKind,
-            position::{
-                Offset,
-                PositionCache,
-                SubSplitLocation,
-            },
-            vertex::{
-                VertexCache,
-                positions::DirectedPositions,
-            },
         },
         child::{
-            ChildTracePos,
-            TraceBack,
-            TraceSide,
-            bands::{
-                HasChildRoleIters,
-                PostfixIterator,
-            },
             iterator::{
                 ChildIterator,
                 ChildQueue,
             },
-            state::{
-                ChildState,
-                PrefixStates,
-            },
+            state::ChildState,
         },
         command::{
             PostfixCommand,
@@ -231,27 +179,29 @@ pub use crate::{
         },
         has_graph::{
             HasGraph,
-            HasGraphMut,
             TravKind,
         },
-        node::{
-            AsNodeTraceCtx,
-            NodeTraceCtx,
-        },
-        pattern::{
-            GetPatternCtx,
-            GetPatternTraceCtx,
-            HasPatternTraceCtx,
-            PatternTraceCtx,
-        },
         state::{
-            BaseState,
             InnerKind,
-            parent::{
-                ParentBatch,
-                ParentState,
-            },
+            parent::ParentState,
         },
         traceable::Traceable,
+    },
+    trace::{
+        cache::key::props::LeafKey,
+        state::{
+            BaseState,
+            parent::ParentBatch,
+        },
+    },
+};
+// Auto-generated pub(crate) use statements for internal use only
+pub(crate) use crate::{
+    direction::Direction,
+    graph::vertex::location::pattern::PatternLocation,
+    trace::cache::{
+        new::EditKind,
+        position::PositionCache,
+        vertex::positions::DirectedPositions,
     },
 };

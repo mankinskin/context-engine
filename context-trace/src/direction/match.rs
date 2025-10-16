@@ -9,14 +9,17 @@ use itertools::{
 };
 
 use crate::{
+    HashMap,
+    HashSet,
     direction::{
         Left,
         Right,
     },
     graph::{
+        Hypergraph,
         getters::{
-            vertex::VertexSet,
             ErrorReason,
+            vertex::VertexSet,
         },
         kind::GraphKind,
         vertex::{
@@ -31,18 +34,15 @@ use crate::{
                 PatternIndex,
             },
             pattern::{
+                Pattern,
                 id::PatternId,
                 pattern_range::PatternRangeIndex,
-                Pattern,
             },
         },
-        Hypergraph,
     },
-    HashMap,
-    HashSet,
 };
 
-use crate::{Direction};
+use crate::Direction;
 
 fn to_matching_iterator<'a, I: HasVertexIndex + 'a, J: HasVertexIndex + 'a>(
     a: impl Iterator<Item = &'a I>,
@@ -56,7 +56,7 @@ fn to_matching_iterator<'a, I: HasVertexIndex + 'a, J: HasVertexIndex + 'a>(
         })
 }
 
-pub trait MatchDirection: Direction {
+pub(crate) trait MatchDirection: Direction {
     type PostfixRange<T>: PatternRangeIndex<T>;
     /// get the parent where vertex is at the relevant position
     fn get_match_parent_to<G: GraphKind>(
@@ -93,8 +93,11 @@ pub trait MatchDirection: Direction {
         parent: &Parent,
         child_patterns: &HashMap<PatternId, Pattern>,
     ) -> HashSet<PatternIndex>;
-    fn split_head_tail<T: ToChild + Clone>(pattern: &'_ [T]) -> Option<(T, &'_ [T])> {
-        Self::pattern_head(pattern).map(|head| (head.clone(), Self::pattern_tail(pattern)))
+    fn split_head_tail<T: ToChild + Clone>(
+        pattern: &'_ [T]
+    ) -> Option<(T, &'_ [T])> {
+        Self::pattern_head(pattern)
+            .map(|head| (head.clone(), Self::pattern_tail(pattern)))
     }
     fn front_context_range<T>(index: usize) -> Self::PostfixRange<T>;
     /// get remaining pattern in matching direction excluding index
@@ -134,7 +137,8 @@ pub trait MatchDirection: Direction {
         Self::pattern_head(context)
             .and_then(|context_next| {
                 let context_next: Child = context_next.to_child();
-                Self::next_child(child_pattern, sub_index).map(|next| context_next == next)
+                Self::next_child(child_pattern, sub_index)
+                    .map(|next| context_next == next)
             })
             .unwrap_or(false)
     }

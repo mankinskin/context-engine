@@ -7,7 +7,7 @@ use crate::{
 };
 
 use crate::path::mutators::move_path::path::MovePath;
-pub trait Retract: MovePath<Left, End> {
+pub(crate) trait Retract: MovePath<Left, End> {
     fn retract<G: HasGraph>(
         &mut self,
         trav: &G,

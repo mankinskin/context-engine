@@ -1,18 +1,15 @@
-pub mod advanced;
-pub mod child;
-pub mod parent;
-pub mod pattern;
-pub mod token;
-pub mod vertex;
+pub(crate) mod child;
+pub(crate) mod parent;
+pub(crate) mod pattern;
+pub(crate) mod token;
+pub(crate) mod utils;
+pub(crate) mod vertex;
 
 use std::borrow::Borrow;
-
-use derive_new::new;
 
 use crate::{
     graph::{
         Hypergraph,
-        getters::vertex::VertexSet,
         kind::GraphKind,
         vertex::{
             VertexIndex,
@@ -26,6 +23,8 @@ use crate::{
     },
     path::structs::rooted::pattern_range::PatternRangePath,
 };
+use derive_new::new;
+pub(crate) use vertex::VertexSet;
 
 #[derive(Debug, Clone, Eq, PartialEq, new)]
 pub struct IndexWithPath {
@@ -68,49 +67,10 @@ pub enum ErrorReason {
 }
 
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn expect_index_width(
+    pub(crate) fn expect_index_width(
         &self,
         index: &impl HasVertexIndex,
     ) -> usize {
         self.expect_vertex(index.vertex_index()).width
     }
-}
-
-impl<G: GraphKind> Hypergraph<G> {
-    //pub fn async_to_token_indices_stream(
-    //    arc: Arc<RwLock<Self>>,
-    //    tokens: impl TokenStream<T> + 't,
-    //) -> impl PatternStream<VertexIndex, Token<T>> + 't {
-    //    let handle = tokio::runtime::Handle::current();
-    //    tokens.map(move |token|
-    //        // is this slow?
-    //        handle.block_on(async {
-    //            arc.read().get_token_index(token.as_token())
-    //                .map_err(|_| Token::Element(token))
-    //        }))
-    //}
-    //pub fn async_to_token_children_stream(
-    //    arc: Arc<RwLock<Self>>,
-    //    tokens: impl TokenStream<T> + 't,
-    //) -> impl PatternStream<Child, Token<T>> + 't {
-    //    Self::async_to_token_indices_stream(arc, tokens)
-    //
-    //        .map(move |index| index.into_inner().map(|index| Child::new(index, 1)))
-    //}
-    //pub fn to_token_indices_stream(
-    //    &'a self,
-    //    tokens: impl TokenStream<G::Token> + 'a,
-    //) -> impl PatternStream<VertexIndex, Token<G::Token>> + 'a {
-    //    tokens.map(move |token| {
-    //        self.get_token_index(token.as_token())
-    //            .map_err(|_| Token::Element(token))
-    //    })
-    //}
-    //pub fn to_token_children_stream(
-    //    &'a self,
-    //    tokens: impl TokenStream<G::Token> + 'a,
-    //) -> impl PatternStream<Child, Token<G::Token>> + 'a {
-    //    self.to_token_indices_stream(tokens)
-    //        .map(move |index| index.into_inner().map(|index| Child::new(index, 1)))
-    //}
 }

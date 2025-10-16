@@ -1,20 +1,20 @@
 use crate::trace::cache::directed::{DirectedKey};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct PrevKey {
-    pub prev_target: DirectedKey,
-    pub delta: usize,
+pub(crate) struct PrevKey {
+    pub(crate) prev_target: DirectedKey,
+    pub(crate) delta: usize,
 }
 
 impl PrevKey {
-    pub fn advanced(&self) -> DirectedKey {
+    pub(crate) fn advanced(&self) -> DirectedKey {
         let mut target = self.prev_target.clone();
         target.pos += self.delta;
         target
     }
 }
 
-pub trait ToPrev {
+pub(crate) trait ToPrev {
     fn to_prev(
         self,
         delta: usize,

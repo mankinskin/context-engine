@@ -1,7 +1,7 @@
 use auto_impl::auto_impl;
 use root::RootChild;
 
-pub mod root;
+pub(crate) mod root;
 
 use crate::{
     graph::vertex::{
@@ -35,7 +35,7 @@ impl<R: PathRole, P: RootChild<R> + PathChild<R>> LeafChild<R> for P {
     }
 }
 
-pub trait LeafChildPosMut<R>: RootChildIndexMut<R> {
+pub(crate) trait LeafChildPosMut<R>: RootChildIndexMut<R> {
     fn leaf_child_pos_mut(&mut self) -> &mut usize;
 }
 
@@ -63,6 +63,6 @@ pub trait RootChildIndex<R> {
     fn root_child_index(&self) -> usize;
 }
 
-pub trait RootChildIndexMut<R>: RootChildIndex<R> {
+pub(crate) trait RootChildIndexMut<R>: RootChildIndex<R> {
     fn root_child_index_mut(&mut self) -> &mut usize;
 }

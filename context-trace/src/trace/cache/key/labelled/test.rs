@@ -27,7 +27,7 @@ impl<T> Borrow<T> for Labelled<T> {
     }
 }
 
-pub fn labelled<G: HasGraph, T: HasVertexIndex>(
+pub(crate) fn labelled<G: HasGraph, T: HasVertexIndex>(
     trav: &G,
     index: T,
 ) -> Labelled<T>
@@ -38,7 +38,7 @@ where
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deref)]
-pub struct Labelled<T> {
+pub(crate) struct Labelled<T> {
     #[deref]
     index: T,
     label: String,
@@ -52,7 +52,7 @@ impl From<Labelled<Child>> for Labelled<VertexIndex> {
     }
 }
 impl<T> Labelled<T> {
-    pub fn new(
+    pub(crate) fn new(
         index: T,
         label: impl ToString,
     ) -> Self {
@@ -61,7 +61,7 @@ impl<T> Labelled<T> {
             index,
         }
     }
-    pub fn build<G: HasGraph>(
+    pub(crate) fn build<G: HasGraph>(
         trav: &G,
         index: T,
     ) -> Self
@@ -101,4 +101,5 @@ macro_rules! lab {
         $crate::trace::cache::key::labelled::Labelled::new($x, stringify!($x))
     };
 }
+#[allow(unused)]
 pub use lab;

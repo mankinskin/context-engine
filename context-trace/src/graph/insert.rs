@@ -7,10 +7,11 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 
 use crate::{
+    HashSet,
     graph::{
         getters::{
-            vertex::VertexSet,
             ErrorReason,
+            vertex::VertexSet,
         },
         kind::GraphKind,
         vertex::{
@@ -30,15 +31,15 @@ use crate::{
             },
             parent::PatternIndex,
             pattern::{
+                IntoPattern,
+                Pattern,
                 id::PatternId,
                 pattern_range::{
-                    get_child_pattern_range,
                     PatternRangeIndex,
+                    get_child_pattern_range,
                 },
                 pattern_width,
                 replace_in_pattern,
-                IntoPattern,
-                Pattern,
             },
             token::{
                 NewTokenIndex,
@@ -47,7 +48,6 @@ use crate::{
             },
         },
     },
-    HashSet,
 };
 
 lazy_static! {
@@ -57,21 +57,21 @@ impl<G> crate::graph::Hypergraph<G>
 where
     G: GraphKind,
 {
-    pub fn insert_vertex_builder(
+    pub(crate) fn insert_vertex_builder(
         &mut self,
         builder: VertexDataBuilder,
     ) -> Child {
         let data = self.finish_vertex_builder(builder);
         self.insert_vertex_data(data)
     }
-    pub fn finish_vertex_builder(
+    pub(crate) fn finish_vertex_builder(
         &mut self,
         mut builder: VertexDataBuilder,
     ) -> VertexData {
         builder.index(self.next_vertex_index()).build().unwrap()
     }
     /// insert raw vertex data
-    pub fn insert_vertex_data(
+    pub(crate) fn insert_vertex_data(
         &mut self,
         data: VertexData,
     ) -> Child {
@@ -88,7 +88,7 @@ where
         self.token_keys.insert(token, key);
     }
     /// insert raw vertex data
-    pub fn insert_token_data(
+    pub(crate) fn insert_token_data(
         &mut self,
         token: Token<G::Token>,
         data: VertexData,
@@ -96,7 +96,7 @@ where
         self.insert_token_key(token, data.key);
         self.insert_vertex_data(data)
     }
-    pub fn insert_token_builder(
+    pub(crate) fn insert_token_builder(
         &mut self,
         token: Token<G::Token>,
         builder: VertexDataBuilder,
@@ -105,7 +105,7 @@ where
         self.insert_token_data(token, data)
     }
     // insert single token node
-    pub fn insert_token(
+    pub(crate) fn insert_token(
         &mut self,
         token: Token<G::Token>,
     ) -> Child {
@@ -113,7 +113,7 @@ where
         self.insert_token_data(token, data)
     }
     /// insert multiple token nodes
-    pub fn insert_tokens(
+    pub(crate) fn insert_tokens(
         &mut self,
         tokens: impl IntoIterator<Item = Token<G::Token>>,
     ) -> Vec<Child> {
@@ -141,7 +141,10 @@ where
     }
     /// adds a parent to all nodes in a pattern
     #[track_caller]
-    pub fn add_parents_to_pattern_nodes<I: HasVertexIndex, P: ToChild>(
+    pub(crate) fn add_parents_to_pattern_nodes<
+        I: HasVertexIndex,
+        P: ToChild,
+    >(
         &mut self,
         pattern: Vec<I>,
         parent: P,
@@ -156,14 +159,14 @@ where
             ));
         }
     }
-    pub fn validate_vertex(
+    pub(crate) fn validate_vertex(
         &self,
         index: impl HasVertexIndex,
     ) {
         self.expect_vertex(index.vertex_index()).validate()
     }
     /// add pattern to existing node
-    pub fn add_pattern_with_update(
+    pub(crate) fn add_pattern_with_update(
         &mut self,
         index: impl HasVertexIndex,
         pattern: Pattern,
@@ -184,7 +187,7 @@ where
     }
     /// add pattern to existing node
     //#[track_caller]
-    pub fn add_patterns_with_update(
+    pub(crate) fn add_patterns_with_update(
         &mut self,
         index: impl HasVertexIndex,
         patterns: impl IntoIterator<Item = Pattern>,
@@ -197,7 +200,7 @@ where
     }
     /// create new node from a pattern
     #[track_caller]
-    pub fn insert_pattern_with_id(
+    pub(crate) fn insert_pattern_with_id(
         &mut self,
         pattern: impl IntoPattern,
     ) -> (Child, Option<PatternId>) {
@@ -217,7 +220,7 @@ where
     }
     /// create new node from a pattern (even if single index)
     //#[track_caller]
-    pub fn force_insert_pattern_with_id(
+    pub(crate) fn force_insert_pattern_with_id(
         &mut self,
         pattern: impl IntoPattern,
     ) -> (Child, PatternId) {
@@ -233,7 +236,7 @@ where
         (index, pattern_id)
     }
     /// create new node from a pattern
-    pub fn insert_pattern(
+    pub(crate) fn insert_pattern(
         &mut self,
         pattern: impl IntoPattern,
     ) -> Child {
@@ -241,13 +244,13 @@ where
         self.insert_pattern_with_id(indices).0
     }
     /// create new node from a pattern
-    pub fn force_insert_pattern(
+    pub(crate) fn force_insert_pattern(
         &mut self,
         indices: impl IntoPattern,
     ) -> Child {
         self.force_insert_pattern_with_id(indices).0
     }
-    pub fn insert_patterns_with_ids(
+    pub(crate) fn insert_patterns_with_ids(
         &mut self,
         patterns: impl IntoIterator<Item = Pattern>,
     ) -> (Child, Vec<PatternId>) {
@@ -265,7 +268,7 @@ where
     }
     /// create new node from multiple patterns
     //#[track_caller]
-    pub fn insert_patterns(
+    pub(crate) fn insert_patterns(
         &mut self,
         patterns: impl IntoIterator<Item = impl IntoPattern>,
     ) -> Child {
@@ -290,7 +293,7 @@ where
             })
     }
     #[track_caller]
-    pub fn try_insert_patterns(
+    pub(crate) fn try_insert_patterns(
         &mut self,
         patterns: impl IntoIterator<Item = Pattern>,
     ) -> Option<Child> {
@@ -305,7 +308,7 @@ where
         }
     }
     #[track_caller]
-    pub fn try_insert_range_in(
+    pub(crate) fn try_insert_range_in(
         &mut self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,
@@ -337,7 +340,7 @@ where
             })
     }
     #[track_caller]
-    pub fn insert_range_in(
+    pub(crate) fn insert_range_in(
         &mut self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,
@@ -346,7 +349,7 @@ where
             .and_then(|c| c.or(Err(ErrorReason::Unnecessary)))
     }
     #[track_caller]
-    pub fn insert_range_in_or_default(
+    pub(crate) fn insert_range_in_or_default(
         &mut self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,
@@ -357,7 +360,7 @@ where
         })
     }
     //#[track_caller]
-    pub fn replace_in_pattern(
+    pub(crate) fn replace_in_pattern(
         &mut self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,
@@ -423,7 +426,7 @@ where
         );
         self.validate_expansion(parent_index);
     }
-    pub fn add_pattern_parent(
+    pub(crate) fn add_pattern_parent(
         &mut self,
         parent: impl ToChild,
         pattern: impl IntoPattern,
@@ -444,7 +447,7 @@ where
                 ));
             });
     }
-    pub fn append_to_pattern(
+    pub(crate) fn append_to_pattern(
         &mut self,
         parent: impl crate::graph::vertex::has_vertex_index::ToChild,
         pattern_id: PatternId,
@@ -477,7 +480,7 @@ where
         self.add_pattern_parent(parent, new, pattern_id, offset);
         parent
     }
-    pub fn new_token_indices(
+    pub(crate) fn new_token_indices(
         &mut self,
         sequence: impl IntoIterator<Item = G::Token>,
     ) -> NewTokenIndices {

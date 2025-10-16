@@ -19,50 +19,50 @@ pub trait TestEnv {
     fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self>;
 }
 pub struct Env1 {
-    pub graph: HypergraphRef,
-    pub a: Child,
-    pub b: Child,
-    pub c: Child,
-    pub d: Child,
-    pub e: Child,
-    pub f: Child,
-    pub g: Child,
-    pub h: Child,
-    pub i: Child,
-    pub ab: Child,
-    pub bc: Child,
-    pub bc_id: PatternId,
-    pub cd: Child,
-    pub cd_id: PatternId,
-    pub bcd: Child,
-    pub b_cd_id: PatternId,
-    pub bc_d_id: PatternId,
-    pub def: Child,
-    pub d_ef_id: PatternId,
-    pub abc: Child,
-    pub a_bc_id: PatternId,
-    pub abcd: Child,
-    pub a_bcd_id: PatternId,
-    pub abc_d_id: PatternId,
-    pub ef: Child,
-    pub e_f_id: PatternId,
-    pub ghi: Child,
-    pub cdef: Child,
-    pub c_def_id: PatternId,
-    pub cd_ef_id: PatternId,
-    pub efghi: Child,
-    pub abab: Child,
-    pub ababab: Child,
-    pub abcdef: Child,
-    pub abcd_ef_id: PatternId,
-    pub abc_def_id: PatternId,
-    pub ab_cdef_id: PatternId,
-    pub abcdefghi: Child,
-    pub abcd_efghi_id: PatternId,
-    pub abcdef_ghi_id: PatternId,
-    pub ababababcdefghi: Child,
+    pub(crate) graph: HypergraphRef,
+    pub(crate) a: Child,
+    pub(crate) b: Child,
+    pub(crate) c: Child,
+    pub(crate) d: Child,
+    pub(crate) e: Child,
+    pub(crate) f: Child,
+    pub(crate) g: Child,
+    pub(crate) h: Child,
+    pub(crate) i: Child,
+    pub(crate) ab: Child,
+    pub(crate) bc: Child,
+    pub(crate) bc_id: PatternId,
+    pub(crate) cd: Child,
+    pub(crate) cd_id: PatternId,
+    pub(crate) bcd: Child,
+    pub(crate) b_cd_id: PatternId,
+    pub(crate) bc_d_id: PatternId,
+    pub(crate) def: Child,
+    pub(crate) d_ef_id: PatternId,
+    pub(crate) abc: Child,
+    pub(crate) a_bc_id: PatternId,
+    pub(crate) abcd: Child,
+    pub(crate) a_bcd_id: PatternId,
+    pub(crate) abc_d_id: PatternId,
+    pub(crate) ef: Child,
+    pub(crate) e_f_id: PatternId,
+    pub(crate) ghi: Child,
+    pub(crate) cdef: Child,
+    pub(crate) c_def_id: PatternId,
+    pub(crate) cd_ef_id: PatternId,
+    pub(crate) efghi: Child,
+    pub(crate) abab: Child,
+    pub(crate) ababab: Child,
+    pub(crate) abcdef: Child,
+    pub(crate) abcd_ef_id: PatternId,
+    pub(crate) abc_def_id: PatternId,
+    pub(crate) ab_cdef_id: PatternId,
+    pub(crate) abcdefghi: Child,
+    pub(crate) abcd_efghi_id: PatternId,
+    pub(crate) abcdef_ghi_id: PatternId,
+    pub(crate) ababababcdefghi: Child,
 }
-pub fn tokens1(graph: &mut Hypergraph) -> Vec<Child> {
+pub(crate) fn tokens1(graph: &mut Hypergraph) -> Vec<Child> {
     graph.insert_tokens([
         Token::Element('a'),
         Token::Element('b'),
@@ -130,10 +130,11 @@ impl TestEnv for Env1 {
         // 25
         let abab = graph.insert_patterns([vec![aba, b], vec![ab, ab]]);
         let ababab = graph.insert_patterns([vec![abab, ab], vec![ab, abab]]);
-        let ababcd =
-            graph.insert_patterns([vec![ab, abcd], vec![aba, bcd], vec![
-                abab, cd,
-            ]]);
+        let ababcd = graph.insert_patterns([
+            vec![ab, abcd],
+            vec![aba, bcd],
+            vec![abab, cd],
+        ]);
         // 28
         let ababababcd =
             graph.insert_patterns([vec![ababab, abcd], vec![abab, ababcd]]);
@@ -198,13 +199,13 @@ impl TestEnv for Env1 {
     }
 }
 lazy_static::lazy_static! {
-    pub static ref
+    pub(crate) static ref
         CONTEXT: Arc<RwLock<Env1>> = Arc::new(RwLock::new(Env1::initialize_expected()));
 }
-//pub fn context() -> RwLockReadGuard<'static, Ctx> {
+//pub(crate) fn context() -> RwLockReadGuard<'static, Ctx> {
 //    CONTEXT.read().unwrap()
 //}
 //
-//pub fn context_mut() -> RwLockWriteGuard<'static, Ctx> {
+//pub(crate) fn context_mut() -> RwLockWriteGuard<'static, Ctx> {
 //    CONTEXT.write().unwrap()
 //}

@@ -1,27 +1,30 @@
 use std::num::NonZeroUsize;
 
-use crate::*;
+use crate::{
+    graph::vertex::location::SubLocation,
+    *,
+};
 
-pub type Offset = NonZeroUsize;
+pub(crate) type Offset = NonZeroUsize;
 
 /// optional offset inside of pattern sub location
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct SubSplitLocation {
-    pub location: SubLocation,
-    pub inner_offset: Option<Offset>,
+pub(crate) struct SubSplitLocation {
+    pub(crate) location: SubLocation,
+    pub(crate) inner_offset: Option<Offset>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct PositionCache {
-    pub top: HashSet<DirectedKey>,
-    pub bottom: HashMap<DirectedKey, SubLocation>,
+    pub(crate) top: HashSet<DirectedKey>,
+    pub(crate) bottom: HashMap<DirectedKey, SubLocation>,
 }
-pub enum AddChildLocation {
+pub(crate) enum AddChildLocation {
     Target(ChildLocation),
     Prev(ChildLocation),
 }
 impl PositionCache {
-    pub fn new(
+    pub(crate) fn new(
         cache: &mut TraceCache,
         state: EditKind,
         add_edges: bool,
@@ -49,10 +52,10 @@ impl PositionCache {
             top: HashSet::default(),
         }
     }
-    pub fn num_parents(&self) -> usize {
+    pub(crate) fn num_parents(&self) -> usize {
         self.top.len()
     }
-    pub fn num_bu_edges(&self) -> usize {
+    pub(crate) fn num_bu_edges(&self) -> usize {
         self.bottom.len()
     }
 }

@@ -62,7 +62,7 @@ BaseQuery
         self.role_leaf_child(&trav)
     }
 }
-pub trait RangePath:
+pub(crate) trait RangePath:
     RootedPath + HasRootedRolePath<Start> + HasRootedRolePath<End>
 {
     fn new_range(

@@ -27,7 +27,7 @@ use crate::{
 };
 use std::fmt::Debug;
 
-pub trait NodePath<R: PathRole>:
+pub(crate) trait NodePath<R: PathRole>:
     RootChild<R> + Send + Clone + Eq + Debug
 {
 }
@@ -37,7 +37,7 @@ impl<R: PathRole, T: RootChild<R> + Send + Clone + Eq + Debug> NodePath<R>
 {
 }
 
-pub trait Advanced:
+pub(crate) trait Advanced:
     RolePathUtils
     + NodePath<Start>
     + BasePath
@@ -70,7 +70,7 @@ impl<
 > Advanced for T
 {
 }
-pub trait FromAdvanced<A: Advanced> {
+pub(crate) trait FromAdvanced<A: Advanced> {
     fn from_advanced<G: HasGraph>(
         path: A,
         trav: &G,

@@ -13,7 +13,7 @@ use crate::graph::{
 };
 use crate::graph::vertex::data::VertexData;
 
-pub trait HasVertexDataMut: HasVertexData {
+pub(crate) trait HasVertexDataMut: HasVertexData {
     fn vertex_mut<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>> + DerefMut>(
         self,
         graph: &'a mut R,
@@ -79,7 +79,7 @@ impl<V: HasVertexDataMut> HasVertexDataMut for &'_ mut V {
 //    }
 //}
 
-pub trait HasVertexData: Sized {
+pub(crate) trait HasVertexData: Sized {
     fn vertex<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>>>(
         self,
         graph: &'a R,

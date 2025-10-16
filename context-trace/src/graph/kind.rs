@@ -1,14 +1,14 @@
 use crate::{
     direction::{
-        pattern::PatternDirection,
         Right,
+        pattern::PatternDirection,
     },
     graph::vertex::token::Tokenize,
 };
 use serde::{
-    de::DeserializeOwned,
     Deserialize,
     Serialize,
+    de::DeserializeOwned,
 };
 use std::fmt::{
     Debug,
@@ -21,9 +21,9 @@ pub trait GraphKind: Debug + Clone + Default + PartialEq + Eq {
 }
 
 pub type TokenOf<K> = <K as GraphKind>::Token;
-pub type DefaultToken = TokenOf<BaseGraphKind>;
-pub type DirectionOf<K> = <K as GraphKind>::Direction;
-pub type DefaultDirection = DirectionOf<BaseGraphKind>;
+pub(crate) type DefaultToken = TokenOf<BaseGraphKind>;
+pub(crate) type DirectionOf<K> = <K as GraphKind>::Direction;
+pub(crate) type DefaultDirection = DirectionOf<BaseGraphKind>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct BaseGraphKind;

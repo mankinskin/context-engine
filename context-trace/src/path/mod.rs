@@ -8,7 +8,6 @@ use accessors::{
     has_path::HasRolePath,
     role::PathRole,
 };
-use structs::role_path::RolePath;
 
 use crate::{
     direction::pattern::PatternDirection,
@@ -16,7 +15,10 @@ use crate::{
         child::Child,
         location::child::ChildLocation,
     },
-    path::accessors::child::RootChildIndex,
+    path::{
+        accessors::child::RootChildIndex,
+        structs::role_path::RolePath,
+    },
     trace::has_graph::HasGraph,
 };
 

@@ -1,19 +1,19 @@
 #[cfg(not(any(test, feature = "test-api")))]
-pub mod normal;
+pub(crate) mod normal;
 #[cfg(not(any(test, feature = "test-api")))]
-pub use normal::*;
+pub(crate) use normal::*;
 
 #[cfg(any(test, feature = "test-api"))]
-pub mod test;
+pub(crate) mod test;
 
 #[cfg(any(test, feature = "test-api"))]
-pub use test::*;
+pub(crate) use test::*;
 
 use crate::{
     graph::vertex::has_vertex_index::HasVertexIndex,
     trace::has_graph::HasGraph,
 };
-pub trait Labelling: HasVertexIndex {
+pub(crate) trait Labelling: HasVertexIndex {
     fn labelled<G: HasGraph>(
         self,
         trav: &'_ G,

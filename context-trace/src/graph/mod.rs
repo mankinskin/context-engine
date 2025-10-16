@@ -37,11 +37,11 @@ use vertex::{
     wide::Wide,
 };
 
-pub(crate) mod child_strings;
+pub mod child_strings;
 pub mod getters;
-pub(crate) mod insert;
+pub mod insert;
 pub mod kind;
-pub(crate) mod validation;
+pub mod validation;
 
 pub mod vertex;
 
@@ -150,19 +150,19 @@ impl<G: GraphKind> Hypergraph<G> {
     pub fn vertex_count(&self) -> usize {
         self.graph.len()
     }
-    //pub fn next_vertex_id(&mut self) -> vertex::VertexIndex {
+    //pub(crate) fn next_vertex_id(&mut self) -> vertex::VertexIndex {
     //    self.vertex_id_count.fetch_add(1, atomic::Ordering::SeqCst)
     //}
-    //pub fn next_pattern_id(&mut self) -> PatternId {
+    //pub(crate) fn next_pattern_id(&mut self) -> PatternId {
     //    self.pattern_id_count.fetch_add(1, atomic::Ordering::SeqCst)
     //}
-    //pub fn index_sequence<N: Into<G>, I: IntoIterator<Item = N>>(&mut self, seq: I) -> VertexIndex {
+    //pub(crate) fn index_sequence<N: Into<G>, I: IntoIterator<Item = N>>(&mut self, seq: I) -> VertexIndex {
     //    let seq = seq.into_iter();
     //    let tokens = T::tokenize(seq);
     //    let pattern = self.to_token_children(tokens);
     //    self.index_pattern(&pattern[..])
     //}
-    //pub fn insert_token_indices(
+    //pub(crate) fn insert_token_indices(
     //    &self,
     //    index: impl ToChild,
     //) -> Vec<VertexIndex> {
@@ -184,7 +184,7 @@ impl<G: GraphKind> Hypergraph<G> {
     //            .unwrap()
     //    }
     //}
-    //pub fn pattern_token_indices(
+    //pub(crate) fn pattern_token_indices(
     //    &self,
     //    pattern: impl IntoPattern,
     //) -> Vec<VertexIndex> {
@@ -270,7 +270,7 @@ where
         });
         ChildStrings::from_nodes(nodes)
     }
-    pub fn pattern_child_strings(
+    pub(crate) fn pattern_child_strings(
         &self,
         pattern: impl IntoPattern,
     ) -> ChildStrings {
@@ -284,7 +284,7 @@ where
         ChildStrings::from_nodes(nodes)
     }
 
-    pub fn pattern_string_with_separator(
+    pub(crate) fn pattern_string_with_separator(
         &'a self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
         separator: &'static str,
@@ -294,19 +294,19 @@ where
             .map(|child| self.index_string(child.vertex_index()))
             .join(separator)
     }
-    pub fn separated_pattern_string(
+    pub(crate) fn separated_pattern_string(
         &'a self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
     ) -> String {
         self.pattern_string_with_separator(pattern, "_")
     }
-    pub fn pattern_string(
+    pub(crate) fn pattern_string(
         &'a self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
     ) -> String {
         self.pattern_string_with_separator(pattern, "")
     }
-    pub fn pattern_strings(
+    pub(crate) fn pattern_strings(
         &'a self,
         patterns: impl IntoIterator<
             Item = impl IntoIterator<Item = impl HasVertexIndex>,
@@ -317,26 +317,26 @@ where
             .map(|pattern| self.pattern_string_with_separator(pattern, ""))
             .collect()
     }
-    pub fn get_token_by_key(
+    pub(crate) fn get_token_by_key(
         &self,
         key: &VertexKey,
     ) -> Option<&Token<G::Token>> {
         self.tokens.get(key)
     }
-    pub fn expect_token_by_key(
+    pub(crate) fn expect_token_by_key(
         &self,
         key: &VertexKey,
     ) -> &Token<G::Token> {
         self.get_token_by_key(key)
             .expect("Key does not belong to a token!")
     }
-    pub fn vertex_key_string(
+    pub(crate) fn vertex_key_string(
         &self,
         key: &VertexKey,
     ) -> String {
         self.vertex_data_string(self.expect_vertex(key))
     }
-    pub fn vertex_data_string(
+    pub(crate) fn vertex_data_string(
         &self,
         data: &VertexData,
     ) -> String {
@@ -347,7 +347,7 @@ where
             self.pattern_string(data.expect_any_child_pattern().1)
         }
     }
-    pub fn index_string(
+    pub(crate) fn index_string(
         &self,
         index: impl HasVertexIndex,
     ) -> String {

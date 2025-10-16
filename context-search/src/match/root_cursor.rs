@@ -18,7 +18,10 @@ use crate::{
         TraversalKind,
     },
 };
-use context_trace::*;
+use context_trace::{
+    path::RolePathUtils,
+    *,
+};
 use std::collections::VecDeque;
 pub type CompareQueue = VecDeque<CompareState>;
 

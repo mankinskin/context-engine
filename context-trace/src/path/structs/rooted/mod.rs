@@ -1,8 +1,8 @@
-pub mod index_range;
-pub mod pattern_range;
-pub mod role_path;
-pub mod root;
-pub mod split_path;
+pub(crate) mod index_range;
+pub(crate) mod pattern_range;
+pub(crate) mod role_path;
+pub(crate) mod root;
+pub(crate) mod split_path;
 
 use root::{
     PathRoot,
@@ -29,9 +29,9 @@ use crate::path::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RootedRangePath<Root: PathRoot> {
-    pub root: Root,
-    pub start: RolePath<Start>,
-    pub end: RolePath<End>,
+    pub(crate) root: Root,
+    pub(crate) start: RolePath<Start>,
+    pub(crate) end: RolePath<End>,
 }
 impl<R: PathRoot> RootedPath for RootedRangePath<R> {
     type Root = R;

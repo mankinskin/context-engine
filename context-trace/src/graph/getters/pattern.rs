@@ -22,7 +22,7 @@ use crate::graph::{
 };
 
 impl<G: GraphKind> Hypergraph<G> {
-    pub fn get_pattern_at(
+    pub(crate) fn get_pattern_at(
         &self,
         location: impl IntoPatternLocation,
     ) -> Result<&Pattern, ErrorReason> {
@@ -43,7 +43,7 @@ impl<G: GraphKind> Hypergraph<G> {
             panic!("Pattern not found at location {:#?}", location)
         })
     }
-    pub fn get_pattern_mut_at(
+    pub(crate) fn get_pattern_mut_at(
         &mut self,
         location: impl IntoPatternLocation,
     ) -> Result<&mut Pattern, ErrorReason> {
@@ -55,7 +55,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .ok_or(ErrorReason::NoChildPatterns) // todo: better error
     }
     #[track_caller]
-    pub fn expect_pattern_mut_at(
+    pub(crate) fn expect_pattern_mut_at(
         &mut self,
         location: impl IntoPatternLocation,
     ) -> &mut Pattern {
@@ -65,14 +65,14 @@ impl<G: GraphKind> Hypergraph<G> {
                 panic!("Pattern not found at location {:#?}", location)
             })
     }
-    pub fn get_child_patterns_of(
+    pub(crate) fn get_child_patterns_of(
         &self,
         index: impl GetVertexIndex,
     ) -> Result<&ChildPatterns, ErrorReason> {
         self.get_vertex(index.get_vertex_index(self))
             .map(|vertex| vertex.get_child_patterns())
     }
-    pub fn get_pattern_of(
+    pub(crate) fn get_pattern_of(
         &self,
         index: impl HasVertexIndex,
         pid: PatternId,
@@ -81,7 +81,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .and_then(|vertex| vertex.get_child_pattern(&pid))
     }
     #[track_caller]
-    pub fn expect_child_pattern(
+    pub(crate) fn expect_child_pattern(
         &self,
         index: impl GetVertexIndex,
         pid: PatternId,
@@ -90,7 +90,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .expect_child_pattern(&pid)
     }
     #[track_caller]
-    pub fn expect_child_patterns(
+    pub(crate) fn expect_child_patterns(
         &self,
         index: impl GetVertexIndex,
     ) -> &ChildPatterns {
@@ -99,7 +99,7 @@ impl<G: GraphKind> Hypergraph<G> {
     }
 
     #[track_caller]
-    pub fn expect_any_child_pattern(
+    pub(crate) fn expect_any_child_pattern(
         &self,
         index: impl GetVertexIndex,
     ) -> (&PatternId, &Pattern) {
@@ -107,7 +107,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .expect_any_child_pattern()
     }
     #[track_caller]
-    pub fn expect_pattern_range_width(
+    pub(crate) fn expect_pattern_range_width(
         &self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,

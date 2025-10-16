@@ -1,5 +1,9 @@
 use crate::traversal::ControlFlow;
-use context_trace::*;
+use context_trace::{
+    direction::Direction,
+    path::RolePathUtils,
+    *,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PathCursor<P> {

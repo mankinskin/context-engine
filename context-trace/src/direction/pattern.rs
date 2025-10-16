@@ -1,6 +1,10 @@
 use crate::graph::vertex::pattern::Pattern;
 
-use crate::{Direction, Left, Right};
+use crate::{
+    Direction,
+    Left,
+    Right,
+};
 
 pub trait PatternDirection: Direction {
     //fn pattern_tail<T: ToChild>(pattern: &'_ [T]) -> &'_ [T];
@@ -52,7 +56,7 @@ impl PatternDirection for Left {
     }
 }
 
-//pub trait MatchDirection: Direction {
+//pub(crate) trait MatchDirection: Direction {
 //    type PostfixRange<T>: PatternRangeIndex<T>;
 //    /// get the parent where vertex is at the relevant position
 //    fn get_match_parent_to<G: GraphKind>(

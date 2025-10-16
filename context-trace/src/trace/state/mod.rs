@@ -1,14 +1,16 @@
-pub mod parent;
+pub(crate) mod parent;
 
-use crate::trace::child::state::{ChildState};
-use crate::path::{
-    mutators::move_path::key::TokenPosition,
-    structs::rooted::root::RootedPath,
+use crate::{
+    path::{
+        mutators::move_path::key::TokenPosition,
+        structs::rooted::root::RootedPath,
+    },
+    trace::child::state::ChildState,
 };
 use parent::ParentState;
 use std::cmp::Ordering;
 
-//pub trait SearchSpace {
+//pub(crate) trait SearchSpace {
 //    fn expand(&mut self) -> Vec<TraceState<Self>>;
 //}
 // TODO:
@@ -28,8 +30,8 @@ use std::cmp::Ordering;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BaseState<P: RootedPath> {
     pub prev_pos: TokenPosition,
-    pub root_pos: TokenPosition,
-    pub path: P,
+    pub(crate) root_pos: TokenPosition,
+    pub(crate) path: P,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum InnerKind {
@@ -44,7 +46,7 @@ impl InnerKind {
             panic!();
         }
     }
-    pub fn unwrap_child(self) -> ChildState {
+    pub(crate) fn unwrap_child(self) -> ChildState {
         if let Self::Child(c) = self {
             c
         } else {

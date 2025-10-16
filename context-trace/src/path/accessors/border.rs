@@ -16,10 +16,10 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub trait RelativeDirection: PatternDirection {}
+pub(crate) trait RelativeDirection: PatternDirection {}
 
 #[derive(Default, Debug, Clone, Copy)]
-pub struct Front;
+pub(crate) struct Front;
 
 impl Direction for Front {
     type Opposite = Back;
@@ -38,7 +38,7 @@ impl PatternDirection for Front {
 }
 
 #[derive(Default, Debug, Clone, Copy)]
-pub struct Back;
+pub(crate) struct Back;
 
 impl RelativeDirection for Back {}
 
@@ -58,7 +58,7 @@ impl PatternDirection for Back {
     }
 }
 
-pub trait PathBorder {
+pub(crate) trait PathBorder {
     type BorderDirection: PatternDirection;
 
     //fn pattern_entry_outer_pos<P: IntoPattern>(pattern: P, entry: usize) -> Option<usize> {

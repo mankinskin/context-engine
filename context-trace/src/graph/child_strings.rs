@@ -4,10 +4,10 @@ pub struct ChildStrings {
 }
 
 impl ChildStrings {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Default::default()
     }
-    pub fn from_nodes(
+    pub(crate) fn from_nodes(
         nodes: impl IntoIterator<
             Item = (
                 impl ToString,
@@ -19,7 +19,7 @@ impl ChildStrings {
         g.add_nodes(nodes);
         g
     }
-    pub fn add_nodes(
+    pub(crate) fn add_nodes(
         &mut self,
         node_patterns: impl IntoIterator<
             Item = (
@@ -38,7 +38,7 @@ impl ChildStrings {
                 )
             }));
     }
-    pub fn from_node(
+    pub(crate) fn from_node(
         name: impl ToString,
         node: impl IntoIterator<Item = impl IntoIterator<Item = impl ToString>>,
     ) -> Self {
@@ -46,7 +46,7 @@ impl ChildStrings {
         g.add_node(name, node);
         g
     }
-    pub fn add_node(
+    pub(crate) fn add_node(
         &mut self,
         name: impl ToString,
         patterns: impl IntoIterator<Item = impl IntoIterator<Item = impl ToString>>,

@@ -2,7 +2,10 @@ use itertools::Itertools;
 use std::fmt::Debug;
 
 use crate::traversal::container::order::TraversalOrder;
-use context_trace::*;
+use context_trace::{
+    path::mutators::raise::PathRaise,
+    *,
+};
 
 pub trait DirectedTraversalPolicy: Sized + Debug {
     type Trav: HasGraph;

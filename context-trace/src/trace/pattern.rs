@@ -10,10 +10,10 @@ use crate::graph::vertex::{
 
 #[derive(Debug, Clone, Derivative)]
 #[derivative(Hash, PartialEq, Eq)]
-pub struct PatternTraceCtx<'a> {
-    pub loc: PatternLocation,
+pub(crate) struct PatternTraceCtx<'a> {
+    pub(crate) loc: PatternLocation,
     #[derivative(Hash = "ignore", PartialEq = "ignore")]
-    pub pattern: &'a Pattern,
+    pub(crate) pattern: &'a Pattern,
 }
 
 impl<'p> From<PatternTraceCtx<'p>> for PatternId {
@@ -22,7 +22,7 @@ impl<'p> From<PatternTraceCtx<'p>> for PatternId {
     }
 }
 
-pub trait HasPatternTraceCtx {
+pub(crate) trait HasPatternTraceCtx {
     fn pattern_trace_context<'a>(&'a self) -> PatternTraceCtx<'a>
     where
         Self: 'a;
@@ -35,7 +35,7 @@ impl HasPatternTraceCtx for PatternTraceCtx<'_> {
         self.clone()
     }
 }
-pub trait GetPatternTraceCtx {
+pub(crate) trait GetPatternTraceCtx {
     fn get_pattern_trace_context<'b>(
         &'b self,
         pattern_id: &PatternId,
@@ -43,7 +43,7 @@ pub trait GetPatternTraceCtx {
     where
         Self: 'b;
 }
-pub trait GetPatternCtx {
+pub(crate) trait GetPatternCtx {
     type PatternCtx<'b>: HasPatternTraceCtx
     where
         Self: 'b;
