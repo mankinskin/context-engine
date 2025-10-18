@@ -111,8 +111,7 @@ impl PathRaise for ParentState {
         let path = &mut self.path.role_path.sub_path;
 
         let graph = trav.graph();
-        let prev_pattern =
-            graph.expect_pattern_at(self.path.root.location.clone());
+        let prev_pattern = graph.expect_pattern_at(self.path.root.location);
 
         self.prev_pos = self.root_pos;
         self.root_pos

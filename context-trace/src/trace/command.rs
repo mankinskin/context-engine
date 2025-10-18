@@ -44,7 +44,7 @@ use crate::{
     },
 };
 #[derive(Debug)]
-pub(crate) enum TraceCommand {
+pub enum TraceCommand {
     Postfix(PostfixCommand),
     Prefix(PrefixCommand),
     Range(RangeCommand),

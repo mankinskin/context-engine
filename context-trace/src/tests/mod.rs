@@ -10,7 +10,6 @@ pub mod grammar;
 pub mod graph;
 
 pub mod env;
-pub mod trace;
 
 pub fn init_tracing() {
     tracing_subscriber::fmt()
