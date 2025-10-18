@@ -13,7 +13,6 @@ use crate::{
         },
         mutators::move_path::key::TokenPosition,
     },
-    tests::mock,
     trace::cache::key::{
         directed::{
             DirectedKey,

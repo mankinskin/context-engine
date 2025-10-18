@@ -4,7 +4,6 @@ use crate::{
     graph::vertex::parent::PatternIndex,
     *,
 };
-pub mod mock;
 
 pub mod grammar;
 #[macro_use]

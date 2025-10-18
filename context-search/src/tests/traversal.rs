@@ -34,10 +34,7 @@ use tracing::{
 };
 #[allow(unused)]
 use {
-    context_trace::{
-        graph::vertex::child::Child,
-        tests::mock,
-    },
+    context_trace::graph::vertex::child::Child,
     std::{
         borrow::Borrow,
         num::NonZeroUsize,

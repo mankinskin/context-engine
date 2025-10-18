@@ -49,9 +49,6 @@ pub use tests::{
     init_tracing,
 };
 
-#[cfg(any(test, feature = "test-api"))]
-pub use crate::tests::mock;
-
 // Essential public re-exports for context-search
 pub use crate::{
     direction::{
