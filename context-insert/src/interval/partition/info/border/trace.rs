@@ -1,12 +1,15 @@
-use crate::interval::partition::info::{
-    border::visit::VisitBorders,
-    range::{
-        InnerRangeInfo,
-        role::{
-            ModePatternCtxOf,
-            RangeRole,
+use crate::{
+    interval::partition::info::{
+        border::visit::VisitBorders,
+        range::{
+            InnerRangeInfo,
+            role::{
+                ModePatternCtxOf,
+                RangeRole,
+            },
         },
     },
+    split::vertex::pattern::HasPatternTraceCtx,
 };
 use context_trace::*;
 

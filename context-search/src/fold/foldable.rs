@@ -23,12 +23,12 @@ use crate::{
 };
 use std::fmt::Debug;
 
-pub type FoldResult = Result<FinishedState, ErrorState>;
+pub(crate) type FoldResult = Result<FinishedState, ErrorState>;
 
 #[derive(Debug)]
 pub struct ErrorState {
-    pub reason: ErrorReason,
-    pub found: Option<FinishedKind>,
+    pub(crate) reason: ErrorReason,
+    pub(crate) found: Option<FinishedKind>,
 }
 impl From<ErrorReason> for ErrorState {
     fn from(reason: ErrorReason) -> Self {

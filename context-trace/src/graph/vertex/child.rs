@@ -94,13 +94,13 @@ impl Child {
     pub(crate) fn get_width(&self) -> usize {
         self.width.0
     }
-    pub(crate) fn to_pattern_location(
+    pub fn to_pattern_location(
         self,
         pattern_id: PatternId,
     ) -> PatternLocation {
         PatternLocation::new(self, pattern_id)
     }
-    pub(crate) fn to_child_location(
+    pub fn to_child_location(
         self,
         sub: SubLocation,
     ) -> ChildLocation {

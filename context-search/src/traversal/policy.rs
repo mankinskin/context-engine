@@ -44,7 +44,7 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
             parents: trav
                 .graph()
                 .expect_vertex(index)
-                .get_parents()
+                .parents()
                 .iter()
                 .flat_map(|(i, parent)| {
                     let p = Child::new(i, parent.width());

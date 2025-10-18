@@ -6,7 +6,7 @@ use crate::traversal::{
 use crate::{StateContainer};
 
 #[derive(Debug, Default)]
-pub struct DftStack {
+pub(crate) struct DftStack {
     stack: Vec<(usize, TraversalState)>,
 }
 

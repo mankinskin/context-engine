@@ -14,6 +14,7 @@ use crate::{
             JoinPartition,
         },
     },
+    split::vertex::node::AsNodeTraceCtx,
 };
 use context_trace::*;
 use derive_more::derive::{

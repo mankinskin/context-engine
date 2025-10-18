@@ -21,7 +21,14 @@ use crate::{
             range::role::ModeNodeCtxOf,
         },
     },
-    split::pattern::PatternSplits,
+    split::{
+        pattern::PatternSplits,
+        vertex::pattern::{
+            GetPatternCtx,
+            HasPatternTraceCtx,
+            PatternTraceCtx,
+        },
+    },
 };
 use context_trace::*;
 

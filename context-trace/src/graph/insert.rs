@@ -166,7 +166,7 @@ where
         self.expect_vertex(index.vertex_index()).validate()
     }
     /// add pattern to existing node
-    pub(crate) fn add_pattern_with_update(
+    pub fn add_pattern_with_update(
         &mut self,
         index: impl HasVertexIndex,
         pattern: Pattern,
@@ -360,7 +360,7 @@ where
         })
     }
     //#[track_caller]
-    pub(crate) fn replace_in_pattern(
+    pub fn replace_in_pattern(
         &mut self,
         location: impl IntoPatternLocation,
         range: impl PatternRangeIndex,

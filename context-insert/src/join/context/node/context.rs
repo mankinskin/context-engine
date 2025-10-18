@@ -52,7 +52,16 @@ use crate::{
             ChildTracePositions,
             PosSplitCtx,
             VertexSplits,
+            node::{
+                AsNodeTraceCtx,
+                NodeTraceCtx,
+            },
             output::RootMode,
+            pattern::{
+                GetPatternCtx,
+                GetPatternTraceCtx,
+                PatternTraceCtx,
+            },
         },
     },
 };
@@ -98,10 +107,7 @@ impl<'a> AsNodeTraceCtx for NodeJoinCtx<'a> {
         Self: 't,
         'a: 't,
     {
-        NodeTraceCtx {
-            patterns: self.patterns(),
-            index: self.borrow().index,
-        }
+        NodeTraceCtx::new(self.patterns(), self.borrow().index)
     }
 }
 impl GetPatternTraceCtx for NodeJoinCtx<'_> {
@@ -112,10 +118,10 @@ impl GetPatternTraceCtx for NodeJoinCtx<'_> {
     where
         Self: 'c,
     {
-        PatternTraceCtx {
-            loc: self.index.to_pattern_location(*pattern_id),
-            pattern: self.as_trace_context().patterns.get(pattern_id).unwrap(),
-        }
+        PatternTraceCtx::new(
+            self.index.to_pattern_location(*pattern_id),
+            self.as_trace_context().patterns.get(pattern_id).unwrap(),
+        )
     }
 }
 impl GetPatternCtx for NodeJoinCtx<'_> {
@@ -198,9 +204,10 @@ impl NodeJoinCtx<'_> {
                             .join_partition(self)
                             .map(|part| part.index)
                             .unwrap_or_else(|full| full);
-                        self.ctx.trav.add_pattern_with_update(index, vec![
-                            part.index, post,
-                        ]);
+                        self.ctx.trav.add_pattern_with_update(
+                            index,
+                            vec![part.index, post],
+                        );
                     }
                 })
                 .map(|part| part.index),
@@ -213,9 +220,10 @@ impl NodeJoinCtx<'_> {
                             Ok(pre) => pre.index,
                             Err(c) => c,
                         };
-                        self.ctx.trav.add_pattern_with_update(index, vec![
-                            pre, part.index,
-                        ]);
+                        self.ctx.trav.add_pattern_with_update(
+                            index,
+                            vec![pre, part.index],
+                        );
                     }
                 })
                 .map(|part| part.index),
@@ -262,8 +270,8 @@ impl NodeJoinCtx<'_> {
             //       [               ]
             // |     |       |       |      |
             let (ll, rl) = (part.perfect.0.unwrap(), part.perfect.1.unwrap());
-            let lpos = loffset.1.pattern_splits[&ll].sub_index;
-            let rpos = roffset.1.pattern_splits[&rl].sub_index;
+            let lpos = loffset.1.pattern_splits[&ll].sub_index();
+            let rpos = roffset.1.pattern_splits[&rl].sub_index();
             self.ctx.trav.replace_in_pattern(
                 index.to_pattern_location(ll),
                 lpos..rpos,
@@ -291,7 +299,7 @@ impl NodeJoinCtx<'_> {
                     .unwrap();
                     (position_splits(self.patterns(), outer_offset), li)
                 };
-                let ri = roffset.1.pattern_splits[&rp].sub_index;
+                let ri = roffset.1.pattern_splits[&rp].sub_index();
 
                 //prev_offset.1 = prev_offset.1 - pre.delta;
 
@@ -348,7 +356,7 @@ impl NodeJoinCtx<'_> {
                     (position_splits(self.patterns(), outer_offset), ri)
                 };
 
-                let li = loffset.1.pattern_splits[&lp].sub_index;
+                let li = loffset.1.pattern_splits[&lp].sub_index();
 
                 let info = Infix::new(loffset, &wrap_offset)
                     .info_partition(self)

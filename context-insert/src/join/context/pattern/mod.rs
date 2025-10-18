@@ -4,7 +4,13 @@ use derive_more::derive::{
     DerefMut,
 };
 
-use crate::split::SplitMap;
+use crate::split::{
+    SplitMap,
+    vertex::pattern::{
+        HasPatternTraceCtx,
+        PatternTraceCtx,
+    },
+};
 use context_trace::*;
 
 pub mod borders;

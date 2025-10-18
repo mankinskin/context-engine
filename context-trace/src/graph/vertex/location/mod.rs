@@ -34,6 +34,11 @@ impl SubLocation {
         }
     }
 }
+impl HasSubIndex for SubLocation {
+    fn sub_index(&self) -> usize {
+        self.sub_index
+    }
+}
 
 impl From<ChildLocation> for SubLocation {
     fn from(value: ChildLocation) -> Self {

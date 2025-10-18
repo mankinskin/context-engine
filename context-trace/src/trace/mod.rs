@@ -2,8 +2,6 @@ pub mod cache;
 pub mod child;
 pub mod command;
 pub mod has_graph;
-pub mod node;
-pub mod pattern;
 pub mod state;
 pub mod traceable;
 

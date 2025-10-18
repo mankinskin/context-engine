@@ -15,19 +15,19 @@ use context_trace::{
     trace::cache::key::directed::down::DownKey,
 };
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
-pub struct CompareRootState {
+pub(crate) struct CompareRootState {
     #[deref]
     #[deref_mut]
-    pub child: CompareState,
-    pub root_parent: ParentState,
+    pub(crate) child: CompareState,
+    pub(crate) root_parent: ParentState,
 }
 
 #[derive(Clone, Debug, Deref, DerefMut)]
-pub struct ParentCompareState {
+pub(crate) struct ParentCompareState {
     #[deref]
     #[deref_mut]
-    pub parent_state: ParentState,
-    pub cursor: PatternCursor,
+    pub(crate) parent_state: ParentState,
+    pub(crate) cursor: PatternCursor,
 }
 impl IntoAdvanced for ParentCompareState {
     type Next = CompareRootState;

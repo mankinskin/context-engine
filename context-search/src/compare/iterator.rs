@@ -13,12 +13,12 @@ use std::fmt::Debug;
 use crate::compare::state::CompareNext::*;
 
 #[derive(Debug)]
-pub struct CompareIterator<G: HasGraph> {
-    pub children: ChildIterator<G, CompareState>,
+pub(crate) struct CompareIterator<G: HasGraph> {
+    pub(crate) children: ChildIterator<G, CompareState>,
 }
 
 impl<G: HasGraph> CompareIterator<G> {
-    pub fn new(
+    pub(crate) fn new(
         trav: G,
         queue: impl Into<ChildQueue<CompareState>>,
     ) -> Self {
@@ -26,13 +26,13 @@ impl<G: HasGraph> CompareIterator<G> {
             children: ChildIterator::new(trav, queue),
         }
     }
-    pub fn find_match(self) -> Option<CompareState> {
+    pub(crate) fn find_match(self) -> Option<CompareState> {
         match self.compare() {
             Mismatch(_) => None,
             Match(state) => Some(state),
         }
     }
-    pub fn compare(mut self) -> ChildMatchState {
+    pub(crate) fn compare(mut self) -> ChildMatchState {
         self.find_map(|flow| flow).unwrap()
     }
 }

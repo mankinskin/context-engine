@@ -1,9 +1,52 @@
+use std::{
+    borrow::Borrow,
+    num::NonZeroUsize,
+};
+
+use crate::*;
 use context_trace::*;
 
 use pretty_assertions::assert_eq;
 
 pub mod insert;
 pub mod interval;
+
+pub(crate) fn pattern_from_widths(
+    widths: impl IntoIterator<Item = usize>
+) -> Pattern {
+    widths
+        .into_iter()
+        .enumerate()
+        .map(|(i, w)| Child::new(i, w))
+        .collect()
+}
+
+#[test]
+fn token_pos_split() {
+    let pattern = pattern_from_widths([1, 1, 3, 1, 1]);
+    let width = pattern_width(&pattern);
+    assert_eq!(
+        TraceBack::trace_child_pos(
+            pattern.borrow() as &[Child],
+            NonZeroUsize::new(2).unwrap(),
+        ),
+        Some((2, None).into()),
+    );
+    assert_eq!(
+        TraceFront::trace_child_pos(
+            pattern.borrow() as &[Child],
+            NonZeroUsize::new(width - 2).unwrap(),
+        ),
+        Some((2, None).into()),
+    );
+    assert_eq!(
+        TraceFront::trace_child_pos(
+            pattern.borrow() as &[Child],
+            NonZeroUsize::new(width - 4).unwrap(),
+        ),
+        Some((2, NonZeroUsize::new(1)).into()),
+    );
+}
 
 //#[macro_export]
 //macro_rules! insert_patterns2 {
@@ -61,31 +104,31 @@ macro_rules! build_split_cache {
         ),*
         $(,)?
     ) => {
-        SplitCache {
+        $crate::SplitCache {
             root_mode: $root_mode,
-            entries: HashMap::from_iter([
+            entries: context_trace::HashMap::from_iter([
                 $(
                     (
                         $entry_root.index,
-                        SplitVertexCache {
+                        $crate::SplitVertexCache {
                             positions: BTreeMap::from_iter([
                                 $(
                                     (
                                         nz!($pos),
-                                        SplitPositionCache {
-                                            top: HashSet::from_iter([
+                                        $crate::SplitPositionCache {
+                                            top: context_trace::HashSet::from_iter([
                                                 $(
-                                                    PosKey {
+                                                    $crate::PosKey {
                                                         index: $top.to_owned(),
                                                         pos: nz!($top_pos),
                                                     }
                                                 ),*
                                             ]),
-                                            pattern_splits: HashMap::from_iter([
+                                            pattern_splits: context_trace::HashMap::from_iter([
                                                 $(
                                                     (
                                                         $pid.to_owned(),
-                                                        ChildTracePos {
+                                                        $crate::ChildTracePos {
                                                             inner_offset: $inner,
                                                             sub_index: $sub,
                                                         }

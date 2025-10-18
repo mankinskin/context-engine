@@ -15,7 +15,16 @@ use crate::direction::{
     Clone, Debug, Copy, Hash, Eq, PartialEq, Add, Sub, Deref, DerefMut, Default,
 )]
 pub struct TokenPosition(pub(crate) usize);
-
+impl AsMut<usize> for TokenPosition {
+    fn as_mut(&mut self) -> &mut usize {
+        &mut self.0
+    }
+}
+impl AsRef<usize> for TokenPosition {
+    fn as_ref(&self) -> &usize {
+        &self.0
+    }
+}
 impl From<TokenPosition> for usize {
     fn from(val: TokenPosition) -> Self {
         val.0

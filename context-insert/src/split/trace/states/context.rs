@@ -5,22 +5,7 @@ use derive_more::derive::{
     DerefMut,
 };
 
-use crate::split::{
-    cache::{
-        position::{
-            PosKey,
-            SplitPositionCache,
-        },
-        vertex::SplitVertexCache,
-    },
-    cleaned_position_splits,
-    trace::{
-        HasGraph,
-        SplitTraceCtx,
-        states::SplitStates,
-    },
-    vertex::output::InnerNode,
-};
+use crate::*;
 use context_trace::*;
 
 #[derive(Debug, Deref, DerefMut)]
@@ -56,7 +41,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
             let graph = self.ctx.trav.graph();
             let node = graph.expect_vertex(index);
             //let entry = self.cache.entries.get(&index.index).unwrap();
-            cleaned_position_splits(node.children.iter(), offset)
+            cleaned_position_splits(node.children().iter(), offset)
         });
         let pos_splits =
             self.states.leaves.collect_leaves(&index, subs.clone());
@@ -71,10 +56,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
                         SplitPositionCache::new(
                             prev,
                             res.unwrap_or_else(|location| {
-                                vec![SubSplitLocation {
-                                    location,
-                                    inner_offset: None,
-                                }]
+                                vec![SubSplitLocation::new(location, None)]
                             }),
                         ),
                     )
@@ -91,7 +73,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
         let splits = {
             let graph = self.ctx.trav.graph();
             let node = graph.expect_vertex(index);
-            cleaned_position_splits(node.children.iter(), offset)
+            cleaned_position_splits(node.children().iter(), offset)
         };
 
         // handle clean splits
@@ -108,10 +90,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
                 self.states.leaves.push(PosKey::new(index, offset));
                 SplitPositionCache::new(
                     prev,
-                    vec![SubSplitLocation {
-                        location,
-                        inner_offset: None,
-                    }],
+                    vec![SubSplitLocation::new(location, None)],
                 )
             },
         }

@@ -3,8 +3,8 @@ use std::cmp::Ordering;
 use context_trace::*;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TraversalState {
-    pub prev: DirectedKey,
-    pub kind: InnerKind,
+    pub(crate) prev: DirectedKey,
+    pub(crate) kind: InnerKind,
 }
 impl HasRootPos for TraversalState {
     fn root_pos(&self) -> &TokenPosition {
@@ -21,7 +21,7 @@ impl HasRootPos for TraversalState {
     }
 }
 impl TraversalState {
-    pub fn entry_location(&self) -> Option<ChildLocation> {
+    pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
             InnerKind::Parent(state) =>
                 Some(state.rooted_path().root_child_location()),
@@ -29,11 +29,11 @@ impl TraversalState {
                 state.rooted_path().role_leaf_child_location::<End>(),
         }
     }
-    pub fn prev_key(&self) -> DirectedKey {
+    pub(crate) fn prev_key(&self) -> DirectedKey {
         self.prev.clone()
     }
 
-    pub fn state_direction(&self) -> StateDirection {
+    pub(crate) fn state_direction(&self) -> StateDirection {
         match &self.kind {
             InnerKind::Parent(_) => StateDirection::BottomUp,
             InnerKind::Child(_) => StateDirection::TopDown,

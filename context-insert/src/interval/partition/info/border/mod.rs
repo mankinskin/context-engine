@@ -2,17 +2,7 @@ use std::num::NonZeroUsize;
 
 use perfect::*;
 
-use crate::interval::partition::info::range::{
-    mode::InVisitMode,
-    role::{
-        BooleanPerfectOf,
-        In,
-        OffsetsOf,
-        Post,
-        Pre,
-        RangeRole,
-    },
-};
+use crate::*;
 use context_trace::*;
 pub mod perfect;
 
@@ -26,18 +16,22 @@ pub struct BorderInfo {
     /// start offset of index with border
     pub start_offset: Option<NonZeroUsize>,
 }
-
 impl BorderInfo {
     fn new(
         pattern: &Pattern,
         pos: &ChildTracePos,
     ) -> Self {
-        let offset = End::inner_ctx_width(pattern, pos.sub_index);
+        let offset = End::inner_ctx_width(pattern, pos.sub_index());
         BorderInfo {
-            sub_index: pos.sub_index,
-            inner_offset: pos.inner_offset,
+            sub_index: pos.sub_index(),
+            inner_offset: pos.inner_offset(),
             start_offset: NonZeroUsize::new(offset),
         }
+    }
+}
+impl HasInnerOffset for BorderInfo {
+    fn inner_offset(&self) -> Option<NonZeroUsize> {
+        self.inner_offset
     }
 }
 

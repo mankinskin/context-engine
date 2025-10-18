@@ -1,6 +1,6 @@
-pub mod ancestor;
-pub mod consecutive;
-pub mod parent;
+pub(crate) mod ancestor;
+pub(crate) mod consecutive;
+pub(crate) mod parent;
 
 #[cfg(test)]
 use {

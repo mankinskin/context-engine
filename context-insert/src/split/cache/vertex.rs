@@ -26,7 +26,10 @@ use crate::{
         },
         position_splits,
         trace::SplitTraceState,
-        vertex::output::RootMode,
+        vertex::{
+            node::NodeTraceCtx,
+            output::RootMode,
+        },
     },
 };
 use context_trace::*;

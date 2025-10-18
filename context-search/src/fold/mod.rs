@@ -14,11 +14,12 @@ use foldable::ErrorState;
 use std::fmt::Debug;
 use tracing::debug;
 
-pub mod foldable;
-pub mod result;
-pub mod state;
+pub(crate) mod complete;
+pub(crate) mod foldable;
+pub(crate) mod result;
+pub(crate) mod state;
 
-pub trait IntoFoldCtx<K: TraversalKind> {
+pub(crate) trait IntoFoldCtx<K: TraversalKind> {
     fn into_fold_context(self) -> Result<FoldCtx<K>, ErrorState>;
 }
 
@@ -34,10 +35,10 @@ impl<K: TraversalKind, S: IntoTraversalCtx<K> + ToChild> IntoFoldCtx<K> for S {
 }
 /// context for running fold traversal
 #[derive(Debug)]
-pub struct FoldCtx<K: TraversalKind> {
-    pub tctx: TraversalCtx<K>,
-    pub start_index: Child,
-    pub max_width: usize,
+pub(crate) struct FoldCtx<K: TraversalKind> {
+    pub(crate) tctx: TraversalCtx<K>,
+    pub(crate) start_index: Child,
+    pub(crate) max_width: usize,
 }
 
 impl<K: TraversalKind> Iterator for FoldCtx<K> {

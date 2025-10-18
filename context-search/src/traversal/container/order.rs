@@ -2,8 +2,7 @@ use std::cmp::Ordering;
 
 use context_trace::*;
 
-pub trait TraversalOrder: Wide {
-    fn sub_index(&self) -> usize;
+pub(crate) trait TraversalOrder: Wide + HasSubIndex {
     fn cmp(
         &self,
         other: impl TraversalOrder,
@@ -15,14 +14,4 @@ pub trait TraversalOrder: Wide {
     }
 }
 
-impl<T: TraversalOrder> TraversalOrder for &T {
-    fn sub_index(&self) -> usize {
-        TraversalOrder::sub_index(*self)
-    }
-}
-
-impl TraversalOrder for ChildLocation {
-    fn sub_index(&self) -> usize {
-        HasSubIndex::sub_index(self)
-    }
-}
+impl<T: Wide + HasSubIndex> TraversalOrder for T {}

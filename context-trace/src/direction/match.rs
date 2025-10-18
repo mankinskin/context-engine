@@ -90,7 +90,7 @@ pub(crate) trait MatchDirection: Direction {
     /// filter pattern indices of parent relation by child patterns and matching direction
     fn filter_parent_pattern_indices(
         parent: &Parent,
-        child_patterns: &HashMap<PatternId, Pattern>,
+        children: &HashMap<PatternId, Pattern>,
     ) -> HashSet<PatternIndex>;
     fn split_head_tail<T: ToChild + Clone>(
         pattern: &'_ [T]
@@ -245,10 +245,10 @@ impl MatchDirection for Left {
     }
     fn filter_parent_pattern_indices(
         parent: &Parent,
-        child_patterns: &HashMap<PatternId, Pattern>,
+        children: &HashMap<PatternId, Pattern>,
     ) -> HashSet<PatternIndex> {
         parent
-            .filter_pattern_indices_at_end_in_patterns(child_patterns)
+            .filter_pattern_indices_at_end_in_patterns(children)
             .cloned()
             .collect()
     }

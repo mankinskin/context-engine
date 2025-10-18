@@ -1,9 +1,9 @@
 use context_trace::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct PrefixEnd {
-    pub path: IndexEndPath,
-    pub target: DownKey,
+pub(crate) struct PrefixEnd {
+    pub(crate) path: IndexEndPath,
+    pub(crate) target: DownKey,
 }
 impl From<&PrefixEnd> for PrefixCommand {
     fn from(value: &PrefixEnd) -> Self {

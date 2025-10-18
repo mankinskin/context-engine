@@ -9,6 +9,10 @@ use crate::split::{
         HasGraph,
         SplitTraceState,
     },
+    vertex::position::{
+        Offset,
+        SubSplitLocation,
+    },
 };
 use context_trace::*;
 pub mod context;

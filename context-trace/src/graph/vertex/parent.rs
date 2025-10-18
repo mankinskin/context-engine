@@ -1,14 +1,4 @@
-use crate::{
-    HasSubIndex,
-    HashMap,
-    HashSet,
-    graph::vertex::{
-        PatternId,
-        data::VertexData,
-        pattern::Pattern,
-        wide::Wide,
-    },
-};
+use crate::*;
 use serde::{
     Deserialize,
     Serialize,
@@ -23,6 +13,16 @@ pub trait HasPatternId {
     fn pattern_id(&self) -> PatternId;
 }
 impl HasPatternId for PatternIndex {
+    fn pattern_id(&self) -> PatternId {
+        self.pattern_id
+    }
+}
+impl HasPatternId for ChildLocation {
+    fn pattern_id(&self) -> PatternId {
+        self.pattern_id
+    }
+}
+impl HasPatternId for SubLocation {
     fn pattern_id(&self) -> PatternId {
         self.pattern_id
     }

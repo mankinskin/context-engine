@@ -28,8 +28,8 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> Result<&Pattern, ErrorReason> {
         let location = location.into_pattern_location();
         let vertex = self.get_vertex(location.parent)?;
-        let child_patterns = vertex.get_child_patterns();
-        child_patterns
+        let children = vertex.children();
+        children
             .get(&location.id)
             .ok_or(ErrorReason::NoChildPatterns) // todo: better error
     }
@@ -49,8 +49,8 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> Result<&mut Pattern, ErrorReason> {
         let location = location.into_pattern_location();
         let vertex = self.get_vertex_mut(location.parent)?;
-        let child_patterns = vertex.get_child_patterns_mut();
-        child_patterns
+        let children = vertex.children_mut();
+        children
             .get_mut(&location.id)
             .ok_or(ErrorReason::NoChildPatterns) // todo: better error
     }
@@ -70,7 +70,7 @@ impl<G: GraphKind> Hypergraph<G> {
         index: impl GetVertexIndex,
     ) -> Result<&ChildPatterns, ErrorReason> {
         self.get_vertex(index.get_vertex_index(self))
-            .map(|vertex| vertex.get_child_patterns())
+            .map(|vertex| vertex.children())
     }
     pub(crate) fn get_pattern_of(
         &self,
@@ -90,12 +90,11 @@ impl<G: GraphKind> Hypergraph<G> {
             .expect_child_pattern(&pid)
     }
     #[track_caller]
-    pub(crate) fn expect_child_patterns(
+    pub fn expect_child_patterns(
         &self,
         index: impl GetVertexIndex,
     ) -> &ChildPatterns {
-        self.expect_vertex(index.get_vertex_index(self))
-            .get_child_patterns()
+        self.expect_vertex(index.get_vertex_index(self)).children()
     }
 
     #[track_caller]

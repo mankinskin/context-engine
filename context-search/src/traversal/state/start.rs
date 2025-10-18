@@ -16,10 +16,10 @@ use context_trace::{
 };
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct StartCtx<K: TraversalKind> {
-    pub index: Child,
-    pub cursor: PatternCursor,
-    pub trav: K::Trav,
+pub(crate) struct StartCtx<K: TraversalKind> {
+    pub(crate) index: Child,
+    pub(crate) cursor: PatternCursor,
+    pub(crate) trav: K::Trav,
 }
 
 impl<K: TraversalKind> HasVertexIndex for StartCtx<K> {
@@ -33,7 +33,9 @@ impl<K: TraversalKind> Wide for StartCtx<K> {
     }
 }
 impl<K: TraversalKind> StartCtx<K> {
-    pub fn get_parent_batch(&self) -> Result<CompareParentBatch, ErrorState> {
+    pub(crate) fn get_parent_batch(
+        &self
+    ) -> Result<CompareParentBatch, ErrorState> {
         let mut cursor = self.cursor.clone();
         if cursor.advance(&self.trav).is_continue() {
             let batch = K::Policy::gen_parent_batch(

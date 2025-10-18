@@ -10,6 +10,7 @@ use crate::split::{
     vertex::{
         VertexSplitCtx,
         output::NodeType,
+        position::Offset,
     },
 };
 use context_trace::*;

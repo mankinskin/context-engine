@@ -1,41 +1,33 @@
-use std::num::NonZeroUsize;
-
 use crate::{
-    graph::vertex::location::SubLocation,
     trace::cache::new::EditKind,
     *,
 };
-
-pub(crate) type Offset = NonZeroUsize;
-
-/// optional offset inside of pattern sub location
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct SubSplitLocation {
-    pub(crate) location: SubLocation,
-    pub(crate) inner_offset: Option<Offset>,
-}
-
+//pub(crate) enum AddChildLocation {
+//    Target(ChildLocation),
+//    Prev(ChildLocation),
+//}
+pub type Bottom = HashMap<DirectedKey, SubLocation>;
+pub type Top = HashSet<DirectedKey>;
 #[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct PositionCache {
     pub(crate) top: HashSet<DirectedKey>,
-    pub(crate) bottom: HashMap<DirectedKey, SubLocation>,
-}
-pub(crate) enum AddChildLocation {
-    Target(ChildLocation),
-    Prev(ChildLocation),
+    pub(crate) bottom: Bottom,
 }
 impl PositionCache {
-    pub fn with_top(top: HashSet<DirectedKey>) -> Self {
+    pub fn with_top(top: Top) -> Self {
         Self {
             top,
             bottom: Default::default(),
         }
     }
-    pub fn with_bottom(bottom: HashMap<DirectedKey, SubLocation>) -> Self {
+    pub fn with_bottom(bottom: Bottom) -> Self {
         Self {
             top: Default::default(),
             bottom,
         }
+    }
+    pub fn bottom(&self) -> &Bottom {
+        &self.bottom
     }
     pub fn new(
         top: HashSet<DirectedKey>,

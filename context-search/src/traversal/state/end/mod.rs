@@ -17,19 +17,19 @@ use crate::{
     traversal::state::cursor::PatternCursor,
 };
 
-pub mod postfix;
-pub mod prefix;
-pub mod range;
+pub(crate) mod postfix;
+pub(crate) mod prefix;
+pub(crate) mod range;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum EndKind {
+pub(crate) enum EndKind {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
     Complete(Child),
 }
 impl EndKind {
-    pub fn from_range_path<G: HasGraph>(
+    pub(crate) fn from_range_path<G: HasGraph>(
         mut path: IndexRangePath,
         root_pos: TokenPosition,
         target: DownKey,
@@ -61,7 +61,7 @@ impl EndKind {
             }),
         }
     }
-    pub fn from_start_path<G: HasGraph>(
+    pub(crate) fn from_start_path<G: HasGraph>(
         mut path: IndexStartPath,
         root_pos: TokenPosition,
         trav: &G,
@@ -76,17 +76,8 @@ impl EndKind {
         }
     }
 }
-impl PathComplete for EndKind {
-    fn as_complete(&self) -> Option<Child> {
-        match self {
-            Self::Complete(c) => Some(*c),
-            _ => None,
-        }
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum EndReason {
+pub(crate) enum EndReason {
     QueryEnd,
     Mismatch,
 }
@@ -96,7 +87,7 @@ pub enum EndReason {
 // - bottom up-no matching parents
 
 #[derive(Clone, Debug)]
-pub struct TraceStart<'a>(pub &'a EndState, pub usize);
+pub(crate) struct TraceStart<'a>(pub(crate) &'a EndState, pub(crate) usize);
 
 impl Traceable for TraceStart<'_> {
     fn trace<G: HasGraph>(
@@ -117,10 +108,10 @@ impl Traceable for TraceStart<'_> {
     }
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EndState {
-    pub reason: EndReason,
-    pub kind: EndKind,
-    pub cursor: PatternCursor,
+pub(crate) struct EndState {
+    pub(crate) reason: EndReason,
+    pub(crate) kind: EndKind,
+    pub(crate) cursor: PatternCursor,
 }
 impl_cursor_pos! {
     CursorPosition for EndState, self => self.cursor.relative_pos
@@ -140,7 +131,7 @@ impl Traceable for &EndState {
     }
 }
 impl EndState {
-    pub fn with_reason<G: HasGraph>(
+    pub(crate) fn with_reason<G: HasGraph>(
         trav: G,
         reason: EndReason,
         parent: ParentCompareState,
@@ -156,23 +147,23 @@ impl EndState {
             cursor: parent.cursor,
         }
     }
-    pub fn query_end<G: HasGraph>(
+    pub(crate) fn query_end<G: HasGraph>(
         trav: G,
         parent: ParentCompareState,
     ) -> Self {
         Self::with_reason(trav, EndReason::QueryEnd, parent)
     }
-    pub fn mismatch<G: HasGraph>(
+    pub(crate) fn mismatch<G: HasGraph>(
         trav: G,
         parent: ParentCompareState,
     ) -> Self {
         Self::with_reason(trav, EndReason::Mismatch, parent)
     }
-    pub fn is_final(&self) -> bool {
+    pub(crate) fn is_final(&self) -> bool {
         self.reason == EndReason::QueryEnd
             && matches!(self.kind, EndKind::Complete(_))
     }
-    pub fn entry_location(&self) -> Option<ChildLocation> {
+    pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
             EndKind::Range(state) =>
                 Some(GraphRootChild::<Start>::root_child_location(&state.path)),
@@ -181,7 +172,7 @@ impl EndState {
             EndKind::Complete(_) => None,
         }
     }
-    pub fn state_direction(&self) -> StateDirection {
+    pub(crate) fn state_direction(&self) -> StateDirection {
         match self.kind {
             EndKind::Range(_) => StateDirection::TopDown,
             EndKind::Postfix(_) => StateDirection::BottomUp,
@@ -189,10 +180,10 @@ impl EndState {
             EndKind::Complete(_) => StateDirection::BottomUp,
         }
     }
-    pub fn start_len(&self) -> usize {
+    pub(crate) fn start_len(&self) -> usize {
         self.start_path().map(|p| p.len()).unwrap_or_default()
     }
-    pub fn start_path(&self) -> Option<&'_ StartPath> {
+    pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
         match &self.kind {
             EndKind::Range(e) => Some(e.path.start_path()),
             EndKind::Postfix(e) => Some(e.path.start_path()),
@@ -200,7 +191,7 @@ impl EndState {
             EndKind::Complete(_) => None,
         }
     }
-    pub fn end_path(&self) -> Option<&'_ EndPath> {
+    pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
         match &self.kind {
             EndKind::Range(e) => Some(e.path.end_path()),
             EndKind::Postfix(_) => None,
@@ -208,7 +199,7 @@ impl EndState {
             EndKind::Complete(_) => None,
         }
     }
-    pub fn is_complete(&self) -> bool {
+    pub(crate) fn is_complete(&self) -> bool {
         matches!(self.kind, EndKind::Complete(_))
     }
 }

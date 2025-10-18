@@ -21,22 +21,10 @@ impl From<EndState> for FinishedKind {
     }
 }
 impl FinishedKind {
-    pub fn unwrap_complete(self) -> Child {
-        self.expect_complete("Unable to unwrap complete FoundRange")
-    }
-    pub fn unwrap_incomplete(self) -> Box<EndState> {
+    pub(crate) fn unwrap_incomplete(self) -> Box<EndState> {
         self.expect_incomplete("Unable to unwrap incomplete FoundRange")
     }
-    pub fn expect_complete(
-        self,
-        msg: &str,
-    ) -> Child {
-        match self {
-            Self::Complete(c) => c,
-            _ => panic!("{}", msg),
-        }
-    }
-    pub fn expect_incomplete(
+    pub(crate) fn expect_incomplete(
         self,
         msg: &str,
     ) -> Box<EndState> {
@@ -47,21 +35,11 @@ impl FinishedKind {
     }
 }
 
-impl PathComplete for FinishedKind {
-    /// returns child if reduced to single child
-    fn as_complete(&self) -> Option<Child> {
-        match self {
-            Self::Complete(c) => Some(*c),
-            _ => None,
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompleteState {
-    pub cache: TraceCache,
-    pub root: IndexWithPath,
-    pub start: Child,
+    pub(crate) cache: TraceCache,
+    pub(crate) root: IndexWithPath,
+    pub(crate) start: Child,
 }
 impl TryFrom<FinishedState> for CompleteState {
     type Error = IncompleteState;
@@ -90,10 +68,10 @@ impl TryFrom<FinishedState> for CompleteState {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IncompleteState {
-    pub end_state: EndState,
-    pub cache: TraceCache,
-    pub root: IndexWithPath,
-    pub start: Child,
+    pub(crate) end_state: EndState,
+    pub(crate) cache: TraceCache,
+    pub(crate) root: IndexWithPath,
+    pub(crate) start: Child,
 }
 impl TryFrom<FinishedState> for IncompleteState {
     type Error = CompleteState;
@@ -106,23 +84,8 @@ impl TryFrom<FinishedState> for IncompleteState {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FinishedState {
-    pub kind: FinishedKind,
-    pub cache: TraceCache,
-    pub root: IndexWithPath,
-    pub start: Child,
-}
-
-impl FinishedState {
-    #[track_caller]
-    pub fn unwrap_complete(self) -> Child {
-        self.kind.unwrap_complete()
-    }
-    #[allow(unused)]
-    #[track_caller]
-    pub fn expect_complete(
-        self,
-        msg: &str,
-    ) -> Child {
-        self.kind.expect_complete(msg)
-    }
+    pub(crate) kind: FinishedKind,
+    pub(crate) cache: TraceCache,
+    pub(crate) root: IndexWithPath,
+    pub(crate) start: Child,
 }

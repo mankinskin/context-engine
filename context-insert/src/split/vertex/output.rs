@@ -2,6 +2,11 @@ use std::fmt::Debug;
 
 use context_trace::*;
 
+use crate::split::vertex::position::{
+    Offset,
+    SubSplitLocation,
+};
+
 pub type OffsetLocations = HashMap<Offset, Vec<SubSplitLocation>>;
 pub type CompleteLocations =
     HashMap<Offset, Result<Vec<SubSplitLocation>, SubLocation>>;

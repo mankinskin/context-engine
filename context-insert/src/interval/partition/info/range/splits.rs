@@ -28,6 +28,7 @@ use crate::{
         vertex::{
             PosSplitCtx,
             ToVertexSplits,
+            node::AsNodeTraceCtx,
         },
     },
 };

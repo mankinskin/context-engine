@@ -80,7 +80,7 @@ impl PatternDirection for Left {
 //    /// filter pattern indices of parent relation by child patterns and matching direction
 //    fn filter_parent_pattern_indices(
 //        parent: &Parent,
-//        child_patterns: &HashMap<PatternId, Pattern>,
+//        children: &HashMap<PatternId, Pattern>,
 //    ) -> HashSet<PatternIndex>;
 //    fn split_head_tail<T: ToChild + Clone>(pattern: &'_ [T]) -> Option<(T, &'_ [T])> {
 //        Self::pattern_head(pattern).map(|head| (head.clone(), Self::pattern_tail(pattern)))

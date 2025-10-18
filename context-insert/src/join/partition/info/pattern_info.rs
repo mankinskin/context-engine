@@ -29,6 +29,7 @@ use crate::{
             info::inner_range::JoinInnerRangeInfo,
         },
     },
+    split::vertex::pattern::HasPatternTraceCtx,
 };
 use context_trace::*;
 

@@ -1,10 +1,10 @@
 use context_trace::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct RangeEnd {
-    pub path: IndexRangePath,
-    pub target: DownKey,
-    pub root_pos: TokenPosition,
+pub(crate) struct RangeEnd {
+    pub(crate) path: IndexRangePath,
+    pub(crate) target: DownKey,
+    pub(crate) root_pos: TokenPosition,
 }
 impl LeafKey for RangeEnd {
     fn leaf_location(&self) -> ChildLocation {

@@ -23,7 +23,7 @@ use context_trace::{
     *,
 };
 use std::collections::VecDeque;
-pub type CompareQueue = VecDeque<CompareState>;
+pub(crate) type CompareQueue = VecDeque<CompareState>;
 
 use std::{
     fmt::Debug,
@@ -34,9 +34,9 @@ use std::{
     },
 };
 #[derive(Debug)]
-pub struct RootCursor<G: HasGraph> {
-    pub state: Box<CompareState>,
-    pub trav: G,
+pub(crate) struct RootCursor<G: HasGraph> {
+    pub(crate) state: Box<CompareState>,
+    pub(crate) trav: G,
 }
 impl<G: HasGraph> Iterator for RootCursor<G> {
     type Item = ControlFlow<EndReason>;
@@ -67,7 +67,7 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
     }
 }
 impl<G: HasGraph> RootCursor<G> {
-    pub fn next_parents<K: TraversalKind>(
+    pub(crate) fn next_parents<K: TraversalKind>(
         self,
         trav: &K::Trav,
     ) -> Result<(ParentCompareState, CompareParentBatch), Box<EndState>> {
@@ -111,7 +111,7 @@ impl<G: HasGraph> RootCursor<G> {
     fn path_advanced(&mut self) -> ControlFlow<()> {
         self.state.rooted_path_mut().advance(&self.trav)
     }
-    pub fn find_end(mut self) -> Result<EndState, Self> {
+    pub(crate) fn find_end(mut self) -> Result<EndState, Self> {
         match self.find_map(|flow| match flow {
             Continue(()) => None,
             Break(reason) => Some(reason),

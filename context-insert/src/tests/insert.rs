@@ -1,12 +1,8 @@
-use std::collections::HashSet;
-
 use crate::{
-    build_trace_cache,
     insert::{
         ToInsertCtx,
         context::InsertTraversal,
     },
-    insert_patterns,
     interval::init::InitInterval,
 };
 use context_search::*;
@@ -16,6 +12,7 @@ use pretty_assertions::{
     assert_eq,
     assert_matches,
 };
+use std::collections::HashSet;
 
 #[test]
 fn index_pattern1() {
@@ -89,10 +86,10 @@ fn index_pattern2() {
 
     let graph = graph_ref.graph();
     let aby_vertex = graph.expect_vertex(aby);
-    assert_eq!(aby_vertex.parents.len(), 1, "aby");
+    assert_eq!(aby_vertex.parents().len(), 1, "aby");
     assert_eq!(
         aby_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![ab, y],]
@@ -129,11 +126,11 @@ fn index_infix1() {
     let graph = graph_ref.graph();
     let aby_vertex = graph.expect_vertex(aby);
     assert_eq!(aby.width(), 3, "aby");
-    assert_eq!(aby_vertex.parents.len(), 1, "aby");
-    assert_eq!(aby_vertex.children.len(), 1, "aby");
+    assert_eq!(aby_vertex.parents().len(), 1, "aby");
+    assert_eq!(aby_vertex.children().len(), 1, "aby");
     assert_eq!(
         aby_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![ab, y]],
@@ -158,7 +155,7 @@ fn index_infix1() {
     let abyz_vertex = graph.expect_vertex(abyz);
     assert_eq!(
         abyz_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![aby, z], vec![ab, yz]],
@@ -167,7 +164,7 @@ fn index_infix1() {
     let xxabyzw_vertex = graph.expect_vertex(xxabyzw);
     assert_eq!(
         xxabyzw_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![x, x, abyz, w]],
@@ -199,11 +196,11 @@ fn index_infix2() {
     let graph = graph_ref.graph();
     let abcd_vertex = graph.expect_vertex(abcd);
     assert_eq!(abcd.width(), 4, "abcd");
-    assert_eq!(abcd_vertex.parents.len(), 1, "abcd");
-    assert_eq!(abcd_vertex.children.len(), 1, "abcd");
+    assert_eq!(abcd_vertex.parents().len(), 1, "abcd");
+    assert_eq!(abcd_vertex.children().len(), 1, "abcd");
     assert_eq!(
         abcd_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![a, b, c, d]],
@@ -214,7 +211,7 @@ fn index_infix2() {
     let abcdx_vertex = graph.expect_vertex(abcdx);
     assert_eq!(
         abcdx_vertex
-            .get_child_pattern_set()
+            .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
         hashset![vec![abcd, x],],
@@ -238,28 +235,31 @@ fn index_prefix1() {
     let state = fold_res.unwrap().unwrap_err();
     let init = InitInterval::from(state);
 
-    assert_eq!(init, InitInterval {
-        root: heldld,
-        cache: build_trace_cache!(
-            heldld => (
-                BU {},
-                TD {2 => ld -> (heldld_id, 2) },
+    assert_eq!(
+        init,
+        InitInterval {
+            root: heldld,
+            cache: build_trace_cache!(
+                heldld => (
+                    BU {},
+                    TD {2 => ld -> (heldld_id, 2) },
+                ),
+                ld => (
+                    BU {},
+                    TD { 2 => l -> (ld_id, 0) },
+                ),
+                h => (
+                    BU {},
+                    TD {},
+                ),
+                l => (
+                    BU {},
+                    TD { 2 },
+                ),
             ),
-            ld => (
-                BU {},
-                TD { 2 => l -> (ld_id, 0) },
-            ),
-            h => (
-                BU {},
-                TD {},
-            ),
-            l => (
-                BU {},
-                TD { 2 },
-            ),
-        ),
-        end_bound: 3,
-    });
+            end_bound: 3,
+        }
+    );
     let hel: Child = graph.insert_init((), init);
     assert_indices!(graph, he, held);
     assert_patterns! {
@@ -287,24 +287,27 @@ fn index_postfix1() {
     assert_matches!(fold_res, Ok(Err(_)));
     let state = fold_res.unwrap().unwrap_err();
     let init = InitInterval::from(state);
-    assert_eq!(init, InitInterval {
-        root: ababcd,
-        cache: build_trace_cache!(
-            ababcd => (
-                BU { 1 => ab -> (ababcd_id, 1) },
-                TD {},
+    assert_eq!(
+        init,
+        InitInterval {
+            root: ababcd,
+            cache: build_trace_cache!(
+                ababcd => (
+                    BU { 1 => ab -> (ababcd_id, 1) },
+                    TD {},
+                ),
+                ab => (
+                    BU { 1 => b -> (ab_id, 1) },
+                    TD {},
+                ),
+                b => (
+                    BU {},
+                    TD {},
+                ),
             ),
-            ab => (
-                BU { 1 => b -> (ab_id, 1) },
-                TD {},
-            ),
-            b => (
-                BU {},
-                TD {},
-            ),
-        ),
-        end_bound: 3,
-    },);
+            end_bound: 3,
+        },
+    );
     let bcd: Child = graph.insert_init((), init);
     assert_indices!(graph, cd, abcd);
     assert_patterns! {

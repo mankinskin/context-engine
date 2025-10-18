@@ -24,14 +24,14 @@ use derive_new::new;
 use tracing::debug;
 
 #[derive(Debug, Clone, Deref, DerefMut)]
-pub struct CompareParentBatch {
+pub(crate) struct CompareParentBatch {
     #[deref]
     #[deref_mut]
-    pub batch: ParentBatch,
-    pub cursor: PatternCursor,
+    pub(crate) batch: ParentBatch,
+    pub(crate) cursor: PatternCursor,
 }
 impl CompareParentBatch {
-    pub fn into_compare_batch(self) -> VecDeque<ParentCompareState> {
+    pub(crate) fn into_compare_batch(self) -> VecDeque<ParentCompareState> {
         self.batch
             .parents
             .into_iter()
@@ -44,10 +44,10 @@ impl CompareParentBatch {
 }
 
 #[derive(Debug, new)]
-pub struct MatchIterator<K: TraversalKind>(pub TraceCtx<K::Trav>, pub MatchCtx);
+pub(crate) struct MatchIterator<K: TraversalKind>(pub(crate) TraceCtx<K::Trav>, pub(crate) MatchCtx);
 
 impl<K: TraversalKind> MatchIterator<K> {
-    pub fn find_next(&mut self) -> Option<EndState> {
+    pub(crate) fn find_next(&mut self) -> Option<EndState> {
         self.find_map(Some)
     }
 }

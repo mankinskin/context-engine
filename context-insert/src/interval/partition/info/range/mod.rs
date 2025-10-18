@@ -12,9 +12,12 @@ use role::{
 
 use context_trace::*;
 
-use crate::interval::partition::info::border::{
-    trace::TraceBorders,
-    visit::VisitBorders,
+use crate::{
+    interval::partition::info::border::{
+        trace::TraceBorders,
+        visit::VisitBorders,
+    },
+    split::vertex::pattern::HasPatternTraceCtx,
 };
 
 pub mod role;

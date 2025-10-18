@@ -38,16 +38,9 @@ use crate::{
             wide::Wide,
         },
     },
-    trace::{
-        cache::position::Offset,
-        child::{
-            TraceFront,
-            TraceSide,
-        },
-        has_graph::{
-            HasGraph,
-            TravDir,
-        },
+    trace::has_graph::{
+        HasGraph,
+        TravDir,
     },
 };
 use derive_builder::Builder;
@@ -148,10 +141,10 @@ impl VertexData {
     ) -> &mut Parent {
         self.get_parent_mut(index).unwrap()
     }
-    pub fn get_parents(&self) -> &VertexParents {
+    pub fn parents(&self) -> &VertexParents {
         &self.parents
     }
-    pub(crate) fn get_parents_mut(&mut self) -> &mut VertexParents {
+    pub(crate) fn parents_mut(&mut self) -> &mut VertexParents {
         &mut self.parents
     }
     pub(crate) fn get_child_pattern_range<R: PatternRangeIndex>(
@@ -213,7 +206,7 @@ impl VertexData {
             .get(location.sub_index)
             .ok_or(ErrorReason::InvalidChild(location.sub_index))
     }
-    pub(crate) fn expect_child_at(
+    pub fn expect_child_at(
         &self,
         location: &SubLocation,
     ) -> &Child {
@@ -242,7 +235,7 @@ impl VertexData {
     ) -> usize {
         self.expect_child_pattern(id).len()
     }
-    pub(crate) fn expect_child_offset(
+    pub fn expect_child_offset(
         &self,
         loc: &SubLocation,
     ) -> usize {
@@ -291,22 +284,22 @@ impl VertexData {
             panic!("Child pattern with id {} does not exist in in vertex", id,)
         })
     }
-    pub(crate) fn get_child_patterns(&self) -> &ChildPatterns {
+    pub fn children(&self) -> &ChildPatterns {
         &self.children
     }
-    pub(crate) fn get_child_patterns_mut(&mut self) -> &mut ChildPatterns {
+    pub fn children_mut(&mut self) -> &mut ChildPatterns {
         &mut self.children
     }
-    pub(crate) fn get_child_pattern_iter(
+    pub(crate) fn child_pattern_iter(
         &'_ self
     ) -> impl Iterator<Item = Pattern> + '_ {
         clone_child_patterns(&self.children)
     }
-    pub(crate) fn get_child_pattern_set(&self) -> HashSet<Pattern> {
-        self.get_child_pattern_iter().collect()
+    pub fn child_pattern_set(&self) -> HashSet<Pattern> {
+        self.child_pattern_iter().collect()
     }
-    pub(crate) fn get_child_pattern_vec(&self) -> Vec<Pattern> {
-        self.get_child_pattern_iter().collect()
+    pub(crate) fn child_pattern_vec(&self) -> Vec<Pattern> {
+        self.child_pattern_iter().collect()
     }
     pub(crate) fn add_pattern_no_update(
         &mut self,
@@ -411,7 +404,7 @@ impl VertexData {
         &self,
         width_ceiling: Option<usize>,
     ) -> impl Iterator<Item = (&VertexIndex, &Parent)> + Clone {
-        let parents = self.get_parents();
+        let parents = self.parents();
         // optionally filter parents by width
         if let Some(ceil) = width_ceiling {
             Either::Left(
@@ -430,7 +423,7 @@ impl VertexData {
     where
         G::Token: Display,
     {
-        self.get_child_pattern_iter()
+        self.child_pattern_iter()
             .map(|pat| {
                 pat.iter()
                     .map(|c| g.index_string(c.index))
@@ -600,14 +593,6 @@ impl VertexData {
     {
         self.selected_children(|_, pattern| {
             Some(TravDir::<G>::last_index(pattern))
-        })
-    }
-    pub(crate) fn offset_children(
-        &self,
-        offset: Offset,
-    ) -> Vec<SubChild> {
-        self.selected_children(|_, pattern| {
-            TraceFront::trace_child_pos(pattern, offset).map(|p| p.sub_index)
         })
     }
 }

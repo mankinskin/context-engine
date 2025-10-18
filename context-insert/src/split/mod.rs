@@ -6,13 +6,117 @@ pub mod trace;
 pub mod vertex;
 
 use std::{
+    cmp::Ordering,
     fmt::Debug,
     num::NonZeroUsize,
 };
 
 use cache::position::PosKey;
 use context_trace::*;
+use derive_new::new;
 use vertex::VertexSplits;
+
+use crate::*;
+
+#[derive(Debug, Clone, Eq, PartialEq, new)]
+pub struct ChildTracePos {
+    pub(crate) inner_offset: Option<NonZeroUsize>,
+    pub(crate) sub_index: usize,
+}
+impl HasInnerOffset for ChildTracePos {
+    fn inner_offset(&self) -> Option<NonZeroUsize> {
+        self.inner_offset
+    }
+}
+impl HasSubIndex for ChildTracePos {
+    fn sub_index(&self) -> usize {
+        self.sub_index
+    }
+}
+impl HasSubIndexMut for ChildTracePos {
+    fn sub_index_mut(&mut self) -> &mut usize {
+        &mut self.sub_index
+    }
+}
+impl From<(usize, Option<NonZeroUsize>)> for ChildTracePos {
+    fn from((sub_index, inner_offset): (usize, Option<NonZeroUsize>)) -> Self {
+        Self {
+            sub_index,
+            inner_offset,
+        }
+    }
+}
+
+/// Side refers to border (front is indexing before front border, back is indexing after back border)
+pub trait TraceSide:
+    std::fmt::Debug + Sync + Send + Unpin + Clone + 'static
+{
+    fn trace_child_pos(
+        pattern: impl IntoPattern,
+        offset: NonZeroUsize,
+    ) -> Option<ChildTracePos>;
+}
+
+/// for insert
+#[derive(Debug, Clone)]
+pub struct TraceBack;
+
+impl TraceSide for TraceBack {
+    fn trace_child_pos(
+        pattern: impl IntoPattern,
+        offset: NonZeroUsize,
+    ) -> Option<ChildTracePos> {
+        let mut offset = offset.get();
+        pattern
+            .into_pattern()
+            .into_iter()
+            .enumerate()
+            .find_map(|(i, c)|
+            // returns current index when remaining offset is smaller than current child
+            match c.width().cmp(&offset) {
+                Ordering::Less => {
+                    offset -= c.width();
+                    None
+                }
+                Ordering::Equal => {
+                    offset = 0;
+                    None
+                }
+                Ordering::Greater => Some((i, NonZeroUsize::new(offset))),
+            })
+            .map(Into::into)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TraceFront;
+
+impl TraceSide for TraceFront {
+    fn trace_child_pos(
+        pattern: impl IntoPattern,
+        offset: NonZeroUsize,
+    ) -> Option<ChildTracePos> {
+        let mut offset = offset.get();
+        pattern
+            .into_pattern()
+            .into_iter()
+            .enumerate()
+            .find_map(|(i, c)|
+            // returns current index when remaining offset does not exceed current child
+            match c.width().cmp(&offset) {
+                Ordering::Less => {
+                    offset -= c.width();
+                    None
+                }
+                Ordering::Equal => {
+                    offset = 0;
+                    Some((i, NonZeroUsize::new(offset)))
+                }
+                Ordering::Greater => Some((i, NonZeroUsize::new(offset))),
+            })
+            .map(Into::into)
+    }
+}
 
 pub fn position_splits<'a>(
     patterns: impl IntoIterator<Item = (&'a PatternId, &'a Pattern)>,
@@ -60,13 +164,10 @@ pub(crate) fn cleaned_position_splits<'a>(
     patterns
         .map(|(pid, pat)| {
             let pos = TraceBack::trace_child_pos(pat, parent_offset).unwrap();
-            let location = SubLocation::new(*pid, pos.sub_index);
-            if pos.inner_offset.is_some() || pat.len() > 2 {
+            let location = SubLocation::new(*pid, pos.sub_index());
+            if pos.inner_offset().is_some() || pat.len() > 2 {
                 // can't be clean
-                Ok(SubSplitLocation {
-                    location,
-                    inner_offset: pos.inner_offset,
-                })
+                Ok(SubSplitLocation::new(location, pos.inner_offset()))
             } else {
                 // must be clean
                 Err(location)

@@ -6,7 +6,7 @@ use context::{
     SearchResult,
 };
 use context_trace::*;
-pub mod context;
+pub(crate) mod context;
 
 #[allow(dead_code)]
 pub trait Searchable: HasGraph {

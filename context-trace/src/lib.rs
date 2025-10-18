@@ -49,9 +49,13 @@ pub use tests::{
     init_tracing,
 };
 
+#[cfg(any(test, feature = "test-api"))]
+pub use crate::tests::mock;
+
 // Essential public re-exports for context-search
 pub use crate::{
     direction::{
+        Direction,
         Left,
         Right,
     },
@@ -65,14 +69,18 @@ pub use crate::{
         },
         kind::{
             BaseGraphKind,
+            GraphKind,
             TokenOf,
         },
         vertex::{
+            ChildPatterns,
             VertexIndex,
             child::{
                 Child,
+                ChildWidth,
                 HasChild,
             },
+            data::VertexData,
             has_vertex_data::HasVertexData,
             has_vertex_index::{
                 HasVertexIndex,
@@ -83,16 +91,23 @@ pub use crate::{
                 child::{
                     ChildLocation,
                     HasSubIndex,
+                    HasSubIndexMut,
                 },
                 pattern::{
                     HasPatternLocation,
                     PatternLocation,
                 },
             },
-            parent::Parent,
+            parent::{
+                HasPatternId,
+                Parent,
+            },
             pattern::{
+                IntoPattern,
                 Pattern,
                 id::PatternId,
+                pattern_range::PatternRangeIndex,
+                pattern_width,
             },
             token::{
                 AsToken,
@@ -112,7 +127,6 @@ pub use crate::{
                     RootChild,
                 },
             },
-            complete::PathComplete,
             has_path::{
                 HasPath,
                 HasRootedPath,
@@ -210,7 +224,6 @@ pub use crate::{
             },
         },
         child::{
-            ChildTracePos,
             iterator::{
                 ChildIterator,
                 ChildQueue,

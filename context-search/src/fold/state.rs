@@ -7,9 +7,9 @@ use context_trace::{
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct FinalState<'a> {
-    pub num_parents: usize,
-    pub state: &'a EndState,
+pub(crate) struct FinalState<'a> {
+    pub(crate) num_parents: usize,
+    pub(crate) state: &'a EndState,
 }
 
 impl PartialOrd for FinalState<'_> {
@@ -43,21 +43,21 @@ impl Ord for FinalState<'_> {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct FoldState {
-    pub cache: TraceCache,
-    pub end_state: EndState,
-    pub start: Child,
-    pub root: Child,
+pub(crate) struct FoldState {
+    pub(crate) cache: TraceCache,
+    pub(crate) end_state: EndState,
+    pub(crate) start: Child,
+    pub(crate) root: Child,
 }
 
 impl FoldState {
-    pub fn root_entry(&self) -> &VertexCache {
+    pub(crate) fn root_entry(&self) -> &VertexCache {
         self.cache.entries.get(&self.root().vertex_index()).unwrap()
     }
-    pub fn start_key(&self) -> DirectedKey {
+    pub(crate) fn start_key(&self) -> DirectedKey {
         DirectedKey::new(self.start, self.start.width())
     }
-    pub fn root(&self) -> Child {
+    pub(crate) fn root(&self) -> Child {
         self.root
     }
 }

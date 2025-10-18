@@ -1,23 +1,26 @@
 use std::num::NonZeroUsize;
 
-use crate::interval::partition::info::{
-    border::{
-        BorderInfo,
-        PartitionBorder,
-    },
-    range::{
-        mode::{
-            InVisitMode,
-            PostVisitMode,
-            PreVisitMode,
+use crate::{
+    ChildTracePos,
+    interval::partition::info::{
+        border::{
+            BorderInfo,
+            PartitionBorder,
         },
-        role::{
-            In,
-            OffsetsOf,
-            Post,
-            Pre,
-            RangeOf,
-            RangeRole,
+        range::{
+            mode::{
+                InVisitMode,
+                PostVisitMode,
+                PreVisitMode,
+            },
+            role::{
+                In,
+                OffsetsOf,
+                Post,
+                Pre,
+                RangeOf,
+                RangeRole,
+            },
         },
     },
 };

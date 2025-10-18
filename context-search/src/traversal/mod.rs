@@ -24,9 +24,9 @@ use std::{
     ops::ControlFlow,
 };
 use tracing::debug;
-pub mod container;
-pub mod policy;
-pub mod state;
+pub(crate) mod container;
+pub(crate) mod policy;
+pub(crate) mod state;
 
 pub trait TraversalKind: Debug + Default {
     type Trav: HasGraph;
@@ -34,23 +34,23 @@ pub trait TraversalKind: Debug + Default {
     type Policy: DirectedTraversalPolicy<Trav = Self::Trav>;
 }
 #[derive(Debug, Clone, Copy)]
-pub enum OptGen<Y> {
+pub(crate) enum OptGen<Y> {
     Yield(Y),
     Pass,
 }
 
-pub trait HasTraversalCtx<K: TraversalKind> {
+pub(crate) trait HasTraversalCtx<K: TraversalKind> {
     fn traversal_context(&self) -> Result<&TraversalCtx<K>, ErrorState>;
 }
-pub trait IntoTraversalCtx<K: TraversalKind> {
+pub(crate) trait IntoTraversalCtx<K: TraversalKind> {
     fn into_traversal_context(self) -> Result<TraversalCtx<K>, ErrorState>;
 }
 
 /// context for generating next states
 #[derive(Debug, new)]
-pub struct TraversalCtx<K: TraversalKind> {
-    pub match_iter: MatchIterator<K>,
-    pub last_match: EndState,
+pub(crate) struct TraversalCtx<K: TraversalKind> {
+    pub(crate) match_iter: MatchIterator<K>,
+    pub(crate) last_match: EndState,
 }
 impl<K: TraversalKind> Unpin for TraversalCtx<K> {}
 

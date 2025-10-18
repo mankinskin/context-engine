@@ -1,5 +1,8 @@
 use crate::{
-    trace::cache::key::directed::HasTokenPosition,
+    trace::cache::{
+        key::directed::HasTokenPosition,
+        position::PositionCache,
+    },
     *,
 };
 

@@ -33,7 +33,7 @@ macro_rules! assert_patterns {
         let g = $graph.graph();
         $(
             let pats: HashSet<_> =
-                $crate::HasVertexData::vertex(&$name, &g).get_child_pattern_set().into_iter().collect();
+                $crate::HasVertexData::vertex(&$name, &g).child_pattern_set().into_iter().collect();
             assert_eq!(pats, hashset![$(vec![$($pat),*]),*]);
         )*
         #[allow(dropping_references)]

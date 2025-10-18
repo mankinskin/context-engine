@@ -1,14 +1,10 @@
 use crate::traversal::ControlFlow;
-use context_trace::{
-    direction::Direction,
-    path::RolePathUtils,
-    *,
-};
+use context_trace::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct PathCursor<P> {
-    pub path: P,
-    pub relative_pos: TokenPosition,
+pub(crate) struct PathCursor<P> {
+    pub(crate) path: P,
+    pub(crate) relative_pos: TokenPosition,
 }
 
 impl<P> Wide for PathCursor<P> {
@@ -70,8 +66,8 @@ impl_cursor_pos! {
     <R: FoldablePath> CursorPosition for PathCursor<R>, self => self.relative_pos
 }
 
-pub type PatternRangeCursor = PathCursor<PatternRangePath>;
-pub type PatternCursor = PathCursor<PatternPostfixPath>;
+pub(crate) type PatternRangeCursor = PathCursor<PatternRangePath>;
+pub(crate) type PatternCursor = PathCursor<PatternPostfixPath>;
 
 impl From<PatternRangeCursor> for PatternCursor {
     fn from(value: PathCursor<PatternRangePath>) -> Self {
@@ -94,7 +90,7 @@ where
     }
 }
 
-pub trait MovablePath<D: Direction, R: PathRole>:
+pub(crate) trait MovablePath<D: Direction, R: PathRole>:
     MovePath<D, R> + RootChildIndex<R> + RootPattern
 {
 }
@@ -142,7 +138,7 @@ where
         flow
     }
 }
-pub trait ToCursor: FoldablePath {
+pub(crate) trait ToCursor: FoldablePath {
     fn to_cursor<G: HasGraph>(
         self,
         trav: &G,

@@ -8,13 +8,7 @@ use std::{
     num::NonZeroUsize,
 };
 
-use crate::{
-    interval::partition::delta::PatternSubDeltas,
-    split::vertex::{
-        ChildTracePositions,
-        ToVertexSplitPos,
-    },
-};
+use crate::*;
 use context_trace::*;
 
 #[derive(Clone, Debug, Copy, Hash, Eq, PartialEq)]
@@ -61,7 +55,7 @@ impl std::ops::Sub<PatternSubDeltas> for SplitPositionCache {
     ) -> Self::Output {
         self.pattern_splits
             .iter_mut()
-            .for_each(|(pid, pos)| pos.sub_index -= rhs[pid]);
+            .for_each(|(pid, pos)| *pos.sub_index_mut() -= rhs[pid]);
         self
     }
 }
@@ -102,10 +96,9 @@ impl SplitPositionCache {
     }
     pub fn find_clean_split(&self) -> Option<SubLocation> {
         self.pattern_splits.iter().find_map(|(pid, s)| {
-            s.inner_offset.is_none().then_some(SubLocation {
-                pattern_id: *pid,
-                sub_index: s.sub_index,
-            })
+            s.inner_offset
+                .is_none()
+                .then_some(SubLocation::new(*pid, s.sub_index))
         })
     }
     //pub fn add_location_split(&mut self, location: SubLocation, split: Split) {

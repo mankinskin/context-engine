@@ -71,7 +71,7 @@ impl<G: GraphKind> Hypergraph<G> {
             .get_child_pattern_range(&loc.id, range)
     }
     #[track_caller]
-    pub(crate) fn expect_pattern_range<R: PatternRangeIndex>(
+    pub fn expect_pattern_range<R: PatternRangeIndex>(
         &self,
         id: impl IntoPatternLocation,
         range: R,

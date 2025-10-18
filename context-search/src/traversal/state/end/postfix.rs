@@ -11,11 +11,11 @@ use derive_more::derive::{
     DerefMut,
 };
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
-pub struct PostfixEnd {
+pub(crate) struct PostfixEnd {
     #[deref]
     #[deref_mut]
-    pub path: IndexStartPath,
-    pub root_pos: TokenPosition,
+    pub(crate) path: IndexStartPath,
+    pub(crate) root_pos: TokenPosition,
 }
 impl HasRootPos for PostfixEnd {
     fn root_pos(&self) -> &TokenPosition {

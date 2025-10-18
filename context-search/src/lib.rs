@@ -12,17 +12,18 @@
 
 extern crate test;
 
-pub mod compare;
-pub mod fold;
-pub mod r#match;
-pub mod search;
-pub mod traversal;
+pub(crate) mod compare;
+pub(crate) mod fold;
+pub(crate) mod r#match;
+pub(crate) mod search;
+pub(crate) mod traversal;
 
 #[cfg(any(test, feature = "test-api"))]
-pub mod tests;
+pub(crate) mod tests;
 
 pub use crate::{
     fold::{
+        complete::UnwrapComplete,
         foldable::{
             ErrorState,
             Foldable,

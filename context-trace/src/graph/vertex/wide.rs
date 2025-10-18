@@ -1,5 +1,6 @@
 use crate::{
     Child,
+    ChildLocation,
     graph::vertex::{
         data::VertexData,
         pattern::{

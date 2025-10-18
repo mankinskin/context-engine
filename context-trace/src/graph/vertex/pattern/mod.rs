@@ -24,7 +24,7 @@ pub type Pattern = Vec<Child>;
 pub(crate) type PatternView<'a> = &'a [Child];
 pub(crate) type Patterns = Vec<Pattern>;
 
-pub(crate) trait PatternWidth: IntoPattern {
+pub trait PatternWidth: IntoPattern {
     fn pattern_width(&self) -> usize;
 }
 impl PatternWidth for Pattern {
@@ -110,7 +110,7 @@ pub(crate) trait AsPatternMut: BorrowMut<Vec<Child>> + Debug {}
 
 impl<T> AsPatternMut for T where T: BorrowMut<Vec<Child>> + Debug {}
 
-pub(crate) fn pattern_width<T: Borrow<Child>>(
+pub fn pattern_width<T: Borrow<Child>>(
     pat: impl IntoIterator<Item = T>
 ) -> usize {
     pat.into_iter().map(|c| c.borrow().width()).sum()

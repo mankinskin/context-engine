@@ -18,29 +18,29 @@ use crate::{
 use context_trace::*;
 
 use derive_new::new;
-pub mod iterator;
-pub mod root_cursor;
+pub(crate) mod iterator;
+pub(crate) mod root_cursor;
 
 #[derive(Debug, new)]
-pub struct MatchCtx {
+pub(crate) struct MatchCtx {
     #[new(default)]
-    pub nodes: VecDeque<TraceNode>,
+    pub(crate) nodes: VecDeque<TraceNode>,
 }
 
 #[derive(Debug)]
-pub struct RootSearchIterator<'a, K: TraversalKind> {
-    pub ctx: &'a mut MatchCtx,
-    pub trav: &'a K::Trav,
+pub(crate) struct RootSearchIterator<'a, K: TraversalKind> {
+    pub(crate) ctx: &'a mut MatchCtx,
+    pub(crate) trav: &'a K::Trav,
 }
 impl<'a, K: TraversalKind> RootSearchIterator<'a, K> {
-    pub fn new(
+    pub(crate) fn new(
         trav: &'a K::Trav,
         ctx: &'a mut MatchCtx,
     ) -> Self {
         Self { ctx, trav }
     }
 
-    pub fn find_root_cursor(mut self) -> Option<RootCursor<&'a K::Trav>> {
+    pub(crate) fn find_root_cursor(mut self) -> Option<RootCursor<&'a K::Trav>> {
         self.find_map(|root| root).map(|state| RootCursor {
             trav: self.trav,
             state: Box::new(state),
@@ -70,7 +70,7 @@ impl<K: TraversalKind> Iterator for RootSearchIterator<'_, K> {
 }
 
 #[derive(Debug)]
-pub enum TraceStep {
+pub(crate) enum TraceStep {
     Append(Vec<TraceNode>),
     Match(CompareState),
     Pass,
@@ -78,7 +78,7 @@ pub enum TraceStep {
 use TraceStep::*;
 
 #[derive(Debug)]
-pub enum TraceNode {
+pub(crate) enum TraceNode {
     Parent(ParentCompareState),
     Child(ChildQueue<CompareState>),
 }

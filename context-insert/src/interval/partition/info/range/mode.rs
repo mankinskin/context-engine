@@ -3,15 +3,29 @@ use std::{
     hash::Hash,
 };
 
-use crate::interval::partition::info::range::{
-    ModeRangeInfo,
-    TraceRangeInfo,
-    role::{
-        In,
-        ModeOf,
-        Post,
-        Pre,
-        RangeRole,
+use crate::{
+    interval::partition::info::range::{
+        ModeRangeInfo,
+        TraceRangeInfo,
+        role::{
+            In,
+            ModeOf,
+            Post,
+            Pre,
+            RangeRole,
+        },
+    },
+    split::vertex::{
+        node::{
+            AsNodeTraceCtx,
+            NodeTraceCtx,
+        },
+        pattern::{
+            GetPatternCtx,
+            GetPatternTraceCtx,
+            HasPatternTraceCtx,
+            PatternTraceCtx,
+        },
     },
 };
 use context_trace::*;

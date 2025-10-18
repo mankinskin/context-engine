@@ -1,18 +1,27 @@
+pub mod node;
 pub mod output;
+pub mod pattern;
+pub mod position;
 
 use std::{
     borrow::Borrow,
     num::NonZeroUsize,
 };
 
-use crate::split::cache::position::{SplitPositionCache};
+use crate::*;
 
 use crate::split::{
     position_splits,
-    vertex::output::{
-        NodeSplitOutput,
-        NodeType,
-        RootMode,
+    vertex::{
+        output::{
+            NodeSplitOutput,
+            NodeType,
+            RootMode,
+        },
+        position::{
+            Offset,
+            SubSplitLocation,
+        },
     },
 };
 use context_trace::*;
@@ -99,10 +108,13 @@ impl ToVertexSplitPos for Vec<SubSplitLocation> {
     fn to_vertex_split_pos(self) -> ChildTracePositions {
         self.into_iter()
             .map(|loc| {
-                (loc.location.pattern_id, ChildTracePos {
-                    inner_offset: loc.inner_offset,
-                    sub_index: loc.location.sub_index,
-                })
+                (
+                    loc.location.pattern_id(),
+                    ChildTracePos::new(
+                        loc.inner_offset(),
+                        loc.location.sub_index(),
+                    ),
+                )
             })
             .collect()
     }
@@ -128,20 +140,18 @@ impl VertexSplitCtx<'_> {
         // uses inner width of sub split position to calculate node offset
         for (inner_width, pos_cache) in self.bottom_up.iter() {
             // bottom up incoming edge
-            for location in pos_cache.bottom.values() {
+            for location in pos_cache.bottom().values() {
                 // pattern location
                 let child = node.expect_child_at(location);
 
-                let inner_offset = Offset::new(child.width() - inner_width.0);
+                let inner_offset = Offset::new(child.width() - **inner_width);
                 let outer_offset = node.expect_child_offset(location);
                 if let Some(node_offset) = inner_offset
                     .and_then(|o| o.checked_add(outer_offset))
                     .or(NonZeroUsize::new(outer_offset))
                 {
-                    let split_loc = SubSplitLocation {
-                        location: *location,
-                        inner_offset,
-                    };
+                    let split_loc =
+                        SubSplitLocation::new(*location, inner_offset);
                     output
                         .splits_mut()
                         .entry(node_offset)
@@ -165,27 +175,23 @@ impl VertexSplitCtx<'_> {
         // uses end pos of sub split position to calculate node offset
         for (outer_offset, pos_cache) in self.top_down.iter() {
             // outer offset:
-            let inner_offset = Offset::new(end_pos.0 - outer_offset.0).unwrap();
-            for location in pos_cache.bottom.values() {
+            let inner_offset = Offset::new(*(end_pos - *outer_offset)).unwrap();
+            for location in pos_cache.bottom().values() {
                 let child = node.expect_child_at(location);
                 let inner_offset =
                     Offset::new(inner_offset.get() % child.width());
-                let location = SubLocation {
-                    sub_index: location.sub_index
-                        + inner_offset.is_none() as usize,
-                    pattern_id: location.pattern_id,
-                };
+                let location = SubLocation::new(
+                    location.pattern_id(),
+                    location.sub_index() + inner_offset.is_none() as usize,
+                );
 
                 let offset = node.expect_child_offset(&location);
                 let parent_offset = inner_offset
                     .map(|o| o.checked_add(offset).unwrap())
                     .unwrap_or_else(|| NonZeroUsize::new(offset).unwrap());
 
-                if parent_offset.get() < node.width {
-                    let bottom = SubSplitLocation {
-                        location,
-                        inner_offset,
-                    };
+                if parent_offset.get() < node.width() {
+                    let bottom = SubSplitLocation::new(location, inner_offset);
                     if let Some(e) = output.splits_mut().get_mut(&parent_offset)
                     {
                         e.push(bottom)
@@ -229,31 +235,32 @@ impl VertexSplitCtx<'_> {
             global_splits
                 .into_iter()
                 .map(|(parent_offset, mut locs)| {
-                    if locs.len() < node.children.len() {
+                    if locs.len() < node.children().len() {
                         let pids: HashSet<_> = locs
                             .iter()
-                            .map(|l| l.location.pattern_id)
+                            .map(|l| l.location.pattern_id())
                             .collect();
                         let missing = node
-                            .children
+                            .children()
                             .iter()
                             .filter(|(pid, _)| !pids.contains(pid))
                             .collect_vec();
                         let new_splits =
                             position_splits(missing, parent_offset).splits;
                         locs.extend(new_splits.into_iter().map(|(pid, loc)| {
-                            SubSplitLocation {
-                                location: SubLocation::new(pid, loc.sub_index),
-                                inner_offset: loc.inner_offset,
-                            }
+                            SubSplitLocation::new(
+                                SubLocation::new(pid, loc.sub_index()),
+                                loc.inner_offset(),
+                            )
                         }))
                     }
                     (
                         parent_offset,
                         locs.into_iter()
                             .map(|sub| {
-                                if sub.inner_offset.is_some()
-                                    || node.children[&sub.location.pattern_id]
+                                if sub.inner_offset().is_some()
+                                    || node.children()
+                                        [&sub.location.pattern_id()]
                                         .len()
                                         > 2
                                 {

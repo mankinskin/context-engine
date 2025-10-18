@@ -246,7 +246,7 @@ where
             })
             .collect();
         nodes.values().for_each(|(idx, node)| {
-            let parents = node.data.get_parents();
+            let parents = node.data.parents();
             for (p_id, parent) in parents {
                 let (p_idx, _p_data) = nodes
                     .get(p_id)

@@ -25,12 +25,35 @@ use crate::{
         TravDir,
     },
 };
+pub trait HasSubIndexMut: HasSubIndex {
+    fn sub_index_mut(&mut self) -> &mut usize;
+}
 pub trait HasSubIndex {
     fn sub_index(&self) -> usize;
+}
+impl<T: HasSubIndex> HasSubIndex for &mut T {
+    fn sub_index(&self) -> usize {
+        (**self).sub_index()
+    }
+}
+impl<T: HasSubIndex> HasSubIndex for &T {
+    fn sub_index(&self) -> usize {
+        (**self).sub_index()
+    }
+}
+impl<T: HasSubIndexMut> HasSubIndexMut for &mut T {
+    fn sub_index_mut(&mut self) -> &mut usize {
+        (**self).sub_index_mut()
+    }
 }
 impl HasSubIndex for ChildLocation {
     fn sub_index(&self) -> usize {
         self.sub_index
+    }
+}
+impl HasSubIndexMut for ChildLocation {
+    fn sub_index_mut(&mut self) -> &mut usize {
+        &mut self.sub_index
     }
 }
 

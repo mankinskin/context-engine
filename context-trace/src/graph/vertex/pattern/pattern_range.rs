@@ -27,7 +27,7 @@ pub(crate) fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     })
 }
 
-pub(crate) trait PatternRangeIndex<T = Child>:
+pub trait PatternRangeIndex<T = Child>:
     SliceIndex<[T], Output = [T]>
     + RangeBounds<usize>
     + Iterator<Item = usize>

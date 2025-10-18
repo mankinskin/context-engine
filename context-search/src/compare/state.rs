@@ -11,6 +11,7 @@ use crate::{
             EndState,
         },
     },
+    FinishedKind::Complete,
 };
 use context_trace::{
     path::RolePathUtils,
@@ -28,32 +29,32 @@ use std::{
 use CompareNext::*;
 use PathPairMode::*;
 
-pub type CompareQueue = VecDeque<CompareState>;
+pub(crate) type CompareQueue = VecDeque<CompareState>;
 
 #[derive(Clone, Debug, PartialEq, Eq, Copy)]
-pub enum PathPairMode {
+pub(crate) enum PathPairMode {
     GraphMajor,
     QueryMajor,
 }
 #[derive(Clone, Debug)]
-pub enum ChildMatchState {
+pub(crate) enum ChildMatchState {
     Mismatch(EndState),
     Match(CompareState),
 }
 use ChildMatchState::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
-pub struct CompareState {
+pub(crate) struct CompareState {
     #[deref]
     #[deref_mut]
-    pub child_state: ChildState,
-    pub cursor: PatternCursor,
-    pub target: DownKey,
-    pub mode: PathPairMode,
+    pub(crate) child_state: ChildState,
+    pub(crate) cursor: PatternCursor,
+    pub(crate) target: DownKey,
+    pub(crate) mode: PathPairMode,
 }
 
 #[derive(Clone, Debug)]
-pub enum CompareNext {
+pub(crate) enum CompareNext {
     MatchState(ChildMatchState),
     Prefixes(ChildQueue<CompareState>),
 }
@@ -69,14 +70,14 @@ impl CompareState {
         }
         .prefix_states(trav)
     }
-    pub fn parent_state(&self) -> ParentCompareState {
+    pub(crate) fn parent_state(&self) -> ParentCompareState {
         ParentCompareState {
             parent_state: self.child_state.parent_state(),
             cursor: self.cursor.clone(),
         }
     }
     /// generate child states for index prefixes
-    pub fn prefix_states<G: HasGraph>(
+    pub(crate) fn prefix_states<G: HasGraph>(
         &self,
         trav: &G,
     ) -> VecDeque<Self> {
@@ -111,7 +112,7 @@ impl CompareState {
                 .collect(),
         }
     }
-    pub fn next_match<G: HasGraph>(
+    pub(crate) fn next_match<G: HasGraph>(
         self,
         trav: &G,
     ) -> CompareNext {

@@ -8,7 +8,10 @@ use crate::split::{
         SplitTraceState,
         states::context::SplitTraceStatesCtx,
     },
-    vertex::output::RootNode,
+    vertex::{
+        output::RootNode,
+        position::SubSplitLocation,
+    },
 };
 use context_trace::*;
 use derive_more::derive::{
