@@ -38,7 +38,7 @@ impl FinishedKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompleteState {
     pub(crate) cache: TraceCache,
-    pub(crate) root: IndexWithPath,
+    pub root: IndexWithPath,
     pub(crate) start: Child,
 }
 impl TryFrom<FinishedState> for CompleteState {
@@ -68,9 +68,9 @@ impl TryFrom<FinishedState> for CompleteState {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IncompleteState {
-    pub(crate) end_state: EndState,
-    pub(crate) cache: TraceCache,
-    pub(crate) root: IndexWithPath,
+    pub end_state: EndState,
+    pub cache: TraceCache,
+    pub root: IndexWithPath,
     pub(crate) start: Child,
 }
 impl TryFrom<FinishedState> for IncompleteState {
@@ -84,7 +84,7 @@ impl TryFrom<FinishedState> for IncompleteState {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FinishedState {
-    pub(crate) kind: FinishedKind,
+    pub kind: FinishedKind,
     pub(crate) cache: TraceCache,
     pub(crate) root: IndexWithPath,
     pub(crate) start: Child,

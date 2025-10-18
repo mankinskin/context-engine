@@ -108,10 +108,10 @@ impl Traceable for TraceStart<'_> {
     }
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct EndState {
+pub struct EndState {
     pub(crate) reason: EndReason,
     pub(crate) kind: EndKind,
-    pub(crate) cursor: PatternCursor,
+    pub cursor: PatternCursor,
 }
 impl_cursor_pos! {
     CursorPosition for EndState, self => self.cursor.relative_pos

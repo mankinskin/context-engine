@@ -19,7 +19,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
     pub fn new(
         ctx: TraceCtx<G>,
         root: Child,
-        end_bound: usize,
+        end_bound: TokenPosition,
     ) -> Self {
         Self {
             ctx: SplitTraceCtx {

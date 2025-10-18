@@ -257,7 +257,7 @@ fn index_prefix1() {
                     TD { 2 },
                 ),
             ),
-            end_bound: 3,
+            end_bound: 3.into(),
         }
     );
     let hel: Child = graph.insert_init((), init);
@@ -305,7 +305,7 @@ fn index_postfix1() {
                     TD {},
                 ),
             ),
-            end_bound: 3,
+            end_bound: 3.into(),
         },
     );
     let bcd: Child = graph.insert_init((), init);

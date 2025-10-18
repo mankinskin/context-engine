@@ -25,7 +25,7 @@ pub struct SplitTraceState {
 #[derive(Debug, Deref, DerefMut)]
 pub struct SplitTraceCtx<G: HasGraph> {
     pub root: Child,
-    pub end_bound: usize,
+    pub end_bound: TokenPosition,
 
     #[deref]
     #[deref_mut]

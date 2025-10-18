@@ -1,4 +1,5 @@
 use context_trace::*;
+use derive_new::new;
 
 use crate::{
     fold::{
@@ -25,10 +26,10 @@ use std::fmt::Debug;
 
 pub(crate) type FoldResult = Result<FinishedState, ErrorState>;
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct ErrorState {
-    pub(crate) reason: ErrorReason,
-    pub(crate) found: Option<FinishedKind>,
+    pub reason: ErrorReason,
+    pub found: Option<FinishedKind>,
 }
 impl From<ErrorReason> for ErrorState {
     fn from(reason: ErrorReason) -> Self {

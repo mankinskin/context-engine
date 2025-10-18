@@ -23,6 +23,29 @@ use crate::graph::{
 };
 
 impl<G: GraphKind> Hypergraph<G> {
+    #[track_caller]
+    pub fn expect_token_child(
+        &self,
+        token: impl AsToken<G::Token>,
+    ) -> Child {
+        Child::new(self.expect_token_index(token), 1)
+    }
+    pub fn get_token_children(
+        &self,
+        tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
+    ) -> Result<Pattern, ErrorReason> {
+        self.to_token_children_iter(tokens)
+            .collect::<Result<Pattern, _>>()
+    }
+    #[track_caller]
+    pub fn expect_token_children(
+        &self,
+        tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
+    ) -> Pattern {
+        self.get_token_children(tokens)
+            .expect("Failed to convert tokens to children")
+            .into_pattern()
+    }
     pub(crate) fn get_token_data(
         &self,
         token: &Token<G::Token>,
@@ -66,13 +89,6 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> VertexIndex {
         self.get_token_index(token).expect("Token does not exist")
     }
-    #[track_caller]
-    pub(crate) fn expect_token_child(
-        &self,
-        token: impl AsToken<G::Token>,
-    ) -> Child {
-        Child::new(self.expect_token_index(token), 1)
-    }
     pub(crate) fn to_token_keys_iter<'a>(
         &'a self,
         tokens: impl IntoIterator<Item = impl AsToken<G::Token>> + 'a,
@@ -95,22 +111,6 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> impl Iterator<Item = Result<Child, ErrorReason>> + 'a {
         self.to_token_index_iter(tokens)
             .map(move |r| r.map(|index| Child::new(index, 1)))
-    }
-    pub fn get_token_children(
-        &self,
-        tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
-    ) -> Result<Pattern, ErrorReason> {
-        self.to_token_children_iter(tokens)
-            .collect::<Result<Pattern, _>>()
-    }
-    #[track_caller]
-    pub fn expect_token_children(
-        &self,
-        tokens: impl IntoIterator<Item = impl AsToken<G::Token>>,
-    ) -> Pattern {
-        self.get_token_children(tokens)
-            .expect("Failed to convert tokens to children")
-            .into_pattern()
     }
     pub(crate) fn get_token_indices(
         &self,

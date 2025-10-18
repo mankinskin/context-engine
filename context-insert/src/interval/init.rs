@@ -13,14 +13,14 @@ use crate::interval::IntervalGraph;
 pub struct InitInterval {
     pub root: Child,
     pub cache: TraceCache,
-    pub end_bound: usize,
+    pub end_bound: TokenPosition,
 }
 impl From<IncompleteState> for InitInterval {
     fn from(state: IncompleteState) -> Self {
         Self {
             cache: state.cache,
             root: state.root.index,
-            end_bound: state.end_state.cursor.width(),
+            end_bound: *state.end_state.cursor_pos(),
         }
     }
 }

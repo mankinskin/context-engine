@@ -262,7 +262,7 @@ fn interval_graph2() {
         init,
         InitInterval {
             root: cdefghi,
-            end_bound: 5,
+            end_bound: 5.into(),
             cache: build_trace_cache!(
                 d => (
                     BU {},

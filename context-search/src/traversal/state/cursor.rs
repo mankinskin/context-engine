@@ -2,16 +2,20 @@ use crate::traversal::ControlFlow;
 use context_trace::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct PathCursor<P> {
+pub struct PathCursor<P> {
     pub(crate) path: P,
     pub(crate) relative_pos: TokenPosition,
 }
 
-impl<P> Wide for PathCursor<P> {
-    fn width(&self) -> usize {
-        self.relative_pos.into()
+impl<R: PathRole, P: RootChildIndex<R>> RootChildIndex<R> for PathCursor<P> {
+    fn root_child_index(&self) -> usize {
+        RootChildIndex::<R>::root_child_index(&self.path)
     }
 }
+impl_cursor_pos! {
+    <R: FoldablePath> CursorPosition for PathCursor<R>, self => self.relative_pos
+}
+
 impl<P: PathPop> PathPop for PathCursor<P> {
     fn path_pop(&mut self) -> Option<ChildLocation> {
         self.path.path_pop()
@@ -25,14 +29,12 @@ impl<P: PathAppend> PathAppend for PathCursor<P> {
         self.path.path_append(parent_entry);
     }
 }
-impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
-    for PathCursor<P>
-{
-    fn root_child<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Child {
-        self.path.root_child(trav)
+impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
+    fn rooted_path(&self) -> &P {
+        &self.path
+    }
+    fn rooted_path_mut(&mut self) -> &mut P {
+        &mut self.path
     }
 }
 impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
@@ -43,27 +45,16 @@ impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
         self.path.path_mut()
     }
 }
-
-impl<R: PathRole, P: FoldablePath + PathChild<R>> PathChild<R>
-    for PathCursor<P>
+impl<D: Direction, P> MoveKey<D> for PathCursor<P>
+where
+    TokenPosition: MoveKey<D>,
 {
-    fn path_child_location(&self) -> Option<ChildLocation> {
-        self.path.path_child_location()
+    fn move_key(
+        &mut self,
+        delta: usize,
+    ) {
+        self.relative_pos.move_key(delta)
     }
-    fn path_child<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Option<Child> {
-        self.path.path_child(trav)
-    }
-}
-impl<R: PathRole, P: RootChildIndex<R>> RootChildIndex<R> for PathCursor<P> {
-    fn root_child_index(&self) -> usize {
-        RootChildIndex::<R>::root_child_index(&self.path)
-    }
-}
-impl_cursor_pos! {
-    <R: FoldablePath> CursorPosition for PathCursor<R>, self => self.relative_pos
 }
 
 pub(crate) type PatternRangeCursor = PathCursor<PatternRangePath>;
@@ -78,18 +69,29 @@ impl From<PatternRangeCursor> for PatternCursor {
     }
 }
 
-impl<D: Direction, P> MoveKey<D> for PathCursor<P>
-where
-    TokenPosition: MoveKey<D>,
+impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
+    for PathCursor<P>
 {
-    fn move_key(
-        &mut self,
-        delta: usize,
-    ) {
-        self.relative_pos.move_key(delta)
+    fn root_child<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Child {
+        self.path.root_child(trav)
     }
 }
-
+impl<R: PathRole, P: FoldablePath + PathChild<R>> PathChild<R>
+    for PathCursor<P>
+{
+    fn path_child_location(&self) -> Option<ChildLocation> {
+        self.path.path_child_location()
+    }
+    fn path_child<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Option<Child> {
+        self.path.path_child(trav)
+    }
+}
 pub(crate) trait MovablePath<D: Direction, R: PathRole>:
     MovePath<D, R> + RootChildIndex<R> + RootPattern
 {
