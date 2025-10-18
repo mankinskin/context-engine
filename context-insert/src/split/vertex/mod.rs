@@ -55,10 +55,10 @@ impl<'a, N: Borrow<(&'a NonZeroUsize, &'a SplitPositionCache)>> From<N>
 #[derive(Debug, Clone)]
 pub struct VertexSplits {
     pub pos: NonZeroUsize,
-    pub splits: ChildTracePositions,
+    pub splits: TokenTracePositions,
 }
 
-pub type ChildTracePositions = HashMap<PatternId, ChildTracePos>;
+pub type TokenTracePositions = HashMap<PatternId, TokenTracePos>;
 
 pub trait ToVertexSplits: Clone {
     fn to_vertex_splits(self) -> VertexSplits;
@@ -95,22 +95,22 @@ impl<N: Borrow<NonZeroUsize>, S: Borrow<SplitPositionCache>> From<(N, S)>
 }
 
 pub trait ToVertexSplitPos {
-    fn to_vertex_split_pos(self) -> ChildTracePositions;
+    fn to_vertex_split_pos(self) -> TokenTracePositions;
 }
 
-impl ToVertexSplitPos for ChildTracePositions {
-    fn to_vertex_split_pos(self) -> ChildTracePositions {
+impl ToVertexSplitPos for TokenTracePositions {
+    fn to_vertex_split_pos(self) -> TokenTracePositions {
         self
     }
 }
 
 impl ToVertexSplitPos for Vec<SubSplitLocation> {
-    fn to_vertex_split_pos(self) -> ChildTracePositions {
+    fn to_vertex_split_pos(self) -> TokenTracePositions {
         self.into_iter()
             .map(|loc| {
                 (
                     loc.location.pattern_id(),
-                    ChildTracePos::new(
+                    TokenTracePos::new(
                         loc.inner_offset(),
                         loc.location.sub_index(),
                     ),
@@ -121,7 +121,7 @@ impl ToVertexSplitPos for Vec<SubSplitLocation> {
 }
 
 impl ToVertexSplitPos for VertexSplits {
-    fn to_vertex_split_pos(self) -> ChildTracePositions {
+    fn to_vertex_split_pos(self) -> TokenTracePositions {
         self.splits
     }
 }
@@ -142,9 +142,9 @@ impl VertexSplitCtx<'_> {
             // bottom up incoming edge
             for location in pos_cache.bottom().values() {
                 // pattern location
-                let child = node.expect_child_at(location);
+                let token = node.expect_child_at(location);
 
-                let inner_offset = Offset::new(child.width() - **inner_width);
+                let inner_offset = Offset::new(token.width() - **inner_width);
                 let outer_offset = node.expect_child_offset(location);
                 if let Some(node_offset) = inner_offset
                     .and_then(|o| o.checked_add(outer_offset))
@@ -167,7 +167,7 @@ impl VertexSplitCtx<'_> {
     }
     pub fn top_down_splits<N: NodeType>(
         &self,
-        end_pos: TokenPosition,
+        end_pos: AtomPosition,
         node: &VertexData,
         output: &mut N::GlobalSplitOutput,
     ) -> bool {
@@ -177,9 +177,9 @@ impl VertexSplitCtx<'_> {
             // outer offset:
             let inner_offset = Offset::new(*(end_pos - *outer_offset)).unwrap();
             for location in pos_cache.bottom().values() {
-                let child = node.expect_child_at(location);
+                let token = node.expect_child_at(location);
                 let inner_offset =
-                    Offset::new(inner_offset.get() % child.width());
+                    Offset::new(inner_offset.get() % token.width());
                 let location = SubLocation::new(
                     location.pattern_id(),
                     location.sub_index() + inner_offset.is_none() as usize,
@@ -206,7 +206,7 @@ impl VertexSplitCtx<'_> {
     }
     pub fn global_splits<N: NodeType>(
         &self,
-        end_pos: TokenPosition,
+        end_pos: AtomPosition,
         node: &VertexData,
     ) -> N::GlobalSplitOutput {
         let mut output = N::GlobalSplitOutput::default();
@@ -223,7 +223,7 @@ impl VertexSplitCtx<'_> {
     pub fn complete_splits<G: HasGraph, N: NodeType>(
         &self,
         trav: &G,
-        end_pos: TokenPosition,
+        end_pos: AtomPosition,
     ) -> N::CompleteSplitOutput {
         let graph = trav.graph();
 
@@ -235,13 +235,13 @@ impl VertexSplitCtx<'_> {
             global_splits
                 .into_iter()
                 .map(|(parent_offset, mut locs)| {
-                    if locs.len() < node.children().len() {
+                    if locs.len() < node.child_patterns().len() {
                         let pids: HashSet<_> = locs
                             .iter()
                             .map(|l| l.location.pattern_id())
                             .collect();
                         let missing = node
-                            .children()
+                            .child_patterns()
                             .iter()
                             .filter(|(pid, _)| !pids.contains(pid))
                             .collect_vec();
@@ -259,7 +259,7 @@ impl VertexSplitCtx<'_> {
                         locs.into_iter()
                             .map(|sub| {
                                 if sub.inner_offset().is_some()
-                                    || node.children()
+                                    || node.child_patterns()
                                         [&sub.location.pattern_id()]
                                         .len()
                                         > 2

@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use accessors::{
     child::{
-        LeafChild,
+        LeafToken,
         root::GraphRootChild,
     },
     has_path::HasRolePath,
@@ -12,12 +12,15 @@ use accessors::{
 use crate::{
     direction::pattern::PatternDirection,
     graph::vertex::{
-        child::Child,
         location::child::ChildLocation,
+        token::Token,
     },
-    path::structs::{
-        role_path::RolePath,
-        rooted::role_path::RootChildIndex,
+    path::{
+        accessors::child::RootedLeafToken,
+        structs::{
+            role_path::RolePath,
+            rooted::role_path::RootChildIndex,
+        },
     },
     trace::has_graph::HasGraph,
 };
@@ -47,11 +50,11 @@ impl<T: Debug + Sized + Clone + PartialEq + Eq + Send + Sync + Unpin + 'static>
 }
 
 pub trait RolePathUtils {
-    fn role_leaf_child_location<R: PathRole>(&self) -> Option<ChildLocation>
+    fn role_leaf_token_location<R: PathRole>(&self) -> Option<ChildLocation>
     where
-        Self: LeafChild<R>,
+        Self: LeafToken<R>,
     {
-        LeafChild::<R>::leaf_child_location(self)
+        LeafToken::<R>::leaf_token_location(self)
     }
     fn role_root_child_index<R: PathRole>(&self) -> usize
     where
@@ -106,14 +109,14 @@ pub trait RolePathUtils {
     {
         HasRolePath::<R>::role_path_mut(self)
     }
-    fn role_leaf_child<R: PathRole, G: HasGraph>(
+    fn role_leaf_token<R: PathRole, G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child
+    ) -> Token
     where
-        Self: LeafChild<R>,
+        Self: RootedLeafToken<R>,
     {
-        LeafChild::<R>::leaf_child(self, trav)
+        RootedLeafToken::<R>::rooted_leaf_token(self, trav)
     }
     fn child_pos<R: PathRole>(&self) -> usize
     where

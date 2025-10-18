@@ -6,13 +6,13 @@ use crate::graph::{
     },
     kind::GraphKind,
     vertex::{
-        child::Child,
         has_vertex_index::HasVertexIndex,
         location::child::{
             ChildLocation,
             IntoChildLocation,
         },
         pattern::Pattern,
+        token::Token,
     },
 };
 
@@ -20,41 +20,41 @@ impl<G: GraphKind> Hypergraph<G> {
     pub(crate) fn get_child_at(
         &self,
         location: impl IntoChildLocation,
-    ) -> Result<&Child, ErrorReason> {
+    ) -> Result<&Token, ErrorReason> {
         let location = location.into_child_location();
         let pattern = self.get_pattern_at(location)?;
         pattern
             .get(location.sub_index)
-            .ok_or(ErrorReason::NoChildPatterns) // todo: better error
+            .ok_or(ErrorReason::NoTokenPatterns) // todo: better error
     }
     pub(crate) fn get_child_mut_at(
         &mut self,
         location: impl IntoChildLocation,
-    ) -> Result<&mut Child, ErrorReason> {
+    ) -> Result<&mut Token, ErrorReason> {
         let location = location.into_child_location();
         let pattern = self.get_pattern_mut_at(location)?;
         pattern
             .get_mut(location.sub_index)
-            .ok_or(ErrorReason::NoChildPatterns) // todo: better error
+            .ok_or(ErrorReason::NoTokenPatterns) // todo: better error
     }
     #[track_caller]
     pub fn expect_child_at(
         &self,
         location: impl IntoChildLocation,
-    ) -> &Child {
+    ) -> &Token {
         let location = location.into_child_location();
         self.get_child_at(location).unwrap_or_else(|_| {
-            panic!("Child not found at location {:#?}", location)
+            panic!("Token not found at location {:#?}", location)
         })
     }
     #[track_caller]
     pub(crate) fn expect_child_mut_at(
         &mut self,
         location: impl IntoChildLocation,
-    ) -> &mut Child {
+    ) -> &mut Token {
         let location = location.into_child_location();
         self.get_child_mut_at(location).unwrap_or_else(|_| {
-            panic!("Child not found at location {:#?}", location)
+            panic!("Token not found at location {:#?}", location)
         })
     }
     pub(crate) fn expect_is_at_end(
@@ -75,14 +75,14 @@ impl<G: GraphKind> Hypergraph<G> {
     pub(crate) fn expect_child(
         &self,
         index: impl HasVertexIndex,
-    ) -> Child {
+    ) -> Token {
         self.to_child(index)
     }
     pub(crate) fn to_child(
         &self,
         index: impl HasVertexIndex,
-    ) -> Child {
-        Child::new(index.vertex_index(), self.expect_index_width(&index))
+    ) -> Token {
+        Token::new(index.vertex_index(), self.expect_index_width(&index))
     }
     pub(crate) fn to_children(
         &self,

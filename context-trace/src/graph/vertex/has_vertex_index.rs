@@ -1,6 +1,6 @@
 use crate::graph::vertex::{
     VertexIndex,
-    child::Child,
+    token::Token,
     data::VertexData,
     wide::Wide,
 };
@@ -33,32 +33,32 @@ impl HasVertexIndex for VertexData {
         self.index
     }
 }
-impl HasVertexIndex for Child {
+impl HasVertexIndex for Token {
     fn vertex_index(&self) -> VertexIndex {
         self.index
     }
 }
 
-pub trait ToChild: HasVertexIndex + Wide + Debug {
-    fn to_child(&self) -> Child {
-        Child::new(self.vertex_index(), self.width())
+pub trait ToToken: HasVertexIndex + Wide + Debug {
+    fn to_child(&self) -> Token {
+        Token::new(self.vertex_index(), self.width())
     }
 }
 
-impl<T: HasVertexIndex + Wide + Debug> ToChild for T {}
+impl<T: HasVertexIndex + Wide + Debug> ToToken for T {}
 
-//pub(crate) trait MaybeIndexed<T: Tokenize> {
+//pub(crate) trait MaybeIndexed<T: Atomize> {
 //    type Inner: HasVertexIndex;
 //    fn into_inner(self) -> Result<Self::Inner, T>;
 //}
 //
-//impl<I: HasVertexIndex, T: Tokenize> MaybeIndexed<T> for Result<I, T> {
+//impl<I: HasVertexIndex, T: Atomize> MaybeIndexed<T> for Result<I, T> {
 //    type Inner = I;
 //    fn into_inner(self) -> Result<Self::Inner, T> {
 //        self
 //    }
 //}
-//impl<I: Indexed, T: Tokenize> MaybeIndexed<T> for I {
+//impl<I: Indexed, T: Atomize> MaybeIndexed<T> for I {
 //    type Inner = I;
 //    fn into_inner(self) -> Result<Self::Inner, T> {
 //        Ok(self)

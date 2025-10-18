@@ -2,12 +2,12 @@ use crate::{
     graph::vertex::has_vertex_index::HasVertexIndex,
     trace::{
         cache::{
-            Child,
+            Token,
             VertexIndex,
         },
         has_graph::{
             HasGraph,
-            TravToken,
+            TravAtom,
         },
     },
 };
@@ -32,7 +32,7 @@ pub(crate) fn labelled<G: HasGraph, T: HasVertexIndex>(
     index: T,
 ) -> Labelled<T>
 where
-    TravToken<G>: Display,
+    TravAtom<G>: Display,
 {
     Labelled::<T>::build(trav, index)
 }
@@ -43,8 +43,8 @@ pub(crate) struct Labelled<T> {
     index: T,
     label: String,
 }
-impl From<Labelled<Child>> for Labelled<VertexIndex> {
-    fn from(c: Labelled<Child>) -> Self {
+impl From<Labelled<Token>> for Labelled<VertexIndex> {
+    fn from(c: Labelled<Token>) -> Self {
         Labelled {
             index: c.index.vertex_index(),
             label: c.label,
@@ -66,7 +66,7 @@ impl<T> Labelled<T> {
         index: T,
     ) -> Self
     where
-        TravToken<G>: Display,
+        TravAtom<G>: Display,
         T: HasVertexIndex,
     {
         let vi = index.vertex_index();

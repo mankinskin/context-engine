@@ -17,7 +17,7 @@ use std::collections::HashSet;
 #[test]
 fn index_pattern1() {
     let mut graph = Hypergraph::default();
-    insert_tokens!(graph, {a, b, x, y, z});
+    insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         ab => [[a, b]],
         by => [[b, y]],
@@ -31,10 +31,10 @@ fn index_pattern1() {
     // todo: split sub patterns not caught by query search
     let graph = HypergraphRef::from(graph);
     let query = vec![by, z];
-    let byz: Child = graph.insert(query.clone()).expect("Indexing failed");
+    let byz: Token = graph.insert(query.clone()).expect("Indexing failed");
     assert_eq!(
         byz,
-        Child {
+        Token {
             index: 13,
             width: 3.into(),
         },
@@ -50,7 +50,7 @@ fn index_pattern1() {
         "byz"
     );
     let query = vec![ab, y];
-    let aby: Child = graph.insert(query.clone()).expect("Indexing failed");
+    let aby: Token = graph.insert(query.clone()).expect("Indexing failed");
     let aby_found = graph.find_parent(&query);
     assert_matches!(
         aby_found,
@@ -65,7 +65,7 @@ fn index_pattern1() {
 #[test]
 fn index_pattern2() {
     let mut graph = Hypergraph::default();
-    insert_tokens!(graph, {a, b, x, y, z});
+    insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         yz => [[y, z]],
         xab => [[x, a, b]],
@@ -77,7 +77,7 @@ fn index_pattern2() {
     let graph_ref = HypergraphRef::from(graph);
 
     let query = vec![a, b, y, x];
-    let aby: Child = graph_ref.insert(query.clone()).expect("Indexing failed");
+    let aby: Token = graph_ref.insert(query.clone()).expect("Indexing failed");
     assert_eq!(aby.width(), 3);
     let ab = graph_ref
         .find_sequence("ab".chars())
@@ -110,7 +110,7 @@ fn index_pattern2() {
 #[test]
 fn index_infix1() {
     let mut graph = Hypergraph::default();
-    insert_tokens!(graph, {a, b, w, x, y, z});
+    insert_atoms!(graph, {a, b, w, x, y, z});
     insert_patterns!(graph,
         yz => [[y, z]],
         xxabyzw => [[x, x, a, b, yz, w]],
@@ -118,7 +118,7 @@ fn index_infix1() {
 
     let graph_ref = HypergraphRef::from(graph);
 
-    let aby: Child = graph_ref.insert(vec![a, b, y]).expect("Indexing failed");
+    let aby: Token = graph_ref.insert(vec![a, b, y]).expect("Indexing failed");
     let ab = graph_ref
         .find_ancestor(vec![a, b])
         .unwrap()
@@ -127,7 +127,7 @@ fn index_infix1() {
     let aby_vertex = graph.expect_vertex(aby);
     assert_eq!(aby.width(), 3, "aby");
     assert_eq!(aby_vertex.parents().len(), 1, "aby");
-    assert_eq!(aby_vertex.children().len(), 1, "aby");
+    assert_eq!(aby_vertex.child_patterns().len(), 1, "aby");
     assert_eq!(
         aby_vertex
             .child_pattern_set()
@@ -175,7 +175,7 @@ fn index_infix1() {
 #[test]
 fn index_infix2() {
     let mut graph = Hypergraph::default();
-    insert_tokens!(graph, {a, b, c, d, x, y});
+    insert_atoms!(graph, {a, b, c, d, x, y});
     insert_patterns!(graph,
         yy => [y, y],
         xx => [x, x],
@@ -191,13 +191,13 @@ fn index_infix2() {
 
     let graph_ref = HypergraphRef::from(graph);
 
-    let abcd: Child =
+    let abcd: Token =
         graph_ref.insert(vec![a, b, c, d]).expect("Indexing failed");
     let graph = graph_ref.graph();
     let abcd_vertex = graph.expect_vertex(abcd);
     assert_eq!(abcd.width(), 4, "abcd");
     assert_eq!(abcd_vertex.parents().len(), 1, "abcd");
-    assert_eq!(abcd_vertex.children().len(), 1, "abcd");
+    assert_eq!(abcd_vertex.child_patterns().len(), 1, "abcd");
     assert_eq!(
         abcd_vertex
             .child_pattern_set()
@@ -223,7 +223,7 @@ fn index_infix2() {
 fn index_prefix1() {
     init_tracing();
     let mut graph = HypergraphRef::default();
-    insert_tokens!(graph, {h, e, l, d});
+    insert_atoms!(graph, {h, e, l, d});
     insert_patterns!(graph,
         (ld, ld_id) => [l, d],
         (heldld, heldld_id) => [h, e, ld, ld]
@@ -260,7 +260,7 @@ fn index_prefix1() {
             end_bound: 3.into(),
         }
     );
-    let hel: Child = graph.insert_init((), init);
+    let hel: Token = graph.insert_init((), init);
     assert_indices!(graph, he, held);
     assert_patterns! {
         graph,
@@ -274,7 +274,7 @@ fn index_prefix1() {
 #[test]
 fn index_postfix1() {
     let mut graph = HypergraphRef::default();
-    insert_tokens!(graph, {a, b, c, d});
+    insert_atoms!(graph, {a, b, c, d});
 
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
@@ -308,7 +308,7 @@ fn index_postfix1() {
             end_bound: 3.into(),
         },
     );
-    let bcd: Child = graph.insert_init((), init);
+    let bcd: Token = graph.insert_init((), init);
     assert_indices!(graph, cd, abcd);
     assert_patterns! {
         graph,

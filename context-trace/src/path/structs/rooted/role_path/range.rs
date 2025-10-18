@@ -1,6 +1,9 @@
 use crate::{
     path::{
-        accessors::child::LeafChildPosMut,
+        accessors::child::{
+            LeafToken,
+            LeafTokenPosMut,
+        },
         mutators::adapters::FromAdvanced,
         structs::rooted::role_path::RootChildIndexMut,
     },
@@ -10,21 +13,21 @@ use crate::{
 pub type StartPath = RolePath<Start>;
 pub type EndPath = RolePath<End>;
 
-impl LeafChildPosMut<End> for EndPath {
-    fn leaf_child_pos_mut(&mut self) -> &mut usize {
+impl LeafTokenPosMut<End> for EndPath {
+    fn leaf_token_pos_mut(&mut self) -> &mut usize {
         if !self.path().is_empty() {
-            &mut self.path_child_location_mut().unwrap().sub_index
+            &mut self.leaf_token_location_mut().unwrap().sub_index
         } else {
             self.root_child_index_mut()
         }
     }
 }
-pub trait HasStartPath {
+pub trait HasStartPath: HasPath<Start> {
     fn start_path(&self) -> &StartPath;
     fn start_path_mut(&mut self) -> &mut StartPath;
 }
 
-pub trait HasEndPath {
+pub trait HasEndPath: HasPath<End> {
     fn end_path(&self) -> &EndPath;
     fn end_path_mut(&mut self) -> &mut EndPath;
 }

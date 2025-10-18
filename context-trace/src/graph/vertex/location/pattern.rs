@@ -4,40 +4,48 @@ use std::{
     ops::Range,
 };
 
-use crate::graph::vertex::{
-    PatternId,
-    location::{
-        ChildLocation,
-        HasParent,
+use crate::{
+    HasPatternId,
+    graph::vertex::{
+        PatternId,
+        location::{
+            ChildLocation,
+            HasParent,
+        },
+        pattern::Pattern,
     },
-    pattern::Pattern,
 };
 
-use crate::graph::vertex::child::Child;
+use crate::graph::vertex::token::Token;
 
 pub(crate) struct PatternRangeLocation {
-    pub parent: Child,
+    pub parent: Token,
     pub id: PatternId,
     pub range: Range<usize>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 pub struct PatternLocation {
-    pub parent: Child,
-    pub id: PatternId,
+    pub parent: Token,
+    pub pattern_id: PatternId,
 }
 
+impl HasPatternId for PatternLocation {
+    fn pattern_id(&self) -> PatternId {
+        self.pattern_id
+    }
+}
 impl HasParent for PatternLocation {
-    fn parent(&self) -> &Child {
+    fn parent(&self) -> &Token {
         &self.parent
     }
 }
 impl PatternLocation {
     pub fn new(
-        parent: Child,
-        id: PatternId,
+        parent: Token,
+        pattern_id: PatternId,
     ) -> Self {
-        Self { parent, id }
+        Self { parent, pattern_id }
     }
     pub(crate) fn to_child_location(
         &self,
@@ -45,7 +53,7 @@ impl PatternLocation {
     ) -> ChildLocation {
         ChildLocation {
             parent: self.parent,
-            pattern_id: self.id,
+            pattern_id: self.pattern_id,
             sub_index,
         }
     }
@@ -55,14 +63,14 @@ impl PatternLocation {
     ) -> PatternRangeLocation {
         PatternRangeLocation {
             parent: self.parent,
-            id: self.id,
+            id: self.pattern_id,
             range,
         }
     }
     //pub(crate) fn get_pattern<
     //    'a: 'g,
     //    'g,
-    //    T: Tokenize,
+    //    T: Atomize,
     //    Trav: HasGraph<T> + 'a,
     //>(&'a self, trav: &'a Trav) -> Option<&Pattern> {
     //    trav.graph().get_pattern_at(self).ok()
@@ -70,23 +78,23 @@ impl PatternLocation {
     //pub(crate) fn expect_pattern<
     //    'a: 'g,
     //    'g,
-    //    T: Tokenize,
+    //    T: Atomize,
     //    Trav: HasGraph<T> + 'a,
     //>(&'a self, trav: &'a Trav) -> &Pattern {
     //    trav.graph().expect_pattern_at(self)
     //}
     pub(crate) fn get_pattern_in<'a>(
         &self,
-        patterns: &'a crate::graph::vertex::ChildPatterns,
+        patterns: &'a crate::graph::vertex::TokenPatterns,
     ) -> Option<&'a Pattern> {
-        patterns.get(&self.id)
+        patterns.get(&self.pattern_id)
     }
     pub(crate) fn expect_pattern_in<'a>(
         &self,
-        patterns: &'a crate::graph::vertex::ChildPatterns,
+        patterns: &'a crate::graph::vertex::TokenPatterns,
     ) -> &'a Pattern {
         self.get_pattern_in(patterns)
-            .expect("Expected Pattern not present in ChildPatterns!")
+            .expect("Expected Pattern not present in TokenPatterns!")
     }
 }
 

@@ -1,9 +1,9 @@
 #[derive(Default, PartialEq, Debug)]
-pub struct ChildStrings {
+pub struct TokenStrings {
     patterns: indexmap::IndexMap<String, Vec<Vec<String>>>,
 }
 
-impl ChildStrings {
+impl TokenStrings {
     pub(crate) fn new() -> Self {
         Default::default()
     }

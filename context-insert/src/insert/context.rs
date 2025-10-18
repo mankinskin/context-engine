@@ -28,7 +28,7 @@ impl TraversalKind for InsertTraversal {
 }
 
 #[derive(Debug)]
-pub struct InsertCtx<R: InsertResult = Child> {
+pub struct InsertCtx<R: InsertResult = Token> {
     graph: HypergraphRef,
     _ty: std::marker::PhantomData<R>,
 }

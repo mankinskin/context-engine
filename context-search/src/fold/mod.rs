@@ -23,7 +23,7 @@ pub(crate) trait IntoFoldCtx<K: TraversalKind> {
     fn into_fold_context(self) -> Result<FoldCtx<K>, ErrorState>;
 }
 
-impl<K: TraversalKind, S: IntoTraversalCtx<K> + ToChild> IntoFoldCtx<K> for S {
+impl<K: TraversalKind, S: IntoTraversalCtx<K> + ToToken> IntoFoldCtx<K> for S {
     fn into_fold_context(self) -> Result<FoldCtx<K>, ErrorState> {
         let start_index = self.to_child();
         self.into_traversal_context().map(|tctx| FoldCtx {
@@ -37,7 +37,7 @@ impl<K: TraversalKind, S: IntoTraversalCtx<K> + ToChild> IntoFoldCtx<K> for S {
 #[derive(Debug)]
 pub(crate) struct FoldCtx<K: TraversalKind> {
     pub(crate) tctx: TraversalCtx<K>,
-    pub(crate) start_index: Child,
+    pub(crate) start_index: Token,
     pub(crate) max_width: usize,
 }
 

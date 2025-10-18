@@ -26,12 +26,12 @@ pub(crate) enum EndKind {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
-    Complete(Child),
+    Complete(Token),
 }
 impl EndKind {
     pub(crate) fn from_range_path<G: HasGraph>(
         mut path: IndexRangePath,
-        root_pos: TokenPosition,
+        root_pos: AtomPosition,
         target: DownKey,
         trav: &G,
     ) -> Self {
@@ -63,7 +63,7 @@ impl EndKind {
     }
     pub(crate) fn from_start_path<G: HasGraph>(
         mut path: IndexStartPath,
-        root_pos: TokenPosition,
+        root_pos: AtomPosition,
         trav: &G,
     ) -> Self {
         path.role_path_mut().simplify(trav);

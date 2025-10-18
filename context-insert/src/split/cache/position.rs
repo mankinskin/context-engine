@@ -13,13 +13,13 @@ use context_trace::*;
 
 #[derive(Clone, Debug, Copy, Hash, Eq, PartialEq)]
 pub struct PosKey {
-    pub index: Child,
+    pub index: Token,
     pub pos: NonZeroUsize,
 }
 
 impl PosKey {
     pub fn new<P: TryInto<NonZeroUsize>>(
-        index: Child,
+        index: Token,
         pos: P,
     ) -> Self
     where
@@ -32,8 +32,8 @@ impl PosKey {
     }
 }
 
-impl From<Child> for PosKey {
-    fn from(index: Child) -> Self {
+impl From<Token> for PosKey {
+    fn from(index: Token) -> Self {
         Self {
             index,
             pos: NonZeroUsize::new(index.width()).unwrap(),
@@ -44,7 +44,7 @@ impl From<Child> for PosKey {
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SplitPositionCache {
     pub top: HashSet<PosKey>,
-    pub pattern_splits: ChildTracePositions,
+    pub pattern_splits: TokenTracePositions,
 }
 
 impl std::ops::Sub<PatternSubDeltas> for SplitPositionCache {
@@ -60,20 +60,20 @@ impl std::ops::Sub<PatternSubDeltas> for SplitPositionCache {
     }
 }
 
-impl Borrow<ChildTracePositions> for SplitPositionCache {
-    fn borrow(&self) -> &ChildTracePositions {
+impl Borrow<TokenTracePositions> for SplitPositionCache {
+    fn borrow(&self) -> &TokenTracePositions {
         &self.pattern_splits
     }
 }
 
-impl Borrow<ChildTracePositions> for &SplitPositionCache {
-    fn borrow(&self) -> &ChildTracePositions {
+impl Borrow<TokenTracePositions> for &SplitPositionCache {
+    fn borrow(&self) -> &TokenTracePositions {
         &self.pattern_splits
     }
 }
 
-impl BorrowMut<ChildTracePositions> for SplitPositionCache {
-    fn borrow_mut(&mut self) -> &mut ChildTracePositions {
+impl BorrowMut<TokenTracePositions> for SplitPositionCache {
+    fn borrow_mut(&mut self) -> &mut TokenTracePositions {
         &mut self.pattern_splits
     }
 }

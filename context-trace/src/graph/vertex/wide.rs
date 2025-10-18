@@ -1,5 +1,5 @@
 use crate::{
-    Child,
+    Token,
     ChildLocation,
     graph::vertex::{
         data::VertexData,
@@ -24,7 +24,7 @@ impl Wide for Pattern {
     }
 }
 
-impl Wide for [Child] {
+impl Wide for [Token] {
     fn width(&self) -> usize {
         pattern_width(self)
     }

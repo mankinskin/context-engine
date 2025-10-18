@@ -6,18 +6,21 @@ use crate::{
     graph::{
         getters::ErrorReason,
         vertex::{
-            child::Child,
             pattern::{
                 IntoPattern,
                 Pattern,
             },
+            token::Token,
         },
     },
     path::{
         BaseQuery,
         RolePathUtils,
         accessors::{
-            child::LeafChild,
+            child::{
+                LeafToken,
+                RootedLeafToken,
+            },
             has_path::IntoRootedRolePath,
             role::{
                 End,
@@ -42,11 +45,11 @@ use crate::path::structs::rooted::pattern_range::PatternRangePath;
 
 pub trait FoldablePath:
 BaseQuery
-//+ LeafChildPosMut<End>
+//+ LeafTokenPosMut<End>
 + PathAppend
 + PathPop
 + MoveRootIndex<Right, End>
-+ LeafChild<End>
++ RootedLeafToken<End>
 + RootPattern
 + CalcWidth
 {
@@ -58,8 +61,8 @@ BaseQuery
     fn start_index<G: HasGraph>(
         &self,
         trav: G,
-    ) -> Child {
-        self.role_leaf_child(&trav)
+    ) -> Token {
+        self.role_leaf_token(&trav)
     }
 }
 pub(crate) trait RangePath:
@@ -78,7 +81,7 @@ pub(crate) trait RangePath:
 //    fn prev_exit_pos<
 //        'a: 'g,
 //        'g,
-//        T: Tokenize,
+//        T: Atomize,
 //        D: ,
 //        G: HasGraph<T>,
 //    >(&self, trav: G) -> Option<usize> {

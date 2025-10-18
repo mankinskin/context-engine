@@ -26,7 +26,7 @@ pub struct BandChain {
     //pub links: VecDeque<OverlapLink>,
 }
 impl BandChain {
-    pub fn new(index: Child) -> Self {
+    pub fn new(index: Token) -> Self {
         debug!("New BandChain");
         Self {
             bands: Some(Band {
@@ -68,8 +68,8 @@ impl BandChain {
     }
     pub fn append_front_complement(
         &mut self,
-        complement: Child,
-        exp: Child,
+        complement: Token,
+        exp: Token,
     ) {
         debug!("append_front_complement");
         let pattern = vec![complement, exp];

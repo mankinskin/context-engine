@@ -24,7 +24,7 @@ pub struct PartitionBorders<R: RangeRole, C: PartitionBorderKey = PatternId> {
 }
 
 impl<R: RangeRole> PartitionBorders<R, ModePatternCtxOf<'_, R>> {
-    pub fn into_partition_info(self) -> Result<PartitionInfo<R>, Child> {
+    pub fn into_partition_info(self) -> Result<PartitionInfo<R>, Token> {
         let perfect = self.perfect;
         let patterns: Result<_, _> = self
             .borders

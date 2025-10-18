@@ -42,7 +42,7 @@ fn find_sequence() {
             path: vec![*a].into(),
         }))),
     );
-    let query = graph.graph().expect_token_children("abc".chars());
+    let query = graph.graph().expect_atom_children("abc".chars());
     let abc_found = graph.find_ancestor(&query);
     assert_eq!(
         abc_found.map(|r| r.kind),
@@ -51,7 +51,7 @@ fn find_sequence() {
     );
     let query = graph
         .graph()
-        .expect_token_children("ababababcdefghi".chars());
+        .expect_atom_children("ababababcdefghi".chars());
     let ababababcdefghi_found = graph.find_ancestor(&query);
     assert_eq!(
         ababababcdefghi_found.map(|r| r.kind),
@@ -64,13 +64,13 @@ fn find_pattern1() {
     let mut graph =
         context_trace::graph::Hypergraph::<BaseGraphKind>::default();
     let (a, b, _w, x, y, z) = graph
-        .insert_tokens([
-            Token::Element('a'),
-            Token::Element('b'),
-            Token::Element('w'),
-            Token::Element('x'),
-            Token::Element('y'),
-            Token::Element('z'),
+        .insert_atoms([
+            Atom::Element('a'),
+            Atom::Element('b'),
+            Atom::Element('w'),
+            Atom::Element('x'),
+            Atom::Element('y'),
+            Atom::Element('z'),
         ])
         .into_iter()
         .next_tuple()

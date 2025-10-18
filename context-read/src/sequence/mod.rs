@@ -7,53 +7,45 @@ use std::{
     str::Chars,
 };
 
-pub trait ToNewTokenIndices: Debug {
-    fn to_new_token_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
+pub trait ToNewAtomIndices: Debug {
+    fn to_new_Atom_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
         self,
         graph: &'a mut G,
-    ) -> NewTokenIndices;
+    ) -> NewAtomIndices;
 }
 
-impl ToNewTokenIndices for NewTokenIndices {
-    fn to_new_token_indices<
-        'a: 'g,
-        'g,
-        G: HasGraphMut<Kind = BaseGraphKind>,
-    >(
+impl ToNewAtomIndices for NewAtomIndices {
+    fn to_new_atom_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
         self,
         _graph: &'a mut G,
-    ) -> NewTokenIndices {
+    ) -> NewAtomIndices {
         self
     }
 }
-impl ToNewTokenIndices for Chars<'_> {
-    fn to_new_token_indices<
-        'a: 'g,
-        'g,
-        G: HasGraphMut<Kind = BaseGraphKind>,
-    >(
+impl ToNewAtomIndices for Chars<'_> {
+    fn to_new_atom_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
         self,
         graph: &'a mut G,
-    ) -> NewTokenIndices {
-        graph.graph_mut().new_token_indices(self)
+    ) -> NewAtomIndices {
+        graph.graph_mut().new_atom_indices(self)
     }
 }
-//impl<T: Tokenize> ToNewTokenIndices<T> for Vec<T> {
-//    fn to_new_token_indices<'a: 'g, 'g, G: HasGraphMut>(
+//impl<T: Atomize> ToNewTokenIndices<T> for Vec<T> {
+//    fn to_new_atom_indices<'a: 'g, 'g, G: HasGraphMut>(
 //        self,
 //        graph: &'a mut G,
 //    ) -> NewTokenIndices {
-//        graph.graph_mut().new_token_indices(self)
+//        graph.graph_mut().new_atom_indices(self)
 //    }
 //}
 
-//impl<Iter: IntoIterator<Item = DefaultToken> + Debug + Send + Sync> ToNewTokenIndices<DefaultToken>
+//impl<Iter: IntoIterator<Item = DefaultAtom> + Debug + Send + Sync> ToNewAtomIndices<DefaultAtom>
 //    for Iter
 //{
-//    fn to_new_token_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
+//    fn to_new_atom_indices<'a: 'g, 'g, G: HasGraphMut<Kind = BaseGraphKind>>(
 //        self,
 //        graph: &'a mut G,
 //    ) -> NewTokenIndices {
-//        graph.graph_mut().new_token_indices(self)
+//        graph.graph_mut().new_atom_indices(self)
 //    }
 //}

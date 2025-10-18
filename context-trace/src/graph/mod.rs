@@ -6,7 +6,7 @@ use std::sync::{
 use crate::{
     HashMap,
     graph::{
-        child_strings::ChildStrings,
+        child_strings::TokenStrings,
         getters::vertex::VertexSet,
         kind::{
             BaseGraphKind,
@@ -27,13 +27,13 @@ use serde::{
 };
 use vertex::{
     VertexIndex,
-    child::Child,
+    atom::Atom,
+    token::Token,
     has_vertex_index::{
         HasVertexIndex,
-        ToChild,
+        ToToken,
     },
     pattern::IntoPattern,
-    token::Token,
     wide::Wide,
 };
 
@@ -90,16 +90,16 @@ impl<G: GraphKind> AsMut<Self> for Hypergraph<G> {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Hypergraph<G: GraphKind = BaseGraphKind> {
     graph: indexmap::IndexMap<VertexKey, VertexData>,
-    tokens: indexmap::IndexMap<VertexKey, Token<G::Token>>,
-    token_keys: indexmap::IndexMap<Token<G::Token>, VertexKey>,
+    atoms: indexmap::IndexMap<VertexKey, Atom<G::Atom>>,
+    atom_keys: indexmap::IndexMap<Atom<G::Atom>, VertexKey>,
     _ty: std::marker::PhantomData<G>,
 }
 impl<G: GraphKind> Clone for Hypergraph<G> {
     fn clone(&self) -> Self {
         Self {
             graph: self.graph.clone(),
-            tokens: self.tokens.clone(),
-            token_keys: self.token_keys.clone(),
+            atoms: self.atoms.clone(),
+            atom_keys: self.atom_keys.clone(),
             //pattern_id_count: self.pattern_id_count.load(Ordering::SeqCst).clone().into(),
             //vertex_id_count: self.vertex_id_count.load(Ordering::SeqCst).clone().into(),
             _ty: self._ty,
@@ -112,8 +112,8 @@ impl<G: GraphKind> PartialEq for Hypergraph<G> {
         other: &Self,
     ) -> bool {
         self.graph.eq(&other.graph)
-            && self.tokens.eq(&other.tokens)
-            && self.token_keys.eq(&other.token_keys)
+            && self.atoms.eq(&other.atoms)
+            && self.atom_keys.eq(&other.atom_keys)
             //&& self
             //    .pattern_id_count
             //    .load(Ordering::SeqCst)
@@ -131,8 +131,8 @@ impl<G: GraphKind> Default for Hypergraph<G> {
     fn default() -> Self {
         Self {
             graph: indexmap::IndexMap::default(),
-            tokens: indexmap::IndexMap::default(),
-            token_keys: indexmap::IndexMap::default(),
+            atoms: indexmap::IndexMap::default(),
+            atom_keys: indexmap::IndexMap::default(),
             //pattern_id_count: AtomicUsize::new(0),
             //vertex_id_count: AtomicUsize::new(0),
             _ty: Default::default(),
@@ -158,23 +158,23 @@ impl<G: GraphKind> Hypergraph<G> {
     //}
     //pub(crate) fn index_sequence<N: Into<G>, I: IntoIterator<Item = N>>(&mut self, seq: I) -> VertexIndex {
     //    let seq = seq.into_iter();
-    //    let tokens = T::tokenize(seq);
-    //    let pattern = self.to_token_children(tokens);
+    //    let atoms = T::atomize(seq);
+    //    let pattern = self.to_atom_children(atoms);
     //    self.index_pattern(&pattern[..])
     //}
-    //pub(crate) fn insert_token_indices(
+    //pub(crate) fn insert_atom_indices(
     //    &self,
-    //    index: impl ToChild,
+    //    index: impl ToToken,
     //) -> Vec<VertexIndex> {
     //    if index.width() == 1 {
     //        vec![index.vertex_index()]
     //    } else {
     //        let data = self.expect_vertex(index);
-    //        assert!(!data.children.is_empty());
-    //        data.children
+    //        assert!(!data.tokens.is_empty());
+    //        data.tokens
     //            .values()
     //            .fold(None, |acc, p| {
-    //                let exp = self.pattern_token_indices(p.borrow());
+    //                let exp = self.pattern_atom_indices(p.borrow());
     //                acc.map(|acc| {
     //                    assert_eq!(acc, exp);
     //                    acc
@@ -184,13 +184,13 @@ impl<G: GraphKind> Hypergraph<G> {
     //            .unwrap()
     //    }
     //}
-    //pub(crate) fn pattern_token_indices(
+    //pub(crate) fn pattern_atom_indices(
     //    &self,
     //    pattern: impl IntoPattern,
     //) -> Vec<VertexIndex> {
     //    pattern
     //        .into_iter()
-    //        .flat_map(|c| self.insert_token_indices(c))
+    //        .flat_map(|c| self.insert_atom_indices(c))
     //        .collect_vec()
     //}
     pub fn validate_expansion(
@@ -199,7 +199,7 @@ impl<G: GraphKind> Hypergraph<G> {
     ) {
         //let root = index.index();
         let data = self.expect_vertex(index.vertex_index());
-        data.children.iter().fold(
+        data.tokens.iter().fold(
             Vec::new(),
             |mut acc: Vec<vertex::VertexIndex>, (_pid, p)| {
                 assert!(!p.is_empty());
@@ -218,7 +218,7 @@ impl<G: GraphKind> Hypergraph<G> {
 #[derive(Clone, Debug)]
 pub struct Edge {
     pub parent: vertex::parent::Parent,
-    pub child: Child,
+    pub token: Token,
 }
 
 #[derive(Clone, Debug, new)]
@@ -229,7 +229,7 @@ pub struct Node {
 
 impl<'a, G: GraphKind> Hypergraph<G>
 where
-    G::Token: std::fmt::Display,
+    G::Atom: std::fmt::Display,
 {
     pub fn to_petgraph(&self) -> DiGraph<(VertexIndex, Node), Edge> {
         let mut pg = DiGraph::new() as DiGraph<(VertexIndex, Node), Edge>;
@@ -256,7 +256,7 @@ where
                     *idx,
                     Edge {
                         parent: parent.clone(),
-                        child: node.data.to_child(),
+                        token: node.data.to_child(),
                     },
                 );
             }
@@ -264,24 +264,24 @@ where
         pg
     }
 
-    pub fn to_node_child_strings(&self) -> ChildStrings {
+    pub fn to_node_child_strings(&self) -> TokenStrings {
         let nodes = self.graph.iter().map(|(_, data)| {
             (self.vertex_data_string(data), data.to_pattern_strings(self))
         });
-        ChildStrings::from_nodes(nodes)
+        TokenStrings::from_nodes(nodes)
     }
     pub(crate) fn pattern_child_strings(
         &self,
         pattern: impl IntoPattern,
-    ) -> ChildStrings {
-        let nodes = pattern.into_pattern().into_iter().map(|child| {
+    ) -> TokenStrings {
+        let nodes = pattern.into_pattern().into_iter().map(|token| {
             (
-                self.index_string(child.vertex_index()),
-                self.expect_vertex(child.vertex_index())
+                self.index_string(token.vertex_index()),
+                self.expect_vertex(token.vertex_index())
                     .to_pattern_strings(self),
             )
         });
-        ChildStrings::from_nodes(nodes)
+        TokenStrings::from_nodes(nodes)
     }
 
     pub(crate) fn pattern_string_with_separator(
@@ -291,7 +291,7 @@ where
     ) -> String {
         pattern
             .into_iter()
-            .map(|child| self.index_string(child.vertex_index()))
+            .map(|token| self.index_string(token.vertex_index()))
             .join(separator)
     }
     pub(crate) fn separated_pattern_string(
@@ -317,18 +317,18 @@ where
             .map(|pattern| self.pattern_string_with_separator(pattern, ""))
             .collect()
     }
-    pub(crate) fn get_token_by_key(
+    pub(crate) fn get_atom_by_key(
         &self,
         key: &VertexKey,
-    ) -> Option<&Token<G::Token>> {
-        self.tokens.get(key)
+    ) -> Option<&Atom<G::Atom>> {
+        self.atoms.get(key)
     }
-    pub(crate) fn expect_token_by_key(
+    pub(crate) fn expect_atom_by_key(
         &self,
         key: &VertexKey,
-    ) -> &Token<G::Token> {
-        self.get_token_by_key(key)
-            .expect("Key does not belong to a token!")
+    ) -> &Atom<G::Atom> {
+        self.get_atom_by_key(key)
+            .expect("Key does not belong to an atom!")
     }
     pub(crate) fn vertex_key_string(
         &self,
@@ -340,8 +340,8 @@ where
         &self,
         data: &VertexData,
     ) -> String {
-        if let Some(token) = self.get_token_by_key(&data.key) {
-            token.to_string()
+        if let Some(atom) = self.get_atom_by_key(&data.key) {
+            atom.to_string()
         } else {
             assert!(data.width() > 1);
             self.pattern_string(data.expect_any_child_pattern().1)

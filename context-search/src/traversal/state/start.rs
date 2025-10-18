@@ -17,7 +17,7 @@ use context_trace::{
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct StartCtx<K: TraversalKind> {
-    pub(crate) index: Child,
+    pub(crate) index: Token,
     pub(crate) cursor: PatternCursor,
     pub(crate) trav: K::Trav,
 }
@@ -59,6 +59,6 @@ impl<K: TraversalKind> StartCtx<K> {
 
 //impl RootKey for StartState {
 //    fn root_key(&self) -> UpKey {
-//        UpKey::new(self.index, TokenPosition(self.index.width()).into())
+//        UpKey::new(self.index, AtomPosition(self.index.width()).into())
 //    }
 //}

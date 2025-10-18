@@ -28,7 +28,7 @@ impl StartBound for BandExpansion {
 #[derive(Debug)]
 pub struct BandCap {
     pub postfix_path: IndexEndPath,
-    pub expansion: Child,
+    pub expansion: Token,
     pub start_bound: usize,
 }
 

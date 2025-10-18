@@ -5,8 +5,8 @@ pub(crate) mod root;
 
 use crate::{
     graph::vertex::{
-        child::Child,
         location::child::ChildLocation,
+        token::Token,
     },
     path::{
         accessors::{
@@ -20,45 +20,33 @@ use crate::{
     },
     trace::has_graph::HasGraph,
 };
-pub trait LeafChild<R>: RootChildIndex<R> {
-    fn leaf_child_location(&self) -> Option<ChildLocation>;
-    fn leaf_child<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Child;
-}
 
-impl<R: PathRole, P: RootChild<R> + PathChild<R>> LeafChild<R> for P {
-    fn leaf_child_location(&self) -> Option<ChildLocation> {
-        self.path_child_location()
+pub trait LeafToken<R: PathRole>: RootChildIndex<R> + HasPath<R> {
+    fn leaf_token_location_mut(&mut self) -> Option<&mut ChildLocation> {
+        R::bottom_up_iter(self.path_mut().iter_mut()).next()
     }
-    fn leaf_child<G: HasGraph>(
+    fn leaf_token_location(&self) -> Option<ChildLocation> {
+        R::bottom_up_iter(self.path().iter()).next().cloned() as Option<_>
+    }
+    fn leaf_token<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child {
-        self.path_child(trav)
+    ) -> Option<Token> {
+        self.leaf_token_location()
+            .map(|loc| *trav.graph().expect_child_at(loc))
+    }
+}
+pub trait RootedLeafToken<R: PathRole>: LeafToken<R> + RootChild<R> {
+    fn rooted_leaf_token<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Token {
+        self.leaf_token(trav)
             .unwrap_or_else(|| self.root_child(trav))
     }
 }
+impl<R: PathRole, T: LeafToken<R> + RootChild<R>> RootedLeafToken<R> for T {}
 
-pub(crate) trait LeafChildPosMut<R>: RootChildIndexMut<R> {
-    fn leaf_child_pos_mut(&mut self) -> &mut usize;
-}
-
-/// used to get a descendant in a Graph, pointed to by a child path
-#[auto_impl(& mut)]
-pub trait PathChild<R: PathRole>: HasPath<R> {
-    fn path_child_location(&self) -> Option<ChildLocation> {
-        R::bottom_up_iter(self.path().iter()).next().cloned() as Option<_>
-    }
-    fn path_child_location_mut(&mut self) -> Option<&mut ChildLocation> {
-        R::bottom_up_iter(self.path_mut().iter_mut()).next()
-    }
-    fn path_child<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Option<Child> {
-        self.path_child_location()
-            .map(|loc| *trav.graph().expect_child_at(loc))
-    }
+pub(crate) trait LeafTokenPosMut<R>: RootChildIndexMut<R> {
+    fn leaf_token_pos_mut(&mut self) -> &mut usize;
 }

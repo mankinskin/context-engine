@@ -17,31 +17,31 @@ pub(crate) fn pattern_from_widths(
     widths
         .into_iter()
         .enumerate()
-        .map(|(i, w)| Child::new(i, w))
+        .map(|(i, w)| Token::new(i, w))
         .collect()
 }
 
 #[test]
-fn token_pos_split() {
+fn atom_pos_split() {
     let pattern = pattern_from_widths([1, 1, 3, 1, 1]);
     let width = pattern_width(&pattern);
     assert_eq!(
         TraceBack::trace_child_pos(
-            pattern.borrow() as &[Child],
+            pattern.borrow() as &[Token],
             NonZeroUsize::new(2).unwrap(),
         ),
         Some((2, None).into()),
     );
     assert_eq!(
         TraceFront::trace_child_pos(
-            pattern.borrow() as &[Child],
+            pattern.borrow() as &[Token],
             NonZeroUsize::new(width - 2).unwrap(),
         ),
         Some((2, None).into()),
     );
     assert_eq!(
         TraceFront::trace_child_pos(
-            pattern.borrow() as &[Child],
+            pattern.borrow() as &[Token],
             NonZeroUsize::new(width - 4).unwrap(),
         ),
         Some((2, NonZeroUsize::new(1)).into()),
@@ -69,13 +69,13 @@ fn token_pos_split() {
 //    ) => {
 //
 //        $(
-//            let $name1: Child = $graph.insert_pattern([$($pat1),*]);
-//            let $name1: Child = $graph.insert_patterns(vec![$(vec![$($pat2),*]),*] as Vec<context_trace::graph::vertex::pattern::Pattern>);
+//            let $name1: Token = $graph.insert_pattern([$($pat1),*]);
+//            let $name1: Token = $graph.insert_patterns(vec![$(vec![$($pat2),*]),*] as Vec<context_trace::graph::vertex::pattern::Pattern>);
 //            $(
-//                let ($name2, $idname): (Child, _) = $graph.graph_mut().insert_pattern_with_id([$($pat3),*]);
+//                let ($name2, $idname): (Token, _) = $graph.graph_mut().insert_pattern_with_id([$($pat3),*]);
 //                let $idname = $idname.unwrap();
 //            )?
-//            $(let ($name2, $idname): (Child, _) = $graph.graph_mut().insert_patterns_with_ids([$(vec![$($pat4),*]),*]))?
+//            $(let ($name2, $idname): (Token, _) = $graph.graph_mut().insert_patterns_with_ids([$(vec![$($pat4),*]),*]))?
 //        )*
 //    };
 //}
@@ -128,7 +128,7 @@ macro_rules! build_split_cache {
                                                 $(
                                                     (
                                                         $pid.to_owned(),
-                                                        $crate::ChildTracePos {
+                                                        $crate::TokenTracePos {
                                                             inner_offset: $inner,
                                                             sub_index: $sub,
                                                         }

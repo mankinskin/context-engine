@@ -7,7 +7,7 @@ use crate::traversal::state::end::{
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum FinishedKind {
-    Complete(Child),
+    Complete(Token),
     Incomplete(Box<EndState>),
 }
 
@@ -39,7 +39,7 @@ impl FinishedKind {
 pub struct CompleteState {
     pub(crate) cache: TraceCache,
     pub root: IndexWithPath,
-    pub(crate) start: Child,
+    pub(crate) start: Token,
 }
 impl TryFrom<FinishedState> for CompleteState {
     type Error = IncompleteState;
@@ -71,7 +71,7 @@ pub struct IncompleteState {
     pub end_state: EndState,
     pub cache: TraceCache,
     pub root: IndexWithPath,
-    pub(crate) start: Child,
+    pub(crate) start: Token,
 }
 impl TryFrom<FinishedState> for IncompleteState {
     type Error = CompleteState;
@@ -87,5 +87,5 @@ pub struct FinishedState {
     pub kind: FinishedKind,
     pub(crate) cache: TraceCache,
     pub(crate) root: IndexWithPath,
-    pub(crate) start: Child,
+    pub(crate) start: Token,
 }

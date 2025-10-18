@@ -19,26 +19,26 @@ use vertex::VertexSplits;
 use crate::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, new)]
-pub struct ChildTracePos {
+pub struct TokenTracePos {
     pub(crate) inner_offset: Option<NonZeroUsize>,
     pub(crate) sub_index: usize,
 }
-impl HasInnerOffset for ChildTracePos {
+impl HasInnerOffset for TokenTracePos {
     fn inner_offset(&self) -> Option<NonZeroUsize> {
         self.inner_offset
     }
 }
-impl HasSubIndex for ChildTracePos {
+impl HasSubIndex for TokenTracePos {
     fn sub_index(&self) -> usize {
         self.sub_index
     }
 }
-impl HasSubIndexMut for ChildTracePos {
+impl HasSubIndexMut for TokenTracePos {
     fn sub_index_mut(&mut self) -> &mut usize {
         &mut self.sub_index
     }
 }
-impl From<(usize, Option<NonZeroUsize>)> for ChildTracePos {
+impl From<(usize, Option<NonZeroUsize>)> for TokenTracePos {
     fn from((sub_index, inner_offset): (usize, Option<NonZeroUsize>)) -> Self {
         Self {
             sub_index,
@@ -54,7 +54,7 @@ pub trait TraceSide:
     fn trace_child_pos(
         pattern: impl IntoPattern,
         offset: NonZeroUsize,
-    ) -> Option<ChildTracePos>;
+    ) -> Option<TokenTracePos>;
 }
 
 /// for insert
@@ -65,14 +65,14 @@ impl TraceSide for TraceBack {
     fn trace_child_pos(
         pattern: impl IntoPattern,
         offset: NonZeroUsize,
-    ) -> Option<ChildTracePos> {
+    ) -> Option<TokenTracePos> {
         let mut offset = offset.get();
         pattern
             .into_pattern()
             .into_iter()
             .enumerate()
             .find_map(|(i, c)|
-            // returns current index when remaining offset is smaller than current child
+            // returns current index when remaining offset is smaller than current token
             match c.width().cmp(&offset) {
                 Ordering::Less => {
                     offset -= c.width();
@@ -95,14 +95,14 @@ impl TraceSide for TraceFront {
     fn trace_child_pos(
         pattern: impl IntoPattern,
         offset: NonZeroUsize,
-    ) -> Option<ChildTracePos> {
+    ) -> Option<TokenTracePos> {
         let mut offset = offset.get();
         pattern
             .into_pattern()
             .into_iter()
             .enumerate()
             .find_map(|(i, c)|
-            // returns current index when remaining offset does not exceed current child
+            // returns current index when remaining offset does not exceed current token
             match c.width().cmp(&offset) {
                 Ordering::Less => {
                     offset -= c.width();
@@ -181,7 +181,7 @@ pub trait SplitInner: Debug + Clone {}
 impl<T: Debug + Clone> SplitInner for T {}
 
 #[derive(Debug, Clone)]
-pub struct Split<T: SplitInner = Child> {
+pub struct Split<T: SplitInner = Token> {
     pub left: T,
     pub right: T,
 }

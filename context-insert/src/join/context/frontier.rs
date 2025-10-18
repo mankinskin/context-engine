@@ -49,13 +49,13 @@ pub struct FrontierSplitIterator {
 impl FrontierSplitIterator {
     fn node(
         &mut self,
-        index: Child,
+        index: Token,
     ) -> NodeJoinCtx<'_> {
         NodeJoinCtx::new(index, self)
     }
 }
 impl Iterator for FrontierSplitIterator {
-    type Item = Option<Child>;
+    type Item = Option<Token>;
     fn next(&mut self) -> Option<Self::Item> {
         Some(match self.frontier.next() {
             Some(Some(key)) => {

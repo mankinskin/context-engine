@@ -2,17 +2,17 @@ use context_trace::*;
 
 use crate::{
     context::ReadCtx,
-    sequence::ToNewTokenIndices,
+    sequence::ToNewAtomIndices,
 };
 pub trait HasReadCtx {
     fn read_context(&'_ mut self) -> ReadCtx;
-    fn read_sequence(&mut self) -> Option<Child> {
+    fn read_sequence(&mut self) -> Option<Token> {
         self.read_context().read_sequence()
     }
     fn read_pattern(
         &mut self,
         pattern: impl IntoPattern,
-    ) -> Option<Child> {
+    ) -> Option<Token> {
         self.read_context().read_pattern(pattern)
     }
 }
@@ -27,13 +27,13 @@ impl<T: HasReadCtx> HasReadCtx for &'_ mut T {
         (**self).read_context()
     }
 }
-impl<S: ToNewTokenIndices + Clone> HasReadCtx for (HypergraphRef, S) {
+impl<S: ToNewAtomIndices + Clone> HasReadCtx for (HypergraphRef, S) {
     fn read_context(&mut self) -> ReadCtx {
         let (graph, seq) = self;
         ReadCtx::new(graph.clone(), seq.clone())
     }
 }
-impl<S: ToNewTokenIndices + Clone> HasReadCtx for (&mut HypergraphRef, S) {
+impl<S: ToNewAtomIndices + Clone> HasReadCtx for (&mut HypergraphRef, S) {
     fn read_context(&mut self) -> ReadCtx {
         let (graph, seq) = self;
         ReadCtx::new(graph.clone(), seq.clone())

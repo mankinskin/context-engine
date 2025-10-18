@@ -46,16 +46,16 @@ where
     where
         'b: 'c,
     {
-        // assert: no complete perfect child
-        // todo: index inner ranges and get child splits
+        // assert: no complete perfect token
+        // todo: index inner ranges and get token splits
         //
         // index inner range
         // cases:
-        // - (child, inner, child)
-        // - (child, inner),
-        // - (inner, child),
-        // - (child, child),
-        // - child: not possible, handled earlier
+        // - (token, inner, token)
+        // - (token, inner),
+        // - (inner, token),
+        // - (token, token),
+        // - token: not possible, handled earlier
         let range = if let SinglePerfect(Some(pid)) = info.perfect.complete() {
             Some(info.patterns[&pid].range.clone())
         } else {
@@ -85,8 +85,8 @@ where
 }
 //#[derive(Debug)]
 //pub enum JoinedPattern {
-//    Trigram([Child; 3]),
-//    Bigram([Child; 2]),
+//    Trigram([Token; 3]),
+//    Bigram([Token; 2]),
 //}
 //impl From<BorderChildren<JoinedRangeInfoKind>> for JoinedPattern {
 //    fn from(borders: BorderChildren<JoinedRangeInfoKind>) -> Self {
@@ -102,8 +102,8 @@ where
 //        }
 //    }
 //}
-//impl<'p> Borrow<[Child]> for &'p JoinedPattern {
-//    fn borrow(&self) -> &[Child] {
+//impl<'p> Borrow<[Token]> for &'p JoinedPattern {
+//    fn borrow(&self) -> &[Token] {
 //        match self {
 //            JoinedPattern::Trigram(p) => p.borrow(),
 //            JoinedPattern::Bigram(p) => p.borrow(),
@@ -111,8 +111,8 @@ where
 //    }
 //}
 //impl<'p> IntoIterator for &'p JoinedPattern {
-//    type Item = &'p Child;
-//    type IntoIter = std::slice::Iter<'p, Child>;
+//    type Item = &'p Token;
+//    type IntoIter = std::slice::Iter<'p, Token>;
 //    fn into_iter(self) -> Self::IntoIter {
 //        match self {
 //            JoinedPattern::Trigram(p) => p.into_iter(),
@@ -121,7 +121,7 @@ where
 //    }
 //}
 //impl Deref for JoinedPattern {
-//    type Target = [Child];
+//    type Target = [Token];
 //    fn deref(&self) -> &Self::Target {
 //        match self {
 //            Self::Trigram(p) => p,
@@ -129,8 +129,8 @@ where
 //        }
 //    }
 //}
-//impl<'p> From<&[Child]> for JoinedPattern {
-//    fn from(value: &[Child]) -> Self {
+//impl<'p> From<&[Token]> for JoinedPattern {
+//    fn from(value: &[Token]) -> Self {
 //        JoinedPattern::Bigram(
 //            value.try_into().expect("unmerged partition without inner range not a bigram")
 //        )

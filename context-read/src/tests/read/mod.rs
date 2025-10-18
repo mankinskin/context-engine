@@ -2,7 +2,10 @@ use std::collections::HashSet;
 
 use crate::context::has_read_context::HasReadCtx;
 use context_search::*;
-use context_trace::*;
+use context_trace::{
+    graph::vertex::parent::PatternIndex,
+    *,
+};
 use maplit::hashset;
 use pretty_assertions::{
     assert_eq,
@@ -14,10 +17,10 @@ fn sync_read_text1() {
     let result = (&mut graph, "heldldo world!".chars())
         .read_sequence()
         .unwrap();
-    expect_tokens!(graph, {h, e, l, d, o, w, r});
+    expect_atoms!(graph, {h, e, l, d, o, w, r});
     let g = graph.graph();
-    let space = g.expect_token_child(' ');
-    let exclam = g.expect_token_child('!');
+    let space = g.expect_atom_child(' ');
+    let exclam = g.expect_atom_child('!');
     drop(g);
 
     assert_indices!(graph, ld);
@@ -34,7 +37,7 @@ fn sync_read_text1() {
 fn sync_read_text2() {
     let mut graph = HypergraphRef::default();
     let heldld = (&mut graph, "heldld".chars()).read_sequence().unwrap();
-    expect_tokens!(graph, {h, e, l, d});
+    expect_atoms!(graph, {h, e, l, d});
     assert_indices!(graph, ld);
     assert_not_indices!(graph, held, he, hel);
     assert_patterns!(
@@ -62,7 +65,7 @@ fn read_sequence1() {
     let ind_hypergraph =
         (&mut graph, "hypergraph".chars()).read_sequence().unwrap();
 
-    expect_tokens!(graph, {h, y, p, e, r, g, a});
+    expect_atoms!(graph, {h, y, p, e, r, g, a});
     {
         assert_patterns! {
             graph,
@@ -71,7 +74,7 @@ fn read_sequence1() {
         let gr = graph.graph();
         let pid = *ind_hypergraph
             .vertex(&gr)
-            .get_child_patterns()
+            .child_patterns()
             .iter()
             .next()
             .unwrap()
@@ -129,7 +132,7 @@ fn read_sequence1() {
 fn read_sequence2() {
     let mut graph = HypergraphRef::default();
     let ind_abab = (&mut graph, "abab".chars()).read_sequence().unwrap();
-    expect_tokens!(graph, {a, b});
+    expect_atoms!(graph, {a, b});
     assert_indices!(graph, ab);
     {
         assert_patterns! {
@@ -137,12 +140,12 @@ fn read_sequence2() {
             ind_abab => [[ab, ab]]
         };
         let gr = graph.graph();
-        let pid = *ab.vertex(&gr).get_child_patterns().iter().next().unwrap().0;
+        let pid = *ab.vertex(&gr).child_patterns().iter().next().unwrap().0;
         assert_parents(&gr, a, ab, [PatternIndex::new(pid, 0)]);
         assert_parents(&gr, b, ab, [PatternIndex::new(pid, 1)]);
         let pid = *ind_abab
             .vertex(&gr)
-            .get_child_patterns()
+            .child_patterns()
             .iter()
             .next()
             .unwrap()
@@ -166,7 +169,7 @@ fn read_infix1() {
     let subdivision =
         (&mut graph, "subdivision".chars()).read_sequence().unwrap();
     assert_eq!(subdivision.width(), 11);
-    expect_tokens!(graph, {s, u, b, d, i, v, o, n});
+    expect_atoms!(graph, {s, u, b, d, i, v, o, n});
     {
         assert_patterns! {
             graph,
@@ -175,7 +178,7 @@ fn read_infix1() {
         let graph = graph.graph();
         let pid = *subdivision
             .vertex(&graph)
-            .get_child_patterns()
+            .child_patterns()
             .iter()
             .next()
             .unwrap()
@@ -207,7 +210,7 @@ fn read_infix1() {
         .read_sequence()
         .unwrap();
     {
-        expect_tokens!(graph, {a, l, z, t});
+        expect_atoms!(graph, {a, l, z, t});
 
         assert_indices!(graph, vis, su, vi, visu, ion);
         assert_patterns! {
@@ -228,7 +231,7 @@ fn read_infix2() {
     let mut graph = HypergraphRef::default();
     let subvisu = (&mut graph, "subvisu".chars()).read_sequence().unwrap();
     assert_eq!(subvisu.width(), 7);
-    expect_tokens!(graph, {s, u, b, v, i});
+    expect_atoms!(graph, {s, u, b, v, i});
 
     assert_indices!(graph, su);
     assert_patterns! {
@@ -258,7 +261,7 @@ fn read_loose_sequence1() {
     let mut graph = HypergraphRef::default();
     let abxaxxb = (&mut graph, "abxaxxb".chars()).read_sequence().unwrap();
     assert_eq!(abxaxxb.width(), 7);
-    expect_tokens!(graph, {a, b, x});
+    expect_atoms!(graph, {a, b, x});
 
     assert_patterns! {
         graph,
@@ -272,7 +275,7 @@ fn read_repeating_known1() {
     let mut graph = HypergraphRef::default();
     let xyyxy = (&mut graph, "xyyxy".chars()).read_sequence().unwrap();
     assert_eq!(xyyxy.width(), 5);
-    expect_tokens!(graph, {x, y});
+    expect_atoms!(graph, {x, y});
     assert_indices!(graph, xy);
     assert_patterns! {
         graph,
@@ -289,7 +292,7 @@ fn read_multiple_overlaps1() {
     //  bcde
     //  bcdea
 
-    expect_tokens!(graph, {a, b, c, d, e});
+    expect_atoms!(graph, {a, b, c, d, e});
     assert_patterns! {
         graph,
         abcde => [[a, b, c, d, e]]

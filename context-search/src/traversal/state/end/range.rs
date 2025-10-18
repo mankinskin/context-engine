@@ -4,7 +4,7 @@ use context_trace::*;
 pub(crate) struct RangeEnd {
     pub(crate) path: IndexRangePath,
     pub(crate) target: DownKey,
-    pub(crate) root_pos: TokenPosition,
+    pub(crate) root_pos: AtomPosition,
 }
 impl LeafKey for RangeEnd {
     fn leaf_location(&self) -> ChildLocation {

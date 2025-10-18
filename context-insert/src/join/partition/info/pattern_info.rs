@@ -67,7 +67,7 @@ where
                     self.range,
                 )
                 .into_pattern(),
-            (Some(_), None) => panic!("inner range without children"),
+            (Some(_), None) => panic!("inner range without tokens"),
             //let pat = ctx.pattern.get(range.clone()).unwrap();
         }
     }
@@ -80,7 +80,7 @@ where
     fn info_pattern_range(
         borders: BordersOf<R>,
         ctx: &ModePatternCtxOf<R>,
-    ) -> Result<PatternRangeInfo<R>, Child> {
+    ) -> Result<PatternRangeInfo<R>, Token> {
         let perfect = borders.perfect();
         let range = borders.outer_range();
         let offsets = borders.offsets();
@@ -97,13 +97,13 @@ where
                 })
                 .unwrap_or(0);
             let pat = ctx.pattern.get(range.clone()).unwrap();
-            (delta, pat, ctx.loc.id)
+            (delta, pat, ctx.loc.pattern_id)
         };
         let children = (!perfect.all_perfect())
             .then(|| borders.get_child_splits(ctx).unwrap());
         match (pat.len(), children) {
             (0, _) => panic!("Empty range"),
-            (1, Some(children)) => Err(children.to_child().unwrap()),
+            (1, Some(children)) => Err(children.to_token().unwrap()),
             (1, None) => Err(pat[0]),
             (_, children) => Ok(PatternRangeInfo {
                 pattern_id: pid,

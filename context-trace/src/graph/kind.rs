@@ -3,7 +3,7 @@ use crate::{
         Right,
         pattern::PatternDirection,
     },
-    graph::vertex::token::Tokenize,
+    graph::vertex::atom::Atomize,
 };
 use serde::{
     Deserialize,
@@ -16,12 +16,12 @@ use std::fmt::{
 };
 
 pub trait GraphKind: Debug + Clone + Default + PartialEq + Eq {
-    type Token: Tokenize + Display + DeserializeOwned;
+    type Atom: Atomize + Display + DeserializeOwned;
     type Direction: PatternDirection;
 }
 
-pub type TokenOf<K> = <K as GraphKind>::Token;
-pub(crate) type DefaultToken = TokenOf<BaseGraphKind>;
+pub type AtomOf<K> = <K as GraphKind>::Atom;
+pub(crate) type DefaultAtom = AtomOf<BaseGraphKind>;
 pub(crate) type DirectionOf<K> = <K as GraphKind>::Direction;
 pub(crate) type DefaultDirection = DirectionOf<BaseGraphKind>;
 
@@ -29,6 +29,6 @@ pub(crate) type DefaultDirection = DirectionOf<BaseGraphKind>;
 pub struct BaseGraphKind;
 
 impl GraphKind for BaseGraphKind {
-    type Token = char;
+    type Atom = char;
     type Direction = Right;
 }

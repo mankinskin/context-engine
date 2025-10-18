@@ -2,7 +2,7 @@ use crate::{
     trace::cache::new::EditKind,
     *,
 };
-//pub(crate) enum AddChildLocation {
+//pub(crate) enum AddTokenLocation {
 //    Target(ChildLocation),
 //    Prev(ChildLocation),
 //}
@@ -49,7 +49,7 @@ impl PositionCache {
                 bottom
                     .insert(edit.prev.into(), edit.location.to_sub_location());
             },
-            (_, EditKind::Child(edit)) => {
+            (_, EditKind::Token(edit)) => {
                 // created by downwards traversal
                 let prev = cache.force_mut(&(edit.prev.into()));
                 prev.bottom.insert(

@@ -14,7 +14,7 @@ use crate::{
             has_path::HasRolePath,
             role::PathRole,
         },
-        mutators::move_path::key::TokenPosition,
+        mutators::move_path::key::AtomPosition,
     },
     trace::{
         cache::{
@@ -30,7 +30,7 @@ use crate::{
 };
 use cache::{
     key::directed::{
-        HasTokenPosition,
+        HasAtomPosition,
         down::DownPosition,
         up::{
             UpKey,
@@ -159,10 +159,10 @@ impl<G: HasGraph> TraceCtx<G> {
 }
 
 pub trait TraceKey:
-    HasTokenPosition + Debug + Clone + Copy + Into<DirectedKey>
+    HasAtomPosition + Debug + Clone + Copy + Into<DirectedKey>
 {
 }
-impl<T: HasTokenPosition + Debug + Clone + Into<DirectedKey> + Copy> TraceKey
+impl<T: HasAtomPosition + Debug + Clone + Into<DirectedKey> + Copy> TraceKey
     for T
 {
 }
@@ -174,7 +174,7 @@ pub trait TraceDirection {
     type Key: TraceKey;
     fn build_key<G: HasGraph>(
         trav: &G,
-        last_pos: TokenPosition,
+        last_pos: AtomPosition,
         location: &ChildLocation,
     ) -> Self::Key;
 }
@@ -184,7 +184,7 @@ impl TraceDirection for BottomUp {
     type Key = UpKey;
     fn build_key<G: HasGraph>(
         _trav: &G,
-        last_pos: TokenPosition,
+        last_pos: AtomPosition,
         location: &ChildLocation,
     ) -> Self::Key {
         UpKey {
@@ -199,7 +199,7 @@ impl TraceDirection for TopDown {
     type Key = DownKey;
     fn build_key<G: HasGraph>(
         trav: &G,
-        last_pos: TokenPosition,
+        last_pos: AtomPosition,
         location: &ChildLocation,
     ) -> Self::Key {
         let graph = trav.graph();

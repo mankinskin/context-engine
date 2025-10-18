@@ -44,14 +44,14 @@ fn find_ancestor1() {
         ababababcdefghi,
         ..
     } = &*Env1::get_expected();
-    let a_bc_pattern = vec![Child::new(a, 1), Child::new(bc, 2)];
-    let ab_c_pattern = vec![Child::new(ab, 2), Child::new(c, 1)];
+    let a_bc_pattern = vec![Token::new(a, 1), Token::new(bc, 2)];
+    let ab_c_pattern = vec![Token::new(ab, 2), Token::new(c, 1)];
     let a_bc_d_pattern =
-        vec![Child::new(a, 1), Child::new(bc, 2), Child::new(d, 1)];
-    let b_c_pattern = vec![Child::new(b, 1), Child::new(c, 1)];
-    let bc_pattern = vec![Child::new(bc, 2)];
+        vec![Token::new(a, 1), Token::new(bc, 2), Token::new(d, 1)];
+    let b_c_pattern = vec![Token::new(b, 1), Token::new(c, 1)];
+    let bc_pattern = vec![Token::new(bc, 2)];
     let a_b_c_pattern =
-        vec![Child::new(a, 1), Child::new(b, 1), Child::new(c, 1)];
+        vec![Token::new(a, 1), Token::new(b, 1), Token::new(c, 1)];
 
     let query = bc_pattern;
     assert_eq!(
@@ -127,7 +127,7 @@ fn find_ancestor1() {
         "a_b_a_b_a_b_a_b_c_d_e_f_g_h_i"
     );
 
-    let query = [&a_b_c_pattern[..], &[Child::new(c, 1)]].concat();
+    let query = [&a_b_c_pattern[..], &[Token::new(c, 1)]].concat();
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(FinishedState {
@@ -144,13 +144,13 @@ fn find_ancestor2() {
 
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let (a, b, _w, x, y, z) = graph
-        .insert_tokens([
-            Token::Element('a'),
-            Token::Element('b'),
-            Token::Element('w'),
-            Token::Element('x'),
-            Token::Element('y'),
-            Token::Element('z'),
+        .insert_atoms([
+            Atom::Element('a'),
+            Atom::Element('b'),
+            Atom::Element('w'),
+            Atom::Element('x'),
+            Atom::Element('y'),
+            Atom::Element('z'),
         ])
         .into_iter()
         .next_tuple()
@@ -256,13 +256,13 @@ fn find_ancestor2() {
 fn find_ancestor3() {
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let (a, b, _w, x, y, z) = graph
-        .insert_tokens([
-            Token::Element('a'),
-            Token::Element('b'),
-            Token::Element('w'),
-            Token::Element('x'),
-            Token::Element('y'),
-            Token::Element('z'),
+        .insert_atoms([
+            Atom::Element('a'),
+            Atom::Element('b'),
+            Atom::Element('w'),
+            Atom::Element('x'),
+            Atom::Element('y'),
+            Atom::Element('z'),
         ])
         .into_iter()
         .next_tuple()

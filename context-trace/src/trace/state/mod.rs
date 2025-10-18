@@ -28,33 +28,33 @@ use std::cmp::Ordering;
 // TraceState<K> is either {ChildState<K>, ParentState<K>}
 //
 pub trait HasPrevPos {
-    fn prev_pos(&self) -> &TokenPosition;
-    fn prev_pos_mut(&mut self) -> &mut TokenPosition;
+    fn prev_pos(&self) -> &AtomPosition;
+    fn prev_pos_mut(&mut self) -> &mut AtomPosition;
 }
 impl<P: RootedPath> HasPrevPos for BaseState<P> {
-    fn prev_pos(&self) -> &TokenPosition {
+    fn prev_pos(&self) -> &AtomPosition {
         &self.prev_pos
     }
-    fn prev_pos_mut(&mut self) -> &mut TokenPosition {
+    fn prev_pos_mut(&mut self) -> &mut AtomPosition {
         &mut self.prev_pos
     }
 }
 pub trait HasRootPos {
-    fn root_pos(&self) -> &TokenPosition;
-    fn root_pos_mut(&mut self) -> &mut TokenPosition;
+    fn root_pos(&self) -> &AtomPosition;
+    fn root_pos_mut(&mut self) -> &mut AtomPosition;
 }
 impl<P: RootedPath> HasRootPos for BaseState<P> {
-    fn root_pos(&self) -> &TokenPosition {
+    fn root_pos(&self) -> &AtomPosition {
         &self.root_pos
     }
-    fn root_pos_mut(&mut self) -> &mut TokenPosition {
+    fn root_pos_mut(&mut self) -> &mut AtomPosition {
         &mut self.root_pos
     }
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BaseState<P: RootedPath> {
-    pub prev_pos: TokenPosition,
-    pub root_pos: TokenPosition,
+    pub prev_pos: AtomPosition,
+    pub root_pos: AtomPosition,
     pub path: P,
 }
 impl<P: RootedPath> IntoRootedPath<P> for BaseState<P> {
@@ -73,7 +73,7 @@ impl<P: RootedPath> HasRootedPath<P> for BaseState<P> {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum InnerKind {
     Parent(ParentState),
-    Child(ChildState),
+    Token(ChildState),
 }
 impl InnerKind {
     pub fn unwrap_parent(self) -> ParentState {
@@ -84,7 +84,7 @@ impl InnerKind {
         }
     }
     pub(crate) fn unwrap_child(self) -> ChildState {
-        if let Self::Child(c) = self {
+        if let Self::Token(c) = self {
             c
         } else {
             panic!();
@@ -96,7 +96,7 @@ impl InnerKind {
 //    fn from(state: InnerKind) -> Self {
 //        match state {
 //            InnerKind::Parent(state) => Self::Parent(state.into()),
-//            InnerKind::Child(state) => Self::Child(state.into()),
+//            InnerKind::Token(state) => Self::Token(state.into()),
 //        }
 //    }
 //}
@@ -107,10 +107,10 @@ impl Ord for InnerKind {
         other: &Self,
     ) -> Ordering {
         match (self, other) {
-            (InnerKind::Child(a), InnerKind::Child(b)) => a.cmp(b),
+            (InnerKind::Token(a), InnerKind::Token(b)) => a.cmp(b),
             (InnerKind::Parent(a), InnerKind::Parent(b)) => a.cmp(b),
-            (InnerKind::Child(_), _) => Ordering::Less,
-            (_, InnerKind::Child(_)) => Ordering::Greater,
+            (InnerKind::Token(_), _) => Ordering::Less,
+            (_, InnerKind::Token(_)) => Ordering::Greater,
         }
     }
 }
@@ -131,7 +131,7 @@ pub trait IntoParentState: Sized {
         parent_entry: ChildLocation,
     ) -> ParentState;
 }
-impl IntoParentState for Child {
+impl IntoParentState for Token {
     fn into_parent_state<G: HasGraph>(
         self,
         _trav: &G,

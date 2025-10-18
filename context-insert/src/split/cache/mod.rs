@@ -33,7 +33,7 @@ impl SplitCache {
     pub fn augment_node(
         &mut self,
         trav: impl HasGraph,
-        index: Child,
+        index: Token,
     ) -> Vec<SplitTraceState> {
         let graph = trav.graph();
         let ctx = NodeTraceCtx::from_index(&graph, index);
@@ -45,7 +45,7 @@ impl SplitCache {
     pub fn augment_root(
         &mut self,
         trav: impl HasGraph,
-        root: Child,
+        root: Token,
     ) -> Vec<SplitTraceState> {
         let graph = trav.graph();
         let ctx = NodeTraceCtx::from_index(&graph, root);
@@ -53,7 +53,7 @@ impl SplitCache {
         let root_mode = self.root_mode;
         self.get_mut(&index).unwrap().augment_root(ctx, root_mode)
     }
-    pub fn augment_nodes<G: HasGraph, I: IntoIterator<Item = Child>>(
+    pub fn augment_nodes<G: HasGraph, I: IntoIterator<Item = Token>>(
         &mut self,
         ctx: &mut SplitTraceStatesCtx<G>,
         nodes: I,

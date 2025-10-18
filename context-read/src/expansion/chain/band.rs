@@ -28,12 +28,12 @@ impl Borrow<usize> for Band {
     }
 }
 impl Band {
-    pub fn postfix(&self) -> Child {
+    pub fn postfix(&self) -> Token {
         *self.pattern.last().unwrap()
     }
     pub fn append(
         &mut self,
-        postfix: Child,
+        postfix: Token,
     ) {
         let width = self.postfix().width();
         self.start_bound += width;
@@ -46,8 +46,8 @@ impl Band {
 //        band
 //    }
 //}
-impl From<Child> for Band {
-    fn from(first: Child) -> Self {
+impl From<Token> for Band {
+    fn from(first: Token) -> Self {
         Self {
             start_bound: 0,
             end_bound: first.width(),
@@ -70,7 +70,7 @@ impl From<(usize, Pattern)> for Band {
 #[derivative(Ord, PartialOrd, PartialEq)]
 pub struct Overlap {
     #[deref]
-    pub index: Child,
+    pub index: Token,
     pub start_bound: usize, // key for ordering
 }
 impl Overlap {

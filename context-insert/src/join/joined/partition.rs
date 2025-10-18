@@ -27,7 +27,7 @@ use tracing::debug;
 
 #[derive(Debug)]
 pub struct JoinedPartition<R: RangeRole> {
-    pub index: Child,
+    pub index: Token,
     pub perfect: R::Perfect,
     pub delta: PatternSubDeltas,
 }
@@ -64,14 +64,14 @@ where
     }
 }
 
-impl<K: RangeRole> Borrow<Child> for JoinedPartition<K> {
-    fn borrow(&self) -> &Child {
+impl<K: RangeRole> Borrow<Token> for JoinedPartition<K> {
+    fn borrow(&self) -> &Token {
         &self.index
     }
 }
 
-impl<K: RangeRole> Borrow<Child> for &JoinedPartition<K> {
-    fn borrow(&self) -> &Child {
+impl<K: RangeRole> Borrow<Token> for &JoinedPartition<K> {
+    fn borrow(&self) -> &Token {
         &self.index
     }
 }

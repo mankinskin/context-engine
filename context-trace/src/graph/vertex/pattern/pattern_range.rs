@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{
-    Child,
+    Token,
     Pattern,
     graph::{
         getters::ErrorReason,
@@ -17,7 +17,7 @@ pub(crate) fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     id: &PatternId,
     p: &'a Pattern,
     range: R,
-) -> Result<&'a <R as SliceIndex<[Child]>>::Output, ErrorReason> {
+) -> Result<&'a <R as SliceIndex<[Token]>>::Output, ErrorReason> {
     p.get(range.clone()).ok_or_else(|| {
         ErrorReason::InvalidPatternRange(
             *id,
@@ -27,7 +27,7 @@ pub(crate) fn get_child_pattern_range<'a, R: PatternRangeIndex>(
     })
 }
 
-pub trait PatternRangeIndex<T = Child>:
+pub trait PatternRangeIndex<T = Token>:
     SliceIndex<[T], Output = [T]>
     + RangeBounds<usize>
     + Iterator<Item = usize>

@@ -44,12 +44,12 @@ impl PatternIndex {
     }
 }
 
-/// Storage for parent relationship of a child to a parent
+/// Storage for parent relationship of a token to a parent
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Parent {
     /// width of the parent
     pub(crate) width: usize,
-    /// positions of child in parent patterns
+    /// positions of token in parent patterns
     pub(crate) pattern_indices: HashSet<PatternIndex>,
 }
 impl Wide for Parent {

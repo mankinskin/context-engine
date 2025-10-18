@@ -6,14 +6,14 @@ use crate::{
 pub trait LeafKey {
     fn leaf_location(&self) -> ChildLocation;
 }
-use crate::path::mutators::move_path::key::TokenPosition;
+use crate::path::mutators::move_path::key::AtomPosition;
 
 use crate::trace::cache::key::directed::DirectedKey;
 
-/// get the token position in a query
+/// get the atom position in a query
 pub trait CursorPosition {
-    fn cursor_pos(&self) -> &TokenPosition;
-    fn cursor_pos_mut(&mut self) -> &mut TokenPosition;
+    fn cursor_pos(&self) -> &AtomPosition;
+    fn cursor_pos_mut(&mut self) -> &mut AtomPosition;
 }
 #[macro_export]
 macro_rules! impl_cursor_pos {
@@ -21,10 +21,10 @@ macro_rules! impl_cursor_pos {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? CursorPosition for $target:ty, $self_:ident => $func:expr
     } => {
         impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::CursorPosition for $target {
-            fn cursor_pos(& $self_) -> &$crate::TokenPosition {
+            fn cursor_pos(& $self_) -> &$crate::AtomPosition {
                 &$func
             }
-            fn cursor_pos_mut(&mut $self_) -> &mut $crate::TokenPosition {
+            fn cursor_pos_mut(&mut $self_) -> &mut $crate::AtomPosition {
                 &mut $func
             }
         }

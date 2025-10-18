@@ -38,7 +38,7 @@ where
     fn join_partition<'a: 'b, 'b: 'c, 'c>(
         self,
         ctx: &'c mut NodeJoinCtx<'a>,
-    ) -> Result<JoinedPartition<R>, Child>
+    ) -> Result<JoinedPartition<R>, Token>
     where
         Self: 'c,
         R: 'a,

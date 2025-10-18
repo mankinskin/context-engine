@@ -12,7 +12,7 @@ pub struct SplitRunStep;
 #[derive(Debug)]
 pub struct SplitRun<G: HasGraph> {
     ctx: SplitCacheCtx<G>,
-    incomplete: BTreeSet<Child>,
+    incomplete: BTreeSet<Token>,
 }
 impl<G: HasGraph> SplitRun<G> {
     pub fn init(&mut self) {
@@ -36,7 +36,7 @@ impl<G: HasGraph> Iterator for SplitRun<G> {
             self.incomplete.insert(state.index);
             let complete = self
                 .incomplete
-                .split_off(&ChildWidth(state.index.width() + 1));
+                .split_off(&TokenWidth(state.index.width() + 1));
             self.ctx
                 .cache
                 .augment_nodes(&mut self.ctx.states_ctx, complete);

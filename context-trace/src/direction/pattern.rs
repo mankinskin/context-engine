@@ -7,8 +7,8 @@ use crate::{
 };
 
 pub trait PatternDirection: Direction {
-    //fn pattern_tail<T: ToChild>(pattern: &'_ [T]) -> &'_ [T];
-    //fn pattern_head<T: ToChild>(pattern: &'_ [T]) -> Option<&'_ T>;
+    //fn pattern_tail<T: ToToken>(pattern: &'_ [T]) -> &'_ [T];
+    //fn pattern_head<T: ToToken>(pattern: &'_ [T]) -> Option<&'_ T>;
     fn head_index(pattern: &Pattern) -> usize;
     fn last_index(pattern: &Pattern) -> usize
     where
@@ -73,21 +73,21 @@ impl PatternDirection for Left {
 //        rem: A,
 //        context: B,
 //    ) -> Pattern;
-//    fn tail_index<T: ToChild>(
+//    fn tail_index<T: ToToken>(
 //        pattern: &'_ [T],
 //        tail: &'_ [T],
 //    ) -> usize;
-//    /// filter pattern indices of parent relation by child patterns and matching direction
+//    /// filter pattern indices of parent relation by token patterns and matching direction
 //    fn filter_parent_pattern_indices(
 //        parent: &Parent,
-//        children: &HashMap<PatternId, Pattern>,
+//        tokens: &HashMap<PatternId, Pattern>,
 //    ) -> HashSet<PatternIndex>;
-//    fn split_head_tail<T: ToChild + Clone>(pattern: &'_ [T]) -> Option<(T, &'_ [T])> {
+//    fn split_head_tail<T: ToToken + Clone>(pattern: &'_ [T]) -> Option<(T, &'_ [T])> {
 //        Self::pattern_head(pattern).map(|head| (head.clone(), Self::pattern_tail(pattern)))
 //    }
 //    fn front_context_range<T>(index: usize) -> Self::PostfixRange<T>;
 //    /// get remaining pattern in matching direction excluding index
-//    fn front_context<T: ToChild + Clone>(
+//    fn front_context<T: ToToken + Clone>(
 //        pattern: &'_ [T],
 //        index: usize,
 //    ) -> Vec<T> {
@@ -99,9 +99,9 @@ impl PatternDirection for Left {
 //    fn next_child(
 //        pattern: impl IntoPattern,
 //        sub_index: usize,
-//    ) -> Option<Child> {
+//    ) -> Option<Token> {
 //        Self::pattern_index_next(pattern.borrow(), sub_index)
-//            .and_then(|i| pattern.borrow().get(i).map(ToChild::to_child))
+//            .and_then(|i| pattern.borrow().get(i).map(ToToken::to_child))
 //    }
 //    fn compare_next_index_in_child_pattern(
 //        child_pattern: impl IntoPattern,
@@ -110,7 +110,7 @@ impl PatternDirection for Left {
 //    ) -> bool {
 //        Self::pattern_head(context.borrow())
 //            .and_then(|context_next| {
-//                let context_next: Child = context_next.to_child();
+//                let context_next: Token = context_next.to_child();
 //                Self::next_child(child_pattern, sub_index).map(|next| context_next == next)
 //            })
 //            .unwrap_or(false)

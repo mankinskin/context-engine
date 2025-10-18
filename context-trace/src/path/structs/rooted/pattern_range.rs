@@ -27,13 +27,12 @@ use crate::{
             wide::Wide,
         },
     },
-    impl_child,
     impl_root,
+    impl_root_child,
     path::{
         accessors::{
             child::{
-                LeafChild,
-                PathChild,
+                LeafToken,
                 root::PatternRootChild,
             },
             has_path::{
@@ -151,11 +150,11 @@ impl MoveRootIndex<Right, End> for PatternRangePath {
     }
 }
 
-impl<R: PathRole> PathChild<R> for PatternRolePath<R> where
+impl<R: PathRole> LeafToken<R> for PatternRolePath<R> where
     Self: HasPath<R> + PatternRootChild<R>
 {
 }
-impl<R: PathRole> PathChild<R> for PatternRangePath where
+impl<R: PathRole> LeafToken<R> for PatternRangePath where
     Self: HasPath<R> + PatternRootChild<R>
 {
 }
@@ -201,7 +200,7 @@ impl<R: PathRole> PatternRootChild<R> for PatternRangePath where
 {
 }
 
-impl_child! { RootChild for PatternRangePath, self, _trav =>
+impl_root_child! { RootChild for PatternRangePath, self, _trav =>
        *self.root.get(self.role_root_child_index::<R>()).unwrap()
 }
 use crate::path::RolePathUtils;

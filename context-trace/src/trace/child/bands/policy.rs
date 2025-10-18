@@ -4,12 +4,12 @@ use crate::{
         pattern::PatternDirection,
     },
     graph::vertex::{
-        child::Child,
         location::{
             child::ChildLocation,
             pattern::PatternLocation,
         },
         pattern::Pattern,
+        token::Token,
         wide::Wide,
     },
     trace::has_graph::HasGraph,
@@ -20,10 +20,10 @@ pub(crate) trait BandExpandingPolicy<G: HasGraph> {
     fn map_band(
         location: PatternLocation,
         pattern: &Pattern,
-    ) -> (ChildLocation, Child);
+    ) -> (ChildLocation, Token);
     fn map_batch(
-        batch: impl IntoIterator<Item = (ChildLocation, Child)>
-    ) -> Vec<(ChildLocation, Child)> {
+        batch: impl IntoIterator<Item = (ChildLocation, Token)>
+    ) -> Vec<(ChildLocation, Token)> {
         batch.into_iter().collect_vec()
     }
 }
@@ -40,13 +40,13 @@ where
     fn map_band(
         location: PatternLocation,
         pattern: &Pattern,
-    ) -> (ChildLocation, Child) {
+    ) -> (ChildLocation, Token) {
         let last = D::last_index(pattern);
         (location.to_child_location(last), pattern[last])
     }
     fn map_batch(
-        batch: impl IntoIterator<Item = (ChildLocation, Child)>
-    ) -> Vec<(ChildLocation, Child)> {
+        batch: impl IntoIterator<Item = (ChildLocation, Token)>
+    ) -> Vec<(ChildLocation, Token)> {
         batch
             .into_iter()
             .sorted_by(|a, b| b.1.width().cmp(&a.1.width()))
@@ -64,12 +64,12 @@ impl<G: HasGraph, D: Direction> BandExpandingPolicy<G>
     fn map_band(
         location: PatternLocation,
         pattern: &Pattern,
-    ) -> (ChildLocation, Child) {
+    ) -> (ChildLocation, Token) {
         (location.to_child_location(0), pattern[0])
     }
     fn map_batch(
-        batch: impl IntoIterator<Item = (ChildLocation, Child)>
-    ) -> Vec<(ChildLocation, Child)> {
+        batch: impl IntoIterator<Item = (ChildLocation, Token)>
+    ) -> Vec<(ChildLocation, Token)> {
         batch
             .into_iter()
             .sorted_by(|a, b| b.1.width().cmp(&a.1.width()))

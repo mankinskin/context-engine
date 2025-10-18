@@ -12,8 +12,8 @@ use crate::{
         accessors::{
             border::PathBorder,
             child::{
-                LeafChildPosMut,
-                PathChild,
+                LeafToken,
+                LeafTokenPosMut,
             },
             has_path::{
                 HasPath,

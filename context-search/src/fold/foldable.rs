@@ -59,7 +59,7 @@ pub trait Foldable: Sized {
     }
 }
 
-impl<const N: usize> Foldable for &'_ [Child; N] {
+impl<const N: usize> Foldable for &'_ [Token; N] {
     fn to_fold_context<K: TraversalKind>(
         self,
         trav: K::Trav,
@@ -67,7 +67,7 @@ impl<const N: usize> Foldable for &'_ [Child; N] {
         PatternRangePath::from(self).to_fold_context::<K>(trav)
     }
 }
-impl Foldable for &'_ [Child] {
+impl Foldable for &'_ [Token] {
     fn to_fold_context<K: TraversalKind>(
         self,
         trav: K::Trav,

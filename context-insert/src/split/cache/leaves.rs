@@ -12,7 +12,7 @@ pub struct Leaves(Vec<PosKey>);
 impl Leaves {
     pub fn collect_leaves(
         &mut self,
-        index: &Child,
+        index: &Token,
         offsets: CompleteLocations,
     ) -> HashMap<Offset, Vec<SubSplitLocation>> {
         offsets

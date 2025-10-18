@@ -9,7 +9,7 @@ use std::fmt::Debug;
 
 #[derive(Debug, Deref, DerefMut, Clone)]
 pub struct BlockIter {
-    iter: std::iter::Peekable<std::vec::IntoIter<NewTokenIndex>>,
+    iter: std::iter::Peekable<std::vec::IntoIter<NewAtomndex>>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,15 +31,15 @@ impl Iterator for BlockIter {
 }
 
 impl BlockIter {
-    pub fn new(sequence: NewTokenIndices) -> Self {
+    pub fn new(sequence: NewAtomIndices) -> Self {
         Self {
             iter: sequence.into_iter().peekable(),
         }
     }
     fn next_pattern_where(
         &mut self,
-        f: impl FnMut(&NewTokenIndex) -> bool,
+        f: impl FnMut(&NewAtomIndex) -> bool,
     ) -> Pattern {
-        self.iter.peeking_take_while(f).map(Child::from).collect()
+        self.iter.peeking_take_while(f).map(Token::from).collect()
     }
 }

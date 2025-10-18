@@ -1,7 +1,7 @@
 use crate::{
     graph::vertex::{
-        child::Child,
         location::child::ChildLocation,
+        token::Token,
     },
     path::{
         accessors::{
@@ -25,10 +25,10 @@ pub trait RootChild<R>: RootChildIndex<R> {
     fn root_child<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child;
+    ) -> Token;
 }
 #[macro_export]
-macro_rules! impl_child {
+macro_rules! impl_root_child {
     {
         RootChild for $target:ty, $self_:ident, $trav:ident => $func:expr
     } => {
@@ -37,20 +37,20 @@ macro_rules! impl_child {
         {
             fn root_child<
                 G: HasGraph,
-            >(& $self_, $trav: &G) -> $crate::graph::vertex::child::Child {
+            >(& $self_, $trav: &G) -> $crate::graph::vertex::token::Token {
                 $func
             }
         }
     };
 }
 
-/// used to get a direct child in a Graph
+/// used to get a direct token in a Graph
 pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
     fn root_child_location(&self) -> ChildLocation;
     fn graph_root_child<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child {
+    ) -> Token {
         *trav.graph().expect_child_at(
             <_ as GraphRootChild<R>>::root_child_location(self),
         )
@@ -79,11 +79,11 @@ impl<R: PathRole> GraphRootChild<R> for ChildLocation {
         *self
     }
 }
-// used to get a direct child of a pattern
+// used to get a direct token of a pattern
 pub(crate) trait PatternRootChild<R>:
     RootChildIndex<R> + PatternRoot
 {
-    fn pattern_root_child(&self) -> Child {
+    fn pattern_root_child(&self) -> Token {
         PatternRoot::pattern_root_pattern(self)[self.root_child_index()]
     }
 }

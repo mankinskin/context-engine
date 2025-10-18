@@ -62,23 +62,23 @@ macro_rules! assert_indices {
     };
 }
 #[macro_export]
-macro_rules! expect_tokens {
+macro_rules! expect_atoms {
     ($graph:ident, {$($name:ident),*}) => {
 
         let g = $graph.graph();
-        $(let $name = g.expect_token_child($crate::charify::charify!($name));)*
+        $(let $name = g.expect_atom_child($crate::charify::charify!($name));)*
         #[allow(dropping_references)]
         drop(g);
     };
 }
 #[macro_export]
-macro_rules! insert_tokens {
+macro_rules! insert_atoms {
     ($graph:ident, {$($name:ident),*}) => {
         use itertools::Itertools;
         let ($($name),*) = $crate::trace::has_graph::HasGraphMut::graph_mut(&mut $graph)
-            .insert_tokens([
+            .insert_atoms([
                 $(
-                    $crate::graph::vertex::token::Token::Element($crate::charify::charify!($name))
+                    $crate::graph::vertex::atom::Atom::Element($crate::charify::charify!($name))
                 ),*
             ])
             .into_iter()
@@ -88,13 +88,13 @@ macro_rules! insert_tokens {
 }
 pub fn assert_parents(
     graph: &Hypergraph,
-    child: impl ToChild,
-    parent: impl ToChild,
+    token: impl ToToken,
+    parent: impl ToToken,
     pattern_indices: impl IntoIterator<Item = PatternIndex>,
 ) {
     assert_eq!(
         graph
-            .expect_parents(child)
+            .expect_parents(token)
             .clone()
             .into_iter()
             .collect::<HashMap<_, _>>(),
@@ -184,7 +184,7 @@ macro_rules! build_trace_cache {
 #[test]
 fn test_build_trace_cache1() {
     let mut graph = HypergraphRef::default();
-    insert_tokens!(graph, {h, e, l, d});
+    insert_atoms!(graph, {h, e, l, d});
     insert_patterns!(graph,
         (ld, ld_id) => [l, d],
         (heldld, heldld_id) => [h, e, ld, ld]
@@ -282,7 +282,7 @@ fn test_build_trace_cache1() {
 #[test]
 fn test_build_trace_cache2() {
     let mut graph = HypergraphRef::default();
-    insert_tokens!(graph, {a, b, c, d});
+    insert_atoms!(graph, {a, b, c, d});
 
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],

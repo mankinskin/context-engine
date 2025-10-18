@@ -16,7 +16,7 @@ pub trait PatternSplits: Debug + Clone {
 }
 
 impl PatternSplits for VertexSplits {
-    type Pos = ChildTracePos;
+    type Pos = TokenTracePos;
     type Offsets = usize;
     fn get(
         &self,
@@ -33,7 +33,7 @@ impl PatternSplits for VertexSplits {
 }
 
 impl PatternSplits for &VertexSplits {
-    type Pos = ChildTracePos;
+    type Pos = TokenTracePos;
     type Offsets = usize;
     fn get(
         &self,

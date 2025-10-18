@@ -96,7 +96,7 @@ fn test_split_cache1() {
                                 ]),
                                 pattern_splits: HashMap::from_iter([(
                                     *e_f_id,
-                                    ChildTracePos {
+                                    TokenTracePos {
                                         inner_offset: None,
                                         sub_index: 1,
                                     }
@@ -123,7 +123,7 @@ fn test_split_cache1() {
                                 ]),
                                 pattern_splits: HashMap::from_iter([(
                                     *d_ef_id,
-                                    ChildTracePos {
+                                    TokenTracePos {
                                         inner_offset: Some(nz!(1)),
                                         sub_index: 1,
                                     }
@@ -145,14 +145,14 @@ fn test_split_cache1() {
                                 pattern_splits: HashMap::from_iter([
                                     (
                                         *c_def_id,
-                                        ChildTracePos {
+                                        TokenTracePos {
                                             inner_offset: Some(nz!(2)),
                                             sub_index: 1,
                                         },
                                     ),
                                     (
                                         *cd_ef_id,
-                                        ChildTracePos {
+                                        TokenTracePos {
                                             inner_offset: Some(nz!(1)),
                                             sub_index: 1,
                                         },
@@ -172,21 +172,21 @@ fn test_split_cache1() {
                                 pattern_splits: HashMap::from_iter([
                                     (
                                         *abcd_ef_id,
-                                        ChildTracePos {
+                                        TokenTracePos {
                                             inner_offset: Some(nz!(1)),
                                             sub_index: 1,
                                         }
                                     ),
                                     (
                                         *abc_def_id,
-                                        ChildTracePos {
+                                        TokenTracePos {
                                             inner_offset: Some(nz!(2)),
                                             sub_index: 1,
                                         }
                                     ),
                                     (
                                         *ab_cdef_id,
-                                        ChildTracePos {
+                                        TokenTracePos {
                                             inner_offset: Some(nz!(3)),
                                             sub_index: 1,
                                         }
@@ -236,7 +236,7 @@ fn interval_graph1() {
 fn interval_graph2() {
     init_tracing();
     let mut graph = HypergraphRef::default();
-    insert_tokens!(graph, {a, b, c, d, e, f, g, h, i, j, k});
+    insert_atoms!(graph, {a, b, c, d, e, f, g, h, i, j, k});
     insert_patterns!(graph,
         (cd, cd_id) => [c, d],
         (hi, hi_id) => [h, i],

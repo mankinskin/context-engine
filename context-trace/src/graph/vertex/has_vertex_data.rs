@@ -8,7 +8,7 @@ use crate::graph::{
     getters::vertex::VertexSet,
     kind::GraphKind,
     vertex::{
-        child::Child,
+        token::Token,
         data::VertexData,
         has_vertex_index::HasVertexIndex,
         key::VertexKey,
@@ -37,7 +37,7 @@ pub(crate) trait HasVertexDataMut: HasVertexData {
     ) -> &'a mut VertexData;
 }
 
-impl HasVertexDataMut for Child {
+impl HasVertexDataMut for Token {
     fn vertex_mut<
         'a,
         G: GraphKind + 'a,
@@ -118,7 +118,7 @@ pub trait HasVertexData: Sized {
     ) -> &'a VertexData;
 }
 
-impl HasVertexData for Child {
+impl HasVertexData for Token {
     fn vertex<'a, G: GraphKind + 'a, R: Deref<Target = Hypergraph<G>>>(
         self,
         graph: &'a R,

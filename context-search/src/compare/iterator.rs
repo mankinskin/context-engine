@@ -1,10 +1,10 @@
 use crate::compare::state::{
-    ChildMatchState::{
+    CompareState,
+    TokenMatchState::{
         self,
         Match,
         Mismatch,
     },
-    CompareState,
 };
 use context_trace::*;
 
@@ -32,12 +32,12 @@ impl<G: HasGraph> CompareIterator<G> {
             Match(state) => Some(state),
         }
     }
-    pub(crate) fn compare(mut self) -> ChildMatchState {
+    pub(crate) fn compare(mut self) -> TokenMatchState {
         self.find_map(|flow| flow).unwrap()
     }
 }
 impl<G: HasGraph> Iterator for CompareIterator<G> {
-    type Item = Option<ChildMatchState>;
+    type Item = Option<TokenMatchState>;
     fn next(&mut self) -> Option<Self::Item> {
         self.children.next().map(|cs| {
             match cs.next_match(&self.children.trav) {

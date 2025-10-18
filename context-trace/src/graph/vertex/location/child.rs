@@ -7,8 +7,7 @@ use crate::{
         pattern::PatternDirection,
     },
     graph::vertex::{
-        ChildPatterns,
-        child::Child,
+        TokenPatterns,
         has_vertex_index::HasVertexIndex,
         location::{
             PatternId,
@@ -17,6 +16,7 @@ use crate::{
             pattern::IntoPatternLocation,
         },
         pattern::Pattern,
+        token::Token,
         wide::Wide,
     },
     path::mutators::move_path::leaf::MoveLeaf,
@@ -59,7 +59,7 @@ impl HasSubIndexMut for ChildLocation {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct ChildLocation {
-    pub parent: Child,
+    pub parent: Token,
     pub pattern_id: PatternId,
     pub sub_index: usize,
 }
@@ -100,7 +100,7 @@ impl MoveLeaf<Left> for ChildLocation {
 
 impl ChildLocation {
     pub fn new(
-        parent: Child,
+        parent: Token,
         pattern_id: PatternId,
         sub_index: usize,
     ) -> Self {
@@ -112,43 +112,43 @@ impl ChildLocation {
     }
     pub(crate) fn get_child_in<'a>(
         &self,
-        patterns: &'a ChildPatterns,
-    ) -> Option<&'a Child> {
+        patterns: &'a TokenPatterns,
+    ) -> Option<&'a Token> {
         self.get_pattern_in(patterns)
             .and_then(|p| self.get_child_in_pattern(p))
     }
     pub(crate) fn expect_child_in<'a>(
         &self,
-        patterns: &'a ChildPatterns,
-    ) -> &'a Child {
+        patterns: &'a TokenPatterns,
+    ) -> &'a Token {
         self.get_child_in(patterns)
-            .expect("Expected Child not present in ChildPatterns!")
+            .expect("Expected Token not present in TokenPatterns!")
     }
     pub(crate) fn get_child_in_pattern<'a>(
         &self,
         pattern: &'a Pattern,
-    ) -> Option<&'a Child> {
+    ) -> Option<&'a Token> {
         pattern.get(self.sub_index)
     }
     pub(crate) fn expect_child_in_pattern<'a>(
         &self,
         pattern: &'a Pattern,
-    ) -> &'a Child {
+    ) -> &'a Token {
         self.get_child_in_pattern(pattern)
-            .expect("Expected Child not present in ChildPatterns!")
+            .expect("Expected Token not present in TokenPatterns!")
     }
     pub(crate) fn get_pattern_in<'a>(
         &self,
-        patterns: &'a ChildPatterns,
+        patterns: &'a TokenPatterns,
     ) -> Option<&'a Pattern> {
         patterns.get(&self.pattern_id)
     }
     pub(crate) fn expect_pattern_in<'a>(
         &self,
-        patterns: &'a ChildPatterns,
+        patterns: &'a TokenPatterns,
     ) -> &'a Pattern {
         self.get_pattern_in(patterns)
-            .expect("Expected Pattern not present in ChildPatterns!")
+            .expect("Expected Pattern not present in TokenPatterns!")
     }
     pub(crate) fn to_child_location(
         self,
@@ -158,11 +158,11 @@ impl ChildLocation {
     }
     pub(crate) fn to_pattern_location(
         self,
-        id: PatternId,
+        pattern_id: PatternId,
     ) -> PatternLocation {
         PatternLocation {
             parent: self.parent,
-            id,
+            pattern_id,
         }
     }
     pub(crate) fn to_sub_location(self) -> SubLocation {
@@ -193,7 +193,7 @@ impl IntoPatternLocation for ChildLocation {
     fn into_pattern_location(self) -> PatternLocation {
         PatternLocation {
             parent: self.parent,
-            id: self.pattern_id,
+            pattern_id: self.pattern_id,
         }
     }
 }

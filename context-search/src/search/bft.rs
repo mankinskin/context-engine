@@ -46,8 +46,8 @@ impl<T, F, I> Iterator for Bft<T, F, I>
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((depth, node)) = self.queue.pop_front() {
-            let children = (self.iter_children)(&node);
-            self.queue.extend(children.map(|child| (depth + 1, child)));
+            let tokens = (self.iter_children)(&node);
+            self.queue.extend(tokens.map(|token| (depth + 1, token)));
 
             Some((depth, node))
         } else {

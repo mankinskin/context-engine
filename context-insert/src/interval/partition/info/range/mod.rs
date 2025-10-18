@@ -42,20 +42,20 @@ pub trait ModeRangeInfo<R: RangeRole>: Debug {
     fn info_pattern_range(
         borders: BordersOf<R>,
         ctx: &ModePatternCtxOf<R>,
-    ) -> Result<PatternRangeInfo<R>, Child>;
+    ) -> Result<PatternRangeInfo<R>, Token>;
 }
 
 impl<R: RangeRole<Mode = Trace>> ModeRangeInfo<R> for TraceRangeInfo<R> {
     fn info_pattern_range(
         borders: BordersOf<R>,
         ctx: &ModePatternCtxOf<R>,
-    ) -> Result<PatternRangeInfo<R>, Child> {
+    ) -> Result<PatternRangeInfo<R>, Token> {
         let range = borders.outer_range();
         let inner = borders.inner_info(ctx);
         let (pat, pid) = {
             let ctx = ctx.pattern_trace_context();
             let pat = ctx.pattern.get(range.clone()).unwrap();
-            (pat, ctx.loc.id)
+            (pat, ctx.loc.pattern_id())
         };
         if pat.len() != 1 {
             Ok(PatternRangeInfo {

@@ -39,7 +39,7 @@ pub struct ExpansionCtx<'a> {
     chain: BandChain,
 }
 impl Iterator for ExpansionCtx<'_> {
-    type Item = Child;
+    type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
         ExpandCtx::try_new(self)
@@ -87,7 +87,7 @@ impl<'a> ExpansionCtx<'a> {
         let first = self.chain.first().unwrap().postfix();
         self.last().unwrap_or(first)
     }
-    pub fn cursor_root_index(&self) -> &Child {
+    pub fn cursor_root_index(&self) -> &Token {
         self.chain
             .bands
             .first()
@@ -137,7 +137,7 @@ impl<'a> ExpansionCtx<'a> {
             start_bound,
         } = exp;
         let start_bound = *start_bound;
-        let overlap = postfix_path.role_leaf_child::<End, _>(&self.cursor.ctx);
+        let overlap = postfix_path.role_leaf_token::<End, _>(&self.cursor.ctx);
         let prefix_path = expansion.prefix_path(&self.cursor.ctx, overlap);
 
         ExpansionLink {

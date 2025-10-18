@@ -7,16 +7,16 @@ use derive_more::derive::From;
 use derive_new::new;
 
 use crate::{
-    graph::vertex::child::Child,
-    path::mutators::move_path::key::TokenPosition,
+    graph::vertex::token::Token,
+    path::mutators::move_path::key::AtomPosition,
     trace::cache::key::directed::{
-        HasTokenPosition,
+        HasAtomPosition,
         down::DownPosition,
     },
 };
 
 #[derive(Clone, Debug, Copy, Hash, Eq, PartialEq, From)]
-pub struct UpPosition(pub TokenPosition);
+pub struct UpPosition(pub AtomPosition);
 
 impl UpPosition {
     pub fn flipped(self) -> DownPosition {
@@ -51,12 +51,12 @@ impl Add<usize> for UpPosition {
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Copy, new)]
 pub struct UpKey {
-    pub index: Child,
+    pub index: Token,
     pub pos: UpPosition,
 }
 
-impl HasTokenPosition for UpKey {
-    fn pos(&self) -> &TokenPosition {
+impl HasAtomPosition for UpKey {
+    fn pos(&self) -> &AtomPosition {
         &self.pos.0
     }
 }

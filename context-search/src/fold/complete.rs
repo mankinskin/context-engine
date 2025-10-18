@@ -8,13 +8,13 @@ use crate::{
 };
 
 pub trait UnwrapComplete: Sized + Debug {
-    fn as_complete(&self) -> Option<Child>;
+    fn as_complete(&self) -> Option<Token>;
 
     fn is_complete(&self) -> bool {
         self.as_complete().is_some()
     }
     #[track_caller]
-    fn unwrap_complete(self) -> Child {
+    fn unwrap_complete(self) -> Token {
         self.as_complete().unwrap_or_else(|| {
             panic!("Unable to unwrap {:?} as complete.", self)
         })
@@ -23,7 +23,7 @@ pub trait UnwrapComplete: Sized + Debug {
     fn expect_complete(
         self,
         msg: &str,
-    ) -> Child {
+    ) -> Token {
         self.as_complete().unwrap_or_else(|| {
             panic!("Unable to unwrap {:?} as complete: {}", self, msg)
         })
@@ -31,7 +31,7 @@ pub trait UnwrapComplete: Sized + Debug {
 }
 
 impl UnwrapComplete for EndKind {
-    fn as_complete(&self) -> Option<Child> {
+    fn as_complete(&self) -> Option<Token> {
         match self {
             Self::Complete(c) => Some(*c),
             _ => None,
@@ -40,21 +40,21 @@ impl UnwrapComplete for EndKind {
 }
 
 impl UnwrapComplete for FinishedKind {
-    /// returns child if reduced to single child
-    fn as_complete(&self) -> Option<Child> {
+    /// returns token if reduced to single token
+    fn as_complete(&self) -> Option<Token> {
         match self {
             Self::Complete(c) => Some(*c),
             _ => None,
         }
     }
-    fn unwrap_complete(self) -> Child {
+    fn unwrap_complete(self) -> Token {
         self.expect_complete("Unable to unwrap complete FoundRange")
     }
 
     fn expect_complete(
         self,
         msg: &str,
-    ) -> Child {
+    ) -> Token {
         match self {
             FinishedKind::Complete(c) => c,
             _ => panic!("{}", msg),
@@ -63,12 +63,12 @@ impl UnwrapComplete for FinishedKind {
 }
 
 impl UnwrapComplete for FinishedState {
-    /// returns child if reduced to single child
-    fn as_complete(&self) -> Option<Child> {
+    /// returns token if reduced to single token
+    fn as_complete(&self) -> Option<Token> {
         self.kind.as_complete()
     }
     #[track_caller]
-    fn unwrap_complete(self) -> Child {
+    fn unwrap_complete(self) -> Token {
         self.kind.unwrap_complete()
     }
 
@@ -76,7 +76,7 @@ impl UnwrapComplete for FinishedState {
     fn expect_complete(
         self,
         msg: &str,
-    ) -> Child {
+    ) -> Token {
         self.kind.expect_complete(msg)
     }
 }

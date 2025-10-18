@@ -1,7 +1,7 @@
 use crate::{
     graph::vertex::{
-        child::Child,
-        has_vertex_index::ToChild,
+        token::Token,
+        has_vertex_index::ToToken,
         location::child::ChildLocation,
         pattern::{
             pattern_post,
@@ -50,44 +50,44 @@ pub trait PathRole: 'static + Debug + PathBorder + Default + Clone {
     ) -> std::iter::Rev<Self::TopDownPathIter<I, T>> {
         Self::top_down_iter(collection).rev()
     }
-    fn outer_ctx_width<T: Borrow<Child>>(
+    fn outer_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize;
-    fn inner_ctx_width<T: Borrow<Child>>(
+    fn inner_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize;
-    fn inner_width<T: Borrow<Child>>(
+    fn inner_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize;
-    fn outer_width<T: Borrow<Child>>(
+    fn outer_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize;
 
     /// get remaining pattern agains matching direction excluding index
-    fn back_context<T: ToChild + Clone>(
+    fn back_context<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T>;
-    fn normalize_index<T: ToChild>(
+    fn normalize_index<T: ToToken>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize;
-    fn split_end<T: ToChild + Clone>(
+    fn split_end<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T>;
-    fn split_end_normalized<T: ToChild + Clone>(
+    fn split_end_normalized<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
         Self::split_end(pattern, Self::normalize_index(pattern, index))
     }
     fn directed_pattern_split<
-        T: crate::graph::vertex::has_vertex_index::ToChild + Clone,
+        T: crate::graph::vertex::has_vertex_index::ToToken + Clone,
     >(
         pattern: &'_ [T],
         index: usize,
@@ -114,25 +114,25 @@ impl PathRole for Start {
     ) -> Self::TopDownPathIter<I, T> {
         collection.rev()
     }
-    fn back_context<T: ToChild + Clone>(
+    fn back_context<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
         prefix(pattern, index)
     }
-    fn normalize_index<T: ToChild>(
+    fn normalize_index<T: ToToken>(
         _pattern: &'_ [T],
         index: usize,
     ) -> usize {
         index
     }
-    fn split_end<T: ToChild + Clone>(
+    fn split_end<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
         postfix(pattern, index)
     }
-    fn outer_ctx_width<T: Borrow<Child>>(
+    fn outer_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
@@ -141,7 +141,7 @@ impl PathRole for Start {
             index,
         ))
     }
-    fn inner_ctx_width<T: Borrow<Child>>(
+    fn inner_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
@@ -150,13 +150,13 @@ impl PathRole for Start {
             index,
         ))
     }
-    fn inner_width<T: Borrow<Child>>(
+    fn inner_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
         pattern_width(pattern_post(pattern.iter().map(Borrow::borrow), index))
     }
-    fn outer_width<T: Borrow<Child>>(
+    fn outer_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
@@ -180,43 +180,43 @@ impl PathRole for End {
     ) -> Self::TopDownPathIter<I, T> {
         collection
     }
-    fn back_context<T: ToChild + Clone>(
+    fn back_context<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
         postfix(pattern, index + 1)
     }
-    fn normalize_index<T: ToChild>(
+    fn normalize_index<T: ToToken>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
         pattern.len() - index - 1
     }
-    fn split_end<T: ToChild + Clone>(
+    fn split_end<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
         prefix(pattern, index + 1)
     }
-    fn outer_ctx_width<T: Borrow<Child>>(
+    fn outer_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
         Start::inner_ctx_width(pattern, index)
     }
-    fn inner_ctx_width<T: Borrow<Child>>(
+    fn inner_ctx_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
         Start::outer_ctx_width(pattern, index)
     }
-    fn inner_width<T: Borrow<Child>>(
+    fn inner_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {
         Start::outer_width(pattern, index)
     }
-    fn outer_width<T: Borrow<Child>>(
+    fn outer_width<T: Borrow<Token>>(
         pattern: &'_ [T],
         index: usize,
     ) -> usize {

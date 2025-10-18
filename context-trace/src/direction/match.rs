@@ -24,11 +24,11 @@ use crate::{
         },
         kind::GraphKind,
         vertex::{
-            child::Child,
+            token::Token,
             data::VertexData,
             has_vertex_index::{
                 HasVertexIndex,
-                ToChild,
+                ToToken,
             },
             parent::{
                 Parent,
@@ -68,8 +68,8 @@ pub(crate) trait MatchDirection: Direction {
         b: impl DoubleEndedIterator<Item = &'a J>,
     ) -> Option<(usize, EitherOrBoth<&'a I, &'a J>)>;
     /// get remaining pattern in matching direction including index
-    fn pattern_tail<T: ToChild>(pattern: &'_ [T]) -> &'_ [T];
-    fn pattern_head<T: ToChild>(pattern: &'_ [T]) -> Option<&'_ T>;
+    fn pattern_tail<T: ToToken>(pattern: &'_ [T]) -> &'_ [T];
+    fn pattern_head<T: ToToken>(pattern: &'_ [T]) -> Option<&'_ T>;
     fn head_index(pattern: &Pattern) -> usize;
     fn last_index(pattern: &Pattern) -> usize
     where
@@ -83,16 +83,16 @@ pub(crate) trait MatchDirection: Direction {
     ) -> Pattern;
     fn index_next(index: usize) -> Option<usize>;
     fn index_prev(index: usize) -> Option<usize>;
-    fn tail_index<T: ToChild>(
+    fn tail_index<T: ToToken>(
         pattern: &'_ [T],
         tail: &'_ [T],
     ) -> usize;
-    /// filter pattern indices of parent relation by child patterns and matching direction
+    /// filter pattern indices of parent relation by token patterns and matching direction
     fn filter_parent_pattern_indices(
         parent: &Parent,
-        children: &HashMap<PatternId, Pattern>,
+        tokens: &HashMap<PatternId, Pattern>,
     ) -> HashSet<PatternIndex>;
-    fn split_head_tail<T: ToChild + Clone>(
+    fn split_head_tail<T: ToToken + Clone>(
         pattern: &'_ [T]
     ) -> Option<(T, &'_ [T])> {
         Self::pattern_head(pattern)
@@ -100,7 +100,7 @@ pub(crate) trait MatchDirection: Direction {
     }
     fn front_context_range<T>(index: usize) -> Self::PostfixRange<T>;
     /// get remaining pattern in matching direction excluding index
-    fn front_context<T: ToChild + Clone>(
+    fn front_context<T: ToToken + Clone>(
         pattern: &'_ [T],
         index: usize,
     ) -> Vec<T> {
@@ -124,9 +124,9 @@ pub(crate) trait MatchDirection: Direction {
     fn next_child(
         pattern: &Pattern,
         sub_index: usize,
-    ) -> Option<Child> {
+    ) -> Option<Token> {
         Self::pattern_index_next(pattern, sub_index)
-            .and_then(|i| pattern.get(i).map(ToChild::to_child))
+            .and_then(|i| pattern.get(i).map(ToToken::to_child))
     }
     fn compare_next_index_in_child_pattern(
         child_pattern: &Pattern,
@@ -135,7 +135,7 @@ pub(crate) trait MatchDirection: Direction {
     ) -> bool {
         Self::pattern_head(context)
             .and_then(|context_next| {
-                let context_next: Child = context_next.to_child();
+                let context_next: Token = context_next.to_child();
                 Self::next_child(child_pattern, sub_index)
                     .map(|next| context_next == next)
             })
@@ -162,16 +162,16 @@ impl MatchDirection for Right {
     fn front_context_range<T>(index: usize) -> Self::PostfixRange<T> {
         (index + 1)..
     }
-    fn pattern_tail<T: ToChild>(pattern: &'_ [T]) -> &'_ [T] {
+    fn pattern_tail<T: ToToken>(pattern: &'_ [T]) -> &'_ [T] {
         pattern.get(1..).unwrap_or(&[])
     }
-    fn pattern_head<T: ToChild>(pattern: &'_ [T]) -> Option<&'_ T> {
+    fn pattern_head<T: ToToken>(pattern: &'_ [T]) -> Option<&'_ T> {
         pattern.first()
     }
     fn head_index(_pattern: &Pattern) -> usize {
         0
     }
-    fn tail_index<T: ToChild>(
+    fn tail_index<T: ToToken>(
         pattern: &'_ [T],
         tail: &'_ [T],
     ) -> usize {
@@ -216,16 +216,16 @@ impl MatchDirection for Left {
     fn front_context_range<T>(index: usize) -> Self::PostfixRange<T> {
         0..index
     }
-    fn pattern_tail<T: ToChild>(pattern: &'_ [T]) -> &'_ [T] {
+    fn pattern_tail<T: ToToken>(pattern: &'_ [T]) -> &'_ [T] {
         pattern.split_last().map(|(_last, pre)| pre).unwrap_or(&[])
     }
-    fn pattern_head<T: ToChild>(pattern: &'_ [T]) -> Option<&'_ T> {
+    fn pattern_head<T: ToToken>(pattern: &'_ [T]) -> Option<&'_ T> {
         pattern.last()
     }
     fn head_index(pattern: &Pattern) -> usize {
         pattern.len() - 1
     }
-    fn tail_index<T: ToChild>(
+    fn tail_index<T: ToToken>(
         _pattern: &'_ [T],
         tail: &'_ [T],
     ) -> usize {
@@ -245,10 +245,10 @@ impl MatchDirection for Left {
     }
     fn filter_parent_pattern_indices(
         parent: &Parent,
-        children: &HashMap<PatternId, Pattern>,
+        tokens: &HashMap<PatternId, Pattern>,
     ) -> HashSet<PatternIndex> {
         parent
-            .filter_pattern_indices_at_end_in_patterns(children)
+            .filter_pattern_indices_at_end_in_patterns(tokens)
             .cloned()
             .collect()
     }

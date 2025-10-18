@@ -7,8 +7,8 @@ use crate::{
     graph::{
         kind::DirectionOf,
         vertex::{
-            child::Child,
-            has_vertex_index::ToChild,
+            token::Token,
+            has_vertex_index::ToToken,
             location::{
                 child::ChildLocation,
                 pattern::PatternLocation,
@@ -38,12 +38,12 @@ use std::collections::VecDeque;
 pub(crate) mod policy;
 
 pub(crate) trait BandIterator<'a, G: HasGraph + 'a>:
-    Iterator<Item = (ChildLocation, Child)>
+    Iterator<Item = (ChildLocation, Token)>
 {
     type Policy: BandExpandingPolicy<G>;
     fn band_iter(
         trav: G,
-        root: Child,
+        root: Token,
     ) -> Self;
     fn trav(&self) -> &G;
     fn trav_mut(&mut self) -> &mut G;
@@ -51,8 +51,8 @@ pub(crate) trait BandIterator<'a, G: HasGraph + 'a>:
     /// get all postfixes of index with their locations
     fn next_children(
         &self,
-        index: Child,
-    ) -> Vec<(ChildLocation, Child)> {
+        index: Token,
+    ) -> Vec<(ChildLocation, Token)> {
         Self::Policy::map_batch(
             self.trav().graph().expect_child_patterns(index).iter().map(
                 |(pid, pattern)| {
@@ -66,7 +66,7 @@ pub(crate) trait BandIterator<'a, G: HasGraph + 'a>:
     }
 }
 use crate::trace::has_graph::TravDir;
-pub(crate) trait HasChildRoleIters: ToChild {
+pub(crate) trait HasTokenRoleIters: ToToken {
     fn postfix_iter<'a, G: HasGraph + 'a>(
         &self,
         trav: G,
@@ -83,11 +83,11 @@ pub(crate) trait HasChildRoleIters: ToChild {
         PrefixIterator::band_iter(trav, self.to_child())
     }
 
-    /// Calculate the prefix path from this child to the given advanced path
+    /// Calculate the prefix path from this token to the given advanced path
     fn prefix_path<G>(
         &self,
         trav: &G,
-        prefix: Child,
+        prefix: Token,
     ) -> IndexStartPath
     where
         G: HasGraph + Clone,
@@ -111,7 +111,7 @@ pub(crate) trait HasChildRoleIters: ToChild {
             .into_inner()
     }
 }
-impl<T: ToChild> HasChildRoleIters for T {}
+impl<T: ToToken> HasTokenRoleIters for T {}
 
 pub(crate) type PostfixIterator<'a, G> = BandExpandingIterator<
     'a,
@@ -132,8 +132,8 @@ where
     P: BandExpandingPolicy<G>,
 {
     trav: G,
-    queue: VecDeque<(ChildLocation, Child)>,
-    last: (Option<ChildLocation>, Child),
+    queue: VecDeque<(ChildLocation, Token)>,
+    last: (Option<ChildLocation>, Token),
     _ty: std::marker::PhantomData<&'a P>,
 }
 
@@ -145,7 +145,7 @@ where
     type Policy = P;
     fn band_iter(
         trav: G,
-        root: Child,
+        root: Token,
     ) -> Self {
         Self {
             trav,
@@ -167,7 +167,7 @@ where
     G: HasGraph,
     P: BandExpandingPolicy<G>,
 {
-    type Item = (ChildLocation, Child);
+    type Item = (ChildLocation, Token);
 
     fn next(&mut self) -> Option<Self::Item> {
         //let mut segment = None;

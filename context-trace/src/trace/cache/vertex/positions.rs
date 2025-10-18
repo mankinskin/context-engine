@@ -1,6 +1,6 @@
 use crate::{
     HashMap,
-    path::mutators::move_path::key::TokenPosition,
+    path::mutators::move_path::key::AtomPosition,
     trace::cache::position::PositionCache,
 };
 use derive_more::derive::{
@@ -14,10 +14,10 @@ use std::iter::FromIterator;
     Clone, Debug, PartialEq, Eq, Default, IntoIterator, Deref, DerefMut,
 )]
 pub struct DirectedPositions {
-    entries: HashMap<TokenPosition, PositionCache>,
+    entries: HashMap<AtomPosition, PositionCache>,
 }
-impl FromIterator<(TokenPosition, PositionCache)> for DirectedPositions {
-    fn from_iter<T: IntoIterator<Item = (TokenPosition, PositionCache)>>(
+impl FromIterator<(AtomPosition, PositionCache)> for DirectedPositions {
+    fn from_iter<T: IntoIterator<Item = (AtomPosition, PositionCache)>>(
         iter: T
     ) -> Self {
         Self {
@@ -25,8 +25,8 @@ impl FromIterator<(TokenPosition, PositionCache)> for DirectedPositions {
         }
     }
 }
-impl Extend<(TokenPosition, PositionCache)> for DirectedPositions {
-    fn extend<T: IntoIterator<Item = (TokenPosition, PositionCache)>>(
+impl Extend<(AtomPosition, PositionCache)> for DirectedPositions {
+    fn extend<T: IntoIterator<Item = (AtomPosition, PositionCache)>>(
         &mut self,
         iter: T,
     ) {

@@ -10,13 +10,13 @@ use crate::{
     direction::Right,
     graph::vertex::{
         VertexIndex,
-        child::Child,
+        token::Token,
         has_vertex_index::HasVertexIndex,
         wide::Wide,
     },
     path::mutators::move_path::key::{
         MoveKey,
-        TokenPosition,
+        AtomPosition,
     },
 };
 
@@ -36,11 +36,11 @@ pub enum DirectedPosition {
     BottomUp(UpPosition),
     TopDown(DownPosition),
 }
-pub trait HasTokenPosition {
-    fn pos(&self) -> &TokenPosition;
+pub trait HasAtomPosition {
+    fn pos(&self) -> &AtomPosition;
 }
-impl HasTokenPosition for DirectedPosition {
-    fn pos(&self) -> &TokenPosition {
+impl HasAtomPosition for DirectedPosition {
+    fn pos(&self) -> &AtomPosition {
         match self {
             Self::BottomUp(pos) => &pos.0,
             Self::TopDown(pos) => &pos.0,
@@ -94,16 +94,16 @@ impl MoveKey<Right> for DirectedPosition {
     ) {
         match self {
             DirectedPosition::BottomUp(UpPosition(p)) =>
-                <TokenPosition as MoveKey<Right>>::move_key(p, delta),
+                <AtomPosition as MoveKey<Right>>::move_key(p, delta),
             DirectedPosition::TopDown(DownPosition(p)) =>
-                <TokenPosition as MoveKey<Right>>::move_key(p, delta),
+                <AtomPosition as MoveKey<Right>>::move_key(p, delta),
         }
     }
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub struct DirectedKey {
-    pub index: Child,
+    pub index: Token,
     pub pos: DirectedPosition,
 }
 impl Wide for DirectedKey {
@@ -116,8 +116,8 @@ impl HasVertexIndex for DirectedKey {
         self.index.vertex_index()
     }
 }
-impl HasTokenPosition for DirectedKey {
-    fn pos(&self) -> &TokenPosition {
+impl HasAtomPosition for DirectedKey {
+    fn pos(&self) -> &AtomPosition {
         self.pos.pos()
     }
 }
@@ -132,7 +132,7 @@ impl MoveKey<Right> for DirectedKey {
 
 impl DirectedKey {
     pub fn new(
-        index: Child,
+        index: Token,
         pos: impl Into<DirectedPosition>,
     ) -> Self {
         Self {
@@ -141,7 +141,7 @@ impl DirectedKey {
         }
     }
     pub fn up(
-        index: Child,
+        index: Token,
         pos: impl Into<UpPosition>,
     ) -> Self {
         Self {
@@ -150,7 +150,7 @@ impl DirectedKey {
         }
     }
     pub fn down(
-        index: Child,
+        index: Token,
         pos: impl Into<DownPosition>,
     ) -> Self {
         Self {
@@ -166,8 +166,8 @@ impl DirectedKey {
     }
 }
 
-impl From<Child> for DirectedKey {
-    fn from(index: Child) -> Self {
+impl From<Token> for DirectedKey {
+    fn from(index: Token) -> Self {
         Self {
             pos: DirectedPosition::BottomUp(index.width().into()),
             index,

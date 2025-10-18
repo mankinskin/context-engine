@@ -12,7 +12,7 @@ use {
                 ErrorReason,
                 IndexWithPath,
             },
-            vertex::child::Child,
+            vertex::token::Token,
         },
 
         tests::env::TestEnv,
@@ -34,13 +34,13 @@ fn find_parent1() {
         abc,
         ..
     } = &*Env1::get_expected();
-    //let a_bc_pattern = [Child::new(a, 1), Child::new(bc, 2)];
-    let ab_c_pattern = [Child::new(ab, 2), Child::new(c, 1)];
+    //let a_bc_pattern = [Token::new(a, 1), Token::new(bc, 2)];
+    let ab_c_pattern = [Token::new(ab, 2), Token::new(c, 1)];
     //let a_bc_d_pattern =
-    //    [Child::new(a, 1), Child::new(bc, 2), Child::new(d, 1)];
-    let b_c_pattern = vec![Child::new(b, 1), Child::new(c, 1)];
-    let bc_pattern = [Child::new(bc, 2)];
-    //let a_b_c_pattern = [Child::new(a, 1), Child::new(b, 1), Child::new(c, 1)];
+    //    [Token::new(a, 1), Token::new(bc, 2), Token::new(d, 1)];
+    let b_c_pattern = vec![Token::new(b, 1), Token::new(c, 1)];
+    let bc_pattern = [Token::new(bc, 2)];
+    //let a_b_c_pattern = [Token::new(a, 1), Token::new(b, 1), Token::new(c, 1)];
 
     let query = bc_pattern;
     assert_eq!(
@@ -69,7 +69,7 @@ fn find_parent1() {
         }) if x == *abc,
         "ab_c"
     );
-    // enable when bfs for parent-child batches is implemented
+    // enable when bfs for parent-token batches is implemented
     //let query = a_bc_pattern;
     //assert_matches!(
     //    graph.find_parent(&query),
@@ -97,7 +97,7 @@ fn find_parent1() {
     //    }) if x == *abc,
     //    "a_b_c"
     //);
-    //let query = [&a_b_c_pattern[..], &[Child::new(c, 1)]].concat();
+    //let query = [&a_b_c_pattern[..], &[Token::new(c, 1)]].concat();
     //assert_matches!(
     //    graph.find_parent(&query),
     //    Ok(FinishedState {

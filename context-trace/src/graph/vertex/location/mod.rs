@@ -7,15 +7,15 @@ use child::*;
 use pattern::*;
 
 use crate::{
-    Child,
     PatternId,
+    Token,
 };
 
 pub(crate) mod child;
 pub(crate) mod pattern;
 
 pub trait HasParent {
-    fn parent(&self) -> &Child;
+    fn parent(&self) -> &Token;
 }
 #[derive(Clone, Debug, PartialEq, Eq, Copy, Hash)]
 pub struct SubLocation {

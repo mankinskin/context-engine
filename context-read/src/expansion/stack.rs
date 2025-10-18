@@ -27,12 +27,12 @@ pub struct OverlapStack {
 
 #[derive(Debug, Clone)]
 pub enum StackBandEnd {
-    Single(Child),
+    Single(Token),
     Stack(OverlapStack),
 }
 #[derive(Debug, Clone)]
 pub struct StackBand {
-    pub back_context: Child,
+    pub back_context: Token,
     pub expansion: StackBandEnd,
 }
 impl StartBound for StackBand {
@@ -42,7 +42,7 @@ impl StartBound for StackBand {
 }
 
 impl OverlapStack {
-    pub fn new(head_index: Child) -> Self {
+    pub fn new(head_index: Token) -> Self {
         Self {
             head: vec![head_index],
             overlaps: VecDeque::default(),

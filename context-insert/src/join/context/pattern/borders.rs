@@ -7,13 +7,13 @@ use crate::{
         range::{
             children::InfixChildren,
             role::{
-                ChildrenOf,
                 In,
-                ModeChildrenOf,
                 ModePatternCtxOf,
+                ModeChildrenOf,
                 Post,
                 Pre,
                 RangeRole,
+                ChildrenOf,
             },
         },
     },

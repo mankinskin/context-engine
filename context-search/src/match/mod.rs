@@ -5,8 +5,8 @@ use crate::{
         iterator::CompareIterator,
         parent::ParentCompareState,
         state::{
-            ChildMatchState,
             CompareState,
+            TokenMatchState,
         },
     },
     r#match::root_cursor::RootCursor,
@@ -40,7 +40,9 @@ impl<'a, K: TraversalKind> RootSearchIterator<'a, K> {
         Self { ctx, trav }
     }
 
-    pub(crate) fn find_root_cursor(mut self) -> Option<RootCursor<&'a K::Trav>> {
+    pub(crate) fn find_root_cursor(
+        mut self
+    ) -> Option<RootCursor<&'a K::Trav>> {
         self.find_map(|root| root).map(|state| RootCursor {
             trav: self.trav,
             state: Box::new(state),
@@ -80,7 +82,7 @@ use TraceStep::*;
 #[derive(Debug)]
 pub(crate) enum TraceNode {
     Parent(ParentCompareState),
-    Child(ChildQueue<CompareState>),
+    Token(ChildQueue<CompareState>),
 }
 use TraceNode::*;
 
@@ -92,7 +94,7 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
         match self.0 {
             Parent(parent) => match parent.into_advanced(&self.1) {
                 Ok(state) => PolicyNode::<K>::new(
-                    Child(ChildQueue::from_iter([state.child])),
+                    Token(ChildQueue::from_iter([state.token])),
                     self.1,
                 )
                 .consume(),
@@ -108,14 +110,14 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
                         .collect(),
                 )),
             },
-            Child(queue) => {
+            Token(queue) => {
                 let mut compare_iter =
                     CompareIterator::<&K::Trav>::new(self.1, queue);
                 match compare_iter.next() {
-                    Some(Some(ChildMatchState::Match(cs))) => Some(Match(cs)),
-                    Some(Some(ChildMatchState::Mismatch(_))) => Some(Pass),
+                    Some(Some(TokenMatchState::Match(cs))) => Some(Match(cs)),
+                    Some(Some(TokenMatchState::Mismatch(_))) => Some(Pass),
                     Some(None) =>
-                        Some(Append(vec![Child(compare_iter.children.queue)])),
+                        Some(Append(vec![Token(compare_iter.children.queue)])),
                     None => None,
                 }
             },

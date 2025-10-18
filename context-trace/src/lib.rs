@@ -65,23 +65,23 @@ pub use crate::{
             vertex::VertexSet,
         },
         kind::{
+            AtomOf,
             BaseGraphKind,
             GraphKind,
-            TokenOf,
         },
         vertex::{
-            ChildPatterns,
+            TokenPatterns,
             VertexIndex,
-            child::{
-                Child,
-                ChildWidth,
-                HasChild,
+            atom::{
+                AsAtom,
+                Atom,
+                atomizing_iter,
             },
             data::VertexData,
             has_vertex_data::HasVertexData,
             has_vertex_index::{
                 HasVertexIndex,
-                ToChild,
+                ToToken,
             },
             location::{
                 SubLocation,
@@ -107,9 +107,9 @@ pub use crate::{
                 pattern_width,
             },
             token::{
-                AsToken,
+                HasToken,
                 Token,
-                tokenizing_iter,
+                TokenWidth,
             },
             wide::Wide,
         },
@@ -118,7 +118,7 @@ pub use crate::{
         RolePathUtils,
         accessors::{
             child::{
-                PathChild,
+                LeafToken,
                 root::{
                     GraphRootChild,
                     RootChild,
@@ -151,8 +151,8 @@ pub use crate::{
                     CanAdvance,
                 },
                 key::{
+                    AtomPosition,
                     MoveKey,
-                    TokenPosition,
                 },
                 path::MovePath,
                 root::MoveRootIndex,
@@ -203,7 +203,7 @@ pub use crate::{
                 directed::{
                     DirectedKey,
                     DirectedPosition,
-                    HasTokenPosition,
+                    HasAtomPosition,
                     down::DownKey,
                     up::UpKey,
                 },

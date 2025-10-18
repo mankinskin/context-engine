@@ -37,11 +37,11 @@ pub(crate) enum PathPairMode {
     QueryMajor,
 }
 #[derive(Clone, Debug)]
-pub(crate) enum ChildMatchState {
+pub(crate) enum TokenMatchState {
     Mismatch(EndState),
     Match(CompareState),
 }
-use ChildMatchState::*;
+use TokenMatchState::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
 pub(crate) struct CompareState {
@@ -52,10 +52,9 @@ pub(crate) struct CompareState {
     pub(crate) target: DownKey,
     pub(crate) mode: PathPairMode,
 }
-
 #[derive(Clone, Debug)]
 pub(crate) enum CompareNext {
-    MatchState(ChildMatchState),
+    MatchState(TokenMatchState),
     Prefixes(ChildQueue<CompareState>),
 }
 impl CompareState {
@@ -76,7 +75,7 @@ impl CompareState {
             cursor: self.cursor.clone(),
         }
     }
-    /// generate child states for index prefixes
+    /// generate token states for index prefixes
     pub(crate) fn prefix_states<G: HasGraph>(
         &self,
         trav: &G,
@@ -88,7 +87,7 @@ impl CompareState {
                 .into_iter()
                 .map(|(sub, child_state)| Self {
                     target: DownKey::new(
-                        sub.child(),
+                        sub.token(),
                         (*self.cursor.cursor_pos()).into(),
                     ),
                     child_state,
@@ -102,7 +101,7 @@ impl CompareState {
                 .into_iter()
                 .map(|(sub, cursor)| Self {
                     target: DownKey::new(
-                        sub.child(),
+                        sub.token(),
                         (*cursor.cursor_pos()).into(),
                     ),
                     child_state: self.child_state.clone(),
@@ -117,8 +116,8 @@ impl CompareState {
         trav: &G,
     ) -> CompareNext {
         use Ordering::*;
-        let path_leaf = self.rooted_path().role_leaf_child::<End, _>(trav);
-        let query_leaf = self.cursor.role_leaf_child::<End, _>(trav);
+        let path_leaf = self.rooted_path().role_leaf_token::<End, _>(trav);
+        let query_leaf = self.cursor.role_leaf_token::<End, _>(trav);
 
         if path_leaf == query_leaf {
             //debug!(
@@ -178,7 +177,7 @@ impl CompareState {
             Complete(index)
         } else {
             let target = DownKey::new(
-                path.role_leaf_child::<End, _>(trav),
+                path.role_leaf_token::<End, _>(trav),
                 cursor.relative_pos.into(),
             );
             EndKind::from_range_path(path, root_pos, target, trav)

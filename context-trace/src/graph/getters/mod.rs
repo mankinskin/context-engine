@@ -1,7 +1,7 @@
+pub(crate) mod atom;
 pub(crate) mod child;
 pub(crate) mod parent;
 pub(crate) mod pattern;
-pub(crate) mod token;
 pub(crate) mod utils;
 pub(crate) mod vertex;
 
@@ -13,12 +13,12 @@ use crate::{
         kind::GraphKind,
         vertex::{
             VertexIndex,
-            child::Child,
             has_vertex_index::HasVertexIndex,
             pattern::{
                 Pattern,
                 id::PatternId,
             },
+            token::Token,
         },
     },
     path::structs::rooted::pattern_range::PatternRangePath,
@@ -28,16 +28,16 @@ pub(crate) use vertex::VertexSet;
 
 #[derive(Debug, Clone, Eq, PartialEq, new)]
 pub struct IndexWithPath {
-    pub index: Child,
+    pub index: Token,
     pub path: PatternRangePath,
 }
-impl From<IndexWithPath> for Child {
+impl From<IndexWithPath> for Token {
     fn from(val: IndexWithPath) -> Self {
         val.index
     }
 }
-impl Borrow<Child> for IndexWithPath {
-    fn borrow(&self) -> &Child {
+impl Borrow<Token> for IndexWithPath {
+    fn borrow(&self) -> &Token {
         &self.index
     }
 }
@@ -51,17 +51,17 @@ impl From<PatternRangePath> for IndexWithPath {
 pub enum ErrorReason {
     EmptyPatterns,
     NoParents,
-    NoChildPatterns,
+    NoTokenPatterns,
     NotFound,
     ErrorReasoningParent(VertexIndex),
     InvalidPattern(PatternId),
-    InvalidChild(usize),
+    InvalidToken(usize),
     InvalidPatternRange(PatternId, Pattern, String),
     SingleIndex(Box<IndexWithPath>),
     ParentMatchingPartially,
     UnknownKey,
     UnknownIndex,
-    UnknownToken,
+    UnknownAtom,
     Unnecessary,
     EmptyRange,
 }

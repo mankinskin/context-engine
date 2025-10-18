@@ -11,14 +11,14 @@ use std::fmt::Debug;
 
 use crate::compare::state::PathPairMode::GraphMajor;
 use context_trace::{
-    graph::vertex::child::Child,
+    graph::vertex::token::Token,
     trace::cache::key::directed::down::DownKey,
 };
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
 pub(crate) struct CompareRootState {
     #[deref]
     #[deref_mut]
-    pub(crate) child: CompareState,
+    pub(crate) token: CompareState,
     pub(crate) root_parent: ParentState,
 }
 
@@ -37,11 +37,11 @@ impl IntoAdvanced for ParentCompareState {
     ) -> Result<Self::Next, Self> {
         match self.parent_state.into_advanced(trav) {
             Ok(next) => Ok(CompareRootState {
-                child: CompareState {
+                token: CompareState {
                     child_state: next.child_state,
                     cursor: self.cursor,
                     mode: GraphMajor,
-                    target: DownKey::new(Child::new(0, 0), 0.into()),
+                    target: DownKey::new(Token::new(0, 0), 0.into()),
                 },
                 root_parent: next.root_parent,
             }),

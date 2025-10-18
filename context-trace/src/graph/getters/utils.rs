@@ -6,15 +6,15 @@ use crate::graph::{
     },
     kind::GraphKind,
     vertex::{
-        child::Child,
         has_vertex_data::HasVertexData,
         has_vertex_index::{
             HasVertexIndex,
-            ToChild,
+            ToToken,
         },
         location::pattern::IntoPatternLocation,
         parent::PatternIndex,
         pattern::pattern_range::PatternRangeIndex,
+        token::Token,
         wide::Wide,
     },
 };
@@ -50,7 +50,7 @@ impl<G: GraphKind> Hypergraph<G> {
                     })
                     .cloned()
             })
-            .ok_or(ErrorReason::NoChildPatterns)
+            .ok_or(ErrorReason::NoTokenPatterns)
     }
     #[track_caller]
     pub(crate) fn expect_common_pattern_in_parent(
@@ -59,26 +59,26 @@ impl<G: GraphKind> Hypergraph<G> {
         parent: impl HasVertexIndex,
     ) -> PatternIndex {
         self.get_common_pattern_in_parent(pattern, parent)
-            .expect("No common pattern in parent for children.")
+            .expect("No common pattern in parent for tokens.")
     }
     pub(crate) fn get_pattern_range<R: PatternRangeIndex>(
         &self,
         id: impl IntoPatternLocation,
         range: R,
-    ) -> Result<&<R as SliceIndex<[Child]>>::Output, ErrorReason> {
+    ) -> Result<&<R as SliceIndex<[Token]>>::Output, ErrorReason> {
         let loc = id.into_pattern_location();
         self.get_vertex(loc.parent)?
-            .get_child_pattern_range(&loc.id, range)
+            .get_child_pattern_range(&loc.pattern_id, range)
     }
     #[track_caller]
     pub fn expect_pattern_range<R: PatternRangeIndex>(
         &self,
         id: impl IntoPatternLocation,
         range: R,
-    ) -> &<R as SliceIndex<[Child]>>::Output {
+    ) -> &<R as SliceIndex<[Token]>>::Output {
         let loc = id.into_pattern_location();
         self.expect_vertex(loc.parent)
-            .expect_child_pattern_range(&loc.id, range)
+            .expect_child_pattern_range(&loc.pattern_id, range)
     }
     /// get sub-vertex at range relative to index
     /// FIXME: can crash if range does not have an exact match in the root vertex
@@ -86,7 +86,7 @@ impl<G: GraphKind> Hypergraph<G> {
         &self,
         vertex: impl HasVertexData,
         range: Range<usize>,
-    ) -> Child {
+    ) -> Token {
         let mut data = vertex.vertex(&self);
         let mut wrap = 0..data.width();
         assert!(wrap.start <= range.start && wrap.end >= range.end);

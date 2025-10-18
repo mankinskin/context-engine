@@ -7,7 +7,7 @@ use {
     crate::search::Searchable,
     context_trace::tests::env::Env1,
     context_trace::{
-        graph::vertex::child::Child,
+        graph::vertex::token::Token,
 
         tests::env::TestEnv,
     },
@@ -28,15 +28,15 @@ fn find_consecutive1() {
         ghi,
         ..
     } = &*Env1::get_expected();
-    //let a_bc_pattern = [Child::new(a, 1), Child::new(bc, 2)];
-    //let ab_c_pattern = [Child::new(ab, 2), Child::new(c, 1)];
+    //let a_bc_pattern = [Token::new(a, 1), Token::new(bc, 2)];
+    //let ab_c_pattern = [Token::new(ab, 2), Token::new(c, 1)];
     let g_h_i_a_b_c_pattern = vec![
-        Child::new(g, 1),
-        Child::new(h, 1),
-        Child::new(i, 1),
-        Child::new(a, 1),
-        Child::new(b, 1),
-        Child::new(c, 1),
+        Token::new(g, 1),
+        Token::new(h, 1),
+        Token::new(i, 1),
+        Token::new(a, 1),
+        Token::new(b, 1),
+        Token::new(c, 1),
     ];
 
     let query = g_h_i_a_b_c_pattern;

@@ -1,295 +1,259 @@
 use std::{
     borrow::Borrow,
+    cmp::Ordering,
     fmt::{
-        self,
         Debug,
         Display,
     },
-    hash::Hash,
 };
 
-use petgraph::graph::EdgeIndex;
+use derive_more::From;
 use serde::{
     Deserialize,
     Serialize,
 };
 
-use crate::graph::vertex::wide::Wide;
+use crate::{
+    graph::vertex::{
+        PatternId,
+        VertexIndex,
+        atom::NewAtomIndex,
+        has_vertex_index::HasVertexIndex,
+        location::{
+            SubLocation,
+            child::ChildLocation,
+            pattern::PatternLocation,
+        },
+        wide::{
+            Wide,
+            WideMut,
+        },
+    },
+    trace::cache::key::directed::{
+        down::{
+            DownKey,
+            DownPosition,
+        },
+        up::{
+            UpKey,
+            UpPosition,
+        },
+    },
+};
 
-pub fn tokenizing_iter<T: Tokenize, C: AsToken<T>>(
-    seq: impl Iterator<Item = C>
-) -> impl Iterator<Item = Token<T>> {
-    seq.map(|c| c.as_token())
-}
+#[derive(
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Debug,
+    Clone,
+    Copy,
+    From,
+    Serialize,
+    Deserialize,
+)]
+pub struct TokenWidth(pub usize);
 
-/// Trait for token that can be mapped in a sequence
-pub trait Tokenize:
-    TokenData
-    + Wide
-    + Hash
-    + Eq
-    + Copy
-    + Debug
-    + Send
-    + Sync
-    + 'static
-    + Unpin
-    + Serialize
-{
-    fn tokenize<T: AsToken<Self>, I: Iterator<Item = T>>(
-        seq: I
-    ) -> Vec<Token<Self>> {
-        let mut v = vec![];
-        v.extend(tokenizing_iter(seq));
-        //v.push(Token::End);
-        v
-    }
-    fn into_token(self) -> Token<Self> {
-        Token::Element(self)
-    }
-}
-
-impl<
-    T: TokenData
-        + Wide
-        + Hash
-        + Eq
-        + Copy
-        + Debug
-        + Send
-        + Sync
-        + 'static
-        + Unpin
-        + Serialize,
-> Tokenize for T
-{
-}
-
-pub trait TokenData: Debug + PartialEq + Clone + Wide {}
-
-impl<T: Debug + PartialEq + Clone + Wide> TokenData for T {}
-
-#[derive(Hash, Debug, Clone, PartialEq, Eq, Copy)]
-pub(crate) struct NoToken;
-
-impl Wide for NoToken {
-    fn width(&self) -> usize {
-        0
+impl Borrow<TokenWidth> for Token {
+    fn borrow(&self) -> &TokenWidth {
+        &self.width
     }
 }
 
-#[derive(Clone, Debug, Copy, PartialEq, Eq)]
-pub(crate) enum NewTokenIndex {
-    New(crate::graph::vertex::VertexIndex),
-    Known(crate::graph::vertex::VertexIndex),
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SubToken {
+    pub(crate) token: Token,
+    pub(crate) location: SubLocation,
 }
-
-impl NewTokenIndex {
-    pub(crate) fn is_known(&self) -> bool {
-        matches!(self, Self::Known(_))
-    }
-    pub(crate) fn is_new(&self) -> bool {
-        matches!(self, Self::New(_))
-    }
+pub trait HasToken {
+    fn token(&self) -> Token;
 }
-
-impl Wide for NewTokenIndex {
-    fn width(&self) -> usize {
-        1
+impl HasToken for SubToken {
+    fn token(&self) -> Token {
+        self.token
     }
 }
 
-impl crate::graph::vertex::has_vertex_index::HasVertexIndex for NewTokenIndex {
-    fn vertex_index(&self) -> crate::graph::vertex::VertexIndex {
-        match self {
-            Self::New(i) => *i,
-            Self::Known(i) => *i,
+#[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
+pub struct Token {
+    pub index: VertexIndex, // the token index
+    pub width: TokenWidth,  // the atom width
+}
+
+impl Token {
+    pub fn new(
+        index: impl HasVertexIndex,
+        width: usize,
+    ) -> Self {
+        Self {
+            index: index.vertex_index(),
+            width: TokenWidth(width),
         }
     }
-}
-
-impl Borrow<crate::graph::vertex::VertexIndex> for &'_ NewTokenIndex {
-    fn borrow(&self) -> &crate::graph::vertex::VertexIndex {
-        match self {
-            NewTokenIndex::New(i) => i,
-            NewTokenIndex::Known(i) => i,
-        }
+    pub(crate) fn get_width(&self) -> usize {
+        self.width.0
+    }
+    pub fn to_pattern_location(
+        self,
+        pattern_id: PatternId,
+    ) -> PatternLocation {
+        PatternLocation::new(self, pattern_id)
+    }
+    pub fn to_child_location(
+        self,
+        sub: SubLocation,
+    ) -> ChildLocation {
+        ChildLocation::new(self, sub.pattern_id, sub.sub_index)
+    }
+    pub(crate) fn down_key(
+        self,
+        pos: impl Into<DownPosition>,
+    ) -> DownKey {
+        DownKey::new(self, pos.into())
+    }
+    pub(crate) fn up_key(
+        self,
+        pos: impl Into<UpPosition>,
+    ) -> UpKey {
+        UpKey::new(self, pos.into())
     }
 }
 
-impl Borrow<crate::graph::vertex::VertexIndex> for &'_ mut NewTokenIndex {
-    fn borrow(&self) -> &crate::graph::vertex::VertexIndex {
-        match self {
-            NewTokenIndex::New(i) => i,
-            NewTokenIndex::Known(i) => i,
-        }
-    }
-}
-
-pub(crate) type NewTokenIndices = Vec<NewTokenIndex>;
-
-pub trait AsToken<T: Tokenize> {
-    fn as_token(&self) -> Token<T>;
-}
-
-impl<T: Tokenize> AsToken<T> for &'_ Token<T> {
-    fn as_token(&self) -> Token<T> {
-        (*self).as_token()
-    }
-}
-impl<T: Tokenize> AsToken<T> for Token<T> {
-    fn as_token(&self) -> Token<T> {
-        *self
-    }
-}
-
-impl<T: Tokenize> AsToken<T> for T {
-    fn as_token(&self) -> Token<T> {
-        Token::Element(*self)
-    }
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct CtxInfo<T: Tokenize> {
-    pub(crate) token: Token<T>,
-    pub(crate) incoming_groups: Vec<Vec<Token<T>>>,
-    pub(crate) outgoing_groups: Vec<Vec<Token<T>>>,
-}
-
-pub(crate) trait CtxLink: Sized + Clone {
-    fn index(&self) -> &EdgeIndex;
-    fn into_index(self) -> EdgeIndex {
-        *self.index()
-    }
-}
-
-impl CtxLink for EdgeIndex {
-    fn index(&self) -> &EdgeIndex {
-        self
-    }
-}
-
-pub(crate) trait CtxMapping<E: CtxLink> {
-    /// Get distance groups for incoming edges
-    fn incoming(&self) -> &Vec<E>;
-    fn outgoing(&self) -> &Vec<E>;
-
-    ///// Get distance groups for incoming edges
-    //fn incoming_distance_groups(
-    //    &self,
-    //    graph: &SequenceGraph<T>,
-    //) -> Vec<Vec<Self::Ctx>> {
-    //    graph.distance_group_source_weights(self.incoming().iter().map(|e| e.into_index()))
-    //}
-    ///// Get distance groups for outgoing edges
-    //fn outgoing_distance_groups(
-    //    &self,
-    //    graph: &SequenceGraph<T>,
-    //) -> Vec<Vec<Self::Ctx>> {
-    //    graph.distance_group_target_weights(self.outgoing().iter().map(|e| e.into_index()))
-    //}
-}
-
-pub(crate) trait TokenCtx<T: Tokenize, E: CtxLink>: Sized {
-    type Mapping: CtxMapping<E>;
-    fn token(&self) -> &Token<T>;
-    fn into_token(self) -> Token<T>;
-    fn map_to_tokens(groups: Vec<Vec<Self>>) -> Vec<Vec<Token<T>>> {
-        groups
-            .into_iter()
-            .map(|g| g.into_iter().map(|m| m.into_token()).collect())
-            .collect()
-    }
-    fn mapping(&self) -> &Self::Mapping;
-    fn mapping_mut(&mut self) -> &mut Self::Mapping;
-    //fn get_info(&self, graph: &SequenceGraph<T>) -> CtxInfo<T> {
-    //    let mut incoming_groups = self.mapping().incoming_distance_groups(graph);
-    //    incoming_groups.reverse();
-    //    let outgoing_groups = self.mapping().outgoing_distance_groups(graph);
-    //    CtxInfo {
-    //        token: self.token().clone(),
-    //        incoming_groups: Self::map_to_tokens(incoming_groups),
-    //        outgoing_groups: Self::map_to_tokens(outgoing_groups),
-    //    }
-    //}
-}
-
-pub(crate) fn groups_to_string<
-    T: Tokenize,
-    E: CtxLink,
-    C: TokenCtx<T, E> + Display,
->(
-    groups: Vec<Vec<C>>
-) -> String {
-    let mut lines = Vec::new();
-    let max = groups.iter().map(Vec::len).max().unwrap_or(0);
-    for i in 0..max {
-        let mut line = Vec::new();
-        for group in &groups {
-            line.push(group.get(i).map(ToString::to_string));
-        }
-        lines.push(line);
-    }
-    lines.iter().fold(String::new(), |a, line| {
-        format!(
-            "{}{}\n",
-            a,
-            line.iter().fold(String::new(), |a, elem| {
-                format!("{}{} ", a, elem.clone().unwrap_or_default())
-            })
-        )
-    })
-}
-
-/// Type for storing elements of a sequence
-#[derive(Copy, Debug, PartialEq, Clone, Eq, Hash, Serialize, Deserialize)]
-pub enum Token<T: Tokenize = char> {
-    Element(T),
-    Start,
-    End,
-}
-
-impl<T: Tokenize + Display> Display for Token<T> {
-    fn fmt(
+impl Ord for Token {
+    fn cmp(
         &self,
-        f: &mut fmt::Formatter,
-    ) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                Token::Element(t) => t.to_string(),
-                Token::Start => "START".to_string(),
-                Token::End => "END".to_string(),
-            }
-        )
+        other: &Self,
+    ) -> Ordering {
+        self.width().cmp(&other.width())
     }
 }
 
-impl<T: Tokenize> Wide for Token<T> {
-    fn width(&self) -> usize {
-        match self {
-            Token::Element(t) => t.width(),
-            Token::Start => 0,
-            Token::End => 0,
+impl PartialOrd for Token {
+    fn partial_cmp(
+        &self,
+        other: &Self,
+    ) -> Option<std::cmp::Ordering> {
+        Some(self.index.cmp(&other.index))
+    }
+}
+
+impl<A: Borrow<Token>, B: Borrow<Token>> From<Result<A, B>> for Token {
+    fn from(value: Result<A, B>) -> Self {
+        match value {
+            Ok(a) => *a.borrow(),
+            Err(b) => *b.borrow(),
         }
     }
 }
 
-impl<T: Tokenize> From<T> for Token<T> {
-    fn from(e: T) -> Self {
-        Token::Element(e)
+impl std::hash::Hash for Token {
+    fn hash<H: std::hash::Hasher>(
+        &self,
+        h: &mut H,
+    ) {
+        self.index.hash(h);
     }
 }
 
-impl<T: Tokenize> PartialEq<T> for Token<T> {
+//impl std::cmp::Ord for Token {
+//    fn cmp(
+//        &self,
+//        other: &Self,
+//    ) -> std::cmp::Ordering {
+//        self.index.cmp(&other.index)
+//    }
+//}
+impl PartialEq for Token {
     fn eq(
         &self,
-        rhs: &T,
+        other: &Self,
     ) -> bool {
-        match self {
-            Token::Element(e) => *e == *rhs,
-            _ => false,
-        }
+        self.index == other.index
+    }
+}
+
+impl PartialEq<VertexIndex> for Token {
+    fn eq(
+        &self,
+        other: &VertexIndex,
+    ) -> bool {
+        self.index == *other
+    }
+}
+
+impl PartialEq<VertexIndex> for &'_ Token {
+    fn eq(
+        &self,
+        other: &VertexIndex,
+    ) -> bool {
+        self.index == *other
+    }
+}
+
+impl PartialEq<VertexIndex> for &'_ mut Token {
+    fn eq(
+        &self,
+        other: &VertexIndex,
+    ) -> bool {
+        self.index == *other
+    }
+}
+
+impl<T: Into<Token> + Clone> From<&'_ T> for Token {
+    fn from(o: &'_ T) -> Self {
+        (*o).clone().into()
+    }
+}
+
+impl From<NewAtomIndex> for Token {
+    fn from(o: NewAtomIndex) -> Self {
+        Self::new(o.vertex_index(), 1)
+    }
+}
+
+impl IntoIterator for Token {
+    type Item = Self;
+    type IntoIter = std::iter::Once<Token>;
+    fn into_iter(self) -> Self::IntoIter {
+        std::iter::once(self)
+    }
+}
+
+//impl HasVertexIndex for Token {
+//    fn vertex_index(&self) -> VertexIndex {
+//        self.index
+//    }
+//}
+
+impl Wide for Token {
+    fn width(&self) -> usize {
+        self.width.0
+    }
+}
+
+impl WideMut for Token {
+    fn width_mut(&mut self) -> &mut usize {
+        &mut self.width.0
+    }
+}
+
+impl Borrow<[Token]> for Token {
+    fn borrow(&self) -> &[Token] {
+        std::slice::from_ref(self)
+    }
+}
+
+impl AsRef<[Token]> for Token {
+    fn as_ref(&self) -> &[Token] {
+        self.borrow()
+    }
+}
+impl Display for Token {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

@@ -33,14 +33,14 @@ pub fn test_grammar() {
         * (std::mem::size_of::<VertexData>()
             + std::mem::size_of::<VertexIndex>())
         + 4 * g.vertex_count()
-            * (std::mem::size_of::<Child>() + std::mem::size_of::<Parent>());
+            * (std::mem::size_of::<Token>() + std::mem::size_of::<Parent>());
     println!("total MB = {}", num_bytes as u32 / 10_u32.pow(6),);
     println!("mul = {}", num_bytes / N,);
 }
 
 #[derive(new, Deref)]
 struct BuilderNode {
-    index: Child,
+    index: Token,
     #[deref]
     range: BuildKey,
 }
@@ -101,12 +101,12 @@ impl GraphBuilder {
                     let loc = ChildLocation::new(node.index, pid, sub_index);
                     if let Some(v) = self.range_map.get(key) {
                         self.graph.expect_vertex_mut(v).add_parent(loc);
-                        Child::new(*v, key.clone().count())
+                        Token::new(*v, key.clone().count())
                     } else {
                         self.range_map
                             .insert(key.clone(), self.range_map.len());
                         let vid = self.graph.next_vertex_index();
-                        let c = Child::new(vid, key.clone().count());
+                        let c = Token::new(vid, key.clone().count());
                         self.queue_node(BuilderNode::new(c, key.clone()));
                         c
                     }
@@ -120,19 +120,19 @@ impl GraphBuilder {
     pub fn fill_grammar(&mut self) {
         let vid = self.graph.next_vertex_index();
         self.queue_node(BuilderNode::new(
-            Child::new(vid, self.N),
+            Token::new(vid, self.N),
             0..=self.N - 1,
         ));
         while let Some(node) = self.queue.pop_front() {
             self.add_rules(node);
         }
     }
-    //fn postfix_count(&self, index: Child) -> usize {
+    //fn postfix_count(&self, index: Token) -> usize {
     //    self.graph.expect_vertex(index)
     //        .get_parents_with_index_at(1)
     //        .len()
     //}
-    //fn prefix_count(&self, index: Child) -> usize {
+    //fn prefix_count(&self, index: Token) -> usize {
     //    self.graph.expect_vertex(index)
     //        .get_parents_with_index_at(0)
     //        .len()
@@ -205,7 +205,7 @@ impl RewireCtx {
             k,
         }
     }
-    //fn select_next_token(&self, prefixes: &Vec<VertexIndex>) -> VertexIndex {
+    //fn select_next_atom(&self, prefixes: &Vec<VertexIndex>) -> VertexIndex {
     //    if prefixes.iter().any(|c| self.prefix_counts.get(c) == Some(&self.k)) {
 
     //    } else {
@@ -214,19 +214,19 @@ impl RewireCtx {
     //}
     //fn extend_prefixes(&self, prefixes: Vec<VertexIndex>) -> Vec<VertexIndex> {
     //    // determine 1-gram at next position in range_map
-    //    // select new k-token for position
-    //    // rewire all parents of previous index to new k-token index
-    //    let next_token = self.select_next_token(&prefixes);
-    //    let x = (&self.builder.graph).find_parent(vec![next_token, next_token]);
+    //    // select new k-atom for position
+    //    // rewire all parents of previous index to new k-atom index
+    //    let next_atom = self.select_next_atom(&prefixes);
+    //    let x = (&self.builder.graph).find_parent(vec![next_atom, next_atom]);
     //    prefixes.into_iter()
     //        .map(|p| {
     //        })
     //}
     pub fn rewire_grammar(&mut self) {
-        // - fix first token
+        // - fix first atom
         // - store number of prefix uses for each index
-        // - implement function selecting the next token given the previous n-grams
-        // - call next token with previous n grams until counts reach k
+        // - implement function selecting the next atom given the previous n-grams
+        // - call next atom with previous n grams until counts reach k
         // - implement rewire function to point index edges to previous index
         // -
         let first = *self

@@ -12,11 +12,11 @@ pub struct SubSplitLocation {
     pub(crate) inner_offset: Option<Offset>,
 }
 
-impl From<SubSplitLocation> for (PatternId, ChildTracePos) {
+impl From<SubSplitLocation> for (PatternId, TokenTracePos) {
     fn from(sub: SubSplitLocation) -> Self {
         (
             sub.location.pattern_id(),
-            ChildTracePos::new(sub.inner_offset(), sub.location.sub_index()),
+            TokenTracePos::new(sub.inner_offset(), sub.location.sub_index()),
         )
     }
 }

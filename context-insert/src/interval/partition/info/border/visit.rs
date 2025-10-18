@@ -1,7 +1,7 @@
 use std::num::NonZeroUsize;
 
 use crate::{
-    ChildTracePos,
+    TokenTracePos,
     interval::partition::info::{
         border::{
             BorderInfo,
@@ -41,7 +41,7 @@ pub trait VisitBorders<R: RangeRole>: Sized + PartitionBorder<R> {
 }
 
 impl<M: PostVisitMode> VisitBorders<Post<M>> for BorderInfo {
-    type Splits = ChildTracePos;
+    type Splits = TokenTracePos;
     fn info_border(
         pattern: &Pattern,
         splits: &Self::Splits,
@@ -68,7 +68,7 @@ impl<M: PostVisitMode> VisitBorders<Post<M>> for BorderInfo {
 }
 
 impl<M: PreVisitMode> VisitBorders<Pre<M>> for BorderInfo {
-    type Splits = ChildTracePos;
+    type Splits = TokenTracePos;
     fn info_border(
         pattern: &Pattern,
         splits: &Self::Splits,

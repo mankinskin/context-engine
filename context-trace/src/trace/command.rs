@@ -73,7 +73,7 @@ impl Traceable for PostfixCommand {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        let first = self.path.role_leaf_child_location::<Start>().unwrap();
+        let first = self.path.role_leaf_token_location::<Start>().unwrap();
         let start_index = *ctx.trav.graph().expect_child_at(first);
         let prev = TraceRole::<Start>::trace_sub_path(
             ctx,
@@ -104,7 +104,7 @@ impl Traceable for PrefixCommand {
         ctx: &mut TraceCtx<G>,
     ) {
         let root_exit = self.path.role_root_child_location::<End>();
-        // TODO: implement root_child for prefix/postfix path with most outer root child
+        // TODO: implement root_child for prefix/postfix path with most outer root token
         let exit_key = DownKey {
             pos: (pattern_width(
                 &self.path.root_pattern::<G>(&ctx.trav.graph())
@@ -145,7 +145,7 @@ impl Traceable for RangeCommand {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        let first = self.path.role_leaf_child_location::<Start>().unwrap();
+        let first = self.path.role_leaf_token_location::<Start>().unwrap();
         let start_index = *ctx.trav.graph().expect_child_at(first);
         let prev = TraceRole::<Start>::trace_sub_path(
             ctx,
@@ -178,7 +178,7 @@ impl Traceable for RangeCommand {
         let root_exit = self.path.role_root_child_location::<End>();
 
         let exit_key = DownKey {
-            pos: (self.path.role_leaf_child::<Start, _>(&ctx.trav).width()
+            pos: (self.path.role_leaf_token::<Start, _>(&ctx.trav).width()
                 + self.path.calc_offset(&ctx.trav))
             .into(),
             index: root_exit.parent,

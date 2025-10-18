@@ -4,7 +4,7 @@ use context_trace::*;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PathCursor<P> {
     pub(crate) path: P,
-    pub(crate) relative_pos: TokenPosition,
+    pub(crate) relative_pos: AtomPosition,
 }
 
 impl<R: PathRole, P: RootChildIndex<R>> RootChildIndex<R> for PathCursor<P> {
@@ -39,15 +39,15 @@ impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
 }
 impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
     fn path(&self) -> &Vec<ChildLocation> {
-        self.path.path()
+        HasPath::<R>::path(&self.path)
     }
     fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
-        self.path.path_mut()
+        HasPath::<R>::path_mut(&mut self.path)
     }
 }
 impl<D: Direction, P> MoveKey<D> for PathCursor<P>
 where
-    TokenPosition: MoveKey<D>,
+    AtomPosition: MoveKey<D>,
 {
     fn move_key(
         &mut self,
@@ -75,21 +75,21 @@ impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
     fn root_child<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child {
-        self.path.root_child(trav)
+    ) -> Token {
+        RootChild::<R>::root_child(&self.path, trav)
     }
 }
-impl<R: PathRole, P: FoldablePath + PathChild<R>> PathChild<R>
+impl<R: PathRole, P: FoldablePath + LeafToken<R>> LeafToken<R>
     for PathCursor<P>
 {
-    fn path_child_location(&self) -> Option<ChildLocation> {
-        self.path.path_child_location()
+    fn leaf_token_location(&self) -> Option<ChildLocation> {
+        LeafToken::<R>::leaf_token_location(&self.path)
     }
-    fn path_child<G: HasGraph>(
+    fn leaf_token<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Option<Child> {
-        self.path.path_child(trav)
+    ) -> Option<Token> {
+        LeafToken::<R>::leaf_token(&self.path, trav)
     }
 }
 pub(crate) trait MovablePath<D: Direction, R: PathRole>:

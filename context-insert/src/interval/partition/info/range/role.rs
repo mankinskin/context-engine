@@ -92,7 +92,7 @@ impl<M: PreVisitMode> RangeRole for Pre<M> {
     type Mode = M;
     type Range = Range<usize>;
     type Kind = Outer;
-    type Children = Child;
+    type Children = Token;
     type PartitionSplits = ((), VertexSplits);
     type Borders = BorderInfo;
     type Splits = VertexSplits;
@@ -128,7 +128,7 @@ impl<M: PostVisitMode> RangeRole for Post<M> {
     type Mode = M;
     type Range = RangeFrom<usize>;
     type Kind = Outer;
-    type Children = Child;
+    type Children = Token;
     type PartitionSplits = (VertexSplits, ());
     type Borders = BorderInfo;
     type Splits = VertexSplits;

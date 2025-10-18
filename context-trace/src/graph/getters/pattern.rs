@@ -1,22 +1,25 @@
-use crate::graph::{
-    Hypergraph,
-    getters::{
-        ErrorReason,
-        vertex::{
-            GetVertexIndex,
-            VertexSet,
+use crate::{
+    HasPatternId,
+    graph::{
+        Hypergraph,
+        getters::{
+            ErrorReason,
+            vertex::{
+                GetVertexIndex,
+                VertexSet,
+            },
         },
-    },
-    kind::GraphKind,
-    vertex::{
-        ChildPatterns,
-        has_vertex_index::HasVertexIndex,
-        location::pattern::IntoPatternLocation,
-        pattern::{
-            Pattern,
-            id::PatternId,
-            pattern_range::PatternRangeIndex,
-            pattern_width,
+        kind::GraphKind,
+        vertex::{
+            TokenPatterns,
+            has_vertex_index::HasVertexIndex,
+            location::pattern::IntoPatternLocation,
+            pattern::{
+                Pattern,
+                id::PatternId,
+                pattern_range::PatternRangeIndex,
+                pattern_width,
+            },
         },
     },
 };
@@ -28,10 +31,10 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> Result<&Pattern, ErrorReason> {
         let location = location.into_pattern_location();
         let vertex = self.get_vertex(location.parent)?;
-        let children = vertex.children();
-        children
-            .get(&location.id)
-            .ok_or(ErrorReason::NoChildPatterns) // todo: better error
+        vertex
+            .child_patterns()
+            .get(&location.pattern_id())
+            .ok_or(ErrorReason::NoTokenPatterns) // todo: better error
     }
     #[track_caller]
     pub fn expect_pattern_at(
@@ -49,10 +52,10 @@ impl<G: GraphKind> Hypergraph<G> {
     ) -> Result<&mut Pattern, ErrorReason> {
         let location = location.into_pattern_location();
         let vertex = self.get_vertex_mut(location.parent)?;
-        let children = vertex.children_mut();
-        children
-            .get_mut(&location.id)
-            .ok_or(ErrorReason::NoChildPatterns) // todo: better error
+        let tokens = vertex.child_patterns_mut();
+        tokens
+            .get_mut(&location.pattern_id())
+            .ok_or(ErrorReason::NoTokenPatterns) // todo: better error
     }
     #[track_caller]
     pub(crate) fn expect_pattern_mut_at(
@@ -65,12 +68,12 @@ impl<G: GraphKind> Hypergraph<G> {
                 panic!("Pattern not found at location {:#?}", location)
             })
     }
-    pub(crate) fn get_child_patterns_of(
+    pub(crate) fn child_patterns_of(
         &self,
         index: impl GetVertexIndex,
-    ) -> Result<&ChildPatterns, ErrorReason> {
+    ) -> Result<&TokenPatterns, ErrorReason> {
         self.get_vertex(index.get_vertex_index(self))
-            .map(|vertex| vertex.children())
+            .map(|vertex| vertex.child_patterns())
     }
     pub(crate) fn get_pattern_of(
         &self,
@@ -93,8 +96,9 @@ impl<G: GraphKind> Hypergraph<G> {
     pub fn expect_child_patterns(
         &self,
         index: impl GetVertexIndex,
-    ) -> &ChildPatterns {
-        self.expect_vertex(index.get_vertex_index(self)).children()
+    ) -> &TokenPatterns {
+        self.expect_vertex(index.get_vertex_index(self))
+            .child_patterns()
     }
 
     #[track_caller]

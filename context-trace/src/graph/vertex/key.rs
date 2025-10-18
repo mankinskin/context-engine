@@ -26,23 +26,23 @@ impl Default for VertexKey {
     }
 }
 //#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy, new, Serialize, Deserialize)]
-//pub(crate) enum VertexKey<T: Tokenize = TokenOf<BaseGraphKind>> {
-//    Pattern(Child),
-//    Token(Token<T>, VertexIndex)
+//pub(crate) enum VertexKey<T: Atomize = AtomOf<BaseGraphKind>> {
+//    Pattern(Token),
+//    Atom(Atom<T>, VertexIndex)
 //}
-//impl<T: Tokenize> HasVertexIndex for VertexKey<T> {
+//impl<T: Atomize> HasVertexIndex for VertexKey<T> {
 //    fn vertex_index(&self) -> VertexIndex {
 //        match self {
-//            Self::Token(_token, index) => *index,
-//            Self::Pattern(child) => child.vertex_index(),
+//            Self::Atom(_atom, index) => *index,
+//            Self::Pattern(token) => token.vertex_index(),
 //        }
 //    }
 //}
-//impl<T: Tokenize> Borrow<VertexIndex> for VertexKey<T> {
+//impl<T: Atomize> Borrow<VertexIndex> for VertexKey<T> {
 //    fn borrow(&self) -> &VertexIndex {
 //        match self {
-//            Self::Token(_token, index) => index,
-//            Self::Pattern(child) => &child.index,
+//            Self::Atom(_atom, index) => index,
+//            Self::Pattern(token) => &token.index,
 //        }
 //    }
 //}

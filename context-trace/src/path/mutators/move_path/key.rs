@@ -14,29 +14,29 @@ use crate::direction::{
 #[derive(
     Clone, Debug, Copy, Hash, Eq, PartialEq, Add, Sub, Deref, DerefMut, Default,
 )]
-pub struct TokenPosition(pub(crate) usize);
-impl AsMut<usize> for TokenPosition {
+pub struct AtomPosition(pub(crate) usize);
+impl AsMut<usize> for AtomPosition {
     fn as_mut(&mut self) -> &mut usize {
         &mut self.0
     }
 }
-impl AsRef<usize> for TokenPosition {
+impl AsRef<usize> for AtomPosition {
     fn as_ref(&self) -> &usize {
         &self.0
     }
 }
-impl From<TokenPosition> for usize {
-    fn from(val: TokenPosition) -> Self {
+impl From<AtomPosition> for usize {
+    fn from(val: AtomPosition) -> Self {
         val.0
     }
 }
-impl From<usize> for TokenPosition {
+impl From<usize> for AtomPosition {
     fn from(pos: usize) -> Self {
         Self(pos)
     }
 }
 
-impl std::ops::Add<usize> for TokenPosition {
+impl std::ops::Add<usize> for AtomPosition {
     type Output = Self;
     fn add(
         mut self,
@@ -47,7 +47,7 @@ impl std::ops::Add<usize> for TokenPosition {
     }
 }
 
-impl std::ops::Sub<usize> for TokenPosition {
+impl std::ops::Sub<usize> for AtomPosition {
     type Output = Self;
     fn sub(
         mut self,
@@ -58,7 +58,7 @@ impl std::ops::Sub<usize> for TokenPosition {
     }
 }
 
-impl std::ops::AddAssign<usize> for TokenPosition {
+impl std::ops::AddAssign<usize> for AtomPosition {
     fn add_assign(
         &mut self,
         delta: usize,
@@ -67,7 +67,7 @@ impl std::ops::AddAssign<usize> for TokenPosition {
     }
 }
 
-impl std::ops::SubAssign<usize> for TokenPosition {
+impl std::ops::SubAssign<usize> for AtomPosition {
     fn sub_assign(
         &mut self,
         delta: usize,
@@ -114,7 +114,7 @@ pub(crate) trait RetractKey: MoveKey<Left> {
 
 impl<T: MoveKey<Left>> RetractKey for T {}
 
-impl MoveKey<Right> for TokenPosition {
+impl MoveKey<Right> for AtomPosition {
     fn move_key(
         &mut self,
         delta: usize,
@@ -123,7 +123,7 @@ impl MoveKey<Right> for TokenPosition {
     }
 }
 
-impl MoveKey<Left> for TokenPosition {
+impl MoveKey<Left> for AtomPosition {
     fn move_key(
         &mut self,
         delta: usize,

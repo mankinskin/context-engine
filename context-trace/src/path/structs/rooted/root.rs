@@ -5,7 +5,7 @@ use derive_more::{
 };
 
 use crate::{
-    Child,
+    Token,
     graph::vertex::{
         location::{
             HasParent,
@@ -31,7 +31,7 @@ impl HasPatternLocation for IndexRoot {
     }
 }
 impl HasParent for IndexRoot {
-    fn parent(&self) -> &Child {
+    fn parent(&self) -> &Token {
         self.location.parent()
     }
 }

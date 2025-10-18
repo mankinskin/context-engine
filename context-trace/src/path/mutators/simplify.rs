@@ -36,7 +36,7 @@ pub trait PathSimplify: Sized {
 //}
 //impl<P: PathSimplify> PathSimplify for OriginPath<P> {
 //    fn into_simplified<
-//        T: Tokenize,
+//        T: Atomize,
 //        D: ,
 //        G: HasGraph<T>,
 //    >(mut self, trav: &G) -> Self {

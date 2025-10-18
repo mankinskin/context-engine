@@ -3,7 +3,7 @@ use {
     crate::graph::{
         Hypergraph,
         kind::BaseGraphKind,
-        vertex::token::Token,
+        vertex::atom::Atom,
     },
     itertools::Itertools,
 };
@@ -62,11 +62,11 @@ macro_rules! insert_patterns {
 fn test_to_petgraph() {
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let (a, b, c, d) = graph
-        .insert_tokens([
-            Token::Element('a'),
-            Token::Element('b'),
-            Token::Element('c'),
-            Token::Element('d'),
+        .insert_atoms([
+            Atom::Element('a'),
+            Atom::Element('b'),
+            Atom::Element('c'),
+            Atom::Element('d'),
         ])
         .into_iter()
         .next_tuple()

@@ -55,7 +55,7 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
         let part = self.clone().to_partition();
         // todo detect if prev offset is in same index (to use inner partition as result)
         let pctx = ctx.pattern_trace_context();
-        let splits = part.offsets.get(&pctx.loc.id).unwrap();
+        let splits = part.offsets.get(&pctx.loc.pattern_id).unwrap();
 
         R::Borders::info_border(pctx.pattern, &splits)
     }
@@ -72,7 +72,7 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
     }
 
     /// bundle pattern range infos of each pattern
-    /// or extract complete child for range
+    /// or extract complete token for range
     fn partition_borders<
         'a: 'b,
         'b,
@@ -88,7 +88,7 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
                 let (perfect, borders) = {
                     let pctx = pctx.pattern_trace_context();
                     let borders = self.info_borders(&pctx);
-                    (borders.perfect().then_some(pctx.loc.id), borders)
+                    (borders.perfect().then_some(pctx.loc.pattern_id), borders)
                 };
                 (perfect, (C::from(pctx), borders))
             })
@@ -98,7 +98,7 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
     fn info_partition<'a: 'b, 'b>(
         &'b self,
         ctx: &'b ModeNodeCtxOf<'a, 'b, R>,
-    ) -> Result<PartitionInfo<R>, Child> {
+    ) -> Result<PartitionInfo<R>, Token> {
         self.partition_borders(ctx).into_partition_info()
     }
 }

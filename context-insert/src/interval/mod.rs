@@ -17,9 +17,9 @@ pub mod partition;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IntervalGraph {
-    pub states: SplitStates,
-    pub cache: SplitCache,
-    pub root: Child,
+    pub(crate) states: SplitStates,
+    pub(crate) cache: SplitCache,
+    pub(crate) root: Token,
 }
 impl IntervalGraph {
     pub fn get(

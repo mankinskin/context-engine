@@ -27,7 +27,7 @@ pub trait TryInitWith<T>: Sized {
 //        Self::try_from(value)
 //    }
 //}
-impl TryInitWith<IndexWithPath> for Child {
+impl TryInitWith<IndexWithPath> for Token {
     type Error = IndexWithPath;
     fn try_init(value: IndexWithPath) -> Result<Self, Self::Error> {
         Ok(value.index)
@@ -39,8 +39,8 @@ impl TryInitWith<IndexWithPath> for IndexWithPath {
         Err(value)
     }
 }
-//impl TryInitWith<ErrorState> for Child {
-//    type Error = Child;
+//impl TryInitWith<ErrorState> for Token {
+//    type Error = Token;
 //    fn try_init(value: ErrorState) -> Result<Self, Self::Error> {
 //        match value {
 //            ErrorState {
@@ -55,28 +55,28 @@ impl TryInitWith<IndexWithPath> for IndexWithPath {
 //    }
 //}
 //impl TryInitWith<ErrorState> for IndexWithPath {
-//    type Error = Child;
+//    type Error = Token;
 //    fn try_init(value: ErrorState) -> Result<Self, Self::Error> {
 //        Err(value)
 //    }
 //}
 pub trait InsertResult:
     Debug
-    + Borrow<Child>
+    + Borrow<Token>
     + TryInitWith<IndexWithPath>
-    //+ TryInitWith<ErrorState, Error = Child>
-    + Into<Child>
+    //+ TryInitWith<ErrorState, Error = Token>
+    + Into<Token>
 {
     type Extract: ResultExtraction;
     fn build_with_extract(
-        root: Child,
+        root: Token,
         ext: Self::Extract,
     ) -> Self;
 }
-impl InsertResult for Child {
+impl InsertResult for Token {
     type Extract = ();
     fn build_with_extract(
-        root: Child,
+        root: Token,
         _: Self::Extract,
     ) -> Self {
         root
@@ -85,7 +85,7 @@ impl InsertResult for Child {
 impl InsertResult for IndexWithPath {
     type Extract = PatternRangePath;
     fn build_with_extract(
-        root: Child,
+        root: Token,
         ext: Self::Extract,
     ) -> Self {
         Self {
@@ -97,7 +97,7 @@ impl InsertResult for IndexWithPath {
 
 //#[derive(Debug, Clone)]
 //pub struct IndexSplitResult {
-//    pub inner: Child,
+//    pub inner: Token,
 //    pub location: ChildLocation,
 //    pub path: Vec<ChildLocation>,
 //}

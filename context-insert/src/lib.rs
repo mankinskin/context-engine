@@ -1,10 +1,10 @@
-pub mod insert;
-pub mod interval;
-pub mod join;
-pub mod split;
+pub(crate) mod insert;
+pub(crate) mod interval;
+pub(crate) mod join;
+pub(crate) mod split;
 
 #[cfg(test)]
-pub mod tests;
+pub(crate) mod tests;
 
 // Auto-generated pub use statements
 pub use crate::{
@@ -50,12 +50,12 @@ pub(crate) use crate::{
         },
     },
     split::{
-        ChildTracePos,
+        TokenTracePos,
         cleaned_position_splits,
         trace::SplitTraceCtx,
         vertex::{
-            ChildTracePositions,
             ToVertexSplitPos,
+            TokenTracePositions,
             VertexSplits,
             output::{
                 CompleteLocations,

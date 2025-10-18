@@ -11,7 +11,7 @@ use crate::graph::{
         VertexEntry,
         VertexIndex,
         VertexPatternView,
-        child::Child,
+        token::Token,
         data::VertexData,
         has_vertex_index::HasVertexIndex,
         has_vertex_key::HasVertexKey,
@@ -60,7 +60,7 @@ impl_GetVertexKey_with!(
         graph.expect_key_for_index(self),
     {
         VertexIndex,
-        Child,
+        Token,
     }
 );
 impl_GetVertexKey_with!(
@@ -74,7 +74,7 @@ impl_GetVertexIndex_with!(
     (_graph, self) => self.vertex_index(),
     {
         VertexIndex,
-        Child,
+        Token,
     }
 );
 
@@ -231,22 +231,22 @@ impl<G: GraphKind> VertexSet<VertexIndex> for Hypergraph<G> {
         self.vertex_entry(key)
     }
 }
-impl<G: GraphKind> VertexSet<Child> for Hypergraph<G> {
+impl<G: GraphKind> VertexSet<Token> for Hypergraph<G> {
     fn get_vertex(
         &self,
-        key: Child,
+        key: Token,
     ) -> Result<&VertexData, ErrorReason> {
         self.get_vertex(key.vertex_index())
     }
     fn get_vertex_mut(
         &mut self,
-        key: Child,
+        key: Token,
     ) -> Result<&mut VertexData, ErrorReason> {
         self.get_vertex_mut(key.vertex_index())
     }
     fn vertex_entry(
         &mut self,
-        index: Child,
+        index: Token,
     ) -> VertexEntry<'_> {
         let key = *self.graph.get_index(index.vertex_index()).unwrap().0;
         self.vertex_entry(key)

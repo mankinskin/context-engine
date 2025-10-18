@@ -7,6 +7,7 @@ pub(crate) mod split_path;
 use crate::{
     EndPath,
     HasEndPath,
+    HasPath,
     HasStartPath,
     StartPath,
     path::{
@@ -77,7 +78,10 @@ impl From<PatternStartPath> for PatternRangePath {
         }
     }
 }
-impl<Root: PathRoot> HasStartPath for RootedRangePath<Root> {
+impl<Root: PathRoot> HasStartPath for RootedRangePath<Root>
+where
+    RootedRangePath<Root>: HasPath<Start>,
+{
     fn start_path(&self) -> &StartPath {
         &self.start
     }
@@ -85,7 +89,10 @@ impl<Root: PathRoot> HasStartPath for RootedRangePath<Root> {
         &mut self.start
     }
 }
-impl<Root: PathRoot> HasEndPath for RootedRangePath<Root> {
+impl<Root: PathRoot> HasEndPath for RootedRangePath<Root>
+where
+    RootedRangePath<Root>: HasPath<End>,
+{
     fn end_path(&self) -> &EndPath {
         &self.end
     }

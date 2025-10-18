@@ -34,7 +34,7 @@ use tracing::{
 };
 #[allow(unused)]
 use {
-    context_trace::graph::vertex::child::Child,
+    context_trace::graph::vertex::token::Token,
     std::{
         borrow::Borrow,
         num::NonZeroUsize,

@@ -37,7 +37,7 @@ where
     pub fn index_pattern_inner<'a: 'b, 'b: 'c, 'c>(
         &self,
         ctx: &'c mut NodeJoinCtx<'a>,
-    ) -> Child
+    ) -> Token
     where
         Self: 'a,
     {

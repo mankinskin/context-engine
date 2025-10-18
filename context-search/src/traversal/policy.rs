@@ -37,7 +37,7 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
         B: (Fn(&Self::Trav, ChildLocation) -> ParentState) + Copy,
     >(
         trav: &Self::Trav,
-        index: Child,
+        index: Token,
         build_parent: B,
     ) -> ParentBatch {
         ParentBatch {
@@ -47,7 +47,7 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
                 .parents()
                 .iter()
                 .flat_map(|(i, parent)| {
-                    let p = Child::new(i, parent.width());
+                    let p = Token::new(i, parent.width());
                     parent.pattern_indices().iter().map(move |pi| {
                         ChildLocation::new(p, pi.pattern_id(), pi.sub_index())
                     })

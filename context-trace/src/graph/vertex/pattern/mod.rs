@@ -8,20 +8,20 @@ use std::{
 };
 
 use crate::{
-    ToChild,
+    ToToken,
     graph::vertex::{
         pattern::pattern_range::PatternRangeIndex,
         wide::Wide,
     },
 };
 
-use crate::graph::vertex::child::Child;
+use crate::graph::vertex::token::Token;
 
 pub(crate) mod id;
 pub(crate) mod pattern_range;
 
-pub type Pattern = Vec<Child>;
-pub(crate) type PatternView<'a> = &'a [Child];
+pub type Pattern = Vec<Token>;
+pub(crate) type PatternView<'a> = &'a [Token];
 pub(crate) type Patterns = Vec<Pattern>;
 
 pub trait PatternWidth: IntoPattern {
@@ -34,10 +34,10 @@ impl PatternWidth for Pattern {
 }
 /// trait for types which can be converted to a pattern with a known size
 pub trait IntoPattern: Sized
-//IntoIterator<Item = Self::Elem, IntoIter = Self::Iter> + Sized + Borrow<[Child]> + Debug
+//IntoIterator<Item = Self::Elem, IntoIter = Self::Iter> + Sized + Borrow<[Token]> + Debug
 {
     //type Iter: ExactSizeIterator + DoubleEndedIterator<Item = Self::Elem>;
-    //type Elem: ToChild;
+    //type Elem: ToToken;
 
     //fn into_pattern(self) -> Pattern {
     //    self.into_iter().map(|x| x.to_child()).collect()
@@ -46,7 +46,7 @@ pub trait IntoPattern: Sized
     fn is_empty(&self) -> bool;
 }
 
-impl<const N: usize> IntoPattern for [Child; N] {
+impl<const N: usize> IntoPattern for [Token; N] {
     fn into_pattern(self) -> Pattern {
         self.into_iter().collect()
     }
@@ -54,7 +54,7 @@ impl<const N: usize> IntoPattern for [Child; N] {
         N == 0
     }
 }
-impl IntoPattern for Child {
+impl IntoPattern for Token {
     fn into_pattern(self) -> Pattern {
         Some(self).into_iter().collect()
     }
@@ -62,7 +62,7 @@ impl IntoPattern for Child {
         false
     }
 }
-//impl<It: IntoIterator<Item = Child> + Borrow<[Child]>> IntoPattern for It {
+//impl<It: IntoIterator<Item = Token> + Borrow<[Token]>> IntoPattern for It {
 //    fn into_pattern(self) -> Pattern {
 //        self.into_iter().collect()
 //    }
@@ -70,7 +70,7 @@ impl IntoPattern for Child {
 //        (*self).borrow().is_empty()
 //    }
 //}
-impl IntoPattern for &'_ [Child] {
+impl IntoPattern for &'_ [Token] {
     fn into_pattern(self) -> Pattern {
         self.iter().map(Clone::clone).collect()
     }
@@ -97,59 +97,59 @@ impl<T: IntoPattern + Clone> IntoPattern for &'_ T {
 
 //impl<C, It, T> IntoPattern for T
 //where
-//    C: ToChild,
+//    C: ToToken,
 //    It: DoubleEndedIterator<Item = C> + ExactSizeIterator,
-//    T: IntoIterator<Item = C, IntoIter = It> + Borrow<[Child]> + Debug,
+//    T: IntoIterator<Item = C, IntoIter = It> + Borrow<[Token]> + Debug,
 //{
 //    type Iter = It;
 //    type Elem = C;
 //}
 
 /// trait for types which can be converted to a pattern with a known size
-pub(crate) trait AsPatternMut: BorrowMut<Vec<Child>> + Debug {}
+pub(crate) trait AsPatternMut: BorrowMut<Vec<Token>> + Debug {}
 
-impl<T> AsPatternMut for T where T: BorrowMut<Vec<Child>> + Debug {}
+impl<T> AsPatternMut for T where T: BorrowMut<Vec<Token>> + Debug {}
 
-pub fn pattern_width<T: Borrow<Child>>(
+pub fn pattern_width<T: Borrow<Token>>(
     pat: impl IntoIterator<Item = T>
 ) -> usize {
     pat.into_iter().map(|c| c.borrow().width()).sum()
 }
 
-pub(crate) fn pattern_pre_ctx<T: Borrow<Child>>(
+pub(crate) fn pattern_pre_ctx<T: Borrow<Token>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pat.into_iter().take(sub_index)
 }
 
-pub(crate) fn pattern_post_ctx<T: Borrow<Child>>(
+pub(crate) fn pattern_post_ctx<T: Borrow<Token>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pattern_post(pat, sub_index + 1)
 }
-pub(crate) fn pattern_post<T: Borrow<Child>>(
+pub(crate) fn pattern_post<T: Borrow<Token>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pat.into_iter().skip(sub_index)
 }
-pub(crate) fn pattern_pre<T: Borrow<Child>>(
+pub(crate) fn pattern_pre<T: Borrow<Token>>(
     pat: impl IntoIterator<Item = T>,
     sub_index: usize,
 ) -> impl IntoIterator<Item = T> {
     pattern_pre_ctx(pat, sub_index + 1)
 }
 
-pub(crate) fn prefix<T: ToChild + Clone>(
+pub(crate) fn prefix<T: ToToken + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> Vec<T> {
     pattern.get(0..index).unwrap_or(pattern).to_vec()
 }
 
-pub(crate) fn infix<T: ToChild + Clone>(
+pub(crate) fn infix<T: ToToken + Clone>(
     pattern: &'_ [T],
     start: usize,
     end: usize,
@@ -157,7 +157,7 @@ pub(crate) fn infix<T: ToChild + Clone>(
     pattern.get(start..end).unwrap_or(&[]).to_vec()
 }
 
-pub(crate) fn postfix<T: ToChild + Clone>(
+pub(crate) fn postfix<T: ToToken + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> Vec<T> {
@@ -179,7 +179,7 @@ pub(crate) fn replace_in_pattern(
 
 pub(crate) fn single_child_patterns(
     halves: Vec<Pattern>
-) -> Result<Child, Vec<Pattern>> {
+) -> Result<Token, Vec<Pattern>> {
     match (halves.len(), halves.first()) {
         (1, Some(first)) =>
             single_child_pattern(first.clone()).map_err(|_| halves),
@@ -187,7 +187,7 @@ pub(crate) fn single_child_patterns(
     }
 }
 
-pub(crate) fn single_child_pattern(half: Pattern) -> Result<Child, Pattern> {
+pub(crate) fn single_child_pattern(half: Pattern) -> Result<Token, Pattern> {
     match (half.len(), half.first()) {
         (1, Some(first)) => Ok(*first),
         _ => Err(half),
@@ -195,14 +195,14 @@ pub(crate) fn single_child_pattern(half: Pattern) -> Result<Child, Pattern> {
 }
 
 /// Split a pattern before the specified index
-pub(crate) fn split_pattern_at_index<T: ToChild + Clone>(
+pub(crate) fn split_pattern_at_index<T: ToToken + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> (Vec<T>, Vec<T>) {
     (prefix(pattern, index), postfix(pattern, index))
 }
 
-pub(crate) fn split_context<T: ToChild + Clone>(
+pub(crate) fn split_context<T: ToToken + Clone>(
     pattern: &'_ [T],
     index: usize,
 ) -> (Vec<T>, Vec<T>) {

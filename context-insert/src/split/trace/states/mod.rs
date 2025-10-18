@@ -32,7 +32,7 @@ impl SplitStates {
     pub fn filter_trace_states<G: HasGraph>(
         &mut self,
         trav: G,
-        index: &Child,
+        index: &Token,
         pos_splits: impl IntoIterator<Item = (Offset, Vec<SubSplitLocation>)>,
     ) {
         let (perfect, next) = {

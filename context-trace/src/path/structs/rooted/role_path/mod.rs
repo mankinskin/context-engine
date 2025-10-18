@@ -17,7 +17,6 @@ use crate::{
     graph::{
         getters::ErrorReason,
         vertex::{
-            child::Child,
             location::{
                 child::ChildLocation,
                 pattern::{
@@ -29,15 +28,16 @@ use crate::{
                 IntoPattern,
                 Pattern,
             },
+            token::Token,
             wide::Wide,
         },
     },
-    impl_child,
+    impl_root_child,
     path::{
         accessors::{
             child::{
-                LeafChild,
-                PathChild,
+                LeafToken,
+                RootedLeafToken,
                 root::{
                     GraphRootChild,
                     PatternRootChild,
@@ -100,6 +100,19 @@ impl<Root: PathRoot, R: PathRole> RootedRolePath<R, Root> {
         }
     }
 }
+
+impl<R: PathRole, Root: PathRoot> HasPath<R> for RootedRolePath<R, Root>
+where
+    Self: HasRolePath<R>,
+{
+    fn path(&self) -> &Vec<ChildLocation> {
+        HasRolePath::<R>::role_path(self).path()
+    }
+    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+        HasRolePath::<R>::role_path_mut(self).path_mut()
+    }
+}
+
 impl<Root: PathRoot> HasStartPath for RootedStartPath<Root> {
     fn start_path(&self) -> &StartPath {
         &self.role_path
@@ -132,18 +145,18 @@ impl<R: PathRole, Root: PathRoot> IntoRolePath<R> for RootedRolePath<R, Root> {
 }
 impl<Root: PathRoot> CalcWidth for RootedRangePath<Root>
 where
-    Self: LeafChild<Start> + LeafChild<End>,
+    Self: RootedLeafToken<Start> + RootedLeafToken<End>,
 {
     fn calc_width<G: HasGraph>(
         &self,
         trav: G,
     ) -> usize {
         self.calc_offset(&trav)
-            + self.role_leaf_child::<Start, _>(&trav).width()
+            + self.role_leaf_token::<Start, _>(&trav).width()
             + if self.role_root_child_index::<Start>()
                 != self.role_root_child_index::<End>()
             {
-                self.role_leaf_child::<End, _>(&trav).width()
+                self.role_leaf_token::<End, _>(&trav).width()
             } else {
                 0
             }
@@ -166,11 +179,11 @@ impl<R: PathRole> IndexRolePath<R> {
         Self::from(first)
     }
 }
-impl<R: PathRole> PathChild<R> for IndexRolePath<R>
+impl<R: PathRole> LeafToken<R> for IndexRolePath<R>
 where
     Self: HasRolePath<R>,
 {
-    fn path_child_location(&self) -> Option<ChildLocation> {
+    fn leaf_token_location(&self) -> Option<ChildLocation> {
         Some(
             R::bottom_up_iter(self.path().iter())
                 .next()
@@ -182,11 +195,11 @@ where
                 ),
         )
     }
-    fn path_child<G: HasGraph>(
+    fn leaf_token<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Option<Child> {
-        PathChild::<R>::path_child(self.role_path(), trav)
+    ) -> Option<Token> {
+        self.role_path().leaf_token(trav)
     }
 }
 
@@ -242,7 +255,7 @@ impl<R: PathRoot> RootedEndPath<R> {
     }
 }
 
-/// access to the position of a child
+/// access to the position of a token
 #[auto_impl(&, & mut)]
 pub trait RootChildIndex<R> {
     fn root_child_index(&self) -> usize;
@@ -284,9 +297,9 @@ impl<R: PathRole, Root: PathRoot> RootedPath for RootedRolePath<R, Root> {
     }
 }
 
-impl<R: PathRole> PathChild<R> for RolePath<R> {}
+impl<R: PathRole> LeafToken<R> for RolePath<R> {}
 
-impl_child! {
+impl_root_child! {
     RootChild for IndexRolePath<R>, self,
     trav => *trav.graph().expect_child_at(
             self.path_root().location.to_child_location(
@@ -310,7 +323,7 @@ impl<R: PathRole, Root: PathRoot> RootChildIndex<R>
 }
 
 impl<R: PathRole> GraphRoot for RootedRolePath<R, IndexRoot> {
-    fn root_parent(&self) -> Child {
+    fn root_parent(&self) -> Token {
         self.root.location.parent
     }
 }
@@ -345,7 +358,7 @@ impl RootChildIndex<Start> for PatternEndPath {
         0
     }
 }
-//impl<R: PathRole> PathChild<R> for PatternRolePath<R> where
+//impl<R: PathRole> LeafToken<R> for PatternRolePath<R> where
 //    Self: HasPath<R> + PatternRootChild<R>
 //{
 //}
@@ -355,28 +368,20 @@ impl RootChildIndex<Start> for PatternEndPath {
 //{
 //}
 
-impl HasPath<End> for PatternEndPath {
-    fn path(&self) -> &Vec<ChildLocation> {
-        self.role_path.path()
-    }
-    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
-        self.role_path.path_mut()
-    }
-}
-//impl PathChild<Start> for PatternEndPath {
+//impl LeafToken<Start> for PatternEndPath {
 //    fn path_child_location(&self) -> Option<ChildLocation> {
 //        None
 //    }
 //    fn path_child<G: HasGraph>(
 //        &self,
 //        trav: &G,
-//    ) -> Option<Child> {
+//    ) -> Option<Token> {
 //        Some(self.root_child())
 //    }
 //}
 //impl_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
 
-impl_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
+impl_root_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
 
 impl FoldablePath for PatternEndPath {
     fn to_range_path(self) -> PatternRangePath {

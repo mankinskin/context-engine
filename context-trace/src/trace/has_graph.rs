@@ -45,7 +45,7 @@ impl<T: HasGraph> HasGraph for &mut T {
 }
 pub type TravKind<G> = <G as HasGraph>::Kind;
 pub type TravDir<G> = <TravKind<G> as GraphKind>::Direction;
-pub type TravToken<G> = <TravKind<G> as GraphKind>::Token;
+pub type TravAtom<G> = <TravKind<G> as GraphKind>::Atom;
 
 #[macro_export]
 macro_rules! impl_has_graph {

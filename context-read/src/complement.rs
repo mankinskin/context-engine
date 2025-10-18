@@ -15,7 +15,7 @@ impl ComplementBuilder {
     pub fn build(
         self,
         trav: &mut ReadCtx,
-    ) -> Child {
+    ) -> Token {
         // Get the root index from the postfix path
         let root = self.link.root_postfix.root_child(trav);
 
@@ -42,7 +42,7 @@ impl ComplementBuilder {
     fn build_complement_trace_cache(
         &self,
         trav: &ReadCtx,
-        root: Child,
+        root: Token,
     ) -> TraceCache {
         use context_trace::{
             path::mutators::move_path::retract::Retract,

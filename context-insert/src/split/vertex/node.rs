@@ -5,7 +5,7 @@ use derive_new::new;
 //    pub(crate) fn offset_children(
 //        &self,
 //        offset: Offset,
-//    ) -> Vec<SubChild> {
+//    ) -> Vec<SubToken> {
 //        self.selected_children(|_, pattern| {
 //            TraceFront::trace_child_pos(pattern, offset).map(|p| p.sub_index)
 //        })
@@ -14,17 +14,17 @@ use derive_new::new;
 /// for insert
 #[derive(Debug, Clone, Copy, new)]
 pub struct NodeTraceCtx<'p> {
-    pub(crate) patterns: &'p ChildPatterns,
-    pub(crate) index: Child,
+    pub(crate) patterns: &'p TokenPatterns,
+    pub(crate) index: Token,
 }
 
 impl<'p> NodeTraceCtx<'p> {
     pub fn from_index<K: GraphKind>(
         graph: &'p Hypergraph<K>,
-        index: Child,
+        index: Token,
     ) -> Self {
         Self {
-            patterns: &graph.expect_vertex(index).children(),
+            patterns: &graph.expect_vertex(index).child_patterns(),
             index,
         }
     }

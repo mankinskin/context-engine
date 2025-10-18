@@ -2,7 +2,7 @@ use crate::{
     HashMap,
     graph::vertex::{
         VertexIndex,
-        child::Child,
+        token::Token,
         has_vertex_index::HasVertexIndex,
     },
     trace::cache::{
@@ -27,7 +27,7 @@ pub struct TraceCache {
     pub entries: HashMap<VertexIndex, VertexCache>,
 }
 impl TraceCache {
-    pub fn new(start_index: Child) -> Self {
+    pub fn new(start_index: Token) -> Self {
         let mut entries = HashMap::default();
         entries.insert(
             start_index.vertex_index(),
@@ -87,25 +87,25 @@ impl TraceCache {
     }
     pub(crate) fn get_vertex(
         &self,
-        key: &Child,
+        key: &Token,
     ) -> Option<&VertexCache> {
         self.entries.get(&key.index.vertex_index())
     }
     pub(crate) fn get_vertex_mut(
         &mut self,
-        key: &Child,
+        key: &Token,
     ) -> Option<&mut VertexCache> {
         self.entries.get_mut(&key.index.vertex_index())
     }
     pub(crate) fn expect_vertex(
         &self,
-        key: &Child,
+        key: &Token,
     ) -> &VertexCache {
         self.get_vertex(key).unwrap()
     }
     pub(crate) fn expect_vertex_mut(
         &mut self,
-        key: &Child,
+        key: &Token,
     ) -> &mut VertexCache {
         self.get_vertex_mut(key).unwrap()
     }
@@ -136,7 +136,7 @@ impl TraceCache {
     }
     pub(crate) fn exists_vertex(
         &self,
-        key: &Child,
+        key: &Token,
     ) -> bool {
         self.entries.contains_key(&key.vertex_index())
     }

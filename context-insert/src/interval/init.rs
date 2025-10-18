@@ -11,9 +11,9 @@ use crate::interval::IntervalGraph;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct InitInterval {
-    pub root: Child,
+    pub root: Token,
     pub cache: TraceCache,
-    pub end_bound: TokenPosition,
+    pub end_bound: AtomPosition,
 }
 impl From<IncompleteState> for InitInterval {
     fn from(state: IncompleteState) -> Self {

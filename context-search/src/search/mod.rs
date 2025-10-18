@@ -13,10 +13,10 @@ pub trait Searchable: HasGraph {
     fn ctx(&self) -> SearchCtx<Self>;
     fn find_sequence(
         &self,
-        pattern: impl IntoIterator<Item = impl AsToken<TokenOf<TravKind<Self>>>>,
+        pattern: impl IntoIterator<Item = impl AsAtom<AtomOf<TravKind<Self>>>>,
     ) -> SearchResult {
-        let iter = tokenizing_iter(pattern.into_iter());
-        let pattern = self.graph().get_token_children(iter)?;
+        let iter = atomizing_iter(pattern.into_iter());
+        let pattern = self.graph().get_atom_children(iter)?;
         self.find_ancestor(pattern)
     }
     // find largest matching direct parent

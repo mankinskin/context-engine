@@ -6,7 +6,7 @@ use crate::{
         RolePathUtils,
         accessors::{
             child::{
-                LeafChild,
+                LeafToken,
                 root::{
                     GraphRootChild,
                     RootChild,
@@ -45,8 +45,8 @@ pub(crate) trait Advanced:
     + HasRolePath<End>
     + GraphRootChild<Start>
     + GraphRootChild<End>
-    + LeafChild<Start>
-    + LeafChild<End>
+    + LeafToken<Start>
+    + LeafToken<End>
     + MoveRootIndex<Right, End>
     + RootChildIndexMut<End>
     + GraphRoot
@@ -62,8 +62,8 @@ impl<
         + HasRolePath<End>
         + GraphRootChild<Start>
         + GraphRootChild<End>
-        + LeafChild<Start>
-        + LeafChild<End>
+        + LeafToken<Start>
+        + LeafToken<End>
         + MoveRootIndex<Right, End>
         + RootChildIndexMut<End>
         + PathAppend,

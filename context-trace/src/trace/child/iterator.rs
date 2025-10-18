@@ -12,7 +12,7 @@ impl From<ChildState> for ChildQueue {
         FromIterator::from_iter([state])
     }
 }
-//pub(crate) type ChildQueue = VecDeque<ChildModeCtx>;
+//pub(crate) type ChildQueue = VecDeque<TokenModeCtx>;
 pub trait QueuedState {}
 impl<T> QueuedState for T {}
 

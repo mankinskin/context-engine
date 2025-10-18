@@ -18,8 +18,8 @@ pub struct SplitTraceStatesCtx<G: HasGraph> {
 impl<G: HasGraph> SplitTraceStatesCtx<G> {
     pub fn new(
         ctx: TraceCtx<G>,
-        root: Child,
-        end_bound: TokenPosition,
+        root: Token,
+        end_bound: AtomPosition,
     ) -> Self {
         Self {
             ctx: SplitTraceCtx {
@@ -32,7 +32,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
     }
     pub fn new_split_vertex(
         &mut self,
-        index: Child,
+        index: Token,
         offset: NonZeroUsize,
         prev: PosKey,
     ) -> SplitVertexCache {
@@ -41,7 +41,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
             let graph = self.ctx.trav.graph();
             let node = graph.expect_vertex(index);
             //let entry = self.cache.entries.get(&index.index).unwrap();
-            cleaned_position_splits(node.children().iter(), offset)
+            cleaned_position_splits(node.child_patterns().iter(), offset)
         });
         let pos_splits =
             self.states.leaves.collect_leaves(&index, subs.clone());
@@ -66,14 +66,14 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
     }
     pub fn new_split_position(
         &mut self,
-        index: Child,
+        index: Token,
         offset: NonZeroUsize,
         prev: PosKey,
     ) -> SplitPositionCache {
         let splits = {
             let graph = self.ctx.trav.graph();
             let node = graph.expect_vertex(index);
-            cleaned_position_splits(node.children().iter(), offset)
+            cleaned_position_splits(node.child_patterns().iter(), offset)
         };
 
         // handle clean splits

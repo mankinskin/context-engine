@@ -8,7 +8,7 @@ pub mod context;
 pub mod direction;
 pub mod result;
 
-pub trait ToInsertCtx<R: InsertResult = Child>: HasGraphMut {
+pub trait ToInsertCtx<R: InsertResult = Token>: HasGraphMut {
     fn insert_context(&self) -> InsertCtx<R>;
 
     fn insert(

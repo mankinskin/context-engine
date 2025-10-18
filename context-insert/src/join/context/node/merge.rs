@@ -33,7 +33,7 @@ use crate::{
             vertex::SplitVertexCache,
         },
         vertex::{
-            ChildTracePositions,
+            TokenTracePositions,
             PosSplitCtx,
         },
     },
@@ -48,7 +48,7 @@ pub struct NodeMergeCtx<'a: 'b, 'b> {
 impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
     pub fn merge_node(
         &'c mut self,
-        partitions: &Vec<Child>,
+        partitions: &Vec<Token>,
     ) -> LinkedHashMap<PosKey, Split> {
         let offsets = self.ctx.vertex_cache().clone();
         assert_eq!(partitions.len(), offsets.len() + 1);
@@ -64,7 +64,7 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
             let left = *merges.get(&lr).unwrap();
             let right = *merges.get(&rr).unwrap();
             if !lr.is_empty() || !lr.is_empty() {
-                if let Some((&pid, _)) = (v.borrow() as &ChildTracePositions)
+                if let Some((&pid, _)) = (v.borrow() as &TokenTracePositions)
                     .iter()
                     .find(|(_, s)| s.inner_offset.is_none())
                 {
@@ -86,7 +86,7 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
     pub fn merge_partitions(
         &mut self,
         offsets: &SplitVertexCache,
-        partitions: &Vec<Child>,
+        partitions: &Vec<Token>,
     ) -> RangeMap {
         let num_offsets = offsets.positions.len();
 
@@ -138,10 +138,10 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
 #[derive(Debug, Deref, DerefMut, Default)]
 pub struct RangeMap<R = Range<usize>> {
     #[deref]
-    map: HashMap<R, Child>,
+    map: HashMap<R, Token>,
 }
 
-impl<C: Borrow<Child>, I: IntoIterator<Item = C>> From<I>
+impl<C: Borrow<Token>, I: IntoIterator<Item = C>> From<I>
     for RangeMap<Range<usize>>
 {
     fn from(iter: I) -> Self {

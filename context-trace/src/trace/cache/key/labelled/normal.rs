@@ -1,11 +1,11 @@
 use crate::{
     graph::vertex::{
-        child::Child,
+        token::Token,
         has_vertex_index::HasVertexIndex,
     },
     trace::has_graph::{
         HasGraph,
-        TravToken,
+        TravAtom,
     },
 };
 use std::fmt::Display;
@@ -17,7 +17,7 @@ pub(crate) fn labelled_key<G: HasGraph, T>(
     index: T,
 ) -> Labelled<T>
 where
-    TravToken<G>: Display,
+    TravAtom<G>: Display,
 {
     index
 }

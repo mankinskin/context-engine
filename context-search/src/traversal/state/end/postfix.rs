@@ -15,13 +15,13 @@ pub(crate) struct PostfixEnd {
     #[deref]
     #[deref_mut]
     pub(crate) path: IndexStartPath,
-    pub(crate) root_pos: TokenPosition,
+    pub(crate) root_pos: AtomPosition,
 }
 impl HasRootPos for PostfixEnd {
-    fn root_pos(&self) -> &TokenPosition {
+    fn root_pos(&self) -> &AtomPosition {
         &self.root_pos
     }
-    fn root_pos_mut(&mut self) -> &mut TokenPosition {
+    fn root_pos_mut(&mut self) -> &mut AtomPosition {
         &mut self.root_pos
     }
 }

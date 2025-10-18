@@ -7,16 +7,16 @@ pub struct TraversalState {
     pub(crate) kind: InnerKind,
 }
 impl HasRootPos for TraversalState {
-    fn root_pos(&self) -> &TokenPosition {
+    fn root_pos(&self) -> &AtomPosition {
         match &self.kind {
             InnerKind::Parent(state) => state.root_pos(),
-            InnerKind::Child(state) => state.root_pos(),
+            InnerKind::Token(state) => state.root_pos(),
         }
     }
-    fn root_pos_mut(&mut self) -> &mut TokenPosition {
+    fn root_pos_mut(&mut self) -> &mut AtomPosition {
         match &mut self.kind {
             InnerKind::Parent(state) => state.root_pos_mut(),
-            InnerKind::Child(state) => state.root_pos_mut(),
+            InnerKind::Token(state) => state.root_pos_mut(),
         }
     }
 }
@@ -25,8 +25,8 @@ impl TraversalState {
         match &self.kind {
             InnerKind::Parent(state) =>
                 Some(state.rooted_path().root_child_location()),
-            InnerKind::Child(state) =>
-                state.rooted_path().role_leaf_child_location::<End>(),
+            InnerKind::Token(state) =>
+                state.rooted_path().role_leaf_token_location::<End>(),
         }
     }
     pub(crate) fn prev_key(&self) -> DirectedKey {
@@ -36,7 +36,7 @@ impl TraversalState {
     pub(crate) fn state_direction(&self) -> StateDirection {
         match &self.kind {
             InnerKind::Parent(_) => StateDirection::BottomUp,
-            InnerKind::Child(_) => StateDirection::TopDown,
+            InnerKind::Token(_) => StateDirection::TopDown,
         }
     }
 }
@@ -53,7 +53,7 @@ impl From<(DirectedKey, ChildState)> for TraversalState {
     fn from((prev, cs): (DirectedKey, ChildState)) -> Self {
         Self {
             prev,
-            kind: InnerKind::Child(cs),
+            kind: InnerKind::Token(cs),
         }
     }
 }
@@ -61,7 +61,7 @@ impl TargetKey for TraversalState {
     fn target_key(&self) -> DirectedKey {
         match &self.kind {
             InnerKind::Parent(state) => state.target_key(),
-            InnerKind::Child(state) => state.target_key(),
+            InnerKind::Token(state) => state.target_key(),
         }
     }
 }
@@ -78,7 +78,7 @@ impl RootKey for TraversalState {
     fn root_key(&self) -> UpKey {
         match &self.kind {
             InnerKind::Parent(state) => state.root_key(),
-            InnerKind::Child(state) => state.root_key(),
+            InnerKind::Token(state) => state.root_key(),
         }
     }
 }

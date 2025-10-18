@@ -1,6 +1,9 @@
 use crate::{
     path::{
-        accessors::child::LeafChild,
+        accessors::child::{
+            LeafToken,
+            RootedLeafToken,
+        },
         structs::rooted::root::PathRoot,
     },
     *,
@@ -29,12 +32,12 @@ impl<Role: PathRole, Root: PathRoot> CalcOffset for RootedRolePath<Role, Root> {
 
 impl<Role: PathRole, Root: PathRoot> CalcWidth for RootedRolePath<Role, Root>
 where
-    Self: LeafChild<Role>,
+    Self: RootedLeafToken<Role>,
 {
     fn calc_width<G: HasGraph>(
         &self,
         trav: G,
     ) -> usize {
-        self.calc_offset(&trav) + self.leaf_child(&trav).width()
+        self.calc_offset(&trav) + self.rooted_leaf_token(&trav).width()
     }
 }

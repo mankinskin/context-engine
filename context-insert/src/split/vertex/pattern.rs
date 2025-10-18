@@ -15,7 +15,7 @@ pub struct PatternTraceCtx<'a> {
 
 impl<'p> From<PatternTraceCtx<'p>> for PatternId {
     fn from(value: PatternTraceCtx<'p>) -> Self {
-        value.loc.id
+        value.loc.pattern_id
     }
 }
 

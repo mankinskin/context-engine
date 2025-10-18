@@ -49,7 +49,7 @@ use crate::{
         },
         position_splits,
         vertex::{
-            ChildTracePositions,
+            TokenTracePositions,
             PosSplitCtx,
             VertexSplits,
             node::{
@@ -87,12 +87,12 @@ pub struct NodeJoinCtx<'a> {
     #[deref]
     #[deref_mut]
     pub ctx: LockedFrontierCtx<'a>,
-    pub index: Child,
+    pub index: Token,
 }
 
 impl<'a> NodeJoinCtx<'a> {
     pub fn new(
-        index: Child,
+        index: Token,
         ctx: &'a mut FrontierSplitIterator,
     ) -> Self {
         NodeJoinCtx {
@@ -149,7 +149,7 @@ impl GetPatternCtx for NodeJoinCtx<'_> {
     }
 }
 impl NodeJoinCtx<'_> {
-    pub fn patterns(&self) -> &ChildPatterns {
+    pub fn patterns(&self) -> &TokenPatterns {
         self.ctx.trav.expect_child_patterns(self.index)
     }
 }
@@ -162,19 +162,19 @@ impl NodeJoinCtx<'_> {
         let partitions = self.index_partitions();
         assert_eq!(
             self.index.width(),
-            partitions.iter().map(Child::width).sum::<usize>()
+            partitions.iter().map(Token::width).sum::<usize>()
         );
         let pos_splits = self.vertex_cache();
         assert_eq!(partitions.len(), pos_splits.len() + 1,);
         NodeMergeCtx::new(self).merge_node(&partitions)
     }
-    pub fn index_partitions(&mut self) -> Vec<Child> {
+    pub fn index_partitions(&mut self) -> Vec<Token> {
         let pos_splits = self.vertex_cache().clone();
         let len = pos_splits.len();
         assert!(len > 0);
         let mut iter = pos_splits.iter().map(|(&pos, splits)| VertexSplits {
             pos,
-            splits: (splits.borrow() as &ChildTracePositions).clone(),
+            splits: (splits.borrow() as &TokenTracePositions).clone(),
         });
 
         let mut prev = iter.next().unwrap();
@@ -188,7 +188,7 @@ impl NodeJoinCtx<'_> {
         //println!("{:#?}", parts);
         parts
     }
-    pub fn join_root_partitions(&mut self) -> Child {
+    pub fn join_root_partitions(&mut self) -> Token {
         let root_mode = self.interval.cache.root_mode;
         let index = self.index;
         let offsets = self.vertex_cache().clone();
@@ -247,8 +247,8 @@ impl NodeJoinCtx<'_> {
         part: JoinedPartition<In<Join>>,
         loffset: PosSplitCtx<'c>,
         roffset: PosSplitCtx<'c>,
-        index: Child,
-    ) -> Child {
+        index: Token,
+    ) -> Token {
         let loffset = (*loffset.pos, loffset.split.clone());
         let roffset = (*roffset.pos, roffset.split.clone() - part.delta);
 
@@ -262,7 +262,7 @@ impl NodeJoinCtx<'_> {
                     ((roffset.0, (roffset.1.clone() - part.delta)), part.index),
                 Err(ch) => (roffset, ch),
             };
-            let post: Child = Postfix::new(offset).join_partition(self).into();
+            let post: Token = Postfix::new(offset).join_partition(self).into();
             self.trav
                 .add_pattern_with_update(index, vec![pre, part.index, post]);
         } else if part.perfect.0 == part.perfect.1 {

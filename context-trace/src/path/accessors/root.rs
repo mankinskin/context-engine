@@ -1,6 +1,5 @@
 use crate::{
     graph::vertex::{
-        child::Child,
         location::{
             child::ChildLocation,
             pattern::{
@@ -9,12 +8,13 @@ use crate::{
             },
         },
         pattern::Pattern,
+        token::Token,
     },
     path::structs::rooted::root::IndexRoot,
     trace::has_graph::HasGraph,
 };
 
-pub(crate) trait GraphRootPattern: GraphRoot + RootPattern {
+pub trait GraphRootPattern: GraphRoot + RootPattern {
     fn root_pattern_location(&self) -> PatternLocation;
     fn graph_root_pattern<'a: 'g, 'g, G: HasGraph + 'a>(
         &self,
@@ -25,7 +25,7 @@ pub(crate) trait GraphRootPattern: GraphRoot + RootPattern {
 }
 impl GraphRootPattern for PatternLocation {
     fn root_pattern_location(&self) -> PatternLocation {
-        self.clone()
+        *self
     }
 }
 impl GraphRootPattern for ChildLocation {
@@ -34,15 +34,15 @@ impl GraphRootPattern for ChildLocation {
     }
 }
 pub trait GraphRoot {
-    fn root_parent(&self) -> Child;
+    fn root_parent(&self) -> Token;
 }
 impl GraphRoot for PatternLocation {
-    fn root_parent(&self) -> Child {
+    fn root_parent(&self) -> Token {
         self.parent
     }
 }
 impl GraphRoot for ChildLocation {
-    fn root_parent(&self) -> Child {
+    fn root_parent(&self) -> Token {
         self.parent
     }
 }
@@ -127,7 +127,7 @@ macro_rules! impl_root {
         $(< $( $par:ident $( : $bhead:tt $( + $btail:tt )*)? ),* >)? GraphRoot for $target:ty, $self_:ident => $func:expr
     } => {
         impl <$( $( $par $(: $bhead $( + $btail )* )? ),* )?> $crate::GraphRoot for $target {
-            fn root_parent(& $self_) -> $crate::Child {
+            fn root_parent(& $self_) -> $crate::Token {
                 $func
             }
         }

@@ -1,6 +1,6 @@
 use crate::{
     trace::cache::{
-        key::directed::HasTokenPosition,
+        key::directed::HasAtomPosition,
         position::PositionCache,
     },
     *,
@@ -12,10 +12,10 @@ pub mod positions;
 pub struct VertexCache {
     pub bottom_up: DirectedPositions,
     pub top_down: DirectedPositions,
-    pub index: Child,
+    pub index: Token,
 }
 impl VertexCache {
-    pub fn start(index: Child) -> Self {
+    pub fn start(index: Token) -> Self {
         let bottom_up = Default::default();
         //bottom_up.insert(
         //    index.width().into(),
@@ -66,8 +66,8 @@ impl VertexCache {
     }
 }
 
-impl From<Child> for VertexCache {
-    fn from(index: Child) -> Self {
+impl From<Token> for VertexCache {
+    fn from(index: Token) -> Self {
         Self {
             index,
             bottom_up: Default::default(),

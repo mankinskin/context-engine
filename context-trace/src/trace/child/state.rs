@@ -1,19 +1,25 @@
 use crate::{
+    HasPath,
+    PathRole,
+    RootChild,
     RootChildIndex,
     graph::{
         getters::vertex::VertexSet,
         vertex::{
-            child::{
-                Child,
-                SubChild,
-            },
             location::child::ChildLocation,
+            token::{
+                SubToken,
+                Token,
+            },
         },
     },
     path::{
         RolePathUtils,
         accessors::{
-            child::LeafChild,
+            child::{
+                LeafToken,
+                RootedLeafToken,
+            },
             has_path::IntoRootedRolePath,
             role::End,
             root::GraphRoot,
@@ -49,6 +55,7 @@ use std::{
     cmp::Ordering,
     collections::VecDeque,
     fmt::Debug,
+    ops::Index,
 };
 
 //impl_cursor_pos! {
@@ -95,34 +102,53 @@ impl RootChildIndex<End> for ChildState {
         self.base.path.role_root_child_index::<End>()
     }
 }
-impl LeafChild<End> for ChildState {
-    fn leaf_child<G: HasGraph>(
+impl RootChild<End> for ChildState {
+    fn root_child<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> Child {
-        self.base.path.role_leaf_child::<End, G>(trav)
+    ) -> Token {
+        RootChild::<End>::root_child(&self.base.path, trav)
     }
-    fn leaf_child_location(&self) -> Option<ChildLocation> {
-        self.base.path.role_leaf_child_location::<End>()
+}
+impl LeafToken<End> for ChildState {
+    fn leaf_token<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Option<Token> {
+        Some(self.base.path.role_leaf_token::<End, G>(trav))
+    }
+    fn leaf_token_location(&self) -> Option<ChildLocation> {
+        self.base.path.role_leaf_token_location::<End>()
+    }
+}
+impl<R: PathRole> HasPath<R> for ChildState
+where
+    IndexRangePath: HasPath<R>,
+{
+    fn path(&self) -> &Vec<ChildLocation> {
+        HasPath::<R>::path(&self.base.path)
+    }
+    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+        HasPath::<R>::path_mut(&mut self.base.path)
     }
 }
 pub trait PrefixStates: Sized + Clone {
     fn prefix_states<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> VecDeque<(SubChild, Self)>;
+    ) -> VecDeque<(SubToken, Self)>;
 }
-impl<T: LeafChild<End> + PathAppend + Clone + Sized> PrefixStates for T {
+impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
     fn prefix_states<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> VecDeque<(SubChild, Self)> {
-        let leaf = self.role_leaf_child::<End, _>(trav);
+    ) -> VecDeque<(SubToken, Self)> {
+        let leaf = self.role_leaf_token::<End, _>(trav);
         trav.graph()
             .expect_vertex(leaf)
             .prefix_children::<G>()
             .iter()
-            .sorted_unstable_by(|a, b| b.child.width.cmp(&a.child.width))
+            .sorted_unstable_by(|a, b| b.token.width.cmp(&a.token.width))
             .map(|sub| {
                 let mut next = self.clone();
                 next.path_append(leaf.to_child_location(sub.location));
@@ -133,7 +159,7 @@ impl<T: LeafChild<End> + PathAppend + Clone + Sized> PrefixStates for T {
 }
 //impl From<ChildState> for EditKind {
 //    fn from(state: ChildState) -> Self {
-//        match state.path.role_leaf_child_location::<End>() {
+//        match state.path.role_leaf_token_location::<End>() {
 //            Some(entry) => DownEdit {
 //                target: state.target,
 //                entry,
@@ -155,10 +181,10 @@ impl IntoAdvanced for ChildState {
         trav: &G,
     ) -> Result<Self, Self> {
         if self.base.path.advance(trav).is_continue() {
-            // gen next child
+            // gen next token
             //Ok(Self {
             //    target: DownKey::new(
-            //        self.base.path.role_leaf_child::<End, _>(&trav),
+            //        self.base.path.role_leaf_token::<End, _>(&trav),
             //        (*self.cursor_pos()).into(),
             //    ),
             //    ..self

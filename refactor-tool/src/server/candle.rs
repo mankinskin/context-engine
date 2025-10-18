@@ -609,10 +609,10 @@ impl CandleServer {
             .as_ref()
             .ok_or_else(|| anyhow::anyhow!("Tokenizer not loaded"))?;
 
-        // Tokenize input
+        // Atomize input
         let tokens = tokenizer
             .encode(prompt, true)
-            .map_err(|e| anyhow::anyhow!("Failed to tokenize input: {}", e))?
+            .map_err(|e| anyhow::anyhow!("Failed to atomize input: {}", e))?
             .get_ids()
             .iter()
             .map(|&id| id as u32)

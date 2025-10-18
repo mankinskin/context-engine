@@ -19,7 +19,7 @@ pub struct BorderInfo {
 impl BorderInfo {
     fn new(
         pattern: &Pattern,
-        pos: &ChildTracePos,
+        pos: &TokenTracePos,
     ) -> Self {
         let offset = End::inner_ctx_width(pattern, pos.sub_index());
         BorderInfo {

@@ -15,11 +15,11 @@ pub struct RootManager {
     #[deref_mut]
     pub graph: HypergraphRef,
     #[new(default)]
-    pub root: Option<Child>,
+    pub root: Option<Token>,
 }
 
 impl RootManager {
-    /// append a pattern of new token indices
+    /// append a pattern of new atom indices
     /// returns index of possible new index
     pub fn append_pattern(
         &mut self,
@@ -35,7 +35,7 @@ impl RootManager {
                 if let Some(root) = &mut self.root {
                     let mut graph = self.graph.graph_mut();
                     let vertex = (*root).vertex_mut(&mut graph);
-                    *root = if vertex.children.len() == 1
+                    *root = if vertex.tokens.len() == 1
                         && vertex.parents.is_empty()
                     {
                         let (&pid, _) = vertex.expect_any_child_pattern();
@@ -56,14 +56,14 @@ impl RootManager {
     #[instrument(skip(self, index))]
     pub fn append_index(
         &mut self,
-        index: impl ToChild,
+        index: impl ToToken,
     ) {
         let index = index.to_child();
         if let Some(root) = &mut self.root {
             let mut graph = self.graph.graph_mut();
             let vertex = (*root).vertex_mut(&mut graph);
             *root = if index.vertex_index() != root.vertex_index()
-                && vertex.children.len() == 1
+                && vertex.tokens.len() == 1
                 && vertex.parents.is_empty()
             {
                 let (&pid, _) = vertex.expect_any_child_pattern();
