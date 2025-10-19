@@ -20,14 +20,14 @@ use derive_new::new;
 #[derive(Clone, Debug, PartialEq, Eq, From)]
 pub enum EditKind {
     Parent(NewTraceEdge<BottomUp>),
-    Token(NewTraceEdge<TopDown>),
+    Child(NewTraceEdge<TopDown>),
 }
 
 impl TargetKey for EditKind {
     fn target_key(&self) -> DirectedKey {
         match &self {
             EditKind::Parent(state) => state.target.into(),
-            EditKind::Token(state) => state.target.into(),
+            EditKind::Child(state) => state.target.into(),
         }
     }
 }

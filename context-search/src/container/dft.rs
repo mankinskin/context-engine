@@ -3,21 +3,13 @@ use crate::traversal::{
     state::traversal::TraversalState,
 };
 
-use crate::{StateContainer};
+use crate::StateContainer;
 
 #[derive(Debug, Default)]
 pub(crate) struct DftStack {
     stack: Vec<(usize, TraversalState)>,
 }
 
-//impl From<StartState> for DftStack {
-//    fn from(start: StartState) -> Self {
-//        Self {
-//            stack: Vec::from([(0, TraversalState::Start(start))]),
-//            _ty: Default::default(),
-//        }
-//    }
-//}
 impl StateContainer for DftStack {
     fn clear(&mut self) {
         self.stack.clear()

@@ -13,15 +13,13 @@ use pretty_assertions::{
 use std::convert::TryInto;
 
 use crate::{
+    cursor::PathCursor,
     fold::result::IncompleteState,
     search::Searchable,
-    traversal::state::{
-        cursor::PathCursor,
-        end::{
-            EndKind,
-            EndReason,
-            EndState,
-        },
+    state::end::{
+        EndKind,
+        EndReason,
+        EndState,
     },
 };
 use context_trace::{
@@ -73,7 +71,7 @@ fn prefix1() {
             root: IndexWithPath::new(*abcdef, res.root.path),
             end_state: EndState {
                 cursor: PathCursor {
-                    relative_pos: 5.into(),
+                    atom_position: 5.into(),
                     path: res.end_state.cursor.path,
                 },
                 kind: res.end_state.kind,
@@ -178,7 +176,7 @@ fn postfix1() {
             root: IndexWithPath::new(*abcdefghi, res.root.path),
             end_state: EndState {
                 cursor: PathCursor {
-                    relative_pos: 7.into(),
+                    atom_position: 7.into(),
                     path: res.end_state.cursor.path,
                 },
                 kind: res.end_state.kind,
@@ -276,7 +274,7 @@ fn range1() {
             root: IndexWithPath::new(*abcdef, res.root.path),
             end_state: EndState {
                 cursor: PathCursor {
-                    relative_pos: 4.into(),
+                    atom_position: 4.into(),
                     path: res.end_state.cursor.path,
                 },
                 kind: res.end_state.kind,

@@ -1,10 +1,10 @@
 use crate::{
     fold::result::FinishedState,
     traversal::{
-        container::bft::BftQueue,
         policy::DirectedTraversalPolicy,
         TraversalKind,
     },
+    BftQueue,
 };
 use context_trace::*;
 #[derive(Debug)]

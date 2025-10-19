@@ -49,7 +49,7 @@ impl PositionCache {
                 bottom
                     .insert(edit.prev.into(), edit.location.to_sub_location());
             },
-            (_, EditKind::Token(edit)) => {
+            (_, EditKind::Child(edit)) => {
                 // created by downwards traversal
                 let prev = cache.force_mut(&(edit.prev.into()));
                 prev.bottom.insert(

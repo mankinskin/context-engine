@@ -1,6 +1,6 @@
 use crate::{
     compare::state::CompareState,
-    traversal::state::cursor::PatternCursor,
+    cursor::PatternCursor,
 };
 use context_trace::*;
 use derive_more::{

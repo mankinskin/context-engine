@@ -1,4 +1,4 @@
-use crate::traversal::state::traversal::TraversalState;
+use crate::state::TraversalState;
 use extend::ExtendStates;
 use std::fmt::Debug;
 

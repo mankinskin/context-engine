@@ -2,7 +2,7 @@ use context_trace::*;
 use std::fmt::Debug;
 
 use crate::{
-    traversal::state::end::EndKind,
+    state::end::EndKind,
     FinishedKind,
     FinishedState,
 };

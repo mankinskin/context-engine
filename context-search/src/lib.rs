@@ -13,15 +13,19 @@
 extern crate test;
 
 pub(crate) mod compare;
+pub(crate) mod container;
+pub(crate) mod cursor;
 pub(crate) mod fold;
 pub(crate) mod r#match;
 pub(crate) mod search;
+pub(crate) mod state;
 pub(crate) mod traversal;
 
 #[cfg(any(test, feature = "test-api"))]
 pub(crate) mod tests;
 
 pub use crate::{
+    container::bft::BftQueue,
     fold::{
         complete::UnwrapComplete,
         foldable::{
@@ -39,8 +43,5 @@ pub use crate::{
         context::AncestorPolicy,
         Searchable,
     },
-    traversal::{
-        container::bft::BftQueue,
-        TraversalKind,
-    },
+    traversal::TraversalKind,
 };

@@ -1,4 +1,5 @@
 use crate::{
+    cursor::PatternCursor,
     fold::{
         foldable::ErrorState,
         result::FinishedKind,
@@ -6,7 +7,6 @@ use crate::{
     r#match::iterator::CompareParentBatch,
     traversal::{
         policy::DirectedTraversalPolicy,
-        state::cursor::PatternCursor,
         TraversalKind,
     },
 };
@@ -56,9 +56,3 @@ impl<K: TraversalKind> StartCtx<K> {
         }
     }
 }
-
-//impl RootKey for StartState {
-//    fn root_key(&self) -> UpKey {
-//        UpKey::new(self.index, AtomPosition(self.index.width()).into())
-//    }
-//}

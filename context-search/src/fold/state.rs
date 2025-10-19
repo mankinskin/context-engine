@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::traversal::state::end::EndState;
+use crate::state::end::EndState;
 use context_trace::{
     trace::cache::vertex::VertexCache,
     *,

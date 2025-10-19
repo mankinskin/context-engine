@@ -1,3 +1,4 @@
+use crate::cursor::PatternCursor;
 #[cfg(test)]
 use {
     crate::{
@@ -6,14 +7,11 @@ use {
             FinishedState,
         },
         search::Searchable,
-        traversal::state::{
-            cursor::PatternCursor,
-            end::{
-                postfix::PostfixEnd,
-                EndKind,
-                EndReason,
-                EndState,
-            },
+        state::end::{
+            postfix::PostfixEnd,
+            EndKind,
+            EndReason,
+            EndState,
         },
     },
     context_trace::*,
@@ -199,7 +197,7 @@ fn find_ancestor2() {
                         query.clone(),
                         RolePath::new_empty(1),
                     ),
-                    relative_pos: 3.into(),
+                    atom_position: 3.into(),
                 },
             })),
             cache: TraceCache {
@@ -313,7 +311,7 @@ fn find_ancestor3() {
                         query.clone(),
                         RolePath::new_empty(1),
                     ),
-                    relative_pos: 3.into(),
+                    atom_position: 3.into(),
                 },
             })),
             cache: TraceCache {

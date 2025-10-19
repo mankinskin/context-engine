@@ -3,12 +3,12 @@ use std::{
     collections::BinaryHeap,
 };
 
-use crate::traversal::{
+use crate::{
     container::{
         extend::ExtendStates,
         StateContainer,
     },
-    state::traversal::TraversalState,
+    state::TraversalState,
 };
 
 #[derive(Debug, Default)]

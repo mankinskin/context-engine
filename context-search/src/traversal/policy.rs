@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::fmt::Debug;
 
-use crate::traversal::container::order::TraversalOrder;
+use crate::container::order::TraversalOrder;
 use context_trace::{
     graph::vertex::parent::HasPatternId,
     path::mutators::raise::PathRaise,

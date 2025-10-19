@@ -55,7 +55,7 @@ pub enum ErrorReason {
     NotFound,
     ErrorReasoningParent(VertexIndex),
     InvalidPattern(PatternId),
-    InvalidToken(usize),
+    InvalidChild(usize),
     InvalidPatternRange(PatternId, Pattern, String),
     SingleIndex(Box<IndexWithPath>),
     ParentMatchingPartially,

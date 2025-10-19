@@ -1,4 +1,4 @@
-use crate::traversal::state::traversal::TraversalState;
+use crate::state::TraversalState;
 
 pub(crate) trait ExtendStates {
     fn extend<

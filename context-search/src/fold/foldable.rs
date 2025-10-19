@@ -2,6 +2,11 @@ use context_trace::*;
 use derive_new::new;
 
 use crate::{
+    cursor::{
+        PatternCursor,
+        PatternRangeCursor,
+        ToCursor,
+    },
     fold::{
         result::{
             FinishedKind,
@@ -10,17 +15,8 @@ use crate::{
         FoldCtx,
         IntoFoldCtx,
     },
-    traversal::{
-        state::{
-            cursor::{
-                PatternCursor,
-                PatternRangeCursor,
-                ToCursor,
-            },
-            start::StartCtx,
-        },
-        TraversalKind,
-    },
+    state::start::StartCtx,
+    traversal::TraversalKind,
 };
 use std::fmt::Debug;
 

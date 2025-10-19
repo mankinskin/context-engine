@@ -1,15 +1,10 @@
 use crate::{
     compare::parent::ParentCompareState,
-    traversal::state::{
-        cursor::{
-            self,
-            PatternCursor,
-        },
-        end::{
-            EndKind,
-            EndReason,
-            EndState,
-        },
+    cursor::PatternCursor,
+    state::end::{
+        EndKind,
+        EndReason,
+        EndState,
     },
     FinishedKind::Complete,
 };
@@ -178,7 +173,7 @@ impl CompareState {
         } else {
             let target = DownKey::new(
                 path.role_leaf_token::<End, _>(trav),
-                cursor.relative_pos.into(),
+                cursor.atom_position.into(),
             );
             EndKind::from_range_path(path, root_pos, target, trav)
         };

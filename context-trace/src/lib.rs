@@ -245,7 +245,6 @@ pub use crate::{
             BaseState,
             HasPrevPos,
             HasRootPos,
-            InnerKind,
             parent::{
                 ParentBatch,
                 ParentState,

@@ -202,7 +202,7 @@ impl VertexData {
             .get(&location.pattern_id)
             .ok_or(ErrorReason::InvalidPattern(location.pattern_id))?
             .get(location.sub_index)
-            .ok_or(ErrorReason::InvalidToken(location.sub_index))
+            .ok_or(ErrorReason::InvalidChild(location.sub_index))
     }
     pub fn expect_child_at(
         &self,
@@ -218,7 +218,7 @@ impl VertexData {
             .get_mut(&location.pattern_id)
             .ok_or(ErrorReason::InvalidPattern(location.pattern_id))?
             .get_mut(location.sub_index)
-            .ok_or(ErrorReason::InvalidToken(location.sub_index))
+            .ok_or(ErrorReason::InvalidChild(location.sub_index))
     }
     pub(crate) fn expect_child_mut_at(
         &mut self,

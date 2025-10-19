@@ -1,6 +1,6 @@
 use context_trace::*;
 
-use crate::traversal::state::end::{
+use crate::state::end::{
     EndKind,
     EndState,
 };

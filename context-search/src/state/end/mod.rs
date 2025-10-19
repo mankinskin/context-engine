@@ -14,7 +14,7 @@ use range::RangeEnd;
 
 use crate::{
     compare::parent::ParentCompareState,
-    traversal::state::cursor::PatternCursor,
+    cursor::PatternCursor,
 };
 
 pub(crate) mod postfix;
@@ -114,7 +114,7 @@ pub struct EndState {
     pub cursor: PatternCursor,
 }
 impl_cursor_pos! {
-    CursorPosition for EndState, self => self.cursor.relative_pos
+    CursorPosition for EndState, self => self.cursor.atom_position
 }
 
 impl Traceable for &EndState {
@@ -159,6 +159,17 @@ impl EndState {
     ) -> Self {
         Self::with_reason(trav, EndReason::Mismatch, parent)
     }
+    pub(crate) fn start_len(&self) -> usize {
+        self.start_path().map(|p| p.len()).unwrap_or_default()
+    }
+    pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
+        match &self.kind {
+            EndKind::Range(e) => Some(e.path.start_path()),
+            EndKind::Postfix(e) => Some(e.path.start_path()),
+            EndKind::Prefix(_) => None,
+            EndKind::Complete(_) => None,
+        }
+    }
     pub(crate) fn is_final(&self) -> bool {
         self.reason == EndReason::QueryEnd
             && matches!(self.kind, EndKind::Complete(_))
@@ -178,17 +189,6 @@ impl EndState {
             EndKind::Postfix(_) => StateDirection::BottomUp,
             EndKind::Prefix(_) => StateDirection::TopDown,
             EndKind::Complete(_) => StateDirection::BottomUp,
-        }
-    }
-    pub(crate) fn start_len(&self) -> usize {
-        self.start_path().map(|p| p.len()).unwrap_or_default()
-    }
-    pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
-        match &self.kind {
-            EndKind::Range(e) => Some(e.path.start_path()),
-            EndKind::Postfix(e) => Some(e.path.start_path()),
-            EndKind::Prefix(_) => None,
-            EndKind::Complete(_) => None,
         }
     }
     pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {

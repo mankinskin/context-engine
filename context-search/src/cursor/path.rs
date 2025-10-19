@@ -1,0 +1,107 @@
+use std::ops::ControlFlow;
+
+use crate::cursor::PathCursor;
+use context_trace::*;
+
+pub(crate) trait MovablePath<D: Direction, R: PathRole>:
+    MovePath<D, R> + RootChildIndex<R> + RootPattern
+{
+}
+impl<
+        D: Direction,
+        R: PathRole,
+        P: MovePath<D, R> + RootChildIndex<R> + RootPattern,
+    > MovablePath<D, R> for P
+{
+}
+impl<D: Direction, R: PathRole, P: MovablePath<D, R>> MovePath<D, R>
+    for PathCursor<P>
+where
+    Self: MoveKey<D>,
+{
+    fn move_path_segment<G: HasGraph>(
+        &mut self,
+        location: &mut ChildLocation,
+        trav: &G::Guard<'_>,
+    ) -> ControlFlow<()> {
+        let flow = self.path.move_path_segment::<G>(location, trav);
+        if let ControlFlow::Continue(()) = flow {
+            let graph = trav.graph();
+            self.move_key(graph.expect_child_at(*location).width());
+        }
+        flow
+    }
+}
+
+impl<D: Direction, R: PathRole, P: MovablePath<D, R>> MoveRootIndex<D, R>
+    for PathCursor<P>
+where
+    Self: MoveKey<D> + RootChildIndex<R>,
+{
+    fn move_root_index<G: HasGraph>(
+        &mut self,
+        trav: &G,
+    ) -> ControlFlow<()> {
+        let flow = self.path.move_root_index(trav);
+        if let ControlFlow::Continue(()) = flow {
+            let graph = trav.graph();
+            let pattern = self.path.root_pattern::<G>(&graph);
+            self.move_key(pattern[self.role_root_child_index()].width());
+        }
+        flow
+    }
+}
+
+impl<P: PathPop> PathPop for PathCursor<P> {
+    fn path_pop(&mut self) -> Option<ChildLocation> {
+        self.path.path_pop()
+    }
+}
+impl<P: PathAppend> PathAppend for PathCursor<P> {
+    fn path_append(
+        &mut self,
+        parent_entry: ChildLocation,
+    ) {
+        self.path.path_append(parent_entry);
+    }
+}
+impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
+    fn rooted_path(&self) -> &P {
+        &self.path
+    }
+    fn rooted_path_mut(&mut self) -> &mut P {
+        &mut self.path
+    }
+}
+impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
+    fn path(&self) -> &Vec<ChildLocation> {
+        HasPath::<R>::path(&self.path)
+    }
+    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+        HasPath::<R>::path_mut(&mut self.path)
+    }
+}
+
+impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
+    for PathCursor<P>
+{
+    fn root_child<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Token {
+        RootChild::<R>::root_child(&self.path, trav)
+    }
+}
+impl<R: PathRole, P: FoldablePath + LeafToken<R>> LeafToken<R>
+    for PathCursor<P>
+{
+    fn leaf_token_location(&self) -> Option<ChildLocation> {
+        LeafToken::<R>::leaf_token_location(&self.path)
+    }
+    fn leaf_token<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Option<Token> {
+        LeafToken::<R>::leaf_token(&self.path, trav)
+    }
+}

@@ -1,32 +1,28 @@
+pub(crate) mod policy;
+
 use crate::{
+    container::StateContainer,
     fold::foldable::ErrorState,
     r#match::{
         iterator::MatchIterator,
         MatchCtx,
         TraceNode::Parent,
     },
+    state::{
+        end::{
+            EndKind,
+            EndReason,
+            EndState,
+            TraceStart,
+        },
+        start::StartCtx,
+    },
 };
-use container::StateContainer;
 use context_trace::*;
 use derive_new::new;
 use policy::DirectedTraversalPolicy;
-use state::{
-    end::{
-        EndKind,
-        EndReason,
-        EndState,
-        TraceStart,
-    },
-    start::StartCtx,
-};
-use std::{
-    fmt::Debug,
-    ops::ControlFlow,
-};
+use std::fmt::Debug;
 use tracing::debug;
-pub(crate) mod container;
-pub(crate) mod policy;
-pub(crate) mod state;
 
 pub trait TraversalKind: Debug + Default {
     type Trav: HasGraph;

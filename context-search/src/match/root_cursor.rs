@@ -8,13 +8,13 @@ use crate::{
         },
     },
     r#match::iterator::CompareParentBatch,
+    state::end::{
+        EndKind,
+        EndReason,
+        EndState,
+    },
     traversal::{
         policy::DirectedTraversalPolicy,
-        state::end::{
-            EndKind,
-            EndReason,
-            EndState,
-        },
         TraversalKind,
     },
 };
@@ -125,7 +125,7 @@ impl<G: HasGraph> RootCursor<G> {
                 let root_pos = *child_state.root_pos();
                 let path = child_state.rooted_path().clone();
                 let target_index = path.role_leaf_token::<End, _>(&self.trav);
-                let pos = cursor.relative_pos;
+                let pos = cursor.atom_position;
                 let target = DownKey::new(target_index, pos.into());
                 Ok(EndState {
                     cursor,

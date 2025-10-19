@@ -82,7 +82,7 @@ use TraceStep::*;
 #[derive(Debug)]
 pub(crate) enum TraceNode {
     Parent(ParentCompareState),
-    Token(ChildQueue<CompareState>),
+    Child(ChildQueue<CompareState>),
 }
 use TraceNode::*;
 
@@ -94,7 +94,7 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
         match self.0 {
             Parent(parent) => match parent.into_advanced(&self.1) {
                 Ok(state) => PolicyNode::<K>::new(
-                    Token(ChildQueue::from_iter([state.token])),
+                    Child(ChildQueue::from_iter([state.token])),
                     self.1,
                 )
                 .consume(),
@@ -110,14 +110,14 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
                         .collect(),
                 )),
             },
-            Token(queue) => {
+            Child(queue) => {
                 let mut compare_iter =
                     CompareIterator::<&K::Trav>::new(self.1, queue);
                 match compare_iter.next() {
                     Some(Some(TokenMatchState::Match(cs))) => Some(Match(cs)),
                     Some(Some(TokenMatchState::Mismatch(_))) => Some(Pass),
                     Some(None) =>
-                        Some(Append(vec![Token(compare_iter.children.queue)])),
+                        Some(Append(vec![Child(compare_iter.children.queue)])),
                     None => None,
                 }
             },

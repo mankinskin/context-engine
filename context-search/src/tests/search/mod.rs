@@ -6,15 +6,13 @@ pub(crate) mod parent;
 use {
     crate::search::Searchable,
     crate::{
+        cursor::PatternCursor,
         fold::result::FinishedKind,
-        traversal::state::{
-            cursor::PatternCursor,
-            end::{
-                range::RangeEnd,
-                EndKind,
-                EndReason,
-                EndState,
-            },
+        state::end::{
+            range::RangeEnd,
+            EndKind,
+            EndReason,
+            EndState,
         },
     },
     context_trace::tests::env::Env1,
@@ -61,82 +59,56 @@ fn find_sequence() {
 }
 #[test]
 fn find_pattern1() {
-    let mut graph =
+    let mut base_graph =
         context_trace::graph::Hypergraph::<BaseGraphKind>::default();
-    let (a, b, _w, x, y, z) = graph
-        .insert_atoms([
-            Atom::Element('a'),
-            Atom::Element('b'),
-            Atom::Element('w'),
-            Atom::Element('x'),
-            Atom::Element('y'),
-            Atom::Element('z'),
-        ])
-        .into_iter()
-        .next_tuple()
-        .unwrap();
+    insert_atoms!(base_graph, {a, b, x, y, z});
     // index 6
-    let (yz, y_z_id) = graph.insert_pattern_with_id(vec![y, z]);
-    let (xab, x_a_b_id) = graph.insert_pattern_with_id(vec![x, a, b]);
-    let _xyz = graph.insert_pattern(vec![x, yz]);
-    let _xabz = graph.insert_pattern(vec![xab, z]);
-    let (xabyz, xab_yz_id) = graph.insert_pattern_with_id(vec![xab, yz]);
+    insert_patterns!(base_graph,
+        (yz, y_z_id) => [y, z],
+        (xab, x_a_b_id) => [x, a, b],
+    );
+    insert_patterns!(base_graph,
+        _xyz => [x, yz],
+        _xabz => [xab, z],
+    );
+    insert_patterns!(base_graph,
+        (xabyz, xab_yz_id) => [xab, yz]
+    );
 
-    let graph_ref = HypergraphRef::from(graph);
+    let graph_ref = HypergraphRef::from(base_graph);
 
     let query = vec![a, b, y, x];
     let aby_found = graph_ref
         .find_ancestor(query.clone())
         .expect("Search failed");
-    //info!("{:#?}", aby);
+
+    let expected_cache = build_trace_cache!(
+        xab => (
+            BU { 1 => a -> (x_a_b_id, 1) },
+            TD {},
+        ),
+        xabyz => (
+            BU { 2 => xab -> (xab_yz_id, 0) },
+            TD { 2 => yz -> (xab_yz_id, 1) },
+        ),
+        yz => (
+            BU {},
+            TD { 2 => y -> (y_z_id, 0) },
+        ),
+    );
 
     assert_eq!(
-        aby_found.cache.entries[&xab.index],
-        VertexCache {
-            index: xab,
-            bottom_up: FromIterator::from_iter([(
-                1.into(),
-                PositionCache::with_bottom(HashMap::from_iter([(
-                    DirectedKey::up(a, 1),
-                    SubLocation::new(x_a_b_id.unwrap(), 1)
-                )]))
-            )]),
-            top_down: FromIterator::from_iter([]),
-        }
+        aby_found.cache.entries[&xab.index], expected_cache.entries[&xab.index],
+        "xab"
     );
     assert_eq!(
         aby_found.cache.entries[&xabyz.index],
-        VertexCache {
-            index: xabyz,
-            bottom_up: FromIterator::from_iter([(
-                2.into(),
-                PositionCache::with_bottom(HashMap::from_iter([(
-                    DirectedKey::up(xab, 1),
-                    SubLocation::new(xab_yz_id.unwrap(), 0)
-                )]))
-            )]),
-            top_down: FromIterator::from_iter([(
-                2.into(),
-                PositionCache::with_bottom(HashMap::from_iter([(
-                    DirectedKey::down(yz, 2),
-                    SubLocation::new(xab_yz_id.unwrap(), 1)
-                )]))
-            )]),
-        }
+        expected_cache.entries[&xabyz.index],
+        "xabyz"
     );
     assert_eq!(
-        aby_found.cache.entries[&yz.index],
-        VertexCache {
-            index: yz,
-            bottom_up: FromIterator::from_iter([]),
-            top_down: FromIterator::from_iter([(
-                2.into(),
-                PositionCache::with_bottom(HashMap::from_iter([(
-                    DirectedKey::down(y, 2),
-                    SubLocation::new(y_z_id.unwrap(), 0)
-                )]))
-            )]),
-        }
+        aby_found.cache.entries[&yz.index], expected_cache.entries[&yz.index],
+        "yz"
     );
     assert_eq!(aby_found.cache.entries.len(), 5);
     assert_eq!(
@@ -147,15 +119,12 @@ fn find_pattern1() {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
                 path: RootedRangePath::new(
-                    PatternLocation::new(xabyz, xab_yz_id.unwrap()),
+                    PatternLocation::new(xabyz, xab_yz_id),
                     RolePath::new(
                         0,
-                        vec![ChildLocation::new(xab, x_a_b_id.unwrap(), 1)],
+                        vec![ChildLocation::new(xab, x_a_b_id, 1)],
                     ),
-                    RolePath::new(
-                        1,
-                        vec![ChildLocation::new(yz, y_z_id.unwrap(), 0)],
-                    ),
+                    RolePath::new(1, vec![ChildLocation::new(yz, y_z_id, 0)],),
                 ),
             }),
             cursor: PatternCursor {
@@ -163,7 +132,7 @@ fn find_pattern1() {
                     query.clone(),
                     RolePath::new(2, vec![]),
                 ),
-                relative_pos: 3.into(),
+                atom_position: 3.into(),
             },
         }))
     );
