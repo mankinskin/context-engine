@@ -6,7 +6,7 @@ use crate::{
         EndReason,
         EndState,
     },
-    FinishedKind::Complete,
+    CompleteState,
 };
 use context_trace::{
     path::RolePathUtils,
@@ -57,7 +57,7 @@ impl CompareState {
         &self,
         trav: &G,
         mode: PathPairMode,
-    ) -> VecDeque<Self> {
+    ) -> ChildQueue<Self> {
         Self {
             mode,
             ..self.clone()
@@ -74,7 +74,7 @@ impl CompareState {
     pub(crate) fn prefix_states<G: HasGraph>(
         &self,
         trav: &G,
-    ) -> VecDeque<Self> {
+    ) -> ChildQueue<Self> {
         match self.mode {
             GraphMajor => self
                 .child_state
@@ -168,8 +168,8 @@ impl CompareState {
             }
         };
         let cursor = self.cursor;
-        let kind = if let Some(index) = index {
-            Complete(index)
+        let kind = if let Some(_) = index {
+            Complete(CompleteState::new_path(path))
         } else {
             let target = DownKey::new(
                 path.role_leaf_token::<End, _>(trav),
@@ -179,15 +179,15 @@ impl CompareState {
         };
         EndState {
             reason: Mismatch,
-            kind,
             cursor,
+            kind,
         }
     }
 }
 
 impl From<CompareState> for ChildQueue<CompareState> {
     fn from(val: CompareState) -> Self {
-        VecDeque::from_iter([val])
+        ChildQueue::from_iter([val])
     }
 }
 

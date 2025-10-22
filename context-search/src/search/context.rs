@@ -1,5 +1,5 @@
 use crate::{
-    fold::result::FinishedState,
+    state::result::Response,
     traversal::{
         policy::DirectedTraversalPolicy,
         TraversalKind,
@@ -28,11 +28,11 @@ impl<T: HasGraph> DirectedTraversalPolicy for ParentPolicy<T> {
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct SearchCtx<T: HasGraph> {
+pub struct SearchCtx<T: HasGraph> {
     pub(crate) graph: T,
 }
 
-pub(crate) type SearchResult = Result<FinishedState, ErrorReason>;
+pub(crate) type SearchResult = Result<Response, ErrorReason>;
 #[derive(Debug)]
 pub(crate) struct AncestorSearchTraversal<T: HasGraph>(
     std::marker::PhantomData<T>,

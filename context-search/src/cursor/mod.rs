@@ -2,13 +2,13 @@ use context_trace::*;
 pub(crate) mod path;
 pub(crate) mod position;
 
-pub(crate) trait ToCursor: FoldablePath {
+pub(crate) trait ToCursor: StartFoldPath {
     fn to_cursor<G: HasGraph>(
         self,
         trav: &G,
     ) -> PathCursor<Self>;
 }
-impl<P: FoldablePath> ToCursor for P {
+impl<P: StartFoldPath> ToCursor for P {
     fn to_cursor<G: HasGraph>(
         self,
         trav: &G,
@@ -28,13 +28,22 @@ pub struct PathCursor<P> {
 
 pub(crate) type PatternRangeCursor = PathCursor<PatternRangePath>;
 
-pub(crate) type PatternCursor = PathCursor<PatternPostfixPath>;
+pub(crate) type PatternCursor = PathCursor<PatternPrefixPath>;
 
-impl From<PatternRangeCursor> for PatternCursor {
-    fn from(value: PathCursor<PatternRangePath>) -> Self {
+impl<T: Into<PatternRangeCursor>> From<T> for PatternCursor {
+    fn from(value: T) -> Self {
+        let value: PatternRangeCursor = value.into();
         Self {
             path: value.path.into(),
             atom_position: value.atom_position,
+        }
+    }
+}
+impl<P> From<P> for PathCursor<P> {
+    fn from(value: P) -> Self {
+        Self {
+            path: value,
+            atom_position: 0.into(),
         }
     }
 }

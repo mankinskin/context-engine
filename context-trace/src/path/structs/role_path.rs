@@ -5,50 +5,9 @@ use derive_more::{
     DerefMut,
 };
 
-use crate::{
-    EndPath,
-    graph::vertex::location::child::ChildLocation,
-    path::{
-        accessors::{
-            border::PathBorder,
-            child::{
-                LeafToken,
-                LeafTokenPosMut,
-            },
-            has_path::{
-                HasPath,
-                HasRolePath,
-                HasSinglePath,
-            },
-            role::{
-                End,
-                PathRole,
-                Start,
-            },
-        },
-        mutators::{
-            adapters::FromAdvanced,
-            simplify::PathSimplify,
-        },
-        structs::{
-            rooted::{
-                role_path::{
-                    RootChildIndex,
-                    RootChildIndexMut,
-                    RootedRolePath,
-                },
-                root::PathRoot,
-            },
-            sub_path::SubPath,
-        },
-    },
-    trace::has_graph::HasGraph,
-};
+use crate::*;
 
-use crate::path::{
-    RolePathUtils,
-    structs::rooted::index_range::IndexRangePath,
-};
+use crate::path::RolePathUtils;
 
 #[derive(Clone, Debug, PartialEq, Eq, Default, Deref, DerefMut)]
 pub struct RolePath<R: PathRole> {

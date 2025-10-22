@@ -17,10 +17,7 @@ use crate::{
         BaseQuery,
         RolePathUtils,
         accessors::{
-            child::{
-                LeafToken,
-                RootedLeafToken,
-            },
+            child::RootedLeafToken,
             has_path::IntoRootedRolePath,
             role::{
                 End,
@@ -43,7 +40,7 @@ use crate::{
 
 use crate::path::structs::rooted::pattern_range::PatternRangePath;
 
-pub trait FoldablePath:
+pub trait StartFoldPath:
 BaseQuery
 //+ LeafTokenPosMut<End>
 + PathAppend

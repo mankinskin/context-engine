@@ -1,4 +1,3 @@
-use auto_impl::auto_impl;
 use root::RootChild;
 
 pub(crate) mod root;

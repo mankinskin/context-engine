@@ -9,9 +9,9 @@ use crate::{
         getters::ErrorReason,
         kind::GraphKind,
         vertex::{
+            ChildPatterns,
             IndexPosition,
             PatternId,
-            TokenPatterns,
             VertexIndex,
             VertexParents,
             has_vertex_index::{
@@ -62,13 +62,13 @@ use std::{
 use crate::graph::vertex::token::SubToken;
 
 pub(crate) fn clone_child_patterns(
-    tokens: &'_ TokenPatterns
+    tokens: &'_ ChildPatterns
 ) -> impl Iterator<Item = Pattern> + '_ {
     tokens.values().cloned()
 }
 pub(crate) fn localized_children_iter_for_index(
     parent: impl ToToken,
-    tokens: &TokenPatterns,
+    tokens: &ChildPatterns,
 ) -> impl IntoIterator<Item = (ChildLocation, &Token)> {
     let parent = parent.to_child();
     tokens.iter().flat_map(move |(&pid, pat)| {
@@ -90,7 +90,7 @@ pub struct VertexData {
     pub(crate) parents: VertexParents,
 
     #[builder(default)]
-    pub(crate) tokens: TokenPatterns,
+    pub(crate) children: ChildPatterns,
 }
 
 impl VertexData {
@@ -103,7 +103,7 @@ impl VertexData {
             key: VertexKey::default(),
             index,
             parents: VertexParents::default(),
-            tokens: TokenPatterns::default(),
+            children: ChildPatterns::default(),
         }
     }
     pub(crate) fn get_width(&self) -> usize {
@@ -175,7 +175,7 @@ impl VertexData {
         id: &PatternId,
         pos: IndexPosition,
     ) -> Result<&Token, ErrorReason> {
-        self.tokens
+        self.children
             .get(id)
             .and_then(|p| p.get(pos))
             .ok_or(ErrorReason::NoTokenPatterns)
@@ -184,7 +184,7 @@ impl VertexData {
         &self,
         width: NonZeroUsize,
     ) -> Option<(&PatternId, &Pattern)> {
-        self.tokens
+        self.children
             .iter()
             .find(|(_pid, pat)| pat[0].width() == width.get())
     }
@@ -192,13 +192,15 @@ impl VertexData {
         &self,
         id: &PatternId,
     ) -> Result<&Pattern, ErrorReason> {
-        self.tokens.get(id).ok_or(ErrorReason::InvalidPattern(*id))
+        self.children
+            .get(id)
+            .ok_or(ErrorReason::InvalidPattern(*id))
     }
     pub(crate) fn get_child_at(
         &self,
         location: &SubLocation,
     ) -> Result<&Token, ErrorReason> {
-        self.tokens
+        self.children
             .get(&location.pattern_id)
             .ok_or(ErrorReason::InvalidPattern(location.pattern_id))?
             .get(location.sub_index)
@@ -214,7 +216,7 @@ impl VertexData {
         &mut self,
         location: &SubLocation,
     ) -> Result<&mut Token, ErrorReason> {
-        self.tokens
+        self.children
             .get_mut(&location.pattern_id)
             .ok_or(ErrorReason::InvalidPattern(location.pattern_id))?
             .get_mut(location.sub_index)
@@ -245,18 +247,20 @@ impl VertexData {
         &self,
         f: impl FnMut(&(&PatternId, &Pattern)) -> bool,
     ) -> Option<PatternId> {
-        self.tokens.iter().find(f).map(|r| *r.0)
+        self.children.iter().find(f).map(|r| *r.0)
     }
     pub(crate) fn get_child_pattern_mut(
         &mut self,
         id: &PatternId,
     ) -> Result<&mut Pattern, ErrorReason> {
-        self.tokens.get_mut(id).ok_or(ErrorReason::NoTokenPatterns)
+        self.children
+            .get_mut(id)
+            .ok_or(ErrorReason::NoTokenPatterns)
     }
     #[track_caller]
-    pub(crate) fn expect_any_child_pattern(&self) -> (&PatternId, &Pattern) {
-        self.tokens.iter().next().unwrap_or_else(|| {
-            panic!("Pattern vertex has no tokens {:#?}", self,)
+    pub fn expect_any_child_pattern(&self) -> (&PatternId, &Pattern) {
+        self.children.iter().next().unwrap_or_else(|| {
+            panic!("Pattern vertex has no children {:#?}", self,)
         })
     }
     #[track_caller]
@@ -280,16 +284,16 @@ impl VertexData {
             panic!("Token pattern with id {} does not exist in in vertex", id,)
         })
     }
-    pub fn child_patterns(&self) -> &TokenPatterns {
-        &self.tokens
+    pub fn child_patterns(&self) -> &ChildPatterns {
+        &self.children
     }
-    pub fn child_patterns_mut(&mut self) -> &mut TokenPatterns {
-        &mut self.tokens
+    pub fn child_patterns_mut(&mut self) -> &mut ChildPatterns {
+        &mut self.children
     }
     pub(crate) fn child_pattern_iter(
         &'_ self
     ) -> impl Iterator<Item = Pattern> + '_ {
-        clone_child_patterns(&self.tokens)
+        clone_child_patterns(&self.children)
     }
     pub fn child_pattern_set(&self) -> HashSet<Pattern> {
         self.child_pattern_iter().collect()
@@ -305,7 +309,7 @@ impl VertexData {
         if pat.len() < 2 {
             assert!(pat.len() > 1);
         }
-        self.tokens.insert(id, pat.into_pattern());
+        self.children.insert(id, pat.into_pattern());
         self.validate();
     }
     pub(crate) fn add_patterns_no_update(
@@ -316,36 +320,36 @@ impl VertexData {
             if pat.len() < 2 {
                 assert!(pat.len() > 1);
             }
-            self.tokens.insert(id, pat.into_pattern());
+            self.children.insert(id, pat.into_pattern());
         }
         self.validate();
     }
     #[track_caller]
     pub(crate) fn validate_links(&self) {
-        assert!(self.tokens.len() != 1 || self.parents.len() != 1);
+        assert!(self.children.len() != 1 || self.parents.len() != 1);
     }
     #[track_caller]
     pub(crate) fn validate_patterns(&self) {
-        self.tokens.iter().fold(
+        self.children.iter().fold(
             Vec::new(),
             |mut acc: Vec<Vec<usize>>, (pid, p)| {
                 let mut offset = 0;
                 assert!(!p.is_empty(), "Empty pattern in index {:#?}", self.index);
                 let pattern_width = pattern_width(p);
-                assert_eq!(pattern_width, self.width, "Pattern width mismatch in index {:#?} token pattern:\n {:#?}", self.index, (pid, self.tokens.get(pid)));
+                assert_eq!(pattern_width, self.width, "Pattern width mismatch in index {:#?} token pattern:\n {:#?}", self.index, (pid, self.children.get(pid)));
                 let mut p = p.iter().fold(Vec::new(), |mut pa, c| {
                     offset += c.width();
                     assert!(
                         !acc.iter().any(|pr| pr.contains(&offset)),
                         "Duplicate border in index {:#?} token patterns:\n {:#?}",
                         self.index,
-                        self.tokens
+                        self.children
                     );
                     pa.push(offset);
                     pa
                 });
                 p.pop().unwrap();
-                assert!(!p.is_empty(), "Single index pattern in index {:#?}:\n {:#?}", self.index, (pid, self.tokens.get(pid)));
+                assert!(!p.is_empty(), "Single index pattern in index {:#?}:\n {:#?}", self.index, (pid, self.children.get(pid)));
                 acc.push(p);
                 acc
             },
@@ -354,7 +358,7 @@ impl VertexData {
     #[track_caller]
     pub(crate) fn validate(&self) {
         //self.validate_links();
-        if !self.tokens.is_empty() {
+        if !self.children.is_empty() {
             self.validate_patterns();
         }
     }
@@ -523,7 +527,7 @@ impl VertexData {
     //}
     pub(crate) fn largest_postfix(&self) -> (PatternId, Token) {
         let (id, c) = self
-            .tokens
+            .children
             .iter()
             .fold(None, |acc: Option<(&PatternId, &Token)>, (pid, p)| {
                 if let Some(acc) = acc {
@@ -541,15 +545,15 @@ impl VertexData {
         (*id, *c)
     }
     pub(crate) fn all_children_iter(&self) -> impl IntoIterator<Item = &Token> {
-        self.tokens.iter().flat_map(|(_, pat)| pat.iter())
+        self.children.iter().flat_map(|(_, pat)| pat.iter())
     }
     pub(crate) fn all_localized_children_iter(
         &self
     ) -> impl IntoIterator<Item = (ChildLocation, &Token)> {
-        localized_children_iter_for_index(self.to_child(), &self.tokens)
+        localized_children_iter_for_index(self.to_child(), &self.children)
     }
     pub(crate) fn top_down_containment_nodes(&self) -> Vec<(usize, Token)> {
-        self.tokens
+        self.children
             .iter()
             .flat_map(|(_, pat)| {
                 pat.iter()
@@ -564,7 +568,7 @@ impl VertexData {
         &self,
         selector: impl Fn(&PatternId, &Pattern) -> Option<usize>,
     ) -> Vec<SubToken> {
-        self.tokens
+        self.children
             .iter()
             .filter_map(|(pid, child_pattern): (_, &Pattern)| {
                 selector(pid, child_pattern).map(|sub_index| {

@@ -24,7 +24,6 @@ use crate::{
                 Pattern,
                 pattern_width,
             },
-            wide::Wide,
         },
     },
     impl_root,
@@ -54,8 +53,8 @@ use crate::{
         },
         structs::{
             query_range_path::{
-                FoldablePath,
                 RangePath,
+                StartFoldPath,
             },
             role_path::{
                 CalcOffset,
@@ -84,8 +83,8 @@ use crate::{
 };
 
 pub type PatternRangePath = RootedRangePath<Pattern>;
-pub(crate) type PatternPrefixPath = RootedRolePath<Start, Pattern>;
-pub type PatternPostfixPath = RootedRolePath<End, Pattern>;
+pub type PatternPostfixPath = RootedRolePath<Start, Pattern>;
+pub type PatternPrefixPath = RootedRolePath<End, Pattern>;
 
 impl RootChildIndexMut<End> for PatternRangePath {
     fn root_child_index_mut(&mut self) -> &mut usize {
@@ -223,7 +222,7 @@ impl<Root: PathRoot> CalcOffset for RootedRangePath<Root> {
         inner_offset + outer_offsets
     }
 }
-impl FoldablePath for PatternRangePath {
+impl StartFoldPath for PatternRangePath {
     fn to_range_path(self) -> PatternRangePath {
         self
     }

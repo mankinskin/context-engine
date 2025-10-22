@@ -1,19 +1,10 @@
 use crate::{
     path::{
-        accessors::child::{
-            LeafToken,
-            RootedLeafToken,
-        },
+        accessors::child::RootedLeafToken,
         structs::rooted::root::PathRoot,
     },
     *,
 };
-use auto_impl::auto_impl;
-use derive_more::{
-    Deref,
-    DerefMut,
-};
-use std::borrow::Borrow;
 
 pub trait CalcWidth: CalcOffset + RootedPath {
     fn calc_width<G: HasGraph>(

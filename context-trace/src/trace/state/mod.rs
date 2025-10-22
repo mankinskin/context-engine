@@ -9,7 +9,6 @@ use crate::{
     *,
 };
 use parent::ParentState;
-use std::cmp::Ordering;
 
 //pub(crate) trait SearchSpace {
 //    fn expand(&mut self) -> Vec<TraceState<Self>>;

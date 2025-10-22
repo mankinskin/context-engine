@@ -11,7 +11,6 @@ use crate::{
     },
     split::vertex::pattern::HasPatternTraceCtx,
 };
-use context_trace::*;
 
 pub trait TraceBorders<R: RangeRole>: VisitBorders<R> {
     fn inner_info(

@@ -149,7 +149,7 @@ impl GetPatternCtx for NodeJoinCtx<'_> {
     }
 }
 impl NodeJoinCtx<'_> {
-    pub fn patterns(&self) -> &TokenPatterns {
+    pub fn patterns(&self) -> &ChildPatterns {
         self.ctx.trav.expect_child_patterns(self.index)
     }
 }

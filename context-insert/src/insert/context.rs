@@ -44,7 +44,7 @@ impl<R: InsertResult> From<HypergraphRef> for InsertCtx<R> {
 impl<R: InsertResult> InsertCtx<R> {
     pub fn insert(
         &mut self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> Result<R, ErrorState> {
         self.insert_result(foldable)
             .and_then(|res| res.map_err(|root| root.into()))
@@ -62,7 +62,7 @@ impl<R: InsertResult> InsertCtx<R> {
     }
     fn insert_result(
         &mut self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> Result<Result<R, R::Error>, ErrorState> {
         match foldable.fold::<InsertTraversal>(self.graph.clone()) {
             Ok(result) => Ok(match CompleteState::try_from(result) {
@@ -77,7 +77,7 @@ impl<R: InsertResult> InsertCtx<R> {
     }
     pub fn insert_or_get_complete(
         &mut self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> Result<Result<R, R::Error>, ErrorReason> {
         self.insert_result(foldable).map_err(|err| err.reason)
     }

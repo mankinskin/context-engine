@@ -85,13 +85,13 @@ impl PatternLocation {
     //}
     pub(crate) fn get_pattern_in<'a>(
         &self,
-        patterns: &'a crate::graph::vertex::TokenPatterns,
+        patterns: &'a crate::graph::vertex::ChildPatterns,
     ) -> Option<&'a Pattern> {
         patterns.get(&self.pattern_id)
     }
     pub(crate) fn expect_pattern_in<'a>(
         &self,
-        patterns: &'a crate::graph::vertex::TokenPatterns,
+        patterns: &'a crate::graph::vertex::ChildPatterns,
     ) -> &'a Pattern {
         self.get_pattern_in(patterns)
             .expect("Expected Pattern not present in TokenPatterns!")

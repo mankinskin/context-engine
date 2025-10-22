@@ -43,8 +43,8 @@ fn index_pattern1() {
     let byz_found = graph.find_ancestor(&query);
     assert_matches!(
         byz_found,
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == byz,
         "byz"
@@ -54,8 +54,8 @@ fn index_pattern1() {
     let aby_found = graph.find_parent(&query);
     assert_matches!(
         aby_found,
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == aby,
         "aby"
@@ -99,8 +99,8 @@ fn index_pattern2() {
     let aby_found = graph_ref.find_ancestor(&query);
     assert_matches!(
         aby_found,
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == aby,
         "aby"
@@ -141,8 +141,8 @@ fn index_infix1() {
     let aby_found = graph_ref.find_ancestor(&query);
     assert_matches!(
         aby_found,
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == aby,
         "aby"
@@ -229,7 +229,7 @@ fn index_prefix1() {
         (heldld, heldld_id) => [h, e, ld, ld]
     );
     let fold_res =
-        Foldable::fold::<InsertTraversal>(vec![h, e, l, l], graph.clone())
+        StartFold::fold::<InsertTraversal>(vec![h, e, l, l], graph.clone())
             .map(CompleteState::try_from);
     assert_matches!(fold_res, Ok(Err(_)));
     let state = fold_res.unwrap().unwrap_err();
@@ -281,7 +281,7 @@ fn index_postfix1() {
         (ababcd, ababcd_id) => [ab, ab, c, d]
     );
     let fold_res =
-        Foldable::fold::<InsertTraversal>(vec![b, c, d, d], graph.clone())
+        StartFold::fold::<InsertTraversal>(vec![b, c, d, d], graph.clone())
             .map(CompleteState::try_from);
 
     assert_matches!(fold_res, Ok(Err(_)));

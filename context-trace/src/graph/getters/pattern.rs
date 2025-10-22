@@ -11,7 +11,7 @@ use crate::{
         },
         kind::GraphKind,
         vertex::{
-            TokenPatterns,
+            ChildPatterns,
             has_vertex_index::HasVertexIndex,
             location::pattern::IntoPatternLocation,
             pattern::{
@@ -63,15 +63,14 @@ impl<G: GraphKind> Hypergraph<G> {
         location: impl IntoPatternLocation,
     ) -> &mut Pattern {
         let location = location.into_pattern_location();
-        self.get_pattern_mut_at(location.clone())
-            .unwrap_or_else(|_| {
-                panic!("Pattern not found at location {:#?}", location)
-            })
+        self.get_pattern_mut_at(location).unwrap_or_else(|_| {
+            panic!("Pattern not found at location {:#?}", location)
+        })
     }
     pub(crate) fn child_patterns_of(
         &self,
         index: impl GetVertexIndex,
-    ) -> Result<&TokenPatterns, ErrorReason> {
+    ) -> Result<&ChildPatterns, ErrorReason> {
         self.get_vertex(index.get_vertex_index(self))
             .map(|vertex| vertex.child_patterns())
     }
@@ -96,7 +95,7 @@ impl<G: GraphKind> Hypergraph<G> {
     pub fn expect_child_patterns(
         &self,
         index: impl GetVertexIndex,
-    ) -> &TokenPatterns {
+    ) -> &ChildPatterns {
         self.expect_vertex(index.get_vertex_index(self))
             .child_patterns()
     }

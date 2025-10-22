@@ -70,7 +70,7 @@ pub use crate::{
             GraphKind,
         },
         vertex::{
-            TokenPatterns,
+            ChildPatterns,
             VertexIndex,
             atom::{
                 AsAtom,
@@ -161,7 +161,7 @@ pub use crate::{
             simplify::PathSimplify,
         },
         structs::{
-            query_range_path::FoldablePath,
+            query_range_path::StartFoldPath,
             role_path::{
                 CalcOffset,
                 RolePath,
@@ -171,6 +171,7 @@ pub use crate::{
                 index_range::IndexRangePath,
                 pattern_range::{
                     PatternPostfixPath,
+                    PatternPrefixPath,
                     PatternRangePath,
                 },
                 role_path::{
@@ -245,11 +246,37 @@ pub use crate::{
             BaseState,
             HasPrevPos,
             HasRootPos,
+            IntoParentState,
             parent::{
                 ParentBatch,
                 ParentState,
             },
         },
         traceable::Traceable,
+    },
+};
+pub(crate) use crate::{
+    graph::vertex::location::pattern::IntoPatternLocation,
+    path::{
+        accessors::{
+            border::PathBorder,
+            child::{
+                RootedLeafToken,
+                root::PatternRootChild,
+            },
+            has_path::{
+                HasRolePath,
+                HasSinglePath,
+                IntoRolePath,
+            },
+            root::GraphRootPattern,
+        },
+        structs::rooted::{
+            role_path::{
+                RootChildIndexMut,
+                calc::CalcWidth,
+            },
+            root::PathRoot,
+        },
     },
 };

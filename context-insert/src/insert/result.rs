@@ -45,11 +45,11 @@ impl TryInitWith<IndexWithPath> for IndexWithPath {
 //        match value {
 //            ErrorState {
 //                reason: ErrorReason::SingleIndex(c),
-//                found: Some(FinishedKind::Complete(_)),
+//                found: Some(ResponseKind::Complete(_)),
 //            } => Ok(c),
 //            ErrorState {
 //                reason: ErrorReason::SingleIndex(c),
-//                found: Some(FinishedKind::Complete(_)),
+//                found: Some(ResponseKind::Complete(_)),
 //            } => Ok(c),
 //        }
 //    }

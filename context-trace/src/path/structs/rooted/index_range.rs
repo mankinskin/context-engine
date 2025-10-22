@@ -60,7 +60,6 @@ use crate::{
             rooted::{
                 RootedRangePath,
                 role_path::{
-                    IndexRolePath,
                     RootChildIndex,
                     RootChildIndexMut,
                     RootedRolePath,
@@ -107,7 +106,7 @@ impl From<IndexRoot> for IndexRangePath {
         }
     }
 }
-impl_root! { GraphRootPattern for IndexRangePath, self => self.root.location.clone() }
+impl_root! { GraphRootPattern for IndexRangePath, self => self.root.location }
 impl_root! { GraphRoot for IndexRangePath, self => self.root_pattern_location().parent }
 impl_root! { RootPattern for IndexRangePath, self, trav => GraphRootPattern::graph_root_pattern::<G>(self, trav) }
 

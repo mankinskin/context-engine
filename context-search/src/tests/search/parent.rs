@@ -1,10 +1,8 @@
+use crate::CompleteState;
 #[cfg(test)]
 use {
-    crate::fold::result::{
-        FinishedKind,
-        FinishedState,
-    },
     crate::search::Searchable,
+    crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::{
         graph::{
@@ -54,27 +52,29 @@ fn find_parent1() {
     let query = b_c_pattern;
     assert_matches!(
         graph.find_parent(&query),
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
-            ..
-        }) if x == *bc,
+        Ok(Response::Complete(CompleteState {
+                root: x,
+                ..
+            }),
+        ) if x.index == *bc,
         "b_c"
     );
     let query = ab_c_pattern;
     assert_matches!(
         graph.find_parent(&query),
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
-            ..
-        }) if x == *abc,
+        Ok(Response::Complete(CompleteState {
+                root: x,
+                ..
+            }),
+        ) if x.index == *abc,
         "ab_c"
     );
     // enable when bfs for parent-token batches is implemented
     //let query = a_bc_pattern;
     //assert_matches!(
     //    graph.find_parent(&query),
-    //    Ok(FinishedState {
-    //        kind: FinishedKind::Complete(x),
+    //    Ok(Response {
+    //        kind: ResponseKind::Complete(x),
     //        ..
     //    }) if x == *abc,
     //    "a_bc"
@@ -82,8 +82,8 @@ fn find_parent1() {
     //let query = a_bc_d_pattern;
     //assert_matches!(
     //    graph.find_parent(&query),
-    //    Ok(FinishedState {
-    //        kind: FinishedKind::Complete(x),
+    //    Ok(Response {
+    //        kind: ResponseKind::Complete(x),
     //        ..
     //    }) if x == *abc,
     //    "a_bc_d"
@@ -91,8 +91,8 @@ fn find_parent1() {
     //let query = a_b_c_pattern.clone();
     //assert_matches!(
     //    graph.find_parent(&query),
-    //    Ok(FinishedState {
-    //        kind: FinishedKind::Complete(x),
+    //    Ok(Response {
+    //        kind: ResponseKind::Complete(x),
     //        ..
     //    }) if x == *abc,
     //    "a_b_c"
@@ -100,8 +100,8 @@ fn find_parent1() {
     //let query = [&a_b_c_pattern[..], &[Token::new(c, 1)]].concat();
     //assert_matches!(
     //    graph.find_parent(&query),
-    //    Ok(FinishedState {
-    //        kind: FinishedKind::Complete(x),
+    //    Ok(Response {
+    //        kind: ResponseKind::Complete(x),
     //        ..
     //    }) if x == *abc,
     //    "a_b_c_c"

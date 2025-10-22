@@ -1,8 +1,4 @@
-use std::collections::VecDeque;
-
 use crate::{
-    compare::parent::ParentCompareState,
-    cursor::PatternCursor,
     r#match::{
         MatchCtx,
         RootSearchIterator,
@@ -12,32 +8,8 @@ use crate::{
     traversal::TraversalKind,
 };
 use context_trace::*;
-use derive_more::{
-    Deref,
-    DerefMut,
-};
 use derive_new::new;
 use tracing::debug;
-
-#[derive(Debug, Clone, Deref, DerefMut)]
-pub(crate) struct CompareParentBatch {
-    #[deref]
-    #[deref_mut]
-    pub(crate) batch: ParentBatch,
-    pub(crate) cursor: PatternCursor,
-}
-impl CompareParentBatch {
-    pub(crate) fn into_compare_batch(self) -> VecDeque<ParentCompareState> {
-        self.batch
-            .parents
-            .into_iter()
-            .map(|parent_state| ParentCompareState {
-                parent_state,
-                cursor: self.cursor.clone(),
-            })
-            .collect()
-    }
-}
 
 #[derive(Debug, new)]
 pub(crate) struct MatchIterator<K: TraversalKind>(

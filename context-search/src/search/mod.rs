@@ -1,4 +1,4 @@
-use crate::fold::foldable::Foldable;
+use crate::fold::foldable::StartFold;
 use context::{
     AncestorSearchTraversal,
     ParentSearchTraversal,
@@ -22,7 +22,7 @@ pub trait Searchable: HasGraph {
     // find largest matching direct parent
     fn find_parent(
         &self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> SearchResult {
         foldable
             .fold::<ParentSearchTraversal<Self>>(self.ctx())
@@ -31,7 +31,7 @@ pub trait Searchable: HasGraph {
     /// find largest matching ancestor for pattern
     fn find_ancestor(
         &self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> SearchResult {
         foldable
             .fold::<AncestorSearchTraversal<Self>>(self.ctx())

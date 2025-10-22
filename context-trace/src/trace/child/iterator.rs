@@ -3,11 +3,28 @@ use std::{
     fmt::Debug,
 };
 
+use derive_more::{
+    Deref,
+    DerefMut,
+    From,
+    IntoIterator,
+};
+
 use crate::*;
 
-pub type ChildQueue<S = ChildState> = VecDeque<S>;
+#[derive(Debug, Clone, Default, Deref, DerefMut, IntoIterator, From)]
+pub struct ChildQueue<S> {
+    queue: VecDeque<S>,
+}
+impl<S> FromIterator<S> for ChildQueue<S> {
+    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+        Self {
+            queue: VecDeque::from_iter(iter),
+        }
+    }
+}
 
-impl From<ChildState> for ChildQueue {
+impl From<ChildState> for ChildQueue<ChildState> {
     fn from(state: ChildState) -> Self {
         FromIterator::from_iter([state])
     }

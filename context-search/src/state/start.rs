@@ -2,18 +2,18 @@ use crate::{
     cursor::PatternCursor,
     fold::{
         foldable::ErrorState,
-        result::FinishedKind,
+        FoldCtx,
     },
-    r#match::iterator::CompareParentBatch,
+    r#match::root_cursor::CompareParentBatch,
     traversal::{
         policy::DirectedTraversalPolicy,
         TraversalKind,
+        TryIntoTraversalCtx,
     },
+    CompleteState,
+    Response,
 };
-use context_trace::{
-    trace::state::IntoParentState,
-    *,
-};
+use context_trace::*;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct StartCtx<K: TraversalKind> {
@@ -51,7 +51,7 @@ impl<K: TraversalKind> StartCtx<K> {
                     index: self.index,
                     path: self.cursor.path.clone().into(),
                 })),
-                found: Some(FinishedKind::Complete(self.index)),
+                found: None,
             })
         }
     }

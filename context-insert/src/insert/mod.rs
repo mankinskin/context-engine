@@ -13,7 +13,7 @@ pub trait ToInsertCtx<R: InsertResult = Token>: HasGraphMut {
 
     fn insert(
         &self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> Result<R, ErrorState> {
         self.insert_context().insert(foldable)
     }
@@ -26,7 +26,7 @@ pub trait ToInsertCtx<R: InsertResult = Token>: HasGraphMut {
     }
     fn insert_or_get_complete(
         &self,
-        foldable: impl Foldable,
+        foldable: impl StartFold,
     ) -> Result<Result<R, R::Error>, ErrorReason> {
         self.insert_context().insert_or_get_complete(foldable)
     }

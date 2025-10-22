@@ -8,6 +8,7 @@ pub(crate) mod vertex;
 use std::borrow::Borrow;
 
 use crate::{
+    IndexRangePath,
     graph::{
         Hypergraph,
         kind::GraphKind,

@@ -26,22 +26,21 @@ pub(crate) mod tests;
 
 pub use crate::{
     container::bft::BftQueue,
-    fold::{
-        complete::UnwrapComplete,
-        foldable::{
-            ErrorState,
-            Foldable,
-        },
-        result::{
-            CompleteState,
-            FinishedKind,
-            FinishedState,
-            IncompleteState,
-        },
+    fold::foldable::{
+        ErrorState,
+        StartFold,
     },
     search::{
         context::AncestorPolicy,
         Searchable,
+    },
+    state::{
+        complete::UnwrapComplete,
+        result::{
+            CompleteState,
+            IncompleteState,
+            Response,
+        },
     },
     traversal::TraversalKind,
 };

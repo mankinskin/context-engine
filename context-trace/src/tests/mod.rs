@@ -45,7 +45,7 @@ macro_rules! assert_not_indices {
         assert_matches!(
             $graph
             .find_sequence(stringify!($name).chars()),
-            Err(_) | Ok(FinishedState { kind: FinishedKind::Incomplete(_), .. })
+            Err(_) | Ok(Response { kind: ResponseKind::Incomplete(_), .. })
         );
         )*
     };

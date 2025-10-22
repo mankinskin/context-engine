@@ -14,7 +14,7 @@ use derive_new::new;
 /// for insert
 #[derive(Debug, Clone, Copy, new)]
 pub struct NodeTraceCtx<'p> {
-    pub(crate) patterns: &'p TokenPatterns,
+    pub(crate) patterns: &'p ChildPatterns,
     pub(crate) index: Token,
 }
 

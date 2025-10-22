@@ -62,7 +62,10 @@ impl<K: TraversalKind> Iterator for RootSearchIterator<'_, K> {
                 Some(None)
             },
             Some(Match(cs)) => {
+                // forgetting other paths here
+                // we might want to trace them later
                 self.ctx.nodes.clear();
+
                 Some(Some(cs))
             },
             Some(Pass) => Some(None),
@@ -85,19 +88,30 @@ pub(crate) enum TraceNode {
     Child(ChildQueue<CompareState>),
 }
 use TraceNode::*;
-
 #[derive(Debug, new)]
 struct PolicyNode<'a, K: TraversalKind>(TraceNode, &'a K::Trav);
 
 impl<K: TraversalKind> PolicyNode<'_, K> {
+    fn compare_next(
+        trav: &K::Trav,
+        queue: ChildQueue<CompareState>,
+    ) -> Option<TraceStep> {
+        let mut compare_iter = CompareIterator::<&K::Trav>::new(trav, queue);
+        match compare_iter.next() {
+            Some(Some(TokenMatchState::Match(cs))) => Some(Match(cs)),
+            Some(Some(TokenMatchState::Mismatch(_))) => Some(Pass),
+            Some(None) =>
+                Some(Append(vec![Child(compare_iter.children.queue)])),
+            None => None,
+        }
+    }
     fn consume(self) -> Option<TraceStep> {
         match self.0 {
             Parent(parent) => match parent.into_advanced(&self.1) {
-                Ok(state) => PolicyNode::<K>::new(
-                    Child(ChildQueue::from_iter([state.token])),
+                Ok(state) => Self::compare_next(
                     self.1,
-                )
-                .consume(),
+                    ChildQueue::from_iter([state.token]),
+                ),
                 Err(parent) => Some(Append(
                     K::Policy::next_batch(self.1, &parent)
                         .into_iter()
@@ -110,17 +124,7 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
                         .collect(),
                 )),
             },
-            Child(queue) => {
-                let mut compare_iter =
-                    CompareIterator::<&K::Trav>::new(self.1, queue);
-                match compare_iter.next() {
-                    Some(Some(TokenMatchState::Match(cs))) => Some(Match(cs)),
-                    Some(Some(TokenMatchState::Mismatch(_))) => Some(Pass),
-                    Some(None) =>
-                        Some(Append(vec![Child(compare_iter.children.queue)])),
-                    None => None,
-                }
-            },
+            Child(queue) => Self::compare_next(self.1, queue),
         }
     }
 }

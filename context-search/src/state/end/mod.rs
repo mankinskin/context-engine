@@ -15,6 +15,7 @@ use range::RangeEnd;
 use crate::{
     compare::parent::ParentCompareState,
     cursor::PatternCursor,
+    CompleteState,
 };
 
 pub(crate) mod postfix;
@@ -26,7 +27,7 @@ pub(crate) enum EndKind {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
-    Complete(Token),
+    Complete(CompleteState),
 }
 impl EndKind {
     pub(crate) fn from_range_path<G: HasGraph>(
@@ -44,7 +45,8 @@ impl EndKind {
             path.is_at_border::<_, End>(trav.graph()),
             path.raw_child_path::<End>().is_empty(),
         ) {
-            (true, true, true, true) => EndKind::Complete(path.root_parent()),
+            (true, true, true, true) =>
+                EndKind::Complete(CompleteState::new_path(path)),
             (true, true, false, _) | (true, true, true, false) =>
                 EndKind::Prefix(PrefixEnd {
                     path: path.into(),
@@ -71,7 +73,7 @@ impl EndKind {
             path.is_at_border::<_, Start>(trav.graph()),
             path.raw_child_path().is_empty(),
         ) {
-            (true, true) => EndKind::Complete(path.root_parent()),
+            (true, true) => EndKind::Complete(CompleteState::new_path(path)),
             _ => EndKind::Postfix(PostfixEnd { path, root_pos }),
         }
     }
@@ -86,36 +88,15 @@ pub(crate) enum EndReason {
 // - top down match-query end
 // - bottom up-no matching parents
 
-#[derive(Clone, Debug)]
-pub(crate) struct TraceStart<'a>(pub(crate) &'a EndState, pub(crate) usize);
-
-impl Traceable for TraceStart<'_> {
-    fn trace<G: HasGraph>(
-        self,
-        ctx: &mut TraceCtx<G>,
-    ) {
-        if let Some(mut p) = match self.0.kind.clone() {
-            EndKind::Postfix(p) => Some(p),
-            EndKind::Range(p) => Some(PostfixEnd {
-                path: p.path.into_rooted_role_path(),
-                root_pos: p.root_pos,
-            }),
-            _ => None,
-        } {
-            p.rooted_role_path_mut().drain(0..self.1);
-            p.trace(ctx);
-        }
-    }
-}
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EndState {
     pub(crate) reason: EndReason,
     pub(crate) kind: EndKind,
-    pub cursor: PatternCursor,
+    pub(crate) cursor: PatternCursor,
 }
-impl_cursor_pos! {
-    CursorPosition for EndState, self => self.cursor.atom_position
-}
+// impl_cursor_pos! {
+//     CursorPosition for EndState, self => self.cursor.atom_position
+// }
 
 impl Traceable for &EndState {
     fn trace<G: HasGraph>(
@@ -210,7 +191,7 @@ impl TargetKey for EndState {
             EndKind::Range(p) => p.target.into(),
             EndKind::Postfix(_) => self.root_key().into(),
             EndKind::Prefix(p) => p.target.into(),
-            EndKind::Complete(c) => DirectedKey::up(*c, *self.cursor_pos()),
+            EndKind::Complete(c) => c.target_key(),
         }
     }
 }
@@ -222,7 +203,7 @@ impl RootKey for EndState {
                 EndKind::Range(s) => s.path.root_parent(),
                 EndKind::Postfix(p) => p.path.root_parent(),
                 EndKind::Prefix(p) => p.path.root_parent(),
-                EndKind::Complete(c) => *c,
+                EndKind::Complete(c) => c.path.root_parent(),
             },
             match &self.kind {
                 EndKind::Range(s) => s.root_pos.into(),
@@ -235,7 +216,7 @@ impl RootKey for EndState {
 }
 impl_root! { GraphRoot for EndState, self =>
     match &self.kind {
-        EndKind::Complete(c) => *c,
+        EndKind::Complete(c) => c.path.root_parent(),
         EndKind::Range(p) => p.path.root_parent(),
         EndKind::Postfix(p) => p.path.root_parent(),
         EndKind::Prefix(p) => p.path.root_parent(),

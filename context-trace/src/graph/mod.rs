@@ -28,12 +28,12 @@ use serde::{
 use vertex::{
     VertexIndex,
     atom::Atom,
-    token::Token,
     has_vertex_index::{
         HasVertexIndex,
         ToToken,
     },
     pattern::IntoPattern,
+    token::Token,
     wide::Wide,
 };
 
@@ -199,7 +199,7 @@ impl<G: GraphKind> Hypergraph<G> {
     ) {
         //let root = index.index();
         let data = self.expect_vertex(index.vertex_index());
-        data.tokens.iter().fold(
+        data.children.iter().fold(
             Vec::new(),
             |mut acc: Vec<vertex::VertexIndex>, (_pid, p)| {
                 assert!(!p.is_empty());

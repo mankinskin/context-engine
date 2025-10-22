@@ -28,7 +28,6 @@ use crate::{
         },
     },
 };
-use context_trace::*;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Trace;

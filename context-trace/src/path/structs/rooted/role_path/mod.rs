@@ -8,79 +8,7 @@ use derive_more::{
 };
 use std::borrow::Borrow;
 
-use crate::{
-    EndPath,
-    HasEndPath,
-    HasStartPath,
-    RolePathUtils,
-    StartPath,
-    graph::{
-        getters::ErrorReason,
-        vertex::{
-            location::{
-                child::ChildLocation,
-                pattern::{
-                    IntoPatternLocation,
-                    PatternLocation,
-                },
-            },
-            pattern::{
-                IntoPattern,
-                Pattern,
-            },
-            token::Token,
-            wide::Wide,
-        },
-    },
-    impl_root_child,
-    path::{
-        accessors::{
-            child::{
-                LeafToken,
-                RootedLeafToken,
-                root::{
-                    GraphRootChild,
-                    PatternRootChild,
-                },
-            },
-            has_path::{
-                HasPath,
-                HasRolePath,
-                HasSinglePath,
-                IntoRolePath,
-            },
-            role::{
-                End,
-                PathRole,
-                Start,
-            },
-            root::{
-                GraphRoot,
-                GraphRootPattern,
-                RootPattern,
-            },
-        },
-        structs::{
-            query_range_path::FoldablePath,
-            role_path::{
-                CalcOffset,
-                RolePath,
-            },
-            rooted::{
-                RootedRangePath,
-                pattern_range::PatternRangePath,
-                role_path::calc::CalcWidth,
-                root::{
-                    IndexRoot,
-                    PathRoot,
-                    RootedPath,
-                },
-            },
-            sub_path::SubPath,
-        },
-    },
-    trace::has_graph::HasGraph,
-};
+use crate::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deref, DerefMut)]
 pub struct RootedRolePath<R: PathRole, Root: PathRoot> {
@@ -97,6 +25,14 @@ impl<Root: PathRoot, R: PathRole> RootedRolePath<R, Root> {
         Self {
             root: root.into(),
             role_path,
+        }
+    }
+}
+impl<Root: PathRoot, R: PathRole> From<Root> for RootedRolePath<R, Root> {
+    fn from(root: Root) -> Self {
+        Self {
+            root,
+            role_path: Default::default(),
         }
     }
 }
@@ -383,7 +319,7 @@ impl RootChildIndex<Start> for PatternEndPath {
 
 impl_root_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
 
-impl FoldablePath for PatternEndPath {
+impl StartFoldPath for PatternEndPath {
     fn to_range_path(self) -> PatternRangePath {
         self.into_range(0)
     }

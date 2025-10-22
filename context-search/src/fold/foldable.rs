@@ -8,24 +8,26 @@ use crate::{
         ToCursor,
     },
     fold::{
-        result::{
-            FinishedKind,
-            FinishedState,
-        },
         FoldCtx,
         IntoFoldCtx,
     },
-    state::start::StartCtx,
-    traversal::TraversalKind,
+    state::{
+        result::Response,
+        start::StartCtx,
+    },
+    traversal::{
+        TraversalKind,
+        TryIntoTraversalCtx,
+    },
 };
 use std::fmt::Debug;
 
-pub(crate) type FoldResult = Result<FinishedState, ErrorState>;
+pub(crate) type FoldResult = Result<Response, ErrorState>;
 
 #[derive(Debug, new)]
 pub struct ErrorState {
     pub reason: ErrorReason,
-    pub found: Option<FinishedKind>,
+    pub found: Option<Response>,
 }
 impl From<ErrorReason> for ErrorState {
     fn from(reason: ErrorReason) -> Self {
@@ -42,92 +44,95 @@ impl From<IndexWithPath> for ErrorState {
 }
 
 pub trait Foldable: Sized {
-    fn to_fold_context<K: TraversalKind>(
+    fn to_fold_ctx<K: TraversalKind>(self) -> FoldCtx<K>;
+    fn fold<K: TraversalKind>(self) -> Response {
+        self.to_fold_ctx::<K>().fold()
+    }
+}
+pub trait StartFold: Sized {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState>;
-
     fn fold<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FinishedState, ErrorState> {
-        self.to_fold_context::<K>(trav).and_then(|ctx| ctx.fold())
+    ) -> Result<Response, ErrorState> {
+        self.start_fold::<K>(trav).map(|ctx| ctx.fold())
     }
 }
 
-impl<const N: usize> Foldable for &'_ [Token; N] {
-    fn to_fold_context<K: TraversalKind>(
+impl<T: StartFold + Clone> StartFold for &T {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).to_fold_context::<K>(trav)
-    }
-}
-impl Foldable for &'_ [Token] {
-    fn to_fold_context<K: TraversalKind>(
-        self,
-        trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).to_fold_context::<K>(trav)
-    }
-}
-impl Foldable for &'_ Pattern {
-    fn to_fold_context<K: TraversalKind>(
-        self,
-        trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).to_fold_context::<K>(trav)
-    }
-}
-impl Foldable for Pattern {
-    fn to_fold_context<K: TraversalKind>(
-        self,
-        trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).to_fold_context::<K>(trav)
+        self.clone().start_fold(trav)
     }
 }
 
-impl Foldable for PatternEndPath {
-    fn to_fold_context<K: TraversalKind>(
+impl<const N: usize> StartFold for &'_ [Token; N] {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        self.to_range_path()
-            .to_cursor(&trav)
-            .to_fold_context::<K>(trav)
+        PatternRangePath::from(self).start_fold::<K>(trav)
     }
 }
-impl Foldable for PatternRangePath {
-    fn to_fold_context<K: TraversalKind>(
+impl StartFold for &'_ [Token] {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        self.to_range_path()
-            .to_cursor(&trav)
-            .to_fold_context::<K>(trav)
+        PatternRangePath::from(self).start_fold::<K>(trav)
     }
 }
-impl Foldable for PatternRangeCursor {
-    fn to_fold_context<K: TraversalKind>(
+impl StartFold for Pattern {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternCursor::from(self).to_fold_context(trav)
+        PatternRangePath::from(self).start_fold::<K>(trav)
     }
 }
 
-impl Foldable for PatternCursor {
-    fn to_fold_context<K: TraversalKind>(
+impl StartFold for PatternEndPath {
+    fn start_fold<K: TraversalKind>(
+        self,
+        trav: K::Trav,
+    ) -> Result<FoldCtx<K>, ErrorState> {
+        self.to_range_path().to_cursor(&trav).start_fold::<K>(trav)
+    }
+}
+impl StartFold for PatternRangePath {
+    fn start_fold<K: TraversalKind>(
+        self,
+        trav: K::Trav,
+    ) -> Result<FoldCtx<K>, ErrorState> {
+        self.to_range_path().to_cursor(&trav).start_fold::<K>(trav)
+    }
+}
+impl StartFold for PatternRangeCursor {
+    fn start_fold<K: TraversalKind>(
+        self,
+        trav: K::Trav,
+    ) -> Result<FoldCtx<K>, ErrorState> {
+        PatternCursor::from(self).start_fold(trav)
+    }
+}
+
+impl StartFold for PatternCursor {
+    fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
         let start_index = self.path.start_index(&trav);
-        StartCtx {
+        let tctx = StartCtx {
             index: start_index,
             cursor: self,
             trav,
         }
-        .into_fold_context()
+        .try_into_traversal_context()?;
+        Ok(FoldCtx { start_index, tctx })
     }
 }

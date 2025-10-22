@@ -7,7 +7,7 @@ use crate::{
             TokenMatchState::*,
         },
     },
-    r#match::iterator::CompareParentBatch,
+    cursor::PatternCursor,
     state::end::{
         EndKind,
         EndReason,
@@ -22,10 +22,14 @@ use context_trace::{
     path::RolePathUtils,
     *,
 };
-use std::collections::VecDeque;
 pub(crate) type CompareQueue = VecDeque<CompareState>;
 
+use derive_more::{
+    Deref,
+    DerefMut,
+};
 use std::{
+    collections::VecDeque,
     fmt::Debug,
     ops::ControlFlow::{
         self,
@@ -137,5 +141,25 @@ impl<G: HasGraph> RootCursor<G> {
             },
             None => Err(self),
         }
+    }
+}
+
+#[derive(Debug, Clone, Deref, DerefMut)]
+pub(crate) struct CompareParentBatch {
+    #[deref]
+    #[deref_mut]
+    pub(crate) batch: ParentBatch,
+    pub(crate) cursor: PatternCursor,
+}
+impl CompareParentBatch {
+    pub(crate) fn into_compare_batch(self) -> VecDeque<ParentCompareState> {
+        self.batch
+            .parents
+            .into_iter()
+            .map(|parent_state| ParentCompareState {
+                parent_state,
+                cursor: self.cursor.clone(),
+            })
+            .collect()
     }
 }

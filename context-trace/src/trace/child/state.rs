@@ -55,7 +55,6 @@ use std::{
     cmp::Ordering,
     collections::VecDeque,
     fmt::Debug,
-    ops::Index,
 };
 
 //impl_cursor_pos! {

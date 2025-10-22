@@ -2,7 +2,7 @@ use crate::cursor::PathCursor;
 use context_trace::*;
 
 impl_cursor_pos! {
-    <R: FoldablePath> CursorPosition for PathCursor<R>, self => self.atom_position
+    <R: StartFoldPath> CursorPosition for PathCursor<R>, self => self.atom_position
 }
 impl<D: Direction, P> MoveKey<D> for PathCursor<P>
 where

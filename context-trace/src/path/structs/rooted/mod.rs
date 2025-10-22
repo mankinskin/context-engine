@@ -9,6 +9,7 @@ use crate::{
     HasEndPath,
     HasPath,
     HasStartPath,
+    RootChildIndex,
     StartPath,
     path::{
         accessors::{
@@ -25,6 +26,7 @@ use crate::{
                 role_path::{
                     PatternStartPath,
                     RootedEndPath,
+                    RootedStartPath,
                 },
             },
         },
@@ -53,6 +55,16 @@ impl<Root: PathRoot> RootedRangePath<Root> {
             end,
         }
     }
+    pub fn new_path<O: PathRoot>(
+        root: impl Into<Root>,
+        path: impl Into<RootedRangePath<O>>,
+    ) -> Self {
+        let path = path.into();
+        Self::new(root, path.start, path.end)
+    }
+    pub fn new_empty<O: PathRoot + Into<Root>>(root: O) -> Self {
+        Self::new(root.into(), Default::default(), Default::default())
+    }
 }
 impl<R: PathRoot> RootedPath for RootedRangePath<R> {
     type Root = R;
@@ -69,11 +81,11 @@ impl<R: PathRoot> From<RootedEndPath<R>> for RootedRangePath<R> {
         }
     }
 }
-impl From<PatternStartPath> for PatternRangePath {
-    fn from(value: PatternStartPath) -> Self {
+impl<R: PathRoot> From<RootedStartPath<R>> for RootedRangePath<R> {
+    fn from(value: RootedStartPath<R>) -> Self {
         Self {
+            end: RolePath::new_empty(value.role_path.root_child_index()),
             start: value.role_path,
-            end: RolePath::new_empty(value.root.len()),
             root: value.root,
         }
     }

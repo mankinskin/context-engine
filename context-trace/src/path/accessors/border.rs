@@ -19,7 +19,7 @@ use crate::{
 pub(crate) trait RelativeDirection: PatternDirection {}
 
 #[derive(Default, Debug, Clone, Copy)]
-pub(crate) struct Front;
+pub struct Front;
 
 impl Direction for Front {
     type Opposite = Back;
@@ -38,7 +38,7 @@ impl PatternDirection for Front {
 }
 
 #[derive(Default, Debug, Clone, Copy)]
-pub(crate) struct Back;
+pub struct Back;
 
 impl RelativeDirection for Back {}
 
@@ -58,15 +58,9 @@ impl PatternDirection for Back {
     }
 }
 
-pub(crate) trait PathBorder {
+pub trait PathBorder {
     type BorderDirection: PatternDirection;
 
-    //fn pattern_entry_outer_pos<P: IntoPattern>(pattern: P, entry: usize) -> Option<usize> {
-    //    <Self::BorderDirection as RelativeDirection<D>>::Direction::pattern_index_next(pattern, entry)
-    //}
-    //fn pattern_outer_pos<P: IntoPattern>(&self, pattern: P) -> Option<usize> {
-    //    Self::pattern_entry_outer_pos(pattern, <_ as GraphRootChild<R>>::root_child_location(self).sub_index)
-    //}
     fn is_at_border<G: HasGraph>(
         trav: G,
         location: ChildLocation,
@@ -79,6 +73,12 @@ pub(crate) trait PathBorder {
         )
         .is_none()
     }
+    //fn pattern_entry_outer_pos<P: IntoPattern>(pattern: P, entry: usize) -> Option<usize> {
+    //    <Self::BorderDirection as RelativeDirection<D>>::Direction::pattern_index_next(pattern, entry)
+    //}
+    //fn pattern_outer_pos<P: IntoPattern>(&self, pattern: P) -> Option<usize> {
+    //    Self::pattern_entry_outer_pos(pattern, <_ as GraphRootChild<R>>::root_child_location(self).sub_index)
+    //}
     //fn is_complete_in_pattern<P: IntoPattern>(&self, pattern: P) -> bool {
     //    self.single_path().is_empty() && self.is_at_pattern_border(pattern)
     //}

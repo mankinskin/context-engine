@@ -7,7 +7,7 @@ use crate::{
         pattern::PatternDirection,
     },
     graph::vertex::{
-        TokenPatterns,
+        ChildPatterns,
         has_vertex_index::HasVertexIndex,
         location::{
             PatternId,
@@ -112,14 +112,14 @@ impl ChildLocation {
     }
     pub(crate) fn get_child_in<'a>(
         &self,
-        patterns: &'a TokenPatterns,
+        patterns: &'a ChildPatterns,
     ) -> Option<&'a Token> {
         self.get_pattern_in(patterns)
             .and_then(|p| self.get_child_in_pattern(p))
     }
     pub(crate) fn expect_child_in<'a>(
         &self,
-        patterns: &'a TokenPatterns,
+        patterns: &'a ChildPatterns,
     ) -> &'a Token {
         self.get_child_in(patterns)
             .expect("Expected Token not present in TokenPatterns!")
@@ -139,13 +139,13 @@ impl ChildLocation {
     }
     pub(crate) fn get_pattern_in<'a>(
         &self,
-        patterns: &'a TokenPatterns,
+        patterns: &'a ChildPatterns,
     ) -> Option<&'a Pattern> {
         patterns.get(&self.pattern_id)
     }
     pub(crate) fn expect_pattern_in<'a>(
         &self,
-        patterns: &'a TokenPatterns,
+        patterns: &'a ChildPatterns,
     ) -> &'a Pattern {
         self.get_pattern_in(patterns)
             .expect("Expected Pattern not present in TokenPatterns!")

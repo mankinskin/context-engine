@@ -7,7 +7,6 @@ use {
     crate::search::Searchable,
     crate::{
         cursor::PatternCursor,
-        fold::result::FinishedKind,
         state::end::{
             range::RangeEnd,
             EndKind,
@@ -18,7 +17,6 @@ use {
     context_trace::tests::env::Env1,
 
     context_trace::*,
-    itertools::*,
     pretty_assertions::assert_eq,
 
     std::iter::FromIterator,
@@ -44,7 +42,7 @@ fn find_sequence() {
     let abc_found = graph.find_ancestor(&query);
     assert_eq!(
         abc_found.map(|r| r.kind),
-        Ok(FinishedKind::Complete(*abc)),
+        Ok(ResponseKind::Complete(*abc)),
         "abc"
     );
     let query = graph
@@ -53,7 +51,7 @@ fn find_sequence() {
     let ababababcdefghi_found = graph.find_ancestor(&query);
     assert_eq!(
         ababababcdefghi_found.map(|r| r.kind),
-        Ok(FinishedKind::Complete(*ababababcdefghi)),
+        Ok(ResponseKind::Complete(*ababababcdefghi)),
         "ababababcdefghi"
     );
 }
@@ -113,7 +111,7 @@ fn find_pattern1() {
     assert_eq!(aby_found.cache.entries.len(), 5);
     assert_eq!(
         aby_found.kind,
-        FinishedKind::Incomplete(Box::new(EndState {
+        ResponseKind::Incomplete(Box::new(EndState {
             reason: EndReason::Mismatch,
             kind: EndKind::Range(RangeEnd {
                 root_pos: 2.into(),

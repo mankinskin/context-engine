@@ -1,5 +1,4 @@
 use crate::{
-    IndexRoot,
     direction::{
         Direction,
         pattern::PatternDirection,
@@ -7,12 +6,12 @@ use crate::{
     graph::{
         kind::DirectionOf,
         vertex::{
-            token::Token,
             has_vertex_index::ToToken,
             location::{
                 child::ChildLocation,
                 pattern::PatternLocation,
             },
+            token::Token,
         },
     },
     path::{

@@ -1,13 +1,9 @@
-use crate::insert_atoms;
 #[cfg(test)]
-use {
-    crate::graph::{
-        Hypergraph,
-        kind::BaseGraphKind,
-        vertex::atom::Atom,
-    },
-    itertools::Itertools,
+use crate::graph::{
+    Hypergraph,
+    kind::BaseGraphKind,
 };
+use crate::insert_atoms;
 
 #[macro_export]
 macro_rules! insert_patterns {

@@ -1,11 +1,10 @@
 #[cfg(test)]
 use {
-    crate::fold::result::{
-        FinishedKind,
-        FinishedState,
-    },
+    crate::cursor::PatternCursor,
     crate::search::Searchable,
+    crate::state::result::Response,
     context_trace::tests::env::Env1,
+    context_trace::PatternPrefixPath,
     context_trace::{
         graph::vertex::token::Token,
 
@@ -39,19 +38,22 @@ fn find_consecutive1() {
         Token::new(c, 1),
     ];
 
-    let query = g_h_i_a_b_c_pattern;
+    let query =
+        PatternCursor::from(PatternPrefixPath::from(g_h_i_a_b_c_pattern));
+    let fin = graph.find_ancestor(&query);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        fin,
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == *ghi,
         "+g_h_i_a_b_c"
     );
+    let query = fin.unwrap().cursor;
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(FinishedState {
-            kind: FinishedKind::Complete(x),
+        graph.find_ancestor(query),
+        Ok(Response {
+            kind: ResponseKind::Complete(x),
             ..
         }) if x == *abc,
         "g_h_i_+a_b_c"

@@ -1,5 +1,3 @@
-use derive_more::Deref;
-
 use crate::{
     graph::vertex::location::child::ChildLocation,
     impl_root,
@@ -11,10 +9,7 @@ use crate::{
         },
         structs::{
             rooted::{
-                role_path::{
-                    RootChildIndex,
-                    RootedRolePath,
-                },
+                role_path::RootChildIndex,
                 root::{
                     IndexRoot,
                     PathRoot,
@@ -74,7 +69,7 @@ impl<R: PathRoot> RootedPath for RootedSplitPath<R> {
 //    }
 //}
 
-impl_root! { GraphRootPattern for RootedSplitPath<IndexRoot>, self => self.root.location.clone() }
+impl_root! { GraphRootPattern for RootedSplitPath<IndexRoot>, self => self.root.location }
 //impl_root! { GraphRootPattern for RootedSplitPathRef<'_, IndexRoot>, self => self.root.location.clone() }
 impl_root! { GraphRoot for RootedSplitPath<IndexRoot>, self => self.root.location.parent }
 //impl_root! { GraphRoot for RootedSplitPathRef<'_, IndexRoot>, self => self.root.location.parent }

@@ -73,7 +73,7 @@ impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
         &mut self.path
     }
 }
-impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
+impl<R: PathRole, P: StartFoldPath + HasPath<R>> HasPath<R> for PathCursor<P> {
     fn path(&self) -> &Vec<ChildLocation> {
         HasPath::<R>::path(&self.path)
     }
@@ -82,7 +82,7 @@ impl<R: PathRole, P: FoldablePath + HasPath<R>> HasPath<R> for PathCursor<P> {
     }
 }
 
-impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
+impl<R: PathRole, P: RootChild<R> + StartFoldPath> RootChild<R>
     for PathCursor<P>
 {
     fn root_child<G: HasGraph>(
@@ -92,7 +92,7 @@ impl<R: PathRole, P: RootChild<R> + FoldablePath> RootChild<R>
         RootChild::<R>::root_child(&self.path, trav)
     }
 }
-impl<R: PathRole, P: FoldablePath + LeafToken<R>> LeafToken<R>
+impl<R: PathRole, P: StartFoldPath + LeafToken<R>> LeafToken<R>
     for PathCursor<P>
 {
     fn leaf_token_location(&self) -> Option<ChildLocation> {

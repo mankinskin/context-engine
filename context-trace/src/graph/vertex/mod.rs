@@ -27,7 +27,7 @@ pub type IndexedVertexEntry<'x> =
     indexmap::map::IndexedEntry<'x, VertexKey, VertexData>;
 pub type VertexIndex = usize;
 pub type VertexParents = HashMap<VertexIndex, Parent>;
-pub type TokenPatterns = HashMap<PatternId, Pattern>;
+pub type ChildPatterns = HashMap<PatternId, Pattern>;
 pub type IndexPosition = usize;
 pub type IndexPattern = Vec<VertexIndex>;
 pub type VertexPatternView<'a> = Vec<&'a VertexData>;

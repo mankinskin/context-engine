@@ -14,12 +14,14 @@ use std::convert::TryInto;
 
 use crate::{
     cursor::PathCursor,
-    fold::result::IncompleteState,
     search::Searchable,
-    state::end::{
-        EndKind,
-        EndReason,
-        EndState,
+    state::{
+        end::{
+            EndKind,
+            EndReason,
+            EndState,
+        },
+        result::IncompleteState,
     },
 };
 use context_trace::{
