@@ -2,6 +2,14 @@ pub(crate) mod ancestor;
 pub(crate) mod consecutive;
 pub(crate) mod parent;
 
+use crate::{
+    state::result::HasBaseResponse,
+    CompleteState,
+    IncompleteState,
+    Response,
+};
+use pretty_assertions::assert_matches;
+
 #[cfg(test)]
 use {
     crate::search::Searchable,
@@ -40,18 +48,24 @@ fn find_sequence() {
     );
     let query = graph.graph().expect_atom_children("abc".chars());
     let abc_found = graph.find_ancestor(&query);
-    assert_eq!(
-        abc_found.map(|r| r.kind),
-        Ok(ResponseKind::Complete(*abc)),
+    assert_matches!(
+        abc_found,
+        Ok(Response::Complete(CompleteState {
+           path,
+           ..
+        })) if path.root_parent() == *abc,
         "abc"
     );
     let query = graph
         .graph()
         .expect_atom_children("ababababcdefghi".chars());
     let ababababcdefghi_found = graph.find_ancestor(&query);
-    assert_eq!(
-        ababababcdefghi_found.map(|r| r.kind),
-        Ok(ResponseKind::Complete(*ababababcdefghi)),
+    assert_matches!(
+        ababababcdefghi_found,
+        Ok(Response::Complete(CompleteState {
+           path,
+           ..
+        })) if path.root_parent() == *ababababcdefghi,
         "ababababcdefghi"
     );
 }
@@ -94,44 +108,51 @@ fn find_pattern1() {
             TD { 2 => y -> (y_z_id, 0) },
         ),
     );
-
+    let base_found = aby_found.base_response();
     assert_eq!(
-        aby_found.cache.entries[&xab.index], expected_cache.entries[&xab.index],
+        base_found.cache.entries[&xab.index],
+        expected_cache.entries[&xab.index],
         "xab"
     );
     assert_eq!(
-        aby_found.cache.entries[&xabyz.index],
+        base_found.cache.entries[&xabyz.index],
         expected_cache.entries[&xabyz.index],
         "xabyz"
     );
     assert_eq!(
-        aby_found.cache.entries[&yz.index], expected_cache.entries[&yz.index],
+        base_found.cache.entries[&yz.index], expected_cache.entries[&yz.index],
         "yz"
     );
-    assert_eq!(aby_found.cache.entries.len(), 5);
-    assert_eq!(
-        aby_found.kind,
-        ResponseKind::Incomplete(Box::new(EndState {
-            reason: EndReason::Mismatch,
-            kind: EndKind::Range(RangeEnd {
-                root_pos: 2.into(),
-                target: DownKey::new(y, 3.into()),
-                path: RootedRangePath::new(
-                    PatternLocation::new(xabyz, xab_yz_id),
-                    RolePath::new(
-                        0,
-                        vec![ChildLocation::new(xab, x_a_b_id, 1)],
+    assert_eq!(base_found.cache.entries.len(), 5);
+    assert_matches!(
+        aby_found,
+        Response::Incomplete(IncompleteState {
+            end,
+            ..
+        }) if end == EndState {
+                reason: EndReason::Mismatch,
+                kind: EndKind::Range(RangeEnd {
+                    root_pos: 2.into(),
+                    target: DownKey::new(y, 3.into()),
+                    path: RootedRangePath::new(
+                        PatternLocation::new(xabyz, xab_yz_id),
+                        RolePath::new(
+                            0,
+                            vec![ChildLocation::new(xab, x_a_b_id, 1)],
+                        ),
+                        RolePath::new(
+                            1,
+                            vec![ChildLocation::new(yz, y_z_id, 0)],
+                        ),
                     ),
-                    RolePath::new(1, vec![ChildLocation::new(yz, y_z_id, 0)],),
-                ),
-            }),
-            cursor: PatternCursor {
-                path: RootedRolePath::new(
-                    query.clone(),
-                    RolePath::new(2, vec![]),
-                ),
-                atom_position: 3.into(),
-            },
-        }))
+                }),
+                cursor: PatternCursor {
+                    path: RootedRolePath::new(
+                        query.clone(),
+                        RolePath::new(2, vec![]),
+                    ),
+                    atom_position: 3.into(),
+                },
+            }
     );
 }

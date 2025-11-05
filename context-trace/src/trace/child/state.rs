@@ -1,8 +1,12 @@
 use crate::{
+    GraphRootChild,
+    GraphRootPattern,
     HasPath,
     PathRole,
     RootChild,
     RootChildIndex,
+    RootPattern,
+    RootedPath,
     graph::{
         getters::vertex::VertexSet,
         vertex::{
@@ -109,13 +113,36 @@ impl RootChild<End> for ChildState {
         RootChild::<End>::root_child(&self.base.path, trav)
     }
 }
-impl LeafToken<End> for ChildState {
-    fn leaf_token<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Option<Token> {
-        Some(self.base.path.role_leaf_token::<End, G>(trav))
+impl GraphRoot for ChildState {
+    fn root_parent(&self) -> Token {
+        self.base.path.root_parent()
     }
+}
+impl RootPattern for ChildState {
+    fn root_pattern<'a: 'g, 'b: 'g, 'g, G: HasGraph + 'a>(
+        &'b self,
+        trav: &'g G::Guard<'a>,
+    ) -> &'g crate::Pattern {
+        self.base.path.root_pattern::<G>(trav)
+    }
+}
+impl GraphRootPattern for ChildState {
+    fn root_pattern_location(&self) -> crate::PatternLocation {
+        self.base.path.root_pattern_location()
+    }
+}
+impl RootedPath for ChildState {
+    type Root = <IndexRangePath as RootedPath>::Root;
+    fn path_root(&self) -> Self::Root {
+        self.base.path.path_root()
+    }
+}
+impl GraphRootChild<End> for ChildState {
+    fn graph_root_child_location(&self) -> ChildLocation {
+        self.base.path.role_root_child_location::<End>()
+    }
+}
+impl LeafToken<End> for ChildState {
     fn leaf_token_location(&self) -> Option<ChildLocation> {
         self.base.path.role_leaf_token_location::<End>()
     }
@@ -131,47 +158,6 @@ where
         HasPath::<R>::path_mut(&mut self.base.path)
     }
 }
-pub trait PrefixStates: Sized + Clone {
-    fn prefix_states<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> VecDeque<(SubToken, Self)>;
-}
-impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
-    fn prefix_states<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> VecDeque<(SubToken, Self)> {
-        let leaf = self.role_leaf_token::<End, _>(trav);
-        trav.graph()
-            .expect_vertex(leaf)
-            .prefix_children::<G>()
-            .iter()
-            .sorted_unstable_by(|a, b| b.token.width.cmp(&a.token.width))
-            .map(|sub| {
-                let mut next = self.clone();
-                next.path_append(leaf.to_child_location(sub.location));
-                (sub.clone(), next)
-            })
-            .collect()
-    }
-}
-//impl From<ChildState> for EditKind {
-//    fn from(state: ChildState) -> Self {
-//        match state.path.role_leaf_token_location::<End>() {
-//            Some(entry) => DownEdit {
-//                target: state.target,
-//                entry,
-//            }
-//            .into(),
-//            None => RootEdit {
-//                entry_key: state.target,
-//                entry_location: entry,
-//            }
-//            .into(),
-//        }
-//    }
-//}
 
 impl IntoAdvanced for ChildState {
     type Next = Self;

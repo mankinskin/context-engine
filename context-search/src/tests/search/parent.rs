@@ -1,4 +1,16 @@
-use crate::CompleteState;
+use std::ops::Index;
+
+use context_trace::{
+    GraphRoot,
+    IndexRangePath,
+    RootChild,
+};
+
+use crate::{
+    cursor::PathCursor,
+    state::end::EndState,
+    CompleteState,
+};
 #[cfg(test)]
 use {
     crate::search::Searchable,
@@ -53,20 +65,20 @@ fn find_parent1() {
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response::Complete(CompleteState {
-                root: x,
+                path,
                 ..
             }),
-        ) if x.index == *bc,
+        ) if path.root_parent() == *bc,
         "b_c"
     );
     let query = ab_c_pattern;
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response::Complete(CompleteState {
-                root: x,
+                path,
                 ..
             }),
-        ) if x.index == *abc,
+        ) if path.root_parent() == *abc,
         "ab_c"
     );
     // enable when bfs for parent-token batches is implemented

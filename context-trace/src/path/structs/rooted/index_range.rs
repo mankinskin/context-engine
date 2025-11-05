@@ -55,9 +55,9 @@ use crate::{
             },
         },
         structs::{
-            query_range_path::RangePath,
             role_path::RolePath,
             rooted::{
+                RangePath,
                 RootedRangePath,
                 role_path::{
                     RootChildIndex,
@@ -83,6 +83,7 @@ use crate::{
 };
 
 pub type IndexRangePath = RootedRangePath<IndexRoot>;
+
 impl RangePath for IndexRangePath {
     fn new_range(
         root: Self::Root,
@@ -253,7 +254,7 @@ impl RootChild<End> for IndexRangePath {
     }
 }
 impl GraphRootChild<Start> for IndexRangePath {
-    fn root_child_location(&self) -> ChildLocation {
+    fn graph_root_child_location(&self) -> ChildLocation {
         self.root.location.to_child_location(self.start.root_entry)
     }
 }
@@ -269,7 +270,7 @@ impl LeafKey for IndexRangePath {
 }
 
 impl GraphRootChild<End> for IndexRangePath {
-    fn root_child_location(&self) -> ChildLocation {
+    fn graph_root_child_location(&self) -> ChildLocation {
         self.root.location.to_child_location(self.end.root_entry)
     }
 }

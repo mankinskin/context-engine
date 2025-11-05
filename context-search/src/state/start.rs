@@ -3,52 +3,51 @@ use crate::{
     fold::{
         foldable::ErrorState,
         FoldCtx,
+        StartLocationResult,
     },
     r#match::root_cursor::CompareParentBatch,
     traversal::{
         policy::DirectedTraversalPolicy,
         TraversalKind,
-        TryIntoTraversalCtx,
     },
-    CompleteState,
     Response,
 };
 use context_trace::*;
 
 #[derive(Debug, PartialEq, Eq)]
-pub(crate) struct StartCtx<K: TraversalKind> {
-    pub(crate) index: Token,
+pub(crate) struct StartCtx {
+    pub(crate) location: StartLocationResult,
     pub(crate) cursor: PatternCursor,
-    pub(crate) trav: K::Trav,
 }
 
-impl<K: TraversalKind> HasVertexIndex for StartCtx<K> {
+impl HasVertexIndex for StartCtx {
     fn vertex_index(&self) -> VertexIndex {
-        self.index.vertex_index()
+        self.location.parent.vertex_index()
     }
 }
-impl<K: TraversalKind> Wide for StartCtx<K> {
+impl Wide for StartCtx {
     fn width(&self) -> usize {
-        self.index.width()
+        self.location.parent.width()
     }
 }
-impl<K: TraversalKind> StartCtx<K> {
-    pub(crate) fn get_parent_batch(
-        &self
+impl StartCtx {
+    pub(crate) fn get_parent_batch<K: TraversalKind>(
+        &self,
+        trav: &K::Trav,
     ) -> Result<CompareParentBatch, ErrorState> {
         let mut cursor = self.cursor.clone();
-        if cursor.advance(&self.trav).is_continue() {
+        if cursor.advance(trav).is_continue() {
             let batch = K::Policy::gen_parent_batch(
-                &self.trav,
-                self.index,
-                |trav, p| self.index.into_parent_state(trav, p),
+                trav,
+                self.location.parent,
+                |trav, p| self.location.parent.into_parent_state(trav, p),
             );
 
             Ok(CompareParentBatch { batch, cursor })
         } else {
             Err(ErrorState {
                 reason: ErrorReason::SingleIndex(Box::new(IndexWithPath {
-                    index: self.index,
+                    index: self.location.parent,
                     path: self.cursor.path.clone().into(),
                 })),
                 found: None,

@@ -34,13 +34,6 @@ pub use crate::{
         context::AncestorPolicy,
         Searchable,
     },
-    state::{
-        complete::UnwrapComplete,
-        result::{
-            CompleteState,
-            IncompleteState,
-            Response,
-        },
-    },
+    state::result::Response,
     traversal::TraversalKind,
 };

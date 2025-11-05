@@ -1,8 +1,12 @@
 use crate::{
     r#match::{
+        root_cursor::CompareParentBatch,
         MatchCtx,
         RootSearchIterator,
-        TraceNode::Parent,
+        TraceNode::{
+            self,
+            Parent,
+        },
     },
     state::end::EndState,
     traversal::TraversalKind,
@@ -16,6 +20,37 @@ pub(crate) struct MatchIterator<K: TraversalKind>(
     pub(crate) TraceCtx<K::Trav>,
     pub(crate) MatchCtx,
 );
+impl<K: TraversalKind> MatchIterator<K> {
+    pub(crate) fn start_index(
+        trav: K::Trav,
+        start_index: Token,
+    ) -> Self {
+        MatchIterator::new(
+            TraceCtx {
+                trav,
+                cache: TraceCache::new(start_index),
+            },
+            MatchCtx::new(),
+        )
+    }
+    pub(crate) fn start_parent(
+        trav: K::Trav,
+        start_index: Token,
+        p: CompareParentBatch,
+    ) -> Self {
+        MatchIterator::new(
+            TraceCtx {
+                trav,
+                cache: TraceCache::new(start_index),
+            },
+            MatchCtx {
+                nodes: FromIterator::from_iter(
+                    p.into_compare_batch().into_iter().map(TraceNode::Parent),
+                ),
+            },
+        )
+    }
+}
 
 impl<K: TraversalKind> MatchIterator<K> {
     pub(crate) fn find_next(&mut self) -> Option<EndState> {

@@ -50,6 +50,25 @@ pub use tests::{
 };
 
 // Essential public re-exports for context-search
+pub(crate) use crate::path::{
+    accessors::{
+        border::PathBorder,
+        child::{
+            RootedLeafToken,
+            root::PatternRootChild,
+        },
+        has_path::{
+            HasRolePath,
+            HasSinglePath,
+            IntoRolePath,
+        },
+        root::GraphRootPattern,
+    },
+    structs::rooted::{
+        role_path::RootChildIndexMut,
+        root::PathRoot,
+    },
+};
 pub use crate::{
     direction::{
         Direction,
@@ -92,6 +111,7 @@ pub use crate::{
                 },
                 pattern::{
                     HasPatternLocation,
+                    IntoPatternLocation,
                     PatternLocation,
                 },
             },
@@ -161,7 +181,6 @@ pub use crate::{
             simplify::PathSimplify,
         },
         structs::{
-            query_range_path::StartFoldPath,
             role_path::{
                 CalcOffset,
                 RolePath,
@@ -180,6 +199,7 @@ pub use crate::{
                     PatternEndPath,
                     RootChildIndex,
                     RootedRolePath,
+                    calc::CalcWidth,
                     range::{
                         EndPath,
                         HasEndPath,
@@ -228,7 +248,6 @@ pub use crate::{
             },
             state::{
                 ChildState,
-                PrefixStates,
                 RootChildState,
             },
         },
@@ -253,30 +272,5 @@ pub use crate::{
             },
         },
         traceable::Traceable,
-    },
-};
-pub(crate) use crate::{
-    graph::vertex::location::pattern::IntoPatternLocation,
-    path::{
-        accessors::{
-            border::PathBorder,
-            child::{
-                RootedLeafToken,
-                root::PatternRootChild,
-            },
-            has_path::{
-                HasRolePath,
-                HasSinglePath,
-                IntoRolePath,
-            },
-            root::GraphRootPattern,
-        },
-        structs::rooted::{
-            role_path::{
-                RootChildIndexMut,
-                calc::CalcWidth,
-            },
-            root::PathRoot,
-        },
     },
 };

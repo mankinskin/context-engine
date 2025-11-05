@@ -83,7 +83,7 @@ impl TraversalState {
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
             InnerKind::Parent(state) =>
-                Some(state.rooted_path().root_child_location()),
+                Some(state.rooted_path().graph_root_child_location()),
             InnerKind::Child(state) =>
                 state.rooted_path().role_leaf_token_location::<End>(),
         }

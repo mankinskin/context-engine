@@ -73,7 +73,7 @@ impl IntoAdvanced for ParentState {
         self,
         trav: &G,
     ) -> Result<Self::Next, Self> {
-        let entry = self.path.root_child_location();
+        let entry = self.path.graph_root_child_location();
         let graph = trav.graph();
         let pattern = self.path.root_pattern::<G>(&graph).clone();
         if let Some(next_i) =

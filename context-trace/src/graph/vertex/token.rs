@@ -74,6 +74,14 @@ impl HasToken for SubToken {
         self.token
     }
 }
+pub trait HasSubLocation {
+    fn sub_location(&self) -> &SubLocation;
+}
+impl HasSubLocation for SubToken {
+    fn sub_location(&self) -> &SubLocation {
+        &self.location
+    }
+}
 
 #[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct Token {

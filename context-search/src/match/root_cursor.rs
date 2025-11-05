@@ -128,7 +128,8 @@ impl<G: HasGraph> RootCursor<G> {
                 } = *self.state;
                 let root_pos = *child_state.root_pos();
                 let path = child_state.rooted_path().clone();
-                let target_index = path.role_leaf_token::<End, _>(&self.trav);
+                let target_index =
+                    path.role_rooted_leaf_token::<End, _>(&self.trav);
                 let pos = cursor.atom_position;
                 let target = DownKey::new(target_index, pos.into());
                 Ok(EndState {

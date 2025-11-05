@@ -1,6 +1,9 @@
 use std::ops::ControlFlow;
 
-use crate::cursor::PathCursor;
+use crate::{
+    cursor::PathCursor,
+    fold::StartFoldPath,
+};
 use context_trace::*;
 
 pub(crate) trait MovablePath<D: Direction, R: PathRole>:

@@ -9,6 +9,7 @@ use crate::{
     HasEndPath,
     HasPath,
     HasStartPath,
+    IntoRootedRolePath,
     RootChildIndex,
     StartPath,
     path::{
@@ -21,13 +22,9 @@ use crate::{
         },
         structs::{
             role_path::RolePath,
-            rooted::{
-                pattern_range::PatternRangePath,
-                role_path::{
-                    PatternStartPath,
-                    RootedEndPath,
-                    RootedStartPath,
-                },
+            rooted::role_path::{
+                RootedEndPath,
+                RootedStartPath,
             },
         },
     },
@@ -36,7 +33,15 @@ use root::{
     PathRoot,
     RootedPath,
 };
-
+pub(crate) trait RangePath:
+    RootedPath + IntoRootedRolePath<Start> + IntoRootedRolePath<End>
+{
+    fn new_range(
+        root: Self::Root,
+        entry: usize,
+        exit: usize,
+    ) -> Self;
+}
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RootedRangePath<Root: PathRoot> {
     pub(crate) root: Root,
@@ -62,7 +67,7 @@ impl<Root: PathRoot> RootedRangePath<Root> {
         let path = path.into();
         Self::new(root, path.start, path.end)
     }
-    pub fn new_empty<O: PathRoot + Into<Root>>(root: O) -> Self {
+    pub fn new_empty<O: Into<Root>>(root: O) -> Self {
         Self::new(root.into(), Default::default(), Default::default())
     }
 }

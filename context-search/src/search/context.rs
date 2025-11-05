@@ -32,7 +32,6 @@ pub struct SearchCtx<T: HasGraph> {
     pub(crate) graph: T,
 }
 
-pub(crate) type SearchResult = Result<Response, ErrorReason>;
 #[derive(Debug)]
 pub(crate) struct AncestorSearchTraversal<T: HasGraph>(
     std::marker::PhantomData<T>,

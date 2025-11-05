@@ -1,24 +1,24 @@
 use context_trace::*;
 use derive_new::new;
+use tracing::debug;
 
 use crate::{
     cursor::{
         PatternCursor,
-        PatternRangeCursor,
+        PatternPrefixCursor,
         ToCursor,
     },
     fold::{
         FoldCtx,
-        IntoFoldCtx,
+        StartFoldPath,
     },
+    r#match::iterator::MatchIterator,
     state::{
+        end::EndState,
         result::Response,
         start::StartCtx,
     },
-    traversal::{
-        TraversalKind,
-        TryIntoTraversalCtx,
-    },
+    traversal::TraversalKind,
 };
 use std::fmt::Debug;
 
@@ -112,27 +112,40 @@ impl StartFold for PatternRangePath {
         self.to_range_path().to_cursor(&trav).start_fold::<K>(trav)
     }
 }
-impl StartFold for PatternRangeCursor {
-    fn start_fold<K: TraversalKind>(
-        self,
-        trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternCursor::from(self).start_fold(trav)
-    }
-}
-
 impl StartFold for PatternCursor {
     fn start_fold<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        let start_index = self.path.start_index(&trav);
-        let tctx = StartCtx {
-            index: start_index,
+        let location = self.path.start_location(&trav);
+        let start = StartCtx {
+            location,
             cursor: self,
-            trav,
+        };
+
+        match start.get_parent_batch::<K>(&trav) {
+            Ok(p) => {
+                debug!("First ParentBatch {:?}", p);
+                Ok(FoldCtx {
+                    start_index: start.location.parent,
+                    last_match: EndState::init_fold(start),
+                    matches: MatchIterator::start_parent(
+                        trav,
+                        start.location.parent,
+                        p,
+                    ),
+                })
+            },
+            Err(err) => Err(err),
         }
-        .try_into_traversal_context()?;
-        Ok(FoldCtx { start_index, tctx })
+    }
+}
+
+impl StartFold for PatternPrefixCursor {
+    fn start_fold<K: TraversalKind>(
+        self,
+        trav: K::Trav,
+    ) -> Result<FoldCtx<K>, ErrorState> {
+        PatternCursor::from(self).start_fold(trav)
     }
 }

@@ -178,7 +178,10 @@ impl Traceable for RangeCommand {
         let root_exit = self.path.role_root_child_location::<End>();
 
         let exit_key = DownKey {
-            pos: (self.path.role_leaf_token::<Start, _>(&ctx.trav).width()
+            pos: (self
+                .path
+                .role_rooted_leaf_token::<Start, _>(&ctx.trav)
+                .width()
                 + self.path.calc_offset(&ctx.trav))
             .into(),
             index: root_exit.parent,

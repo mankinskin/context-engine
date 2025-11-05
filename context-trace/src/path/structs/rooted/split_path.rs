@@ -89,7 +89,7 @@ impl<R: PathRole, Root: PathRoot> RootChildIndex<R> for RootedSplitPath<Root> {
 //}
 
 impl<R: PathRole> GraphRootChild<R> for RootedSplitPath<IndexRoot> {
-    fn root_child_location(&self) -> ChildLocation {
+    fn graph_root_child_location(&self) -> ChildLocation {
         self.path_root()
             .location
             .to_child_location(self.sub_path.root_entry)
@@ -97,7 +97,7 @@ impl<R: PathRole> GraphRootChild<R> for RootedSplitPath<IndexRoot> {
 }
 
 //impl<R: PathRole> GraphRootChild<R> for RootedSplitPathRef<'_, IndexRoot> {
-//    fn root_child_location(&self) -> ChildLocation {
+//    fn graph_root_child_location(&self) -> ChildLocation {
 //        self.path_root()
 //            .location
 //            .to_child_location(self.sub_path.root_entry)

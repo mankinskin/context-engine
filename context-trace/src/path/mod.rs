@@ -16,7 +16,10 @@ use crate::{
         token::Token,
     },
     path::{
-        accessors::child::RootedLeafToken,
+        accessors::child::{
+            RootedLeafToken,
+            RootedLeafTokenLocation,
+        },
         structs::{
             role_path::RolePath,
             rooted::role_path::RootChildIndex,
@@ -56,6 +59,30 @@ pub trait RolePathUtils {
     {
         LeafToken::<R>::leaf_token_location(self)
     }
+    fn role_leaf_token<R: PathRole, G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Option<Token>
+    where
+        Self: LeafToken<R>,
+    {
+        LeafToken::<R>::leaf_token(self, trav)
+    }
+    fn role_rooted_leaf_token<R: PathRole, G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Token
+    where
+        Self: RootedLeafToken<R>,
+    {
+        RootedLeafToken::<R>::rooted_leaf_token(self, trav)
+    }
+    fn role_rooted_leaf_token_location<R: PathRole>(&self) -> ChildLocation
+    where
+        Self: RootedLeafTokenLocation<R>,
+    {
+        RootedLeafTokenLocation::<R>::rooted_leaf_token_location(self)
+    }
     fn role_root_child_index<R: PathRole>(&self) -> usize
     where
         Self: RootChildIndex<R>,
@@ -66,7 +93,7 @@ pub trait RolePathUtils {
     where
         Self: GraphRootChild<R>,
     {
-        GraphRootChild::<R>::root_child_location(self)
+        GraphRootChild::<R>::graph_root_child_location(self)
     }
 
     fn role_outer_width<G: HasGraph, R: PathRole>(
@@ -108,15 +135,6 @@ pub trait RolePathUtils {
         Self: HasRolePath<R>,
     {
         HasRolePath::<R>::role_path_mut(self)
-    }
-    fn role_leaf_token<R: PathRole, G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Token
-    where
-        Self: RootedLeafToken<R>,
-    {
-        RootedLeafToken::<R>::rooted_leaf_token(self, trav)
     }
     fn child_pos<R: PathRole>(&self) -> usize
     where

@@ -79,26 +79,6 @@ impl<R: PathRole, Root: PathRoot> IntoRolePath<R> for RootedRolePath<R, Root> {
         self.role_path
     }
 }
-impl<Root: PathRoot> CalcWidth for RootedRangePath<Root>
-where
-    Self: RootedLeafToken<Start> + RootedLeafToken<End>,
-{
-    fn calc_width<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize {
-        self.calc_offset(&trav)
-            + self.role_leaf_token::<Start, _>(&trav).width()
-            + if self.role_root_child_index::<Start>()
-                != self.role_root_child_index::<End>()
-            {
-                self.role_leaf_token::<End, _>(&trav).width()
-            } else {
-                0
-            }
-    }
-}
-
 pub(crate) type IndexRolePath<R> = RootedRolePath<R, IndexRoot>;
 
 pub(crate) type PatternRolePath<R> = RootedRolePath<R, Pattern>;
@@ -155,7 +135,7 @@ impl<Root: PathRoot, R: PathRole> From<(Root, RolePath<R>)>
     }
 }
 impl<R: PathRoot> RootedStartPath<R> {
-    pub(crate) fn into_range(
+    pub fn into_range(
         self,
         exit: usize,
     ) -> RootedRangePath<R> {
@@ -173,7 +153,7 @@ impl<R: PathRoot> RootedStartPath<R> {
     }
 }
 impl<R: PathRoot> RootedEndPath<R> {
-    pub(crate) fn into_range(
+    pub fn into_range(
         self,
         entry: usize,
     ) -> RootedRangePath<R> {
@@ -244,7 +224,7 @@ impl_root_child! {
         )
 }
 impl<R: PathRole> GraphRootChild<R> for RootedRolePath<R, IndexRoot> {
-    fn root_child_location(&self) -> ChildLocation {
+    fn graph_root_child_location(&self) -> ChildLocation {
         self.path_root()
             .location
             .to_child_location(self.role_path.sub_path.root_entry)
@@ -318,34 +298,3 @@ impl RootChildIndex<Start> for PatternEndPath {
 //impl_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
 
 impl_root_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
-
-impl StartFoldPath for PatternEndPath {
-    fn to_range_path(self) -> PatternRangePath {
-        self.into_range(0)
-    }
-    fn complete(query: impl IntoPattern) -> Self {
-        let pattern = query.into_pattern();
-        Self {
-            role_path: RolePath::new_empty(pattern.len() - 1),
-            root: pattern,
-        }
-    }
-    fn new_directed<D>(query: Pattern) -> Result<Self, (ErrorReason, Self)> {
-        let pattern = query.into_pattern();
-        let len = pattern.len();
-        let p = Self {
-            role_path: RolePath::new_empty(0),
-            root: pattern,
-        };
-        match len {
-            0 => Err((ErrorReason::EmptyPatterns, p)),
-            1 => Err((
-                ErrorReason::SingleIndex(Box::new(
-                    PatternRangePath::from(p.clone()).into(),
-                )),
-                p,
-            )),
-            _ => Ok(p),
-        }
-    }
-}

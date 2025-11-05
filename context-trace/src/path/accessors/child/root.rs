@@ -46,20 +46,20 @@ macro_rules! impl_root_child {
 
 /// used to get a direct token in a Graph
 pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
-    fn root_child_location(&self) -> ChildLocation;
+    fn graph_root_child_location(&self) -> ChildLocation;
     fn graph_root_child<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {
         *trav.graph().expect_child_at(
-            <_ as GraphRootChild<R>>::root_child_location(self),
+            <_ as GraphRootChild<R>>::graph_root_child_location(self),
         )
     }
     fn get_outer_width<G: HasGraph>(
         &self,
         trav: &G,
     ) -> usize {
-        let i = self.root_child_location().sub_index;
+        let i = self.graph_root_child_location().sub_index;
         let g = trav.graph();
         let p = self.graph_root_pattern::<G>(&g);
         R::outer_ctx_width(p, i)
@@ -68,14 +68,14 @@ pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
         &self,
         trav: &G,
     ) -> usize {
-        let i = self.root_child_location().sub_index;
+        let i = self.graph_root_child_location().sub_index;
         let g = trav.graph();
         let p = self.graph_root_pattern::<G>(&g);
         R::inner_width(p, i)
     }
 }
 impl<R: PathRole> GraphRootChild<R> for ChildLocation {
-    fn root_child_location(&self) -> ChildLocation {
+    fn graph_root_child_location(&self) -> ChildLocation {
         *self
     }
 }

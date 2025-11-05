@@ -6,16 +6,23 @@ use crate::{
         EndReason,
         EndState,
     },
-    CompleteState,
 };
 use context_trace::{
-    path::RolePathUtils,
+    graph::vertex::token::{
+        HasSubLocation,
+        SubToken,
+    },
+    path::{
+        accessors::child::RootedLeafToken,
+        RolePathUtils,
+    },
     *,
 };
 use derive_more::{
     Deref,
     DerefMut,
 };
+use itertools::Itertools;
 use std::{
     cmp::Ordering,
     collections::VecDeque,
@@ -111,8 +118,9 @@ impl CompareState {
         trav: &G,
     ) -> CompareNext {
         use Ordering::*;
-        let path_leaf = self.rooted_path().role_leaf_token::<End, _>(trav);
-        let query_leaf = self.cursor.role_leaf_token::<End, _>(trav);
+        let path_leaf =
+            self.rooted_path().role_rooted_leaf_token::<End, _>(trav);
+        let query_leaf = self.cursor.role_rooted_leaf_token::<End, _>(trav);
 
         if path_leaf == query_leaf {
             //debug!(
@@ -125,7 +133,7 @@ impl CompareState {
         } else if path_leaf.width() == 1 && query_leaf.width() == 1 {
             MatchState(Mismatch(self.on_mismatch(trav)))
         } else {
-            Prefixes(match path_leaf.width.cmp(&query_leaf.width) {
+            Prefixes(match path_leaf.width().cmp(&query_leaf.width()) {
                 Equal => self
                     .mode_prefixes(trav, GraphMajor)
                     .into_iter()
@@ -169,10 +177,10 @@ impl CompareState {
         };
         let cursor = self.cursor;
         let kind = if let Some(_) = index {
-            Complete(CompleteState::new_path(path))
+            Complete(path)
         } else {
             let target = DownKey::new(
-                path.role_leaf_token::<End, _>(trav),
+                path.role_rooted_leaf_token::<End, _>(trav),
                 cursor.atom_position.into(),
             );
             EndKind::from_range_path(path, root_pos, target, trav)
@@ -209,3 +217,47 @@ impl IntoAdvanced for CompareState {
         }
     }
 }
+
+pub trait PrefixStates: Sized + Clone {
+    fn prefix_states<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> VecDeque<(SubToken, Self)>;
+}
+impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
+    fn prefix_states<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> VecDeque<(SubToken, Self)> {
+        let leaf = self.role_rooted_leaf_token::<End, _>(trav);
+        trav.graph()
+            .expect_vertex(leaf)
+            .prefix_children::<G>()
+            .iter()
+            .sorted_unstable_by(|a, b| {
+                b.token().width().cmp(&a.token().width())
+            })
+            .map(|sub| {
+                let mut next = self.clone();
+                next.path_append(leaf.to_child_location(*sub.sub_location()));
+                (sub.clone(), next)
+            })
+            .collect()
+    }
+}
+//impl From<ChildState> for EditKind {
+//    fn from(state: ChildState) -> Self {
+//        match state.path.role_leaf_token_location::<End>() {
+//            Some(entry) => DownEdit {
+//                target: state.target,
+//                entry,
+//            }
+//            .into(),
+//            None => RootEdit {
+//                entry_key: state.target,
+//                entry_location: entry,
+//            }
+//            .into(),
+//        }
+//    }
+//}

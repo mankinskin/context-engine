@@ -1,3 +1,12 @@
+use crate::{
+    state::result::HasBaseResponse,
+    UnwrapComplete,
+};
+use context_trace::{
+    GraphRoot,
+    RootChild,
+};
+
 #[cfg(test)]
 use {
     crate::cursor::PatternCursor,
@@ -43,19 +52,15 @@ fn find_consecutive1() {
     let fin = graph.find_ancestor(&query);
     assert_matches!(
         fin,
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == *ghi,
+        Ok(Response::Complete(x)
+        ) if x.path.root_parent() == *ghi,
         "+g_h_i_a_b_c"
     );
-    let query = fin.unwrap().cursor;
+    let query = fin.unwrap().unwrap_complete().make_cursor();
     assert_matches!(
         graph.find_ancestor(query),
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == *abc,
+        Ok(Response::Complete(x)
+        ) if x.path.root_parent() == *abc,
         "g_h_i_+a_b_c"
     );
 }

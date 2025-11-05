@@ -4,6 +4,10 @@ use std::{
 };
 
 use crate::{
+    PathAppend,
+    PatternEndPath,
+    PatternLocation,
+    RootPattern,
     direction::{
         Right,
         pattern::PatternDirection,
@@ -29,6 +33,7 @@ use crate::{
     impl_root,
     impl_root_child,
     path::{
+        BaseQuery,
         accessors::{
             child::{
                 LeafToken,
@@ -52,15 +57,12 @@ use crate::{
             pop::PathPop,
         },
         structs::{
-            query_range_path::{
-                RangePath,
-                StartFoldPath,
-            },
             role_path::{
                 CalcOffset,
                 RolePath,
             },
             rooted::{
+                RangePath,
                 RootedRangePath,
                 role_path::{
                     PatternRolePath,
@@ -86,6 +88,19 @@ pub type PatternRangePath = RootedRangePath<Pattern>;
 pub type PatternPostfixPath = RootedRolePath<Start, Pattern>;
 pub type PatternPrefixPath = RootedRolePath<End, Pattern>;
 
+impl RangePath for PatternRangePath {
+    fn new_range(
+        root: Self::Root,
+        entry: usize,
+        exit: usize,
+    ) -> Self {
+        Self {
+            root,
+            start: SubPath::new(entry, vec![]).into(),
+            end: SubPath::new(exit, vec![]).into(),
+        }
+    }
+}
 impl RootChildIndexMut<End> for PatternRangePath {
     fn root_child_index_mut(&mut self) -> &mut usize {
         &mut self.end.sub_path.root_entry
@@ -104,20 +119,6 @@ impl<P: IntoPattern> From<P> for PatternRangePath {
         }
     }
 }
-impl RangePath for PatternRangePath {
-    fn new_range(
-        root: Self::Root,
-        entry: usize,
-        exit: usize,
-    ) -> Self {
-        Self {
-            root,
-            start: SubPath::new(entry, vec![]).into(),
-            end: SubPath::new(exit, vec![]).into(),
-        }
-    }
-}
-
 impl_root! { RootPattern for PatternRangePath, self, _trav => PatternRoot::pattern_root_pattern(self) }
 impl_root! { PatternRoot for PatternRangePath, self => self.root.borrow() }
 impl_root! { <Role: PathRole> PatternRoot for PatternRolePath<Role>, self => self.root.borrow() }
@@ -222,34 +223,7 @@ impl<Root: PathRoot> CalcOffset for RootedRangePath<Root> {
         inner_offset + outer_offsets
     }
 }
-impl StartFoldPath for PatternRangePath {
-    fn to_range_path(self) -> PatternRangePath {
-        self
-    }
-    fn complete(query: impl IntoPattern) -> Self {
-        let query = query.into_pattern();
-        let len = query.len();
-        Self::new_range(query, 0, len - 1)
-    }
-    fn new_directed<D: PatternDirection>(
-        query: Pattern
-    ) -> Result<Self, (ErrorReason, Self)> {
-        let entry = D::head_index(&query);
-        let query = query.into_pattern();
-        let len = query.len();
-        let query = Self::new_range(query, entry, entry);
-        match len {
-            0 => Err((ErrorReason::EmptyPatterns, query)),
-            1 => Err((
-                ErrorReason::SingleIndex(Box::new(IndexWithPath::from(
-                    query.clone(),
-                ))),
-                query,
-            )),
-            _ => Ok(query),
-        }
-    }
-}
+
 impl<R: PathRoot> PathPop for RootedRangePath<R> {
     fn path_pop(&mut self) -> Option<ChildLocation> {
         self.end.path_pop()

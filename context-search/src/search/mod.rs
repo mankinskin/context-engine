@@ -1,13 +1,16 @@
-use crate::fold::foldable::StartFold;
+use crate::{
+    fold::foldable::StartFold,
+    Response,
+};
 use context::{
     AncestorSearchTraversal,
     ParentSearchTraversal,
     SearchCtx,
-    SearchResult,
 };
 use context_trace::*;
 pub(crate) mod context;
 
+pub(crate) type SearchResult = Result<Response, ErrorReason>;
 #[allow(dead_code)]
 pub trait Searchable: HasGraph {
     fn ctx(&self) -> SearchCtx<Self>;

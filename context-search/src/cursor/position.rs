@@ -1,4 +1,7 @@
-use crate::cursor::PathCursor;
+use crate::{
+    cursor::PathCursor,
+    fold::StartFoldPath,
+};
 use context_trace::*;
 
 impl_cursor_pos! {

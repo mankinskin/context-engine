@@ -14,8 +14,11 @@ use range::RangeEnd;
 
 use crate::{
     compare::parent::ParentCompareState,
-    cursor::PatternCursor,
-    CompleteState,
+    cursor::{
+        PathCursor,
+        PatternCursor,
+    },
+    state::start::StartCtx,
 };
 
 pub(crate) mod postfix;
@@ -27,7 +30,7 @@ pub(crate) enum EndKind {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
-    Complete(CompleteState),
+    Complete(IndexRangePath),
 }
 impl EndKind {
     pub(crate) fn from_range_path<G: HasGraph>(
@@ -45,8 +48,7 @@ impl EndKind {
             path.is_at_border::<_, End>(trav.graph()),
             path.raw_child_path::<End>().is_empty(),
         ) {
-            (true, true, true, true) =>
-                EndKind::Complete(CompleteState::new_path(path)),
+            (true, true, true, true) => EndKind::Complete(path),
             (true, true, false, _) | (true, true, true, false) =>
                 EndKind::Prefix(PrefixEnd {
                     path: path.into(),
@@ -73,7 +75,7 @@ impl EndKind {
             path.is_at_border::<_, Start>(trav.graph()),
             path.raw_child_path().is_empty(),
         ) {
-            (true, true) => EndKind::Complete(CompleteState::new_path(path)),
+            (true, true) => EndKind::Complete(path.into()),
             _ => EndKind::Postfix(PostfixEnd { path, root_pos }),
         }
     }
@@ -112,6 +114,13 @@ impl Traceable for &EndState {
     }
 }
 impl EndState {
+    pub(crate) fn init_fold(init: StartCtx) -> Self {
+        Self {
+            reason: EndReason::QueryEnd,
+            kind: EndKind::Complete(IndexRangePath::new_empty(init.location)),
+            cursor: init.cursor,
+        }
+    }
     pub(crate) fn with_reason<G: HasGraph>(
         trav: G,
         reason: EndReason,
@@ -134,6 +143,12 @@ impl EndState {
     ) -> Self {
         Self::with_reason(trav, EndReason::QueryEnd, parent)
     }
+    //pub(crate) fn complete(
+    //    trav: G,
+    //    parent: ParentCompareState,
+    //) -> Self {
+    //    Self::with_reason(trav, EndReason::QueryEnd, parent)
+    //}
     pub(crate) fn mismatch<G: HasGraph>(
         trav: G,
         parent: ParentCompareState,
@@ -157,8 +172,9 @@ impl EndState {
     }
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
-            EndKind::Range(state) =>
-                Some(GraphRootChild::<Start>::root_child_location(&state.path)),
+            EndKind::Range(state) => Some(
+                GraphRootChild::<Start>::graph_root_child_location(&state.path),
+            ),
             EndKind::Postfix(_) => None,
             EndKind::Prefix(_) => None,
             EndKind::Complete(_) => None,
@@ -185,16 +201,16 @@ impl EndState {
     }
 }
 
-impl TargetKey for EndState {
-    fn target_key(&self) -> DirectedKey {
-        match &self.kind {
-            EndKind::Range(p) => p.target.into(),
-            EndKind::Postfix(_) => self.root_key().into(),
-            EndKind::Prefix(p) => p.target.into(),
-            EndKind::Complete(c) => c.target_key(),
-        }
-    }
-}
+//impl TargetKey for EndState {
+//    fn target_key(&self) -> DirectedKey {
+//        match &self.kind {
+//            EndKind::Range(p) => p.target.into(),
+//            EndKind::Postfix(_) => self.root_key().into(),
+//            EndKind::Prefix(p) => p.target.into(),
+//            EndKind::Complete(c) => c.target_key(),
+//        }
+//    }
+//}
 
 impl RootKey for EndState {
     fn root_key(&self) -> UpKey {
@@ -203,7 +219,7 @@ impl RootKey for EndState {
                 EndKind::Range(s) => s.path.root_parent(),
                 EndKind::Postfix(p) => p.path.root_parent(),
                 EndKind::Prefix(p) => p.path.root_parent(),
-                EndKind::Complete(c) => c.path.root_parent(),
+                EndKind::Complete(c) => c.root_parent(),
             },
             match &self.kind {
                 EndKind::Range(s) => s.root_pos.into(),
@@ -216,7 +232,7 @@ impl RootKey for EndState {
 }
 impl_root! { GraphRoot for EndState, self =>
     match &self.kind {
-        EndKind::Complete(c) => c.path.root_parent(),
+        EndKind::Complete(c) => c.root_parent(),
         EndKind::Range(p) => p.path.root_parent(),
         EndKind::Postfix(p) => p.path.root_parent(),
         EndKind::Prefix(p) => p.path.root_parent(),

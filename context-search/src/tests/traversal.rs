@@ -21,7 +21,10 @@ use crate::{
             EndReason,
             EndState,
         },
-        result::IncompleteState,
+        result::{
+            BaseResponse,
+            IncompleteState,
+        },
     },
 };
 use context_trace::{
@@ -69,73 +72,74 @@ fn prefix1() {
     assert_eq!(
         res.clone(),
         IncompleteState {
-            start: *a,
-            root: IndexWithPath::new(*abcdef, res.root.path),
-            end_state: EndState {
+            end: EndState {
                 cursor: PathCursor {
                     atom_position: 5.into(),
-                    path: res.end_state.cursor.path,
+                    path: res.end.cursor.path,
                 },
-                kind: res.end_state.kind,
+                kind: res.end.kind,
                 reason: EndReason::QueryEnd
             },
-            cache: TraceCache {
-                entries: HashMap::from_iter([
-                    (
-                        a.index,
-                        VertexCache {
-                            index: *a,
-                            bottom_up: FromIterator::from_iter([]),
-                            top_down: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        e.index,
-                        VertexCache {
-                            index: *e,
-                            top_down: FromIterator::from_iter([(
-                                4.into(),
-                                PositionCache::default(),
-                            )]),
-                            bottom_up: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        ef.index,
-                        VertexCache {
-                            index: *ef,
-                            bottom_up: FromIterator::from_iter([]),
-                            top_down: FromIterator::from_iter([(
-                                4.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::down(*e, 4),
-                                        SubLocation::new(*e_f_id, 0),
-                                    )]),
-                                )
-                            )]),
-                        }
-                    ),
-                    (
-                        abcdef.index,
-                        VertexCache {
-                            index: *abcdef,
-                            bottom_up: FromIterator::from_iter([]),
-                            top_down: FromIterator::from_iter([(
-                                4.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::down(*ef, 4),
-                                        SubLocation::new(*abcd_ef_id, 1),
-                                    )]),
-                                )
-                            )]),
-                        },
-                    ),
-                ]),
-            },
+            base: BaseResponse {
+                start: *a,
+                cache: TraceCache {
+                    entries: HashMap::from_iter([
+                        (
+                            a.index,
+                            VertexCache {
+                                index: *a,
+                                bottom_up: FromIterator::from_iter([]),
+                                top_down: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            e.index,
+                            VertexCache {
+                                index: *e,
+                                top_down: FromIterator::from_iter([(
+                                    4.into(),
+                                    PositionCache::default(),
+                                )]),
+                                bottom_up: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            ef.index,
+                            VertexCache {
+                                index: *ef,
+                                bottom_up: FromIterator::from_iter([]),
+                                top_down: FromIterator::from_iter([(
+                                    4.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::down(*e, 4),
+                                            SubLocation::new(*e_f_id, 0),
+                                        )]),
+                                    )
+                                )]),
+                            }
+                        ),
+                        (
+                            abcdef.index,
+                            VertexCache {
+                                index: *abcdef,
+                                bottom_up: FromIterator::from_iter([]),
+                                top_down: FromIterator::from_iter([(
+                                    4.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::down(*ef, 4),
+                                            SubLocation::new(*abcd_ef_id, 1),
+                                        )]),
+                                    )
+                                )]),
+                            },
+                        ),
+                    ]),
+                },
+            }
         }
     );
 }
@@ -174,62 +178,63 @@ fn postfix1() {
     assert_eq!(
         res.clone(),
         IncompleteState {
-            start: *c,
-            root: IndexWithPath::new(*abcdefghi, res.root.path),
-            end_state: EndState {
+            end: EndState {
                 cursor: PathCursor {
                     atom_position: 7.into(),
-                    path: res.end_state.cursor.path,
+                    path: res.end.cursor.path,
                 },
-                kind: res.end_state.kind,
+                kind: res.end.kind,
                 reason: EndReason::QueryEnd
             },
-            cache: TraceCache {
-                entries: HashMap::from_iter([
-                    (
-                        c.index,
-                        VertexCache {
-                            index: *c,
-                            top_down: FromIterator::from_iter([]),
-                            bottom_up: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        abcdef.index,
-                        VertexCache {
-                            index: *abcdef,
-                            bottom_up: FromIterator::from_iter([(
-                                4.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::up(*cdef, 4),
-                                        SubLocation::new(*ab_cdef_id, 1)
-                                    )]),
-                                )
-                            )]),
-                            top_down: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        abcdefghi.index,
-                        VertexCache {
-                            index: *abcdefghi,
-                            bottom_up: FromIterator::from_iter([(
-                                4.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::up(*abcdef, 4),
-                                        SubLocation::new(*abcdef_ghi_id, 0)
-                                    )]),
-                                )
-                            )]),
-                            top_down: FromIterator::from_iter([]),
-                        },
-                    ),
-                ]),
-            },
+            base: BaseResponse {
+                start: *c,
+                cache: TraceCache {
+                    entries: HashMap::from_iter([
+                        (
+                            c.index,
+                            VertexCache {
+                                index: *c,
+                                top_down: FromIterator::from_iter([]),
+                                bottom_up: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            abcdef.index,
+                            VertexCache {
+                                index: *abcdef,
+                                bottom_up: FromIterator::from_iter([(
+                                    4.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::up(*cdef, 4),
+                                            SubLocation::new(*ab_cdef_id, 1)
+                                        )]),
+                                    )
+                                )]),
+                                top_down: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            abcdefghi.index,
+                            VertexCache {
+                                index: *abcdefghi,
+                                bottom_up: FromIterator::from_iter([(
+                                    4.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::up(*abcdef, 4),
+                                            SubLocation::new(*abcdef_ghi_id, 0)
+                                        )]),
+                                    )
+                                )]),
+                                top_down: FromIterator::from_iter([]),
+                            },
+                        ),
+                    ]),
+                },
+            }
         }
     );
 }
@@ -272,99 +277,100 @@ fn range1() {
     assert_eq!(
         res.clone(),
         IncompleteState {
-            start: *bc,
-            root: IndexWithPath::new(*abcdef, res.root.path),
-            end_state: EndState {
+            end: EndState {
                 cursor: PathCursor {
                     atom_position: 4.into(),
-                    path: res.end_state.cursor.path,
+                    path: res.end.cursor.path,
                 },
-                kind: res.end_state.kind,
+                kind: res.end.kind,
                 reason: EndReason::QueryEnd
             },
-            cache: TraceCache {
-                entries: HashMap::from_iter([
-                    (
-                        bc.index,
-                        VertexCache {
-                            index: *bc,
-                            top_down: FromIterator::from_iter([]),
-                            bottom_up: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        abcdef.index,
-                        VertexCache {
-                            index: *abcdef,
-                            bottom_up: FromIterator::from_iter([(
-                                3.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::up(*abcd, 3),
-                                        SubLocation::new(*abcd_ef_id, 0)
-                                    )]),
-                                )
-                            )]),
-                            top_down: FromIterator::from_iter([(
-                                3.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::down(*ef, 3),
-                                        SubLocation::new(*abcd_ef_id, 1)
-                                    )])
-                                )
-                            )]),
-                        },
-                    ),
-                    (
-                        abcd.index,
-                        VertexCache {
-                            index: *abcd,
-                            bottom_up: FromIterator::from_iter([(
-                                3.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::up(*bcd, 3),
-                                        SubLocation::new(*a_bcd_id, 1)
-                                    )]),
-                                )
-                            )]),
-                            top_down: FromIterator::from_iter([]),
-                        },
-                    ),
-                    (
-                        ef.index,
-                        VertexCache {
-                            index: *ef,
-                            bottom_up: FromIterator::from_iter([]),
-                            top_down: FromIterator::from_iter([(
-                                3.into(),
-                                PositionCache::new(
-                                    FromIterator::from_iter([]),
-                                    FromIterator::from_iter([(
-                                        DirectedKey::down(*e, 3),
-                                        SubLocation::new(*e_f_id, 0)
-                                    )]),
-                                )
-                            )]),
-                        }
-                    ),
-                    (
-                        e.index,
-                        VertexCache {
-                            index: *e,
-                            top_down: FromIterator::from_iter([(
-                                3.into(),
-                                PositionCache::default(),
-                            )]),
-                            bottom_up: FromIterator::from_iter([]),
-                        },
-                    ),
-                ]),
-            },
+            base: BaseResponse {
+                start: *bc,
+                cache: TraceCache {
+                    entries: HashMap::from_iter([
+                        (
+                            bc.index,
+                            VertexCache {
+                                index: *bc,
+                                top_down: FromIterator::from_iter([]),
+                                bottom_up: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            abcdef.index,
+                            VertexCache {
+                                index: *abcdef,
+                                bottom_up: FromIterator::from_iter([(
+                                    3.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::up(*abcd, 3),
+                                            SubLocation::new(*abcd_ef_id, 0)
+                                        )]),
+                                    )
+                                )]),
+                                top_down: FromIterator::from_iter([(
+                                    3.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::down(*ef, 3),
+                                            SubLocation::new(*abcd_ef_id, 1)
+                                        )])
+                                    )
+                                )]),
+                            },
+                        ),
+                        (
+                            abcd.index,
+                            VertexCache {
+                                index: *abcd,
+                                bottom_up: FromIterator::from_iter([(
+                                    3.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::up(*bcd, 3),
+                                            SubLocation::new(*a_bcd_id, 1)
+                                        )]),
+                                    )
+                                )]),
+                                top_down: FromIterator::from_iter([]),
+                            },
+                        ),
+                        (
+                            ef.index,
+                            VertexCache {
+                                index: *ef,
+                                bottom_up: FromIterator::from_iter([]),
+                                top_down: FromIterator::from_iter([(
+                                    3.into(),
+                                    PositionCache::new(
+                                        FromIterator::from_iter([]),
+                                        FromIterator::from_iter([(
+                                            DirectedKey::down(*e, 3),
+                                            SubLocation::new(*e_f_id, 0)
+                                        )]),
+                                    )
+                                )]),
+                            }
+                        ),
+                        (
+                            e.index,
+                            VertexCache {
+                                index: *e,
+                                top_down: FromIterator::from_iter([(
+                                    3.into(),
+                                    PositionCache::default(),
+                                )]),
+                                bottom_up: FromIterator::from_iter([]),
+                            },
+                        ),
+                    ]),
+                },
+            }
         }
     );
 }

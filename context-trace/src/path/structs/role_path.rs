@@ -65,6 +65,15 @@ impl<R: PathRole> CalcOffset for RolePath<R> {
             .fold(0, |acc, loc| acc + loc.role_inner_width::<_, R>(&graph))
     }
 }
+impl<Role: PathRole, Root: PathRoot> CalcOffset for RootedRolePath<Role, Root> {
+    fn calc_offset<G: HasGraph>(
+        &self,
+        trav: G,
+    ) -> usize {
+        self.role_path.calc_offset(trav)
+    }
+}
+
 impl<R: PathRole> RootChildIndex<R> for RolePath<R> {
     fn root_child_index(&self) -> usize {
         self.sub_path.root_entry

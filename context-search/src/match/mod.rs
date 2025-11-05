@@ -21,7 +21,7 @@ use derive_new::new;
 pub(crate) mod iterator;
 pub(crate) mod root_cursor;
 
-#[derive(Debug, new)]
+#[derive(Debug, new, Default)]
 pub(crate) struct MatchCtx {
     #[new(default)]
     pub(crate) nodes: VecDeque<TraceNode>,

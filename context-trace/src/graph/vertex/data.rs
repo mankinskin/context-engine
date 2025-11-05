@@ -581,12 +581,12 @@ impl VertexData {
             })
             .collect_vec()
     }
-    pub(crate) fn prefix_children<G: HasGraph>(&self) -> Vec<SubToken> {
+    pub fn prefix_children<G: HasGraph>(&self) -> Vec<SubToken> {
         self.selected_children(|_, pattern| {
             Some(TravDir::<G>::head_index(pattern))
         })
     }
-    pub(crate) fn postfix_children<G: HasGraph>(&self) -> Vec<SubToken>
+    pub fn postfix_children<G: HasGraph>(&self) -> Vec<SubToken>
     where
         <<G::Kind as GraphKind>::Direction as Direction>::Opposite:
             PatternDirection,
