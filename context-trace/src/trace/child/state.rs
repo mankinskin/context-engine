@@ -3,7 +3,6 @@ use crate::{
     GraphRootPattern,
     HasPath,
     PathRole,
-    RootChild,
     RootChildIndex,
     RootPattern,
     RootedPath,
@@ -33,7 +32,10 @@ use crate::{
             append::PathAppend,
             move_path::advance::Advance,
         },
-        structs::rooted::index_range::IndexRangePath,
+        structs::rooted::{
+            index_range::IndexRangePath,
+            role_path::RootChildToken,
+        },
     },
     trace::{
         cache::key::{
@@ -105,12 +107,12 @@ impl RootChildIndex<End> for ChildState {
         self.base.path.role_root_child_index::<End>()
     }
 }
-impl RootChild<End> for ChildState {
-    fn root_child<G: HasGraph>(
+impl RootChildToken<End> for ChildState {
+    fn root_child_token<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {
-        RootChild::<End>::root_child(&self.base.path, trav)
+        RootChildToken::<End>::root_child_token(&self.base.path, trav)
     }
 }
 impl GraphRoot for ChildState {

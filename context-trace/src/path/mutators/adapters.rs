@@ -7,10 +7,7 @@ use crate::{
         accessors::{
             child::{
                 LeafToken,
-                root::{
-                    GraphRootChild,
-                    RootChild,
-                },
+                root::GraphRootChild,
             },
             has_path::HasRolePath,
             role::{
@@ -21,18 +18,21 @@ use crate::{
             root::GraphRoot,
         },
         mutators::move_path::root::MoveRootIndex,
-        structs::rooted::role_path::RootChildIndexMut,
+        structs::rooted::role_path::{
+            RootChildIndexMut,
+            RootChildToken,
+        },
     },
     trace::has_graph::HasGraph,
 };
 use std::fmt::Debug;
 
 pub(crate) trait NodePath<R: PathRole>:
-    RootChild<R> + Send + Clone + Eq + Debug
+    RootChildToken<R> + Send + Clone + Eq + Debug
 {
 }
 
-impl<R: PathRole, T: RootChild<R> + Send + Clone + Eq + Debug> NodePath<R>
+impl<R: PathRole, T: RootChildToken<R> + Send + Clone + Eq + Debug> NodePath<R>
     for T
 {
 }

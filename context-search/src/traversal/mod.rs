@@ -3,18 +3,18 @@ pub(crate) mod policy;
 use crate::{
     container::StateContainer,
     cursor::PatternCursor,
-    fold::foldable::ErrorState,
     r#match::{
         iterator::MatchIterator,
         MatchCtx,
         TraceNode::Parent,
     },
+    search::searchable::ErrorState,
     state::{
         end::{
             postfix::PostfixEnd,
-            EndKind,
             EndReason,
             EndState,
+            PathEnum,
         },
         start::StartCtx,
     },
@@ -50,9 +50,9 @@ impl Traceable for TraceStart<'_> {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        if let Some(mut p) = match self.end.kind.clone() {
-            EndKind::Postfix(p) => Some(p),
-            EndKind::Range(p) => Some(PostfixEnd {
+        if let Some(mut p) = match self.end.path.clone() {
+            PathEnum::Postfix(p) => Some(p),
+            PathEnum::Range(p) => Some(PostfixEnd {
                 path: p.path.into_rooted_role_path(),
                 root_pos: p.root_pos,
             }),

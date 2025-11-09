@@ -4,84 +4,13 @@ use std::{
 };
 
 use crate::{
-    PathAppend,
-    PatternEndPath,
-    PatternLocation,
-    RootPattern,
-    direction::{
-        Right,
-        pattern::PatternDirection,
+    direction::pattern::PatternDirection,
+    path::structs::rooted::{
+        RangePath,
+        role_path::PatternRolePath,
     },
-    graph::{
-        getters::{
-            ErrorReason,
-            IndexWithPath,
-        },
-        kind::{
-            BaseGraphKind,
-            GraphKind,
-        },
-        vertex::{
-            location::child::ChildLocation,
-            pattern::{
-                IntoPattern,
-                Pattern,
-                pattern_width,
-            },
-        },
-    },
-    impl_root,
-    impl_root_child,
-    path::{
-        BaseQuery,
-        accessors::{
-            child::{
-                LeafToken,
-                root::PatternRootChild,
-            },
-            has_path::{
-                HasPath,
-                HasRolePath,
-                IntoRolePath,
-                IntoRootedRolePath,
-            },
-            role::{
-                End,
-                PathRole,
-                Start,
-            },
-            root::PatternRoot,
-        },
-        mutators::{
-            move_path::root::MoveRootIndex,
-            pop::PathPop,
-        },
-        structs::{
-            role_path::{
-                CalcOffset,
-                RolePath,
-            },
-            rooted::{
-                RangePath,
-                RootedRangePath,
-                role_path::{
-                    PatternRolePath,
-                    RootChildIndex,
-                    RootChildIndexMut,
-                    RootedRolePath,
-                },
-                root::{
-                    PathRoot,
-                    RootedPath,
-                },
-            },
-            sub_path::SubPath,
-        },
-    },
-    trace::has_graph::{
-        HasGraph,
-        TravDir,
-    },
+    trace::has_graph::TravDir,
+    *,
 };
 
 pub type PatternRangePath = RootedRangePath<Pattern>;
@@ -111,7 +40,7 @@ impl<P: IntoPattern> From<P> for PatternRangePath {
     fn from(p: P) -> Self {
         let p = p.into_pattern();
         let entry =
-            <BaseGraphKind as GraphKind>::Direction::head_index(p.borrow());
+            <<BaseGraphKind as GraphKind>::Direction as PatternDirection>::head_index(p.borrow());
         RootedRangePath {
             root: p,
             start: SubPath::new(entry, vec![]).into(),
@@ -200,10 +129,9 @@ impl<R: PathRole> PatternRootChild<R> for PatternRangePath where
 {
 }
 
-impl_root_child! { RootChild for PatternRangePath, self, _trav =>
+impl_root_child_token! { RootChildToken for PatternRangePath, self, _trav =>
        *self.root.get(self.role_root_child_index::<R>()).unwrap()
 }
-use crate::path::RolePathUtils;
 impl<Root: PathRoot> CalcOffset for RootedRangePath<Root> {
     fn calc_offset<G: HasGraph>(
         &self,

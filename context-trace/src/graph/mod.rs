@@ -173,7 +173,7 @@ impl<G: GraphKind> Hypergraph<G> {
     //        assert!(!data.tokens.is_empty());
     //        data.tokens
     //            .values()
-    //            .fold(None, |acc, p| {
+    //            .search(None, |acc, p| {
     //                let exp = self.pattern_atom_indices(p.borrow());
     //                acc.map(|acc| {
     //                    assert_eq!(acc, exp);

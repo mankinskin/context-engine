@@ -1,9 +1,6 @@
 use context_trace::{
     path::{
-        accessors::has_path::{
-            HasRolePath,
-            HasRootedRolePath,
-        },
+        accessors::has_path::HasRolePath,
         RolePathUtils,
     },
     *,
@@ -14,10 +11,7 @@ use range::RangeEnd;
 
 use crate::{
     compare::parent::ParentCompareState,
-    cursor::{
-        PathCursor,
-        PatternCursor,
-    },
+    cursor::PatternCursor,
     state::start::StartCtx,
 };
 
@@ -26,13 +20,23 @@ pub(crate) mod prefix;
 pub(crate) mod range;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) enum EndKind {
+pub(crate) enum PathEnum {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
     Complete(IndexRangePath),
 }
-impl EndKind {
+impl GraphRoot for PathEnum {
+    fn root_parent(&self) -> Token {
+        match self {
+            PathEnum::Range(p) => p.path.root_parent(),
+            PathEnum::Postfix(p) => p.path.root_parent(),
+            PathEnum::Prefix(p) => p.path.root_parent(),
+            PathEnum::Complete(c) => c.root_parent(),
+        }
+    }
+}
+impl PathEnum {
     pub(crate) fn from_range_path<G: HasGraph>(
         mut path: IndexRangePath,
         root_pos: AtomPosition,
@@ -48,17 +52,17 @@ impl EndKind {
             path.is_at_border::<_, End>(trav.graph()),
             path.raw_child_path::<End>().is_empty(),
         ) {
-            (true, true, true, true) => EndKind::Complete(path),
+            (true, true, true, true) => PathEnum::Complete(path),
             (true, true, false, _) | (true, true, true, false) =>
-                EndKind::Prefix(PrefixEnd {
+                PathEnum::Prefix(PrefixEnd {
                     path: path.into(),
                     target,
                 }),
             (false, _, true, true) | (true, false, true, true) => {
                 let path: IndexStartPath = path.into();
-                EndKind::Postfix(PostfixEnd { path, root_pos })
+                PathEnum::Postfix(PostfixEnd { path, root_pos })
             },
-            _ => EndKind::Range(RangeEnd {
+            _ => PathEnum::Range(RangeEnd {
                 path,
                 root_pos,
                 target,
@@ -75,8 +79,8 @@ impl EndKind {
             path.is_at_border::<_, Start>(trav.graph()),
             path.raw_child_path().is_empty(),
         ) {
-            (true, true) => EndKind::Complete(path.into()),
-            _ => EndKind::Postfix(PostfixEnd { path, root_pos }),
+            (true, true) => PathEnum::Complete(path.into()),
+            _ => PathEnum::Postfix(PostfixEnd { path, root_pos }),
         }
     }
 }
@@ -93,7 +97,7 @@ pub(crate) enum EndReason {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EndState {
     pub(crate) reason: EndReason,
-    pub(crate) kind: EndKind,
+    pub(crate) path: PathEnum,
     pub(crate) cursor: PatternCursor,
 }
 // impl_cursor_pos! {
@@ -105,10 +109,10 @@ impl Traceable for &EndState {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        match &self.kind {
-            EndKind::Range(p) => p.trace(ctx),
-            EndKind::Prefix(p) => p.trace(ctx),
-            EndKind::Postfix(p) => p.trace(ctx),
+        match &self.path {
+            PathEnum::Range(p) => p.trace(ctx),
+            PathEnum::Prefix(p) => p.trace(ctx),
+            PathEnum::Postfix(p) => p.trace(ctx),
             _ => {},
         }
     }
@@ -117,7 +121,9 @@ impl EndState {
     pub(crate) fn init_fold(init: StartCtx) -> Self {
         Self {
             reason: EndReason::QueryEnd,
-            kind: EndKind::Complete(IndexRangePath::new_empty(init.location)),
+            path: PathEnum::Complete(IndexRangePath::new_empty(
+                IndexRoot::from(init.location),
+            )),
             cursor: init.cursor,
         }
     }
@@ -129,7 +135,7 @@ impl EndState {
         let root_pos = *parent.parent_state.root_pos();
         Self {
             reason,
-            kind: EndKind::from_start_path(
+            path: PathEnum::from_start_path(
                 parent.parent_state.into_rooted_path(),
                 root_pos,
                 &trav,
@@ -159,55 +165,55 @@ impl EndState {
         self.start_path().map(|p| p.len()).unwrap_or_default()
     }
     pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
-        match &self.kind {
-            EndKind::Range(e) => Some(e.path.start_path()),
-            EndKind::Postfix(e) => Some(e.path.start_path()),
-            EndKind::Prefix(_) => None,
-            EndKind::Complete(_) => None,
+        match &self.path {
+            PathEnum::Range(e) => Some(e.path.start_path()),
+            PathEnum::Postfix(e) => Some(e.path.start_path()),
+            PathEnum::Prefix(_) => None,
+            PathEnum::Complete(_) => None,
         }
     }
     pub(crate) fn is_final(&self) -> bool {
         self.reason == EndReason::QueryEnd
-            && matches!(self.kind, EndKind::Complete(_))
+            && matches!(self.path, PathEnum::Complete(_))
     }
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
-        match &self.kind {
-            EndKind::Range(state) => Some(
+        match &self.path {
+            PathEnum::Range(state) => Some(
                 GraphRootChild::<Start>::graph_root_child_location(&state.path),
             ),
-            EndKind::Postfix(_) => None,
-            EndKind::Prefix(_) => None,
-            EndKind::Complete(_) => None,
+            PathEnum::Postfix(_) => None,
+            PathEnum::Prefix(_) => None,
+            PathEnum::Complete(_) => None,
         }
     }
     pub(crate) fn state_direction(&self) -> StateDirection {
-        match self.kind {
-            EndKind::Range(_) => StateDirection::TopDown,
-            EndKind::Postfix(_) => StateDirection::BottomUp,
-            EndKind::Prefix(_) => StateDirection::TopDown,
-            EndKind::Complete(_) => StateDirection::BottomUp,
+        match self.path {
+            PathEnum::Range(_) => StateDirection::TopDown,
+            PathEnum::Postfix(_) => StateDirection::BottomUp,
+            PathEnum::Prefix(_) => StateDirection::TopDown,
+            PathEnum::Complete(_) => StateDirection::BottomUp,
         }
     }
     pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
-        match &self.kind {
-            EndKind::Range(e) => Some(e.path.end_path()),
-            EndKind::Postfix(_) => None,
-            EndKind::Prefix(e) => Some(e.path.end_path()),
-            EndKind::Complete(_) => None,
+        match &self.path {
+            PathEnum::Range(e) => Some(e.path.end_path()),
+            PathEnum::Postfix(_) => None,
+            PathEnum::Prefix(e) => Some(e.path.end_path()),
+            PathEnum::Complete(_) => None,
         }
     }
     pub(crate) fn is_complete(&self) -> bool {
-        matches!(self.kind, EndKind::Complete(_))
+        matches!(self.path, PathEnum::Complete(_))
     }
 }
 
 //impl TargetKey for EndState {
 //    fn target_key(&self) -> DirectedKey {
-//        match &self.kind {
-//            EndKind::Range(p) => p.target.into(),
-//            EndKind::Postfix(_) => self.root_key().into(),
-//            EndKind::Prefix(p) => p.target.into(),
-//            EndKind::Complete(c) => c.target_key(),
+//        match &self.path {
+//            PathEnum::Range(p) => p.target.into(),
+//            PathEnum::Postfix(_) => self.root_key().into(),
+//            PathEnum::Prefix(p) => p.target.into(),
+//            PathEnum::Complete(c) => c.target_key(),
 //        }
 //    }
 //}
@@ -215,26 +221,26 @@ impl EndState {
 impl RootKey for EndState {
     fn root_key(&self) -> UpKey {
         UpKey::new(
-            match &self.kind {
-                EndKind::Range(s) => s.path.root_parent(),
-                EndKind::Postfix(p) => p.path.root_parent(),
-                EndKind::Prefix(p) => p.path.root_parent(),
-                EndKind::Complete(c) => c.root_parent(),
+            match &self.path {
+                PathEnum::Range(s) => s.path.root_parent(),
+                PathEnum::Postfix(p) => p.path.root_parent(),
+                PathEnum::Prefix(p) => p.path.root_parent(),
+                PathEnum::Complete(c) => c.root_parent(),
             },
-            match &self.kind {
-                EndKind::Range(s) => s.root_pos.into(),
-                EndKind::Postfix(p) => p.root_pos.into(),
-                EndKind::Prefix(_) => 0.into(),
-                EndKind::Complete(_) => 0.into(),
+            match &self.path {
+                PathEnum::Range(s) => s.root_pos.into(),
+                PathEnum::Postfix(p) => p.root_pos.into(),
+                PathEnum::Prefix(_) => 0.into(),
+                PathEnum::Complete(_) => 0.into(),
             },
         )
     }
 }
 impl_root! { GraphRoot for EndState, self =>
-    match &self.kind {
-        EndKind::Complete(c) => c.root_parent(),
-        EndKind::Range(p) => p.path.root_parent(),
-        EndKind::Postfix(p) => p.path.root_parent(),
-        EndKind::Prefix(p) => p.path.root_parent(),
+    match &self.path {
+        PathEnum::Complete(c) => c.root_parent(),
+        PathEnum::Range(p) => p.path.root_parent(),
+        PathEnum::Postfix(p) => p.path.root_parent(),
+        PathEnum::Prefix(p) => p.path.root_parent(),
     }
 }

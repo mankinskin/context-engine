@@ -229,7 +229,7 @@ fn index_prefix1() {
         (heldld, heldld_id) => [h, e, ld, ld]
     );
     let fold_res =
-        StartFold::fold::<InsertTraversal>(vec![h, e, l, l], graph.clone())
+        Searchable::search::<InsertTraversal>(vec![h, e, l, l], graph.clone())
             .map(CompleteState::try_from);
     assert_matches!(fold_res, Ok(Err(_)));
     let state = fold_res.unwrap().unwrap_err();
@@ -281,7 +281,7 @@ fn index_postfix1() {
         (ababcd, ababcd_id) => [ab, ab, c, d]
     );
     let fold_res =
-        StartFold::fold::<InsertTraversal>(vec![b, c, d, d], graph.clone())
+        Searchable::search::<InsertTraversal>(vec![b, c, d, d], graph.clone())
             .map(CompleteState::try_from);
 
     assert_matches!(fold_res, Ok(Err(_)));

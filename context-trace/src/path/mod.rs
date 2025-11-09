@@ -22,7 +22,10 @@ use crate::{
         },
         structs::{
             role_path::RolePath,
-            rooted::role_path::RootChildIndex,
+            rooted::role_path::{
+                RootChildIndex,
+                RootChildToken,
+            },
         },
     },
     trace::has_graph::HasGraph,
@@ -82,6 +85,15 @@ pub trait RolePathUtils {
         Self: RootedLeafTokenLocation<R>,
     {
         RootedLeafTokenLocation::<R>::rooted_leaf_token_location(self)
+    }
+    fn role_root_child_token<R: PathRole, G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Token
+    where
+        Self: RootChildToken<R>,
+    {
+        RootChildToken::<R>::root_child_token(self, trav)
     }
     fn role_root_child_index<R: PathRole>(&self) -> usize
     where

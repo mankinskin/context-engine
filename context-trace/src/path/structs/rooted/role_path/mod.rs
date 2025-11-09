@@ -170,6 +170,14 @@ impl<R: PathRoot> RootedEndPath<R> {
         }
     }
 }
+/// access to the position of a token
+#[auto_impl(&, & mut)]
+pub trait RootChildToken<R> {
+    fn root_child_token<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> Token;
+}
 
 /// access to the position of a token
 #[auto_impl(&, & mut)]
@@ -215,8 +223,8 @@ impl<R: PathRole, Root: PathRoot> RootedPath for RootedRolePath<R, Root> {
 
 impl<R: PathRole> LeafToken<R> for RolePath<R> {}
 
-impl_root_child! {
-    RootChild for IndexRolePath<R>, self,
+impl_root_child_token! {
+    RootChildToken for IndexRolePath<R>, self,
     trav => *trav.graph().expect_child_at(
             self.path_root().location.to_child_location(
                 RootChildIndex::<R>::root_child_index(&self.role_path)
@@ -295,6 +303,6 @@ impl RootChildIndex<Start> for PatternEndPath {
 //        Some(self.root_child())
 //    }
 //}
-//impl_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
+//impl_child! { RootChildToken for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
 
-impl_root_child! { RootChild for PatternRolePath<R>, self, _trav => self.pattern_root_child() }
+impl_root_child_token! { RootChildToken for PatternRolePath<R>, self, _trav => self.pattern_root_child() }

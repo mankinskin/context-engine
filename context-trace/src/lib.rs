@@ -53,10 +53,7 @@ pub use tests::{
 pub(crate) use crate::path::{
     accessors::{
         border::PathBorder,
-        child::{
-            RootedLeafToken,
-            root::PatternRootChild,
-        },
+        child::root::PatternRootChild,
         has_path::{
             HasRolePath,
             HasSinglePath,
@@ -139,10 +136,7 @@ pub use crate::{
         accessors::{
             child::{
                 LeafToken,
-                root::{
-                    GraphRootChild,
-                    RootChild,
-                },
+                root::GraphRootChild,
             },
             has_path::{
                 HasPath,
@@ -181,10 +175,7 @@ pub use crate::{
             simplify::PathSimplify,
         },
         structs::{
-            role_path::{
-                CalcOffset,
-                RolePath,
-            },
+            role_path::RolePath,
             rooted::{
                 RootedRangePath,
                 index_range::IndexRangePath,
@@ -198,8 +189,12 @@ pub use crate::{
                     IndexStartPath,
                     PatternEndPath,
                     RootChildIndex,
+                    RootChildToken,
                     RootedRolePath,
-                    calc::CalcWidth,
+                    calc::{
+                        CalcOffset,
+                        CalcWidth,
+                    },
                     range::{
                         EndPath,
                         HasEndPath,

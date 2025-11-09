@@ -9,9 +9,9 @@ use crate::{
     },
     cursor::PatternCursor,
     state::end::{
-        EndKind,
         EndReason,
         EndState,
+        PathEnum,
     },
     traversal::{
         policy::DirectedTraversalPolicy,
@@ -135,7 +135,7 @@ impl<G: HasGraph> RootCursor<G> {
                 Ok(EndState {
                     cursor,
                     reason,
-                    kind: EndKind::from_range_path(
+                    path: PathEnum::from_range_path(
                         path, root_pos, target, &self.trav,
                     ),
                 })

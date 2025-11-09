@@ -1,5 +1,3 @@
-use root::RootChild;
-
 pub(crate) mod root;
 
 use crate::{
@@ -16,6 +14,7 @@ use crate::{
         structs::rooted::role_path::{
             RootChildIndex,
             RootChildIndexMut,
+            RootChildToken,
         },
     },
     trace::has_graph::HasGraph,
@@ -41,7 +40,9 @@ pub trait RootedLeafTokenLocation<R: PathRole>:
 {
     fn rooted_leaf_token_location(&self) -> ChildLocation;
 }
-pub trait RootedLeafToken<R: PathRole>: LeafToken<R> + RootChild<R> {
+pub trait RootedLeafToken<R: PathRole>:
+    LeafToken<R> + RootChildToken<R>
+{
     fn rooted_leaf_token<G: HasGraph>(
         &self,
         trav: &G,
@@ -70,13 +71,15 @@ impl<R: PathRole, T: LeafToken<R> + GraphRootChild<R>>
             .unwrap_or_else(|| self.graph_root_child_location())
     }
 }
-impl<R: PathRole, T: LeafToken<R> + RootChild<R>> RootedLeafToken<R> for T {
+impl<R: PathRole, T: LeafToken<R> + RootChildToken<R>> RootedLeafToken<R>
+    for T
+{
     fn rooted_leaf_token<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {
         self.leaf_token(trav)
-            .unwrap_or_else(|| self.root_child(trav))
+            .unwrap_or_else(|| self.root_child_token(trav))
     }
 }
 

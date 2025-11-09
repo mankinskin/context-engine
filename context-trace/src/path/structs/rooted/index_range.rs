@@ -20,10 +20,7 @@ use crate::{
         accessors::{
             child::{
                 LeafToken,
-                root::{
-                    GraphRootChild,
-                    RootChild,
-                },
+                root::GraphRootChild,
             },
             has_path::{
                 HasMatchPaths,
@@ -62,6 +59,7 @@ use crate::{
                 role_path::{
                     RootChildIndex,
                     RootChildIndexMut,
+                    RootChildToken,
                     RootedRolePath,
                 },
                 root::{
@@ -228,8 +226,8 @@ where
         location.move_leaf(trav)
     }
 }
-impl RootChild<Start> for IndexRangePath {
-    fn root_child<G: HasGraph>(
+impl RootChildToken<Start> for IndexRangePath {
+    fn root_child_token<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {
@@ -241,8 +239,8 @@ impl RootChild<Start> for IndexRangePath {
     }
 }
 
-impl RootChild<End> for IndexRangePath {
-    fn root_child<G: HasGraph>(
+impl RootChildToken<End> for IndexRangePath {
+    fn root_child_token<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {

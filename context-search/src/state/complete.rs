@@ -3,7 +3,7 @@ use core::fmt;
 use std::fmt::Debug;
 
 use crate::{
-    state::end::EndKind,
+    state::end::PathEnum,
     Response,
 };
 
@@ -60,7 +60,7 @@ pub trait UnwrapToken: Sized + Debug {
 //    }
 //}
 
-//impl UnwrapComplete for EndKind {
+//impl UnwrapComplete for PathEnum {
 //    fn as_complete(&self) -> Option<&CompleteState> {
 //        match self {
 //            Self::Complete(c) => Some(c),

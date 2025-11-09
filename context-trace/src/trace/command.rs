@@ -1,4 +1,5 @@
 use crate::{
+    CalcOffset,
     graph::vertex::{
         pattern::pattern_width,
         wide::Wide,
@@ -12,14 +13,11 @@ use crate::{
             },
             root::RootPattern,
         },
-        structs::{
-            role_path::CalcOffset,
-            rooted::{
-                index_range::IndexRangePath,
-                role_path::{
-                    IndexEndPath,
-                    IndexStartPath,
-                },
+        structs::rooted::{
+            index_range::IndexRangePath,
+            role_path::{
+                IndexEndPath,
+                IndexStartPath,
             },
         },
     },

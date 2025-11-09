@@ -67,8 +67,8 @@ impl<Root: PathRoot> RootedRangePath<Root> {
         let path = path.into();
         Self::new(root, path.start, path.end)
     }
-    pub fn new_empty<O: Into<Root>>(root: O) -> Self {
-        Self::new(root.into(), Default::default(), Default::default())
+    pub fn new_empty(root: Root) -> Self {
+        Self::new(root, Default::default(), Default::default())
     }
 }
 impl<R: PathRoot> RootedPath for RootedRangePath<R> {

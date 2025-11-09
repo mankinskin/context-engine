@@ -3,17 +3,16 @@ use std::ops::Index;
 use context_trace::{
     GraphRoot,
     IndexRangePath,
-    RootChild,
+    RootChildToken,
 };
 
 use crate::{
     cursor::PathCursor,
     state::end::EndState,
-    CompleteState,
 };
 #[cfg(test)]
 use {
-    crate::search::Searchable,
+    crate::search::Find,
     crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::{

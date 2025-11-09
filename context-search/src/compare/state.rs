@@ -2,9 +2,9 @@ use crate::{
     compare::parent::ParentCompareState,
     cursor::PatternCursor,
     state::end::{
-        EndKind,
         EndReason,
         EndState,
+        PathEnum,
     },
 };
 use context_trace::{
@@ -149,8 +149,8 @@ impl CompareState {
         self,
         trav: &G,
     ) -> EndState {
-        use EndKind::*;
         use EndReason::*;
+        use PathEnum::*;
         let BaseState {
             prev_pos,
             mut path,
@@ -183,12 +183,12 @@ impl CompareState {
                 path.role_rooted_leaf_token::<End, _>(trav),
                 cursor.atom_position.into(),
             );
-            EndKind::from_range_path(path, root_pos, target, trav)
+            PathEnum::from_range_path(path, root_pos, target, trav)
         };
         EndState {
             reason: Mismatch,
             cursor,
-            kind,
+            path: kind,
         }
     }
 }

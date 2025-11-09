@@ -1,27 +1,9 @@
 use context_trace::*;
 
-use crate::fold::StartFoldPath;
 pub(crate) mod path;
 pub(crate) mod position;
-
-pub(crate) trait ToCursor: StartFoldPath {
-    fn to_cursor<G: HasGraph>(
-        self,
-        trav: &G,
-    ) -> PathCursor<Self>;
-}
-impl<P: StartFoldPath> ToCursor for P {
-    fn to_cursor<G: HasGraph>(
-        self,
-        trav: &G,
-    ) -> PathCursor<Self> {
-        PathCursor {
-            atom_position: self.calc_width(trav).into(),
-            path: self,
-        }
-    }
-}
-
+pub trait CursorPath: GraphRoot {}
+impl<T: GraphRoot> CursorPath for T {}
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PathCursor<P> {
     pub(crate) path: P,

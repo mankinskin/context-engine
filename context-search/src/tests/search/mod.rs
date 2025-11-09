@@ -2,24 +2,16 @@ pub(crate) mod ancestor;
 pub(crate) mod consecutive;
 pub(crate) mod parent;
 
-use crate::{
-    state::result::HasBaseResponse,
-    CompleteState,
-    IncompleteState,
-    Response,
-};
-use pretty_assertions::assert_matches;
-
 #[cfg(test)]
 use {
-    crate::search::Searchable,
+    crate::search::Find,
     crate::{
         cursor::PatternCursor,
         state::end::{
             range::RangeEnd,
-            EndKind,
             EndReason,
             EndState,
+            PathEnum,
         },
     },
     context_trace::tests::env::Env1,
@@ -27,9 +19,20 @@ use {
     context_trace::*,
     pretty_assertions::assert_eq,
 
+    pretty_assertions::assert_matches,
     std::iter::FromIterator,
 };
-
+#[macro_export]
+macro_rules! assert_indices {
+    ($graph:ident, $($name:ident),*) => {
+        $(
+        let $name = $graph
+            .find_sequence(stringify!($name).chars())
+            .unwrap()
+            .expect_complete(stringify!($name));
+        )*
+    };
+}
 #[test]
 fn find_sequence() {
     let Env1 {
@@ -108,51 +111,43 @@ fn find_pattern1() {
             TD { 2 => y -> (y_z_id, 0) },
         ),
     );
-    let base_found = aby_found.base_response();
     assert_eq!(
-        base_found.cache.entries[&xab.index],
-        expected_cache.entries[&xab.index],
+        aby_found.cache.entries[&xab.index], expected_cache.entries[&xab.index],
         "xab"
     );
     assert_eq!(
-        base_found.cache.entries[&xabyz.index],
+        aby_found.cache.entries[&xabyz.index],
         expected_cache.entries[&xabyz.index],
         "xabyz"
     );
     assert_eq!(
-        base_found.cache.entries[&yz.index], expected_cache.entries[&yz.index],
+        aby_found.cache.entries[&yz.index], expected_cache.entries[&yz.index],
         "yz"
     );
-    assert_eq!(base_found.cache.entries.len(), 5);
-    assert_matches!(
-        aby_found,
-        Response::Incomplete(IncompleteState {
-            end,
-            ..
-        }) if end == EndState {
-                reason: EndReason::Mismatch,
-                kind: EndKind::Range(RangeEnd {
-                    root_pos: 2.into(),
-                    target: DownKey::new(y, 3.into()),
-                    path: RootedRangePath::new(
-                        PatternLocation::new(xabyz, xab_yz_id),
-                        RolePath::new(
-                            0,
-                            vec![ChildLocation::new(xab, x_a_b_id, 1)],
-                        ),
-                        RolePath::new(
-                            1,
-                            vec![ChildLocation::new(yz, y_z_id, 0)],
-                        ),
+    assert_eq!(aby_found.cache.entries.len(), 5);
+    assert_eq!(
+        aby_found.end,
+        EndState {
+            reason: EndReason::Mismatch,
+            path: PathEnum::Range(RangeEnd {
+                root_pos: 2.into(),
+                target: DownKey::new(y, 3.into()),
+                path: RootedRangePath::new(
+                    PatternLocation::new(xabyz, xab_yz_id),
+                    RolePath::new(
+                        0,
+                        vec![ChildLocation::new(xab, x_a_b_id, 1)],
                     ),
-                }),
-                cursor: PatternCursor {
-                    path: RootedRolePath::new(
-                        query.clone(),
-                        RolePath::new(2, vec![]),
-                    ),
-                    atom_position: 3.into(),
-                },
-            }
+                    RolePath::new(1, vec![ChildLocation::new(yz, y_z_id, 0)],),
+                ),
+            }),
+            cursor: PatternCursor {
+                path: RootedRolePath::new(
+                    query.clone(),
+                    RolePath::new(2, vec![]),
+                ),
+                atom_position: 3.into(),
+            },
+        }
     );
 }

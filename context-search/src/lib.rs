@@ -15,7 +15,6 @@ extern crate test;
 pub(crate) mod compare;
 pub(crate) mod container;
 pub(crate) mod cursor;
-pub(crate) mod fold;
 pub(crate) mod r#match;
 pub(crate) mod search;
 pub(crate) mod state;
@@ -26,13 +25,13 @@ pub(crate) mod tests;
 
 pub use crate::{
     container::bft::BftQueue,
-    fold::foldable::{
-        ErrorState,
-        StartFold,
-    },
     search::{
         context::AncestorPolicy,
-        Searchable,
+        searchable::{
+            ErrorState,
+            Searchable,
+        },
+        Find,
     },
     state::result::Response,
     traversal::TraversalKind,

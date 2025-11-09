@@ -13,9 +13,9 @@ pub trait ToInsertCtx<R: InsertResult = Token>: HasGraphMut {
 
     fn insert(
         &self,
-        foldable: impl StartFold,
+        searchable: impl Searchable,
     ) -> Result<R, ErrorState> {
-        self.insert_context().insert(foldable)
+        self.insert_context().insert(searchable)
     }
     fn insert_init(
         &self,
@@ -26,9 +26,9 @@ pub trait ToInsertCtx<R: InsertResult = Token>: HasGraphMut {
     }
     fn insert_or_get_complete(
         &self,
-        foldable: impl StartFold,
+        searchable: impl Searchable,
     ) -> Result<Result<R, R::Error>, ErrorReason> {
-        self.insert_context().insert_or_get_complete(foldable)
+        self.insert_context().insert_or_get_complete(searchable)
     }
 }
 impl<R: InsertResult> ToInsertCtx<R> for HypergraphRef {

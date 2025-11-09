@@ -2,7 +2,7 @@ use std::ops::ControlFlow;
 
 use crate::{
     cursor::PathCursor,
-    fold::StartFoldPath,
+    state::start::StartFoldPath,
 };
 use context_trace::*;
 
@@ -85,14 +85,14 @@ impl<R: PathRole, P: StartFoldPath + HasPath<R>> HasPath<R> for PathCursor<P> {
     }
 }
 
-impl<R: PathRole, P: RootChild<R> + StartFoldPath> RootChild<R>
+impl<R: PathRole, P: RootChildToken<R> + StartFoldPath> RootChildToken<R>
     for PathCursor<P>
 {
-    fn root_child<G: HasGraph>(
+    fn root_child_token<G: HasGraph>(
         &self,
         trav: &G,
     ) -> Token {
-        RootChild::<R>::root_child(&self.path, trav)
+        RootChildToken::<R>::root_child_token(&self.path, trav)
     }
 }
 impl<R: PathRole, P: StartFoldPath + LeafToken<R>> LeafToken<R>

@@ -1,33 +1,15 @@
-use std::{
-    ops::Index,
-    path::Path,
-};
-
 use context_trace::*;
-use petgraph::Direction::Incoming;
 
-use crate::{
-    cursor::{
-        PathCursor,
-        PatternCursor,
-    },
-    state::end::{
-        EndKind,
-        EndReason,
-        EndState,
-    },
-};
+use crate::state::end::EndState;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Response {
     pub cache: TraceCache,
-    pub(crate) start: Token,
     pub end: EndState,
-    pub path: IndexRangePath,
 }
 //impl From<EndState> for Response {
 //    fn from(state: EndState) -> Self {
-//        if let EndKind::Complete(c) = &state.kind {
+//        if let PathEnum::Complete(c) = &state.kind {
 //            Response::Complete(*c) // cursor.path
 //        } else {
 //            Response::Incomplete(Box::new(state))
@@ -37,16 +19,14 @@ pub struct Response {
 
 impl Response {
     pub(crate) fn new(
-        start: Token,
+        //start: Token,
         cache: TraceCache,
         end: EndState,
-        path: IndexRangePath,
     ) -> Self {
         Self {
             cache,
-            start,
+            //start,
             end,
-            path,
         }
     }
 
@@ -83,7 +63,7 @@ impl Response {
     //        path,
     //        end: EndState {
     //            reason: EndReason::QueryEnd,
-    //            kind: EndKind::Complete(path),
+    //            kind: PathEnum::Complete(path),
     //        },
     //    }
     //}
@@ -91,8 +71,8 @@ impl Response {
 impl TargetKey for Response {
     fn target_key(&self) -> DirectedKey {
         DirectedKey::up(
-            self.path.root_parent(),
-            self.path.root_parent().width(),
+            self.end.path.root_parent(),
+            self.end.path.root_parent().width(),
         )
     }
 }
@@ -100,7 +80,7 @@ impl TargetKey for Response {
 //    type Error = &'static str;
 //    fn try_into(self) -> Result<IncompleteState, Self::Error> {
 //        match self.end.kind {
-//            EndKind::Complete(_) => Err("Response is Complete, not Incomplete"),
+//            PathEnum::Complete(_) => Err("Response is Complete, not Incomplete"),
 //            _ => Ok(IncompleteState { end: self.end, }),
 //        }
 //    }

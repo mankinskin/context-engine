@@ -18,24 +18,16 @@ use crate::{
     },
     trace::has_graph::HasGraph,
 };
-use auto_impl::auto_impl;
 
-#[auto_impl(&, & mut)]
-pub trait RootChild<R>: RootChildIndex<R> {
-    fn root_child<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> Token;
-}
 #[macro_export]
-macro_rules! impl_root_child {
+macro_rules! impl_root_child_token {
     {
-        RootChild for $target:ty, $self_:ident, $trav:ident => $func:expr
+        RootChildToken for $target:ty, $self_:ident, $trav:ident => $func:expr
     } => {
-        impl<R: PathRole> $crate::path::accessors::child::root::RootChild<R> for $target
+        impl<R: PathRole> $crate::path::RootChildToken<R> for $target
             where $target: RootChildIndex<R>
         {
-            fn root_child<
+            fn root_child_token<
                 G: HasGraph,
             >(& $self_, $trav: &G) -> $crate::graph::vertex::token::Token {
                 $func

@@ -1,16 +1,16 @@
 use crate::{
-    fold::FoldCtx,
+    search::FoldCtx,
     traversal::TraversalKind,
 };
-pub(crate) trait IntoFoldCtx<K: TraversalKind> {
-    fn start_fold(
-        self,
-        trav: K::Trav,
-    ) -> FoldCtx<K>;
-}
+//pub(crate) trait IntoFoldCtx<K: TraversalKind> {
+//    fn start_search(
+//        self,
+//        trav: K::Trav,
+//    ) -> FoldCtx<K>;
+//}
 
 //impl<K: TraversalKind, S: ToToken> IntoFoldCtx<K> for S {
-//    fn start_fold(
+//    fn start_search(
 //        self,
 //        trav: K::Trav,
 //    ) -> FoldCtx<K> {

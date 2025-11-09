@@ -1,16 +1,12 @@
-use crate::{
-    state::result::HasBaseResponse,
-    UnwrapComplete,
-};
 use context_trace::{
     GraphRoot,
-    RootChild,
+    RootChildToken,
 };
 
 #[cfg(test)]
 use {
     crate::cursor::PatternCursor,
-    crate::search::Searchable,
+    crate::search::Find,
     crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::PatternPrefixPath,

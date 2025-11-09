@@ -1,18 +1,12 @@
-use crate::{
-    cursor::PatternCursor,
-    state::result::BaseResponse,
-    CompleteState,
-    IncompleteState,
-};
 #[cfg(test)]
 use {
     crate::{
-        search::Searchable,
+        search::Find,
         state::end::{
             postfix::PostfixEnd,
-            EndKind,
             EndReason,
             EndState,
+            PathEnum,
         },
         state::result::Response,
     },
@@ -169,7 +163,7 @@ fn find_ancestor2() {
         Response::Incomplete(IncompleteState {
             end_state: EndState {
                 reason: EndReason::QueryEnd,
-                kind: EndKind::Postfix(PostfixEnd {
+                kind: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xabyz, xaby_z_id,),
@@ -353,7 +347,7 @@ fn find_ancestor3() {
             },
             end_state: EndState {
                 reason: EndReason::QueryEnd,
-                kind: EndKind::Postfix(PostfixEnd {
+                kind: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xaby, xab_y_id),

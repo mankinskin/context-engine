@@ -46,33 +46,6 @@ impl<R: PathRole> RolePath<R> {
         RootedRolePath::from((root, self))
     }
 }
-pub trait CalcOffset {
-    // TODO: Make offset side relative
-    fn calc_offset<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize;
-}
-impl<R: PathRole> CalcOffset for RolePath<R> {
-    fn calc_offset<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize {
-        let graph = trav.graph();
-        self.sub_path
-            .path
-            .iter()
-            .fold(0, |acc, loc| acc + loc.role_inner_width::<_, R>(&graph))
-    }
-}
-impl<Role: PathRole, Root: PathRoot> CalcOffset for RootedRolePath<Role, Root> {
-    fn calc_offset<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize {
-        self.role_path.calc_offset(trav)
-    }
-}
 
 impl<R: PathRole> RootChildIndex<R> for RolePath<R> {
     fn root_child_index(&self) -> usize {

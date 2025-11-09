@@ -50,17 +50,7 @@ macro_rules! assert_not_indices {
         )*
     };
 }
-#[macro_export]
-macro_rules! assert_indices {
-    ($graph:ident, $($name:ident),*) => {
-        $(
-        let $name = $graph
-            .find_sequence(stringify!($name).chars())
-            .unwrap()
-            .expect_complete(stringify!($name));
-        )*
-    };
-}
+
 #[macro_export]
 macro_rules! expect_atoms {
     ($graph:ident, {$($name:ident),*}) => {

@@ -1,5 +1,4 @@
 use crate::{
-    state::result::Response,
     traversal::{
         policy::DirectedTraversalPolicy,
         TraversalKind,
