@@ -1,6 +1,9 @@
 use context_trace::*;
 
-use crate::state::end::EndState;
+use crate::state::end::{
+    EndState,
+    PathEnum,
+};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Response {
@@ -27,6 +30,35 @@ impl Response {
             cache,
             //start,
             end,
+        }
+    }
+
+    /// Check if the response is complete (search fully matched)
+    pub fn is_complete(&self) -> bool {
+        matches!(self.end.path, PathEnum::Complete(_))
+    }
+
+    /// Unwrap a complete response, panicking if incomplete
+    pub fn unwrap_complete(self) -> IndexRangePath {
+        self.expect_complete("Called unwrap_complete on incomplete Response")
+    }
+
+    /// Unwrap a complete response with a custom error message
+    pub fn expect_complete(
+        self,
+        msg: &str,
+    ) -> IndexRangePath {
+        match self.end.path {
+            PathEnum::Complete(path) => path,
+            _ => panic!("{}", msg),
+        }
+    }
+
+    /// Try to get the complete path if the response is complete
+    pub fn as_complete(&self) -> Option<&IndexRangePath> {
+        match &self.end.path {
+            PathEnum::Complete(path) => Some(path),
+            _ => None,
         }
     }
 

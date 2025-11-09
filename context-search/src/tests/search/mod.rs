@@ -13,6 +13,7 @@ use {
             EndState,
             PathEnum,
         },
+        state::result::Response,
     },
     context_trace::tests::env::Env1,
 
@@ -29,7 +30,8 @@ macro_rules! assert_indices {
         let $name = $graph
             .find_sequence(stringify!($name).chars())
             .unwrap()
-            .expect_complete(stringify!($name));
+            .expect_complete(stringify!($name))
+            .root_parent();
         )*
     };
 }
@@ -53,10 +55,13 @@ fn find_sequence() {
     let abc_found = graph.find_ancestor(&query);
     assert_matches!(
         abc_found,
-        Ok(Response::Complete(CompleteState {
-           path,
-           ..
-        })) if path.root_parent() == *abc,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
+            ..
+        }) if path.root_parent() == *abc,
         "abc"
     );
     let query = graph
@@ -65,10 +70,13 @@ fn find_sequence() {
     let ababababcdefghi_found = graph.find_ancestor(&query);
     assert_matches!(
         ababababcdefghi_found,
-        Ok(Response::Complete(CompleteState {
-           path,
-           ..
-        })) if path.root_parent() == *ababababcdefghi,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
+            ..
+        }) if path.root_parent() == *ababababcdefghi,
         "ababababcdefghi"
     );
 }
@@ -142,9 +150,10 @@ fn find_pattern1() {
                 ),
             }),
             cursor: PatternCursor {
-                path: RootedRolePath::new(
+                path: RootedRangePath::new(
                     query.clone(),
                     RolePath::new(2, vec![]),
+                    RolePath::new_empty(query.len()),
                 ),
                 atom_position: 3.into(),
             },

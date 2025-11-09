@@ -1,6 +1,7 @@
 #[cfg(test)]
 use {
     crate::{
+        cursor::PatternCursor,
         search::Find,
         state::end::{
             postfix::PostfixEnd,
@@ -60,10 +61,13 @@ fn find_ancestor1() {
     let query = b_c_pattern;
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *bc,
+        }) if path.path_root().pattern_location().parent == *bc,
         "b_c"
     );
 
@@ -71,40 +75,52 @@ fn find_ancestor1() {
     let query = a_bc_pattern;
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *abc,
+        }) if path.path_root().pattern_location().parent == *abc,
         "a_bc"
     );
 
     let query = ab_c_pattern;
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *abc,
+        }) if path.path_root().pattern_location().parent == *abc,
         "ab_c"
     );
 
     let query = a_bc_d_pattern;
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *abcd,
+        }) if path.path_root().pattern_location().parent == *abcd,
         "a_bc_d"
     );
 
     let query = a_b_c_pattern.clone();
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *abc,
+        }) if path.path_root().pattern_location().parent == *abc,
         "a_b_c"
     );
 
@@ -114,20 +130,26 @@ fn find_ancestor1() {
         .collect();
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *ababababcdefghi,
+        }) if path.path_root().pattern_location().parent == *ababababcdefghi,
         "a_b_a_b_a_b_a_b_c_d_e_f_g_h_i"
     );
 
     let query = [&a_b_c_pattern[..], &[Token::new(c, 1)]].concat();
     assert_matches!(
         graph.find_ancestor(&query),
-        Ok(Response::Complete(CompleteState {
-            root: x,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
             ..
-        })) if x.index == *abc,
+        }) if path.path_root().pattern_location().parent == *abc,
         "a_b_c_c"
     );
 }
@@ -160,10 +182,10 @@ fn find_ancestor2() {
 
     assert_eq!(
         byz_found,
-        Response::Incomplete(IncompleteState {
-            end_state: EndState {
+        Response {
+            end: EndState {
                 reason: EndReason::QueryEnd,
-                kind: PathEnum::Postfix(PostfixEnd {
+                path: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xabyz, xaby_z_id,),
@@ -173,72 +195,62 @@ fn find_ancestor2() {
                         ),
                     )
                 }),
-            },
-            root: IndexWithPath {
-                index: xabyz,
-                path: RootedRangePath::new(
-                    query.clone(),
-                    RolePath::new_empty(1),
-                    RolePath::new_empty(1),
-                ),
-            },
-            base: BaseResponse {
-                start: by,
                 cursor: PatternCursor {
-                    path: RootedRolePath::new(
+                    path: RootedRangePath::new(
                         query.clone(),
+                        RolePath::new_empty(1),
                         RolePath::new_empty(1),
                     ),
                     atom_position: 3.into(),
                 },
-                cache: TraceCache {
-                    entries: HashMap::from_iter([
-                        (
-                            xabyz.index,
-                            VertexCache {
-                                index: xabyz,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([(
-                                    2.into(), // width of by
-                                    PositionCache::new(
-                                        Default::default(),
-                                        HashMap::from_iter([(
-                                            DirectedKey::up(xaby, 2), // width of by
-                                            SubLocation::new(xaby_z_id, 0),
-                                        ),]),
-                                    )
-                                )]),
-                            }
-                        ),
-                        (
-                            xaby.index,
-                            VertexCache {
-                                index: xaby,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([(
-                                    2.into(), // width of by
-                                    PositionCache::new(
-                                        HashSet::from_iter([]),
-                                        HashMap::from_iter([(
-                                            DirectedKey::up(by, 2), // width of by
-                                            SubLocation::new(xa_by_id, 1)
-                                        )]),
-                                    )
-                                )]),
-                            }
-                        ),
-                        (
-                            by.index,
-                            VertexCache {
-                                index: by,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([]),
-                            }
-                        ),
-                    ]),
-                }
-            }
-        })
+            },
+            cache: TraceCache {
+                entries: HashMap::from_iter([
+                    (
+                        xabyz.index,
+                        VertexCache {
+                            index: xabyz,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([(
+                                2.into(), // width of by
+                                PositionCache::new(
+                                    Default::default(),
+                                    HashMap::from_iter([(
+                                        DirectedKey::up(xaby, 2), // width of by
+                                        SubLocation::new(xaby_z_id, 0),
+                                    ),]),
+                                )
+                            )]),
+                        }
+                    ),
+                    (
+                        xaby.index,
+                        VertexCache {
+                            index: xaby,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([(
+                                2.into(), // width of by
+                                PositionCache::new(
+                                    HashSet::from_iter([]),
+                                    HashMap::from_iter([(
+                                        DirectedKey::up(by, 2), // width of by
+                                        SubLocation::new(xa_by_id, 1)
+                                    )]),
+                                )
+                            )]),
+                        }
+                    ),
+                    (
+                        by.index,
+                        VertexCache {
+                            index: by,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([]),
+                        }
+                    ),
+                ]),
+            },
+        }
     );
 }
 
@@ -280,74 +292,56 @@ fn find_ancestor3() {
     let aby_found = gr.find_ancestor(&query).unwrap();
     assert_eq!(
         aby_found.clone(),
-        Response::Incomplete(IncompleteState {
-            base: BaseResponse {
-                start: ab,
-                cursor: PatternCursor {
-                    path: RootedRolePath::new(
-                        query.clone(),
-                        RolePath::new_empty(1),
+        Response {
+            cache: TraceCache {
+                entries: HashMap::from_iter([
+                    (
+                        xaby.index,
+                        VertexCache {
+                            index: xaby,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([(
+                                2.into(),
+                                PositionCache::new(
+                                    Default::default(),
+                                    HashMap::from_iter([(
+                                        DirectedKey::up(xab, 2),
+                                        SubLocation::new(xab_y_id, 0),
+                                    ),]),
+                                )
+                            )]),
+                        }
                     ),
-                    atom_position: 3.into(),
-                },
-                cache: TraceCache {
-                    entries: HashMap::from_iter([
-                        (
-                            xaby.index,
-                            VertexCache {
-                                index: xaby,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([(
-                                    2.into(),
-                                    PositionCache::new(
-                                        Default::default(),
-                                        HashMap::from_iter([(
-                                            DirectedKey::up(xab, 2),
-                                            SubLocation::new(xab_y_id, 0),
-                                        ),]),
-                                    )
-                                )]),
-                            }
-                        ),
-                        (
-                            xab.index,
-                            VertexCache {
-                                index: xab,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([(
-                                    2.into(),
-                                    PositionCache::new(
-                                        HashSet::from_iter([]),
-                                        HashMap::from_iter([(
-                                            DirectedKey::up(ab, 2),
-                                            SubLocation::new(x_ab_id, 1),
-                                        )]),
-                                    )
-                                )]),
-                            }
-                        ),
-                        (
-                            ab.index,
-                            VertexCache {
-                                index: ab,
-                                top_down: FromIterator::from_iter([]),
-                                bottom_up: FromIterator::from_iter([]),
-                            }
-                        ),
-                    ]),
-                }
+                    (
+                        xab.index,
+                        VertexCache {
+                            index: xab,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([(
+                                2.into(),
+                                PositionCache::new(
+                                    HashSet::from_iter([]),
+                                    HashMap::from_iter([(
+                                        DirectedKey::up(ab, 2),
+                                        SubLocation::new(x_ab_id, 1),
+                                    )]),
+                                )
+                            )]),
+                        }
+                    ),
+                    (
+                        ab.index,
+                        VertexCache {
+                            index: ab,
+                            top_down: FromIterator::from_iter([]),
+                            bottom_up: FromIterator::from_iter([]),
+                        }
+                    ),
+                ]),
             },
-            root: IndexWithPath {
-                index: xaby,
-                path: RootedRangePath::new(
-                    query.clone(),
-                    RolePath::new_empty(1),
-                    RolePath::new_empty(1),
-                ),
-            },
-            end_state: EndState {
+            end: EndState {
                 reason: EndReason::QueryEnd,
-                kind: PathEnum::Postfix(PostfixEnd {
+                path: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xaby, xab_y_id),
@@ -356,8 +350,16 @@ fn find_ancestor3() {
                             vec![ChildLocation::new(xab, x_ab_id, 1)],
                         ),
                     )
-                })
+                }),
+                cursor: PatternCursor {
+                    path: RootedRangePath::new(
+                        query.clone(),
+                        RolePath::new_empty(1),
+                        RolePath::new_empty(1),
+                    ),
+                    atom_position: 3.into(),
+                },
             },
-        })
+        }
     );
 }

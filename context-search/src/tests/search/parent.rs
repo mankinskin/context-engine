@@ -8,7 +8,10 @@ use context_trace::{
 
 use crate::{
     cursor::PathCursor,
-    state::end::EndState,
+    state::end::{
+        EndState,
+        PathEnum,
+    },
 };
 #[cfg(test)]
 use {
@@ -63,21 +66,25 @@ fn find_parent1() {
     let query = b_c_pattern;
     assert_matches!(
         graph.find_parent(&query),
-        Ok(Response::Complete(CompleteState {
-                path,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
                 ..
-            }),
-        ) if path.root_parent() == *bc,
+            },
+            ..
+        }) if path.root_parent() == *bc,
         "b_c"
     );
     let query = ab_c_pattern;
     assert_matches!(
         graph.find_parent(&query),
-        Ok(Response::Complete(CompleteState {
-                path,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
                 ..
-            }),
-        ) if path.root_parent() == *abc,
+            },
+            ..
+        }) if path.root_parent() == *abc,
         "ab_c"
     );
     // enable when bfs for parent-token batches is implemented

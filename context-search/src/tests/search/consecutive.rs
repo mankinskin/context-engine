@@ -7,6 +7,10 @@ use context_trace::{
 use {
     crate::cursor::PatternCursor,
     crate::search::Find,
+    crate::state::end::{
+        EndState,
+        PathEnum,
+    },
     crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::PatternPrefixPath,
@@ -43,20 +47,31 @@ fn find_consecutive1() {
         Token::new(c, 1),
     ];
 
-    let query =
-        PatternCursor::from(PatternPrefixPath::from(g_h_i_a_b_c_pattern));
+    let query = PatternPrefixPath::from(g_h_i_a_b_c_pattern);
     let fin = graph.find_ancestor(&query);
     assert_matches!(
         fin,
-        Ok(Response::Complete(x)
-        ) if x.path.root_parent() == *ghi,
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
+            ..
+        }) if path.root_parent() == *ghi,
         "+g_h_i_a_b_c"
     );
-    let query = fin.unwrap().unwrap_complete().make_cursor();
+
+    // Extract the cursor from the response and use it for the next search
+    let query = fin.unwrap().end.cursor;
     assert_matches!(
-        graph.find_ancestor(query),
-        Ok(Response::Complete(x)
-        ) if x.path.root_parent() == *abc,
+        graph.find_ancestor(&query),
+        Ok(Response {
+            end: EndState {
+                path: PathEnum::Complete(ref path),
+                ..
+            },
+            ..
+        }) if path.root_parent() == *abc,
         "g_h_i_+a_b_c"
     );
 }
