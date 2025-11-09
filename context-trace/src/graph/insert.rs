@@ -104,8 +104,8 @@ where
         let data = self.finish_vertex_builder(builder);
         self.insert_atom_data(atom, data)
     }
-    // insert single atom node
-    pub(crate) fn insert_atom(
+    /// insert single atom node
+    pub fn insert_atom(
         &mut self,
         atom: Atom<G::Atom>,
     ) -> Token {
