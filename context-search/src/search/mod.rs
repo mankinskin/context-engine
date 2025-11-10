@@ -47,7 +47,7 @@ pub trait Find: HasGraph {
         let iter = atomizing_iter(pattern.into_iter());
         let atoms: Vec<_> = iter.collect();
         tracing::Span::current().record("pattern_len", atoms.len());
-        info!("Finding sequence pattern with {} atoms", atoms.len());
+        debug!("Finding sequence pattern with {} atoms", atoms.len());
         trace!("Pattern atoms: {}", pretty(&atoms));
 
         let pattern = self.graph().get_atom_children(atoms.into_iter())?;
@@ -62,15 +62,15 @@ pub trait Find: HasGraph {
         &self,
         searchable: impl Searchable,
     ) -> SearchResult {
-        info!("Starting parent search");
+        debug!("Starting parent search");
         let result = searchable
             .search::<ParentSearchTraversal<Self>>(self.ctx())
             .map_err(|err| err.reason);
 
         match &result {
             Ok(response) =>
-                info!("Parent search succeeded: end={}", pretty(&response.end)),
-            Err(reason) => info!("Parent search failed: {}", pretty(reason)),
+                debug!("Parent search succeeded: end={}", pretty(&response.end)),
+            Err(reason) => debug!("Parent search failed: {}", pretty(reason)),
         }
         result
     }
@@ -81,17 +81,17 @@ pub trait Find: HasGraph {
         &self,
         searchable: impl Searchable,
     ) -> SearchResult {
-        info!("Starting ancestor search");
+        debug!("Starting ancestor search");
         let result = searchable
             .search::<AncestorSearchTraversal<Self>>(self.ctx())
             .map_err(|err| err.reason);
 
         match &result {
-            Ok(response) => info!(
+            Ok(response) => debug!(
                 "Ancestor search succeeded: end={}",
                 pretty(&response.end)
             ),
-            Err(reason) => info!("Ancestor search failed: {}", pretty(reason)),
+            Err(reason) => debug!("Ancestor search failed: {}", pretty(reason)),
         }
         result
     }
@@ -157,7 +157,7 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
 impl<K: TraversalKind> FoldCtx<K> {
     #[instrument(skip(self))]
     pub(crate) fn search(mut self) -> Response {
-        info!("Starting fold search");
+        debug!("Starting fold search");
         debug!(
             "Initial state: matches={}, last_match={}",
             pretty(&self.matches),
@@ -172,7 +172,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             end.trace(&mut self.matches.0);
         }
 
-        info!("Fold completed after {} iterations", iteration);
+        debug!("Fold completed after {} iterations", iteration);
 
         // Get the final end state
         let end = match self.last_match {
@@ -214,7 +214,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             end,
         };
 
-        info!("Search complete: {}", pretty(&response));
+        debug!("Search complete: {}", pretty(&response));
         response
     }
 }

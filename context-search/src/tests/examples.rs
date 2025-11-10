@@ -25,8 +25,6 @@ fn example_basic_sequence_search() {
     // Initialize tracing for this test - log file will be cleaned up on success
     let _tracing = init_test_tracing!();
 
-    info!("Starting basic sequence search test");
-
     // Create graph and insert atoms
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     debug!("Created empty hypergraph");
@@ -43,7 +41,7 @@ fn example_basic_sequence_search() {
 
     // Create a pattern [a, b, c]
     let abc = graph.insert_pattern([a, b, c]);
-    info!(abc = %pretty(&abc), "Created pattern [a, b, c]");
+    debug!(abc = %pretty(&abc), "Created pattern [a, b, c]");
 
     // Search for [b, c] in the graph
     let graph = HypergraphRef::from(graph);
@@ -72,7 +70,6 @@ fn example_basic_sequence_search() {
     // Verify the path points to abc as the parent
     let parent = response.end.path.root_parent();
     assert_eq!(parent, abc);
-    info!("Test completed successfully");
 }
 
 #[test]

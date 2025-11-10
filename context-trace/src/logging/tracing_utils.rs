@@ -16,6 +16,7 @@ use std::{
 use tracing::Level;
 use tracing_subscriber::{
     EnvFilter,
+    Layer,
     fmt::format::FmtSpan,
     layer::SubscriberExt,
     util::SubscriberInitExt,
@@ -68,14 +69,18 @@ fn get_target_dir() -> PathBuf {
 pub struct TracingConfig {
     /// Directory where log files are stored
     pub log_dir: PathBuf,
-    /// Default log level
-    pub default_level: Level,
+    /// Default log level for stdout
+    pub stdout_level: Level,
+    /// Default log level for file
+    pub file_level: Level,
     /// Whether to log to stdout
     pub log_to_stdout: bool,
     /// Whether to log to file
     pub log_to_file: bool,
-    /// Custom filter directives (e.g., "context_search=debug,context_trace=info")
-    pub filter_directives: Option<String>,
+    /// Custom filter directives for stdout (e.g., "context_search=info,context_trace=error")
+    pub stdout_filter_directives: Option<String>,
+    /// Custom filter directives for file (e.g., "context_search=trace,context_trace=debug")
+    pub file_filter_directives: Option<String>,
     /// Which spans to log
     pub span_events: FmtSpan,
 }
@@ -84,33 +89,78 @@ impl Default for TracingConfig {
     fn default() -> Self {
         Self {
             log_dir: get_target_dir().join("test-logs"),
-            default_level: Level::DEBUG,
-            log_to_stdout: false,
+            stdout_level: Level::INFO,
+            file_level: Level::TRACE,
+            log_to_stdout: true,
             log_to_file: true,
-            filter_directives: None,
+            stdout_filter_directives: None,
+            file_filter_directives: None,
             span_events: FmtSpan::NEW | FmtSpan::CLOSE,
         }
     }
 }
 
 impl TracingConfig {
-    /// Create config with custom log level
+    /// Create config with custom log level for both stdout and file
     pub fn with_level(
         mut self,
         level: Level,
     ) -> Self {
-        self.default_level = level;
+        self.stdout_level = level;
+        self.file_level = level;
         self
     }
 
-    /// Create config with custom filter directives
+    /// Create config with custom stdout log level
+    pub fn with_stdout_level(
+        mut self,
+        level: Level,
+    ) -> Self {
+        self.stdout_level = level;
+        self
+    }
+
+    /// Create config with custom file log level
+    pub fn with_file_level(
+        mut self,
+        level: Level,
+    ) -> Self {
+        self.file_level = level;
+        self
+    }
+
+    /// Create config with custom filter directives for both stdout and file
     ///
     /// Example: `"context_search::search=trace,context_trace=debug"`
     pub fn with_filter(
         mut self,
         filter: impl Into<String>,
     ) -> Self {
-        self.filter_directives = Some(filter.into());
+        let filter_str = filter.into();
+        self.stdout_filter_directives = Some(filter_str.clone());
+        self.file_filter_directives = Some(filter_str);
+        self
+    }
+
+    /// Create config with custom filter directives for stdout only
+    ///
+    /// Example: `"context_search=info,context_trace=error"`
+    pub fn with_stdout_filter(
+        mut self,
+        filter: impl Into<String>,
+    ) -> Self {
+        self.stdout_filter_directives = Some(filter.into());
+        self
+    }
+
+    /// Create config with custom filter directives for file only
+    ///
+    /// Example: `"context_search=trace,context_trace=debug"`
+    pub fn with_file_filter(
+        mut self,
+        filter: impl Into<String>,
+    ) -> Self {
+        self.file_filter_directives = Some(filter.into());
         self
     }
 
@@ -197,20 +247,30 @@ impl TestTracing {
             None
         };
 
-        // Build the filter
-        let filter = if let Some(directives) = &config.filter_directives {
-            EnvFilter::try_new(directives).unwrap_or_else(|_| {
-                EnvFilter::new(config.default_level.as_str())
-            })
+        // Build separate filters for stdout and file
+        let stdout_filter =
+            if let Some(directives) = &config.stdout_filter_directives {
+                EnvFilter::try_new(directives).unwrap_or_else(|_| {
+                    EnvFilter::new(config.stdout_level.as_str())
+                })
+            } else {
+                // Check for RUST_LOG env var, otherwise use stdout level
+                EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                    EnvFilter::new(config.stdout_level.as_str())
+                })
+            };
+
+        let file_filter = if let Some(directives) =
+            &config.file_filter_directives
+        {
+            EnvFilter::try_new(directives)
+                .unwrap_or_else(|_| EnvFilter::new(config.file_level.as_str()))
         } else {
-            // Check for RUST_LOG env var, otherwise use default level
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-                EnvFilter::new(config.default_level.as_str())
-            })
+            EnvFilter::new(config.file_level.as_str())
         };
 
-        // Create the subscriber with layers
-        let registry = tracing_subscriber::registry().with(filter);
+        // Create the subscriber without a global filter
+        let registry = tracing_subscriber::registry();
 
         // Extract config values to avoid partial move issues
         let span_events = config.span_events;
@@ -219,7 +279,7 @@ impl TestTracing {
         // Build layers based on configuration
         match (log_to_stdout, log_file_path.as_ref()) {
             (true, Some(path)) => {
-                // Both stdout and file - use multiple layers
+                // Both stdout and file - use multiple layers with separate filters
                 let file =
                     fs::File::create(path).expect("Failed to create log file");
 
@@ -232,7 +292,8 @@ impl TestTracing {
                     .with_file(true)
                     .with_line_number(true)
                     .with_ansi(true)
-                    .pretty();
+                    .pretty()
+                    .with_filter(stdout_filter);
 
                 let file_layer = tracing_subscriber::fmt::layer()
                     .with_writer(move || {
@@ -245,7 +306,8 @@ impl TestTracing {
                     .with_file(true)
                     .with_line_number(true)
                     .with_ansi(false)
-                    .pretty();
+                    .pretty()
+                    .with_filter(file_filter);
 
                 registry.with(stdout_layer).with(file_layer).try_init().ok();
             },
@@ -260,7 +322,8 @@ impl TestTracing {
                     .with_file(true)
                     .with_line_number(true)
                     .with_ansi(true)
-                    .pretty();
+                    .pretty()
+                    .with_filter(stdout_filter);
 
                 registry.with(stdout_layer).try_init().ok();
             },
@@ -280,7 +343,8 @@ impl TestTracing {
                     .with_file(true)
                     .with_line_number(true)
                     .with_ansi(false)
-                    .pretty();
+                    .pretty()
+                    .with_filter(file_filter);
 
                 registry.with(file_layer).try_init().ok();
             },
@@ -398,13 +462,38 @@ mod tests {
             .file(true)
             .log_dir("custom/logs");
 
-        assert_eq!(config.default_level, Level::TRACE);
+        assert_eq!(config.stdout_level, Level::TRACE);
+        assert_eq!(config.file_level, Level::TRACE);
         assert_eq!(
-            config.filter_directives,
+            config.stdout_filter_directives,
+            Some("context_search=trace".to_string())
+        );
+        assert_eq!(
+            config.file_filter_directives,
             Some("context_search=trace".to_string())
         );
         assert!(!config.log_to_stdout);
         assert!(config.log_to_file);
         assert_eq!(config.log_dir, PathBuf::from("custom/logs"));
+    }
+
+    #[test]
+    fn test_separate_filters() {
+        let config = TracingConfig::default()
+            .with_stdout_level(Level::INFO)
+            .with_file_level(Level::TRACE)
+            .with_stdout_filter("context_search=warn")
+            .with_file_filter("context_search=trace,context_trace=debug");
+
+        assert_eq!(config.stdout_level, Level::INFO);
+        assert_eq!(config.file_level, Level::TRACE);
+        assert_eq!(
+            config.stdout_filter_directives,
+            Some("context_search=warn".to_string())
+        );
+        assert_eq!(
+            config.file_filter_directives,
+            Some("context_search=trace,context_trace=debug".to_string())
+        );
     }
 }
