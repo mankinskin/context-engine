@@ -47,27 +47,21 @@ where
     ) -> ControlFlow<()> {
         let flow = self.path.move_root_index(trav);
         if let ControlFlow::Continue(()) = flow {
+            let child_index = self.role_root_child_index();
             let graph = trav.graph();
             let pattern = self.path.root_pattern::<G>(&graph);
-            let child_index = self.role_root_child_index();
 
             tracing::trace!(
-                "PathCursor::move_root_index - pattern len: {}, child_index: {}, pattern: {:?}",
-                pattern.len(),
+                "PathCursor::move_root_index - advanced to child_index: {}, pattern_len: {}",
                 child_index,
-                pattern
+                pattern.len()
             );
 
-            if child_index >= pattern.len() {
-                tracing::error!(
-                    "Index out of bounds! child_index={} >= pattern.len()={}",
-                    child_index,
-                    pattern.len()
-                );
-                tracing::error!("Pattern: {:?}", pattern);
+            // Only access pattern if child_index is valid
+            // When matching is complete, child_index may equal pattern.len()
+            if child_index < pattern.len() {
+                self.move_key(pattern[child_index].width());
             }
-
-            self.move_key(pattern[child_index].width());
         }
         flow
     }

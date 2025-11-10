@@ -60,15 +60,27 @@ fn example_basic_sequence_search() {
     debug!(query = %pretty(&query), "Searching for [b, c]");
     let result = graph.find_ancestor(&query[..]);
 
-    // Verify we found a complete match
+    // Verify we found the query pattern
     assert!(result.is_ok(), "Search should succeed");
     let response = result.unwrap();
     trace!(response = %pretty(&response), "Got response");
-    assert!(response.is_complete(), "Response should be complete");
 
-    // Extract the path and verify it points to abc
-    let path = response.unwrap_complete();
-    assert_eq!(path.root_pattern_location().parent, abc);
+    // Since [b, c] was never inserted as a complete pattern, we expect a Postfix
+    // (it matches indices 1-2 of the parent pattern [a, b, c])
+    // But the query should be fully matched (QueryEnd)
+    assert_eq!(
+        response.end.reason,
+        crate::state::end::EndReason::QueryEnd,
+        "Query should be fully matched"
+    );
+    assert!(
+        matches!(response.end.path, crate::state::end::PathEnum::Postfix(_)),
+        "Path should be Postfix since [b, c] doesn't start at the beginning of [a, b, c]"
+    );
+
+    // Verify the path points to abc as the parent
+    let parent = response.end.path.root_parent();
+    assert_eq!(parent, abc);
     info!("Test completed successfully");
 }
 

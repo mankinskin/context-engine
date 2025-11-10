@@ -1,9 +1,11 @@
 //! Tracing setup utilities for tests
 //!
 //! Provides per-test logging to files with automatic cleanup on success.
-//! Logs are written to `target/test-logs/<test_name>.log` and deleted if the test passes.
+//! Logs are written to `<target-dir>/test-logs/<test_name>.log` and deleted if the test passes.
+//! The target directory is automatically detected from the Cargo build environment.
 
 use std::{
+    env,
     fs,
     path::{
         Path,
@@ -20,6 +22,46 @@ use tracing_subscriber::{
 };
 
 static GLOBAL_INIT: Once = Once::new();
+
+/// Get the target directory used by Cargo
+///
+/// This respects the workspace structure by checking:
+/// 1. CARGO_TARGET_DIR environment variable (if set by user/CI)
+/// 2. CARGO_MANIFEST_DIR at runtime to find workspace root
+/// 3. Falls back to "target" relative to current directory
+fn get_target_dir() -> PathBuf {
+    // First check if CARGO_TARGET_DIR is set (user override or CI)
+    if let Ok(target_dir) = env::var("CARGO_TARGET_DIR") {
+        return PathBuf::from(target_dir);
+    }
+
+    // During test execution, CARGO_MANIFEST_DIR points to the crate being tested
+    // For workspace, we want to use the workspace root's target directory
+    if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
+        let manifest_path = PathBuf::from(&manifest_dir);
+        let mut current = manifest_path.clone();
+
+        // Walk up to find workspace root (has Cargo.toml with [workspace])
+        while let Some(parent) = current.parent() {
+            let workspace_toml = parent.join("Cargo.toml");
+            if workspace_toml.exists() {
+                // Check if this is a workspace root by looking for [workspace] section
+                if let Ok(contents) = fs::read_to_string(&workspace_toml) {
+                    if contents.contains("[workspace]") {
+                        return parent.join("target");
+                    }
+                }
+            }
+            current = parent.to_path_buf();
+        }
+
+        // If no workspace found, use the manifest dir's target
+        return manifest_path.join("target");
+    }
+
+    // Fallback to relative "target" directory (current directory)
+    PathBuf::from("target")
+}
 
 /// Configuration for test tracing
 #[derive(Debug, Clone)]
@@ -41,7 +83,7 @@ pub struct TracingConfig {
 impl Default for TracingConfig {
     fn default() -> Self {
         Self {
-            log_dir: PathBuf::from("target/test-logs"),
+            log_dir: get_target_dir().join("test-logs"),
             default_level: Level::DEBUG,
             log_to_stdout: true,
             log_to_file: true,

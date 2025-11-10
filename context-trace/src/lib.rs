@@ -181,7 +181,7 @@ pub use crate::{
             role_path::RolePath,
             rooted::{
                 RootedRangePath,
-                index_range::{IndexRangePath, SearchRangePath},
+                index_range::IndexRangePath,
                 pattern_range::{
                     PatternPostfixPath,
                     PatternPrefixPath,
@@ -206,10 +206,8 @@ pub use crate::{
                     },
                 },
                 root::{
-                    AtomRoot,
                     IndexRoot,
                     RootedPath,
-                    SearchRoot,
                 },
             },
             sub_path::SubPath,

@@ -1,7 +1,13 @@
 use crate::{
+    cursor::PatternCursor,
     r#match::iterator::MatchIterator,
     state::{
-        end::EndState,
+        end::{
+            EndReason,
+            EndState,
+            MatchState,
+            PathEnum,
+        },
         start::Searchable,
     },
     traversal::TraceStart,
@@ -108,7 +114,7 @@ impl Find for HypergraphRef {
 pub struct FoldCtx<K: TraversalKind> {
     pub(crate) matches: MatchIterator<K>,
     //pub(crate) start_index: Token,
-    pub(crate) last_match: EndState,
+    pub(crate) last_match: MatchState,
 }
 
 impl<K: TraversalKind> Iterator for FoldCtx<K> {
@@ -118,7 +124,16 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
         match self.matches.find_next() {
             Some(end) => {
                 debug!("Found end state: {}", pretty(&end));
-                let start_len = self.last_match.start_len();
+
+                // Get the start length from the previous match or query
+                let start_len = match &self.last_match {
+                    MatchState::Located(prev_end) => prev_end.start_len(),
+                    MatchState::Query(_) => {
+                        // First match: start from beginning of query
+                        debug!("First match found, transitioning from Query to Located state");
+                        0
+                    },
+                };
                 debug!("Tracing from position: {}", start_len);
 
                 TraceStart {
@@ -127,7 +142,8 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
                 }
                 .trace(&mut self.matches.0);
 
-                self.last_match = end.clone();
+                // Update last_match to the located state
+                self.last_match = MatchState::Located(end.clone());
                 Some(end.clone())
             },
             None => {
@@ -158,8 +174,36 @@ impl<K: TraversalKind> FoldCtx<K> {
 
         info!("Fold completed after {} iterations", iteration);
 
-        // last end
-        let end = self.last_match;
+        // Get the final end state
+        let end = match self.last_match {
+            MatchState::Located(end_state) => {
+                debug!("Final state is located: {}", pretty(&end_state));
+                end_state
+            },
+            MatchState::Query(query_path) => {
+                // No matches were found - need to create an appropriate error/incomplete state
+                debug!("No matches found, still in query state");
+                // TODO: Create proper EndState for "no match" case
+                // For now, create a minimal EndState
+                // The query_path has a Pattern root, get the first token
+                let start_token = query_path.path_root()[0];
+                let cursor = PatternCursor {
+                    atom_position: AtomPosition::default(),
+                    path: query_path.clone(),
+                };
+                EndState {
+                    reason: EndReason::Mismatch,
+                    path: PathEnum::Complete(IndexRangePath::new_empty(
+                        IndexRoot::from(PatternLocation::new(
+                            start_token,
+                            PatternId::default(),
+                        )),
+                    )),
+                    cursor,
+                }
+            },
+        };
+
         debug!("Final end state: {}", pretty(&end));
 
         let trace_ctx = &mut self.matches.0;

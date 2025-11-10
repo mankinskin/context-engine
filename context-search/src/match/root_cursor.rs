@@ -95,18 +95,85 @@ impl<G: HasGraph> RootCursor<G> {
         }
     }
     fn advanced(&mut self) -> ControlFlow<Option<EndReason>> {
-        if self.state.rooted_path().can_advance(&self.trav) {
+        let rooted_path = self.state.rooted_path();
+        let can_advance = rooted_path.can_advance(&self.trav);
+
+        let cursor = &self.state.cursor;
+        tracing::debug!(
+            "RootCursor::advanced - child_state can_advance={}, child_state={:?}",
+            can_advance,
+            rooted_path
+        );
+        tracing::debug!("RootCursor::advanced - query cursor={:?}", cursor);
+
+        if can_advance {
             match self.query_advanced() {
                 Continue(_) => {
-                    let _ = self.path_advanced();
-                    Continue(())
+                    // Query advanced successfully, now check if it's past the end of the pattern
+                    let cursor_end_index =
+                        self.state.cursor.role_root_child_index::<End>();
+                    let cursor_pattern_len = {
+                        let graph = self.trav.graph();
+                        self.state.cursor.path.root_pattern::<G>(&graph).len()
+                    };
+
+                    tracing::debug!(
+                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
+                        cursor_end_index,
+                        cursor_pattern_len
+                    );
+
+                    if cursor_end_index >= cursor_pattern_len {
+                        tracing::debug!("RootCursor::advanced - query index past pattern end, returning QueryEnd");
+                        Break(Some(EndReason::QueryEnd))
+                    } else {
+                        tracing::debug!("RootCursor::advanced - query still within pattern, advancing child_state");
+                        let _ = self.path_advanced();
+                        Continue(())
+                    }
                 },
-                // end of query
-                Break(_) => Break(Some(EndReason::QueryEnd)),
+                // Advance returned Break (shouldn't happen with our logic)
+                Break(_) => {
+                    tracing::debug!(
+                        "RootCursor::advanced - query advance returned Break"
+                    );
+                    Break(Some(EndReason::QueryEnd))
+                },
             }
         } else {
-            // end of this root
-            Break(None)
+            // Child state cannot advance further in the graph
+            // Try to advance the query cursor to see if it's also complete
+            tracing::debug!("RootCursor::advanced - child_state cannot advance, attempting to advance query");
+
+            match self.query_advanced() {
+                Continue(_) => {
+                    // Query advanced successfully, check if it's now past the pattern end
+                    let cursor_end_index =
+                        self.state.cursor.role_root_child_index::<End>();
+                    let cursor_pattern_len = {
+                        let graph = self.trav.graph();
+                        self.state.cursor.path.root_pattern::<G>(&graph).len()
+                    };
+
+                    tracing::debug!(
+                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
+                        cursor_end_index,
+                        cursor_pattern_len
+                    );
+
+                    if cursor_end_index >= cursor_pattern_len {
+                        tracing::debug!("RootCursor::advanced - query is complete, returning QueryEnd");
+                        Break(Some(EndReason::QueryEnd))
+                    } else {
+                        tracing::debug!("RootCursor::advanced - query incomplete but child_state exhausted, returning None");
+                        Break(None)
+                    }
+                },
+                Break(_) => {
+                    tracing::debug!("RootCursor::advanced - query cannot advance (already at end or error)");
+                    Break(None)
+                },
+            }
         }
     }
     fn query_advanced(&mut self) -> ControlFlow<()> {

@@ -68,12 +68,27 @@ impl MoveRootIndex<Right, End> for PatternRangePath {
         &mut self,
         _trav: &G,
     ) -> ControlFlow<()> {
-        if let Some(next) = TravDir::<G>::index_next(
-            RootChildIndex::<End>::root_child_index(self),
-        ) {
+        let current_index = RootChildIndex::<End>::root_child_index(self);
+
+        tracing::debug!(
+            "PatternRangePath::move_root_index - current_index={}, pattern_len={}",
+            current_index,
+            self.root.len()
+        );
+
+        // Try to get the next index and advance
+        if let Some(next) = TravDir::<G>::index_next(current_index) {
+            tracing::debug!(
+                "PatternRangePath::move_root_index - advancing from {} to {}",
+                current_index,
+                next
+            );
             *self.root_child_index_mut() = next;
             ControlFlow::Continue(())
         } else {
+            tracing::debug!(
+                "PatternRangePath::move_root_index - no next index, returning Break"
+            );
             ControlFlow::Break(())
         }
     }

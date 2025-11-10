@@ -190,7 +190,6 @@ impl StartFoldPath for PatternEndPath {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct StartCtx {
-    pub(crate) root: SearchRoot,
     pub(crate) cursor: PatternCursor,
 }
 
@@ -269,43 +268,12 @@ impl Searchable for PatternCursor {
     ) -> Result<FoldCtx<K>, ErrorState> {
         debug!("PatternCursor::start_search");
 
-        let in_loc = self.path.input_location(&trav);
-        trace!("Input location: {}", pretty(&in_loc));
-
-        let root = match in_loc.clone() {
-            InputLocation::Location(loc) => {
-                trace!("Using direct location");
-                SearchRoot::from(loc)
-            },
-            InputLocation::PatternChild { token, .. } => {
-                trace!(
-                    "Creating root from pattern child token: {}",
-                    pretty(&token)
-                );
-                
-                // Special case: atoms (width == 1) don't store child patterns explicitly
-                // They represent themselves as a single-token pattern
-                if token.width() == 1 {
-                    debug!("Token is an atom (width=1), creating AtomRoot");
-                    SearchRoot::from(AtomRoot::new(token))
-                } else {
-                    // Multi-token patterns have explicit child pattern IDs
-                    debug!("Token is a pattern (width={}), creating IndexRoot", token.width());
-                    let pattern_id = *trav
-                        .graph()
-                        .expect_vertex(token)
-                        .expect_any_child_pattern()
-                        .0;
-                    SearchRoot::from(PatternLocation::new(token, pattern_id))
-                }
-            },
-        };
-
-        debug!("Search root: {}", pretty(&root));
+        // Get the starting token from the query pattern for the MatchIterator
+        let start_token = self.path.role_root_child_token::<End, _>(&trav);
+        debug!("Starting search from token: {}", pretty(&start_token));
 
         let start = StartCtx {
-            root,
-            cursor: self,
+            cursor: self.clone(),
         };
 
         match start.get_parent_batch::<K>(&trav) {
@@ -317,10 +285,10 @@ impl Searchable for PatternCursor {
                 trace!("ParentBatch details: {}", pretty(&p));
 
                 Ok(FoldCtx {
-                    last_match: EndState::init_fold(start),
+                    last_match: EndState::init_fold(self),
                     matches: MatchIterator::start_parent(
                         trav,
-                        location.parent,
+                        start_token,
                         p,
                     ),
                 })
@@ -364,37 +332,9 @@ impl Searchable for &'_ [Token] {
         debug!("Searchable for &[Token] - creating PatternRangePath from {} tokens", self.len());
         trace!("Tokens: {:?}", self);
         
-        // Special case: if all tokens are atoms (width==1), we need to create or find
-        // the pattern that represents this sequence, rather than treating the atoms
-        // as if they were pattern tokens themselves.
-        let all_atoms = self.iter().all(|t| t.width() == 1);
-        
-        if all_atoms && !self.is_empty() {
-            debug!("All tokens are atoms - need to find/create pattern for this sequence");
-            
-            // For atoms, we need to get the actual atoms and create a pattern from them
-            // The tokens represent vertex indices, so we need to convert them to a pattern
-            // by creating a new pattern that contains these atoms in sequence
-            
-            // Note: get_atom_children expects atoms, but we have tokens (vertex indices).
-            // For atoms (width==1), the token IS the atom vertex, but we can't directly
-            // use tokens as atoms. Instead, we should try to find if a pattern already
-            // exists for this sequence of tokens.
-            
-            warn!("Cannot automatically create pattern from atom tokens in find_ancestor");
-            warn!("Please use find_sequence() instead, or create the pattern first");
-            
-            Err(ErrorState {
-                reason: ErrorReason::SingleIndex(Box::new(IndexWithPath {
-                    index: self[0],
-                    path: PatternRangePath::from(self).into(),
-                })),
-                found: None,
-            })
-        } else {
-            // Normal case: tokens are already pattern tokens
-            PatternRangePath::from(self).start_search::<K>(trav)
-        }
+        // Convert the token slice to a PatternRangePath and start the search
+        // This works for both atoms and composite patterns now thanks to MatchState::Query
+        PatternRangePath::from(self).start_search::<K>(trav)
     }
 }
 impl Searchable for Pattern {

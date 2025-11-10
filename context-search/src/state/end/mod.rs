@@ -19,6 +19,17 @@ pub(crate) mod postfix;
 pub(crate) mod prefix;
 pub(crate) mod range;
 
+/// Represents the state of matching during search.
+/// Distinguishes between "haven't found anything yet" (query state)
+/// and "found something" (located in graph).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) enum MatchState {
+    /// Initial state: searching for the query pattern, no graph location yet
+    Query(PatternRangePath),
+    /// Found state: matched something and located it in the graph
+    Located(EndState),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum PathEnum {
     Range(RangeEnd),
@@ -118,14 +129,9 @@ impl Traceable for &EndState {
     }
 }
 impl EndState {
-    pub(crate) fn init_fold(init: StartCtx) -> Self {
-        Self {
-            reason: EndReason::QueryEnd,
-            path: PathEnum::Complete(IndexRangePath::new_empty(
-                IndexRoot::from(init.location),
-            )),
-            cursor: init.cursor,
-        }
+    pub(crate) fn init_fold(cursor: PatternCursor) -> MatchState {
+        // Initially, we have a query pattern that hasn't been located in the graph yet
+        MatchState::Query(cursor.path)
     }
     pub(crate) fn with_reason<G: HasGraph>(
         trav: G,
