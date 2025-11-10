@@ -20,13 +20,19 @@ use crate::{
     Response,
 };
 use context_trace::{
+    logging::format_utils::pretty,
     path::{
         accessors::child::RootedLeafToken,
         BaseQuery,
     },
     *,
 };
-use tracing::debug;
+use tracing::{
+    debug,
+    instrument,
+    trace,
+    warn,
+};
 
 pub(crate) trait ToCursor: StartFoldPath {
     fn to_cursor<G: HasGraph>(
@@ -91,12 +97,36 @@ BaseQuery
         &self,
         trav: &G,
     ) -> InputLocation {
+        trace!("Determining input_location for path");
+        
         if let Some(loc) = self.role_leaf_token_location::<End>() {
-            InputLocation::Location(loc.into_pattern_location())
+            debug!("Found leaf token location: {}", pretty(&loc));
+            let pattern_loc = loc.into_pattern_location();
+            debug!("Converted to pattern location: {}", pretty(&pattern_loc));
+            InputLocation::Location(pattern_loc)
         } else {
+            debug!("No leaf token location, getting pattern child");
+            let sub_index = self.role_root_child_index::<End>();
+            let token = self.role_rooted_leaf_token::<End, _>(trav);
+            debug!("Pattern child: token={}, sub_index={}", pretty(&token), sub_index);
+            
+            // This is where the panic will happen - when we try to use this token
+            // and it doesn't have children
+            trace!("Checking token vertex data in graph");
+            if let Ok(vertex_data) = trav.graph().get_vertex(token.vertex_index()) {
+                trace!("Token vertex data: {}", pretty(vertex_data));
+                let child_patterns = vertex_data.child_patterns();
+                if child_patterns.is_empty() {
+                    warn!("WARNING: Token {} has no child patterns! This will cause a panic.", 
+                          pretty(&token));
+                    warn!("This typically means you're trying to search for atoms directly without creating a pattern first.");
+                    warn!("Consider using find_sequence() instead of find_ancestor() for raw atoms.");
+                }
+            }
+            
             InputLocation::PatternChild {
-                sub_index: self.role_root_child_index::<End>(),
-                token: self.role_rooted_leaf_token::<End, _>(trav),
+                sub_index,
+                token,
             }
         }
     }
@@ -160,7 +190,7 @@ impl StartFoldPath for PatternEndPath {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct StartCtx {
-    pub(crate) location: PatternLocation,
+    pub(crate) root: SearchRoot,
     pub(crate) cursor: PatternCursor,
 }
 
@@ -211,45 +241,82 @@ pub trait Searchable: Sized {
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState>;
+
+    #[instrument(skip(self, trav))]
     fn search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<Response, ErrorState> {
+        debug!("Searchable::search - starting search");
         match self.start_search::<K>(trav) {
-            Ok(ctx) => Ok(ctx.search()),
-            Err(err) => Err(err),
+            Ok(ctx) => {
+                debug!("Start search successful, beginning fold");
+                Ok(ctx.search())
+            },
+            Err(err) => {
+                debug!("Start search failed: {}", pretty(&err));
+                Err(err)
+            },
         }
     }
 }
 
 impl Searchable for PatternCursor {
+    #[instrument(skip(self, trav))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
+        debug!("PatternCursor::start_search");
+
         let in_loc = self.path.input_location(&trav);
-        let location = match in_loc.clone() {
-            InputLocation::Location(loc) => loc,
-            InputLocation::PatternChild { token, .. } => PatternLocation::new(
-                token,
-                *trav
-                    .graph()
-                    .expect_vertex(token)
-                    .expect_any_child_pattern()
-                    .0,
-            ),
+        trace!("Input location: {}", pretty(&in_loc));
+
+        let root = match in_loc.clone() {
+            InputLocation::Location(loc) => {
+                trace!("Using direct location");
+                SearchRoot::from(loc)
+            },
+            InputLocation::PatternChild { token, .. } => {
+                trace!(
+                    "Creating root from pattern child token: {}",
+                    pretty(&token)
+                );
+                
+                // Special case: atoms (width == 1) don't store child patterns explicitly
+                // They represent themselves as a single-token pattern
+                if token.width() == 1 {
+                    debug!("Token is an atom (width=1), creating AtomRoot");
+                    SearchRoot::from(AtomRoot::new(token))
+                } else {
+                    // Multi-token patterns have explicit child pattern IDs
+                    debug!("Token is a pattern (width={}), creating IndexRoot", token.width());
+                    let pattern_id = *trav
+                        .graph()
+                        .expect_vertex(token)
+                        .expect_any_child_pattern()
+                        .0;
+                    SearchRoot::from(PatternLocation::new(token, pattern_id))
+                }
+            },
         };
+
+        debug!("Search root: {}", pretty(&root));
+
         let start = StartCtx {
-            location,
+            root,
             cursor: self,
         };
-        //let start = self.into_start_ctx(start, &trav);
 
         match start.get_parent_batch::<K>(&trav) {
             Ok(p) => {
-                debug!("First ParentBatch {:?}", p);
+                debug!(
+                    "First ParentBatch obtained with {} items",
+                    p.batch.len()
+                );
+                trace!("ParentBatch details: {}", pretty(&p));
+
                 Ok(FoldCtx {
-                    //start_index: start.location.parent,
                     last_match: EndState::init_fold(start),
                     matches: MatchIterator::start_parent(
                         trav,
@@ -258,7 +325,10 @@ impl Searchable for PatternCursor {
                     ),
                 })
             },
-            Err(err) => Err(err),
+            Err(err) => {
+                debug!("Failed to get parent batch: {}", pretty(&err));
+                Err(err)
+            },
         }
     }
 }
@@ -273,19 +343,58 @@ impl<T: Searchable + Clone> Searchable for &T {
 }
 
 impl<const N: usize> Searchable for &'_ [Token; N] {
+    #[instrument(skip(self, trav), fields(token_count = N))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).start_search::<K>(trav)
+        debug!("Searchable for [Token; {}] - creating PatternRangePath", N);
+        trace!("Tokens: {:?}", self);
+        
+        // Delegate to slice implementation which handles atom special case
+        self.as_slice().start_search::<K>(trav)
     }
 }
 impl Searchable for &'_ [Token] {
+    #[instrument(skip(self, trav), fields(token_count = self.len()))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        PatternRangePath::from(self).start_search::<K>(trav)
+        debug!("Searchable for &[Token] - creating PatternRangePath from {} tokens", self.len());
+        trace!("Tokens: {:?}", self);
+        
+        // Special case: if all tokens are atoms (width==1), we need to create or find
+        // the pattern that represents this sequence, rather than treating the atoms
+        // as if they were pattern tokens themselves.
+        let all_atoms = self.iter().all(|t| t.width() == 1);
+        
+        if all_atoms && !self.is_empty() {
+            debug!("All tokens are atoms - need to find/create pattern for this sequence");
+            
+            // For atoms, we need to get the actual atoms and create a pattern from them
+            // The tokens represent vertex indices, so we need to convert them to a pattern
+            // by creating a new pattern that contains these atoms in sequence
+            
+            // Note: get_atom_children expects atoms, but we have tokens (vertex indices).
+            // For atoms (width==1), the token IS the atom vertex, but we can't directly
+            // use tokens as atoms. Instead, we should try to find if a pattern already
+            // exists for this sequence of tokens.
+            
+            warn!("Cannot automatically create pattern from atom tokens in find_ancestor");
+            warn!("Please use find_sequence() instead, or create the pattern first");
+            
+            Err(ErrorState {
+                reason: ErrorReason::SingleIndex(Box::new(IndexWithPath {
+                    index: self[0],
+                    path: PatternRangePath::from(self).into(),
+                })),
+                found: None,
+            })
+        } else {
+            // Normal case: tokens are already pattern tokens
+            PatternRangePath::from(self).start_search::<K>(trav)
+        }
     }
 }
 impl Searchable for Pattern {
@@ -308,13 +417,21 @@ impl Searchable for PatternEndPath {
     }
 }
 impl Searchable for PatternRangePath {
+    #[instrument(skip(self, trav), fields(path = ?self))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
-        self.to_range_path()
-            .to_cursor(&trav)
-            .start_search::<K>(trav)
+        debug!("PatternRangePath::start_search - converting to cursor");
+        trace!("PatternRangePath details: {}", pretty(&self));
+        
+        let range_path = self.to_range_path();
+        debug!("Converted to range_path: {}", pretty(&range_path));
+        
+        let cursor = range_path.to_cursor(&trav);
+        debug!("Created cursor: {}", pretty(&cursor));
+        
+        cursor.start_search::<K>(trav)
     }
 }
 impl Searchable for PatternPrefixCursor {

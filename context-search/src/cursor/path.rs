@@ -49,7 +49,25 @@ where
         if let ControlFlow::Continue(()) = flow {
             let graph = trav.graph();
             let pattern = self.path.root_pattern::<G>(&graph);
-            self.move_key(pattern[self.role_root_child_index()].width());
+            let child_index = self.role_root_child_index();
+
+            tracing::trace!(
+                "PathCursor::move_root_index - pattern len: {}, child_index: {}, pattern: {:?}",
+                pattern.len(),
+                child_index,
+                pattern
+            );
+
+            if child_index >= pattern.len() {
+                tracing::error!(
+                    "Index out of bounds! child_index={} >= pattern.len()={}",
+                    child_index,
+                    pattern.len()
+                );
+                tracing::error!("Pattern: {:?}", pattern);
+            }
+
+            self.move_key(pattern[child_index].width());
         }
         flow
     }

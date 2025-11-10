@@ -1,4 +1,7 @@
-use context_trace::*;
+use context_trace::{
+    logging::format_utils::pretty,
+    *,
+};
 use derive_new::new;
 
 use crate::{
@@ -7,6 +10,10 @@ use crate::{
     traversal::TraversalKind,
 };
 use std::fmt::Debug;
+use tracing::{
+    debug,
+    instrument,
+};
 
 pub(crate) type FoldResult = Result<Response, ErrorState>;
 
@@ -31,7 +38,12 @@ impl From<IndexWithPath> for ErrorState {
 
 pub trait Searchable: Sized {
     fn to_fold_ctx<K: TraversalKind>(self) -> FoldCtx<K>;
+
+    #[instrument(skip(self))]
     fn search<K: TraversalKind>(self) -> Response {
-        self.to_fold_ctx::<K>().search()
+        debug!("Searchable::search - creating fold context");
+        let fold_ctx = self.to_fold_ctx::<K>();
+        debug!("Fold context created, starting search");
+        fold_ctx.search()
     }
 }

@@ -16,6 +16,9 @@ pub mod path;
 pub mod graph;
 pub mod trace;
 
+// Logging utilities (tracing and formatting)
+pub mod logging;
+
 #[cfg(any(test, feature = "test-api"))]
 pub mod tests;
 
@@ -178,7 +181,7 @@ pub use crate::{
             role_path::RolePath,
             rooted::{
                 RootedRangePath,
-                index_range::IndexRangePath,
+                index_range::{IndexRangePath, SearchRangePath},
                 pattern_range::{
                     PatternPostfixPath,
                     PatternPrefixPath,
@@ -203,8 +206,10 @@ pub use crate::{
                     },
                 },
                 root::{
+                    AtomRoot,
                     IndexRoot,
                     RootedPath,
+                    SearchRoot,
                 },
             },
             sub_path::SubPath,

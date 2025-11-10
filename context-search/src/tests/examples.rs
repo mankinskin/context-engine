@@ -7,35 +7,69 @@ use {
         search::Find,
         state::end::PathEnum,
     },
-    context_trace::path::accessors::root::GraphRootPattern,
-    context_trace::*,
+    context_trace::{
+        init_test_tracing,
+        logging::{
+            format_utils::pretty,
+            tracing_utils::{
+                TestTracing,
+                TracingConfig,
+            },
+        },
+        path::accessors::root::GraphRootPattern,
+        pretty_log,
+        *,
+    },
     pretty_assertions::assert_eq,
+    tracing::{
+        debug,
+        info,
+        trace,
+        warn,
+    },
 };
 
 #[test]
 fn example_basic_sequence_search() {
+    // Initialize tracing for this test - log file will be cleaned up on success
+    let _tracing = init_test_tracing!();
+
+    info!("Starting basic sequence search test");
+
     // Create graph and insert atoms
     let mut graph = Hypergraph::<BaseGraphKind>::default();
+    debug!("Created empty hypergraph");
+
     let a = graph.insert_atom(Atom::Element('a'));
     let b = graph.insert_atom(Atom::Element('b'));
     let c = graph.insert_atom(Atom::Element('c'));
+    debug!(
+        a = %pretty(&a),
+        b = %pretty(&b),
+        c = %pretty(&c),
+        "Inserted atoms"
+    );
 
     // Create a pattern [a, b, c]
     let abc = graph.insert_pattern([a, b, c]);
+    info!(abc = %pretty(&abc), "Created pattern [a, b, c]");
 
     // Search for [b, c] in the graph
     let graph = HypergraphRef::from(graph);
     let query = [b, c];
+    debug!(query = %pretty(&query), "Searching for [b, c]");
     let result = graph.find_ancestor(&query[..]);
 
     // Verify we found a complete match
-    assert!(result.is_ok());
+    assert!(result.is_ok(), "Search should succeed");
     let response = result.unwrap();
-    assert!(response.is_complete());
+    trace!(response = %pretty(&response), "Got response");
+    assert!(response.is_complete(), "Response should be complete");
 
     // Extract the path and verify it points to abc
     let path = response.unwrap_complete();
     assert_eq!(path.root_pattern_location().parent, abc);
+    info!("Test completed successfully");
 }
 
 #[test]
