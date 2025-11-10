@@ -85,7 +85,7 @@ impl Default for TracingConfig {
         Self {
             log_dir: get_target_dir().join("test-logs"),
             default_level: Level::DEBUG,
-            log_to_stdout: true,
+            log_to_stdout: false,
             log_to_file: true,
             filter_directives: None,
             span_events: FmtSpan::NEW | FmtSpan::CLOSE,

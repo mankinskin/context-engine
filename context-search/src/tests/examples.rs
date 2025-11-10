@@ -8,16 +8,8 @@ use {
         state::end::PathEnum,
     },
     context_trace::{
-        init_test_tracing,
-        logging::{
-            format_utils::pretty,
-            tracing_utils::{
-                TestTracing,
-                TracingConfig,
-            },
-        },
+        logging::format_utils::pretty,
         path::accessors::root::GraphRootPattern,
-        pretty_log,
         *,
     },
     pretty_assertions::assert_eq,
@@ -25,7 +17,6 @@ use {
         debug,
         info,
         trace,
-        warn,
     },
 };
 
