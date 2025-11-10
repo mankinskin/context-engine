@@ -1,11 +1,5 @@
 use context_trace::*;
-use core::fmt;
 use std::fmt::Debug;
-
-use crate::{
-    state::end::PathEnum,
-    Response,
-};
 
 pub trait UnwrapToken: Sized + Debug {
     fn as_token(&self) -> Option<Token>;

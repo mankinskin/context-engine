@@ -21,12 +21,6 @@ pub trait TryInitWith<T>: Sized {
     type Error: Into<ErrorState>;
     fn try_init(value: T) -> Result<Self, Self::Error>;
 }
-//impl<T, A: TryFrom<T>> TryInitWith<T> for A {
-//    type Error = <A as TryFrom<T>>::Error;
-//    fn try_init(value: T) -> Result<Self, Self::Error> {
-//        Self::try_from(value)
-//    }
-//}
 impl TryInitWith<IndexWithPath> for Token {
     type Error = IndexWithPath;
     fn try_init(value: IndexWithPath) -> Result<Self, Self::Error> {
@@ -39,6 +33,12 @@ impl TryInitWith<IndexWithPath> for IndexWithPath {
         Err(value)
     }
 }
+//impl<T, A: TryFrom<T>> TryInitWith<T> for A {
+//    type Error = <A as TryFrom<T>>::Error;
+//    fn try_init(value: T) -> Result<Self, Self::Error> {
+//        Self::try_from(value)
+//    }
+//}
 //impl TryInitWith<ErrorState> for Token {
 //    type Error = Token;
 //    fn try_init(value: ErrorState) -> Result<Self, Self::Error> {

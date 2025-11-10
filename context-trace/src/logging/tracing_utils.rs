@@ -47,10 +47,10 @@ fn get_target_dir() -> PathBuf {
             let workspace_toml = parent.join("Cargo.toml");
             if workspace_toml.exists() {
                 // Check if this is a workspace root by looking for [workspace] section
-                if let Ok(contents) = fs::read_to_string(&workspace_toml) {
-                    if contents.contains("[workspace]") {
-                        return parent.join("target");
-                    }
+                if let Ok(contents) = fs::read_to_string(&workspace_toml)
+                    && contents.contains("[workspace]")
+                {
+                    return parent.join("target");
                 }
             }
             current = parent.to_path_buf();

@@ -1,11 +1,5 @@
-use context_trace::{
-    GraphRoot,
-    RootChildToken,
-};
-
 #[cfg(test)]
 use {
-    crate::cursor::PatternCursor,
     crate::search::Find,
     crate::state::end::{
         EndState,
@@ -13,6 +7,7 @@ use {
     },
     crate::state::result::Response,
     context_trace::tests::env::Env1,
+    context_trace::GraphRoot,
     context_trace::PatternPrefixPath,
     context_trace::{
         graph::vertex::token::Token,

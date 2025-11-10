@@ -2,42 +2,29 @@ pub(crate) mod policy;
 
 use crate::{
     container::StateContainer,
-    cursor::PatternCursor,
-    r#match::{
-        iterator::MatchIterator,
-        MatchCtx,
-        TraceNode::Parent,
-    },
-    search::searchable::ErrorState,
-    state::{
-        end::{
-            postfix::PostfixEnd,
-            EndReason,
-            EndState,
-            PathEnum,
-        },
-        start::StartCtx,
+    state::end::{
+        postfix::PostfixEnd,
+        EndState,
+        PathEnum,
     },
 };
 use context_trace::{
     path::accessors::has_path::HasRootedRolePath,
     *,
 };
-use derive_new::new;
 use policy::DirectedTraversalPolicy;
 use std::fmt::Debug;
-use tracing::debug;
 
 pub trait TraversalKind: Debug + Default {
     type Trav: HasGraph;
     type Container: StateContainer;
     type Policy: DirectedTraversalPolicy<Trav = Self::Trav>;
 }
-#[derive(Debug, Clone, Copy)]
-pub(crate) enum OptGen<Y> {
-    Yield(Y),
-    Pass,
-}
+//#[derive(Debug, Clone, Copy)]
+//pub(crate) enum OptGen<Y> {
+//    Yield(Y),
+//    Pass,
+//}
 
 #[derive(Clone, Debug)]
 pub(crate) struct TraceStart<'a> {

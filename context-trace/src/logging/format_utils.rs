@@ -69,6 +69,7 @@ mod tests {
     #[test]
     fn test_pretty_debug() {
         #[derive(Debug)]
+        #[allow(unused)]
         struct TestStruct {
             field1: i32,
             field2: Vec<String>,

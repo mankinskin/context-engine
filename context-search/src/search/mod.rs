@@ -25,7 +25,6 @@ use context_trace::{
 };
 use tracing::{
     debug,
-    info,
     instrument,
     trace,
 };

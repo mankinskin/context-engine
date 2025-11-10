@@ -61,7 +61,7 @@ fn prefix1() {
     } = &*Env1::get_expected();
 
     let query = vec![*a, *bc, *d, *e];
-    let res: Response = graph.find_ancestor(query).unwrap().try_into().unwrap();
+    let res: Response = graph.find_ancestor(query).unwrap();
 
     assert_eq!(
         res.clone(),
@@ -164,7 +164,7 @@ fn postfix1() {
     } = &*Env1::get_expected();
 
     let query = vec![*c, *d, *ef, *ghi];
-    let res: Response = graph.find_ancestor(query).unwrap().try_into().unwrap();
+    let res: Response = graph.find_ancestor(query).unwrap();
 
     assert_eq!(
         res.clone(),
@@ -260,7 +260,7 @@ fn range1() {
     } = &*Env1::get_expected();
 
     let query = vec![*bc, *d, *e];
-    let res: Response = graph.find_ancestor(query).unwrap().try_into().unwrap();
+    let res: Response = graph.find_ancestor(query).unwrap();
 
     assert_eq!(
         res.clone(),

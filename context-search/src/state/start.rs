@@ -216,6 +216,7 @@ impl StartCtx {
         trav: &K::Trav,
     ) -> Result<CompareParentBatch, ErrorState> {
         let mut cursor = self.cursor.clone();
+        debug!("get_parent_batch - cursor path before root_child_token: {:?}", cursor.path);
         let parent = self.cursor.path.role_root_child_token::<End, _>(trav);
         if cursor.advance(trav).is_continue() {
             let batch = K::Policy::gen_parent_batch(trav, parent, |trav, p| {
@@ -227,7 +228,7 @@ impl StartCtx {
             Err(ErrorState {
                 reason: ErrorReason::SingleIndex(Box::new(IndexWithPath {
                     index: parent,
-                    path: self.cursor.path.clone().into(),
+                    path: self.cursor.path.clone(),
                 })),
                 found: None,
             })
@@ -267,6 +268,7 @@ impl Searchable for PatternCursor {
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
         debug!("PatternCursor::start_search");
+        debug!("PatternCursor path: {:?}", self.path);
 
         // Get the starting token from the query pattern for the MatchIterator
         let start_token = self.path.role_root_child_token::<End, _>(&trav);

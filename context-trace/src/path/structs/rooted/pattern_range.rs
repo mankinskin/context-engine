@@ -17,6 +17,20 @@ pub type PatternRangePath = RootedRangePath<Pattern>;
 pub type PatternPostfixPath = RootedRolePath<Start, Pattern>;
 pub type PatternPrefixPath = RootedRolePath<End, Pattern>;
 
+impl PatternRangePath {
+    /// Check if this range path has reached the end of its pattern
+    /// and should be converted to a Postfix path
+    pub fn is_at_pattern_end(&self) -> bool {
+        self.end.sub_path.root_entry == self.root.len() - 1
+    }
+
+    /// Check if this range path spans the entire pattern (complete match)
+    pub fn is_complete_match(&self) -> bool {
+        self.start.sub_path.root_entry == 0
+            && self.end.sub_path.root_entry == self.root.len() - 1
+    }
+}
+
 impl RangePath for PatternRangePath {
     fn new_range(
         root: Self::Root,
@@ -76,8 +90,10 @@ impl MoveRootIndex<Right, End> for PatternRangePath {
             self.root.len()
         );
 
-        // Try to get the next index and advance
-        if let Some(next) = TravDir::<G>::index_next(current_index) {
+        // Use pattern_index_next to check bounds
+        if let Some(next) =
+            TravDir::<G>::pattern_index_next(&self.root, current_index)
+        {
             tracing::debug!(
                 "PatternRangePath::move_root_index - advancing from {} to {}",
                 current_index,
@@ -87,7 +103,7 @@ impl MoveRootIndex<Right, End> for PatternRangePath {
             ControlFlow::Continue(())
         } else {
             tracing::debug!(
-                "PatternRangePath::move_root_index - no next index, returning Break"
+                "PatternRangePath::move_root_index - reached end of pattern, returning Break"
             );
             ControlFlow::Break(())
         }

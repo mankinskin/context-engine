@@ -12,7 +12,6 @@ use range::RangeEnd;
 use crate::{
     compare::parent::ParentCompareState,
     cursor::PatternCursor,
-    state::start::StartCtx,
 };
 
 pub(crate) mod postfix;

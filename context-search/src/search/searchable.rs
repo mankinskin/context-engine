@@ -1,7 +1,4 @@
-use context_trace::{
-    logging::format_utils::pretty,
-    *,
-};
+use context_trace::*;
 use derive_new::new;
 
 use crate::{

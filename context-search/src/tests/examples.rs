@@ -15,7 +15,6 @@ use {
     pretty_assertions::assert_eq,
     tracing::{
         debug,
-        info,
         trace,
     },
 };
@@ -191,6 +190,21 @@ fn example_hierarchical_parent_search() {
 
 #[test]
 fn example_hierarchical_ancestor_search() {
+    // This test demonstrates a hierarchical ancestor search scenario where:
+    // - The graph has a single `abcd` vertex with multiple pattern compositions
+    // - Pattern 1: [ab, cd] - hierarchical composition
+    // - Pattern 2: [a, bc, d] - ensures reachability to the bc substring
+    //
+    // Expected behavior (once bug is fixed):
+    // Searching for [b, c, d] should return a Postfix match:
+    // - The match starts at position 1 in abcd (not at the beginning)
+    // - It continues to the end through the [a, bc, d] pattern
+    // - Root parent should be abcd
+    // - Result should be QueryEnd with a Postfix path
+    //
+    // Initialize tracing for this test
+    let _tracing = init_test_tracing!();
+
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let a = graph.insert_atom(Atom::Element('a'));
     let b = graph.insert_atom(Atom::Element('b'));
@@ -200,30 +214,68 @@ fn example_hierarchical_ancestor_search() {
     let ab = graph.insert_pattern([a, b]);
     let bc = graph.insert_pattern([b, c]);
     let cd = graph.insert_pattern([c, d]);
-    let abcd = graph.insert_pattern([ab, cd]);
+
+    // Create abcd with two ways to compose it:
+    // 1. [ab, cd] - doesn't contain bc directly
+    // 2. [a, bc, d] - contains bc and maintains reachability to bc substring
+    // Both patterns are added to the same vertex
+    insert_patterns!(graph,
+        abcd => [[ab, cd], [a, bc, d]]
+    );
 
     let graph = HypergraphRef::from(graph);
 
-    // Search for [b, c, d] - finds [b, c] as a complete pattern
+    // Search for [b, c, d] - this should find a hierarchical postfix match
+    // In abcd with patterns [ab, cd] and [a, bc, d],
+    // the query [b, c, d] should match via the [a, bc, d] pattern
     let query = [b, c, d];
-    let response = graph.find_ancestor(&query).unwrap();
+    debug!(query = %pretty(&query), "Searching for [b, c, d]");
+    let result = graph.find_ancestor(&query);
 
-    // The search finds [b, c] as a complete match, then fails to find 'd' after it
-    // So we get Mismatch with a Complete path to [b, c]
-    assert_eq!(
-        response.end.reason,
-        crate::state::end::EndReason::Mismatch,
-        "Query should mismatch after finding [b, c]"
-    );
+    debug!(result = ?result, "Search result");
 
-    assert!(
-        response.is_complete(),
-        "Path should be Complete for the [b, c] pattern"
-    );
+    // If the search succeeds, let's examine what we got
+    if let Ok(response) = result {
+        debug!(response = %pretty(&response), "Actual response");
+        debug!(reason = ?response.end.reason, "End reason");
+        debug!(path = ?response.end.path, "End path");
 
-    // The path points to the [b, c] pattern
-    let path = response.unwrap_complete();
-    assert_eq!(path.root_pattern_location().parent, bc);
+        // The query should be matched to the end
+        assert_eq!(
+            response.end.reason,
+            crate::state::end::EndReason::QueryEnd,
+            "Query should be fully matched. Got: {:?}",
+            response.end.reason
+        );
+
+        // The path should be Postfix since [b, c, d] starts at position 1 in abcd (not at the beginning)
+        // but continues to the end
+        assert!(
+            !response.is_complete(),
+            "Path should be Postfix, not Complete. Got: {:?}",
+            response.end.path
+        );
+
+        match &response.end.path {
+            PathEnum::Postfix(postfix) => {
+                // The root parent should be abcd
+                assert_eq!(
+                    postfix.path.root_pattern_location().parent,
+                    abcd,
+                    "Root parent should be abcd"
+                );
+                // The postfix starts at position 1 in abcd (at 'bc')
+                assert_eq!(
+                    postfix.path.root_child_index(),
+                    1,
+                    "Postfix should start at position 1"
+                );
+            },
+            _ => panic!("Expected Postfix path, got: {:?}", response.end.path),
+        }
+    } else {
+        panic!("Search failed: {:?}", result);
+    }
 }
 
 #[test]

@@ -1,23 +1,14 @@
-use std::ops::Index;
-
-use context_trace::{
-    GraphRoot,
-    IndexRangePath,
-    RootChildToken,
-};
-
-use crate::{
-    cursor::PathCursor,
-    state::end::{
-        EndState,
-        PathEnum,
-    },
-};
 #[cfg(test)]
 use {
     crate::search::Find,
+    crate::state::end::{
+        EndState,
+        PathEnum,
+    },
     crate::state::result::Response,
     context_trace::tests::env::Env1,
+    context_trace::GraphRoot,
+
     context_trace::{
         graph::{
             getters::{

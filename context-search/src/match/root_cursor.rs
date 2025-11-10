@@ -75,23 +75,17 @@ impl<G: HasGraph> RootCursor<G> {
         self,
         trav: &K::Trav,
     ) -> Result<(ParentCompareState, CompareParentBatch), Box<EndState>> {
-        let mut parent = self.state.parent_state();
-        let prev_cursor = parent.cursor.clone();
-        if parent.cursor.advance(trav).is_continue() {
-            if let Some(batch) =
-                K::Policy::next_batch(trav, &parent.parent_state)
-            {
-                let batch = CompareParentBatch {
-                    batch,
-                    cursor: parent.cursor.clone(),
-                };
-                Ok((parent, batch))
-            } else {
-                parent.cursor = prev_cursor;
-                Err(Box::new(EndState::mismatch(trav, parent)))
-            }
+        let parent = self.state.parent_state();
+        // Note: The cursor should already be advanced by the `advanced()` method
+        // before this function is called. We don't advance it again here.
+        if let Some(batch) = K::Policy::next_batch(trav, &parent.parent_state) {
+            let batch = CompareParentBatch {
+                batch,
+                cursor: parent.cursor.clone(),
+            };
+            Ok((parent, batch))
         } else {
-            Err(Box::new(EndState::query_end(trav, parent)))
+            Err(Box::new(EndState::mismatch(trav, parent)))
         }
     }
     fn advanced(&mut self) -> ControlFlow<Option<EndReason>> {
@@ -107,38 +101,35 @@ impl<G: HasGraph> RootCursor<G> {
         tracing::debug!("RootCursor::advanced - query cursor={:?}", cursor);
 
         if can_advance {
-            match self.query_advanced() {
-                Continue(_) => {
-                    // Query advanced successfully, now check if it's past the end of the pattern
-                    let cursor_end_index =
-                        self.state.cursor.role_root_child_index::<End>();
-                    let cursor_pattern_len = {
-                        let graph = self.trav.graph();
-                        self.state.cursor.path.root_pattern::<G>(&graph).len()
-                    };
+            // Both query and child_state can advance together
+            // Query advance is guaranteed to succeed since can_advance returned true
+            let advance_result = self.query_advanced();
+            if advance_result.is_break() {
+                panic!(
+                    "query_advanced returned Break when can_advance was true"
+                );
+            }
 
-                    tracing::debug!(
-                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
-                        cursor_end_index,
-                        cursor_pattern_len
-                    );
+            let cursor_end_index =
+                self.state.cursor.role_root_child_index::<End>();
+            let cursor_pattern_len = {
+                let graph = self.trav.graph();
+                self.state.cursor.path.root_pattern::<G>(&graph).len()
+            };
 
-                    if cursor_end_index >= cursor_pattern_len {
-                        tracing::debug!("RootCursor::advanced - query index past pattern end, returning QueryEnd");
-                        Break(Some(EndReason::QueryEnd))
-                    } else {
-                        tracing::debug!("RootCursor::advanced - query still within pattern, advancing child_state");
-                        let _ = self.path_advanced();
-                        Continue(())
-                    }
-                },
-                // Advance returned Break (shouldn't happen with our logic)
-                Break(_) => {
-                    tracing::debug!(
-                        "RootCursor::advanced - query advance returned Break"
-                    );
-                    Break(Some(EndReason::QueryEnd))
-                },
+            tracing::debug!(
+                "RootCursor::advanced - both advanced to index {}, pattern_len={}",
+                cursor_end_index,
+                cursor_pattern_len
+            );
+
+            if cursor_end_index >= cursor_pattern_len {
+                tracing::debug!("RootCursor::advanced - query past pattern end, returning QueryEnd");
+                Break(Some(EndReason::QueryEnd))
+            } else {
+                tracing::debug!("RootCursor::advanced - advancing child_state to stay in sync");
+                let _ = self.path_advanced();
+                Continue(())
             }
         } else {
             // Child state cannot advance further in the graph
@@ -147,7 +138,8 @@ impl<G: HasGraph> RootCursor<G> {
 
             match self.query_advanced() {
                 Continue(_) => {
-                    // Query advanced successfully, check if it's now past the pattern end
+                    // Query advanced successfully but child_state could not
+                    // We need to search in parents for the next query token
                     let cursor_end_index =
                         self.state.cursor.role_root_child_index::<End>();
                     let cursor_pattern_len = {
@@ -156,22 +148,26 @@ impl<G: HasGraph> RootCursor<G> {
                     };
 
                     tracing::debug!(
-                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
+                        "RootCursor::advanced - query advanced to index {}, pattern_len={}, need to search in parents",
                         cursor_end_index,
                         cursor_pattern_len
                     );
 
-                    if cursor_end_index >= cursor_pattern_len {
-                        tracing::debug!("RootCursor::advanced - query is complete, returning QueryEnd");
-                        Break(Some(EndReason::QueryEnd))
-                    } else {
-                        tracing::debug!("RootCursor::advanced - query incomplete but child_state exhausted, returning None");
-                        Break(None)
-                    }
+                    // The query should not be past the end if advance succeeded
+                    debug_assert!(
+                        cursor_end_index < cursor_pattern_len,
+                        "Query advanced but is past pattern end"
+                    );
+
+                    // Signal to search in parents (next_parents will be called)
+                    // The cursor is already advanced for the parent search
+                    Break(None)
                 },
                 Break(_) => {
-                    tracing::debug!("RootCursor::advanced - query cannot advance (already at end or error)");
-                    Break(None)
+                    // Query cannot advance - both query and child_state are exhausted
+                    // This means we've matched the entire query (QueryEnd)
+                    tracing::debug!("RootCursor::advanced - query and child_state both exhausted, returning QueryEnd");
+                    Break(Some(EndReason::QueryEnd))
                 },
             }
         }

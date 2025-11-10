@@ -41,8 +41,8 @@ where
     ) -> Result<(), ValidationError> {
         let location = location.into_pattern_location();
         let pattern = self
-            .get_pattern_at(location.clone())
-            .map_err(|_| ValidationError::InvalidPattern(location.clone()))?;
+            .get_pattern_at(location)
+            .map_err(|_| ValidationError::InvalidPattern(location))?;
         if end >= pattern.len() {
             Err(ValidationError::InvalidPatternRange(
                 format!(
@@ -57,7 +57,7 @@ where
         } else if end < start {
             Err(ValidationError::InvalidPatternRange(
                 format!("end < start: {} < {}", end, start),
-                location.clone(),
+                location,
                 start,
                 end,
             ))

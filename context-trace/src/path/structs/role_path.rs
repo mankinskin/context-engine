@@ -7,8 +7,6 @@ use derive_more::{
 
 use crate::*;
 
-use crate::path::RolePathUtils;
-
 #[derive(Clone, Debug, PartialEq, Eq, Default, Deref, DerefMut)]
 pub struct RolePath<R: PathRole> {
     #[deref]
