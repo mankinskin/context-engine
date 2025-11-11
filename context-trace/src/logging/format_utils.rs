@@ -6,7 +6,7 @@ use std::fmt;
 ///
 /// # Example
 /// ```
-/// use context_trace::format_utils::pretty;
+/// use context_trace::logging::format_utils::pretty;
 ///
 /// let data = vec![1, 2, 3];
 /// tracing::debug!(data = %pretty(&data), "Processing");

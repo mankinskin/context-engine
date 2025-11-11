@@ -70,6 +70,24 @@ cargo test          # Run tests
 cargo doc --open    # Generate documentation
 ```
 
+### Testing with Logging
+
+By default, test logs are written to files in `target/test-logs/` and automatically
+deleted when tests pass. To enable stdout logging for debugging:
+
+```bash
+# Enable stdout logging for all tests
+RUST_TEST_LOG_STDOUT=1 cargo test
+
+# Run specific test with stdout logging
+RUST_TEST_LOG_STDOUT=1 cargo test my_test_name -- --nocapture
+
+# Combine with RUST_LOG for custom log levels
+RUST_TEST_LOG_STDOUT=1 RUST_LOG=debug cargo test
+```
+
+Failed tests always preserve their log files in `target/test-logs/` for inspection.
+
 **Features**: `test-api` (deterministic testing), default (logging)
 
 ## Architecture

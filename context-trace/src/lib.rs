@@ -49,7 +49,6 @@ pub use tests::{
         Env1,
         TestEnv,
     },
-    init_tracing,
 };
 
 // Essential public re-exports for context-search

@@ -3,6 +3,29 @@
 //! Provides per-test logging to files with automatic cleanup on success.
 //! Logs are written to `<target-dir>/test-logs/<test_name>.log` and deleted if the test passes.
 //! The target directory is automatically detected from the Cargo build environment.
+//!
+//! # Enabling stdout logging
+//!
+//! By default, logs are only written to files. To enable stdout logging for debugging,
+//! set the `RUST_TEST_LOG_STDOUT` environment variable:
+//!
+//! ```bash
+//! # Enable stdout logging
+//! RUST_TEST_LOG_STDOUT=1 cargo test
+//!
+//! # Or with true/yes
+//! RUST_TEST_LOG_STDOUT=true cargo test
+//! RUST_TEST_LOG_STDOUT=yes cargo test
+//!
+//! # Run specific test with stdout logging
+//! RUST_TEST_LOG_STDOUT=1 cargo test my_test_name -- --nocapture
+//! ```
+//!
+//! You can also combine with `RUST_LOG` to control log levels:
+//!
+//! ```bash
+//! RUST_TEST_LOG_STDOUT=1 RUST_LOG=debug cargo test
+//! ```
 
 use std::{
     env,
@@ -87,11 +110,22 @@ pub struct TracingConfig {
 
 impl Default for TracingConfig {
     fn default() -> Self {
+        // Check environment variable to enable stdout logging
+        // Usage: RUST_TEST_LOG_STDOUT=1 cargo test
+        // or:    RUST_TEST_LOG_STDOUT=true cargo test
+        let log_to_stdout = env::var("RUST_TEST_LOG_STDOUT")
+            .map(|v| {
+                v == "1"
+                    || v.eq_ignore_ascii_case("true")
+                    || v.eq_ignore_ascii_case("yes")
+            })
+            .unwrap_or(false);
+
         Self {
             log_dir: get_target_dir().join("test-logs"),
             stdout_level: Level::INFO,
             file_level: Level::TRACE,
-            log_to_stdout: true,
+            log_to_stdout,
             log_to_file: true,
             stdout_filter_directives: None,
             file_filter_directives: None,
@@ -213,7 +247,7 @@ impl TestTracing {
     ///
     /// # Example
     /// ```no_run
-    /// use context_trace::tracing_utils::TestTracing;
+    /// use context_trace::logging::tracing_utils::TestTracing;
     ///
     /// #[test]
     /// fn my_test() {

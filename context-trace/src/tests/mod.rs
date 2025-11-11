@@ -1,5 +1,3 @@
-use tracing::Level;
-
 use crate::{
     graph::vertex::parent::PatternIndex,
     *,
@@ -10,13 +8,8 @@ pub mod grammar;
 pub mod graph;
 
 pub mod env;
-
-pub fn init_tracing() {
-    tracing_subscriber::fmt()
-        .with_max_level(Level::DEBUG)
-        .with_target(false)
-        .init();
-}
+#[path = "public_api/mod.rs"]
+pub mod public_api;
 
 #[macro_export]
 macro_rules! assert_patterns {

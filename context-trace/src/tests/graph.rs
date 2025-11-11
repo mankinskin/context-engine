@@ -16,7 +16,7 @@ macro_rules! insert_patterns {
     ) => {
 
         $(
-            let $name = $graph.insert_patterns([$(vec![$($pat),*]),*]);
+            let $name = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns([$(vec![$($pat),*]),*]);
         )*
     };
     ($graph:ident,
@@ -27,7 +27,7 @@ macro_rules! insert_patterns {
     ) => {
 
         $(
-            let $name = $graph.insert_pattern([$($pat),*]);
+            let $name = $crate::HasGraphMut::graph_mut(&mut $graph).insert_pattern([$($pat),*]);
         )*
     };
     ($graph:ident,
