@@ -136,6 +136,10 @@ pub use crate::{
     path::{
         RolePathUtils,
         accessors::{
+            calc::{
+                CalcOffset,
+                CalcWidth,
+            },
             child::{
                 LeafToken,
                 root::GraphRootChild,
@@ -193,10 +197,6 @@ pub use crate::{
                     RootChildIndex,
                     RootChildToken,
                     RootedRolePath,
-                    calc::{
-                        CalcOffset,
-                        CalcWidth,
-                    },
                     range::{
                         EndPath,
                         HasEndPath,

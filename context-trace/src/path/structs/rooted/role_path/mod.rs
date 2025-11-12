@@ -1,4 +1,3 @@
-pub(crate) mod calc;
 pub(crate) mod range;
 
 use auto_impl::auto_impl;
