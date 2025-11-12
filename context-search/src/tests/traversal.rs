@@ -230,6 +230,7 @@ fn postfix1() {
 
 #[test]
 fn range1() {
+    let _tracing = init_test_tracing!();
     let Env1 {
         graph,
         a,

@@ -17,6 +17,9 @@ pub mod grammar;
 #[cfg(test)]
 pub mod public_api;
 
+#[cfg(test)]
+pub mod path_advance;
+
 pub fn assert_parents(
     graph: &Hypergraph,
     token: impl ToToken,
