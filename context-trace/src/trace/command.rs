@@ -1,4 +1,5 @@
 use crate::{
+    AtomPosition,
     CalcOffset,
     graph::vertex::{
         pattern::pattern_width,
@@ -95,6 +96,7 @@ impl Traceable for PostfixCommand {
 pub struct PrefixCommand {
     pub path: IndexEndPath,
     pub add_edges: bool,
+    pub end_pos: AtomPosition,
 }
 impl Traceable for PrefixCommand {
     fn trace<G: HasGraph>(
@@ -102,15 +104,9 @@ impl Traceable for PrefixCommand {
         ctx: &mut TraceCtx<G>,
     ) {
         let root_exit = self.path.role_root_child_location::<End>();
-        // TODO: implement root_child for prefix/postfix path with most outer root token
         let exit_key = DownKey {
-            pos: (pattern_width(
-                &self.path.root_pattern::<G>(&ctx.trav.graph())
-                    [0..self.path.root_entry],
-            ) + self.path.calc_offset(&ctx.trav))
-            .into(),
+            pos: self.end_pos.into(),
             index: root_exit.parent,
-            //*ctx.trav.graph().expect_child_at(root_exit.clone()),
         };
         let target = DownKey {
             index: *ctx.trav.graph().expect_child_at(root_exit),
@@ -137,6 +133,7 @@ pub struct RangeCommand {
     pub path: IndexRangePath,
     pub add_edges: bool,
     pub root_pos: UpPosition,
+    pub end_pos: AtomPosition,
 }
 impl Traceable for RangeCommand {
     fn trace<G: HasGraph>(
@@ -176,12 +173,7 @@ impl Traceable for RangeCommand {
         let root_exit = self.path.role_root_child_location::<End>();
 
         let exit_key = DownKey {
-            pos: (self
-                .path
-                .role_rooted_leaf_token::<Start, _>(&ctx.trav)
-                .width()
-                + self.path.calc_offset(&ctx.trav))
-            .into(),
+            pos: self.end_pos.into(),
             index: root_exit.parent,
         };
         let target = DownKey {

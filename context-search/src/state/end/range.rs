@@ -5,6 +5,7 @@ pub(crate) struct RangeEnd {
     pub(crate) path: IndexRangePath,
     pub(crate) target: DownKey,
     pub(crate) root_pos: AtomPosition,
+    pub(crate) end_pos: AtomPosition,
 }
 impl LeafKey for RangeEnd {
     fn leaf_location(&self) -> ChildLocation {
@@ -27,6 +28,7 @@ impl From<&RangeEnd> for RangeCommand {
             add_edges: true,
             path: value.path.clone(),
             root_pos: value.root_pos.into(),
+            end_pos: value.end_pos,
         }
     }
 }

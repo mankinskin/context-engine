@@ -86,36 +86,45 @@ impl CompareState {
         trav: &G,
     ) -> ChildQueue<Self> {
         match self.mode {
-            GraphMajor => self
-                .child_state
-                .prefix_states(trav)
-                .into_iter()
-                .map(|(sub, child_state)| Self {
-                    target: DownKey::new(
-                        sub.token(),
-                        (*self.matched_cursor.cursor_pos()).into(),
-                    ),
-                    child_state,
-                    mode: self.mode,
-                    cursor: self.cursor.clone(),
-                    matched_cursor: self.matched_cursor.clone(),
-                })
-                .collect(),
-            QueryMajor => self
-                .cursor
-                .prefix_states(trav)
-                .into_iter()
-                .map(|(sub, cursor)| Self {
-                    target: DownKey::new(
-                        sub.token(),
-                        (*self.matched_cursor.cursor_pos()).into(),
-                    ),
-                    child_state: self.child_state.clone(),
-                    mode: self.mode,
-                    cursor,
-                    matched_cursor: self.matched_cursor.clone(),
-                })
-                .collect(),
+            GraphMajor => {
+                let matched_cursor_pos = *self.matched_cursor.cursor_pos();
+
+                let result: ChildQueue<Self> = self
+                    .child_state
+                    .prefix_states(trav)
+                    .into_iter()
+                    .map(|(sub, child_state)| {
+                        let token = sub.token();
+                        let target_pos = matched_cursor_pos.into();
+                        Self {
+                            target: DownKey::new(token, target_pos),
+                            child_state,
+                            mode: self.mode,
+                            cursor: self.cursor.clone(),
+                            matched_cursor: self.matched_cursor.clone(),
+                        }
+                    })
+                    .collect();
+                result
+            },
+            QueryMajor => {
+                let cursor_prefixes = self.cursor.prefix_states(trav);
+
+                let result: ChildQueue<Self> = cursor_prefixes
+                    .into_iter()
+                    .map(|(sub, cursor)| Self {
+                        target: DownKey::new(
+                            sub.token(),
+                            (*self.matched_cursor.cursor_pos()).into(),
+                        ),
+                        child_state: self.child_state.clone(),
+                        mode: self.mode,
+                        cursor,
+                        matched_cursor: self.matched_cursor.clone(),
+                    })
+                    .collect();
+                result
+            },
         }
     }
     pub(crate) fn next_match<G: HasGraph>(

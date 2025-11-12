@@ -78,6 +78,7 @@ fn trace_ctx_prefix_traces_path_downward() {
     let command = PrefixCommand {
         path: end_path,
         add_edges: true,
+        end_pos: AtomPosition::from(0), // Test case - position at start
     };
 
     command.trace(&mut ctx);

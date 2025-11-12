@@ -67,6 +67,7 @@ impl PathEnum {
                 PathEnum::Prefix(PrefixEnd {
                     path: path.into(),
                     target,
+                    end_pos: target.pos.0,
                 }),
             (false, _, true, true) | (true, false, true, true) => {
                 let path: IndexStartPath = path.into();
@@ -76,6 +77,7 @@ impl PathEnum {
                 path,
                 root_pos,
                 target,
+                end_pos: target.pos.0,
             }),
         }
     }

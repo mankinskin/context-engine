@@ -140,6 +140,7 @@ fn find_pattern1() {
             path: PathEnum::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
+                end_pos: 3.into(),
                 path: RootedRangePath::new(
                     PatternLocation::new(xabyz, xab_yz_id),
                     RolePath::new(

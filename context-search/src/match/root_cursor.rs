@@ -7,7 +7,11 @@ use crate::{
             TokenMatchState::*,
         },
     },
-    cursor::PatternCursor,
+    cursor::{
+        Matched,
+        PathCursor,
+        PatternCursor,
+    },
     state::end::{
         EndReason,
         EndState,
@@ -31,6 +35,7 @@ use derive_more::{
 use std::{
     collections::VecDeque,
     fmt::Debug,
+    marker::PhantomData,
     ops::ControlFlow::{
         self,
         Break,
@@ -49,17 +54,18 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
         let prev_state = self.state.clone();
         match self.advanced() {
             Continue(_) => {
-                // Update matched_cursor BEFORE comparing
-                // matched_cursor should be the position where we START matching this token
+                // Save the matched_cursor (position where THIS token's matching started)
                 // That's prev_state.cursor (before advancing)
-                self.state.matched_cursor = prev_state.cursor.clone();
+                let matched_cursor_for_this_token = prev_state.cursor.clone();
 
                 // next position
                 Some(
                     match CompareIterator::new(&self.trav, *self.state.clone())
                         .compare()
                     {
-                        Match(c) => {
+                        Match(mut c) => {
+                            // Restore the correct matched_cursor after compare()
+                            c.matched_cursor = matched_cursor_for_this_token;
                             *self.state = c;
                             Continue(())
                         },
@@ -194,6 +200,7 @@ impl<G: HasGraph> RootCursor<G> {
             Some(reason) => {
                 let CompareState {
                     child_state,
+                    cursor,
                     matched_cursor,
                     ..
                 } = *self.state;
@@ -201,8 +208,15 @@ impl<G: HasGraph> RootCursor<G> {
                 let path = child_state.rooted_path().clone();
                 let target_index =
                     path.role_rooted_leaf_token::<End, _>(&self.trav);
-                let pos = matched_cursor.atom_position;
-                let target = DownKey::new(target_index, pos.into());
+
+                // Calculate the END position based on cursor position BEFORE the last advance
+                // The cursor has advanced past the last token, so we need to go back by the width of the last token
+                let last_token_width_value = target_index.width();
+                let end_pos = AtomPosition::from(
+                    *cursor.atom_position - last_token_width_value,
+                );
+
+                let target = DownKey::new(target_index, end_pos.into());
                 Ok(EndState {
                     cursor: matched_cursor,
                     reason,
