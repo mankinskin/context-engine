@@ -23,7 +23,7 @@ fn trace_ctx_postfix_traces_path_upward() {
         (ab, ab_id) => [a, b],
     );
     insert_patterns!(graph,
-        abc => [ab, c]
+        _abc => [ab, c]
     );
 
     // Create a postfix path starting from 'b' within 'ab'
@@ -60,7 +60,9 @@ fn trace_ctx_prefix_traces_path_downward() {
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
-        (abc, abc_id) => [ab, c]
+    );
+    insert_patterns!(graph,
+        _abc => [ab, c]
     );
 
     // Create a prefix path ending at 'a' within 'ab'

@@ -3,6 +3,7 @@
 //! The MoveKey trait enables moving positions forward (Right) or backward (Left)
 //! by a given delta. This is used extensively in search to track atom positions.
 
+#[cfg(test)]
 use crate::*;
 
 #[test]

@@ -14,6 +14,7 @@ use crate::{
     StartPath,
     path::{
         accessors::{
+            child::RootedLeafToken,
             has_path::HasRolePath,
             role::{
                 End,
@@ -34,7 +35,13 @@ use root::{
     RootedPath,
 };
 pub(crate) trait RangePath:
-    RootedPath + IntoRootedRolePath<Start> + IntoRootedRolePath<End>
+    RootedPath
+    + IntoRootedRolePath<Start>
+    + IntoRootedRolePath<End>
+    + RootChildIndex<Start>
+    + RootChildIndex<End>
+    + RootedLeafToken<Start>
+    + RootedLeafToken<End>
 {
     fn new_range(
         root: Self::Root,

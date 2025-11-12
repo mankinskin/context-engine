@@ -11,7 +11,7 @@ fn pattern_strings_single_pattern() {
     let _tracing = init_test_tracing!();
 
     let mut graph = Hypergraph::default();
-    insert_atoms!(graph, {a, b, c});
+    insert_atoms!(graph, {a, b});
 
     insert_patterns!(graph,
         ab => [a, b],

@@ -51,16 +51,11 @@ where
             let graph = trav.graph();
             let pattern = self.path.root_pattern::<G>(&graph);
 
-            tracing::trace!(
-                "PathCursor::move_root_index - advanced to child_index: {}, pattern_len: {}",
-                child_index,
-                pattern.len()
-            );
-
             // Only access pattern if child_index is valid
             // When matching is complete, child_index may equal pattern.len()
             if child_index < pattern.len() {
-                self.move_key(pattern[child_index].width());
+                let child_width = pattern[child_index].width();
+                self.move_key(child_width);
             }
         }
         flow

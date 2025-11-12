@@ -103,8 +103,8 @@ fn move_root_index_works_with_compound_patterns() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
-        (ab, ab_id) => [a, b],
-        (cd, cd_id) => [c, d]
+        ab => [a, b],
+        cd => [c, d]
     );
     insert_patterns!(graph,
         (abcd, abcd_id) => [ab, cd]

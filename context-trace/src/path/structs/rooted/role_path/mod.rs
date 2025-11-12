@@ -277,11 +277,11 @@ impl<Role: PathRole, Root: PathRoot> RootPattern
 
 //impl_root! { <R: PathRole> PatternRoot for PatternRolePath<R>, self => self.root.borrow() }
 
-impl RootChildIndex<Start> for PatternEndPath {
-    fn root_child_index(&self) -> usize {
-        0
-    }
-}
+//impl RootChildIndex<Start> for PatternEndPath {
+//    fn root_child_index(&self) -> usize {
+//        0
+//    }
+//}
 //impl<R: PathRole> LeafToken<R> for PatternRolePath<R> where
 //    Self: HasPath<R> + PatternRootChild<R>
 //{

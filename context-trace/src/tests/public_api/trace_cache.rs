@@ -239,7 +239,7 @@ fn trace_cache_extend_merges_entries() {
 
     // merge b into a using Extend
     let mut a_clone = a.clone();
-    a_clone.extend(b.entries.into_iter());
+    a_clone.extend(b.entries);
 
     // entries from `a` should still be present in the merged cache
     for (k, _v) in a.entries.iter() {
@@ -274,7 +274,7 @@ fn trace_cache_extend_merges_positions_for_same_vertex() {
 
     // Merge them
     let mut merged = cache_a.clone();
-    merged.extend(cache_b.entries.into_iter());
+    merged.extend(cache_b.entries);
 
     // The merged cache should have both bottom-up positions
     let vertex_cache = merged.get_vertex(&ab).expect("vertex exists");

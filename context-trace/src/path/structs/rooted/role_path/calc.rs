@@ -1,9 +1,7 @@
-use std::ops::Index;
-
 use crate::{
-    path::{
-        accessors::child::RootedLeafToken,
-        structs::rooted::root::PathRoot,
+    path::structs::rooted::{
+        RangePath,
+        root::PathRoot,
     },
     *,
 };
@@ -64,7 +62,7 @@ pub trait PathWidth: CalcOffset + RootedPath {
         trav: G,
     ) -> usize;
 }
-impl PathWidth for RootedRangePath<IndexRoot> {
+impl<P: RangePath + CalcOffset + RootedPath> PathWidth for P {
     fn path_width<G: HasGraph>(
         &self,
         trav: G,
@@ -76,40 +74,17 @@ impl PathWidth for RootedRangePath<IndexRoot> {
                 + self.role_rooted_leaf_token::<Start, _>(&trav).width()
                 + self.role_rooted_leaf_token::<End, _>(&trav).width()
         } else {
-            0
+            self.role_root_child_token::<Start, _>(&trav).width()
         }
     }
 }
 
-impl PathWidth for RootedRangePath<Pattern> {
+impl PathWidth for PatternEndPath {
     fn path_width<G: HasGraph>(
         &self,
         trav: G,
     ) -> usize {
-        if self.role_root_child_index::<Start>()
-            != self.role_root_child_index::<End>()
-        {
-            self.calc_offset(&trav)
-                + self.role_rooted_leaf_token::<Start, _>(&trav).width()
-                + self.role_rooted_leaf_token::<End, _>(&trav).width()
-        } else {
-            0
-        }
-    }
-}
-
-impl PathWidth for RootedRolePath<End, Pattern> {
-    fn path_width<G: HasGraph>(
-        &self,
-        trav: G,
-    ) -> usize {
-        if self.role_root_child_index::<Start>()
-            != self.role_root_child_index::<End>()
-        {
-            self.calc_offset(&trav)
-                + self.role_rooted_leaf_token::<End, _>(&trav).width()
-        } else {
-            0
-        }
+        self.calc_offset(&trav)
+            + self.role_rooted_leaf_token::<End, _>(&trav).width()
     }
 }

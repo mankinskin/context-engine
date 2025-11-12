@@ -198,7 +198,7 @@ fn find_ancestor2() {
                 cursor: PatternCursor {
                     path: RootedRangePath::new(
                         query.clone(),
-                        RolePath::new_empty(1),
+                        RolePath::new_empty(0),
                         RolePath::new_empty(1),
                     ),
                     atom_position: 3.into(),
@@ -354,7 +354,7 @@ fn find_ancestor3() {
                 cursor: PatternCursor {
                     path: RootedRangePath::new(
                         query.clone(),
-                        RolePath::new_empty(1),
+                        RolePath::new_empty(0),
                         RolePath::new_empty(1),
                     ),
                     atom_position: 3.into(),
