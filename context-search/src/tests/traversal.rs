@@ -3,7 +3,10 @@ use context_trace::trace::cache::{
     position::PositionCache,
     vertex::VertexCache,
 };
-use std::iter::FromIterator;
+use std::{
+    iter::FromIterator,
+    marker::PhantomData,
+};
 
 use context_trace::*;
 use pretty_assertions::{
@@ -70,6 +73,7 @@ fn prefix1() {
                 cursor: PathCursor {
                     atom_position: 5.into(),
                     path: res.end.cursor.path,
+                    _state: PhantomData,
                 },
                 path: res.end.path,
                 reason: EndReason::QueryEnd
@@ -173,6 +177,7 @@ fn postfix1() {
                 cursor: PathCursor {
                     atom_position: 7.into(),
                     path: res.end.cursor.path,
+                    _state: PhantomData,
                 },
                 path: res.end.path,
                 reason: EndReason::QueryEnd
@@ -270,6 +275,7 @@ fn range1() {
                 cursor: PathCursor {
                     atom_position: 4.into(),
                     path: res.end.cursor.path,
+                    _state: PhantomData,
                 },
                 path: res.end.path,
                 reason: EndReason::QueryEnd

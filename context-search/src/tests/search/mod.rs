@@ -156,6 +156,7 @@ fn find_pattern1() {
                     RolePath::new_empty(query.len()),
                 ),
                 atom_position: 3.into(),
+                _state: std::marker::PhantomData,
             },
         }
     );

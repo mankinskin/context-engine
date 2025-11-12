@@ -189,6 +189,7 @@ impl<K: TraversalKind> FoldCtx<K> {
                 let cursor = PatternCursor {
                     atom_position: AtomPosition::default(),
                     path: query_path.clone(),
+                    _state: std::marker::PhantomData,
                 };
                 EndState {
                     reason: EndReason::Mismatch,

@@ -48,6 +48,7 @@ impl<P: StartFoldPath> ToCursor for P {
         PathCursor {
             atom_position: self.calc_width(trav).into(),
             path: self,
+            _state: std::marker::PhantomData,
         }
     }
 }

@@ -48,21 +48,28 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
     fn next(&mut self) -> Option<Self::Item> {
         let prev_state = self.state.clone();
         match self.advanced() {
-            Continue(_) => Some(
+            Continue(_) => {
+                // Update matched_cursor BEFORE comparing
+                // matched_cursor should be the position where we START matching this token
+                // That's prev_state.cursor (before advancing)
+                self.state.matched_cursor = prev_state.cursor.clone();
+
                 // next position
-                match CompareIterator::new(&self.trav, *self.state.clone())
-                    .compare()
-                {
-                    Match(c) => {
-                        *self.state = c;
-                        Continue(())
+                Some(
+                    match CompareIterator::new(&self.trav, *self.state.clone())
+                        .compare()
+                    {
+                        Match(c) => {
+                            *self.state = c;
+                            Continue(())
+                        },
+                        Mismatch(_) => {
+                            self.state = prev_state;
+                            Break(EndReason::Mismatch)
+                        },
                     },
-                    Mismatch(_) => {
-                        self.state = prev_state;
-                        Break(EndReason::Mismatch)
-                    },
-                },
-            ),
+                )
+            },
             // end of this root
             Break(None) => None,
             // end of query
@@ -90,56 +97,21 @@ impl<G: HasGraph> RootCursor<G> {
     }
     fn advanced(&mut self) -> ControlFlow<Option<EndReason>> {
         let rooted_path = self.state.rooted_path();
-        let can_advance = rooted_path.can_advance(&self.trav);
+        let child_can_advance = rooted_path.can_advance(&self.trav);
 
         let cursor = &self.state.cursor;
         tracing::debug!(
             "RootCursor::advanced - child_state can_advance={}, child_state={:?}",
-            can_advance,
+            child_can_advance,
             rooted_path
         );
         tracing::debug!("RootCursor::advanced - query cursor={:?}", cursor);
 
-        if can_advance {
-            // Both query and child_state can advance together
-            // Query advance is guaranteed to succeed since can_advance returned true
-            let advance_result = self.query_advanced();
-            if advance_result.is_break() {
-                panic!(
-                    "query_advanced returned Break when can_advance was true"
-                );
-            }
-
-            let cursor_end_index =
-                self.state.cursor.role_root_child_index::<End>();
-            let cursor_pattern_len = {
-                let graph = self.trav.graph();
-                self.state.cursor.path.root_pattern::<G>(&graph).len()
-            };
-
-            tracing::debug!(
-                "RootCursor::advanced - both advanced to index {}, pattern_len={}",
-                cursor_end_index,
-                cursor_pattern_len
-            );
-
-            if cursor_end_index >= cursor_pattern_len {
-                tracing::debug!("RootCursor::advanced - query past pattern end, returning QueryEnd");
-                Break(Some(EndReason::QueryEnd))
-            } else {
-                tracing::debug!("RootCursor::advanced - advancing child_state to stay in sync");
-                let _ = self.path_advanced();
-                Continue(())
-            }
-        } else {
-            // Child state cannot advance further in the graph
-            // Try to advance the query cursor to see if it's also complete
-            tracing::debug!("RootCursor::advanced - child_state cannot advance, attempting to advance query");
-
+        if child_can_advance {
+            // Child state can advance - try to advance query cursor too
             match self.query_advanced() {
                 Continue(_) => {
-                    // Query advanced successfully but child_state could not
-                    // We need to search in parents for the next query token
+                    // Query advanced successfully, now check if it's past the end of the pattern
                     let cursor_end_index =
                         self.state.cursor.role_root_child_index::<End>();
                     let cursor_pattern_len = {
@@ -148,24 +120,60 @@ impl<G: HasGraph> RootCursor<G> {
                     };
 
                     tracing::debug!(
-                        "RootCursor::advanced - query advanced to index {}, pattern_len={}, need to search in parents",
+                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
                         cursor_end_index,
                         cursor_pattern_len
                     );
 
-                    // The query should not be past the end if advance succeeded
-                    debug_assert!(
-                        cursor_end_index < cursor_pattern_len,
-                        "Query advanced but is past pattern end"
+                    if cursor_end_index >= cursor_pattern_len {
+                        tracing::debug!("RootCursor::advanced - query index past pattern end, returning QueryEnd");
+                        Break(Some(EndReason::QueryEnd))
+                    } else {
+                        tracing::debug!("RootCursor::advanced - query still within pattern, advancing child_state");
+                        let _ = self.path_advanced();
+                        Continue(())
+                    }
+                },
+                // Query advance returned Break - cursor cannot advance further
+                // Even though child could continue, query is complete
+                Break(_) => {
+                    tracing::debug!(
+                        "RootCursor::advanced - query advance returned Break, query complete"
+                    );
+                    Break(Some(EndReason::QueryEnd))
+                },
+            }
+        } else {
+            // Child state cannot advance further in the graph
+            // Try to advance the query cursor to see if it's also complete
+            tracing::debug!("RootCursor::advanced - child_state cannot advance, attempting to advance query");
+
+            match self.query_advanced() {
+                Continue(_) => {
+                    // Query advanced successfully, check if it's now past the pattern end
+                    let cursor_end_index =
+                        self.state.cursor.role_root_child_index::<End>();
+                    let cursor_pattern_len = {
+                        let graph = self.trav.graph();
+                        self.state.cursor.path.root_pattern::<G>(&graph).len()
+                    };
+
+                    tracing::debug!(
+                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
+                        cursor_end_index,
+                        cursor_pattern_len
                     );
 
-                    // Signal to search in parents (next_parents will be called)
-                    // The cursor is already advanced for the parent search
-                    Break(None)
+                    if cursor_end_index >= cursor_pattern_len {
+                        tracing::debug!("RootCursor::advanced - query is complete, returning QueryEnd");
+                        Break(Some(EndReason::QueryEnd))
+                    } else {
+                        tracing::debug!("RootCursor::advanced - query incomplete but child_state exhausted, searching in parents");
+                        Break(None)
+                    }
                 },
                 Break(_) => {
                     // Query cannot advance - both query and child_state are exhausted
-                    // This means we've matched the entire query (QueryEnd)
                     tracing::debug!("RootCursor::advanced - query and child_state both exhausted, returning QueryEnd");
                     Break(Some(EndReason::QueryEnd))
                 },
@@ -186,17 +194,17 @@ impl<G: HasGraph> RootCursor<G> {
             Some(reason) => {
                 let CompareState {
                     child_state,
-                    cursor,
+                    matched_cursor,
                     ..
                 } = *self.state;
                 let root_pos = *child_state.root_pos();
                 let path = child_state.rooted_path().clone();
                 let target_index =
                     path.role_rooted_leaf_token::<End, _>(&self.trav);
-                let pos = cursor.atom_position;
+                let pos = matched_cursor.atom_position;
                 let target = DownKey::new(target_index, pos.into());
                 Ok(EndState {
-                    cursor,
+                    cursor: matched_cursor,
                     reason,
                     path: PathEnum::from_range_path(
                         path, root_pos, target, &self.trav,

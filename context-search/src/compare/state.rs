@@ -50,7 +50,10 @@ pub(crate) struct CompareState {
     #[deref]
     #[deref_mut]
     pub(crate) child_state: ChildState,
+    /// Current cursor position (may be candidate or matched)
     pub(crate) cursor: PatternCursor,
+    /// Last confirmed matched cursor position
+    pub(crate) matched_cursor: PatternCursor,
     pub(crate) target: DownKey,
     pub(crate) mode: PathPairMode,
 }
@@ -90,11 +93,12 @@ impl CompareState {
                 .map(|(sub, child_state)| Self {
                     target: DownKey::new(
                         sub.token(),
-                        (*self.cursor.cursor_pos()).into(),
+                        (*self.matched_cursor.cursor_pos()).into(),
                     ),
                     child_state,
                     mode: self.mode,
                     cursor: self.cursor.clone(),
+                    matched_cursor: self.matched_cursor.clone(),
                 })
                 .collect(),
             QueryMajor => self
@@ -104,11 +108,12 @@ impl CompareState {
                 .map(|(sub, cursor)| Self {
                     target: DownKey::new(
                         sub.token(),
-                        (*cursor.cursor_pos()).into(),
+                        (*self.matched_cursor.cursor_pos()).into(),
                     ),
                     child_state: self.child_state.clone(),
                     mode: self.mode,
                     cursor,
+                    matched_cursor: self.matched_cursor.clone(),
                 })
                 .collect(),
         }

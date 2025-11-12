@@ -202,6 +202,7 @@ fn find_ancestor2() {
                         RolePath::new_empty(1),
                     ),
                     atom_position: 3.into(),
+                    _state: std::marker::PhantomData,
                 },
             },
             cache: TraceCache {
@@ -358,6 +359,7 @@ fn find_ancestor3() {
                         RolePath::new_empty(1),
                     ),
                     atom_position: 3.into(),
+                    _state: std::marker::PhantomData,
                 },
             },
         }

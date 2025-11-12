@@ -39,7 +39,8 @@ impl IntoAdvanced for ParentCompareState {
             Ok(next) => Ok(CompareRootState {
                 token: CompareState {
                     child_state: next.child_state,
-                    cursor: self.cursor,
+                    cursor: self.cursor.clone(),
+                    matched_cursor: self.cursor,
                     mode: GraphMajor,
                     target: DownKey::new(Token::new(0, 0), 0.into()),
                 },
