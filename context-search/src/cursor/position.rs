@@ -1,13 +1,16 @@
 use crate::{
-    cursor::PathCursor,
+    cursor::{
+        CursorState,
+        PathCursor,
+    },
     state::start::StartFoldPath,
 };
 use context_trace::*;
 
 impl_cursor_pos! {
-    <R: StartFoldPath> CursorPosition for PathCursor<R>, self => self.atom_position
+    <R: StartFoldPath, S: CursorState> CursorPosition for PathCursor<R, S>, self => self.atom_position
 }
-impl<D: Direction, P> MoveKey<D> for PathCursor<P>
+impl<D: Direction, P, S: CursorState> MoveKey<D> for PathCursor<P, S>
 where
     AtomPosition: MoveKey<D>,
 {
@@ -19,7 +22,9 @@ where
     }
 }
 
-impl<R: PathRole, P: RootChildIndex<R>> RootChildIndex<R> for PathCursor<P> {
+impl<R: PathRole, P: RootChildIndex<R>, S: CursorState> RootChildIndex<R>
+    for PathCursor<P, S>
+{
     fn root_child_index(&self) -> usize {
         RootChildIndex::<R>::root_child_index(&self.path)
     }

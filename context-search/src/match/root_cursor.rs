@@ -54,9 +54,9 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
         let prev_state = self.state.clone();
         match self.advanced() {
             Continue(_) => {
-                // Save the matched_cursor (position where THIS token's matching started)
+                // Save the checkpoint (position where THIS token's matching started)
                 // That's prev_state.cursor (before advancing)
-                let matched_cursor_for_this_token = prev_state.cursor.clone();
+                let checkpoint_for_this_token = prev_state.cursor.clone();
 
                 // next position
                 Some(
@@ -64,8 +64,9 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
                         .compare()
                     {
                         Match(mut c) => {
-                            // Restore the correct matched_cursor after compare()
-                            c.matched_cursor = matched_cursor_for_this_token;
+                            // Restore the correct checkpoint after compare()
+                            c.checkpoint =
+                                checkpoint_for_this_token.confirm_match();
                             *self.state = c;
                             Continue(())
                         },
@@ -201,7 +202,7 @@ impl<G: HasGraph> RootCursor<G> {
                 let CompareState {
                     child_state,
                     cursor,
-                    matched_cursor,
+                    checkpoint,
                     ..
                 } = *self.state;
                 let root_pos = *child_state.root_pos();
@@ -218,7 +219,7 @@ impl<G: HasGraph> RootCursor<G> {
 
                 let target = DownKey::new(target_index, end_pos.into());
                 Ok(EndState {
-                    cursor: matched_cursor,
+                    cursor: checkpoint,
                     reason,
                     path: PathEnum::from_range_path(
                         path, root_pos, target, &self.trav,

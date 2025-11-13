@@ -1,7 +1,10 @@
 use std::ops::ControlFlow;
 
 use crate::{
-    cursor::PathCursor,
+    cursor::{
+        CursorState,
+        PathCursor,
+    },
     state::start::StartFoldPath,
 };
 use context_trace::*;
@@ -17,8 +20,8 @@ impl<
     > MovablePath<D, R> for P
 {
 }
-impl<D: Direction, R: PathRole, P: MovablePath<D, R>> MovePath<D, R>
-    for PathCursor<P>
+impl<D: Direction, R: PathRole, P: MovablePath<D, R>, S: CursorState>
+    MovePath<D, R> for PathCursor<P, S>
 where
     Self: MoveKey<D>,
 {
@@ -36,8 +39,8 @@ where
     }
 }
 
-impl<D: Direction, R: PathRole, P: MovablePath<D, R>> MoveRootIndex<D, R>
-    for PathCursor<P>
+impl<D: Direction, R: PathRole, P: MovablePath<D, R>, S: CursorState>
+    MoveRootIndex<D, R> for PathCursor<P, S>
 where
     Self: MoveKey<D> + RootChildIndex<R>,
 {
@@ -62,12 +65,12 @@ where
     }
 }
 
-impl<P: PathPop> PathPop for PathCursor<P> {
+impl<P: PathPop, S: CursorState> PathPop for PathCursor<P, S> {
     fn path_pop(&mut self) -> Option<ChildLocation> {
         self.path.path_pop()
     }
 }
-impl<P: PathAppend> PathAppend for PathCursor<P> {
+impl<P: PathAppend, S: CursorState> PathAppend for PathCursor<P, S> {
     fn path_append(
         &mut self,
         parent_entry: ChildLocation,
@@ -75,7 +78,7 @@ impl<P: PathAppend> PathAppend for PathCursor<P> {
         self.path.path_append(parent_entry);
     }
 }
-impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
+impl<P: RootedPath, S: CursorState> HasRootedPath<P> for PathCursor<P, S> {
     fn rooted_path(&self) -> &P {
         &self.path
     }
@@ -83,7 +86,9 @@ impl<P: RootedPath> HasRootedPath<P> for PathCursor<P> {
         &mut self.path
     }
 }
-impl<R: PathRole, P: StartFoldPath + HasPath<R>> HasPath<R> for PathCursor<P> {
+impl<R: PathRole, P: StartFoldPath + HasPath<R>, S: CursorState> HasPath<R>
+    for PathCursor<P, S>
+{
     fn path(&self) -> &Vec<ChildLocation> {
         HasPath::<R>::path(&self.path)
     }
@@ -92,8 +97,8 @@ impl<R: PathRole, P: StartFoldPath + HasPath<R>> HasPath<R> for PathCursor<P> {
     }
 }
 
-impl<R: PathRole, P: RootChildToken<R> + StartFoldPath> RootChildToken<R>
-    for PathCursor<P>
+impl<R: PathRole, P: RootChildToken<R> + StartFoldPath, S: CursorState>
+    RootChildToken<R> for PathCursor<P, S>
 {
     fn root_child_token<G: HasGraph>(
         &self,
@@ -102,8 +107,8 @@ impl<R: PathRole, P: RootChildToken<R> + StartFoldPath> RootChildToken<R>
         RootChildToken::<R>::root_child_token(&self.path, trav)
     }
 }
-impl<R: PathRole, P: StartFoldPath + LeafToken<R>> LeafToken<R>
-    for PathCursor<P>
+impl<R: PathRole, P: StartFoldPath + LeafToken<R>, S: CursorState> LeafToken<R>
+    for PathCursor<P, S>
 {
     fn leaf_token_location(&self) -> Option<ChildLocation> {
         LeafToken::<R>::leaf_token_location(&self.path)

@@ -26,6 +26,13 @@ pub struct Candidate;
 impl sealed::Sealed for Candidate {}
 impl CursorState for Candidate {}
 
+/// Mismatched state: cursor has scanned atoms but encountered a mismatch
+/// Behaves like Matched in terms of atom_position (includes scanned atoms)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Mismatched;
+impl sealed::Sealed for Mismatched {}
+impl CursorState for Mismatched {}
+
 /// Exhausted state: cursor has reached the end of the pattern
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Exhausted;
@@ -99,6 +106,15 @@ impl<P> PathCursor<P, Candidate> {
         }
     }
 
+    /// Mark a candidate cursor as mismatched (preserves atom_position)
+    pub(crate) fn mark_mismatch(self) -> PathCursor<P, Mismatched> {
+        PathCursor {
+            path: self.path,
+            atom_position: self.atom_position,
+            _state: PhantomData,
+        }
+    }
+
     /// Revert a candidate cursor back to the matched state
     /// by replacing it with the provided matched cursor
     pub(crate) fn revert(
@@ -106,6 +122,17 @@ impl<P> PathCursor<P, Candidate> {
         matched: PathCursor<P, Matched>,
     ) -> PathCursor<P, Matched> {
         matched
+    }
+}
+
+impl<P> PathCursor<P, Mismatched> {
+    /// Convert a mismatched cursor to matched (for final states)
+    pub(crate) fn as_matched(self) -> PathCursor<P, Matched> {
+        PathCursor {
+            path: self.path,
+            atom_position: self.atom_position,
+            _state: PhantomData,
+        }
     }
 }
 

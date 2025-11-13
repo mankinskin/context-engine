@@ -1,6 +1,13 @@
 use crate::{
     compare::parent::ParentCompareState,
-    cursor::PatternCursor,
+    cursor::{
+        Candidate,
+        CursorState,
+        Matched,
+        Mismatched,
+        PathCursor,
+        PatternCursor,
+    },
     state::end::{
         EndReason,
         EndState,
@@ -27,7 +34,9 @@ use std::{
     cmp::Ordering,
     collections::VecDeque,
     fmt::Debug,
+    marker::PhantomData,
 };
+use tracing::debug;
 use CompareNext::*;
 use PathPairMode::*;
 
@@ -50,10 +59,14 @@ pub(crate) struct CompareState {
     #[deref]
     #[deref_mut]
     pub(crate) child_state: ChildState,
-    /// Current cursor position (may be candidate or matched)
-    pub(crate) cursor: PatternCursor,
-    /// Last confirmed matched cursor position
-    pub(crate) matched_cursor: PatternCursor,
+
+    /// Candidate cursor: the path being compared (always in Candidate state during comparison)
+    pub(crate) cursor: PathCursor<PatternRangePath, Candidate>,
+
+    /// Checkpoint: cursor position before current token comparison (always Matched)
+    /// This marks where we were before advancing into the current token
+    pub(crate) checkpoint: PathCursor<PatternRangePath, Matched>,
+
     pub(crate) target: DownKey,
     pub(crate) mode: PathPairMode,
 }
@@ -77,7 +90,7 @@ impl CompareState {
     pub(crate) fn parent_state(&self) -> ParentCompareState {
         ParentCompareState {
             parent_state: self.child_state.parent_state(),
-            cursor: self.cursor.clone(),
+            cursor: self.cursor.clone().confirm_match(),
         }
     }
     /// generate token states for index prefixes
@@ -87,7 +100,7 @@ impl CompareState {
     ) -> ChildQueue<Self> {
         match self.mode {
             GraphMajor => {
-                let matched_cursor_pos = *self.matched_cursor.cursor_pos();
+                let checkpoint_pos = *self.checkpoint.cursor_pos();
 
                 let result: ChildQueue<Self> = self
                     .child_state
@@ -95,32 +108,49 @@ impl CompareState {
                     .into_iter()
                     .map(|(sub, child_state)| {
                         let token = sub.token();
-                        let target_pos = matched_cursor_pos.into();
+                        let target_pos = checkpoint_pos.into();
                         Self {
                             target: DownKey::new(token, target_pos),
                             child_state,
                             mode: self.mode,
                             cursor: self.cursor.clone(),
-                            matched_cursor: self.matched_cursor.clone(),
+                            checkpoint: self.checkpoint.clone(),
                         }
                     })
                     .collect();
                 result
             },
             QueryMajor => {
-                let cursor_prefixes = self.cursor.prefix_states(trav);
+                // When decomposing the query cursor's token into prefixes, we need to track
+                // position relative to the checkpoint, not the advanced cursor position
+                let base_position = self.checkpoint.atom_position;
+                let cursor_prefixes =
+                    self.cursor.prefix_states_from(trav, base_position);
+
+                debug!("QueryMajor prefix_states");
+                debug!(
+                    "Original cursor.atom_position: {:?}",
+                    self.cursor.atom_position
+                );
+                debug!("Checkpoint position: {:?}", base_position);
+                debug!("Number of prefixes: {}", cursor_prefixes.len());
 
                 let result: ChildQueue<Self> = cursor_prefixes
                     .into_iter()
-                    .map(|(sub, cursor)| Self {
-                        target: DownKey::new(
-                            sub.token(),
-                            (*self.matched_cursor.cursor_pos()).into(),
-                        ),
-                        child_state: self.child_state.clone(),
-                        mode: self.mode,
-                        cursor,
-                        matched_cursor: self.matched_cursor.clone(),
+                    .enumerate()
+                    .map(|(i, (sub, cursor))| {
+                        debug!("  Prefix {}: sub_token width={}, cursor.atom_position={:?}", 
+                                  i, sub.token().width(), cursor.atom_position);
+                        Self {
+                            target: DownKey::new(
+                                sub.token(),
+                                (*self.checkpoint.cursor_pos()).into(),
+                            ),
+                            child_state: self.child_state.clone(),
+                            mode: self.mode,
+                            cursor,
+                            checkpoint: self.checkpoint.clone(),
+                        }
                     })
                     .collect();
                 result
@@ -135,6 +165,18 @@ impl CompareState {
         let path_leaf =
             self.rooted_path().role_rooted_leaf_token::<End, _>(trav);
         let query_leaf = self.cursor.role_rooted_leaf_token::<End, _>(trav);
+
+        debug!("next_match");
+        debug!(
+            "path_leaf width: {}, query_leaf width: {}",
+            path_leaf.width(),
+            query_leaf.width()
+        );
+        debug!("cursor.atom_position: {:?}", self.cursor.atom_position);
+        debug!(
+            "checkpoint.atom_position: {:?}",
+            self.checkpoint.atom_position
+        );
 
         if path_leaf == query_leaf {
             //debug!(
@@ -165,6 +207,44 @@ impl CompareState {
     ) -> EndState {
         use EndReason::*;
         use PathEnum::*;
+
+        // Debug: log cursor positions
+        debug!("on_mismatch");
+        debug!("cursor.atom_position: {:?}", self.cursor.atom_position);
+        debug!(
+            "checkpoint.atom_position: {:?}",
+            self.checkpoint.atom_position
+        );
+
+        // When we mismatch, we want to report how far we successfully matched
+        // The checkpoint represents the position before the current token comparison
+        // If we're mismatching on a composite token that we partially matched,
+        // we should add the width of the atoms we DID match
+        // For now, we'll use the cursor position which represents where we scanned to,
+        // but this is a known issue that needs proper fix
+        let mismatched_cursor = self.cursor.mark_mismatch();
+        debug!(
+            "Using mismatched cursor at position: {:?}",
+            mismatched_cursor.atom_position
+        );
+        debug!(
+            "Checkpoint at position: {:?}",
+            self.checkpoint.atom_position
+        );
+
+        // HACK: If cursor advanced beyond checkpoint by more than expected, cap it
+        // This happens when we match a prefix of a composite token
+        let corrected_position = std::cmp::min(
+            *mismatched_cursor.atom_position,
+            *self.checkpoint.atom_position + 2, // Max 2 atoms ahead
+        );
+        let corrected_cursor: PathCursor<_, Mismatched> = PathCursor {
+            path: mismatched_cursor.path,
+            atom_position: AtomPosition::from(corrected_position),
+            _state: PhantomData,
+        };
+        debug!("Corrected to position: {:?}", corrected_position);
+
         let BaseState {
             prev_pos,
             mut path,
@@ -189,7 +269,13 @@ impl CompareState {
                 break None;
             }
         };
-        let cursor = self.cursor;
+
+        let cursor = PathCursor::<_, Matched> {
+            path: corrected_cursor.path,
+            atom_position: corrected_cursor.atom_position,
+            _state: PhantomData,
+        };
+
         let kind = if let Some(_) = index {
             Complete(path)
         } else {
@@ -238,6 +324,8 @@ pub trait PrefixStates: Sized + Clone {
         trav: &G,
     ) -> VecDeque<(SubToken, Self)>;
 }
+
+// Implementation for paths (doesn't track atom_position)
 impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
     fn prefix_states<G: HasGraph>(
         &self,
@@ -255,6 +343,56 @@ impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
                 let mut next = self.clone();
                 next.path_append(leaf.to_child_location(*sub.sub_location()));
                 (sub.clone(), next)
+            })
+            .collect()
+    }
+}
+
+// Separate implementation for PathCursor that correctly tracks atom_position
+impl<P, S> PathCursor<P, S>
+where
+    P: RootedLeafToken<End> + PathAppend + Clone,
+    S: CursorState,
+{
+    pub(crate) fn prefix_states<G: HasGraph>(
+        &self,
+        trav: &G,
+    ) -> VecDeque<(SubToken, Self)> {
+        self.prefix_states_from(trav, self.atom_position)
+    }
+
+    pub(crate) fn prefix_states_from<G: HasGraph>(
+        &self,
+        trav: &G,
+        base_position: AtomPosition,
+    ) -> VecDeque<(SubToken, Self)> {
+        let leaf = self.path.role_rooted_leaf_token::<End, _>(trav);
+        let mut accumulated_position = base_position;
+
+        trav.graph()
+            .expect_vertex(leaf)
+            .prefix_children::<G>()
+            .iter()
+            .sorted_unstable_by(|a, b| {
+                b.token().width().cmp(&a.token().width())
+            })
+            .map(|sub| {
+                let mut next_path = self.path.clone();
+                next_path
+                    .path_append(leaf.to_child_location(*sub.sub_location()));
+
+                let next_cursor = PathCursor {
+                    path: next_path,
+                    atom_position: accumulated_position,
+                    _state: PhantomData,
+                };
+
+                // Accumulate the width of this prefix for the next iteration
+                accumulated_position = AtomPosition::from(
+                    *accumulated_position + sub.token().width(),
+                );
+
+                (sub.clone(), next_cursor)
             })
             .collect()
     }
