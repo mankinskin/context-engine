@@ -72,18 +72,6 @@ macro_rules! assert_patterns {
         drop(g);
     };
 }
-#[macro_export]
-macro_rules! assert_not_indices {
-    ($graph:ident, $($name:ident),*) => {
-        $(
-        assert_matches!(
-            $graph
-            .find_sequence(stringify!($name).chars()),
-            Err(_) | Ok(Response { kind: ResponseKind::Incomplete(_), .. })
-        );
-        )*
-    };
-}
 
 #[macro_export]
 macro_rules! expect_atoms {

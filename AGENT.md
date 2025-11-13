@@ -8,6 +8,51 @@ Workspace-specific reference for the context-engine project.
 >
 > **Update this file** when project structure, test locations, or common issues change.
 
+## 📚 Documentation Maintenance
+
+**⚠️ CRITICAL: Always review and update guidance files when making changes!**
+
+### Before Starting Work:
+1. ✅ Read `CHEAT_SHEET.md` for current API patterns
+2. ✅ Check relevant `<crate>/HIGH_LEVEL_GUIDE.md` for concepts
+3. ✅ Review `QUESTIONS_FOR_AUTHOR.md` for known issues related to your task
+
+### After Making Changes:
+1. ✅ **Update `CHEAT_SHEET.md`** if you:
+   - Changed public API or types
+   - Fixed a common gotcha
+   - Discovered new patterns or idioms
+   - Changed test utilities or macros
+
+2. ✅ **Update `<crate>/HIGH_LEVEL_GUIDE.md`** if you:
+   - Modified core concepts or architecture
+   - Changed module structure
+   - Added/removed key types
+   - Changed how operations work
+
+3. ✅ **Update `QUESTIONS_FOR_AUTHOR.md`** if you:
+   - Discovered unclear behavior (add question)
+   - Found answer to existing question (move to proper docs, remove question)
+   - Identified new documentation gaps
+
+4. ✅ **Update this AGENT.md** if you:
+   - Changed test structure or locations
+   - Modified debugging workflows
+   - Changed build/test commands
+   - Added new crates or major components
+
+### Documentation Checklist:
+```
+□ Did my changes affect public APIs? → Update CHEAT_SHEET.md
+□ Did I change how something conceptually works? → Update HIGH_LEVEL_GUIDE.md
+□ Did I find something confusing? → Add to QUESTIONS_FOR_AUTHOR.md
+□ Did my fix resolve a known issue? → Update or remove from QUESTIONS
+□ Are my code examples still valid? → Verify in all guides
+□ Did I add new test patterns? → Document in relevant guides
+```
+
+**Why this matters:** Future agents (and humans) rely on these guides. Outdated documentation causes repeated mistakes and wastes time.
+
 ## Problem-Solving Approach
 
 ### Context-First Strategy
@@ -41,21 +86,49 @@ Workspace-specific reference for the context-engine project.
 ## Project Structure
 
 Multi-crate workspace for context analysis and graph traversal:
-- `context-search` - Pattern matching and graph search algorithms  
-- `context-trace` - Graph traversal and path tracing
-- `context-insert` - Context insertion operations
+- `context-trace` - Foundation: graph structures, paths, bidirectional tracing (see HIGH_LEVEL_GUIDE.md)
+- `context-search` - Pattern matching and search with unified Response API (see HIGH_LEVEL_GUIDE.md)
+- `context-insert` - Insertion via split-join architecture (see HIGH_LEVEL_GUIDE.md)
 - `context-read` - Context reading and expansion
+
+**Architecture:** trace → search → insert → read (each layer builds on previous)
+
+**Quick API Reference:** See CHEAT_SHEET.md for types, common patterns, and gotchas
 
 ## Documentation Resources
 
 **Priority order when researching:**
-1. `<crate>/README.md` - Purpose and API overview
-2. `<crate>/DOCUMENTATION_ANALYSIS.md` - Detailed structural analysis (update when making significant changes)
-3. `<crate>/src/tests/` - Usage examples and expected behavior
-4. `bug-reports/` - Known issues and fix options
-5. `cargo doc --package <crate> --no-deps --document-private-items --open` - Generated API docs
+1. **`CHEAT_SHEET.md`** - Quick reference for common operations, types, and patterns (START HERE!)
+2. `<crate>/HIGH_LEVEL_GUIDE.md` - Conceptual overview and design explanations
+3. `<crate>/README.md` - Purpose and API overview
+4. `<crate>/DOCUMENTATION_ANALYSIS.md` - Detailed structural analysis (update when making significant changes)
+5. `<crate>/src/tests/` - Usage examples and expected behavior
+6. `bug-reports/` - Known issues and fix options
+7. **`QUESTIONS_FOR_AUTHOR.md`** - Unclear topics needing clarification
+8. `cargo doc --package <crate> --no-deps --document-private-items --open` - Generated API docs
+
+**New Agent Resources:**
+- **CHEAT_SHEET.md** - Types, patterns, gotchas, API changes, debugging tips
+- **context-trace/HIGH_LEVEL_GUIDE.md** - Graph concepts, paths, tracing explained
+- **context-search/HIGH_LEVEL_GUIDE.md** - Search algorithms, Response API, patterns
+- **context-insert/HIGH_LEVEL_GUIDE.md** - Split-join architecture, InitInterval, insertion flow
+- **QUESTIONS_FOR_AUTHOR.md** - Known gaps and questions to resolve
 
 ## Testing & Debugging
+
+### Recent API Changes (Important!)
+
+**Response API Unification (context-search):**
+- ❌ Old: `CompleteState` / `IncompleteState` (REMOVED)
+- ✅ New: Unified `Response` type with accessor methods
+- Migration: See CHEAT_SHEET.md "API Changes" section for patterns
+
+**Key changes:**
+- `search()` returns `Result<Response, ErrorState>` (not bare Response)
+- Check `response.is_complete()` before unwrapping
+- Use `response.expect_complete().root_parent()` to get Token
+- `Searchable` trait now in `context_search::` (public export)
+- Test utility: `context_trace::init_test_tracing!()` not `init_tracing()`
 
 ### Test Commands
 ```bash
@@ -101,6 +174,11 @@ Required sections:
 
 Create reproducing test if one doesn't exist.
 
+**After fixing a bug:**
+- Update relevant guidance files (CHEAT_SHEET.md, HIGH_LEVEL_GUIDE.md)
+- Remove or update the bug report
+- Document the fix pattern if it might help others
+
 ## Temporary Work Files
 
 Use `agent-tmp/` for temporary analysis and debugging files. Never commit.
@@ -110,17 +188,26 @@ Naming conventions:
 - `test_output_<test_name>.txt`
 - `debug_<component>_<issue>.log`
 
-Move important findings to proper documentation before cleanup.
+**Move important findings to proper documentation before cleanup:**
+- Patterns → CHEAT_SHEET.md
+- Concepts → HIGH_LEVEL_GUIDE.md
+- Questions → QUESTIONS_FOR_AUTHOR.md
+- Permanent analysis → crate DOCUMENTATION_ANALYSIS.md
 
 ## Key Documentation Files
 
 ### Context-Search
+- `HIGH_LEVEL_GUIDE.md` - Search concepts, Response API, algorithms explained
 - `TRACING_GUIDE.md`, `TESTING_PLAN.md`, `SEARCH_API_EXAMPLES.md`
 - `agent-tmp/PATTERN_MATCHING_EXAMPLE.md`, `agent-tmp/RESULT_ARCHITECTURE_ANALYSIS.md`
 
 ### Context-Trace
+- `HIGH_LEVEL_GUIDE.md` - Graph model, paths, tracing, bidirectional cache
 - `TRACING_GUIDE.md`, `TRACING_IMPLEMENTATION.md`, `TEST_EXPECTATIONS.md`
 
+### Context-Insert
+- `HIGH_LEVEL_GUIDE.md` - Split-join architecture, InitInterval, insertion flow
+
 ### Other
-- Root: `README.md`, `DOCUMENTATION_SUMMARY.md`
+- Root: `README.md`, `DOCUMENTATION_SUMMARY.md`, `CHEAT_SHEET.md`, `QUESTIONS_FOR_AUTHOR.md`
 - `refactor-tool/` - Multiple feature guides
