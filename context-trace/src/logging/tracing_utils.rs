@@ -7,24 +7,24 @@
 //! # Enabling stdout logging
 //!
 //! By default, logs are only written to files. To enable stdout logging for debugging,
-//! set the `RUST_TEST_LOG_STDOUT` environment variable:
+//! set the `LOG_STDOUT` environment variable:
 //!
 //! ```bash
 //! # Enable stdout logging
-//! RUST_TEST_LOG_STDOUT=1 cargo test
+//! LOG_STDOUT=1 cargo test
 //!
 //! # Or with true/yes
-//! RUST_TEST_LOG_STDOUT=true cargo test
-//! RUST_TEST_LOG_STDOUT=yes cargo test
+//! LOG_STDOUT=true cargo test
+//! LOG_STDOUT=yes cargo test
 //!
 //! # Run specific test with stdout logging
-//! RUST_TEST_LOG_STDOUT=1 cargo test my_test_name -- --nocapture
+//! LOG_STDOUT=1 cargo test my_test_name -- --nocapture
 //! ```
 //!
 //! You can also combine with `RUST_LOG` to control log levels:
 //!
 //! ```bash
-//! RUST_TEST_LOG_STDOUT=1 RUST_LOG=debug cargo test
+//! LOG_STDOUT=1 RUST_LOG=debug cargo test
 //! ```
 
 use std::{
@@ -111,9 +111,9 @@ pub struct TracingConfig {
 impl Default for TracingConfig {
     fn default() -> Self {
         // Check environment variable to enable stdout logging
-        // Usage: RUST_TEST_LOG_STDOUT=1 cargo test
-        // or:    RUST_TEST_LOG_STDOUT=true cargo test
-        let log_to_stdout = env::var("RUST_TEST_LOG_STDOUT")
+        // Usage: LOG_STDOUT=1 cargo test
+        // or:    LOG_STDOUT=true cargo test
+        let log_to_stdout = env::var("LOG_STDOUT")
             .map(|v| {
                 v == "1"
                     || v.eq_ignore_ascii_case("true")

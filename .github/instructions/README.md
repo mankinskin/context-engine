@@ -32,5 +32,5 @@ Your instructions here...
 
 ## See Also
 
-- `.github/copilot-instructions.md` - Repository-wide instructions (applied to all files)
+- `.github/instructions.md` - Repository-wide instructions (applied to all files)
 - GitHub docs: https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
