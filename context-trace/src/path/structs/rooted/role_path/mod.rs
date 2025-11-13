@@ -184,7 +184,7 @@ pub trait RootChildIndex<R> {
     fn root_child_index(&self) -> usize;
 }
 
-pub(crate) trait RootChildIndexMut<R>: RootChildIndex<R> {
+pub trait RootChildIndexMut<R>: RootChildIndex<R> {
     fn root_child_index_mut(&mut self) -> &mut usize;
 }
 

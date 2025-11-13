@@ -63,10 +63,7 @@ pub(crate) use crate::path::{
         },
         root::GraphRootPattern,
     },
-    structs::rooted::{
-        role_path::RootChildIndexMut,
-        root::PathRoot,
-    },
+    structs::rooted::root::PathRoot,
 };
 pub use crate::{
     direction::{
@@ -195,6 +192,7 @@ pub use crate::{
                     IndexStartPath,
                     PatternEndPath,
                     RootChildIndex,
+                    RootChildIndexMut,
                     RootChildToken,
                     RootedRolePath,
                     range::{

@@ -28,6 +28,8 @@ use context_trace::{
         RolePathUtils,
     },
     PatternPrefixPath,
+    RootChildIndex,
+    RootChildIndexMut,
     *,
 };
 use derive_more::{

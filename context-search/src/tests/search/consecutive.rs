@@ -19,6 +19,8 @@ use {
 
 #[test]
 fn find_consecutive1() {
+    let _tracing = context_trace::init_test_tracing!();
+
     let Env1 {
         graph,
         a,

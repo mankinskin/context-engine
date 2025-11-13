@@ -77,27 +77,21 @@ fn example_single_atom_error() {
     let mut graph = Hypergraph::<BaseGraphKind>::default();
     let a = graph.insert_atom(Atom::Element('a'));
 
-    // Single atoms have no parent patterns, so searching for them returns Mismatch
-    // The search finds the atom itself (Complete path) but since there's no parent
-    // pattern containing it, the query cannot be satisfied
+    // Single atoms have no parent patterns, so searching for them returns SingleIndex error
+    // This is because there's no pattern containing just a single atom
     let graph = HypergraphRef::from(graph);
     let query = [a];
     let result = graph.find_ancestor(&query[..]);
 
-    assert!(result.is_ok());
-    let response = result.unwrap();
-
-    use crate::state::end::{
-        EndReason,
-        PathEnum,
-    };
-
-    // The query doesn't complete because atoms need parent patterns to match
-    assert_eq!(response.end.reason, EndReason::Mismatch);
-
-    // However, the path found is Complete (spans the entire atom)
-    assert!(response.is_complete());
-    assert!(matches!(response.end.path, PathEnum::Complete(_)));
+    // Should return SingleIndex error - single atom has no parent pattern
+    use context_trace::ErrorReason;
+    assert_eq!(
+        result,
+        Err(ErrorReason::SingleIndex(Box::new(IndexWithPath {
+            index: a,
+            path: vec![a].into(),
+        }))),
+    );
 }
 #[test]
 fn example_helper_methods() {
