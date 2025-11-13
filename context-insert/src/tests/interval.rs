@@ -215,8 +215,8 @@ fn interval_graph1() {
         ..
     } = env;
     let query = vec![*a, *bc, *d, *e];
-    let res: IncompleteState =
-        graph.find_ancestor(query).unwrap().try_into().unwrap();
+    let res = graph.find_ancestor(query).unwrap();
+    assert!(!res.is_complete());
     let init = InitInterval::from(res);
     let interval = IntervalGraph::from((&mut *graph, init));
     assert_eq!(
@@ -234,7 +234,7 @@ fn interval_graph1() {
 
 #[test]
 fn interval_graph2() {
-    init_tracing();
+    let _tracing = context_trace::init_test_tracing!();
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d, e, f, g, h, i, j, k});
     insert_patterns!(graph,
@@ -254,8 +254,8 @@ fn interval_graph2() {
         (_abcdefghijk, _abcdefghijk_id) => [a, b, cdefghi, j, k],
     );
     let query = vec![d, e, f, g, h];
-    let res: IncompleteState =
-        graph.find_ancestor(query).unwrap().try_into().unwrap();
+    let res = graph.find_ancestor(query).unwrap();
+    assert!(!res.is_complete());
     let init = InitInterval::from(res);
 
     assert_eq!(

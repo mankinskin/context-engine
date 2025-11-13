@@ -1,3 +1,5 @@
+use tracing::debug;
+
 use crate::{
     AtomPosition,
     CalcOffset,
@@ -74,6 +76,11 @@ impl Traceable for PostfixCommand {
     ) {
         let first = self.path.role_leaf_token_location::<Start>().unwrap();
         let start_index = *ctx.trav.graph().expect_child_at(first);
+        tracing::trace!(
+            ?first,
+            ?start_index,
+            "PostfixCommand: leaf and start_index"
+        );
         let prev = TraceRole::<Start>::trace_sub_path(
             ctx,
             &self.path,
@@ -83,12 +90,14 @@ impl Traceable for PostfixCommand {
             },
             self.add_edges,
         );
+        tracing::trace!(?prev, "PostfixCommand: trace_sub_path returned");
         let location = self.path.role_root_child_location::<Start>();
         let new = NewTraceEdge::<BottomUp> {
             target: self.root_up_key,
             prev,
             location,
         };
+        tracing::trace!(?new, "PostfixCommand: creating NewTraceEdge");
         ctx.cache.add_state(new, self.add_edges);
     }
 }

@@ -67,8 +67,7 @@ pub trait Find: HasGraph {
             .map_err(|err| err.reason);
 
         match &result {
-            Ok(response) =>
-                debug!("Parent search succeeded: end={}", pretty(&response.end)),
+            Ok(response) => debug!("Parent search succeeded"),
             Err(reason) => debug!("Parent search failed: {}", pretty(reason)),
         }
         result
@@ -86,10 +85,7 @@ pub trait Find: HasGraph {
             .map_err(|err| err.reason);
 
         match &result {
-            Ok(response) => debug!(
-                "Ancestor search succeeded: end={}",
-                pretty(&response.end)
-            ),
+            Ok(response) => debug!("Ancestor search succeeded"),
             Err(reason) => debug!("Ancestor search failed: {}", pretty(reason)),
         }
         result
@@ -122,7 +118,7 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
         trace!("FoldCtx::next - searching for next match");
         match self.matches.find_next() {
             Some(end) => {
-                debug!("Found end state: {}", pretty(&end));
+                debug!("Found end state");
 
                 // Get the start length from the previous match or query
                 let start_len = match &self.last_match {
@@ -157,17 +153,12 @@ impl<K: TraversalKind> FoldCtx<K> {
     #[instrument(skip(self))]
     pub(crate) fn search(mut self) -> Response {
         debug!("Starting fold search");
-        debug!(
-            "Initial state: matches={}, last_match={}",
-            pretty(&self.matches),
-            pretty(&self.last_match)
-        );
+        debug!("Initial state: matches={:?}", &self.matches);
 
         let mut iteration = 0;
         while let Some(end) = &mut self.next() {
             iteration += 1;
             debug!("Fold iteration {}: tracing end state", iteration);
-            trace!("End state details: {}", pretty(end));
             end.trace(&mut self.matches.0);
         }
 
@@ -176,7 +167,7 @@ impl<K: TraversalKind> FoldCtx<K> {
         // Get the final end state
         let end = match self.last_match {
             MatchState::Located(end_state) => {
-                debug!("Final state is located: {}", pretty(&end_state));
+                debug!("Final state is located");
                 end_state
             },
             MatchState::Query(query_path) => {
@@ -204,7 +195,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             },
         };
 
-        debug!("Final end state: {}", pretty(&end));
+        trace!("Final end state: {}", pretty(&end));
 
         let trace_ctx = &mut self.matches.0;
         end.trace(trace_ctx);
@@ -214,7 +205,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             end,
         };
 
-        debug!("Search complete: {}", pretty(&response));
+        debug!("Search complete");
         response
     }
 }

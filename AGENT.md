@@ -1,8 +1,42 @@
 # Agent Development Guide
 
+> **⚠️ READ THIS FILE FIRST** before responding to any request in this workspace.
+
 Workspace-specific reference for the context-engine project.
 
+> **Keep this file concise and scannable.** Remove outdated info. Focus on what's actionable.
+>
 > **Update this file** when project structure, test locations, or common issues change.
+
+## Problem-Solving Approach
+
+### Context-First Strategy
+
+**For complex tasks: Gather context BEFORE coding.**
+
+**Explore the workspace:**
+- Use `ls`, `pwd`, `find`, `tree` to understand file structure
+- Navigate directories to discover relevant files
+- Check for documentation, tests, logs before modifying code
+- Verify file locations rather than assuming paths
+
+**Context levels:**
+- ❌ Error only → ⚠️ Error + code → ✓ + tests/expectations → ✓✓ + data flow → ✓✓✓ + architecture
+
+**Collect context via:**
+1. File system exploration (ls, find, locate relevant directories)
+2. Documentation (README, DOCUMENTATION_ANALYSIS.md, bug-reports/)
+3. Test files and expectations
+4. Logs (`target/test-logs/`)
+5. Git history (`git log -p -- <file>`)
+6. Backtracking through code/data flow
+7. Ask user when: multiple interpretations, contradictory expectations, unclear intent
+
+**Red flags (need more context):**
+- Repeated similar fixes failing
+- Unclear actual vs expected values
+- Uncertain about component ownership or data semantics
+- Many unidentified function/type references in your working context
 
 ## Project Structure
 
@@ -45,6 +79,11 @@ let _tracing = init_test_tracing!();  // Enables tracing for this test
 - **Failed test logs**: `target/test-logs/<test_name>.log` (preserved on failure)
 - **Log levels**: `RUST_LOG=error|warn|info|debug|trace`
 - **Module-specific**: `RUST_LOG=context_search::search=trace`
+
+**Debug workflow:**
+1. Track: data flow origin, control flow, component ownership, dependencies
+2. Before fix: state understanding, identify gaps, explain why fix should work
+3. After failure: re-examine output, check for different underlying issue, consider different layer
 
 ## Bug Reports
 

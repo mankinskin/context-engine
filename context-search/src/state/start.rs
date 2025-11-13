@@ -366,13 +366,13 @@ impl Searchable for PatternRangePath {
         trav: K::Trav,
     ) -> Result<FoldCtx<K>, ErrorState> {
         debug!("PatternRangePath::start_search - converting to cursor");
-        trace!("PatternRangePath details: {}", pretty(&self));
+        trace!("PatternRangePath details: {:?}", &self);
         
         let range_path = self.to_range_path();
-        debug!("Converted to range_path: {}", pretty(&range_path));
+        debug!("Converted to range_path: {:?}", &range_path);
         
         let cursor = range_path.to_cursor(&trav);
-        debug!("Created cursor: {}", pretty(&cursor));
+        debug!("Created cursor: {:?}", &cursor);
         
         cursor.start_search::<K>(trav)
     }

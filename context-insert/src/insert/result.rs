@@ -7,14 +7,14 @@ use context_search::*;
 use context_trace::*;
 
 pub trait ResultExtraction {
-    fn extract_from(state: &IncompleteState) -> Self;
+    fn extract_from(state: &Response) -> Self;
 }
 impl ResultExtraction for () {
-    fn extract_from(_: &IncompleteState) -> Self {}
+    fn extract_from(_: &Response) -> Self {}
 }
 impl ResultExtraction for PatternRangePath {
-    fn extract_from(state: &IncompleteState) -> Self {
-        state.end_state.cursor.rooted_path().clone().into()
+    fn extract_from(state: &Response) -> Self {
+        state.query_pattern().clone()
     }
 }
 pub trait TryInitWith<T>: Sized {

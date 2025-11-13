@@ -82,6 +82,7 @@ fn find_sequence() {
 }
 #[test]
 fn find_pattern1() {
+    let _tracing = context_trace::init_test_tracing!();
     let mut base_graph =
         context_trace::graph::Hypergraph::<BaseGraphKind>::default();
     insert_atoms!(base_graph, {a, b, x, y, z});

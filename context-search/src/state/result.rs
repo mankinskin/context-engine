@@ -62,6 +62,26 @@ impl Response {
         }
     }
 
+    /// Get the query pattern cursor from the response
+    pub fn query_cursor(&self) -> &crate::cursor::PatternCursor {
+        &self.end.cursor
+    }
+
+    /// Get the query pattern path from the response
+    pub fn query_pattern(&self) -> &PatternRangePath {
+        &self.end.cursor.path
+    }
+
+    /// Get the root token from the located path
+    pub fn root_token(&self) -> Token {
+        self.end.path.root_parent()
+    }
+
+    /// Get the cursor atom position
+    pub fn cursor_position(&self) -> AtomPosition {
+        self.end.cursor.atom_position
+    }
+
     //pub(crate) fn unwrap_incomplete(self) -> Self {
     //    self.expect_incomplete("Unable to unwrap incomplete FoundRange")
     //}

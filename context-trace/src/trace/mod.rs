@@ -105,11 +105,15 @@ where
     ) -> RoleTraceKey<Role> {
         let graph = self.trav.graph();
 
-        path.raw_child_path().iter().cloned().fold(
+        tracing::trace!(?prev_key, "trace_sub_path start");
+
+        let result = path.raw_child_path().iter().cloned().fold(
             prev_key,
             |prev, location| {
+                tracing::trace!(?prev, ?location, "fold iteration");
                 let target =
                     Role::Direction::build_key(&graph, *prev.pos(), &location);
+                tracing::trace!(?target, "build_key result");
                 self.cache.add_state(
                     RoleEdit::<Role> {
                         target,
@@ -120,7 +124,10 @@ where
                 );
                 target
             },
-        )
+        );
+
+        tracing::trace!(?result, "trace_sub_path result");
+        result
     }
 }
 
@@ -189,7 +196,8 @@ impl TraceDirection for BottomUp {
     ) -> Self::Key {
         UpKey {
             index: location.parent,
-            pos: UpPosition::from(last_pos),
+            // Increment position when moving up the hierarchy
+            pos: UpPosition::from(last_pos + 1),
         }
     }
 }

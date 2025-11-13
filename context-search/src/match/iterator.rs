@@ -84,11 +84,11 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
             .find_root_cursor()
         {
             Some(root_cursor) => {
-                debug!("Found root cursor: {}", pretty(&root_cursor));
+                debug!("Found root cursor");
 
                 Some(match root_cursor.find_end() {
                     Ok(end) => {
-                        debug!("Successfully found EndState: {}", pretty(&end));
+                        debug!("Successfully found EndState");
                         end
                     },
                     Err(root_cursor) => {
@@ -98,16 +98,15 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
 
                         match root_cursor.next_parents::<K>(&self.0.trav) {
                             Err(end) => {
-                                debug!(
-                                    "No more parents, returning end state: {}",
-                                    pretty(&end)
-                                );
+                                debug!("No more parents, returning end state",);
                                 *end
                             },
                             Ok((parent, batch)) => {
                                 let batch_size = batch.len();
-                                debug!("Found next parent batch: parent={}, batch_size={}", 
-                                       pretty(&parent), batch_size);
+                                debug!(
+                                    "Found next parent batch, batch_size={}",
+                                    batch_size
+                                );
                                 trace!("Batch details: {}", pretty(&batch));
 
                                 assert!(!batch.is_empty());

@@ -1,5 +1,14 @@
+use tracing::debug;
+
 use crate::{
-    trace::cache::new::EditKind,
+    trace::cache::{
+        key::directed::{
+            DirectedKey,
+            DirectedPosition,
+            up::UpPosition,
+        },
+        new::EditKind,
+    },
     *,
 };
 //pub(crate) enum AddTokenLocation {

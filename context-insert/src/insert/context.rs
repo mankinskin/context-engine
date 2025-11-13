@@ -1,5 +1,4 @@
 use std::{
-    convert::TryFrom,
     fmt::Debug,
     sync::RwLockWriteGuard,
 };
@@ -12,7 +11,13 @@ use crate::{
     },
     join::context::frontier::FrontierSplitIterator,
 };
-use context_search::*;
+use context_search::{
+    AncestorPolicy,
+    BftQueue,
+    ErrorState,
+    Searchable,
+    TraversalKind,
+};
 use context_trace::*;
 use std::sync::RwLockReadGuard;
 
@@ -65,13 +70,24 @@ impl<R: InsertResult> InsertCtx<R> {
         searchable: impl Searchable,
     ) -> Result<Result<R, R::Error>, ErrorState> {
         match searchable.search::<InsertTraversal>(self.graph.clone()) {
-            Ok(result) => Ok(match CompleteState::try_from(result) {
-                Ok(state) => R::try_init(state.root),
-                Err(state) => Ok(self.insert_init(
-                    <R::Extract as ResultExtraction>::extract_from(&state),
-                    InitInterval::from(state),
-                )),
-            }),
+            Ok(result) => {
+                // Check if the result is complete
+                if result.is_complete() {
+                    // Extract the query pattern from the cursor and the root token from the complete path
+                    let query_path = result.query_pattern().clone();
+                    let root_token = result.root_token();
+                    Ok(R::try_init(IndexWithPath {
+                        index: root_token,
+                        path: query_path,
+                    }))
+                } else {
+                    // Incomplete result - need to insert
+                    Ok(Ok(self.insert_init(
+                        <R::Extract as ResultExtraction>::extract_from(&result),
+                        InitInterval::from(result),
+                    )))
+                }
+            },
             Err(err) => Err(err),
         }
     }

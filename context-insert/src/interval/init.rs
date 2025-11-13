@@ -15,12 +15,14 @@ pub struct InitInterval {
     pub cache: TraceCache,
     pub end_bound: AtomPosition,
 }
-impl From<IncompleteState> for InitInterval {
-    fn from(state: IncompleteState) -> Self {
+impl From<Response> for InitInterval {
+    fn from(state: Response) -> Self {
+        let root = state.root_token();
+        let end_bound = state.cursor_position();
         Self {
             cache: state.cache,
-            root: state.root.index,
-            end_bound: *state.end_state.cursor_pos(),
+            root,
+            end_bound,
         }
     }
 }

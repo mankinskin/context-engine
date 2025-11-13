@@ -32,15 +32,3 @@ impl From<IndexWithPath> for ErrorState {
         ErrorReason::SingleIndex(Box::new(value)).into()
     }
 }
-
-pub trait Searchable: Sized {
-    fn to_fold_ctx<K: TraversalKind>(self) -> FoldCtx<K>;
-
-    #[instrument(skip(self))]
-    fn search<K: TraversalKind>(self) -> Response {
-        debug!("Searchable::search - creating fold context");
-        let fold_ctx = self.to_fold_ctx::<K>();
-        debug!("Fold context created, starting search");
-        fold_ctx.search()
-    }
-}

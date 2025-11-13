@@ -43,10 +43,7 @@ fn index_pattern1() {
     let byz_found = graph.find_ancestor(&query);
     assert_matches!(
         byz_found,
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == byz,
+        Ok(ref response) if response.is_complete() && response.root_token() == byz,
         "byz"
     );
     let query = vec![ab, y];
@@ -54,10 +51,7 @@ fn index_pattern1() {
     let aby_found = graph.find_parent(&query);
     assert_matches!(
         aby_found,
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == aby,
+        Ok(ref response) if response.is_complete() && response.root_token() == aby,
         "aby"
     );
 }
@@ -82,7 +76,8 @@ fn index_pattern2() {
     let ab = graph_ref
         .find_sequence("ab".chars())
         .unwrap()
-        .expect_complete("ab");
+        .expect_complete("ab")
+        .root_parent();
 
     let graph = graph_ref.graph();
     let aby_vertex = graph.expect_vertex(aby);
@@ -99,10 +94,7 @@ fn index_pattern2() {
     let aby_found = graph_ref.find_ancestor(&query);
     assert_matches!(
         aby_found,
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == aby,
+        Ok(ref response) if response.is_complete() && response.root_token() == aby,
         "aby"
     );
 }
@@ -122,7 +114,8 @@ fn index_infix1() {
     let ab = graph_ref
         .find_ancestor(vec![a, b])
         .unwrap()
-        .expect_complete("ab");
+        .expect_complete("ab")
+        .root_parent();
     let graph = graph_ref.graph();
     let aby_vertex = graph.expect_vertex(aby);
     assert_eq!(aby.width(), 3, "aby");
@@ -141,16 +134,14 @@ fn index_infix1() {
     let aby_found = graph_ref.find_ancestor(&query);
     assert_matches!(
         aby_found,
-        Ok(Response {
-            kind: ResponseKind::Complete(x),
-            ..
-        }) if x == aby,
+        Ok(ref response) if response.is_complete() && response.root_token() == aby,
         "aby"
     );
     let abyz = graph_ref
         .find_ancestor(vec![ab, yz])
         .unwrap()
-        .expect_complete("abyz");
+        .expect_complete("abyz")
+        .root_parent();
     let graph = graph_ref.graph();
     let abyz_vertex = graph.expect_vertex(abyz);
     assert_eq!(
@@ -221,7 +212,7 @@ fn index_infix2() {
 
 #[test]
 fn index_prefix1() {
-    init_tracing();
+    let _tracing = context_trace::init_test_tracing!();
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {h, e, l, d});
     insert_patterns!(graph,
@@ -229,10 +220,9 @@ fn index_prefix1() {
         (heldld, heldld_id) => [h, e, ld, ld]
     );
     let fold_res =
-        Searchable::search::<InsertTraversal>(vec![h, e, l, l], graph.clone())
-            .map(CompleteState::try_from);
-    assert_matches!(fold_res, Ok(Err(_)));
-    let state = fold_res.unwrap().unwrap_err();
+        Searchable::search::<InsertTraversal>(vec![h, e, l, l], graph.clone());
+    assert_matches!(fold_res, Ok(ref response) if !response.is_complete());
+    let state = fold_res.unwrap();
     let init = InitInterval::from(state);
 
     assert_eq!(
@@ -281,11 +271,10 @@ fn index_postfix1() {
         (ababcd, ababcd_id) => [ab, ab, c, d]
     );
     let fold_res =
-        Searchable::search::<InsertTraversal>(vec![b, c, d, d], graph.clone())
-            .map(CompleteState::try_from);
+        Searchable::search::<InsertTraversal>(vec![b, c, d, d], graph.clone());
 
-    assert_matches!(fold_res, Ok(Err(_)));
-    let state = fold_res.unwrap().unwrap_err();
+    assert_matches!(fold_res, Ok(ref response) if !response.is_complete());
+    let state = fold_res.unwrap();
     let init = InitInterval::from(state);
     assert_eq!(
         init,
