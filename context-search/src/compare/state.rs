@@ -7,6 +7,7 @@ use crate::{
         Mismatched,
         PathCursor,
         PatternCursor,
+        PatternPrefixCursor,
     },
     state::end::{
         EndReason,
@@ -20,9 +21,13 @@ use context_trace::{
         SubToken,
     },
     path::{
-        accessors::child::RootedLeafToken,
+        accessors::{
+            child::RootedLeafToken,
+            has_path::IntoRootedRolePath,
+        },
         RolePathUtils,
     },
+    PatternPrefixPath,
     *,
 };
 use derive_more::{
@@ -60,8 +65,9 @@ pub(crate) struct CompareState {
     #[deref_mut]
     pub(crate) child_state: ChildState,
 
-    /// Candidate cursor: the path being compared (always in Candidate state during comparison)
-    pub(crate) cursor: PathCursor<PatternRangePath, Candidate>,
+    /// Candidate cursor: the prefix path being compared (always in Candidate state during comparison)
+    /// Uses PatternPrefixPath (only End role) since we only need the end position during comparison
+    pub(crate) cursor: PathCursor<PatternPrefixPath, Candidate>,
 
     /// Checkpoint: cursor position before current token comparison (always Matched)
     /// This marks where we were before advancing into the current token
@@ -88,11 +94,30 @@ impl CompareState {
         .prefix_states(trav)
     }
     pub(crate) fn parent_state(&self) -> ParentCompareState {
+        // Convert prefix path cursor back to range path for parent state
+        let range_path = self.checkpoint.path.clone();
+        let cursor = PathCursor {
+            path: range_path,
+            atom_position: self.cursor.atom_position,
+            _state: PhantomData,
+        };
+
         ParentCompareState {
             parent_state: self.child_state.parent_state(),
-            cursor: self.cursor.clone().confirm_match(),
+            cursor,
         }
     }
+
+    /// Update the checkpoint with the candidate cursor's position
+    /// Returns a PatternCursor (range path) that can be marked as mismatched
+    fn update_checkpoint_with_candidate(&self) -> PatternCursor {
+        PathCursor {
+            path: self.checkpoint.path.clone(),
+            atom_position: self.cursor.atom_position,
+            _state: PhantomData,
+        }
+    }
+
     /// generate token states for index prefixes
     pub(crate) fn prefix_states<G: HasGraph>(
         &self,
@@ -216,34 +241,12 @@ impl CompareState {
             self.checkpoint.atom_position
         );
 
-        // When we mismatch, we want to report how far we successfully matched
-        // The checkpoint represents the position before the current token comparison
-        // If we're mismatching on a composite token that we partially matched,
-        // we should add the width of the atoms we DID match
-        // For now, we'll use the cursor position which represents where we scanned to,
-        // but this is a known issue that needs proper fix
-        let mismatched_cursor = self.cursor.mark_mismatch();
+        // Update checkpoint with candidate's position to get a PatternCursor
+        let updated_cursor = self.update_checkpoint_with_candidate();
         debug!(
-            "Using mismatched cursor at position: {:?}",
-            mismatched_cursor.atom_position
+            "Updated cursor at position: {:?}",
+            updated_cursor.atom_position
         );
-        debug!(
-            "Checkpoint at position: {:?}",
-            self.checkpoint.atom_position
-        );
-
-        // HACK: If cursor advanced beyond checkpoint by more than expected, cap it
-        // This happens when we match a prefix of a composite token
-        let corrected_position = std::cmp::min(
-            *mismatched_cursor.atom_position,
-            *self.checkpoint.atom_position + 2, // Max 2 atoms ahead
-        );
-        let corrected_cursor: PathCursor<_, Mismatched> = PathCursor {
-            path: mismatched_cursor.path,
-            atom_position: AtomPosition::from(corrected_position),
-            _state: PhantomData,
-        };
-        debug!("Corrected to position: {:?}", corrected_position);
 
         let BaseState {
             prev_pos,
@@ -270,24 +273,18 @@ impl CompareState {
             }
         };
 
-        let cursor = PathCursor::<_, Matched> {
-            path: corrected_cursor.path,
-            atom_position: corrected_cursor.atom_position,
-            _state: PhantomData,
-        };
-
         let kind = if let Some(_) = index {
             Complete(path)
         } else {
             let target = DownKey::new(
                 path.role_rooted_leaf_token::<End, _>(trav),
-                cursor.atom_position.into(),
+                updated_cursor.atom_position.into(),
             );
             PathEnum::from_range_path(path, root_pos, target, trav)
         };
         EndState {
             reason: Mismatch,
-            cursor,
+            cursor: updated_cursor,
             path: kind,
         }
     }

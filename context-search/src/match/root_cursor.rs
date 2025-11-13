@@ -64,9 +64,13 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
                         .compare()
                     {
                         Match(mut c) => {
-                            // Restore the correct checkpoint after compare()
-                            c.checkpoint =
-                                checkpoint_for_this_token.confirm_match();
+                            // Update checkpoint to reflect successful match
+                            // The checkpoint should now be at the position where the cursor advanced to
+                            c.checkpoint = PathCursor {
+                                path: prev_state.checkpoint.path.clone(),
+                                atom_position: c.cursor.atom_position,
+                                _state: PhantomData,
+                            };
                             *self.state = c;
                             Continue(())
                         },
