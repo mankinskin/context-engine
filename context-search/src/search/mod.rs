@@ -135,7 +135,7 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
                     end: &end,
                     pos: start_len,
                 }
-                .trace(&mut self.matches.0);
+                .trace(&mut self.matches.trace_ctx);
 
                 // Update last_match to the located state
                 self.last_match = MatchState::Located(end.clone());
@@ -159,7 +159,7 @@ impl<K: TraversalKind> FoldCtx<K> {
         while let Some(end) = &mut self.next() {
             iteration += 1;
             debug!("Fold iteration {}: tracing end state", iteration);
-            end.trace(&mut self.matches.0);
+            end.trace(&mut self.matches.trace_ctx);
         }
 
         debug!("Fold completed after {} iterations", iteration);
@@ -197,11 +197,11 @@ impl<K: TraversalKind> FoldCtx<K> {
 
         trace!("Final end state: {}", pretty(&end));
 
-        let trace_ctx = &mut self.matches.0;
+        let trace_ctx = &mut self.matches.trace_ctx;
         end.trace(trace_ctx);
 
         let response = Response {
-            cache: self.matches.0.cache,
+            cache: self.matches.trace_ctx.cache,
             end,
         };
 

@@ -1,6 +1,7 @@
 use crate::{
     compare::state::CompareState,
     cursor::{
+        Candidate,
         PathCursor,
         PatternCursor,
     },
@@ -25,7 +26,7 @@ use context_trace::{
 pub(crate) struct CompareRootState {
     #[deref]
     #[deref_mut]
-    pub(crate) token: CompareState,
+    pub(crate) token: CompareState<Candidate>,
     pub(crate) root_parent: ParentState,
 }
 

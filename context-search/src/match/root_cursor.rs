@@ -3,11 +3,13 @@ use crate::{
         iterator::CompareIterator,
         parent::ParentCompareState,
         state::{
+            CompareNext,
+            CompareNext::*,
             CompareState,
-            TokenMatchState::*,
         },
     },
     cursor::{
+        Candidate,
         Matched,
         PathCursor,
         PatternCursor,
@@ -27,7 +29,7 @@ use context_trace::{
     End,
     *,
 };
-pub(crate) type CompareQueue = VecDeque<CompareState>;
+pub(crate) type CompareQueue = VecDeque<CompareState<Candidate>>;
 
 use derive_more::{
     Deref,
@@ -45,7 +47,7 @@ use std::{
 };
 #[derive(Debug)]
 pub(crate) struct RootCursor<G: HasGraph> {
-    pub(crate) state: Box<CompareState>,
+    pub(crate) state: Box<CompareState<Candidate>>,
     pub(crate) trav: G,
 }
 impl<G: HasGraph> Iterator for RootCursor<G> {
@@ -53,39 +55,79 @@ impl<G: HasGraph> Iterator for RootCursor<G> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let prev_state = self.state.clone();
-        match self.advanced() {
-            Continue(_) => {
-                // Save the checkpoint (position where THIS token's matching started)
-                // That's prev_state.cursor (before advancing)
-                let checkpoint_for_this_token = prev_state.cursor.clone();
 
-                // next position
-                Some(
-                    match CompareIterator::new(&self.trav, *self.state.clone())
-                        .compare()
-                    {
-                        Match(mut c) => {
-                            // Update checkpoint to reflect successful match
-                            // The checkpoint should now be at the position where the cursor advanced to
-                            c.checkpoint = PathCursor {
-                                path: prev_state.checkpoint.path.clone(),
-                                atom_position: c.cursor.atom_position,
-                                _state: PhantomData,
-                            };
-                            *self.state = c;
-                            Continue(())
-                        },
-                        Mismatch(_) => {
-                            self.state = prev_state;
-                            Break(EndReason::Mismatch)
-                        },
+        tracing::debug!("RootCursor::next - comparing current candidate");
+        // Compare the current candidate state
+        match CompareIterator::new(&self.trav, *self.state.clone()).compare() {
+            Match(matched_state) => {
+                tracing::debug!(
+                    "RootCursor::next - got Match, calling into_next_candidate"
+                );
+                // Convert matched state to candidate state for next iteration
+                // This updates the checkpoint to the matched cursor position
+                // and advances the cursor to the next position
+                match matched_state.into_next_candidate(&self.trav) {
+                    Ok(candidate_state) => {
+                        *self.state = candidate_state;
+                        Some(Continue(()))
                     },
-                )
+                    Err(matched_state) => {
+                        // Cannot advance cursor further after a successful match
+                        // Check if query pattern is complete
+                        let cursor_index =
+                            matched_state.cursor.path.root_child_index();
+                        let cursor_pattern_len = {
+                            matched_state
+                                .cursor
+                                .path
+                                .root_pattern::<G>(&self.trav.graph())
+                                .len()
+                        };
+
+                        // Create candidate state from matched (without advancing cursor)
+                        // The checkpoint should be the matched position
+                        let checkpoint: PatternCursor =
+                            matched_state.cursor.clone().into();
+                        let candidate_cursor =
+                            matched_state.cursor.as_candidate();
+
+                        *self.state = CompareState {
+                            child_state: matched_state.child_state,
+                            cursor: candidate_cursor,
+                            checkpoint,
+                            target: matched_state.target,
+                            mode: matched_state.mode,
+                        };
+
+                        if cursor_index >= cursor_pattern_len - 1 {
+                            // Query pattern is complete
+                            Some(Break(EndReason::QueryEnd))
+                        } else {
+                            // Query incomplete but cannot advance in this root
+                            // End iteration to signal parent search
+                            None
+                        }
+                    },
+                }
             },
-            // end of this root
-            Break(None) => None,
-            // end of query
-            Break(Some(end)) => Some(Break(end)),
+            Mismatch(_) => {
+                // Mismatch found - check if this is after some matches (partial match)
+                // or immediate mismatch (no match)
+                // The checkpoint atom_position tells us if we've made progress
+                if self.state.checkpoint.atom_position != AtomPosition::from(0)
+                {
+                    // We had matches before this mismatch
+                    // This is a PARTIAL MATCH - the success case!
+                    // This root contains the largest contiguous match
+                    Some(Break(EndReason::Mismatch))
+                } else {
+                    // Immediate mismatch, no matches yet
+                    // Revert and break to try other paths
+                    self.state = prev_state;
+                    Some(Break(EndReason::Mismatch))
+                }
+            },
+            Prefixes(_) => unreachable!("compare() never returns Prefixes"),
         }
     }
 }
@@ -107,97 +149,7 @@ impl<G: HasGraph> RootCursor<G> {
             Err(Box::new(EndState::mismatch(trav, parent)))
         }
     }
-    fn advanced(&mut self) -> ControlFlow<Option<EndReason>> {
-        let rooted_path = self.state.rooted_path();
-        let child_can_advance = rooted_path.can_advance(&self.trav);
 
-        let cursor = &self.state.cursor;
-        tracing::debug!(
-            "RootCursor::advanced - child_state can_advance={}, child_state={:?}",
-            child_can_advance,
-            rooted_path
-        );
-        tracing::debug!("RootCursor::advanced - query cursor={:?}", cursor);
-
-        if child_can_advance {
-            // Child state can advance - try to advance query cursor too
-            match self.query_advanced() {
-                Continue(_) => {
-                    // Query advanced successfully, now check if it's past the end of the pattern
-                    let cursor_end_index =
-                        self.state.cursor.role_root_child_index::<End>();
-                    let cursor_pattern_len = {
-                        let graph = self.trav.graph();
-                        self.state.cursor.path.root_pattern::<G>(&graph).len()
-                    };
-
-                    tracing::debug!(
-                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
-                        cursor_end_index,
-                        cursor_pattern_len
-                    );
-
-                    if cursor_end_index >= cursor_pattern_len {
-                        tracing::debug!("RootCursor::advanced - query index past pattern end, returning QueryEnd");
-                        Break(Some(EndReason::QueryEnd))
-                    } else {
-                        tracing::debug!("RootCursor::advanced - query still within pattern, advancing child_state");
-                        let _ = self.path_advanced();
-                        Continue(())
-                    }
-                },
-                // Query advance returned Break - cursor cannot advance further
-                // Even though child could continue, query is complete
-                Break(_) => {
-                    tracing::debug!(
-                        "RootCursor::advanced - query advance returned Break, query complete"
-                    );
-                    Break(Some(EndReason::QueryEnd))
-                },
-            }
-        } else {
-            // Child state cannot advance further in the graph
-            // Try to advance the query cursor to see if it's also complete
-            tracing::debug!("RootCursor::advanced - child_state cannot advance, attempting to advance query");
-
-            match self.query_advanced() {
-                Continue(_) => {
-                    // Query advanced successfully, check if it's now past the pattern end
-                    let cursor_end_index =
-                        self.state.cursor.role_root_child_index::<End>();
-                    let cursor_pattern_len = {
-                        let graph = self.trav.graph();
-                        self.state.cursor.path.root_pattern::<G>(&graph).len()
-                    };
-
-                    tracing::debug!(
-                        "RootCursor::advanced - query advanced to index {}, pattern_len={}",
-                        cursor_end_index,
-                        cursor_pattern_len
-                    );
-
-                    if cursor_end_index >= cursor_pattern_len {
-                        tracing::debug!("RootCursor::advanced - query is complete, returning QueryEnd");
-                        Break(Some(EndReason::QueryEnd))
-                    } else {
-                        tracing::debug!("RootCursor::advanced - query incomplete but child_state exhausted, searching in parents");
-                        Break(None)
-                    }
-                },
-                Break(_) => {
-                    // Query cannot advance - both query and child_state are exhausted
-                    tracing::debug!("RootCursor::advanced - query and child_state both exhausted, returning QueryEnd");
-                    Break(Some(EndReason::QueryEnd))
-                },
-            }
-        }
-    }
-    fn query_advanced(&mut self) -> ControlFlow<()> {
-        self.state.cursor.advance(&self.trav)
-    }
-    fn path_advanced(&mut self) -> ControlFlow<()> {
-        self.state.rooted_path_mut().advance(&self.trav)
-    }
     pub(crate) fn find_end(mut self) -> Result<EndState, Self> {
         match self.find_map(|flow| match flow {
             Continue(()) => None,

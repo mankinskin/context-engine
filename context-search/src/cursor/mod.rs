@@ -53,7 +53,6 @@ pub(crate) type PatternPrefixCursor = PathCursor<PatternPrefixPath>;
 
 impl From<PatternPrefixCursor> for PatternCursor {
     fn from(value: PatternPrefixCursor) -> Self {
-        let value: PatternCursor = value.into();
         Self {
             path: value.path.into(),
             atom_position: value.atom_position,
@@ -96,9 +95,23 @@ impl<P> PathCursor<P, Matched> {
     }
 }
 
-impl<P> PathCursor<P, Candidate> {
-    /// Confirm a candidate cursor as matched
-    pub(crate) fn confirm_match(self) -> PathCursor<P, Matched> {
+/// Trait for marking cursor/state as matched or mismatched
+pub trait MarkMatchState {
+    type Matched;
+    type Mismatched;
+
+    /// Mark as successfully matched
+    fn mark_match(self) -> Self::Matched;
+
+    /// Mark as mismatched/failed
+    fn mark_mismatch(self) -> Self::Mismatched;
+}
+
+impl<P> MarkMatchState for PathCursor<P, Candidate> {
+    type Matched = PathCursor<P, Matched>;
+    type Mismatched = PathCursor<P, Mismatched>;
+
+    fn mark_match(self) -> Self::Matched {
         PathCursor {
             path: self.path,
             atom_position: self.atom_position,
@@ -106,8 +119,18 @@ impl<P> PathCursor<P, Candidate> {
         }
     }
 
-    /// Mark a candidate cursor as mismatched (preserves atom_position)
-    pub(crate) fn mark_mismatch(self) -> PathCursor<P, Mismatched> {
+    fn mark_mismatch(self) -> Self::Mismatched {
+        PathCursor {
+            path: self.path,
+            atom_position: self.atom_position,
+            _state: PhantomData,
+        }
+    }
+}
+
+impl<P> PathCursor<P, Candidate> {
+    /// Confirm a candidate cursor as matched
+    pub(crate) fn confirm_match(self) -> PathCursor<P, Matched> {
         PathCursor {
             path: self.path,
             atom_position: self.atom_position,
@@ -122,6 +145,26 @@ impl<P> PathCursor<P, Candidate> {
         matched: PathCursor<P, Matched>,
     ) -> PathCursor<P, Matched> {
         matched
+    }
+
+    /// Quick conversion: mark this candidate as matched
+    /// Convenience method that consumes self and returns matched cursor
+    pub(crate) fn into_matched(self) -> PathCursor<P, Matched> {
+        PathCursor {
+            path: self.path,
+            atom_position: self.atom_position,
+            _state: PhantomData,
+        }
+    }
+
+    /// Quick conversion: mark this candidate as mismatched
+    /// Convenience method that consumes self and returns mismatched cursor
+    pub(crate) fn into_mismatched(self) -> PathCursor<P, Mismatched> {
+        PathCursor {
+            path: self.path,
+            atom_position: self.atom_position,
+            _state: PhantomData,
+        }
     }
 }
 
