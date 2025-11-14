@@ -12,7 +12,7 @@ The context-search crate provides advanced search and traversal operations for h
 
 #### `Foldable` trait
 - **Explanation**: Core trait for types that can be folded/searched through with early termination
-- **Related items**: [`FoldCtx`], [`FoldResult`], [`ErrorState`], [`FinishedState`]
+- **Related items**: [`SearchState`], [`FoldResult`], [`ErrorState`], [`FinishedState`]
 - **Doc test importance**: CRITICAL - Central abstraction for search operations
 - **Example use**: Implementing custom foldable types, fold operations on patterns
 
@@ -234,17 +234,17 @@ The context-search crate provides advanced search and traversal operations for h
 - **Doc test importance**: MEDIUM - Primer creation pattern
 - **Example use**: Starting traversal from various types
 
-#### `IntoFoldCtx<K>` trait
-- **Explanation**: Conversion trait for creating fold contexts
-- **Related items**: [`FoldCtx`], [`TraversalKind`], [`ToChild`]
-- **Doc test importance**: HIGH - Fold context creation
-- **Example use**: Setting up fold operations
+#### `IntoSearchState<K>` trait
+- **Explanation**: Conversion trait for creating search state contexts
+- **Related items**: [`SearchState`], [`TraversalKind`], [`ToChild`]
+- **Doc test importance**: HIGH - Search state context creation
+- **Example use**: Setting up search operations
 
-#### `FoldCtx<K>` struct
-- **Explanation**: Context for fold operations with traversal integration
-- **Related items**: [`IntoFoldCtx`], [`TraversalCtx`], [`Foldable`]
-- **Doc test importance**: CRITICAL - Fold operation context
-- **Example use**: Managing fold operation state
+#### `SearchState<K>` struct
+- **Explanation**: Context for search operations with traversal integration
+- **Related items**: [`IntoSearchState`], [`TraversalCtx`], [`Foldable`]
+- **Doc test importance**: CRITICAL - Search operation context
+- **Example use**: Managing search operation state
 
 ## Advanced Features
 
@@ -268,7 +268,7 @@ The context-search crate provides advanced search and traversal operations for h
 - `Searchable` trait
 - `Foldable` trait
 - `TraversalCtx<K>`
-- `FoldCtx<K>`
+- `SearchState<K>`
 - `TraversalKind` trait
 
 ### High (Requires good documentation + basic examples)

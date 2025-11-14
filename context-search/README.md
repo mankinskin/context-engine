@@ -55,7 +55,7 @@ let result = tokens.fold::<BreadthFirst>(traversal_context)?;
 ```
 
 #### 2. **Folding to Search Context**
-The `Foldable` trait converts different input types into a unified `FoldCtx`:
+The `Foldable` trait converts different input types into a unified `SearchState`:
 - **Token arrays**: Create cursor from token sequence
 - **Patterns**: Use existing pattern structure  
 - **Cursors**: Use current position and path
@@ -79,7 +79,7 @@ pub trait TraversalPolicy {
 
 #### 4. **State Management**
 - **StartCtx**: Initial search configuration with graph reference and policies
-- **FoldCtx**: Active search context with cursor and traversal state  
+- **SearchState**: Active search context with cursor and traversal state  
 - **EndState**: Terminal results with success/failure details and exact position
 - **InnerKind**: Intermediate states allowing search continuation
 

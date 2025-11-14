@@ -97,7 +97,7 @@ use NodeResult::*;
 #[derive(Debug)]
 pub(crate) enum SearchNode {
     ParentCandidate(ParentCompareState),
-    ChildQueue(ChildQueue<CompareState<Candidate, Candidate>>),
+    PrefixQueue(ChildQueue<CompareState<Candidate, Candidate>>),
 }
 use SearchNode::*;
 #[derive(Debug, new)]
@@ -120,7 +120,7 @@ impl<K: TraversalKind> NodeConsumer<'_, K> {
                 unreachable!("compare_iter.next() should never return Prefixes - they are consumed by the iterator")
             },
             Some(None) =>
-                Some(QueueMore(vec![ChildQueue(compare_iter.children.queue)])),
+                Some(QueueMore(vec![PrefixQueue(compare_iter.children.queue)])),
             None => None,
         }
     }
@@ -139,11 +139,11 @@ impl<K: TraversalKind> NodeConsumer<'_, K> {
                             parent_state,
                             cursor: parent.cursor.clone(),
                         })
-                        .map(Parent)
+                        .map(ParentCandidate)
                         .collect(),
                 )),
             },
-            ChildQueue(queue) => Self::compare_next(self.1, queue),
+            PrefixQueue(queue) => Self::compare_next(self.1, queue),
         }
     }
 }

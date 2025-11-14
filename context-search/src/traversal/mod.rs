@@ -35,7 +35,7 @@ pub(crate) struct TraceStart<'a> {
 impl Traceable for TraceStart<'_> {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut SearchContext<G>,
+        ctx: &mut TraceCtx<G>,
     ) {
         if let Some(mut p) = match self.end.path.clone() {
             PathEnum::Postfix(p) => Some(p),

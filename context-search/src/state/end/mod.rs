@@ -119,7 +119,7 @@ pub struct EndState {
 impl Traceable for &EndState {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut SearchContext<G>,
+        ctx: &mut TraceCtx<G>,
     ) {
         match &self.path {
             PathEnum::Range(p) => p.trace(ctx),

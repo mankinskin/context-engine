@@ -16,7 +16,7 @@ impl LeafKey for RangeEnd {
 impl Traceable for &RangeEnd {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut SearchContext<G>,
+        ctx: &mut TraceCtx<G>,
     ) {
         RangeCommand::from(self).trace(ctx)
     }

@@ -6,6 +6,7 @@ use crate::{
     insert_atoms,
     insert_patterns,
 };
+use std::fs;
 
 #[test]
 fn test_to_petgraph() {
@@ -26,6 +27,15 @@ fn test_to_petgraph() {
         _abcd => [[abc, d], [a, bcd]]
     );
     let pg = graph.to_petgraph();
-    pg.write_to_file("assets/test_graph1.dot")
-        .expect("Failed to write assets/test_graph1.dot file!");
+
+    // Create temporary directory and file
+    let temp_dir = std::env::temp_dir().join("context_trace_test");
+    fs::create_dir_all(&temp_dir).expect("Failed to create temp directory");
+    let temp_file = temp_dir.join("test_graph1.dot");
+
+    // Write and then delete the file
+    pg.write_to_file(&temp_file)
+        .expect("Failed to write test graph file!");
+    fs::remove_file(&temp_file).expect("Failed to delete test graph file!");
+    fs::remove_dir(&temp_dir).expect("Failed to delete temp directory!");
 }

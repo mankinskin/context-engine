@@ -1,12 +1,12 @@
 use crate::{
     r#match::{
         root_cursor::CompareParentBatch,
-        SearchQueue,
         RootFinder,
         SearchNode::{
             self,
-            Parent,
+            ParentCandidate,
         },
+        SearchQueue,
     },
     state::end::{
         EndReason,
@@ -28,7 +28,7 @@ use tracing::{
 
 #[derive(Debug, new)]
 pub(crate) struct SearchIterator<K: TraversalKind> {
-    pub(crate) trace_ctx: SearchContext<K::Trav>,
+    pub(crate) trace_ctx: TraceCtx<K::Trav>,
     pub(crate) match_ctx: SearchQueue,
     /// Tracks the largest complete match found so far
     /// (matches that reached end of root and continued to parents)
@@ -42,7 +42,7 @@ impl<K: TraversalKind> SearchIterator<K> {
     ) -> Self {
         debug!("creating match iterator from start index");
         SearchIterator {
-            trace_ctx: SearchContext {
+            trace_ctx: TraceCtx {
                 trav,
                 cache: TraceCache::new(start_index),
             },
@@ -64,13 +64,13 @@ impl<K: TraversalKind> SearchIterator<K> {
         );
 
         SearchIterator {
-            trace_ctx: SearchContext {
+            trace_ctx: TraceCtx {
                 trav,
                 cache: TraceCache::new(start_index),
             },
             match_ctx: SearchQueue {
                 nodes: FromIterator::from_iter(
-                    p.into_compare_batch().into_iter().map(SearchNode::Parent),
+                    p.into_compare_batch().into_iter().map(SearchNode::ParentCandidate),
                 ),
             },
             last_complete_match: None,
@@ -91,11 +91,8 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
     fn next(&mut self) -> Option<Self::Item> {
         trace!("searching for root cursor");
 
-        match RootFinder::<K>::new(
-            &self.trace_ctx.trav,
-            &mut self.match_ctx,
-        )
-        .find_root_cursor()
+        match RootFinder::<K>::new(&self.trace_ctx.trav, &mut self.match_ctx)
+            .find_root_cursor()
         {
             Some(root_cursor) => {
                 debug!("found root cursor");
@@ -152,7 +149,7 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                                     batch
                                         .into_compare_batch()
                                         .into_iter()
-                                        .map(Parent),
+                                        .map(ParentCandidate),
                                 );
 
                                 // Continue exploring - call next() recursively
