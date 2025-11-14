@@ -9,14 +9,15 @@ use crate::{
         parent::ParentCompareState,
         state::{
             CandidateCompareState,
-            CompareNext,
-            CompareNext::*,
+            CompareResult,
+            CompareResult::*,
             CompareState,
             MatchedCompareState,
         },
     },
     cursor::{
         Candidate,
+        Matched,
         PathCursor,
     },
     r#match::root_cursor::RootCursor,
@@ -32,108 +33,105 @@ pub(crate) mod iterator;
 pub(crate) mod root_cursor;
 
 #[derive(Debug, new, Default)]
-pub(crate) struct MatchCtx {
+pub(crate) struct SearchQueue {
     #[new(default)]
-    pub(crate) nodes: VecDeque<TraceNode>,
+    pub(crate) nodes: VecDeque<SearchNode>,
 }
 
 #[derive(Debug)]
-pub(crate) struct RootSearchIterator<'a, K: TraversalKind> {
-    pub(crate) ctx: &'a mut MatchCtx,
+pub(crate) struct RootFinder<'a, K: TraversalKind> {
+    pub(crate) ctx: &'a mut SearchQueue,
     pub(crate) trav: &'a K::Trav,
 }
-impl<'a, K: TraversalKind> RootSearchIterator<'a, K> {
+impl<'a, K: TraversalKind> RootFinder<'a, K> {
     pub(crate) fn new(
         trav: &'a K::Trav,
-        ctx: &'a mut MatchCtx,
+        ctx: &'a mut SearchQueue,
     ) -> Self {
         Self { ctx, trav }
     }
 
     pub(crate) fn find_root_cursor(
         mut self
-    ) -> Option<RootCursor<&'a K::Trav>> {
-        self.find_map(|root| root).map(|state| RootCursor {
-            trav: self.trav,
-            state: Box::new(state),
+    ) -> Option<RootCursor<&'a K::Trav, Matched, Matched>> {
+        self.find_map(|root| root).map(|matched_state| {
+            // Return a Matched RootCursor - caller will advance cursors
+            RootCursor {
+                trav: self.trav,
+                state: Box::new(matched_state),
+            }
         })
     }
 }
 
-impl<K: TraversalKind> Iterator for RootSearchIterator<'_, K> {
-    type Item = Option<CandidateCompareState>;
+impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
+    type Item = Option<MatchedCompareState>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.ctx.nodes.pop_front().and_then(|node| {
-            PolicyNode::<'_, K>::new(node, self.trav).consume()
+            NodeConsumer::<'_, K>::new(node, self.trav).consume()
         }) {
-            Some(Append(next)) => {
+            Some(QueueMore(next)) => {
                 self.ctx.nodes.extend(next);
                 Some(None)
             },
-            Some(TraceStep::Match(matched_state)) => {
-                // Don't clear queue - keep exploring other paths
-                // Queue will be sorted by root width to explore smallest parents first
-                
-                // Convert matched state to candidate with checkpoint update
-                // If cursor cannot advance, skip this match
-                match matched_state.into_next_candidate(self.trav) {
-                    Ok(candidate_state) => Some(Some(candidate_state)),
-                    Err(_) => Some(None), // Cannot advance, skip
-                }
+            Some(NodeResult::FoundMatch(matched_state)) => {
+                // Found a root match - return it for RootCursor creation
+                // RootCursor will handle cursor advancement and determine when to add cache entries
+                Some(Some(matched_state))
             },
-            Some(Pass) => Some(None),
+            Some(Skip) => Some(None),
             None => None,
         }
     }
 }
 
 #[derive(Debug)]
-pub(crate) enum TraceStep {
-    Append(Vec<TraceNode>),
-    Match(MatchedCompareState),
-    Pass,
+pub(crate) enum NodeResult {
+    QueueMore(Vec<SearchNode>),
+    FoundMatch(MatchedCompareState),
+    Skip,
 }
-use TraceStep::*;
+use NodeResult::*;
 
 #[derive(Debug)]
-pub(crate) enum TraceNode {
-    Parent(ParentCompareState),
-    Child(ChildQueue<CompareState<Candidate>>),
+pub(crate) enum SearchNode {
+    ParentCandidate(ParentCompareState),
+    ChildQueue(ChildQueue<CompareState<Candidate, Candidate>>),
 }
-use TraceNode::*;
+use SearchNode::*;
 #[derive(Debug, new)]
-struct PolicyNode<'a, K: TraversalKind>(TraceNode, &'a K::Trav);
+struct NodeConsumer<'a, K: TraversalKind>(SearchNode, &'a K::Trav);
 
-impl<K: TraversalKind> PolicyNode<'_, K> {
+impl<K: TraversalKind> NodeConsumer<'_, K> {
     fn compare_next(
         trav: &K::Trav,
-        queue: ChildQueue<CompareState<Candidate>>,
-    ) -> Option<TraceStep> {
+        queue: ChildQueue<CompareState<Candidate, Candidate>>,
+    ) -> Option<NodeResult> {
         let mut compare_iter = CompareIterator::<&K::Trav>::new(trav, queue);
         match compare_iter.next() {
-            Some(Some(CompareNext::Match(matched_state))) => {
+            Some(Some(CompareResult::FoundMatch(matched_state))) => {
                 // Return the matched state directly without conversion
                 // RootCursor will handle the conversion to Candidate with checkpoint update
-                Some(TraceStep::Match(matched_state))
+                Some(NodeResult::FoundMatch(matched_state))
             },
-            Some(Some(CompareNext::Mismatch(_))) => Some(Pass),
-            Some(Some(CompareNext::Prefixes(_))) => {
+            Some(Some(CompareResult::Mismatch(_))) => Some(Skip),
+            Some(Some(CompareResult::Prefixes(_))) => {
                 unreachable!("compare_iter.next() should never return Prefixes - they are consumed by the iterator")
             },
             Some(None) =>
-                Some(Append(vec![Child(compare_iter.children.queue)])),
+                Some(QueueMore(vec![ChildQueue(compare_iter.children.queue)])),
             None => None,
         }
     }
-    fn consume(self) -> Option<TraceStep> {
+    fn consume(self) -> Option<NodeResult> {
         match self.0 {
-            Parent(parent) => match parent.into_advanced(&self.1) {
+            ParentCandidate(parent) => match parent.into_advanced(&self.1) {
                 Ok(state) => Self::compare_next(
                     self.1,
                     ChildQueue::from_iter([state.token]),
                 ),
-                Err(parent) => Some(Append(
+                Err(parent) => Some(QueueMore(
                     K::Policy::next_batch(self.1, &parent)
                         .into_iter()
                         .flat_map(|batch| batch.parents)
@@ -145,7 +143,7 @@ impl<K: TraversalKind> PolicyNode<'_, K> {
                         .collect(),
                 )),
             },
-            Child(queue) => Self::compare_next(self.1, queue),
+            ChildQueue(queue) => Self::compare_next(self.1, queue),
         }
     }
 }

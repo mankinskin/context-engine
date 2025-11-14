@@ -5,12 +5,12 @@ use crate::{
         PatternPrefixCursor,
     },
     r#match::{
-        iterator::MatchIterator,
+        iterator::SearchIterator,
         root_cursor::CompareParentBatch,
     },
     search::{
         searchable::ErrorState,
-        FoldCtx,
+        SearchState,
     },
     state::end::EndState,
     traversal::{
@@ -98,30 +98,32 @@ BaseQuery
         &self,
         trav: &G,
     ) -> InputLocation {
-        trace!("Determining input_location for path");
+        trace!("determining input_location for path");
         
         if let Some(loc) = self.role_leaf_token_location::<End>() {
-            debug!("Found leaf token location: {}", pretty(&loc));
+            debug!(location = %pretty(&loc), "found leaf token location");
             let pattern_loc = loc.into_pattern_location();
-            debug!("Converted to pattern location: {}", pretty(&pattern_loc));
+            debug!(pattern_location = %pretty(&pattern_loc), "converted to pattern location");
             InputLocation::Location(pattern_loc)
         } else {
-            debug!("No leaf token location, getting pattern child");
+            debug!("no leaf token location, getting pattern child");
             let sub_index = self.role_root_child_index::<End>();
             let token = self.role_rooted_leaf_token::<End, _>(trav);
-            debug!("Pattern child: token={}, sub_index={}", pretty(&token), sub_index);
+            debug!(token = %pretty(&token), sub_index, "pattern child");
             
             // This is where the panic will happen - when we try to use this token
             // and it doesn't have children
-            trace!("Checking token vertex data in graph");
+            trace!("checking token vertex data in graph");
             if let Ok(vertex_data) = trav.graph().get_vertex(token.vertex_index()) {
-                trace!("Token vertex data: {}", pretty(vertex_data));
+                trace!(vertex_data = %pretty(vertex_data), "token vertex data");
                 let child_patterns = vertex_data.child_patterns();
                 if child_patterns.is_empty() {
-                    warn!("WARNING: Token {} has no child patterns! This will cause a panic.", 
-                          pretty(&token));
-                    warn!("This typically means you're trying to search for atoms directly without creating a pattern first.");
-                    warn!("Consider using find_sequence() instead of find_ancestor() for raw atoms.");
+                    warn!(
+                        token = %pretty(&token),
+                        "token has no child patterns - will cause panic"
+                    );
+                    warn!("typically means searching atoms directly without pattern");
+                    warn!("consider using find_sequence() instead of find_ancestor()");
                 }
             }
             
@@ -217,7 +219,7 @@ impl StartCtx {
         trav: &K::Trav,
     ) -> Result<CompareParentBatch, ErrorState> {
         let mut cursor = self.cursor.clone();
-        debug!("get_parent_batch - cursor path before root_child_token: {:?}", cursor.path);
+        debug!(cursor_path = ?cursor.path, "get_parent_batch - cursor path before root_child_token");
         let parent = self.cursor.path.role_root_child_token::<End, _>(trav);
         if cursor.advance(trav).is_continue() {
             let batch = K::Policy::gen_parent_batch(trav, parent, |trav, p| {
@@ -241,21 +243,21 @@ pub trait Searchable: Sized {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState>;
+    ) -> Result<SearchState<K>, ErrorState>;
 
     #[instrument(skip(self, trav))]
     fn search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<Response, ErrorState> {
-        debug!("Searchable::search - starting search");
+        debug!("starting search");
         match self.start_search::<K>(trav) {
             Ok(ctx) => {
-                debug!("Start search successful, beginning fold");
+                debug!("start search successful, beginning fold");
                 Ok(ctx.search())
             },
             Err(err) => {
-                debug!("Start search failed: {}", pretty(&err));
+                debug!(error = %pretty(&err), "start search failed");
                 Err(err)
             },
         }
@@ -267,13 +269,13 @@ impl Searchable for PatternCursor {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        debug!("PatternCursor::start_search");
-        debug!("PatternCursor path: {:?}", self.path);
+    ) -> Result<SearchState<K>, ErrorState> {
+        debug!("starting pattern cursor search");
+        debug!(path = ?self.path, "pattern cursor path");
 
-        // Get the starting token from the query pattern for the MatchIterator
+        // Get the starting token from the query pattern for the SearchIterator
         let start_token = self.path.role_root_child_token::<End, _>(&trav);
-        debug!("Starting search from token: {}", pretty(&start_token));
+        debug!(start_token = %pretty(&start_token), "starting search from token");
 
         let start = StartCtx {
             cursor: self.clone(),
@@ -282,14 +284,14 @@ impl Searchable for PatternCursor {
         match start.get_parent_batch::<K>(&trav) {
             Ok(p) => {
                 debug!(
-                    "First ParentBatch obtained with {} items",
-                    p.batch.len()
+                    batch_len = p.batch.len(),
+                    "first parent batch obtained"
                 );
-                trace!("ParentBatch details: {}", pretty(&p));
+                trace!(batch_details = %pretty(&p), "parent batch details");
 
-                Ok(FoldCtx {
+                Ok(SearchState {
                     last_match: EndState::init_fold(self),
-                    matches: MatchIterator::start_parent(
+                    matches: SearchIterator::start_parent(
                         trav,
                         start_token,
                         p,
@@ -297,7 +299,7 @@ impl Searchable for PatternCursor {
                 })
             },
             Err(err) => {
-                debug!("Failed to get parent batch: {}", pretty(&err));
+                debug!(error = %pretty(&err), "failed to get parent batch");
                 Err(err)
             },
         }
@@ -308,7 +310,7 @@ impl<T: Searchable + Clone> Searchable for &T {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
+    ) -> Result<SearchState<K>, ErrorState> {
         self.clone().start_search(trav)
     }
 }
@@ -318,9 +320,9 @@ impl<const N: usize> Searchable for &'_ [Token; N] {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        debug!("Searchable for [Token; {}] - creating PatternRangePath", N);
-        trace!("Tokens: {:?}", self);
+    ) -> Result<SearchState<K>, ErrorState> {
+        debug!(token_count = N, "creating pattern range path from array");
+        trace!(tokens = ?self, "token array");
         
         // Delegate to slice implementation which handles atom special case
         self.as_slice().start_search::<K>(trav)
@@ -331,9 +333,9 @@ impl Searchable for &'_ [Token] {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        debug!("Searchable for &[Token] - creating PatternRangePath from {} tokens", self.len());
-        trace!("Tokens: {:?}", self);
+    ) -> Result<SearchState<K>, ErrorState> {
+        debug!(token_count = self.len(), "creating pattern range path from slice");
+        trace!(tokens = ?self, "token slice");
         
         // Convert the token slice to a PatternRangePath and start the search
         // This works for both atoms and composite patterns now thanks to MatchState::Query
@@ -344,7 +346,7 @@ impl Searchable for Pattern {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
+    ) -> Result<SearchState<K>, ErrorState> {
         PatternRangePath::from(self).start_search::<K>(trav)
     }
 }
@@ -353,7 +355,7 @@ impl Searchable for PatternEndPath {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
+    ) -> Result<SearchState<K>, ErrorState> {
         self.to_range_path()
             .to_cursor(&trav)
             .start_search::<K>(trav)
@@ -364,15 +366,15 @@ impl Searchable for PatternRangePath {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
-        debug!("PatternRangePath::start_search - converting to cursor");
-        trace!("PatternRangePath details: {:?}", &self);
+    ) -> Result<SearchState<K>, ErrorState> {
+        debug!("converting pattern range path to cursor");
+        trace!(range_path_details = ?self, "pattern range path details");
         
         let range_path = self.to_range_path();
-        debug!("Converted to range_path: {:?}", &range_path);
+        debug!(range_path = ?range_path, "converted to range_path");
         
         let cursor = range_path.to_cursor(&trav);
-        debug!("Created cursor: {:?}", &cursor);
+        debug!(cursor = ?cursor, "created cursor");
         
         cursor.start_search::<K>(trav)
     }
@@ -381,7 +383,7 @@ impl Searchable for PatternPrefixCursor {
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
-    ) -> Result<FoldCtx<K>, ErrorState> {
+    ) -> Result<SearchState<K>, ErrorState> {
         PatternCursor::from(self).start_search(trav)
     }
 }

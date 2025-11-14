@@ -26,7 +26,7 @@ use context_trace::{
 pub(crate) struct CompareRootState {
     #[deref]
     #[deref_mut]
-    pub(crate) token: CompareState<Candidate>,
+    pub(crate) token: CompareState<Candidate, Candidate>,
     pub(crate) root_parent: ParentState,
 }
 
@@ -49,6 +49,12 @@ impl IntoAdvanced for ParentCompareState {
                 let prefix_path =
                     self.cursor.path.clone().into_rooted_role_path();
                 let cursor = PathCursor {
+                    path: prefix_path.clone(),
+                    atom_position: self.cursor.atom_position,
+                    _state: PhantomData,
+                };
+                // Initially, index_cursor starts at the same position as query cursor
+                let index_cursor = PathCursor {
                     path: prefix_path,
                     atom_position: self.cursor.atom_position,
                     _state: PhantomData,
@@ -58,6 +64,7 @@ impl IntoAdvanced for ParentCompareState {
                     token: CompareState {
                         child_state: next.child_state,
                         cursor,
+                        index_cursor,
                         checkpoint: self.cursor,
                         mode: GraphMajor,
                         target: DownKey::new(Token::new(0, 0), 0.into()),

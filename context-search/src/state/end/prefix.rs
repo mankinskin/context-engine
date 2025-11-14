@@ -18,7 +18,7 @@ impl From<&PrefixEnd> for PrefixCommand {
 impl Traceable for &PrefixEnd {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut TraceCtx<G>,
+        ctx: &mut SearchContext<G>,
     ) {
         PrefixCommand::from(self).trace(ctx)
     }

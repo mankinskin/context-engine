@@ -1,6 +1,6 @@
 use crate::{
     cursor::PatternCursor,
-    r#match::iterator::MatchIterator,
+    r#match::iterator::SearchIterator,
     state::{
         end::{
             EndReason,
@@ -46,11 +46,11 @@ pub trait Find: HasGraph {
         let iter = atomizing_iter(pattern.into_iter());
         let atoms: Vec<_> = iter.collect();
         tracing::Span::current().record("pattern_len", atoms.len());
-        debug!("Finding sequence pattern with {} atoms", atoms.len());
-        trace!("Pattern atoms: {}", pretty(&atoms));
+        debug!(pattern_len = atoms.len(), "finding sequence pattern");
+        trace!(atoms = %pretty(&atoms), "pattern atoms");
 
         let pattern = self.graph().get_atom_children(atoms.into_iter())?;
-        debug!("Created pattern token: {}", pretty(&pattern));
+        debug!(pattern = %pretty(&pattern), "created pattern token");
 
         self.find_ancestor(pattern)
     }
@@ -61,14 +61,15 @@ pub trait Find: HasGraph {
         &self,
         searchable: impl Searchable,
     ) -> SearchResult {
-        debug!("Starting parent search");
+        debug!("starting parent search");
         let result = searchable
             .search::<ParentSearchTraversal<Self>>(self.ctx())
             .map_err(|err| err.reason);
 
         match &result {
-            Ok(response) => debug!("Parent search succeeded"),
-            Err(reason) => debug!("Parent search failed: {}", pretty(reason)),
+            Ok(_response) => debug!("parent search succeeded"),
+            Err(reason) =>
+                debug!(reason = %pretty(reason), "parent search failed"),
         }
         result
     }
@@ -79,14 +80,15 @@ pub trait Find: HasGraph {
         &self,
         searchable: impl Searchable,
     ) -> SearchResult {
-        debug!("Starting ancestor search");
+        debug!("starting ancestor search");
         let result = searchable
             .search::<AncestorSearchTraversal<Self>>(self.ctx())
             .map_err(|err| err.reason);
 
         match &result {
-            Ok(response) => debug!("Ancestor search succeeded"),
-            Err(reason) => debug!("Ancestor search failed: {}", pretty(reason)),
+            Ok(_response) => debug!("ancestor search succeeded"),
+            Err(reason) =>
+                debug!(reason = %pretty(reason), "ancestor search failed"),
         }
         result
     }
@@ -106,30 +108,30 @@ impl Find for HypergraphRef {
 
 /// context for running fold traversal
 #[derive(Debug)]
-pub struct FoldCtx<K: TraversalKind> {
-    pub(crate) matches: MatchIterator<K>,
+pub struct SearchState<K: TraversalKind> {
+    pub(crate) matches: SearchIterator<K>,
     //pub(crate) start_index: Token,
     pub(crate) last_match: MatchState,
 }
 
-impl<K: TraversalKind> Iterator for FoldCtx<K> {
+impl<K: TraversalKind> Iterator for SearchState<K> {
     type Item = EndState;
     fn next(&mut self) -> Option<Self::Item> {
-        trace!("FoldCtx::next - searching for next match");
+        trace!("searching for next match");
         match self.matches.find_next() {
             Some(end) => {
-                debug!("Found end state");
+                debug!("found end state");
 
                 // Get the start length from the previous match or query
                 let start_len = match &self.last_match {
                     MatchState::Located(prev_end) => prev_end.start_len(),
                     MatchState::Query(_) => {
                         // First match: start from beginning of query
-                        debug!("First match found, transitioning from Query to Located state");
+                        debug!("first match found, transitioning from Query to Located state");
                         0
                     },
                 };
-                debug!("Tracing from position: {}", start_len);
+                debug!(start_pos = start_len, "tracing from position");
 
                 TraceStart {
                     end: &end,
@@ -142,37 +144,37 @@ impl<K: TraversalKind> Iterator for FoldCtx<K> {
                 Some(end.clone())
             },
             None => {
-                trace!("No more matches found");
+                trace!("no more matches found");
                 None
             },
         }
     }
 }
 
-impl<K: TraversalKind> FoldCtx<K> {
+impl<K: TraversalKind> SearchState<K> {
     #[instrument(skip(self))]
     pub(crate) fn search(mut self) -> Response {
-        debug!("Starting fold search");
-        debug!("Initial state: matches={:?}", &self.matches);
+        debug!("starting fold search");
+        debug!(matches = ?&self.matches, "initial state");
 
         let mut iteration = 0;
         while let Some(end) = &mut self.next() {
             iteration += 1;
-            debug!("Fold iteration {}: tracing end state", iteration);
+            debug!(iteration, "tracing end state");
             end.trace(&mut self.matches.trace_ctx);
         }
 
-        debug!("Fold completed after {} iterations", iteration);
+        debug!(iterations = iteration, "fold completed");
 
         // Get the final end state
         let end = match self.last_match {
             MatchState::Located(end_state) => {
-                debug!("Final state is located");
+                debug!("final state is located");
                 end_state
             },
             MatchState::Query(query_path) => {
                 // No matches were found - need to create an appropriate error/incomplete state
-                debug!("No matches found, still in query state");
+                debug!("no matches found, still in query state");
                 // TODO: Create proper EndState for "no match" case
                 // For now, create a minimal EndState
                 // The query_path has a Pattern root, get the first token
@@ -195,7 +197,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             },
         };
 
-        trace!("Final end state: {}", pretty(&end));
+        trace!(end = %pretty(&end), "final end state");
 
         let trace_ctx = &mut self.matches.trace_ctx;
         end.trace(trace_ctx);
@@ -205,7 +207,7 @@ impl<K: TraversalKind> FoldCtx<K> {
             end,
         };
 
-        debug!("Search complete");
+        debug!("search complete");
         response
     }
 }

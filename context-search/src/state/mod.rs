@@ -19,7 +19,7 @@ impl From<(DirectedKey, ParentState)> for TraversalState {
     fn from((prev, ps): (DirectedKey, ParentState)) -> Self {
         Self {
             prev,
-            kind: InnerKind::Parent(ps),
+            kind: InnerKind::ParentCandidate(ps),
         }
     }
 }
@@ -27,37 +27,37 @@ impl From<(DirectedKey, ChildState)> for TraversalState {
     fn from((prev, cs): (DirectedKey, ChildState)) -> Self {
         Self {
             prev,
-            kind: InnerKind::Child(cs),
+            kind: InnerKind::ChildQueue(cs),
         }
     }
 }
 impl HasRootPos for TraversalState {
     fn root_pos(&self) -> &AtomPosition {
         match &self.kind {
-            InnerKind::Parent(state) => state.root_pos(),
-            InnerKind::Child(state) => state.root_pos(),
+            InnerKind::ParentCandidate(state) => state.root_pos(),
+            InnerKind::ChildQueue(state) => state.root_pos(),
         }
     }
     fn root_pos_mut(&mut self) -> &mut AtomPosition {
         match &mut self.kind {
-            InnerKind::Parent(state) => state.root_pos_mut(),
-            InnerKind::Child(state) => state.root_pos_mut(),
+            InnerKind::ParentCandidate(state) => state.root_pos_mut(),
+            InnerKind::ChildQueue(state) => state.root_pos_mut(),
         }
     }
 }
 impl TargetKey for TraversalState {
     fn target_key(&self) -> DirectedKey {
         match &self.kind {
-            InnerKind::Parent(state) => state.target_key(),
-            InnerKind::Child(state) => state.target_key(),
+            InnerKind::ParentCandidate(state) => state.target_key(),
+            InnerKind::ChildQueue(state) => state.target_key(),
         }
     }
 }
 impl RootKey for TraversalState {
     fn root_key(&self) -> UpKey {
         match &self.kind {
-            InnerKind::Parent(state) => state.root_key(),
-            InnerKind::Child(state) => state.root_key(),
+            InnerKind::ParentCandidate(state) => state.root_key(),
+            InnerKind::ChildQueue(state) => state.root_key(),
         }
     }
 }
@@ -82,9 +82,9 @@ impl PartialOrd for TraversalState {
 impl TraversalState {
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
-            InnerKind::Parent(state) =>
+            InnerKind::ParentCandidate(state) =>
                 Some(state.rooted_path().graph_root_child_location()),
-            InnerKind::Child(state) =>
+            InnerKind::ChildQueue(state) =>
                 state.rooted_path().role_leaf_token_location::<End>(),
         }
     }
@@ -94,8 +94,8 @@ impl TraversalState {
 
     pub(crate) fn state_direction(&self) -> StateDirection {
         match &self.kind {
-            InnerKind::Parent(_) => StateDirection::BottomUp,
-            InnerKind::Child(_) => StateDirection::TopDown,
+            InnerKind::ParentCandidate(_) => StateDirection::BottomUp,
+            InnerKind::ChildQueue(_) => StateDirection::TopDown,
         }
     }
 }

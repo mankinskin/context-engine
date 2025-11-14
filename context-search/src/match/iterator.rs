@@ -1,9 +1,9 @@
 use crate::{
     r#match::{
         root_cursor::CompareParentBatch,
-        MatchCtx,
-        RootSearchIterator,
-        TraceNode::{
+        SearchQueue,
+        RootFinder,
+        SearchNode::{
             self,
             Parent,
         },
@@ -27,26 +27,26 @@ use tracing::{
 };
 
 #[derive(Debug, new)]
-pub(crate) struct MatchIterator<K: TraversalKind> {
-    pub(crate) trace_ctx: TraceCtx<K::Trav>,
-    pub(crate) match_ctx: MatchCtx,
+pub(crate) struct SearchIterator<K: TraversalKind> {
+    pub(crate) trace_ctx: SearchContext<K::Trav>,
+    pub(crate) match_ctx: SearchQueue,
     /// Tracks the largest complete match found so far
     /// (matches that reached end of root and continued to parents)
     pub(crate) last_complete_match: Option<EndState>,
 }
-impl<K: TraversalKind> MatchIterator<K> {
+impl<K: TraversalKind> SearchIterator<K> {
     #[instrument(skip(trav), fields(start_index = ?start_index))]
     pub(crate) fn start_index(
         trav: K::Trav,
         start_index: Token,
     ) -> Self {
-        debug!("creating MatchIterator from start index");
-        MatchIterator {
-            trace_ctx: TraceCtx {
+        debug!("creating match iterator from start index");
+        SearchIterator {
+            trace_ctx: SearchContext {
                 trav,
                 cache: TraceCache::new(start_index),
             },
-            match_ctx: MatchCtx::new(),
+            match_ctx: SearchQueue::new(),
             last_complete_match: None,
         }
     }
@@ -57,20 +57,20 @@ impl<K: TraversalKind> MatchIterator<K> {
         start_index: Token,
         p: CompareParentBatch,
     ) -> Self {
-        debug!("creating MatchIterator from parent batch");
+        debug!("creating match iterator from parent batch");
         trace!(
             batch_details = %pretty(&p),
             "parent batch composition"
         );
 
-        MatchIterator {
-            trace_ctx: TraceCtx {
+        SearchIterator {
+            trace_ctx: SearchContext {
                 trav,
                 cache: TraceCache::new(start_index),
             },
-            match_ctx: MatchCtx {
+            match_ctx: SearchQueue {
                 nodes: FromIterator::from_iter(
-                    p.into_compare_batch().into_iter().map(TraceNode::Parent),
+                    p.into_compare_batch().into_iter().map(SearchNode::Parent),
                 ),
             },
             last_complete_match: None,
@@ -78,20 +78,20 @@ impl<K: TraversalKind> MatchIterator<K> {
     }
 }
 
-impl<K: TraversalKind> MatchIterator<K> {
+impl<K: TraversalKind> SearchIterator<K> {
     pub(crate) fn find_next(&mut self) -> Option<EndState> {
         trace!("finding next match");
         self.find_map(Some)
     }
 }
 
-impl<K: TraversalKind> Iterator for MatchIterator<K> {
+impl<K: TraversalKind> Iterator for SearchIterator<K> {
     type Item = EndState;
 
     fn next(&mut self) -> Option<Self::Item> {
         trace!("searching for root cursor");
 
-        match RootSearchIterator::<K>::new(
+        match RootFinder::<K>::new(
             &self.trace_ctx.trav,
             &mut self.match_ctx,
         )
@@ -103,7 +103,7 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
                 Some(match root_cursor.find_end() {
                     Ok(end) => {
                         // RootCursor found an end (partial match or immediate mismatch/query end)
-                        debug!("found end state: {:?}", end.reason);
+                        debug!(reason = ?end.reason, "found end state");
                         end
                     },
                     Err(root_cursor) => {
@@ -117,7 +117,15 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
                             Err(end) => {
                                 // No more parents available
                                 debug!("no more parents available");
-                                *end
+                                // Return last_complete_match if we have one, otherwise this end state
+                                if let Some(complete) =
+                                    self.last_complete_match.take()
+                                {
+                                    debug!("returning last complete match");
+                                    complete
+                                } else {
+                                    *end
+                                }
                             },
                             Ok((parent, batch)) => {
                                 debug!(
@@ -131,6 +139,14 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
 
                                 assert!(!batch.is_empty());
 
+                                // Save this complete match before exploring parents
+                                let complete_match = EndState::query_end(
+                                    &self.trace_ctx.trav,
+                                    parent.clone(),
+                                );
+                                debug!("saving complete match before parent exploration");
+                                self.last_complete_match = Some(complete_match);
+
                                 // Add parent batch to queue for next iteration
                                 self.match_ctx.nodes.extend(
                                     batch
@@ -139,9 +155,16 @@ impl<K: TraversalKind> Iterator for MatchIterator<K> {
                                         .map(Parent),
                                 );
 
-                                // Return mismatch to signal "continue searching"
-                                // The queue now has parents to explore in next iteration
-                                EndState::mismatch(&self.trace_ctx.trav, parent)
+                                // Continue exploring - call next() recursively
+                                match self.next() {
+                                    Some(end_state) => end_state,
+                                    None => {
+                                        // Queue exhausted - return the saved complete match
+                                        self.last_complete_match.take().expect(
+                                            "last_complete_match should be set",
+                                        )
+                                    },
+                                }
                             },
                         }
                     },

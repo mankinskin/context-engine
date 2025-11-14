@@ -23,7 +23,7 @@ pub trait TraversalKind: Debug + Default {
 //#[derive(Debug, Clone, Copy)]
 //pub(crate) enum OptGen<Y> {
 //    Yield(Y),
-//    Pass,
+//    Skip,
 //}
 
 #[derive(Clone, Debug)]
@@ -35,7 +35,7 @@ pub(crate) struct TraceStart<'a> {
 impl Traceable for TraceStart<'_> {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut TraceCtx<G>,
+        ctx: &mut SearchContext<G>,
     ) {
         if let Some(mut p) = match self.end.path.clone() {
             PathEnum::Postfix(p) => Some(p),

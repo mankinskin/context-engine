@@ -2,7 +2,7 @@ use context_trace::*;
 use derive_new::new;
 
 use crate::{
-    search::FoldCtx,
+    search::SearchState,
     state::result::Response,
     traversal::TraversalKind,
 };

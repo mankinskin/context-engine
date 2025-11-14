@@ -4,8 +4,8 @@ use context_trace::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum InnerKind {
-    Parent(ParentState),
-    Child(ChildState),
+    ParentCandidate(ParentState),
+    ChildQueue(ChildState),
 }
 impl Ord for InnerKind {
     fn cmp(
@@ -13,10 +13,10 @@ impl Ord for InnerKind {
         other: &Self,
     ) -> Ordering {
         match (self, other) {
-            (InnerKind::Child(a), InnerKind::Child(b)) => a.cmp(b),
-            (InnerKind::Parent(a), InnerKind::Parent(b)) => a.cmp(b),
-            (InnerKind::Child(_), _) => Ordering::Less,
-            (_, InnerKind::Child(_)) => Ordering::Greater,
+            (InnerKind::ChildQueue(a), InnerKind::ChildQueue(b)) => a.cmp(b),
+            (InnerKind::ParentCandidate(a), InnerKind::ParentCandidate(b)) => a.cmp(b),
+            (InnerKind::ChildQueue(_), _) => Ordering::Less,
+            (_, InnerKind::ChildQueue(_)) => Ordering::Greater,
         }
     }
 }
@@ -31,14 +31,14 @@ impl PartialOrd for InnerKind {
 }
 impl InnerKind {
     pub fn unwrap_parent(self) -> ParentState {
-        if let Self::Parent(p) = self {
+        if let Self::ParentCandidate(p) = self {
             p
         } else {
             panic!();
         }
     }
     pub(crate) fn unwrap_child(self) -> ChildState {
-        if let Self::Child(c) = self {
+        if let Self::ChildQueue(c) = self {
             c
         } else {
             panic!();

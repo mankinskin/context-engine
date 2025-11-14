@@ -52,7 +52,7 @@ impl HasRootedRolePath<IndexRoot, Start> for PostfixEnd {
 impl Traceable for &'_ PostfixEnd {
     fn trace<G: HasGraph>(
         self,
-        ctx: &mut TraceCtx<G>,
+        ctx: &mut SearchContext<G>,
     ) {
         PostfixCommand::from(self).trace(ctx)
     }
