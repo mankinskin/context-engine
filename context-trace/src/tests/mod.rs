@@ -26,6 +26,12 @@ pub mod tracing_demo;
 #[cfg(test)]
 pub mod compact_format_demo;
 
+#[cfg(test)]
+pub mod test_string_repr;
+
+#[cfg(test)]
+pub mod test_env1_string_repr;
+
 pub fn assert_parents(
     graph: &Hypergraph,
     token: impl ToToken,

@@ -83,7 +83,7 @@ impl HasSubLocation for SubToken {
     }
 }
 
-#[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct Token {
     pub index: VertexIndex, // the token index
     pub width: TokenWidth,  // the atom width
@@ -98,6 +98,11 @@ impl Token {
             index: index.vertex_index(),
             width: TokenWidth(width),
         }
+    }
+    
+    #[cfg(any(test, feature = "test-api"))]
+    pub fn get_string_repr(&self) -> Option<String> {
+        crate::graph::test_graph::get_token_string_from_test_graph(self.index)
     }
     pub(crate) fn get_width(&self) -> usize {
         self.width.0
@@ -262,6 +267,24 @@ impl Display for Token {
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
+        #[cfg(any(test, feature = "test-api"))]
+        {
+            if let Some(s) = self.get_string_repr() {
+                return write!(f, "\"{}\"", s);
+            }
+        }
         write!(f, "T{}w{}", self.index, self.width.0)
     }
 }
+
+impl Debug for Token {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        // Use Display formatting for Debug as well, so string representations
+        // show up in trace logs that use {:?}
+        Display::fmt(self, f)
+    }
+}
+

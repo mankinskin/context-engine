@@ -45,6 +45,9 @@ pub mod validation;
 
 pub mod vertex;
 
+#[cfg(any(test, feature = "test-api"))]
+pub mod test_graph;
+
 #[derive(Debug, Clone, Default)]
 pub struct HypergraphRef<G: GraphKind = BaseGraphKind>(
     pub Arc<RwLock<Hypergraph<G>>>,
@@ -340,12 +343,33 @@ where
         &self,
         data: &VertexData,
     ) -> String {
-        if let Some(atom) = self.get_atom_by_key(&data.key) {
+        #[cfg(any(test, feature = "test-api"))]
+        {
+            // Check cache first
+            if let Ok(cache) = data.cached_string.read() {
+                if let Some(cached) = cache.as_ref() {
+                    return cached.clone();
+                }
+            }
+        }
+        
+        // Compute string
+        let s = if let Some(atom) = self.get_atom_by_key(&data.key) {
             atom.to_string()
         } else {
             assert!(data.width() > 1);
             self.pattern_string(data.expect_any_child_pattern().1)
+        };
+        
+        #[cfg(any(test, feature = "test-api"))]
+        {
+            // Populate cache
+            if let Ok(mut cache) = data.cached_string.write() {
+                *cache = Some(s.clone());
+            }
         }
+        
+        s
     }
     pub(crate) fn index_string(
         &self,

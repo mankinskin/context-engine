@@ -78,7 +78,8 @@ pub(crate) fn localized_children_iter_for_index(
     })
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Builder, Serialize, Deserialize)]
+#[derive(Debug, Builder, Serialize, Deserialize)]
+#[cfg_attr(not(any(test, feature = "test-api")), derive(PartialEq, Eq, Clone))]
 pub struct VertexData {
     pub(crate) width: usize,
     pub(crate) index: VertexIndex,
@@ -91,6 +92,40 @@ pub struct VertexData {
 
     #[builder(default)]
     pub(crate) children: ChildPatterns,
+    
+    #[cfg(any(test, feature = "test-api"))]
+    #[serde(skip)]
+    #[builder(setter(skip), default = "std::sync::RwLock::new(None)")]
+    pub(crate) cached_string: std::sync::RwLock<Option<String>>,
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl PartialEq for VertexData {
+    fn eq(&self, other: &Self) -> bool {
+        self.width == other.width
+            && self.index == other.index
+            && self.key == other.key
+            && self.parents == other.parents
+            && self.children == other.children
+        // cached_string is not compared
+    }
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl Eq for VertexData {}
+
+#[cfg(any(test, feature = "test-api"))]
+impl Clone for VertexData {
+    fn clone(&self) -> Self {
+        Self {
+            width: self.width,
+            index: self.index,
+            key: self.key.clone(),
+            parents: self.parents.clone(),
+            children: self.children.clone(),
+            cached_string: std::sync::RwLock::new(None), // Don't clone cache
+        }
+    }
 }
 
 impl VertexData {
@@ -104,6 +139,8 @@ impl VertexData {
             index,
             parents: VertexParents::default(),
             children: ChildPatterns::default(),
+            #[cfg(any(test, feature = "test-api"))]
+            cached_string: std::sync::RwLock::new(None),
         }
     }
     pub(crate) fn get_width(&self) -> usize {
@@ -301,6 +338,14 @@ impl VertexData {
     pub(crate) fn child_pattern_vec(&self) -> Vec<Pattern> {
         self.child_pattern_iter().collect()
     }
+    
+    #[cfg(any(test, feature = "test-api"))]
+    fn invalidate_string_cache(&self) {
+        if let Ok(mut cache) = self.cached_string.write() {
+            *cache = None;
+        }
+    }
+    
     pub(crate) fn add_pattern_no_update(
         &mut self,
         id: PatternId,
@@ -310,6 +355,8 @@ impl VertexData {
             assert!(pat.len() > 1);
         }
         self.children.insert(id, pat.into_pattern());
+        #[cfg(any(test, feature = "test-api"))]
+        self.invalidate_string_cache();
         self.validate();
     }
     pub(crate) fn add_patterns_no_update(
@@ -322,6 +369,8 @@ impl VertexData {
             }
             self.children.insert(id, pat.into_pattern());
         }
+        #[cfg(any(test, feature = "test-api"))]
+        self.invalidate_string_cache();
         self.validate();
     }
     #[track_caller]

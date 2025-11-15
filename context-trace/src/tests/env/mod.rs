@@ -172,6 +172,11 @@ impl TestEnv for Env1 {
             vec![abab, ababcdefghi],
             vec![ababab, abcdefghi],
         ]);
+        
+        // Register the graph for token string representations in test output
+        #[cfg(any(test, feature = "test-api"))]
+        crate::graph::test_graph::register_test_graph(&graph);
+        
         Env1 {
             graph: HypergraphRef::from(graph),
             a,

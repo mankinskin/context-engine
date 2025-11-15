@@ -43,7 +43,7 @@ fn fmt_token_vec(
         if i > 0 {
             write!(f, ", ")?;
         }
-        write!(f, "T({}, {})", token.index, token.width.0)?;
+        write!(f, "{}", token)?;
     }
     write!(f, "]")
 }
