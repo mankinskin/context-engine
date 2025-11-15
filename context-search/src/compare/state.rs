@@ -69,6 +69,18 @@ pub(crate) enum PathPairMode {
     QueryMajor,
 }
 
+impl std::fmt::Display for PathPairMode {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        match self {
+            PathPairMode::GraphMajor => write!(f, "GraphMajor"),
+            PathPairMode::QueryMajor => write!(f, "QueryMajor"),
+        }
+    }
+}
+
 /// State for comparing a candidate position against the graph.
 ///
 /// Generic over TWO states `Q` (query) and `I` (index) to track both cursors' processing status:
@@ -191,8 +203,8 @@ impl CompareState<Candidate, Candidate> {
         mode: PathPairMode,
     ) -> ChildQueue<CompareState<Candidate, Candidate>> {
         debug!(
-            old_mode = ?self.mode,
-            new_mode = ?mode,
+            old_mode = %self.mode,
+            new_mode = %mode,
             "creating new state with different mode"
         );
         CompareState {
@@ -212,9 +224,9 @@ impl CompareState<Candidate, Candidate> {
         trav: &G,
     ) -> ChildQueue<CompareState<Candidate, Candidate>> {
         debug!(
-            mode = ?self.mode,
+            mode = %self.mode,
             child_state = %self.child_state,
-            cursor = ?self.cursor,
+            cursor = %self.cursor,
             "entering prefix_states"
         );
 
@@ -227,7 +239,7 @@ impl CompareState<Candidate, Candidate> {
                 trace!(
                     mode = "GraphMajor",
                     num_prefixes = prefixes.len(),
-                    checkpoint_pos = ?checkpoint_pos,
+                    checkpoint_pos = %checkpoint_pos,
                     "decomposing graph path token into prefixes"
                 );
 
@@ -269,8 +281,8 @@ impl CompareState<Candidate, Candidate> {
 
                 trace!(
                     mode = "QueryMajor",
-                    cursor_pos = ?self.cursor.atom_position,
-                    base_pos = ?base_position,
+                    cursor_pos = %self.cursor.atom_position,
+                    base_pos = %base_position,
                     num_prefixes = cursor_prefixes.len(),
                     "decomposing query cursor token into prefixes"
                 );
@@ -283,7 +295,7 @@ impl CompareState<Candidate, Candidate> {
                             trace!(
                                 prefix_idx = i,
                                 sub_width = sub.token().width(),
-                                cursor_pos = ?cursor.atom_position,
+                                cursor_pos = %cursor.atom_position,
                                 "created prefix state"
                             );
                             CompareState {
@@ -326,13 +338,13 @@ impl CompareState<Candidate, Candidate> {
         let query_leaf = self.cursor.role_rooted_leaf_token::<End, _>(trav);
 
         debug!(
-            path_leaf = ?path_leaf,
-            query_leaf = ?query_leaf,
+            path_leaf = %path_leaf,
+            query_leaf = %query_leaf,
             path_width = path_leaf.width(),
             query_width = query_leaf.width(),
-            cursor_pos = ?self.cursor.atom_position,
-            checkpoint_pos = ?self.checkpoint.atom_position,
-            mode = ?self.mode,
+            cursor_pos = %self.cursor.atom_position,
+            checkpoint_pos = %self.checkpoint.atom_position,
+            mode = %self.mode,
             "comparing candidate tokens"
         );
 
@@ -356,7 +368,7 @@ impl CompareState<Candidate, Candidate> {
             debug!(
                 path_width = path_leaf.width(),
                 query_width = query_leaf.width(),
-                mode = ?self.mode,
+                mode = %self.mode,
                 "tokens need decomposition - calling mode_prefixes"
             );
             let prefixes = match path_leaf.width().cmp(&query_leaf.width()) {
@@ -426,7 +438,7 @@ impl CompareState<Matched, Matched> {
         CompareState<Matched, Matched>,
     > {
         debug!(
-            cursor = ?self.cursor,
+            cursor = %self.cursor,
             "converting matched to candidate"
         );
         // Convert the old matched cursor to a checkpoint (PrefixPath -> RangePath)
@@ -494,7 +506,7 @@ impl CompareState<Matched, Matched> {
     ) -> Result<CompareState<Candidate, Matched>, CompareState<Matched, Matched>>
     {
         debug!(
-            cursor = ?self.cursor,
+            cursor = %self.cursor,
             "advancing query cursor only"
         );
 
@@ -537,7 +549,7 @@ impl CompareState<Candidate, Matched> {
         CompareState<Candidate, Matched>,
     > {
         debug!(
-            index_cursor = ?self.index_cursor,
+            index_cursor = %self.index_cursor,
             "advancing index cursor only (query already advanced)"
         );
 
@@ -641,7 +653,7 @@ impl<T: RootedLeafToken<End> + PathAppend + Clone + Sized> PrefixStates for T {
     ) -> VecDeque<(SubToken, Self)> {
         let leaf = self.role_rooted_leaf_token::<End, _>(trav);
         debug!(
-            leaf = ?leaf,
+            leaf = %leaf,
             "getting prefix_children"
         );
         let prefix_children =

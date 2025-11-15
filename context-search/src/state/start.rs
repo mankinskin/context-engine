@@ -61,6 +61,18 @@ pub enum InputLocation {
     Location(PatternLocation),
     PatternChild { sub_index: usize, token: Token },
 }
+
+impl std::fmt::Display for InputLocation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            InputLocation::Location(loc) => write!(f, "Location({})", loc),
+            InputLocation::PatternChild { sub_index, token } => {
+                write!(f, "PatternChild{{ sub_index: {}, token: {} }}", sub_index, token)
+            }
+        }
+    }
+}
+
 impl GraphRoot for InputLocation {
     fn root_parent(&self) -> Token {
         match self {
@@ -199,6 +211,12 @@ pub(crate) struct StartCtx {
     pub(crate) cursor: PatternCursor,
 }
 
+impl std::fmt::Display for StartCtx {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "StartCtx{{ cursor: {} }}", self.cursor)
+    }
+}
+
 //impl HasVertexIndex for StartCtx {
 //    fn vertex_index(&self) -> VertexIndex {
 //        self.location.parent.vertex_index()
@@ -222,7 +240,7 @@ impl StartCtx {
         trav: &K::Trav,
     ) -> Result<CompareParentBatch, ErrorState> {
         let mut cursor = self.cursor.clone();
-        debug!(cursor_path = ?cursor.path, "get_parent_batch - cursor path before root_child_token");
+        debug!(cursor_path = %cursor.path, "get_parent_batch - cursor path before root_child_token");
         let parent = self.cursor.path.role_root_child_token::<End, _>(trav);
         if cursor.advance(trav).is_continue() {
             let batch = K::Policy::gen_parent_batch(trav, parent, |trav, p| {
@@ -274,7 +292,7 @@ impl Searchable for PatternCursor {
         trav: K::Trav,
     ) -> Result<SearchState<K>, ErrorState> {
         debug!("starting pattern cursor search");
-        debug!(path = ?self.path, "pattern cursor path");
+        debug!(path = %self.path, "pattern cursor path");
 
         // Get the starting token from the query pattern for the SearchIterator
         let start_token = self.path.role_root_child_token::<End, _>(&trav);
@@ -354,6 +372,15 @@ impl Searchable for Pattern {
     }
 }
 
+impl Searchable for Vec<Token> {
+    fn start_search<K: TraversalKind>(
+        self,
+        trav: K::Trav,
+    ) -> Result<SearchState<K>, ErrorState> {
+        Pattern::from(self).start_search::<K>(trav)
+    }
+}
+
 impl Searchable for PatternEndPath {
     fn start_search<K: TraversalKind>(
         self,
@@ -365,19 +392,19 @@ impl Searchable for PatternEndPath {
     }
 }
 impl Searchable for PatternRangePath {
-    #[context_trace::instrument_sig(skip(self, trav), fields(path = ?self))]
+    #[context_trace::instrument_sig(skip(self, trav), fields(path = %self))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
     ) -> Result<SearchState<K>, ErrorState> {
         debug!("converting pattern range path to cursor");
-        trace!(range_path_details = ?self, "pattern range path details");
+        trace!(range_path_details = %self, "pattern range path details");
         
         let range_path = self.to_range_path();
-        debug!(range_path = ?range_path, "converted to range_path");
+        debug!(range_path = %range_path, "converted to range_path");
         
         let cursor = range_path.to_cursor(&trav);
-        debug!(cursor = ?cursor, "created cursor");
+        debug!(cursor = %cursor, "created cursor");
         
         cursor.start_search::<K>(trav)
     }

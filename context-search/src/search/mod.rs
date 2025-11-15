@@ -155,7 +155,7 @@ impl<K: TraversalKind> SearchState<K> {
     #[context_trace::instrument_sig(skip(self))]
     pub(crate) fn search(mut self) -> Response {
         debug!("starting fold search");
-        debug!(queue = ?&self.matches.queue, "initial state");
+        debug!(queue = %&self.matches.queue, "initial state");
 
         let mut iteration = 0;
         while let Some(end) = &mut self.next() {

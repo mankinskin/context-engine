@@ -94,7 +94,6 @@ impl CompactFormat for RootedRangePath<Pattern> {
         let start_entry = self.start.sub_path.root_entry;
         let end_entry = self.end.sub_path.root_entry;
 
-        write_indent(f, indent)?;
         writeln!(f, "PatternRangePath {{")?;
 
         // Root pattern
@@ -147,7 +146,6 @@ impl CompactFormat for RootedRangePath<IndexRoot> {
         let start_entry = self.start.sub_path.root_entry;
         let end_entry = self.end.sub_path.root_entry;
 
-        write_indent(f, indent)?;
         writeln!(f, "IndexRangePath {{")?;
 
         // Root
@@ -236,7 +234,6 @@ impl CompactFormat for PatternEndPath {
         f: &mut fmt::Formatter,
         indent: usize,
     ) -> fmt::Result {
-        write_indent(f, indent)?;
         writeln!(f, "PatternEndPath {{")?;
         write_indent(f, indent + 1)?;
         write!(f, "pattern: ")?;
@@ -273,7 +270,6 @@ impl CompactFormat for crate::trace::child::state::ChildState {
         f: &mut fmt::Formatter,
         indent: usize,
     ) -> fmt::Result {
-        write_indent(f, indent)?;
         writeln!(f, "ChildState {{")?;
         write_indent(f, indent + 1)?;
         writeln!(f, "prev_pos: {},", usize::from(self.base.prev_pos))?;

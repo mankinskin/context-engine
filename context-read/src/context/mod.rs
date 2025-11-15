@@ -71,7 +71,7 @@ impl ReadCtx {
                 },
                 Err((err, _)) => match err {
                     ErrorReason::SingleIndex(c) => vec![c.index],
-                    _ => known,
+                    _ => known.into(),
                 },
             };
         self.append_pattern(minified);

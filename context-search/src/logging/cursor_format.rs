@@ -26,12 +26,10 @@ impl<P: CompactFormat, S: CursorState> CompactFormat for PathCursor<P, S> {
         f: &mut fmt::Formatter,
         indent: usize,
     ) -> fmt::Result {
-        writeln!(f)?;
-        write_indent(f, indent)?;
         writeln!(f, "PathCursor {{")?;
         write_indent(f, indent + 1)?;
         write!(f, "path: ")?;
-        self.path.fmt_indented(f, indent + 2)?;
+        self.path.fmt_indented(f, indent + 1)?;
         writeln!(f, ",")?;
         write_indent(f, indent + 1)?;
         writeln!(f, "position: {},", usize::from(self.atom_position))?;

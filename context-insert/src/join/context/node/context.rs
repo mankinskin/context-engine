@@ -49,8 +49,8 @@ use crate::{
         },
         position_splits,
         vertex::{
-            TokenTracePositions,
             PosSplitCtx,
+            TokenTracePositions,
             VertexSplits,
             node::{
                 AsNodeTraceCtx,
@@ -206,7 +206,7 @@ impl NodeJoinCtx<'_> {
                             .unwrap_or_else(|full| full);
                         self.ctx.trav.add_pattern_with_update(
                             index,
-                            vec![part.index, post],
+                            Pattern::from(vec![part.index, post]),
                         );
                     }
                 })
@@ -222,7 +222,7 @@ impl NodeJoinCtx<'_> {
                         };
                         self.ctx.trav.add_pattern_with_update(
                             index,
-                            vec![pre, part.index],
+                            Pattern::from(vec![pre, part.index]),
                         );
                     }
                 })
@@ -263,8 +263,10 @@ impl NodeJoinCtx<'_> {
                 Err(ch) => (roffset, ch),
             };
             let post: Token = Postfix::new(offset).join_partition(self).into();
-            self.trav
-                .add_pattern_with_update(index, vec![pre, part.index, post]);
+            self.trav.add_pattern_with_update(
+                index,
+                Pattern::from(vec![pre, part.index, post]),
+            );
         } else if part.perfect.0 == part.perfect.1 {
             // perfect borders in same pattern
             //       [               ]
@@ -315,7 +317,7 @@ impl NodeJoinCtx<'_> {
                     Err(c) => c,
                 };
                 let wrapper = self.trav.insert_patterns(
-                    std::iter::once(vec![wrap_pre, part.index])
+                    std::iter::once(Pattern::from(vec![wrap_pre, part.index]))
                         .chain(wrap_patterns.patterns),
                 );
                 let loc = index.to_pattern_location(rp);
@@ -371,7 +373,7 @@ impl NodeJoinCtx<'_> {
                 };
 
                 let wrapper = self.trav.insert_patterns(
-                    std::iter::once(vec![part.index, wrap_post])
+                    std::iter::once(Pattern::from(vec![part.index, wrap_post]))
                         .chain(wrap_patterns.patterns),
                 );
                 let loc = index.to_pattern_location(lp);

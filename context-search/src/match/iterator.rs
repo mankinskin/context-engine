@@ -35,7 +35,7 @@ pub(crate) struct SearchIterator<K: TraversalKind> {
     pub(crate) last_complete_match: Option<EndState>,
 }
 impl<K: TraversalKind> SearchIterator<K> {
-    #[context_trace::instrument_sig(skip(trav), fields(start_index = ?start_index))]
+    #[context_trace::instrument_sig(skip(trav), fields(start_index = %start_index))]
     pub(crate) fn start_index(
         trav: K::Trav,
         start_index: Token,
@@ -51,7 +51,7 @@ impl<K: TraversalKind> SearchIterator<K> {
         }
     }
 
-    #[context_trace::instrument_sig(skip(trav, p), fields(start_index = ?start_index, parent_count = p.len()))]
+    #[context_trace::instrument_sig(skip(trav, p), fields(start_index = %start_index, parent_count = p.len()))]
     pub(crate) fn start_parent(
         trav: K::Trav,
         start_index: Token,
@@ -102,7 +102,7 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                 Some(match root_cursor.find_end() {
                     Ok(end) => {
                         // RootCursor found an end (partial match or immediate mismatch/query end)
-                        debug!(reason = ?end.reason, "found end state");
+                        debug!(reason = %end.reason, "found end state");
                         end
                     },
                     Err(root_cursor) => {

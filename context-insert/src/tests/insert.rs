@@ -88,7 +88,7 @@ fn index_pattern2() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![ab, y],]
+        hashset![Pattern::from(vec![ab, y]),]
     );
     drop(graph);
     let query = vec![a, b, y];
@@ -127,7 +127,7 @@ fn index_infix1() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![ab, y]],
+        hashset![Pattern::from(vec![ab, y])],
         "aby"
     );
     drop(graph);
@@ -150,7 +150,7 @@ fn index_infix1() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![aby, z], vec![ab, yz]],
+        hashset![Pattern::from(vec![aby, z]), Pattern::from(vec![ab, yz])],
         "abyz"
     );
     let xxabyzw_vertex = graph.expect_vertex(xxabyzw);
@@ -159,7 +159,7 @@ fn index_infix1() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![x, x, abyz, w]],
+        hashset![Pattern::from(vec![x, x, abyz, w])],
         "xxabyzw"
     );
 }
@@ -195,7 +195,7 @@ fn index_infix2() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![a, b, c, d]],
+        hashset![Pattern::from(vec![a, b, c, d])],
         "abc"
     );
     drop(graph);
@@ -206,7 +206,7 @@ fn index_infix2() {
             .child_pattern_set()
             .into_iter()
             .collect::<HashSet<_>>(),
-        hashset![vec![abcd, x],],
+        hashset![Pattern::from(vec![abcd, x]),],
         "abcx"
     );
 }

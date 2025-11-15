@@ -24,7 +24,6 @@ use crate::{
         },
         kind::GraphKind,
         vertex::{
-            token::Token,
             data::VertexData,
             has_vertex_index::{
                 HasVertexIndex,
@@ -39,6 +38,7 @@ use crate::{
                 id::PatternId,
                 pattern_range::PatternRangeIndex,
             },
+            token::Token,
         },
     },
 };
@@ -187,7 +187,7 @@ impl MatchDirection for Right {
         rem: &Pattern,
         context: &Pattern,
     ) -> Pattern {
-        [rem.clone(), context.clone()].concat()
+        Pattern::from([rem.clone(), context.clone()].concat())
     }
     fn filter_parent_pattern_indices(
         parent: &Parent,
@@ -241,7 +241,7 @@ impl MatchDirection for Left {
         rem: &Pattern,
         context: &Pattern,
     ) -> Pattern {
-        [context.clone(), rem.clone()].concat()
+        Pattern::from([context.clone(), rem.clone()].concat())
     }
     fn filter_parent_pattern_indices(
         parent: &Parent,

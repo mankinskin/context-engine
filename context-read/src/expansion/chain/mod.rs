@@ -30,7 +30,7 @@ impl BandChain {
         debug!("New BandChain");
         Self {
             bands: Some(Band {
-                pattern: vec![index],
+                pattern: Pattern::from(vec![index]),
                 start_bound: 0,
                 end_bound: index.width(),
             })
@@ -72,7 +72,7 @@ impl BandChain {
         exp: Token,
     ) {
         debug!("append_front_complement");
-        let pattern = vec![complement, exp];
+        let pattern = Pattern::from(vec![complement, exp]);
         let band = Band::from((0, pattern));
         self.append(band);
     }

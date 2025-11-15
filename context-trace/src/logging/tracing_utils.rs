@@ -891,7 +891,7 @@ impl Drop for TestTracing {
             // Test passed - clean up log file
             if let Some(ref path) = self.log_file_path {
                 tracing::info!(
-                    log_file = ?path,
+                    log_file = %path.display(),
                     "Test passed, removing log file"
                 );
                 fs::remove_file(path).ok();

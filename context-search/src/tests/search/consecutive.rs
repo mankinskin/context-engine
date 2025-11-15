@@ -8,6 +8,7 @@ use {
     crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::GraphRoot,
+    context_trace::Pattern,
     context_trace::PatternPrefixPath,
     context_trace::{
         graph::vertex::token::Token,
@@ -44,7 +45,7 @@ fn find_consecutive1() {
         Token::new(c, 1),
     ];
 
-    let query = PatternPrefixPath::from(g_h_i_a_b_c_pattern);
+    let query = PatternPrefixPath::from(Pattern::from(g_h_i_a_b_c_pattern));
     let fin = graph.find_ancestor(&query);
     assert_matches!(
         fin,

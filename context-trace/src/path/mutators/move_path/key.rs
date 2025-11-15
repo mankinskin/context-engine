@@ -15,6 +15,16 @@ use crate::direction::{
     Clone, Debug, Copy, Hash, Eq, PartialEq, Add, Sub, Deref, DerefMut, Default,
 )]
 pub struct AtomPosition(pub(crate) usize);
+
+impl std::fmt::Display for AtomPosition {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl AsMut<usize> for AtomPosition {
     fn as_mut(&mut self) -> &mut usize {
         &mut self.0

@@ -3,8 +3,16 @@ use std::{
         Borrow,
         BorrowMut,
     },
-    fmt::Debug,
+    fmt::{
+        Debug,
+        Display,
+    },
     iter::IntoIterator,
+};
+
+use serde::{
+    Deserialize,
+    Serialize,
 };
 
 use crate::{
@@ -20,7 +28,107 @@ use crate::graph::vertex::token::Token;
 pub(crate) mod id;
 pub(crate) mod pattern_range;
 
-pub type Pattern = Vec<Token>;
+#[derive(
+    Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize,
+)]
+pub struct Pattern(Vec<Token>);
+
+impl Pattern {
+    /// Get a mutable reference to the inner Vec<Token>
+    pub(crate) fn as_vec_mut(&mut self) -> &mut Vec<Token> {
+        &mut self.0
+    }
+}
+
+impl Display for Pattern {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "[")?;
+        for (i, token) in self.0.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", token)?;
+        }
+        write!(f, "]")
+    }
+}
+
+impl From<Vec<Token>> for Pattern {
+    fn from(tokens: Vec<Token>) -> Self {
+        Pattern(tokens)
+    }
+}
+
+impl From<Pattern> for Vec<Token> {
+    fn from(pattern: Pattern) -> Self {
+        pattern.0
+    }
+}
+
+impl Borrow<[Token]> for Pattern {
+    fn borrow(&self) -> &[Token] {
+        &self.0
+    }
+}
+
+impl BorrowMut<[Token]> for Pattern {
+    fn borrow_mut(&mut self) -> &mut [Token] {
+        &mut self.0
+    }
+}
+
+impl Borrow<Vec<Token>> for Pattern {
+    fn borrow(&self) -> &Vec<Token> {
+        &self.0
+    }
+}
+
+impl BorrowMut<Vec<Token>> for Pattern {
+    fn borrow_mut(&mut self) -> &mut Vec<Token> {
+        &mut self.0
+    }
+}
+
+impl std::ops::Deref for Pattern {
+    type Target = Vec<Token>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for Pattern {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl IntoIterator for Pattern {
+    type Item = Token;
+    type IntoIter = std::vec::IntoIter<Token>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a Pattern {
+    type Item = &'a Token;
+    type IntoIter = std::slice::Iter<'a, Token>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
+impl std::iter::FromIterator<Token> for Pattern {
+    fn from_iter<I: IntoIterator<Item = Token>>(iter: I) -> Self {
+        Pattern(iter.into_iter().collect())
+    }
+}
+
 pub(crate) type PatternView<'a> = &'a [Token];
 pub(crate) type Patterns = Vec<Pattern>;
 
@@ -48,7 +156,7 @@ pub trait IntoPattern: Sized
 
 impl<const N: usize> IntoPattern for [Token; N] {
     fn into_pattern(self) -> Pattern {
-        self.into_iter().collect()
+        Pattern(self.into_iter().collect())
     }
     fn is_empty(&self) -> bool {
         N == 0
@@ -56,7 +164,7 @@ impl<const N: usize> IntoPattern for [Token; N] {
 }
 impl IntoPattern for Token {
     fn into_pattern(self) -> Pattern {
-        Some(self).into_iter().collect()
+        Pattern(Some(self).into_iter().collect())
     }
     fn is_empty(&self) -> bool {
         false
@@ -72,7 +180,7 @@ impl IntoPattern for Token {
 //}
 impl IntoPattern for &'_ [Token] {
     fn into_pattern(self) -> Pattern {
-        self.iter().map(Clone::clone).collect()
+        Pattern(self.iter().map(Clone::clone).collect())
     }
     fn is_empty(&self) -> bool {
         (*self).is_empty()
@@ -83,7 +191,15 @@ impl IntoPattern for Pattern {
         self
     }
     fn is_empty(&self) -> bool {
-        (*self).is_empty()
+        self.0.is_empty()
+    }
+}
+impl IntoPattern for Vec<Token> {
+    fn into_pattern(self) -> Pattern {
+        Pattern(self)
+    }
+    fn is_empty(&self) -> bool {
+        self.is_empty()
     }
 }
 impl<T: IntoPattern + Clone> IntoPattern for &'_ T {
@@ -218,8 +334,16 @@ pub(crate) fn double_split_context(
     if left_index < right_index {
         let (infix, postfix) =
             split_context(&rem, right_index - (left_index + 1));
-        (prefix, infix, postfix)
+        (
+            Pattern::from(prefix),
+            Pattern::from(infix),
+            Pattern::from(postfix),
+        )
     } else {
-        (prefix, vec![], rem)
+        (
+            Pattern::from(prefix),
+            Pattern::from(vec![]),
+            Pattern::from(rem),
+        )
     }
 }

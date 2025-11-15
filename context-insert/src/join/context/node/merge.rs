@@ -33,8 +33,8 @@ use crate::{
             vertex::SplitVertexCache,
         },
         vertex::{
-            TokenTracePositions,
             PosSplitCtx,
+            TokenTracePositions,
         },
     },
 };
@@ -74,9 +74,10 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
                         vec![left, right],
                     );
                 } else {
-                    self.ctx
-                        .trav
-                        .add_pattern_with_update(index, vec![left, right]);
+                    self.ctx.trav.add_pattern_with_update(
+                        index,
+                        Pattern::from(vec![left, right]),
+                    );
                 }
             }
             finals.insert(PosKey::new(index, *offset), Split::new(left, right));
@@ -115,11 +116,13 @@ impl<'a: 'b, 'b: 'c, 'c> NodeMergeCtx<'a, 'b> {
                             range_map.range_sub_merges(start..start + len);
                         let joined =
                             info.patterns.into_iter().map(|(pid, info)| {
-                                (info.join_pattern(self.ctx, &pid).borrow()
-                                    as &'_ Pattern)
-                                    .iter()
-                                    .cloned()
-                                    .collect_vec()
+                                Pattern::from(
+                                    (info.join_pattern(self.ctx, &pid).borrow()
+                                        as &'_ Pattern)
+                                        .iter()
+                                        .cloned()
+                                        .collect_vec(),
+                                )
                             });
                         // todo: insert into perfect context
                         let patterns =
@@ -162,7 +165,7 @@ impl RangeMap<Range<usize>> {
         range.into_iter().map(move |ri| {
             let &left = self.map.get(&(start..ri)).unwrap();
             let &right = self.map.get(&(ri..end)).unwrap();
-            vec![left, right]
+            Pattern::from(vec![left, right])
         })
     }
 }

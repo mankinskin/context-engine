@@ -30,51 +30,6 @@ use context_trace::{
 };
 use std::fmt;
 
-// Note: We can't implement CompactFormat for PathCursor directly because
-// PathRoot is not public. Instead, we'll provide helper functions.
-
-/// Format a PathCursor compactly for logging
-pub fn fmt_cursor_compact<P, S>(
-    cursor: &PathCursor<P, S>,
-    f: &mut fmt::Formatter,
-) -> fmt::Result
-where
-    P: fmt::Debug,
-    S: CursorState,
-{
-    let pos: usize = cursor.atom_position.into();
-    write!(f, "Cursor(pos:{}, path:{:?})", pos, cursor.path)
-}
-
-/// Format a PathCursor with indentation for logging
-pub fn fmt_cursor_indented<P, S>(
-    cursor: &PathCursor<P, S>,
-    f: &mut fmt::Formatter,
-    indent: usize,
-) -> fmt::Result
-where
-    P: CompactFormat,
-    S: CursorState,
-{
-    let state_name = std::any::type_name::<S>()
-        .split("::")
-        .last()
-        .unwrap_or("Unknown");
-
-    let pos: usize = cursor.atom_position.into();
-
-    write_indent(f, indent)?;
-    writeln!(f, "PathCursor<{}> {{", state_name)?;
-    write_indent(f, indent + 1)?;
-    writeln!(f, "position: {},", pos)?;
-    write_indent(f, indent + 1)?;
-    write!(f, "path: ")?;
-    cursor.path.fmt_indented(f, indent + 1)?;
-    writeln!(f)?;
-    write_indent(f, indent)?;
-    write!(f, "}}")
-}
-
 impl<Q, I> CompactFormat for CompareState<Q, I>
 where
     Q: CursorState,
@@ -123,29 +78,18 @@ where
 
         write_indent(f, indent + 1)?;
         write!(f, "query: ")?;
-        fmt_cursor_indented(&self.cursor, f, indent + 1)?;
+        self.cursor.fmt_indented(f, indent + 1)?;
         writeln!(f, ",")?;
 
         write_indent(f, indent + 1)?;
         write!(f, "index: ")?;
-        fmt_cursor_indented(&self.index_cursor, f, indent + 1)?;
+        self.index_cursor.fmt_indented(f, indent + 1)?;
         writeln!(f, ",")?;
 
         write_indent(f, indent + 1)?;
         write!(f, "checkpoint: ")?;
-        // Format checkpoint with its own structure
-        let checkpoint_pos: usize = self.checkpoint.atom_position.into();
-        writeln!(f)?;
-        write_indent(f, indent + 1)?;
-        writeln!(f, "PathCursor<Matched> {{")?;
-        write_indent(f, indent + 2)?;
-        writeln!(f, "position: {},", checkpoint_pos)?;
-        write_indent(f, indent + 2)?;
-        write!(f, "path: ")?;
-        self.checkpoint.path.fmt_indented(f, indent + 2)?;
-        writeln!(f)?;
-        write_indent(f, indent + 1)?;
-        writeln!(f, "}}")?;
+        self.checkpoint.fmt_indented(f, indent + 1)?;
+        writeln!(f, ",")?;
 
         write_indent(f, indent)?;
         write!(f, "}}")

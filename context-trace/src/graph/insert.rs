@@ -176,7 +176,7 @@ where
         let (width, indices, tokens) = self.to_width_indices_children(indices);
         let pattern_id = PatternId::default();
         let data = self.expect_vertex_mut(index.vertex_index());
-        data.add_pattern_no_update(pattern_id, tokens);
+        data.add_pattern_no_update(pattern_id, Pattern::from(tokens));
         self.add_parents_to_pattern_nodes(
             indices,
             Token::new(index, width),
@@ -228,7 +228,7 @@ where
         let index = self.next_vertex_index();
         let mut new_data = VertexData::new(index, width);
         let pattern_id = PatternId::default();
-        new_data.add_pattern_no_update(pattern_id, tokens);
+        new_data.add_pattern_no_update(pattern_id, Pattern::from(tokens));
         let index = self.insert_vertex_data(new_data);
         self.add_parents_to_pattern_nodes(indices, index, pattern_id);
         (index, pattern_id)
@@ -317,9 +317,10 @@ where
             .get_child_pattern(&location.pattern_id)
             .map(|pattern| pattern.to_vec())
             .and_then(|pattern| {
+                let pattern = Pattern::from(pattern);
                 get_child_pattern_range(
                     &location.pattern_id,
-                    pattern.borrow(),
+                    &pattern,
                     range.clone(),
                 )
                 .and_then(|inner| {
@@ -378,7 +379,7 @@ where
             let new_end = start + replace.len();
             let _old = pattern.clone();
             let replaced = replace_in_pattern(
-                &mut *pattern,
+                pattern.as_vec_mut(),
                 range.clone(),
                 replace.clone(),
             );

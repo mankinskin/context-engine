@@ -12,7 +12,7 @@ macro_rules! insert_patterns {
     ) => {
 
         $(
-            let $name = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns([$(vec![$($pat),*]),*]);
+            let $name = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns([$($ crate::Pattern::from(vec![$($pat),*])),*]);
         )*
     };
     ($graph:ident,
@@ -35,7 +35,7 @@ macro_rules! insert_patterns {
     ) => {
 
         $(
-            let ($name, $idname) = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns_with_ids([$(vec![$($pat),*]),*]);
+            let ($name, $idname) = $crate::HasGraphMut::graph_mut(&mut $graph).insert_patterns_with_ids([$($crate::Pattern::from(vec![$($pat),*])),*]);
         )*
     };
     ($graph:ident,
@@ -66,7 +66,7 @@ macro_rules! assert_patterns {
         $(
             let pats: HashSet<_> =
                 $crate::HasVertexData::vertex(&$name, &g).child_pattern_set().into_iter().collect();
-            assert_eq!(pats, hashset![$(vec![$($pat),*]),*]);
+            assert_eq!(pats, hashset![$($crate::Pattern::from(vec![$($pat),*])),*]);
         )*
         #[allow(dropping_references)]
         drop(g);

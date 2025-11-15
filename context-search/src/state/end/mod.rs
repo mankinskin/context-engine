@@ -101,6 +101,19 @@ pub(crate) enum EndReason {
     QueryEnd,
     Mismatch,
 }
+
+impl std::fmt::Display for EndReason {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        match self {
+            EndReason::QueryEnd => write!(f, "QueryEnd"),
+            EndReason::Mismatch => write!(f, "Mismatch"),
+        }
+    }
+}
+
 // End types:
 // - top down match-mismatch
 // - top down match-query end

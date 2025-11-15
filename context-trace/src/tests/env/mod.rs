@@ -3,8 +3,11 @@ use crate::graph::{
     HypergraphRef,
     vertex::{
         atom::Atom,
+        pattern::{
+            Pattern,
+            id::PatternId,
+        },
         token::Token,
-        pattern::id::PatternId,
     },
 };
 use std::sync::{
@@ -111,17 +114,23 @@ impl TestEnv for Env1 {
         // index: 9
         let ab = graph.insert_pattern(vec![a, b]);
         let (bc, bc_id) = graph.insert_pattern_with_id(vec![b, c]);
-        let (abc, abc_ids) =
-            graph.insert_patterns_with_ids([vec![ab, c], vec![a, bc]]);
+        let (abc, abc_ids) = graph.insert_patterns_with_ids([
+            Pattern::from(vec![ab, c]),
+            Pattern::from(vec![a, bc]),
+        ]);
 
         let (cd, cd_id) = graph.insert_pattern_with_id(vec![c, d]);
         // 13
-        let (bcd, bcd_ids) =
-            graph.insert_patterns_with_ids([vec![bc, d], vec![b, cd]]);
+        let (bcd, bcd_ids) = graph.insert_patterns_with_ids([
+            Pattern::from(vec![bc, d]),
+            Pattern::from(vec![b, cd]),
+        ]);
         //let abcd = graph.insert_pattern(&[abc, d]);
         //graph.insert_to_pattern(abcd, &[a, bcd]);
-        let (abcd, abcd_ids) =
-            graph.insert_patterns_with_ids([vec![abc, d], vec![a, bcd]]);
+        let (abcd, abcd_ids) = graph.insert_patterns_with_ids([
+            Pattern::from(vec![abc, d]),
+            Pattern::from(vec![a, bcd]),
+        ]);
         // index 15
         let (ef, e_f_id) = graph.insert_pattern_with_id(vec![e, f]);
         let gh = graph.insert_pattern(vec![g, h]);
@@ -129,16 +138,20 @@ impl TestEnv for Env1 {
         let efgh = graph.insert_pattern(vec![ef, gh]);
         let efghi = graph.insert_patterns([vec![efgh, i], vec![ef, ghi]]);
         let (def, d_ef_id) = graph.insert_pattern_with_id(vec![d, ef]);
-        let (cdef, cdef_ids) =
-            graph.insert_patterns_with_ids([vec![c, def], vec![cd, ef]]);
+        let (cdef, cdef_ids) = graph.insert_patterns_with_ids([
+            Pattern::from(vec![c, def]),
+            Pattern::from(vec![cd, ef]),
+        ]);
         // index 22
         let (abcdef, abcdef_ids) = graph.insert_patterns_with_ids([
-            vec![abcd, ef],
-            vec![abc, def],
-            vec![ab, cdef],
+            Pattern::from(vec![abcd, ef]),
+            Pattern::from(vec![abc, def]),
+            Pattern::from(vec![ab, cdef]),
         ]);
-        let (abcdefghi, abcdefghi_ids) = graph
-            .insert_patterns_with_ids([vec![abcd, efghi], vec![abcdef, ghi]]);
+        let (abcdefghi, abcdefghi_ids) = graph.insert_patterns_with_ids([
+            Pattern::from(vec![abcd, efghi]),
+            Pattern::from(vec![abcdef, ghi]),
+        ]);
         let aba = graph.insert_pattern(vec![ab, a]);
         // 25
         let abab = graph.insert_patterns([vec![aba, b], vec![ab, ab]]);

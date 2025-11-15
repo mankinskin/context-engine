@@ -44,7 +44,7 @@ impl StartBound for StackBand {
 impl OverlapStack {
     pub fn new(head_index: Token) -> Self {
         Self {
-            head: vec![head_index],
+            head: Pattern::from(vec![head_index]),
             overlaps: VecDeque::default(),
         }
     }

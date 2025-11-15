@@ -51,7 +51,7 @@ impl From<Token> for Band {
         Self {
             start_bound: 0,
             end_bound: first.width(),
-            pattern: vec![first],
+            pattern: Pattern::from(vec![first]),
         }
     }
 }

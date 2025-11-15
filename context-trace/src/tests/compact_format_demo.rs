@@ -36,7 +36,7 @@ fn test_compact_formatting() {
 
     // Indented Debug format - multi-line, shows structure
     tracing::debug!(
-        path = ?Compact(&path),
+        path = %Compact(&path),
         "Using Compact Debug (multi-line)"
     );
 

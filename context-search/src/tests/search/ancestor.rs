@@ -276,13 +276,17 @@ fn find_ancestor3() {
     let yz = graph.insert_pattern(vec![y, z]);
     let xa = graph.insert_pattern(vec![x, a]);
     // 10
-    let (xab, xab_ids) =
-        graph.insert_patterns_with_ids([vec![x, ab], vec![xa, b]]);
+    let (xab, xab_ids) = graph.insert_patterns_with_ids([
+        Pattern::from(vec![x, ab]),
+        Pattern::from(vec![xa, b]),
+    ]);
     let x_ab_id = xab_ids[0];
     //assert_eq!(x_ab_id, 4);
     // 11
-    let (xaby, xaby_ids) =
-        graph.insert_patterns_with_ids([vec![xab, y], vec![xa, by]]);
+    let (xaby, xaby_ids) = graph.insert_patterns_with_ids([
+        Pattern::from(vec![xab, y]),
+        Pattern::from(vec![xa, by]),
+    ]);
     let xab_y_id = xaby_ids[0];
     //assert_eq!(xab_y_id, 6);
     // 12
