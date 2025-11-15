@@ -350,7 +350,7 @@ impl CompareState<Candidate, Candidate> {
 
         if path_leaf == query_leaf {
             debug!(
-                token = path_leaf.index,
+                token = *path_leaf.index,
                 width = path_leaf.width(),
                 "tokens matched"
             );
@@ -358,8 +358,8 @@ impl CompareState<Candidate, Candidate> {
             CompareResult::FoundMatch(self.mark_match())
         } else if path_leaf.width() == 1 && query_leaf.width() == 1 {
             debug!(
-                path_token = path_leaf.index,
-                query_token = query_leaf.index,
+                path_token = *path_leaf.index,
+                query_token = *query_leaf.index,
                 "atom mismatch - both width 1 but different"
             );
             // Mark as mismatched using trait method (checkpoint not updated here)

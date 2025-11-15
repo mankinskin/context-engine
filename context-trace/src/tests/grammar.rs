@@ -77,7 +77,7 @@ impl BuilderNode {
 }
 
 struct GraphBuilder {
-    range_map: HashMap<BuildKey, usize>,
+    range_map: HashMap<BuildKey, VertexIndex>,
     queue: VecDeque<BuilderNode>,
     graph: crate::graph::Hypergraph,
     N: usize,
@@ -119,12 +119,11 @@ impl GraphBuilder {
                 .map(|(sub_index, key)| {
                     let loc = ChildLocation::new(node.index, pid, sub_index);
                     if let Some(v) = self.range_map.get(key) {
-                        self.graph.expect_vertex_mut(v).add_parent(loc);
+                        self.graph.expect_vertex_mut(*v).add_parent(loc);
                         Token::new(*v, key.clone().count())
                     } else {
-                        self.range_map
-                            .insert(key.clone(), self.range_map.len());
                         let vid = self.graph.next_vertex_index();
+                        self.range_map.insert(key.clone(), vid);
                         let c = Token::new(vid, key.clone().count());
                         self.queue_node(BuilderNode::new(c, key.clone()));
                         c

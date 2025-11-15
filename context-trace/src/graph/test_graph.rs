@@ -35,6 +35,7 @@ use crate::{
     graph::{
         getters::vertex::VertexSet,
         kind::GraphKind,
+        vertex::VertexIndex,
     },
 };
 use once_cell::sync::Lazy;
@@ -56,9 +57,9 @@ where
         &self,
         index: usize,
     ) -> Option<String> {
-        self.get_vertex(index)
-            .ok()
-            .map(|_| <Hypergraph<G>>::index_string(self, index))
+        self.get_vertex(VertexIndex::from(index)).ok().map(|_| {
+            <Hypergraph<G>>::index_string(self, VertexIndex::from(index))
+        })
     }
 }
 

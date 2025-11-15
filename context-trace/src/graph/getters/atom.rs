@@ -12,13 +12,13 @@ use crate::graph::{
             AsAtom,
             Atom,
         },
-        token::Token,
         data::VertexData,
         key::VertexKey,
         pattern::{
             IntoPattern,
             Pattern,
         },
+        token::Token,
     },
 };
 
@@ -65,7 +65,8 @@ impl<G: GraphKind> Hypergraph<G> {
         Ok(self
             .graph
             .get_index_of(&self.get_atom_key(atom.as_atom())?)
-            .unwrap())
+            .unwrap()
+            .into())
     }
     pub(crate) fn get_atom_key(
         &self,

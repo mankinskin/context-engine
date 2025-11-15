@@ -657,7 +657,9 @@ impl std::fmt::Display for VertexData {
         #[cfg(any(test, feature = "test-api"))]
         {
             use crate::graph::test_graph;
-            if let Some(s) = test_graph::get_token_string_from_test_graph(self.index) {
+            if let Some(s) =
+                test_graph::get_token_string_from_test_graph(*self.index)
+            {
                 return write!(f, "Vertex({}:\"{}\")", self.index, s);
             }
         }

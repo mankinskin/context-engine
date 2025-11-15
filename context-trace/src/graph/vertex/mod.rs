@@ -23,10 +23,11 @@ pub mod token;
 pub mod vertex_index;
 pub mod wide;
 
+pub use vertex_index::VertexIndex;
+
 pub type VertexEntry<'x> = indexmap::map::Entry<'x, VertexKey, VertexData>;
 pub type IndexedVertexEntry<'x> =
     indexmap::map::IndexedEntry<'x, VertexKey, VertexData>;
-pub type VertexIndex = usize;
 pub type VertexParents = HashMap<VertexIndex, Parent>;
 pub type ChildPatterns = HashMap<PatternId, Pattern>;
 pub type IndexPosition = usize;

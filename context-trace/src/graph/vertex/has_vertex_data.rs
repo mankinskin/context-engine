@@ -8,10 +8,10 @@ use crate::graph::{
     getters::vertex::VertexSet,
     kind::GraphKind,
     vertex::{
-        token::Token,
         data::VertexData,
         has_vertex_index::HasVertexIndex,
         key::VertexKey,
+        token::Token,
     },
 };
 

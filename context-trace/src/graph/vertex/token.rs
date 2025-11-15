@@ -102,7 +102,7 @@ impl Token {
 
     #[cfg(any(test, feature = "test-api"))]
     pub fn get_string_repr(&self) -> Option<String> {
-        crate::graph::test_graph::get_token_string_from_test_graph(self.index)
+        crate::graph::test_graph::get_token_string_from_test_graph(*self.index)
     }
     pub(crate) fn get_width(&self) -> usize {
         self.width.0
@@ -270,7 +270,9 @@ impl Display for Token {
         #[cfg(any(test, feature = "test-api"))]
         {
             use crate::graph::test_graph;
-            if let Some(s) = test_graph::get_token_string_from_test_graph(self.index) {
+            if let Some(s) =
+                test_graph::get_token_string_from_test_graph(*self.index)
+            {
                 return write!(f, "\"{}\"", s);
             }
         }

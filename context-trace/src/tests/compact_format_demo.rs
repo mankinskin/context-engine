@@ -66,7 +66,7 @@ fn test_compact_with_token_display() {
         (xyz, xyz_id) => [x, y, z]
     );
 
-    let token = Token::new(10, 3);
+    let token = Token::new(VertexIndex::from(10), 3);
     let pattern_loc = PatternLocation::new(token, xyz_id);
     let root = IndexRoot::from(pattern_loc);
 

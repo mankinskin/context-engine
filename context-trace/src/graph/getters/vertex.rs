@@ -11,11 +11,11 @@ use crate::graph::{
         VertexEntry,
         VertexIndex,
         VertexPatternView,
-        token::Token,
         data::VertexData,
         has_vertex_index::HasVertexIndex,
         has_vertex_key::HasVertexKey,
         key::VertexKey,
+        token::Token,
     },
 };
 
@@ -210,7 +210,7 @@ impl<G: GraphKind> VertexSet<VertexIndex> for Hypergraph<G> {
         key: VertexIndex,
     ) -> Result<&VertexData, ErrorReason> {
         self.graph
-            .get_index(*key.borrow())
+            .get_index(**key.borrow())
             .map(|(_, d)| d)
             .ok_or(ErrorReason::UnknownIndex)
     }
@@ -219,7 +219,7 @@ impl<G: GraphKind> VertexSet<VertexIndex> for Hypergraph<G> {
         key: VertexIndex,
     ) -> Result<&mut VertexData, ErrorReason> {
         self.graph
-            .get_index_mut(*key.borrow())
+            .get_index_mut(**key.borrow())
             .map(|(_, d)| d)
             .ok_or(ErrorReason::UnknownIndex)
     }
@@ -227,7 +227,7 @@ impl<G: GraphKind> VertexSet<VertexIndex> for Hypergraph<G> {
         &mut self,
         index: VertexIndex,
     ) -> VertexEntry<'_> {
-        let key = *self.graph.get_index(index).unwrap().0;
+        let key = *self.graph.get_index(*index).unwrap().0;
         self.vertex_entry(key)
     }
 }
@@ -248,7 +248,7 @@ impl<G: GraphKind> VertexSet<Token> for Hypergraph<G> {
         &mut self,
         index: Token,
     ) -> VertexEntry<'_> {
-        let key = *self.graph.get_index(index.vertex_index()).unwrap().0;
+        let key = *self.graph.get_index(*index.vertex_index()).unwrap().0;
         self.vertex_entry(key)
     }
 }
@@ -257,7 +257,10 @@ impl<G: GraphKind> Hypergraph<G> {
         &self,
         key: &VertexKey,
     ) -> Result<VertexIndex, ErrorReason> {
-        self.graph.get_index_of(key).ok_or(ErrorReason::UnknownKey)
+        self.graph
+            .get_index_of(key)
+            .map(VertexIndex::from)
+            .ok_or(ErrorReason::UnknownKey)
     }
     #[track_caller]
     pub(crate) fn expect_index_for_key(
@@ -271,7 +274,7 @@ impl<G: GraphKind> Hypergraph<G> {
         index: impl HasVertexIndex,
     ) -> Result<VertexKey, ErrorReason> {
         self.graph
-            .get_index(index.vertex_index())
+            .get_index(*index.vertex_index())
             .map(|(k, _)| *k)
             .ok_or(ErrorReason::UnknownKey)
     }
@@ -284,7 +287,7 @@ impl<G: GraphKind> Hypergraph<G> {
     }
 
     pub(crate) fn next_vertex_index(&self) -> VertexIndex {
-        self.graph.len()
+        self.graph.len().into()
     }
     pub(crate) fn vertex_iter(
         &self

@@ -20,7 +20,10 @@ use crate::compare::state::PathPairMode::GraphMajor;
 use context_trace::{
     graph::vertex::token::Token,
     path::accessors::has_path::IntoRootedRolePath,
-    trace::cache::key::directed::down::DownKey,
+    trace::cache::key::directed::down::{
+        DownKey,
+        DownPosition,
+    },
 };
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
 pub(crate) struct CompareRootState {
@@ -60,6 +63,12 @@ impl IntoAdvanced for ParentCompareState {
                     _state: PhantomData,
                 };
 
+                // Get the token that index_cursor points to
+                let index_token = index_cursor
+                    .leaf_token(trav)
+                    .expect("index_cursor should point to a valid token");
+                let cursor_position = self.cursor.atom_position;
+
                 Ok(CompareRootState {
                     token: CompareState {
                         child_state: next.child_state,
@@ -67,7 +76,10 @@ impl IntoAdvanced for ParentCompareState {
                         index_cursor,
                         checkpoint: self.cursor,
                         mode: GraphMajor,
-                        target: DownKey::new(Token::new(0, 0), 0.into()),
+                        target: DownKey::new(
+                            index_token,
+                            DownPosition(cursor_position),
+                        ),
                     },
                     root_parent: next.root_parent,
                 })
