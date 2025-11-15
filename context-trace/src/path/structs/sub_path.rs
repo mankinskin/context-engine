@@ -3,6 +3,7 @@ use derive_more::{
     Deref,
     DerefMut,
 };
+use std::fmt;
 
 use crate::{
     graph::vertex::location::child::ChildLocation,
@@ -45,5 +46,25 @@ impl SubPath {
 impl<R: PathRole> RootChildIndex<R> for SubPath {
     fn root_child_index(&self) -> usize {
         self.root_entry
+    }
+}
+
+impl fmt::Display for SubPath {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        if self.path.is_empty() {
+            write!(f, "[]")
+        } else {
+            write!(f, "[")?;
+            for (i, loc) in self.path.iter().enumerate() {
+                if i > 0 {
+                    write!(f, ", ")?;
+                }
+                write!(f, "{}", loc)?;
+            }
+            write!(f, "]")
+        }
     }
 }

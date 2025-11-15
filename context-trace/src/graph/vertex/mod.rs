@@ -20,6 +20,7 @@ pub mod location;
 pub mod parent;
 pub mod pattern;
 pub mod token;
+pub mod vertex_index;
 pub mod wide;
 
 pub type VertexEntry<'x> = indexmap::map::Entry<'x, VertexKey, VertexData>;

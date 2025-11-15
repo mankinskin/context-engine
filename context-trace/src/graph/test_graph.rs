@@ -30,26 +30,40 @@
 //! # }
 //! ```
 
-use std::sync::RwLock;
+use crate::{
+    Hypergraph,
+    graph::{
+        getters::vertex::VertexSet,
+        kind::GraphKind,
+    },
+};
 use once_cell::sync::Lazy;
-use crate::{Hypergraph, graph::kind::GraphKind, graph::getters::vertex::VertexSet};
+use std::sync::RwLock;
 
 /// Type-erased graph accessor for getting string representations
 trait GraphStringGetter: Send + Sync {
-    fn get_token_string(&self, index: usize) -> Option<String>;
+    fn get_token_string(
+        &self,
+        index: usize,
+    ) -> Option<String>;
 }
 
 impl<G: GraphKind + Send + Sync> GraphStringGetter for Hypergraph<G>
 where
     G::Atom: std::fmt::Display,
 {
-    fn get_token_string(&self, index: usize) -> Option<String> {
-        self.get_vertex(index).ok().map(|_| <Hypergraph<G>>::index_string(self, index))
+    fn get_token_string(
+        &self,
+        index: usize,
+    ) -> Option<String> {
+        self.get_vertex(index)
+            .ok()
+            .map(|_| <Hypergraph<G>>::index_string(self, index))
     }
 }
 
 /// Global test graph registry
-static TEST_GRAPH: Lazy<RwLock<Option<Box<dyn GraphStringGetter>>>> = 
+static TEST_GRAPH: Lazy<RwLock<Option<Box<dyn GraphStringGetter>>>> =
     Lazy::new(|| RwLock::new(None));
 
 /// Register a graph for use in tests
@@ -61,16 +75,17 @@ static TEST_GRAPH: Lazy<RwLock<Option<Box<dyn GraphStringGetter>>>> =
 /// ```ignore
 /// let mut graph = Hypergraph::default();
 /// insert_atoms!(graph, {a, b, c});
-/// 
+///
 /// register_test_graph(&graph);
-/// 
+///
 /// // Now tokens will show their string representation in logs
 /// println!("{}", a); // T1w1("a")
-/// 
+///
 /// clear_test_graph();
 /// ```
-pub fn register_test_graph<G: GraphKind + Send + Sync + 'static>(graph: &Hypergraph<G>)
-where
+pub fn register_test_graph<G: GraphKind + Send + Sync + 'static>(
+    graph: &Hypergraph<G>
+) where
     G::Atom: std::fmt::Display,
 {
     // We need to clone the graph to store it safely

@@ -99,7 +99,7 @@ impl Token {
             width: TokenWidth(width),
         }
     }
-    
+
     #[cfg(any(test, feature = "test-api"))]
     pub fn get_string_repr(&self) -> Option<String> {
         crate::graph::test_graph::get_token_string_from_test_graph(self.index)
@@ -269,7 +269,8 @@ impl Display for Token {
     ) -> std::fmt::Result {
         #[cfg(any(test, feature = "test-api"))]
         {
-            if let Some(s) = self.get_string_repr() {
+            use crate::graph::test_graph;
+            if let Some(s) = test_graph::get_token_string_from_test_graph(self.index) {
                 return write!(f, "\"{}\"", s);
             }
         }
@@ -287,4 +288,3 @@ impl Debug for Token {
         Display::fmt(self, f)
     }
 }
-

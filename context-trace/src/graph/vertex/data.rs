@@ -92,7 +92,7 @@ pub struct VertexData {
 
     #[builder(default)]
     pub(crate) children: ChildPatterns,
-    
+
     #[cfg(any(test, feature = "test-api"))]
     #[serde(skip)]
     #[builder(setter(skip), default = "std::sync::RwLock::new(None)")]
@@ -101,7 +101,10 @@ pub struct VertexData {
 
 #[cfg(any(test, feature = "test-api"))]
 impl PartialEq for VertexData {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq(
+        &self,
+        other: &Self,
+    ) -> bool {
         self.width == other.width
             && self.index == other.index
             && self.key == other.key
@@ -338,14 +341,14 @@ impl VertexData {
     pub(crate) fn child_pattern_vec(&self) -> Vec<Pattern> {
         self.child_pattern_iter().collect()
     }
-    
+
     #[cfg(any(test, feature = "test-api"))]
     fn invalidate_string_cache(&self) {
         if let Ok(mut cache) = self.cached_string.write() {
             *cache = None;
         }
     }
-    
+
     pub(crate) fn add_pattern_no_update(
         &mut self,
         id: PatternId,
@@ -643,5 +646,21 @@ impl VertexData {
         self.selected_children(|_, pattern| {
             Some(TravDir::<G>::last_index(pattern))
         })
+    }
+}
+
+impl std::fmt::Display for VertexData {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        #[cfg(any(test, feature = "test-api"))]
+        {
+            use crate::graph::test_graph;
+            if let Some(s) = test_graph::get_token_string_from_test_graph(self.index) {
+                return write!(f, "Vertex({}:\"{}\")", self.index, s);
+            }
+        }
+        write!(f, "Vertex({})", self.index)
     }
 }

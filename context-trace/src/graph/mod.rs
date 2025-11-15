@@ -352,7 +352,7 @@ where
                 }
             }
         }
-        
+
         // Compute string
         let s = if let Some(atom) = self.get_atom_by_key(&data.key) {
             atom.to_string()
@@ -360,7 +360,7 @@ where
             assert!(data.width() > 1);
             self.pattern_string(data.expect_any_child_pattern().1)
         };
-        
+
         #[cfg(any(test, feature = "test-api"))]
         {
             // Populate cache
@@ -368,7 +368,7 @@ where
                 *cache = Some(s.clone());
             }
         }
-        
+
         s
     }
     pub(crate) fn index_string(

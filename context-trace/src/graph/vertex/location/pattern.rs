@@ -35,6 +35,7 @@ impl std::fmt::Display for PatternLocation {
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
+        // Token's Display already handles string representation if available
         write!(
             f,
             "PatternLocation({}, {})",

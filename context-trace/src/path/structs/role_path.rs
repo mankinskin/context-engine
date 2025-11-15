@@ -1,4 +1,7 @@
-use std::borrow::Borrow;
+use std::{
+    borrow::Borrow,
+    fmt,
+};
 
 use derive_more::{
     Deref,
@@ -102,5 +105,18 @@ impl<R: PathRole> From<SubPath> for RolePath<R> {
             sub_path,
             _ty: Default::default(),
         }
+    }
+}
+
+impl<R: PathRole> fmt::Display for RolePath<R> {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
+        write!(
+            f,
+            "entry={}, path={}",
+            self.sub_path.root_entry, self.sub_path
+        )
     }
 }

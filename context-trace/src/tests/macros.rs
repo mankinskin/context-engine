@@ -364,10 +364,10 @@ fn test_build_trace_cache2() {
 /// ```ignore
 /// let mut graph = HypergraphRef::default();
 /// insert_atoms!(graph, {a, b, c});
-/// 
+///
 /// // Enable string representations
 /// register_test_graph!(graph);
-/// 
+///
 /// // Now tokens show their content: T0w1("a")
 /// println!("{}", a);
 /// ```

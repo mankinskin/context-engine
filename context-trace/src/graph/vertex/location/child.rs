@@ -63,6 +63,23 @@ pub struct ChildLocation {
     pub pattern_id: PatternId,
     pub sub_index: usize,
 }
+
+impl std::fmt::Display for ChildLocation {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        // Token's Display already handles string representation if available
+        write!(
+            f,
+            "ChildLocation({}, {}, {})",
+            self.parent,
+            &format!("{}", self.pattern_id)[..8],
+            self.sub_index
+        )
+    }
+}
+
 impl MoveLeaf<Right> for ChildLocation {
     fn move_leaf<G: HasGraph>(
         &mut self,
