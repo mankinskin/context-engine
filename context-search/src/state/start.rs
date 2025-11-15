@@ -20,7 +20,10 @@ use crate::{
     Response,
 };
 use context_trace::{
-    logging::format_utils::pretty,
+    logging::{
+        format_utils::pretty,
+        Compact,
+    },
     path::{
         accessors::child::RootedLeafToken,
         BaseQuery,
@@ -245,7 +248,7 @@ pub trait Searchable: Sized {
         trav: K::Trav,
     ) -> Result<SearchState<K>, ErrorState>;
 
-    #[instrument(skip(self, trav))]
+    #[context_trace::instrument_sig(skip(self, trav))]
     fn search<K: TraversalKind>(
         self,
         trav: K::Trav,
@@ -265,7 +268,7 @@ pub trait Searchable: Sized {
 }
 
 impl Searchable for PatternCursor {
-    #[instrument(skip(self, trav))]
+    #[context_trace::instrument_sig(skip(self, trav))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
@@ -316,7 +319,7 @@ impl<T: Searchable + Clone> Searchable for &T {
 }
 
 impl<const N: usize> Searchable for &'_ [Token; N] {
-    #[instrument(skip(self, trav), fields(token_count = N))]
+    #[context_trace::instrument_sig(skip(self, trav), fields(token_count = N))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
@@ -329,7 +332,7 @@ impl<const N: usize> Searchable for &'_ [Token; N] {
     }
 }
 impl Searchable for &'_ [Token] {
-    #[instrument(skip(self, trav), fields(token_count = self.len()))]
+    #[context_trace::instrument_sig(skip(self, trav), fields(token_count = self.len()))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,
@@ -362,7 +365,7 @@ impl Searchable for PatternEndPath {
     }
 }
 impl Searchable for PatternRangePath {
-    #[instrument(skip(self, trav), fields(path = ?self))]
+    #[context_trace::instrument_sig(skip(self, trav), fields(path = ?self))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,

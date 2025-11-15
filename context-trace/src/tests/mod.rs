@@ -20,6 +20,12 @@ pub mod public_api;
 #[cfg(test)]
 pub mod path_advance;
 
+#[cfg(test)]
+pub mod tracing_demo;
+
+#[cfg(test)]
+pub mod compact_format_demo;
+
 pub fn assert_parents(
     graph: &Hypergraph,
     token: impl ToToken,

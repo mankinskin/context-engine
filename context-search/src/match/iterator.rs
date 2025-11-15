@@ -29,13 +29,13 @@ use tracing::{
 #[derive(Debug, new)]
 pub(crate) struct SearchIterator<K: TraversalKind> {
     pub(crate) trace_ctx: TraceCtx<K::Trav>,
-    pub(crate) match_ctx: SearchQueue,
+    pub(crate) queue: SearchQueue,
     /// Tracks the largest complete match found so far
     /// (matches that reached end of root and continued to parents)
     pub(crate) last_complete_match: Option<EndState>,
 }
 impl<K: TraversalKind> SearchIterator<K> {
-    #[instrument(skip(trav), fields(start_index = ?start_index))]
+    #[context_trace::instrument_sig(skip(trav), fields(start_index = ?start_index))]
     pub(crate) fn start_index(
         trav: K::Trav,
         start_index: Token,
@@ -46,12 +46,12 @@ impl<K: TraversalKind> SearchIterator<K> {
                 trav,
                 cache: TraceCache::new(start_index),
             },
-            match_ctx: SearchQueue::new(),
+            queue: SearchQueue::new(),
             last_complete_match: None,
         }
     }
 
-    #[instrument(skip(trav, p), fields(start_index = ?start_index, parent_count = p.len()))]
+    #[context_trace::instrument_sig(skip(trav, p), fields(start_index = ?start_index, parent_count = p.len()))]
     pub(crate) fn start_parent(
         trav: K::Trav,
         start_index: Token,
@@ -68,9 +68,11 @@ impl<K: TraversalKind> SearchIterator<K> {
                 trav,
                 cache: TraceCache::new(start_index),
             },
-            match_ctx: SearchQueue {
+            queue: SearchQueue {
                 nodes: FromIterator::from_iter(
-                    p.into_compare_batch().into_iter().map(SearchNode::ParentCandidate),
+                    p.into_compare_batch()
+                        .into_iter()
+                        .map(SearchNode::ParentCandidate),
                 ),
             },
             last_complete_match: None,
@@ -91,7 +93,7 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
     fn next(&mut self) -> Option<Self::Item> {
         trace!("searching for root cursor");
 
-        match RootFinder::<K>::new(&self.trace_ctx.trav, &mut self.match_ctx)
+        match RootFinder::<K>::new(&self.trace_ctx.trav, &mut self.queue)
             .find_root_cursor()
         {
             Some(root_cursor) => {
@@ -145,7 +147,7 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                                 self.last_complete_match = Some(complete_match);
 
                                 // Add parent batch to queue for next iteration
-                                self.match_ctx.nodes.extend(
+                                self.queue.nodes.extend(
                                     batch
                                         .into_compare_batch()
                                         .into_iter()

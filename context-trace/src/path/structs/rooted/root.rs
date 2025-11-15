@@ -25,6 +25,16 @@ use crate::{
 pub struct IndexRoot {
     pub(crate) location: PatternLocation,
 }
+
+impl std::fmt::Display for IndexRoot {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "Root({})", self.location)
+    }
+}
+
 impl HasPatternLocation for IndexRoot {
     fn pattern_location(&self) -> &PatternLocation {
         &self.location

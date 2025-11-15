@@ -38,7 +38,7 @@ pub(crate) type SearchResult = Result<Response, ErrorReason>;
 pub trait Find: HasGraph {
     fn ctx(&self) -> SearchCtx<Self>;
 
-    #[instrument(skip(self, pattern), fields(pattern_len))]
+    #[context_trace::instrument_sig(skip(self, pattern), fields(pattern_len))]
     fn find_sequence(
         &self,
         pattern: impl IntoIterator<Item = impl AsAtom<AtomOf<TravKind<Self>>>>,
@@ -55,8 +55,8 @@ pub trait Find: HasGraph {
         self.find_ancestor(pattern)
     }
 
-    // find largest matching direct parent
-    #[instrument(skip(self, searchable))]
+    /// find largest matching parent for pattern
+    #[context_trace::instrument_sig(skip(self, searchable))]
     fn find_parent(
         &self,
         searchable: impl Searchable,
@@ -75,7 +75,7 @@ pub trait Find: HasGraph {
     }
 
     /// find largest matching ancestor for pattern
-    #[instrument(skip(self, searchable))]
+    #[context_trace::instrument_sig(skip(self, searchable))]
     fn find_ancestor(
         &self,
         searchable: impl Searchable,
@@ -152,10 +152,10 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
 }
 
 impl<K: TraversalKind> SearchState<K> {
-    #[instrument(skip(self))]
+    #[context_trace::instrument_sig(skip(self))]
     pub(crate) fn search(mut self) -> Response {
         debug!("starting fold search");
-        debug!(matches = ?&self.matches, "initial state");
+        debug!(queue = ?&self.matches.queue, "initial state");
 
         let mut iteration = 0;
         while let Some(end) = &mut self.next() {

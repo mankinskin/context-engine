@@ -34,6 +34,7 @@ use root::{
     PathRoot,
     RootedPath,
 };
+use std::fmt;
 pub(crate) trait RangePath:
     RootedPath
     + IntoRootedRolePath<Start>
@@ -153,5 +154,48 @@ impl<R: PathRoot> HasRolePath<End> for RootedRangePath<R> {
     }
     fn role_path_mut(&mut self) -> &mut RolePath<End> {
         &mut self.end
+    }
+}
+
+// Display implementation using compact format with Display trait for nested types
+impl<R: PathRoot + fmt::Display> fmt::Display for RootedRangePath<R> {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
+        let start_entry = self.start.sub_path.root_entry;
+        let start_depth = self.start.sub_path.path.len();
+        let end_entry = self.end.sub_path.root_entry;
+        let end_depth = self.end.sub_path.path.len();
+
+        if f.alternate() {
+            // Pretty print with indentation when using {:#}
+            writeln!(f, "RootedRangePath {{")?;
+            writeln!(f, "  root: {},", self.root)?;
+            write!(f, "  start: [{}]", start_entry)?;
+            if start_depth > 0 {
+                writeln!(f, " +{},", start_depth)?;
+            } else {
+                writeln!(f, ",")?;
+            }
+            write!(f, "  end: [{}]", end_entry)?;
+            if end_depth > 0 {
+                writeln!(f, " +{}", end_depth)?;
+            } else {
+                writeln!(f)?;
+            }
+            write!(f, "}}")
+        } else {
+            // Compact format for {}
+            write!(f, "Path(root: {}, [{}", self.root, start_entry)?;
+            if start_depth > 0 {
+                write!(f, "+{}", start_depth)?;
+            }
+            write!(f, "..{}", end_entry)?;
+            if end_depth > 0 {
+                write!(f, "+{}", end_depth)?;
+            }
+            write!(f, "])")
+        }
     }
 }

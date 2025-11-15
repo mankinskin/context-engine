@@ -9,6 +9,10 @@ test-api = []
 
 [dependencies]
 
+context-trace-macros = { path = "../context-trace-macros" }
+syntect = { version = "5.2", default-features = false, features = [
+    "default-fancy",
+] }
 itertools = "^0.14"
 indexmap = { version = "^2.7", features = ["serde"] }
 tracing = { version = "^0.1", features = ["attributes", "valuable"] }

@@ -30,6 +30,20 @@ pub struct PatternLocation {
     pub pattern_id: PatternId,
 }
 
+impl std::fmt::Display for PatternLocation {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(
+            f,
+            "PatternLocation({}, {})",
+            self.parent,
+            &format!("{}", self.pattern_id)[..8]
+        )
+    }
+}
+
 impl HasPatternId for PatternLocation {
     fn pattern_id(&self) -> PatternId {
         self.pattern_id

@@ -1,3 +1,5 @@
+// !!! Remove ALLOW WARNINGS before production release !!!
+#![allow(unused, dead_code)]
 #![deny(clippy::disallowed_methods)]
 #![feature(test)]
 #![feature(assert_matches)]
@@ -18,6 +20,9 @@ pub mod trace;
 
 // Logging utilities (tracing and formatting)
 pub mod logging;
+
+// Re-export proc macros
+pub use context_trace_macros::instrument_sig;
 
 #[cfg(any(test, feature = "test-api"))]
 pub mod tests;

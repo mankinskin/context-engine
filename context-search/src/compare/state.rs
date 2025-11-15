@@ -21,6 +21,7 @@ use context_trace::{
         HasSubLocation,
         SubToken,
     },
+    logging::compact_format::Compact,
     path::{
         accessors::{
             child::RootedLeafToken,
@@ -212,7 +213,7 @@ impl CompareState<Candidate, Candidate> {
     ) -> ChildQueue<CompareState<Candidate, Candidate>> {
         debug!(
             mode = ?self.mode,
-            child_state = ?self.child_state,
+            child_state = %self.child_state,
             cursor = ?self.cursor,
             "entering prefix_states"
         );
@@ -355,11 +356,7 @@ impl CompareState<Candidate, Candidate> {
             debug!(
                 path_width = path_leaf.width(),
                 query_width = query_leaf.width(),
-                mode = ?match path_leaf.width().cmp(&query_leaf.width()) {
-                    Equal => "both",
-                    Greater => "graph_major",
-                    Less => "query_major",
-                },
+                mode = ?self.mode,
                 "tokens need decomposition - calling mode_prefixes"
             );
             let prefixes = match path_leaf.width().cmp(&query_leaf.width()) {

@@ -9,7 +9,10 @@ use crate::{
         Mismatched,
     },
 };
-use context_trace::*;
+use context_trace::{
+    logging::compact_format::Compact,
+    *,
+};
 
 use std::fmt::Debug;
 
@@ -50,7 +53,7 @@ impl<G: HasGraph> Iterator for CompareIterator<G> {
         );
         self.children.next().map(|cs| {
             tracing::debug!(
-                state = ?cs,
+                state = %cs,
                 "calling next_match"
             );
             match cs.next_match(&self.children.trav) {
@@ -64,7 +67,7 @@ impl<G: HasGraph> Iterator for CompareIterator<G> {
                 },
                 result => {
                     tracing::debug!(
-                        result = ?result,
+                        result = %result,
                         "got result (Match/Mismatch)"
                     );
                     Some(result)

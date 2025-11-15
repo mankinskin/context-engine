@@ -30,42 +30,42 @@ fn test_pattern_cursor_at_end_cannot_advance() {
     );
     let mut path = IndexRangePath::new_empty(root);
 
-    tracing::info!("Initial path: {:?}", path);
+    tracing::info!(%path, "Initial path");
     tracing::info!(
-        "End index: {}",
-        path.role_root_child_index::<crate::path::accessors::role::End>()
+        end_index = %path.role_root_child_index::<crate::path::accessors::role::End>(),
+        "End index"
     );
 
     // Advance to position 1
     let result1 = path.advance(&graph);
     tracing::info!(
-        "First advance result: {:?}, end_index={}",
-        result1,
-        path.role_root_child_index::<crate::path::accessors::role::End>()
+        ?result1,
+        end_index = %path.role_root_child_index::<crate::path::accessors::role::End>(),
+        "First advance result"
     );
     assert!(result1.is_continue(), "First advance should succeed");
 
     // Advance to position 2 (the last element)
     let result2 = path.advance(&graph);
     tracing::info!(
-        "Second advance result: {:?}, end_index={}",
-        result2,
-        path.role_root_child_index::<crate::path::accessors::role::End>()
+        ?result2,
+        end_index = %path.role_root_child_index::<crate::path::accessors::role::End>(),
+        "Second advance result"
     );
     assert!(result2.is_continue(), "Second advance should succeed");
 
     // Now we're at the end (index 2 of a 3-element pattern)
     let end_index =
         path.role_root_child_index::<crate::path::accessors::role::End>();
-    tracing::info!("After two advances - end_index: {}", end_index);
+    tracing::info!(%end_index, "After two advances");
 
     // Check can_advance
     let can_advance = path.can_advance(&graph);
-    tracing::info!("can_advance result: {}", can_advance);
+    tracing::info!(%can_advance, "can_advance result");
 
     // Try to advance again
     let advance_result = path.clone().advance(&graph);
-    tracing::info!("Third advance result: {:?}", advance_result);
+    tracing::info!(?advance_result, "Third advance result");
 
     // CRITICAL INVARIANT: can_advance should guarantee advance succeeds!
     if can_advance {

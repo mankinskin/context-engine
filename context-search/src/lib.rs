@@ -1,3 +1,5 @@
+// !!! Remove ALLOW WARNINGS before production release !!!
+#![allow(unused, dead_code)]
 #![deny(clippy::disallowed_methods)]
 #![feature(test)]
 #![feature(assert_matches)]
@@ -19,6 +21,9 @@ pub(crate) mod r#match;
 pub(crate) mod search;
 pub(crate) mod state;
 pub(crate) mod traversal;
+
+/// Compact formatting for logging
+pub mod logging;
 
 #[cfg(any(test, feature = "test-api"))]
 pub(crate) mod tests;

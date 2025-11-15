@@ -1,0 +1,401 @@
+//! Compact formatting implementations for path types
+
+use crate::{
+    End,
+    graph::vertex::{
+        location::{
+            child::ChildLocation,
+            pattern::PatternLocation,
+        },
+        pattern::Pattern,
+        token::Token,
+    },
+    impl_display_via_compact,
+    logging::compact_format::{
+        CompactFormat,
+        write_indent,
+    },
+    path::structs::{
+        role_path::RolePath,
+        rooted::{
+            RootedRangePath,
+            role_path::{
+                PatternEndPath,
+                RootedRolePath,
+            },
+            root::{
+                IndexRoot,
+                PathRoot,
+                RootedPath,
+            },
+        },
+    },
+};
+use std::fmt;
+
+// Helper to format Vec<Token> when used as PathRoot
+fn fmt_token_vec(
+    tokens: &[Token],
+    f: &mut fmt::Formatter,
+) -> fmt::Result {
+    write!(f, "[")?;
+    for (i, token) in tokens.iter().enumerate() {
+        if i > 0 {
+            write!(f, ", ")?;
+        }
+        write!(f, "T({}, {})", token.index, token.width.0)?;
+    }
+    write!(f, "]")
+}
+
+// Helper to format child location path
+fn fmt_child_path(
+    path: &[ChildLocation],
+    f: &mut fmt::Formatter,
+) -> fmt::Result {
+    if path.is_empty() {
+        write!(f, "[]")
+    } else {
+        write!(f, "[")?;
+        for (i, loc) in path.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(
+                f,
+                "T{}-{}[{}]",
+                loc.parent.index, loc.parent.width.0, loc.sub_index
+            )?;
+        }
+        write!(f, "]")
+    }
+}
+
+// CompactFormat for RootedRangePath<Pattern> (which is Vec<Token>)
+impl CompactFormat for RootedRangePath<Pattern> {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let start_entry = self.start.sub_path.root_entry;
+        let end_entry = self.end.sub_path.root_entry;
+
+        write!(f, "Pattern")?;
+        fmt_token_vec(&self.root, f)?;
+        write!(f, "[{}..{}]", start_entry, end_entry)?;
+        Ok(())
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        let start_entry = self.start.sub_path.root_entry;
+        let end_entry = self.end.sub_path.root_entry;
+
+        write_indent(f, indent)?;
+        writeln!(f, "PatternRangePath {{")?;
+
+        // Root pattern
+        write_indent(f, indent + 1)?;
+        write!(f, "pattern: ")?;
+        fmt_token_vec(&self.root, f)?;
+        writeln!(f, ",")?;
+
+        // Start position
+        write_indent(f, indent + 1)?;
+        write!(f, "start: entry={}", start_entry)?;
+        if !self.start.sub_path.path.is_empty() {
+            write!(f, ", path=")?;
+            fmt_child_path(&self.start.sub_path.path, f)?;
+        }
+        writeln!(f, ",")?;
+
+        // End position
+        write_indent(f, indent + 1)?;
+        write!(f, "end: entry={}", end_entry)?;
+        if !self.end.sub_path.path.is_empty() {
+            write!(f, ", path=")?;
+            fmt_child_path(&self.end.sub_path.path, f)?;
+        }
+        writeln!(f)?;
+
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+// CompactFormat for RootedRangePath<IndexRoot>
+impl CompactFormat for RootedRangePath<IndexRoot> {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let start_entry = self.start.sub_path.root_entry;
+        let end_entry = self.end.sub_path.root_entry;
+
+        write!(f, "Index({})[{}..{}]", self.root, start_entry, end_entry)?;
+        Ok(())
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        let start_entry = self.start.sub_path.root_entry;
+        let end_entry = self.end.sub_path.root_entry;
+
+        write_indent(f, indent)?;
+        writeln!(f, "IndexRangePath {{")?;
+
+        // Root
+        write_indent(f, indent + 1)?;
+        writeln!(f, "root: {},", self.root)?;
+
+        // Start position
+        write_indent(f, indent + 1)?;
+        write!(f, "start: entry={}", start_entry)?;
+        if !self.start.sub_path.path.is_empty() {
+            write!(f, ", path=")?;
+            fmt_child_path(&self.start.sub_path.path, f)?;
+        }
+        writeln!(f, ",")?;
+
+        // End position
+        write_indent(f, indent + 1)?;
+        write!(f, "end: entry={}", end_entry)?;
+        if !self.end.sub_path.path.is_empty() {
+            write!(f, ", path=")?;
+            fmt_child_path(&self.end.sub_path.path, f)?;
+        }
+        writeln!(f)?;
+
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+// CompactFormat for IndexRoot
+impl CompactFormat for IndexRoot {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        write!(f, "IndexRoot({})", self.location)
+    }
+}
+
+// CompactFormat for PatternLocation
+impl CompactFormat for PatternLocation {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        write!(
+            f,
+            "PatternLocation({}, {})",
+            self.parent,
+            &self.pattern_id.to_string()[..8]
+        )
+    }
+}
+
+// CompactFormat for RootedRolePath (PatternEndPath = RootedRolePath<End, Pattern>)
+impl CompactFormat for PatternEndPath {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "PatternEnd(")?;
+        fmt_token_vec(&self.root, f)?;
+        write!(f, ", entry={})", self.role_path.sub_path.root_entry)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "PatternEndPath {{")?;
+        write_indent(f, indent + 1)?;
+        write!(f, "pattern: ")?;
+        fmt_token_vec(&self.root, f)?;
+        writeln!(f, ",")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "entry: {},", self.role_path.sub_path.root_entry)?;
+        write_indent(f, indent + 1)?;
+        write!(f, "path: ")?;
+        fmt_child_path(&self.role_path.sub_path.path, f)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+// CompactFormat for ChildState
+impl CompactFormat for crate::trace::child::state::ChildState {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let prev_pos: usize = self.base.prev_pos.into();
+        let root_pos: usize = self.base.root_pos.into();
+        write!(
+            f,
+            "ChildState(prev:{}, root:{}, path:...)",
+            prev_pos, root_pos
+        )
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "ChildState {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "prev_pos: {},", usize::from(self.base.prev_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "root_pos: {},", usize::from(self.base.root_pos))?;
+        write_indent(f, indent + 1)?;
+        write!(f, "path: ")?;
+        self.base.path.fmt_indented(f, indent + 1)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+impl<P: RootedPath> CompactFormat for crate::trace::state::BaseState<P>
+where
+    P: CompactFormat,
+{
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let prev_pos: usize = self.prev_pos.into();
+        let root_pos: usize = self.root_pos.into();
+        write!(f, "BaseState(prev:{}, root:{})", prev_pos, root_pos)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "BaseState {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "prev_pos: {},", usize::from(self.prev_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "root_pos: {},", usize::from(self.root_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "path:")?;
+        self.path.fmt_indented(f, indent + 2)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+impl<R: crate::PathRole> CompactFormat for RolePath<R> {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(
+            f,
+            "RolePath(entry:{}, len:{})",
+            self.sub_path.root_entry,
+            self.sub_path.path.len()
+        )
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "RolePath {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "entry: {},", self.sub_path.root_entry)?;
+        write_indent(f, indent + 1)?;
+        write!(f, "path: ")?;
+        fmt_child_path(&self.sub_path.path, f)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+impl<R: crate::PathRole, Root: PathRoot> CompactFormat
+    for RootedRolePath<R, Root>
+where
+    Root: CompactFormat,
+{
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "RootedRolePath(")?;
+        self.root.fmt_compact(f)?;
+        if !self.role_path.is_empty() {
+            write!(f, ", path_len:{})", self.role_path.len())?;
+        } else {
+            write!(f, ")")?;
+        }
+        Ok(())
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "RootedRolePath {{")?;
+        write_indent(f, indent + 1)?;
+        write!(f, "root: ")?;
+        self.root.fmt_compact(f)?;
+        writeln!(f, ",")?;
+        write_indent(f, indent + 1)?;
+        write!(f, "role_path: ")?;
+        self.role_path.fmt_compact(f)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+// Implement Display for types to enable % formatting in tracing without Compact wrapper
+// Note: Only implement for types that don't already have Display
+// (RootedRangePath already has Display in path/structs/rooted/mod.rs)
+impl_display_via_compact!(PatternEndPath);
+impl_display_via_compact!(RolePath<R> where R: crate::PathRole);
+impl_display_via_compact!(RootedRolePath<R, Root> where R: crate::PathRole, Root: PathRoot + CompactFormat);
+impl_display_via_compact!(crate::trace::state::BaseState<P> where P: RootedPath + CompactFormat);
+impl_display_via_compact!(crate::trace::child::state::ChildState);

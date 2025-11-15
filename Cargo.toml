@@ -5,7 +5,7 @@ members = [
   "context-insert",
   "context-read",
   "context-trace",
-  "refactor-tool",
+  "refactor-tool", "context-trace-macros",
 ]
 exclude = ["./petgraph", "./justlog"]
 

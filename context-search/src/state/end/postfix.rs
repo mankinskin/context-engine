@@ -1,5 +1,9 @@
 use context_trace::{
     graph::vertex::location::HasParent,
+    logging::compact_format::{
+        write_indent,
+        CompactFormat,
+    },
     path::accessors::has_path::{
         HasRootedRolePath,
         IntoRolePath,
@@ -10,6 +14,7 @@ use derive_more::derive::{
     Deref,
     DerefMut,
 };
+use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
 pub(crate) struct PostfixEnd {
     #[deref]
@@ -68,5 +73,29 @@ impl From<&'_ PostfixEnd> for PostfixCommand {
                 value.root_pos.into(),
             ),
         }
+    }
+}
+
+impl CompactFormat for PostfixEnd {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "PostfixEnd(root_pos:{})", usize::from(self.root_pos))
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "PostfixEnd {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "root_pos: {},", usize::from(self.root_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "path: {:?}", &self.path)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
     }
 }
