@@ -225,11 +225,6 @@ impl TestTracing {
         let mut format_config_file = format_config.clone();
         format_config_file.enable_ansi = false; // File output should not have ANSI
 
-        eprintln!(
-            "DEBUG: format_config.show_timestamp = {}",
-            format_config.show_timestamp
-        );
-
         // Build layers based on configuration
         // Timestamp display is controlled by the formatter's show_timestamp config,
         // so we always use CompactTimer and let the formatter decide whether to call format_time.
