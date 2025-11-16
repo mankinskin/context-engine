@@ -78,7 +78,6 @@ fn prefix1() {
                 path: res.end.path,
                 reason: EndReason::QueryEnd
             },
-            //start: *a,
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (

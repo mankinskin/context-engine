@@ -86,7 +86,7 @@ pub(crate) type RootedStartPath<R> = RootedRolePath<Start, R>;
 pub(crate) type RootedEndPath<R> = RootedRolePath<End, R>;
 pub type IndexStartPath = IndexRolePath<Start>;
 pub type IndexEndPath = IndexRolePath<End>;
-pub(crate) type PatternStartPath = PatternRolePath<Start>;
+pub type PatternStartPath = PatternRolePath<Start>;
 pub type PatternEndPath = PatternRolePath<End>;
 
 impl<R: PathRole> IndexRolePath<R> {

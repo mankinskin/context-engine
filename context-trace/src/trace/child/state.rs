@@ -28,7 +28,7 @@ use crate::{
             root::GraphRoot,
         },
         mutators::{
-            adapters::IntoAdvanced,
+            adapters::StateAdvance,
             append::PathAppend,
             move_path::advance::Advance,
         },
@@ -161,9 +161,9 @@ where
     }
 }
 
-impl IntoAdvanced for ChildState {
+impl StateAdvance for ChildState {
     type Next = Self;
-    fn into_advanced<G: HasGraph>(
+    fn advance_state<G: HasGraph>(
         mut self,
         trav: &G,
     ) -> Result<Self, Self> {

@@ -16,7 +16,7 @@ use crate::{
             },
         },
         mutators::{
-            adapters::IntoAdvanced,
+            adapters::StateAdvance,
             move_path::key::AdvanceKey,
             raise::PathRaise,
         },
@@ -67,9 +67,9 @@ pub type ParentState = BaseState<IndexStartPath>;
 //    CursorPosition for ParentState, self => self.cursor.relative_pos
 //}
 
-impl IntoAdvanced for ParentState {
+impl StateAdvance for ParentState {
     type Next = RootChildState;
-    fn into_advanced<G: HasGraph>(
+    fn advance_state<G: HasGraph>(
         self,
         trav: &G,
     ) -> Result<Self::Next, Self> {

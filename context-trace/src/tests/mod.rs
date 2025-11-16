@@ -21,6 +21,9 @@ pub mod public_api;
 pub mod path_advance;
 
 #[cfg(test)]
+pub mod state_advance;
+
+#[cfg(test)]
 pub mod tracing_demo;
 
 #[cfg(test)]

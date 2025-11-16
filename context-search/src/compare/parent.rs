@@ -15,6 +15,7 @@ use std::{
     fmt::Debug,
     marker::PhantomData,
 };
+use tracing::debug;
 
 use crate::compare::state::PathPairMode::GraphMajor;
 use context_trace::{
@@ -40,13 +41,14 @@ pub(crate) struct ParentCompareState {
     pub(crate) parent_state: ParentState,
     pub(crate) cursor: PatternCursor,
 }
-impl IntoAdvanced for ParentCompareState {
+impl StateAdvance for ParentCompareState {
     type Next = CompareRootState;
-    fn into_advanced<G: HasGraph>(
+    #[context_trace::instrument_sig(skip(self, trav))]
+    fn advance_state<G: HasGraph>(
         self,
         trav: &G,
     ) -> Result<Self::Next, Self> {
-        match self.parent_state.into_advanced(trav) {
+        match self.parent_state.advance_state(trav) {
             Ok(next) => {
                 // Convert checkpoint (PatternRangePath) to prefix path (PatternPrefixPath) for cursor
                 let prefix_path =
@@ -62,7 +64,10 @@ impl IntoAdvanced for ParentCompareState {
                     atom_position: self.cursor.atom_position,
                     _state: PhantomData,
                 };
-
+                debug!(
+                    index_cursor=%index_cursor,
+                    "Created index_cursor from parent_state"
+                );
                 // Get the token that index_cursor points to
                 let index_token = index_cursor
                     .leaf_token(trav)

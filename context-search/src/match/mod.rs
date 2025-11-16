@@ -135,7 +135,7 @@ impl<K: TraversalKind> NodeConsumer<'_, K> {
     }
     fn consume(self) -> Option<NodeResult> {
         match self.0 {
-            ParentCandidate(parent) => match parent.into_advanced(&self.1) {
+            ParentCandidate(parent) => match parent.advance_state(&self.1) {
                 Ok(state) => Self::compare_next(
                     self.1,
                     ChildQueue::from_iter([state.token]),

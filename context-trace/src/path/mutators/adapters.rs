@@ -76,9 +76,9 @@ pub(crate) trait FromAdvanced<A: Advanced> {
         trav: &G,
     ) -> Self;
 }
-pub trait IntoAdvanced: Sized + Clone {
+pub trait StateAdvance: Sized + Clone {
     type Next;
-    fn into_advanced<G: HasGraph>(
+    fn advance_state<G: HasGraph>(
         self,
         trav: &G,
     ) -> Result<Self::Next, Self>;

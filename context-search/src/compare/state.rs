@@ -430,6 +430,7 @@ impl CompareState<Matched, Matched> {
     /// - Old checkpoint is discarded
     /// - Child state (graph path) is also advanced
     /// Uses move semantics to consume the matched state.
+    #[context_trace::instrument_sig(skip(self, trav))]
     pub(crate) fn into_next_candidate<G: HasGraph>(
         mut self,
         trav: &G,
@@ -460,7 +461,7 @@ impl CompareState<Matched, Matched> {
                 // Also try to advance the child_state (graph path position)
                 // If child_state cannot advance, it means we've reached the end of this pattern
                 // and should signal completion to trigger parent exploration
-                match self.child_state.into_advanced(trav) {
+                match self.child_state.advance_state(trav) {
                     Ok(advanced_child_state) => {
                         debug!("child_state advanced successfully");
                         Ok(CompareState {
@@ -554,7 +555,7 @@ impl CompareState<Candidate, Matched> {
         );
 
         // Try to advance the child_state (which represents the index path position)
-        match self.child_state.into_advanced(trav) {
+        match self.child_state.advance_state(trav) {
             Ok(advanced_child_state) => {
                 debug!("index cursor advance succeeded");
                 // Convert index cursor to candidate state
@@ -592,13 +593,13 @@ impl From<CompareState<Candidate, Candidate>>
     }
 }
 
-impl IntoAdvanced for CompareState<Candidate, Candidate> {
+impl StateAdvance for CompareState<Candidate, Candidate> {
     type Next = Self;
-    fn into_advanced<G: HasGraph>(
+    fn advance_state<G: HasGraph>(
         self,
         trav: &G,
     ) -> Result<Self, Self> {
-        match self.child_state.into_advanced(trav) {
+        match self.child_state.advance_state(trav) {
             Ok(child_state) => Ok(CompareState {
                 child_state,
                 ..self
@@ -611,13 +612,13 @@ impl IntoAdvanced for CompareState<Candidate, Candidate> {
     }
 }
 
-impl IntoAdvanced for CompareState<Matched, Matched> {
+impl StateAdvance for CompareState<Matched, Matched> {
     type Next = Self;
-    fn into_advanced<G: HasGraph>(
+    fn advance_state<G: HasGraph>(
         self,
         trav: &G,
     ) -> Result<Self, Self> {
-        match self.child_state.into_advanced(trav) {
+        match self.child_state.advance_state(trav) {
             Ok(child_state) => Ok(CompareState {
                 child_state,
                 cursor: self.cursor,

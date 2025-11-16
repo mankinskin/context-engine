@@ -164,7 +164,7 @@ pub use crate::{
             },
         },
         mutators::{
-            adapters::IntoAdvanced,
+            adapters::StateAdvance,
             append::PathAppend,
             lower::PathLower,
             move_path::{
@@ -196,6 +196,7 @@ pub use crate::{
                     IndexEndPath,
                     IndexStartPath,
                     PatternEndPath,
+                    PatternStartPath,
                     RootChildIndex,
                     RootChildIndexMut,
                     RootChildToken,
