@@ -19,7 +19,7 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
     ) -> Option<ParentBatch> {
         let batch = Self::gen_parent_batch(
             trav,
-            parent.rooted_path().root_parent(),
+            parent.path.root_parent(),
             |trav, p| {
                 let mut parent = parent.clone();
                 parent.path_raise(trav, p);

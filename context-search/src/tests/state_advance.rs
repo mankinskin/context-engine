@@ -93,7 +93,11 @@ fn test_parent_compare_state_advance_success() {
         parent_compare_state.cursor.atom_position
     );
     assert_eq!(
-        compare_root_state.token.index_cursor.atom_position,
+        *compare_root_state
+            .token
+            .child_cursor
+            .child_state
+            .target_pos(),
         parent_compare_state.cursor.atom_position
     );
 
@@ -217,8 +221,16 @@ fn test_parent_compare_state_advance_with_nested_pattern() {
     let compare_root_state = result.unwrap();
     tracing::info!(?compare_root_state, "Advanced with nested pattern");
 
-    // Verify the child state has the correct root
-    assert_eq!(compare_root_state.token.child_state.path.path_root(), root);
+    // Verify the child cursor has the correct root
+    assert_eq!(
+        compare_root_state
+            .token
+            .child_cursor
+            .child_state
+            .path
+            .path_root(),
+        root
+    );
 }
 
 #[test]
@@ -238,11 +250,8 @@ fn test_compare_state_candidate_advance() {
         ChildLocation::new(abc, abc_id, 0).into_pattern_location(),
     );
     let child_state = context_trace::ChildState {
-        base: BaseState {
-            path: rooted_path!(Range: root, start: 0, end: 0),
-            prev_pos: AtomPosition::from(0),
-            root_pos: AtomPosition::from(0),
-        },
+        current_pos: AtomPosition::from(0),
+        path: rooted_path!(Range: root, start: 0, end: 0),
     };
 
     let pattern_path: PatternRangePath = rooted_path!(
@@ -256,12 +265,6 @@ fn test_compare_state_candidate_advance() {
         _state: PhantomData::<Candidate>,
     };
 
-    let index_cursor = PathCursor {
-        path: pattern_path.clone().into_rooted_role_path(),
-        atom_position: AtomPosition::from(0),
-        _state: PhantomData::<Candidate>,
-    };
-
     let checkpoint = PatternCursor {
         path: pattern_path,
         atom_position: AtomPosition::from(0),
@@ -269,9 +272,11 @@ fn test_compare_state_candidate_advance() {
     };
 
     let compare_state = CompareState {
-        child_state,
+        child_cursor: crate::cursor::ChildCursor {
+            child_state,
+            _state: PhantomData,
+        },
         cursor,
-        index_cursor,
         checkpoint,
         mode: crate::compare::state::PathPairMode::GraphMajor,
         target: context_trace::trace::cache::key::directed::down::DownKey::new(
@@ -323,11 +328,8 @@ fn test_compare_state_matched_advance() {
         ChildLocation::new(abc, abc_id, 0).into_pattern_location(),
     );
     let child_state = context_trace::ChildState {
-        base: BaseState {
-            path: rooted_path!(Range: root, start: 0, end: 0),
-            prev_pos: AtomPosition::from(0),
-            root_pos: AtomPosition::from(0),
-        },
+        current_pos: AtomPosition::from(0),
+        path: rooted_path!(Range: root, start: 0, end: 0),
     };
 
     let pattern_path: PatternRangePath = rooted_path!(
@@ -335,16 +337,10 @@ fn test_compare_state_matched_advance() {
         start: 0,
         end: 1
     );
-    let cursor = PathCursor {
+    let cursor: PathCursor<PatternPrefixPath, Matched> = PathCursor {
         path: pattern_path.clone().into_rooted_role_path(),
         atom_position: AtomPosition::from(0),
-        _state: PhantomData::<Matched>,
-    };
-
-    let index_cursor = PathCursor {
-        path: pattern_path.clone().into_rooted_role_path(),
-        atom_position: AtomPosition::from(0),
-        _state: PhantomData::<Matched>,
+        _state: PhantomData,
     };
 
     let checkpoint = PatternCursor {
@@ -354,9 +350,11 @@ fn test_compare_state_matched_advance() {
     };
 
     let compare_state = CompareState {
-        child_state,
+        child_cursor: crate::cursor::ChildCursor {
+            child_state,
+            _state: PhantomData,
+        },
         cursor,
-        index_cursor,
         checkpoint,
         mode: crate::compare::state::PathPairMode::GraphMajor,
         target: context_trace::trace::cache::key::directed::down::DownKey::new(
@@ -387,8 +385,8 @@ fn test_compare_state_matched_advance() {
         compare_state.cursor.atom_position
     );
     assert_eq!(
-        advanced_state.index_cursor.atom_position,
-        compare_state.index_cursor.atom_position
+        *advanced_state.child_cursor.child_state.target_pos(),
+        *compare_state.child_cursor.child_state.target_pos()
     );
     assert_eq!(
         advanced_state.checkpoint.atom_position,
@@ -453,9 +451,9 @@ fn test_parent_compare_state_cursor_conversion() {
         "Cursor atom_position should be preserved"
     );
     assert_eq!(
-        compare_root_state.token.index_cursor.atom_position,
-        AtomPosition::from(5),
-        "Index cursor atom_position should match"
+        *compare_root_state.token.child_cursor.child_state.target_pos(),
+        AtomPosition::from(0),
+        "Child cursor target_pos should match parent_state root_pos (not query cursor position)"
     );
     assert_eq!(
         compare_root_state.token.checkpoint.atom_position,

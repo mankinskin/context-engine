@@ -164,9 +164,9 @@ fn test_advancement_preserves_atom_positions() {
             "Cursor position should be preserved"
         );
         assert_eq!(
-            usize::from(advanced.token.index_cursor.atom_position),
+            usize::from(*advanced.token.child_cursor.child_state.target_pos()),
             pos,
-            "Index cursor position should be preserved"
+            "Child cursor target_pos should be preserved"
         );
         assert_eq!(
             usize::from(advanced.token.checkpoint.atom_position),

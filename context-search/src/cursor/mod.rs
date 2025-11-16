@@ -51,6 +51,15 @@ pub(crate) type IndexCursor = PathCursor<IndexRangePath>;
 
 pub(crate) type PatternPrefixCursor = PathCursor<PatternPrefixPath>;
 
+/// Cursor wrapper for ChildState that supports CursorState markers
+/// This allows tracking the state (Matched/Candidate/Mismatched) of the index path
+/// without duplicating the path information that ChildState already contains.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct ChildCursor<State = Matched> {
+    pub(crate) child_state: ChildState,
+    pub(crate) _state: PhantomData<State>,
+}
+
 impl From<PatternPrefixCursor> for PatternCursor {
     fn from(value: PatternPrefixCursor) -> Self {
         Self {
@@ -174,6 +183,56 @@ impl<P> PathCursor<P, Mismatched> {
         PathCursor {
             path: self.path,
             atom_position: self.atom_position,
+            _state: PhantomData,
+        }
+    }
+}
+
+// ChildCursor state transitions
+impl ChildCursor<Matched> {
+    /// Convert a Matched cursor to a Candidate by creating a copy
+    pub(crate) fn as_candidate(&self) -> ChildCursor<Candidate> {
+        ChildCursor {
+            child_state: self.child_state.clone(),
+            _state: PhantomData,
+        }
+    }
+}
+
+impl MarkMatchState for ChildCursor<Candidate> {
+    type Matched = ChildCursor<Matched>;
+    type Mismatched = ChildCursor<Mismatched>;
+
+    fn mark_match(self) -> Self::Matched {
+        ChildCursor {
+            child_state: self.child_state,
+            _state: PhantomData,
+        }
+    }
+
+    fn mark_mismatch(self) -> Self::Mismatched {
+        ChildCursor {
+            child_state: self.child_state,
+            _state: PhantomData,
+        }
+    }
+}
+
+impl ChildCursor<Mismatched> {
+    /// Convert a mismatched cursor to matched (for final states)
+    pub(crate) fn as_matched(self) -> ChildCursor<Matched> {
+        ChildCursor {
+            child_state: self.child_state,
+            _state: PhantomData,
+        }
+    }
+}
+
+impl ChildCursor<Exhausted> {
+    /// Convert an exhausted cursor to matched (for end states)
+    pub(crate) fn as_matched(self) -> ChildCursor<Matched> {
+        ChildCursor {
+            child_state: self.child_state,
             _state: PhantomData,
         }
     }

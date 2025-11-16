@@ -35,13 +35,13 @@ impl HasRootPos for TraversalState {
     fn root_pos(&self) -> &AtomPosition {
         match &self.kind {
             InnerKind::ParentCandidate(state) => state.root_pos(),
-            InnerKind::ChildQueue(state) => state.root_pos(),
+            InnerKind::ChildQueue(state) => state.target_pos(),
         }
     }
     fn root_pos_mut(&mut self) -> &mut AtomPosition {
         match &mut self.kind {
             InnerKind::ParentCandidate(state) => state.root_pos_mut(),
-            InnerKind::ChildQueue(state) => state.root_pos_mut(),
+            InnerKind::ChildQueue(state) => state.target_pos_mut(),
         }
     }
 }
@@ -83,9 +83,9 @@ impl TraversalState {
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.kind {
             InnerKind::ParentCandidate(state) =>
-                Some(state.rooted_path().graph_root_child_location()),
+                Some(state.path.graph_root_child_location()),
             InnerKind::ChildQueue(state) =>
-                state.rooted_path().role_leaf_token_location::<End>(),
+                state.path.role_leaf_token_location::<End>(),
         }
     }
     pub(crate) fn prev_key(&self) -> DirectedKey {

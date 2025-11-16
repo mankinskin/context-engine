@@ -10,7 +10,7 @@ use crate::path::mutators::move_path::key::AtomPosition;
 
 use crate::trace::cache::key::directed::DirectedKey;
 
-/// get the atom position in a query
+/// get the atom position in a cursor
 pub trait CursorPosition {
     fn cursor_pos(&self) -> &AtomPosition;
     fn cursor_pos_mut(&mut self) -> &mut AtomPosition;

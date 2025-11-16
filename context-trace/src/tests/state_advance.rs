@@ -177,11 +177,8 @@ fn test_child_state_advance_success() {
     );
 
     let child_state = ChildState {
-        base: BaseState {
-            path,
-            prev_pos: AtomPosition::from(0),
-            root_pos: AtomPosition::from(0),
-        },
+        current_pos: AtomPosition::from(0),
+        path,
     };
 
     tracing::info!(?child_state, "Initial child state");
@@ -233,11 +230,8 @@ fn test_child_state_advance_at_end() {
     );
 
     let child_state = ChildState {
-        base: BaseState {
-            path,
-            prev_pos: AtomPosition::from(0),
-            root_pos: AtomPosition::from(0),
-        },
+        current_pos: AtomPosition::from(0),
+        path,
     };
 
     tracing::info!(?child_state, "Child state at end position");
@@ -387,13 +381,11 @@ fn test_state_advance_preserves_positions() {
 
     let root_child_state = result.unwrap();
 
+    // ChildState has current_pos (which should equal parent's root_pos after advance)
     assert_eq!(
-        root_child_state.child_state.prev_pos, parent_state.prev_pos,
-        "prev_pos should be preserved"
-    );
-    assert_eq!(
-        root_child_state.child_state.root_pos, parent_state.root_pos,
-        "root_pos should be preserved"
+        *root_child_state.child_state.target_pos(),
+        parent_state.root_pos,
+        "child current_pos should match parent root_pos"
     );
     assert_eq!(
         root_child_state.root_parent.prev_pos, parent_state.prev_pos,

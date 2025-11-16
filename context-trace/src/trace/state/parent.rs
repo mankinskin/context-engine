@@ -1,4 +1,5 @@
 use crate::{
+    AtomPosition,
     direction::pattern::PatternDirection,
     graph::vertex::{
         location::{
@@ -61,7 +62,15 @@ use std::{
 pub struct ParentBatch {
     pub parents: VecDeque<ParentState>,
 }
-pub type ParentState = BaseState<IndexStartPath>;
+
+/// State representing a position at the parent level (Start role).
+/// Tracks positions for path raising and traversal.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ParentState {
+    pub prev_pos: AtomPosition,
+    pub root_pos: AtomPosition,
+    pub path: IndexStartPath,
+}
 
 //impl_cursor_pos! {
 //    CursorPosition for ParentState, self => self.cursor.relative_pos
@@ -84,15 +93,11 @@ impl StateAdvance for ParentState {
                 path,
                 prev_pos,
                 root_pos,
-                //cursor,
             } = self;
             Ok(RootChildState {
                 child_state: ChildState {
-                    base: BaseState {
-                        prev_pos,
-                        root_pos,
-                        path: path.into_range(next_i),
-                    },
+                    current_pos: root_pos,
+                    path: path.into_range(next_i),
                 },
                 root_parent,
             })
@@ -142,6 +147,18 @@ impl<P: RootedPath + GraphRoot> RootKey for BaseState<P> {
         UpKey::new(self.path.root_parent(), self.root_pos.into())
     }
 }
+
+impl TargetKey for ParentState {
+    fn target_key(&self) -> DirectedKey {
+        self.root_key().into()
+    }
+}
+impl RootKey for ParentState {
+    fn root_key(&self) -> UpKey {
+        UpKey::new(self.path.root_parent(), self.root_pos.into())
+    }
+}
+
 impl Ord for ParentState {
     fn cmp(
         &self,

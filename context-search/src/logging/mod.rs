@@ -27,6 +27,7 @@ use context_trace::{
         CompactFormat,
     },
     AtomPosition,
+    HasTargetPos,
 };
 use std::fmt;
 
@@ -45,7 +46,8 @@ where
         };
 
         let query_pos: usize = self.cursor.atom_position.into();
-        let index_pos: usize = self.index_cursor.atom_position.into();
+        let index_pos: usize =
+            (*self.child_cursor.child_state.target_pos()).into();
         let checkpoint_pos: usize = self.checkpoint.atom_position.into();
 
         write!(
@@ -72,18 +74,13 @@ where
         writeln!(f, "mode: {:?},", self.mode)?;
 
         write_indent(f, indent + 1)?;
-        write!(f, "child_state: ")?;
-        self.child_state.fmt_indented(f, indent + 1)?;
+        write!(f, "child_cursor: ")?;
+        self.child_cursor.child_state.fmt_indented(f, indent + 1)?;
         writeln!(f, ",")?;
 
         write_indent(f, indent + 1)?;
         write!(f, "query: ")?;
         self.cursor.fmt_indented(f, indent + 1)?;
-        writeln!(f, ",")?;
-
-        write_indent(f, indent + 1)?;
-        write!(f, "index: ")?;
-        self.index_cursor.fmt_indented(f, indent + 1)?;
         writeln!(f, ",")?;
 
         write_indent(f, indent + 1)?;
@@ -207,7 +204,7 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
                         writeln!(f, ",")?;
                         write_indent(f, indent + 4)?;
                         writeln!(f, "parent_state:")?;
-                        state.parent_state.fmt_indented(f, indent + 5)?;
+                        state.parent_state.path.fmt_indented(f, indent + 5)?;
                         writeln!(f)?;
                         write_indent(f, indent + 3)?;
                         writeln!(f, "}},")?;

@@ -2,6 +2,7 @@ use crate::{
     compare::state::CompareState,
     cursor::{
         Candidate,
+        ChildCursor,
         PathCursor,
         PatternCursor,
     },
@@ -58,27 +59,24 @@ impl StateAdvance for ParentCompareState {
                     atom_position: self.cursor.atom_position,
                     _state: PhantomData,
                 };
-                // Initially, index_cursor starts at the same position as query cursor
-                let index_cursor = PathCursor {
-                    path: prefix_path,
-                    atom_position: self.cursor.atom_position,
-                    _state: PhantomData,
-                };
                 debug!(
-                    index_cursor=%index_cursor,
-                    "Created index_cursor from parent_state"
+                    child_cursor=%next.child_state,
+                    "Created child_cursor from parent_state"
                 );
                 // Get the token that index_cursor points to
-                let index_token = index_cursor
+                let index_token = next
+                    .child_state
                     .leaf_token(trav)
-                    .expect("index_cursor should point to a valid token");
+                    .expect("child_state should point to a valid token");
                 let cursor_position = self.cursor.atom_position;
 
                 Ok(CompareRootState {
                     token: CompareState {
-                        child_state: next.child_state,
+                        child_cursor: ChildCursor {
+                            child_state: next.child_state,
+                            _state: PhantomData,
+                        },
                         cursor,
-                        index_cursor,
                         checkpoint: self.cursor,
                         mode: GraphMajor,
                         target: DownKey::new(

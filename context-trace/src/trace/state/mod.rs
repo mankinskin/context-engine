@@ -30,7 +30,19 @@ pub trait HasPrevPos {
     fn prev_pos(&self) -> &AtomPosition;
     fn prev_pos_mut(&mut self) -> &mut AtomPosition;
 }
-impl<P: RootedPath> HasPrevPos for BaseState<P> {
+
+pub trait HasRootPos {
+    fn root_pos(&self) -> &AtomPosition;
+    fn root_pos_mut(&mut self) -> &mut AtomPosition;
+}
+
+/// Trait for accessing the current/target position in a child state
+pub trait HasTargetPos {
+    fn target_pos(&self) -> &AtomPosition;
+    fn target_pos_mut(&mut self) -> &mut AtomPosition;
+}
+
+impl HasPrevPos for ParentState {
     fn prev_pos(&self) -> &AtomPosition {
         &self.prev_pos
     }
@@ -38,9 +50,23 @@ impl<P: RootedPath> HasPrevPos for BaseState<P> {
         &mut self.prev_pos
     }
 }
-pub trait HasRootPos {
-    fn root_pos(&self) -> &AtomPosition;
-    fn root_pos_mut(&mut self) -> &mut AtomPosition;
+
+impl HasRootPos for ParentState {
+    fn root_pos(&self) -> &AtomPosition {
+        &self.root_pos
+    }
+    fn root_pos_mut(&mut self) -> &mut AtomPosition {
+        &mut self.root_pos
+    }
+}
+
+impl<P: RootedPath> HasPrevPos for BaseState<P> {
+    fn prev_pos(&self) -> &AtomPosition {
+        &self.prev_pos
+    }
+    fn prev_pos_mut(&mut self) -> &mut AtomPosition {
+        &mut self.prev_pos
+    }
 }
 impl<P: RootedPath> HasRootPos for BaseState<P> {
     fn root_pos(&self) -> &AtomPosition {

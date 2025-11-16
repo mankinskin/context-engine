@@ -156,7 +156,7 @@ impl EndState {
         Self {
             reason,
             path: PathEnum::from_start_path(
-                parent.parent_state.into_rooted_path(),
+                parent.parent_state.path,
                 root_pos,
                 &trav,
             ),

@@ -207,13 +207,8 @@ impl CompactFormat for crate::trace::child::state::ChildState {
         &self,
         f: &mut fmt::Formatter,
     ) -> fmt::Result {
-        let prev_pos: usize = self.base.prev_pos.into();
-        let root_pos: usize = self.base.root_pos.into();
-        write!(
-            f,
-            "ChildState(prev:{}, root:{}, path:...)",
-            prev_pos, root_pos
-        )
+        let current_pos: usize = self.current_pos.into();
+        write!(f, "ChildState(target:{}, path:...)", current_pos)
     }
 
     fn fmt_indented(
@@ -223,12 +218,10 @@ impl CompactFormat for crate::trace::child::state::ChildState {
     ) -> fmt::Result {
         writeln!(f, "ChildState {{")?;
         write_indent(f, indent + 1)?;
-        writeln!(f, "prev_pos: {},", usize::from(self.base.prev_pos))?;
-        write_indent(f, indent + 1)?;
-        writeln!(f, "root_pos: {},", usize::from(self.base.root_pos))?;
+        writeln!(f, "current_pos: {},", usize::from(self.current_pos))?;
         write_indent(f, indent + 1)?;
         write!(f, "path: ")?;
-        self.base.path.fmt_indented(f, indent + 1)?;
+        self.path.fmt_indented(f, indent + 1)?;
         writeln!(f)?;
         write_indent(f, indent)?;
         write!(f, "}}")

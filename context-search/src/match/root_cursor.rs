@@ -86,9 +86,8 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                         // Index ended but query continues - return for parent exploration
                         Err(RootCursor {
                             state: Box::new(CompareState {
-                                child_state: query_only_advanced.child_state,
+                                child_cursor: query_only_advanced.child_cursor,
                                 cursor: query_only_advanced.cursor,
-                                index_cursor: query_only_advanced.index_cursor,
                                 checkpoint: query_only_advanced.checkpoint,
                                 target: query_only_advanced.target,
                                 mode: query_only_advanced.mode,
@@ -100,8 +99,9 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
             },
             Err(matched_state) => {
                 // Query ended - complete match
-                let root_pos = *matched_state.child_state.root_pos();
-                let path = matched_state.child_state.rooted_path().clone();
+                let root_pos =
+                    *matched_state.child_cursor.child_state.target_pos();
+                let path = matched_state.child_cursor.child_state.path.clone();
                 let target_index = path.role_rooted_leaf_token::<End, _>(&trav);
                 let last_token_width_value = target_index.width();
                 let end_pos = AtomPosition::from(
@@ -169,11 +169,9 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                             EndReason::Mismatch,
                             Some(RootCursor {
                                 state: Box::new(CompareState {
-                                    child_state: _query_only_advanced
-                                        .child_state,
+                                    child_cursor: _query_only_advanced
+                                        .child_cursor,
                                     cursor: _query_only_advanced.cursor,
-                                    index_cursor: _query_only_advanced
-                                        .index_cursor,
                                     checkpoint: _query_only_advanced.checkpoint,
                                     target: _query_only_advanced.target,
                                     mode: _query_only_advanced.mode,
@@ -263,13 +261,12 @@ impl<G: HasGraph + Clone> Iterator for RootCursor<G, Candidate, Candidate> {
 
 impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
     /// Convert to Candidate state for both cursors to enable parent exploration
-    pub(crate) fn to_candidate(self) -> RootCursor<G, Candidate, Candidate> {
+    pub(crate) fn into_candidate(self) -> RootCursor<G, Candidate, Candidate> {
         let state = *self.state;
         RootCursor {
             state: Box::new(CompareState {
-                child_state: state.child_state,
+                child_cursor: state.child_cursor.as_candidate(),
                 cursor: state.cursor,
-                index_cursor: state.index_cursor.as_candidate(),
                 checkpoint: state.checkpoint,
                 target: state.target,
                 mode: state.mode,
@@ -283,7 +280,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
         trav: &K::Trav,
     ) -> Result<(ParentCompareState, CompareParentBatch), Box<EndState>> {
         // Convert to Candidate first, then call next_parents
-        self.to_candidate().next_parents::<K>(trav)
+        self.into_candidate().next_parents::<K>(trav)
     }
 }
 
@@ -313,13 +310,13 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
         }) {
             Some(reason) => {
                 let CompareState {
-                    child_state,
+                    child_cursor,
                     cursor,
                     checkpoint,
                     ..
                 } = *self.state;
-                let root_pos = *child_state.root_pos();
-                let path = child_state.rooted_path().clone();
+                let root_pos = *child_cursor.child_state.target_pos();
+                let path = child_cursor.child_state.path.clone();
                 let target_index =
                     path.role_rooted_leaf_token::<End, _>(&self.trav);
 
