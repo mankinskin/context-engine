@@ -20,6 +20,12 @@ show = true                # Show span enter messages
 show_fn_signature = true   # Show function signatures
 show_fields = true         # Show span fields (parameters)
 
+# Trait context display configuration
+[span_enter.trait_context]
+show_trait_name = true         # Show trait name (e.g., [trait: StateAdvance])
+show_self_type = true          # Show implementing type (e.g., <ParentState>)
+show_associated_types = true   # Show associated types (e.g., [Next=RootChildState])
+
 # Configuration for span close events  
 [span_close]
 show = true                # Show span close messages
@@ -72,6 +78,18 @@ show_timestamp = true      # Show timestamp at beginning of each line (elapsed t
 # show = true
 # show_fn_signature = false
 # show_fields = true
+
+# Show only trait name and self type (hide associated types):
+# [span_enter.trait_context]
+# show_trait_name = true
+# show_self_type = true
+# show_associated_types = false
+
+# Hide all trait context information:
+# [span_enter.trait_context]
+# show_trait_name = false
+# show_self_type = false
+# show_associated_types = false
 
 # Plain text output (no colors, no indentation):
 # enable_indentation = false

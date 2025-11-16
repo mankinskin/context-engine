@@ -38,6 +38,10 @@ use crate::{
             wide::Wide,
         },
     },
+    logging::compact_format::{
+        CompactFormat,
+        write_indent,
+    },
     trace::has_graph::{
         HasGraph,
         TravDir,
@@ -654,15 +658,44 @@ impl std::fmt::Display for VertexData {
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
-        #[cfg(any(test, feature = "test-api"))]
-        {
-            use crate::graph::test_graph;
-            if let Some(s) =
-                test_graph::get_token_string_from_test_graph(*self.index)
-            {
-                return write!(f, "Vertex({}:\"{}\")", self.index, s);
-            }
-        }
-        write!(f, "Vertex({})", self.index)
+        self.fmt_indented(f, 0)
+    }
+}
+
+impl CompactFormat for VertexData {
+    fn fmt_compact(
+        &self,
+        f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        write!(
+            f,
+            "Vertex({}, w:{}, {}p, {}c)",
+            self.index,
+            self.width,
+            self.parents.len(),
+            self.children.len()
+        )
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut std::fmt::Formatter,
+        indent: usize,
+    ) -> std::fmt::Result {
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        writeln!(f, "Vertex {} {{", self.index)?;
+
+        write_indent(f, indent + 1)?;
+        writeln!(f, "width: {},", self.width)?;
+
+        write_indent(f, indent + 1)?;
+        writeln!(f, "parents: {} entries,", self.parents.len())?;
+
+        write_indent(f, indent + 1)?;
+        writeln!(f, "children: {} patterns", self.children.len())?;
+
+        write_indent(f, indent)?;
+        write!(f, "}}")
     }
 }

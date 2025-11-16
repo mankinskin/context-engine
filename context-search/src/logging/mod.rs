@@ -28,6 +28,7 @@ use context_trace::{
         CompactFormat,
     },
     AtomPosition,
+    GraphRoot,
     HasTargetPos,
 };
 use std::fmt;
@@ -194,7 +195,11 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
 
                 match node {
                     SearchNode::ParentCandidate(state) => {
+                        let vertex =
+                            state.parent_state.path.root_parent().index;
                         writeln!(f, "ParentCandidate {{")?;
+                        write_indent(f, indent + 4)?;
+                        writeln!(f, "vertex: {},", vertex)?;
                         write_indent(f, indent + 4)?;
                         let cursor_pos: usize =
                             state.cursor.atom_position.into();
@@ -294,10 +299,12 @@ impl CompactFormat for SearchQueue {
                     SearchNode::ParentCandidate(state) => {
                         let cursor_pos: usize =
                             state.cursor.atom_position.into();
+                        let vertex =
+                            state.parent_state.path.root_parent().index;
                         writeln!(
                             f,
-                            "[{}] ParentCandidate(pos:{}),",
-                            i, cursor_pos
+                            "[{}] ParentCandidate(vertex:{}, pos:{}),",
+                            i, vertex, cursor_pos
                         )?;
                     },
                     SearchNode::PrefixQueue(queue) => {

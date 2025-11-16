@@ -1,6 +1,9 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
-use quote::quote;
+use quote::{
+    quote,
+    ToTokens,
+};
 use syn::{
     parse_macro_input,
     ItemFn,
@@ -20,20 +23,41 @@ pub fn instrument_sig(
     // Extract the function signature as a string
     let fn_sig = extract_function_signature(&input_fn);
 
+    // Auto-detect trait implementation context
+    let trait_context = detect_trait_context(&input_fn);
+
     // Parse args as TokenStream2 for manipulation
     let args: TokenStream2 = args.into();
 
-    // Build the new attribute arguments with fn_sig added to or merged with fields
+    // Build the new attribute arguments with fn_sig and trait context added to or merged with fields
     let new_args = if has_fields {
         // Need to merge with existing fields
-        // We'll parse the tokens and insert fn_sig into the fields argument
-        merge_fn_sig_into_fields(args, &fn_sig)
+        merge_fields_into_args(args, &fn_sig, &trait_context)
     } else {
-        // No existing fields, just add fields(fn_sig = ...)
+        // No existing fields, create fields() with fn_sig and trait context
+        let mut field_content = quote! { fn_sig = #fn_sig };
+
+        // Add auto-detected trait context if not manually specified
+        if trait_context.has_self {
+            field_content
+                .extend(quote! { , self_type = std::any::type_name::<Self>() });
+        }
+
+        for assoc_type in &trait_context.associated_types {
+            let type_field_name = format!("{}_type", assoc_type.to_lowercase());
+            let type_field_ident = syn::Ident::new(
+                &type_field_name,
+                proc_macro2::Span::call_site(),
+            );
+            let type_ident =
+                syn::Ident::new(assoc_type, proc_macro2::Span::call_site());
+            field_content.extend(quote! { , #type_field_ident = std::any::type_name::<Self::#type_ident>() });
+        }
+
         if args.is_empty() {
-            quote! { fields(fn_sig = #fn_sig) }
+            quote! { fields(#field_content) }
         } else {
-            quote! { #args, fields(fn_sig = #fn_sig) }
+            quote! { #args, fields(#field_content) }
         }
     };
 
@@ -46,10 +70,118 @@ pub fn instrument_sig(
     output.into()
 }
 
-/// Merge fn_sig field into existing fields() argument
-fn merge_fn_sig_into_fields(
+/// Information about potential trait implementation context
+struct TraitContext {
+    has_self: bool,
+    associated_types: Vec<String>,
+}
+
+/// Detect if this function is likely a trait implementation and extract context
+fn detect_trait_context(func: &ItemFn) -> TraitContext {
+    let mut has_self = false;
+    let mut associated_types = Vec::new();
+
+    // Check if function has self parameter
+    for input in &func.sig.inputs {
+        if let syn::FnArg::Receiver(_) = input {
+            has_self = true;
+            break;
+        }
+    }
+
+    // Check return type for associated types (Self::TypeName pattern)
+    if let syn::ReturnType::Type(_, ty) = &func.sig.output {
+        extract_associated_types(&**ty, &mut associated_types);
+    }
+
+    TraitContext {
+        has_self,
+        associated_types,
+    }
+}
+
+/// Recursively extract associated type names from a type (e.g., Self::Next, Result<Self::Next, Self>)
+fn extract_associated_types(
+    ty: &syn::Type,
+    result: &mut Vec<String>,
+) {
+    match ty {
+        syn::Type::Path(type_path) => {
+            // Look for Self::AssocType pattern in the path itself
+            let segments: Vec<_> = type_path.path.segments.iter().collect();
+            for i in 0..segments.len().saturating_sub(1) {
+                if segments[i].ident == "Self" {
+                    // Found Self, next segment is the associated type
+                    let assoc_name = segments[i + 1].ident.to_string();
+                    if !result.contains(&assoc_name) {
+                        result.push(assoc_name);
+                    }
+                }
+            }
+
+            // Also check for qualified self (e.g., <Self as Trait>::Type)
+            if let Some(qself) = &type_path.qself {
+                if let syn::Type::Path(self_path) = &*qself.ty {
+                    if self_path.path.segments.len() == 1
+                        && self_path.path.segments[0].ident == "Self"
+                    {
+                        // This is Self::Something
+                        if let Some(segment) =
+                            type_path.path.segments.get(qself.position)
+                        {
+                            let assoc_name = segment.ident.to_string();
+                            if !result.contains(&assoc_name) {
+                                result.push(assoc_name);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Also check generic arguments for nested associated types
+            for segment in &type_path.path.segments {
+                if let syn::PathArguments::AngleBracketed(args) =
+                    &segment.arguments
+                {
+                    for arg in &args.args {
+                        if let syn::GenericArgument::Type(inner_ty) = arg {
+                            extract_associated_types(inner_ty, result);
+                        }
+                    }
+                }
+            }
+        },
+        syn::Type::Tuple(tuple) =>
+            for elem in &tuple.elems {
+                extract_associated_types(elem, result);
+            },
+        syn::Type::Array(array) => {
+            extract_associated_types(&array.elem, result);
+        },
+        syn::Type::Ptr(ptr) => {
+            extract_associated_types(&ptr.elem, result);
+        },
+        syn::Type::Reference(reference) => {
+            extract_associated_types(&reference.elem, result);
+        },
+        syn::Type::Slice(slice) => {
+            extract_associated_types(&slice.elem, result);
+        },
+        syn::Type::Paren(paren) => {
+            extract_associated_types(&paren.elem, result);
+        },
+        syn::Type::Group(group) => {
+            extract_associated_types(&group.elem, result);
+        },
+        _ => {},
+    }
+}
+
+/// Merge fn_sig and trait context into existing fields() argument
+fn merge_fields_into_args(
     args: TokenStream2,
     fn_sig: &str,
+    trait_context: &TraitContext,
 ) -> TokenStream2 {
     use proc_macro2::{
         Delimiter,
@@ -69,11 +201,38 @@ fn merge_fn_sig_into_fields(
                 // Next should be the parenthesized group
                 if let Some(TokenTree::Group(group)) = iter.next() {
                     if group.delimiter() == Delimiter::Parenthesis {
-                        // Create new group with fn_sig prepended
+                        // Create new group with fn_sig and trait context prepended
                         let mut new_stream = TokenStream2::new();
 
                         // Add fn_sig = "..."
                         new_stream.extend(quote! { fn_sig = #fn_sig });
+
+                        // Check if user already specified self_type or associated types
+                        let group_str = group.stream().to_string();
+                        let has_user_self_type =
+                            group_str.contains("self_type");
+
+                        // Add auto-detected self_type if not manually specified
+                        if trait_context.has_self && !has_user_self_type {
+                            new_stream.extend(quote! { , self_type = std::any::type_name::<Self>() });
+                        }
+
+                        // Add auto-detected associated types if not manually specified
+                        for assoc_type in &trait_context.associated_types {
+                            let type_field_name =
+                                format!("{}_type", assoc_type.to_lowercase());
+                            if !group_str.contains(&type_field_name) {
+                                let type_field_ident = syn::Ident::new(
+                                    &type_field_name,
+                                    proc_macro2::Span::call_site(),
+                                );
+                                let type_ident = syn::Ident::new(
+                                    assoc_type,
+                                    proc_macro2::Span::call_site(),
+                                );
+                                new_stream.extend(quote! { , #type_field_ident = std::any::type_name::<Self::#type_ident>() });
+                            }
+                        }
 
                         // Add comma if group is not empty
                         if !group.stream().is_empty() {
@@ -192,4 +351,139 @@ fn normalize_spacing(s: &str) -> String {
         .replace("> ", ">")
         // Handle commas
         .replace(" ,", ",")
+}
+
+/// Attribute macro for trait implementations that automatically adds trait context to all methods
+///
+/// This macro can be applied to an `impl Trait for Type` block and will automatically add
+/// `trait_name` to all instrumented methods, avoiding repetition.
+///
+/// # Usage
+///
+/// ```rust,ignore
+/// #[instrument_trait_impl]
+/// impl StateAdvance for ParentState {
+///     type Next = RootChildState;
+///     
+///     #[instrument_sig(skip(self, trav))]
+///     fn advance_state<G: HasGraph>(self, trav: &G) -> Result<Self::Next, Self> {
+///         // Method implementation
+///         // trait_name = "StateAdvance" is automatically added
+///     }
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn instrument_trait_impl(
+    _args: TokenStream,
+    input: TokenStream,
+) -> TokenStream {
+    let input_impl = parse_macro_input!(input as syn::ItemImpl);
+
+    // Extract the trait name from the impl block
+    let trait_name = if let Some((_, path, _)) = &input_impl.trait_ {
+        // Get the last segment of the trait path (e.g., StateAdvance from context::StateAdvance)
+        path.segments.last().map(|seg| seg.ident.to_string())
+    } else {
+        None
+    };
+
+    // If this is not a trait impl, just return the input unchanged
+    let Some(trait_name_str) = trait_name else {
+        return input_impl.into_token_stream().into();
+    };
+
+    // Process each item in the impl block
+    let mut new_items = Vec::new();
+
+    for item in input_impl.items {
+        match item {
+            syn::ImplItem::Fn(mut method) => {
+                // Check if the method already has instrument_sig attribute
+                let has_instrument_sig = method.attrs.iter().any(|attr| {
+                    attr.path()
+                        .segments
+                        .last()
+                        .map(|seg| seg.ident == "instrument_sig")
+                        .unwrap_or(false)
+                });
+
+                if has_instrument_sig {
+                    // Modify the instrument_sig attribute to add trait_name if not already present
+                    for attr in &mut method.attrs {
+                        if attr
+                            .path()
+                            .segments
+                            .last()
+                            .map(|seg| seg.ident == "instrument_sig")
+                            .unwrap_or(false)
+                        {
+                            // Parse the attribute arguments
+                            let attr_str = quote!(#attr).to_string();
+
+                            // Check if trait_name is already specified
+                            if !attr_str.contains("trait_name") {
+                                // Inject trait_name into the fields
+                                let new_attr = inject_trait_name_into_attr(
+                                    attr,
+                                    &trait_name_str,
+                                );
+                                *attr = new_attr;
+                            }
+                        }
+                    }
+                }
+
+                new_items.push(syn::ImplItem::Fn(method));
+            },
+            other => new_items.push(other),
+        }
+    }
+
+    // Reconstruct the impl block with modified items
+    let output = syn::ItemImpl {
+        items: new_items,
+        ..input_impl
+    };
+
+    quote!(#output).into()
+}
+
+/// Inject trait_name into an instrument_sig attribute
+fn inject_trait_name_into_attr(
+    attr: &syn::Attribute,
+    trait_name: &str,
+) -> syn::Attribute {
+    use syn::Meta;
+
+    // Try to parse the attribute as a meta list
+    if let Meta::List(mut meta_list) = attr.meta.clone() {
+        // Convert the existing tokens to string to manipulate
+        let tokens_str = meta_list.tokens.to_string();
+
+        // Check if there's already a fields() section
+        let new_tokens = if tokens_str.contains("fields") {
+            // Add trait_name to existing fields
+            let modified = tokens_str.replace(
+                "fields(",
+                &format!("fields(trait_name = \"{}\" , ", trait_name),
+            );
+            modified.parse::<TokenStream2>().unwrap()
+        } else {
+            // Add fields() with trait_name
+            let addition = format!(", fields(trait_name = \"{}\")", trait_name);
+            let mut tokens = meta_list.tokens.clone();
+            tokens.extend(addition.parse::<TokenStream2>().unwrap());
+            tokens
+        };
+
+        meta_list.tokens = new_tokens;
+
+        syn::Attribute {
+            meta: Meta::List(meta_list),
+            ..attr.clone()
+        }
+    } else {
+        // If parsing fails, return original
+        attr.clone()
+    }
 }

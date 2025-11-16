@@ -2,8 +2,12 @@ use crate::{
     HashMap,
     graph::vertex::{
         VertexIndex,
-        token::Token,
         has_vertex_index::HasVertexIndex,
+        token::Token,
+    },
+    logging::compact_format::{
+        CompactFormat,
+        write_indent,
     },
     trace::cache::{
         key::props::TargetKey,
@@ -14,6 +18,7 @@ use crate::{
 use derive_more::derive::IntoIterator;
 use key::directed::DirectedKey;
 use new::EditKind;
+use std::fmt;
 
 pub mod key;
 pub mod new;
@@ -166,5 +171,61 @@ impl Extend<(VertexIndex, VertexCache)> for TraceCache {
                 self.entries.insert(k, v);
             }
         }
+    }
+}
+
+impl CompactFormat for TraceCache {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "TraceCache({} entries)", self.entries.len())
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        writeln!(f, "TraceCache {{")?;
+
+        // Collect and sort entries by vertex index for consistent output
+        let mut entries: Vec<_> = self.entries.iter().collect();
+        entries.sort_by_key(|(idx, _)| idx.0);
+
+        for (vertex_idx, vertex_cache) in entries {
+            write_indent(f, indent + 1)?;
+            // VertexIndex Display will use test graph string representation
+            writeln!(f, "{}: {{", vertex_idx)?;
+
+            // Format the vertex cache contents
+            write_indent(f, indent + 2)?;
+            writeln!(f, "index: {},", vertex_idx)?;
+            write_indent(f, indent + 2)?;
+            writeln!(
+                f,
+                "bottom_up: {} entries,",
+                vertex_cache.bottom_up.len()
+            )?;
+            write_indent(f, indent + 2)?;
+            writeln!(f, "top_down: {} entries", vertex_cache.top_down.len())?;
+
+            write_indent(f, indent + 1)?;
+            writeln!(f, "}},")?;
+        }
+
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+impl fmt::Display for TraceCache {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        self.fmt_indented(f, 0)
     }
 }

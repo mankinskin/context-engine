@@ -10,16 +10,7 @@ use std::{
 
 /// Newtype for vertex indices that provides Display with string representation
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
+    Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize,
 )]
 pub struct VertexIndex(pub usize);
 
@@ -54,9 +45,20 @@ impl fmt::Display for VertexIndex {
             if let Some(s) =
                 test_graph::get_token_string_from_test_graph(self.0)
             {
-                return write!(f, "V{}:\"{}\"", self.0, s);
+                return write!(f, "\"{}\"", s);
             }
         }
-        write!(f, "V{}", self.0)
+        write!(f, "{:?}", self.0)
+    }
+}
+
+impl fmt::Debug for VertexIndex {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
+        // Use Display formatting for Debug as well, so string representations
+        // show up in assert_eq and other debug contexts
+        fmt::Display::fmt(self, f)
     }
 }

@@ -42,6 +42,7 @@ pub(crate) struct ParentCompareState {
     pub(crate) parent_state: ParentState,
     pub(crate) cursor: PatternCursor,
 }
+#[context_trace::instrument_trait_impl]
 impl StateAdvance for ParentCompareState {
     type Next = CompareRootState;
     #[context_trace::instrument_sig(skip(self, trav))]

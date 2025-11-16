@@ -20,6 +20,35 @@ use super::path::{
     get_workspace_root,
 };
 
+/// Configuration for trait context display
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TraitContextConfig {
+    /// Show the trait name (e.g., [trait: StateAdvance])
+    #[serde(default = "default_true")]
+    pub show_trait_name: bool,
+    /// Show the implementing type (e.g., <ParentState>)
+    #[serde(default = "default_true")]
+    pub show_self_type: bool,
+    /// Show associated types (e.g., [Next=RootChildState])
+    #[serde(default = "default_true")]
+    pub show_associated_types: bool,
+}
+
+fn default_true() -> bool {
+    true
+}
+
+impl Default for TraitContextConfig {
+    fn default() -> Self {
+        Self {
+            show_trait_name: true,
+            show_self_type: true,
+            show_associated_types: true,
+        }
+    }
+}
+
 /// Configuration for span enter events
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -33,10 +62,9 @@ pub struct SpanEnterConfig {
     /// Show span fields when spans are entered
     #[serde(default = "default_true")]
     pub show_fields: bool,
-}
-
-fn default_true() -> bool {
-    true
+    /// Configuration for trait context display
+    #[serde(default)]
+    pub trait_context: TraitContextConfig,
 }
 
 impl Default for SpanEnterConfig {
@@ -45,6 +73,7 @@ impl Default for SpanEnterConfig {
             show: true,
             show_fn_signature: true,
             show_fields: true,
+            trait_context: TraitContextConfig::default(),
         }
     }
 }
@@ -95,6 +124,43 @@ impl Default for PanicConfig {
     }
 }
 
+/// Configuration for whitespace and visual separation in logs
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WhitespaceConfig {
+    /// Add blank line before events
+    #[serde(default)]
+    pub blank_line_before_events: bool,
+    /// Add blank line after events
+    #[serde(default)]
+    pub blank_line_after_events: bool,
+    /// Add blank line before span enter
+    #[serde(default)]
+    pub blank_line_before_span_enter: bool,
+    /// Add blank line after span enter
+    #[serde(default)]
+    pub blank_line_after_span_enter: bool,
+    /// Add blank line before span close
+    #[serde(default)]
+    pub blank_line_before_span_close: bool,
+    /// Add blank line after span close
+    #[serde(default)]
+    pub blank_line_after_span_close: bool,
+}
+
+impl Default for WhitespaceConfig {
+    fn default() -> Self {
+        Self {
+            blank_line_before_events: false,
+            blank_line_after_events: false,
+            blank_line_before_span_enter: false,
+            blank_line_after_span_enter: false,
+            blank_line_before_span_close: false,
+            blank_line_after_span_close: false,
+        }
+    }
+}
+
 /// Formatting options for log output
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -108,6 +174,9 @@ pub struct FormatConfig {
     /// Configuration for panic logging
     #[serde(default)]
     pub panic: PanicConfig,
+    /// Configuration for whitespace and visual separation
+    #[serde(default)]
+    pub whitespace: WhitespaceConfig,
     /// Enable visual indentation with box-drawing characters
     #[serde(default = "default_true")]
     pub enable_indentation: bool,
@@ -135,6 +204,7 @@ impl Default for FormatConfig {
             span_enter: SpanEnterConfig::default(),
             span_close: SpanCloseConfig::default(),
             panic: PanicConfig::default(),
+            whitespace: WhitespaceConfig::default(),
             enable_indentation: true,
             show_file_location: true,
             enable_ansi: true,
@@ -154,10 +224,19 @@ impl FormatConfig {
     /// show = true
     /// show_fn_signature = true
     /// show_fields = true
+    /// show_trait_context = true
     ///
     /// [span_close]
     /// show = true
     /// show_timing = true
+    ///
+    /// [whitespace]
+    /// blank_line_before_events = false
+    /// blank_line_after_events = false
+    /// blank_line_before_span_enter = false
+    /// blank_line_after_span_enter = false
+    /// blank_line_before_span_close = false
+    /// blank_line_after_span_close = false
     ///
     /// enable_indentation = true
     /// show_file_location = true

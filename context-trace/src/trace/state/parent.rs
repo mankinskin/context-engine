@@ -76,8 +76,10 @@ pub struct ParentState {
 //    CursorPosition for ParentState, self => self.cursor.relative_pos
 //}
 
+#[crate::instrument_trait_impl]
 impl StateAdvance for ParentState {
     type Next = RootChildState;
+    #[crate::instrument_sig(skip(self, trav))]
     fn advance_state<G: HasGraph>(
         self,
         trav: &G,

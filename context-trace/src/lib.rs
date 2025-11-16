@@ -22,7 +22,10 @@ pub mod trace;
 pub mod logging;
 
 // Re-export proc macros
-pub use context_trace_macros::instrument_sig;
+pub use context_trace_macros::{
+    instrument_sig,
+    instrument_trait_impl,
+};
 
 #[cfg(any(test, feature = "test-api"))]
 pub mod tests;

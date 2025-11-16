@@ -50,7 +50,7 @@ pub(crate) trait RangePath:
         exit: usize,
     ) -> Self;
 }
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct RootedRangePath<Root: PathRoot> {
     pub(crate) root: Root,
     pub(crate) start: RolePath<Start>,
@@ -172,12 +172,26 @@ impl<R: PathRoot + fmt::Display> fmt::Display for RootedRangePath<R> {
             writeln!(f)?;
             write!(f, "}}")
         } else {
-            // Compact format for {}
-            write!(f, "RootedRangePath {{")?;
-            write!(f, " root: {}, ", self.root)?;
-            write!(f, "start: {}, ", self.start)?;
-            write!(f, "end: {}", self.end)?;
-            write!(f, " }}")
+            // Compact format for {} - no spaces inside braces
+            write!(f, "RootedRangePath{{")?;
+            write!(f, "root:{},", self.root)?;
+            write!(f, "start:{},", self.start)?;
+            write!(f, "end:{}", self.end)?;
+            write!(f, "}}")
         }
+    }
+}
+
+impl<R: PathRoot + fmt::Display> fmt::Debug for RootedRangePath<R>
+where
+    Self: crate::logging::compact_format::CompactFormat,
+{
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+    ) -> fmt::Result {
+        // Use CompactFormat's indented format for Debug
+        use crate::logging::compact_format::CompactFormat;
+        self.fmt_indented(f, 1)
     }
 }

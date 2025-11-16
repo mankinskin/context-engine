@@ -392,7 +392,7 @@ impl Searchable for PatternEndPath {
     }
 }
 impl Searchable for PatternRangePath {
-    #[context_trace::instrument_sig(skip(self, trav), fields(path = %self))]
+    #[context_trace::instrument_sig(skip(self, trav), fields(path = ?self))]
     fn start_search<K: TraversalKind>(
         self,
         trav: K::Trav,

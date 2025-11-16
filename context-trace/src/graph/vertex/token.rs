@@ -269,12 +269,7 @@ impl Display for Token {
     ) -> std::fmt::Result {
         #[cfg(any(test, feature = "test-api"))]
         {
-            use crate::graph::test_graph;
-            if let Some(s) =
-                test_graph::get_token_string_from_test_graph(*self.index)
-            {
-                return write!(f, "\"{}\"", s);
-            }
+            return write!(f, "{}", *self.index);
         }
         write!(f, "T{}w{}", self.index, self.width.0)
     }

@@ -68,14 +68,30 @@ where
             || message_text == "\"exit\""
             || message_text == "\"close\"";
 
+        let is_span_enter = message_text == "\"enter\"";
+        let is_span_close = message_text == "\"close\"";
+
         // Skip redundant span events - only show enter and close
         // Also skip based on configuration
-        let should_skip = message_text == "\"new\"" 
+        let should_skip = message_text == "\"new\""
             || message_text == "\"exit\""
-            || (message_text == "\"enter\"" && !self.config.span_enter.show)
-            || (message_text == "\"close\"" && !self.config.span_close.show);
+            || (is_span_enter && !self.config.span_enter.show)
+            || (is_span_close && !self.config.span_close.show);
         if should_skip {
             return Ok(());
+        }
+
+        // Add blank line before event if configured
+        let should_add_blank_before = if is_span_enter {
+            self.config.whitespace.blank_line_before_span_enter
+        } else if is_span_close {
+            self.config.whitespace.blank_line_before_span_close
+        } else {
+            self.config.whitespace.blank_line_before_events
+        };
+
+        if should_add_blank_before {
+            writeln!(writer)?;
         }
 
         // Determine decoration based on event type
@@ -144,36 +160,70 @@ where
                 ctx.event_scope().and_then(|scope| scope.from_root().last());
 
             let span_name = span.as_ref().map(|s| s.name()).unwrap_or("?");
-            let target = span.as_ref().map(|s| s.metadata().target()).unwrap_or("");
+            let target =
+                span.as_ref().map(|s| s.metadata().target()).unwrap_or("");
 
             let event_name = match message_text.as_str() {
                 "\"new\"" => format!("SPAN CREATED: {}", span_name),
                 "\"enter\"" => {
+                    let mut parts = Vec::new();
+                    let fields_str_opt = span.as_ref().and_then(|s| {
+                        s.extensions()
+                            .get::<tracing_subscriber::fmt::FormattedFields<N>>(
+                            )
+                            .map(|f| {
+                                strip_ansi_codes(f.as_str()).replace('\n', " ")
+                            })
+                    });
+
+                    // Extract trait context if any component is enabled
+                    let trait_context = if self
+                        .config
+                        .span_enter
+                        .trait_context
+                        .show_trait_name
+                        || self.config.span_enter.trait_context.show_self_type
+                        || self
+                            .config
+                            .span_enter
+                            .trait_context
+                            .show_associated_types
+                    {
+                        fields_str_opt
+                            .as_ref()
+                            .and_then(|fs| extract_trait_context(fs))
+                    } else {
+                        None
+                    };
+
                     // Try to extract fn_sig from the span's formatted fields if enabled
                     let fn_sig = if self.config.span_enter.show_fn_signature {
-                        span.as_ref().and_then(|s| {
-                            // Try to get from FormattedFields extension first
-                            if let Some(fields) = s.extensions().get::<tracing_subscriber::fmt::FormattedFields<N>>() {
-                                // Strip ANSI codes and newlines from formatted fields
-                                let fields_str = strip_ansi_codes(fields.as_str()).replace('\n', "");
-                                
-                                // Parse fn_sig from formatted fields (format: fn_sig="...")
-                                if let Some(idx) = fields_str.find("fn_sig=\"") {
-                                    let start = idx + 8; // Skip 'fn_sig="'
-                                    if let Some(end_offset) = fields_str[start..].find('"') {
-                                        return Some(fields_str[start..start + end_offset].to_string());
-                                    }
+                        fields_str_opt.as_ref().and_then(|fields_str| {
+                            // Parse fn_sig from formatted fields (format: fn_sig="...")
+                            if let Some(idx) = fields_str.find("fn_sig=\"") {
+                                let start = idx + 8; // Skip 'fn_sig="'
+                                if let Some(end_offset) =
+                                    fields_str[start..].find('"')
+                                {
+                                    return Some(
+                                        fields_str[start..start + end_offset]
+                                            .to_string(),
+                                    );
                                 }
-                                
-                                // Also try without quotes (format: fn_sig=...)
-                                if let Some(idx) = fields_str.find("fn_sig=") {
-                                    let start = idx + 7; // Skip 'fn_sig='
-                                    let remaining = &fields_str[start..];
-                                    let end = remaining.find(char::is_whitespace).unwrap_or(remaining.len());
-                                    if end > 0 {
-                                        let value = &remaining[..end];
-                                        return Some(value.trim_matches('"').to_string());
-                                    }
+                            }
+
+                            // Also try without quotes (format: fn_sig=...)
+                            if let Some(idx) = fields_str.find("fn_sig=") {
+                                let start = idx + 7; // Skip 'fn_sig='
+                                let remaining = &fields_str[start..];
+                                let end = remaining
+                                    .find(char::is_whitespace)
+                                    .unwrap_or(remaining.len());
+                                if end > 0 {
+                                    let value = &remaining[..end];
+                                    return Some(
+                                        value.trim_matches('"').to_string(),
+                                    );
                                 }
                             }
                             None
@@ -182,13 +232,64 @@ where
                         None
                     };
 
-                    // Show module path, function name, and highlighted signature if available
-                    if let Some(sig) = fn_sig {
-                        let highlighted = highlight_rust_signature(&sig, self.config.enable_ansi);
-                        format!("SPAN ENTERED: {}::{} - {}", target, span_name, highlighted)
-                    } else {
-                        format!("SPAN ENTERED: {}::{}", target, span_name)
+                    // Build the message parts
+                    parts.push(format!(
+                        "SPAN ENTERED: {}::{}",
+                        target, span_name
+                    ));
+
+                    // Add trait context if available
+                    if let Some(ctx) = trait_context {
+                        if self.config.span_enter.trait_context.show_trait_name
+                        {
+                            if let Some(trait_name) = ctx.trait_name {
+                                parts.push(format!("[trait: {}]", trait_name));
+                            }
+                        }
+                        if self.config.span_enter.trait_context.show_self_type {
+                            if let Some(self_type) = ctx.self_type {
+                                // Extract just the type name from the full path
+                                let type_name = self_type
+                                    .rsplit("::")
+                                    .next()
+                                    .unwrap_or(&self_type);
+                                parts.push(format!("<{}>", type_name));
+                            }
+                        }
+                        if self
+                            .config
+                            .span_enter
+                            .trait_context
+                            .show_associated_types
+                        {
+                            if !ctx.associated_types.is_empty() {
+                                let assoc_str = ctx
+                                    .associated_types
+                                    .iter()
+                                    .map(|(name, ty)| {
+                                        let ty_short = ty
+                                            .rsplit("::")
+                                            .next()
+                                            .unwrap_or(ty);
+                                        format!("{}={}", name, ty_short)
+                                    })
+                                    .collect::<Vec<_>>()
+                                    .join(", ");
+                                parts.push(format!("[{}]", assoc_str));
+                            }
+                        }
                     }
+
+                    // Add signature if available
+                    if let Some(sig) = fn_sig {
+                        let highlighted = highlight_rust_signature(
+                            &sig,
+                            self.config.enable_ansi,
+                        );
+                        parts.push(format!("- {}", highlighted));
+                    }
+
+                    parts.join(" ")
                 },
                 "\"exit\"" => format!("SPAN EXITED: {}", span_name),
                 "\"close\"" => {
@@ -215,27 +316,150 @@ where
         );
         event.record(&mut visitor);
         visitor.result?;
-        
+
         // For SPAN ENTERED events, also display the span's fields if enabled
         if self.config.span_enter.show_fields
             && message_text == "\"enter\""
-            && let Some(span) = ctx.event_scope().and_then(|scope| scope.from_root().last())
-                && let Some(fields) = span.extensions().get::<tracing_subscriber::fmt::FormattedFields<N>>() {
-                    // Parse and display each field
-                    let fields_str = strip_ansi_codes(fields.as_str()).replace('\n', " ");
-                    
-                    // Split by whitespace and process each field=value pair
-                    for part in fields_str.split_whitespace() {
-                        if let Some(eq_pos) = part.find('=') {
-                            let field_name = &part[..eq_pos];
-                            // Skip fn_sig (already displayed inline) and message
-                            if field_name != "fn_sig" && field_name != "message" {
-                                let field_value = &part[eq_pos + 1..];
-                                write!(writer, "\n{}    {}={}", gutter_indent, field_name, field_value)?;
+            && let Some(span) =
+                ctx.event_scope().and_then(|scope| scope.from_root().last())
+            && let Some(fields) =
+                span.extensions()
+                    .get::<tracing_subscriber::fmt::FormattedFields<N>>()
+        {
+            // Display span fields directly without parsing
+            let fields_str = strip_ansi_codes(fields.as_str());
+
+            // Remove fn_sig and message fields if present by simple string replacement
+            // This is hacky but avoids complex parsing
+            let mut cleaned = fields_str.clone();
+
+            // Try to remove fn_sig field (pattern: fn_sig="..." or fn_sig=value)
+            if let Some(start) = cleaned.find("fn_sig=") {
+                // Find the end of this field (next space or end of string)
+                let after_eq = start + 7;
+                let remaining = &cleaned[after_eq..];
+
+                if remaining.starts_with('"') {
+                    // Quoted value - find closing quote
+                    if let Some(quote_end) = remaining[1..].find('"') {
+                        let field_end = after_eq + quote_end + 2;
+                        cleaned.replace_range(start..field_end, "");
+                    }
+                } else {
+                    // Unquoted value - find next whitespace or end
+                    let field_end = remaining
+                        .find(char::is_whitespace)
+                        .map(|i| after_eq + i)
+                        .unwrap_or(cleaned.len());
+                    cleaned.replace_range(start..field_end, "");
+                }
+            }
+
+            // Remove message field similarly
+            if let Some(start) = cleaned.find("message=") {
+                let after_eq = start + 8;
+                let remaining = &cleaned[after_eq..];
+
+                if remaining.starts_with('"') {
+                    if let Some(quote_end) = remaining[1..].find('"') {
+                        let field_end = after_eq + quote_end + 2;
+                        cleaned.replace_range(start..field_end, "");
+                    }
+                } else {
+                    let field_end = remaining
+                        .find(char::is_whitespace)
+                        .map(|i| after_eq + i)
+                        .unwrap_or(cleaned.len());
+                    cleaned.replace_range(start..field_end, "");
+                }
+            }
+
+            // Remove trait context fields if they were displayed inline
+            // Remove self_type if it's being shown in trait context
+            if self.config.span_enter.trait_context.show_self_type {
+                while let Some(start) = cleaned.find("self_type=") {
+                    let after_eq = start + 10;
+                    let remaining = &cleaned[after_eq..];
+                    let field_end = if remaining.starts_with('"') {
+                        remaining[1..].find('"').map(|i| after_eq + i + 2)
+                    } else {
+                        remaining
+                            .find(char::is_whitespace)
+                            .map(|i| after_eq + i)
+                    }
+                    .unwrap_or(cleaned.len());
+                    cleaned.replace_range(start..field_end, "");
+                }
+            }
+
+            // Remove trait_name if it's being shown in trait context
+            if self.config.span_enter.trait_context.show_trait_name {
+                while let Some(start) = cleaned.find("trait_name=") {
+                    let after_eq = start + 11;
+                    let remaining = &cleaned[after_eq..];
+                    let field_end = if remaining.starts_with('"') {
+                        remaining[1..].find('"').map(|i| after_eq + i + 2)
+                    } else {
+                        remaining
+                            .find(char::is_whitespace)
+                            .map(|i| after_eq + i)
+                    }
+                    .unwrap_or(cleaned.len());
+                    cleaned.replace_range(start..field_end, "");
+                }
+            }
+
+            // Remove *_type fields (associated types) if they're being shown in trait context
+            if self.config.span_enter.trait_context.show_associated_types {
+                let mut pos = 0;
+                while pos < cleaned.len() {
+                    if let Some(type_pos) = cleaned[pos..].find("_type=") {
+                        let abs_pos = pos + type_pos;
+                        // Find start of field name (back to previous whitespace or start)
+                        let field_start = cleaned[..abs_pos]
+                            .rfind(char::is_whitespace)
+                            .map(|i| i + 1)
+                            .unwrap_or(0);
+                        let field_name = &cleaned[field_start..abs_pos];
+
+                        // Skip if it's self_type or trait_name (already handled)
+                        if field_name != "self" && field_name != "trait_name" {
+                            let after_eq = abs_pos + 6; // Skip '_type='
+                            let remaining = &cleaned[after_eq..];
+                            let field_end = if remaining.starts_with('"') {
+                                remaining[1..]
+                                    .find('"')
+                                    .map(|i| after_eq + i + 2)
+                            } else {
+                                remaining
+                                    .find(char::is_whitespace)
+                                    .map(|i| after_eq + i)
                             }
+                            .unwrap_or(cleaned.len());
+                            cleaned.replace_range(field_start..field_end, "");
+                            pos = field_start;
+                        } else {
+                            pos = abs_pos + 1;
                         }
+                    } else {
+                        break;
                     }
                 }
+            }
+
+            // Trim and display the remaining fields with proper indentation
+            let trimmed = cleaned.trim();
+            if !trimmed.is_empty() {
+                // Split by lines and add gutter indentation to each line
+                for (i, line) in trimmed.lines().enumerate() {
+                    if i == 0 {
+                        write!(writer, "\n{}    {}", gutter_indent, line)?;
+                    } else {
+                        write!(writer, "\n{}    {}", gutter_indent, line)?;
+                    }
+                }
+            }
+        }
 
         // For SPAN CLOSED events, filter timing fields if timing is disabled
         if message_text == "\"close\"" && !self.config.span_close.show_timing {
@@ -246,11 +470,127 @@ where
         // Write file location if enabled
         if self.config.show_file_location {
             if let Some(file) = event.metadata().file()
-                && let Some(line) = event.metadata().line() {
-                    write!(writer, "\n{}    at {}:{}", gutter_indent, file, line)?;
-                }
+                && let Some(line) = event.metadata().line()
+            {
+                write!(writer, "\n{}    at {}:{}", gutter_indent, file, line)?;
+            }
         }
 
-        writeln!(writer)
+        writeln!(writer)?;
+
+        // Add blank line after event if configured
+        let should_add_blank_after = if is_span_enter {
+            self.config.whitespace.blank_line_after_span_enter
+        } else if is_span_close {
+            self.config.whitespace.blank_line_after_span_close
+        } else {
+            self.config.whitespace.blank_line_after_events
+        };
+
+        if should_add_blank_after {
+            writeln!(writer)?;
+        }
+
+        Ok(())
+    }
+}
+
+/// Trait context extracted from span fields
+#[derive(Debug)]
+struct TraitContext {
+    trait_name: Option<String>,
+    self_type: Option<String>,
+    associated_types: Vec<(String, String)>,
+}
+
+/// Extract trait context from formatted fields string
+/// Looks for special fields: self_type, trait_name, and patterns like next_type, error_type, etc.
+fn extract_trait_context(fields_str: &str) -> Option<TraitContext> {
+    let mut trait_name = None;
+    let mut self_type = None;
+    let mut associated_types = Vec::new();
+
+    // Simple parsing - look for patterns like self_type="..." or trait_name="..."
+    // This assumes fields are formatted as: field="value" or field=value
+
+    // Extract self_type
+    if let Some(idx) = fields_str.find("self_type=") {
+        let start = idx + 10; // Skip 'self_type='
+        let remaining = &fields_str[start..];
+        if let Some(value) = extract_field_value(remaining) {
+            self_type = Some(value);
+        }
+    }
+
+    // Extract trait_name
+    if let Some(idx) = fields_str.find("trait_name=") {
+        let start = idx + 11; // Skip 'trait_name='
+        let remaining = &fields_str[start..];
+        if let Some(value) = extract_field_value(remaining) {
+            trait_name = Some(value);
+        }
+    }
+
+    // Extract associated types (fields ending with _type but not self_type)
+    for part in fields_str.split_whitespace() {
+        if part.contains("_type=")
+            && !part.starts_with("self_type=")
+            && !part.starts_with("trait_name=")
+        {
+            if let Some(eq_pos) = part.find('=') {
+                let field_name = &part[..eq_pos];
+                let remaining = &part[eq_pos + 1..];
+                if let Some(value) = extract_field_value(remaining) {
+                    // Convert next_type to "Next", error_type to "Error", etc.
+                    let assoc_name = field_name
+                        .strip_suffix("_type")
+                        .map(|s| {
+                            // Capitalize first letter
+                            let mut chars = s.chars();
+                            match chars.next() {
+                                None => String::new(),
+                                Some(first) =>
+                                    first.to_uppercase().chain(chars).collect(),
+                            }
+                        })
+                        .unwrap_or_else(|| field_name.to_string());
+                    associated_types.push((assoc_name, value));
+                }
+            }
+        }
+    }
+
+    if trait_name.is_some()
+        || self_type.is_some()
+        || !associated_types.is_empty()
+    {
+        Some(TraitContext {
+            trait_name,
+            self_type,
+            associated_types,
+        })
+    } else {
+        None
+    }
+}
+
+/// Extract a field value from a string, handling quoted and unquoted values
+fn extract_field_value(s: &str) -> Option<String> {
+    let s = s.trim();
+    if s.starts_with('"') {
+        // Quoted value - find closing quote
+        if let Some(end) = s[1..].find('"') {
+            Some(s[1..end + 1].to_string())
+        } else {
+            None
+        }
+    } else {
+        // Unquoted value - take until whitespace
+        let end = s.find(char::is_whitespace).unwrap_or(s.len());
+        if end > 0 {
+            Some(s[..end].to_string())
+        } else {
+            None
+        }
     }
 }
