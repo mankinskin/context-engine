@@ -1,0 +1,385 @@
+//! Main TestTracing API and initialization
+
+use std::{
+    env,
+    fs,
+    path::{
+        Path,
+        PathBuf,
+    },
+    sync::Once,
+};
+use tracing_subscriber::{
+    EnvFilter,
+    Layer,
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
+};
+
+use super::{
+    config::TracingConfig,
+    formatter::CompactFieldsFormatter,
+    panic::install_panic_hook,
+    timer::CompactTimer,
+};
+
+static GLOBAL_INIT: Once = Once::new();
+
+/// Trait for types that can provide access to a Hypergraph for test graph registration
+#[cfg(any(test, feature = "test-api"))]
+pub trait AsGraphRef<G: crate::graph::kind::GraphKind> {
+    fn register_test_graph(self)
+    where
+        G: Send + Sync + 'static,
+        G::Atom: std::fmt::Display;
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl<G: crate::graph::kind::GraphKind> AsGraphRef<G> for &crate::Hypergraph<G> {
+    fn register_test_graph(self)
+    where
+        G: Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        crate::graph::test_graph::register_test_graph(self);
+    }
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
+    for &crate::HypergraphRef<G>
+{
+    fn register_test_graph(self)
+    where
+        G: Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        // HypergraphRef derefs to Arc<RwLock<Hypergraph>>
+        let graph = self.read().unwrap();
+        crate::graph::test_graph::register_test_graph(&*graph);
+    }
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl<G: crate::graph::kind::GraphKind> AsGraphRef<G> for crate::Hypergraph<G> {
+    fn register_test_graph(self)
+    where
+        G: Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        crate::graph::test_graph::register_test_graph(&self);
+    }
+}
+
+#[cfg(any(test, feature = "test-api"))]
+impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
+    for crate::HypergraphRef<G>
+{
+    fn register_test_graph(self)
+    where
+        G: Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        let graph = self.read().unwrap();
+        crate::graph::test_graph::register_test_graph(&*graph);
+    }
+}
+
+/// Guard that handles test logging lifecycle
+///
+/// Automatically cleans up log files when the test succeeds (guard is dropped without panic).
+/// Also handles test graph registration and cleanup.
+pub struct TestTracing {
+    log_file_path: Option<PathBuf>,
+    clear_test_graph_on_drop: bool,
+}
+
+impl TestTracing {
+    /// Initialize tracing for a test
+    ///
+    /// # Example
+    /// ```no_run
+    /// use context_trace::logging::tracing_utils::TestTracing;
+    ///
+    /// #[test]
+    /// fn my_test() {
+    ///     let _tracing = TestTracing::init("my_test");
+    ///     // Test code with automatic tracing
+    ///     // Log file will be deleted if test passes
+    /// }
+    /// ```
+    pub fn init(test_name: &str) -> Self {
+        Self::init_with_config(test_name, TracingConfig::default())
+    }
+
+    /// Initialize tracing with custom configuration
+    pub fn init_with_config(
+        test_name: &str,
+        config: TracingConfig,
+    ) -> Self {
+        Self::init_internal(test_name, config, false)
+    }
+
+    /// Initialize tracing and register a test graph
+    ///
+    /// # Example
+    /// ```no_run
+    /// use context_trace::{Hypergraph, logging::tracing_utils::TestTracing};
+    ///
+    /// #[test]
+    /// fn my_test() {
+    ///     let graph = Hypergraph::default();
+    ///     let _tracing = TestTracing::init_with_graph("my_test", &graph);
+    ///     // Test code - tokens will show string representations
+    ///     // Graph and log file will be cleaned up if test passes
+    /// }
+    /// ```
+    #[cfg(any(test, feature = "test-api"))]
+    pub fn init_with_graph<G>(
+        test_name: &str,
+        graph: impl AsGraphRef<G>,
+    ) -> Self
+    where
+        G: crate::graph::kind::GraphKind + Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        graph.register_test_graph();
+        Self::init_internal(test_name, TracingConfig::default(), true)
+    }
+
+    /// Initialize tracing with custom configuration and register a test graph
+    #[cfg(any(test, feature = "test-api"))]
+    pub fn init_with_config_and_graph<G>(
+        test_name: &str,
+        config: TracingConfig,
+        graph: impl AsGraphRef<G>,
+    ) -> Self
+    where
+        G: crate::graph::kind::GraphKind + Send + Sync + 'static,
+        G::Atom: std::fmt::Display,
+    {
+        graph.register_test_graph();
+        Self::init_internal(test_name, config, true)
+    }
+
+    fn init_internal(
+        test_name: &str,
+        config: TracingConfig,
+        clear_test_graph_on_drop: bool,
+    ) -> Self {
+        // Initialize global tracing only once
+        GLOBAL_INIT.call_once(|| {
+            // This is a placeholder - actual subscriber will be set per-test
+        });
+
+        // Install panic hook to log panics before spans close
+        install_panic_hook(config.format.panic.clone());
+
+        // Create log directory
+        if config.log_to_file {
+            fs::create_dir_all(&config.log_dir).ok();
+        }
+
+        let log_file_path = if config.log_to_file {
+            Some(config.log_dir.join(format!("{}.log", test_name)))
+        } else {
+            None
+        };
+
+        // Build separate filters for stdout and file
+        let stdout_filter = if let Some(directives) =
+            &config.stdout_filter_directives
+        {
+            EnvFilter::try_new(directives).unwrap_or_else(|_| {
+                EnvFilter::new(config.stdout_level.as_str())
+            })
+        } else {
+            // Check for LOG_FILTER first (preferred), then RUST_LOG, otherwise use stdout level
+            env::var("LOG_FILTER")
+                .ok()
+                .and_then(|filter| EnvFilter::try_new(&filter).ok())
+                .or_else(|| EnvFilter::try_from_default_env().ok())
+                .unwrap_or_else(|| EnvFilter::new(config.stdout_level.as_str()))
+        };
+
+        let file_filter = if let Some(directives) =
+            &config.file_filter_directives
+        {
+            EnvFilter::try_new(directives)
+                .unwrap_or_else(|_| EnvFilter::new(config.file_level.as_str()))
+        } else {
+            // For file output, also check LOG_FILTER
+            env::var("LOG_FILTER")
+                .ok()
+                .and_then(|filter| EnvFilter::try_new(&filter).ok())
+                .unwrap_or_else(|| EnvFilter::new(config.file_level.as_str()))
+        };
+
+        // Create the subscriber without a global filter
+        let registry = tracing_subscriber::registry();
+
+        // Extract config values to avoid partial move issues
+        let span_events = config.span_events;
+        let log_to_stdout = config.log_to_stdout;
+        let format_config = config.format.clone();
+        let mut format_config_file = format_config.clone();
+        format_config_file.enable_ansi = false; // File output should not have ANSI
+
+        // Build layers based on configuration
+        match (log_to_stdout, log_file_path.as_ref()) {
+            (true, Some(path)) => {
+                // Both stdout and file - use multiple layers with separate filters
+                let file =
+                    fs::File::create(path).expect("Failed to create log file");
+
+                let stdout_layer = tracing_subscriber::fmt::layer()
+                    .with_writer(std::io::stdout)
+                    .with_span_events(span_events.clone())
+                    .with_target(false)
+                    .with_file(false)
+                    .with_line_number(false)
+                    .with_level(false) // Level handled by custom formatter
+                    .with_ansi(format_config.enable_ansi)
+                    .with_timer(CompactTimer::new())
+                    .event_format(CompactFieldsFormatter::new(
+                        format_config.clone(),
+                    ))
+                    .fmt_fields(
+                        tracing_subscriber::fmt::format::DefaultFields::new(),
+                    )
+                    .with_filter(stdout_filter);
+
+                let file_layer = tracing_subscriber::fmt::layer()
+                    .with_writer(move || {
+                        file.try_clone().expect("Failed to clone file")
+                    })
+                    .with_span_events(span_events)
+                    .with_target(false)
+                    .with_file(false)
+                    .with_line_number(false)
+                    .with_level(false) // Level handled by custom formatter
+                    .with_ansi(false)
+                    .with_timer(CompactTimer::new())
+                    .event_format(CompactFieldsFormatter::new(
+                        format_config_file.clone(),
+                    ))
+                    .with_filter(file_filter);
+
+                registry.with(stdout_layer).with(file_layer).try_init().ok();
+            },
+            (true, None) => {
+                // Only stdout
+                let stdout_layer = tracing_subscriber::fmt::layer()
+                    .with_writer(std::io::stdout)
+                    .with_span_events(span_events)
+                    .with_target(false)
+                    .with_file(false)
+                    .with_line_number(false)
+                    .with_level(false) // Level handled by custom formatter
+                    .with_ansi(format_config.enable_ansi)
+                    .with_timer(CompactTimer::new())
+                    .event_format(CompactFieldsFormatter::new(format_config))
+                    .fmt_fields(
+                        tracing_subscriber::fmt::format::DefaultFields::new(),
+                    )
+                    .with_filter(stdout_filter);
+
+                registry.with(stdout_layer).try_init().ok();
+            },
+            (false, Some(path)) => {
+                // Only file
+                let file =
+                    fs::File::create(path).expect("Failed to create log file");
+
+                let file_layer = tracing_subscriber::fmt::layer()
+                    .with_writer(move || {
+                        file.try_clone().expect("Failed to clone file")
+                    })
+                    .with_span_events(span_events)
+                    .with_target(false)
+                    .with_file(false)
+                    .with_line_number(false)
+                    .with_level(false) // Level handled by custom formatter
+                    .with_ansi(false)
+                    .with_timer(CompactTimer::new())
+                    .event_format(CompactFieldsFormatter::new(
+                        format_config_file,
+                    ))
+                    .fmt_fields(
+                        tracing_subscriber::fmt::format::DefaultFields::new(),
+                    )
+                    .with_filter(file_filter);
+
+                registry.with(file_layer).try_init().ok();
+            },
+            (false, None) => {
+                // No output - minimal subscriber
+                registry.try_init().ok();
+            },
+        }
+
+        tracing::info!(
+            test_name = %test_name,
+            log_file = ?log_file_path,
+            "Test tracing initialized"
+        );
+
+        Self {
+            log_file_path,
+            clear_test_graph_on_drop,
+        }
+    }
+
+    /// Get the path to the log file for this test
+    pub fn log_file(&self) -> Option<&Path> {
+        self.log_file_path.as_deref()
+    }
+
+    /// Explicitly keep the log file (don't delete on drop)
+    ///
+    /// Useful if you want to preserve logs even for passing tests
+    pub fn keep_log(mut self) -> Self {
+        self.log_file_path = None;
+        self
+    }
+
+    /// Explicitly clear the test graph on drop
+    ///
+    /// Useful if you manually registered a test graph but didn't use init_with_graph
+    pub fn clear_test_graph(mut self) -> Self {
+        self.clear_test_graph_on_drop = true;
+        self
+    }
+}
+
+impl Drop for TestTracing {
+    fn drop(&mut self) {
+        // Check if we're unwinding (test panicked/failed)
+        let is_panicking = std::thread::panicking();
+
+        if !is_panicking {
+            // Test passed - clean up log file
+            if let Some(ref path) = self.log_file_path {
+                tracing::info!(
+                    log_file = %path.display(),
+                    "Test passed, removing log file"
+                );
+                fs::remove_file(path).ok();
+            }
+        } else {
+            // Test failed - keep log file
+            if let Some(ref path) = self.log_file_path {
+                eprintln!(
+                    "\n❌ Test failed! Log file preserved at: {}",
+                    path.display()
+                );
+            }
+        }
+
+        // Clear test graph if requested
+        #[cfg(any(test, feature = "test-api"))]
+        if self.clear_test_graph_on_drop {
+            crate::graph::test_graph::clear_test_graph();
+        }
+    }
+}

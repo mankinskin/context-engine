@@ -39,6 +39,7 @@ fn find_ancestor1() {
         ababababcdefghi,
         ..
     } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
     let a_bc_pattern = vec![Token::new(a, 1), Token::new(bc, 2)];
     let ab_c_pattern = vec![Token::new(ab, 2), Token::new(c, 1)];
     let a_bc_d_pattern =
@@ -173,6 +174,7 @@ fn find_ancestor2() {
         (xaby, xaby_ids) => [[xa, by],[xab,y]],
         (xabyz, xabyz_ids) => [[xaby, z],[xab,yz]],
     );
+    let _tracing = init_test_tracing!(&graph);
     let xa_by_id = xaby_ids[0];
     let xaby_z_id = xabyz_ids[0];
     //assert_eq!(xaby_z_id, 8);
@@ -291,6 +293,7 @@ fn find_ancestor3() {
     //assert_eq!(xab_y_id, 6);
     // 12
     let _xabyz = graph.insert_patterns([vec![xaby, z], vec![xab, yz]]);
+    let _tracing = init_test_tracing!(&graph);
     let gr = HypergraphRef::from(graph);
 
     let query = vec![ab, y];

@@ -5,6 +5,7 @@
 # - Setting environment variables directly: `LOG_STDOUT=0 cargo test`
 # - Creating .cargo/config.local.toml (gitignored)
 # - Using direnv with .envrc
+# - Creating a .tracing.toml config file (preferred for formatting)
 
 [env]
 # Enable Rust backtraces for debugging
@@ -21,5 +22,69 @@ LOG_FILTER = "debug"
 # Example: Module-specific logging
 # LOG_FILTER = "context_search=trace,context_trace=debug"
 
+# === TRACING CONFIGURATION ===
+#
+# Preferred: Use a TOML config file for object notation
+# Create config/tracing.toml in workspace root (see config/tracing.toml.example)
+#
+# Config file search order:
+# 1. TRACING_CONFIG env var (absolute or relative to workspace root)
+# 2. {workspace_root}/config/tracing.toml
+# 3. {workspace_root}/.tracing.toml (legacy)
+# 4. {workspace_root}/tracing.toml (legacy)
+# 5. ./config/tracing.toml (current directory)
+# 6. ./.tracing.toml (current directory, legacy)
+# 7. ./tracing.toml (current directory, legacy)
+# 8. ~/.config/tracing.toml
+#
+# Example: TRACING_CONFIG = "config/my-custom-config.toml"
+
+# Formatting options - Control what appears in logs
+# All options default to "1" (enabled). Set to "0" to disable.
+
+# === Nested Configuration (Recommended) ===
+# Use hierarchical naming for fine-grained control:
+
+# Span Enter Configuration:
+# TRACING_SPAN_ENTER_SHOW = "1"                    # Show/hide all span enter messages
+# TRACING_SPAN_ENTER_SHOW_FN_SIGNATURE = "1"      # Show function signatures
+# TRACING_SPAN_ENTER_SHOW_FIELDS = "1"            # Show span fields (parameters)
+
+# Span Close Configuration:
+# TRACING_SPAN_CLOSE_SHOW = "1"                    # Show/hide all span close messages
+# TRACING_SPAN_CLOSE_SHOW_TIMING = "1"            # Show timing info (time.busy, time.idle)
+
+# === Legacy Configuration (Backward Compatible) ===
+# These flat names still work and map to nested config:
+# TRACING_SHOW_FN_SIGNATURE = "1"     # → TRACING_SPAN_ENTER_SHOW_FN_SIGNATURE
+# TRACING_SHOW_SPAN_FIELDS = "1"      # → TRACING_SPAN_ENTER_SHOW_FIELDS
+# TRACING_SHOW_SPAN_TIMING = "1"      # → TRACING_SPAN_CLOSE_SHOW_TIMING
+
+# === Other Formatting Options ===
+# Enable visual indentation with box-drawing characters (┬─, │, └─)
+# Disable this for plain text output
+# TRACING_ENABLE_INDENTATION = "1"
+
+# Show file location for each log event
+# TRACING_SHOW_FILE_LOCATION = "1"
+
+# Enable ANSI colors in terminal output
+# TRACING_ENABLE_ANSI = "1"
+
+# === Examples ===
+
+# Minimal output (no signatures, no fields, no timing, no indentation):
+# TRACING_SPAN_ENTER_SHOW_FN_SIGNATURE = "0"
+# TRACING_SPAN_ENTER_SHOW_FIELDS = "0"
+# TRACING_SPAN_CLOSE_SHOW_TIMING = "0"
+# TRACING_ENABLE_INDENTATION = "0"
+
+# Hide all span messages (events only):
+# TRACING_SPAN_ENTER_SHOW = "0"
+# TRACING_SPAN_CLOSE_SHOW = "0"
+
+# Hide only span close messages:
+# TRACING_SPAN_CLOSE_SHOW = "0"
+
 # Note: Individual tests can still override these settings using
-# TracingConfig::with_level() or TracingConfig::with_filter()
+# TracingConfig::with_level() or TracingConfig builder methods

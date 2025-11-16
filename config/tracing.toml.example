@@ -1,0 +1,71 @@
+# Tracing Configuration Example
+# Copy this to config/tracing.toml to use
+# 
+# Config file search order:
+# 1. Path in TRACING_CONFIG environment variable
+# 2. {workspace_root}/config/tracing.toml
+# 3. {workspace_root}/.tracing.toml (legacy)
+# 4. {workspace_root}/tracing.toml (legacy)
+# 5. ./config/tracing.toml (current directory)
+# 6. ./.tracing.toml (current directory, legacy)
+# 7. ./tracing.toml (current directory, legacy)
+# 8. ~/.config/tracing.toml (user home)
+#
+# If no config file is found, environment variables are used,
+# then defaults (all options enabled).
+
+# Configuration for span enter events
+[span_enter]
+show = true                # Show span enter messages
+show_fn_signature = true   # Show function signatures
+show_fields = true         # Show span fields (parameters)
+
+# Configuration for span close events  
+[span_close]
+show = true                # Show span close messages
+show_timing = true         # Show timing information (time.busy, time.idle)
+
+# Configuration for panic logging
+[panic]
+show = true                # Show panic log events
+show_message = true        # Include panic message in logs
+show_stderr = true         # Print 🔥 PANIC: message to stderr
+
+# General formatting options
+enable_indentation = true  # Visual indentation with box-drawing characters (┬─, │, └─)
+show_file_location = true  # Show file:line for each event
+enable_ansi = true         # Enable ANSI colors in terminal
+
+# === Example Configurations ===
+
+# Minimal output (events only, no span messages):
+# [span_enter]
+# show = false
+# [span_close]
+# show = false
+# enable_indentation = false
+
+# Hide only span close messages:
+# [span_close]
+# show = false
+
+# Disable panic logging completely:
+# [panic]
+# show = false
+# show_stderr = false
+
+# Show panic but without message details:
+# [panic]
+# show = true
+# show_message = false
+# show_stderr = true
+
+# Hide function signatures but keep span enter messages:
+# [span_enter]
+# show = true
+# show_fn_signature = false
+# show_fields = true
+
+# Plain text output (no colors, no indentation):
+# enable_indentation = false
+# enable_ansi = false
