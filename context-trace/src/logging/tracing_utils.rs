@@ -507,6 +507,27 @@ where
 }
 
 static GLOBAL_INIT: Once = Once::new();
+static PANIC_HOOK_INIT: Once = Once::new();
+
+/// Install a panic hook that logs panic information before unwinding
+fn install_panic_hook() {
+    PANIC_HOOK_INIT.call_once(|| {
+        let default_hook = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |panic_info| {
+            // Log panic before unwinding closes spans
+            tracing::error!(
+                panic_message = %panic_info,
+                "PANIC occurred!"
+            );
+            
+            // Also write to stderr for visibility
+            eprintln!("\n🔥 PANIC: {}", panic_info);
+            
+            // Call the default hook (which prints to stderr)
+            default_hook(panic_info);
+        }));
+    });
+}
 
 /// Get the target directory used by Cargo
 ///
@@ -730,6 +751,9 @@ impl TestTracing {
         GLOBAL_INIT.call_once(|| {
             // This is a placeholder - actual subscriber will be set per-test
         });
+
+        // Install panic hook to log panics before spans close
+        install_panic_hook();
 
         // Create log directory
         if config.log_to_file {
