@@ -34,21 +34,6 @@ use crate::{
 };
 use std::fmt;
 
-// Helper to format Vec<Token> when used as PathRoot
-fn fmt_token_vec(
-    tokens: &[Token],
-    f: &mut fmt::Formatter,
-) -> fmt::Result {
-    write!(f, "[")?;
-    for (i, token) in tokens.iter().enumerate() {
-        if i > 0 {
-            write!(f, ", ")?;
-        }
-        write!(f, "{}", token)?;
-    }
-    write!(f, "]")
-}
-
 // CompactFormat for RootedRangePath<Pattern> (which is Vec<Token>)
 impl CompactFormat for RootedRangePath<Pattern> {
     fn fmt_compact(
@@ -59,7 +44,8 @@ impl CompactFormat for RootedRangePath<Pattern> {
         let end_entry = self.end.sub_path.root_entry;
 
         write!(f, "Pattern")?;
-        fmt_token_vec(&self.root, f)?;
+        // Use Display trait for Pattern which uses Token's Display for each token
+        write!(f, "{}", &self.root)?;
         write!(f, "[{}..{}]", start_entry, end_entry)?;
         Ok(())
     }
@@ -74,7 +60,8 @@ impl CompactFormat for RootedRangePath<Pattern> {
         // Root pattern
         write_indent(f, indent + 1)?;
         write!(f, "pattern: ")?;
-        fmt_token_vec(&self.root, f)?;
+        // Use Display trait for Pattern which uses Token's Display for each token
+        write!(f, "{}", &self.root)?;
         writeln!(f, ",")?;
 
         // Start position
@@ -179,7 +166,8 @@ impl CompactFormat for PatternEndPath {
         f: &mut fmt::Formatter,
     ) -> fmt::Result {
         write!(f, "PatternEnd(")?;
-        fmt_token_vec(&self.root, f)?;
+        // Use Display trait for Pattern which uses Token's Display for each token
+        write!(f, "{}", &self.root)?;
         write!(f, ", {})", self.role_path)
     }
 
@@ -191,7 +179,8 @@ impl CompactFormat for PatternEndPath {
         writeln!(f, "PatternEndPath {{")?;
         write_indent(f, indent + 1)?;
         write!(f, "pattern: ")?;
-        fmt_token_vec(&self.root, f)?;
+        // Use Display trait for Pattern which uses Token's Display for each token
+        write!(f, "{}", &self.root)?;
         writeln!(f, ",")?;
         write_indent(f, indent + 1)?;
         write!(f, "{}", self.role_path)?;
