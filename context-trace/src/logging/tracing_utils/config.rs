@@ -22,6 +22,7 @@ use super::path::{
 
 /// Configuration for span enter events
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SpanEnterConfig {
     /// Show the span enter message
     #[serde(default = "default_true")]
@@ -50,6 +51,7 @@ impl Default for SpanEnterConfig {
 
 /// Configuration for span close events
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SpanCloseConfig {
     /// Show the span close message at all
     #[serde(default = "default_true")]
@@ -70,6 +72,7 @@ impl Default for SpanCloseConfig {
 
 /// Configuration for panic message logging
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PanicConfig {
     /// Show panic messages at all
     #[serde(default = "default_true")]
@@ -94,6 +97,7 @@ impl Default for PanicConfig {
 
 /// Formatting options for log output
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct FormatConfig {
     /// Configuration for span enter events
     #[serde(default)]
@@ -113,6 +117,16 @@ pub struct FormatConfig {
     /// Enable ANSI colors in output
     #[serde(default = "default_true")]
     pub enable_ansi: bool,
+    /// Show timestamp at the beginning of each log line
+    #[serde(default = "default_true")]
+    pub show_timestamp: bool,
+    /// Enable logging to stdout (overrides LOG_STDOUT env var if present)
+    #[serde(default)]
+    pub log_to_stdout: Option<bool>,
+    /// Log level filter (e.g., "debug", "trace", "context_search=trace,context_trace=debug")
+    /// Overrides LOG_FILTER env var if present
+    #[serde(default)]
+    pub log_filter: Option<String>,
 }
 
 impl Default for FormatConfig {
@@ -124,6 +138,9 @@ impl Default for FormatConfig {
             enable_indentation: true,
             show_file_location: true,
             enable_ansi: true,
+            show_timestamp: true,
+            log_to_stdout: None,
+            log_filter: None,
         }
     }
 }
@@ -145,13 +162,24 @@ impl FormatConfig {
     /// enable_indentation = true
     /// show_file_location = true
     /// enable_ansi = true
+    /// show_timestamp = true
+    ///
+    /// # Optional: override environment variables
+    /// log_to_stdout = true
+    /// log_filter = "debug"
     /// ```
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self, String> {
         let contents = fs::read_to_string(path.as_ref())
             .map_err(|e| format!("Failed to read config file: {}", e))?;
 
         toml::from_str(&contents)
-            .map_err(|e| format!("Failed to parse config file: {}", e))
+            .map_err(|e| {
+                let msg = format!("Failed to parse config file: {}", e);
+                if msg.contains("unknown field") {
+                    eprintln!("\n[tracing.toml] ERROR: {}\n  -> Check for typos or misplaced options (global options must be before any [section])\n", msg);
+                }
+                msg
+            })
     }
 
     /// Try to load from a config file, falling back to environment variables, then defaults
@@ -354,16 +382,27 @@ pub struct TracingConfig {
 
 impl Default for TracingConfig {
     fn default() -> Self {
+        let format = FormatConfig::load();
+
         // Check environment variable to enable stdout logging
         // Usage: LOG_STDOUT=1 cargo test
         // or:    LOG_STDOUT=true cargo test
-        let log_to_stdout = env::var("LOG_STDOUT")
-            .map(|v| {
-                v == "1"
-                    || v.eq_ignore_ascii_case("true")
-                    || v.eq_ignore_ascii_case("yes")
-            })
-            .unwrap_or(false);
+        // Config file value takes precedence over env var
+        let log_to_stdout = format.log_to_stdout.unwrap_or_else(|| {
+            env::var("LOG_STDOUT")
+                .map(|v| {
+                    v == "1"
+                        || v.eq_ignore_ascii_case("true")
+                        || v.eq_ignore_ascii_case("yes")
+                })
+                .unwrap_or(false)
+        });
+
+        // Check for log filter in config file, then env var
+        let filter_directives = format
+            .log_filter
+            .clone()
+            .or_else(|| env::var("LOG_FILTER").ok());
 
         Self {
             log_dir: get_target_dir().join("test-logs"),
@@ -371,10 +410,10 @@ impl Default for TracingConfig {
             file_level: Level::TRACE,
             log_to_stdout,
             log_to_file: true,
-            stdout_filter_directives: None,
-            file_filter_directives: None,
+            stdout_filter_directives: filter_directives.clone(),
+            file_filter_directives: filter_directives,
             span_events: FmtSpan::ENTER | FmtSpan::CLOSE,
-            format: FormatConfig::load(),
+            format,
         }
     }
 }

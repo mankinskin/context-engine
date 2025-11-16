@@ -35,6 +35,13 @@ show_stderr = true         # Print 🔥 PANIC: message to stderr
 enable_indentation = true  # Visual indentation with box-drawing characters (┬─, │, └─)
 show_file_location = true  # Show file:line for each event
 enable_ansi = true         # Enable ANSI colors in terminal
+show_timestamp = true      # Show timestamp at beginning of each line (elapsed time)
+
+# Logging configuration (optional - overrides environment variables if present)
+# log_to_stdout = true     # Enable stdout logging (overrides LOG_STDOUT env var)
+# log_filter = "debug"     # Log level filter (overrides LOG_FILTER env var)
+                           # Can be a simple level: "error", "warn", "info", "debug", "trace"
+                           # Or module-specific: "context_search=trace,context_trace=debug"
 
 # === Example Configurations ===
 

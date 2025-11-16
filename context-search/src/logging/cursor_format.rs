@@ -4,10 +4,13 @@ use crate::cursor::{
     CursorState,
     PathCursor,
 };
-use context_trace::logging::compact_format::{
-    write_indent,
-    Compact,
-    CompactFormat,
+use context_trace::{
+    impl_display_via_compact,
+    logging::compact_format::{
+        write_indent,
+        Compact,
+        CompactFormat,
+    },
 };
 use std::fmt;
 

@@ -5,10 +5,13 @@ use derive_more::{
     Sub,
 };
 
-use crate::direction::{
-    Direction,
-    Left,
-    Right,
+use crate::{
+    direction::{
+        Direction,
+        Left,
+        Right,
+    },
+    logging::compact_format::CompactFormat,
 };
 
 #[derive(
@@ -20,6 +23,23 @@ impl std::fmt::Display for AtomPosition {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl CompactFormat for AtomPosition {
+    fn fmt_compact(
+        &self,
+        f: &mut std::fmt::Formatter,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut std::fmt::Formatter,
+        _indent: usize,
     ) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }

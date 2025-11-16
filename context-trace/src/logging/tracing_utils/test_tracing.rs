@@ -225,10 +225,17 @@ impl TestTracing {
         let mut format_config_file = format_config.clone();
         format_config_file.enable_ansi = false; // File output should not have ANSI
 
+        eprintln!(
+            "DEBUG: format_config.show_timestamp = {}",
+            format_config.show_timestamp
+        );
+
         // Build layers based on configuration
+        // Timestamp display is controlled by the formatter's show_timestamp config,
+        // so we always use CompactTimer and let the formatter decide whether to call format_time.
         match (log_to_stdout, log_file_path.as_ref()) {
             (true, Some(path)) => {
-                // Both stdout and file - use multiple layers with separate filters
+                // Both stdout and file
                 let file =
                     fs::File::create(path).expect("Failed to create log file");
 
@@ -238,7 +245,7 @@ impl TestTracing {
                     .with_target(false)
                     .with_file(false)
                     .with_line_number(false)
-                    .with_level(false) // Level handled by custom formatter
+                    .with_level(false)
                     .with_ansi(format_config.enable_ansi)
                     .with_timer(CompactTimer::new())
                     .event_format(CompactFieldsFormatter::new(
@@ -257,7 +264,7 @@ impl TestTracing {
                     .with_target(false)
                     .with_file(false)
                     .with_line_number(false)
-                    .with_level(false) // Level handled by custom formatter
+                    .with_level(false)
                     .with_ansi(false)
                     .with_timer(CompactTimer::new())
                     .event_format(CompactFieldsFormatter::new(
@@ -275,7 +282,7 @@ impl TestTracing {
                     .with_target(false)
                     .with_file(false)
                     .with_line_number(false)
-                    .with_level(false) // Level handled by custom formatter
+                    .with_level(false)
                     .with_ansi(format_config.enable_ansi)
                     .with_timer(CompactTimer::new())
                     .event_format(CompactFieldsFormatter::new(format_config))
@@ -299,7 +306,7 @@ impl TestTracing {
                     .with_target(false)
                     .with_file(false)
                     .with_line_number(false)
-                    .with_level(false) // Level handled by custom formatter
+                    .with_level(false)
                     .with_ansi(false)
                     .with_timer(CompactTimer::new())
                     .event_format(CompactFieldsFormatter::new(

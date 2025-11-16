@@ -38,14 +38,7 @@ pub(crate) struct SearchQueue {
     pub(crate) nodes: VecDeque<SearchNode>,
 }
 
-impl std::fmt::Display for SearchQueue {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter,
-    ) -> std::fmt::Result {
-        write!(f, "SearchQueue(len={})", self.nodes.len())
-    }
-}
+// Display implementation moved to logging/mod.rs via impl_display_via_compact macro
 
 #[derive(Debug)]
 pub(crate) struct RootFinder<'a, K: TraversalKind> {

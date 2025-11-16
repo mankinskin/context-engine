@@ -130,6 +130,6 @@ show_fields = false
 
 ## Cargo Configuration
 
-Cargo-specific configuration is in `.cargo/config.toml` (workspace-level) and `.cargo/config.local.toml` (user-level, gitignored).
+Cargo-specific configuration is in `.cargo/config.toml` (workspace-level). For personal overrides, either modify `config.toml` directly, use `~/.cargo/config.toml` for user-level settings, or use direnv with `.envrc`.
 
 **Note:** Cargo requires its config files to be in the `.cargo/` directory. This is a Cargo convention and cannot be changed.

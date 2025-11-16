@@ -250,15 +250,17 @@ impl<P> PathCursor<P, Exhausted> {
 }
 
 // Display implementation for PathCursor
-impl<P: std::fmt::Debug, State> std::fmt::Display for PathCursor<P, State> {
+// Uses CompactFormat if available, otherwise falls back to Debug
+impl<P, State> std::fmt::Display for PathCursor<P, State>
+where
+    P: context_trace::logging::compact_format::CompactFormat,
+    State: CursorState,
+{
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(
-            f,
-            "PathCursor(pos={:?}, path={:?})",
-            self.atom_position, self.path
-        )
+        use context_trace::logging::compact_format::CompactFormat;
+        self.fmt_indented(f, 0)
     }
 }

@@ -631,7 +631,7 @@ let _tracing = init_test_tracing!(&graph, config);
 // Example: Events only (no span messages)
 // TRACING_SPAN_ENTER_SHOW=0 TRACING_SPAN_CLOSE_SHOW=0 cargo test
 
-// Configure in .cargo/config.local.toml (or use config/tracing.toml - preferred):
+// Configure in .cargo/config.toml or ~/.cargo/config.toml (or use config/tracing.toml - preferred):
 // [env]
 // TRACING_SPAN_CLOSE_SHOW = "0"
 // TRACING_PANIC_SHOW = "0"

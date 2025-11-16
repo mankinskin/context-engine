@@ -3,13 +3,15 @@
 # This file sets default environment variables for all cargo commands
 # in this workspace. Users can override these by:
 # - Setting environment variables directly: `LOG_STDOUT=0 cargo test`
-# - Creating .cargo/config.local.toml (gitignored)
-# - Using direnv with .envrc
-# - Creating a .tracing.toml config file (preferred for formatting)
+# - Using direnv with .envrc (create .envrc file with export statements)
+# - Modifying ~/.cargo/config.toml for user-level overrides
+# - Creating a .tracing.toml config file (preferred for formatting options)
+#
+# NOTE: Cargo does NOT support config.local.toml - only config.toml is recognized
 
 [env]
 # Enable Rust backtraces for debugging
-RUST_BACKTRACE = "1"
+# RUST_BACKTRACE = "1"
 
 # Logging configuration for tests
 # Uncomment to enable stdout logging by default for all tests
@@ -17,7 +19,7 @@ RUST_BACKTRACE = "1"
 
 # Set default log level (options: error, warn, info, debug, trace)
 # Uncomment to set a specific log level
-LOG_FILTER = "debug"
+# LOG_FILTER = "info"
 
 # Example: Module-specific logging
 # LOG_FILTER = "context_search=trace,context_trace=debug"

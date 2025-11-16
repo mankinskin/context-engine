@@ -15,6 +15,7 @@ use crate::{
     r#match::{
         iterator::SearchIterator,
         SearchNode,
+        SearchQueue,
     },
     state::end::PathEnum,
     traversal::TraversalKind,
@@ -263,7 +264,69 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
     }
 }
 
+impl CompactFormat for SearchQueue {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "SearchQueue(nodes:{})", self.nodes.len())
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "SearchQueue {{")?;
+
+        write_indent(f, indent + 1)?;
+        writeln!(f, "count: {},", self.nodes.len())?;
+
+        if !self.nodes.is_empty() {
+            write_indent(f, indent + 1)?;
+            writeln!(f, "nodes: [")?;
+
+            // Show first few nodes
+            for (i, node) in self.nodes.iter().take(3).enumerate() {
+                write_indent(f, indent + 2)?;
+                match node {
+                    SearchNode::ParentCandidate(state) => {
+                        let cursor_pos: usize =
+                            state.cursor.atom_position.into();
+                        writeln!(
+                            f,
+                            "[{}] ParentCandidate(pos:{}),",
+                            i, cursor_pos
+                        )?;
+                    },
+                    SearchNode::PrefixQueue(queue) => {
+                        writeln!(
+                            f,
+                            "[{}] PrefixQueue(size:{}),",
+                            i,
+                            queue.len()
+                        )?;
+                    },
+                }
+            }
+
+            if self.nodes.len() > 3 {
+                write_indent(f, indent + 2)?;
+                writeln!(f, "... {} more", self.nodes.len() - 3)?;
+            }
+
+            write_indent(f, indent + 1)?;
+            writeln!(f, "]")?;
+        }
+
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
 // Implement Display for types to enable % formatting in tracing without Compact wrapper
 impl_display_via_compact!(CompareResult);
 impl_display_via_compact!(CompareState<Q, I> where Q: CursorState, I: CursorState);
 impl_display_via_compact!(SearchIterator<K> where K: TraversalKind);
+impl_display_via_compact!(SearchQueue);

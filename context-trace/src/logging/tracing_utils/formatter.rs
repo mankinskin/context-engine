@@ -116,7 +116,9 @@ where
 
         // Write indentation and timestamp
         write!(writer, "{}", indent)?;
-        self.timer.format_time(&mut writer)?;
+        if self.config.show_timestamp {
+            self.timer.format_time(&mut writer)?;
+        }
 
         // Write level
         let level = *event.metadata().level();
