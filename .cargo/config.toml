@@ -1,0 +1,25 @@
+# Cargo configuration for the context-engine workspace
+#
+# This file sets default environment variables for all cargo commands
+# in this workspace. Users can override these by:
+# - Setting environment variables directly: `LOG_STDOUT=0 cargo test`
+# - Creating .cargo/config.local.toml (gitignored)
+# - Using direnv with .envrc
+
+[env]
+# Enable Rust backtraces for debugging
+RUST_BACKTRACE = "1"
+
+# Logging configuration for tests
+# Uncomment to enable stdout logging by default for all tests
+# LOG_STDOUT = "1"
+
+# Set default log level (options: error, warn, info, debug, trace)
+# Uncomment to set a specific log level
+LOG_FILTER = "debug"
+
+# Example: Module-specific logging
+# LOG_FILTER = "context_search=trace,context_trace=debug"
+
+# Note: Individual tests can still override these settings using
+# TracingConfig::with_level() or TracingConfig::with_filter()
