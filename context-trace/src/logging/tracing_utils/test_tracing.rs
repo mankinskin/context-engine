@@ -9,6 +9,7 @@ use std::{
     },
     sync::Once,
 };
+use tracing::Dispatch;
 use tracing_subscriber::{
     EnvFilter,
     Layer,
@@ -89,9 +90,12 @@ impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
 ///
 /// Automatically cleans up log files when the test succeeds (guard is dropped without panic).
 /// Also handles test graph registration and cleanup.
+/// The guard holds a tracing dispatcher that's active for the lifetime of the test.
 pub struct TestTracing {
     log_file_path: Option<PathBuf>,
     clear_test_graph_on_drop: bool,
+    _dispatcher: Dispatch,
+    _guard: tracing::dispatcher::DefaultGuard,
 }
 
 impl TestTracing {
@@ -228,7 +232,8 @@ impl TestTracing {
         // Build layers based on configuration
         // Timestamp display is controlled by the formatter's show_timestamp config,
         // so we always use CompactTimer and let the formatter decide whether to call format_time.
-        match (log_to_stdout, log_file_path.as_ref()) {
+        // Create dispatcher based on configuration
+        let dispatcher = match (log_to_stdout, log_file_path.as_ref()) {
             (true, Some(path)) => {
                 // Both stdout and file
                 let file =
@@ -267,7 +272,7 @@ impl TestTracing {
                     ))
                     .with_filter(file_filter);
 
-                registry.with(stdout_layer).with(file_layer).try_init().ok();
+                Dispatch::new(registry.with(stdout_layer).with(file_layer))
             },
             (true, None) => {
                 // Only stdout
@@ -286,7 +291,7 @@ impl TestTracing {
                     )
                     .with_filter(stdout_filter);
 
-                registry.with(stdout_layer).try_init().ok();
+                Dispatch::new(registry.with(stdout_layer))
             },
             (false, Some(path)) => {
                 // Only file
@@ -312,13 +317,16 @@ impl TestTracing {
                     )
                     .with_filter(file_filter);
 
-                registry.with(file_layer).try_init().ok();
+                Dispatch::new(registry.with(file_layer))
             },
             (false, None) => {
                 // No output - minimal subscriber
-                registry.try_init().ok();
+                Dispatch::new(registry)
             },
-        }
+        };
+
+        // Set as the default dispatcher for this test's scope
+        let guard = tracing::dispatcher::set_default(&dispatcher);
 
         tracing::info!(
             test_name = %test_name,
@@ -329,6 +337,8 @@ impl TestTracing {
         Self {
             log_file_path,
             clear_test_graph_on_drop,
+            _dispatcher: dispatcher,
+            _guard: guard,
         }
     }
 
