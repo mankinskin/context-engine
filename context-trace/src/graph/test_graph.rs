@@ -4,6 +4,9 @@
 //! allowing tokens to dynamically compute their string representation from
 //! the graph when formatting for logs.
 //!
+//! Uses thread-local storage to allow parallel test execution without
+//! interference between tests.
+//!
 //! # Usage
 //!
 //! ```rust
@@ -21,11 +24,11 @@
 //! test_graph::register_test_graph(&graph);
 //!
 //! // Now tokens will show their string representation
-//! println!("{}", a);    // Prints: T0w1("a")
-//! println!("{}", b);    // Prints: T1w1("b")
-//! println!("{}", abc);  // Prints: T3w3("abc")
+//! println!("{}", a);    // Prints: "a"(0)
+//! println!("{}", b);    // Prints: "b"(1)
+//! println!("{}", abc);  // Prints: "abc"(3)
 //!
-//! // Clean up when done
+//! // Clean up when done (optional, as thread-local storage is cleaned up automatically)
 //! test_graph::clear_test_graph();
 //! # }
 //! ```
@@ -38,18 +41,17 @@ use crate::{
         vertex::VertexIndex,
     },
 };
-use once_cell::sync::Lazy;
-use std::sync::RwLock;
+use std::cell::RefCell;
 
 /// Type-erased graph accessor for getting string representations
-trait GraphStringGetter: Send + Sync {
+trait GraphStringGetter {
     fn get_token_string(
         &self,
         index: usize,
     ) -> Option<String>;
 }
 
-impl<G: GraphKind + Send + Sync> GraphStringGetter for Hypergraph<G>
+impl<G: GraphKind> GraphStringGetter for Hypergraph<G>
 where
     G::Atom: std::fmt::Display,
 {
@@ -63,14 +65,17 @@ where
     }
 }
 
-/// Global test graph registry
-static TEST_GRAPH: Lazy<RwLock<Option<Box<dyn GraphStringGetter>>>> =
-    Lazy::new(|| RwLock::new(None));
+thread_local! {
+    /// Thread-local test graph registry
+    /// Each test thread maintains its own graph reference, allowing parallel test execution
+    static TEST_GRAPH: RefCell<Option<Box<dyn GraphStringGetter>>> = RefCell::new(None);
+}
 
 /// Register a graph for use in tests
 ///
 /// This allows tokens to look up their string representation when formatting.
 /// The graph is stored as a type-erased reference, so it works with any GraphKind.
+/// Each test thread has its own graph registry, allowing parallel test execution.
 ///
 /// # Example
 /// ```ignore
@@ -84,27 +89,30 @@ static TEST_GRAPH: Lazy<RwLock<Option<Box<dyn GraphStringGetter>>>> =
 ///
 /// clear_test_graph();
 /// ```
-pub fn register_test_graph<G: GraphKind + Send + Sync + 'static>(
-    graph: &Hypergraph<G>
-) where
+pub fn register_test_graph<G: GraphKind + 'static>(graph: &Hypergraph<G>)
+where
     G::Atom: std::fmt::Display,
 {
     // We need to clone the graph to store it safely
     // In tests this is acceptable overhead
     let graph_clone = graph.clone();
-    *TEST_GRAPH.write().unwrap() = Some(Box::new(graph_clone));
+    TEST_GRAPH.with(|tg| {
+        *tg.borrow_mut() = Some(Box::new(graph_clone));
+    });
 }
 
 /// Access the registered test graph to get string representation
 pub fn get_token_string_from_test_graph(index: usize) -> Option<String> {
-    TEST_GRAPH
-        .read()
-        .unwrap()
-        .as_ref()
-        .and_then(|graph| graph.get_token_string(index))
+    TEST_GRAPH.with(|tg| {
+        tg.borrow()
+            .as_ref()
+            .and_then(|graph| graph.get_token_string(index))
+    })
 }
 
 /// Clear the registered test graph
 pub fn clear_test_graph() {
-    *TEST_GRAPH.write().unwrap() = None;
+    TEST_GRAPH.with(|tg| {
+        *tg.borrow_mut() = None;
+    });
 }
