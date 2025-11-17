@@ -15,13 +15,28 @@ function activate(context) {
         await vscode.commands.executeCommand(
           "workbench.panel.chat.view.copilot.focus"
         );
+
+        // Scroll to the bottom of the chat
+        await vscode.commands.executeCommand(
+          "workbench.action.chat.scrollToBottom"
+        );
       } catch (error) {
         // Try alternative command IDs
         try {
           await vscode.commands.executeCommand("workbench.action.chat.open");
+
+          // Try to scroll to bottom after opening
+          await vscode.commands.executeCommand(
+            "workbench.action.chat.scrollToBottom"
+          );
         } catch (error2) {
           try {
             await vscode.commands.executeCommand("github.copilot.chat.focus");
+
+            // Try to scroll to bottom
+            await vscode.commands.executeCommand(
+              "workbench.action.chat.scrollToBottom"
+            );
           } catch (error3) {
             vscode.window.showErrorMessage(
               "Could not focus Copilot Chat. The command may have changed in your VS Code version."
