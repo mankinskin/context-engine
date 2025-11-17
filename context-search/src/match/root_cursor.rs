@@ -108,6 +108,9 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                     *matched_state.cursor.atom_position
                         - last_token_width_value,
                 );
+                tracing::debug!("root_cursor process_candidate_match: root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
+                    usize::from(root_pos), usize::from(*matched_state.cursor.atom_position), 
+                    last_token_width_value, usize::from(end_pos));
                 let target = DownKey::new(target_index, end_pos.into());
                 Ok(EndState {
                     cursor: matched_state.checkpoint,

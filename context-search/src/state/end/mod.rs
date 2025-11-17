@@ -8,10 +8,14 @@ use context_trace::{
 use postfix::PostfixEnd;
 use prefix::PrefixEnd;
 use range::RangeEnd;
+use std::marker::PhantomData;
 
 use crate::{
     compare::parent::ParentCompareState,
-    cursor::PatternCursor,
+    cursor::{
+        PathCursor,
+        PatternCursor,
+    },
 };
 
 pub(crate) mod postfix;
@@ -73,12 +77,19 @@ impl PathEnum {
                 let path: IndexStartPath = path.into();
                 PathEnum::Postfix(PostfixEnd { path, root_pos })
             },
-            _ => PathEnum::Range(RangeEnd {
-                path,
-                root_pos,
-                target,
-                end_pos: target.pos.0,
-            }),
+            _ => {
+                tracing::debug!(
+                    "Creating RangeEnd: root_pos={}, end_pos={}",
+                    usize::from(root_pos),
+                    usize::from(target.pos.0)
+                );
+                PathEnum::Range(RangeEnd {
+                    path,
+                    root_pos,
+                    target,
+                    end_pos: target.pos.0,
+                })
+            },
         }
     }
     pub(crate) fn from_start_path<G: HasGraph>(

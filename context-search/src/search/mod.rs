@@ -161,7 +161,18 @@ impl<K: TraversalKind> SearchState<K> {
         while let Some(end) = &mut self.next() {
             iteration += 1;
             debug!(iteration, "tracing end state");
+            debug!(
+                "About to trace EndState: reason={:?}, path_variant={}",
+                end.reason,
+                match &end.path {
+                    PathEnum::Range(_) => "Range",
+                    PathEnum::Postfix(_) => "Postfix",
+                    PathEnum::Prefix(_) => "Prefix",
+                    PathEnum::Complete(_) => "Complete",
+                }
+            );
             end.trace(&mut self.matches.trace_ctx);
+            debug!("Finished tracing EndState");
         }
 
         debug!(iterations = iteration, "fold completed");

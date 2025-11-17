@@ -196,8 +196,9 @@ impl TraceDirection for BottomUp {
     ) -> Self::Key {
         UpKey {
             index: location.parent,
-            // Increment position when moving up the hierarchy
-            pos: UpPosition::from(last_pos + 1),
+            // Keep the same position when moving up the hierarchy
+            // The position represents where we are in the parent pattern
+            pos: UpPosition::from(last_pos),
         }
     }
 }

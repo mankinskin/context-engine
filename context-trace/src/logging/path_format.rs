@@ -250,6 +250,37 @@ where
     }
 }
 
+// CompactFormat for ParentState
+impl CompactFormat for crate::trace::state::parent::ParentState {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let prev_pos: usize = self.prev_pos.into();
+        let root_pos: usize = self.root_pos.into();
+        write!(f, "ParentState(prev:{}, root:{})", prev_pos, root_pos)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        write_indent(f, indent)?;
+        writeln!(f, "ParentState {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "prev_pos: {},", usize::from(self.prev_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "root_pos: {},", usize::from(self.root_pos))?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "path:")?;
+        self.path.fmt_indented(f, indent + 2)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
 impl<R: crate::PathRole> CompactFormat for RolePath<R> {
     fn fmt_compact(
         &self,
@@ -324,3 +355,4 @@ impl_display_via_compact!(PatternEndPath);
 impl_display_via_compact!(RootedRolePath<R, Root> where R: crate::PathRole, Root: PathRoot + CompactFormat);
 impl_display_via_compact!(crate::trace::state::BaseState<P> where P: RootedPath + CompactFormat);
 impl_display_via_compact!(crate::trace::child::state::ChildState);
+impl_display_via_compact!(crate::trace::state::parent::ParentState);

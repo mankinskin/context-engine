@@ -79,7 +79,6 @@ pub struct ParentState {
 #[crate::instrument_trait_impl]
 impl StateAdvance for ParentState {
     type Next = RootChildState;
-    #[crate::instrument_sig(skip(self, trav))]
     fn advance_state<G: HasGraph>(
         self,
         trav: &G,
@@ -90,6 +89,7 @@ impl StateAdvance for ParentState {
         if let Some(next_i) =
             TravDir::<G>::pattern_index_next(pattern.borrow(), entry.sub_index)
         {
+            tracing::debug!(next_i = next_i, "Found next child in pattern");
             let root_parent = self.clone();
             let ParentState {
                 path,
@@ -104,6 +104,11 @@ impl StateAdvance for ParentState {
                 root_parent,
             })
         } else {
+            tracing::debug!(
+                entry_sub_index = entry.sub_index,
+                pattern_len = pattern.len(),
+                "No next child in pattern - at end of pattern"
+            );
             Err(self)
         }
     }

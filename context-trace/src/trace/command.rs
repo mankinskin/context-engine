@@ -74,24 +74,47 @@ impl Traceable for PostfixCommand {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
+        tracing::debug!(
+            "PostfixCommand::trace called with root_up_key.pos={}",
+            usize::from(*self.root_up_key.pos.0)
+        );
         let first = self.path.role_leaf_token_location::<Start>().unwrap();
         let start_index = *ctx.trav.graph().expect_child_at(first);
+        tracing::debug!(
+            "PostfixCommand: first={:?}, start_index={}, start_index.width()={}",
+            first,
+            start_index,
+            start_index.width()
+        );
         tracing::trace!(
             ?first,
             ?start_index,
             "PostfixCommand: leaf and start_index"
         );
+        let initial_prev = UpKey {
+            index: start_index,
+            pos: start_index.width().into(),
+        };
+        tracing::debug!(
+            "PostfixCommand: calling trace_sub_path with initial_prev.pos={}",
+            usize::from(*initial_prev.pos.0)
+        );
         let prev = TraceRole::<Start>::trace_sub_path(
             ctx,
             &self.path,
-            UpKey {
-                index: start_index,
-                pos: start_index.width().into(),
-            },
+            initial_prev,
             self.add_edges,
+        );
+        tracing::debug!(
+            "PostfixCommand: trace_sub_path returned prev.pos={}",
+            usize::from(*prev.pos.0)
         );
         tracing::trace!(?prev, "PostfixCommand: trace_sub_path returned");
         let location = self.path.role_root_child_location::<Start>();
+        tracing::debug!(
+            "Creating bottom-up edge with position={}",
+            usize::from(*self.root_up_key.pos.0)
+        );
         let new = NewTraceEdge::<BottomUp> {
             target: self.root_up_key,
             prev,
@@ -149,6 +172,11 @@ impl Traceable for RangeCommand {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
+        tracing::debug!(
+            "RangeCommand::trace called with root_pos={}, end_pos={}",
+            usize::from(*self.root_pos.0),
+            usize::from(self.end_pos)
+        );
         let first = self.path.role_leaf_token_location::<Start>().unwrap();
         let start_index = *ctx.trav.graph().expect_child_at(first);
         let prev = TraceRole::<Start>::trace_sub_path(
@@ -172,6 +200,11 @@ impl Traceable for RangeCommand {
             index: root_entry.parent,
             pos: self.root_pos,
         };
+        tracing::debug!(
+            "Creating bottom-up edge: parent={}, pos={}",
+            root_entry.parent,
+            usize::from(*self.root_pos.0)
+        );
         let new = NewTraceEdge::<BottomUp> {
             target: root_up_key,
             prev,
