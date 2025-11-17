@@ -120,27 +120,55 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
         trace!("searching for next match");
         match self.matches.find_next() {
             Some(end) => {
-                debug!("found end state");
+                debug!("found end state with reason={:?}", end.reason);
 
-                // Get the start length from the previous match or query
-                let start_len = match &self.last_match {
-                    MatchState::Located(prev_end) => prev_end.start_len(),
-                    MatchState::Query(_) => {
-                        // First match: start from beginning of query
-                        debug!("first match found, transitioning from Query to Located state");
-                        0
-                    },
-                };
-                debug!(start_pos = start_len, "tracing from position");
+                // Only update last_match if this is a QueryEnd (successful complete match)
+                // Mismatches are exploration attempts, not better matches
+                if end.reason == EndReason::QueryEnd {
+                    debug!("QueryEnd - updating last_match checkpoint");
 
-                TraceStart {
-                    end: &end,
-                    pos: start_len,
+                    // Check if we already have a Complete match
+                    let current_is_complete =
+                        matches!(end.path, PathEnum::Complete(_));
+                    let should_update = match &self.last_match {
+                        MatchState::Located(prev_end) => {
+                            let prev_is_complete = prev_end.is_complete();
+                            // Update if: new match is Complete, or previous wasn't Complete
+                            // This ensures Complete matches are preferred over non-Complete
+                            current_is_complete || !prev_is_complete
+                        },
+                        MatchState::Query(_) => {
+                            // First match: always update
+                            true
+                        },
+                    };
+
+                    if should_update {
+                        debug!(
+                            is_complete = current_is_complete,
+                            "updating last_match to new QueryEnd"
+                        );
+
+                        // For ancestor search, each QueryEnd is a match in a different root token.
+                        // We always trace from position 0 since each root is independent.
+                        debug!(
+                            "tracing complete QueryEnd match from position 0"
+                        );
+
+                        TraceStart { end: &end, pos: 0 }
+                            .trace(&mut self.matches.trace_ctx);
+
+                        // Update last_match to this new complete match
+                        self.last_match = MatchState::Located(end.clone());
+                    } else {
+                        debug!(
+                            "not updating last_match - already have Complete match"
+                        );
+                    }
+                } else {
+                    debug!("Mismatch - not updating last_match, this is just exploration");
                 }
-                .trace(&mut self.matches.trace_ctx);
 
-                // Update last_match to the located state
-                self.last_match = MatchState::Located(end.clone());
                 Some(end.clone())
             },
             None => {

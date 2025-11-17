@@ -102,14 +102,15 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                 let root_pos =
                     *matched_state.child_cursor.child_state.target_pos();
                 let path = matched_state.child_cursor.child_state.path.clone();
+                let root_parent = path.root_parent();
                 let target_index = path.role_rooted_leaf_token::<End, _>(&trav);
                 let last_token_width_value = target_index.width();
                 let end_pos = AtomPosition::from(
                     *matched_state.cursor.atom_position
                         - last_token_width_value,
                 );
-                tracing::debug!("root_cursor process_candidate_match: root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
-                    usize::from(root_pos), usize::from(*matched_state.cursor.atom_position), 
+                tracing::debug!("root_cursor process_candidate_match: root_parent={}, root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
+                    root_parent, usize::from(root_pos), *matched_state.cursor.atom_position,
                     last_token_width_value, usize::from(end_pos));
                 let target = DownKey::new(target_index, end_pos.into());
                 Ok(EndState {

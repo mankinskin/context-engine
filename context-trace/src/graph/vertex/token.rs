@@ -83,10 +83,20 @@ impl HasSubLocation for SubToken {
     }
 }
 
-#[derive(Debug, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct Token {
     pub index: VertexIndex, // the token index
     pub width: TokenWidth,  // the atom width
+}
+
+impl Debug for Token {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        // Use Display formatting for Debug to show string representations in test output
+        Display::fmt(self, f)
+    }
 }
 
 impl Token {
@@ -269,10 +279,10 @@ impl Display for Token {
     ) -> std::fmt::Result {
         #[cfg(any(test, feature = "test-api"))]
         {
-            if let Some(string_repr) = self.get_string_repr() {
-                return write!(f, "{}", string_repr);
+            if self.get_string_repr().is_some() {
+                // Reuse VertexIndex's Display implementation which shows the string representation
+                return write!(f, "{}", self.index);
             }
-            return write!(f, "{}", *self.index);
         }
         write!(f, "T{}w{}", self.index, self.width.0)
     }

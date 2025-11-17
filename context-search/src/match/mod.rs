@@ -1,5 +1,6 @@
 use std::{
-    collections::VecDeque,
+    cmp::Ordering,
+    collections::BinaryHeap,
     marker::PhantomData,
 };
 
@@ -35,7 +36,7 @@ pub(crate) mod root_cursor;
 #[derive(Debug, new, Default)]
 pub(crate) struct SearchQueue {
     #[new(default)]
-    pub(crate) nodes: VecDeque<SearchNode>,
+    pub(crate) nodes: BinaryHeap<SearchNode>,
 }
 
 // Display implementation moved to logging/mod.rs via impl_display_via_compact macro
@@ -70,7 +71,7 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
     type Item = Option<MatchedCompareState>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self.ctx.nodes.pop_front().and_then(|node| {
+        match self.ctx.nodes.pop().and_then(|node| {
             NodeConsumer::<'_, K>::new(node, self.trav).consume()
         }) {
             Some(QueueMore(next)) => {
@@ -102,6 +103,59 @@ pub(crate) enum SearchNode {
     PrefixQueue(ChildQueue<CompareState<Candidate, Candidate>>),
 }
 use SearchNode::*;
+
+// Implement ordering for SearchNode to use in priority queue
+// Smaller parent tokens are prioritized (processed first)
+impl PartialEq for SearchNode {
+    fn eq(
+        &self,
+        other: &Self,
+    ) -> bool {
+        self.cmp(other) == Ordering::Equal
+    }
+}
+
+impl Eq for SearchNode {}
+
+impl PartialOrd for SearchNode {
+    fn partial_cmp(
+        &self,
+        other: &Self,
+    ) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for SearchNode {
+    fn cmp(
+        &self,
+        other: &Self,
+    ) -> Ordering {
+        let self_priority = match self {
+            SearchNode::ParentCandidate(state) => {
+                // Smaller tokens have higher priority (lower value)
+                let token = state.parent_state.path.root_parent();
+                token.width.0
+            },
+            SearchNode::PrefixQueue(_) => {
+                // PrefixQueues should be processed after all parent candidates
+                usize::MAX
+            },
+        };
+
+        let other_priority = match other {
+            SearchNode::ParentCandidate(state) => {
+                let token = state.parent_state.path.root_parent();
+                token.width.0
+            },
+            SearchNode::PrefixQueue(_) => usize::MAX,
+        };
+
+        // Reverse ordering: smaller priority values come first (min-heap behavior)
+        other_priority.cmp(&self_priority)
+    }
+}
+
 #[derive(Debug, new)]
 struct NodeConsumer<'a, K: TraversalKind>(SearchNode, &'a K::Trav);
 

@@ -45,7 +45,7 @@ impl fmt::Display for VertexIndex {
             if let Some(s) =
                 test_graph::get_token_string_from_test_graph(self.0)
             {
-                return write!(f, "\"{}\"", s);
+                return write!(f, "\"{}\"({})", s, self.0);
             }
         }
         write!(f, "{:?}", self.0)

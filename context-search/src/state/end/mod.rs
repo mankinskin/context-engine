@@ -60,11 +60,19 @@ impl PathEnum {
         path.child_path_mut::<Start>().simplify(trav);
         path.child_path_mut::<End>().simplify(trav);
 
+        let start_at_border = path.is_at_border::<_, Start>(trav.graph());
+        let start_path_empty = path.raw_child_path::<Start>().is_empty();
+        let end_at_border = path.is_at_border::<_, End>(trav.graph());
+        let end_path_empty = path.raw_child_path::<End>().is_empty();
+
+        tracing::debug!("from_range_path: start_at_border={}, start_path_empty={}, end_at_border={}, end_path_empty={}", 
+            start_at_border, start_path_empty, end_at_border, end_path_empty);
+
         match (
-            path.is_at_border::<_, Start>(trav.graph()),
-            path.raw_child_path::<Start>().is_empty(),
-            path.is_at_border::<_, End>(trav.graph()),
-            path.raw_child_path::<End>().is_empty(),
+            start_at_border,
+            start_path_empty,
+            end_at_border,
+            end_path_empty,
         ) {
             (true, true, true, true) => PathEnum::Complete(path),
             (true, true, false, _) | (true, true, true, false) =>
@@ -75,6 +83,10 @@ impl PathEnum {
                 }),
             (false, _, true, true) | (true, false, true, true) => {
                 let path: IndexStartPath = path.into();
+                tracing::debug!(
+                    "Creating PostfixEnd with root_pos={}",
+                    usize::from(root_pos)
+                );
                 PathEnum::Postfix(PostfixEnd { path, root_pos })
             },
             _ => {

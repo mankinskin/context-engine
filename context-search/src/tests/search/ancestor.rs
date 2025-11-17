@@ -19,37 +19,13 @@ use {
     },
 };
 
+// Test: Single token bc should return error (not a pattern)
 #[test]
-fn find_ancestor1() {
-    let Env1 {
-        graph,
-        a,
-        b,
-        c,
-        d,
-        e,
-        f,
-        g,
-        h,
-        i,
-        ab,
-        bc,
-        abc,
-        abcd,
-        ababababcdefghi,
-        ..
-    } = &*Env1::get_expected();
+fn find_ancestor1_single_token() {
+    let Env1 { graph, bc, .. } = &*Env1::get_expected();
     let _tracing = init_test_tracing!(graph);
-    let a_bc_pattern = vec![Token::new(a, 1), Token::new(bc, 2)];
-    let ab_c_pattern = vec![Token::new(ab, 2), Token::new(c, 1)];
-    let a_bc_d_pattern =
-        vec![Token::new(a, 1), Token::new(bc, 2), Token::new(d, 1)];
-    let b_c_pattern = vec![Token::new(b, 1), Token::new(c, 1)];
-    let bc_pattern = vec![Token::new(bc, 2)];
-    let a_b_c_pattern =
-        vec![Token::new(a, 1), Token::new(b, 1), Token::new(c, 1)];
 
-    let query = bc_pattern;
+    let query = vec![Token::new(bc, 2)];
     assert_eq!(
         graph.find_ancestor(&query),
         Err(ErrorReason::SingleIndex(Box::new(IndexWithPath {
@@ -58,8 +34,17 @@ fn find_ancestor1() {
         }))),
         "bc"
     );
+}
 
-    let query = b_c_pattern;
+// Test: Pattern [b, c] should match token bc (Complete)
+#[test]
+fn find_ancestor1_b_c() {
+    let Env1 {
+        graph, b, c, bc, ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![Token::new(b, 1), Token::new(c, 1)];
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
@@ -71,9 +56,17 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *bc,
         "b_c"
     );
+}
 
-    println!("################## A_BC");
-    let query = a_bc_pattern;
+// Test: Pattern [a, bc] should match token abc (Complete)
+#[test]
+fn find_ancestor1_a_bc() {
+    let Env1 {
+        graph, a, bc, abc, ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![Token::new(a, 1), Token::new(bc, 2)];
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
@@ -85,8 +78,17 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *abc,
         "a_bc"
     );
+}
 
-    let query = ab_c_pattern;
+// Test: Pattern [ab, c] should match token abc (Complete)
+#[test]
+fn find_ancestor1_ab_c() {
+    let Env1 {
+        graph, ab, c, abc, ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![Token::new(ab, 2), Token::new(c, 1)];
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
@@ -98,8 +100,22 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *abc,
         "ab_c"
     );
+}
 
-    let query = a_bc_d_pattern;
+// Test: Pattern [a, bc, d] should match token abcd (Complete)
+#[test]
+fn find_ancestor1_a_bc_d() {
+    let Env1 {
+        graph,
+        a,
+        bc,
+        d,
+        abcd,
+        ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![Token::new(a, 1), Token::new(bc, 2), Token::new(d, 1)];
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
@@ -111,10 +127,26 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *abcd,
         "a_bc_d"
     );
+}
 
-    let query = a_b_c_pattern.clone();
+// Test: Pattern [a, b, c] should match token abc (Complete)
+#[test]
+fn find_ancestor1_a_b_c() {
+    let Env1 {
+        graph,
+        a,
+        b,
+        c,
+        abc,
+        ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![Token::new(a, 1), Token::new(b, 1), Token::new(c, 1)];
+    let result = graph.find_ancestor(&query);
+
     assert_matches!(
-        graph.find_ancestor(&query),
+        result,
         Ok(Response {
             end: EndState {
                 path: PathEnum::Complete(ref path),
@@ -124,6 +156,26 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *abc,
         "a_b_c"
     );
+}
+
+// Test: Long pattern [a,b,a,b,a,b,a,b,c,d,e,f,g,h,i] should match ababababcdefghi (Complete)
+#[test]
+fn find_ancestor1_long_pattern() {
+    let Env1 {
+        graph,
+        a,
+        b,
+        c,
+        d,
+        e,
+        f,
+        g,
+        h,
+        i,
+        ababababcdefghi,
+        ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
 
     let query: Vec<_> = [a, b, a, b, a, b, a, b, c, d, e, f, g, h, i]
         .into_iter()
@@ -140,8 +192,27 @@ fn find_ancestor1() {
         }) if path.path_root().pattern_location().parent == *ababababcdefghi,
         "a_b_a_b_a_b_a_b_c_d_e_f_g_h_i"
     );
+}
 
-    let query = [&a_b_c_pattern[..], &[Token::new(c, 1)]].concat();
+// Test: Pattern [a, b, c, c] should match token abc (Complete) - last c is additional
+#[test]
+fn find_ancestor1_a_b_c_c() {
+    let Env1 {
+        graph,
+        a,
+        b,
+        c,
+        abc,
+        ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![
+        Token::new(a, 1),
+        Token::new(b, 1),
+        Token::new(c, 1),
+        Token::new(c, 1),
+    ];
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {

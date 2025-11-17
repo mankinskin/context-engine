@@ -3,10 +3,13 @@
 mod cursor_format;
 
 use crate::{
-    compare::state::{
-        CompareResult,
-        CompareState,
-        PathPairMode,
+    compare::{
+        parent::ParentCompareState,
+        state::{
+            CompareResult,
+            CompareState,
+            PathPairMode,
+        },
     },
     cursor::{
         CursorState,
@@ -32,6 +35,71 @@ use context_trace::{
     HasTargetPos,
 };
 use std::fmt;
+
+impl CompactFormat for ParentCompareState {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        let cursor_pos: usize = self.cursor.atom_position.into();
+        let vertex = self.parent_state.path.root_parent();
+        write!(f, "ParentCandidate(vertex:{}, pos:{})", vertex, cursor_pos)
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        let vertex = self.parent_state.path.root_parent();
+        let cursor_pos: usize = self.cursor.atom_position.into();
+
+        write_indent(f, indent)?;
+        writeln!(f, "ParentCompareState {{")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "vertex: {},", vertex)?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "cursor_pos: {},", cursor_pos)?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "cursor_path:")?;
+        self.cursor.path.fmt_indented(f, indent + 2)?;
+        writeln!(f, ",")?;
+        write_indent(f, indent + 1)?;
+        writeln!(f, "parent_state:")?;
+        self.parent_state.path.fmt_indented(f, indent + 2)?;
+        writeln!(f)?;
+        write_indent(f, indent)?;
+        write!(f, "}}")
+    }
+}
+
+impl CompactFormat for SearchNode {
+    fn fmt_compact(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        match self {
+            SearchNode::ParentCandidate(state) => state.fmt_compact(f),
+            SearchNode::PrefixQueue(queue) => {
+                write!(f, "PrefixQueue(size:{})", queue.len())
+            },
+        }
+    }
+
+    fn fmt_indented(
+        &self,
+        f: &mut fmt::Formatter,
+        indent: usize,
+    ) -> fmt::Result {
+        match self {
+            SearchNode::ParentCandidate(state) => state.fmt_indented(f, indent),
+            SearchNode::PrefixQueue(queue) => {
+                write_indent(f, indent)?;
+                write!(f, "PrefixQueue(size:{})", queue.len())
+            },
+        }
+    }
+}
 
 impl<Q, I> CompactFormat for CompareState<Q, I>
 where
@@ -154,12 +222,11 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
     ) -> fmt::Result {
         let queue_size = self.queue.nodes.len();
         let cache_size = self.trace_ctx.cache.entries.len();
-        let has_complete = self.last_complete_match.is_some();
 
         write!(
             f,
-            "SearchIterator(cache:{}, queue:{}, complete:{})",
-            cache_size, queue_size, has_complete
+            "SearchIterator(cache:{}, queue:{})",
+            cache_size, queue_size
         )
     }
 
@@ -192,33 +259,8 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
             for (i, node) in self.queue.nodes.iter().enumerate() {
                 write_indent(f, indent + 3)?;
                 write!(f, "[{}] ", i)?;
-
-                match node {
-                    SearchNode::ParentCandidate(state) => {
-                        let vertex =
-                            state.parent_state.path.root_parent().index;
-                        writeln!(f, "ParentCandidate {{")?;
-                        write_indent(f, indent + 4)?;
-                        writeln!(f, "vertex: {},", vertex)?;
-                        write_indent(f, indent + 4)?;
-                        let cursor_pos: usize =
-                            state.cursor.atom_position.into();
-                        writeln!(f, "cursor_pos: {},", cursor_pos)?;
-                        write_indent(f, indent + 4)?;
-                        writeln!(f, "cursor_path:")?;
-                        state.cursor.path.fmt_indented(f, indent + 5)?;
-                        writeln!(f, ",")?;
-                        write_indent(f, indent + 4)?;
-                        writeln!(f, "parent_state:")?;
-                        state.parent_state.path.fmt_indented(f, indent + 5)?;
-                        writeln!(f)?;
-                        write_indent(f, indent + 3)?;
-                        writeln!(f, "}},")?;
-                    },
-                    SearchNode::PrefixQueue(queue) => {
-                        writeln!(f, "PrefixQueue(size:{}),", queue.len())?;
-                    },
-                }
+                node.fmt_indented(f, indent + 3)?;
+                writeln!(f, ",")?;
             }
 
             write_indent(f, indent + 2)?;
@@ -227,42 +269,6 @@ impl<K: TraversalKind> CompactFormat for SearchIterator<K> {
 
         write_indent(f, indent + 1)?;
         writeln!(f, "}},")?;
-
-        // last_complete_match
-        write_indent(f, indent + 1)?;
-        if let Some(ref end_state) = self.last_complete_match {
-            writeln!(f, "last_complete_match: Some(")?;
-            write_indent(f, indent + 2)?;
-            writeln!(f, "EndState {{")?;
-            write_indent(f, indent + 3)?;
-            writeln!(f, "reason: {:?},", end_state.reason)?;
-            write_indent(f, indent + 3)?;
-            let cursor_pos: usize = end_state.cursor.atom_position.into();
-            writeln!(f, "cursor_pos: {},", cursor_pos)?;
-            write_indent(f, indent + 3)?;
-            write!(f, "path: ")?;
-            match &end_state.path {
-                PathEnum::Range(p) => {
-                    p.fmt_indented(f, indent + 3)?;
-                },
-                PathEnum::Prefix(p) => {
-                    p.fmt_indented(f, indent + 3)?;
-                },
-                PathEnum::Postfix(p) => {
-                    p.fmt_indented(f, indent + 3)?;
-                },
-                PathEnum::Complete(p) => {
-                    p.fmt_indented(f, indent + 3)?;
-                },
-            }
-            writeln!(f)?;
-            write_indent(f, indent + 2)?;
-            writeln!(f, "}}")?;
-            write_indent(f, indent + 1)?;
-            writeln!(f, "),")?;
-        } else {
-            writeln!(f, "last_complete_match: None,")?;
-        }
 
         write_indent(f, indent)?;
         write!(f, "}}")
@@ -292,35 +298,11 @@ impl CompactFormat for SearchQueue {
             write_indent(f, indent + 1)?;
             writeln!(f, "nodes: [")?;
 
-            // Show first few nodes
-            for (i, node) in self.nodes.iter().take(3).enumerate() {
+            for (i, node) in self.nodes.iter().enumerate() {
                 write_indent(f, indent + 2)?;
-                match node {
-                    SearchNode::ParentCandidate(state) => {
-                        let cursor_pos: usize =
-                            state.cursor.atom_position.into();
-                        let vertex =
-                            state.parent_state.path.root_parent().index;
-                        writeln!(
-                            f,
-                            "[{}] ParentCandidate(vertex:{}, pos:{}),",
-                            i, vertex, cursor_pos
-                        )?;
-                    },
-                    SearchNode::PrefixQueue(queue) => {
-                        writeln!(
-                            f,
-                            "[{}] PrefixQueue(size:{}),",
-                            i,
-                            queue.len()
-                        )?;
-                    },
-                }
-            }
-
-            if self.nodes.len() > 3 {
-                write_indent(f, indent + 2)?;
-                writeln!(f, "... {} more", self.nodes.len() - 3)?;
+                write!(f, "[{}] ", i)?;
+                node.fmt_compact(f)?;
+                writeln!(f, ",")?;
             }
 
             write_indent(f, indent + 1)?;
@@ -337,3 +319,5 @@ impl_display_via_compact!(CompareResult);
 impl_display_via_compact!(CompareState<Q, I> where Q: CursorState, I: CursorState);
 impl_display_via_compact!(SearchIterator<K> where K: TraversalKind);
 impl_display_via_compact!(SearchQueue);
+impl_display_via_compact!(ParentCompareState);
+impl_display_via_compact!(SearchNode);

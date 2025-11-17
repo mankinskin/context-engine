@@ -52,10 +52,6 @@ impl<G: HasGraph> Iterator for CompareIterator<G> {
             "processing next state"
         );
         self.children.next().map(|cs| {
-            tracing::debug!(
-                state = %cs,
-                "calling next_match"
-            );
             match cs.next_match(&self.children.trav) {
                 Prefixes(next) => {
                     tracing::debug!(

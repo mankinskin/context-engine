@@ -30,9 +30,6 @@ use tracing::{
 pub(crate) struct SearchIterator<K: TraversalKind> {
     pub(crate) trace_ctx: TraceCtx<K::Trav>,
     pub(crate) queue: SearchQueue,
-    /// Tracks the largest complete match found so far
-    /// (matches that reached end of root and continued to parents)
-    pub(crate) last_complete_match: Option<EndState>,
 }
 impl<K: TraversalKind> SearchIterator<K> {
     #[context_trace::instrument_sig(skip(trav), fields(start_index = %start_index))]
@@ -47,7 +44,6 @@ impl<K: TraversalKind> SearchIterator<K> {
                 cache: TraceCache::new(start_index),
             },
             queue: SearchQueue::new(),
-            last_complete_match: None,
         }
     }
 
@@ -75,7 +71,6 @@ impl<K: TraversalKind> SearchIterator<K> {
                         .map(SearchNode::ParentCandidate),
                 ),
             },
-            last_complete_match: None,
         }
     }
 }
@@ -101,30 +96,24 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
 
                 Some(match root_cursor.find_end() {
                     Ok(end) => {
-                        // RootCursor found an end (partial match or immediate mismatch/query end)
-                        debug!(reason = %end.reason, "found end state");
+                        // RootCursor found an end - this represents actual comparison progress
+                        // Either we matched more of the pattern (QueryEnd) or hit a mismatch
+                        debug!(reason = %end.reason, "found end state - actual match advancement");
+
                         end
                     },
                     Err(root_cursor) => {
-                        // RootCursor iteration completed without breaking
-                        // This means we matched to the end of the root - complete match
-                        trace!("root cursor completed - matched to end, exploring parents");
+                        // RootCursor reached end of root without conclusion
+                        // Need to explore parent tokens to continue comparison
+                        trace!("root cursor completed - no conclusion yet, need parents");
 
                         match root_cursor
                             .next_parents::<K>(&self.trace_ctx.trav)
                         {
                             Err(end) => {
-                                // No more parents available
+                                // No more parents available - this is the final state
                                 debug!("no more parents available");
-                                // Return last_complete_match if we have one, otherwise this end state
-                                if let Some(complete) =
-                                    self.last_complete_match.take()
-                                {
-                                    debug!("returning last complete match");
-                                    complete
-                                } else {
-                                    *end
-                                }
+                                *end
                             },
                             Ok((parent, batch)) => {
                                 debug!(
@@ -138,15 +127,8 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
 
                                 assert!(!batch.is_empty());
 
-                                // Save this complete match before exploring parents
-                                let complete_match = EndState::query_end(
-                                    &self.trace_ctx.trav,
-                                    parent.clone(),
-                                );
-                                debug!("saving complete match before parent exploration");
-                                self.last_complete_match = Some(complete_match);
-
                                 // Add parent batch to queue for next iteration
+                                // Nodes are prioritized by token width (smaller first)
                                 self.queue.nodes.extend(
                                     batch
                                         .into_compare_batch()
@@ -154,16 +136,9 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                                         .map(ParentCandidate),
                                 );
 
-                                // Continue exploring - call next() recursively
-                                match self.next() {
-                                    Some(end_state) => end_state,
-                                    None => {
-                                        // Queue exhausted - return the saved complete match
-                                        self.last_complete_match.take().expect(
-                                            "last_complete_match should be set",
-                                        )
-                                    },
-                                }
+                                // No match to return yet - continue searching
+                                // Recursively call next() to process the parent batch
+                                return self.next();
                             },
                         }
                     },
