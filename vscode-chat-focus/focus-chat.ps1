@@ -41,7 +41,7 @@ if ($vscodeWindow -eq $null) {
 [WinAPI]::SetForegroundWindow($vscodeWindow) | Out-Null
 Start-Sleep -Milliseconds 100
 
-# Send Ctrl+Alt+C
+# Send Ctrl+Alt+C to focus chat
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("^%c")
 

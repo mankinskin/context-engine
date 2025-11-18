@@ -133,9 +133,9 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
                     let should_update = match &self.last_match {
                         MatchState::Located(prev_end) => {
                             let prev_is_complete = prev_end.is_complete();
-                            // Update if: new match is Complete, or previous wasn't Complete
-                            // This ensures Complete matches are preferred over non-Complete
-                            current_is_complete || !prev_is_complete
+                            // Only update if current is Complete AND previous is NOT Complete
+                            // This ensures we keep the first Complete match (smallest parent)
+                            !prev_is_complete && current_is_complete
                         },
                         MatchState::Query(_) => {
                             // First match: always update

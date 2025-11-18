@@ -52,11 +52,9 @@ impl StateAdvance for ParentCompareState {
     ) -> Result<Self::Next, Self> {
         match self.parent_state.advance_state(trav) {
             Ok(next) => {
-                // Convert checkpoint (PatternRangePath) to prefix path (PatternPrefixPath) for cursor
-                let prefix_path =
-                    self.cursor.path.clone().into_rooted_role_path();
+                // Keep the cursor as a range path to properly track start/end positions
                 let cursor = PathCursor {
-                    path: prefix_path.clone(),
+                    path: self.cursor.path.clone(),
                     atom_position: self.cursor.atom_position,
                     _state: PhantomData,
                 };

@@ -10,6 +10,7 @@ use crate::{
     },
     cursor::{
         Candidate,
+        ChildCursor,
         CursorState,
         Matched,
         PathCursor,
@@ -72,15 +73,116 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                 match query_advanced.advance_index_cursor(&trav) {
                     Ok(both_advanced) => {
                         // Both cursors advanced - create candidate cursor and iterate
-                        let candidate_cursor = RootCursor {
+                        let mut candidate_cursor = RootCursor {
                             state: Box::new(both_advanced),
-                            trav,
+                            trav: trav.clone(),
                         };
-                        candidate_cursor.find_end().map_err(|_| {
-                            panic!(
-                                "Candidate RootCursor completed without Break"
-                            )
-                        })
+                        // Iterate through comparisons until we find an end or need parent exploration
+                        loop {
+                            match candidate_cursor.next() {
+                                Some(Continue(())) => {
+                                    // Continue iterating
+                                    continue;
+                                },
+                                Some(Break(EndReason::QueryEnd)) => {
+                                    // Query ended - complete match
+                                    let CompareState {
+                                        child_cursor,
+                                        cursor,
+                                        checkpoint,
+                                        ..
+                                    } = *candidate_cursor.state;
+                                    let root_pos =
+                                        *child_cursor.child_state.target_pos();
+                                    let path =
+                                        child_cursor.child_state.path.clone();
+                                    let target_index = path
+                                        .role_rooted_leaf_token::<End, _>(
+                                            &trav,
+                                        );
+                                    let last_token_width_value =
+                                        target_index.width();
+                                    let end_pos = AtomPosition::from(
+                                        *cursor.atom_position
+                                            - last_token_width_value,
+                                    );
+                                    let target = DownKey::new(
+                                        target_index,
+                                        end_pos.into(),
+                                    );
+                                    return Ok(EndState {
+                                        cursor: checkpoint,
+                                        reason: EndReason::QueryEnd,
+                                        path: PathEnum::from_range_path(
+                                            path, root_pos, target, &trav,
+                                        ),
+                                    });
+                                },
+                                Some(Break(EndReason::Mismatch)) => {
+                                    // Mismatch - partial match
+                                    let CompareState {
+                                        child_cursor,
+                                        cursor,
+                                        checkpoint,
+                                        ..
+                                    } = *candidate_cursor.state;
+                                    let root_pos =
+                                        *child_cursor.child_state.target_pos();
+                                    let path =
+                                        child_cursor.child_state.path.clone();
+                                    let target_index = path
+                                        .role_rooted_leaf_token::<End, _>(
+                                            &trav,
+                                        );
+                                    let last_token_width_value =
+                                        target_index.width();
+                                    let end_pos = AtomPosition::from(
+                                        *checkpoint.atom_position
+                                            - last_token_width_value,
+                                    );
+                                    let target = DownKey::new(
+                                        target_index,
+                                        end_pos.into(),
+                                    );
+                                    return Ok(EndState {
+                                        cursor: checkpoint,
+                                        reason: EndReason::Mismatch,
+                                        path: PathEnum::from_range_path(
+                                            path, root_pos, target, &trav,
+                                        ),
+                                    });
+                                },
+                                None => {
+                                    // Iterator completed without Break - need parent exploration
+                                    // Convert <Candidate, Candidate> to <Candidate, Matched> for parent exploration
+                                    return Err(RootCursor {
+                                        state: Box::new(CompareState {
+                                            child_cursor: ChildCursor {
+                                                child_state: candidate_cursor
+                                                    .state
+                                                    .child_cursor
+                                                    .child_state
+                                                    .clone(),
+                                                _state: PhantomData,
+                                            },
+                                            cursor: candidate_cursor
+                                                .state
+                                                .cursor
+                                                .clone(),
+                                            checkpoint: candidate_cursor
+                                                .state
+                                                .checkpoint
+                                                .clone(),
+                                            target: candidate_cursor
+                                                .state
+                                                .target,
+                                            mode: candidate_cursor.state.mode,
+                                        }),
+                                        trav,
+                                    });
+                                },
+                            }
+                        }
                     },
                     Err(query_only_advanced) => {
                         // Index ended but query continues - return for parent exploration

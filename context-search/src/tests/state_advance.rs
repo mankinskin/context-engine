@@ -260,7 +260,7 @@ fn test_compare_state_candidate_advance() {
         end: 1
     );
     let cursor = PathCursor {
-        path: pattern_path.clone().into_rooted_role_path(),
+        path: pattern_path.clone(),
         atom_position: AtomPosition::from(0),
         _state: PhantomData::<Candidate>,
     };
@@ -337,8 +337,8 @@ fn test_compare_state_matched_advance() {
         start: 0,
         end: 1
     );
-    let cursor: PathCursor<PatternPrefixPath, Matched> = PathCursor {
-        path: pattern_path.clone().into_rooted_role_path(),
+    let cursor: PathCursor<PatternRangePath, Matched> = PathCursor {
+        path: pattern_path.clone(),
         atom_position: AtomPosition::from(0),
         _state: PhantomData,
     };

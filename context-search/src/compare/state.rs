@@ -141,7 +141,8 @@ pub(crate) struct CompareState<
     I: CursorState = Candidate,
 > {
     /// Query cursor: state controlled by generic parameter Q
-    pub(crate) cursor: PathCursor<PatternPrefixPath, Q>,
+    /// Uses PatternRangePath to properly track start/end positions during matching
+    pub(crate) cursor: PathCursor<PatternRangePath, Q>,
 
     /// Index cursor: wraps ChildState with state marker I
     /// The ChildState contains the IndexRangePath being traversed
@@ -173,10 +174,9 @@ pub(crate) enum CompareResult {
 
 impl CompareState<Candidate, Candidate> {
     pub(crate) fn parent_state(&self) -> ParentCompareState {
-        // Convert prefix path cursor back to range path for parent state
-        let range_path = self.checkpoint.path.clone();
+        // Use the current cursor's path to preserve advancement state
         let cursor = PathCursor {
-            path: range_path,
+            path: self.cursor.path.clone(),
             atom_position: self.cursor.atom_position,
             _state: PhantomData,
         };
@@ -403,6 +403,11 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
     type Mismatched = CompareState<Mismatched, Mismatched>;
 
     fn mark_match(self) -> Self::Matched {
+        tracing::debug!(
+            cursor_pos = %self.cursor.atom_position,
+            checkpoint_pos = %self.checkpoint.atom_position,
+            "mark_match: converting to Matched state"
+        );
         CompareState {
             child_cursor: self.child_cursor.mark_match(),
             cursor: self.cursor.mark_match(),
@@ -464,23 +469,29 @@ impl CompareState<Matched, Matched> {
                 match candidate_child_cursor.child_state.advance_state(trav) {
                     Ok(advanced_child_state) => {
                         debug!("child_state advanced successfully");
-                        Ok(CompareState {
+                        let result = CompareState {
                             child_cursor: ChildCursor {
                                 child_state: advanced_child_state,
                                 _state: PhantomData,
                             },
                             cursor: candidate_cursor,
-                            checkpoint: new_checkpoint,
+                            checkpoint: new_checkpoint.clone(),
                             target: self.target,
                             mode: self.mode,
-                        })
+                        };
+                        debug!(
+                            new_checkpoint_pos = %result.checkpoint.atom_position,
+                            cursor_pos = %result.cursor.atom_position,
+                            "checkpoint updated after successful advance"
+                        );
+                        Ok(result)
                     },
                     Err(child_state) => {
                         // child_state cannot advance - we've matched to the end of this pattern
                         // Return Err to signal we need parent exploration
                         // Use the NON-advanced cursor since we couldn't advance the graph path
                         debug!("child_state cannot advance - matched to end of pattern");
-                        Err(CompareState {
+                        let result = CompareState {
                             child_cursor: ChildCursor {
                                 child_state,
                                 _state: PhantomData,
@@ -489,7 +500,13 @@ impl CompareState<Matched, Matched> {
                             checkpoint: new_checkpoint, // But update checkpoint to mark progress
                             target: self.target,
                             mode: self.mode,
-                        })
+                        };
+                        debug!(
+                            new_checkpoint_pos = %result.checkpoint.atom_position,
+                            cursor_pos = %result.cursor.atom_position,
+                            "checkpoint updated after successful match"
+                        );
+                        Err(result)
                     },
                 }
             },
