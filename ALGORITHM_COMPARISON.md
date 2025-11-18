@@ -2,6 +2,8 @@
 
 This document compares the desired search algorithm (DESIRED_SEARCH_ALGORITHM.md) with the current `find_ancestor` implementation in context-search.
 
+> **📋 Quick Navigation**: See [SEARCH_ALGORITHM_ANALYSIS_SUMMARY.md](SEARCH_ALGORITHM_ANALYSIS_SUMMARY.md) for overview and next steps.
+
 ## Executive Summary
 
 **High-Level Alignment**: ✅ The current implementation follows the desired algorithm structure closely.
@@ -320,9 +322,56 @@ end.trace(trace_ctx);
 | Comparison iteration | Until mismatch/QueryEnd | Iterator on RootCursor | ✅ Perfect |
 | **Trace cache** | **Incremental start paths** | **Checkpoint tracing** | ⚠️ **Different timing** |
 
+---
+
+# Implementation Roadmap
+
+See **BEST_MATCH_IMPLEMENTATION_STRATEGY.md** for detailed implementation plan.
+
+## Quick Summary
+
+### Root Cause of Differences
+
+The current implementation is **functionally correct but inefficient**:
+- ✅ Finds correct matches (find_ancestor1_a_b_c passes)
+- ⚠️ Processes more nodes than necessary (no queue clearing)
+- ⚠️ Traces redundantly (traces intermediate matches)
+- ⚠️ May have issues with extended queries (find_ancestor1_a_b_c_c fails)
+
+### Key Fix: Queue Clearing + Width Comparison
+
+**The substring-graph invariant**: Once we find **any match** (first match in a root R), all future matches will be reachable from ancestors of R. Because we are in the smallest matching substring and all substring nodes are reachable from superstring nodes, all future matches must be parents of R.
+
+**Applies to all path types**: Complete (entire token), Range/Prefix/Postfix (partial matches)
+
+**Search Node Types**:
+- **Candidate parent paths**: `ParentCompareState` - no match in root yet
+- **Matched root cursors**: `RootCursor` - matched at least once, established substring location
+
+Therefore:
+1. **Find abc (width 3)** - first match in smallest root (any path type)
+2. **Clear queue** - remove candidate parents (unmatched), they're on unrelated branches
+3. **Add parents of abc** - only explore ancestors of matched root (abcd, etc.)
+4. **Continue** - explore parent roots with continuation of query
+
+This ensures:
+- **Efficiency**: Don't process unrelated candidate parents
+- **Correctness**: Don't miss larger ancestor matches (all reachable from matched root's parents)
+- **Optimality**: First match is in smallest root token (priority queue guarantees)
+
+### Implementation Phases
+
+1. ✅ **Phase 1**: Add width comparison between Complete matches
+2. ✅ **Phase 2**: Clear queue on Complete match, add parents
+3. ✅ **Phase 3**: Remove intermediate tracing (trace only final)
+4. 🧪 **Phase 4**: Test and verify (especially find_ancestor1_a_b_c_c)
+5. 🔮 **Phase 5**: (Optional) Incremental start path tracing
+
+---
+
 ## Recommendations
 
-### 1. Queue Clearing (High Priority)
+### 1. Queue Clearing (High Priority) ✅ ADDRESSED IN STRATEGY
 
 **Issue**: Desired algorithm clears queue when match found, current doesn't.
 
@@ -378,3 +427,189 @@ end.trace(trace_ctx);
 1. Add queue clearing back and test
 2. Check if abc match is being found but then lost
 3. Verify parent exploration starts from correct position after abc match
+
+---
+
+# Deep Analysis: Best Match Checkpointing
+
+## Current Implementation Analysis
+
+### Trace Points (Where cache is populated)
+
+**Location 1**: `search/mod.rs` lines 145-162 - **During search iteration**
+```rust
+if end.reason == EndReason::QueryEnd {
+    let should_update = /* ... logic ... */;
+    if should_update {
+        TraceStart { end: &end, pos: 0 }.trace(&mut self.matches.trace_ctx);
+        self.last_match = MatchState::Located(end.clone());
+    }
+}
+```
+- **When**: Each QueryEnd during iteration
+- **What**: Traces from position 0 for Complete matches
+- **Issue**: Traces ALL QueryEnd matches, even if not the final best match
+
+**Location 2**: `search/mod.rs` lines 241-242 - **After search completes**
+```rust
+let trace_ctx = &mut self.matches.trace_ctx;
+end.trace(trace_ctx);
+```
+- **When**: Final state after all iterations
+- **What**: Traces the final end state
+- **Issue**: Re-traces the same match if it was already traced in Location 1
+
+### Current Best Match Logic
+
+**MatchState Enum** (search/mod.rs):
+```rust
+pub(crate) enum MatchState {
+    Query(PatternPrefixPath),     // Initial state - no match yet
+    Located(EndState),             // Found a match
+}
+```
+
+**Current Code** (lines 133-156):
+```rust
+// OLD INCORRECT LOGIC (now fixed):
+// if end.reason == EndReason::QueryEnd { ... }
+// This was wrong - QueryEnd doesn't mean "entire search ends"
+
+// CORRECTED LOGIC:
+// QueryEnd = query pattern exhausted within this root (match found)
+// Mismatch = comparison failed within this root  
+// Both represent valid match results in a root
+
+let should_update = match &self.last_match {
+    MatchState::Located(prev_end) => {
+        // Compare widths of matched roots
+        let current_width = end.path.root_parent().width.0;
+        let prev_width = prev_end.path.root_parent().width.0;
+        current_width < prev_width
+    },
+    MatchState::Query(_) => true,  // First match in any root
+};
+```
+
+**Problems** (now addressed):
+1. ~~**No width comparison**: Doesn't check if new match is smaller~~ → FIXED: Now compares widths
+2. ~~**Complete-path-only bias**: Won't update from one Complete path to another Complete path~~ → FIXED: Compares all matches
+3. ~~**Tracing on every update**: Traces immediately instead of at end~~ → FIXED: Deferred to end
+4. **No queue clearing**: Continues processing nodes after finding best match → TODO
+
+**EndReason Semantics**:
+- **QueryEnd**: Query pattern fully matched within current root (all query tokens consumed)
+- **Mismatch**: Token comparison failed within current root (partial match or no match)
+- Both are valid "end states" for a root cursor - not search termination
+
+## Desired Behavior (from DESIRED_SEARCH_ALGORITHM.md)
+
+### Best Match Definition
+> "We should keep track of the best match at each time we find a new matching root from a parent and clear the search queue."
+
+**Interpretation**:
+- "Best match" = smallest root token with any match (Complete/Range/Postfix/Prefix)
+- "Matching root from parent" = when we transition from candidate parent to root cursor (first match in root)
+- "Clear queue" = remove unmatched candidate parents; all future matches reachable from matched root's ancestors
+
+**Key Distinction**:
+- **Candidate parent paths**: Parent states in queue, no match in root yet (still candidates)
+- **Matched root cursors** ("matching root"): Have matched at least once in root
+- Queue clearing happens on transition from candidate → matched (first match in root)
+
+**Path Types**: Complete (entire token), Range/Prefix/Postfix (partial) - all can trigger queue clearing
+
+### Trace Cache Commitment
+> "If we return a match result from find, we make sure all of the atom position traces for the result are added to the trace cache. We need to trace the end path to commit the final end position to the trace cache. The start paths should be committed to the trace cache incrementally while finding larger matching roots which must be contained in the final root."
+
+**Interpretation**:
+1. **Final commitment**: Only trace the final best match to cache
+2. **Incremental start paths**: Trace start portions as we build up to larger matches
+3. **End path**: Trace complete end path only for final result
+
+## Key Insight: Width-Based Priority + Queue Clearing
+
+The BinaryHeap processes tokens in ascending width order. Combined with queue clearing:
+
+1. Process abc (width 3) before abcd (width 4)
+2. If abc produces **any match** (Complete/Range/Postfix/Prefix) → clear queue
+3. Only explore parents of abc (which are larger)
+4. If parent produces match → that becomes new best match
+
+**Substring-Graph Invariant**: Once we find **any match** (first match in a root), all future matches will be reachable from roots containing this substring. Because we process smallest tokens first, and all substring nodes are reachable from their superstring nodes, we can clear unrelated branches.
+
+**Two Types of Nodes in Search**:
+1. **Candidate Parent Paths**: Parent states in queue with no match in root yet (from `ParentCompareState`)
+2. **Root Cursors**: States that have matched at least once in the root (from `RootCursor`)
+   - These are the "matched roots" in parent root search iteration
+   - Once we have a root cursor (any match type), future exploration only needs parents of this root
+
+**Path Types**:
+- **Complete**: Match covers entire root token
+- **Range/Prefix/Postfix**: Partial matches within or across tokens
+- **All types** trigger queue clearing once first match found in a root
+
+Therefore:
+- **Clear queue** = stop exploring unrelated branches (candidate parents with no match)
+- **Only explore parents** = only explore valid larger matches (ancestors of matched root)
+- **First match in smallest root** = triggers queue clearing (due to width ordering)
+
+## Implementation Issues
+
+### Issue 1: No Queue Clearing on First Match in Root
+
+**Current**: Queue continues with all nodes (both candidate parents and matched roots intermixed)
+**Desired**: Clear queue when first match found in any root (any path type), only add parents of matched root
+**Distinction**: 
+- **Candidate parent paths**: Parent states with no match in root yet (still exploring)
+- **Matched root cursors**: States that matched at least once in root (established substring)
+- Once we have a matched root, clear candidate parents, keep only ancestors of matched root
+**Impact**: Processes unnecessary branches, may visit roots out of optimal order
+
+### Issue 2: Trace Timing
+
+**Current**: Traces immediately on match update
+**Desired**: Trace incrementally for start paths, final trace for end
+**Impact**: May trace matches that aren't the final best match
+
+### Issue 3: Width Comparison Missing
+
+**Current**: Only checks Complete path vs not-Complete path
+**Desired**: Compare widths to find smallest match
+**Impact**: With queue clearing, first Complete path should always be smallest root token (due to priority)
+
+### Issue 4: Checkpoint Update Semantics
+
+**Current**: `checkpoint` in CompareState updated by mark_match
+**Desired**: Checkpoints should track incremental progress within a root
+**Impact**: Confusion between "checkpoint in current root" vs "best match across all roots"
+
+### Issue 5: Start Path Tracking for Incremental Tracing
+
+**Current**: Start path correctly starts from checkpoint (verified in `parent_state()`)
+**Status**: ✅ **CORRECT** - Infrastructure ready for incremental tracing
+
+**Details**:
+```rust
+// In CompareState::parent_state() (state.rs lines 186-199)
+pub(crate) fn parent_state(&self) -> ParentCompareState {
+    // Uses self.cursor.path (current position, includes checkpoint)
+    let cursor = PathCursor {
+        path: self.cursor.path.clone(),  // PatternRangePath with range
+        atom_position: self.cursor.atom_position,
+        _state: PhantomData,
+    };
+    
+    ParentCompareState {
+        parent_state: self.child_cursor.child_state.parent_state(),
+        cursor,  // This cursor starts from last match position
+    }
+}
+```
+
+**Benefits**:
+- **Incremental tracing**: Each parent match can trace its start segment from last match
+- **Proper path composition**: Start paths build incrementally from query start to current position
+- **Ready for implementation**: When first match found, can trace start path segment
+
+**Next Step**: Implement incremental start path tracing in search iteration (TODO in code)

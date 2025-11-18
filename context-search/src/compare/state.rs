@@ -185,7 +185,12 @@ pub(crate) enum CompareResult {
 
 impl CompareState<Candidate, Candidate> {
     pub(crate) fn parent_state(&self) -> ParentCompareState {
-        // Use the current cursor's path to preserve advancement state
+        // IMPORTANT: Use cursor (not checkpoint) to create parent state
+        // The cursor.path is a PatternRangePath that tracks the current query position
+        // This is passed to ParentCompareState.cursor and used as the starting point
+        // for matching in parent roots, allowing incremental start path tracing:
+        // - Each parent match builds on the previous match's cursor position
+        // - Start paths can be traced incrementally from last match to new match
         let cursor = PathCursor {
             path: self.cursor.path.clone(),
             atom_position: self.cursor.atom_position,
