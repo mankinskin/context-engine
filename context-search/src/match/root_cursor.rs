@@ -31,7 +31,6 @@ use context_trace::{
     End,
     *,
 };
-pub(crate) type CompareQueue = VecDeque<CompareState<Candidate, Candidate>>;
 
 use derive_more::{
     Deref,
@@ -47,6 +46,16 @@ use std::{
         Continue,
     },
 };
+
+// Type alias for advance_cursors return type
+/// Result of advancing both cursors:
+/// - Ok: Both cursors advanced successfully
+/// - Err: Contains EndReason and optionally a cursor needing parent exploration
+pub(crate) type AdvanceCursorsResult<G> = Result<
+    RootCursor<G, Candidate, Candidate>,
+    (EndReason, Option<RootCursor<G, Candidate, Matched>>),
+>;
+
 #[derive(Debug)]
 pub(crate) struct RootCursor<
     G: HasGraph + Clone,
@@ -58,11 +67,15 @@ pub(crate) struct RootCursor<
 }
 
 impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
-    /// Process a matched cursor and iterate to find end state
-    /// This advances the cursors first, then delegates to the Candidate impl or returns appropriate end
-    pub(crate) fn find_end(
+    /// Advance a Matched cursor to a Candidate cursor by advancing both query and index
+    /// Returns Ok(Candidate cursor) if both advanced successfully
+    /// Returns Err(EndState) if query ended (QueryEnd) or if need parent exploration
+    pub(crate) fn advance_to_candidate(
         self
-    ) -> Result<EndState, RootCursor<G, Candidate, Matched>> {
+    ) -> Result<
+        RootCursor<G, Candidate, Candidate>,
+        Result<EndState, RootCursor<G, Candidate, Matched>>,
+    > {
         let matched_state = *self.state;
         let trav = self.trav;
 
@@ -72,121 +85,15 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                 // Query advanced, now try index
                 match query_advanced.advance_index_cursor(&trav) {
                     Ok(both_advanced) => {
-                        // Both cursors advanced - create candidate cursor and iterate
-                        let mut candidate_cursor = RootCursor {
+                        // Both cursors advanced - return Candidate cursor
+                        Ok(RootCursor {
                             state: Box::new(both_advanced),
-                            trav: trav.clone(),
-                        };
-                        // Iterate through comparisons until we find an end or need parent exploration
-                        loop {
-                            match candidate_cursor.next() {
-                                Some(Continue(())) => {
-                                    // Continue iterating
-                                    continue;
-                                },
-                                Some(Break(EndReason::QueryEnd)) => {
-                                    // Query ended - complete match
-                                    let CompareState {
-                                        child_cursor,
-                                        cursor,
-                                        checkpoint,
-                                        ..
-                                    } = *candidate_cursor.state;
-                                    let root_pos =
-                                        *child_cursor.child_state.target_pos();
-                                    let path =
-                                        child_cursor.child_state.path.clone();
-                                    let target_index = path
-                                        .role_rooted_leaf_token::<End, _>(
-                                            &trav,
-                                        );
-                                    let last_token_width_value =
-                                        target_index.width();
-                                    let end_pos = AtomPosition::from(
-                                        *cursor.atom_position
-                                            - last_token_width_value,
-                                    );
-                                    let target = DownKey::new(
-                                        target_index,
-                                        end_pos.into(),
-                                    );
-                                    return Ok(EndState {
-                                        cursor: checkpoint,
-                                        reason: EndReason::QueryEnd,
-                                        path: PathEnum::from_range_path(
-                                            path, root_pos, target, &trav,
-                                        ),
-                                    });
-                                },
-                                Some(Break(EndReason::Mismatch)) => {
-                                    // Mismatch - partial match
-                                    let CompareState {
-                                        child_cursor,
-                                        cursor,
-                                        checkpoint,
-                                        ..
-                                    } = *candidate_cursor.state;
-                                    let root_pos =
-                                        *child_cursor.child_state.target_pos();
-                                    let path =
-                                        child_cursor.child_state.path.clone();
-                                    let target_index = path
-                                        .role_rooted_leaf_token::<End, _>(
-                                            &trav,
-                                        );
-                                    let last_token_width_value =
-                                        target_index.width();
-                                    let end_pos = AtomPosition::from(
-                                        *checkpoint.atom_position
-                                            - last_token_width_value,
-                                    );
-                                    let target = DownKey::new(
-                                        target_index,
-                                        end_pos.into(),
-                                    );
-                                    return Ok(EndState {
-                                        cursor: checkpoint,
-                                        reason: EndReason::Mismatch,
-                                        path: PathEnum::from_range_path(
-                                            path, root_pos, target, &trav,
-                                        ),
-                                    });
-                                },
-                                None => {
-                                    // Iterator completed without Break - need parent exploration
-                                    // Convert <Candidate, Candidate> to <Candidate, Matched> for parent exploration
-                                    return Err(RootCursor {
-                                        state: Box::new(CompareState {
-                                            child_cursor: ChildCursor {
-                                                child_state: candidate_cursor
-                                                    .state
-                                                    .child_cursor
-                                                    .child_state
-                                                    .clone(),
-                                                _state: PhantomData,
-                                            },
-                                            cursor: candidate_cursor
-                                                .state
-                                                .cursor
-                                                .clone(),
-                                            checkpoint: candidate_cursor
-                                                .state
-                                                .checkpoint
-                                                .clone(),
-                                            target: candidate_cursor
-                                                .state
-                                                .target,
-                                            mode: candidate_cursor.state.mode,
-                                        }),
-                                        trav,
-                                    });
-                                },
-                            }
-                        }
+                            trav,
+                        })
                     },
                     Err(query_only_advanced) => {
-                        // Index ended but query continues - return for parent exploration
-                        Err(RootCursor {
+                        // Index ended but query continues - need parent exploration
+                        Err(Err(RootCursor {
                             state: Box::new(CompareState {
                                 child_cursor: query_only_advanced.child_cursor,
                                 cursor: query_only_advanced.cursor,
@@ -195,7 +102,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                                 mode: query_only_advanced.mode,
                             }),
                             trav,
-                        })
+                        }))
                     },
                 }
             },
@@ -214,18 +121,147 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                 tracing::debug!("root_cursor process_candidate_match: root_parent={}, root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
                     root_parent, usize::from(root_pos), *matched_state.cursor.atom_position,
                     last_token_width_value, usize::from(end_pos));
+
                 let target = DownKey::new(target_index, end_pos.into());
-                Ok(EndState {
+                Err(Ok(EndState {
                     cursor: matched_state.checkpoint,
                     reason: EndReason::QueryEnd,
                     path: PathEnum::from_range_path(
                         path, root_pos, target, &trav,
                     ),
-                })
+                }))
             },
         }
     }
 
+    /// Process a matched cursor and iterate to find end state
+    /// Uses iterator to advance through matches until QueryEnd or need parent exploration
+    pub(crate) fn find_end(
+        self
+    ) -> Result<EndState, RootCursor<G, Candidate, Matched>> {
+        // Try to advance to candidate
+        match self.advance_to_candidate() {
+            Ok(candidate_cursor) => {
+                // We have a candidate cursor - iterate it to find the end
+                candidate_cursor.find_end()
+            },
+            Err(Ok(end_state)) => {
+                // Query ended immediately - return the end state
+                Ok(end_state)
+            },
+            Err(Err(need_parent)) => {
+                // Need parent exploration immediately
+                Err(need_parent)
+            },
+        }
+    }
+}
+
+impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
+    /// Advance a Candidate cursor to a Matched cursor by comparing and matching
+    /// Returns Ok(Matched cursor) if comparison resulted in a match
+    /// Returns Err(Some(EndState)) if hit QueryEnd or Mismatch during iteration
+    /// Returns Err(None) if iterator completed without conclusion - need parent exploration (returns self)
+    pub(crate) fn advance_to_matched(
+        mut self
+    ) -> Result<RootCursor<G, Matched, Matched>, Result<EndState, Self>> {
+        // Iterate until we get a match or need to stop
+        loop {
+            match self.next() {
+                Some(Continue(())) => {
+                    // Comparison resulted in match and both cursors advanced
+                    // self has been updated to new candidate state, continue
+                    continue;
+                },
+                Some(Break(reason)) => {
+                    // Hit an end condition (QueryEnd or Mismatch)
+                    let CompareState {
+                        child_cursor,
+                        cursor,
+                        checkpoint,
+                        ..
+                    } = *self.state;
+                    let root_pos = *child_cursor.child_state.target_pos();
+                    let path = child_cursor.child_state.path.clone();
+                    let target_index =
+                        path.role_rooted_leaf_token::<End, _>(&self.trav);
+                    let last_token_width_value = target_index.width();
+
+                    let (end_cursor, end_pos) = match reason {
+                        EndReason::QueryEnd => (
+                            checkpoint.clone(),
+                            AtomPosition::from(
+                                *cursor.atom_position - last_token_width_value,
+                            ),
+                        ),
+                        EndReason::Mismatch => (
+                            checkpoint.clone(),
+                            AtomPosition::from(
+                                *checkpoint.atom_position
+                                    - last_token_width_value,
+                            ),
+                        ),
+                    };
+
+                    let target = DownKey::new(target_index, end_pos.into());
+                    return Err(Ok(EndState {
+                        cursor: end_cursor,
+                        reason,
+                        path: PathEnum::from_range_path(
+                            path, root_pos, target, &self.trav,
+                        ),
+                    }));
+                },
+                None => {
+                    // Iterator completed without Break - need parent exploration
+                    return Err(Err(self));
+                },
+            }
+        }
+    }
+
+    /// Find the end state by iterating through candidate comparisons
+    /// Returns Ok(EndState) if we reach QueryEnd or Mismatch
+    /// Returns Err if we need parent exploration
+    pub(crate) fn find_end(
+        self
+    ) -> Result<EndState, RootCursor<G, Candidate, Matched>> {
+        match self.advance_to_matched() {
+            Ok(_matched_cursor) => {
+                // Got a matched cursor - this shouldn't happen in find_end
+                // because advance_to_matched loops until it gets an EndState or needs parents
+                unreachable!("advance_to_matched returned Ok(Matched) - should return Err with EndState")
+            },
+            Err(Ok(end_state)) => {
+                // Found an end state (QueryEnd or Mismatch)
+                Ok(end_state)
+            },
+            Err(Err(candidate_cursor)) => {
+                // Need parent exploration - convert <Candidate, Candidate> to <Candidate, Matched>
+                Err(RootCursor {
+                    state: Box::new(CompareState {
+                        child_cursor: ChildCursor {
+                            child_state: candidate_cursor
+                                .state
+                                .child_cursor
+                                .child_state
+                                .clone(),
+                            _state: PhantomData,
+                        },
+                        cursor: candidate_cursor.state.cursor.clone(),
+                        checkpoint: candidate_cursor.state.checkpoint.clone(),
+                        target: candidate_cursor.state.target,
+                        mode: candidate_cursor.state.mode,
+                    }),
+                    trav: candidate_cursor.trav,
+                })
+            },
+        }
+    }
+}
+
+// Keep the old find_end implementation but remove the confusing loop
+impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
     /// Process a matched cursor: advance and convert to either iterable candidate cursor or immediate end
     pub(crate) fn process_match(
         self
@@ -244,12 +280,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
 
     /// Advance cursors after a match and transition to Candidate state
     /// Returns Ok with both-advanced state, or Err with reason for failure
-    pub(crate) fn advance_cursors(
-        self
-    ) -> Result<
-        RootCursor<G, Candidate, Candidate>,
-        (EndReason, Option<RootCursor<G, Candidate, Matched>>),
-    > {
+    pub(crate) fn advance_cursors(self) -> AdvanceCursorsResult<G> {
         let matched_state = *self.state;
 
         // Step 1: Try to advance QUERY cursor
@@ -406,43 +437,6 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
             Ok((parent, batch))
         } else {
             Err(Box::new(EndState::mismatch(trav, parent)))
-        }
-    }
-
-    pub(crate) fn find_end(mut self) -> Result<EndState, Self> {
-        match self.find_map(|flow| match flow {
-            Continue(()) => None,
-            Break(reason) => Some(reason),
-        }) {
-            Some(reason) => {
-                let CompareState {
-                    child_cursor,
-                    cursor,
-                    checkpoint,
-                    ..
-                } = *self.state;
-                let root_pos = *child_cursor.child_state.target_pos();
-                let path = child_cursor.child_state.path.clone();
-                let target_index =
-                    path.role_rooted_leaf_token::<End, _>(&self.trav);
-
-                // Calculate the END position based on cursor position BEFORE the last advance
-                // The cursor has advanced past the last token, so we need to go back by the width of the last token
-                let last_token_width_value = target_index.width();
-                let end_pos = AtomPosition::from(
-                    *cursor.atom_position - last_token_width_value,
-                );
-
-                let target = DownKey::new(target_index, end_pos.into());
-                Ok(EndState {
-                    cursor: checkpoint,
-                    reason,
-                    path: PathEnum::from_range_path(
-                        path, root_pos, target, &self.trav,
-                    ),
-                })
-            },
-            None => Err(self),
         }
     }
 }

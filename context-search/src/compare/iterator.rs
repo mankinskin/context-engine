@@ -52,7 +52,7 @@ impl<G: HasGraph> Iterator for CompareIterator<G> {
             "processing next state"
         );
         self.children.next().map(|cs| {
-            match cs.next_match(&self.children.trav) {
+            match cs.compare_leaf_tokens(&self.children.trav) {
                 Prefixes(next) => {
                     tracing::debug!(
                         num_prefixes = next.len(),

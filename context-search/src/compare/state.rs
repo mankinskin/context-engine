@@ -64,6 +64,17 @@ pub(crate) type CompareQueue = VecDeque<CompareState<Candidate, Candidate>>;
 pub(crate) type CandidateCompareState = CompareState<Candidate, Candidate>;
 pub(crate) type MatchedCompareState = CompareState<Matched, Matched>;
 
+// Return type aliases for advance operations
+/// Result of advancing only the query cursor: Ok = query advanced, Err = query ended
+pub(crate) type QueryAdvanceResult =
+    Result<CompareState<Candidate, Matched>, CompareState<Matched, Matched>>;
+
+/// Result of advancing only the index cursor: Ok = index advanced, Err = index ended
+pub(crate) type IndexAdvanceResult = Result<
+    CompareState<Candidate, Candidate>,
+    CompareState<Candidate, Matched>,
+>;
+
 #[derive(Clone, Debug, PartialEq, Eq, Copy)]
 pub(crate) enum PathPairMode {
     GraphMajor,
@@ -330,7 +341,7 @@ impl CompareState<Candidate, Candidate> {
     ///
     /// The checkpoint (always Matched state) is NOT updated here - that's RootCursor's responsibility
     /// after determining this match is part of the largest contiguous match.
-    pub(crate) fn next_match<G: HasGraph>(
+    pub(crate) fn compare_leaf_tokens<G: HasGraph>(
         self,
         trav: &G,
     ) -> CompareResult {
@@ -429,95 +440,6 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
 }
 
 impl CompareState<Matched, Matched> {
-    /// Convert a matched state to a candidate state for the next comparison.
-    /// - Old matched cursor becomes the new checkpoint
-    /// - Old matched cursor is advanced to get the new candidate cursor
-    /// - Old checkpoint is discarded
-    /// - Child cursor (graph path) is also advanced
-    /// Uses move semantics to consume the matched state.
-    #[context_trace::instrument_sig(skip(self, trav))]
-    pub(crate) fn into_next_candidate<G: HasGraph>(
-        mut self,
-        trav: &G,
-    ) -> Result<
-        CompareState<Candidate, Candidate>,
-        CompareState<Matched, Matched>,
-    > {
-        debug!(
-            cursor = %self.cursor,
-            "converting matched to candidate"
-        );
-        // Convert the old matched cursor to a checkpoint (PrefixPath -> RangePath)
-        debug!("about to clone cursor");
-        let cursor_clone = self.cursor.clone();
-        debug!("cloned cursor, now converting to PatternCursor");
-        let new_checkpoint: PatternCursor = cursor_clone.into();
-        debug!("converted to PatternCursor");
-
-        debug!("calling cursor.advance");
-        // Advance the cursor to get the new candidate position
-        match self.cursor.advance(trav) {
-            Continue(_) => {
-                debug!("advance succeeded");
-                // Convert the old matched cursor to a checkpoint (PrefixPath -> RangePath)
-                let candidate_cursor = self.cursor.as_candidate();
-                let candidate_child_cursor = self.child_cursor.as_candidate();
-
-                // Also try to advance the child_cursor (graph path position)
-                // If child_cursor cannot advance, it means we've reached the end of this pattern
-                // and should signal completion to trigger parent exploration
-                match candidate_child_cursor.child_state.advance_state(trav) {
-                    Ok(advanced_child_state) => {
-                        debug!("child_state advanced successfully");
-                        let result = CompareState {
-                            child_cursor: ChildCursor {
-                                child_state: advanced_child_state,
-                                _state: PhantomData,
-                            },
-                            cursor: candidate_cursor,
-                            checkpoint: new_checkpoint.clone(),
-                            target: self.target,
-                            mode: self.mode,
-                        };
-                        debug!(
-                            new_checkpoint_pos = %result.checkpoint.atom_position,
-                            cursor_pos = %result.cursor.atom_position,
-                            "checkpoint updated after successful advance"
-                        );
-                        Ok(result)
-                    },
-                    Err(child_state) => {
-                        // child_state cannot advance - we've matched to the end of this pattern
-                        // Return Err to signal we need parent exploration
-                        // Use the NON-advanced cursor since we couldn't advance the graph path
-                        debug!("child_state cannot advance - matched to end of pattern");
-                        let result = CompareState {
-                            child_cursor: ChildCursor {
-                                child_state,
-                                _state: PhantomData,
-                            },
-                            cursor: self.cursor, // Use original cursor (not advanced)
-                            checkpoint: new_checkpoint, // But update checkpoint to mark progress
-                            target: self.target,
-                            mode: self.mode,
-                        };
-                        debug!(
-                            new_checkpoint_pos = %result.checkpoint.atom_position,
-                            cursor_pos = %result.cursor.atom_position,
-                            "checkpoint updated after successful match"
-                        );
-                        Err(result)
-                    },
-                }
-            },
-            Break(_) => {
-                debug!("advance failed, returning matched state");
-                // Cannot advance - return the matched state back
-                Err(self)
-            },
-        }
-    }
-
     /// Advance only the query cursor to the next token.
     /// Returns CompareState with query in Candidate state, index still in Matched state.
     ///
@@ -525,8 +447,7 @@ impl CompareState<Matched, Matched> {
     pub(crate) fn advance_query_cursor<G: HasGraph>(
         mut self,
         trav: &G,
-    ) -> Result<CompareState<Candidate, Matched>, CompareState<Matched, Matched>>
-    {
+    ) -> QueryAdvanceResult {
         debug!(
             cursor = %self.cursor,
             "advancing query cursor only"
@@ -565,10 +486,7 @@ impl CompareState<Candidate, Matched> {
     pub(crate) fn advance_index_cursor<G: HasGraph>(
         self,
         trav: &G,
-    ) -> Result<
-        CompareState<Candidate, Candidate>,
-        CompareState<Candidate, Matched>,
-    > {
+    ) -> IndexAdvanceResult {
         debug!(
             child_cursor = ?self.child_cursor,
             "advancing index cursor only (query already advanced)"
