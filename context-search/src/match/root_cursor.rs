@@ -23,9 +23,9 @@ use crate::{
             PathCoverage,
         },
         matched::{
-            QueryExhaustedState,
             MatchedEndState,
-            PartialMatchState,
+            MismatchState,
+            QueryExhaustedState,
         },
     },
     traversal::{
@@ -105,6 +105,8 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                                 child_cursor: query_only_advanced.child_cursor,
                                 cursor: query_only_advanced.cursor,
                                 checkpoint: query_only_advanced.checkpoint,
+                                checkpoint_child: query_only_advanced
+                                    .checkpoint_child,
                                 target: query_only_advanced.target,
                                 mode: query_only_advanced.mode,
                             }),
@@ -195,10 +197,28 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                         child_cursor,
                         cursor,
                         checkpoint,
+                        checkpoint_child,
                         ..
                     } = *self.state;
-                    let root_pos = *child_cursor.child_state.target_pos();
-                    let path = child_cursor.child_state.path.clone();
+
+                    // For Mismatch, use checkpoint_child path (state at last match)
+                    // For QueryExhausted, use current child_cursor path
+                    let (path, root_pos) = match reason {
+                        EndReason::QueryExhausted => {
+                            let root_pos =
+                                *child_cursor.child_state.target_pos();
+                            (child_cursor.child_state.path.clone(), root_pos)
+                        },
+                        EndReason::Mismatch => {
+                            let root_pos =
+                                *checkpoint_child.child_state.target_pos();
+                            (
+                                checkpoint_child.child_state.path.clone(),
+                                root_pos,
+                            )
+                        },
+                    };
+
                     let target_index =
                         path.role_rooted_leaf_token::<End, _>(&self.trav);
                     let last_token_width_value = target_index.width();
@@ -214,10 +234,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                             // For Mismatch, checkpoint already points to position AFTER last match
                             // We need end_pos to be position of last matched token's END
                             // which is checkpoint.atom_position (already accounts for last match width)
-                            (
-                                checkpoint.clone(),
-                                checkpoint.atom_position,
-                            )
+                            (checkpoint.clone(), checkpoint.atom_position)
                         },
                     };
 
@@ -229,13 +246,15 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                     // Create appropriate matched state based on reason
                     let matched_state = match reason {
                         EndReason::QueryExhausted =>
-                            MatchedEndState::QueryExhausted(QueryExhaustedState {
-                                cursor: end_cursor,
-                                path: path_enum,
-                            }),
+                            MatchedEndState::QueryExhausted(
+                                QueryExhaustedState {
+                                    cursor: end_cursor,
+                                    path: path_enum,
+                                },
+                            ),
                         EndReason::Mismatch => {
                             // We already filtered checkpoint == 0 above
-                            MatchedEndState::Partial(PartialMatchState {
+                            MatchedEndState::Mismatch(MismatchState {
                                 cursor: end_cursor,
                                 path: path_enum,
                             })
@@ -282,6 +301,10 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                         },
                         cursor: candidate_cursor.state.cursor.clone(),
                         checkpoint: candidate_cursor.state.checkpoint.clone(),
+                        checkpoint_child: candidate_cursor
+                            .state
+                            .checkpoint_child
+                            .clone(),
                         target: candidate_cursor.state.target,
                         mode: candidate_cursor.state.mode,
                     }),
@@ -342,6 +365,8 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                                         .child_cursor,
                                     cursor: _query_only_advanced.cursor,
                                     checkpoint: _query_only_advanced.checkpoint,
+                                    checkpoint_child: _query_only_advanced
+                                        .checkpoint_child,
                                     target: _query_only_advanced.target,
                                     mode: _query_only_advanced.mode,
                                 }),
@@ -437,6 +462,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
                 child_cursor: state.child_cursor.as_candidate(),
                 cursor: state.cursor,
                 checkpoint: state.checkpoint,
+                checkpoint_child: state.checkpoint_child,
                 target: state.target,
                 mode: state.mode,
             }),

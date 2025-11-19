@@ -323,9 +323,9 @@ impl<K: TraversalKind> SearchState<K> {
                 matched_state
             },
             MatchState::Query(query_path) => {
-                // No matches were found - need to create a partial match at position 0
+                // No matches were found - need to create a mismatch at position 0
                 debug!("no matches found, still in query state");
-                // Create a PartialMatchState with checkpoint 0 (no progress)
+                // Create a MismatchState with checkpoint 0 (no progress)
                 let start_token = query_path.path_root()[0];
                 let cursor = PatternCursor {
                     atom_position: AtomPosition::default(),
@@ -339,8 +339,8 @@ impl<K: TraversalKind> SearchState<K> {
                         PatternId::default(),
                     )),
                 ));
-                MatchedEndState::Partial(
-                    crate::state::matched::PartialMatchState { path, cursor },
+                MatchedEndState::Mismatch(
+                    crate::state::matched::MismatchState { path, cursor },
                 )
             },
         };

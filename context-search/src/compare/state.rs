@@ -162,6 +162,9 @@ pub(crate) struct CompareState<
     /// Checkpoint: last confirmed match (always Matched state)
     pub(crate) checkpoint: PathCursor<PatternRangePath, Matched>,
 
+    /// Checkpoint for child cursor: index path state at last confirmed match
+    pub(crate) checkpoint_child: ChildCursor<Matched>,
+
     pub(crate) target: DownKey,
     pub(crate) mode: PathPairMode,
 }
@@ -281,6 +284,7 @@ impl CompareState<Candidate, Candidate> {
                                 mode: self.mode,
                                 cursor: self.cursor.clone(),
                                 checkpoint: self.checkpoint.clone(),
+                                checkpoint_child: self.checkpoint_child.clone(),
                             }
                         })
                         .collect();
@@ -326,6 +330,7 @@ impl CompareState<Candidate, Candidate> {
                                 mode: self.mode,
                                 cursor,
                                 checkpoint: self.checkpoint.clone(),
+                                checkpoint_child: self.checkpoint_child.clone(),
                             }
                         })
                         .collect();
@@ -422,6 +427,7 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
         let cursor_pos = self.cursor.atom_position.clone();
         let old_checkpoint_pos = self.checkpoint.atom_position.clone();
         let matched_cursor = self.cursor.mark_match();
+        let matched_child = self.child_cursor.mark_match();
         tracing::debug!(
             cursor_pos = %cursor_pos,
             old_checkpoint_pos = %old_checkpoint_pos,
@@ -429,9 +435,10 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
             "mark_match: converting to Matched state and updating checkpoint"
         );
         CompareState {
-            child_cursor: self.child_cursor.mark_match(),
+            child_cursor: matched_child.clone(),
             cursor: matched_cursor.clone(),
             checkpoint: matched_cursor,
+            checkpoint_child: matched_child,
             target: self.target,
             mode: self.mode,
         }
@@ -442,6 +449,7 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
             child_cursor: self.child_cursor.mark_mismatch(),
             cursor: self.cursor.mark_mismatch(),
             checkpoint: self.checkpoint,
+            checkpoint_child: self.checkpoint_child,
             target: self.target,
             mode: self.mode,
         }
@@ -473,6 +481,7 @@ impl CompareState<Matched, Matched> {
                     child_cursor: self.child_cursor,
                     cursor: candidate_cursor,
                     checkpoint: self.checkpoint,
+                    checkpoint_child: self.checkpoint_child,
                     target: self.target,
                     mode: self.mode,
                 })
@@ -516,6 +525,7 @@ impl CompareState<Candidate, Matched> {
                     },
                     cursor: self.cursor, // Already in Candidate state
                     checkpoint: self.checkpoint,
+                    checkpoint_child: self.checkpoint_child,
                     target: self.target,
                     mode: self.mode,
                 })
@@ -529,6 +539,7 @@ impl CompareState<Candidate, Matched> {
                     },
                     cursor: self.cursor,
                     checkpoint: self.checkpoint,
+                    checkpoint_child: self.checkpoint_child,
                     target: self.target,
                     mode: self.mode,
                 })
@@ -584,6 +595,7 @@ impl StateAdvance for CompareState<Matched, Matched> {
                 },
                 cursor: self.cursor,
                 checkpoint: self.checkpoint,
+                checkpoint_child: self.checkpoint_child,
                 target: self.target,
                 mode: self.mode,
             }),
@@ -594,6 +606,7 @@ impl StateAdvance for CompareState<Matched, Matched> {
                 },
                 cursor: self.cursor,
                 checkpoint: self.checkpoint,
+                checkpoint_child: self.checkpoint_child,
                 target: self.target,
                 mode: self.mode,
             }),

@@ -72,11 +72,15 @@ impl StateAdvance for ParentCompareState {
                 Ok(CompareRootState {
                     token: CompareState {
                         child_cursor: ChildCursor {
-                            child_state: next.child_state,
+                            child_state: next.child_state.clone(),
                             _state: PhantomData,
                         },
                         cursor,
                         checkpoint: self.cursor,
+                        checkpoint_child: ChildCursor {
+                            child_state: next.child_state,
+                            _state: PhantomData,
+                        },
                         mode: GraphMajor,
                         target: DownKey::new(
                             index_token,

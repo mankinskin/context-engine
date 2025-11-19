@@ -6,9 +6,6 @@ use context_trace::{
     RootedPath,
     *,
 };
-use postfix::PostfixEnd;
-use prefix::PrefixEnd;
-use range::RangeEnd;
 use std::marker::PhantomData;
 
 use crate::{
@@ -23,6 +20,10 @@ use crate::{
 pub(crate) mod postfix;
 pub(crate) mod prefix;
 pub(crate) mod range;
+
+use postfix::PostfixEnd;
+use prefix::PrefixEnd;
+use range::RangeEnd;
 
 /// Represents the state of matching during search.
 /// Distinguishes between "haven't found anything yet" (query state)
@@ -165,6 +166,7 @@ impl PathCoverage {
         }
     }
 }
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub(crate) enum EndReason {
     QueryExhausted,
@@ -194,9 +196,6 @@ pub struct EndState {
     pub(crate) path: PathCoverage,
     pub(crate) cursor: PatternCursor,
 }
-// impl_cursor_pos! {
-//     CursorPosition for EndState, self => self.cursor.atom_position
-// }
 
 impl Traceable for &EndState {
     fn trace<G: HasGraph>(
@@ -211,6 +210,7 @@ impl Traceable for &EndState {
         }
     }
 }
+
 impl EndState {
     pub(crate) fn init_fold(cursor: PatternCursor) -> MatchState {
         // Initially, we have a query pattern that hasn't been located in the graph yet
@@ -238,27 +238,25 @@ impl EndState {
     ) -> Self {
         Self::with_reason(trav, EndReason::QueryExhausted, parent)
     }
-    //pub(crate) fn complete(
-    //    trav: G,
-    //    parent: ParentCompareState,
-    //) -> Self {
-    //    Self::with_reason(trav, EndReason::QueryExhausted, parent)
-    //}
+
     pub(crate) fn mismatch<G: HasGraph>(
         trav: G,
         parent: ParentCompareState,
     ) -> Self {
         Self::with_reason(trav, EndReason::Mismatch, parent)
     }
+
     pub(crate) fn start_len(&self) -> usize {
         self.path
             .try_start_path()
             .map(|p| p.len())
             .unwrap_or_default()
     }
+
     pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
         self.path.try_start_path()
     }
+
     pub(crate) fn is_final(&self) -> bool {
         self.reason == EndReason::QueryExhausted
             && matches!(self.path, PathCoverage::EntireRoot(_))
@@ -273,6 +271,7 @@ impl EndState {
             PathCoverage::EntireRoot(_) => None,
         }
     }
+
     pub(crate) fn state_direction(&self) -> StateDirection {
         match self.path {
             PathCoverage::Range(_) => StateDirection::TopDown,
@@ -281,6 +280,7 @@ impl EndState {
             PathCoverage::EntireRoot(_) => StateDirection::BottomUp,
         }
     }
+
     pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
         match &self.path {
             PathCoverage::Range(e) => Some(e.path.end_path()),
@@ -289,6 +289,7 @@ impl EndState {
             PathCoverage::EntireRoot(_) => None,
         }
     }
+
     pub(crate) fn is_complete(&self) -> bool {
         matches!(self.path, PathCoverage::EntireRoot(_))
     }
@@ -323,6 +324,7 @@ impl RootKey for EndState {
         )
     }
 }
+
 impl_root! { GraphRoot for EndState, self =>
     match &self.path {
         PathCoverage::EntireRoot(c) => c.root_parent(),

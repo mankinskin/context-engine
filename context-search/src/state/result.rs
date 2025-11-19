@@ -48,7 +48,7 @@ impl Response {
                 PathCoverage::EntireRoot(path) => path,
                 _ => panic!("{}: QueryExhausted state has non-EntireRoot path", msg),
             },
-            MatchedEndState::Partial(_) => panic!("{}", msg),
+            MatchedEndState::Mismatch(_) => panic!("{}", msg),
         }
     }
 
@@ -59,7 +59,7 @@ impl Response {
                 PathCoverage::EntireRoot(path) => Some(path),
                 _ => None,
             },
-            MatchedEndState::Partial(_) => None,
+            MatchedEndState::Mismatch(_) => None,
         }
     }
 

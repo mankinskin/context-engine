@@ -15,7 +15,7 @@ use {
         state::matched::{
             QueryExhaustedState,
             MatchedEndState,
-            PartialMatchState,
+            MismatchState,
         },
         state::result::Response,
     },
@@ -163,7 +163,7 @@ fn find_pattern1() {
     assert_eq!(aby_found.cache.entries.len(), 5);
     assert_eq!(
         aby_found.end,
-        MatchedEndState::Partial(PartialMatchState {
+        MatchedEndState::Mismatch(MismatchState {
             path: PathCoverage::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),

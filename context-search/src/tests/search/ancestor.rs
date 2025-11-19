@@ -11,6 +11,7 @@ use {
         state::matched::{
             QueryExhaustedState,
             MatchedEndState,
+            MismatchState,
         },
         state::result::Response,
     },
@@ -197,7 +198,7 @@ fn find_ancestor1_long_pattern() {
     );
 }
 
-// Test: Pattern [a, b, c, c] should match token abc (Complete) - last c is additional
+// Test: Pattern [a, b, c, c] should partially match token abc - only first 3 tokens match
 #[test]
 fn find_ancestor1_a_b_c_c() {
     let Env1 {
@@ -219,7 +220,7 @@ fn find_ancestor1_a_b_c_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState::Mismatch(MismatchState {
                 path: PathCoverage::EntireRoot(ref path),
                 ..
             }),

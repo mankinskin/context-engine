@@ -273,11 +273,15 @@ fn test_compare_state_candidate_advance() {
 
     let compare_state = CompareState {
         child_cursor: crate::cursor::ChildCursor {
-            child_state,
+            child_state: child_state.clone(),
             _state: PhantomData,
         },
         cursor,
         checkpoint,
+        checkpoint_child: crate::cursor::ChildCursor {
+            child_state,
+            _state: PhantomData,
+        },
         mode: crate::compare::state::PathPairMode::GraphMajor,
         target: context_trace::trace::cache::key::directed::down::DownKey::new(
             ab,
@@ -351,11 +355,15 @@ fn test_compare_state_matched_advance() {
 
     let compare_state = CompareState {
         child_cursor: crate::cursor::ChildCursor {
-            child_state,
+            child_state: child_state.clone(),
             _state: PhantomData,
         },
         cursor,
         checkpoint,
+        checkpoint_child: crate::cursor::ChildCursor {
+            child_state,
+            _state: PhantomData,
+        },
         mode: crate::compare::state::PathPairMode::GraphMajor,
         target: context_trace::trace::cache::key::directed::down::DownKey::new(
             ab,
