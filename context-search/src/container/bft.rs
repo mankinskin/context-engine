@@ -14,9 +14,9 @@ pub struct BftQueue {
 }
 
 impl StateContainer for BftQueue {
-    fn clear(&mut self) {
-        self.queue.clear()
-    }
+    //fn clear(&mut self) {
+    //    self.queue.clear()
+    //}
 }
 
 impl FromIterator<(usize, TraversalState)> for BftQueue {

@@ -9,7 +9,7 @@ use std::fmt::Debug;
 #[derive(Debug, new)]
 pub struct ErrorState {
     pub reason: ErrorReason,
-    pub found: Option<Response>,
+    pub found: Option<Box<Response>>,
 }
 impl From<ErrorReason> for ErrorState {
     fn from(reason: ErrorReason) -> Self {

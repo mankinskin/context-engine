@@ -12,5 +12,5 @@ pub trait StateContainer:
     + Debug
     + FromIterator<(usize, TraversalState)>
 {
-    fn clear(&mut self);
+    //fn clear(&mut self);
 }

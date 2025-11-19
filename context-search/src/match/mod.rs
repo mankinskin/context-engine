@@ -98,7 +98,7 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
             Some(NodeResult::FoundMatch(matched_state)) => {
                 // Found a root match - return it for RootCursor creation
                 // RootCursor will handle cursor advancement and determine when to add cache entries
-                Some(Some(matched_state))
+                Some(Some(*matched_state))
             },
             Some(Skip) => Some(None),
             None => None,
@@ -109,7 +109,7 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
 #[derive(Debug)]
 pub(crate) enum NodeResult {
     QueueMore(Vec<SearchNode>),
-    FoundMatch(MatchedCompareState),
+    FoundMatch(Box<MatchedCompareState>),
     Skip,
 }
 use NodeResult::*;
@@ -199,7 +199,7 @@ impl<K: TraversalKind> NodeConsumer<'_, K> {
             Some(Some(CompareResult::FoundMatch(matched_state))) => {
                 // Return the matched state directly without conversion
                 // RootCursor will handle the conversion to Candidate with checkpoint update
-                Some(NodeResult::FoundMatch(matched_state))
+                Some(NodeResult::FoundMatch(Box::new(matched_state)))
             },
             Some(Some(CompareResult::Mismatch(_))) => Some(Skip),
             Some(Some(CompareResult::Prefixes(_))) => {
