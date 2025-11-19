@@ -3,7 +3,7 @@ use {
     crate::search::Find,
     crate::state::end::PathCoverage,
     crate::state::matched::{
-        QueryExhaustedState,
+
         MatchedEndState,
     },
     crate::state::result::Response,
@@ -47,30 +47,23 @@ fn find_consecutive1() {
     ];
 
     let query = PatternPrefixPath::from(Pattern::from(g_h_i_a_b_c_pattern));
-    let fin = graph.find_ancestor(&query);
-    assert_matches!(
-        fin,
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *ghi,
-        "+g_h_i_a_b_c"
-    );
+    let fin = graph.find_ancestor(&query).unwrap();
+    assert!(fin.query_exhausted(), "Query should be complete");
+    match &fin.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *ghi, "Should match ghi root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
 
     // Extract the cursor from the response and use it for the next search
-    let query = fin.unwrap().end.cursor().clone();
-    assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *abc,
-        "g_h_i_+a_b_c"
-    );
+    let query = fin.end.cursor().clone();
+    let response = graph.find_ancestor(&query).unwrap();
+    assert!(response.query_exhausted(), "Query should be complete");
+    match &response.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *abc, "Should match abc root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
 }

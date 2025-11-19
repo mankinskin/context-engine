@@ -22,11 +22,7 @@ use crate::{
             EndState,
             PathCoverage,
         },
-        matched::{
-            MatchedEndState,
-            MismatchState,
-            QueryExhaustedState,
-        },
+        matched::MatchedEndState,
     },
     traversal::{
         policy::DirectedTraversalPolicy,
@@ -38,6 +34,7 @@ use context_trace::{
     End,
     *,
 };
+use tracing::debug;
 
 use derive_more::{
     Deref,
@@ -74,49 +71,182 @@ pub(crate) struct RootCursor<
 }
 
 impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
-    /// Advance a Matched cursor to a Candidate cursor by advancing both query and index
-    /// Returns Ok(Candidate cursor) if both advanced successfully
-    /// Returns Err(EndState) if query ended (QueryExhausted) or if need parent exploration
-    pub(crate) fn advance_to_candidate(
+    /// Advance through matches until we reach an end state
+    /// Returns Ok(MatchedEndState) if we reach QueryExhausted or Mismatch with progress
+    /// Returns Err((checkpoint_state, root_cursor)) if we need parent exploration
+    pub(crate) fn advance_to_end(
+        self
+    ) -> Result<
+        MatchedEndState,
+        (MatchedEndState, RootCursor<G, Candidate, Matched>),
+    > {
+        let root_parent =
+            self.state.child_cursor.child_state.path.root_parent();
+        debug!(
+            root = %root_parent,
+            width = root_parent.width.0,
+            checkpoint_pos = *self.state.checkpoint.atom_position.as_ref(),
+            "→ advance_to_end: starting advancement for root"
+        );
+
+        // Try to advance to the next match (advance query + advance child)
+        match self.advance_to_next_match() {
+            Ok(candidate_cursor) => {
+                let root = candidate_cursor
+                    .state
+                    .child_cursor
+                    .child_state
+                    .path
+                    .root_parent();
+                debug!(
+                    root = %root,
+                    "→ advance_to_end: got <Candidate, Candidate> cursor, calling advance_to_matched"
+                );
+                // We have a <Candidate, Candidate> cursor - iterate to find end
+                candidate_cursor.advance_to_matched()
+            },
+            Err(Ok(matched_state)) => {
+                debug!(
+                    root = %matched_state.root_parent(),
+                    "→ advance_to_end: query ended immediately (QueryExhausted)"
+                );
+                // Query ended immediately - return the matched state
+                Ok(matched_state)
+            },
+            Err(Err(need_parent)) => {
+                let root = need_parent
+                    .state
+                    .child_cursor
+                    .child_state
+                    .path
+                    .root_parent();
+                let checkpoint_pos =
+                    *need_parent.state.checkpoint.atom_position.as_ref();
+                debug!(
+                    root = %root,
+                    checkpoint_pos = checkpoint_pos,
+                    "→ advance_to_end: index ended before query (need parent exploration)"
+                );
+                // Need parent exploration immediately (index ended before query)
+                // Create checkpoint state for this root
+                let checkpoint_state = need_parent.create_checkpoint_state();
+                debug!(
+                    checkpoint_root = %checkpoint_state.root_parent(),
+                    checkpoint_width = checkpoint_state.root_parent().width.0,
+                    "→ advance_to_end: created checkpoint state for parent exploration"
+                );
+                Err((checkpoint_state, need_parent))
+            },
+        }
+    }
+
+    /// Advance to the next match by: 1. advancing query cursor, 2. advancing child path
+    /// Returns Ok(<Candidate, Candidate>) if both advanced successfully
+    /// Returns Err(Ok(MatchedEndState)) if query ended (complete match)
+    /// Returns Err(Err(<Candidate, Matched>)) if child path ended but query continues (need parent exploration)
+    fn advance_to_next_match(
         self
     ) -> Result<
         RootCursor<G, Candidate, Candidate>,
         Result<MatchedEndState, RootCursor<G, Candidate, Matched>>,
     > {
+        debug!("  → advance_to_next_match: Step 1 - calling advance_query");
+        // Step 1: Advance query cursor
+        let query_advanced = match self.advance_query() {
+            Ok(cursor) => {
+                let root =
+                    cursor.state.child_cursor.child_state.path.root_parent();
+                debug!(
+                    root = %root,
+                    query_pos = *cursor.state.cursor.atom_position.as_ref(),
+                    "  → advance_to_next_match: Step 1 complete - query advanced successfully"
+                );
+                cursor
+            },
+            Err(matched_state) => {
+                debug!(
+                    root = %matched_state.root_parent(),
+                    "  → advance_to_next_match: Step 1 - query ended (QueryExhausted)"
+                );
+                return Err(Ok(matched_state));
+            },
+        };
+
+        debug!("  → advance_to_next_match: Step 2 - calling advance_child");
+        // Step 2: Advance child path (index)
+        match query_advanced.advance_child() {
+            Ok(both_advanced) => {
+                let root = both_advanced
+                    .state
+                    .child_cursor
+                    .child_state
+                    .path
+                    .root_parent();
+                debug!(
+                    root = %root,
+                    child_pos = *both_advanced.state.child_cursor.child_state.target_pos().as_ref(),
+                    "  → advance_to_next_match: Step 2 complete - child advanced successfully, got <Candidate, Candidate>"
+                );
+                Ok(both_advanced)
+            },
+            Err(need_parent) => {
+                let root = need_parent
+                    .state
+                    .child_cursor
+                    .child_state
+                    .path
+                    .root_parent();
+                debug!(
+                    root = %root,
+                    "  → advance_to_next_match: Step 2 - child ended (need parent exploration)"
+                );
+                Err(Err(need_parent))
+            },
+        }
+    }
+
+    /// Step 1: Advance the query cursor
+    /// Returns Ok(<Candidate, Matched>) if query advanced
+    /// Returns Err(MatchedEndState) if query ended (QueryExhausted)
+    fn advance_query(
+        self
+    ) -> Result<RootCursor<G, Candidate, Matched>, MatchedEndState> {
+        let root_parent =
+            self.state.child_cursor.child_state.path.root_parent();
+        let query_pos_before = *self.state.cursor.atom_position.as_ref();
+        debug!(
+            root = %root_parent,
+            query_pos = query_pos_before,
+            "    → advance_query: attempting to advance query cursor"
+        );
+
         let matched_state = *self.state;
         let trav = self.trav;
 
         // Try to advance query cursor
         match matched_state.advance_query_cursor(&trav) {
             Ok(query_advanced) => {
-                // Query advanced, now try index
-                match query_advanced.advance_index_cursor(&trav) {
-                    Ok(both_advanced) => {
-                        // Both cursors advanced - return Candidate cursor
-                        Ok(RootCursor {
-                            state: Box::new(both_advanced),
-                            trav,
-                        })
-                    },
-                    Err(query_only_advanced) => {
-                        // Index ended but query continues - need parent exploration
-                        Err(Err(RootCursor {
-                            state: Box::new(CompareState {
-                                child_cursor: query_only_advanced.child_cursor,
-                                cursor: query_only_advanced.cursor,
-                                checkpoint: query_only_advanced.checkpoint,
-                                checkpoint_child: query_only_advanced
-                                    .checkpoint_child,
-                                target: query_only_advanced.target,
-                                mode: query_only_advanced.mode,
-                            }),
-                            trav,
-                        }))
-                    },
-                }
+                let query_pos_after =
+                    *query_advanced.cursor.atom_position.as_ref();
+                debug!(
+                    root = %root_parent,
+                    query_pos_before = query_pos_before,
+                    query_pos_after = query_pos_after,
+                    "    → advance_query: SUCCESS - query cursor advanced"
+                );
+                // Query advanced successfully
+                Ok(RootCursor {
+                    state: Box::new(query_advanced),
+                    trav,
+                })
             },
             Err(matched_state) => {
-                // Query ended - complete match
+                debug!(
+                    root = %root_parent,
+                    query_pos = query_pos_before,
+                    "    → advance_query: QUERY ENDED - creating QueryExhausted state"
+                );
+                // Query ended - create complete match state
                 let root_pos =
                     *matched_state.child_cursor.child_state.target_pos();
                 let path = matched_state.child_cursor.child_state.path.clone();
@@ -127,195 +257,122 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                     *matched_state.cursor.atom_position
                         - last_token_width_value,
                 );
-                tracing::debug!("root_cursor process_candidate_match: root_parent={}, root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
+                tracing::debug!(
+                    "root_cursor advance_query: root_parent={}, root_pos={}, cursor.atom_position={}, last_token_width={}, end_pos={}",
                     root_parent, usize::from(root_pos), *matched_state.cursor.atom_position,
-                    last_token_width_value, usize::from(end_pos));
+                    last_token_width_value, usize::from(end_pos)
+                );
 
                 let target = DownKey::new(target_index, end_pos.into());
-                Err(Ok(MatchedEndState::QueryExhausted(QueryExhaustedState {
+                Err(MatchedEndState {
                     cursor: matched_state.checkpoint,
                     path: PathCoverage::from_range_path(
                         path, root_pos, target, &trav,
                     ),
-                })))
-            },
-        }
-    }
-
-    /// Process a matched cursor and iterate to find end state
-    /// Uses iterator to advance through matches until QueryExhausted or need parent exploration
-    pub(crate) fn find_end(
-        self
-    ) -> Result<MatchedEndState, RootCursor<G, Candidate, Matched>> {
-        // Try to advance to candidate
-        match self.advance_to_candidate() {
-            Ok(candidate_cursor) => {
-                // We have a candidate cursor - iterate it to find the end
-                candidate_cursor.find_end()
-            },
-            Err(Ok(matched_state)) => {
-                // Query ended immediately - return the matched state
-                Ok(matched_state)
-            },
-            Err(Err(need_parent)) => {
-                // Need parent exploration immediately
-                Err(need_parent)
-            },
-        }
-    }
-}
-
-impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
-    /// Advance a Candidate cursor to a Matched cursor by comparing and matching
-    /// Returns Ok(Matched cursor) if comparison resulted in a match
-    /// Returns Err(Some(MatchedEndState)) if hit QueryExhausted or Mismatch during iteration
-    /// Returns Err(None) if iterator completed without conclusion - need parent exploration (returns self)
-    pub(crate) fn advance_to_matched(
-        mut self
-    ) -> Result<RootCursor<G, Matched, Matched>, Result<MatchedEndState, Self>>
-    {
-        // Iterate until we get a match or need to stop
-        loop {
-            match self.next() {
-                Some(Continue(())) => {
-                    // Comparison resulted in match and both cursors advanced
-                    // self has been updated to new candidate state, continue
-                    continue;
-                },
-                Some(Break(reason)) => {
-                    // Hit an end condition (QueryExhausted or Mismatch)
-                    // Check if this is a valid match before destructuring
-                    if reason == EndReason::Mismatch
-                        && *self.state.checkpoint.atom_position.as_ref() == 0
-                    {
-                        // No progress - not a valid match, continue iteration
-                        continue;
-                    }
-
-                    // Valid match - destructure and create matched state
-                    let CompareState {
-                        child_cursor,
-                        cursor,
-                        checkpoint,
-                        checkpoint_child,
-                        ..
-                    } = *self.state;
-
-                    // For Mismatch, use checkpoint_child path (state at last match)
-                    // For QueryExhausted, use current child_cursor path
-                    let (path, root_pos) = match reason {
-                        EndReason::QueryExhausted => {
-                            let root_pos =
-                                *child_cursor.child_state.target_pos();
-                            (child_cursor.child_state.path.clone(), root_pos)
-                        },
-                        EndReason::Mismatch => {
-                            let root_pos =
-                                *checkpoint_child.child_state.target_pos();
-                            (
-                                checkpoint_child.child_state.path.clone(),
-                                root_pos,
-                            )
-                        },
-                    };
-
-                    let target_index =
-                        path.role_rooted_leaf_token::<End, _>(&self.trav);
-                    let last_token_width_value = target_index.width();
-
-                    let (end_cursor, end_pos) = match reason {
-                        EndReason::QueryExhausted => (
-                            checkpoint.clone(),
-                            AtomPosition::from(
-                                *cursor.atom_position - last_token_width_value,
-                            ),
-                        ),
-                        EndReason::Mismatch => {
-                            // For Mismatch, checkpoint already points to position AFTER last match
-                            // We need end_pos to be position of last matched token's END
-                            // which is checkpoint.atom_position (already accounts for last match width)
-                            (checkpoint.clone(), checkpoint.atom_position)
-                        },
-                    };
-
-                    let target = DownKey::new(target_index, end_pos.into());
-                    let path_enum = PathCoverage::from_range_path(
-                        path, root_pos, target, &self.trav,
-                    );
-
-                    // Create appropriate matched state based on reason
-                    let matched_state = match reason {
-                        EndReason::QueryExhausted =>
-                            MatchedEndState::QueryExhausted(
-                                QueryExhaustedState {
-                                    cursor: end_cursor,
-                                    path: path_enum,
-                                },
-                            ),
-                        EndReason::Mismatch => {
-                            // We already filtered checkpoint == 0 above
-                            MatchedEndState::Mismatch(MismatchState {
-                                cursor: end_cursor,
-                                path: path_enum,
-                            })
-                        },
-                    };
-
-                    return Err(Ok(matched_state));
-                },
-                None => {
-                    // Iterator completed without Break - need parent exploration
-                    return Err(Err(self));
-                },
-            }
-        }
-    }
-
-    /// Find the end state by iterating through candidate comparisons
-    /// Returns Ok(MatchedEndState) if we reach QueryExhausted or Mismatch with progress
-    /// Returns Err if we need parent exploration
-    pub(crate) fn find_end(
-        self
-    ) -> Result<MatchedEndState, RootCursor<G, Candidate, Matched>> {
-        match self.advance_to_matched() {
-            Ok(_matched_cursor) => {
-                // Got a matched cursor - this shouldn't happen in find_end
-                // because advance_to_matched loops until it gets an EndState or needs parents
-                unreachable!("advance_to_matched returned Ok(Matched) - should return Err with EndState")
-            },
-            Err(Ok(end_state)) => {
-                // Found an end state (QueryExhausted or Mismatch)
-                Ok(end_state)
-            },
-            Err(Err(candidate_cursor)) => {
-                // Need parent exploration - convert <Candidate, Candidate> to <Candidate, Matched>
-                Err(RootCursor {
-                    state: Box::new(CompareState {
-                        child_cursor: ChildCursor {
-                            child_state: candidate_cursor
-                                .state
-                                .child_cursor
-                                .child_state
-                                .clone(),
-                            _state: PhantomData,
-                        },
-                        cursor: candidate_cursor.state.cursor.clone(),
-                        checkpoint: candidate_cursor.state.checkpoint.clone(),
-                        checkpoint_child: candidate_cursor
-                            .state
-                            .checkpoint_child
-                            .clone(),
-                        target: candidate_cursor.state.target,
-                        mode: candidate_cursor.state.mode,
-                    }),
-                    trav: candidate_cursor.trav,
                 })
             },
         }
     }
 }
 
-// Keep the old find_end implementation but remove the confusing loop
+impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
+    /// Step 2: Advance the child path (index cursor)
+    /// Returns Ok(<Candidate, Candidate>) if child advanced
+    /// Returns Err(<Candidate, Matched>) if child ended but query continues (need parent exploration)
+    fn advance_child(
+        self
+    ) -> Result<
+        RootCursor<G, Candidate, Candidate>,
+        RootCursor<G, Candidate, Matched>,
+    > {
+        let root_parent =
+            self.state.child_cursor.child_state.path.root_parent();
+        let child_pos_before =
+            *self.state.child_cursor.child_state.target_pos().as_ref();
+        debug!(
+            root = %root_parent,
+            child_pos = child_pos_before,
+            "    → advance_child: attempting to advance child (index) cursor"
+        );
+
+        let state = *self.state;
+        let trav = self.trav;
+
+        // Try to advance index cursor
+        match state.advance_index_cursor(&trav) {
+            Ok(both_advanced) => {
+                let child_pos_after = *both_advanced
+                    .child_cursor
+                    .child_state
+                    .target_pos()
+                    .as_ref();
+                debug!(
+                    root = %root_parent,
+                    child_pos_before = child_pos_before,
+                    child_pos_after = child_pos_after,
+                    "    → advance_child: SUCCESS - child cursor advanced"
+                );
+                // Both cursors advanced - return Candidate cursor
+                Ok(RootCursor {
+                    state: Box::new(both_advanced),
+                    trav,
+                })
+            },
+            Err(query_only_advanced) => {
+                debug!(
+                    root = %root_parent,
+                    child_pos = child_pos_before,
+                    "    → advance_child: CHILD ENDED - need parent exploration"
+                );
+                // Index ended but query continues - need parent exploration
+                Err(RootCursor {
+                    state: Box::new(CompareState {
+                        child_cursor: query_only_advanced.child_cursor,
+                        cursor: query_only_advanced.cursor,
+                        checkpoint: query_only_advanced.checkpoint,
+                        checkpoint_child: query_only_advanced.checkpoint_child,
+                        target: query_only_advanced.target,
+                        mode: query_only_advanced.mode,
+                    }),
+                    trav,
+                })
+            },
+        }
+    }
+}
+
+impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
+    /// Create a QueryExhausted state from this root cursor's checkpoint
+    /// Used when the root matched successfully but needs parent exploration
+    pub(crate) fn create_checkpoint_state(&self) -> MatchedEndState {
+        // Extract checkpoint information
+        let checkpoint = &self.state.checkpoint;
+        let checkpoint_child = &self.state.checkpoint_child;
+
+        // Use checkpoint_child path as it represents the matched state
+        let mut path = checkpoint_child.child_state.path.clone();
+        let root_pos = *checkpoint_child.child_state.target_pos();
+
+        // Simplify path to remove redundant segments
+        path.child_path_mut::<Start>().simplify(&self.trav);
+        path.child_path_mut::<End>().simplify(&self.trav);
+
+        let target_index = path.role_rooted_leaf_token::<End, _>(&self.trav);
+        let last_token_width_value = target_index.width();
+
+        let end_cursor = checkpoint.clone();
+        let end_pos = checkpoint.atom_position;
+
+        let target = DownKey::new(target_index, end_pos.into());
+        let path_enum =
+            PathCoverage::from_range_path(path, root_pos, target, &self.trav);
+
+        MatchedEndState {
+            cursor: end_cursor,
+            path: path_enum,
+        }
+    }
+}
 impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
     /// Process a matched cursor: advance and convert to either iterable candidate cursor or immediate end
     pub(crate) fn process_match(
@@ -449,6 +506,170 @@ impl<G: HasGraph + Clone> Iterator for RootCursor<G, Candidate, Candidate> {
                 }
             },
             Prefixes(_) => unreachable!("compare() never returns Prefixes"),
+        }
+    }
+}
+
+impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
+    /// Iterate through candidate comparisons until we reach an end state or need parent exploration
+    /// Returns Ok(MatchedEndState) if we reach QueryExhausted or Mismatch with progress
+    /// Returns Err((checkpoint_state, root_cursor)) if iterator completed without conclusion - need parent exploration
+    pub(crate) fn advance_to_matched(
+        mut self
+    ) -> Result<
+        MatchedEndState,
+        (MatchedEndState, RootCursor<G, Candidate, Matched>),
+    > {
+        // Iterate until we get a match or need to stop
+        loop {
+            match self.next() {
+                Some(Continue(())) => {
+                    // Comparison resulted in match and both cursors advanced
+                    // self has been updated to new candidate state, continue
+                    continue;
+                },
+                Some(Break(reason)) => {
+                    // Hit an end condition (QueryExhausted or Mismatch)
+                    let checkpoint_pos =
+                        *self.state.checkpoint.atom_position.as_ref();
+                    let root_parent =
+                        self.state.child_cursor.child_state.path.root_parent();
+
+                    // Check if this is a valid match before destructuring
+                    if reason == EndReason::Mismatch && checkpoint_pos == 0 {
+                        // No progress - not a valid match, continue iteration
+                        debug!(
+                            root = %root_parent,
+                            reason = "Mismatch with checkpoint=0 (no progress)",
+                            "Discarding invalid match - continuing iteration"
+                        );
+                        continue;
+                    }
+
+                    debug!(
+                        root = %root_parent,
+                        root_width = root_parent.width.0,
+                        checkpoint_pos = checkpoint_pos,
+                        reason = ?reason,
+                        "Valid match found - creating MatchedEndState"
+                    );
+
+                    // Create matched end state from current state
+                    return Ok(self.create_end_state(reason));
+                },
+                None => {
+                    // Iterator completed without Break - need parent exploration
+                    // Create checkpoint state and return cursor for parent exploration
+                    let checkpoint_state = self.create_checkpoint_from_state();
+                    let root_cursor = self.into_candidate_matched();
+                    return Err((checkpoint_state, root_cursor));
+                },
+            }
+        }
+    }
+
+    /// Create a MatchedEndState from the current candidate state based on the end reason
+    fn create_end_state(
+        self,
+        reason: EndReason,
+    ) -> MatchedEndState {
+        let CompareState {
+            child_cursor,
+            cursor,
+            checkpoint,
+            checkpoint_child,
+            ..
+        } = *self.state;
+
+        // For Mismatch, use checkpoint_child path (state at last match)
+        // For QueryExhausted, use current child_cursor path
+        let (mut path, root_pos) = match reason {
+            EndReason::QueryExhausted => {
+                let root_pos = *child_cursor.child_state.target_pos();
+                (child_cursor.child_state.path.clone(), root_pos)
+            },
+            EndReason::Mismatch => {
+                let root_pos = *checkpoint_child.child_state.target_pos();
+                (checkpoint_child.child_state.path.clone(), root_pos)
+            },
+        };
+
+        // Simplify path to remove redundant segments at token borders
+        path.child_path_mut::<Start>().simplify(&self.trav);
+        path.child_path_mut::<End>().simplify(&self.trav);
+
+        let target_index = path.role_rooted_leaf_token::<End, _>(&self.trav);
+        let last_token_width_value = target_index.width();
+
+        let (end_cursor, end_pos) = match reason {
+            EndReason::QueryExhausted => (
+                checkpoint.clone(),
+                AtomPosition::from(
+                    *cursor.atom_position - last_token_width_value,
+                ),
+            ),
+            EndReason::Mismatch => {
+                // For Mismatch, checkpoint already points to position AFTER last match
+                (checkpoint.clone(), checkpoint.atom_position)
+            },
+        };
+
+        let target = DownKey::new(target_index, end_pos.into());
+        let path_enum =
+            PathCoverage::from_range_path(path, root_pos, target, &self.trav);
+
+        // Create matched state - no need to distinguish QueryExhausted vs Mismatch in data structure
+        // The cursor's atom_position indicates how far we matched
+        MatchedEndState {
+            cursor: end_cursor,
+            path: path_enum,
+        }
+    }
+
+    /// Create a checkpoint Mismatch state from the current candidate state
+    /// Used when iterator completes without definitive match/mismatch - needs parent exploration
+    /// Always returns Mismatch since the root ended without completing the query
+    fn create_checkpoint_from_state(&self) -> MatchedEndState {
+        let checkpoint = &self.state.checkpoint;
+        let checkpoint_child = &self.state.checkpoint_child;
+
+        let mut path = checkpoint_child.child_state.path.clone();
+        let root_pos = *checkpoint_child.child_state.target_pos();
+
+        // Simplify path
+        path.child_path_mut::<Start>().simplify(&self.trav);
+        path.child_path_mut::<End>().simplify(&self.trav);
+
+        let target_index = path.role_rooted_leaf_token::<End, _>(&self.trav);
+        let end_pos = checkpoint.atom_position;
+        let target = DownKey::new(target_index, end_pos.into());
+        let path_enum =
+            PathCoverage::from_range_path(path, root_pos, target, &self.trav);
+
+        // Create checkpoint - no need to determine if query is complete here
+        // The cursor's atom_position indicates how far we matched
+        // Completeness can be determined later by comparing position to query length
+        MatchedEndState {
+            cursor: checkpoint.clone(),
+            path: path_enum,
+        }
+    }
+
+    /// Convert <Candidate, Candidate> to <Candidate, Matched> for parent exploration
+    fn into_candidate_matched(self) -> RootCursor<G, Candidate, Matched> {
+        RootCursor {
+            state: Box::new(CompareState {
+                child_cursor: ChildCursor {
+                    child_state: self.state.child_cursor.child_state.clone(),
+                    _state: PhantomData,
+                },
+                cursor: self.state.cursor.clone(),
+                checkpoint: self.state.checkpoint.clone(),
+                checkpoint_child: self.state.checkpoint_child.clone(),
+                target: self.state.target,
+                mode: self.state.mode,
+            }),
+            trav: self.trav,
         }
     }
 }

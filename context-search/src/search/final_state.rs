@@ -7,42 +7,6 @@ use context_trace::{
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub(crate) struct FinalState<'a> {
-    pub(crate) num_parents: usize,
-    pub(crate) state: &'a EndState,
-}
-
-impl PartialOrd for FinalState<'_> {
-    fn partial_cmp(
-        &self,
-        other: &Self,
-    ) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for FinalState<'_> {
-    fn cmp(
-        &self,
-        other: &Self,
-    ) -> Ordering {
-        self.num_parents.cmp(&other.num_parents).then_with(|| {
-            other
-                .state
-                .is_complete()
-                .cmp(&self.state.is_complete())
-                .then_with(|| {
-                    other
-                        .state
-                        .root_key()
-                        .width()
-                        .cmp(&self.state.root_key().width())
-                })
-        })
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
 pub(crate) struct FoldState {
     pub(crate) cache: TraceCache,
     pub(crate) end_state: EndState,

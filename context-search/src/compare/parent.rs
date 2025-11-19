@@ -69,6 +69,17 @@ impl StateAdvance for ParentCompareState {
                     .expect("child_state should point to a valid token");
                 let cursor_position = self.cursor.atom_position;
 
+                // Clone and simplify the child state path for checkpoint_child
+                let mut simplified_child_state = next.child_state.clone();
+                simplified_child_state
+                    .path
+                    .child_path_mut::<Start>()
+                    .simplify(trav);
+                simplified_child_state
+                    .path
+                    .child_path_mut::<End>()
+                    .simplify(trav);
+
                 Ok(CompareRootState {
                     token: CompareState {
                         child_cursor: ChildCursor {
@@ -78,7 +89,7 @@ impl StateAdvance for ParentCompareState {
                         cursor,
                         checkpoint: self.cursor,
                         checkpoint_child: ChildCursor {
-                            child_state: next.child_state,
+                            child_state: simplified_child_state,
                             _state: PhantomData,
                         },
                         mode: GraphMajor,

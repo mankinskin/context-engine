@@ -311,7 +311,7 @@ impl Searchable for PatternCursor {
                 trace!(batch_details = %pretty(&p), "parent batch details");
 
                 Ok(SearchState {
-                    last_match: EndState::init_fold(self),
+                    query: self.path.clone(),
                     matches: SearchIterator::start_parent(
                         trav,
                         start_token,

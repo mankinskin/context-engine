@@ -71,7 +71,28 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
     type Item = Option<MatchedCompareState>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self.ctx.nodes.pop().and_then(|node| {
+        let popped_node = self.ctx.nodes.pop();
+        
+        // Debug: log what was popped from the queue
+        if let Some(ref node) = popped_node {
+            use tracing::debug;
+            match node {
+                SearchNode::ParentCandidate(state) => {
+                    let token = state.parent_state.path.root_parent();
+                    debug!(
+                        popped_token = %token,
+                        popped_width = token.width.0,
+                        queue_remaining = self.ctx.nodes.len(),
+                        "Popped SearchNode from priority queue"
+                    );
+                },
+                SearchNode::PrefixQueue(_) => {
+                    debug!("Popped PrefixQueue node from priority queue");
+                }
+            }
+        }
+        
+        match popped_node.and_then(|node| {
             NodeConsumer::<'_, K>::new(node, self.trav).consume()
         }) {
             Some(QueueMore(next)) => {
@@ -152,7 +173,20 @@ impl Ord for SearchNode {
         };
 
         // Reverse ordering: smaller priority values come first (min-heap behavior)
-        other_priority.cmp(&self_priority)
+        // BinaryHeap is a max-heap by default, so we reverse the comparison
+        // to get min-heap behavior (smallest widths popped first)
+        let result = other_priority.cmp(&self_priority);
+        
+        // Debug output to verify ordering
+        use tracing::trace;
+        trace!(
+            self_width = self_priority,
+            other_width = other_priority,
+            ordering = ?result,
+            "SearchNode comparison for heap ordering"
+        );
+        
+        result
     }
 }
 

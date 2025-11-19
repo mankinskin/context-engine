@@ -35,7 +35,7 @@ use tracing::{
 };
 pub(crate) mod context;
 pub(crate) mod ext;
-pub(crate) mod final_state;
+// pub(crate) mod final_state; // Unused - references old EndState type
 pub(crate) mod searchable;
 
 pub(crate) type SearchResult = Result<Response, ErrorReason>;
@@ -115,8 +115,8 @@ impl Find for HypergraphRef {
 #[derive(Debug)]
 pub struct SearchState<K: TraversalKind> {
     pub(crate) matches: SearchIterator<K>,
-    //pub(crate) start_index: Token,
-    pub(crate) last_match: MatchState,
+    /// The query pattern we're searching for
+    pub(crate) query: PatternRangePath,
 }
 
 impl<K: TraversalKind> SearchState<K> {
@@ -180,104 +180,80 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
         match self.matches.find_next() {
             Some(matched_state) => {
                 debug!(
-                    is_complete = matched_state.is_complete(),
+                    is_complete = matched_state.query_exhausted(),
                     "found matched state"
                 );
 
-                // Compare with previous best match (if any)
-                let should_update = match &self.last_match {
-                    MatchState::Located(prev_match) => {
-                        // Already have a matched root - compare widths
-                        // Smaller root token is better (more specific match)
-                        let current_width = matched_state.root_parent().width.0;
-                        let prev_width = prev_match.root_parent().width.0;
-                        current_width < prev_width
-                    },
-                    MatchState::Query(_) => {
-                        // First match - always update
+                // Update best_checkpoint if this match is better
+                let checkpoint_pos =
+                    *matched_state.cursor().atom_position.as_ref();
+
+                let should_update = match &self.matches.best_checkpoint {
+                    None => {
+                        debug!(
+                            root = %matched_state.root_parent(),
+                            checkpoint_pos = checkpoint_pos,
+                            "First match - setting as best_checkpoint"
+                        );
                         true
+                    },
+                    Some(prev) => {
+                        let prev_checkpoint_pos =
+                            *prev.cursor().atom_position.as_ref();
+
+                        if checkpoint_pos > prev_checkpoint_pos {
+                            debug!(
+                                root = %matched_state.root_parent(),
+                                checkpoint_pos = checkpoint_pos,
+                                prev_checkpoint_pos = prev_checkpoint_pos,
+                                "Better match found (more query tokens matched)"
+                            );
+                            true
+                        } else if checkpoint_pos == prev_checkpoint_pos {
+                            // Same progress: prefer Complete over Mismatch
+                            let better = matched_state.query_exhausted()
+                                && !prev.query_exhausted();
+                            if better {
+                                debug!(
+                                    root = %matched_state.root_parent(),
+                                    "Same progress but Complete - updating"
+                                );
+                            }
+                            better
+                        } else {
+                            false
+                        }
                     },
                 };
 
                 if should_update {
-                    debug!(
-                        width = matched_state.root_parent().width.0,
-                        is_first_match =
-                            matches!(&self.last_match, MatchState::Query(_)),
-                        is_complete = matched_state.is_complete(),
-                        "updating last_match to better match"
-                    );
-
-                    // Queue clearing: TEMPORARILY DISABLED FOR DEBUGGING
-                    // When first COMPLETE match found, clear candidate parents
-                    // and add only parents of matched root for continued exploration
-                    //
-                    // NOTE: Only clear for Complete matches, not Partial matches
-                    // Partial matches mean query continues, so we might find better matches elsewhere
-                    let _is_first_match =
-                        matches!(&self.last_match, MatchState::Query(_));
-                    let _is_complete = matched_state.is_complete();
-
-                    if false {
-                        // DISABLED: is_first_match && is_complete
-                        debug!(
-                            "First COMPLETE match found - clearing queue of {} unmatched candidate parents",
-                            self.matches.queue.nodes.len()
-                        );
-
-                        // Clear queue: remove all unmatched candidate parents
-                        // Substring-graph invariant: all future matches reachable from this root's ancestors
-                        self.matches.queue.nodes.clear();
-
-                        // Add parents of matched root for continued exploration
-                        if let Some(parent_nodes) =
-                            self.extract_parent_batch(&matched_state)
-                        {
-                            debug!(
-                                "Adding {} parent nodes of matched root to queue",
-                                parent_nodes.len()
-                            );
-                            self.matches.queue.nodes.extend(parent_nodes);
-                        } else {
-                            debug!(
-                                "No parents to add (Prefix path or root has no parents)"
-                            );
-                        }
-                    }
-
-                    // Incremental start path tracing
-                    // Trace only the NEW portion of the start path to avoid duplicate cache entries
+                    // Trace start path for new best match
                     if let Some(start_path) =
                         matched_state.path().try_start_path()
                     {
-                        // Calculate how much of start path was already traced
-                        let prev_start_len = match &self.last_match {
-                            MatchState::Located(prev) => prev.start_len(),
-                            MatchState::Query(_) => 0,
-                        };
+                        let prev_start_len = self
+                            .matches
+                            .best_checkpoint
+                            .as_ref()
+                            .and_then(|p| p.path().try_start_path())
+                            .map(|p| p.len())
+                            .unwrap_or(0);
                         let current_start_len = start_path.len();
 
-                        // Only trace the NEW segment (avoid duplicate cache entries)
                         if current_start_len > prev_start_len {
                             debug!(
-                                "Tracing incremental start path: prev_len={}, current_len={}, new_segment_start={}",
-                                prev_start_len, current_start_len, prev_start_len
+                                "Tracing incremental start path: prev_len={}, current_len={}",
+                                prev_start_len, current_start_len
                             );
-                            // Trace from prev_start_len onwards (skips already-traced prefix)
                             TraceStart {
                                 end: &matched_state,
                                 pos: prev_start_len,
                             }
                             .trace(&mut self.matches.trace_ctx);
-                        } else {
-                            debug!("Start path not longer than previous - no new segment to trace");
                         }
                     }
 
-                    self.last_match =
-                        MatchState::Located(matched_state.clone());
-                } else {
-                    debug!("not updating last_match - current match not better than previous");
+                    self.matches.best_checkpoint = Some(matched_state.clone());
                 }
 
                 Some(matched_state)
@@ -302,7 +278,7 @@ impl<K: TraversalKind> SearchState<K> {
             debug!(iteration, "tracing matched state");
             debug!(
                 "About to trace MatchedEndState: is_complete={}, path_variant={}",
-                matched_state.is_complete(),
+                matched_state.query_exhausted(),
                 match matched_state.path() {
                     PathCoverage::Range(_) => "Range",
                     PathCoverage::Postfix(_) => "Postfix",
@@ -316,33 +292,31 @@ impl<K: TraversalKind> SearchState<K> {
 
         debug!(iterations = iteration, "fold completed");
 
-        // Get the final matched state
-        let end = match self.last_match {
-            MatchState::Located(matched_state) => {
-                debug!("final state is located");
-                matched_state
-            },
-            MatchState::Query(query_path) => {
-                // No matches were found - need to create a mismatch at position 0
-                debug!("no matches found, still in query state");
-                // Create a MismatchState with checkpoint 0 (no progress)
-                let start_token = query_path.path_root()[0];
-                let cursor = PatternCursor {
-                    atom_position: AtomPosition::default(),
-                    path: query_path.clone(),
-                    _state: std::marker::PhantomData,
-                };
-                // Use an EntireRoot path with empty range to represent "no match"
-                let path = PathCoverage::EntireRoot(IndexRangePath::new_empty(
-                    IndexRoot::from(PatternLocation::new(
-                        start_token,
-                        PatternId::default(),
-                    )),
-                ));
-                MatchedEndState::Mismatch(
-                    crate::state::matched::MismatchState { path, cursor },
-                )
-            },
+        // Get the final matched state from best_checkpoint
+        let end = if let Some(checkpoint) = self.matches.best_checkpoint {
+            debug!(
+                root = %checkpoint.root_parent(),
+                checkpoint_pos = *checkpoint.cursor().atom_position.as_ref(),
+                is_complete = checkpoint.query_exhausted(),
+                "Using best_checkpoint as final result"
+            );
+            checkpoint
+        } else {
+            // No matches found - create empty mismatch at position 0
+            debug!("No matches found, creating empty mismatch");
+            let start_token = self.query.path_root()[0];
+            let cursor = PatternCursor {
+                atom_position: AtomPosition::default(),
+                path: self.query.clone(),
+                _state: std::marker::PhantomData,
+            };
+            let path = PathCoverage::EntireRoot(IndexRangePath::new_empty(
+                IndexRoot::from(PatternLocation::new(
+                    start_token,
+                    PatternId::default(),
+                )),
+            ));
+            MatchedEndState { path, cursor }
         };
 
         trace!(end = %pretty(&end), "final matched state");

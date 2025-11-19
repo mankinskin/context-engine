@@ -12,11 +12,7 @@ use {
             EndReason,
             PathCoverage,
         },
-        state::matched::{
-            QueryExhaustedState,
-            MatchedEndState,
-            MismatchState,
-        },
+        state::matched::MatchedEndState,
         state::result::Response,
     },
     context_trace::tests::env::Env1,
@@ -86,33 +82,25 @@ fn find_sequence() {
         }))),
     );
     let query = graph.graph().expect_atom_children("abc".chars());
-    let abc_found = graph.find_ancestor(&query);
-    assert_matches!(
-        abc_found,
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *abc,
-        "abc"
-    );
+    let abc_found = graph.find_ancestor(&query).unwrap();
+    assert!(abc_found.query_exhausted(), "Query should be complete");
+    match &abc_found.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *abc, "Should match abc root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
     let query = graph
         .graph()
         .expect_atom_children("ababababcdefghi".chars());
-    let ababababcdefghi_found = graph.find_ancestor(&query);
-    assert_matches!(
-        ababababcdefghi_found,
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *ababababcdefghi,
-        "ababababcdefghi"
-    );
+    let ababababcdefghi_found = graph.find_ancestor(&query).unwrap();
+    assert!(ababababcdefghi_found.query_exhausted(), "Query should be complete");
+    match &ababababcdefghi_found.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *ababababcdefghi, "Should match ababababcdefghi root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
 }
 #[test]
 fn find_pattern1() {
@@ -163,7 +151,7 @@ fn find_pattern1() {
     assert_eq!(aby_found.cache.entries.len(), 5);
     assert_eq!(
         aby_found.end,
-        MatchedEndState::Mismatch(MismatchState {
+        MatchedEndState {
             path: PathCoverage::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
@@ -186,6 +174,6 @@ fn find_pattern1() {
                 atom_position: 3.into(),
                 _state: std::marker::PhantomData,
             },
-        })
+        }
     );
 }

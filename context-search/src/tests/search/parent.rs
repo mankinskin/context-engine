@@ -3,7 +3,7 @@ use {
     crate::search::Find,
     crate::state::end::PathCoverage,
     crate::state::matched::{
-        QueryExhaustedState,
+
         MatchedEndState,
     },
     crate::state::result::Response,
@@ -56,29 +56,23 @@ fn find_parent1() {
         "bc"
     );
     let query = b_c_pattern;
-    assert_matches!(
-        graph.find_parent(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *bc,
-        "b_c"
-    );
+    let response = graph.find_parent(&query).unwrap();
+    assert!(response.query_exhausted(), "Query should be complete");
+    match &response.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *bc, "Should match bc root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
     let query = ab_c_pattern;
-    assert_matches!(
-        graph.find_parent(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.root_parent() == *abc,
-        "ab_c"
-    );
+    let response = graph.find_parent(&query).unwrap();
+    assert!(response.query_exhausted(), "Query should be complete");
+    match &response.end.path {
+        PathCoverage::EntireRoot(ref path) => {
+            assert_eq!(path.root_parent(), *abc, "Should match abc root");
+        }
+        _ => panic!("Expected EntireRoot path"),
+    }
     // enable when bfs for parent-token batches is implemented
     //let query = a_bc_pattern;
     //assert_matches!(

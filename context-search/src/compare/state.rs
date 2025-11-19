@@ -377,8 +377,24 @@ impl CompareState<Candidate, Candidate> {
                 width = path_leaf.width(),
                 "tokens matched"
             );
+            // Simplify the child path before marking as matched
+            // This removes redundant path segments at token borders
+            let mut state = self;
+            state
+                .child_cursor
+                .child_state
+                .path
+                .child_path_mut::<Start>()
+                .simplify(trav);
+            state
+                .child_cursor
+                .child_state
+                .path
+                .child_path_mut::<End>()
+                .simplify(trav);
+
             // Mark as matched using trait method
-            CompareResult::FoundMatch(self.mark_match())
+            CompareResult::FoundMatch(state.mark_match())
         } else if path_leaf.width() == 1 && query_leaf.width() == 1 {
             debug!(
                 path_token = *path_leaf.index,

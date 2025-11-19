@@ -8,7 +8,7 @@ macro_rules! assert_not_indices {
             Err(_) | Ok(_)
         );
         if let Ok(ref response) = result {
-            assert!(!response.is_complete(),
+            assert!(!response.query_exhausted(),
                 "Expected incomplete or error for {}, but got complete match",
                 stringify!($name));
         }

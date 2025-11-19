@@ -24,7 +24,7 @@ use crate::{
             PathCoverage,
         },
         matched::{
-            QueryExhaustedState,
+
             MatchedEndState,
         },
     },
@@ -74,14 +74,14 @@ fn prefix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState {
                 cursor: PathCursor {
                     atom_position: 5.into(),
                     path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
                 path: res.end.path().clone(),
-            }),
+            },
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (
@@ -176,14 +176,14 @@ fn postfix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState {
                 cursor: PathCursor {
                     atom_position: 7.into(),
                     path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
                 path: res.end.path().clone(),
-            }),
+            },
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (
@@ -272,14 +272,14 @@ fn range1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState {
                 cursor: PathCursor {
                     atom_position: 4.into(),
                     path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
                 path: res.end.path().clone(),
-            }),
+            },
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (

@@ -28,9 +28,9 @@ impl Response {
         Self { cache, end }
     }
 
-    /// Check if the response is complete (search fully matched)
-    pub fn is_complete(&self) -> bool {
-        self.end.is_complete()
+    /// Check if the query was fully matched
+    pub fn query_exhausted(&self) -> bool {
+        self.end.query_exhausted()
     }
 
     /// Unwrap a complete response, panicking if incomplete
@@ -43,23 +43,23 @@ impl Response {
         self,
         msg: &str,
     ) -> IndexRangePath {
-        match self.end {
-            MatchedEndState::QueryExhausted(state) => match state.path {
-                PathCoverage::EntireRoot(path) => path,
-                _ => panic!("{}: QueryExhausted state has non-EntireRoot path", msg),
-            },
-            MatchedEndState::Mismatch(_) => panic!("{}", msg),
+        if !self.end.query_exhausted() {
+            panic!("{}", msg);
+        }
+        match self.end.path {
+            PathCoverage::EntireRoot(path) => path,
+            _ => panic!("{}: Complete response has non-EntireRoot path", msg),
         }
     }
 
     /// Try to get the complete path if the response is complete
     pub fn as_complete(&self) -> Option<&IndexRangePath> {
-        match &self.end {
-            MatchedEndState::QueryExhausted(state) => match &state.path {
-                PathCoverage::EntireRoot(path) => Some(path),
-                _ => None,
-            },
-            MatchedEndState::Mismatch(_) => None,
+        if !self.end.query_exhausted() {
+            return None;
+        }
+        match &self.end.path {
+            PathCoverage::EntireRoot(path) => Some(path),
+            _ => None,
         }
     }
 

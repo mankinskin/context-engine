@@ -8,11 +8,7 @@ use {
             EndReason,
             PathCoverage,
         },
-        state::matched::{
-            QueryExhaustedState,
-            MatchedEndState,
-            MismatchState,
-        },
+        state::matched::MatchedEndState,
         state::result::Response,
     },
     context_trace::*,
@@ -49,16 +45,12 @@ fn find_ancestor1_b_c() {
     let _tracing = init_test_tracing!(graph);
 
     let query = vec![Token::new(b, 1), Token::new(c, 1)];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *bc,
-        "b_c"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *bc
     );
 }
 
@@ -71,16 +63,12 @@ fn find_ancestor1_a_bc() {
     let _tracing = init_test_tracing!(graph);
 
     let query = vec![Token::new(a, 1), Token::new(bc, 2)];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *abc,
-        "a_bc"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abc
     );
 }
 
@@ -93,16 +81,12 @@ fn find_ancestor1_ab_c() {
     let _tracing = init_test_tracing!(graph);
 
     let query = vec![Token::new(ab, 2), Token::new(c, 1)];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *abc,
-        "ab_c"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abc
     );
 }
 
@@ -120,16 +104,12 @@ fn find_ancestor1_a_bc_d() {
     let _tracing = init_test_tracing!(graph);
 
     let query = vec![Token::new(a, 1), Token::new(bc, 2), Token::new(d, 1)];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *abcd,
-        "a_bc_d"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abcd
     );
 }
 
@@ -147,18 +127,12 @@ fn find_ancestor1_a_b_c() {
     let _tracing = init_test_tracing!(graph);
 
     let query = vec![Token::new(a, 1), Token::new(b, 1), Token::new(c, 1)];
-    let result = graph.find_ancestor(&query);
-
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        result,
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *abc,
-        "a_b_c"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abc
     );
 }
 
@@ -185,16 +159,12 @@ fn find_ancestor1_long_pattern() {
         .into_iter()
         .cloned()
         .collect();
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), true);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *ababababcdefghi,
-        "a_b_a_b_a_b_a_b_c_d_e_f_g_h_i"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *ababababcdefghi
     );
 }
 
@@ -217,16 +187,12 @@ fn find_ancestor1_a_b_c_c() {
         Token::new(c, 1),
         Token::new(c, 1),
     ];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), false);
     assert_matches!(
-        graph.find_ancestor(&query),
-        Ok(Response {
-            end: MatchedEndState::Mismatch(MismatchState {
-                path: PathCoverage::EntireRoot(ref path),
-                ..
-            }),
-            ..
-        }) if path.path_root().pattern_location().parent == *abc,
-        "a_b_c_c"
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abc
     );
 }
 
@@ -282,7 +248,7 @@ fn find_ancestor2() {
     assert_eq!(
         byz_found,
         Response {
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState {
                 path: PathCoverage::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
@@ -302,7 +268,7 @@ fn find_ancestor2() {
                     atom_position: 3.into(),
                     _state: std::marker::PhantomData,
                 },
-            }),
+            },
 
             cache: TraceCache {
                 entries: HashMap::from_iter([
@@ -444,7 +410,7 @@ fn find_ancestor3() {
                     ),
                 ]),
             },
-            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+            end: MatchedEndState {
                 path: PathCoverage::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
@@ -464,7 +430,7 @@ fn find_ancestor3() {
                     atom_position: 3.into(),
                     _state: std::marker::PhantomData,
                 },
-            }),
+            },
         }
     );
 }
