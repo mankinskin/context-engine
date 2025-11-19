@@ -17,7 +17,6 @@ use crate::{
             },
         },
         mutators::{
-            adapters::StateAdvance,
             move_path::key::AdvanceKey,
             raise::PathRaise,
         },
@@ -45,7 +44,10 @@ use crate::{
             HasGraph,
             TravDir,
         },
-        state::BaseState,
+        state::{
+            BaseState,
+            StateAdvance,
+        },
     },
 };
 use derive_more::{
@@ -91,11 +93,7 @@ impl StateAdvance for ParentState {
         {
             tracing::debug!(next_i = next_i, "Found next child in pattern");
             let root_parent = self.clone();
-            let ParentState {
-                path,
-                prev_pos,
-                root_pos,
-            } = self;
+            let ParentState { path, root_pos, .. } = self;
             Ok(RootChildState {
                 child_state: ChildState {
                     current_pos: root_pos,

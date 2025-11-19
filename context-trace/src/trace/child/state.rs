@@ -10,29 +10,19 @@ use crate::{
     RootedPath,
     TargetKey,
     UpKey,
-    graph::{
-        getters::vertex::VertexSet,
-        vertex::{
-            location::child::ChildLocation,
-            token::{
-                SubToken,
-                Token,
-            },
-        },
+    graph::vertex::{
+        location::child::ChildLocation,
+        token::Token,
     },
     path::{
         RolePathUtils,
         accessors::{
-            child::{
-                LeafToken,
-                RootedLeafToken,
-            },
+            child::LeafToken,
             has_path::IntoRootedRolePath,
             role::End,
             root::GraphRoot,
         },
         mutators::{
-            adapters::StateAdvance,
             append::PathAppend,
             move_path::advance::Advance,
         },
@@ -49,6 +39,7 @@ use crate::{
         has_graph::HasGraph,
         state::{
             HasTargetPos,
+            StateAdvance,
             parent::ParentState,
         },
     },
@@ -57,10 +48,8 @@ use derive_more::derive::{
     Deref,
     DerefMut,
 };
-use itertools::Itertools;
 use std::{
     cmp::Ordering,
-    collections::VecDeque,
     fmt::Debug,
 };
 

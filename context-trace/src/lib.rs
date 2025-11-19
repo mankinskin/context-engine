@@ -1,5 +1,3 @@
-// !!! Remove ALLOW WARNINGS before production release !!!
-#![allow(unused, dead_code)]
 #![deny(clippy::disallowed_methods)]
 #![feature(test)]
 #![feature(assert_matches)]
@@ -66,7 +64,6 @@ pub(crate) use crate::path::{
         child::root::PatternRootChild,
         has_path::{
             HasRolePath,
-            HasSinglePath,
             IntoRolePath,
         },
         root::GraphRootPattern,
@@ -167,7 +164,6 @@ pub use crate::{
             },
         },
         mutators::{
-            adapters::StateAdvance,
             append::PathAppend,
             lower::PathLower,
             move_path::{
@@ -271,6 +267,7 @@ pub use crate::{
             HasRootPos,
             HasTargetPos,
             IntoParentState,
+            StateAdvance,
             parent::{
                 ParentBatch,
                 ParentState,

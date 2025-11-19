@@ -14,7 +14,6 @@ use tracing_subscriber::{
     EnvFilter,
     Layer,
     layer::SubscriberExt,
-    util::SubscriberInitExt,
 };
 
 use super::{

@@ -273,6 +273,7 @@ where
         });
         TokenStrings::from_nodes(nodes)
     }
+    #[allow(dead_code)]
     pub(crate) fn pattern_child_strings(
         &self,
         pattern: impl IntoPattern,
@@ -297,6 +298,7 @@ where
             .map(|token| self.index_string(token.vertex_index()))
             .join(separator)
     }
+    #[allow(dead_code)]
     pub(crate) fn separated_pattern_string(
         &'a self,
         pattern: impl IntoIterator<Item = impl HasVertexIndex>,
@@ -309,6 +311,7 @@ where
     ) -> String {
         self.pattern_string_with_separator(pattern, "")
     }
+    #[allow(dead_code)]
     pub(crate) fn pattern_strings(
         &'a self,
         patterns: impl IntoIterator<
@@ -326,6 +329,7 @@ where
     ) -> Option<&Atom<G::Atom>> {
         self.atoms.get(key)
     }
+    #[allow(dead_code)]
     pub(crate) fn expect_atom_by_key(
         &self,
         key: &VertexKey,
@@ -333,6 +337,7 @@ where
         self.get_atom_by_key(key)
             .expect("Key does not belong to an atom!")
     }
+    #[allow(dead_code)]
     pub(crate) fn vertex_key_string(
         &self,
         key: &VertexKey,
@@ -346,10 +351,10 @@ where
         #[cfg(any(test, feature = "test-api"))]
         {
             // Check cache first
-            if let Ok(cache) = data.cached_string.read() {
-                if let Some(cached) = cache.as_ref() {
-                    return cached.clone();
-                }
+            if let Ok(cache) = data.cached_string.read()
+                && let Some(cached) = cache.as_ref()
+            {
+                return cached.clone();
             }
         }
 

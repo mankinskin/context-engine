@@ -8,7 +8,6 @@ use crate::{
         Advance,
         CanAdvance,
     },
-    tests::macros::*,
     *,
 };
 
@@ -90,7 +89,7 @@ fn test_can_advance_advance_consistency() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
-        (abc, abc_id) => [a, b, c],
+        (abc, _abc_id) => [a, b, c],
         (abcd, abcd_id) => [abc, d]
     );
 
@@ -130,6 +129,6 @@ fn test_can_advance_advance_consistency() {
         }
 
         // Apply the advance to continue testing
-        path.advance(&graph);
+        let _ = path.advance(&graph);
     }
 }

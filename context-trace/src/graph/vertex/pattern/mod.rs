@@ -129,8 +129,8 @@ impl std::iter::FromIterator<Token> for Pattern {
     }
 }
 
-pub(crate) type PatternView<'a> = &'a [Token];
-pub(crate) type Patterns = Vec<Pattern>;
+//pub(crate) type PatternView<'a> = &'a [Token];
+//pub(crate) type Patterns = Vec<Pattern>;
 
 pub trait PatternWidth: IntoPattern {
     fn pattern_width(&self) -> usize;
@@ -325,25 +325,25 @@ pub(crate) fn split_context<T: ToToken + Clone>(
     (prefix(pattern, index), postfix(pattern, index + 1))
 }
 
-pub(crate) fn double_split_context(
-    pattern: PatternView<'_>,
-    left_index: usize,
-    right_index: usize,
-) -> (Pattern, Pattern, Pattern) {
-    let (prefix, rem) = split_context(pattern, left_index);
-    if left_index < right_index {
-        let (infix, postfix) =
-            split_context(&rem, right_index - (left_index + 1));
-        (
-            Pattern::from(prefix),
-            Pattern::from(infix),
-            Pattern::from(postfix),
-        )
-    } else {
-        (
-            Pattern::from(prefix),
-            Pattern::from(vec![]),
-            Pattern::from(rem),
-        )
-    }
-}
+//pub(crate) fn double_split_context(
+//    pattern: PatternView<'_>,
+//    left_index: usize,
+//    right_index: usize,
+//) -> (Pattern, Pattern, Pattern) {
+//    let (prefix, rem) = split_context(pattern, left_index);
+//    if left_index < right_index {
+//        let (infix, postfix) =
+//            split_context(&rem, right_index - (left_index + 1));
+//        (
+//            Pattern::from(prefix),
+//            Pattern::from(infix),
+//            Pattern::from(postfix),
+//        )
+//    } else {
+//        (
+//            Pattern::from(prefix),
+//            Pattern::from(vec![]),
+//            Pattern::from(rem),
+//        )
+//    }
+//}

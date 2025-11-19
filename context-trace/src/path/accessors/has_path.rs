@@ -1,11 +1,7 @@
 use crate::{
     graph::vertex::location::child::ChildLocation,
     path::{
-        accessors::role::{
-            End,
-            PathRole,
-            Start,
-        },
+        accessors::role::PathRole,
         structs::{
             role_path::RolePath,
             rooted::{
@@ -61,12 +57,13 @@ pub trait IntoRolePath<R: PathRole> {
     fn into_role_path(self) -> RolePath<R>;
 }
 
-pub(crate) trait HasMatchPaths:
-    HasRolePath<Start> + HasRolePath<End>
-{
-    fn into_paths(self) -> (RolePath<Start>, RolePath<End>);
-}
-
-pub(crate) trait HasSinglePath {
-    fn single_path(&self) -> &[ChildLocation];
-}
+//pub(crate) trait HasMatchPaths:
+//    HasRolePath<Start> + HasRolePath<End>
+//{
+//    fn into_paths(self) -> (RolePath<Start>, RolePath<End>);
+//}
+//
+//pub(crate) trait HasSinglePath {
+//    fn single_path(&self) -> &[ChildLocation];
+//}
+//

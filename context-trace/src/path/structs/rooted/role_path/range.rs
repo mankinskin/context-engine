@@ -1,27 +1,17 @@
-use crate::{
-    path::{
-        accessors::child::{
-            LeafToken,
-            LeafTokenPosMut,
-        },
-        mutators::adapters::FromAdvanced,
-        structs::rooted::role_path::RootChildIndexMut,
-    },
-    *,
-};
+use crate::*;
 
 pub type StartPath = RolePath<Start>;
 pub type EndPath = RolePath<End>;
 
-impl LeafTokenPosMut<End> for EndPath {
-    fn leaf_token_pos_mut(&mut self) -> &mut usize {
-        if !self.path().is_empty() {
-            &mut self.leaf_token_location_mut().unwrap().sub_index
-        } else {
-            self.root_child_index_mut()
-        }
-    }
-}
+//impl LeafTokenPosMut<End> for EndPath {
+//    fn leaf_token_pos_mut(&mut self) -> &mut usize {
+//        if !self.path().is_empty() {
+//            &mut self.leaf_token_location_mut().unwrap().sub_index
+//        } else {
+//            self.root_child_index_mut()
+//        }
+//    }
+//}
 pub trait HasStartPath: HasPath<Start> {
     fn start_path(&self) -> &StartPath;
     fn start_path_mut(&mut self) -> &mut StartPath;
@@ -48,12 +38,3 @@ impl From<IndexRangePath> for EndPath {
 //        &mut self.width
 //    }
 //}
-
-impl FromAdvanced<IndexRangePath> for StartPath {
-    fn from_advanced<G: HasGraph>(
-        path: IndexRangePath,
-        _trav: &G,
-    ) -> Self {
-        path.start
-    }
-}

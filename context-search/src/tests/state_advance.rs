@@ -10,24 +10,26 @@
 //! - Proper error handling when advancement fails
 //! - State consistency after advancement (cursors, positions, etc.)
 
-use crate::{
-    compare::{
-        parent::{
-            CompareRootState,
-            ParentCompareState,
+#[cfg(test)]
+use {
+    crate::{
+        compare::{
+            parent::{
+                CompareRootState,
+                ParentCompareState,
+            },
+            state::CompareState,
         },
-        state::CompareState,
+        cursor::{
+            Candidate,
+            Matched,
+            PathCursor,
+            PatternCursor,
+        },
     },
-    cursor::{
-        Candidate,
-        Matched,
-        PathCursor,
-        PatternCursor,
-    },
-    tests::macros::*,
+    context_trace::*,
+    std::marker::PhantomData,
 };
-use context_trace::*;
-use std::marker::PhantomData;
 
 #[test]
 fn test_parent_compare_state_advance_success() {
@@ -173,7 +175,7 @@ fn test_parent_compare_state_advance_with_nested_pattern() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
-        (ab, ab_id) => [a, b],
+        (ab, _ab_id) => [a, b],
         (abc, abc_id) => [ab, c]
     );
 
@@ -241,7 +243,7 @@ fn test_compare_state_candidate_advance() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
-        (ab, ab_id) => [a, b],
+        (ab, _ab_id) => [a, b],
         (abc, abc_id) => [ab, c]
     );
 
@@ -323,7 +325,7 @@ fn test_compare_state_matched_advance() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
-        (ab, ab_id) => [a, b],
+        (ab, _ab_id) => [a, b],
         (abc, abc_id) => [ab, c]
     );
 

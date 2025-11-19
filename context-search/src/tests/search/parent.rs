@@ -2,11 +2,6 @@
 use {
     crate::search::Find,
     crate::state::end::PathCoverage,
-    crate::state::matched::{
-
-        MatchedEndState,
-    },
-    crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::GraphRoot,
 
@@ -21,10 +16,7 @@ use {
 
         tests::env::TestEnv,
     },
-    pretty_assertions::{
-        assert_eq,
-        assert_matches,
-    },
+    pretty_assertions::assert_eq,
 };
 
 #[test]
@@ -61,7 +53,7 @@ fn find_parent1() {
     match &response.end.path {
         PathCoverage::EntireRoot(ref path) => {
             assert_eq!(path.root_parent(), *bc, "Should match bc root");
-        }
+        },
         _ => panic!("Expected EntireRoot path"),
     }
     let query = ab_c_pattern;
@@ -70,7 +62,7 @@ fn find_parent1() {
     match &response.end.path {
         PathCoverage::EntireRoot(ref path) => {
             assert_eq!(path.root_parent(), *abc, "Should match abc root");
-        }
+        },
         _ => panic!("Expected EntireRoot path"),
     }
     // enable when bfs for parent-token batches is implemented

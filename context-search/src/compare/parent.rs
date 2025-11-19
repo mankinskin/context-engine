@@ -19,13 +19,9 @@ use std::{
 use tracing::debug;
 
 use crate::compare::state::PathPairMode::GraphMajor;
-use context_trace::{
-    graph::vertex::token::Token,
-    path::accessors::has_path::IntoRootedRolePath,
-    trace::cache::key::directed::down::{
-        DownKey,
-        DownPosition,
-    },
+use context_trace::trace::cache::key::directed::down::{
+    DownKey,
+    DownPosition,
 };
 #[derive(Clone, Debug, PartialEq, Eq, Deref, DerefMut)]
 pub(crate) struct CompareRootState {
@@ -42,6 +38,7 @@ pub(crate) struct ParentCompareState {
     pub(crate) parent_state: ParentState,
     pub(crate) cursor: PatternCursor,
 }
+
 #[context_trace::instrument_trait_impl]
 impl StateAdvance for ParentCompareState {
     type Next = CompareRootState;

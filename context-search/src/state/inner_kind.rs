@@ -14,7 +14,8 @@ impl Ord for InnerKind {
     ) -> Ordering {
         match (self, other) {
             (InnerKind::ChildQueue(a), InnerKind::ChildQueue(b)) => a.cmp(b),
-            (InnerKind::ParentCandidate(a), InnerKind::ParentCandidate(b)) => a.cmp(b),
+            (InnerKind::ParentCandidate(a), InnerKind::ParentCandidate(b)) =>
+                a.cmp(b),
             (InnerKind::ChildQueue(_), _) => Ordering::Less,
             (_, InnerKind::ChildQueue(_)) => Ordering::Greater,
         }
@@ -29,19 +30,19 @@ impl PartialOrd for InnerKind {
         Some(self.cmp(other))
     }
 }
-impl InnerKind {
-    pub fn unwrap_parent(self) -> ParentState {
-        if let Self::ParentCandidate(p) = self {
-            p
-        } else {
-            panic!();
-        }
-    }
-    pub(crate) fn unwrap_child(self) -> ChildState {
-        if let Self::ChildQueue(c) = self {
-            c
-        } else {
-            panic!();
-        }
-    }
-}
+//impl InnerKind {
+//    pub fn unwrap_parent(self) -> ParentState {
+//        if let Self::ParentCandidate(p) = self {
+//            p
+//        } else {
+//            panic!();
+//        }
+//    }
+//    pub(crate) fn unwrap_child(self) -> ChildState {
+//        if let Self::ChildQueue(c) = self {
+//            c
+//        } else {
+//            panic!();
+//        }
+//    }
+//}

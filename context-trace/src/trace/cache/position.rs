@@ -1,12 +1,6 @@
-use tracing::debug;
-
 use crate::{
     trace::cache::{
-        key::directed::{
-            DirectedKey,
-            DirectedPosition,
-            up::UpPosition,
-        },
+        key::directed::DirectedKey,
         new::EditKind,
     },
     *,
@@ -72,9 +66,11 @@ impl PositionCache {
             top: HashSet::default(),
         }
     }
+    #[allow(dead_code)]
     pub(crate) fn num_parents(&self) -> usize {
         self.top.len()
     }
+    #[allow(dead_code)]
     pub(crate) fn num_bu_edges(&self) -> usize {
         self.bottom.len()
     }

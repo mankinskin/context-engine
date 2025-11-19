@@ -96,6 +96,13 @@ impl<P: RootedPath> HasRootedPath<P> for BaseState<P> {
     }
 }
 
+pub trait StateAdvance: Sized + Clone {
+    type Next;
+    fn advance_state<G: HasGraph>(
+        self,
+        trav: &G,
+    ) -> Result<Self::Next, Self>;
+}
 pub trait IntoParentState: Sized {
     fn into_parent_state<G: HasGraph>(
         self,

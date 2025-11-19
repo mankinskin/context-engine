@@ -1,7 +1,6 @@
 use std::{
     cmp::Ordering,
     collections::BinaryHeap,
-    marker::PhantomData,
 };
 
 use crate::{
@@ -9,9 +8,7 @@ use crate::{
         iterator::CompareIterator,
         parent::ParentCompareState,
         state::{
-            CandidateCompareState,
             CompareResult,
-            CompareResult::*,
             CompareState,
             MatchedCompareState,
         },
@@ -19,7 +16,6 @@ use crate::{
     cursor::{
         Candidate,
         Matched,
-        PathCursor,
     },
     r#match::root_cursor::RootCursor,
     traversal::{
@@ -72,7 +68,7 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let popped_node = self.ctx.nodes.pop();
-        
+
         // Debug: log what was popped from the queue
         if let Some(ref node) = popped_node {
             use tracing::debug;
@@ -88,10 +84,10 @@ impl<K: TraversalKind> Iterator for RootFinder<'_, K> {
                 },
                 SearchNode::PrefixQueue(_) => {
                     debug!("Popped PrefixQueue node from priority queue");
-                }
+                },
             }
         }
-        
+
         match popped_node.and_then(|node| {
             NodeConsumer::<'_, K>::new(node, self.trav).consume()
         }) {
@@ -176,7 +172,7 @@ impl Ord for SearchNode {
         // BinaryHeap is a max-heap by default, so we reverse the comparison
         // to get min-heap behavior (smallest widths popped first)
         let result = other_priority.cmp(&self_priority);
-        
+
         // Debug output to verify ordering
         use tracing::trace;
         trace!(
@@ -185,7 +181,7 @@ impl Ord for SearchNode {
             ordering = ?result,
             "SearchNode comparison for heap ordering"
         );
-        
+
         result
     }
 }

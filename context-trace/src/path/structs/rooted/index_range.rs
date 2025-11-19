@@ -23,7 +23,6 @@ use crate::{
                 root::GraphRootChild,
             },
             has_path::{
-                HasMatchPaths,
                 HasPath,
                 HasRolePath,
                 IntoRolePath,
@@ -68,7 +67,6 @@ use crate::{
                     RootedPath,
                 },
             },
-            sub_path::SubPath,
         },
     },
     trace::{
@@ -83,17 +81,17 @@ use crate::{
 pub type IndexRangePath = RootedRangePath<IndexRoot>;
 
 impl RangePath for IndexRangePath {
-    fn new_range(
-        root: Self::Root,
-        entry: usize,
-        exit: usize,
-    ) -> Self {
-        Self {
-            root,
-            start: SubPath::new_empty(entry).into(),
-            end: SubPath::new_empty(exit).into(),
-        }
-    }
+    //fn new_range(
+    //    root: Self::Root,
+    //    entry: usize,
+    //    exit: usize,
+    //) -> Self {
+    //    Self {
+    //        root,
+    //        start: SubPath::new_empty(entry).into(),
+    //        end: SubPath::new_empty(exit).into(),
+    //    }
+    //}
 }
 
 impl From<IndexRoot> for IndexRangePath {
@@ -155,11 +153,11 @@ where
     }
 }
 
-impl HasMatchPaths for IndexRangePath {
-    fn into_paths(self) -> (RolePath<Start>, RolePath<End>) {
-        (self.start, self.end)
-    }
-}
+//impl HasMatchPaths for IndexRangePath {
+//    fn into_paths(self) -> (RolePath<Start>, RolePath<End>) {
+//        (self.start, self.end)
+//    }
+//}
 
 impl MoveRootIndex<Right, End> for IndexRangePath {
     fn move_root_index<G: HasGraph>(

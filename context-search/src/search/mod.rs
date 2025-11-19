@@ -2,20 +2,11 @@ use crate::{
     cursor::PatternCursor,
     r#match::iterator::SearchIterator,
     state::{
-        end::{
-            range::RangeEnd,
-            EndReason,
-            EndState,
-            MatchState,
-            PathCoverage,
-        },
+        end::PathCoverage,
         matched::MatchedEndState,
         start::Searchable,
     },
-    traversal::{
-        policy::DirectedTraversalPolicy,
-        TraceStart,
-    },
+    traversal::TraceStart,
     Response,
     TraversalKind,
 };
@@ -30,7 +21,6 @@ use context_trace::{
 };
 use tracing::{
     debug,
-    instrument,
     trace,
 };
 pub(crate) mod context;
@@ -119,59 +109,59 @@ pub struct SearchState<K: TraversalKind> {
     pub(crate) query: PatternRangePath,
 }
 
-impl<K: TraversalKind> SearchState<K> {
-    /// Extract parent batch from a matched state for queue repopulation
-    /// Converts matched root to parent nodes for continued exploration
-    fn extract_parent_batch(
-        &self,
-        matched_state: &MatchedEndState,
-    ) -> Option<Vec<crate::r#match::SearchNode>> {
-        use crate::{
-            compare::parent::ParentCompareState,
-            r#match::SearchNode,
-        };
-
-        // Extract IndexRangePath and cursor from matched state
-        let (index_path, cursor) = matched_state.to_parent_state()?;
-
-        debug!(
-            "Extracting parents for matched root: {}",
-            index_path.root_parent()
-        );
-
-        // Create ChildState from IndexRangePath
-        // ChildState wraps IndexRangePath with a current_pos for traversal
-        let child_state = ChildState {
-            current_pos: cursor.atom_position,
-            path: index_path,
-        };
-
-        // Get ParentState from ChildState
-        let parent_state = child_state.parent_state();
-
-        // Use traversal policy to get parent batch
-        let batch =
-            K::Policy::next_batch(&self.matches.trace_ctx.trav, &parent_state)?;
-
-        // Convert to SearchNode::ParentCandidate
-        let parent_nodes: Vec<SearchNode> = batch
-            .parents
-            .into_iter()
-            .map(|ps| {
-                SearchNode::ParentCandidate(ParentCompareState {
-                    parent_state: ps,
-                    cursor: cursor.clone(),
-                })
-            })
-            .collect();
-
-        debug!(
-            "Found {} parents for continued exploration",
-            parent_nodes.len()
-        );
-        Some(parent_nodes)
-    }
-}
+//impl<K: TraversalKind> SearchState<K> {
+//    /// Extract parent batch from a matched state for queue repopulation
+//    /// Converts matched root to parent nodes for continued exploration
+//    fn extract_parent_batch(
+//        &self,
+//        matched_state: &MatchedEndState,
+//    ) -> Option<Vec<crate::r#match::SearchNode>> {
+//        use crate::{
+//            compare::parent::ParentCompareState,
+//            r#match::SearchNode,
+//        };
+//
+//        // Extract IndexRangePath and cursor from matched state
+//        let (index_path, cursor) = matched_state.to_parent_state()?;
+//
+//        debug!(
+//            "Extracting parents for matched root: {}",
+//            index_path.root_parent()
+//        );
+//
+//        // Create ChildState from IndexRangePath
+//        // ChildState wraps IndexRangePath with a current_pos for traversal
+//        let child_state = ChildState {
+//            current_pos: cursor.atom_position,
+//            path: index_path,
+//        };
+//
+//        // Get ParentState from ChildState
+//        let parent_state = child_state.parent_state();
+//
+//        // Use traversal policy to get parent batch
+//        let batch =
+//            K::Policy::next_batch(&self.matches.trace_ctx.trav, &parent_state)?;
+//
+//        // Convert to SearchNode::ParentCandidate
+//        let parent_nodes: Vec<SearchNode> = batch
+//            .parents
+//            .into_iter()
+//            .map(|ps| {
+//                SearchNode::ParentCandidate(ParentCompareState {
+//                    parent_state: ps,
+//                    cursor: cursor.clone(),
+//                })
+//            })
+//            .collect();
+//
+//        debug!(
+//            "Found {} parents for continued exploration",
+//            parent_nodes.len()
+//        );
+//        Some(parent_nodes)
+//    }
+//}
 
 impl<K: TraversalKind> Iterator for SearchState<K> {
     type Item = MatchedEndState;

@@ -21,9 +21,9 @@ pub trait GraphKind: Debug + Clone + Default + PartialEq + Eq {
 }
 
 pub type AtomOf<K> = <K as GraphKind>::Atom;
-pub(crate) type DefaultAtom = AtomOf<BaseGraphKind>;
-pub(crate) type DirectionOf<K> = <K as GraphKind>::Direction;
-pub(crate) type DefaultDirection = DirectionOf<BaseGraphKind>;
+//pub(crate) type DefaultAtom = AtomOf<BaseGraphKind>;
+//pub(crate) type DirectionOf<K> = <K as GraphKind>::Direction;
+//pub(crate) type DefaultDirection = DirectionOf<BaseGraphKind>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct BaseGraphKind;

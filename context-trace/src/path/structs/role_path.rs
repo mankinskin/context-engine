@@ -1,7 +1,4 @@
-use std::{
-    borrow::Borrow,
-    fmt,
-};
+use std::fmt;
 
 use derive_more::{
     Deref,
@@ -59,11 +56,11 @@ impl<R: PathRole> RootChildIndexMut<R> for RolePath<R> {
     }
 }
 
-impl<R: PathRole> HasSinglePath for RolePath<R> {
-    fn single_path(&self) -> &[ChildLocation] {
-        self.path().borrow()
-    }
-}
+//impl<R: PathRole> HasSinglePath for RolePath<R> {
+//    fn single_path(&self) -> &[ChildLocation] {
+//        self.path().borrow()
+//    }
+//}
 
 impl<R: PathRole> HasPath<R> for RolePath<R> {
     fn path(&self) -> &Vec<ChildLocation> {

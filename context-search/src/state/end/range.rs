@@ -8,7 +8,7 @@ use context_trace::{
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct RangeEnd {
+pub struct RangeEnd {
     pub(crate) path: IndexRangePath,
     pub(crate) target: DownKey,
     pub(crate) root_pos: AtomPosition,

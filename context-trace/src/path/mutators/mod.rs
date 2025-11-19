@@ -1,4 +1,3 @@
-pub mod adapters;
 pub mod append;
 pub mod lower;
 pub mod move_path;

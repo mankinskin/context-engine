@@ -8,7 +8,7 @@ use context_trace::{
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct PrefixEnd {
+pub struct PrefixEnd {
     pub(crate) path: IndexEndPath,
     pub(crate) target: DownKey,
     pub(crate) end_pos: AtomPosition,

@@ -2,11 +2,6 @@
 use {
     crate::search::Find,
     crate::state::end::PathCoverage,
-    crate::state::matched::{
-
-        MatchedEndState,
-    },
-    crate::state::result::Response,
     context_trace::tests::env::Env1,
     context_trace::GraphRoot,
     context_trace::Pattern,
@@ -16,7 +11,6 @@ use {
 
         tests::env::TestEnv,
     },
-    pretty_assertions::assert_matches,
 };
 
 #[test]
@@ -52,7 +46,7 @@ fn find_consecutive1() {
     match &fin.end.path {
         PathCoverage::EntireRoot(ref path) => {
             assert_eq!(path.root_parent(), *ghi, "Should match ghi root");
-        }
+        },
         _ => panic!("Expected EntireRoot path"),
     }
 
@@ -63,7 +57,7 @@ fn find_consecutive1() {
     match &response.end.path {
         PathCoverage::EntireRoot(ref path) => {
             assert_eq!(path.root_parent(), *abc, "Should match abc root");
-        }
+        },
         _ => panic!("Expected EntireRoot path"),
     }
 }

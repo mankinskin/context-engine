@@ -5,10 +5,7 @@ use crate::{
         TopDown,
         TraceDirection,
         cache::key::{
-            directed::{
-                DirectedKey,
-                up::UpKey,
-            },
+            directed::DirectedKey,
             props::TargetKey,
         },
     },
@@ -38,8 +35,8 @@ pub struct NewTraceEdge<D: TraceDirection> {
     pub(crate) target: D::Key,
     pub(crate) location: ChildLocation,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct RootEdit {
-    pub(crate) entry_key: UpKey,
-    pub(crate) entry_location: ChildLocation,
-}
+//#[derive(Clone, Debug, PartialEq, Eq)]
+//pub(crate) struct RootEdit {
+//    pub(crate) entry_key: UpKey,
+//    pub(crate) entry_location: ChildLocation,
+//}

@@ -1,4 +1,3 @@
-pub(crate) mod complete;
 pub(crate) mod end;
 pub(crate) mod inner_kind;
 pub(crate) mod matched;
@@ -80,23 +79,23 @@ impl PartialOrd for TraversalState {
     }
 }
 
-impl TraversalState {
-    pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
-        match &self.kind {
-            InnerKind::ParentCandidate(state) =>
-                Some(state.path.graph_root_child_location()),
-            InnerKind::ChildQueue(state) =>
-                state.path.role_leaf_token_location::<End>(),
-        }
-    }
-    pub(crate) fn prev_key(&self) -> DirectedKey {
-        self.prev.clone()
-    }
-
-    pub(crate) fn state_direction(&self) -> StateDirection {
-        match &self.kind {
-            InnerKind::ParentCandidate(_) => StateDirection::BottomUp,
-            InnerKind::ChildQueue(_) => StateDirection::TopDown,
-        }
-    }
-}
+//impl TraversalState {
+//    pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
+//        match &self.kind {
+//            InnerKind::ParentCandidate(state) =>
+//                Some(state.path.graph_root_child_location()),
+//            InnerKind::ChildQueue(state) =>
+//                state.path.role_leaf_token_location::<End>(),
+//        }
+//    }
+//    pub(crate) fn prev_key(&self) -> DirectedKey {
+//        self.prev.clone()
+//    }
+//
+//    pub(crate) fn state_direction(&self) -> StateDirection {
+//        match &self.kind {
+//            InnerKind::ParentCandidate(_) => StateDirection::BottomUp,
+//            InnerKind::ChildQueue(_) => StateDirection::TopDown,
+//        }
+//    }
+//}

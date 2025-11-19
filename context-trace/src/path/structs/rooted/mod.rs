@@ -2,7 +2,7 @@ pub(crate) mod index_range;
 pub(crate) mod pattern_range;
 pub(crate) mod role_path;
 pub(crate) mod root;
-pub(crate) mod split_path;
+//pub(crate) mod split_path;
 
 use crate::{
     EndPath,
@@ -44,11 +44,11 @@ pub(crate) trait RangePath:
     + RootedLeafToken<Start>
     + RootedLeafToken<End>
 {
-    fn new_range(
-        root: Self::Root,
-        entry: usize,
-        exit: usize,
-    ) -> Self;
+    //fn new_range(
+    //    root: Self::Root,
+    //    entry: usize,
+    //    exit: usize,
+    //) -> Self;
 }
 #[derive(Clone, PartialEq, Eq)]
 pub struct RootedRangePath<Root: PathRoot> {

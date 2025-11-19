@@ -127,7 +127,7 @@ fn path_append_and_trace_creates_nested_path() {
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
-        (cd, cd_id) => [c, d],
+        (cd, _cd_id) => [c, d],
         (abcd, abcd_id) => [ab, cd]
     );
 
@@ -154,7 +154,7 @@ fn move_root_and_leaf_combined() {
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
-        (cd, cd_id) => [c, d],
+        (cd, _cd_id) => [c, d],
         (abcd, abcd_id) => [ab, cd]
     );
 

@@ -57,6 +57,7 @@ impl<G> crate::graph::Hypergraph<G>
 where
     G: GraphKind,
 {
+    #[allow(dead_code)]
     pub(crate) fn insert_vertex_builder(
         &mut self,
         builder: VertexDataBuilder,
@@ -64,6 +65,7 @@ where
         let data = self.finish_vertex_builder(builder);
         self.insert_vertex_data(data)
     }
+    #[allow(dead_code)]
     pub(crate) fn finish_vertex_builder(
         &mut self,
         mut builder: VertexDataBuilder,
@@ -96,6 +98,7 @@ where
         self.insert_atom_key(atom, data.key);
         self.insert_vertex_data(data)
     }
+    #[allow(dead_code)]
     pub(crate) fn insert_atom_builder(
         &mut self,
         atom: Atom<G::Atom>,

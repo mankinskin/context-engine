@@ -1,18 +1,10 @@
 use context_trace::*;
 use derive_new::new;
 
-use crate::{
-    search::SearchState,
-    state::result::Response,
-    traversal::TraversalKind,
-};
+use crate::state::result::Response;
 use std::fmt::Debug;
-use tracing::{
-    debug,
-    instrument,
-};
 
-pub(crate) type FoldResult = Result<Response, ErrorState>;
+//pub(crate) type FoldResult = Result<Response, ErrorState>;
 
 #[derive(Debug, new)]
 pub struct ErrorState {

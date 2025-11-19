@@ -21,12 +21,12 @@ pub struct Response {
 //}
 
 impl Response {
-    pub(crate) fn new(
-        cache: TraceCache,
-        end: MatchedEndState,
-    ) -> Self {
-        Self { cache, end }
-    }
+    //pub(crate) fn new(
+    //    cache: TraceCache,
+    //    end: MatchedEndState,
+    //) -> Self {
+    //    Self { cache, end }
+    //}
 
     /// Check if the query was fully matched
     pub fn query_exhausted(&self) -> bool {

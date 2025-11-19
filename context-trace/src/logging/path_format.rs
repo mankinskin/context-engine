@@ -1,14 +1,9 @@
 //! Compact formatting implementations for path types
 
 use crate::{
-    End,
     graph::vertex::{
-        location::{
-            child::ChildLocation,
-            pattern::PatternLocation,
-        },
+        location::pattern::PatternLocation,
         pattern::Pattern,
-        token::Token,
     },
     impl_display_via_compact,
     logging::compact_format::{
@@ -29,7 +24,6 @@ use crate::{
                 RootedPath,
             },
         },
-        sub_path::SubPath,
     },
 };
 use std::fmt;

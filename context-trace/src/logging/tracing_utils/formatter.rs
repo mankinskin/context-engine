@@ -7,7 +7,6 @@ use super::{
     syntax::highlight_rust_signature,
     timer::CompactTimer,
 };
-use std::fmt::Write as _;
 use tracing::{
     Level,
     Subscriber,
@@ -241,42 +240,38 @@ where
                     // Add trait context if available
                     if let Some(ctx) = trait_context {
                         if self.config.span_enter.trait_context.show_trait_name
+                            && let Some(trait_name) = ctx.trait_name
                         {
-                            if let Some(trait_name) = ctx.trait_name {
-                                parts.push(format!("[trait: {}]", trait_name));
-                            }
+                            parts.push(format!("[trait: {}]", trait_name));
                         }
-                        if self.config.span_enter.trait_context.show_self_type {
-                            if let Some(self_type) = ctx.self_type {
-                                // Extract just the type name from the full path
-                                let type_name = self_type
-                                    .rsplit("::")
-                                    .next()
-                                    .unwrap_or(&self_type);
-                                parts.push(format!("<{}>", type_name));
-                            }
+                        if self.config.span_enter.trait_context.show_self_type
+                            && let Some(self_type) = ctx.self_type
+                        {
+                            // Extract just the type name from the full path
+                            let type_name = self_type
+                                .rsplit("::")
+                                .next()
+                                .unwrap_or(&self_type);
+                            parts.push(format!("<{}>", type_name));
                         }
                         if self
                             .config
                             .span_enter
                             .trait_context
                             .show_associated_types
+                            && !ctx.associated_types.is_empty()
                         {
-                            if !ctx.associated_types.is_empty() {
-                                let assoc_str = ctx
-                                    .associated_types
-                                    .iter()
-                                    .map(|(name, ty)| {
-                                        let ty_short = ty
-                                            .rsplit("::")
-                                            .next()
-                                            .unwrap_or(ty);
-                                        format!("{}={}", name, ty_short)
-                                    })
-                                    .collect::<Vec<_>>()
-                                    .join(", ");
-                                parts.push(format!("[{}]", assoc_str));
-                            }
+                            let assoc_str = ctx
+                                .associated_types
+                                .iter()
+                                .map(|(name, ty)| {
+                                    let ty_short =
+                                        ty.rsplit("::").next().unwrap_or(ty);
+                                    format!("{}={}", name, ty_short)
+                                })
+                                .collect::<Vec<_>>()
+                                .join(", ");
+                            parts.push(format!("[{}]", assoc_str));
                         }
                     }
 
@@ -339,9 +334,9 @@ where
                 let after_eq = start + 7;
                 let remaining = &cleaned[after_eq..];
 
-                if remaining.starts_with('"') {
+                if let Some(stripped) = remaining.strip_prefix('"') {
                     // Quoted value - find closing quote
-                    if let Some(quote_end) = remaining[1..].find('"') {
+                    if let Some(quote_end) = stripped.find('"') {
                         let field_end = after_eq + quote_end + 2;
                         cleaned.replace_range(start..field_end, "");
                     }
@@ -360,8 +355,8 @@ where
                 let after_eq = start + 8;
                 let remaining = &cleaned[after_eq..];
 
-                if remaining.starts_with('"') {
-                    if let Some(quote_end) = remaining[1..].find('"') {
+                if let Some(stripped) = remaining.strip_prefix('"') {
+                    if let Some(quote_end) = stripped.find('"') {
                         let field_end = after_eq + quote_end + 2;
                         cleaned.replace_range(start..field_end, "");
                     }
@@ -380,14 +375,15 @@ where
                 while let Some(start) = cleaned.find("self_type=") {
                     let after_eq = start + 10;
                     let remaining = &cleaned[after_eq..];
-                    let field_end = if remaining.starts_with('"') {
-                        remaining[1..].find('"').map(|i| after_eq + i + 2)
-                    } else {
-                        remaining
-                            .find(char::is_whitespace)
-                            .map(|i| after_eq + i)
-                    }
-                    .unwrap_or(cleaned.len());
+                    let field_end =
+                        if let Some(stripped) = remaining.strip_prefix('"') {
+                            stripped.find('"').map(|i| after_eq + i + 2)
+                        } else {
+                            remaining
+                                .find(char::is_whitespace)
+                                .map(|i| after_eq + i)
+                        }
+                        .unwrap_or(cleaned.len());
                     cleaned.replace_range(start..field_end, "");
                 }
             }
@@ -397,14 +393,15 @@ where
                 while let Some(start) = cleaned.find("trait_name=") {
                     let after_eq = start + 11;
                     let remaining = &cleaned[after_eq..];
-                    let field_end = if remaining.starts_with('"') {
-                        remaining[1..].find('"').map(|i| after_eq + i + 2)
-                    } else {
-                        remaining
-                            .find(char::is_whitespace)
-                            .map(|i| after_eq + i)
-                    }
-                    .unwrap_or(cleaned.len());
+                    let field_end =
+                        if let Some(stripped) = remaining.strip_prefix('"') {
+                            stripped.find('"').map(|i| after_eq + i + 2)
+                        } else {
+                            remaining
+                                .find(char::is_whitespace)
+                                .map(|i| after_eq + i)
+                        }
+                        .unwrap_or(cleaned.len());
                     cleaned.replace_range(start..field_end, "");
                 }
             }
@@ -426,10 +423,10 @@ where
                         if field_name != "self" && field_name != "trait_name" {
                             let after_eq = abs_pos + 6; // Skip '_type='
                             let remaining = &cleaned[after_eq..];
-                            let field_end = if remaining.starts_with('"') {
-                                remaining[1..]
-                                    .find('"')
-                                    .map(|i| after_eq + i + 2)
+                            let field_end = if let Some(stripped) =
+                                remaining.strip_prefix('"')
+                            {
+                                stripped.find('"').map(|i| after_eq + i + 2)
                             } else {
                                 remaining
                                     .find(char::is_whitespace)
@@ -451,12 +448,8 @@ where
             let trimmed = cleaned.trim();
             if !trimmed.is_empty() {
                 // Split by lines and add gutter indentation to each line
-                for (i, line) in trimmed.lines().enumerate() {
-                    if i == 0 {
-                        write!(writer, "\n{}    {}", gutter_indent, line)?;
-                    } else {
-                        write!(writer, "\n{}    {}", gutter_indent, line)?;
-                    }
+                for line in trimmed.lines() {
+                    write!(writer, "\n{}    {}", gutter_indent, line)?;
                 }
             }
         }
@@ -468,12 +461,11 @@ where
         }
 
         // Write file location if enabled
-        if self.config.show_file_location {
-            if let Some(file) = event.metadata().file()
-                && let Some(line) = event.metadata().line()
-            {
-                write!(writer, "\n{}    at {}:{}", gutter_indent, file, line)?;
-            }
+        if self.config.show_file_location
+            && let Some(file) = event.metadata().file()
+            && let Some(line) = event.metadata().line()
+        {
+            write!(writer, "\n{}    at {}:{}", gutter_indent, file, line)?;
         }
 
         writeln!(writer)?;
@@ -536,26 +528,25 @@ fn extract_trait_context(fields_str: &str) -> Option<TraitContext> {
         if part.contains("_type=")
             && !part.starts_with("self_type=")
             && !part.starts_with("trait_name=")
+            && let Some(eq_pos) = part.find('=')
         {
-            if let Some(eq_pos) = part.find('=') {
-                let field_name = &part[..eq_pos];
-                let remaining = &part[eq_pos + 1..];
-                if let Some(value) = extract_field_value(remaining) {
-                    // Convert next_type to "Next", error_type to "Error", etc.
-                    let assoc_name = field_name
-                        .strip_suffix("_type")
-                        .map(|s| {
-                            // Capitalize first letter
-                            let mut chars = s.chars();
-                            match chars.next() {
-                                None => String::new(),
-                                Some(first) =>
-                                    first.to_uppercase().chain(chars).collect(),
-                            }
-                        })
-                        .unwrap_or_else(|| field_name.to_string());
-                    associated_types.push((assoc_name, value));
-                }
+            let field_name = &part[..eq_pos];
+            let remaining = &part[eq_pos + 1..];
+            if let Some(value) = extract_field_value(remaining) {
+                // Convert next_type to "Next", error_type to "Error", etc.
+                let assoc_name = field_name
+                    .strip_suffix("_type")
+                    .map(|s| {
+                        // Capitalize first letter
+                        let mut chars = s.chars();
+                        match chars.next() {
+                            None => String::new(),
+                            Some(first) =>
+                                first.to_uppercase().chain(chars).collect(),
+                        }
+                    })
+                    .unwrap_or_else(|| field_name.to_string());
+                associated_types.push((assoc_name, value));
             }
         }
     }
@@ -577,13 +568,8 @@ fn extract_trait_context(fields_str: &str) -> Option<TraitContext> {
 /// Extract a field value from a string, handling quoted and unquoted values
 fn extract_field_value(s: &str) -> Option<String> {
     let s = s.trim();
-    if s.starts_with('"') {
-        // Quoted value - find closing quote
-        if let Some(end) = s[1..].find('"') {
-            Some(s[1..end + 1].to_string())
-        } else {
-            None
-        }
+    if let Some(stripped) = s.strip_prefix('"') {
+        stripped.find('"').map(|end| s[1..end + 1].to_string())
     } else {
         // Unquoted value - take until whitespace
         let end = s.find(char::is_whitespace).unwrap_or(s.len());

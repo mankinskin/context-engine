@@ -9,18 +9,15 @@ use {
         cursor::PatternCursor,
         state::end::{
             range::RangeEnd,
-            EndReason,
             PathCoverage,
         },
         state::matched::MatchedEndState,
-        state::result::Response,
     },
     context_trace::tests::env::Env1,
 
     context_trace::*,
     pretty_assertions::assert_eq,
 
-    pretty_assertions::assert_matches,
     std::iter::FromIterator,
 };
 
@@ -87,18 +84,25 @@ fn find_sequence() {
     match &abc_found.end.path {
         PathCoverage::EntireRoot(ref path) => {
             assert_eq!(path.root_parent(), *abc, "Should match abc root");
-        }
+        },
         _ => panic!("Expected EntireRoot path"),
     }
     let query = graph
         .graph()
         .expect_atom_children("ababababcdefghi".chars());
     let ababababcdefghi_found = graph.find_ancestor(&query).unwrap();
-    assert!(ababababcdefghi_found.query_exhausted(), "Query should be complete");
+    assert!(
+        ababababcdefghi_found.query_exhausted(),
+        "Query should be complete"
+    );
     match &ababababcdefghi_found.end.path {
         PathCoverage::EntireRoot(ref path) => {
-            assert_eq!(path.root_parent(), *ababababcdefghi, "Should match ababababcdefghi root");
-        }
+            assert_eq!(
+                path.root_parent(),
+                *ababababcdefghi,
+                "Should match ababababcdefghi root"
+            );
+        },
         _ => panic!("Expected EntireRoot path"),
     }
 }

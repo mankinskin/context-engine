@@ -4,7 +4,6 @@ use crate::{
     container::StateContainer,
     state::end::{
         postfix::PostfixEnd,
-        EndState,
         PathCoverage,
     },
 };

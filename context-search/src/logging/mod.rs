@@ -11,26 +11,20 @@ use crate::{
             PathPairMode,
         },
     },
-    cursor::{
-        CursorState,
-        PathCursor,
-    },
+    cursor::CursorState,
     r#match::{
         iterator::SearchIterator,
         SearchNode,
         SearchQueue,
     },
-    state::end::PathCoverage,
     traversal::TraversalKind,
 };
 use context_trace::{
     impl_display_via_compact,
     logging::compact_format::{
         write_indent,
-        Compact,
         CompactFormat,
     },
-    AtomPosition,
     GraphRoot,
     HasTargetPos,
 };

@@ -32,17 +32,17 @@ impl PatternRangePath {
 }
 
 impl RangePath for PatternRangePath {
-    fn new_range(
-        root: Self::Root,
-        entry: usize,
-        exit: usize,
-    ) -> Self {
-        Self {
-            root,
-            start: SubPath::new(entry, vec![]).into(),
-            end: SubPath::new(exit, vec![]).into(),
-        }
-    }
+    //fn new_range(
+    //    root: Self::Root,
+    //    entry: usize,
+    //    exit: usize,
+    //) -> Self {
+    //    Self {
+    //        root,
+    //        start: SubPath::new(entry, vec![]).into(),
+    //        end: SubPath::new(exit, vec![]).into(),
+    //    }
+    //}
 }
 impl RootChildIndexMut<End> for PatternRangePath {
     fn root_child_index_mut(&mut self) -> &mut usize {

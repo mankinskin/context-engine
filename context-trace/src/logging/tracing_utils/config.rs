@@ -127,6 +127,7 @@ impl Default for PanicConfig {
 /// Configuration for whitespace and visual separation in logs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+#[derive(Default)]
 pub struct WhitespaceConfig {
     /// Add blank line before events
     #[serde(default)]
@@ -146,19 +147,6 @@ pub struct WhitespaceConfig {
     /// Add blank line after span close
     #[serde(default)]
     pub blank_line_after_span_close: bool,
-}
-
-impl Default for WhitespaceConfig {
-    fn default() -> Self {
-        Self {
-            blank_line_before_events: false,
-            blank_line_after_events: false,
-            blank_line_before_span_enter: false,
-            blank_line_after_span_enter: false,
-            blank_line_before_span_close: false,
-            blank_line_after_span_close: false,
-        }
-    }
 }
 
 /// Formatting options for log output

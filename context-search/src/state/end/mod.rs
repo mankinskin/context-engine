@@ -6,15 +6,10 @@ use context_trace::{
     RootedPath,
     *,
 };
-use std::marker::PhantomData;
 
 use crate::{
     compare::parent::ParentCompareState,
-    cursor::{
-        PathCursor,
-        PatternCursor,
-    },
-    state::matched::MatchedEndState,
+    cursor::PatternCursor,
 };
 
 pub(crate) mod postfix;
@@ -25,19 +20,19 @@ use postfix::PostfixEnd;
 use prefix::PrefixEnd;
 use range::RangeEnd;
 
-/// Represents the state of matching during search.
-/// Distinguishes between "haven't found anything yet" (query state)
-/// and "found something" (located in graph).
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) enum MatchState {
-    /// Initial state: searching for the query pattern, no graph location yet
-    Query(PatternRangePath),
-    /// Found state: matched something and located it in the graph
-    Located(MatchedEndState),
-}
+///// Represents the state of matching during search.
+///// Distinguishes between "haven't found anything yet" (query state)
+///// and "found something" (located in graph).
+//#[derive(Clone, Debug, PartialEq, Eq)]
+//pub(crate) enum MatchState {
+//    /// Initial state: searching for the query pattern, no graph location yet
+//    Query(PatternRangePath),
+//    /// Found state: matched something and located it in the graph
+//    Located(MatchedEndState),
+//}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) enum PathCoverage {
+pub enum PathCoverage {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
@@ -212,10 +207,10 @@ impl Traceable for &EndState {
 }
 
 impl EndState {
-    pub(crate) fn init_fold(cursor: PatternCursor) -> MatchState {
-        // Initially, we have a query pattern that hasn't been located in the graph yet
-        MatchState::Query(cursor.path)
-    }
+    //pub(crate) fn init_fold(cursor: PatternCursor) -> MatchState {
+    //    // Initially, we have a query pattern that hasn't been located in the graph yet
+    //    MatchState::Query(cursor.path)
+    //}
     pub(crate) fn with_reason<G: HasGraph>(
         trav: G,
         reason: EndReason,
@@ -232,12 +227,12 @@ impl EndState {
             cursor: parent.cursor,
         }
     }
-    pub(crate) fn query_end<G: HasGraph>(
-        trav: G,
-        parent: ParentCompareState,
-    ) -> Self {
-        Self::with_reason(trav, EndReason::QueryExhausted, parent)
-    }
+    //pub(crate) fn query_end<G: HasGraph>(
+    //    trav: G,
+    //    parent: ParentCompareState,
+    //) -> Self {
+    //    Self::with_reason(trav, EndReason::QueryExhausted, parent)
+    //}
 
     pub(crate) fn mismatch<G: HasGraph>(
         trav: G,
@@ -246,53 +241,53 @@ impl EndState {
         Self::with_reason(trav, EndReason::Mismatch, parent)
     }
 
-    pub(crate) fn start_len(&self) -> usize {
-        self.path
-            .try_start_path()
-            .map(|p| p.len())
-            .unwrap_or_default()
-    }
+    //pub(crate) fn start_len(&self) -> usize {
+    //    self.path
+    //        .try_start_path()
+    //        .map(|p| p.len())
+    //        .unwrap_or_default()
+    //}
 
-    pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
-        self.path.try_start_path()
-    }
+    //pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
+    //    self.path.try_start_path()
+    //}
 
-    pub(crate) fn is_final(&self) -> bool {
-        self.reason == EndReason::QueryExhausted
-            && matches!(self.path, PathCoverage::EntireRoot(_))
-    }
-    pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
-        match &self.path {
-            PathCoverage::Range(state) => Some(
-                GraphRootChild::<Start>::graph_root_child_location(&state.path),
-            ),
-            PathCoverage::Postfix(_) => None,
-            PathCoverage::Prefix(_) => None,
-            PathCoverage::EntireRoot(_) => None,
-        }
-    }
+    //pub(crate) fn is_final(&self) -> bool {
+    //    self.reason == EndReason::QueryExhausted
+    //        && matches!(self.path, PathCoverage::EntireRoot(_))
+    //}
+    //pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
+    //    match &self.path {
+    //        PathCoverage::Range(state) => Some(
+    //            GraphRootChild::<Start>::graph_root_child_location(&state.path),
+    //        ),
+    //        PathCoverage::Postfix(_) => None,
+    //        PathCoverage::Prefix(_) => None,
+    //        PathCoverage::EntireRoot(_) => None,
+    //    }
+    //}
 
-    pub(crate) fn state_direction(&self) -> StateDirection {
-        match self.path {
-            PathCoverage::Range(_) => StateDirection::TopDown,
-            PathCoverage::Postfix(_) => StateDirection::BottomUp,
-            PathCoverage::Prefix(_) => StateDirection::TopDown,
-            PathCoverage::EntireRoot(_) => StateDirection::BottomUp,
-        }
-    }
+    //pub(crate) fn state_direction(&self) -> StateDirection {
+    //    match self.path {
+    //        PathCoverage::Range(_) => StateDirection::TopDown,
+    //        PathCoverage::Postfix(_) => StateDirection::BottomUp,
+    //        PathCoverage::Prefix(_) => StateDirection::TopDown,
+    //        PathCoverage::EntireRoot(_) => StateDirection::BottomUp,
+    //    }
+    //}
 
-    pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
-        match &self.path {
-            PathCoverage::Range(e) => Some(e.path.end_path()),
-            PathCoverage::Postfix(_) => None,
-            PathCoverage::Prefix(e) => Some(e.path.end_path()),
-            PathCoverage::EntireRoot(_) => None,
-        }
-    }
+    //pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
+    //    match &self.path {
+    //        PathCoverage::Range(e) => Some(e.path.end_path()),
+    //        PathCoverage::Postfix(_) => None,
+    //        PathCoverage::Prefix(e) => Some(e.path.end_path()),
+    //        PathCoverage::EntireRoot(_) => None,
+    //    }
+    //}
 
-    pub(crate) fn is_complete(&self) -> bool {
-        matches!(self.path, PathCoverage::EntireRoot(_))
-    }
+    //pub(crate) fn is_complete(&self) -> bool {
+    //    matches!(self.path, PathCoverage::EntireRoot(_))
+    //}
 }
 
 //impl TargetKey for EndState {

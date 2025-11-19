@@ -10,13 +10,10 @@
 //! - State consistency after advancement
 
 use crate::{
-    path::{
-        mutators::adapters::StateAdvance,
-        structs::rooted::{
-            index_range::IndexRangePath,
-            role_path::IndexStartPath,
-            root::IndexRoot,
-        },
+    path::structs::rooted::{
+        index_range::IndexRangePath,
+        role_path::IndexStartPath,
+        root::IndexRoot,
     },
     tests::macros::*,
     trace::{

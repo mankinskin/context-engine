@@ -4,10 +4,7 @@ use std::{
 };
 
 use crate::{
-    container::{
-        extend::ExtendStates,
-        StateContainer,
-    },
+    container::StateContainer,
     state::TraversalState,
 };
 
@@ -40,18 +37,18 @@ impl Iterator for BftQueue {
     }
 }
 
-impl ExtendStates for BftQueue {
-    fn extend<
-        It: DoubleEndedIterator + Iterator<Item = (usize, TraversalState)>,
-        T: IntoIterator<Item = (usize, TraversalState), IntoIter = It>,
-    >(
-        &mut self,
-        iter: T,
-    ) {
-        self.queue
-            .extend(iter.into_iter().map(|(d, s)| QueueEntry(d, s)))
-    }
-}
+//impl ExtendStates for BftQueue {
+//    fn extend<
+//        It: DoubleEndedIterator + Iterator<Item = (usize, TraversalState)>,
+//        T: IntoIterator<Item = (usize, TraversalState), IntoIter = It>,
+//    >(
+//        &mut self,
+//        iter: T,
+//    ) {
+//        self.queue
+//            .extend(iter.into_iter().map(|(d, s)| QueueEntry(d, s)))
+//    }
+//}
 
 #[derive(Debug, PartialEq, Eq)]
 struct QueueEntry(usize, TraversalState);

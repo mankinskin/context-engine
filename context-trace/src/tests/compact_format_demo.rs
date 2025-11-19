@@ -2,7 +2,6 @@
 
 use crate::{
     logging::Compact,
-    tests::macros::*,
     *,
 };
 
@@ -15,8 +14,10 @@ fn test_compact_formatting() {
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c],
-        (cd, cd_id) => [c, d],
-        (abcd, abcd_id) => [abc, cd]
+    );
+    insert_patterns!(graph,
+        cd => [c, d],
+        _abcd => [abc, cd]
     );
 
     // Create a path
@@ -63,7 +64,7 @@ fn test_compact_with_token_display() {
     let mut graph = HypergraphRef::default();
     insert_atoms!(graph, {x, y, z});
     insert_patterns!(graph,
-        (xyz, xyz_id) => [x, y, z]
+        (_xyz, xyz_id) => [x, y, z]
     );
 
     let token = Token::new(VertexIndex::from(10), 3);

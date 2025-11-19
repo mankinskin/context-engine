@@ -1,5 +1,3 @@
-// !!! Remove ALLOW WARNINGS before production release !!!
-#![allow(unused, dead_code)]
 #![deny(clippy::disallowed_methods)]
 #![feature(test)]
 #![feature(assert_matches)]

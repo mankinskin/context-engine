@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-pub mod r#match;
+//pub mod r#match;
 pub mod pattern;
 //pub(crate)(crate) mod merge;
 

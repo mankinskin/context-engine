@@ -8,13 +8,7 @@ use crate::{
         },
         SearchQueue,
     },
-    state::{
-        end::{
-            EndReason,
-            EndState,
-        },
-        matched::MatchedEndState,
-    },
+    state::matched::MatchedEndState,
     traversal::TraversalKind,
 };
 use context_trace::{
@@ -24,7 +18,6 @@ use context_trace::{
 use derive_new::new;
 use tracing::{
     debug,
-    instrument,
     trace,
     warn,
 };
@@ -38,21 +31,21 @@ pub(crate) struct SearchIterator<K: TraversalKind> {
     pub(crate) best_checkpoint: Option<MatchedEndState>,
 }
 impl<K: TraversalKind> SearchIterator<K> {
-    #[context_trace::instrument_sig(skip(trav), fields(start_index = %start_index))]
-    pub(crate) fn start_index(
-        trav: K::Trav,
-        start_index: Token,
-    ) -> Self {
-        debug!("creating match iterator from start index");
-        SearchIterator {
-            trace_ctx: TraceCtx {
-                trav,
-                cache: TraceCache::new(start_index),
-            },
-            queue: SearchQueue::new(),
-            best_checkpoint: None,
-        }
-    }
+    //#[context_trace::instrument_sig(skip(trav), fields(start_index = %start_index))]
+    //pub(crate) fn start_index(
+    //    trav: K::Trav,
+    //    start_index: Token,
+    //) -> Self {
+    //    debug!("creating match iterator from start index");
+    //    SearchIterator {
+    //        trace_ctx: TraceCtx {
+    //            trav,
+    //            cache: TraceCache::new(start_index),
+    //        },
+    //        queue: SearchQueue::new(),
+    //        best_checkpoint: None,
+    //    }
+    //}
 
     #[context_trace::instrument_sig(skip(trav, p), fields(start_index = %start_index, parent_count = p.len()))]
     pub(crate) fn start_parent(

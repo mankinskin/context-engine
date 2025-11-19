@@ -16,7 +16,7 @@ use crate::{
     trace::has_graph::HasGraph,
 };
 
-pub(crate) trait RelativeDirection: PatternDirection {}
+//pub(crate) trait RelativeDirection: PatternDirection {}
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Front;
@@ -24,7 +24,7 @@ pub struct Front;
 impl Direction for Front {
     type Opposite = Back;
 }
-impl RelativeDirection for Front {}
+//impl RelativeDirection for Front {}
 impl PatternDirection for Front {
     fn head_index(pattern: &Pattern) -> usize {
         <Right as PatternDirection>::head_index(pattern)
@@ -40,7 +40,7 @@ impl PatternDirection for Front {
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Back;
 
-impl RelativeDirection for Back {}
+//impl RelativeDirection for Back {}
 
 impl Direction for Back {
     type Opposite = Front;

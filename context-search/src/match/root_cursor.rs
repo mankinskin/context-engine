@@ -3,7 +3,6 @@ use crate::{
         iterator::CompareIterator,
         parent::ParentCompareState,
         state::{
-            CompareResult,
             CompareResult::*,
             CompareState,
         },
@@ -13,7 +12,6 @@ use crate::{
         ChildCursor,
         CursorState,
         Matched,
-        PathCursor,
         PatternCursor,
     },
     state::{
@@ -358,7 +356,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
         path.child_path_mut::<End>().simplify(&self.trav);
 
         let target_index = path.role_rooted_leaf_token::<End, _>(&self.trav);
-        let last_token_width_value = target_index.width();
+        //let last_token_width_value = target_index.width();
 
         let end_cursor = checkpoint.clone();
         let end_pos = checkpoint.atom_position;
@@ -374,21 +372,21 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Matched> {
     }
 }
 impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
-    /// Process a matched cursor: advance and convert to either iterable candidate cursor or immediate end
-    pub(crate) fn process_match(
-        self
-    ) -> Result<RootCursor<G, Candidate, Candidate>, EndReason> {
-        match self.advance_cursors() {
-            Ok(candidate_cursor) => {
-                // Both cursors advanced - can continue iterating
-                Ok(candidate_cursor)
-            },
-            Err((reason, _)) => {
-                // Could not advance
-                Err(reason)
-            },
-        }
-    }
+    ///// Process a matched cursor: advance and convert to either iterable candidate cursor or immediate end
+    //pub(crate) fn process_match(
+    //    self
+    //) -> Result<RootCursor<G, Candidate, Candidate>, EndReason> {
+    //    match self.advance_cursors() {
+    //        Ok(candidate_cursor) => {
+    //            // Both cursors advanced - can continue iterating
+    //            Ok(candidate_cursor)
+    //        },
+    //        Err((reason, _)) => {
+    //            // Could not advance
+    //            Err(reason)
+    //        },
+    //    }
+    //}
 
     /// Advance cursors after a match and transition to Candidate state
     /// Returns Ok with both-advanced state, or Err with reason for failure

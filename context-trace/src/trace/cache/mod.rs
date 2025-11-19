@@ -90,6 +90,7 @@ impl TraceCache {
         }
         self.expect_mut(key)
     }
+    #[allow(dead_code)]
     pub(crate) fn get_vertex(
         &self,
         key: &Token,
@@ -102,18 +103,21 @@ impl TraceCache {
     ) -> Option<&mut VertexCache> {
         self.entries.get_mut(&key.index.vertex_index())
     }
+    #[allow(dead_code)]
     pub(crate) fn expect_vertex(
         &self,
         key: &Token,
     ) -> &VertexCache {
         self.get_vertex(key).unwrap()
     }
+    #[allow(dead_code)]
     pub(crate) fn expect_vertex_mut(
         &mut self,
         key: &Token,
     ) -> &mut VertexCache {
         self.get_vertex_mut(key).unwrap()
     }
+    #[allow(dead_code)]
     pub(crate) fn get(
         &self,
         key: &DirectedKey,
@@ -127,6 +131,7 @@ impl TraceCache {
         self.get_vertex_mut(&key.index)
             .and_then(|ve| ve.get_mut(&key.pos))
     }
+    #[allow(dead_code)]
     pub(crate) fn expect(
         &self,
         key: &DirectedKey,
@@ -139,6 +144,7 @@ impl TraceCache {
     ) -> &mut PositionCache {
         self.get_mut(key).unwrap()
     }
+    #[allow(dead_code)]
     pub(crate) fn exists_vertex(
         &self,
         key: &Token,

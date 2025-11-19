@@ -13,7 +13,6 @@ use crate::{
         },
         structs::rooted::role_path::{
             RootChildIndex,
-            RootChildIndexMut,
             RootChildToken,
         },
     },
@@ -83,6 +82,6 @@ impl<R: PathRole, T: LeafToken<R> + RootChildToken<R>> RootedLeafToken<R>
     }
 }
 
-pub(crate) trait LeafTokenPosMut<R>: RootChildIndexMut<R> {
-    fn leaf_token_pos_mut(&mut self) -> &mut usize;
-}
+//pub(crate) trait LeafTokenPosMut<R>: RootChildIndexMut<R> {
+//    fn leaf_token_pos_mut(&mut self) -> &mut usize;
+//}

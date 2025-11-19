@@ -5,7 +5,6 @@ use derive_more::{
     Deref,
     DerefMut,
 };
-use std::borrow::Borrow;
 
 use crate::*;
 
@@ -253,15 +252,15 @@ impl<R: PathRole> GraphRoot for RootedRolePath<R, IndexRoot> {
 
 impl<R: PathRole> GraphRootPattern for RootedRolePath<R, IndexRoot> {
     fn root_pattern_location(&self) -> PatternLocation {
-        self.root.location.clone()
+        self.root.location
     }
 }
 
-impl<R: PathRole, Root: PathRoot> HasSinglePath for RootedRolePath<R, Root> {
-    fn single_path(&self) -> &[ChildLocation] {
-        self.role_path.sub_path.path.borrow()
-    }
-}
+//impl<R: PathRole, Root: PathRoot> HasSinglePath for RootedRolePath<R, Root> {
+//    fn single_path(&self) -> &[ChildLocation] {
+//        self.role_path.sub_path.path.borrow()
+//    }
+//}
 
 impl<Role: PathRole, Root: PathRoot> RootPattern
     for RootedRolePath<Role, Root>

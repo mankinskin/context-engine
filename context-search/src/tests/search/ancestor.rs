@@ -5,7 +5,6 @@ use {
         search::Find,
         state::end::{
             postfix::PostfixEnd,
-            EndReason,
             PathCoverage,
         },
         state::matched::MatchedEndState,

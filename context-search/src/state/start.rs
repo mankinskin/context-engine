@@ -12,7 +12,6 @@ use crate::{
         searchable::ErrorState,
         SearchState,
     },
-    state::end::EndState,
     traversal::{
         policy::DirectedTraversalPolicy,
         TraversalKind,
@@ -22,7 +21,6 @@ use crate::{
 use context_trace::{
     logging::{
         format_utils::pretty,
-        Compact,
     },
     path::{
         accessors::child::RootedLeafToken,
@@ -32,7 +30,6 @@ use context_trace::{
 };
 use tracing::{
     debug,
-    instrument,
     trace,
     warn,
 };

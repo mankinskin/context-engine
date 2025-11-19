@@ -8,13 +8,6 @@ use crate::{
         Matched,
         Mismatched,
         PathCursor,
-        PatternCursor,
-        PatternPrefixCursor,
-    },
-    state::end::{
-        EndReason,
-        EndState,
-        PathCoverage,
     },
 };
 use context_trace::{
@@ -22,22 +15,12 @@ use context_trace::{
         HasSubLocation,
         SubToken,
     },
-    logging::compact_format::Compact,
     path::{
-        accessors::{
-            child::RootedLeafToken,
-            has_path::IntoRootedRolePath,
-        },
+        accessors::child::RootedLeafToken,
         RolePathUtils,
     },
-    PatternPrefixPath,
-    RootChildIndex,
-    RootChildIndexMut,
+    trace::state::StateAdvance,
     *,
-};
-use derive_more::{
-    Deref,
-    DerefMut,
 };
 use itertools::Itertools;
 use std::{
@@ -46,7 +29,6 @@ use std::{
     fmt::Debug,
     marker::PhantomData,
     ops::ControlFlow::{
-        self,
         Break,
         Continue,
     },
@@ -58,10 +40,10 @@ use tracing::{
 use CompareResult::*;
 use PathPairMode::*;
 
-pub(crate) type CompareQueue = VecDeque<CompareState<Candidate, Candidate>>;
+//pub(crate) type CompareQueue = VecDeque<CompareState<Candidate, Candidate>>;
 
 // Type aliases for clarity
-pub(crate) type CandidateCompareState = CompareState<Candidate, Candidate>;
+//pub(crate) type CandidateCompareState = CompareState<Candidate, Candidate>;
 pub(crate) type MatchedCompareState = CompareState<Matched, Matched>;
 
 // Return type aliases for advance operations
@@ -203,16 +185,6 @@ impl CompareState<Candidate, Candidate> {
         ParentCompareState {
             parent_state: self.child_cursor.child_state.parent_state(),
             cursor,
-        }
-    }
-
-    /// Update the checkpoint with the candidate cursor's position
-    /// Returns a PatternCursor (range path) that can be marked as mismatched
-    fn update_checkpoint_with_candidate(&self) -> PatternCursor {
-        PathCursor {
-            path: self.checkpoint.path.clone(),
-            atom_position: self.cursor.atom_position,
-            _state: PhantomData,
         }
     }
 
@@ -440,8 +412,8 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
     type Mismatched = CompareState<Mismatched, Mismatched>;
 
     fn mark_match(self) -> Self::Matched {
-        let cursor_pos = self.cursor.atom_position.clone();
-        let old_checkpoint_pos = self.checkpoint.atom_position.clone();
+        let cursor_pos = self.cursor.atom_position;
+        let old_checkpoint_pos = self.checkpoint.atom_position;
         let matched_cursor = self.cursor.mark_match();
         let matched_child = self.child_cursor.mark_match();
         tracing::debug!(
@@ -673,12 +645,12 @@ where
     P: RootedLeafToken<End> + PathAppend + Clone,
     S: CursorState,
 {
-    pub(crate) fn prefix_states<G: HasGraph>(
-        &self,
-        trav: &G,
-    ) -> VecDeque<(SubToken, Self)> {
-        self.prefix_states_from(trav, self.atom_position)
-    }
+    //pub(crate) fn prefix_states<G: HasGraph>(
+    //    &self,
+    //    trav: &G,
+    //) -> VecDeque<(SubToken, Self)> {
+    //    self.prefix_states_from(trav, self.atom_position)
+    //}
 
     pub(crate) fn prefix_states_from<G: HasGraph>(
         &self,
