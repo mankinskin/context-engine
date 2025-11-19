@@ -16,10 +16,17 @@ use crate::{
         PathCursor,
         PatternCursor,
     },
-    state::end::{
-        EndReason,
-        EndState,
-        PathEnum,
+    state::{
+        end::{
+            EndReason,
+            EndState,
+            PathEnum,
+        },
+        matched::{
+            CompleteMatchState,
+            MatchedEndState,
+            PartialMatchState,
+        },
     },
     traversal::{
         policy::DirectedTraversalPolicy,
@@ -74,7 +81,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
         self
     ) -> Result<
         RootCursor<G, Candidate, Candidate>,
-        Result<EndState, RootCursor<G, Candidate, Matched>>,
+        Result<MatchedEndState, RootCursor<G, Candidate, Matched>>,
     > {
         let matched_state = *self.state;
         let trav = self.trav;
@@ -123,13 +130,12 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                     last_token_width_value, usize::from(end_pos));
 
                 let target = DownKey::new(target_index, end_pos.into());
-                Err(Ok(EndState {
+                Err(Ok(MatchedEndState::Complete(CompleteMatchState {
                     cursor: matched_state.checkpoint,
-                    reason: EndReason::QueryEnd,
                     path: PathEnum::from_range_path(
                         path, root_pos, target, &trav,
                     ),
-                }))
+                })))
             },
         }
     }
@@ -138,16 +144,16 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
     /// Uses iterator to advance through matches until QueryEnd or need parent exploration
     pub(crate) fn find_end(
         self
-    ) -> Result<EndState, RootCursor<G, Candidate, Matched>> {
+    ) -> Result<MatchedEndState, RootCursor<G, Candidate, Matched>> {
         // Try to advance to candidate
         match self.advance_to_candidate() {
             Ok(candidate_cursor) => {
                 // We have a candidate cursor - iterate it to find the end
                 candidate_cursor.find_end()
             },
-            Err(Ok(end_state)) => {
-                // Query ended immediately - return the end state
-                Ok(end_state)
+            Err(Ok(matched_state)) => {
+                // Query ended immediately - return the matched state
+                Ok(matched_state)
             },
             Err(Err(need_parent)) => {
                 // Need parent exploration immediately
@@ -160,11 +166,12 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
 impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
     /// Advance a Candidate cursor to a Matched cursor by comparing and matching
     /// Returns Ok(Matched cursor) if comparison resulted in a match
-    /// Returns Err(Some(EndState)) if hit QueryEnd or Mismatch during iteration
+    /// Returns Err(Some(MatchedEndState)) if hit QueryEnd or Mismatch during iteration
     /// Returns Err(None) if iterator completed without conclusion - need parent exploration (returns self)
     pub(crate) fn advance_to_matched(
         mut self
-    ) -> Result<RootCursor<G, Matched, Matched>, Result<EndState, Self>> {
+    ) -> Result<RootCursor<G, Matched, Matched>, Result<MatchedEndState, Self>>
+    {
         // Iterate until we get a match or need to stop
         loop {
             match self.next() {
@@ -175,6 +182,15 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                 },
                 Some(Break(reason)) => {
                     // Hit an end condition (QueryEnd or Mismatch)
+                    // Check if this is a valid match before destructuring
+                    if reason == EndReason::Mismatch
+                        && *self.state.checkpoint.atom_position.as_ref() == 0
+                    {
+                        // No progress - not a valid match, continue iteration
+                        continue;
+                    }
+
+                    // Valid match - destructure and create matched state
                     let CompareState {
                         child_cursor,
                         cursor,
@@ -204,13 +220,27 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                     };
 
                     let target = DownKey::new(target_index, end_pos.into());
-                    return Err(Ok(EndState {
-                        cursor: end_cursor,
-                        reason,
-                        path: PathEnum::from_range_path(
-                            path, root_pos, target, &self.trav,
-                        ),
-                    }));
+                    let path_enum = PathEnum::from_range_path(
+                        path, root_pos, target, &self.trav,
+                    );
+
+                    // Create appropriate matched state based on reason
+                    let matched_state = match reason {
+                        EndReason::QueryEnd =>
+                            MatchedEndState::Complete(CompleteMatchState {
+                                cursor: end_cursor,
+                                path: path_enum,
+                            }),
+                        EndReason::Mismatch => {
+                            // We already filtered checkpoint == 0 above
+                            MatchedEndState::Partial(PartialMatchState {
+                                cursor: end_cursor,
+                                path: path_enum,
+                            })
+                        },
+                    };
+
+                    return Err(Ok(matched_state));
                 },
                 None => {
                     // Iterator completed without Break - need parent exploration
@@ -221,11 +251,11 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
     }
 
     /// Find the end state by iterating through candidate comparisons
-    /// Returns Ok(EndState) if we reach QueryEnd or Mismatch
+    /// Returns Ok(MatchedEndState) if we reach QueryEnd or Mismatch with progress
     /// Returns Err if we need parent exploration
     pub(crate) fn find_end(
         self
-    ) -> Result<EndState, RootCursor<G, Candidate, Matched>> {
+    ) -> Result<MatchedEndState, RootCursor<G, Candidate, Matched>> {
         match self.advance_to_matched() {
             Ok(_matched_cursor) => {
                 // Got a matched cursor - this shouldn't happen in find_end

@@ -18,10 +18,15 @@ use std::convert::TryInto;
 use crate::{
     cursor::PathCursor,
     search::Find,
-    state::end::{
-        EndReason,
-        EndState,
-        PathEnum,
+    state::{
+        end::{
+            EndReason,
+            PathEnum,
+        },
+        matched::{
+            CompleteMatchState,
+            MatchedEndState,
+        },
     },
     Response,
 };
@@ -69,15 +74,14 @@ fn prefix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 cursor: PathCursor {
                     atom_position: 5.into(),
-                    path: res.end.cursor.path,
+                    path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
-                path: res.end.path,
-                reason: EndReason::QueryEnd
-            },
+                path: res.end.path().clone(),
+            }),
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (
@@ -172,16 +176,14 @@ fn postfix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 cursor: PathCursor {
                     atom_position: 7.into(),
-                    path: res.end.cursor.path,
+                    path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
-                path: res.end.path,
-                reason: EndReason::QueryEnd
-            },
-            //start: *c,
+                path: res.end.path().clone(),
+            }),
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (
@@ -270,16 +272,14 @@ fn range1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 cursor: PathCursor {
                     atom_position: 4.into(),
-                    path: res.end.cursor.path,
+                    path: res.end.cursor().path.clone(),
                     _state: PhantomData,
                 },
-                path: res.end.path,
-                reason: EndReason::QueryEnd
-            },
-            //start: *bc,
+                path: res.end.path().clone(),
+            }),
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (

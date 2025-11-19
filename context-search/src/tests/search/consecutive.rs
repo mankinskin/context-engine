@@ -1,9 +1,10 @@
 #[cfg(test)]
 use {
     crate::search::Find,
-    crate::state::end::{
-        EndState,
-        PathEnum,
+    crate::state::end::PathEnum,
+    crate::state::matched::{
+        CompleteMatchState,
+        MatchedEndState,
     },
     crate::state::result::Response,
     context_trace::tests::env::Env1,
@@ -50,24 +51,24 @@ fn find_consecutive1() {
     assert_matches!(
         fin,
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *ghi,
         "+g_h_i_a_b_c"
     );
 
     // Extract the cursor from the response and use it for the next search
-    let query = fin.unwrap().end.cursor;
+    let query = fin.unwrap().end.cursor().clone();
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *abc,
         "g_h_i_+a_b_c"

@@ -28,7 +28,7 @@ pub trait TraversalKind: Debug + Default {
 
 #[derive(Clone, Debug)]
 pub(crate) struct TraceStart<'a> {
-    pub(crate) end: &'a EndState,
+    pub(crate) end: &'a crate::state::matched::MatchedEndState,
     pub(crate) pos: usize,
 }
 
@@ -37,7 +37,7 @@ impl Traceable for TraceStart<'_> {
         self,
         ctx: &mut TraceCtx<G>,
     ) {
-        if let Some(mut p) = match self.end.path.clone() {
+        if let Some(mut p) = match self.end.path().clone() {
             PathEnum::Postfix(p) => Some(p),
             PathEnum::Range(p) => Some(PostfixEnd {
                 path: p.path.into_rooted_role_path(),

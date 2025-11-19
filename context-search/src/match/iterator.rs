@@ -8,9 +8,12 @@ use crate::{
         },
         SearchQueue,
     },
-    state::end::{
-        EndReason,
-        EndState,
+    state::{
+        end::{
+            EndReason,
+            EndState,
+        },
+        matched::MatchedEndState,
     },
     traversal::TraversalKind,
 };
@@ -76,14 +79,14 @@ impl<K: TraversalKind> SearchIterator<K> {
 }
 
 impl<K: TraversalKind> SearchIterator<K> {
-    pub(crate) fn find_next(&mut self) -> Option<EndState> {
+    pub(crate) fn find_next(&mut self) -> Option<MatchedEndState> {
         trace!("finding next match");
         self.find_map(Some)
     }
 }
 
 impl<K: TraversalKind> Iterator for SearchIterator<K> {
-    type Item = EndState;
+    type Item = MatchedEndState;
 
     fn next(&mut self) -> Option<Self::Item> {
         trace!("searching for root cursor");
@@ -95,12 +98,14 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                 debug!("found root cursor");
 
                 Some(match root_cursor.find_end() {
-                    Ok(end) => {
-                        // RootCursor found an end - this represents actual comparison progress
-                        // Either we matched more of the pattern (QueryEnd) or hit a mismatch
-                        debug!(reason = %end.reason, "found end state - actual match advancement");
+                    Ok(matched_state) => {
+                        // RootCursor found a match - query matched at least partially
+                        debug!(
+                            is_complete = matched_state.is_complete(),
+                            "found matched state"
+                        );
 
-                        end
+                        matched_state
                     },
                     Err(root_cursor) => {
                         // RootCursor reached end of root without conclusion
@@ -110,10 +115,11 @@ impl<K: TraversalKind> Iterator for SearchIterator<K> {
                         match root_cursor
                             .next_parents::<K>(&self.trace_ctx.trav)
                         {
-                            Err(end) => {
-                                // No more parents available - this is the final state
-                                debug!("no more parents available");
-                                *end
+                            Err(_end_state) => {
+                                // No more parents available - exhausted search without match
+                                // Don't return anything, continue to next candidate
+                                debug!("no more parents available - continuing search");
+                                return self.next();
                             },
                             Ok((parent, batch)) => {
                                 debug!(

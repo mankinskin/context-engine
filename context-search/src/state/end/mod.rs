@@ -3,6 +3,7 @@ use context_trace::{
         accessors::has_path::HasRolePath,
         RolePathUtils,
     },
+    RootedPath,
     *,
 };
 use postfix::PostfixEnd;
@@ -16,6 +17,7 @@ use crate::{
         PathCursor,
         PatternCursor,
     },
+    state::matched::MatchedEndState,
 };
 
 pub(crate) mod postfix;
@@ -30,7 +32,7 @@ pub(crate) enum MatchState {
     /// Initial state: searching for the query pattern, no graph location yet
     Query(PatternRangePath),
     /// Found state: matched something and located it in the graph
-    Located(EndState),
+    Located(MatchedEndState),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -48,6 +50,32 @@ impl GraphRoot for PathEnum {
             PathEnum::Prefix(p) => p.path.root_parent(),
             PathEnum::Complete(c) => c.root_parent(),
         }
+    }
+}
+
+impl RootedPath for PathEnum {
+    type Root = IndexRoot;
+    fn path_root(&self) -> Self::Root {
+        match self {
+            PathEnum::Range(p) => p.path.path_root(),
+            PathEnum::Postfix(p) => p.path.path_root(),
+            PathEnum::Prefix(p) => p.path.path_root(),
+            PathEnum::Complete(c) => c.path_root(),
+        }
+    }
+}
+
+impl RootKey for PathEnum {
+    fn root_key(&self) -> UpKey {
+        UpKey::new(
+            self.root_parent(),
+            match self {
+                PathEnum::Range(s) => s.root_pos.into(),
+                PathEnum::Postfix(p) => p.root_pos.into(),
+                PathEnum::Prefix(_) => 0.into(),
+                PathEnum::Complete(_) => 0.into(),
+            },
+        )
     }
 }
 impl PathEnum {
@@ -116,6 +144,24 @@ impl PathEnum {
         ) {
             (true, true) => PathEnum::Complete(path.into()),
             _ => PathEnum::Postfix(PostfixEnd { path, root_pos }),
+        }
+    }
+
+    /// Get the start path length for incremental tracing
+    pub(crate) fn start_len(&self) -> usize {
+        match self {
+            PathEnum::Range(p) => p.path.start_path().len(),
+            PathEnum::Postfix(p) => p.path.start_path().len(),
+            PathEnum::Prefix(_) | PathEnum::Complete(_) => 0,
+        }
+    }
+
+    /// Get the start path if it exists (safe version that returns Option)
+    pub(crate) fn try_start_path(&self) -> Option<&StartPath> {
+        match self {
+            PathEnum::Range(p) => Some(p.path.start_path()),
+            PathEnum::Postfix(p) => Some(p.path.start_path()),
+            PathEnum::Prefix(_) | PathEnum::Complete(_) => None,
         }
     }
 }
@@ -205,15 +251,13 @@ impl EndState {
         Self::with_reason(trav, EndReason::Mismatch, parent)
     }
     pub(crate) fn start_len(&self) -> usize {
-        self.start_path().map(|p| p.len()).unwrap_or_default()
+        self.path
+            .try_start_path()
+            .map(|p| p.len())
+            .unwrap_or_default()
     }
     pub(crate) fn start_path(&self) -> Option<&'_ StartPath> {
-        match &self.path {
-            PathEnum::Range(e) => Some(e.path.start_path()),
-            PathEnum::Postfix(e) => Some(e.path.start_path()),
-            PathEnum::Prefix(_) => None,
-            PathEnum::Complete(_) => None,
-        }
+        self.path.try_start_path()
     }
     pub(crate) fn is_final(&self) -> bool {
         self.reason == EndReason::QueryEnd

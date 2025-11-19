@@ -10,8 +10,12 @@ use {
         state::end::{
             range::RangeEnd,
             EndReason,
-            EndState,
             PathEnum,
+        },
+        state::matched::{
+            CompleteMatchState,
+            MatchedEndState,
+            PartialMatchState,
         },
         state::result::Response,
     },
@@ -86,10 +90,10 @@ fn find_sequence() {
     assert_matches!(
         abc_found,
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *abc,
         "abc"
@@ -101,10 +105,10 @@ fn find_sequence() {
     assert_matches!(
         ababababcdefghi_found,
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *ababababcdefghi,
         "ababababcdefghi"
@@ -159,8 +163,7 @@ fn find_pattern1() {
     assert_eq!(aby_found.cache.entries.len(), 5);
     assert_eq!(
         aby_found.end,
-        EndState {
-            reason: EndReason::Mismatch,
+        MatchedEndState::Partial(PartialMatchState {
             path: PathEnum::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
@@ -183,6 +186,6 @@ fn find_pattern1() {
                 atom_position: 3.into(),
                 _state: std::marker::PhantomData,
             },
-        }
+        })
     );
 }

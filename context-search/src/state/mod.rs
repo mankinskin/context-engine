@@ -1,6 +1,7 @@
 pub(crate) mod complete;
 pub(crate) mod end;
 pub(crate) mod inner_kind;
+pub(crate) mod matched;
 pub(crate) mod result;
 pub(crate) mod start;
 

@@ -9,6 +9,7 @@ use crate::{
             MatchState,
             PathEnum,
         },
+        matched::MatchedEndState,
         start::Searchable,
     },
     traversal::{
@@ -119,114 +120,73 @@ pub struct SearchState<K: TraversalKind> {
 }
 
 impl<K: TraversalKind> Iterator for SearchState<K> {
-    type Item = EndState;
+    type Item = MatchedEndState;
     fn next(&mut self) -> Option<Self::Item> {
         trace!("searching for next match");
         match self.matches.find_next() {
-            Some(end) => {
-                debug!("found end state with reason={:?}", end.reason);
+            Some(matched_state) => {
+                debug!(
+                    is_complete = matched_state.is_complete(),
+                    "found matched state"
+                );
 
-                // QueryEnd means query pattern exhausted within this root (match found)
-                // Mismatch means comparison failed within this root
-                // Both are valid match results - we want the best (smallest root) match
-
-                // Check if this is first match in any root (candidate parent -> matched root cursor)
-                let is_first_match =
-                    matches!(&self.last_match, MatchState::Query(_));
-
+                // Compare with previous best match (if any)
                 let should_update = match &self.last_match {
-                    MatchState::Located(prev_end) => {
+                    MatchState::Located(prev_match) => {
                         // Already have a matched root - compare widths
                         // Smaller root token is better (more specific match)
-                        let current_width = end.path.root_parent().width.0;
-                        let prev_width = prev_end.path.root_parent().width.0;
+                        let current_width = matched_state.root_parent().width.0;
+                        let prev_width = prev_match.root_parent().width.0;
                         current_width < prev_width
                     },
                     MatchState::Query(_) => {
-                        // First match in any root - transition from candidate parent to matched root cursor
+                        // First match - always update
                         true
                     },
                 };
 
                 if should_update {
                     debug!(
-                        width = end.path.root_parent().width.0,
-                        is_first = is_first_match,
+                        width = matched_state.root_parent().width.0,
                         "updating last_match to better match"
                     );
 
-                    if is_first_match {
-                        debug!("First match in root - clearing candidate parents and adding matched root's parents");
+                    // Incremental start path tracing
+                    // Trace only the NEW portion of the start path to avoid duplicate cache entries
+                    if let Some(start_path) =
+                        matched_state.path().try_start_path()
+                    {
+                        // Calculate how much of start path was already traced
+                        let prev_start_len = match &self.last_match {
+                            MatchState::Located(prev) => prev.start_len(),
+                            MatchState::Query(_) => 0,
+                        };
+                        let current_start_len = start_path.len();
 
-                        // Clear queue: remove unmatched candidate parents
-                        // Substring invariant: all future matches reachable from matched root's ancestors
-                        let old_queue_size = self.matches.queue.nodes.len();
-                        self.matches.queue.nodes.clear();
-                        debug!(
-                            "Cleared {} candidate parent nodes from queue",
-                            old_queue_size
-                        );
-
-                        // Add parents of matched root for continued exploration
-                        if let Some(parent_batch) =
-                            Self::extract_parent_batch(&end, &self.matches)
-                        {
-                            let parent_count = parent_batch.len();
-                            self.matches.queue.nodes.extend(parent_batch);
-                            debug!("Added {} parent nodes of matched root to queue", parent_count);
-                        } else {
-                            debug!("No parents available for matched root");
-                        }
-
-                        // Incremental start path tracing
-                        // Trace the start path segment from query start (pos 0) to this first match
-                        // This traces the path leading TO the matched root
-                        if let Some(start_path) = end.start_path() {
-                            let start_len = start_path.len();
+                        // Only trace the NEW segment (avoid duplicate cache entries)
+                        if current_start_len > prev_start_len {
                             debug!(
-                                "Tracing initial start path segment (len={})",
-                                start_len
+                                "Tracing incremental start path: prev_len={}, current_len={}, new_segment_start={}",
+                                prev_start_len, current_start_len, prev_start_len
                             );
-                            TraceStart { end: &end, pos: 0 }
-                                .trace(&mut self.matches.trace_ctx);
-                        } else {
-                            debug!("No start path to trace (Complete or Prefix path)");
-                        }
-                    } else {
-                        // Not first match - we already have a matched root, comparing widths
-                        // Trace start path segments incrementally from previous match
-                        if let Some(start_path) = end.start_path() {
-                            // Calculate how much of start path was already traced
-                            let prev_start_len = match &self.last_match {
-                                MatchState::Located(prev) => prev.start_len(),
-                                MatchState::Query(_) => 0,
-                            };
-                            let current_start_len = start_path.len();
-
-                            // Only trace the NEW segment (avoid duplicate cache entries)
-                            if current_start_len > prev_start_len {
-                                debug!(
-                                    "Tracing incremental start path: prev_len={}, current_len={}, new_segment_start={}",
-                                    prev_start_len, current_start_len, prev_start_len
-                                );
-                                // Trace from prev_start_len onwards (skips already-traced prefix)
-                                TraceStart {
-                                    end: &end,
-                                    pos: prev_start_len,
-                                }
-                                .trace(&mut self.matches.trace_ctx);
-                            } else {
-                                debug!("Start path not longer than previous - no new segment to trace");
+                            // Trace from prev_start_len onwards (skips already-traced prefix)
+                            TraceStart {
+                                end: &matched_state,
+                                pos: prev_start_len,
                             }
+                            .trace(&mut self.matches.trace_ctx);
+                        } else {
+                            debug!("Start path not longer than previous - no new segment to trace");
                         }
                     }
 
-                    self.last_match = MatchState::Located(end.clone());
+                    self.last_match =
+                        MatchState::Located(matched_state.clone());
                 } else {
                     debug!("not updating last_match - current match not better than previous");
                 }
 
-                Some(end.clone())
+                Some(matched_state)
             },
             None => {
                 trace!("no more matches found");
@@ -310,57 +270,55 @@ impl<K: TraversalKind> SearchState<K> {
         debug!(queue = %&self.matches.queue, "initial state");
 
         let mut iteration = 0;
-        while let Some(end) = &mut self.next() {
+        while let Some(matched_state) = &mut self.next() {
             iteration += 1;
-            debug!(iteration, "tracing end state");
+            debug!(iteration, "tracing matched state");
             debug!(
-                "About to trace EndState: reason={:?}, path_variant={}",
-                end.reason,
-                match &end.path {
+                "About to trace MatchedEndState: is_complete={}, path_variant={}",
+                matched_state.is_complete(),
+                match matched_state.path() {
                     PathEnum::Range(_) => "Range",
                     PathEnum::Postfix(_) => "Postfix",
                     PathEnum::Prefix(_) => "Prefix",
                     PathEnum::Complete(_) => "Complete",
                 }
             );
-            end.trace(&mut self.matches.trace_ctx);
-            debug!("Finished tracing EndState");
+            matched_state.trace(&mut self.matches.trace_ctx);
+            debug!("Finished tracing MatchedEndState");
         }
 
         debug!(iterations = iteration, "fold completed");
 
-        // Get the final end state
+        // Get the final matched state
         let end = match self.last_match {
-            MatchState::Located(end_state) => {
+            MatchState::Located(matched_state) => {
                 debug!("final state is located");
-                end_state
+                matched_state
             },
             MatchState::Query(query_path) => {
-                // No matches were found - need to create an appropriate error/incomplete state
+                // No matches were found - need to create a partial match at position 0
                 debug!("no matches found, still in query state");
-                // TODO: Create proper EndState for "no match" case
-                // For now, create a minimal EndState
-                // The query_path has a Pattern root, get the first token
+                // Create a PartialMatchState with checkpoint 0 (no progress)
                 let start_token = query_path.path_root()[0];
                 let cursor = PatternCursor {
                     atom_position: AtomPosition::default(),
                     path: query_path.clone(),
                     _state: std::marker::PhantomData,
                 };
-                EndState {
-                    reason: EndReason::Mismatch,
-                    path: PathEnum::Complete(IndexRangePath::new_empty(
-                        IndexRoot::from(PatternLocation::new(
-                            start_token,
-                            PatternId::default(),
-                        )),
+                // Use a Complete path with empty range to represent "no match"
+                let path = PathEnum::Complete(IndexRangePath::new_empty(
+                    IndexRoot::from(PatternLocation::new(
+                        start_token,
+                        PatternId::default(),
                     )),
-                    cursor,
-                }
+                ));
+                MatchedEndState::Partial(
+                    crate::state::matched::PartialMatchState { path, cursor },
+                )
             },
         };
 
-        trace!(end = %pretty(&end), "final end state");
+        trace!(end = %pretty(&end), "final matched state");
 
         let trace_ctx = &mut self.matches.trace_ctx;
         end.trace(trace_ctx);

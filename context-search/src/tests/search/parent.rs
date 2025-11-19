@@ -1,9 +1,10 @@
 #[cfg(test)]
 use {
     crate::search::Find,
-    crate::state::end::{
-        EndState,
-        PathEnum,
+    crate::state::end::PathEnum,
+    crate::state::matched::{
+        CompleteMatchState,
+        MatchedEndState,
     },
     crate::state::result::Response,
     context_trace::tests::env::Env1,
@@ -58,10 +59,10 @@ fn find_parent1() {
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *bc,
         "b_c"
@@ -70,10 +71,10 @@ fn find_parent1() {
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.root_parent() == *abc,
         "ab_c"

@@ -55,19 +55,15 @@ fn example_basic_sequence_search() {
 
     // Since [b, c] was never inserted as a complete pattern, we expect a Postfix
     // (it matches indices 1-2 of the parent pattern [a, b, c])
-    // But the query should be fully matched (QueryEnd)
-    assert_eq!(
-        response.end.reason,
-        crate::state::end::EndReason::QueryEnd,
-        "Query should be fully matched"
-    );
+    // But the query should be fully matched (Complete variant)
+    assert!(response.end.is_complete(), "Query should be fully matched");
     assert!(
-        matches!(response.end.path, crate::state::end::PathEnum::Postfix(_)),
+        matches!(response.end.path(), crate::state::end::PathEnum::Postfix(_)),
         "Path should be Postfix since [b, c] doesn't start at the beginning of [a, b, c]"
     );
 
     // Verify the path points to abc as the parent
-    let parent = response.end.path.root_parent();
+    let parent = response.end.path().root_parent();
     assert_eq!(parent, abc);
 }
 
@@ -130,21 +126,17 @@ fn example_token_pattern_element() {
     let response = graph.find_ancestor(&query[..]).unwrap();
 
     // [e, l] matches at indices 1-2 within [h, e, l], so it's a Postfix match
-    // but the query itself completed successfully
-    assert_eq!(
-        response.end.reason,
-        crate::state::end::EndReason::QueryEnd,
-        "Query should be fully matched"
-    );
+    // but the query itself completed successfully (Complete variant)
+    assert!(response.end.is_complete(), "Query should be fully matched");
 
     // The path is Postfix since [e, l] starts at position 1 in [h, e, l]
     assert!(
-        matches!(response.end.path, crate::state::end::PathEnum::Postfix(_)),
+        matches!(response.end.path(), crate::state::end::PathEnum::Postfix(_)),
         "Path should be Postfix since [e, l] doesn't start at the beginning of [h, e, l]"
     );
 
     // Verify the path points to hel as the parent
-    let parent = response.end.path.root_parent();
+    let parent = response.end.path().root_parent();
     assert_eq!(parent, hel);
 }
 
@@ -231,26 +223,24 @@ fn example_hierarchical_ancestor_search() {
     // If the search succeeds, let's examine what we got
     if let Ok(response) = result {
         debug!(response = %pretty(&response), "Actual response");
-        debug!(reason = ?response.end.reason, "End reason");
-        debug!(path = ?response.end.path, "End path");
+        debug!(path = ?response.end.path(), "End path");
 
-        // The query should be matched to the end
-        assert_eq!(
-            response.end.reason,
-            crate::state::end::EndReason::QueryEnd,
-            "Query should be fully matched. Got: {:?}",
-            response.end.reason
+        // The query was matched to the end (query exhausted - QueryEnd became Complete variant)
+        // But the path is Postfix, not Complete
+        assert!(
+            response.end.is_complete(),
+            "Query should be fully exhausted (Complete variant). Got is_complete={:?}",
+            response.end.is_complete()
         );
 
         // The path should be Postfix since [b, c, d] starts at position 1 in abcd (not at the beginning)
-        // but continues to the end
+        // not Complete (Complete means path covers entire root from start to end)
         assert!(
-            !response.is_complete(),
+            matches!(response.end.path(), PathEnum::Postfix(_)),
             "Path should be Postfix, not Complete. Got: {:?}",
-            response.end.path
+            response.end.path()
         );
-
-        match &response.end.path {
+        match &response.end.path() {
             PathEnum::Postfix(postfix) => {
                 // The root parent should be abcd
                 assert_eq!(
@@ -265,7 +255,8 @@ fn example_hierarchical_ancestor_search() {
                     "Postfix should start at position 1"
                 );
             },
-            _ => panic!("Expected Postfix path, got: {:?}", response.end.path),
+            _ =>
+                panic!("Expected Postfix path, got: {:?}", response.end.path()),
         }
     } else {
         panic!("Search failed: {:?}", result);
@@ -286,9 +277,9 @@ fn example_incomplete_postfix() {
     let query = [b, c];
     let response = graph.find_ancestor(&query).unwrap();
 
-    // This is a Postfix match - starts at position 1 in [a,b,c]
-    assert!(!response.is_complete());
-    match &response.end.path {
+    // Query is fully exhausted (Complete), but path is Postfix (doesn't start at beginning)
+    assert!(response.is_complete(), "Query should be fully exhausted");
+    match &response.end.path() {
         PathEnum::Postfix(postfix) => {
             assert_eq!(postfix.root_pos, 1.into());
             assert_eq!(postfix.path.root_pattern_location().parent, abc);
@@ -311,9 +302,9 @@ fn example_incomplete_prefix() {
     let query = [a, b];
     let response = graph.find_ancestor(&query).unwrap();
 
-    // This is a Prefix match - matches beginning but not all of [a,b,c]
-    assert!(!response.is_complete());
-    match &response.end.path {
+    // Query is fully exhausted (Complete), but path is Prefix (doesn't reach end of parent)
+    assert!(response.is_complete(), "Query should be fully exhausted");
+    match &response.end.path() {
         PathEnum::Prefix(prefix) => {
             assert_eq!(prefix.path.root_pattern_location().parent, abc);
         },

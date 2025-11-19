@@ -6,8 +6,11 @@ use {
         state::end::{
             postfix::PostfixEnd,
             EndReason,
-            EndState,
             PathEnum,
+        },
+        state::matched::{
+            CompleteMatchState,
+            MatchedEndState,
         },
         state::result::Response,
     },
@@ -48,10 +51,10 @@ fn find_ancestor1_b_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *bc,
         "b_c"
@@ -70,10 +73,10 @@ fn find_ancestor1_a_bc() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *abc,
         "a_bc"
@@ -92,10 +95,10 @@ fn find_ancestor1_ab_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *abc,
         "ab_c"
@@ -119,10 +122,10 @@ fn find_ancestor1_a_bc_d() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *abcd,
         "a_bc_d"
@@ -148,10 +151,10 @@ fn find_ancestor1_a_b_c() {
     assert_matches!(
         result,
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *abc,
         "a_b_c"
@@ -184,10 +187,10 @@ fn find_ancestor1_long_pattern() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *ababababcdefghi,
         "a_b_a_b_a_b_a_b_c_d_e_f_g_h_i"
@@ -216,10 +219,10 @@ fn find_ancestor1_a_b_c_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: EndState {
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Complete(ref path),
                 ..
-            },
+            }),
             ..
         }) if path.path_root().pattern_location().parent == *abc,
         "a_b_c_c"
@@ -254,10 +257,31 @@ fn find_ancestor2() {
     let byz_found = graph.find_ancestor(&query).unwrap();
 
     assert_eq!(
+        byz_found.end.path().clone(),
+        PathEnum::Postfix(PostfixEnd {
+            root_pos: 2.into(),
+            path: RootedRolePath::new(
+                PatternLocation::new(xabyz, xaby_z_id,),
+                RolePath::new(0, vec![ChildLocation::new(xaby, xa_by_id, 1,)],),
+            )
+        })
+    );
+    assert_eq!(
+        byz_found.end.cursor().clone(),
+        PatternCursor {
+            path: RootedRangePath::new(
+                query.clone(),
+                RolePath::new_empty(0),
+                RolePath::new_empty(1),
+            ),
+            atom_position: 3.into(),
+            _state: std::marker::PhantomData,
+        }
+    );
+    assert_eq!(
         byz_found,
         Response {
-            end: EndState {
-                reason: EndReason::QueryEnd,
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
@@ -277,7 +301,8 @@ fn find_ancestor2() {
                     atom_position: 3.into(),
                     _state: std::marker::PhantomData,
                 },
-            },
+            }),
+
             cache: TraceCache {
                 entries: HashMap::from_iter([
                     (
@@ -395,17 +420,17 @@ fn find_ancestor3() {
                         xab.index,
                         VertexCache {
                             index: xab,
-                            top_down: FromIterator::from_iter([]),
                             bottom_up: FromIterator::from_iter([(
                                 2.into(),
                                 PositionCache::new(
-                                    HashSet::from_iter([]),
+                                    Default::default(),
                                     HashMap::from_iter([(
                                         DirectedKey::up(ab, 2),
                                         SubLocation::new(x_ab_id, 1),
-                                    )]),
+                                    ),]),
                                 )
                             )]),
+                            top_down: FromIterator::from_iter([]),
                         }
                     ),
                     (
@@ -418,8 +443,7 @@ fn find_ancestor3() {
                     ),
                 ]),
             },
-            end: EndState {
-                reason: EndReason::QueryEnd,
+            end: MatchedEndState::Complete(CompleteMatchState {
                 path: PathEnum::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
@@ -439,7 +463,7 @@ fn find_ancestor3() {
                     atom_position: 3.into(),
                     _state: std::marker::PhantomData,
                 },
-            },
+            }),
         }
     );
 }
