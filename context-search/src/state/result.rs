@@ -1,7 +1,7 @@
 use context_trace::*;
 
 use crate::state::{
-    end::PathEnum,
+    end::PathCoverage,
     matched::MatchedEndState,
 };
 
@@ -44,9 +44,9 @@ impl Response {
         msg: &str,
     ) -> IndexRangePath {
         match self.end {
-            MatchedEndState::Complete(state) => match state.path {
-                PathEnum::Complete(path) => path,
-                _ => panic!("{}: Complete state has non-Complete path", msg),
+            MatchedEndState::QueryExhausted(state) => match state.path {
+                PathCoverage::EntireRoot(path) => path,
+                _ => panic!("{}: QueryExhausted state has non-EntireRoot path", msg),
             },
             MatchedEndState::Partial(_) => panic!("{}", msg),
         }
@@ -55,8 +55,8 @@ impl Response {
     /// Try to get the complete path if the response is complete
     pub fn as_complete(&self) -> Option<&IndexRangePath> {
         match &self.end {
-            MatchedEndState::Complete(state) => match &state.path {
-                PathEnum::Complete(path) => Some(path),
+            MatchedEndState::QueryExhausted(state) => match &state.path {
+                PathCoverage::EntireRoot(path) => Some(path),
                 _ => None,
             },
             MatchedEndState::Partial(_) => None,

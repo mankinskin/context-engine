@@ -5,7 +5,7 @@ use crate::{
     state::end::{
         postfix::PostfixEnd,
         EndState,
-        PathEnum,
+        PathCoverage,
     },
 };
 use context_trace::{
@@ -38,8 +38,8 @@ impl Traceable for TraceStart<'_> {
         ctx: &mut TraceCtx<G>,
     ) {
         if let Some(mut p) = match self.end.path().clone() {
-            PathEnum::Postfix(p) => Some(p),
-            PathEnum::Range(p) => Some(PostfixEnd {
+            PathCoverage::Postfix(p) => Some(p),
+            PathCoverage::Range(p) => Some(PostfixEnd {
                 path: p.path.into_rooted_role_path(),
                 root_pos: p.root_pos,
             }),

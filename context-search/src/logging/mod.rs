@@ -20,7 +20,7 @@ use crate::{
         SearchNode,
         SearchQueue,
     },
-    state::end::PathEnum,
+    state::end::PathCoverage,
     traversal::TraversalKind,
 };
 use context_trace::{

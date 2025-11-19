@@ -6,10 +6,10 @@ use {
         state::end::{
             postfix::PostfixEnd,
             EndReason,
-            PathEnum,
+            PathCoverage,
         },
         state::matched::{
-            CompleteMatchState,
+            QueryExhaustedState,
             MatchedEndState,
         },
         state::result::Response,
@@ -51,8 +51,8 @@ fn find_ancestor1_b_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -73,8 +73,8 @@ fn find_ancestor1_a_bc() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -95,8 +95,8 @@ fn find_ancestor1_ab_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -122,8 +122,8 @@ fn find_ancestor1_a_bc_d() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -151,8 +151,8 @@ fn find_ancestor1_a_b_c() {
     assert_matches!(
         result,
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -187,8 +187,8 @@ fn find_ancestor1_long_pattern() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -219,8 +219,8 @@ fn find_ancestor1_a_b_c_c() {
     assert_matches!(
         graph.find_ancestor(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -258,7 +258,7 @@ fn find_ancestor2() {
 
     assert_eq!(
         byz_found.end.path().clone(),
-        PathEnum::Postfix(PostfixEnd {
+        PathCoverage::Postfix(PostfixEnd {
             root_pos: 2.into(),
             path: RootedRolePath::new(
                 PatternLocation::new(xabyz, xaby_z_id,),
@@ -281,8 +281,8 @@ fn find_ancestor2() {
     assert_eq!(
         byz_found,
         Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Postfix(PostfixEnd {
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xabyz, xaby_z_id,),
@@ -443,8 +443,8 @@ fn find_ancestor3() {
                     ),
                 ]),
             },
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Postfix(PostfixEnd {
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::Postfix(PostfixEnd {
                     root_pos: 2.into(),
                     path: RootedRolePath::new(
                         PatternLocation::new(xaby, xab_y_id),

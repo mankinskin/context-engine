@@ -21,10 +21,10 @@ use crate::{
     state::{
         end::{
             EndReason,
-            PathEnum,
+            PathCoverage,
         },
         matched::{
-            CompleteMatchState,
+            QueryExhaustedState,
             MatchedEndState,
         },
     },
@@ -74,7 +74,7 @@ fn prefix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
                 cursor: PathCursor {
                     atom_position: 5.into(),
                     path: res.end.cursor().path.clone(),
@@ -176,7 +176,7 @@ fn postfix1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
                 cursor: PathCursor {
                     atom_position: 7.into(),
                     path: res.end.cursor().path.clone(),
@@ -272,7 +272,7 @@ fn range1() {
     assert_eq!(
         res.clone(),
         Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
                 cursor: PathCursor {
                     atom_position: 4.into(),
                     path: res.end.cursor().path.clone(),

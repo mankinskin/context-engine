@@ -1,9 +1,9 @@
 #[cfg(test)]
 use {
     crate::search::Find,
-    crate::state::end::PathEnum,
+    crate::state::end::PathCoverage,
     crate::state::matched::{
-        CompleteMatchState,
+        QueryExhaustedState,
         MatchedEndState,
     },
     crate::state::result::Response,
@@ -59,8 +59,8 @@ fn find_parent1() {
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -71,8 +71,8 @@ fn find_parent1() {
     assert_matches!(
         graph.find_parent(&query),
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..

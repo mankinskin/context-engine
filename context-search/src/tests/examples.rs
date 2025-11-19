@@ -5,7 +5,7 @@
 use {
     crate::{
         search::Find,
-        state::end::PathEnum,
+        state::end::PathCoverage,
     },
     context_trace::{
         logging::format_utils::pretty,
@@ -58,7 +58,7 @@ fn example_basic_sequence_search() {
     // But the query should be fully matched (Complete variant)
     assert!(response.end.is_complete(), "Query should be fully matched");
     assert!(
-        matches!(response.end.path(), crate::state::end::PathEnum::Postfix(_)),
+        matches!(response.end.path(), crate::state::end::PathCoverage::Postfix(_)),
         "Path should be Postfix since [b, c] doesn't start at the beginning of [a, b, c]"
     );
 
@@ -131,7 +131,7 @@ fn example_token_pattern_element() {
 
     // The path is Postfix since [e, l] starts at position 1 in [h, e, l]
     assert!(
-        matches!(response.end.path(), crate::state::end::PathEnum::Postfix(_)),
+        matches!(response.end.path(), crate::state::end::PathCoverage::Postfix(_)),
         "Path should be Postfix since [e, l] doesn't start at the beginning of [h, e, l]"
     );
 
@@ -186,7 +186,7 @@ fn example_hierarchical_ancestor_search() {
     // - The match starts at position 1 in abcd (not at the beginning)
     // - It continues to the end through the [a, bc, d] pattern
     // - Root parent should be abcd
-    // - Result should be QueryEnd with a Postfix path
+    // - Result should be QueryExhausted with a Postfix path
     //
     // Initialize tracing for this test
     let _tracing = init_test_tracing!();
@@ -225,7 +225,7 @@ fn example_hierarchical_ancestor_search() {
         debug!(response = %pretty(&response), "Actual response");
         debug!(path = ?response.end.path(), "End path");
 
-        // The query was matched to the end (query exhausted - QueryEnd became Complete variant)
+        // The query was matched to the end (query exhausted - QueryExhausted became Complete variant)
         // But the path is Postfix, not Complete
         assert!(
             response.end.is_complete(),
@@ -236,12 +236,12 @@ fn example_hierarchical_ancestor_search() {
         // The path should be Postfix since [b, c, d] starts at position 1 in abcd (not at the beginning)
         // not Complete (Complete means path covers entire root from start to end)
         assert!(
-            matches!(response.end.path(), PathEnum::Postfix(_)),
+            matches!(response.end.path(), PathCoverage::Postfix(_)),
             "Path should be Postfix, not Complete. Got: {:?}",
             response.end.path()
         );
         match &response.end.path() {
-            PathEnum::Postfix(postfix) => {
+            PathCoverage::Postfix(postfix) => {
                 // The root parent should be abcd
                 assert_eq!(
                     postfix.path.root_pattern_location().parent,
@@ -280,7 +280,7 @@ fn example_incomplete_postfix() {
     // Query is fully exhausted (Complete), but path is Postfix (doesn't start at beginning)
     assert!(response.is_complete(), "Query should be fully exhausted");
     match &response.end.path() {
-        PathEnum::Postfix(postfix) => {
+        PathCoverage::Postfix(postfix) => {
             assert_eq!(postfix.root_pos, 1.into());
             assert_eq!(postfix.path.root_pattern_location().parent, abc);
         },
@@ -305,7 +305,7 @@ fn example_incomplete_prefix() {
     // Query is fully exhausted (Complete), but path is Prefix (doesn't reach end of parent)
     assert!(response.is_complete(), "Query should be fully exhausted");
     match &response.end.path() {
-        PathEnum::Prefix(prefix) => {
+        PathCoverage::Prefix(prefix) => {
             assert_eq!(prefix.path.root_pattern_location().parent, abc);
         },
         _ => panic!("Expected Prefix"),

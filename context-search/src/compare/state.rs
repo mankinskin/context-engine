@@ -14,7 +14,7 @@ use crate::{
     state::end::{
         EndReason,
         EndState,
-        PathEnum,
+        PathCoverage,
     },
 };
 use context_trace::{
@@ -419,15 +419,19 @@ impl MarkMatchState for CompareState<Candidate, Candidate> {
     type Mismatched = CompareState<Mismatched, Mismatched>;
 
     fn mark_match(self) -> Self::Matched {
+        let cursor_pos = self.cursor.atom_position.clone();
+        let old_checkpoint_pos = self.checkpoint.atom_position.clone();
+        let matched_cursor = self.cursor.mark_match();
         tracing::debug!(
-            cursor_pos = %self.cursor.atom_position,
-            checkpoint_pos = %self.checkpoint.atom_position,
-            "mark_match: converting to Matched state"
+            cursor_pos = %cursor_pos,
+            old_checkpoint_pos = %old_checkpoint_pos,
+            new_checkpoint_pos = %matched_cursor.atom_position,
+            "mark_match: converting to Matched state and updating checkpoint"
         );
         CompareState {
             child_cursor: self.child_cursor.mark_match(),
-            cursor: self.cursor.mark_match(),
-            checkpoint: self.checkpoint,
+            cursor: matched_cursor.clone(),
+            checkpoint: matched_cursor,
             target: self.target,
             mode: self.mode,
         }

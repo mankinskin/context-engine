@@ -10,10 +10,10 @@ use {
         state::end::{
             range::RangeEnd,
             EndReason,
-            PathEnum,
+            PathCoverage,
         },
         state::matched::{
-            CompleteMatchState,
+            QueryExhaustedState,
             MatchedEndState,
             PartialMatchState,
         },
@@ -90,8 +90,8 @@ fn find_sequence() {
     assert_matches!(
         abc_found,
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -105,8 +105,8 @@ fn find_sequence() {
     assert_matches!(
         ababababcdefghi_found,
         Ok(Response {
-            end: MatchedEndState::Complete(CompleteMatchState {
-                path: PathEnum::Complete(ref path),
+            end: MatchedEndState::QueryExhausted(QueryExhaustedState {
+                path: PathCoverage::EntireRoot(ref path),
                 ..
             }),
             ..
@@ -164,7 +164,7 @@ fn find_pattern1() {
     assert_eq!(
         aby_found.end,
         MatchedEndState::Partial(PartialMatchState {
-            path: PathEnum::Range(RangeEnd {
+            path: PathCoverage::Range(RangeEnd {
                 root_pos: 2.into(),
                 target: DownKey::new(y, 3.into()),
                 end_pos: 3.into(),

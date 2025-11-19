@@ -36,49 +36,49 @@ pub(crate) enum MatchState {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) enum PathEnum {
+pub(crate) enum PathCoverage {
     Range(RangeEnd),
     Postfix(PostfixEnd),
     Prefix(PrefixEnd),
-    Complete(IndexRangePath),
+    EntireRoot(IndexRangePath),
 }
-impl GraphRoot for PathEnum {
+impl GraphRoot for PathCoverage {
     fn root_parent(&self) -> Token {
         match self {
-            PathEnum::Range(p) => p.path.root_parent(),
-            PathEnum::Postfix(p) => p.path.root_parent(),
-            PathEnum::Prefix(p) => p.path.root_parent(),
-            PathEnum::Complete(c) => c.root_parent(),
+            PathCoverage::Range(p) => p.path.root_parent(),
+            PathCoverage::Postfix(p) => p.path.root_parent(),
+            PathCoverage::Prefix(p) => p.path.root_parent(),
+            PathCoverage::EntireRoot(c) => c.root_parent(),
         }
     }
 }
 
-impl RootedPath for PathEnum {
+impl RootedPath for PathCoverage {
     type Root = IndexRoot;
     fn path_root(&self) -> Self::Root {
         match self {
-            PathEnum::Range(p) => p.path.path_root(),
-            PathEnum::Postfix(p) => p.path.path_root(),
-            PathEnum::Prefix(p) => p.path.path_root(),
-            PathEnum::Complete(c) => c.path_root(),
+            PathCoverage::Range(p) => p.path.path_root(),
+            PathCoverage::Postfix(p) => p.path.path_root(),
+            PathCoverage::Prefix(p) => p.path.path_root(),
+            PathCoverage::EntireRoot(c) => c.path_root(),
         }
     }
 }
 
-impl RootKey for PathEnum {
+impl RootKey for PathCoverage {
     fn root_key(&self) -> UpKey {
         UpKey::new(
             self.root_parent(),
             match self {
-                PathEnum::Range(s) => s.root_pos.into(),
-                PathEnum::Postfix(p) => p.root_pos.into(),
-                PathEnum::Prefix(_) => 0.into(),
-                PathEnum::Complete(_) => 0.into(),
+                PathCoverage::Range(s) => s.root_pos.into(),
+                PathCoverage::Postfix(p) => p.root_pos.into(),
+                PathCoverage::Prefix(_) => 0.into(),
+                PathCoverage::EntireRoot(_) => 0.into(),
             },
         )
     }
 }
-impl PathEnum {
+impl PathCoverage {
     pub(crate) fn from_range_path<G: HasGraph>(
         mut path: IndexRangePath,
         root_pos: AtomPosition,
@@ -102,9 +102,9 @@ impl PathEnum {
             end_at_border,
             end_path_empty,
         ) {
-            (true, true, true, true) => PathEnum::Complete(path),
+            (true, true, true, true) => PathCoverage::EntireRoot(path),
             (true, true, false, _) | (true, true, true, false) =>
-                PathEnum::Prefix(PrefixEnd {
+                PathCoverage::Prefix(PrefixEnd {
                     path: path.into(),
                     target,
                     end_pos: target.pos.0,
@@ -115,7 +115,7 @@ impl PathEnum {
                     "Creating PostfixEnd with root_pos={}",
                     usize::from(root_pos)
                 );
-                PathEnum::Postfix(PostfixEnd { path, root_pos })
+                PathCoverage::Postfix(PostfixEnd { path, root_pos })
             },
             _ => {
                 tracing::debug!(
@@ -123,7 +123,7 @@ impl PathEnum {
                     usize::from(root_pos),
                     usize::from(target.pos.0)
                 );
-                PathEnum::Range(RangeEnd {
+                PathCoverage::Range(RangeEnd {
                     path,
                     root_pos,
                     target,
@@ -142,32 +142,32 @@ impl PathEnum {
             path.is_at_border::<_, Start>(trav.graph()),
             path.raw_child_path().is_empty(),
         ) {
-            (true, true) => PathEnum::Complete(path.into()),
-            _ => PathEnum::Postfix(PostfixEnd { path, root_pos }),
+            (true, true) => PathCoverage::EntireRoot(path.into()),
+            _ => PathCoverage::Postfix(PostfixEnd { path, root_pos }),
         }
     }
 
     /// Get the start path length for incremental tracing
     pub(crate) fn start_len(&self) -> usize {
         match self {
-            PathEnum::Range(p) => p.path.start_path().len(),
-            PathEnum::Postfix(p) => p.path.start_path().len(),
-            PathEnum::Prefix(_) | PathEnum::Complete(_) => 0,
+            PathCoverage::Range(p) => p.path.start_path().len(),
+            PathCoverage::Postfix(p) => p.path.start_path().len(),
+            PathCoverage::Prefix(_) | PathCoverage::EntireRoot(_) => 0,
         }
     }
 
     /// Get the start path if it exists (safe version that returns Option)
     pub(crate) fn try_start_path(&self) -> Option<&StartPath> {
         match self {
-            PathEnum::Range(p) => Some(p.path.start_path()),
-            PathEnum::Postfix(p) => Some(p.path.start_path()),
-            PathEnum::Prefix(_) | PathEnum::Complete(_) => None,
+            PathCoverage::Range(p) => Some(p.path.start_path()),
+            PathCoverage::Postfix(p) => Some(p.path.start_path()),
+            PathCoverage::Prefix(_) | PathCoverage::EntireRoot(_) => None,
         }
     }
 }
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub(crate) enum EndReason {
-    QueryEnd,
+    QueryExhausted,
     Mismatch,
 }
 
@@ -177,7 +177,7 @@ impl std::fmt::Display for EndReason {
         f: &mut std::fmt::Formatter,
     ) -> std::fmt::Result {
         match self {
-            EndReason::QueryEnd => write!(f, "QueryEnd"),
+            EndReason::QueryExhausted => write!(f, "QueryExhausted"),
             EndReason::Mismatch => write!(f, "Mismatch"),
         }
     }
@@ -191,7 +191,7 @@ impl std::fmt::Display for EndReason {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EndState {
     pub(crate) reason: EndReason,
-    pub(crate) path: PathEnum,
+    pub(crate) path: PathCoverage,
     pub(crate) cursor: PatternCursor,
 }
 // impl_cursor_pos! {
@@ -204,9 +204,9 @@ impl Traceable for &EndState {
         ctx: &mut TraceCtx<G>,
     ) {
         match &self.path {
-            PathEnum::Range(p) => p.trace(ctx),
-            PathEnum::Prefix(p) => p.trace(ctx),
-            PathEnum::Postfix(p) => p.trace(ctx),
+            PathCoverage::Range(p) => p.trace(ctx),
+            PathCoverage::Prefix(p) => p.trace(ctx),
+            PathCoverage::Postfix(p) => p.trace(ctx),
             _ => {},
         }
     }
@@ -224,7 +224,7 @@ impl EndState {
         let root_pos = *parent.parent_state.root_pos();
         Self {
             reason,
-            path: PathEnum::from_start_path(
+            path: PathCoverage::from_start_path(
                 parent.parent_state.path,
                 root_pos,
                 &trav,
@@ -236,13 +236,13 @@ impl EndState {
         trav: G,
         parent: ParentCompareState,
     ) -> Self {
-        Self::with_reason(trav, EndReason::QueryEnd, parent)
+        Self::with_reason(trav, EndReason::QueryExhausted, parent)
     }
     //pub(crate) fn complete(
     //    trav: G,
     //    parent: ParentCompareState,
     //) -> Self {
-    //    Self::with_reason(trav, EndReason::QueryEnd, parent)
+    //    Self::with_reason(trav, EndReason::QueryExhausted, parent)
     //}
     pub(crate) fn mismatch<G: HasGraph>(
         trav: G,
@@ -260,47 +260,47 @@ impl EndState {
         self.path.try_start_path()
     }
     pub(crate) fn is_final(&self) -> bool {
-        self.reason == EndReason::QueryEnd
-            && matches!(self.path, PathEnum::Complete(_))
+        self.reason == EndReason::QueryExhausted
+            && matches!(self.path, PathCoverage::EntireRoot(_))
     }
     pub(crate) fn entry_location(&self) -> Option<ChildLocation> {
         match &self.path {
-            PathEnum::Range(state) => Some(
+            PathCoverage::Range(state) => Some(
                 GraphRootChild::<Start>::graph_root_child_location(&state.path),
             ),
-            PathEnum::Postfix(_) => None,
-            PathEnum::Prefix(_) => None,
-            PathEnum::Complete(_) => None,
+            PathCoverage::Postfix(_) => None,
+            PathCoverage::Prefix(_) => None,
+            PathCoverage::EntireRoot(_) => None,
         }
     }
     pub(crate) fn state_direction(&self) -> StateDirection {
         match self.path {
-            PathEnum::Range(_) => StateDirection::TopDown,
-            PathEnum::Postfix(_) => StateDirection::BottomUp,
-            PathEnum::Prefix(_) => StateDirection::TopDown,
-            PathEnum::Complete(_) => StateDirection::BottomUp,
+            PathCoverage::Range(_) => StateDirection::TopDown,
+            PathCoverage::Postfix(_) => StateDirection::BottomUp,
+            PathCoverage::Prefix(_) => StateDirection::TopDown,
+            PathCoverage::EntireRoot(_) => StateDirection::BottomUp,
         }
     }
     pub(crate) fn end_path(&self) -> Option<&'_ EndPath> {
         match &self.path {
-            PathEnum::Range(e) => Some(e.path.end_path()),
-            PathEnum::Postfix(_) => None,
-            PathEnum::Prefix(e) => Some(e.path.end_path()),
-            PathEnum::Complete(_) => None,
+            PathCoverage::Range(e) => Some(e.path.end_path()),
+            PathCoverage::Postfix(_) => None,
+            PathCoverage::Prefix(e) => Some(e.path.end_path()),
+            PathCoverage::EntireRoot(_) => None,
         }
     }
     pub(crate) fn is_complete(&self) -> bool {
-        matches!(self.path, PathEnum::Complete(_))
+        matches!(self.path, PathCoverage::EntireRoot(_))
     }
 }
 
 //impl TargetKey for EndState {
 //    fn target_key(&self) -> DirectedKey {
 //        match &self.path {
-//            PathEnum::Range(p) => p.target.into(),
-//            PathEnum::Postfix(_) => self.root_key().into(),
-//            PathEnum::Prefix(p) => p.target.into(),
-//            PathEnum::Complete(c) => c.target_key(),
+//            PathCoverage::Range(p) => p.target.into(),
+//            PathCoverage::Postfix(_) => self.root_key().into(),
+//            PathCoverage::Prefix(p) => p.target.into(),
+//            PathCoverage::EntireRoot(c) => c.target_key(),
 //        }
 //    }
 //}
@@ -309,25 +309,25 @@ impl RootKey for EndState {
     fn root_key(&self) -> UpKey {
         UpKey::new(
             match &self.path {
-                PathEnum::Range(s) => s.path.root_parent(),
-                PathEnum::Postfix(p) => p.path.root_parent(),
-                PathEnum::Prefix(p) => p.path.root_parent(),
-                PathEnum::Complete(c) => c.root_parent(),
+                PathCoverage::Range(s) => s.path.root_parent(),
+                PathCoverage::Postfix(p) => p.path.root_parent(),
+                PathCoverage::Prefix(p) => p.path.root_parent(),
+                PathCoverage::EntireRoot(c) => c.root_parent(),
             },
             match &self.path {
-                PathEnum::Range(s) => s.root_pos.into(),
-                PathEnum::Postfix(p) => p.root_pos.into(),
-                PathEnum::Prefix(_) => 0.into(),
-                PathEnum::Complete(_) => 0.into(),
+                PathCoverage::Range(s) => s.root_pos.into(),
+                PathCoverage::Postfix(p) => p.root_pos.into(),
+                PathCoverage::Prefix(_) => 0.into(),
+                PathCoverage::EntireRoot(_) => 0.into(),
             },
         )
     }
 }
 impl_root! { GraphRoot for EndState, self =>
     match &self.path {
-        PathEnum::Complete(c) => c.root_parent(),
-        PathEnum::Range(p) => p.path.root_parent(),
-        PathEnum::Postfix(p) => p.path.root_parent(),
-        PathEnum::Prefix(p) => p.path.root_parent(),
+        PathCoverage::EntireRoot(c) => c.root_parent(),
+        PathCoverage::Range(p) => p.path.root_parent(),
+        PathCoverage::Postfix(p) => p.path.root_parent(),
+        PathCoverage::Prefix(p) => p.path.root_parent(),
     }
 }

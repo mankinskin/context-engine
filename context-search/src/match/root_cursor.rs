@@ -20,10 +20,10 @@ use crate::{
         end::{
             EndReason,
             EndState,
-            PathEnum,
+            PathCoverage,
         },
         matched::{
-            CompleteMatchState,
+            QueryExhaustedState,
             MatchedEndState,
             PartialMatchState,
         },
@@ -76,7 +76,7 @@ pub(crate) struct RootCursor<
 impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
     /// Advance a Matched cursor to a Candidate cursor by advancing both query and index
     /// Returns Ok(Candidate cursor) if both advanced successfully
-    /// Returns Err(EndState) if query ended (QueryEnd) or if need parent exploration
+    /// Returns Err(EndState) if query ended (QueryExhausted) or if need parent exploration
     pub(crate) fn advance_to_candidate(
         self
     ) -> Result<
@@ -130,9 +130,9 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                     last_token_width_value, usize::from(end_pos));
 
                 let target = DownKey::new(target_index, end_pos.into());
-                Err(Ok(MatchedEndState::Complete(CompleteMatchState {
+                Err(Ok(MatchedEndState::QueryExhausted(QueryExhaustedState {
                     cursor: matched_state.checkpoint,
-                    path: PathEnum::from_range_path(
+                    path: PathCoverage::from_range_path(
                         path, root_pos, target, &trav,
                     ),
                 })))
@@ -141,7 +141,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
     }
 
     /// Process a matched cursor and iterate to find end state
-    /// Uses iterator to advance through matches until QueryEnd or need parent exploration
+    /// Uses iterator to advance through matches until QueryExhausted or need parent exploration
     pub(crate) fn find_end(
         self
     ) -> Result<MatchedEndState, RootCursor<G, Candidate, Matched>> {
@@ -166,7 +166,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
 impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
     /// Advance a Candidate cursor to a Matched cursor by comparing and matching
     /// Returns Ok(Matched cursor) if comparison resulted in a match
-    /// Returns Err(Some(MatchedEndState)) if hit QueryEnd or Mismatch during iteration
+    /// Returns Err(Some(MatchedEndState)) if hit QueryExhausted or Mismatch during iteration
     /// Returns Err(None) if iterator completed without conclusion - need parent exploration (returns self)
     pub(crate) fn advance_to_matched(
         mut self
@@ -181,7 +181,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                     continue;
                 },
                 Some(Break(reason)) => {
-                    // Hit an end condition (QueryEnd or Mismatch)
+                    // Hit an end condition (QueryExhausted or Mismatch)
                     // Check if this is a valid match before destructuring
                     if reason == EndReason::Mismatch
                         && *self.state.checkpoint.atom_position.as_ref() == 0
@@ -204,30 +204,32 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                     let last_token_width_value = target_index.width();
 
                     let (end_cursor, end_pos) = match reason {
-                        EndReason::QueryEnd => (
+                        EndReason::QueryExhausted => (
                             checkpoint.clone(),
                             AtomPosition::from(
                                 *cursor.atom_position - last_token_width_value,
                             ),
                         ),
-                        EndReason::Mismatch => (
-                            checkpoint.clone(),
-                            AtomPosition::from(
-                                *checkpoint.atom_position
-                                    - last_token_width_value,
-                            ),
-                        ),
+                        EndReason::Mismatch => {
+                            // For Mismatch, checkpoint already points to position AFTER last match
+                            // We need end_pos to be position of last matched token's END
+                            // which is checkpoint.atom_position (already accounts for last match width)
+                            (
+                                checkpoint.clone(),
+                                checkpoint.atom_position,
+                            )
+                        },
                     };
 
                     let target = DownKey::new(target_index, end_pos.into());
-                    let path_enum = PathEnum::from_range_path(
+                    let path_enum = PathCoverage::from_range_path(
                         path, root_pos, target, &self.trav,
                     );
 
                     // Create appropriate matched state based on reason
                     let matched_state = match reason {
-                        EndReason::QueryEnd =>
-                            MatchedEndState::Complete(CompleteMatchState {
+                        EndReason::QueryExhausted =>
+                            MatchedEndState::QueryExhausted(QueryExhaustedState {
                                 cursor: end_cursor,
                                 path: path_enum,
                             }),
@@ -251,7 +253,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
     }
 
     /// Find the end state by iterating through candidate comparisons
-    /// Returns Ok(MatchedEndState) if we reach QueryEnd or Mismatch with progress
+    /// Returns Ok(MatchedEndState) if we reach QueryExhausted or Mismatch with progress
     /// Returns Err if we need parent exploration
     pub(crate) fn find_end(
         self
@@ -263,7 +265,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Candidate, Candidate> {
                 unreachable!("advance_to_matched returned Ok(Matched) - should return Err with EndState")
             },
             Err(Ok(end_state)) => {
-                // Found an end state (QueryEnd or Mismatch)
+                // Found an end state (QueryExhausted or Mismatch)
                 Ok(end_state)
             },
             Err(Err(candidate_cursor)) => {
@@ -354,7 +356,7 @@ impl<G: HasGraph + Clone> RootCursor<G, Matched, Matched> {
                     "query cursor cannot advance - query pattern ended"
                 );
                 // QUERY ENDED - no cursor to return
-                Err((EndReason::QueryEnd, None))
+                Err((EndReason::QueryExhausted, None))
             },
         }
     }
@@ -389,10 +391,10 @@ impl<G: HasGraph + Clone> Iterator for RootCursor<G, Candidate, Candidate> {
                     Err((reason, cursor_opt)) => {
                         // Could not advance one or both cursors
                         match (reason, cursor_opt) {
-                            (EndReason::QueryEnd, None) => {
-                                // Query cursor ended - complete match
-                                tracing::debug!("query pattern ended - complete match found");
-                                Some(Break(EndReason::QueryEnd))
+                            (EndReason::QueryExhausted, None) => {
+                                // Query cursor ended - QueryExhausted match
+                                tracing::debug!("query pattern ended - QueryExhausted match found");
+                                Some(Break(EndReason::QueryExhausted))
                             },
                             (EndReason::Mismatch, Some(_)) => {
                                 // Index ended but query continues - need parent exploration

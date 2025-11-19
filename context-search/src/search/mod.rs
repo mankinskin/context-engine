@@ -7,7 +7,7 @@ use crate::{
             EndReason,
             EndState,
             MatchState,
-            PathEnum,
+            PathCoverage,
         },
         matched::MatchedEndState,
         start::Searchable,
@@ -119,6 +119,60 @@ pub struct SearchState<K: TraversalKind> {
     pub(crate) last_match: MatchState,
 }
 
+impl<K: TraversalKind> SearchState<K> {
+    /// Extract parent batch from a matched state for queue repopulation
+    /// Converts matched root to parent nodes for continued exploration
+    fn extract_parent_batch(
+        &self,
+        matched_state: &MatchedEndState,
+    ) -> Option<Vec<crate::r#match::SearchNode>> {
+        use crate::{
+            compare::parent::ParentCompareState,
+            r#match::SearchNode,
+        };
+
+        // Extract IndexRangePath and cursor from matched state
+        let (index_path, cursor) = matched_state.to_parent_state()?;
+
+        debug!(
+            "Extracting parents for matched root: {}",
+            index_path.root_parent()
+        );
+
+        // Create ChildState from IndexRangePath
+        // ChildState wraps IndexRangePath with a current_pos for traversal
+        let child_state = ChildState {
+            current_pos: cursor.atom_position,
+            path: index_path,
+        };
+
+        // Get ParentState from ChildState
+        let parent_state = child_state.parent_state();
+
+        // Use traversal policy to get parent batch
+        let batch =
+            K::Policy::next_batch(&self.matches.trace_ctx.trav, &parent_state)?;
+
+        // Convert to SearchNode::ParentCandidate
+        let parent_nodes: Vec<SearchNode> = batch
+            .parents
+            .into_iter()
+            .map(|ps| {
+                SearchNode::ParentCandidate(ParentCompareState {
+                    parent_state: ps,
+                    cursor: cursor.clone(),
+                })
+            })
+            .collect();
+
+        debug!(
+            "Found {} parents for continued exploration",
+            parent_nodes.len()
+        );
+        Some(parent_nodes)
+    }
+}
+
 impl<K: TraversalKind> Iterator for SearchState<K> {
     type Item = MatchedEndState;
     fn next(&mut self) -> Option<Self::Item> {
@@ -148,8 +202,48 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
                 if should_update {
                     debug!(
                         width = matched_state.root_parent().width.0,
+                        is_first_match =
+                            matches!(&self.last_match, MatchState::Query(_)),
+                        is_complete = matched_state.is_complete(),
                         "updating last_match to better match"
                     );
+
+                    // Queue clearing: TEMPORARILY DISABLED FOR DEBUGGING
+                    // When first COMPLETE match found, clear candidate parents
+                    // and add only parents of matched root for continued exploration
+                    //
+                    // NOTE: Only clear for Complete matches, not Partial matches
+                    // Partial matches mean query continues, so we might find better matches elsewhere
+                    let _is_first_match =
+                        matches!(&self.last_match, MatchState::Query(_));
+                    let _is_complete = matched_state.is_complete();
+
+                    if false {
+                        // DISABLED: is_first_match && is_complete
+                        debug!(
+                            "First COMPLETE match found - clearing queue of {} unmatched candidate parents",
+                            self.matches.queue.nodes.len()
+                        );
+
+                        // Clear queue: remove all unmatched candidate parents
+                        // Substring-graph invariant: all future matches reachable from this root's ancestors
+                        self.matches.queue.nodes.clear();
+
+                        // Add parents of matched root for continued exploration
+                        if let Some(parent_nodes) =
+                            self.extract_parent_batch(&matched_state)
+                        {
+                            debug!(
+                                "Adding {} parent nodes of matched root to queue",
+                                parent_nodes.len()
+                            );
+                            self.matches.queue.nodes.extend(parent_nodes);
+                        } else {
+                            debug!(
+                                "No parents to add (Prefix path or root has no parents)"
+                            );
+                        }
+                    }
 
                     // Incremental start path tracing
                     // Trace only the NEW portion of the start path to avoid duplicate cache entries
@@ -197,73 +291,6 @@ impl<K: TraversalKind> Iterator for SearchState<K> {
 }
 
 impl<K: TraversalKind> SearchState<K> {
-    /// Extract parents of a matched root for continued exploration
-    /// Called when first match found in root (candidate parent -> matched root transition)
-    /// Returns parent nodes that should be added to queue for ancestor exploration
-    fn extract_parent_batch(
-        end: &EndState,
-        matches: &SearchIterator<K>,
-    ) -> Option<Vec<crate::r#match::SearchNode>> {
-        use crate::{
-            compare::parent::ParentCompareState,
-            r#match::SearchNode,
-        };
-
-        // Get the root parent from the matched path
-        let root_parent = end.path.root_parent();
-        debug!("Extracting parents for matched root: {}", root_parent);
-
-        // Get the cursor from the end state
-        let cursor = end.cursor.clone();
-
-        // Extract IndexRangePath and root_pos from the matched path
-        // Different PathEnum variants need different handling
-        let (child_state_path, root_pos) = match &end.path {
-            PathEnum::Complete(p) => (p.clone(), cursor.atom_position),
-            PathEnum::Range(p) => (p.path.clone(), p.root_pos),
-            PathEnum::Postfix(p) => {
-                // Postfix uses RootedRolePath, convert to IndexRangePath
-                (p.path.clone().into(), p.root_pos)
-            },
-            PathEnum::Prefix(_) => {
-                // Prefix paths don't have a clear parent structure
-                debug!("Prefix path - no parent extraction");
-                return None;
-            },
-        };
-
-        // Create ChildState from the path (ChildState is re-exported publicly from context_trace)
-        let child_state = ChildState {
-            current_pos: root_pos,
-            path: child_state_path,
-        };
-
-        // Extract parent state using the public parent_state() method
-        let parent_state = child_state.parent_state();
-
-        // Get next batch of parents using the traversal policy
-        if let Some(batch) =
-            K::Policy::next_batch(&matches.trace_ctx.trav, &parent_state)
-        {
-            let parent_nodes: Vec<SearchNode> = batch
-                .parents
-                .into_iter()
-                .map(|parent_state| {
-                    SearchNode::ParentCandidate(ParentCompareState {
-                        parent_state,
-                        cursor: cursor.clone(),
-                    })
-                })
-                .collect();
-
-            debug!("Found {} parents for matched root", parent_nodes.len());
-            Some(parent_nodes)
-        } else {
-            debug!("No parents available for matched root");
-            None
-        }
-    }
-
     #[context_trace::instrument_sig(skip(self))]
     pub(crate) fn search(mut self) -> Response {
         debug!("starting fold search");
@@ -277,10 +304,10 @@ impl<K: TraversalKind> SearchState<K> {
                 "About to trace MatchedEndState: is_complete={}, path_variant={}",
                 matched_state.is_complete(),
                 match matched_state.path() {
-                    PathEnum::Range(_) => "Range",
-                    PathEnum::Postfix(_) => "Postfix",
-                    PathEnum::Prefix(_) => "Prefix",
-                    PathEnum::Complete(_) => "Complete",
+                    PathCoverage::Range(_) => "Range",
+                    PathCoverage::Postfix(_) => "Postfix",
+                    PathCoverage::Prefix(_) => "Prefix",
+                    PathCoverage::EntireRoot(_) => "EntireRoot",
                 }
             );
             matched_state.trace(&mut self.matches.trace_ctx);
@@ -305,8 +332,8 @@ impl<K: TraversalKind> SearchState<K> {
                     path: query_path.clone(),
                     _state: std::marker::PhantomData,
                 };
-                // Use a Complete path with empty range to represent "no match"
-                let path = PathEnum::Complete(IndexRangePath::new_empty(
+                // Use an EntireRoot path with empty range to represent "no match"
+                let path = PathCoverage::EntireRoot(IndexRangePath::new_empty(
                     IndexRoot::from(PatternLocation::new(
                         start_token,
                         PatternId::default(),
