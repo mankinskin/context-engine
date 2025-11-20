@@ -2,6 +2,14 @@
 
 Known issues, bug reports, and architectural problem analyses.
 
+## Confidence Ratings
+
+| Rating | Meaning | Agent Action |
+|--------|---------|-------------|
+| 🟢 **High** | Root cause confirmed, solution verified | Trust analysis, apply fix if not already done |
+| 🟡 **Medium** | Analysis incomplete or fix untested | Verify before applying, may need more investigation |
+| 🔴 **Low** | Preliminary analysis or possibly fixed | Check if still relevant before investigating |
+
 ## Quick Search by Tag
 
 | Tag | Description |
@@ -17,13 +25,15 @@ Known issues, bug reports, and architectural problem analyses.
 ## All Bug Reports & Analyses
 
 ### BUG_REPORT_CAN_ADVANCE.md
+**Confidence:** 🟢 High - Root cause confirmed, reproducible
+
 **Summary:** `can_advance`/`advance` inconsistency causing panic in `range1` test.
 
 **Tags:** `#search` `#matching` `#panic`
 
 **Root cause:** Code checks if child path can advance but then advances cursor path (independent paths).
 
-**Location:** `context-search/src/match/root_cursor.rs:91-108`
+**Location:** `crates/context-search/src/match/root_cursor.rs:91-108`
 
 **Error:** `query_advanced returned Break when can_advance was true`
 
@@ -32,6 +42,8 @@ Known issues, bug reports, and architectural problem analyses.
 ---
 
 ### DEBUG_VS_COMPACT_FORMAT.md
+**Confidence:** 🟢 High - Architectural principle, actively followed
+
 **Summary:** Architectural guidance on separation between `Debug` and `CompactFormat` traits.
 
 **Tags:** `#formatting` `#architecture` `#design-pattern`
@@ -53,6 +65,8 @@ Known issues, bug reports, and architectural problem analyses.
 ---
 
 ### SEARCH_ALGORITHM_ANALYSIS_SUMMARY.md
+**Confidence:** 🟡 Medium - Thorough analysis but implementation may have changed
+
 **Summary:** Comprehensive analysis of current vs desired search algorithm behavior.
 
 **Tags:** `#search` `#algorithm` `#architecture` `#deviation`
@@ -72,6 +86,6 @@ Known issues, bug reports, and architectural problem analyses.
 **Related:** `BEST_MATCH_IMPLEMENTATION_STRATEGY.md` in agents/implemented/ contains the fix plan.
 
 **Key locations:**
-- `context-search/src/match/root_cursor.rs`
-- `context-search/src/search.rs` - SearchState and last_match tracking
+- `crates/context-search/src/match/root_cursor.rs`
+- `crates/context-search/src/search.rs` - SearchState and last_match tracking
 - BinaryHeap processing in search loop

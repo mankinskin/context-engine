@@ -1,6 +1,6 @@
 # Task Plan Template
 
-**Copy this template to `agent-tmp/PLAN_<task_name>.md` for complex tasks**
+**Copy this template to `agents/plans/PLAN_<task_name>.md` for complex tasks (>5 files, >100 lines, unclear scope)**
 
 ---
 
@@ -62,9 +62,11 @@
 - [ ] Verification: 
 
 ### Phase 4: Documentation
-- [ ] Update CHEAT_SHEET.md if needed
-- [ ] Update relevant HIGH_LEVEL_GUIDE.md if needed
-- [ ] Update this AGENTS.md if workflow changed
+- [ ] Update CHEAT_SHEET.md if needed (API/patterns)
+- [ ] Update crates/<crate>/HIGH_LEVEL_GUIDE.md if needed (concepts)
+- [ ] Update AGENTS.md if workflow changed
+- [ ] Create summary in agents/implemented/ + update INDEX.md
+- [ ] Archive or keep this plan in agents/plans/
 
 
 ## Risks & Mitigations

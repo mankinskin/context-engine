@@ -2,6 +2,14 @@
 
 Completed feature implementations and enhancement summaries.
 
+## Confidence Ratings
+
+| Rating | Meaning | Agent Action |
+|--------|---------|-------------|
+| 🟢 **High** | Shipped, tested, documented | Reference as authoritative |
+| 🟡 **Medium** | Implemented but evolving | Verify current state before relying on details |
+| 🔴 **Low** | Partially implemented or deprecated | Check codebase for current status |
+
 ## Quick Search by Tag
 
 | Tag | Description |
@@ -18,6 +26,8 @@ Completed feature implementations and enhancement summaries.
 ## All Implementations
 
 ### TRACING_IMPLEMENTATION.md
+**Confidence:** 🟢 High - Production-ready, actively used in all tests
+
 **Summary:** Comprehensive test tracing system with per-test initialization, structured logging, and automatic cleanup.
 
 **Tags:** `#testing` `#tracing` `#logging` `#infrastructure`
@@ -30,12 +40,14 @@ Completed feature implementations and enhancement summaries.
 - Span event tracking (NEW, CLOSE, ENTER, EXIT)
 
 **Key locations:**
-- `context-trace/src/tests/tracing_setup.rs`
-- Macro in `context-trace/src/tests/mod.rs`
+- `crates/context-trace/src/tests/tracing_setup.rs`
+- Macro in `crates/context-trace/src/tests/mod.rs`
 
 ---
 
 ### CACHING_IMPLEMENTATION.md
+**Confidence:** 🟢 High - Stable, well-tested optimization
+
 **Summary:** String representation caching in VertexData to avoid repeated graph traversals for token display.
 
 **Tags:** `#optimization` `#caching` `#testing`
@@ -47,12 +59,14 @@ Completed feature implementations and enhancement summaries.
 - Significant performance improvement for repeated token displays
 
 **Key locations:**
-- `context-trace/src/graph/vertex/data.rs` - Cache storage
-- `context-trace/src/graph/mod.rs` - Cache population in `vertex_data_string()`
+- `crates/context-trace/src/graph/vertex/data.rs` - Cache storage
+- `crates/context-trace/src/graph/mod.rs` - Cache population in `vertex_data_string()`
 
 ---
 
 ### UNIFIED_API_IMPLEMENTATION_SUMMARY.md
+**Confidence:** 🟢 High - Complete, documented API
+
 **Summary:** Consolidated import/export processing API for the refactor-tool crate.
 
 **Tags:** `#api` `#refactoring` `#architecture`
@@ -65,12 +79,14 @@ Completed feature implementations and enhancement summaries.
 - Extension traits for ergonomic API usage
 
 **Key locations:**
-- `refactor-tool/src/syntax/import_export_processor.rs`
-- `refactor-tool/src/syntax/import_export_extensions.rs`
+- `crates/refactor-tool/src/syntax/import_export_processor.rs`
+- `crates/refactor-tool/src/syntax/import_export_extensions.rs`
 
 ---
 
 ### AI_FEATURES.md
+**Confidence:** 🟡 Medium - Functional but may have provider-specific quirks
+
 **Summary:** AI-powered semantic code analysis for duplication detection and refactoring suggestions.
 
 **Tags:** `#ai` `#refactoring` `#analysis`
@@ -82,12 +98,14 @@ Completed feature implementations and enhancement summaries.
 - Configurable via environment variables
 
 **Key locations:**
-- `refactor-tool/src/ai/` module
+- `crates/refactor-tool/src/ai/` module
 - Configuration via `OPENAI_API_KEY`, `COPILOT_API_KEY`, etc.
 
 ---
 
 ### BEST_MATCH_IMPLEMENTATION_STRATEGY.md
+**Confidence:** 🟡 Medium - Strategy documented, implementation may be incomplete
+
 **Summary:** Implementation plan for best match checkpointing and trace cache in search algorithm.
 
 **Tags:** `#search` `#algorithm` `#planning`
@@ -104,5 +122,5 @@ Completed feature implementations and enhancement summaries.
 - BinaryHeap width-based ordering
 
 **Key locations:**
-- `context-search/src/match/root_cursor.rs`
-- `context-search/src/search.rs` - SearchState
+- `crates/context-search/src/match/root_cursor.rs`
+- `crates/context-search/src/search.rs` - SearchState
