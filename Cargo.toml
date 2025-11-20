@@ -1,13 +1,14 @@
 [workspace]
 resolver = "2"
 members = [
-  "context-search",
-  "context-insert",
-  "context-read",
-  "context-trace",
-  "refactor-tool", "context-trace-macros",
+  "crates/context-search",
+  "crates/context-insert",
+  "crates/context-read",
+  "crates/context-trace",
+  "crates/refactor-tool",
+  "crates/context-trace-macros",
 ]
-exclude = ["./petgraph", "./justlog"]
+exclude = ["./crates/petgraph", "./crates/justlog"]
 
 [profile.dev]
 debug = true
