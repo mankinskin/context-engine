@@ -134,6 +134,33 @@ fn find_ancestor1_a_b_c() {
             if path.path_root().pattern_location().parent == *abc
     );
 }
+// Test: Pattern [a, b, c, c] should partially match token abc - only first 3 tokens match
+#[test]
+fn find_ancestor1_a_b_c_c() {
+    let Env1 {
+        graph,
+        a,
+        b,
+        c,
+        abc,
+        ..
+    } = &*Env1::get_expected();
+    let _tracing = init_test_tracing!(graph);
+
+    let query = vec![
+        Token::new(a, 1),
+        Token::new(b, 1),
+        Token::new(c, 1),
+        Token::new(c, 1),
+    ];
+    let response = graph.find_ancestor(&query).unwrap();
+    assert_eq!(response.query_exhausted(), false);
+    assert_matches!(
+        response.end.path,
+        PathCoverage::EntireRoot(ref path)
+            if path.path_root().pattern_location().parent == *abc
+    );
+}
 
 // Test: Long pattern [a,b,a,b,a,b,a,b,c,d,e,f,g,h,i] should match ababababcdefghi (Complete)
 #[test]
@@ -164,34 +191,6 @@ fn find_ancestor1_long_pattern() {
         response.end.path,
         PathCoverage::EntireRoot(ref path)
             if path.path_root().pattern_location().parent == *ababababcdefghi
-    );
-}
-
-// Test: Pattern [a, b, c, c] should partially match token abc - only first 3 tokens match
-#[test]
-fn find_ancestor1_a_b_c_c() {
-    let Env1 {
-        graph,
-        a,
-        b,
-        c,
-        abc,
-        ..
-    } = &*Env1::get_expected();
-    let _tracing = init_test_tracing!(graph);
-
-    let query = vec![
-        Token::new(a, 1),
-        Token::new(b, 1),
-        Token::new(c, 1),
-        Token::new(c, 1),
-    ];
-    let response = graph.find_ancestor(&query).unwrap();
-    assert_eq!(response.query_exhausted(), false);
-    assert_matches!(
-        response.end.path,
-        PathCoverage::EntireRoot(ref path)
-            if path.path_root().pattern_location().parent == *abc
     );
 }
 
