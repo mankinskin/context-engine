@@ -140,8 +140,8 @@ use context_insert::{ToInsertCtx, InitInterval};
 let query = vec![a, b, c];
 let result = graph.find_ancestor(query)?;
 
-if !result.is_complete() {
-    // Convert incomplete result to insertion interval
+if !result.query_exhausted() {
+    // Query not fully matched - convert to insertion interval
     let init = InitInterval::from(result);
     
     // Perform insertion
@@ -236,9 +236,11 @@ if result.is_complete() {
 
 ### Key Accessor Methods (Response)
 ```rust
-// Checking completeness
-response.is_complete() -> bool
-response.as_complete() -> Option<&IndexRangePath>
+// Checking query and match status (two independent properties)
+response.query_exhausted() -> bool         // Has entire query been matched?
+response.is_full_token() -> bool           // Is result a complete token?
+response.as_complete() -> Option<&IndexRangePath>  // Some if both trueresult a complete pre-existing token?
+response.as_complete() -> Option<&IndexRangePath>  // Get path if query_exhausted && is_full_token
 
 // Getting data (safe, returns copies/refs)
 response.root_token() -> Token              // Root token from path
@@ -350,16 +352,19 @@ Searchable::search::<InsertTraversal>(query, graph)
 Searchable::search::<AncestorSearchTraversal>(query, graph)
 ```
 
-### 6. ❌ Forgetting to Check is_complete()
+### 6. ❌ Forgetting to Check query_exhausted() and is_full_token()
 ```rust
 // ❌ WRONG - assuming search always succeeds
-let path = response.expect_complete("failed");  // Panics on incomplete!
+let path = response.expect_complete("failed");  // Panics if not exhausted!
 
-// ✅ CORRECT - check first
-if response.is_complete() {
+// ✅ CORRECT - check both properties
+if response.query_exhausted() && response.is_full_token() {
     let path = response.expect_complete("msg");
+} else if response.query_exhausted() {
+    // Query matched but within a token (intersection path)
+    println!("Exhausted within: {:?}", response.root_token());
 } else {
-    // Handle incomplete case
+    // Query not fully matched
     let init = InitInterval::from(response);
 }
 ```
@@ -446,8 +451,9 @@ let pattern_path: PatternRangePath = rooted_path!(
 use assert_matches::assert_matches;
 
 // Check search results
-assert_matches!(result, Ok(ref r) if r.is_complete());
-assert!(!result.is_complete());
+assert_matches!(result, Ok(ref r) if r.query_exhausted());
+assert!(!result.query_exhausted());
+assert!(result.is_full_token());
 
 // Check specific values
 assert_eq!(response.root_token(), expected_token);
@@ -455,10 +461,10 @@ assert_eq!(response.cursor_position(), AtomPosition(3));
 
 // Pattern matching on Ok results
 match result {
-    Ok(ref response) if response.is_complete() => {
+    Ok(ref response) if response.query_exhausted() => {
         assert_eq!(response.root_token(), expected);
     },
-    _ => panic!("Expected complete result"),
+    _ => panic!("Expected query exhausted"),
 }
 ```
 
@@ -663,12 +669,15 @@ println!("Cache: {:#?}", response.cache);  // Use {:#?} for pretty debug
 
 ### 3. Check Response State
 ```rust
-// Add this to understand why a search stopped
-if !response.is_complete() {
-    eprintln!("Search incomplete at position: {:?}", 
+// Add this to understand search results
+if !response.query_exhausted() {
+    eprintln!("Query not exhausted at position: {:?}", 
               response.cursor_position());
     eprintln!("Current pattern: {:?}", 
               response.query_pattern());
+}
+if !response.is_full_token() {
+    eprintln!("Result is intersection path, not complete token");
 }
 ```
 

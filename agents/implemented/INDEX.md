@@ -20,6 +20,8 @@ Completed feature implementations and enhancement summaries.
 | `#refactoring` | Code refactoring tools and strategies |
 | `#ai` | AI-powered features |
 | `#search` | Search algorithm implementations |
+| `#naming` | API naming and clarity improvements |
+| `#breaking-change` | Breaking API changes |
 
 ---
 
@@ -124,3 +126,28 @@ Completed feature implementations and enhancement summaries.
 **Key locations:**
 - `crates/context-search/src/match/root_cursor.rs`
 - `crates/context-search/src/search.rs` - SearchState
+
+---
+
+### SEARCH_RESULT_API_RENAME.md
+**Confidence:** 🟢 High - Complete implementation, clear semantics
+
+**Summary:** Renamed search result API to distinguish query exhaustion from exact token match.
+
+**Tags:** `#api` `#search` `#naming` `#breaking-change`
+
+**What it provides:**
+- `query_exhausted()` - Check if entire query was matched
+- `is_full_token()` - Check if result is complete pre-existing token
+- Four distinct result states (exhausted+exact, exhausted+path, prefix, partial)
+- Clear migration path from old `is_complete()` API
+
+**Benefits:**
+- Eliminates ambiguity between "query done" and "token complete"
+- Enables precise handling of intersection paths vs complete tokens
+- Better supports hierarchical pattern matching semantics
+
+**Key locations:**
+- `crates/context-search/src/state/result.rs` - Response methods
+- `crates/context-search/src/state/matched/mod.rs` - MatchedEndState methods
+- `agents/guides/SEARCH_ALGORITHM_GUIDE.md` - Comprehensive explanation

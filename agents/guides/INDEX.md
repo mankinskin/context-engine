@@ -92,3 +92,18 @@ Persistent guidance for common patterns and troubleshooting.
 - Processing Rust import/export statements
 - Merging and transforming use statements
 - Import analysis and replacement
+
+---
+
+### SEARCH_ALGORITHM_GUIDE.md
+**Confidence:** 🟢 High - Comprehensive, current design
+
+**Summary:** How the hierarchical pattern search algorithm works, including query exhaustion vs exact match distinction.
+
+**Tags:** `#search` `#algorithm` `#hierarchical` `#pattern-matching` `#response-api`
+
+**Solves:**
+- Understanding search algorithm flow
+- Query exhaustion vs exact match semantics
+- Checkpoint system and result types
+- Hierarchical pattern discovery
