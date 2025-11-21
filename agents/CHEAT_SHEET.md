@@ -427,23 +427,6 @@ let end: PatternEndPath = rooted_path!(End: pattern, 1);
 let start: IndexStartPath = rooted_path!(Start: root, (0, [child_loc]));
 ```
 
-**Before/After comparison:**
-```rust
-// ❌ OLD WAY - verbose and error-prone
-let pattern_path = PatternRangePath::new(
-    Pattern::from(vec![a, b, c]),
-    RolePath::new_empty(0),
-    RolePath::new_empty(2),
-);
-
-// ✅ NEW WAY - concise and clear
-let pattern_path: PatternRangePath = rooted_path!(
-    Range: Pattern::from(vec![a, b, c]),
-    start: 0,
-    end: 2
-);
-```
-
 **Note:** Type annotations are usually required due to `Into<Root>` ambiguity. The macro is exported from `context_trace` and available in all tests.
 
 ### Assertion Patterns

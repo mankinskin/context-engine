@@ -107,3 +107,48 @@ Persistent guidance for common patterns and troubleshooting.
 - Query exhaustion vs exact match semantics
 - Checkpoint system and result types
 - Hierarchical pattern discovery
+
+---
+
+### DESIRED_SEARCH_ALGORITHM.md
+**Confidence:** 🟢 High - Authoritative algorithm specification
+
+**Summary:** Official specification for the desired search algorithm behavior - bottom-up exploration with ascending width priority.
+
+**Tags:** `#search` `#algorithm` `#specification` `#design`
+
+**Solves:**
+- Algorithm specification and design goals
+- Best match tracking and queue management
+- Parent state tracking and comparison process
+- Bottom-up exploration strategy
+
+**Note:** This is the specification document. See SEARCH_ALGORITHM_GUIDE.md for explanation of current implementation, and agents/analysis/ALGORITHM_COMPARISON.md for detailed comparison.
+
+---
+
+### CONTEXT_INSERT_GUIDE.md
+**Confidence:** 🟢 High - Verified patterns and tested examples
+
+**Summary:** Practical guide for using context-insert to add patterns to hypergraphs through split-join architecture.
+
+**Tags:** `#insert` `#patterns` `#split-join` `#initialization` `#testing`
+
+**Solves:**
+- How to insert patterns into the graph
+- Converting search results to InitInterval
+- Understanding insertion modes (insert, insert_init, insert_or_get_complete)
+- Testing insertion operations
+- Debugging insertion failures
+- Performance optimization tips
+- Common mistakes and solutions
+
+**Key Patterns:**
+- Basic pattern insertion
+- Insert only if needed
+- Handle partial matches
+- Multiple representations
+- Incremental building
+- Batch operations
+
+**Related:** See agents/analysis/CONTEXT_INSERT_ANALYSIS.md for algorithm details, crates/context-insert/HIGH_LEVEL_GUIDE.md for concepts.

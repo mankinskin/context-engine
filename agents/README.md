@@ -16,6 +16,7 @@ agents/
 ├── plans/            # Task plans (before execution)
 ├── implemented/      # Completed feature documentation
 ├── bug-reports/      # Known issues and problem analyses
+├── analysis/         # Algorithm analysis and comparisons
 └── tmp/              # Temporary analysis files (never commit)
 ```
 
@@ -119,6 +120,25 @@ agents/
 
 ---
 
+### `agents/analysis/` 🔬
+**Purpose:** Deep algorithm analysis and comparison documents
+
+**What goes here:**
+- Algorithm comparison documents
+- Design analysis
+- Architectural deep dives
+- Theory vs implementation analysis
+
+**When to add:** When documenting algorithmic differences, design decisions, or comparing approaches
+
+**Format:** `<TOPIC>_COMPARISON.md` or `<TOPIC>_ANALYSIS.md`
+
+**Index:** `agents/analysis/INDEX.md` (tag-based search)
+
+**⚠️ REQUIRED:** Add entry to INDEX.md with summary, tags, key findings, and confidence
+
+---
+
 ### `agents/tmp/` 🗑️
 **Purpose:** Temporary analysis files during investigation
 
@@ -142,6 +162,7 @@ agents/
 | Large feature (>5 files) | Create plan in `agents/plans/` → Execute later → Move to `implemented/` |
 | Found bug | Investigate → Document in `agents/bug-reports/` → After fix, update `guides/` |
 | Completed feature | Write summary in `agents/implemented/` → Update indexes |
+| Algorithm analysis | Document in `agents/analysis/` → Update INDEX.md |
 | Investigating | Use `agents/tmp/` → Migrate findings → Clean up |
 
 ---
@@ -151,6 +172,7 @@ agents/
 - `agents/guides/INDEX.md` - How-to guides
 - `agents/implemented/INDEX.md` - Completed features
 - `agents/bug-reports/INDEX.md` - Bug reports
+- `agents/analysis/INDEX.md` - Algorithm analysis
 
 **Confidence Ratings:** Each entry includes a confidence rating (🟢 High / 🟡 Medium / 🔴 Low) to guide exploration depth:
 - 🟢 High = Trust and apply directly

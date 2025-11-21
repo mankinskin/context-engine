@@ -151,3 +151,36 @@ Completed feature implementations and enhancement summaries.
 - `crates/context-search/src/state/result.rs` - Response methods
 - `crates/context-search/src/state/matched/mod.rs` - MatchedEndState methods
 - `agents/guides/SEARCH_ALGORITHM_GUIDE.md` - Comprehensive explanation
+
+---
+
+### TERMINOLOGY_REFACTORING_COMPLETE.md
+**Confidence:** 🔴 Low - Historical record, superseded by SEARCH_RESULT_API_RENAME
+
+**Summary:** Historical: Earlier refactoring to eliminate "complete" terminology overload (superseded by query_exhausted/is_full_token API).
+
+**Tags:** `#api` `#search` `#naming` `#historical`
+
+**What it documented:**
+- Renamed PathEnum → PathCoverage
+- Renamed Complete → EntireRoot
+- Renamed CompleteMatchState → QueryExhaustedState
+- Earlier terminology cleanup before final API design
+
+**Note:** This refactoring was superseded by the work in SEARCH_RESULT_API_RENAME.md. Keep for historical reference only.
+
+---
+
+### DOCUMENTATION_UPDATE_SUMMARY.md
+**Confidence:** 🔴 Low - Historical summary of documentation work
+
+**Summary:** Historical: Summary of documentation creation work including CHEAT_SHEET.md and HIGH_LEVEL_GUIDE.md files.
+
+**Tags:** `#documentation` `#historical`
+
+**What it documented:**
+- Creation of CHEAT_SHEET.md
+- Creation of HIGH_LEVEL_GUIDE.md files for each crate
+- Documentation structure and organization
+
+**Note:** Historical record of documentation creation. The files it describes are now current and maintained separately.
