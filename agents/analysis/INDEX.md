@@ -152,3 +152,41 @@ Deep analysis and comparison documents for algorithms and architectural decision
 - `crates/context-read/src/` - Implementation
 - `crates/context-read/README.md` - Overview
 - Depends on: context-trace, context-search, context-insert
+
+---
+
+### TRAIT_CONSOLIDATION_V2_ISSUES.md
+**Confidence:** 🟢 High - Current analysis of trait consolidation state
+
+**Summary:** Comprehensive analysis of issues remaining from Phase 1 trait consolidation, identifying 18 qualified trait calls and ~30 deprecation warnings that need resolution.
+
+**Tags:** `#refactoring` `#traits` `#api` `#technical-debt` `#architecture`
+
+**Key Issues Identified:**
+1. **Incomplete Trait Hierarchy** - Missing Tier 2 concrete role accessors (StartPath/EndPath)
+2. **18 Qualified Trait Calls** - Verbose `HasRolePath::<R>::role_path()` syntax throughout
+3. **Confusing Deprecation** - HasRolePath marked deprecated but architecturally necessary
+4. **Role-Generic Pattern Not Supported** - PathAccessor can't handle dual-role RootedRangePath
+5. **Inconsistent Migration State** - Mix of old and new APIs
+
+**Root Cause:**
+- PathAccessor designed for path vector access only (`&Vec<Node>`)
+- Many algorithms need RolePath struct access (for `root_entry` field)
+- RootedRangePath has dual roles (Start + End), can't implement PathAccessor twice (E0119)
+
+**Proposed Solution:**
+- Add Tier 2 traits: StartPathAccessor, EndPathAccessor, RangePathAccessor
+- Keep HasRolePath but un-deprecate it (serves different purpose than PathAccessor)
+- Migrate 18 call sites to use concrete role accessors
+- Remove truly deprecated traits (HasPath, HasRootedPath, etc.)
+
+**Impact:**
+- 18 files with qualified trait calls
+- ~30 deprecation warnings in build output
+- Unclear which API to use for new code
+
+**Related Files:**
+- `crates/context-trace/src/path/accessors/path_accessor.rs` - Tier 1 traits (existing)
+- `crates/context-trace/src/path/accessors/has_path.rs` - Deprecated traits
+- `agents/plans/PLAN_TRAIT_CONSOLIDATION_V2.md` - Full migration plan
+- Call sites in: index_range.rs, pattern_range.rs, role_path/mod.rs, path/mod.rs, trace/child/state.rs, cursor/path.rs
