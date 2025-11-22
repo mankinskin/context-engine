@@ -20,7 +20,7 @@ Successfully completed comprehensive renaming to eliminate "complete" terminolog
    - Purpose: Clearly indicates the query pattern was fully consumed (exhausted)
    - Location: `context-search/src/state/matched/mod.rs`
 
-4. **`MatchedEndState::Complete` → `MatchedEndState::QueryExhausted`**
+4. **`MatchResult::Complete` → `MatchResult::QueryExhausted`**
    - Purpose: Variant name matches the state struct name for clarity
 
 5. **`EndReason::QueryEnd` → `EndReason::QueryExhausted`**
@@ -47,7 +47,7 @@ Successfully completed comprehensive renaming to eliminate "complete" terminolog
 
 ✅ **Successfully compiles** with only 3 visibility warnings:
 ```
-warning: type `PathCoverage` is more private than the item `MatchedEndState::path`
+warning: type `PathCoverage` is more private than the item `MatchResult::path`
 warning: type `PathCoverage` is more private than the item `QueryExhaustedState::path`
 warning: type `PathCoverage` is more private than the item `PartialMatchState::path`
 ```
@@ -86,7 +86,7 @@ The three distinct meanings of "complete" are now unambiguous:
 cd context-search/src/tests
 sed -i 's/CompleteMatchState/QueryExhaustedState/g' **/*.rs *.rs
 sed -i 's/PathEnum/PathCoverage/g' **/*.rs *.rs
-sed -i 's/MatchedEndState::Complete/MatchedEndState::QueryExhausted/g' **/*.rs *.rs
+sed -i 's/MatchResult::Complete/MatchResult::QueryExhausted/g' **/*.rs *.rs
 sed -i 's/PathCoverage::Complete/PathCoverage::EntireRoot/g' **/*.rs *.rs
 sed -i 's/QueryEnd/QueryExhausted/g' **/*.rs *.rs
 

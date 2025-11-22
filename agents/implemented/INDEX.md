@@ -149,7 +149,7 @@ Completed feature implementations and enhancement summaries.
 
 **Key locations:**
 - `crates/context-search/src/state/result.rs` - Response methods
-- `crates/context-search/src/state/matched/mod.rs` - MatchedEndState methods
+- `crates/context-search/src/state/matched/mod.rs` - MatchResult methods
 - `agents/guides/SEARCH_ALGORITHM_GUIDE.md` - Comprehensive explanation
 
 ---
@@ -184,3 +184,31 @@ Completed feature implementations and enhancement summaries.
 - Documentation structure and organization
 
 **Note:** Historical record of documentation creation. The files it describes are now current and maintained separately.
+
+---
+
+### PHASE1_NAMING_REFACTOR.md
+**Confidence:** 🟢 High - Complete implementation, all tests passing
+
+**Summary:** Phase 1 critical naming refactors to eliminate confusion around "checkpoint" terminology and improve code clarity.
+
+**Tags:** `#naming` `#refactoring` `#clarity` `#search`
+
+**What it provides:**
+- `best_checkpoint` → `best_match` (16 locations)
+- `create_checkpoint_state()` → `create_parent_exploration_state()` (2 locations)
+- `EndReason::Mismatch` split → added `ChildExhausted` variant (11 locations)
+
+**Benefits:**
+- Eliminates "checkpoint" overload (was used for 3 different concepts)
+- Clarifies best match tracking vs cursor checkpoint state
+- Explicit distinction between child exhaustion and pattern mismatch
+- Improved type safety and semantic clarity
+
+**Key locations:**
+- `crates/context-search/src/match/iterator.rs` - best_match field
+- `crates/context-search/src/match/root_cursor.rs` - create_parent_exploration_state(), EndReason handling
+- `crates/context-search/src/state/end/mod.rs` - EndReason enum
+- `crates/context-search/src/search/mod.rs` - best_match usage
+
+**Test status:** 29/35 passing (maintained), 0 regressions

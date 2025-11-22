@@ -13,7 +13,7 @@ Implement the queue clearing mechanism and best match tracking from the desired 
 ## Current Status
 - **Test Results**: 26 passing, 9 failing
 - **Code Status**: Compilation successful with warnings only (clippy lints)
-- **Type Refactoring**: Complete - `EndState` → `MatchedEndState` with `Complete`/`Partial` variants
+- **Type Refactoring**: Complete - `EndState` → `MatchResult` with `Complete`/`Partial` variants
 - **Test Assertions**: Fully restored to original strictness (no weakened tests)
 - **Algorithm Analysis**: Complete comparison with desired algorithm (see ALGORITHM_COMPARISON.md)
 
@@ -68,11 +68,11 @@ Queue: [ParentCandidate(abc,3), ParentCandidate(xyz,3), ParentCandidate(abcd,4),
 ## What Was Changed
 
 ### Type System Refactoring (Complete)
-The core type refactoring from `EndState` to `MatchedEndState` is finished:
+The core type refactoring from `EndState` to `MatchResult` is finished:
 
 **Files Modified:**
 - `context-search/src/state/end/mod.rs` - Core `PathEnum` with trait implementations
-- `context-search/src/state/matched/mod.rs` - `MatchedEndState`, `CompleteMatchState`, `PartialMatchState`
+- `context-search/src/state/matched/mod.rs` - `MatchResult`, `CompleteMatchState`, `PartialMatchState`
 - All test files adapted to new types with strict assertions preserved
 
 **Key Changes:**
@@ -82,8 +82,8 @@ EndState { reason: EndReason, path: PathEnum, cursor: PatternCursor }
 // where reason was QueryEnd or Mismatch
 
 // NEW
-MatchedEndState::Complete(CompleteMatchState { path, cursor })
-MatchedEndState::Partial(PartialMatchState { path, cursor })
+MatchResult::Complete(CompleteMatchState { path, cursor })
+MatchResult::Partial(PartialMatchState { path, cursor })
 ```
 
 **Trait Implementations Added:**
@@ -262,7 +262,7 @@ Extract parents of matched root for queue repopulation.
 
 **Location**: `context-search/src/search/mod.rs` (new helper function)
 ```rust
-fn extract_matched_root_parents(end: &MatchedEndState) -> Option<Vec<SearchNode>> {
+fn extract_matched_root_parents(end: &MatchResult) -> Option<Vec<SearchNode>> {
     // Extract parent tokens from end.path.root_parent()
     // Create ParentCompareState nodes for each parent
     // Return as SearchNode::Parent variants

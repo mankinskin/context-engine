@@ -21,7 +21,7 @@ These are two orthogonal properties that were previously conflated under the amb
 - ✅ Updated `expect_complete()` to require both conditions
 - ✅ Updated `as_complete()` to require both conditions
 
-#### `MatchedEndState` type (`crates/context-search/src/state/matched/mod.rs`)
+#### `MatchResult` type (`crates/context-search/src/state/matched/mod.rs`)
 - ✅ Added `query_exhausted() -> bool` - Checks cursor position >= query length
 - ✅ Added `is_full_token() -> bool` - Checks for `PathCoverage::EntireRoot`
 

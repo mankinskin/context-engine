@@ -19,6 +19,12 @@ Persistent guidance for common patterns and troubleshooting.
 | `#api` | API usage patterns |
 | `#macros` | Macro usage |
 | `#refactoring` | Code transformation tools |
+| `#algorithm` | Search algorithms, matching logic |
+| `#advance-cycle` | Root cursor advancement and parent exploration |
+| `#checkpoint` | Checkpoint cursor system |
+| `#parent-exploration` | Hierarchical token expansion |
+| `#search-flow` | Overall search process |
+| `#root-cursor` | RootCursor implementation details |
 
 ---
 
@@ -152,3 +158,41 @@ Persistent guidance for common patterns and troubleshooting.
 - Batch operations
 
 **Related:** See agents/analysis/CONTEXT_INSERT_ANALYSIS.md for algorithm details, crates/context-insert/HIGH_LEVEL_GUIDE.md for concepts.
+
+---
+
+### ADVANCE_CYCLE_GUIDE.md
+**Confidence:** 🟢 High - Complete current implementation documentation
+
+**Summary:** Complete guide to hierarchical search advance cycle with checkpointed cursors - how patterns match across token boundaries through parent exploration.
+
+**Tags:** `#advance-cycle` `#checkpoint` `#parent-exploration` `#search-flow` `#root-cursor` `#algorithm` `#hierarchical`
+
+**Solves:**
+- Understanding the advance cycle flow (Initial Match → Root Advancement → Parent Exploration → Result Selection)
+- Checkpoint vs current cursor semantics (confirmed vs exploring positions)
+- When and why parent exploration is triggered
+- How priority queue ordering works (min-heap by token width)
+- Debugging checkpoint-related issues
+- End index calculation problems
+- Best checkpoint tracking logic
+
+**Key Concepts:**
+- Checkpointed cursor architecture (current + checkpoint fields)
+- Dual cursor system (query + child cursors)
+- Hybrid cursor construction for parent exploration
+- State transitions and end conditions
+- Queue clearing and hierarchical expansion
+
+**Critical Functions:**
+- `advance_to_end()` - Main advancement loop with 3 outcomes
+- `create_checkpoint_state()` - Partial match for parent exploration
+- `create_end_state()` - Query exhaustion or mismatch results
+
+**Common Issues:**
+- Wrong end_index (use current.path + checkpoint.atom_position)
+- Queue not clearing after match
+- Parent exploration not triggering
+- Best checkpoint not optimal
+
+**Related:** SEARCH_ALGORITHM_GUIDE.md for algorithm overview, CHEAT_SHEET.md for types and patterns.

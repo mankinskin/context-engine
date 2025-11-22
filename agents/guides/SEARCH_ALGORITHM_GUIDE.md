@@ -141,7 +141,7 @@ Returns a **Response** containing:
 ```rust
 Response {
     cache: TraceCache,           // All discovered relationships
-    end: MatchedEndState {       // Final state
+    end: MatchResult {       // Final state
         path: PathCoverage,      // What pattern matched
         cursor: PatternCursor,   // Position reached
     }

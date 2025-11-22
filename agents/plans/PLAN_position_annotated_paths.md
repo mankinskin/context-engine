@@ -60,7 +60,7 @@ Modify path structures to track checkpoint positions at each level during top-do
 
 ### Current Issue
 - `root_pos` calculation is wrong because we try to calculate entry positions retroactively
-- By the time we create `MatchedEndState`, checkpoint has been updated multiple times
+- By the time we create `MatchResult`, checkpoint has been updated multiple times
 - We've lost track of "what position were we at when entering each child"
 - Tests expect cache entries at position 2, but we're recording position 1 (BU) or 3 (TD)
 
@@ -76,7 +76,7 @@ Flow:
 4. BEFORE matching "y", checkpoint is at position 2 ← Cache should use this!
 5. Match "y" → checkpoint advances to position 3
 6. Try "x", get mismatch
-7. Create MatchedEndState with checkpoint=3 (WRONG - should be 2)
+7. Create MatchResult with checkpoint=3 (WRONG - should be 2)
 
 Expected: All cache entries at position 2
 Actual: Position 1 (BU) or position 3 (TD)
@@ -310,7 +310,7 @@ child_state.path.end_path.push(child_location);
 **File:** `crates/context-search/src/match/root_cursor.rs` (lines 567-625)
 
 ```rust
-fn create_end_state(...) -> MatchedEndState {
+fn create_end_state(...) -> MatchResult {
     // Get root_pos from stored positions
     let root_pos = if let Some(&entry_pos) = path.end_path_positions.first() {
         entry_pos  // Position when entering first end path child
