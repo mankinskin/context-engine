@@ -36,6 +36,8 @@ show_timing = true         # Show timing information (time.busy, time.idle)
 show = true                # Show panic log events
 show_message = true        # Include panic message in logs
 show_stderr = true         # Print 🔥 PANIC: message to stderr
+show_default_hook = true   # Call default panic hook (prints to stderr)
+                           # Set to false to only log to file without stderr output
 
 # General formatting options
 enable_indentation = true  # Visual indentation with box-drawing characters (┬─, │, └─)
@@ -66,6 +68,13 @@ show_timestamp = true      # Show timestamp at beginning of each line (elapsed t
 # [panic]
 # show = false
 # show_stderr = false
+
+# Log panic to file only (no stderr output):
+# [panic]
+# show = true
+# show_message = true
+# show_stderr = false
+# show_default_hook = false
 
 # Show panic but without message details:
 # [panic]
