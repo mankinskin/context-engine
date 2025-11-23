@@ -5,10 +5,9 @@ members = [
   "crates/context-insert",
   "crates/context-read",
   "crates/context-trace",
-  "crates/refactor-tool",
   "crates/context-trace-macros",
 ]
-exclude = ["./crates/petgraph", "./crates/justlog"]
+exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
 
 [profile.dev]
 debug = true
