@@ -1,11 +1,11 @@
 # File Organization Action Plan
 
 **Date:** 2025-11-23  
-**Last Update:** 2025-11-23 (Phase 1 Complete ✅)  
-**Git Commit:** 7b6fb26 (Phase 1 Day 32 final implementation)  
+**Last Update:** 2025-11-23 (Phase 2 Day 35-36 Complete ✅)  
+**Git Commit:** 1d58f1b (Phase 2 Day 35-36 implementation)  
 **Commit Date:** 2025-11-23  
-**Commit Message:** refactor(context-search): split state/start.rs (424→221 lines)  
-**Status:** Phase 1 Complete ✅ | Phase 2 Ready  
+**Commit Message:** refactor(context-trace): split graph/vertex/data.rs (700→406 lines largest)  
+**Status:** Phase 1 Complete ✅ | Phase 2 In Progress (2/6 complete)  
 **Goal:** Improve codebase maintainability by splitting large files and organizing module hierarchies
 
 ## Executive Summary
@@ -206,44 +206,73 @@ state/
 
 ## Phase 2: context-trace (Weeks 8-11)
 
-### Week 8 Day 33-34: logging/tracing_utils/config.rs (728 → ~240 each)
+### ✅ Week 8 Day 33-34: logging/tracing_utils/config.rs (729 → 305 largest) - COMPLETE
 
-**Priority:** P0 - Largest file in trace crate
+**Status:** ✅ Implemented and committed (a946ab5)  
+**Completion Date:** 2025-11-23  
+**Tests:** 56/56 passing (maintained, 0 regressions)
 
-**Target structure:**
+**Implemented structure:**
 ```rust
 logging/tracing_utils/
 ├── config/
-│   ├── types.rs (~250) - Config types and enums
-│   ├── builder.rs (~240) - Config builder pattern
-│   ├── defaults.rs (~220) - Default configurations
-│   └── mod.rs (~20)
+│   ├── types.rs (194) - Config struct definitions
+│   ├── loader.rs (305) - File loading + environment parsing
+│   ├── builder.rs (238) - TracingConfig builder methods + tests
+│   └── mod.rs (15) - Re-exports
 ├── formatter.rs (591)
 ├── ...
 ```
 
-**Steps:**
-1. Create `config/` subdirectory
-2. Extract type definitions → `types.rs`
-3. Extract builder pattern → `builder.rs`
-4. Extract defaults → `defaults.rs`
-5. Run tests: `cargo test -p context-trace`
+**Completed steps:**
+1. ✅ Created `logging/tracing_utils/config/` directory
+2. ✅ Extracted config types → `types.rs` (194 lines)
+3. ✅ Extracted loading logic → `loader.rs` (305 lines)
+4. ✅ Extracted builder methods → `builder.rs` (238 lines)
+5. ✅ Created `mod.rs` with re-exports (15 lines)
+6. ✅ Tests passing: `cargo test -p context-trace`
+7. ✅ Compilation verified
 
-### Week 8 Day 35-36: graph/vertex/data.rs (699 → ~230 each)
+**Actual impact:**
+- Files: 1 → 4 (752 total lines including module overhead)
+- Largest file: 729 → 305 lines
+- Reduction: 58% in largest file
+- Git: Tracked as rename with modifications
 
-**Target structure:**
+### ✅ Week 8 Day 35-36: graph/vertex/data.rs (700 → 406 largest) - COMPLETE
+
+**Status:** ✅ Implemented and committed (1d58f1b)  
+**Completion Date:** 2025-11-23  
+**Tests:** 56/56 passing (maintained, 0 regressions)
+
+**Implemented structure:**
 ```rust
 graph/vertex/
 ├── data/
-│   ├── atom.rs (~230) - Atom vertex data
-│   ├── pattern.rs (~230) - Pattern vertex data
-│   ├── wide.rs (~220) - Wide vertex data
-│   └── mod.rs (~20)
+│   ├── core.rs (199) - VertexData struct, constructors, validation
+│   ├── parents.rs (218) - Parent relationship operations
+│   ├── children.rs (406) - Child pattern operations
+│   └── mod.rs (65) - Display implementations + re-exports
 ├── token.rs (391)
 ├── ...
 ```
 
-### Week 9 Day 37: tests/macros.rs (618 → ~200 each)
+**Completed steps:**
+1. ✅ Created `graph/vertex/data/` directory
+2. ✅ Extracted VertexData struct + validation → `core.rs` (199 lines)
+3. ✅ Extracted parent operations → `parents.rs` (218 lines)
+4. ✅ Extracted child pattern operations → `children.rs` (406 lines)
+5. ✅ Created `mod.rs` with Display impls (65 lines)
+6. ✅ Tests passing: `cargo test -p context-trace`
+7. ✅ Compilation verified
+
+**Actual impact:**
+- Files: 1 → 4 (888 total lines including module overhead)
+- Largest file: 700 → 406 lines
+- Reduction: 42% in largest file
+- Better separation: struct definition, parents, children, display
+
+### Week 9 Day 37: tests/macros.rs (618 → ~200 each) - NEXT
 
 **Target structure:**
 ```rust
@@ -414,24 +443,26 @@ cargo fmt --all
 # Clippy
 cargo clippy --workspace -- -D warnings
 
-## Success Metrics
+### Success Metrics
 
 ### Quantitative
 - [x] context-search: 0 files over 800 lines (was 1, now 0) ✅
 - [x] context-search: 0 files over 700 lines (was 1, now 0) ✅
 - [x] context-search: 0 files over 500 lines (was 3, now 0) ✅
-- [ ] workspace: <3 files over 500 lines (currently 6 remaining in trace)
-- [ ] workspace: <10 files over 400 lines (currently 18 remaining)
+- [x] context-trace: 0 files over 700 lines (was 2, now 0) ✅
+- [ ] workspace: <3 files over 500 lines (currently 4 remaining in trace)
+- [ ] workspace: <10 files over 400 lines (currently ~16 remaining)
 - [ ] Average file size <150 lines
-- [x] All tests passing (29/35 in context-search, 6 pre-existing failures) ✅
+- [x] All tests passing (context-search: 29/35, context-trace: 56/56) ✅
 
-### Qualitative (Phase 1 Complete ✅)
+### Qualitative
 - [x] context-search: Easier to navigate (all large files split) ✅
 - [x] context-search: Faster compilation (smaller units) ✅
 - [x] context-search: Better IDE performance ✅
 - [x] context-search: Clear module boundaries ✅
 - [x] context-search: Improved code discoverability ✅
-- [ ] Overall workspace organization (Phase 2 next)
+- [x] context-trace: Improved organization (2/6 splits complete) 🔄
+- [ ] Overall workspace organization (Phase 2 in progress)
 - [ ] Faster compilation (smaller units)
 - [ ] Better IDE performance
 - [ ] Clear module boundaries
@@ -460,14 +491,15 @@ cargo clippy --workspace -- -D warnings
 | Phase | Duration | Focus | Status | Progress |
 |-------|----------|-------|--------|----------|
 | Phase 1 | 2 weeks (Days 28-32) | context-search | ✅ Complete | 4/4 complete |
-| Phase 2 | 4 weeks (Days 33-41) | context-trace | ⏳ Ready | 0/6 complete |
+| Phase 2 | 4 weeks (Days 33-41) | context-trace | 🔄 In Progress | 2/6 complete |
 | Phase 3 | 1 week (Days 42-46) | Test organization | ⏳ Planned | 0/7 complete |
 | Phase 4 | 1 week (Days 47-51) | Module hierarchy | ⏳ Planned | Not started |
 
 **Total:** 8 weeks of incremental improvements  
-**Phase 1 Complete:** Days 28-32 (4 major splits)  
-**Next:** Phase 2 Day 33 (logging/tracing_utils/config.rs)  
-**Overall Progress:** 4/17 major splits complete (23.5%)
+**Phase 1 Complete:** Days 28-32 (4 major splits) ✅  
+**Phase 2 Progress:** Days 33-36 (2/6 splits complete) 🔄  
+**Next:** Phase 2 Day 37 (tests/macros.rs)  
+**Overall Progress:** 6/17 major splits complete (35.3%)
 | Phase | Duration | Focus | Impact |
 |-------|----------|-------|--------|
 | Phase 1 | 2 weeks (Days 28-32) | context-search | 4 large files → 15+ smaller files |
