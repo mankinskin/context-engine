@@ -50,6 +50,9 @@ show_timestamp = true      # Show timestamp at beginning of each line (elapsed t
 # log_filter = "debug"     # Log level filter (overrides LOG_FILTER env var)
                            # Can be a simple level: "error", "warn", "info", "debug", "trace"
                            # Or module-specific: "context_search=trace,context_trace=debug"
+# keep_logs = true         # Keep log files even when tests pass (overrides KEEP_LOGS env var)
+                           # By default, log files are deleted when tests pass
+                           # Set to true to preserve all log files for analysis
 
 # === Example Configurations ===
 
