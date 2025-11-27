@@ -190,3 +190,75 @@ Deep analysis and comparison documents for algorithms and architectural decision
 - `crates/context-trace/src/path/accessors/has_path.rs` - Deprecated traits
 - `agents/plans/PLAN_TRAIT_CONSOLIDATION_V2.md` - Full migration plan
 - Call sites in: index_range.rs, pattern_range.rs, role_path/mod.rs, path/mod.rs, trace/child/state.rs, cursor/path.rs
+
+---
+
+### ADVANCED_QUERY_CURSOR_RESPONSE.md
+**Confidence:** 🟢 High - Fresh analysis with detailed solutions
+
+**Summary:** Analysis of `find_consecutive1` test failure caused by missing advanced query cursor state in Response/MatchResult. Comprehensive comparison of 5 architectural solutions with recommendation for unified cursor position approach.
+
+**Tags:** `#search` `#response` `#cursor` `#architecture` `#bug-analysis` `#design-decision`
+
+**Problem:**
+- Test expects `end_index=3` (first unmatched token "a") but gets `end_index=2` (last matched token "i")
+- After matching "ghi", query advances to look for "a" but never finds it
+- `MatchResult` only stores checkpoint cursor (Matched state), loses advanced query position
+- `create_parent_exploration_state()` creates cursor with checkpoint position but advanced path
+- Second consecutive search starts from wrong position
+
+**Root Cause:**
+- `MatchResult.cursor` represents checkpoint only (last confirmed match)
+- When query advances but child cannot (need parent exploration), we lose advanced query state
+- Current code uses `current().path` but `checkpoint.atom_position` - mismatch!
+
+**Solution Options Compared (5):**
+1. **Optional Candidate Cursor** - Add `advanced_cursor: Option<PatternCursor>` (+5% code, medium usability)
+2. **Generic MatchResult** - Make cursor state generic with enum (+20% code, low usability, breaks API)
+3. **QueryState in Response** - Add enum to Response (+8% code, medium-high usability)
+4. **Unified CursorPosition** - Mirror `Checkpointed<C>` pattern (+10% code, high usability) ✅ **RECOMMENDED**
+5. **Extend PathCoverage** - Add AdvancedQuery variant (+12% code, low simplicity)
+
+**Recommended: Option 4 - Unified Cursor Position**
+```rust
+pub struct CursorPosition {
+    pub checkpoint: PatternCursor,  // Last confirmed match
+    pub current: PatternCursor,     // Current exploration position
+}
+```
+
+**Implementation Plan (7 phases, ~3.5 hours):**
+1. Create CursorPosition type with accessors
+2. Update MatchResult structure
+3. Fix create_parent_exploration_state()
+4. Fix create_result_from_state()
+5. Update all callers
+6. Update Response API
+7. Fix tests
+
+**Rationale:**
+- Mirrors internal `Checkpointed<C>` architecture
+- Clear `.checkpoint()` vs `.current()` semantics
+- Single field manages both states
+- Type-safe without generics
+- Natural migration path
+
+**Impact on best_match:**
+- 6 locations update best_match in search flow
+- Inconclusive end (need parent) is the bug location
+- Need to preserve advanced query cursor for consecutive searches
+
+**Design Questions:**
+1. Naming preference? (CursorPosition ✅)
+2. Default accessor behavior? (.cursor() → checkpoint ✅)
+3. Breaking change acceptable? (Yes - migration needed)
+4. Consecutive search start point? (Current/advanced ✅)
+5. Documentation priority? (High - core concept)
+
+**Related Files:**
+- `crates/context-search/src/state/matched/mod.rs` - MatchResult definition
+- `crates/context-search/src/match/root_cursor/advance.rs` - create_parent_exploration_state()
+- `crates/context-search/src/search/mod.rs` - create_result_from_state(), best_match logic
+- `crates/context-search/src/tests/search/consecutive.rs` - Failing test
+- `target/test-logs/find_consecutive1.log` - Test execution trace
+
