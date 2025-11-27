@@ -1,0 +1,1759 @@
+   Compiling context-trace v0.1.0 (C:\Users\linus_behrbohm\git\private\context-engine\crates\context-trace)
+warning: unused import: `auto_impl::auto_impl`
+ --> crates\context-trace\src\path\accessors\child\mod.rs:3:5
+  |
+3 | use auto_impl::auto_impl;
+  |     ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `PathRoot`
+  --> crates\context-trace\src\path\accessors\range_accessor.rs:24:24
+   |
+24 |                 root::{PathRoot, RootedPath},
+   |                        ^^^^^^^^
+
+warning: unused import: `structs::rooted::PathNode`
+ --> crates\context-trace\src\path\mutators\move_path\advance.rs:5:5
+  |
+5 |     structs::rooted::PathNode,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `graph::vertex::location::child::ChildLocation` and `pop::PathPop`
+ --> crates\context-trace\src\path\mutators\move_path\path.rs:3:5
+  |
+3 |     graph::vertex::location::child::ChildLocation,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+9 |             pop::PathPop,
+  |             ^^^^^^^^^^^^
+
+warning: unused import: `PathNode`
+  --> crates\context-trace\src\path\mutators\pop.rs:10:17
+   |
+10 |                 PathNode,
+   |                 ^^^^^^^^
+
+warning: unused import: `root::RootPattern`
+  --> crates\context-trace\src\path\structs\rooted\index_range\accessors.rs:23:13
+   |
+23 |             root::RootPattern,
+   |             ^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `End` and `TokenWidth`
+  --> crates\context-trace\src\path\structs\rooted\index_range\position.rs:4:5
+   |
+ 4 |     TokenWidth,
+   |     ^^^^^^^^^^
+...
+21 |                 End,
+   |                 ^^^
+
+warning: unused imports: `PathRole` and `direction::Right`
+  --> crates\context-trace\src\path\structs\rooted\index_range\type_def.rs:4:5
+   |
+ 4 |     direction::Right,
+   |     ^^^^^^^^^^^^^^^^
+...
+11 |                 PathRole,
+   |                 ^^^^^^^^
+
+warning: unused import: `IndexRangePath`
+  --> crates\context-trace\src\graph\getters\mod.rs:11:5
+   |
+11 |     IndexRangePath,
+   |     ^^^^^^^^^^^^^^
+
+warning: unused import: `key::VertexKey`
+  --> crates\context-trace\src\graph\insert\vertex.rs:12:13
+   |
+12 |             key::VertexKey,
+   |             ^^^^^^^^^^^^^^
+
+warning: unused imports: `Parent`, `Pattern`, `SubLocation`, `child::ChildLocation`, `has_vertex_index::HasVertexIndex`, `id::PatternId`, `pattern_width`, and `self`
+  --> crates\context-trace\src\graph\vertex\data\core.rs:10:9
+   |
+10 |         Parent,
+   |         ^^^^^^
+...
+13 |         has_vertex_index::HasVertexIndex,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+16 |             SubLocation,
+   |             ^^^^^^^^^^^
+17 |             child::ChildLocation,
+   |             ^^^^^^^^^^^^^^^^^^^^
+...
+20 |             self,
+   |             ^^^^
+21 |             Pattern,
+   |             ^^^^^^^
+22 |             id::PatternId,
+   |             ^^^^^^^^^^^^^
+23 |             pattern_width,
+   |             ^^^^^^^^^^^^^
+
+warning: unused imports: `clone_child_patterns` and `localized_children_iter_for_index`
+  --> crates\context-trace\src\graph\vertex\data\mod.rs:14:27
+   |
+14 | pub(crate) use children::{clone_child_patterns, localized_children_iter_for_index};
+   |                           ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::graph::vertex::has_vertex_index::HasVertexIndex`
+ --> crates\context-trace\src\graph\vertex\vertex_index.rs:1:5
+  |
+1 | use crate::graph::vertex::has_vertex_index::HasVertexIndex;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `IntoRootedRolePath` and `PositionAnnotated`
+  --> crates\context-trace\src\trace\child\state.rs:9:5
+   |
+ 9 |     PositionAnnotated,
+   |     ^^^^^^^^^^^^^^^^^
+...
+24 |                 IntoRootedRolePath,
+   |                 ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `sub_path::PositionAnnotated`
+  --> crates\context-trace\src\trace\state\parent.rs:28:13
+   |
+28 |             sub_path::PositionAnnotated,
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `SpanCloseConfig`, `SpanEnterConfig`, `TraitContextConfig`, and `WhitespaceConfig`
+  --> crates\context-trace\src\logging\tracing_utils\config\mod.rs:11:5
+   |
+11 |     SpanCloseConfig,
+   |     ^^^^^^^^^^^^^^^
+12 |     SpanEnterConfig,
+   |     ^^^^^^^^^^^^^^^
+13 |     TraitContextConfig,
+   |     ^^^^^^^^^^^^^^^^^^
+14 |     WhitespaceConfig,
+   |     ^^^^^^^^^^^^^^^^
+
+warning: unused import: `self`
+  --> crates\context-trace\src\logging\tracing_utils\formatter\event.rs:10:9
+   |
+10 |         self,
+   |         ^^^^
+
+warning: unused import: `super::field_visitor::FieldVisitor`
+ --> crates\context-trace\src\logging\tracing_utils\formatter\fields.rs:3:5
+  |
+3 | use super::field_visitor::FieldVisitor;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `tracing::field::Field`
+ --> crates\context-trace\src\logging\tracing_utils\span_fields.rs:5:5
+  |
+5 | use tracing::field::Field;
+  |     ^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `registry::LookupSpan`
+  --> crates\context-trace\src\logging\tracing_utils\span_fields.rs:12:5
+   |
+12 |     registry::LookupSpan,
+   |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `HasPath`
+  --> crates\context-trace\src\path\structs\rooted\index_range\position.rs:17:17
+   |
+17 |                 HasPath,
+   |                 ^^^^^^^
+
+warning: unused import: `ToToken`
+  --> crates\context-trace\src\graph\mod.rs:34:9
+   |
+34 |         ToToken,
+   |         ^^^^^^^
+
+warning: unused import: `ToToken`
+  --> crates\context-trace\src\graph\getters\utils.rs:12:13
+   |
+12 |             ToToken,
+   |             ^^^^^^^
+
+warning: unused import: `wide::Wide`
+  --> crates\context-trace\src\graph\mod.rs:38:5
+   |
+38 |     wide::Wide,
+   |     ^^^^^^^^^^
+
+warning: unused import: `path_accessor::PathAccessor`
+  --> crates\context-trace\src\trace\child\state.rs:26:13
+   |
+26 |             path_accessor::PathAccessor,
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> crates\context-trace\src\graph\insert\vertex.rs:34:9
+   |
+34 |         mut builder: VertexDataBuilder,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `get_atom_data`, `get_atom_data_mut`, `get_atom_child`, `to_atom_keys_iter`, `get_atom_indices`, and `expect_atom_indices` are never used
+   --> crates\context-trace\src\graph\getters\atom.rs:49:19
+    |
+ 25 | impl<G: GraphKind> Hypergraph<G> {
+    | -------------------------------- methods in this implementation
+...
+ 49 |     pub(crate) fn get_atom_data(
+    |                   ^^^^^^^^^^^^^
+...
+ 55 |     pub(crate) fn get_atom_data_mut(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+ 80 |     pub(crate) fn get_atom_child(
+    |                   ^^^^^^^^^^^^^^
+...
+ 93 |     pub(crate) fn to_atom_keys_iter<'a>(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+112 |     pub(crate) fn get_atom_indices(
+    |                   ^^^^^^^^^^^^^^^^
+...
+124 |     pub(crate) fn expect_atom_indices(
+    |                   ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `get_child_mut_at`, `expect_child_mut_at`, `expect_is_at_end`, `expect_child`, and `to_children` are never used
+  --> crates\context-trace\src\graph\getters\child.rs:30:19
+   |
+19 | impl<G: GraphKind> Hypergraph<G> {
+   | -------------------------------- methods in this implementation
+...
+30 |     pub(crate) fn get_child_mut_at(
+   |                   ^^^^^^^^^^^^^^^^
+...
+51 |     pub(crate) fn expect_child_mut_at(
+   |                   ^^^^^^^^^^^^^^^^^^^
+...
+60 |     pub(crate) fn expect_is_at_end(
+   |                   ^^^^^^^^^^^^^^^^
+...
+75 |     pub(crate) fn expect_child(
+   |                   ^^^^^^^^^^^^
+...
+87 |     pub(crate) fn to_children(
+   |                   ^^^^^^^^^^^
+
+warning: methods `expect_parent`, `expect_parent_mut`, `expect_parents_mut`, and `get_pattern_parents` are never used
+  --> crates\context-trace\src\graph\getters\parent.rs:17:19
+   |
+15 | impl<G: GraphKind> Hypergraph<G> {
+   | -------------------------------- methods in this implementation
+16 |     #[track_caller]
+17 |     pub(crate) fn expect_parent(
+   |                   ^^^^^^^^^^^^^
+...
+26 |     pub(crate) fn expect_parent_mut(
+   |                   ^^^^^^^^^^^^^^^^^
+...
+42 |     pub(crate) fn expect_parents_mut(
+   |                   ^^^^^^^^^^^^^^^^^^
+...
+48 |     pub(crate) fn get_pattern_parents(
+   |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: multiple methods are never used
+   --> crates\context-trace\src\graph\getters\pattern.rs:49:19
+    |
+ 27 | impl<G: GraphKind> Hypergraph<G> {
+    | -------------------------------- methods in this implementation
+...
+ 49 |     pub(crate) fn get_pattern_mut_at(
+    |                   ^^^^^^^^^^^^^^^^^^
+...
+ 61 |     pub(crate) fn expect_pattern_mut_at(
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+ 70 |     pub(crate) fn child_patterns_of(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+ 77 |     pub(crate) fn get_pattern_of(
+    |                   ^^^^^^^^^^^^^^
+...
+ 86 |     pub(crate) fn expect_child_pattern(
+    |                   ^^^^^^^^^^^^^^^^^^^^
+...
+104 |     pub(crate) fn expect_any_child_pattern(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+112 |     pub(crate) fn expect_pattern_range_width(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `get_common_pattern_in_parent`, `expect_common_pattern_in_parent`, `get_pattern_range`, and `get_vertex_subrange` are never used
+  --> crates\context-trace\src\graph\getters\utils.rs:28:19
+   |
+27 | impl<G: GraphKind> Hypergraph<G> {
+   | -------------------------------- methods in this implementation
+28 |     pub(crate) fn get_common_pattern_in_parent(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+56 |     pub(crate) fn expect_common_pattern_in_parent(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn get_pattern_range<R: PatternRangeIndex>(
+   |                   ^^^^^^^^^^^^^^^^^
+...
+85 |     pub(crate) fn get_vertex_subrange(
+   |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: methods `vertex_iter_mut`, `vertex_data_iter`, and `vertex_data_iter_mut` are never used
+   --> crates\context-trace\src\graph\getters\vertex.rs:297:19
+    |
+255 | impl<G: GraphKind> Hypergraph<G> {
+    | -------------------------------- methods in this implementation
+...
+297 |     pub(crate) fn vertex_iter_mut(
+    |                   ^^^^^^^^^^^^^^^
+...
+302 |     pub(crate) fn vertex_data_iter(&self) -> impl Iterator<Item = &VertexData> {
+    |                   ^^^^^^^^^^^^^^^^
+...
+305 |     pub(crate) fn vertex_data_iter_mut(
+    |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: method `new_atom_indices` is never used
+  --> crates\context-trace\src\graph\insert\atom.rs:76:19
+   |
+23 | / impl<G> crate::graph::Hypergraph<G>
+24 | | where
+25 | |     G: GraphKind,
+   | |_________________- method in this implementation
+...
+76 |       pub(crate) fn new_atom_indices(
+   |                     ^^^^^^^^^^^^^^^^
+
+warning: method `append_to_pattern` is never used
+  --> crates\context-trace\src\graph\insert\parents.rs:89:19
+   |
+24 | / impl<G> crate::graph::Hypergraph<G>
+25 | | where
+26 | |     G: GraphKind,
+   | |_________________- method in this implementation
+...
+89 |       pub(crate) fn append_to_pattern(
+   |                     ^^^^^^^^^^^^^^^^^
+
+warning: method `force_insert_pattern` is never used
+  --> crates\context-trace\src\graph\insert\pattern.rs:70:19
+   |
+19 | / impl<G> crate::graph::Hypergraph<G>
+20 | | where
+21 | |     G: GraphKind,
+   | |_________________- method in this implementation
+...
+70 |       pub(crate) fn force_insert_pattern(
+   |                     ^^^^^^^^^^^^^^^^^^^^
+
+warning: method `try_insert_patterns` is never used
+  --> crates\context-trace\src\graph\insert\patterns.rs:99:19
+   |
+21 | / impl<G> crate::graph::Hypergraph<G>
+22 | | where
+23 | |     G: GraphKind,
+   | |_________________- method in this implementation
+...
+99 |       pub(crate) fn try_insert_patterns(
+   |                     ^^^^^^^^^^^^^^^^^^^
+
+warning: methods `try_insert_range_in`, `insert_range_in`, and `insert_range_in_or_default` are never used
+  --> crates\context-trace\src\graph\insert\range.rs:30:19
+   |
+25 | / impl<G> crate::graph::Hypergraph<G>
+26 | | where
+27 | |     G: GraphKind,
+   | |_________________- methods in this implementation
+...
+30 |       pub(crate) fn try_insert_range_in(
+   |                     ^^^^^^^^^^^^^^^^^^^
+...
+64 |       pub(crate) fn insert_range_in(
+   |                     ^^^^^^^^^^^^^^^
+...
+74 |       pub(crate) fn insert_range_in_or_default(
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `validate_vertex` is never used
+  --> crates\context-trace\src\graph\insert\vertex.rs:49:19
+   |
+18 | / impl<G> crate::graph::Hypergraph<G>
+19 | | where
+20 | |     G: GraphKind,
+   | |_________________- method in this implementation
+...
+49 |       pub(crate) fn validate_vertex(
+   |                     ^^^^^^^^^^^^^^^
+
+warning: enum `ValidationError` is never used
+  --> crates\context-trace\src\graph\validation.rs:10:17
+   |
+10 | pub(crate) enum ValidationError {
+   |                 ^^^^^^^^^^^^^^^
+
+warning: methods `validate_pattern_indexing_range_at` and `validate_pattern_range_at` are never used
+  --> crates\context-trace\src\graph\validation.rs:19:19
+   |
+15 | / impl<G> crate::graph::Hypergraph<G>
+16 | | where
+17 | |     G: GraphKind,
+   | |_________________- methods in this implementation
+18 |   {
+19 |       pub(crate) fn validate_pattern_indexing_range_at(
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+36 |       pub(crate) fn validate_pattern_range_at(
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `NoAtom` is never constructed
+  --> crates\context-trace\src\graph\vertex\atom.rs:76:19
+   |
+76 | pub(crate) struct NoAtom;
+   |                   ^^^^^^
+
+warning: variants `New` and `Known` are never constructed
+  --> crates\context-trace\src\graph\vertex\atom.rs:86:5
+   |
+85 | pub(crate) enum NewAtomIndex {
+   |                 ------------ variants in this enum
+86 |     New(crate::graph::vertex::VertexIndex),
+   |     ^^^
+87 |     Known(crate::graph::vertex::VertexIndex),
+   |     ^^^^^
+   |
+   = note: `NewAtomIndex` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: methods `is_known` and `is_new` are never used
+  --> crates\context-trace\src\graph\vertex\atom.rs:91:19
+   |
+90 | impl NewAtomIndex {
+   | ----------------- methods in this implementation
+91 |     pub(crate) fn is_known(&self) -> bool {
+   |                   ^^^^^^^^
+...
+94 |     pub(crate) fn is_new(&self) -> bool {
+   |                   ^^^^^^
+
+warning: type alias `NewAtomIndices` is never used
+   --> crates\context-trace\src\graph\vertex\atom.rs:132:17
+    |
+132 | pub(crate) type NewAtomIndices = Vec<NewAtomIndex>;
+    |                 ^^^^^^^^^^^^^^
+
+warning: struct `CtxInfo` is never constructed
+   --> crates\context-trace\src\graph\vertex\atom.rs:156:19
+    |
+156 | pub(crate) struct CtxInfo<T: Atomize> {
+    |                   ^^^^^^^
+
+warning: trait `CtxLink` is never used
+   --> crates\context-trace\src\graph\vertex\atom.rs:162:18
+    |
+162 | pub(crate) trait CtxLink: Sized + Clone {
+    |                  ^^^^^^^
+
+warning: trait `CtxMapping` is never used
+   --> crates\context-trace\src\graph\vertex\atom.rs:175:18
+    |
+175 | pub(crate) trait CtxMapping<E: CtxLink> {
+    |                  ^^^^^^^^^^
+
+warning: trait `AtomCtx` is never used
+   --> crates\context-trace\src\graph\vertex\atom.rs:196:18
+    |
+196 | pub(crate) trait AtomCtx<T: Atomize, E: CtxLink>: Sized {
+    |                  ^^^^^^^
+
+warning: function `groups_to_string` is never used
+   --> crates\context-trace\src\graph\vertex\atom.rs:220:15
+    |
+220 | pub(crate) fn groups_to_string<
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `localized_children_iter_for_index` is never used
+  --> crates\context-trace\src\graph\vertex\data\children.rs:56:15
+   |
+56 | pub(crate) fn localized_children_iter_for_index(
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: multiple methods are never used
+   --> crates\context-trace\src\graph\vertex\data\children.rs:123:19
+    |
+ 68 | impl VertexData {
+    | --------------- methods in this implementation
+...
+123 |     pub(crate) fn get_child_pattern_range<R: PatternRangeIndex>(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+150 |     pub(crate) fn get_child_pattern_position(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+162 |     pub(crate) fn get_child_pattern_with_prefix_width(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+192 |     pub(crate) fn get_child_mut_at(
+    |                   ^^^^^^^^^^^^^^^^
+...
+204 |     pub(crate) fn expect_child_mut_at(
+    |                   ^^^^^^^^^^^^^^^^^^^
+...
+213 |     pub(crate) fn expect_pattern_len(
+    |                   ^^^^^^^^^^^^^^^^^^
+...
+231 |     pub(crate) fn find_child_pattern_id(
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+254 |     pub(crate) fn add_patterns_no_update(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+...
+282 |     pub(crate) fn child_pattern_vec(&self) -> Vec<Pattern> {
+    |                   ^^^^^^^^^^^^^^^^^
+...
+287 |     pub(crate) fn largest_postfix(&self) -> (PatternId, Token) {
+    |                   ^^^^^^^^^^^^^^^
+...
+308 |     pub(crate) fn all_children_iter(&self) -> impl IntoIterator<Item = &Token> {
+    |                   ^^^^^^^^^^^^^^^^^
+...
+313 |     pub(crate) fn all_localized_children_iter(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+320 |     pub(crate) fn top_down_containment_nodes(&self) -> Vec<(usize, Token)> {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `parents_mut` and `validate_links` are never used
+   --> crates\context-trace\src\graph\vertex\data\core.rs:138:19
+    |
+100 | impl VertexData {
+    | --------------- methods in this implementation
+...
+138 |     pub(crate) fn parents_mut(&mut self) -> &mut VertexParents {
+    |                   ^^^^^^^^^^^
+...
+171 |     pub(crate) fn validate_links(&self) {
+    |                   ^^^^^^^^^^^^^^
+
+warning: methods `get_parent`, `expect_parent`, `get_parents_below_width`, `get_parent_to_starting_at`, `get_parent_at_prefix_of`, and `get_parent_at_postfix_of` are never used
+   --> crates\context-trace\src\graph\vertex\data\parents.rs:26:19
+    |
+ 24 | impl VertexData {
+    | --------------- methods in this implementation
+ 25 |     /// Get parent relationship by vertex index
+ 26 |     pub(crate) fn get_parent(
+    |                   ^^^^^^^^^^
+...
+ 49 |     pub(crate) fn expect_parent(
+    |                   ^^^^^^^^^^^^^
+...
+110 |     pub(crate) fn get_parents_below_width(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+128 |     pub(crate) fn get_parent_to_starting_at(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+141 |     pub(crate) fn get_parent_at_prefix_of(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+149 |     pub(crate) fn get_parent_at_postfix_of(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: trait `HasVertexDataMut` is never used
+  --> crates\context-trace\src\graph\vertex\has_vertex_data.rs:51:18
+   |
+51 | pub(crate) trait HasVertexDataMut: HasVertexData {
+   |                  ^^^^^^^^^^^^^^^^
+
+warning: multiple methods are never used
+   --> crates\context-trace\src\graph\vertex\location\child.rs:148:19
+    |
+136 | impl ChildLocation {
+    | ------------------ methods in this implementation
+...
+148 |     pub(crate) fn get_child_in<'a>(
+    |                   ^^^^^^^^^^^^
+...
+155 |     pub(crate) fn expect_child_in<'a>(
+    |                   ^^^^^^^^^^^^^^^
+...
+162 |     pub(crate) fn get_child_in_pattern<'a>(
+    |                   ^^^^^^^^^^^^^^^^^^^^
+...
+168 |     pub(crate) fn expect_child_in_pattern<'a>(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+175 |     pub(crate) fn get_pattern_in<'a>(
+    |                   ^^^^^^^^^^^^^^
+...
+181 |     pub(crate) fn expect_pattern_in<'a>(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+188 |     pub(crate) fn to_child_location(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+194 |     pub(crate) fn to_pattern_location(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PatternRangeLocation` is never constructed
+  --> crates\context-trace\src\graph\vertex\location\pattern.rs:21:19
+   |
+21 | pub(crate) struct PatternRangeLocation {
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `with_range`, `get_pattern_in`, and `expect_pattern_in` are never used
+   --> crates\context-trace\src\graph\vertex\location\pattern.rs:75:19
+    |
+ 58 | impl PatternLocation {
+    | -------------------- methods in this implementation
+...
+ 75 |     pub(crate) fn with_range(
+    |                   ^^^^^^^^^^
+...
+101 |     pub(crate) fn get_pattern_in<'a>(
+    |                   ^^^^^^^^^^^^^^
+...
+107 |     pub(crate) fn expect_pattern_in<'a>(
+    |                   ^^^^^^^^^^^^^^^^^
+
+warning: multiple methods are never used
+   --> crates\context-trace\src\graph\vertex\parent.rs:70:19
+    |
+ 60 | impl Parent {
+    | ----------- methods in this implementation
+...
+ 70 |     pub(crate) fn get_width(&self) -> TokenWidth {
+    |                   ^^^^^^^^^
+...
+ 73 |     pub(crate) fn any_pattern_index(&self) -> PatternIndex {
+    |                   ^^^^^^^^^^^^^^^^^
+...
+ 96 |     pub(crate) fn exists_at_pos(
+    |                   ^^^^^^^^^^^^^
+...
+102 |     pub(crate) fn exists_at_pos_in_pattern(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+112 |     pub(crate) fn get_index_at_pos(
+    |                   ^^^^^^^^^^^^^^^^
+...
+121 |     pub(crate) fn get_index_at_postfix_of(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+133 |     pub(crate) fn filter_pattern_indices_at_prefix(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+141 |     pub(crate) fn filter_pattern_indices_at_end_in_patterns<'a>(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `infix` is never used
+   --> crates\context-trace\src\graph\vertex\pattern\mod.rs:269:15
+    |
+269 | pub(crate) fn infix<T: ToToken + Clone>(
+    |               ^^^^^
+
+warning: function `single_child_patterns` is never used
+   --> crates\context-trace\src\graph\vertex\pattern\mod.rs:297:15
+    |
+297 | pub(crate) fn single_child_patterns(
+    |               ^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `single_child_pattern` is never used
+   --> crates\context-trace\src\graph\vertex\pattern\mod.rs:307:15
+    |
+307 | pub(crate) fn single_child_pattern(half: Pattern) -> Result<Token, Pattern> {
+    |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `split_pattern_at_index` is never used
+   --> crates\context-trace\src\graph\vertex\pattern\mod.rs:315:15
+    |
+315 | pub(crate) fn split_pattern_at_index<T: ToToken + Clone>(
+    |               ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `split_context` is never used
+   --> crates\context-trace\src\graph\vertex\pattern\mod.rs:322:15
+    |
+322 | pub(crate) fn split_context<T: ToToken + Clone>(
+    |               ^^^^^^^^^^^^^
+
+warning: trait `StartInclusive` is never used
+  --> crates\context-trace\src\graph\vertex\pattern\pattern_range.rs:53:18
+   |
+53 | pub(crate) trait StartInclusive {
+   |                  ^^^^^^^^^^^^^^
+
+warning: trait `EndInclusive` is never used
+  --> crates\context-trace\src\graph\vertex\pattern\pattern_range.rs:76:18
+   |
+76 | pub(crate) trait EndInclusive {
+   |                  ^^^^^^^^^^^^
+
+warning: methods `get_width`, `down_key`, and `up_key` are never used
+   --> crates\context-trace\src\graph\vertex\token.rs:219:19
+    |
+204 | impl Token {
+    | ---------- methods in this implementation
+...
+219 |     pub(crate) fn get_width(&self) -> usize {
+    |                   ^^^^^^^^^
+...
+234 |     pub(crate) fn down_key(
+    |                   ^^^^^^^^
+...
+240 |     pub(crate) fn up_key(
+    |                   ^^^^^^
+
+warning: trait `WideMut` is never used
+  --> crates\context-trace\src\graph\vertex\wide.rs:79:18
+   |
+79 | pub(crate) trait WideMut: Wide {
+   |                  ^^^^^^^
+
+warning: function `format_event_fields` is never used
+  --> crates\context-trace\src\logging\tracing_utils\formatter\fields.rs:81:15
+   |
+81 | pub(super) fn format_event_fields(formatted_fields: &str) -> String {
+   |               ^^^^^^^^^^^^^^^^^^^
+
+   Compiling context-search v0.1.0 (C:\Users\linus_behrbohm\git\private\context-engine\crates\context-search)
+warning: unused import: `PathCursor`
+ --> crates\context-search\src\compare\parent.rs:7:9
+  |
+7 |         PathCursor,
+  |         ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `compare::parent::ParentCompareState`
+ --> crates\context-search\src\compare\state\core.rs:2:5
+  |
+2 |     compare::parent::ParentCompareState,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `marker::PhantomData`
+  --> crates\context-search\src\compare\state\core.rs:21:5
+   |
+21 |     marker::PhantomData,
+   |     ^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `impl_display_via_compact`
+  --> crates\context-search\src\cursor\checkpointed.rs:20:5
+   |
+20 |     impl_display_via_compact,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `tracing::trace`
+  --> crates\context-search\src\match\mod.rs:25:5
+   |
+25 | use tracing::trace;
+   |     ^^^^^^^^^^^^^^
+
+warning: unused imports: `ConclusiveEnd`, `ParentCandidate`, `RootAdvanceResult`, `RootCursor`, `RootEndResult`, and `state::matched::MatchResult`
+  --> crates\context-search\src\match\iterator.rs:7:13
+   |
+ 7 |             ConclusiveEnd,
+   |             ^^^^^^^^^^^^^
+ 8 |             RootAdvanceResult,
+   |             ^^^^^^^^^^^^^^^^^
+ 9 |             RootCursor,
+   |             ^^^^^^^^^^
+10 |             RootEndResult,
+   |             ^^^^^^^^^^^^^
+...
+19 |             ParentCandidate,
+   |             ^^^^^^^^^^^^^^^
+...
+23 |     state::matched::MatchResult,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `logging::format_utils::pretty`
+  --> crates\context-search\src\match\iterator.rs:27:5
+   |
+27 |     logging::format_utils::pretty,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `derive_new::new`
+  --> crates\context-search\src\match\iterator.rs:30:5
+   |
+30 | use derive_new::new;
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `warn`
+  --> crates\context-search\src\match\iterator.rs:34:5
+   |
+34 |     warn,
+   |     ^^^^
+
+warning: unused import: `MarkMatchState`
+  --> crates\context-search\src\match\root_cursor\advance.rs:18:9
+   |
+18 |         MarkMatchState,
+   |         ^^^^^^^^^^^^^^
+
+warning: unused import: `state::matched::MatchResult`
+  --> crates\context-search\src\match\root_cursor\core.rs:13:5
+   |
+13 |     state::matched::MatchResult,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `trace`
+ --> crates\context-search\src\search\searchable.rs:8:5
+  |
+8 |     trace,
+  |     ^^^^^
+
+warning: unused imports: `Checkpointed` and `r#match::iterator::SearchIterator`
+  --> crates\context-search\src\search\searchable.rs:13:9
+   |
+13 |         Checkpointed,
+   |         ^^^^^^^^^^^^
+...
+17 |     r#match::iterator::SearchIterator,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `r#match::root_cursor::CompareParentBatch` and `traversal::policy::DirectedTraversalPolicy`
+   --> crates\context-search\src\search\searchable.rs:176:5
+    |
+176 |     r#match::root_cursor::CompareParentBatch,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+177 |     traversal::policy::DirectedTraversalPolicy,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `path::accessors::role::End`
+   --> crates\context-search\src\search\mod.rs:375:13
+    |
+375 |             path::accessors::role::End,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `CompactFormat` and `write_indent`
+ --> crates\context-search\src\state\end\mod.rs:3:9
+  |
+3 |         write_indent,
+  |         ^^^^^^^^^^^^
+4 |         CompactFormat,
+  |         ^^^^^^^^^^^^^
+
+warning: unused imports: `compare::parent::ParentCompareState` and `cursor::PatternCursor`
+  --> crates\context-search\src\state\end\mod.rs:15:5
+   |
+15 |     compare::parent::ParentCompareState,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |     cursor::PatternCursor,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `RootedStartPathAccessor`
+ --> crates\context-search\src\state\end\postfix.rs:8:5
+  |
+8 |     RootedStartPathAccessor,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `path::accessors::path_accessor::StatePosition`
+  --> crates\context-search\src\state\mod.rs:10:5
+   |
+10 |     path::accessors::path_accessor::StatePosition,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `StatePosition`
+  --> crates\context-search\src\logging\mod.rs:29:55
+   |
+29 |     path::accessors::path_accessor::{HasTargetOffset, StatePosition},
+   |                                                       ^^^^^^^^^^^^^
+
+warning: unused import: `crate::cursor::PathCursor`
+ --> crates\context-search\src\tests\search\mod.rs:5:5
+  |
+5 | use crate::cursor::PathCursor;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Candidate`, `Matched`, `PathCursor`, `PatternCursor`, and `compare::state::CompareState`
+ --> crates\context-search\src\tests\state_advance\compare_state.rs:4:5
+  |
+4 |     compare::state::CompareState,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 |     cursor::{
+6 |         Candidate,
+  |         ^^^^^^^^^
+7 |         Matched,
+  |         ^^^^^^^
+8 |         PathCursor,
+  |         ^^^^^^^^^^
+9 |         PatternCursor,
+  |         ^^^^^^^^^^^^^
+
+warning: unused imports: `*` and `path::accessors::path_accessor::HasTargetOffset`
+  --> crates\context-search\src\tests\state_advance\compare_state.rs:12:21
+   |
+12 | use context_trace::{path::accessors::path_accessor::HasTargetOffset, *};
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^
+
+warning: unused import: `std::marker::PhantomData`
+  --> crates\context-search\src\tests\state_advance\compare_state.rs:13:5
+   |
+13 | use std::marker::PhantomData;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\parent.rs:79:51
+    |
+ 79 |                 let cursor_position = self.cursor.current().atom_position;
+    |                                                   ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+  --> crates\context-search\src\compare\parent.rs:84:32
+   |
+84 |                         child: Checkpointed {
+   |                                ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\compare\state\core.rs:170:41
+    |
+170 |             query.current = %self.query.current(),
+    |                                         ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:192:26
+    |
+192 |             (*self.query.current()).role_rooted_leaf_token::<End, _>(trav);
+    |                          ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:195:27
+    |
+195 |             &(*self.query.current()).path,
+    |                           ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:202:38
+    |
+202 |             cursor_pos = %self.query.current().atom_position,
+    |                                      ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:279:39
+    |
+279 |             child_state = %self.child.current().child_state,
+    |                                       ^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-7020211905706021686.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:280:34
+    |
+280 |             cursor = %self.query.current(),
+    |                                  ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:290:22
+    |
+288 |                   let prefixes = self
+    |  ________________________________-
+289 | |                     .child
+290 | |                     .current()
+    | |                     -^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>`
+    | |_____________________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-7020211905706021686.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\decomposition.rs:327:40
+    |
+327 | ...                   child: Checkpointed {
+    |                              ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:351:22
+    |
+349 |                   let cursor_prefixes = self
+    |  _______________________________________-
+350 | |                     .query
+351 | |                     .current()
+    | |                     -^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    | |_____________________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\decomposition.rs:356:46
+    |
+356 |                     cursor_pos = %self.query.current().atom_position,
+    |                                              ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\decomposition.rs:390:40
+    |
+390 | ...                   query: Checkpointed {
+    |                              ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:38:37
+    |
+ 38 |         let cursor_pos = self.query.current().atom_position;
+    |                                     ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:41:25
+    |
+ 41 |             &self.query.current().path,
+    |                         ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `mark_match` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:45:40
+    |
+ 45 |         let query_matched = self.query.mark_match();
+    |                                        ^^^^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `mark_match` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<ChildCursor<Candidate, EndNode>, HasCandidate>`
+            - `Checkpointed<PathCursor<P, Candidate>, HasCandidate>`
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `MarkMatchState` defines an item `mark_match`, perhaps you need to implement it
+   --> crates\context-search\src\cursor\mod.rs:122:1
+    |
+122 | pub trait MarkMatchState {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `mark_match` found for struct `Checkpointed<ChildCursor<Candidate, EndNode>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:46:40
+    |
+ 46 |         let child_matched = self.child.mark_match();
+    |                                        ^^^^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, EndNode>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `mark_match` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<ChildCursor<Candidate, EndNode>, HasCandidate>`
+            - `Checkpointed<PathCursor<P, Candidate>, HasCandidate>`
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `MarkMatchState` defines an item `mark_match`, perhaps you need to implement it
+   --> crates\context-search\src\cursor\mod.rs:122:1
+    |
+122 | pub trait MarkMatchState {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `mark_mismatch` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:70:31
+    |
+ 70 |             query: self.query.mark_mismatch(),
+    |                               ^^^^^^^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `mark_mismatch` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<ChildCursor<Candidate, EndNode>, HasCandidate>`
+            - `Checkpointed<PathCursor<P, Candidate>, HasCandidate>`
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `MarkMatchState` defines an item `mark_mismatch`, perhaps you need to implement it
+   --> crates\context-search\src\cursor\mod.rs:122:1
+    |
+122 | pub trait MarkMatchState {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `mark_mismatch` found for struct `Checkpointed<ChildCursor<Candidate, EndNode>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:71:31
+    |
+ 71 |             child: self.child.mark_mismatch(),
+    |                               ^^^^^^^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, EndNode>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `mark_mismatch` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<ChildCursor<Candidate, EndNode>, HasCandidate>`
+            - `Checkpointed<PathCursor<P, Candidate>, HasCandidate>`
+    = help: items from traits can only be used if the trait is implemented and in scope
+note: `MarkMatchState` defines an item `mark_mismatch`, perhaps you need to implement it
+   --> crates\context-search\src\cursor\mod.rs:122:1
+    |
+122 | pub trait MarkMatchState {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:88:34
+    |
+ 88 |             cursor = %self.query.current(),
+    |                                  ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current_mut` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:93:26
+    |
+ 93 |         match self.query.current_mut().advance(trav) {
+    |                          ^^^^^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current_mut` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0308]: mismatched types
+   --> crates\context-search\src\compare\state\transitions.rs:100:28
+    |
+100 |                     query: query_candidate,
+    |                            ^^^^^^^^^^^^^^^ expected `Checkpointed<PathCursor<..., ...>>`, found `Checkpointed<PathCursor<..., ...>, ...>`
+    |
+    = note: expected struct `Checkpointed<_, AtCheckpoint>`
+               found struct `Checkpointed<_, HasCandidate>`
+
+error[E0599]: no method named `as_candidate` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<...>>, ...>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:124:43
+    |
+124 |                     child: advanced_child.as_candidate(),
+    |                                           ^^^^^^^^^^^^
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `as_candidate` not found for this struct
+    |
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-5664220386215599280.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: there is a method `candidate` with a similar name
+    |
+124 -                     child: advanced_child.as_candidate(),
+124 +                     child: advanced_child.candidate(),
+    |
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate>>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:149:44
+    |
+149 |         let child_state_clone = self.child.current().child_state.clone();
+    |                                            ^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\transitions.rs:152:24
+    |
+152 |                 child: Checkpointed {
+    |                        ^^^^^^^^^^^^ missing `_state`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\transitions.rs:162:24
+    |
+162 |                 child: Checkpointed {
+    |                        ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor>` in the current scope
+   --> crates\context-search\src\compare\state\transitions.rs:181:44
+    |
+181 |         let child_state_clone = self.child.current().child_state.clone();
+    |                                            ^^^^^^^ method not found in `Checkpointed<ChildCursor>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\transitions.rs:184:24
+    |
+184 |                 child: Checkpointed {
+    |                        ^^^^^^^^^^^^ missing `_state`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\compare\state\transitions.rs:196:24
+    |
+196 |                 child: Checkpointed {
+    |                        ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\iterator.rs:122:33
+    |
+122 |             matched_state.child.current().child_state.root_parent();
+    |                                 ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:103:49
+    |
+103 |                     root = %matched_state.child.current().child_state.path.root_parent(),
+    |                                                 ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:104:54
+    |
+104 |                     query_pos = *matched_state.query.current().atom_position.as_ref(),
+    |                                                      ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:162:40
+    |
+162 |                     cursor.state.child.current().child_state.path.root_parent();
+    |                                        ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:165:53
+    |
+165 |                     query_pos = *cursor.state.query.current().atom_position.as_ref(),
+    |                                                     ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:185:22
+    |
+182 |                   let root = both_advanced
+    |  ____________________________-
+183 | |                     .state
+184 | |                     .child
+185 | |                     .current()
+    | |                     -^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>`
+    | |_____________________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-7020211905706021686.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:191:60
+    |
+191 |                     child_pos = ?both_advanced.state.child.current().child_state.target_offset(),
+    |                                                            ^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-7020211905706021686.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:200:22
+    |
+197 |                   let root = need_parent
+    |  ____________________________-
+198 | |                     .state
+199 | |                     .child
+200 | |                     .current()
+    | |                     -^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    | |_____________________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:221:30
+    |
+221 |             self.state.child.current().child_state.path.root_parent();
+    |                              ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:223:31
+    |
+223 |             *self.state.query.current().atom_position.as_ref();
+    |                               ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:237:43
+    |
+237 |                     *query_advanced.query.current().atom_position.as_ref();
+    |                                           ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:259:41
+    |
+259 |                     matched_state.child.current().child_state.entry_pos;
+    |                                         ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:261:41
+    |
+261 |                     matched_state.child.current().child_state.path.clone();
+    |                                         ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:263:41
+    |
+263 |                     matched_state.child.current().child_state.start_pos;
+    |                                         ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\advance.rs:326:39
+    |
+326 |         let root_parent = state.child.current().child_state.path.root_parent();
+    |                                       ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\match\root_cursor\advance.rs:385:28
+    |
+385 |         let cursor_state = Checkpointed {
+    |                            ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\root_cursor\core.rs:96:44
+    |
+ 96 |             parent_state: self.state.child.current().child_state.parent_state(),
+    |                                            ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\match\mod.rs:80:29
+    |
+ 80 |                 state.child.current().child_state.root_parent(),
+    |                             ^^^^^^^ method not found in `Checkpointed<ChildCursor<Candidate, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-7020211905706021686.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+warning: `context-trace` (lib) generated 68 warnings (run `cargo fix --lib -p context-trace` to apply 21 suggestions)
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:216:38
+    |
+216 |             root = %last_match.child.current().child_state.root_parent(),
+    |                                      ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:217:48
+    |
+217 |             checkpoint_pos = *last_match.query.current().atom_position.as_ref(),
+    |                                                ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:237:26
+    |
+234 |                       let checkpoint_pos = *next_match
+    |  ___________________________________________-
+235 | |                         .state
+236 | |                         .query
+237 | |                         .current()
+    | |                         -^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    | |_________________________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:241:56
+    |
+241 |                         root = %next_match.state.child.current().child_state.root_parent(),
+    |                                                        ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:320:40
+    |
+320 |         let result_query = state.query.current();
+    |                                        ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>` in the current scope
+   --> crates\context-search\src\search\mod.rs:321:40
+    |
+321 |         let result_child = state.child.current();
+    |                                        ^^^^^^^ method not found in `Checkpointed<ChildCursor<Matched, PositionAnnotated<ChildLocation>>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+    = note: the full name for the type has been written to 'C:\Users\linus_behrbohm\git\private\context-engine\target\debug\deps\context_search-2182cf97734c1633.long-type-13305231061582157757.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\search\mod.rs:357:28
+    |
+357 |         let cursor_state = Checkpointed {
+    |                            ^^^^^^^^^^^^ missing `_state`
+
+error[E0063]: missing field `_state` in initializer of `Checkpointed<_, _>`
+   --> crates\context-search\src\state\start\core.rs:202:26
+    |
+202 |             let cursor = Checkpointed {
+    |                          ^^^^^^^^^^^^ missing `_state`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>` in the current scope
+   --> crates\context-search\src\logging\mod.rs:40:45
+    |
+ 40 |         let cursor_pos: usize = self.cursor.current().atom_position.into();
+    |                                             ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Candidate>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Q>>` in the current scope
+   --> crates\context-search\src\logging\mod.rs:107:43
+    |
+107 |         let query_pos: usize = self.query.current().atom_position.into();
+    |                                           ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Q>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<I, EndNode>>` in the current scope
+   --> crates\context-search\src\logging\mod.rs:109:26
+    |
+109 |             (*self.child.current().child_state.target_offset()).into();
+    |                          ^^^^^^^ method not found in `Checkpointed<ChildCursor<I, EndNode>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<ChildCursor<I, EndNode>>` in the current scope
+   --> crates\context-search\src\logging\mod.rs:139:14
+    |
+138 | /         self.child
+139 | |             .current()
+    | |             -^^^^^^^ method not found in `Checkpointed<ChildCursor<I, EndNode>>`
+    | |_____________|
+    |
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 |   pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    |   --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+error[E0599]: no method named `current` found for struct `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Q>>` in the current scope
+   --> crates\context-search\src\logging\mod.rs:146:20
+    |
+146 |         self.query.current().fmt_indented(f, indent + 1)?;
+    |                    ^^^^^^^ method not found in `Checkpointed<PathCursor<RootedRangePath<context_trace::Pattern>, Q>>`
+    |
+   ::: crates\context-search\src\cursor\checkpointed.rs:112:1
+    |
+112 | pub struct Checkpointed<C: HasCheckpoint, S: CandidateState = AtCheckpoint> {
+    | --------------------------------------------------------------------------- method `current` not found for this struct
+    |
+    = note: the method was found for
+            - `Checkpointed<C, HasCandidate>`
+
+Some errors have detailed explanations: E0063, E0308, E0599.
+For more information about an error, try `rustc --explain E0063`.
+warning: `context-search` (lib) generated 24 warnings
+error: could not compile `context-search` (lib) due to 60 previous errors; 24 warnings emitted
