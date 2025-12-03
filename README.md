@@ -88,6 +88,14 @@ let search_result = graph.find_sequence(vec!["hello", "world"])?;
 
 ## Development
 
+### Prerequisites
+
+This project requires Rust nightly due to dependencies that use unstable features.
+The `rust-toolchain.toml` file in the repository root automatically selects the 
+nightly toolchain when you work in this directory.
+
+### Building and Testing
+
 Each crate can be developed and tested independently:
 
 ```bash
