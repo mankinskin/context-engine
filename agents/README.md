@@ -20,6 +20,28 @@ agents/
 └── tmp/              # Temporary analysis files (never commit)
 ```
 
+## File Naming Convention (CRITICAL)
+
+**All agent-generated files MUST include a timestamp prefix for chronological ordering:**
+
+- **Format:** `YYYYMMDD_<FILENAME>.md` (e.g., `20251203_FEATURE_NAME.md`)
+- **Benefits:**
+  - Files sorted newest-to-oldest alphabetically (descending date order)
+  - File age immediately visible without checking git history
+  - Easy tracking of document evolution over time
+  - Prevents filename collisions across time periods
+  
+**Examples:**
+- ✅ `20251203_SEARCH_ALGORITHM_GUIDE.md`
+- ✅ `20251127_PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md`
+- ✅ `20250122_TRAIT_CONSOLIDATION_V2_COMPLETE.md`
+- ❌ `SEARCH_ALGORITHM_GUIDE.md` (missing timestamp)
+
+**When to use:**
+- Always for new files in `guides/`, `plans/`, `implemented/`, `bug-reports/`, `analysis/`
+- Not required for `INDEX.md` files (special case)
+- Not required for `tmp/` files (temporary, not committed)
+
 ---
 
 ## When to Use Each Directory
@@ -40,7 +62,7 @@ agents/
 - After user clarifies unclear behavior
 - When establishing best practices
 
-**Format:** `<TOPIC>_GUIDE.md`
+**Format:** `YYYYMMDD_<TOPIC>_GUIDE.md`
 
 **Index:** `agents/guides/INDEX.md` (tag-based search)
 
@@ -62,14 +84,14 @@ agents/
 **When to add:** >5 files affected, >100 lines changed, or unclear scope
 
 **Workflow:**
-1. Create `PLAN_<task_name>.md` using template
+1. Create `YYYYMMDD_PLAN_<task_name>.md` using template
 2. Gather ALL context before planning
 3. Document: Objective, Context, Analysis, Steps, Risks, Validation
 4. Execute in separate session (fresh context)
 5. Create summary in `agents/implemented/` + update INDEX.md
-6. Archive plan (rename to `PLAN_<task>_DONE.md`) or delete if obsolete
+6. Archive plan (rename to `YYYYMMDD_PLAN_<task>_DONE.md`) or delete if obsolete
 
-**Format:** `PLAN_<task_name>.md`
+**Format:** `YYYYMMDD_PLAN_<task_name>.md`
 
 **Template:** `agents/plans/PLAN_TEMPLATE.md`
 
@@ -86,7 +108,7 @@ agents/
 
 **When to add:** After completing significant features, refactors, or new APIs
 
-**Format:** `<FEATURE>_IMPLEMENTATION.md` or `<FEATURE>.md`
+**Format:** `YYYYMMDD_<FEATURE>_IMPLEMENTATION.md` or `YYYYMMDD_<FEATURE>.md`
 
 **Index:** `agents/implemented/INDEX.md` (tag-based search)
 
@@ -107,7 +129,7 @@ agents/
 
 **When to add:** After identifying root cause or documenting incorrect behavior
 
-**Format:** `BUG_<component>_<description>.md` or `<PROBLEM>_ANALYSIS.md`
+**Format:** `YYYYMMDD_BUG_<component>_<description>.md` or `YYYYMMDD_<PROBLEM>_ANALYSIS.md`
 
 **Index:** `agents/bug-reports/INDEX.md` (tag-based search)
 
@@ -131,7 +153,7 @@ agents/
 
 **When to add:** When documenting algorithmic differences, design decisions, or comparing approaches
 
-**Format:** `<TOPIC>_COMPARISON.md` or `<TOPIC>_ANALYSIS.md`
+**Format:** `YYYYMMDD_<TOPIC>_COMPARISON.md` or `YYYYMMDD_<TOPIC>_ANALYSIS.md`
 
 **Index:** `agents/analysis/INDEX.md` (tag-based search)
 

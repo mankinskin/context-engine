@@ -4,7 +4,7 @@ Plans for major refactorings and features before execution.
 
 ## Active Plans
 
-### PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md
+### 20251127_PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md
 - **Status:** 📋 Ready for Review (Created 2025-11-27)
 - **Priority:** High (blocks find_consecutive1 test + architecture improvement)
 - **Effort:** ~9.5 hours (8 phases)
@@ -14,7 +14,7 @@ Plans for major refactorings and features before execution.
 - **Solution:** `candidate: Option<C>` instead of `current: C`, reusable in MatchResult
 - **Next Steps:** Review design questions, confirm approach, begin Phase 1 implementation
 
-### PLAN_checkpoint_architecture_refactor.md
+### 20251123_PLAN_checkpoint_architecture_refactor.md
 - **Status:** ⚠️ Superseded by PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md
 - **Priority:** ~~High~~ Resolved by new plan
 - **Tags:** #architecture #refactor #checkpoints #cursor-state
@@ -22,7 +22,7 @@ Plans for major refactorings and features before execution.
 - **Blocking:** ~~find_consecutive1~~, prefix1, range1 tests (prefix/range fixed, consecutive addressed in new plan)
 - **Note:** Original plan identified issues but new plan provides comprehensive solution
 
-### PLAN_TEST_ECOSYSTEM_IMPROVEMENTS.md
+### 20251130_PLAN_TEST_ECOSYSTEM_IMPROVEMENTS.md
 - **Status:** 📋 Ready for Implementation (Created 2025-11-30, Updated after clarification)
 - **Priority:** High (fix position bug + improve test maintainability)
 - **Effort:** Sprint 0 (2 days bug fix) + 5 weeks (infrastructure + coverage)
@@ -53,4 +53,4 @@ Plans for major refactorings and features before execution.
 
 ## Templates
 
-- `PLAN_TEMPLATE.md` - Template for new plans
+- `20251203_PLAN_TEMPLATE.md` - Template for new plans

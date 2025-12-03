@@ -30,7 +30,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ## All Guides
 
-### TOKEN_TEST_LABELING_GUIDE.md
+### 20251203_TOKEN_TEST_LABELING_GUIDE.md
 **Confidence:** 🟢 High - Recently verified, complete solution
 
 **Summary:** Fix token test labeling so logs show readable names like `"a"` instead of `T0w1`.
@@ -44,7 +44,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### COMPACT_FORMAT_GUIDE.md
+### 20251203_COMPACT_FORMAT_GUIDE.md
 **Confidence:** 🟢 High - Current, well-documented system
 
 **Summary:** Compact formatting system for readable tracing logs with multiple output levels.
@@ -58,7 +58,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### TRACING_GUIDE.md
+### 20251203_TRACING_GUIDE.md
 **Confidence:** 🟢 High - Stable infrastructure, actively used
 
 **Summary:** Tracing infrastructure, structured logging, test log files, and configuration.
@@ -73,7 +73,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### ROOTED_PATH_MACRO_GUIDE.md
+### 20251203_ROOTED_PATH_MACRO_GUIDE.md
 **Confidence:** 🟡 Medium - Functional but may have undocumented edge cases
 
 **Summary:** Using `rooted_path!` macro for clean path construction.
@@ -87,7 +87,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### UNIFIED_API_GUIDE.md
+### 20251203_UNIFIED_API_GUIDE.md
 **Confidence:** 🟢 High - Complete implementation, tested
 
 **Summary:** Unified API for parsing, generating, and transforming import/export statements in refactor-tool.
@@ -101,7 +101,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### SEARCH_ALGORITHM_GUIDE.md
+### 20251203_SEARCH_ALGORITHM_GUIDE.md
 **Confidence:** 🟢 High - Comprehensive, current design
 
 **Summary:** How the hierarchical pattern search algorithm works, including query exhaustion vs exact match distinction.
@@ -116,7 +116,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### DESIRED_SEARCH_ALGORITHM.md
+### 20251203_DESIRED_SEARCH_ALGORITHM.md
 **Confidence:** 🟢 High - Authoritative algorithm specification
 
 **Summary:** Official specification for the desired search algorithm behavior - bottom-up exploration with ascending width priority.
@@ -133,7 +133,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### CONTEXT_INSERT_GUIDE.md
+### 20251203_CONTEXT_INSERT_GUIDE.md
 **Confidence:** 🟢 High - Verified patterns and tested examples
 
 **Summary:** Practical guide for using context-insert to add patterns to hypergraphs through split-join architecture.
@@ -161,7 +161,7 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### ADVANCE_CYCLE_GUIDE.md
+### 20251203_ADVANCE_CYCLE_GUIDE.md
 **Confidence:** 🟢 High - Complete current implementation documentation
 
 **Summary:** Complete guide to hierarchical search advance cycle with checkpointed cursors - how patterns match across token boundaries through parent exploration.

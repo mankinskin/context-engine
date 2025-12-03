@@ -50,7 +50,7 @@ Completed Phase 2 file organization. Workspace reorganized: extracted refactor-t
 - `crates/context-read/FILE_INDEX.md` - 20 files analyzed (★ excellent)
 
 ### Action Plan
-- `agents/plans/PLAN_FILE_ORGANIZATION.md` - Comprehensive 8-week plan
+- `agents/plans/20251123_PLAN_FILE_ORGANIZATION.md` - Comprehensive 8-week plan
 
 ## Key Achievements
 
@@ -112,7 +112,7 @@ Completed Phase 2 file organization. Workspace reorganized: extracted refactor-t
 
 ## Next Steps
 
-1. **Review Plan:** Read `agents/plans/PLAN_FILE_ORGANIZATION.md`
+1. **Review Plan:** Read `agents/plans/20251123_PLAN_FILE_ORGANIZATION.md`
 2. **Choose Starting Point:** Recommend context-search Phase 1
 3. **Begin Implementation:** Start with match/root_cursor.rs (highest priority)
 4. **Track Progress:** Update plan with completed work
