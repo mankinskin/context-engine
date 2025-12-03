@@ -195,6 +195,39 @@ fn my_test() {
 
 ## API Changes (Recent)
 
+### ✅ Atom Iterator Support (Dec 2024)
+
+**`find_sequence()` removed in favor of `Searchable` for atom iterators:**
+
+```rust
+// ❌ OLD: find_sequence() method (REMOVED)
+graph.find_sequence("abc".chars())
+
+// ✅ NEW: find_ancestor() with atom iterators (direct via Searchable)
+graph.find_ancestor("abc".chars())
+```
+
+**How it works:**
+- `Searchable` trait now implemented for `std::str::Chars<'_>` and similar atom iterators
+- Atom sequences are automatically converted to tokens via `graph.get_atom_children()`
+- Works with `find_ancestor()`, `find_parent()`, and all `Searchable` methods
+- Requires: `char: AsAtom<AtomOf<TravKind<K::Trav>>>` (automatically satisfied for char-based graphs)
+
+**Example usage:**
+```rust
+// Direct atom iterator search
+let result = graph.find_ancestor("hello".chars())?;
+
+// Works with all Searchable methods
+let result = "world".chars().search(graph.ctx())?;
+
+// Also works in macros
+assert_indices!(graph, abc, def);  // Uses find_ancestor internally
+```
+
+**Migration:**
+Replace all `find_sequence()` calls with `find_ancestor()` - the functionality is identical.
+
 ### ⚠️ Major Breaking Changes
 
 **Old API (removed):**
