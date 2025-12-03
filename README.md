@@ -88,6 +88,16 @@ let search_result = graph.find_sequence(vec!["hello", "world"])?;
 
 ## Development
 
+### Prerequisites
+
+This project requires Rust nightly due to the use of unstable language features
+such as `test`, `assert_matches`, `try_blocks`, `slice_pattern`, 
+`exact_size_is_empty`, `associated_type_defaults`, and `type_changing_struct_update`.
+The `rust-toolchain.toml` file in the repository root automatically selects the 
+nightly toolchain when you work in this directory.
+
+### Building and Testing
+
 Each crate can be developed and tested independently:
 
 ```bash

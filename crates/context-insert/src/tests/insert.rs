@@ -6,7 +6,12 @@ use crate::{
     interval::init::InitInterval,
 };
 use context_search::*;
-use context_trace::*;
+use context_trace::{
+    *,
+    tests::macros::string_repr::{assert_token_string_repr, assert_all_vertices_unique},
+    trace::has_graph::HasGraph,
+};
+use maplit::hashset;
 use pretty_assertions::{
     assert_eq,
     assert_matches,
@@ -29,24 +34,42 @@ fn index_pattern1() {
     let _tracing = context_trace::init_test_tracing!(&graph);
     print!("{:#?}", xabyz);
     // todo: split sub patterns not caught by query search
+    
+    // Verify all vertices have unique string representations before insertion
+    {
+        let g = graph.graph();
+        assert_all_vertices_unique(&*g);
+    }
+    
+    let graph = HypergraphRef::from(graph);
     let query = vec![by, z];
     let byz: Token = graph.insert(query.clone()).expect("Indexing failed");
-    assert_eq!(
-        byz,
-        Token {
-            index: VertexIndex(12),
-            width: 3.into(),
-        },
-        "byz"
-    );
+    
+    // Assert the token has the expected string representation and width
+    {
+        let g = graph.graph();
+        assert_token_string_repr(&*g, byz, "byz");
+        assert_all_vertices_unique(&*g);
+    }
+    assert_eq!(byz.width(), 3, "byz should have width 3");
+    
     let byz_found = graph.find_ancestor(&query);
     assert_matches!(
         byz_found,
         Ok(ref response) if response.query_exhausted() && response.is_full_token() && response.root_token() == byz,
         "byz"
     );
+    
     let query = vec![ab, y];
     let aby: Token = graph.insert(query.clone()).expect("Indexing failed");
+    
+    // Assert aby has the expected string representation
+    {
+        let g = graph.graph();
+        assert_token_string_repr(&*g, aby, "aby");
+        assert_all_vertices_unique(&*g);
+    }
+    
     let aby_found = graph.find_parent(&query);
     assert_matches!(
         aby_found,
@@ -68,10 +91,26 @@ fn index_pattern2() {
         _xabyz => [[xab, yz]],
     );
 
+    // Verify all vertices have unique string representations before insertion
+    {
+        let g = graph.graph();
+        assert_all_vertices_unique(&*g);
+    }
+
+    let graph_ref = HypergraphRef::from(graph);
+
     let query = vec![a, b, y, x];
-    let aby: Token = graph.insert(query.clone()).expect("Indexing failed");
+    let aby: Token = graph_ref.insert(query.clone()).expect("Indexing failed");
+    
+    // Assert the token has the expected string representation and width
+    {
+        let g = graph_ref.graph();
+        assert_token_string_repr(&*g, aby, "aby");
+        assert_all_vertices_unique(&*g);
+    }
     assert_eq!(aby.width(), 3);
-    let ab = graph
+    
+    let ab = graph_ref
         .find_ancestor("ab".chars())
         .unwrap()
         .expect_complete("ab")
@@ -106,7 +145,21 @@ fn index_infix1() {
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
 
+    // Verify all vertices have unique string representations before insertion
+    {
+        let g = graph.graph();
+        assert_all_vertices_unique(&*g);
+    }
+
     let aby: Token = graph.insert(vec![a, b, y]).expect("Indexing failed");
+    
+    // Assert the token has the expected string representation and width
+    {
+        let g = graph.graph();
+        assert_token_string_repr(&*g, aby, "aby");
+        assert_all_vertices_unique(&*g);
+    }
+    
     let ab = graph
         .find_ancestor(vec![a, b])
         .unwrap()
@@ -180,7 +233,22 @@ fn index_infix2() {
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
 
-    let abcd: Token = graph.insert(vec![a, b, c, d]).expect("Indexing failed");
+    // Verify all vertices have unique string representations before insertion
+    {
+        let g = graph.graph();
+        assert_all_vertices_unique(&*g);
+    }
+
+    let abcd: Token =
+        graph.insert(vec![a, b, c, d]).expect("Indexing failed");
+    
+    // Assert the token has the expected string representation and width
+    {
+        let g = graph.graph();
+        assert_token_string_repr(&*g, abcd, "abcd");
+        assert_all_vertices_unique(&*g);
+    }
+    
     let g = graph.graph();
     let abcd_vertex = g.expect_vertex(abcd);
     assert_eq!(abcd.width(), 4, "abcd");
