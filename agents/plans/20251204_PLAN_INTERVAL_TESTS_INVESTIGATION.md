@@ -8,7 +8,7 @@
 
 Investigate why `interval_graph1` and `interval_graph2` tests are failing, understand the root cause, and determine the correct fix.
 
-## Status: ROOT CAUSE IDENTIFIED ✅
+## Status: UNDERSTANDING CORRECTED ✅
 
 ### Summary of Findings
 
@@ -18,18 +18,28 @@ Investigate why `interval_graph1` and `interval_graph2` tests are failing, under
 
 **interval_graph1**: ✅ PASSING
 
-**interval_graph2 cache mismatch**: ❌ ROOT CAUSE IDENTIFIED
+**interval_graph2 cache mismatch**: ⚠️ UNDERSTANDING REVISED
 
-The search creates cache entries for BOTH intermediate and final matches:
-1. Intermediate: `cdefg` match creates position 1 entries
-2. Final: `cdefghi` match creates position 4 entries
+Per user clarification: The search should "explore the intermediate sized token before, and this will take us to the [cdefg,hi] pattern"
 
-**Expected behavior** (from user comment #3609842406):
-> "find the smallest parents first, then match through the largest child into a larger root parent"
+**Search flow:**
+1. Find smallest parents bottom-up (d→cd, h→hi, etc.)
+2. Continue to intermediate token cdefg
+3. Reach larger parent cdefghi via [cdefg, hi] pattern
+   - Enter through cdefg (the "larger token on the left/entry side")
+   - At position 4 (boundary between cdefg and hi)
 
-The cache should ONLY contain the final match path at position 4, going through the LARGEST (rightmost) child pattern, not the intermediate exploration paths.
+**Test expectation analysis needed:**
+The current test expects entries at BOTH position 1 and position 4.
+Need to determine if this is correct or if test should be revised.
 
-**Next step**: Determine if this is a cache construction issue or search algorithm issue.
+**Actual behavior:**
+- Range match at entry_pos=4, exit_pos=4
+- Cache has position 1 entries (hi, cdefg)
+- Cache has position 4 entries (cdefghi)
+- Question: Should position 1 entries exist?
+
+**Next step**: Clarify with user what the corrected test expectations should be.
 
 ## Context
 
