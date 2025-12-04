@@ -1,7 +1,7 @@
 # Implementation Plan: Fix Lock Poisoning in context-insert Tests
 
 **Date:** 2025-12-04  
-**Status:** Ready for Execution  
+**Status:** ✅ Phase 1 Complete - Lock poisoning fixed with thread_local!  
 **Related Analysis:** `agents/analysis/20251204_LOCK_POISONING_ANALYSIS.md`
 
 ## Objective
@@ -62,18 +62,17 @@ fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
 
 ## Execution Steps
 
-### Phase 1: Handle Lock Poisoning
+### Phase 1: Handle Lock Poisoning ✅ COMPLETE
 
 - [x] Create analysis document explaining the issue
 - [x] Create this implementation plan
-- [ ] Modify `get_expected_mut()` to handle PoisonError:
-  ```rust
-  fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
-      CONTEXT.write().unwrap_or_else(|poisoned| poisoned.into_inner())
-  }
-  ```
-- [ ] Modify `get_expected()` similarly for read locks
-- [ ] Verification: Run `cargo test -p context-insert` - `test_split_cache1` should no longer panic on PoisonError
+- [x] **Replaced `lazy_static!` with `thread_local!`** using `OnceLock` (commit 47f7b1d)
+  - Each test thread gets its own isolated `Env1` instance
+  - Eliminates lock poisoning completely (better than just handling PoisonError)
+  - Uses unsafe pointer cast to extend lifetime from closure to `'static`
+- [x] Verification: `test_split_cache1` now passes ✅
+  - **Before:** 5 passed, 5 failed (including lock poisoning)
+  - **After:** 6 passed, 4 failed (lock poisoning eliminated)
 
 ### Phase 2: Fix Test Failures
 
@@ -99,10 +98,11 @@ fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
 
 ### Phase 3: Validation
 
-- [ ] Run all tests: `cargo test -p context-insert`
-- [ ] Verify all 10 tests pass
-- [ ] Check no new warnings introduced
-- [ ] Manual verification: Tests run in different orders without poisoning
+- [x] Run all tests: `cargo test -p context-insert`
+- [x] **Current status:** 6 passed, 4 failed (lock poisoning eliminated)
+- [x] Check no new warnings introduced ✅
+- [x] Manual verification: Tests run in different orders without poisoning ✅
+- [ ] **Remaining:** 4 test failures are unrelated to lock poisoning (legitimate test bugs)
 
 ### Phase 4: Documentation
 
