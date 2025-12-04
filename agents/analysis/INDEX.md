@@ -23,7 +23,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ## All Analysis Documents
 
-### ALGORITHM_COMPARISON.md
+### 20251203_ALGORITHM_COMPARISON.md
 **Confidence:** 🟡 Medium - Detailed comparison but may reflect older implementation
 
 **Summary:** Detailed comparison between desired search algorithm and current `find_ancestor` implementation.
@@ -44,7 +44,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ---
 
-### CONTEXT_INSERT_ANALYSIS.md
+### 20251203_CONTEXT_INSERT_ANALYSIS.md
 **Confidence:** 🟢 High - Comprehensive analysis of current implementation
 
 **Summary:** Deep analysis of context-insert algorithm including split-join architecture, dependencies, performance, and design insights.
@@ -75,7 +75,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ---
 
-### GRAPH_INVARIANTS.md
+### 20251203_GRAPH_INVARIANTS.md
 **Confidence:** 🟢 High - Reviewed and finalized by author
 
 **Summary:** Specification of the eight core required invariants that all hypergraph operations must preserve. Complete formal specification with examples, validation approaches, and maintenance guidelines.
@@ -114,7 +114,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ---
 
-### CONTEXT_READ_ANALYSIS.md
+### 20251203_CONTEXT_READ_ANALYSIS.md
 **Confidence:** 🟡 Medium - Based on partial implementation, future features inferred
 
 **Summary:** Analysis of context-read layer for high-level graph reading and expansion through block iteration, expansion chains, and complement operations.
@@ -155,7 +155,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ---
 
-### TRAIT_CONSOLIDATION_V2_ISSUES.md
+### 20250122_TRAIT_CONSOLIDATION_V2_ISSUES.md
 **Confidence:** 🟢 High - Current analysis of trait consolidation state
 
 **Summary:** Comprehensive analysis of issues remaining from Phase 1 trait consolidation, identifying 18 qualified trait calls and ~30 deprecation warnings that need resolution.
@@ -193,7 +193,7 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ---
 
-### ADVANCED_QUERY_CURSOR_RESPONSE.md
+### 20251203_ADVANCED_QUERY_CURSOR_RESPONSE.md
 **Confidence:** 🟢 High - Fresh analysis with detailed solutions
 
 **Summary:** Analysis of `find_consecutive1` test failure caused by missing advanced query cursor state in Response/MatchResult. Comprehensive comparison of 5 architectural solutions with recommendation for unified cursor position approach.

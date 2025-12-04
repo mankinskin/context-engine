@@ -24,7 +24,7 @@ Known issues, bug reports, and architectural problem analyses.
 
 ## All Bug Reports & Analyses
 
-### BUG_REPORT_CAN_ADVANCE.md
+### 20251203_BUG_REPORT_CAN_ADVANCE.md
 **Confidence:** 🟢 High - Root cause confirmed, reproducible
 
 **Summary:** `can_advance`/`advance` inconsistency causing panic in `range1` test.
@@ -41,7 +41,7 @@ Known issues, bug reports, and architectural problem analyses.
 
 ---
 
-### DEBUG_VS_COMPACT_FORMAT.md
+### 20251203_DEBUG_VS_COMPACT_FORMAT.md
 **Confidence:** 🟢 High - Architectural principle, actively followed
 
 **Summary:** Architectural guidance on separation between `Debug` and `CompactFormat` traits.
@@ -64,7 +64,7 @@ Known issues, bug reports, and architectural problem analyses.
 
 ---
 
-### SEARCH_ALGORITHM_ANALYSIS_SUMMARY.md
+### 20251203_SEARCH_ALGORITHM_ANALYSIS_SUMMARY.md
 **Confidence:** 🟡 Medium - Thorough analysis but implementation may have changed
 
 **Summary:** Comprehensive analysis of current vs desired search algorithm behavior.
@@ -83,7 +83,7 @@ Known issues, bug reports, and architectural problem analyses.
 - Root cause identification for each deviation
 - Deep dive into best match checkpointing issues
 
-**Related:** `BEST_MATCH_IMPLEMENTATION_STRATEGY.md` in agents/implemented/ contains the fix plan.
+**Related:** `20251203_BEST_MATCH_IMPLEMENTATION_STRATEGY.md` in agents/implemented/ contains the fix plan.
 
 **Key locations:**
 - `crates/context-search/src/match/root_cursor.rs`
