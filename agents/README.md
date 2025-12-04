@@ -93,7 +93,7 @@ agents/
 
 **Format:** `YYYYMMDD_PLAN_<task_name>.md`
 
-**Template:** `agents/plans/PLAN_TEMPLATE.md`
+**Template:** `agents/plans/20251203_PLAN_TEMPLATE.md`
 
 ---
 
