@@ -1,12 +1,14 @@
 # Lock Poisoning Analysis: context-insert Test Failures
 
 **Date:** 2025-12-04  
-**Status:** Analysis Complete  
-**Severity:** High - Blocks 5 tests from running  
+**Status:** ✅ RESOLVED - Fixed with thread_local!  
+**Severity:** High - Blocked 5 tests from running (now fixed)
 
 ## Executive Summary
 
-The `test_split_cache1` test in the context-insert crate fails with a lock poisoning error because other tests (`interval_graph1`, `interval_graph2`, `index_prefix1`, `index_postfix1`) panic while holding a shared `RwLock`, causing it to become poisoned. This prevents subsequent tests from acquiring the lock.
+The `test_split_cache1` test in the context-insert crate failed with a lock poisoning error because other tests (`interval_graph1`, `interval_graph2`, `index_prefix1`, `index_postfix1`) panicked while holding a shared `RwLock`, causing it to become poisoned. This prevented subsequent tests from acquiring the lock.
+
+**Resolution:** Replaced `lazy_static!` with `thread_local!` for the test environment, eliminating lock poisoning by giving each test thread its own isolated environment instance.
 
 ## Problem Description
 
@@ -169,5 +171,55 @@ The lock poisoning is a **symptom**, not the root cause. The real issues are:
 1. The 4 tests have legitimate bugs causing assertions to fail
 2. Shared mutable state creates dependencies between tests
 3. Inadequate error handling for poisoned locks
+
+Fixing the lock poisoning requires addressing both the immediate test failures and the architectural issue of shared mutable test state.
+
+## Resolution
+
+### Solution Implemented
+
+Replaced `lazy_static!` with `thread_local!` in `crates/context-trace/src/tests/env/mod.rs` to give each test thread its own isolated environment:
+
+**Before (lazy_static - shared across all test threads):**
+```rust
+lazy_static::lazy_static! {
+    pub(crate) static ref
+        CONTEXT: Arc<RwLock<Env1>> = Arc::new(RwLock::new(Env1::initialize_expected()));
+}
+```
+
+**After (thread_local - per-thread instances):**
+```rust
+thread_local! {
+    static CONTEXT: RefCell<Option<&'static Arc<RwLock<Env1>>>> = RefCell::new(None);
+}
+
+impl TestEnv for Env1 {
+    fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
+        CONTEXT.with(|cell| {
+            let mut borrow = cell.borrow_mut();
+            if borrow.is_none() {
+                *borrow = Some(Box::leak(Box::new(Arc::new(RwLock::new(Env1::initialize_expected())))));
+            }
+            borrow.unwrap().write().unwrap()
+        })
+    }
+}
+```
+
+### Key Changes
+
+1. **Thread-local storage:** Uses `thread_local!` instead of `lazy_static!`
+2. **Lazy initialization:** Each thread initializes its own `Env1` on first access
+3. **Box::leak for 'static lifetime:** Required because `thread_local!` `with()` closure can't return guards directly
+
+### Results
+
+- **Before:** 5 passed, 5 failed (including `test_split_cache1` with `PoisonError`)
+- **After:** 6 passed, 4 failed (`test_split_cache1` now passes, no more lock poisoning)
+
+The 4 remaining failures are legitimate test bugs unrelated to lock poisoning.
+
+## Original Analysis
 
 Fixing the lock poisoning requires addressing both the immediate test failures and the architectural issue of shared mutable test state.
