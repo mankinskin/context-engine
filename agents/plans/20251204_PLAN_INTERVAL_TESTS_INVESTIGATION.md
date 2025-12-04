@@ -8,38 +8,45 @@
 
 Investigate why `interval_graph1` and `interval_graph2` tests are failing, understand the root cause, and determine the correct fix.
 
-## Status: UNDERSTANDING CORRECTED ✅
+## Status: CORRECT UNDERSTANDING ACHIEVED ✅
 
-### Summary of Findings
+### Summary
 
-**query_exhausted issue**: ✅ RESOLVED
-- Tests incorrectly expected `!query_exhausted()` 
-- Fixed to `query_exhausted()` - query IS exhausted when fully matched
+**query_exhausted issue**: ✅ RESOLVED  
+**interval_graph1**: ✅ PASSING  
+**interval_graph2**: ❌ FAILING - Root cause identified
 
-**interval_graph1**: ✅ PASSING
+Per user confirmation (comment #3609894212): "the entry_pos should be 4 when entering cdefghi from cdefg after matching defg"
 
-**interval_graph2 cache mismatch**: ⚠️ UNDERSTANDING REVISED
+**Position 4 is correct** - this is where we enter cdefghi from cdefg after matching the query.
 
-Per user clarification: The search should "explore the intermediate sized token before, and this will take us to the [cdefg,hi] pattern"
+### Test Expectation Analysis
 
-**Search flow:**
-1. Find smallest parents bottom-up (d→cd, h→hi, etc.)
-2. Continue to intermediate token cdefg
-3. Reach larger parent cdefghi via [cdefg, hi] pattern
-   - Enter through cdefg (the "larger token on the left/entry side")
-   - At position 4 (boundary between cdefg and hi)
+The test expects at position 4 in `cdefghi`:
+```rust
+BU { 4 => cdefg -> (cdefghi_ids[0], 0) },  // Bottom-up from cdefg (child 0)
+TD { 4 => hi -> (cdefghi_ids[0], 1) }      // Top-down to hi (child 1)
+```
 
-**Test expectation analysis needed:**
-The current test expects entries at BOTH position 1 and position 4.
-Need to determine if this is correct or if test should be revised.
+This represents entering cdefghi via the [cdefg, hi] pattern at position 4.
 
-**Actual behavior:**
-- Range match at entry_pos=4, exit_pos=4
-- Cache has position 1 entries (hi, cdefg)
-- Cache has position 4 entries (cdefghi)
-- Question: Should position 1 entries exist?
+### Actual Cache Behavior
 
-**Next step**: Clarify with user what the corrected test expectations should be.
+**Correctly has:**
+- Position 1: `hi` TD to `h` ✓
+- Position 1: `cdefg` BU from `cd` ✓  
+- Position 4: `cdefghi` BU from `cdefg` ✓
+- Position 4: `cdefghi` TD to `hi` ✓
+
+**Issue:**
+The actual cache structure for `cdefghi` at position 4 is inverted or has entries in wrong nested locations compared to expectations. Need to investigate the exact structure mismatch.
+
+### Next Steps
+
+1. ✅ Confirmed position 4 is correct for entry into cdefghi
+2. ⚠️ Identify exact structural difference in cache entries
+3. Determine if issue is in trace generation or cache construction
+4. Fix the implementation to match expected structure
 
 ## Context
 
