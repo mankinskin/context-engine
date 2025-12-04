@@ -6,7 +6,30 @@
 
 ## Objective
 
-Investigate why `interval_graph1` and `interval_graph2` tests are failing with `query_exhausted()` assertion errors, understand the root cause, and determine the correct fix.
+Investigate why `interval_graph1` and `interval_graph2` tests are failing, understand the root cause, and determine the correct fix.
+
+## Status: ROOT CAUSE IDENTIFIED ✅
+
+### Summary of Findings
+
+**query_exhausted issue**: ✅ RESOLVED
+- Tests incorrectly expected `!query_exhausted()` 
+- Fixed to `query_exhausted()` - query IS exhausted when fully matched
+
+**interval_graph1**: ✅ PASSING
+
+**interval_graph2 cache mismatch**: ❌ ROOT CAUSE IDENTIFIED
+
+The search creates cache entries for BOTH intermediate and final matches:
+1. Intermediate: `cdefg` match creates position 1 entries
+2. Final: `cdefghi` match creates position 4 entries
+
+**Expected behavior** (from user comment #3609842406):
+> "find the smallest parents first, then match through the largest child into a larger root parent"
+
+The cache should ONLY contain the final match path at position 4, going through the LARGEST (rightmost) child pattern, not the intermediate exploration paths.
+
+**Next step**: Determine if this is a cache construction issue or search algorithm issue.
 
 ## Context
 
@@ -105,15 +128,43 @@ Possible scenarios:
 - Now continues to find larger ancestors (cdefghi)
 - Need to understand if this is intentional
 
-### Phase 5: Examine Cache Mismatches
+### Phase 5: Examine Cache Mismatches - COMPLETE
 
-Once query_exhausted is understood, investigate why cache structures differ:
+**interval_graph2 cache mismatch - ROOT CAUSE IDENTIFIED:**
 
-**interval_graph2 cache mismatch:**
-- Expected: position 4 entries, cdefghi entries
-- Actual: position 1 entries, cdefg AND cdefghi entries
-- This suggests search traces through multiple levels
-- Need to understand if this is correct behavior
+**Expected cache (test):**
+- All entries at position 4
+- `hi` at position 4
+- `cdefghi` at position 4 with pattern using `hi` as rightmost child
+
+**Actual cache (current implementation):**
+- Entries at position 1 (from intermediate `cdefg` match)
+- Entries at position 4 (from final `cdefghi` match)
+- Uses pattern tracing through `cdefg` instead of `hi`
+
+**What's happening:**
+1. Search finds `cdefg` first at checkpoint_pos=2 → creates position 1 cache entries
+2. Search continues and finds `cdefghi` at checkpoint_pos=5 → creates position 4 cache entries
+3. Cache contains BOTH intermediate and final matches
+
+**User's insight (comment #3609842406):**
+> "find the smallest parents first, then match through the largest child into a larger root parent"
+
+Refined as:
+> "find the smallest parents first, then match through the LARGEST CHILD into a larger root parent"
+
+**Expected behavior:**
+- Find smallest parent containing query start (cdefg)
+- Match through LARGEST (rightmost) child into larger root (cdefghi)
+- For `cdefghi` patterns `[cdefg, hi]` and `[cd, efghi]`:
+  - Should use `[cdefg, hi]` and trace through `hi` (largest child)
+  - NOT through `[cd, efghi]` pattern
+- Cache should only contain final path at position 4, not intermediate exploration
+
+**Fix needed:**
+- Cache should not include intermediate match entries (position 1)
+- Only include final best match path (position 4)
+- Path should go through largest (rightmost) child pattern
 
 ## Questions to Answer
 
