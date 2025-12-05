@@ -25,6 +25,9 @@ Persistent guidance for common patterns and troubleshooting.
 | `#parent-exploration` | Hierarchical token expansion |
 | `#search-flow` | Overall search process |
 | `#root-cursor` | RootCursor implementation details |
+| `#insert` | Insertion operations, split-join |
+| `#position-semantics` | Position calculation and boundaries |
+| `#interoperability` | Cross-crate interaction patterns |
 
 ---
 
@@ -87,20 +90,6 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### 20251203_UNIFIED_API_GUIDE.md
-**Confidence:** 🟢 High - Complete implementation, tested
-
-**Summary:** Unified API for parsing, generating, and transforming import/export statements in refactor-tool.
-
-**Tags:** `#refactoring` `#api` `#imports`
-
-**Solves:**
-- Processing Rust import/export statements
-- Merging and transforming use statements
-- Import analysis and replacement
-
----
-
 ### 20251203_SEARCH_ALGORITHM_GUIDE.md
 **Confidence:** 🟢 High - Comprehensive, current design
 
@@ -158,6 +147,37 @@ Persistent guidance for common patterns and troubleshooting.
 - Batch operations
 
 **Related:** See agents/analysis/CONTEXT_INSERT_ANALYSIS.md for algorithm details, crates/context-insert/HIGH_LEVEL_GUIDE.md for concepts.
+
+---
+
+### 20251204_CONTEXT_INSERT_SEARCH_INTEROP.md
+**Confidence:** 🟢 High - Critical interoperability patterns documented
+
+**Summary:** How context-insert interacts with context-search, focusing on position semantics and trace cache usage.
+
+**Tags:** `#interoperability` `#context-insert` `#context-search` `#position-semantics` `#trace-cache`
+
+**Solves:**
+- cursor_position() vs checkpoint_position() confusion
+- When to use each position type for insertion boundaries
+- Trace cache structure and extraction from Response
+- Creating InitInterval from search results
+- Common insertion mistakes and debugging tips
+- Test setup with correct position handling
+
+**Key Concepts:**
+- **Cursor Position:** Current search position (may be mid-match) - for search state only
+- **Checkpoint Position:** Last confirmed match boundary - ALWAYS use for insertion
+- **Trace Cache:** Maps positions to hyperedges traversed during matching
+- **Response Integration:** Complete workflow from search to insertion
+
+**Common Mistakes:**
+- Using cursor_position() for insertion boundaries (causes pattern splits)
+- Not checking is_complete() before accessing match_result()
+- Incorrect end position calculation
+- Misinterpreting trace cache entries
+
+**Related:** See agents/analysis/20251204_CONTEXT_INSERT_ARCHITECTURE.md for full architecture, CHEAT_SHEET.md for API quick reference.
 
 ---
 

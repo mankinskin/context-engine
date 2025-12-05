@@ -4,52 +4,89 @@ Plans for major refactorings and features before execution.
 
 ## Active Plans
 
+### 20251204_PLAN_INTERVAL_TESTS_INVESTIGATION.md
+- **Status:** ⚠️ Investigation in progress
+- **Priority:** High (test failures)
+- **Tags:** #testing #context-insert #position-semantics #investigation
+- **Summary:** Investigation of interval_graph test failures. Position 4 confirmed correct, but cache structure mismatch identified.
+- **Progress:** Root cause partially identified - cache structure doesn't match expected format
+- **Next Steps:** Fix cache construction to match expected structure
+
+### 20251204_PLAN_FIX_INTERVAL_TESTS.md
+- **Status:** 📋 Ready (depends on investigation)
+- **Priority:** High
+- **Tags:** #testing #context-insert #bug-fix
+- **Summary:** Plan to fix interval_graph test failures once investigation complete
+- **Blocking:** Needs 20251204_PLAN_INTERVAL_TESTS_INVESTIGATION
+
+### 20251204_PLAN_FIX_INDEX_PREFIX_TEST.md
+- **Status:** 📋 Ready for implementation
+- **Priority:** Medium
+- **Tags:** #testing #context-search #position-bug
+- **Summary:** Fix index_prefix1 test failure (width mismatch from wrong end_bound)
+
+### 20251204_PLAN_FIX_INDEX_POSTFIX_TEST.md
+- **Status:** 📋 Ready for implementation
+- **Priority:** Medium
+- **Tags:** #testing #context-search #type-mismatch
+- **Summary:** Fix index_postfix1 test (PathCoverage type expectations)
+
+### 20251203_BEST_MATCH_IMPLEMENTATION_STRATEGY.md
+- **Status:** 📋 Strategy documented
+- **Priority:** Medium
+- **Tags:** #search #algorithm #planning
+- **Summary:** Implementation strategy for proper best match tracking, queue clearing, and trace cache commitment
+- **Note:** Moved from implemented/ - this is a strategy, not completed work
+
+### 20251204_PLAN_COLOR_FORMATTING_IN_LOGS.md
+- **Status:** 📋 Enhancement
+- **Priority:** Low
+- **Tags:** #logging #formatting #enhancement
+- **Summary:** Add color formatting support to log output for better readability
+
+### 20251204_PLAN_THREAD_LOCAL_PATTERN.md
+- **Status:** 📋 Design
+- **Priority:** Low
+- **Tags:** #architecture #thread-safety #design
+- **Summary:** Design for thread-local pattern management
+
+### 20251203_PLAN_CANDIDATE_STATE_CONTROL.md
+- **Status:** 📋 Design proposal
+- **Priority:** Medium
+- **Tags:** #architecture #types #candidate-state
+- **Summary:** Design for removing CheckpointedRef and adding CandidateState type parameter
+
+### 20251203_PLAN_PHASE2_CHECKPOINTED_STATE_ADVANCE.md
+- **Status:** 📋 Phased implementation plan
+- **Priority:** Medium
+- **Tags:** #architecture #checkpointed #advance
+- **Summary:** Phase 2 plan for checkpointed state advancement
+
+### 20251203_PLAN_STATUS_CHECKPOINT.md
+- **Status:** 📋 Planning
+- **Priority:** Medium
+- **Tags:** #checkpoints #status #tracking
+- **Summary:** Plan for status checkpoint tracking
+
+### 20251121_PLAN_position_annotated_paths.md
+- **Status:** 📋 Design proposal
+- **Priority:** Low
+- **Tags:** #paths #positions #annotations
+- **Summary:** Design for position-annotated path structures
+
+## Superseded Plans
+
 ### 20251127_PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md
-- **Status:** 📋 Ready for Review (Created 2025-11-27)
-- **Priority:** High (blocks find_consecutive1 test + architecture improvement)
-- **Effort:** ~9.5 hours (8 phases)
-- **Tags:** #architecture #cursor #checkpoints #space-optimization #type-safety
-- **Summary:** Space-efficient Checkpointed cursor with Option-based candidate storage (50% space savings), AdvanceCheckpointed trait for encapsulated advancement, and MatchResult integration to represent advanced query cursors.
-- **Problem:** Current Checkpointed stores redundant data when checkpoint==current; MatchResult cannot represent advanced queries (causes find_consecutive1 failure with wrong end_index)
-- **Solution:** `candidate: Option<C>` instead of `current: C`, reusable in MatchResult
-- **Next Steps:** Review design questions, confirm approach, begin Phase 1 implementation
+- **Status:** ⚠️ Superseded by other approaches
+- **Note:** Original comprehensive plan, but newer focused plans address specific issues
 
 ### 20251123_PLAN_checkpoint_architecture_refactor.md
-- **Status:** ⚠️ Superseded by PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md
-- **Priority:** ~~High~~ Resolved by new plan
-- **Tags:** #architecture #refactor #checkpoints #cursor-state
-- **Summary:** ~~Centralize checkpoint management to fix position semantic issues~~ → New plan addresses root cause
-- **Blocking:** ~~find_consecutive1~~, prefix1, range1 tests (prefix/range fixed, consecutive addressed in new plan)
-- **Note:** Original plan identified issues but new plan provides comprehensive solution
+- **Status:** ⚠️ Superseded by PLAN_EFFICIENT_CHECKPOINTED_CURSOR
+- **Note:** Identified issues, but newer plan provides better solution
 
 ### 20251130_PLAN_TEST_ECOSYSTEM_IMPROVEMENTS.md
-- **Status:** 📋 Ready for Implementation (Created 2025-11-30, Updated after clarification)
-- **Priority:** High (fix position bug + improve test maintainability)
-- **Effort:** Sprint 0 (2 days bug fix) + 5 weeks (infrastructure + coverage)
-- **Tags:** #testing #bug-fix #infrastructure #coverage #refactor #documentation #quality
-- **Summary:** Fix position caching bug in hierarchical prefix matches, then comprehensive test improvements: reduce duplication, add macros/fixtures, expand coverage, reorganize structure, and document patterns.
-- **Problem:** 
-  - **BUG:** Top-down position tracking produces position `1` instead of `2` in hierarchical prefix with non-empty end paths
-  - Test duplication (6+ scenarios)
-  - No systematic coverage of hierarchical prefix/width/positions
-  - Hard-to-read assertions, 40+ boilerplate repetitions
-- **Solution:** 
-  - **Phase 0 (Sprint 0):** Investigate and fix position bug, document calculation rules
-  - **Phase 1-5 (5 sprints):** Create macros/fixtures/helpers, add 20+ tests, refactor existing, reorganize & document
-- **Key Findings:**
-  - `prefix1` test expectations are CORRECT (position 2)
-  - Implementation has bug producing position 1 (off-by-one in top-down traversal)
-  - Duplicate test removed (had wrong expectations)
-  - Only 1 test covering this critical scenario (now failing correctly)
-  - 53 tests total, weak edge case coverage, significant duplication
-- **Next Steps:** 
-  1. Investigate where position is calculated in top-down traversal code
-  2. Find the off-by-one error or incorrect calculation
-  3. Create bug report document
-  4. Fix the bug
-  5. Verify all tests pass
-  6. Document position calculation rules
-  7. Begin infrastructure improvements
+- **Status:** ⚠️ Superseded / Partially implemented
+- **Note:** Many improvements have been made; review for remaining items
 
 ## Templates
 

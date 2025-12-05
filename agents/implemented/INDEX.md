@@ -27,43 +27,103 @@ Completed feature implementations and enhancement summaries.
 
 ## All Implementations
 
+### 20251205_DOCUMENTATION_COMPACTION_COMPLETE.md
+**Confidence:** 🟢 High | **Tags:** `#documentation` `#compaction` `#optimization`  
+**Summary:** Phase 1 compaction: 3 files reduced 2,606→1,043 lines (60% reduction). GRAPH_INVARIANTS 71%, CHEAT_SHEET 87%, CONTEXT_INSERT_ARCHITECTURE 23%.  
+**Technique:** Verbose descriptions → tables, examples → inline code, historical sections archived, redundancy eliminated  
+**Remaining:** CONTEXT_INSERT_ANALYSIS, CONTEXT_READ_ANALYSIS, CONTEXT_INSERT_GUIDE
+
+---
+
+### 20251204_CONTEXT_INSERT_DOCUMENTATION_UPDATE.md
+**Confidence:** 🟢 High | **Tags:** `#documentation` `#context-insert` `#architecture`  
+**Summary:** Complete context-insert documentation: architecture analysis, split-join pipeline, search interoperability, test failure diagnosis (position semantics), and refactoring opportunities.  
+**Files Created:** analysis/CONTEXT_INSERT_ARCHITECTURE, guides/CONTEXT_INSERT_SEARCH_INTEROP  
+**Key Finding:** Test failures due to `cursor_position()` vs `checkpoint_position()` confusion
+
+---
+
+### 20251204_LOCK_POISONING_FIX.md
+**Confidence:** 🟢 High | **Tags:** `#bug-fix` `#concurrency` `#caching`  
+**Summary:** Fixed lock poisoning in vertex data cache by handling panics gracefully with catch_unwind.  
+**Location:** `context-trace/src/graph/vertex/data.rs`
+
+---
+
 ### 20250122_TRAIT_CONSOLIDATION_V2_COMPLETE.md
-**Confidence:** 🟢 High - Fully implemented and tested  
-**Date:** 2025-01-22  
-**Tags:** `#refactoring` `#api` `#cleanup`  
-**Summary:** Completed Trait Consolidation V2 migration: Added Tier 2 concrete role accessor traits (StartPathAccessor, EndPathAccessor), migrated 18 qualified trait calls to method syntax, un-deprecated HasRolePath AND HasPath with clear documentation, **completely removed all deprecated position traits** (HasPrevPos, HasRootPos, HasTargetPos). Reduced deprecation warnings by 95% (110→5), maintained test compatibility (29/35 passing). Established clear three-tier trait hierarchy: Tier 1 (path vectors), Tier 2 (concrete roles), Tier 3 (role-generic). Zero breaking changes, all code compiles successfully.
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#api` `#traits`  
+**Summary:** Consolidated accessor traits into 3-tier hierarchy. Added Tier 2 (StartPathAccessor, EndPathAccessor), migrated 18 qualified calls, removed deprecated position traits. Reduced warnings 95% (110→5).  
+**Migration:** PathAccessor (Tier 1) → StartPath/EndPathAccessor (Tier 2) → HasRolePath (Tier 3 role-generic)
 
-**Key Changes:**
-- Created `range_accessor.rs` with StartPathAccessor, EndPathAccessor, RangePathAccessor traits
-- Implemented Tier 2 traits for RootedRangePath
-- Migrated qualified calls: `HasRolePath::<R>::role_path()` → `self.role_path()`
-- Un-deprecated HasRolePath (architecturally necessary for role-generic patterns)
-- Un-deprecated HasPath (necessary for role-generic code with generic parameters)
-- **Completely removed HasPrevPos, HasRootPos, HasTargetPos traits and all implementations**
-- Updated 15+ files (1 new, 14+ modified across context-trace and context-search)
-- Eliminated all position trait deprecation warnings (was ~50+ warnings)
-- Only 5 warnings remain (HasRootedPath/HasRootedRolePath - legitimately deprecated)
+---
 
-**Migration Patterns:**
-- Simple path vectors: Use PathAccessor (Tier 1)
-- RolePath structs with concrete roles: Use StartPathAccessor/EndPathAccessor (Tier 2)
-- Role-generic trait bounds: Use HasRolePath (Tier 3)
-- Keep qualified syntax only for disambiguation
+### 20250122_TRAIT_MIGRATION_CONCLUSION.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#analysis`  
+**Summary:** Analysis and conclusion of trait consolidation effort with design rationale and future improvements.
+
+---
+
+### 20251122_PHASE1_HAS_TRAIT_CONSOLIDATION.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#api` `#phase1`  
+**Summary:** Phase 1 trait consolidation: 11 fragmented traits → 3 unified (PathAccessor, RootedPathAccessor, StatePosition). 73% reduction, non-breaking.
 
 ---
 
 ### 20251203_TRACING_IMPLEMENTATION.md
-**Confidence:** 🟢 High - Production-ready, actively used in all tests
+**Confidence:** 🟢 High | **Tags:** `#testing` `#tracing` `#infrastructure`  
+**Summary:** Test tracing system with TracingConfig, TestTracing guard, init_test_tracing!() macro, per-test logs.  
+**Location:** `context-trace/src/tests/tracing_setup.rs`
 
-**Summary:** Comprehensive test tracing system with per-test initialization, structured logging, and automatic cleanup.
+---
 
-**Tags:** `#testing` `#tracing` `#logging` `#infrastructure`
+### 20251203_CACHING_IMPLEMENTATION.md
+**Confidence:** 🟢 High | **Tags:** `#optimization` `#caching`  
+**Summary:** String representation caching in VertexData (RwLock<Option<String>>) avoids repeated graph traversals.  
+**Location:** `context-trace/src/graph/vertex/data.rs`
 
-**What it provides:**
-- `TracingConfig` builder for configuring log behavior
-- `TestTracing` RAII guard for lifecycle management
-- `init_test_tracing!()` macro for automatic setup
-- Per-test log files with structured fields
+---
+
+### 20251203_UNIFIED_API_IMPLEMENTATION_SUMMARY.md
+**Confidence:** 🟢 High | **Tags:** `#api` `#refactoring`  
+**Summary:** Unified import/export API for refactor-tool: ImportExportProcessor, ImportExportContext, ImportTree, PathSegmentProcessor.  
+**Location:** `refactor-tool/src/syntax/`
+
+---
+
+### 20251203_AI_FEATURES.md
+**Confidence:** 🟡 Medium | **Tags:** `#ai` `#refactoring`  
+**Summary:** AI-powered semantic code analysis with multi-provider support (OpenAI, GitHub Copilot, Claude, Ollama).  
+**Location:** `refactor-tool/src/ai/`
+
+---
+
+### 20251120_SEARCH_RESULT_API_RENAME.md
+**Confidence:** 🟢 High | **Tags:** `#api` `#search` `#naming` `#breaking-change`  
+**Summary:** Renamed API to distinguish query exhaustion from exact match: query_exhausted(), is_full_token(). Four distinct result states.  
+**Location:** `context-search/src/state/result.rs`
+
+---
+
+### 20251203_PHASE1_NAMING_REFACTOR.md
+**Confidence:** 🟢 High | **Tags:** `#naming` `#refactoring` `#clarity`  
+**Summary:** Phase 1 critical naming: best_checkpoint→best_match (16 locations), create_checkpoint_state→create_parent_exploration_state (2 locations), EndReason::Mismatch split added ChildExhausted (11 locations).  
+**Benefit:** Eliminates "checkpoint" overload
+
+---
+
+### 20250127_PHASE1_CURSOR_STATE_MACHINE.md
+**Confidence:** 🟢 High | **Tags:** `#cursor` `#state-machine` `#documentation`  
+**Summary:** Documented cursor state machine architecture for search operations with state transitions and invariants.
+
+---
+
+### 20250127_PHASE1_INTO_CURSOR_RENAME.md
+**Confidence:** 🟢 High | **Tags:** `#cursor` `#naming` `#refactoring`  
+**Summary:** Renamed into_cursor() → resume() for clearer continuation semantics.
+
+---
+
+### 20251122_PHASE1_HAS_TRAIT_CONSOLIDATION.md
 - Span event tracking (NEW, CLOSE, ENTER, EXIT)
 
 **Key locations:**
@@ -130,30 +190,6 @@ Completed feature implementations and enhancement summaries.
 
 ---
 
-### 20251203_BEST_MATCH_IMPLEMENTATION_STRATEGY.md
-**Confidence:** 🟡 Medium - Strategy documented, implementation may be incomplete
-
-**Summary:** Implementation plan for best match checkpointing and trace cache in search algorithm.
-
-**Tags:** `#search` `#algorithm` `#planning`
-
-**What it provides:**
-- Phased implementation strategy for proper best match tracking
-- Queue clearing on Complete match discovery
-- Incremental trace commitment for start paths
-- Width comparison between Complete matches
-
-**Key concepts:**
-- Candidate parent paths vs matched root cursors
-- CompareState checkpoint tracking
-- BinaryHeap width-based ordering
-
-**Key locations:**
-- `crates/context-search/src/match/root_cursor.rs`
-- `crates/context-search/src/search.rs` - SearchState
-
----
-
 ### 20251120_SEARCH_RESULT_API_RENAME.md
 **Confidence:** 🟢 High - Complete implementation, clear semantics
 
@@ -176,39 +212,6 @@ Completed feature implementations and enhancement summaries.
 - `crates/context-search/src/state/result.rs` - Response methods
 - `crates/context-search/src/state/matched/mod.rs` - MatchResult methods
 - `agents/guides/SEARCH_ALGORITHM_GUIDE.md` - Comprehensive explanation
-
----
-
-### 20251203_TERMINOLOGY_REFACTORING_COMPLETE.md
-**Confidence:** 🔴 Low - Historical record, superseded by SEARCH_RESULT_API_RENAME
-
-**Summary:** Historical: Earlier refactoring to eliminate "complete" terminology overload (superseded by query_exhausted/is_full_token API).
-
-**Tags:** `#api` `#search` `#naming` `#historical`
-
-**What it documented:**
-- Renamed PathEnum → PathCoverage
-- Renamed Complete → EntireRoot
-- Renamed CompleteMatchState → QueryExhaustedState
-- Earlier terminology cleanup before final API design
-
-**Note:** This refactoring was superseded by the work in SEARCH_RESULT_API_RENAME.md. Keep for historical reference only.
-
----
-
-### 20251203_DOCUMENTATION_UPDATE_SUMMARY.md
-**Confidence:** 🔴 Low - Historical summary of documentation work
-
-**Summary:** Historical: Summary of documentation creation work including CHEAT_SHEET.md and HIGH_LEVEL_GUIDE.md files.
-
-**Tags:** `#documentation` `#historical`
-
-**What it documented:**
-- Creation of CHEAT_SHEET.md
-- Creation of HIGH_LEVEL_GUIDE.md files for each crate
-- Documentation structure and organization
-
-**Note:** Historical record of documentation creation. The files it describes are now current and maintained separately.
 
 ---
 
@@ -373,36 +376,46 @@ Completed feature implementations and enhancement summaries.
 ---
 
 ### 20251123_PHASE2_ADVANCE_RESULT_ENUMS.md
-**Confidence:** 🟢 High - Complete implementation, all tests passing
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#api` `#type-design` `#phase2`  
+**Summary:** Replaced Result type aliases with QueryAdvanceResult/IndexAdvanceResult enums. Better semantics: Exhausted is valid state, not error.  
+**Note:** Superseded by PHASE2_RESULT_TYPE_ENUMS.md (more comprehensive)
 
-**Summary:** Phase 2 Week 3 Day 11: Replaced complex `Result<CompareState<...>, CompareState<...>>` type aliases with descriptive enums for better semantics.
+---
 
-**Tags:** `#refactoring` `#api` `#naming` `#type-design` `#phase2`
+### 20251123_PHASE2_RESULT_TYPE_ENUMS.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#api` `#phase2`  
+**Summary:** Complete Result→Enum conversion with method renames: try_advance→query_advance, query_advance→advance_index, try_compare→compare_query.  
+**Location:** `context-search/src/compare/state.rs`
 
-**What it provides:**
-- `QueryAdvanceResult` enum - replaces Result type alias with Advanced/Exhausted variants
-- `IndexAdvanceResult` enum - replaces Result type alias with Advanced/Exhausted variants
-- Better semantics: "Exhausted" is not an error, both outcomes are valid states
+---
 
-**Benefits:**
-- Clearer meaning: variants named for what they represent, not success/failure
-- Self-documenting: enum variants have descriptive names and doc comments
-- Better error messages: compiler shows meaningful enum names instead of full Result<...> expansion
-- No confusion about Ok vs Err semantics
+### 20251123_PHASE2_FILE_ORGANIZATION_COMPLETE.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#organization` `#phase2`  
+**Summary:** Reorganized compare module: extracted enums to dedicated files (advance_result.rs, compare_result.rs, position.rs).
 
-**Key locations:**
-- `crates/context-search/src/compare/state.rs` - Enum definitions and return sites (2 functions)
-- `crates/context-search/src/match/root_cursor.rs` - Updated call sites (4 match expressions)
+---
 
-**Code changes:**
-- Return sites: `Ok(state)` → `QueryAdvanceResult::Advanced(state)`, `Err(state)` → `QueryAdvanceResult::Exhausted(state)`
-- Call sites: `match result { Ok(x) => ..., Err(y) => ... }` → `match result { Advanced(x) => ..., Exhausted(y) => ... }`
+### 20251123_PHASE2_WEEK4_DAY20_MACRO_CONSOLIDATION.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#macros` `#phase2`  
+**Summary:** Consolidated path construction macros. Unified child_path! and parent_path! patterns.
 
-**Test status:** 29/35 passing context-search (maintained, same 6 pre-existing failures)
+---
 
-**Lines changed:** ~30 (enum definitions + call site updates)
+### 20251123_PHASE2_WEEK4_METHOD_NAMING.md
+**Confidence:** 🟢 High | **Tags:** `#naming` `#refactoring` `#phase2`  
+**Summary:** Phase 2 Week 4 method naming improvements for clarity and consistency across search module.
 
-**Note:** This was superseded by the more comprehensive PHASE2_RESULT_TYPE_ENUMS.md which includes additional enums and method renames.
+---
+
+### 20251123_PHASE3_WEEK5_DAYS25-26_PREFIX_REFACTOR.md
+**Confidence:** 🟢 High | **Tags:** `#refactoring` `#prefix` `#phase3`  
+**Summary:** Phase 3 prefix refactoring: improved prefix handling logic and test coverage.
+
+---
+
+### 20251123_PHASE3_WEEK5_METHOD_NAMING.md
+**Confidence:** 🟢 High | **Tags:** `#naming` `#refactoring` `#phase3`  
+**Summary:** Phase 3 Week 5 method naming improvements continuing clarity initiative.
 
 ---
 
