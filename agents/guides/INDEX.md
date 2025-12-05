@@ -90,20 +90,6 @@ Persistent guidance for common patterns and troubleshooting.
 
 ---
 
-### 20251203_UNIFIED_API_GUIDE.md
-**Confidence:** 🟢 High - Complete implementation, tested
-
-**Summary:** Unified API for parsing, generating, and transforming import/export statements in refactor-tool.
-
-**Tags:** `#refactoring` `#api` `#imports`
-
-**Solves:**
-- Processing Rust import/export statements
-- Merging and transforming use statements
-- Import analysis and replacement
-
----
-
 ### 20251203_SEARCH_ALGORITHM_GUIDE.md
 **Confidence:** 🟢 High - Comprehensive, current design
 

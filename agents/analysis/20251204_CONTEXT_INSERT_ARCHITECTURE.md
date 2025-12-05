@@ -1,303 +1,103 @@
 # Context-Insert Architecture Analysis
 
-> **Comprehensive analysis of context-insert design, search interoperability, and test failures**
+**Comprehensive analysis of context-insert design, search interoperability, and split-join pipeline**
 
-**Date:** 2024-12-04  
-**Status:** Complete  
-**Related:** context-search, trace cache semantics, InitInterval creation
-
----
-
-## Table of Contents
-
-1. [Architecture Overview](#architecture-overview)
-2. [Search-Insert Interoperability](#search-insert-interoperability)
-3. [Split-Join Pipeline Deep Dive](#split-join-pipeline-deep-dive)
-4. [Test Analysis and Root Causes](#test-analysis-and-root-causes)
-5. [Common Patterns](#common-patterns)
-6. [Refactoring Opportunities](#refactoring-opportunities)
-7. [Known Issues and Fixes](#known-issues-and-fixes)
+**Date:** 2024-12-04 | **Status:** Complete | **Related:** context-search, trace cache, InitInterval
 
 ---
 
 ## Architecture Overview
 
-### Purpose and Scope
+**Purpose:** Graph modification layer enabling safe pattern insertion without breaking invariants
 
-**Context-insert** is the graph modification layer that enables safe pattern insertion without breaking existing graph invariants. It sits between context-search (query execution) and the actual graph structure, providing:
+**Core Capabilities:**
+1. Safe modification via split-join (no broken references)
+2. Hierarchical pattern awareness from search
+3. State management through IntervalGraph
+4. Flexible result extraction modes
 
-1. **Safe Modification** - Split-join ensures no existing references break
-2. **Hierarchical Awareness** - Works with pattern hierarchies from search
-3. **State Management** - Tracks insertion progress through IntervalGraph
-4. **Result Extraction** - Different modes for handling insertion outcomes
+### Split-Join Principle
 
-### Core Design Principle: Split-Join Architecture
-
-**Problem:** Direct modification breaks references
-```
-Have: abc = [a, b, c]  (with other patterns referencing abc)
-Want: abcd = [a, b, c, d]
-Can't: Modify abc in-place (breaks references)
-Must: Create new pattern alongside existing one
-```
-
-**Solution:** Three-phase approach
-```
-Phase 1 (Split):   abc → [a, b, c]  (decompose to atoms)
-Phase 2 (Insert):  Add 'd' to collection
-Phase 3 (Join):    [a, b, c, d] → abcd  (create new pattern)
-Result:            Both abc and abcd exist, no references broken
-```
-
-### Module Organization
+**Problem:** Direct modification breaks references  
+**Solution:** Split → Insert → Join (create new patterns alongside existing)
 
 ```
-context-insert/
-├── insert/           # High-level insertion API
-│   ├── mod.rs       # ToInsertCtx trait
-│   ├── context.rs   # InsertCtx implementation
-│   ├── direction.rs # Directional insertion (prefix/postfix)
-│   └── result.rs    # InsertResult extraction
-│
-├── interval/         # Insertion state management
-│   ├── mod.rs       # IntervalGraph - tracks split-join state
-│   ├── init.rs      # InitInterval - conversion from search Response
-│   └── partition/   # Complex partitioning logic
-│       ├── delta.rs        # PatternSubDeltas
-│       └── info/           # Partition metadata
-│           ├── borders.rs  # Border information
-│           └── range/      # Range-specific details
-│               ├── mode.rs # InVisitMode processing
-│               └── role/   # RangeRole types (Pre/Post/In)
-│
-├── split/            # Graph decomposition
-│   ├── mod.rs       # TraceSide trait, position_splits
-│   ├── context.rs   # SplitCacheCtx
-│   ├── pattern.rs   # Pattern splitting
-│   ├── run.rs       # Split execution
-│   ├── cache/       # Split state caching
-│   │   ├── leaves.rs   # Leaf tracking
-│   │   ├── position.rs # PosKey, SplitPositionCache
-│   │   └── vertex.rs   # SplitVertexCache
-│   ├── trace/       # Split tracing
-│   │   └── states/  # SplitStates management
-│   └── vertex/      # Vertex-specific splits
-│       ├── output.rs   # CompleteLocations, RootMode
-│       └── position.rs # SubSplitLocation, Offset
-│
-└── join/             # Graph reconstruction
-    ├── mod.rs       # Join operations
-    ├── context/     # Join context
-    │   ├── frontier.rs # Frontier management
-    │   └── node/       # Node handling
-    │       └── kind.rs # JoinKind trait
-    ├── joined/      # Post-join structures
-    │   ├── partitions.rs
-    │   └── patterns.rs
-    └── partition/   # Join-specific partitioning
-        ├── inner.rs   # Inner range handling
-        └── pattern.rs # Pattern information
+Split:  abc → [a,b,c]    Join: [a,b,c,d] → abcd
+Insert: add 'd'          Result: Both abc and abcd exist
 ```
+
+### Module Structure
+
+| Module | Purpose | Key Types |
+|--------|---------|-----------|
+| `insert/` | High-level API | ToInsertCtx, InsertCtx, InsertResult |
+| `interval/` | State management | IntervalGraph, InitInterval, PatternSubDeltas |
+| `split/` | Decomposition | TraceSide, SplitCache, SplitStates, CompleteLocations |
+| `join/` | Reconstruction | JoinContext, Frontier, JoinedPartitions |
 
 ---
 
 ## Search-Insert Interoperability
 
-### The Bridge: Response → InitInterval
+### Response → InitInterval Conversion
 
-**Critical Understanding:** Context-search returns a `Response` that contains:
-1. **TraceCache** - Bidirectional parent-child relationships discovered during search
-2. **MatchResult** - Path coverage and cursor position (checkpointed vs candidate)
+**TraceCache content:** Bidirectional parent-child relationships discovered during search
+- BU (bottom-up): "At position X in token, there's child Y from pattern Z"
+- TD (top-down): "This token appears at position X in parent pattern Y"
 
-**Key Insight:** There are TWO position types in Response:
-- `cursor_position()` - Returns candidate if available (for consecutive searches)
-- `checkpoint_position()` - Returns confirmed match position (for insertion boundaries)
-
-### Trace Cache Semantics
-
-The `TraceCache` from search encodes the hierarchical structure discovered during pattern matching:
-
-```rust
-TraceCache {
-    entries: HashMap<Token, VertexCache>
-}
-
-VertexCache {
-    bottom_up: DirectedPositions,    // Parents containing this token
-    top_down: DirectedPositions,     // Children this token contains
-    index: Token,                    // The token itself
-}
-
-DirectedPositions {
-    entries: HashMap<AtomPosition, PositionCache>
-}
-
-PositionCache {
-    top: HashSet<DirectedKey>,       // Higher-level patterns
-    bottom: HashMap<DirectedKey, SubLocation>  // Lower-level components
-}
-```
-
-**Semantic Content:**
-- **Bottom-Up (BU):** "At position X in this token, there's a child Y that belongs to pattern Z"
-- **Top-Down (TD):** "This token appears at position X in parent pattern Y"
-
-**Example:**
-```rust
-// Pattern: hello = [h, e, ll, o]
-// where ll = [l, l]
-
-TraceCache for "hello" search:
-  ll => (
-    BU { 1 => l -> (ll_id, 0) },  // "At pos 1 in ll, there's 'l' from pattern ll at sub-index 0"
-    TD { 2 => ll -> (hello_id, 2) }  // "ll appears at pos 2 in hello"
-  )
-```
-
-### Conversion Flow: Response → InitInterval
-
-```rust
-// From init.rs
-impl From<Response> for InitInterval {
-    fn from(state: Response) -> Self {
-        let root = state.root_token();              // Where search stopped
-        let end_bound = state.checkpoint_position(); // ⚠️ Uses checkpoint, not cursor!
-        Self {
-            cache: state.cache,  // Reuse discovered relationships
-            root,
-            end_bound,
-        }
-    }
-}
-```
-
-**Why checkpoint_position?**
-- `checkpoint_position()` returns the **confirmed match extent**
-- `cursor_position()` might be advanced from parent exploration (candidate)
-- Insertion needs the **confirmed boundary**, not speculative exploration
-
-### Search Result Types and Insertion Implications
-
-```rust
-Response {
-    end: MatchResult {
-        path: PathCoverage,    // EntireRoot | Range | Prefix | Postfix
-        cursor: CheckpointedCursor  // AtCheckpoint | HasCandidate
-    }
-}
-```
-
-**PathCoverage variants:**
-1. **EntireRoot** - Full token match, no insertion needed
-2. **Range** - Matched range within token (infix insertion)
-3. **Prefix** - Matched prefix of token (prefix insertion)
-4. **Postfix** - Matched postfix of token (postfix insertion)
-
-**Insertion Decision Tree:**
-```
-query_exhausted? ──┬─ YES ─→ is_full_token? ──┬─ YES ─→ Use existing token
-                   │                           └─ NO ──→ Intersection path (rare)
-                   │
-                   └─ NO ──→ Convert to InitInterval ──→ Insert remaining part
-```
-
----
-
-## Split-Join Pipeline Deep Dive
-
-### Phase 1: InitInterval Creation
-
-**Input:** Incomplete search Response  
-**Output:** InitInterval with insertion boundary
+**Critical:** Uses `checkpoint_position()` (confirmed match), not `cursor_position()` (speculative)
 
 ```rust
 InitInterval {
-    root: Token,           // The pattern that partially matched
-    cache: TraceCache,     // Parent-child relationships from search
-    end_bound: AtomPosition  // Where to extend (checkpoint position!)
+    root: Token,              // Pattern that partially matched
+    cache: TraceCache,        // Parent-child relationships from search
+    end_bound: AtomPosition   // Checkpoint position (confirmed boundary)
 }
 ```
 
-**Example:**
-```
-Graph: heldld = [h, e, ld, ld]  where ld = [l, d]
-Query: [h, e, l, l]
-Search: Matches [h, e, l] (within first ld)
-InitInterval:
-  root = heldld
-  end_bound = 3  (checkpoint at position 3, not 4!)
-  cache = { heldld => TD{2 => ld}, ld => TD{2 => l}, ... }
-```
+### PathCoverage and Insertion Modes
+
+| Coverage | Description | Insertion Type |
+|----------|-------------|----------------|
+| EntireRoot | Full token match | No insertion needed |
+| Range | Infix match | Infix insertion |
+| Prefix | Prefix match | Prefix insertion |
+| Postfix | Postfix match | Postfix insertion |
+
+**Decision:** Query exhausted + not full token → Convert to InitInterval → Insert remaining
+
+---
+
+## Split-Join Pipeline
+
+### Phase 1: InitInterval → IntervalGraph
+
+**Input:** `InitInterval{root, cache, end_bound}`  
+**Output:** `IntervalGraph` ready for splitting
+
+**Key types:**
+- `SplitStates` - Queue of splits to process, leaf position tracking
+- `SplitCache` - Cached split info (RootMode, VertexCache entries)
+- `TraceSide` - TraceBack (insertion) or TraceFront (prefix)
 
 ### Phase 2: Split Execution
 
-**Purpose:** Decompose pattern to atoms, identifying split points
+**Algorithm:**
+1. Start with root token + end_bound
+2. Navigate parent-child using cache
+3. Identify child patterns needing splits
+4. Create PosKey entries for split points
+5. Cache for join phase
 
-```rust
-IntervalGraph {
-    root: Token,           // Root pattern being modified
-    states: SplitStates,   // Queue of splits to process
-    cache: SplitCache,     // Cached split information
-}
-
-SplitStates {
-    leaves: BTreeSet<PosKey>,   // Leaf positions (atoms)
-    queue: VecDeque<...>,       // Processing queue
-}
-
-SplitCache {
-    root_mode: RootMode,   // Prefix | Infix | Postfix
-    entries: HashMap<VertexIndex, SplitVertexCache>
-}
-```
-
-**Split Algorithm:**
-1. Start with `root` token and `end_bound` position
-2. Use `cache` to navigate parent-child relationships
-3. Identify which child patterns need splitting
-4. Create `PosKey` entries for each split point
-5. Track in `SplitCache` for join phase
-
-**TraceSide Implementations:**
-- **TraceBack:** Used for insertion (normal case)
-- **TraceFront:** Used for prefix insertion
-
-**Example:**
-```rust
-// Splitting ef within abcdef at position 5
-SplitCache {
-    root_mode: RootMode::Prefix,
-    entries: {
-        ef => {
-            positions: {
-                1 => {  // Position within ef
-                    top: [abcdef:5, def:2, cdef:3],  // Parents containing ef
-                    pattern_splits: {
-                        e_f_id => (sub_index: 1, inner_offset: None)
-                    }
-                }
-            }
-        }
-    }
-}
-```
+**RootMode:** Prefix | Infix | Postfix (determines split behavior)
 
 ### Phase 3: Join Execution
 
-**Purpose:** Reconstruct patterns with new content
-
-```rust
-// Join operations merge split components
-JoinContext {
-    frontier: Frontier,        // Active join front
-    nodes: HashMap<...>,       // Node states
-}
-```
-
-**Join Algorithm:**
+**Algorithm:**
 1. Process split cache entries
 2. Create new child patterns from atoms
 3. Build parent patterns referencing new children
+4. Use `JoinContext` (Frontier + node states)
 4. Update graph with new patterns
 5. Preserve existing patterns (no modifications!)
 

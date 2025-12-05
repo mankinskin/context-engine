@@ -23,79 +23,31 @@ Deep analysis and comparison documents for algorithms and architectural decision
 
 ## All Analysis Documents
 
+### 20251203_CANDIDATE_STATE_SUMMARY.md
+**Confidence:** 🟢 High | **Tags:** `#architecture` `#types` `#candidate-state`  
+**Summary:** Design for replacing CheckpointedRef enum with CandidateState type parameter (AtCheckpoint vs HasCandidate) for compile-time state tracking, eliminating runtime checks and cloning.  
+**Related:** plans/PLAN_CANDIDATE_STATE_CONTROL
+
+---
+
 ### 20251203_ALGORITHM_COMPARISON.md
-**Confidence:** 🟡 Medium - Detailed comparison but may reflect older implementation
-
-**Summary:** Detailed comparison between desired search algorithm and current `find_ancestor` implementation.
-
-**Tags:** `#search` `#algorithm` `#comparison` `#architecture`
-
-**Key Findings:**
-- High-level alignment between desired and current implementation
-- Bottom-up exploration with ascending width priority matches design
-- Differences in queue clearing behavior (removed after bugs)
-- Best match tracking vs last_match in SearchState
-- Initialization and incremental tracing differences
-
-**Related Files:**
-- `crates/context-search/src/search.rs` - Main search implementation
-- `agents/guides/SEARCH_ALGORITHM_GUIDE.md` - How the algorithm works
-- `agents/guides/DESIRED_SEARCH_ALGORITHM.md` - Desired algorithm specification
+**Confidence:** 🟡 Medium | **Tags:** `#search` `#algorithm` `#comparison`  
+**Summary:** Comparison of desired vs current search algorithm. High-level alignment confirmed, differences in queue clearing, best match tracking, and tracing identified.  
+**Related:** guides/SEARCH_ALGORITHM_GUIDE, guides/DESIRED_SEARCH_ALGORITHM
 
 ---
 
 ### 20251203_CONTEXT_INSERT_ANALYSIS.md
-**Confidence:** 🟢 High - Comprehensive analysis of current implementation
-
-**Summary:** Deep analysis of context-insert algorithm including split-join architecture, dependencies, performance, and design insights.
-
-**Tags:** `#insert` `#algorithm` `#split-join` `#dependencies` `#performance`
-
-**Key Findings:**
-- Split-join architecture enables safe pattern insertion without modifying existing structures
-- Algorithm phases: Search → Initialize → Split → Join → Result
-- Time complexity: O(d*p + k*p + m*c) dominated by search and split
-- Space complexity: O(cache + k*p) for split cache
-- External dependencies could be reduced (linked-hash-map, maplit, pretty_assertions)
-- InitInterval bridges search results to insertion operations
-
-**Covered Topics:**
-- Complete algorithm flow with examples
-- Dependency analysis (internal and external)
-- Testing patterns and helpers
-- Performance characteristics and optimizations
-- Design rationale (why split-join, why intervals, why roles)
-- Algorithm specification with guarantees
-
-**Related Files:**
-- `crates/context-insert/src/` - Implementation
-- `crates/context-insert/HIGH_LEVEL_GUIDE.md` - Concepts
-- `agents/guides/CONTEXT_INSERT_GUIDE.md` - Usage patterns
-- `crates/context-insert/src/tests/` - Test examples
+**Confidence:** 🟢 High | **Tags:** `#insert` `#algorithm` `#split-join`  
+**Summary:** Deep dive into context-insert: split-join architecture, algorithm phases (Search→Initialize→Split→Join→Result), performance (O(d*p + k*p + m*c)), dependencies, design rationale.  
+**Related:** context-insert/HIGH_LEVEL_GUIDE.md, guides/CONTEXT_INSERT_GUIDE
 
 ---
 
 ### 20251203_GRAPH_INVARIANTS.md
-**Confidence:** 🟢 High - Reviewed and finalized by author
-
-**Summary:** Specification of the eight core required invariants that all hypergraph operations must preserve. Complete formal specification with examples, validation approaches, and maintenance guidelines.
-
-**Tags:** `#invariants` `#graph` `#correctness` `#specification` `#validation` `#required`
-
-**Core Required Invariants (8):**
-- 🟢 **Width Consistency** - Sum of children widths equals parent width (validated)
-- 🟢 **Pattern Completeness** - Non-atoms have patterns with ≥2 children (validated)
-- 🟢 **Parent-Child Bidirectional** - Relationships maintained in both directions (enforced)
-- 🟢 **Atom Uniqueness** - Each atom value appears once (structural guarantee)
-- 🟢 **Multiple Representation Consistency** - All patterns of token represent same string (required)
-- 🟢 **Substring Reachability** - All substrings reachable from superstrings (required)
-- 🟢 **String-Token Uniqueness** - Each string has at most one token (required)
-- 🟢 **Position Validity** - All positions within valid bounds (required)
-
-**Key Principles:**
-- Each token represents exactly one unique string
-- String-token mapping is bijective (one-to-one)
-- All eight invariants are mandatory
+**Confidence:** 🟢 High | **Tags:** `#invariants` `#graph` `#specification`  
+**Summary:** Authoritative spec for 8 core required graph invariants: Width Consistency, Pattern Completeness, Parent-Child Bidirectional, Atom Uniqueness, Multiple Representation Consistency, Substring Reachability, String-Token Uniqueness, Position Validity.  
+**Status:** Reviewed and finalized by author
 - All operations must preserve all invariants
 
 **Covered Topics:**
