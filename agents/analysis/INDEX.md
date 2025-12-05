@@ -262,3 +262,59 @@ pub struct CursorPosition {
 - `crates/context-search/src/tests/search/consecutive.rs` - Failing test
 - `target/test-logs/find_consecutive1.log` - Test execution trace
 
+---
+
+### 20251204_CONTEXT_INSERT_ARCHITECTURE.md
+**Confidence:** 🟢 High - Fresh comprehensive analysis with test failure diagnosis
+
+**Summary:** Deep architectural analysis of context-insert covering split-join design, search interoperability, failing test root causes, and refactoring opportunities. Documents how Response converts to InitInterval and identifies position calculation issues.
+
+**Tags:** `#insert` `#architecture` `#split-join` `#interoperability` `#test-analysis` `#position-semantics`
+
+**Key Findings:**
+- **Split-Join Architecture:** Three-phase approach (Split → Insert → Join) enables safe modification without breaking references
+- **Position Semantics Issue:** Critical distinction between `cursor_position()` (for consecutive searches) and `checkpoint_position()` (for insertion boundaries)
+- **Test Failures:** All 3 failing tests trace to position calculation discrepancies (query-relative vs root-relative)
+- **TraceCache Semantics:** Bidirectional (BU/TD) parent-child relationships from search enable efficient split-join
+
+**Test Failure Analysis:**
+1. **index_prefix1:** Width mismatch from wrong end_bound calculation
+2. **index_postfix1:** PathCoverage type mismatch (expects EntireRoot, gets Postfix)
+3. **interval_graph2:** Cache positions off by -3 (checkpoint returns query-relative not root-relative)
+
+**Common Root Cause:**
+All failures relate to position calculation between:
+- Query-relative positions (cursor within search pattern)
+- Root-relative positions (absolute position in matched token)
+- Checkpoint vs candidate positions (confirmed vs exploratory)
+
+**Architecture Insights:**
+- IntervalGraph tracks split-join state via SplitStates and SplitCache
+- TraceSide implementations (TraceBack/TraceFront) handle directional insertion
+- RangeRole system (Pre/Post/In) manages boundary calculations
+- RootMode (Prefix/Infix/Postfix) determines split strategy
+
+**Refactoring Opportunities:**
+1. Clarify position semantics with `insertion_boundary()` and `continuation_position()` methods
+2. Unified PositionContext enum (Absolute/QueryRelative/ParentRelative)
+3. Type-safe RootMode with compile-time enforcement
+4. Simplify RangeRole hierarchy
+5. Better error types (replace panics with Results)
+6. Split-join visibility via builder pattern
+
+**Covered Topics:**
+- Complete module organization breakdown
+- Search-Insert interoperability and Response → InitInterval conversion
+- Split-join pipeline deep dive with examples
+- Trace cache semantics and bidirectional relationships
+- Test failure root cause analysis with fixes
+- Common patterns for safe insertion
+- 6 major refactoring opportunities
+
+**Related Files:**
+- `crates/context-insert/src/interval/init.rs` - InitInterval conversion
+- `crates/context-insert/src/split/` - Split implementation
+- `crates/context-insert/src/join/` - Join implementation
+- `crates/context-search/src/state/result.rs` - Response and checkpoint_position
+- `crates/context-insert/src/tests/insert.rs` - Failing tests
+

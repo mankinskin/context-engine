@@ -279,7 +279,8 @@ response.as_complete() -> Option<&IndexRangePath>  // Get path if query_exhauste
 response.root_token() -> Token              // Root token from path
 response.query_pattern() -> &PatternRangePath
 response.query_cursor() -> &PatternCursor
-response.cursor_position() -> AtomPosition
+response.cursor_position() -> AtomPosition          // For consecutive searches (candidate or checkpoint)
+response.checkpoint_position() -> AtomPosition      // For insertion boundaries (confirmed extent only)
 
 // Unwrapping (panics if incomplete)
 response.unwrap_complete() -> IndexRangePath
@@ -329,6 +330,45 @@ enum CompareResult {
 // Import path unchanged:
 use crate::compare::state::{CandidateResult, CompareResult};
 ```
+
+### Position Semantics (Important!)
+
+**Two position types in Response - use the right one!**
+
+```rust
+// ✅ For insertion boundaries (confirmed match extent)
+let end_bound = response.checkpoint_position();   // Use in InitInterval::from()
+
+// ✅ For consecutive searches (advanced exploration position)
+let next_pos = response.cursor_position();        // Use for next search start
+
+// ❌ WRONG - using cursor_position for insertion
+let init = InitInterval {
+    end_bound: response.cursor_position(),  // Bug! Should be checkpoint_position()
+    // ...
+};
+```
+
+**Why two positions?**
+- Search can advance cursor speculatively (exploring parent patterns)
+- If parent exploration needed, **cursor** advances but **checkpoint** doesn't
+- Insertion needs **confirmed boundary** (checkpoint)
+- Consecutive searches need **exploration position** (cursor)
+
+**Example:**
+```rust
+// Query: [a, b, c, d]
+// Search matches: [a, b, c] in pattern "abc"
+// But advances cursor to check if parent has "d"
+
+response.checkpoint_position()  // 3 (confirmed: matched up to 'c')
+response.cursor_position()      // 4 (candidate: looking for 'd')
+
+// For insertion: use checkpoint (3)
+// For next search: use cursor (4) to continue exploration
+```
+
+*See agents/analysis/20251204_CONTEXT_INSERT_ARCHITECTURE.md for detailed analysis*
 
 ---
 

@@ -27,6 +27,40 @@ Completed feature implementations and enhancement summaries.
 
 ## All Implementations
 
+### 20251204_CONTEXT_INSERT_DOCUMENTATION_UPDATE.md
+**Confidence:** 🟢 High - Comprehensive analysis and documentation
+**Date:** 2025-12-04
+**Tags:** `#documentation` `#context-insert` `#architecture` `#analysis` `#interoperability`
+**Summary:** Major documentation update for context-insert crate with architecture analysis, pattern documentation, and test failure diagnosis.
+
+**Key Deliverables:**
+- `agents/analysis/20251204_CONTEXT_INSERT_ARCHITECTURE.md` - Comprehensive architecture guide
+  - Split-join pipeline architecture
+  - InitInterval creation from search results
+  - Common patterns (frontier traversal, vertical split, pattern extraction)
+  - Interoperability with context-search
+  - Refactoring opportunities identified
+- `agents/guides/20251204_CONTEXT_INSERT_SEARCH_INTEROP.md` - Search interoperability guide
+  - Position semantics (cursor vs checkpoint)
+  - Trace cache usage and structure
+  - Response API integration patterns
+- Updated HIGH_LEVEL_GUIDE.md with improved split-join explanations
+- Updated CHEAT_SHEET.md with position semantics clarifications
+
+**Test Analysis:**
+- Identified root cause of test failures: Position semantics mismatch
+- `cursor_position()` vs `checkpoint_position()` confusion
+- Tests use cursor position but should use checkpoint position for insertion boundaries
+- Issue documented in analysis with clear examples and fix recommendations
+
+**Refactoring Opportunities:**
+- Error handling improvements (reduce unwraps)
+- Cache optimization (combine leaf and position caches)
+- Type safety enhancements (NewType patterns)
+- Testing improvements (property-based tests, integration tests)
+
+---
+
 ### 20250122_TRAIT_CONSOLIDATION_V2_COMPLETE.md
 **Confidence:** 🟢 High - Fully implemented and tested  
 **Date:** 2025-01-22  
