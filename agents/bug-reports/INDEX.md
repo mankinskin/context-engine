@@ -41,6 +41,43 @@ Known issues, bug reports, and architectural problem analyses.
 
 ---
 
+### 20251206_BUG_CONTEXT_READ_API_MISMATCHES.md
+**Confidence:** 🟢 High - Complete error catalog, all 28 errors documented
+
+**Summary:** context-read crate has 28 compilation errors due to API mismatches with context-trace.
+
+**Tags:** `#context-read` `#api-mismatch` `#compilation-errors` `#migration-needed` `#critical`
+
+**Categories:** Missing imports (2), type name errors (7), method naming (3), removed methods (9), private API access (2), type inference (5)
+
+**Root cause:** context-read not updated after context-trace refactoring (trait consolidation, method renames)
+
+**Related:** See `20251206_CONTEXT_READ_API_RESEARCH.md` for migration guide
+
+**Status:** ❌ Blocks compilation, architectural decisions needed (keep vs deprecate crate)
+
+---
+
+### 20251206_CONTEXT_READ_API_RESEARCH.md
+**Confidence:** 🟢 High - Complete API research, all alternatives documented
+
+**Summary:** Research findings and migration guide for fixing context-read's 28 compilation errors.
+
+**Tags:** `#context-read` `#api-migration` `#research` `#visibility` `#trait-methods`
+
+**Key findings:**
+- Type renames: `NewAtomndex` → `NewAtomIndex`, capitalization fixes
+- Method renames: `root_child()` → `graph_root_child()`, trait method name changes
+- Visibility issues: `NewAtomIndex`, `NewAtomIndices` are `pub(crate)` - need public API
+- Missing functionality: `retract` module, `PrefixCommand` removed/moved
+- Architectural question: Is context-read still needed?
+
+**Provides:** Complete API migration map, fix priorities, architectural questions for author
+
+**Status:** ⏳ Research complete, awaiting architectural decisions
+
+---
+
 ### 20251203_DEBUG_VS_COMPACT_FORMAT.md
 **Confidence:** 🟢 High - Architectural principle, actively followed
 
