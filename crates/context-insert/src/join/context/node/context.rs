@@ -195,15 +195,32 @@ impl NodeJoinCtx<'_> {
         let mut offset_iter = offsets.iter().map(PosSplitCtx::from);
         let offset = offset_iter.next().unwrap();
 
+        tracing::debug!(
+            root_token = ?index,
+            root_mode = ?root_mode,
+            split_offset = ?offset.pos,
+            "join_root_partitions - processing root vertex"
+        );
+
         match root_mode {
             RootMode::Prefix => Prefix::new(offset)
                 .join_partition(self)
                 .inspect(|part| {
+                    tracing::debug!(
+                        prefix_index = ?part.index,
+                        perfect = ?part.perfect,
+                        "join_root_partitions - Prefix mode: partition created"
+                    );
                     if part.perfect.is_none() {
                         let post = Postfix::new(offset)
                             .join_partition(self)
                             .map(|part| part.index)
                             .unwrap_or_else(|full| full);
+                        tracing::info!(
+                            root = ?index,
+                            wrapper_pattern = ?vec![part.index, post],
+                            "join_root_partitions - Prefix mode: creating wrapper pattern"
+                        );
                         self.ctx.trav.add_pattern_with_update(
                             index,
                             Pattern::from(vec![part.index, post]),
@@ -214,15 +231,41 @@ impl NodeJoinCtx<'_> {
             RootMode::Postfix => Postfix::new(offset)
                 .join_partition(self)
                 .inspect(|part| {
+                    tracing::debug!(
+                        postfix_index = ?part.index,
+                        perfect = ?part.perfect,
+                        "join_root_partitions - Postfix mode: partition created"
+                    );
                     if part.perfect.is_none() {
                         let pre = match Prefix::new(offset).join_partition(self)
                         {
-                            Ok(pre) => pre.index,
-                            Err(c) => c,
+                            Ok(pre) => {
+                                tracing::debug!(
+                                    prefix_index = ?pre.index,
+                                    "join_root_partitions - Postfix mode: prefix partition created (Ok)"
+                                );
+                                pre.index
+                            },
+                            Err(c) => {
+                                tracing::debug!(
+                                    complete_token = ?c,
+                                    "join_root_partitions - Postfix mode: prefix is complete token (Err)"
+                                );
+                                c
+                            },
                         };
+                        tracing::info!(
+                            root = ?index,
+                            wrapper_pattern = ?vec![pre, part.index],
+                            "join_root_partitions - Postfix mode: creating wrapper pattern"
+                        );
                         self.ctx.trav.add_pattern_with_update(
                             index,
                             Pattern::from(vec![pre, part.index]),
+                        );
+                    } else {
+                        tracing::debug!(
+                            "join_root_partitions - Postfix mode: perfect match, no wrapper needed"
                         );
                     }
                 })
