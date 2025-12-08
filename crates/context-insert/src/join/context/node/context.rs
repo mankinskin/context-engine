@@ -195,204 +195,34 @@ impl NodeJoinCtx<'_> {
         let mut offset_iter = offsets.iter().map(PosSplitCtx::from);
         let offset = offset_iter.next().unwrap();
 
-        tracing::debug!(
-            root_token = ?index,
-            root_mode = ?root_mode,
-            split_offset = ?offset.pos,
-            "join_root_partitions - processing root vertex"
-        );
-
         match root_mode {
             RootMode::Prefix => Prefix::new(offset)
                 .join_partition(self)
                 .inspect(|part| {
-                    tracing::debug!(
-                        prefix_index = ?part.index,
-                        perfect = ?part.perfect,
-                        delta = ?part.delta,
-                        "join_root_partitions - Prefix mode: partition created"
-                    );
                     if part.perfect.is_none() {
-                        // Get the pattern entry info from delta
-                        if let Some((&pattern_id, &entry_index)) = part.delta.iter().next() {
-                            // Get the prefix partition's pattern
-                            let prefix_pattern = self.ctx.trav.expect_child_patterns(part.index);
-                            
-                            // Get the first token from the prefix pattern (e.g., he from [he, l])
-                            let first_token = if let Some((_pid, pattern)) = prefix_pattern.iter().next() {
-                                pattern[0]
-                            } else {
-                                part.index
-                            };
-                            
-                            // Only create wrapper if the prefix contains joined elements
-                            if first_token != part.index {
-                                // Calculate the entry index where prefix ends
-                                // This is trickier for prefix - we need to find the last entry covered by the prefix
-                                // For now, let's find the entry after the prefix end
-                                let patterns = self.patterns();
-                                let pattern = patterns.get(&pattern_id).unwrap();
-                                
-                                // The entry right after where the prefix ends
-                                let next_entry_index = entry_index + 1;
-                                if next_entry_index < pattern.len() {
-                                    let next_entry_token = *self.ctx.trav.expect_child_at(
-                                        index.to_child_location(SubLocation::new(pattern_id, next_entry_index))
-                                    );
-                                    
-                                    // Get the last token from the prefix pattern (e.g., l from [he, l])
-                                    let last_prefix_token = if let Some((_pid, pattern)) = prefix_pattern.iter().next() {
-                                        pattern[pattern.len() - 1]
-                                    } else {
-                                        part.index
-                                    };
-                                    
-                                    // Get the complement token from the next entry
-                                    let next_patterns = self.ctx.trav.expect_child_patterns(next_entry_token);
-                                    let complement_token = if let Some((_pid, pattern)) = next_patterns.iter().next() {
-                                        pattern[pattern.len() - 1]  // Last child
-                                    } else {
-                                        next_entry_token  // fallback
-                                    };
-                                    
-                                    tracing::info!(
-                                        root = ?index,
-                                        entry_index = entry_index,
-                                        first_token = ?first_token,
-                                        next_entry_token = ?next_entry_token,
-                                        complement_token = ?complement_token,
-                                        "join_root_partitions - Prefix mode: creating wrapper vertex from entry range"
-                                    );
-                                    
-                                    // Create new wrapper vertex with two patterns:
-                                    // 1. [he, ld] - using first token and next entry
-                                    // 2. [hel, d] - using prefix and complement
-                                    let wrapper = self.ctx.trav.insert_patterns(vec![
-                                        Pattern::from(vec![first_token, next_entry_token]),
-                                        Pattern::from(vec![part.index, complement_token]),
-                                    ]);
-                                    
-                                    tracing::info!(
-                                        wrapper = ?wrapper,
-                                        "join_root_partitions - Prefix mode: wrapper vertex created with both patterns"
-                                    );
-                                    
-                                    // Replace the pattern entries with the wrapper
-                                    let loc = index.to_pattern_location(pattern_id);
-                                    self.ctx.trav.replace_in_pattern(loc, 0..=next_entry_index, wrapper);
-                                    
-                                    tracing::info!(
-                                        "join_root_partitions - Prefix mode: replaced entries in root pattern"
-                                    );
-                                } else {
-                                    tracing::debug!(
-                                        "join_root_partitions - Prefix mode: no next entry, skipping wrapper"
-                                    );
-                                }
-                            } else {
-                                tracing::debug!(
-                                    "join_root_partitions - Prefix mode: prefix has no joined elements, skipping wrapper"
-                                );
-                            }
-                        } else {
-                            tracing::warn!(
-                                "join_root_partitions - Prefix mode: no delta info, skipping wrapper"
-                            );
-                        }
+                        let post = Postfix::new(offset)
+                            .join_partition(self)
+                            .map(|part| part.index)
+                            .unwrap_or_else(|full| full);
+                        self.ctx.trav.add_pattern_with_update(
+                            index,
+                            Pattern::from(vec![part.index, post]),
+                        );
                     }
                 })
                 .map(|part| part.index),
             RootMode::Postfix => Postfix::new(offset)
                 .join_partition(self)
                 .inspect(|part| {
-                    tracing::debug!(
-                        postfix_index = ?part.index,
-                        perfect = ?part.perfect,
-                        delta = ?part.delta,
-                        "join_root_partitions - Postfix mode: partition created"
-                    );
                     if part.perfect.is_none() {
-                        // Get the pattern entry info from delta
-                        // The delta tells us which pattern entry the postfix starts from
-                        if let Some((&pattern_id, &entry_index)) = part.delta.iter().next() {
-                            // Get the postfix partition's pattern
-                            let postfix_pattern = self.ctx.trav.expect_child_patterns(part.index);
-                            
-                            // Get the last token from the postfix pattern (e.g., cd from [b, cd])
-                            let last_token = if let Some((_pid, pattern)) = postfix_pattern.iter().next() {
-                                pattern[pattern.len() - 1]
-                            } else {
-                                part.index // fallback to whole partition
-                            };
-                            
-                            // Only create wrapper if the postfix contains joined elements
-                            // (i.e., last_token is different from part.index)
-                            if last_token != part.index {
-                                // Get the original child token at the entry where postfix starts
-                                // This gives us the full token (e.g., ab from entry 1)
-                                let entry_token = *self.ctx.trav.expect_child_at(
-                                    index.to_child_location(SubLocation::new(pattern_id, entry_index))
-                                );
-                                
-                                // Get the first token from the postfix pattern (e.g., b from [b, cd])
-                                let _first_postfix_token = if let Some((_pid, pattern)) = postfix_pattern.iter().next() {
-                                    pattern[0]
-                                } else {
-                                    part.index
-                                };
-                                
-                                // Get the complement token (e.g., a from ab, given b)
-                                // entry_token should have pattern [a, b], so we get the first child
-                                let entry_patterns = self.ctx.trav.expect_child_patterns(entry_token);
-                                let complement_token = if let Some((_pid, pattern)) = entry_patterns.iter().next() {
-                                    pattern[0]  // First child is 'a'
-                                } else {
-                                    entry_token  // fallback
-                                };
-                                
-                                tracing::info!(
-                                    root = ?index,
-                                    entry_index = entry_index,
-                                    entry_token = ?entry_token,
-                                    last_token = ?last_token,
-                                    complement_token = ?complement_token,
-                                    "join_root_partitions - Postfix mode: creating wrapper vertex from entry range"
-                                );
-                                
-                                // Create new wrapper vertex with two patterns:
-                                // 1. [ab, cd] - using full entry token
-                                // 2. [a, bcd] - using complement and postfix
-                                let wrapper = self.ctx.trav.insert_patterns(vec![
-                                    Pattern::from(vec![entry_token, last_token]),
-                                    Pattern::from(vec![complement_token, part.index]),
-                                ]);
-                                
-                                tracing::info!(
-                                    wrapper = ?wrapper,
-                                    "join_root_partitions - Postfix mode: wrapper vertex created with both patterns"
-                                );
-                                
-                                // Replace the pattern entries with the wrapper
-                                // The wrapper should replace entries [entry_index..] in the root pattern
-                                let loc = index.to_pattern_location(pattern_id);
-                                self.ctx.trav.replace_in_pattern(loc, entry_index.., wrapper);
-                                
-                                tracing::info!(
-                                    "join_root_partitions - Postfix mode: replaced entries in root pattern"
-                                );
-                            } else {
-                                tracing::debug!(
-                                    "join_root_partitions - Postfix mode: postfix has no joined elements, skipping wrapper"
-                                );
-                            }
-                        } else {
-                            tracing::warn!(
-                                "join_root_partitions - Postfix mode: no delta info, skipping wrapper"
-                            );
-                        }
-                    } else {
-                        tracing::debug!(
-                            "join_root_partitions - Postfix mode: perfect match, no wrapper needed"
+                        let pre = match Prefix::new(offset).join_partition(self)
+                        {
+                            Ok(pre) => pre.index,
+                            Err(c) => c,
+                        };
+                        self.ctx.trav.add_pattern_with_update(
+                            index,
+                            Pattern::from(vec![pre, part.index]),
                         );
                     }
                 })
