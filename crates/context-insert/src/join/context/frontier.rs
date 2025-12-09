@@ -60,6 +60,8 @@ impl Iterator for FrontierSplitIterator {
         Some(match self.frontier.next() {
             Some(Some(key)) => {
                 if !self.splits.contains_key(&key) {
+                    // TODO: cache partitions as they do not depend on key.pos
+                    // or change key structure to not include pos
                     let partitions = self.node(key.index).join_partitions();
 
                     for (key, split) in partitions {
