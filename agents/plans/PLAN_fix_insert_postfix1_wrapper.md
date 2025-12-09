@@ -15,9 +15,38 @@ Missing: `abcd` = `[ab, cd]` (atoms 0-3)
 
 ## Solution Approach
 
+### Key Concept: Minimal Wrapping Vertex
+
+**The core idea is to store multiple overlapping tokens in a minimal wrapping vertex, instead of duplicating the surrounding context.**
+
+When inserting a pattern, we:
+1. Identify the entry index positions from the role paths (start and/or end)
+2. Create a wrapper around only those entries
+3. Replace that specific range with the wrapper vertex in the original pattern_id pattern
+
+### Example: Inserting "mnoxyp" into a Pattern
+
+Original pattern: `[h, i, j, k, lmn, x, y, opq, r, s, t]`
+
+When inserting "mnoxyp":
+- Overlaps entries at indices 4-7: `[lmn, x, y, opq]`
+- After joining: `[x, y]` → `xy` (creating a "delta" since pattern size changed from 2 to 1)
+
+Create wrapper for only the overlapping range:
+```rust
+wrapper = [
+    [lmn, xy, opq],      // Pattern 1: full entry tokens with joined middle
+    [l, mnoxyp, q]        // Pattern 2: complement tokens with inserted pattern
+]
+```
+
+Result: `[h, i, j, k, wrapper, r, s, t]`
+- Surrounding tokens `[h, i, j, k]` and `[r, s, t]` remain **unchanged**
+- Only the overlapping range is wrapped
+
 ### Multi-Level Wrapper Creation
 
-Enhance `join_root_partitions` to create additional wrappers for overlapping child pattern ranges, not just for the main split point.
+Enhance `join_root_partitions` to:
 
 ## Implementation Plan
 
@@ -153,7 +182,7 @@ For `ababcd` = `[ab@0, ab@1, c@2, d@3]` with split after atom position 3:
 
 The key is entries `[1, 2, 3]` which span `[ab, c, d]` atoms, creating the needed `abcd` wrapper.
 
-##Logic for Finding Overlapping Ranges
+## Logic for Finding Overlapping Ranges
 
 ```rust
 fn find_overlapping_child_ranges(

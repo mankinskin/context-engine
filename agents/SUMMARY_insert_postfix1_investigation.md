@@ -52,7 +52,7 @@ let delta = inner
 **Purpose:** Indicates which pattern entry index in the parent pattern a partition corresponds to. For example:
 - `delta: {ababcd_id: 1}` means the partition starts at entry index 1 in pattern `ababcd`
 
-**Note:** The name "delta" may be confusing as it's used in different contexts with different meanings throughout the codebase.
+**Note on "delta" naming:** The name comes from the **change in pattern size** when entries are joined. When `[x, y]` becomes `xy`, the pattern length changes from 2 to 1, creating a "delta" of 1. This represents how many entries were reduced during the joining process. However, the name may be confusing as it's used in different contexts with different meanings throughout the codebase.
 
 ### 2. Wrapper Creation Location
 
@@ -70,31 +70,60 @@ The current implementation in `join_root_partitions` calls `add_pattern_with_upd
 
 ## Proposed Solution Approach
 
+### Key Concept: Minimal Wrapping Vertex
+
+**The core idea is to store multiple overlapping tokens in a minimal wrapping vertex, instead of duplicating the surrounding context.**
+
+This avoids creating unnecessary vertices outside the range of the actual match while efficiently representing overlapping patterns.
+
 ### Pattern-Entry-Level Wrapper Creation
 
 The solution should:
 
-1. **Use delta information** to identify which pattern entries are involved
-2. **Extract full entry tokens** rather than atom-level splits
-3. **Create wrapper vertices** that represent overlapping pattern entry ranges
-4. **Replace pattern entries** (not atoms) in the root pattern
+1. **Use delta information** to identify which pattern entries are involved in the role paths (start and/or end positions)
+2. **Extract the entry index range** that needs to be wrapped
+3. **Create wrapper vertex** around that specific entry range in the original pattern
+4. **Replace that entry range** with the wrapper vertex in the original pattern_id pattern
 
-### For Postfix Mode Example
+### Concrete Example: Inserting "mnoxyp"
 
-For `ababcd` with postfix starting at entry 1:
-1. Extract `entry_index = 1` from `delta`
-2. Get full entry token: `ab` from entry 1
-3. Get last joined token: `cd` from postfix pattern `[b, cd]`
+Original pattern: `[h, i, j, k, lmn, x, y, opq, r, s, t]`
+
+When inserting "mnoxyp", we identify that it overlaps entries at indices 4-7: `[lmn, x, y, opq]`
+
+**Instead of duplicating context**, we create a wrapper for only those entries:
+```rust
+wrapper_vertex = [
+    [lmn, xy, opq],      // Pattern 1: full entry tokens with joined middle
+    [l, mnoxyp, q]        // Pattern 2: complement tokens with inserted pattern
+]
+```
+
+**Result:** Original pattern becomes: `[h, i, j, k, wrapper_vertex, r, s, t]`
+
+Note that:
+- The surrounding tokens `[h, i, j, k]` and `[r, s, t]` are **unchanged**
+- The pattern size changed: `[x, y]` → `xy` (2 entries → 1 entry), creating a "delta" of 1
+- We only wrap the overlapping range, not the entire context
+
+### For `ababcd` Postfix Mode Example
+
+For `ababcd = [ab, ab, c, d]` with postfix starting at entry 1:
+
+1. Extract `entry_index = 1` from `delta` (the role path start position)
+2. Identify the range of entries that overlap: indices `[1, 2, 3]` = `[ab, c, d]`
+3. After joining, `[c, d]` becomes `cd`, so the range is now `[ab, cd]`
 4. Create wrapper `abcd` with patterns:
    - `[ab, cd]` - using full entry token and last joined token
    - `[a, bcd]` - using complement (first child of entry token) and postfix partition
-5. Replace entries `[1..]` in root pattern with wrapper
+5. Replace entries `[1, 2, 3]` in the original pattern with the wrapper
+6. Result: `ababcd = [ab, abcd]` (entry 0 unchanged, entries 1-3 replaced with wrapper)
 
 ### Challenges for All Modes
 
-- **Prefix Mode**: Need to determine the correct entry range to replace (entries before the prefix end)
-- **Postfix Mode**: Need to determine entries from start position to end
-- **Infix Mode**: Need to handle both boundaries correctly
+- **Prefix Mode**: Determine the correct entry range to replace (from start to the end position of the role path)
+- **Postfix Mode**: Determine the entry range from the start position of the role path to the end
+- **Infix Mode**: Handle both start and end boundaries of the role path correctly
 
 ## Experimental Implementation Results
 
@@ -148,6 +177,14 @@ The implementation was **overzealous** and needs refinement:
 - Proposed helper methods
 - Testing strategy
 - Specific algorithms for each mode
+
+### Test Case Example
+`agents/test-cases/TEST_CASE_minimal_wrapping_vertex_example.md` contains:
+- Concrete demonstration of the minimal wrapping vertex concept
+- Example: inserting "mnoxyp" into `[h, i, j, k, lmn, x, y, opq, r, s, t]`
+- Shows how to wrap only overlapping entries without duplicating context
+- Illustrates the "delta" concept (pattern size change during joining)
+- Complete expected behavior and test assertions
 
 ## Conclusion
 
