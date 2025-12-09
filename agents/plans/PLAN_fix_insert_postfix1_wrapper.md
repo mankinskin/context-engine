@@ -24,11 +24,11 @@ When inserting a pattern, we:
 2. Create a wrapper around only those entries
 3. Replace that specific range with the wrapper vertex in the original pattern_id pattern
 
-### Example: Inserting "mnoxyp" into a Pattern
+### Example: Inserting "mnxyop" into a Pattern
 
 Original pattern: `[h, i, j, k, lmn, x, y, opq, r, s, t]`
 
-When inserting "mnoxyp":
+When inserting "mnxyop":
 - Overlaps entries at indices 4-7: `[lmn, x, y, opq]`
 - After joining: `[x, y]` → `xy` (creating a "delta" since pattern size changed from 2 to 1)
 
@@ -36,7 +36,7 @@ Create wrapper for only the overlapping range:
 ```rust
 wrapper = [
     [lmn, xy, opq],      // Pattern 1: full entry tokens with joined middle
-    [l, mnoxyp, q]        // Pattern 2: complement tokens with inserted pattern
+    [l, mnxyop, q]        // Pattern 2: complement tokens with inserted pattern
 ]
 ```
 

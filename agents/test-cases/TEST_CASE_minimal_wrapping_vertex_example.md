@@ -3,7 +3,7 @@
 **Date:** 2025-12-09  
 **Purpose:** Demonstrate the minimal wrapping vertex concept with a concrete example
 
-## Test Scenario: Inserting "mnoxyp"
+## Test Scenario: Inserting "mnxyop"
 
 ### Initial Graph Setup
 
@@ -39,10 +39,10 @@ let original_pattern = graph.insert_pattern(vec![
 
 ### Insertion Request
 
-Insert the pattern "mnoxyp" = `[m, n, o, x, y, p]`
+Insert the pattern "mnxyop" = `[m, n, x, y, o, p]`
 
 ```rust
-let query = vec![m, n, o, x, y, p];
+let query = vec![m, n, x, y, o, p];
 ```
 
 ### Expected Behavior
@@ -73,7 +73,7 @@ Create a wrapper for **only** the overlapping entries (4-7), not the entire patt
 // Wrapper vertex "lmnxyopq" with two patterns:
 lmnxyopq = [
     [lmn, xy, opq],      // Pattern 1: full entry tokens with joined middle
-    [l, mnoxyp, q]       // Pattern 2: split tokens with inserted pattern
+    [l, mnxyop, q]       // Pattern 2: split tokens with inserted pattern
 ]
 ```
 
@@ -82,7 +82,7 @@ Where:
 - `xy` is the joined token from entries 5-6
 - `opq` is the full entry token from index 7
 - `l` is the first child of `lmn` (complement token)
-- `mnoxyp` is the newly inserted pattern
+- `mnxyop` is the newly inserted pattern
 - `q` is the last child of `opq` (complement token)
 
 #### 4. Replace Range in Original Pattern
@@ -114,10 +114,10 @@ assert_indices!(graph, lmnxyopq);
 assert_patterns! {
     graph,
     xy => [[x, y]],
-    mnoxyp => [[m, n, o, x, y, p]],
+    mnxyop => [[m, n, x, y, o, p]],
     lmnxyopq => [
         [lmn, xy, opq],
-        [l, mnoxyp, q]
+        [l, mnxyop, q]
     ]
 };
 
@@ -138,12 +138,12 @@ assert_eq!(result.root_token(), original_pattern);
 1. **Minimal Wrapping**: Only entries 4-7 are wrapped, not the entire pattern
 2. **Context Preservation**: Surrounding tokens `[h, i, j, k]` and `[r, s, t]` are unchanged
 3. **Pattern Size Delta**: The wrapper accounts for the size change when `[x, y]` → `xy`
-4. **Multiple Representations**: The wrapper vertex contains both `[lmn, xy, opq]` and `[l, mnoxyp, q]`
+4. **Multiple Representations**: The wrapper vertex contains both `[lmn, xy, opq]` and `[l, mnxyop, q]`
 5. **Query Findability**: The original query pattern can be found in the modified graph
 
 ## Benefits of This Approach
 
-1. **No Context Duplication**: We don't create `[h, i, j, k, l, mnoxyp, q, r, s, t]` which would duplicate the surrounding context
+1. **No Context Duplication**: We don't create `[h, i, j, k, l, mnxyop, q, r, s, t]` which would duplicate the surrounding context
 2. **Efficient Storage**: Only the overlapping range is wrapped in a new vertex
 3. **Minimal Changes**: The original pattern structure is preserved with minimal modification
 4. **Correct Semantics**: The wrapper represents the exact range that overlaps with the insertion

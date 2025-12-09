@@ -85,17 +85,17 @@ The solution should:
 3. **Create wrapper vertex** around that specific entry range in the original pattern
 4. **Replace that entry range** with the wrapper vertex in the original pattern_id pattern
 
-### Concrete Example: Inserting "mnoxyp"
+### Concrete Example: Inserting "mnxyop"
 
 Original pattern: `[h, i, j, k, lmn, x, y, opq, r, s, t]`
 
-When inserting "mnoxyp", we identify that it overlaps entries at indices 4-7: `[lmn, x, y, opq]`
+When inserting "mnxyop", we identify that it overlaps entries at indices 4-7: `[lmn, x, y, opq]`
 
 **Instead of duplicating context**, we create a wrapper for only those entries:
 ```rust
 wrapper_vertex = [
     [lmn, xy, opq],      // Pattern 1: full entry tokens with joined middle
-    [l, mnoxyp, q]        // Pattern 2: complement tokens with inserted pattern
+    [l, mnxyop, q]        // Pattern 2: complement tokens with inserted pattern
 ]
 ```
 
@@ -181,7 +181,7 @@ The implementation was **overzealous** and needs refinement:
 ### Test Case Example
 `agents/test-cases/TEST_CASE_minimal_wrapping_vertex_example.md` contains:
 - Concrete demonstration of the minimal wrapping vertex concept
-- Example: inserting "mnoxyp" into `[h, i, j, k, lmn, x, y, opq, r, s, t]`
+- Example: inserting "mnxyop" into `[h, i, j, k, lmn, x, y, opq, r, s, t]`
 - Shows how to wrap only overlapping entries without duplicating context
 - Illustrates the "delta" concept (pattern size change during joining)
 - Complete expected behavior and test assertions
