@@ -58,25 +58,14 @@ impl<R: InsertResult> InsertCtx<R> {
         self.insert_result(searchable)
             .and_then(|res| res.map_err(|root| root.into()))
     }
-    pub fn insert_init(
-        &mut self,
-        ext: R::Extract,
-        init: InitInterval,
-    ) -> R {
-        let interval = IntervalGraph::from((&mut self.graph.graph_mut(), init));
-        let mut ctx =
-            FrontierSplitIterator::from((self.graph.clone(), interval));
-        let joined = ctx.find_map(|joined| joined).unwrap();
-        R::build_with_extract(joined, ext)
-    }
     fn insert_result(
         &mut self,
         searchable: impl Searchable<InsertTraversal>,
     ) -> Result<Result<R, R::Error>, ErrorState> {
         match searchable.search(self.graph.clone()) {
             Ok(result) => {
-                // Check if the query was exhausted and result is full token
-                if result.query_exhausted() && result.is_full_token() {
+                // Check if the result is full token
+                if result.is_full_token() {
                     // Extract the query pattern from the cursor and the root token from the complete path
                     let query_path = result.query_cursor().path().clone();
                     let root_token = result.root_token();
@@ -94,6 +83,17 @@ impl<R: InsertResult> InsertCtx<R> {
             },
             Err(err) => Err(err),
         }
+    }
+    pub fn insert_init(
+        &mut self,
+        ext: R::Extract,
+        init: InitInterval,
+    ) -> R {
+        let interval = IntervalGraph::from((&mut self.graph.graph_mut(), init));
+        let mut ctx =
+            FrontierSplitIterator::from((self.graph.clone(), interval));
+        let joined = ctx.find_map(|joined| joined).unwrap();
+        R::build_with_extract(joined, ext)
     }
     pub fn insert_or_get_complete(
         &mut self,
