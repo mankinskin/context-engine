@@ -1,640 +1,540 @@
-# Implementation Plan: Root Node Join Refactoring
+# Specification: Root Node Join Refactoring
 
-**Date:** 2025-01-04  
-**Status:** READY FOR REVIEW  
-**Based on:** `20250103_SPEC_root_join_refactoring.md`
+**Date:** 2025-01-03  
+**Status:** DRAFT - READY FOR IMPLEMENTATION PLANNING  
+**Related:** `20251211_PLAN_wrapper_partition_calculation.md`, `context.rs`
 
-## 1. Key Insight from Examples
+## 1. Problem Statement
 
-The examples reveal that the algorithm is fundamentally simple:
+The current `join_root_partitions` implementation has grown complex with three separate `join_incomplete_*` functions that share structural similarities but differ in specific details. The code is:
+- Hard to maintain (duplication across prefix/postfix/infix cases)
+- Uses imperative loops rather than functional patterns
+- Lacks clear separation of the common algorithm from type-specific operations
 
-**"Merge all partitions from smallest to largest until all wrapper boundaries are reached."**
-
-All partition types (inner, target, wrapper) are handled uniformly:
-- **Inner partitions**: Built first (smallest), used as building blocks
-- **Target partition**: Built using inner partitions, this is what we return
-- **Wrapper partitions**: Built last (largest), contain the target plus complements
-
-There is NO need to:
-- Classify offsets by role (target/wrapper/inner) during the merge loop
-- Have separate join functions for inner/target/wrapper partitions
-
-The only special handling needed:
-1. **Store the target token** when the target partition is created (to return it)
-2. **Replace root pattern children** with partition tokens when partitions span child boundaries
-   - This applies uniformly to ALL partitions (inner, target, and wrapper)
+### Goals:
+1. **Generic Parameterization**: Use traits to abstract over Prefix/Postfix/Infix target partitions
+2. **Unified Algorithm**: Define common root join steps, specializing only where needed
+3. **Functional Paradigms**: Replace loops with iterator chains
+4. **Clear Data Structures**: Design types that make navigation through offsets/partitions intuitive
 
 ---
 
-## 2. Algorithm Overview
+## 2. Key Concepts & Invariants
 
-### 2.1 Partition Types (from Spec Section 2.2)
+### 2.1 Graph Invariants (Critical for Understanding)
 
-| Partition Type | Definition | Ownership |
-|---------------|------------|-----------|
-| **Inner Partition** | Largest range of perfect boundaries inside target | Belongs to exactly one pattern |
-| **Target Partition** | Partition defined by target offset(s) | Replaced in pattern only if both offsets perfect |
-| **Wrapper Partition** | Partition from perfect boundaries around target | Belongs to exactly one pattern |
+1. **Unique Child Boundaries**: All child boundaries in all child patterns of any node are at **different atom positions**. No two child boundaries may share the same atom offset.
 
-**Key insight**: Each partition belongs to **at most one pattern**. A partition IS its offset range - the same object may be an "intermediate partition" globally and "the inner partition of P1" simultaneously.
+2. **No Duplicate Ranges**: No range of children can exist twice anywhere in the graph. When joining a partition:
+   - If a single token already exists for the partition range → reuse it
+   - If no single token exists → create a new vertex from the child pattern cut-out
 
-### 2.2 Algorithm: Two Phases
+3. **Wrapper Offset Uniqueness**: Since wrapper offsets are at perfect child boundaries, and all child boundaries are at unique positions, **each wrapper offset is perfect in exactly one pattern**.
 
-#### Phase 1: Augmentation
-Add inner and wrapper offsets to all pattern nodes:
-- For each pattern, calculate closest perfect boundaries inside/around target
-- This determines which partitions each pattern owns
+### 2.2 Partition Types
 
-#### Phase 2: Join (smallest-to-largest merge)
-Merge all k-part partitions from smaller to larger:
+| Partition Type | Definition | When Different from Target |
+|---------------|------------|---------------------------|
+| **Target Partition** | The partition defined by target offset(s) from the search result | N/A - this is the goal |
+| **Inner Partition** | Partition from perfect boundaries *inside* the target | When target offset is imperfect in that pattern |
+| **Wrapper Partition** | Partition from perfect boundaries *around* the target | When target offset is imperfect in that pattern |
 
-```
-join_root_partitions(ctx, root_mode):
-    
-    1. Merge partitions from smallest to largest:
-       For each partition (by increasing size):
-         → Join partition and cache result
-         
-         Then check if replacement needed:
-         
-         1.1. If this is an INNER partition for some pattern:
-              → Replace in its owning pattern
-         
-         1.2. If this is the TARGET partition:
-              → Store the resulting child token
-              → If BOTH target offsets are perfect: replace in pattern
-         
-         1.3. If this is a WRAPPER partition for some pattern:
-              → Replace in its owning pattern
-         
-         (Intermediate partitions: no replacement, just cached for building larger partitions)
-    
-    2. Return stored target child
-```
+**Key insight**: Each child pattern has its own inner and wrapper partitions. These only differ from the target partition when the target offset is not perfect (not at a child boundary) in that specific pattern.
 
-**Key points**:
-- **All** partitions are joined and cached (including intermediate ones)
-- Only special partitions (inner, target, wrapper) check for replacement
-- Intermediate partitions exist as building blocks for larger partitions
-- Each special partition has at most one owning pattern → at most one replacement
-- Merge order ensures dependencies are satisfied (smaller partitions built first)
+### 2.3 Offset Types
 
-### 2.3 Why This Works
+| Offset Type | Description |
+|------------|-------------|
+| **Target Offset** | Defines the target partition boundary (from search result) |
+| **Inner Offset** | Perfect child boundary inside the target partition range |
+| **Wrapper Offset** | Perfect child boundary outside/at the target partition range |
 
-From the examples:
-- All partitions between any two offsets are built during the merge
-- The target partition is just ONE of these partitions (at a specific size)
-- Wrapper partitions are ALSO just partitions (at larger sizes)
-- Intermediate partitions are cached so larger partitions can reference them
-- Delta tracking happens naturally because smaller partitions are built first
+**Important**: An offset can be multiple types simultaneously. A target offset that happens to be at a perfect child boundary is also a wrapper offset (and potentially an inner offset boundary).
 
 ---
 
-## 3. Data Structures
+## 3. Current Architecture Analysis
 
-### 3.1 Minimal Context
+### 3.1 Non-Root Node Join (`join_partitions`)
+
+The non-root flow:
+```
+1. Clone vertex cache (all split positions)
+2. Create iterator over positions
+3. Join ALL partitions between splits:
+   - First: Prefix (before first split)
+   - Middle: Infix (between adjacent splits)
+   - Last: Postfix (after last split)
+4. Assert widths sum correctly
+5. Merge partitions via NodeMergeCtx::merge_node
+   - Creates left/right pairs for each split position
+   - Builds composite patterns for each offset
+```
+
+**Key insight**: Non-root nodes join ALL partitions because parent nodes may reference ANY partition from either side of any split. The merge step creates the split mapping (left/right tokens for each offset position).
+
+### 3.2 Root Node Join (`join_root_partitions`)
+
+The root flow:
+```
+1. Get RootMode (Prefix/Postfix/Infix)
+2. Get vertex cache offsets (includes wrapper offsets from augmentation)
+3. Extract target offset(s) from offsets
+4. Join partitions in order: smallest to largest (respecting delta accumulation)
+5. For each pattern:
+   - If target offset is perfect: use target partition directly
+   - If target offset is imperfect: create wrapper vertex
+6. Return target partition token
+```
+
+**Key insight**: Root nodes only NEED the target partition indexed. Wrapper vertices integrate the target into patterns where the target offset isn't at a perfect child boundary.
+
+### 3.3 Augmentation Phase (Pre-Join)
+
+During `augment_root`:
+1. Add inner offsets for the target partition
+2. **Add wrapper offsets** at perfect child boundaries around the target
+3. These wrapper offsets ensure we have split positions at perfect boundaries
+4. Wrapper offsets trigger splits in child vertices during bottom-up joining
+
+**Critical**: All wrapper offset calculation happens during augmentation. By the time we reach root joining, all child splits are already computed.
+
+### 3.4 Split Cache Structure
 
 ```rust
-/// Context for root join
-pub struct RootJoinContext<'a> {
+SplitVertexCache {
+    positions: BTreeMap<NonZeroUsize, SplitPositionCache>
+}
+
+SplitPositionCache {
+    top: HashSet<PosKey>,              // Parent positions referencing this
+    pattern_splits: TokenTracePositions // PatternId -> TokenTracePos
+}
+
+TokenTracePos {
+    sub_index: usize,                   // Child index in pattern
+    inner_offset: Option<NonZeroUsize>  // Offset within child (None = perfect boundary)
+}
+```
+
+---
+
+## 4. Delta Propagation Model
+
+### 4.1 What is Delta?
+
+When multiple children are joined into a single token, the pattern length decreases. **Delta** tracks this reduction per pattern:
+- `delta[pattern_id] = original_entry_count - 1`
+- Used to adjust sub-indices when accessing positions after a joined range
+
+### 4.2 Join Order & Delta Accumulation
+
+Just like non-root joining, root joining must:
+1. **Join smaller partitions first** (inner partitions before target, target before wrapper)
+2. **Track deltas** from each join operation
+3. **Apply accumulated deltas** to sub-indices when building larger partitions
+
+Example flow for Postfix target:
+```
+1. Join inner partitions (if any) → accumulate inner_delta
+2. Join target partition (using adjusted indices) → get target_delta  
+3. Join wrapper complement (using adjusted indices) → get wrapper patterns
+4. Create wrapper vertex with target + complement patterns
+```
+
+### 4.3 Delta Application
+
+When accessing `pattern_splits[pid].sub_index()` for a later partition:
+```rust
+let adjusted_offset = offset.split.clone() - accumulated_delta;
+let sub_index = adjusted_offset.pattern_splits[&pid].sub_index();
+```
+
+---
+
+## 5. Proposed Data Structures
+
+### 5.1 Root Join Context
+
+```rust
+/// Complete context for root join operation
+pub struct RootJoinContext<'a, R: TargetRole> {
     /// Reference to node join context
     ctx: &'a mut NodeJoinCtx<'_>,
     
-    /// All offsets sorted by position (from vertex cache)
-    offsets: Vec<NonZeroUsize>,
+    /// All offsets from vertex cache (sorted by position)
+    /// Includes target offsets + wrapper offsets + inner offsets
+    all_offsets: Vec<SplitOffset>,
     
-    /// Target offset range (left, right) - right is None for Prefix/Postfix
-    target_range: (NonZeroUsize, Option<NonZeroUsize>),
+    /// Index/indices of target offset(s) within all_offsets
+    target_indices: R::TargetIndices,
     
-    /// Inner partition per pattern: pattern_id -> (left_bound, right_bound)
-    /// Calculated during augmentation as largest range of perfect boundaries inside target
-    inner_bounds: HashMap<PatternId, (usize, usize)>,
-    
-    /// Wrapper partition per pattern: pattern_id -> (left_bound, right_bound)
-    /// Calculated during augmentation as closest perfect boundaries around target
-    wrapper_bounds: HashMap<PatternId, (usize, usize)>,
-    
-    /// Created partitions: (start_pos, end_pos) -> Token
-    partitions: HashMap<(usize, usize), Token>,
-    
-    /// Target token (set when target partition is created)
-    target_token: Option<Token>,
+    /// Accumulated deltas from joined partitions (per pattern)
+    delta_accumulator: PatternSubDeltas,
 }
 ```
 
-### 3.2 Partition Ownership
-
-Each partition belongs to **at most one pattern**. Ownership is determined during augmentation:
+### 5.2 Offset Navigation
 
 ```rust
-/// Maps partition ranges to their owning pattern and role
-struct PartitionOwnership {
-    /// Inner partitions: range -> owning pattern
-    inner: HashMap<(usize, usize), PatternId>,
+/// Represents a split position with its pattern-level information
+#[derive(Debug, Clone)]
+pub struct SplitOffset {
+    pub position: NonZeroUsize,
+    pub pattern_info: TokenTracePositions,
+}
+
+impl SplitOffset {
+    /// Check if this offset is perfect (at child boundary) in the given pattern
+    pub fn is_perfect_in(&self, pattern_id: &PatternId) -> bool {
+        self.pattern_info
+            .get(pattern_id)
+            .map(|pos| pos.inner_offset().is_none())
+            .unwrap_or(false)
+    }
     
-    /// Wrapper partitions: range -> owning pattern  
-    wrapper: HashMap<(usize, usize), PatternId>,
-    
-    /// Target range (no owner unless both offsets perfect)
-    target: (usize, usize),
-    target_owner: Option<PatternId>,  // Set only if both offsets perfect
+    /// Get the pattern where this offset is perfect (exactly one by invariant)
+    pub fn perfect_pattern(&self) -> Option<PatternId> {
+        self.pattern_info
+            .iter()
+            .find(|(_, pos)| pos.inner_offset().is_none())
+            .map(|(pid, _)| *pid)
+    }
+}
+
+/// Per-pattern partition bounds determined by offsets
+#[derive(Debug, Clone)]
+pub struct PatternPartitionBounds {
+    pub pattern_id: PatternId,
+    /// Start child index in this pattern
+    pub start_index: usize,
+    /// End child index (exclusive) in this pattern  
+    pub end_index: usize,
+    /// Whether start is at perfect boundary
+    pub perfect_start: bool,
+    /// Whether end is at perfect boundary
+    pub perfect_end: bool,
 }
 ```
 
-### 3.3 Delta Tracking
-
-**Key finding**: Delta tracking IS still needed, but it's **handled automatically** by `JoinPartition`.
+### 5.3 Partition Join Result
 
 ```rust
-// JoinedPartition stores computed delta
-pub struct JoinedPartition<R: RangeRole> {
-    pub index: Token,
-    pub perfect: R::Perfect,
-    pub delta: PatternSubDeltas,  // Auto-computed during join
+/// Result of joining any partition (reuse existing or create new)
+pub enum PartitionResult {
+    /// Existing token found for this range
+    Existing(Token),
+    /// New vertex created from patterns
+    Created {
+        token: Token,
+        delta: PatternSubDeltas,
+    },
 }
-```
 
-The current code uses `roffset.split.clone() - part.delta` to adjust offsets after joining. When using `JoinPartition::join_partition()`, this happens automatically.
-
-**Implication**: Use the existing `JoinPartition` trait - no manual delta tracking needed.
-
----
-
-## 4. Implementation Steps
-
-The implementation leverages the existing `JoinPartition` infrastructure
-rather than building everything from scratch.
-
-### Step 1: Augmentation - Calculate Inner and Wrapper Bounds
-
-During augmentation, we calculate inner and wrapper bounds for each pattern.
-This determines partition ownership.
-
-```rust
-fn augment_patterns(
-    ctx: &NodeJoinCtx,
-    target_range: (usize, Option<usize>),
-    root_mode: RootMode,
-) -> (HashMap<PatternId, (usize, usize)>, HashMap<PatternId, (usize, usize)>) {
-    let mut inner_bounds = HashMap::new();
-    let mut wrapper_bounds = HashMap::new();
-    let root_width = ctx.root_width();
-    
-    for pattern_id in ctx.pattern_ids() {
-        // Calculate inner bounds: largest range of perfect boundaries inside target
-        let (target_left, target_right) = match root_mode {
-            RootMode::Prefix => (0, target_range.0),
-            RootMode::Postfix => (target_range.0, root_width),
-            RootMode::Infix => (target_range.0, target_range.1.unwrap()),
-        };
-        
-        let left_inner = find_first_perfect_boundary_gte(ctx, pattern_id, target_left);
-        let right_inner = find_first_perfect_boundary_lte(ctx, pattern_id, target_right);
-        
-        // Only store inner bounds if there's actually a range
-        if left_inner < right_inner {
-            inner_bounds.insert(pattern_id, (left_inner, right_inner));
-        }
-        
-        // Calculate wrapper bounds: closest perfect boundaries around target
-        let (left_wrapper, right_wrapper) = match root_mode {
-            RootMode::Prefix => {
-                // Wrapper: from 0 to first perfect boundary >= target
-                let right = find_first_perfect_boundary_gte(ctx, pattern_id, target_right);
-                (0, right)
-            }
-            RootMode::Postfix => {
-                // Wrapper: from first perfect boundary <= target to end
-                let left = find_first_perfect_boundary_lte(ctx, pattern_id, target_left);
-                (left, root_width)
-            }
-            RootMode::Infix => {
-                // Wrapper: perfect boundaries on both sides
-                let left = find_first_perfect_boundary_lte(ctx, pattern_id, target_left);
-                let right = find_first_perfect_boundary_gte(ctx, pattern_id, target_right);
-                (left, right)
-            }
-        };
-        
-        // Only store wrapper bounds if different from target (i.e., target offset is imperfect)
-        if (left_wrapper, right_wrapper) != (target_left, target_right) {
-            wrapper_bounds.insert(pattern_id, (left_wrapper, right_wrapper));
+impl PartitionResult {
+    pub fn token(&self) -> Token {
+        match self {
+            Self::Existing(t) => *t,
+            Self::Created { token, .. } => *token,
         }
     }
     
-    (inner_bounds, wrapper_bounds)
+    pub fn delta(&self) -> PatternSubDeltas {
+        match self {
+            Self::Existing(_) => Default::default(),
+            Self::Created { delta, .. } => delta.clone(),
+        }
+    }
 }
 ```
 
-### Step 2: Merge Loop with Inline Replacement
+---
 
-**All partitions are joined and cached**. Only special partitions (inner, target, wrapper) check for replacement. Intermediate partitions are building blocks for constructing larger partitions.
+## 6. Proposed Trait Hierarchy
+
+### 6.1 Target Role Trait
 
 ```rust
-fn merge_all_partitions(root_ctx: &mut RootJoinContext) {
-    let offsets: Vec<usize> = root_ctx.offsets.iter().map(|o| o.get()).collect();
-    let max_offset = *offsets.last().unwrap();
+/// Defines the target partition type (Prefix/Postfix/Infix)
+pub trait TargetRole: Sized {
+    /// Type representing target offset indices within the sorted offset list
+    /// - Prefix/Postfix: single index
+    /// - Infix: pair of indices (left, right)
+    type TargetIndices;
     
-    // Include 0 as implicit start boundary
-    let all_positions: Vec<usize> = std::iter::once(0)
-        .chain(offsets.iter().copied())
+    /// Perfect boundary type
+    type Perfect: BorderPerfect;
+    
+    /// Number of target offsets (1 for Prefix/Postfix, 2 for Infix)
+    const TARGET_OFFSET_COUNT: usize;
+    
+    /// Identify target offset indices from RootMode
+    fn identify_target_indices(
+        offsets: &[SplitOffset],
+        root_mode: RootMode,
+    ) -> Self::TargetIndices;
+    
+    /// Get iterator over patterns needing wrapper (imperfect target boundaries)
+    fn patterns_needing_wrapper<'a>(
+        offsets: &'a [SplitOffset],
+        target_indices: &Self::TargetIndices,
+    ) -> impl Iterator<Item = PatternId> + 'a;
+    
+    /// Get wrapper bounds for a specific pattern
+    fn wrapper_bounds(
+        offsets: &[SplitOffset],
+        target_indices: &Self::TargetIndices,
+        pattern_id: PatternId,
+    ) -> PatternPartitionBounds;
+}
+```
+
+### 6.2 Target Role Implementations
+
+```rust
+impl TargetRole for Pre<Join> {
+    type TargetIndices = usize;  // Index of right boundary
+    type Perfect = SinglePerfect;
+    const TARGET_OFFSET_COUNT: usize = 1;
+    
+    fn identify_target_indices(offsets: &[SplitOffset], _: RootMode) -> usize {
+        // For prefix: target offset is the first offset
+        0
+    }
+    
+    fn patterns_needing_wrapper<'a>(
+        offsets: &'a [SplitOffset],
+        target_idx: &usize,
+    ) -> impl Iterator<Item = PatternId> + 'a {
+        // Patterns where target offset is NOT perfect
+        offsets[*target_idx].pattern_info.iter()
+            .filter(|(_, pos)| pos.inner_offset().is_some())
+            .map(|(pid, _)| *pid)
+    }
+}
+
+impl TargetRole for Post<Join> {
+    type TargetIndices = usize;  // Index of left boundary
+    type Perfect = SinglePerfect;
+    const TARGET_OFFSET_COUNT: usize = 1;
+    
+    fn identify_target_indices(offsets: &[SplitOffset], _: RootMode) -> usize {
+        // For postfix: target offset is the first (only) offset
+        0
+    }
+}
+
+impl TargetRole for In<Join> {
+    type TargetIndices = (usize, usize);  // (left_idx, right_idx)
+    type Perfect = DoublePerfect;
+    const TARGET_OFFSET_COUNT: usize = 2;
+    
+    fn identify_target_indices(offsets: &[SplitOffset], _: RootMode) -> (usize, usize) {
+        // For infix: first two offsets define target
+        (0, 1)
+    }
+    
+    fn patterns_needing_wrapper<'a>(
+        offsets: &'a [SplitOffset],
+        (left_idx, right_idx): &(usize, usize),
+    ) -> impl Iterator<Item = PatternId> + 'a {
+        // Patterns where EITHER target offset is imperfect
+        let left_imperfect: HashSet<_> = offsets[*left_idx].pattern_info.iter()
+            .filter(|(_, pos)| pos.inner_offset().is_some())
+            .map(|(pid, _)| *pid)
+            .collect();
+        let right_imperfect: HashSet<_> = offsets[*right_idx].pattern_info.iter()
+            .filter(|(_, pos)| pos.inner_offset().is_some())
+            .map(|(pid, _)| *pid)
+            .collect();
+        left_imperfect.union(&right_imperfect).copied()
+    }
+}
+```
+
+### 6.3 Partition Joiner Trait
+
+```rust
+/// Handles joining partitions between offsets
+pub trait PartitionJoiner {
+    /// Join a partition defined by offset range, respecting deltas
+    fn join_partition_range(
+        &mut self,
+        start_offset: Option<&SplitOffset>,  // None = start of node
+        end_offset: Option<&SplitOffset>,    // None = end of node
+        delta: &PatternSubDeltas,
+    ) -> PartitionResult;
+}
+```
+
+---
+
+## 7. Proposed Algorithm Steps
+
+### 7.1 High-Level Algorithm
+
+```
+join_root_partitions<R: TargetRole>(ctx):
+    1. Collect all offsets from vertex cache (sorted by position)
+    2. Identify target offset indices based on RootMode
+    3. For each pattern:
+       a. Determine if target offsets are perfect in this pattern
+       b. If all perfect: target partition directly usable
+       c. If any imperfect: need to build wrapper
+    4. Join partitions in size order (smallest to largest):
+       a. Inner partitions (between offsets inside target range)
+       b. Target partition
+       c. Wrapper complements (partitions between target and wrapper bounds)
+    5. For each pattern needing wrapper:
+       a. Create wrapper vertex with [complement, target] or [target, complement] patterns
+       b. Also include any alternative patterns from child structure
+       c. Replace wrapper range in root pattern
+    6. Return target partition token
+```
+
+### 7.2 Detailed Steps
+
+#### Step 1: Initialize and Collect Offsets
+
+```rust
+fn init_root_join<R: TargetRole>(
+    ctx: &mut NodeJoinCtx,
+) -> RootJoinContext<R> {
+    let cache = ctx.vertex_cache();
+    
+    // All offsets sorted by position (includes target + wrapper + inner)
+    let all_offsets: Vec<SplitOffset> = cache.iter()
+        .map(|(pos, cache)| SplitOffset {
+            position: *pos,
+            pattern_info: cache.pattern_splits.clone(),
+        })
         .collect();
     
-    // Build partitions from smallest to largest
-    for size in 1..=max_offset {
-        for &start in &all_positions {
-            let end = start + size;
-            if !is_valid_boundary(end, &all_positions, max_offset) {
-                continue;
-            }
-            
-            // Skip if already created
-            if root_ctx.partitions.contains_key(&(start, end)) {
-                continue;
-            }
-            
-            // JOIN: All partitions are joined and cached
-            let token = join_partition_range(root_ctx, start, end);
-            root_ctx.partitions.insert((start, end), token);
-            
-            // REPLACE: Only special partitions check for replacement
-            let partition_type = classify_partition(root_ctx, start, end);
-            
-            match partition_type {
-                PartitionType::Inner { owner_pattern } => {
-                    // 1.1: Replace inner partition in its owning pattern
-                    replace_in_pattern(root_ctx, owner_pattern, token, start, end);
-                }
-                PartitionType::Target { both_offsets_perfect, owner_pattern } => {
-                    // 1.2: Store target child, replace only if both offsets perfect
-                    root_ctx.target_token = Some(token);
-                    if both_offsets_perfect {
-                        if let Some(pattern) = owner_pattern {
-                            replace_in_pattern(root_ctx, pattern, token, start, end);
-                        }
-                    }
-                }
-                PartitionType::Wrapper { owner_pattern } => {
-                    // 1.3: Replace wrapper partition in its owning pattern
-                    replace_in_pattern(root_ctx, owner_pattern, token, start, end);
-                }
-                PartitionType::Intermediate => {
-                    // No replacement - intermediate partitions are just cached
-                    // for use as building blocks in larger partitions
-                }
-            }
-        }
-    }
-}
-
-/// Replace a partition's children in a specific pattern.
-/// 
-/// Each partition has at most one owning pattern, so this is called
-/// at most once per partition.
-fn replace_in_pattern(
-    root_ctx: &mut RootJoinContext,
-    pattern_id: PatternId,
-    token: Token,
-    start: usize,
-    end: usize,
-) {
-    if let Some((start_idx, end_idx)) = get_spanning_child_range(root_ctx.ctx, pattern_id, start, end) {
-        let loc = root_ctx.ctx.index.to_pattern_location(pattern_id);
-        root_ctx.ctx.trav.replace_in_pattern(loc, start_idx..end_idx, vec![token]);
-    }
-}
-
-/// Classify a partition by its role and owning pattern (if any)
-enum PartitionType {
-    /// Inner partition - belongs to exactly one pattern
-    Inner { owner_pattern: PatternId },
-    /// Target partition - may belong to a pattern if both offsets perfect
-    Target { both_offsets_perfect: bool, owner_pattern: Option<PatternId> },
-    /// Wrapper partition - belongs to exactly one pattern
-    Wrapper { owner_pattern: PatternId },
-    /// Intermediate partition - building block, no owner
-    Intermediate,
-}
-
-/// Join a partition using existing Infix infrastructure
-///
-/// 3+ part patterns are created automatically by this infrastructure:
-/// - Root child patterns: e.g., P1's view `[a, bc, defg, h]` from root's children + split borders
-/// - Inner range joining: Target spanning multiple boundaries creates recursive joins
-/// - Composite patterns: The merge creates trigrams like `[left_border, inner, right_border]`
-///
-/// The merge loop only needs to track 2-way boundary combinations - `JoinPartition` handles
-/// the recursive inner range joining that produces 3+ part patterns.
-fn join_partition_range(root_ctx: &mut RootJoinContext, start: usize, end: usize) -> Token {
-    // Get offset contexts for start and end positions
-    let start_offset = position_splits(root_ctx.ctx.patterns(), NonZeroUsize::new(start).unwrap());
-    let end_offset = position_splits(root_ctx.ctx.patterns(), NonZeroUsize::new(end).unwrap());
+    let target_indices = R::identify_target_indices(&all_offsets, root_mode);
     
-    // Use existing JoinPartition trait - handles:
-    // - Existing token detection (returns Err(token))
-    // - Pattern extraction from root children
-    // - Inner range joining (3+ part patterns via recursive JoinInnerRangeInfo)
-    // - Delta computation (automatic via JoinedPartition.delta)
-    match Infix::new(&start_offset, &end_offset).join_partition(root_ctx.ctx) {
-        Ok(joined) => joined.index,
-        Err(existing) => existing,
-    }
-}
-```
-
-### Step 3: Helper Functions
-
-```rust
-/// Get the child index range that a partition spans in a given pattern.
-/// Returns None if the partition doesn't span any children in this pattern.
-fn get_spanning_child_range(
-    ctx: &NodeJoinCtx,
-    pattern_id: PatternId,
-    start: usize,
-    end: usize,
-) -> Option<(usize, usize)> {
-    let boundaries = ctx.get_pattern_boundaries(pattern_id);
-    
-    // Find first child that starts at or after `start`
-    let start_idx = boundaries.iter().position(|&b| b >= start)?;
-    
-    // Find first child that ends at or after `end`
-    let end_idx = boundaries.iter().position(|&b| b >= end)?;
-    
-    // Only return if we actually span something
-    if end_idx > start_idx {
-        Some((start_idx, end_idx))
-    } else {
-        None
-    }
-}
-
-/// Check if a partition partially covers a child (i.e., splits it)
-fn is_partial_child(
-    ctx: &NodeJoinCtx,
-    pattern_id: PatternId,
-    start: usize,
-    end: usize,
-) -> bool {
-    let boundaries = ctx.get_pattern_boundaries(pattern_id);
-    // Partition is partial if start or end is NOT at a child boundary
-    !boundaries.contains(&start) || !boundaries.contains(&end)
-}
-```
-
-### Step 4: Entry Point
-
-```rust
-pub fn join_root_partitions(ctx: &mut NodeJoinCtx, root_mode: RootMode) -> Token {
-    // Extract target range from root_mode
-    let target_range = get_target_range(ctx, root_mode);
-    
-    // Calculate wrapper bounds for each pattern
-    let wrapper_bounds = calculate_wrapper_bounds(ctx, target_range, root_mode);
-    
-    // Collect offsets from vertex cache
-    let offsets: Vec<NonZeroUsize> = ctx.vertex_cache().keys().copied().collect();
-    
-    // Initialize context
-    let mut root_ctx = RootJoinContext {
+    RootJoinContext {
         ctx,
-        offsets,
-        target_range,
-        wrapper_bounds,
-        partitions: HashMap::new(),
-        target_token: None,
+        all_offsets,
+        target_indices,
+        delta_accumulator: Default::default(),
+    }
+}
+```
+
+#### Step 2: Partition Join Order
+
+For proper delta accumulation, partitions must be joined from smallest to largest:
+
+```rust
+/// Generate join order for all partitions
+fn partition_join_order<R: TargetRole>(
+    all_offsets: &[SplitOffset],
+    target_indices: &R::TargetIndices,
+) -> Vec<PartitionSpec> {
+    // 1. Inner partitions (between adjacent offsets within target range)
+    // 2. Target partition
+    // 3. Wrapper partitions (for each pattern needing wrapper)
+    
+    // The key is: smaller partitions first, so their deltas can be applied
+    // to larger partition calculations
+}
+```
+
+#### Step 3: Join Target Partition
+
+```rust
+fn join_target<R: TargetRole>(
+    root_ctx: &mut RootJoinContext<R>,
+) -> PartitionResult {
+    let partition = match R::TARGET_OFFSET_COUNT {
+        1 => {
+            let offset = &root_ctx.all_offsets[root_ctx.target_indices];
+            // Create Prefix or Postfix partition
+        }
+        2 => {
+            let (left, right) = root_ctx.target_indices;
+            // Create Infix partition from two offsets
+        }
     };
     
-    // Run merge
-    merge_all_partitions(&mut root_ctx);
+    // Apply accumulated delta before joining
+    let adjusted_partition = partition.apply_delta(&root_ctx.delta_accumulator);
     
-    // Return target
-    root_ctx.target_token.expect("Target partition should have been created")
+    // Join: either find existing token or create new vertex
+    root_ctx.ctx.join_partition(adjusted_partition)
 }
 ```
 
----
-
-## 5. Current Implementation Analysis & Cleanup Plan
-
-### 5.1 Current File Structure
-
-```
-crates/context-insert/src/join/
-├── mod.rs                           # Module exports only
-├── context/
-│   ├── mod.rs                       # Module exports
-│   ├── frontier.rs                  # FrontierSplitIterator - JOIN DRIVER
-│   ├── node/
-│   │   ├── mod.rs                   # Module exports
-│   │   ├── context.rs               # NodeJoinCtx + join_root_partitions (MAIN TARGET)
-│   │   └── merge.rs                 # NodeMergeCtx - non-root merge
-│   └── pattern/
-│       ├── mod.rs                   # PatternJoinCtx
-│       └── borders.rs               # JoinBorders trait impls
-├── joined/
-│   ├── mod.rs                       # Module exports
-│   ├── partition.rs                 # JoinedPartition struct
-│   └── patterns.rs                  # JoinedPatterns struct
-└── partition/
-    ├── mod.rs                       # JoinPartition trait
-    └── info/
-        ├── mod.rs                   # JoinPartitionInfo
-        ├── inner_range.rs           # JoinInnerRangeInfo
-        └── pattern_info.rs          # JoinPatternInfo
-```
-
-### 5.2 Code to Remove (Old Implementation)
-
-**File: `context/node/context.rs`** (lines ~212-551)
-
-| Function | Lines | Purpose | Why Remove |
-|----------|-------|---------|------------|
-| `join_incomplete_infix` | 212-350 | Handle imperfect infix target | Complex, imperative, handles cases individually |
-| `join_incomplete_postfix` | 352-457 | Handle imperfect postfix target | Duplicates logic from infix with slight variations |
-| `join_incomplete_prefix` | 459-551 | Handle imperfect prefix target | Duplicates logic from infix with slight variations |
-
-**Total: ~340 lines to remove**
-
-### 5.3 Code to Keep (Reusable Infrastructure)
-
-| Component | Location | Why Keep |
-|-----------|----------|----------|
-| `JoinPartition` trait | `partition/mod.rs` | Core partition joining logic |
-| `JoinedPartition` | `joined/partition.rs` | Result type with delta tracking |
-| `JoinedPatterns` | `joined/patterns.rs` | Pattern collection for insertion |
-| `JoinPartitionInfo` | `partition/info/mod.rs` | Partition metadata |
-| `JoinInnerRangeInfo` | `partition/info/inner_range.rs` | Inner range handling |
-| `JoinPatternInfo` | `partition/info/pattern_info.rs` | Per-pattern join info |
-| `JoinBorders` trait | `context/pattern/borders.rs` | Border split access |
-| `NodeMergeCtx` | `context/node/merge.rs` | Non-root merge (keep as-is) |
-| `FrontierSplitIterator` | `context/frontier.rs` | Join driver (keep as-is) |
-| `NodeJoinCtx` | `context/node/context.rs` | Context struct (keep, modify methods) |
-| `LockedFrontierCtx` | `context/node/context.rs` | Lock wrapper (keep) |
-
-### 5.4 Code to Modify
-
-**File: `context/node/context.rs`**
-
-| Function | Current State | New State |
-|----------|--------------|-----------|
-| `join_root_partitions` | Dispatches to `join_incomplete_*` | New unified algorithm |
-| `join_partitions` | Non-root join (keep) | No change |
-
----
-
-## 6. Implementation Phases
-
-### Phase 1: Create New Root Join Module
-
-**Create new file: `context/node/root.rs`**
-
-This isolates the new implementation from the old code, allowing parallel development and easy rollback.
+#### Step 4: Create Wrappers for Imperfect Patterns
 
 ```rust
-// crates/context-insert/src/join/context/node/root.rs
-
-use std::collections::HashMap;
-use std::num::NonZeroUsize;
-
-use crate::{
-    interval::partition::{Infix, Postfix, Prefix},
-    join::{
-        context::node::context::NodeJoinCtx,
-        partition::JoinPartition,
-    },
-    split::vertex::output::RootMode,
-};
-use context_trace::*;
-
-/// Context for root node joining
-pub struct RootJoinContext<'a> {
-    pub ctx: &'a mut NodeJoinCtx<'a>,
-    pub target_range: (usize, usize),
-    pub inner_bounds: HashMap<PatternId, (usize, usize)>,
-    pub wrapper_bounds: HashMap<PatternId, (usize, usize)>,
-    pub partitions: HashMap<(usize, usize), Token>,
-    pub target_token: Option<Token>,
+fn create_pattern_wrapper<R: TargetRole>(
+    root_ctx: &mut RootJoinContext<R>,
+    pattern_id: PatternId,
+    target_token: Token,
+) {
+    let bounds = R::wrapper_bounds(
+        &root_ctx.all_offsets,
+        &root_ctx.target_indices,
+        pattern_id,
+    );
+    
+    // Join complement partition(s)
+    let complement = join_complement(root_ctx, pattern_id, &bounds);
+    
+    // Build wrapper patterns:
+    // - Target pattern: [complement, target] or [target, complement] (target detected and stored)
+    // - Other patterns: merge combinations derived from original child structure
+    let wrapper_patterns = build_wrapper_patterns(
+        target_token,
+        complement,
+        &bounds,
+        root_ctx.ctx,
+    );
+    
+    // Create wrapper vertex
+    let wrapper = root_ctx.ctx.trav.insert_patterns(wrapper_patterns);
+    
+    // Replace in root pattern
+    let loc = root_ctx.ctx.index.to_pattern_location(pattern_id);
+    root_ctx.ctx.trav.replace_in_pattern(
+        loc,
+        bounds.start_index..bounds.end_index,
+        vec![wrapper],
+    );
 }
-
-/// Partition classification for replacement logic
-pub enum PartitionType {
-    Inner { owner: PatternId },
-    Target { both_perfect: bool, owner: Option<PatternId> },
-    Wrapper { owner: PatternId },
-    Intermediate,
-}
-
-// ... implementation functions
 ```
 
-### Phase 2: Implement Core Algorithm
-
-**Add to `root.rs`:**
-
-1. `augment_patterns()` - Calculate inner/wrapper bounds per pattern
-2. `merge_all_partitions()` - Main merge loop
-3. `classify_partition()` - Determine partition type and owner
-4. `replace_in_pattern()` - Single replacement helper
-5. `join_partition_range()` - Wrapper around `JoinPartition`
-
-### Phase 3: Wire Up Entry Point
-
-**Modify `context/node/context.rs`:**
+#### Step 5: Main Entry Point
 
 ```rust
-// Before (current):
-pub fn join_root_partitions(&mut self) -> Token {
-    let root_mode = self.interval.cache.root_mode;
-    // ... dispatch to join_incomplete_*
-}
-
-// After (new):
-pub fn join_root_partitions(&mut self) -> Token {
-    root::join_root_partitions(self)
+pub fn join_root_partitions_generic<R: TargetRole>(
+    ctx: &mut NodeJoinCtx,
+    root_mode: RootMode,
+) -> Token {
+    let mut root_ctx = init_root_join::<R>(ctx, root_mode);
+    
+    // Join inner partitions first (accumulates delta)
+    join_inner_partitions(&mut root_ctx);
+    
+    // Join target partition
+    let target_result = join_target::<R>(&mut root_ctx);
+    let target_token = target_result.token();
+    root_ctx.delta_accumulator.merge(target_result.delta());
+    
+    // Create wrappers for patterns with imperfect target boundaries
+    R::patterns_needing_wrapper(&root_ctx.all_offsets, &root_ctx.target_indices)
+        .for_each(|pid| {
+            create_pattern_wrapper::<R>(&mut root_ctx, pid, target_token);
+        });
+    
+    target_token
 }
 ```
 
-### Phase 4: Test & Verify
-
-1. Run existing tests - ensure no regressions
-2. Add new tests matching spec examples (Prefix, Postfix, Infix)
-3. Verify delta tracking works correctly
-
-### Phase 5: Cleanup
-
-1. Remove `join_incomplete_prefix`
-2. Remove `join_incomplete_postfix`
-3. Remove `join_incomplete_infix`
-4. Remove any dead code (unused helpers, commented code)
-
 ---
 
-## 7. Differences from Original Spec
-
-| Original Spec | Revised Implementation |
-|--------------|----------------------|
-| `TargetRole` trait with 3 implementations | Simple `match root_mode` statements |
-| `SplitOffset` with role classification | Just use position values |
-| Separate `join_inner`, `join_target`, `join_wrapper` | Single merge loop using `Infix::join_partition` |
-| Separate replacement logic per partition type | Unified `replace_spanning_children` for all |
-| Complex offset iterator patterns | Simple nested loops over positions |
-| `PartitionResult` enum | Use existing `JoinedPartition` from `JoinPartition` trait |
-| `PatternPartitionBounds` struct | Simple `(usize, usize)` tuples |
-| Manual pattern building | Use existing `JoinPartition` infrastructure |
-| Custom delta tracking | Automatic via `JoinPartition` |
-| Manual existing token lookup | `JoinPartition` returns `Err(token)` for existing |
-| Manual 3+ part pattern generation | Handled by `JoinPartition` inner range joining |
-
----
-
-## 8. Implementation Checklist (Phased)
-
-### Phase 1: Create New Module
-- [ ] Create `crates/context-insert/src/join/context/node/root.rs`
-- [ ] Add module export in `context/node/mod.rs`
-- [ ] Define `RootJoinContext` struct
-- [ ] Define `PartitionType` enum
-
-### Phase 2: Implement Core Algorithm
-- [ ] `augment_patterns()` - Calculate inner/wrapper bounds
-- [ ] `merge_all_partitions()` - Main merge loop
-- [ ] `classify_partition()` - Partition type classification
-- [ ] `replace_in_pattern()` - Single replacement helper
-- [ ] `join_partition_range()` - Wrapper around `JoinPartition`
-
-### Phase 3: Helper Functions
-- [ ] `find_first_perfect_boundary_gte(ctx, pattern_id, pos) -> usize`
-- [ ] `find_first_perfect_boundary_lte(ctx, pattern_id, pos) -> usize`
-- [ ] `get_child_boundaries(ctx, pattern_id) -> Vec<usize>`
-- [ ] `get_spanning_child_range(ctx, pattern_id, start, end) -> Option<(usize, usize)>`
-- [ ] `get_target_range(ctx, root_mode) -> (usize, usize)`
-
-### Phase 4: Wire Up & Test
-- [ ] Replace `join_root_partitions` in `context.rs` to call new module
-- [ ] Run existing test suite - ensure no regressions
-- [ ] Add unit tests for Prefix example from spec
-- [ ] Add unit tests for Postfix example from spec
-- [ ] Add unit tests for Infix example from spec
-- [ ] Test edge cases: perfect target boundaries, single-pattern roots
-
-### Phase 5: Cleanup
-- [ ] Remove `join_incomplete_prefix` (~100 lines)
-- [ ] Remove `join_incomplete_postfix` (~100 lines)
-- [ ] Remove `join_incomplete_infix` (~140 lines)
-- [ ] Remove commented-out code in `context.rs`
-- [ ] Update module documentation
-
-**Estimated LOC changes:**
-- New code: ~200-250 lines (in `root.rs`)
-- Removed code: ~340 lines (3 `join_incomplete_*` functions)
-- Net reduction: ~90-140 lines
-
----
-
-## 9. Examples
-
-*[Copied verbatim from 20250103_SPEC_root_join_refactoring.md Section 8]*
+## 8. Examples
 
 This section provides detailed worked examples for each target type (Prefix, Postfix, Infix),
 demonstrating the smallest-to-largest merge algorithm with delta tracking.
@@ -643,7 +543,7 @@ demonstrating the smallest-to-largest merge algorithm with delta tracking.
 in every pattern**. This is because the search phase would have stopped at a smaller 
 containing parent otherwise.
 
-### 9.1 Prefix Example
+### 8.1 Prefix Example
 
 ```
 Prefix target with NO perfect boundary, spanning inner boundaries in all patterns:
@@ -679,6 +579,30 @@ Wrapper boundaries (first perfect boundary ≥ pos=8 in each pattern):
   P1: pos=12 (end - no boundary between 8 and 12)
   P2: pos=10
   P3: pos=9
+
+=== PARTITION DEFINITIONS ===
+
+Inner partitions (from closest perfect boundary at/inside target to target end):
+  For Prefix, inner partition spans from pos=0 to the closest perfect boundary ≤ target offset.
+  
+  P1: (0, 7) = "abcdefg" = [a, bc, defg]     ← already exists as child sequence
+  P2: (0, 5) = "abcde"   = [ab, cde]         ← already exists as child sequence
+  P3: (0, 6) = "abcdef"  = [abcd, ef]        ← already exists as child sequence
+
+  All inner partitions use existing children - no joining needed.
+
+Target partition:
+  (0, 8) = "abcdefgh"
+  
+  Patterns from each root pattern's view:
+    P1: [a, bc, defg, h]     where 'h' is left-split of 'hijkl'
+    P2: [ab, cde, fgh]       where 'fgh' is left-split of 'fghij'
+    P3: [abcd, ef, gh]       where 'gh' is left-split of 'ghi'
+
+Wrapper partitions (from pos=0 to wrapper boundary):
+  P1: (0, 12) = "abcdefghijkl" = entire root (patterns added to root, no separate wrapper)
+  P2: (0, 10) = "abcdefghij"   = [target, ij] = [abcdefgh, ij]
+  P3: (0, 9)  = "abcdefghi"    = [target, i]  = [abcdefgh, i]
 
 Step 1: Join all partitions smallest to largest
 
@@ -898,7 +822,7 @@ The merge terminates once all wrapper partitions are created. No partitions
 beyond the outermost wrapper boundary need to be merged.
 ```
 
-### 9.2 Postfix Example
+### 8.2 Postfix Example
 
 ```
 Postfix target with NO perfect boundary, spanning inner boundaries in all patterns:
@@ -934,6 +858,33 @@ Wrapper boundaries (first perfect boundary ≤ pos=3 in each pattern):
   P1: pos=2
   P2: pos=0 (start of root - wrapper covers entire pattern)
   P3: pos=1
+
+=== PARTITION DEFINITIONS ===
+
+Inner partitions (from closest perfect boundary ≥ target offset to root end):
+  For Postfix, inner partition spans from closest perfect boundary ≥ target offset to pos=end.
+  
+  P1: (5, 10) = "fghij"  = [fgh, ij]       ← needs joining (2 children)
+  P2: (4, 10) = "efghij" = [efg, hij]      ← needs joining (2 children, but 'efg' doesn't exist yet)
+  P3: (6, 10) = "ghij"   = [ghij]          ← already exists as single child
+
+  Inner partitions P1 and P2 require joining before target can be built.
+
+Target partition:
+  (3, 10) = "defghij"
+  
+  Patterns from each root pattern's view:
+    P1: [de, fgh, ij]     where 'de' is right-split of 'cde'
+        Or using inner: [de, inner_P1] = [de, fghij]
+    P2: [d, efg, hij]     where 'd' is right-split of 'abcd'
+        Or using inner: [d, inner_P2] = [d, efghij]
+    P3: [def, ghij]       where 'def' is right-split of 'bcdef'
+        Or using inner: [def, inner_P3] = [def, ghij]
+
+Wrapper partitions (from wrapper boundary to pos=end):
+  P1: (2, 10) = "cdefghij"   = [c, target] = [c, defghij]
+  P2: (0, 10) = "abcdefghij" = entire root (patterns added to root, no separate wrapper)
+  P3: (1, 10) = "bcdefghij"  = [bc, target] = [bc, defghij] where 'bc' is right-split of 'bcdef'
 
 Step 1: Join all partitions smallest to largest
 
@@ -1119,7 +1070,7 @@ The merge terminates once all wrapper partitions are created. No partitions
 outside the wrapper boundaries need to be merged.
 ```
 
-### 9.3 Infix Example
+### 8.3 Infix Example
 
 ```
 === INITIAL STATE ===
@@ -1173,6 +1124,36 @@ Wrapper ranges:
   P1 wrapper: pos=2 to pos=12 → "cdefghijkl" (replaces children [cde][fghi][jkl])
   P2 wrapper: pos=3 to pos=12 → "defghijkl" (replaces children [defgh][ijkl])
   P3 wrapper: pos=1 to pos=10 → "bcdefghij" (replaces children [bcdef][ghij])
+
+=== PARTITION DEFINITIONS ===
+
+Inner partitions (from closest perfect boundary ≥ left target to closest ≤ right target):
+  For Infix, inner partition spans between the perfect boundaries closest to each target offset.
+  
+  P1: (5, 9)  = "fghi"   = [fghi]           ← already exists as single child
+  P2: (3, 8)  = "defgh"  = [defgh]          ← already exists as single child  
+  P3: (6, 10) = "ghij"   = [ghij]           ← already exists as single child
+
+  All inner partitions are existing children - no joining needed.
+
+Target partition:
+  (4, 10) = "efghij"
+  
+  Patterns from each root pattern's view:
+    P1: [e, fghi, j]      where 'e' is right-split of 'cde', 'j' is left-split of 'jkl'
+        Or using inner: [e, inner_P1, j] = [e, fghi, j]
+    P2: [efgh, ij]        where 'efgh' is right-split of 'defgh', 'ij' is left-split of 'ijkl'
+        Or using inner: [efgh, ij] (inner_P2 'defgh' doesn't help here - target starts inside it)
+    P3: [ef, ghij]        where 'ef' is right-split of 'bcdef'
+        Or using inner: [ef, inner_P3] = [ef, ghij]
+
+Wrapper partitions (from left wrapper boundary to right wrapper boundary):
+  P1: (2, 12)  = "cdefghijkl" = [cd, target, kl] = [cd, efghij, kl]
+      where 'cd' is right-split of 'cde', 'kl' is right-split of 'jkl'
+  P2: (3, 12)  = "defghijkl"  = [d, target, kl] = [d, efghij, kl]  
+      where 'd' is right-split of 'defgh', 'kl' is right-split of 'ijkl'
+  P3: (1, 10)  = "bcdefghij"  = [bcd, target] = [bcd, efghij]
+      where 'bcd' is right-split of 'bcdef' (right boundary is already perfect)
 
 === MERGE PROCESS (smallest to largest) ===
 
@@ -1340,39 +1321,112 @@ partitions are built (e.g., [e, fghi, j] uses the inner boundary at pos=5 and po
 
 ---
 
-## 10. Summary
+## 9. Remaining Questions
 
-| Concern | Approach |
-|---------|----------|
-| Partition joining | Use existing `JoinPartition` trait |
-| Token creation | `insert_patterns` with single-token reuse |
-| Pattern deduplication | `HashSet<Pattern>` before insertion |
-| Delta tracking | Automatic via `JoinedPartition.delta` |
-| Pattern extraction | `SplitPositionCache` + existing infrastructure |
-| 3+ part patterns | Automatic via `JoinInnerRangeInfo` |
+### Q1: Offset Ordering in SplitVertexCache [ANSWERED]
 
-The core loop is "merge smallest to largest" using existing `JoinPartition` machinery.
+**Question**: How are offsets ordered relative to their roles?
+
+**Answer**: Offsets are sorted by position value (BTreeMap). Role identification uses 
+**Option A: RootMode + position relative to known target offset(s)**.
+
+The algorithm knows the target offset(s) because they're the input to the join operation.
+Given the RootMode, wrapper offsets are identified by their position relative to target:
+
+```
+Role identification by RootMode:
+
+  Prefix (single target offset at pos=T):
+    - Target offset: pos=T (the input)
+    - Wrapper offsets: all positions > T (extending toward root end)
+    - Example from 8.1: T=8, wrappers at 9, 10, 12
+    
+  Postfix (single target offset at pos=T):
+    - Target offset: pos=T (the input)
+    - Wrapper offsets: all positions < T (extending toward root start)
+    - Example from 8.2: T=3, wrappers at 0, 1, 2
+    
+  Infix (two target offsets at pos=L and pos=R):
+    - Target offsets: pos=L and pos=R (the inputs)
+    - Left wrapper offsets: all positions < L
+    - Right wrapper offsets: all positions > R
+    - Example from 8.3: L=4, R=10, left wrappers at 1,2,3, right wrappers at 12
+
+No metadata storage needed during augmentation - roles are implicit from position.
+```
+
+**Implementation approach**:
+```rust
+fn classify_offset(pos: usize, mode: RootMode, target_bounds: (usize, Option<usize>)) -> OffsetRole {
+    let (left_target, right_target) = target_bounds;
+    match mode {
+        RootMode::Prefix => {
+            if pos == left_target { OffsetRole::Target }
+            else if pos > left_target { OffsetRole::Wrapper }
+            else { OffsetRole::Inner }  // shouldn't occur for Prefix
+        }
+        RootMode::Postfix => {
+            if pos == left_target { OffsetRole::Target }
+            else if pos < left_target { OffsetRole::Wrapper }
+            else { OffsetRole::Inner }  // shouldn't occur for Postfix
+        }
+        RootMode::Infix => {
+            let right = right_target.unwrap();
+            if pos == left_target || pos == right { OffsetRole::Target }
+            else if pos < left_target { OffsetRole::LeftWrapper }
+            else if pos > right { OffsetRole::RightWrapper }
+            else { OffsetRole::Inner }  // inside target range
+        }
+    }
+}
+```
 
 ---
 
-## 11. Appendix: Code References
+## 10. Implementation Checklist
 
-### Current Implementation (to be replaced)
-- `join_partitions` (non-root): `context/node/context.rs:157-184`
-- `join_root_partitions`: `context/node/context.rs:185-210`  
-- `join_incomplete_infix`: `context/node/context.rs:212-350` (**REMOVE**)
-- `join_incomplete_postfix`: `context/node/context.rs:352-457` (**REMOVE**)
-- `join_incomplete_prefix`: `context/node/context.rs:459-551` (**REMOVE**)
+1. [ ] **Define helper data structures**
+   - `SplitOffset` with pattern info and perfect-check methods
+   - `PatternPartitionBounds` for wrapper ranges
+   - `PartitionResult` enum for join results
 
-### Infrastructure to Keep
-- `JoinPartition` trait: `partition/mod.rs`
-- `JoinedPartition`: `joined/partition.rs`
-- `JoinedPatterns`: `joined/patterns.rs`
-- `JoinPartitionInfo`: `partition/info/mod.rs`
-- `JoinInnerRangeInfo`: `partition/info/inner_range.rs`
-- `JoinPatternInfo`: `partition/info/pattern_info.rs`
-- `JoinBorders`: `context/pattern/borders.rs`
-- `NodeMergeCtx`: `context/node/merge.rs`
-- `FrontierSplitIterator`: `context/frontier.rs`
+2. [ ] **Implement `TargetRole` trait**
+   - `impl TargetRole for Pre<Join>`
+   - `impl TargetRole for Post<Join>`
+   - `impl TargetRole for In<Join>`
+
+3. [ ] **Implement `RootJoinContext`**
+   - Initialization from vertex cache
+   - Delta accumulation
+   - Offset access methods
+
+4. [ ] **Implement join functions**
+   - `join_inner_partitions` (with delta tracking)
+   - `join_target` (generic over TargetRole)
+   - `join_complement` (for wrapper building)
+
+5. [ ] **Implement wrapper creation**
+   - `create_pattern_wrapper` (builds wrapper vertex)
+   - `build_wrapper_patterns` (target + merge combination patterns)
+
+6. [ ] **Refactor entry point**
+   - Replace `join_root_partitions` match with generic dispatch
+   - Remove `join_incomplete_*` functions
+
+7. [ ] **Testing**
+   - Unit tests for each TargetRole
+   - Integration tests with various perfect/imperfect scenarios
+   - Regression tests for existing behavior
+
+---
+
+## Appendix: Code References
+
+- `join_partitions` (non-root): `context.rs:157-184`
+- `join_root_partitions`: `context.rs:185-210`  
+- `join_incomplete_infix`: `context.rs:212-350`
+- `join_incomplete_postfix`: `context.rs:352-457`
+- `join_incomplete_prefix`: `context.rs:459-551`
 - `SplitVertexCache`: `split/cache/vertex.rs`
 - `augment_root`: `split/cache/vertex.rs:72-107`
+- `JoinedPartition`: `join/joined/partition.rs`
