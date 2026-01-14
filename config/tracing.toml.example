@@ -47,9 +47,13 @@ show_timestamp = true      # Show timestamp at beginning of each line (elapsed t
 
 # Logging configuration (optional - overrides environment variables if present)
 # log_to_stdout = true     # Enable stdout logging (overrides LOG_STDOUT env var)
-# log_filter = "debug"     # Log level filter (overrides LOG_FILTER env var)
+# log_filter = "debug"     # Log level filter for both outputs (overrides LOG_FILTER env var)
                            # Can be a simple level: "error", "warn", "info", "debug", "trace"
                            # Or module-specific: "context_search=trace,context_trace=debug"
+# stdout_log_filter = "info"   # Log level filter specifically for stdout (overrides LOG_STDOUT_FILTER env var)
+                               # Takes precedence over log_filter for stdout output
+# file_log_filter = "trace"    # Log level filter specifically for file output (overrides LOG_FILE_FILTER env var)
+                               # Takes precedence over log_filter for file output
 # keep_logs = true         # Keep log files even when tests pass (overrides KEEP_LOGS env var)
                            # By default, log files are deleted when tests pass
                            # Set to true to preserve all log files for analysis
