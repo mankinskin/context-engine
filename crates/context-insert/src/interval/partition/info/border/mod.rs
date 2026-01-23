@@ -12,6 +12,7 @@ pub mod visit;
 
 pub struct BorderInfo {
     pub sub_index: usize,
+    pub pattern_len: usize,
     pub inner_offset: Option<NonZeroUsize>,
     /// start offset of index with border
     pub start_offset: Option<NonZeroUsize>,
@@ -24,7 +25,30 @@ impl BorderInfo {
         let offset = End::inner_ctx_width(pattern, pos.sub_index());
         BorderInfo {
             sub_index: pos.sub_index(),
+            pattern_len: pattern.len(),
             inner_offset: pos.inner_offset(),
+            start_offset: NonZeroUsize::new(offset),
+        }
+    }
+
+    /// Create a BorderInfo by recalculating sub_index from atom position.
+    /// This is more robust when the pattern may have been modified after the
+    /// original trace was recorded.
+    pub fn new_from_atom_pos(
+        pattern: &Pattern,
+        atom_pos: NonZeroUsize,
+        inner_offset: Option<NonZeroUsize>,
+    ) -> Self {
+        use crate::TraceBack;
+        // Recalculate sub_index from atom position using current pattern
+        let trace_pos = TraceBack::trace_child_pos(pattern, atom_pos)
+            .expect("atom_pos should be valid within pattern");
+        let sub_index = trace_pos.sub_index();
+        let offset = End::inner_ctx_width(pattern, sub_index);
+        BorderInfo {
+            sub_index,
+            pattern_len: pattern.len(),
+            inner_offset,
             start_offset: NonZeroUsize::new(offset),
         }
     }

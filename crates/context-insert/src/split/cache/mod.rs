@@ -1,12 +1,15 @@
-use crate::split::{
-    cache::vertex::SplitVertexCache,
-    trace::{
-        SplitTraceState,
-        states::context::SplitTraceStatesCtx,
-    },
-    vertex::{
-        node::NodeTraceCtx,
-        output::RootMode,
+use crate::{
+    join::context::node::merge::PartitionRange,
+    split::{
+        cache::vertex::SplitVertexCache,
+        trace::{
+            SplitTraceState,
+            states::context::SplitTraceStatesCtx,
+        },
+        vertex::{
+            node::NodeTraceCtx,
+            output::RootMode,
+        },
     },
 };
 use context_trace::*;
@@ -16,6 +19,7 @@ use derive_more::derive::{
 };
 use derive_new::new;
 use std::fmt::Debug;
+use tracing::debug;
 
 pub mod vertex;
 
@@ -39,25 +43,28 @@ impl SplitCache {
         let ctx = NodeTraceCtx::from_index(&graph, index);
         self.get_mut(&index.vertex_index())
             .unwrap()
-            .augment_node(ctx)
+            .node_augmentation(ctx)
     }
     /// complete inner range offsets for root
     pub fn augment_root(
         &mut self,
         trav: impl HasGraph,
         root: Token,
-    ) -> Vec<SplitTraceState> {
+    ) -> (Vec<SplitTraceState>, PartitionRange) {
         let graph = trav.graph();
         let ctx = NodeTraceCtx::from_index(&graph, root);
         let index = root.vertex_index();
         let root_mode = self.root_mode;
-        self.get_mut(&index).unwrap().augment_root(ctx, root_mode)
+        self.get_mut(&index)
+            .unwrap()
+            .root_augmentation(ctx, root_mode)
     }
     pub fn augment_nodes<G: HasGraph, I: IntoIterator<Item = Token>>(
         &mut self,
         ctx: &mut SplitTraceStatesCtx<G>,
         nodes: I,
     ) {
+        debug!("augment_nodes");
         for c in nodes {
             let new = self.augment_node(&ctx.trav, c);
             // todo: force order

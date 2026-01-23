@@ -4,6 +4,7 @@ use std::{
     ops::{
         Range,
         RangeFrom,
+        RangeTo,
     },
 };
 
@@ -34,7 +35,10 @@ use crate::{
                     PostVisitMode,
                     PreVisitMode,
                 },
-                splits::RangeOffsets,
+                splits::{
+                    PostfixRangeFrom,
+                    RangeOffsets,
+                },
             },
         },
     },
@@ -57,14 +61,15 @@ pub type OffsetsOf<R> = <R as RangeRole>::Offsets;
 pub type PerfectOf<R> = <R as RangeRole>::Perfect;
 pub type BooleanPerfectOf<R> = <PerfectOf<R> as BorderPerfect>::Boolean;
 pub type ChildrenOf<R> = <R as RangeRole>::Children;
-pub type RangeOf<R> = <R as RangeRole>::Range;
+pub type PatternRangeOf<R> = <R as RangeRole>::PatternRange;
 pub type ModeOf<R> = <R as RangeRole>::Mode;
 pub type BordersOf<R> = <R as RangeRole>::Borders;
 pub type ModeChildrenOf<R> = <ModeOf<R> as ModeChildren<R>>::Result;
-pub type ModePatternCtxOf<'a, R> =
-    <<R as RangeRole>::Mode as ModeCtx>::PatternResult<'a>;
-pub type ModeNodeCtxOf<'a, 'b, R> =
-    <<R as RangeRole>::Mode as ModeCtx>::NodeCtx<'a, 'b>;
+/// Type alias for the pattern context of a given range role's mode.
+pub type ModePatternCtxOf<R> =
+    <<R as RangeRole>::Mode as ModeCtx>::PatternResult;
+pub type ModeNodeCtxOf<'a, R> =
+    <<R as RangeRole>::Mode as ModeCtx>::NodeCtx<'a>;
 
 pub trait RangeKind: Debug + Clone {}
 
@@ -77,12 +82,14 @@ pub trait RangeRole: Debug + Clone + Copy {
     type Perfect: BorderPerfect;
     type Offsets: RangeOffsets<Self>;
     type Kind: RangeKind;
-    type Range: OffsetIndexRange<Self>;
+    type OffsetRange: OffsetIndexRange<Self>;
+    type PatternRange: PatternRangeIndex<Self>;
     type PartitionSplits;
     type Children: RangeChildren<Self>;
     type Borders: VisitBorders<Self, Splits = <Self::Splits as PatternSplits>::Pos>;
     type Splits: PatternSplits + ToPartition<Self>;
     fn to_partition(splits: Self::Splits) -> Partition<Self>;
+    const ROLE_STR: &'static str;
 }
 
 #[derive(Debug, Clone, Default, Copy)]
@@ -90,7 +97,8 @@ pub struct Pre<M: PreVisitMode>(std::marker::PhantomData<M>);
 
 impl<M: PreVisitMode> RangeRole for Pre<M> {
     type Mode = M;
-    type Range = Range<usize>;
+    type OffsetRange = RangeTo<usize>;
+    type PatternRange = Range<usize>;
     type Kind = Outer;
     type Children = Token;
     type PartitionSplits = ((), VertexSplits);
@@ -98,6 +106,7 @@ impl<M: PreVisitMode> RangeRole for Pre<M> {
     type Splits = VertexSplits;
     type Offsets = NonZeroUsize;
     type Perfect = SinglePerfect;
+    const ROLE_STR: &'static str = "PREFIX";
     fn to_partition(splits: Self::Splits) -> Partition<Self> {
         Partition { offsets: splits }
     }
@@ -108,7 +117,8 @@ pub struct In<M: InVisitMode>(std::marker::PhantomData<M>);
 
 impl<M: InVisitMode> RangeRole for In<M> {
     type Mode = M;
-    type Range = Range<usize>;
+    type OffsetRange = Range<usize>;
+    type PatternRange = Range<usize>;
     type Kind = Inner;
     type Children = InfixChildren;
     type PartitionSplits = (VertexSplits, VertexSplits);
@@ -116,6 +126,7 @@ impl<M: InVisitMode> RangeRole for In<M> {
     type Splits = (VertexSplits, VertexSplits);
     type Offsets = (NonZeroUsize, NonZeroUsize);
     type Perfect = DoublePerfect;
+    const ROLE_STR: &'static str = "INFIX";
     fn to_partition(splits: Self::Splits) -> Partition<Self> {
         Partition { offsets: splits }
     }
@@ -126,7 +137,8 @@ pub struct Post<M: PostVisitMode>(std::marker::PhantomData<M>);
 
 impl<M: PostVisitMode> RangeRole for Post<M> {
     type Mode = M;
-    type Range = RangeFrom<usize>;
+    type OffsetRange = RangeFrom<usize>;
+    type PatternRange = PostfixRangeFrom;
     type Kind = Outer;
     type Children = Token;
     type PartitionSplits = (VertexSplits, ());
@@ -134,6 +146,7 @@ impl<M: PostVisitMode> RangeRole for Post<M> {
     type Splits = VertexSplits;
     type Offsets = NonZeroUsize;
     type Perfect = SinglePerfect;
+    const ROLE_STR: &'static str = "POSTFIX";
     fn to_partition(splits: Self::Splits) -> Partition<Self> {
         Partition { offsets: splits }
     }

@@ -61,7 +61,7 @@ macro_rules! assert_indices {
         $(
         let $name = $graph
             .find_ancestor(stringify!($name).chars())
-            .unwrap()
+            .unwrap_or_else(|e| panic!("Failed to find index for {}: {:?}", stringify!($name), e))
             .expect_complete(stringify!($name))
             .root_parent();
         )*
@@ -113,8 +113,7 @@ fn find_sequence() {
 }
 #[test]
 fn find_pattern1() {
-    let mut base_graph =
-        context_trace::graph::Hypergraph::<BaseGraphKind>::default();
+    let base_graph = Hypergraph::<BaseGraphKind>::default();
     insert_atoms!(base_graph, {a, b, x, y, z});
     // index 6
     insert_patterns!(base_graph,

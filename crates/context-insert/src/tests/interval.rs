@@ -11,20 +11,20 @@ use std::{
 use linked_hash_set::LinkedHashSet;
 use pretty_assertions::assert_eq;
 
-use crate::*;
+use crate::{
+    join::context::node::merge::PartitionRange,
+    *,
+};
 use context_search::{
     tests::search::trace_cache::CdefghiTraceCase,
     *,
 };
-use context_trace::{
-    tests::{
-        env::{
-            Env1,
-            Env2,
-        },
-        test_case::TestEnv,
+use context_trace::tests::{
+    env::{
+        Env1,
+        Env2,
     },
-    *,
+    test_case::TestEnv,
 };
 fn build_split_cache1(env: &Env1) -> SplitCache {
     let Env1 {
@@ -243,7 +243,7 @@ fn interval_graph1() {
     let res = graph.find_ancestor(query).unwrap();
     assert!(res.query_exhausted());
     let init = InitInterval::from(res);
-    let interval = IntervalGraph::from((&mut *graph, init));
+    let interval = IntervalGraph::from((&*graph, init));
     assert_eq!(
         interval.clone(),
         IntervalGraph {
@@ -252,7 +252,8 @@ fn interval_graph1() {
                 leaves: LinkedHashSet::from_iter([PosKey::new(*ef, 1)]).into(),
                 queue: VecDeque::default(),
             },
-            cache: build_split_cache1(env)
+            cache: build_split_cache1(env),
+            target_range: PartitionRange::from(0..=2),
         }
     );
 }
@@ -260,7 +261,7 @@ fn interval_graph1() {
 #[test]
 fn interval_graph2() {
     // Use test environment and trace cache test case from context-search
-    let mut trace_test = CdefghiTraceCase::default();
+    let trace_test = CdefghiTraceCase::default();
     let _tracing = context_trace::init_test_tracing!(&trace_test.env.graph);
 
     // Build InitInterval directly from test case expected values (no search needed)
@@ -293,8 +294,8 @@ fn interval_graph2() {
     let cdefg_hi_id = cdefghi_ids[0];
     let cd_efghi_id = cdefghi_ids[1];
 
-    let interval =
-        IntervalGraph::from((&mut *trace_test.env.graph.graph_mut(), init));
+    // With interior mutability, we only need &graph for IntervalGraph creation
+    let interval = IntervalGraph::from((&*trace_test.env.graph, init));
 
     // Check root and states
     assert_eq!(interval.root, cdefghi);

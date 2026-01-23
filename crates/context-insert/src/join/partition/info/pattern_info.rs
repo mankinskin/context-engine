@@ -36,7 +36,7 @@ use context_trace::*;
 #[derive(Debug, Clone)]
 pub struct JoinPatternInfo<R: RangeRole<Mode = Join>> {
     pub inner_range: Option<InnerRangeInfo<R>>,
-    pub range: R::Range,
+    pub range: R::PatternRange,
     pub children: Option<ModeChildrenOf<R>>,
     pub offsets: R::Offsets,
     pub delta: usize,
@@ -85,20 +85,17 @@ where
         let range = borders.outer_range();
         let offsets = borders.offsets();
         let inner = borders.inner_info(ctx);
-        let (delta, pat, pid) = {
-            let ctx = ctx.pattern_trace_context();
-            let delta = inner
-                .as_ref()
-                .and_then(|inner| {
-                    let inner_pat =
-                        ctx.pattern.get(inner.range.clone()).unwrap();
-                    (inner_pat.len() != 1)
-                        .then(|| inner_pat.len().saturating_sub(1))
-                })
-                .unwrap_or(0);
-            let pat = ctx.pattern.get(range.clone()).unwrap();
-            (delta, pat, ctx.loc.pattern_id)
-        };
+        let pctx = ctx.pattern_trace_context();
+        let delta = inner
+            .as_ref()
+            .and_then(|inner| {
+                let inner_range = inner.range.clone();
+                (inner_range.len() != 1)
+                    .then(|| inner_range.len().saturating_sub(1))
+            })
+            .unwrap_or(0);
+        let pat = pctx.pattern.get(range.clone().into()).unwrap().to_vec();
+        let pid = pctx.loc.pattern_id;
         let children = (!perfect.all_perfect())
             .then(|| borders.get_child_splits(ctx).unwrap());
         match (pat.len(), children) {
