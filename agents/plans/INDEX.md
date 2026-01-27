@@ -4,6 +4,14 @@ Plans for major refactorings and features before execution.
 
 ## Active Plans
 
+### 20260127_SELECTIVE_PARTITION_MERGE.md
+- **Status:** 📋 Design Phase
+- **Priority:** High (test failures)
+- **Tags:** #context-insert #merge #partition #algorithm
+- **Summary:** Transform complete merge to selective partition creation. Only required partitions (target, wrapper, inner, overlaps) get tokens.
+- **Implementation:** [20260127_SELECTIVE_PARTITION_MERGE_IMPL.md](20260127_SELECTIVE_PARTITION_MERGE_IMPL.md)
+- **Related Test:** `insert_infix1` - expects `aby` with 1 pattern, currently has 2
+
 ### 20251204_PLAN_INTERVAL_TESTS_INVESTIGATION.md
 - **Status:** ⚠️ Investigation in progress
 - **Priority:** High (test failures)
