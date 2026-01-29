@@ -1,5 +1,8 @@
 use clap::Parser;
-use std::path::{Path, PathBuf};
+use std::path::{
+    Path,
+    PathBuf,
+};
 use walkdir::WalkDir;
 
 mod analyzer;
@@ -10,7 +13,9 @@ use analyzer::analyze_file;
 
 #[derive(Parser, Debug)]
 #[command(name = "tracing-analyzer")]
-#[command(about = "Analyze debug/trace/info statement coverage in Rust source files")]
+#[command(
+    about = "Analyze debug/trace/info statement coverage in Rust source files"
+)]
 struct Args {
     /// Path to the crate or directory to analyze
     #[arg(default_value = ".")]
@@ -45,10 +50,10 @@ fn main() {
         match analyze_file(file_path) {
             Ok(functions) => {
                 all_functions.extend(functions);
-            }
+            },
             Err(e) => {
                 eprintln!("Error analyzing {:?}: {}", file_path, e);
-            }
+            },
         }
     }
 
@@ -62,9 +67,10 @@ fn main() {
 
     // Sort
     match args.sort.as_str() {
-        "name" => all_functions.sort_by(|a, b| a.full_path().cmp(&b.full_path())),
-        "count" => all_functions.sort_by(|a, b| b.tracing_count.cmp(&a.tracing_count)),
-        "density" | _ => all_functions.sort_by(|a, b| {
+        "name" => all_functions.sort_by_key(|a| a.full_path()),
+        "count" =>
+            all_functions.sort_by(|a, b| b.tracing_count.cmp(&a.tracing_count)),
+        _ => all_functions.sort_by(|a, b| {
             b.density()
                 .partial_cmp(&a.density())
                 .unwrap_or(std::cmp::Ordering::Equal)
@@ -75,7 +81,7 @@ fn main() {
     match args.format.as_str() {
         "json" => output_json(&all_functions),
         "csv" => output_csv(&all_functions),
-        "text" | _ => output_text(&all_functions),
+        _ => output_text(&all_functions),
     }
 
     // Summary statistics
@@ -95,7 +101,7 @@ fn collect_source_files(path: &Path) -> Vec<PathBuf> {
         .filter_map(|e| e.ok())
     {
         let path = entry.path();
-        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+        if path.is_file() && path.extension().is_some_and(|ext| ext == "rs") {
             files.push(path.to_path_buf());
         }
     }
@@ -173,7 +179,10 @@ fn print_summary(functions: &[analyzer::FunctionInfo]) {
     println!("Average density:          {:.2}%", avg_density);
 }
 
-fn truncate(s: &str, max_len: usize) -> String {
+fn truncate(
+    s: &str,
+    max_len: usize,
+) -> String {
     if s.len() <= max_len {
         s.to_string()
     } else {

@@ -80,7 +80,7 @@ fn is_outside_string(
             before.matches('"').count() - before.matches("\\\"").count();
 
         // If even number of unescaped quotes, we're outside a string
-        double_quotes % 2 == 0
+        double_quotes.is_multiple_of(2)
     } else {
         false
     }
