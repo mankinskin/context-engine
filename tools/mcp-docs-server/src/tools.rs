@@ -389,6 +389,117 @@ impl DocsManager {
 
                 report.documents_checked += 1;
             }
+
+            // Validate INDEX.md content
+            if index_path.exists() {
+                let category = doc_type.directory().to_string();
+                if let Ok(index_content) = fs::read_to_string(&index_path) {
+                    // Collect all document filenames in directory
+                    let mut doc_files: Vec<String> = Vec::new();
+                    if let Ok(entries) = fs::read_dir(&dir) {
+                        for entry in entries.flatten() {
+                            let fname =
+                                entry.file_name().to_string_lossy().to_string();
+                            if fname.ends_with(".md") && fname != "INDEX.md" {
+                                doc_files.push(fname);
+                            }
+                        }
+                    }
+
+                    // Check each document is mentioned in INDEX
+                    for doc_file in &doc_files {
+                        if !index_content.contains(doc_file) {
+                            report.issues.push(ValidationIssue {
+                                file: "INDEX.md".to_string(),
+                                category: category.clone(),
+                                issue: format!(
+                                    "Document '{}' not listed in INDEX",
+                                    doc_file
+                                ),
+                                severity: IssueSeverity::Warning,
+                            });
+                        }
+                    }
+
+                    // Check for stale entries in INDEX (files mentioned but don't exist)
+                    // Look for patterns like "### YYYYMMDD_*.md" or "| YYYYMMDD | filename.md |"
+                    let filename_pattern =
+                        regex::Regex::new(r"\d{8}_[A-Za-z0-9_-]+\.md").unwrap();
+                    for caps in filename_pattern.find_iter(&index_content) {
+                        let mentioned_file = caps.as_str();
+                        if !doc_files.contains(&mentioned_file.to_string()) {
+                            report.issues.push(ValidationIssue {
+                                file: "INDEX.md".to_string(),
+                                category: category.clone(),
+                                issue: format!(
+                                    "Stale entry '{}' - file does not exist",
+                                    mentioned_file
+                                ),
+                                severity: IssueSeverity::Error,
+                            });
+                        }
+                    }
+
+                    // Check INDEX has H1 title
+                    if parse_title(&index_content).is_none() {
+                        report.issues.push(ValidationIssue {
+                            file: "INDEX.md".to_string(),
+                            category: category.clone(),
+                            issue: "INDEX.md missing H1 title".to_string(),
+                            severity: IssueSeverity::Warning,
+                        });
+                    }
+
+                    // Check INDEX uses minimal table format
+                    // Should have a table with columns: Date | File | Confidence | Summary
+                    let has_doc_table = index_content
+                        .contains("| Date | File | Confidence | Summary |")
+                        || index_content
+                            .contains("|------|------|------------|");
+
+                    if !has_doc_table {
+                        report.issues.push(ValidationIssue {
+                            file: "INDEX.md".to_string(),
+                            category: category.clone(),
+                            issue: "INDEX.md should use minimal table format: | Date | File | Confidence | Summary |".to_string(),
+                            severity: IssueSeverity::Warning,
+                        });
+                    }
+
+                    // Check for verbose formatting patterns that should be avoided
+                    let verbose_patterns = [
+                        "**What it provides:**",
+                        "**Key locations:**",
+                        "**Solves:**",
+                        "**Benefits:**",
+                        "**Technique:**",
+                        "**Tags:** `#", // Tags should be in document, not INDEX
+                    ];
+
+                    for pattern in verbose_patterns {
+                        if index_content.contains(pattern) {
+                            report.issues.push(ValidationIssue {
+                                file: "INDEX.md".to_string(),
+                                category: category.clone(),
+                                issue: format!("INDEX.md too verbose - remove '{}' sections (use table format)", pattern),
+                                severity: IssueSeverity::Warning,
+                            });
+                        }
+                    }
+
+                    // Check for excessive line count (INDEX should be concise)
+                    let line_count = index_content.lines().count();
+                    let expected_max = 20 + (doc_files.len() * 2); // Header + 2 lines per doc max
+                    if line_count > expected_max {
+                        report.issues.push(ValidationIssue {
+                            file: "INDEX.md".to_string(),
+                            category: category.clone(),
+                            issue: format!("INDEX.md too long ({} lines, expected <{}). Use minimal table format.", line_count, expected_max),
+                            severity: IssueSeverity::Warning,
+                        });
+                    }
+                }
+            }
         }
 
         Ok(report)
