@@ -76,13 +76,6 @@ Completed feature implementations and enhancement summaries.
 
 ---
 
-### 20251203_CACHING_IMPLEMENTATION.md
-**Confidence:** 🟢 High | **Tags:** `#optimization` `#caching`  
-**Summary:** String representation caching in VertexData (RwLock<Option<String>>) avoids repeated graph traversals.  
-**Location:** `context-trace/src/graph/vertex/data.rs`
-
----
-
 ### 20251203_UNIFIED_API_IMPLEMENTATION_SUMMARY.md
 **Confidence:** 🟢 High | **Tags:** `#api` `#refactoring`  
 **Summary:** Unified import/export API for refactor-tool: ImportExportProcessor, ImportExportContext, ImportTree, PathSegmentProcessor.  
@@ -129,25 +122,6 @@ Completed feature implementations and enhancement summaries.
 **Key locations:**
 - `crates/context-trace/src/tests/tracing_setup.rs`
 - Macro in `crates/context-trace/src/tests/mod.rs`
-
----
-
-### 20251203_CACHING_IMPLEMENTATION.md
-**Confidence:** 🟢 High - Stable, well-tested optimization
-
-**Summary:** String representation caching in VertexData to avoid repeated graph traversals for token display.
-
-**Tags:** `#optimization` `#caching` `#testing`
-
-**What it provides:**
-- `RwLock<Option<String>>` cache in VertexData
-- Thread-safe lazy computation and caching
-- Conditional compilation (test builds only)
-- Significant performance improvement for repeated token displays
-
-**Key locations:**
-- `crates/context-trace/src/graph/vertex/data.rs` - Cache storage
-- `crates/context-trace/src/graph/mod.rs` - Cache population in `vertex_data_string()`
 
 ---
 
