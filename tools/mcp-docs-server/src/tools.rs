@@ -506,6 +506,89 @@ impl DocsManager {
 
         Ok(candidates)
     }
+
+    /// Search document content for a query string.
+    pub fn search_content(
+        &self,
+        query: &str,
+        doc_type: Option<DocType>,
+        filter: &ListFilter,
+        lines_before: usize,
+        lines_after: usize,
+    ) -> ToolResult<ContentSearchResult> {
+        let doc_types = match doc_type {
+            Some(dt) => vec![dt],
+            None => vec![
+                DocType::Guide,
+                DocType::Plan,
+                DocType::Implemented,
+                DocType::BugReport,
+                DocType::Analysis,
+            ],
+        };
+
+        let query_lower = query.to_lowercase();
+        let mut matches = Vec::new();
+        let mut files_searched = 0;
+        let mut total_matches = 0;
+
+        for dt in doc_types {
+            let docs = self.list_documents_filtered(dt, filter)?;
+
+            for doc in docs {
+                files_searched += 1;
+                let path =
+                    self.agents_dir.join(dt.directory()).join(&doc.filename);
+                let content = fs::read_to_string(&path)?;
+                let lines: Vec<&str> = content.lines().collect();
+
+                let mut excerpts = Vec::new();
+
+                for (idx, line) in lines.iter().enumerate() {
+                    if line.to_lowercase().contains(&query_lower) {
+                        total_matches += 1;
+
+                        // Gather context before
+                        let start = idx.saturating_sub(lines_before);
+                        let context_before: Vec<String> = lines[start..idx]
+                            .iter()
+                            .map(|s| s.to_string())
+                            .collect();
+
+                        // Gather context after
+                        let end = (idx + 1 + lines_after).min(lines.len());
+                        let context_after: Vec<String> = lines[idx + 1..end]
+                            .iter()
+                            .map(|s| s.to_string())
+                            .collect();
+
+                        excerpts.push(MatchExcerpt {
+                            line_number: idx + 1,
+                            line: line.to_string(),
+                            context_before,
+                            context_after,
+                        });
+                    }
+                }
+
+                if !excerpts.is_empty() {
+                    matches.push(FileMatch {
+                        filename: doc.filename,
+                        doc_type: dt.directory().to_string(),
+                        match_count: excerpts.len(),
+                        excerpts,
+                    });
+                }
+            }
+        }
+
+        Ok(ContentSearchResult {
+            query: query.to_string(),
+            total_matches,
+            files_searched,
+            matches,
+        })
+    }
 }
 
 fn generate_frontmatter(meta: &DocMetadata) -> String {
@@ -670,4 +753,35 @@ pub struct ReviewCandidate {
     pub confidence: Confidence,
     pub summary: String,
     pub reason: String,
+}
+
+/// Result of content search
+#[derive(Debug, Serialize)]
+pub struct ContentSearchResult {
+    pub query: String,
+    pub total_matches: usize,
+    pub files_searched: usize,
+    pub matches: Vec<FileMatch>,
+}
+
+/// Matches within a single file
+#[derive(Debug, Serialize)]
+pub struct FileMatch {
+    pub filename: String,
+    pub doc_type: String,
+    pub match_count: usize,
+    pub excerpts: Vec<MatchExcerpt>,
+}
+
+/// A single match with context
+#[derive(Debug, Serialize)]
+pub struct MatchExcerpt {
+    /// Line number where the match occurs (1-indexed)
+    pub line_number: usize,
+    /// The matching line
+    pub line: String,
+    /// Lines before the match
+    pub context_before: Vec<String>,
+    /// Lines after the match
+    pub context_after: Vec<String>,
 }

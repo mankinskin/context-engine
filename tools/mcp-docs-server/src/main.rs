@@ -179,6 +179,32 @@ fn default_true() -> bool {
     true
 }
 
+/// Search document content for strings
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct SearchContentInput {
+    /// The search query (case-insensitive substring match)
+    query: String,
+    /// Optional: filter to specific doc_type
+    #[serde(default)]
+    doc_type: Option<String>,
+    /// Optional: filter by confidence level
+    #[serde(default)]
+    confidence: Option<String>,
+    /// Optional: filter by tag
+    #[serde(default)]
+    tag: Option<String>,
+    /// Number of lines to include before each match (default: 2)
+    #[serde(default = "default_context_lines")]
+    lines_before: usize,
+    /// Number of lines to include after each match (default: 2)
+    #[serde(default = "default_context_lines")]
+    lines_after: usize,
+}
+
+fn default_context_lines() -> usize {
+    2
+}
+
 // === Tool Implementations ===
 
 #[tool_router]
@@ -411,6 +437,40 @@ impl DocsServer {
             Ok(toc) => {
                 let json =
                     serde_json::to_string_pretty(&toc).unwrap_or_default();
+                Ok(CallToolResult::success(vec![Content::text(json)]))
+            },
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Search document content for strings
+    #[tool(
+        description = "Search for text within document content. Returns matching lines with surrounding context. Use filters to narrow the search scope."
+    )]
+    async fn search_content(
+        &self,
+        Parameters(input): Parameters<SearchContentInput>,
+    ) -> Result<CallToolResult, McpError> {
+        let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
+        let filter = tools::ListFilter {
+            confidence: input.confidence.as_ref().map(|s| parse_confidence(s)),
+            tag: input.tag,
+            status: None,
+        };
+
+        match self.manager.search_content(
+            &input.query,
+            doc_type,
+            &filter,
+            input.lines_before,
+            input.lines_after,
+        ) {
+            Ok(results) => {
+                let json =
+                    serde_json::to_string_pretty(&results).unwrap_or_default();
                 Ok(CallToolResult::success(vec![Content::text(json)]))
             },
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
