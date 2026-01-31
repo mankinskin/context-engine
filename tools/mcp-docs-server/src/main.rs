@@ -356,15 +356,13 @@ impl DocsServer {
 
     /// Validate all documents for convention compliance
     #[tool(
-        description = "Validate all documents for naming conventions, frontmatter, and other requirements."
+        description = "Validate all documents for naming conventions, frontmatter, and other requirements. Returns a report of errors and warnings."
     )]
     async fn validate_docs(&self) -> Result<CallToolResult, McpError> {
         match self.manager.validate() {
-            Ok(report) => {
-                let json =
-                    serde_json::to_string_pretty(&report).unwrap_or_default();
-                Ok(CallToolResult::success(vec![Content::text(json)]))
-            },
+            Ok(report) => Ok(CallToolResult::success(vec![Content::text(
+                report.to_markdown(),
+            )])),
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
                 "Error: {}",
                 e
@@ -382,11 +380,9 @@ impl DocsServer {
     ) -> Result<CallToolResult, McpError> {
         let detail = parse_detail_level(&input.detail);
         match self.manager.read_document(&input.filename, detail) {
-            Ok(result) => {
-                let json =
-                    serde_json::to_string_pretty(&result).unwrap_or_default();
-                Ok(CallToolResult::success(vec![Content::text(json)]))
-            },
+            Ok(result) => Ok(CallToolResult::success(vec![Content::text(
+                result.to_markdown(),
+            )])),
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
                 "Error: {}",
                 e
@@ -434,11 +430,9 @@ impl DocsServer {
         };
 
         match self.manager.browse_docs(doc_type, &filter) {
-            Ok(toc) => {
-                let json =
-                    serde_json::to_string_pretty(&toc).unwrap_or_default();
-                Ok(CallToolResult::success(vec![Content::text(json)]))
-            },
+            Ok(toc) => Ok(CallToolResult::success(vec![Content::text(
+                toc.to_markdown(),
+            )])),
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
                 "Error: {}",
                 e
@@ -468,11 +462,9 @@ impl DocsServer {
             input.lines_before,
             input.lines_after,
         ) {
-            Ok(results) => {
-                let json =
-                    serde_json::to_string_pretty(&results).unwrap_or_default();
-                Ok(CallToolResult::success(vec![Content::text(json)]))
-            },
+            Ok(results) => Ok(CallToolResult::success(vec![Content::text(
+                results.to_markdown(),
+            )])),
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
                 "Error: {}",
                 e

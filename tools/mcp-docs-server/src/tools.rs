@@ -258,6 +258,12 @@ impl DocsManager {
 
     /// Validate all documents and indexes.
     pub fn validate(&self) -> ToolResult<ValidationReport> {
+        use crate::parser::{
+            parse_filename,
+            parse_frontmatter,
+            parse_title,
+        };
+
         let mut report = ValidationReport::default();
 
         for doc_type in [
@@ -269,7 +275,24 @@ impl DocsManager {
         ] {
             let dir = self.agents_dir.join(doc_type.directory());
             if !dir.exists() {
+                report.issues.push(ValidationIssue {
+                    file: doc_type.directory().to_string(),
+                    category: doc_type.directory().to_string(),
+                    issue: "Directory does not exist".to_string(),
+                    severity: IssueSeverity::Warning,
+                });
                 continue;
+            }
+
+            // Check INDEX.md exists
+            let index_path = dir.join("INDEX.md");
+            if !index_path.exists() {
+                report.issues.push(ValidationIssue {
+                    file: "INDEX.md".to_string(),
+                    category: doc_type.directory().to_string(),
+                    issue: "Missing INDEX.md file".to_string(),
+                    severity: IssueSeverity::Error,
+                });
             }
 
             for entry in fs::read_dir(&dir)? {
@@ -284,21 +307,82 @@ impl DocsManager {
                     continue;
                 }
 
-                // Check naming convention
-                if !filename.chars().take(8).all(|c| c.is_ascii_digit()) {
+                let category = doc_type.directory().to_string();
+
+                // Check naming convention (YYYYMMDD_ prefix)
+                if parse_filename(filename).is_none() {
                     report.issues.push(ValidationIssue {
                         file: filename.to_string(),
-                        issue: "Missing YYYYMMDD_ prefix".to_string(),
+                        category: category.clone(),
+                        issue: "Invalid filename format - expected YYYYMMDD_NAME.md".to_string(),
                         severity: IssueSeverity::Error,
                     });
                 }
 
-                // Check frontmatter
+                // Check file content
                 let content = fs::read_to_string(&path)?;
+
+                // Check frontmatter exists
                 if !content.starts_with("---") {
                     report.issues.push(ValidationIssue {
                         file: filename.to_string(),
-                        issue: "Missing frontmatter".to_string(),
+                        category: category.clone(),
+                        issue: "Missing frontmatter (should start with ---)"
+                            .to_string(),
+                        severity: IssueSeverity::Error,
+                    });
+                } else {
+                    // Parse and validate frontmatter
+                    if let Some(fm) = parse_frontmatter(&content) {
+                        // Check confidence is set
+                        if fm.confidence.is_none() {
+                            report.issues.push(ValidationIssue {
+                                file: filename.to_string(),
+                                category: category.clone(),
+                                issue:
+                                    "Missing confidence field in frontmatter"
+                                        .to_string(),
+                                severity: IssueSeverity::Warning,
+                            });
+                        }
+
+                        // Check tags exist
+                        if fm.tags.is_empty() {
+                            report.issues.push(ValidationIssue {
+                                file: filename.to_string(),
+                                category: category.clone(),
+                                issue: "No tags defined in frontmatter"
+                                    .to_string(),
+                                severity: IssueSeverity::Warning,
+                            });
+                        }
+
+                        // Plans should have status
+                        if doc_type == DocType::Plan && fm.status.is_none() {
+                            report.issues.push(ValidationIssue {
+                                file: filename.to_string(),
+                                category: category.clone(),
+                                issue: "Plan document missing status field"
+                                    .to_string(),
+                                severity: IssueSeverity::Warning,
+                            });
+                        }
+                    } else {
+                        report.issues.push(ValidationIssue {
+                            file: filename.to_string(),
+                            category: category.clone(),
+                            issue: "Could not parse frontmatter".to_string(),
+                            severity: IssueSeverity::Warning,
+                        });
+                    }
+                }
+
+                // Check for H1 title
+                if parse_title(&content).is_none() {
+                    report.issues.push(ValidationIssue {
+                        file: filename.to_string(),
+                        category: category.clone(),
+                        issue: "Missing H1 title (# Title)".to_string(),
                         severity: IssueSeverity::Warning,
                     });
                 }
@@ -689,9 +773,67 @@ pub struct ValidationReport {
     pub issues: Vec<ValidationIssue>,
 }
 
+impl ValidationReport {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+
+        md.push_str("# Documentation Validation Report\n\n");
+        md.push_str(&format!(
+            "**Documents Checked:** {}\n",
+            self.documents_checked
+        ));
+
+        let errors: Vec<_> = self
+            .issues
+            .iter()
+            .filter(|i| matches!(i.severity, IssueSeverity::Error))
+            .collect();
+        let warnings: Vec<_> = self
+            .issues
+            .iter()
+            .filter(|i| matches!(i.severity, IssueSeverity::Warning))
+            .collect();
+
+        md.push_str(&format!("**Errors:** {}\n", errors.len()));
+        md.push_str(&format!("**Warnings:** {}\n\n", warnings.len()));
+
+        if self.issues.is_empty() {
+            md.push_str("✅ **All documents pass validation!**\n");
+        } else {
+            if !errors.is_empty() {
+                md.push_str("## ❌ Errors\n\n");
+                md.push_str("| Category | File | Issue |\n");
+                md.push_str("|----------|------|-------|\n");
+                for issue in &errors {
+                    md.push_str(&format!(
+                        "| {} | {} | {} |\n",
+                        issue.category, issue.file, issue.issue
+                    ));
+                }
+                md.push_str("\n");
+            }
+
+            if !warnings.is_empty() {
+                md.push_str("## ⚠️ Warnings\n\n");
+                md.push_str("| Category | File | Issue |\n");
+                md.push_str("|----------|------|-------|\n");
+                for issue in &warnings {
+                    md.push_str(&format!(
+                        "| {} | {} | {} |\n",
+                        issue.category, issue.file, issue.issue
+                    ));
+                }
+            }
+        }
+
+        md
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct ValidationIssue {
     pub file: String,
+    pub category: String,
     pub issue: String,
     pub severity: IssueSeverity,
 }
@@ -784,4 +926,131 @@ pub struct MatchExcerpt {
     pub context_before: Vec<String>,
     /// Lines after the match
     pub context_after: Vec<String>,
+}
+
+// === Markdown Formatting ===
+
+impl BrowseResult {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        md.push_str(&format!(
+            "# Documentation Overview\n\n**Total Documents:** {}\n\n",
+            self.total_documents
+        ));
+
+        for cat in &self.categories {
+            md.push_str(&format!(
+                "## {} ({} docs)\n\n",
+                capitalize(&cat.category),
+                cat.doc_count
+            ));
+
+            if cat.items.is_empty() {
+                md.push_str("*No documents*\n\n");
+            } else {
+                md.push_str("| Date | File | Confidence | Summary |\n");
+                md.push_str("|------|------|------------|--------|\n");
+                for item in &cat.items {
+                    md.push_str(&format!(
+                        "| {} | {} | {} | {} |\n",
+                        &item.date,
+                        &item.filename,
+                        item.confidence.emoji(),
+                        truncate(&item.summary, 50)
+                    ));
+                }
+                md.push('\n');
+            }
+        }
+
+        md
+    }
+}
+
+impl ReadDocResult {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        md.push_str(&format!("# {}\n\n", self.title));
+        md.push_str(&format!(
+            "**File:** `{}`  \n**Type:** {}  \n**Date:** {}  \n**Confidence:** {}  \n",
+            self.filename,
+            self.doc_type,
+            self.date,
+            self.confidence.emoji()
+        ));
+
+        if !self.tags.is_empty() {
+            let tags: Vec<String> =
+                self.tags.iter().map(|t| format!("`#{}`", t)).collect();
+            md.push_str(&format!("**Tags:** {}  \n", tags.join(" ")));
+        }
+
+        if let Some(status) = &self.status {
+            md.push_str(&format!("**Status:** {}  \n", status.emoji()));
+        }
+
+        md.push_str(&format!("\n**Summary:** {}\n", self.summary));
+
+        if let Some(body) = &self.body {
+            md.push_str("\n---\n\n");
+            md.push_str(body);
+        }
+
+        md
+    }
+}
+
+impl ContentSearchResult {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        md.push_str(&format!("# Search Results: \"{}\"\n\n", self.query));
+        md.push_str(&format!(
+            "**Matches:** {} in {} files searched\n\n",
+            self.total_matches, self.files_searched
+        ));
+
+        for file_match in &self.matches {
+            md.push_str(&format!(
+                "## {} ({})\n\n",
+                file_match.filename, file_match.doc_type
+            ));
+            md.push_str(&format!("*{} match(es)*\n\n", file_match.match_count));
+
+            for excerpt in &file_match.excerpts {
+                md.push_str(&format!("**Line {}:**\n", excerpt.line_number));
+                md.push_str("```\n");
+
+                for line in &excerpt.context_before {
+                    md.push_str(&format!("  {}\n", line));
+                }
+                md.push_str(&format!("> {}\n", excerpt.line));
+                for line in &excerpt.context_after {
+                    md.push_str(&format!("  {}\n", line));
+                }
+
+                md.push_str("```\n\n");
+            }
+        }
+
+        md
+    }
+}
+
+fn capitalize(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+    }
+}
+
+fn truncate(
+    s: &str,
+    max_len: usize,
+) -> String {
+    if s.len() <= max_len {
+        s.to_string()
+    } else {
+        format!("{}...", &s[..max_len.saturating_sub(3)])
+    }
 }
