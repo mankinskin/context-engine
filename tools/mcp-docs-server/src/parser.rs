@@ -1,0 +1,161 @@
+//! Parse existing documents to extract metadata.
+
+use crate::schema::{Confidence, DocMetadata, DocType, IndexEntry, PlanStatus};
+use regex::Regex;
+use std::path::Path;
+
+/// Parse a document filename to extract date and base name.
+pub fn parse_filename(filename: &str) -> Option<(String, String)> {
+    let re = Regex::new(r"^(\d{8})_(.+)\.md$").ok()?;
+    let caps = re.captures(filename)?;
+    Some((caps[1].to_string(), caps[2].to_string()))
+}
+
+/// Parse frontmatter from document content.
+pub fn parse_frontmatter(content: &str) -> Option<FrontMatter> {
+    let lines: Vec<&str> = content.lines().collect();
+    
+    if lines.first()?.trim() != "---" {
+        return None;
+    }
+    
+    let end_idx = lines.iter()
+        .skip(1)
+        .position(|l| l.trim() == "---")?
+        + 1;
+    
+    let mut fm = FrontMatter::default();
+    
+    for line in &lines[1..end_idx] {
+        if let Some((key, value)) = line.split_once(':') {
+            let key = key.trim();
+            let value = value.trim();
+            
+            match key {
+                "confidence" => fm.confidence = Confidence::from_emoji(value),
+                "tags" => fm.tags = parse_tags(value),
+                "summary" => fm.summary = Some(value.to_string()),
+                "status" => fm.status = parse_status(value),
+                _ => {}
+            }
+        }
+    }
+    
+    Some(fm)
+}
+
+#[derive(Default)]
+pub struct FrontMatter {
+    pub confidence: Option<Confidence>,
+    pub tags: Vec<String>,
+    pub summary: Option<String>,
+    pub status: Option<PlanStatus>,
+}
+
+fn parse_tags(value: &str) -> Vec<String> {
+    let re = Regex::new(r"`#([^`]+)`").unwrap();
+    re.captures_iter(value)
+        .filter_map(|c| c.get(1).map(|m| m.as_str().to_string()))
+        .collect()
+}
+
+fn parse_status(value: &str) -> Option<PlanStatus> {
+    match value.trim() {
+        "📋" => Some(PlanStatus::Design),
+        "🚧" => Some(PlanStatus::InProgress),
+        "✅" => Some(PlanStatus::Completed),
+        "⚠️" => Some(PlanStatus::Blocked),
+        "❌" => Some(PlanStatus::Superseded),
+        _ => None,
+    }
+}
+
+/// Parse title from first H1 heading.
+pub fn parse_title(content: &str) -> Option<String> {
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("# ") {
+            return Some(trimmed[2..].trim().to_string());
+        }
+    }
+    None
+}
+
+/// Extract document metadata from file path and content.
+pub fn extract_metadata(path: &Path, content: &str) -> Option<DocMetadata> {
+    let filename = path.file_name()?.to_str()?;
+    let parent = path.parent()?.file_name()?.to_str()?;
+    
+    let doc_type = DocType::from_directory(parent)?;
+    let (date, _base_name) = parse_filename(filename)?;
+    
+    let fm = parse_frontmatter(content).unwrap_or_default();
+    let title = parse_title(content).unwrap_or_else(|| filename.to_string());
+    
+    Some(DocMetadata {
+        doc_type,
+        date,
+        title,
+        filename: filename.to_string(),
+        confidence: fm.confidence.unwrap_or(Confidence::Medium),
+        tags: fm.tags,
+        summary: fm.summary.unwrap_or_default(),
+        status: fm.status,
+    })
+}
+
+/// Parse existing INDEX.md to extract entries.
+pub fn parse_index(content: &str) -> Vec<IndexEntry> {
+    let mut entries = Vec::new();
+    let table_re = Regex::new(r"\|\s*(\d{4}-\d{2}-\d{2})\s*\|(?:\s*([^\|]+)\s*\|)?\s*\[([^\]]+)\]\(([^\)]+)\)\s*\|\s*([🟢🟡🔴])\s*\|\s*([^\|]+)\s*\|").unwrap();
+    
+    for line in content.lines() {
+        if let Some(caps) = table_re.captures(line) {
+            let date = caps[1].replace("-", "");
+            let filename = caps[3].to_string();
+            let confidence = Confidence::from_emoji(&caps[5]).unwrap_or(Confidence::Medium);
+            let summary = caps[6].trim().to_string();
+            
+            // Check if there's a status column (for plans)
+            let status = caps.get(2).and_then(|m| parse_status(m.as_str().trim()));
+            
+            entries.push(IndexEntry {
+                date,
+                filename,
+                confidence,
+                summary,
+                status,
+            });
+        }
+    }
+    
+    entries
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_filename() {
+        let (date, name) = parse_filename("20251203_SEARCH_ALGORITHM_GUIDE.md").unwrap();
+        assert_eq!(date, "20251203");
+        assert_eq!(name, "SEARCH_ALGORITHM_GUIDE");
+    }
+
+    #[test]
+    fn test_parse_frontmatter() {
+        let content = r#"---
+confidence: 🟢
+tags: `#testing` `#api`
+summary: A test document
+---
+
+# Title
+"#;
+        let fm = parse_frontmatter(content).unwrap();
+        assert_eq!(fm.confidence, Some(Confidence::High));
+        assert_eq!(fm.tags, vec!["testing", "api"]);
+        assert_eq!(fm.summary, Some("A test document".to_string()));
+    }
+}
