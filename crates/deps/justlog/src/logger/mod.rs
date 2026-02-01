@@ -36,6 +36,7 @@ impl<S: Subscriber> Layer<S> for SleepLayer {
 
 impl Default for Logger {
     fn default() -> Self {
+        #[cfg(not(target_arch = "wasm32"))]
         let console_layer = console_subscriber::spawn();
         let registry = tracing_subscriber::registry();
 
@@ -70,6 +71,7 @@ impl Default for Logger {
             .with(EnvFilter::new(
                 "eframe=off,egui_glow=off,runtime=off,[]=trace",
             ))
+            #[cfg(not(target_arch = "wasm32"))]
             .with(console_layer)
             .init();
         //std::thread::sleep(std::time::Duration::from_secs(3));
