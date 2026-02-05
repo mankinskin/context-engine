@@ -8,96 +8,154 @@ summary: Analysis of edge case failures discovered through context-read testing,
 
 ## Overview
 
-This analysis documents edge case failures discovered through context-read testing that expose bugs in context-insert's input validation. New tests have been added to context-insert to reproduce these failures and guide the implementation of proper error handling.
+This analysis documents edge case failures discovered through context-read testing that expose bugs in context-read's algorithm and context-insert's input validation. New tests have been added to context-insert to reproduce these failures and guide the implementation of proper error handling.
 
-## Findings
+**Key Finding**: The failures in context-read are caused by context-read producing invalid inputs, not by context-insert failing to handle valid inputs. The fix should be in context-read to avoid generating these edge cases.
 
-### Failure Mode 1: InitInterval with end_bound = 0
+## Test Summary
 
-**Location:** `splits.rs:63` - `vertex.positions.iter().nth(self.start).unwrap()`
+| context-read Test | Status | Root Cause |
+|-------------------|--------|------------|
+| `validate_single_char` | FAILED | Empty pattern passed to `read_known()` |
+| `validate_two_chars` | FAILED | Empty pattern passed to `read_known()` |
+| `validate_triple_repeat` | FAILED | Cache missing root token entry |
+| `validate_three_repeated` | FAILED | Missing intermediate token "aa" |
+| `sync_read_text1` | FAILED | Empty pattern root access |
+| `sync_read_text2` | FAILED | Wrong pattern decomposition |
+| `read_infix1` | FAILED | Empty pattern root access |
+| `read_infix2` | FAILED | Wrong pattern decomposition |
+| `read_multiple_overlaps1` | FAILED | Empty pattern root access |
+| `read_repeating_known1` | FAILED | Prefix path instead of EntireRoot |
+| `read_sequence1` | FAILED | Wrong pattern decomposition |
 
-**Trigger:** Search returns `checkpoint_position = 0` (no atoms confirmed as matching)
+## Failure Modes
 
-**Chain of events:**
-1. context-read calls `insert_or_get_complete` with a pattern like `[p, h]`
-2. context-search finds `p` within a larger token (e.g., "hypergra")
-3. Search tries to match next query token `h` against graph's next child - **mismatch**
-4. Search returns with `checkpoint_position = 0` (nothing confirmed)
-5. `InitInterval::from(result)` creates `InitInterval { end_bound: 0, ... }`
-6. `SplitCacheCtx::init` creates an empty `positions` map
-7. `root_augmentation` tries `get_splits(&(0..1), self)` on empty positions
-8. **PANIC**: `.nth(0).unwrap()` fails on empty iterator
+### Failure Mode 1: Empty Pattern in context-read
 
-**Tests affected:** `read_sequence1`, `read_infix1`, `read_loose_sequence1`, `read_repeating_known1`, `validate_palindrome`, `validate_triple_repeat`, `validate_three_repeated`
+**Location:** `context-read/src/context/mod.rs:82` - `read_known(known)` called unconditionally
 
-**New test:** `reject_init_interval_with_zero_end_bound`
-
-### Failure Mode 2: Empty Pattern Root
-
-**Location:** `pattern_range.rs:175` - `self.root.get(self.role_root_child_index::<R>()).unwrap()`
-
-**Trigger:** Search/insertion is attempted with an empty pattern (`Pattern([])`)
+**Trigger:** `BlockIter::next()` returns `NextBlock { unknown: [...], known: [] }` (empty known pattern)
 
 **Chain of events:**
-1. context-read successfully processes some blocks
-2. After processing, it creates a new `ExpansionCtx` with an empty pattern
-3. `start_search` is called with the empty pattern
-4. Code tries to access `self.root.get(0)` to get the first token
-5. **PANIC**: `.unwrap()` on `None` because pattern is empty
+1. `BlockIter::next()` produces blocks with potentially empty `known` pattern
+2. `read_block()` unconditionally calls `read_known(known)` 
+3. `read_known(Pattern([]))` creates `PatternEndPath` with empty root
+4. `ExpansionCtx::new()` tries to access `cursor.path_root()[0]`
+5. **PANIC**: `unwrap()` on `None` because path_root is empty
 
-**Tests affected:** `sync_read_text1`, `read_multiple_overlaps1`, `validate_single_char`, `validate_two_chars`
+**Tests affected:** `validate_single_char`, `validate_two_chars`, `sync_read_text1`, `read_infix1`, `read_multiple_overlaps1`
 
-**New tests:** `reject_empty_pattern_search`, `reject_empty_pattern_insert`
+**Status: ✅ FIXED**
 
-### Failure Mode 3: Partial Match with No Checkpoint (Integration)
+Fix applied in `context-read/src/context/mod.rs`:
+```rust
+fn read_block(&mut self, block: NextBlock) {
+    let NextBlock { unknown, known } = block;
+    self.append_pattern(unknown);
+    if !known.is_empty() {  // <-- Added check
+        self.read_known(known);
+    }
+}
+```
 
-**Location:** Multiple - combines Failure Mode 1 with real search flow
+Tests now passing: `validate_single_char`, `validate_two_chars`, `sync_read_text1`
 
-**Trigger:** Search for pattern where first token exists in graph but second doesn't match
+### Failure Mode 2: Cache Missing Root Token Entry
 
-**New test:** `integration_partial_match_no_checkpoint`
+**Location:** `context-insert/src/interval/partition/info/range/splits.rs:63`
 
-## New Test Coverage
+**Trigger:** `InitInterval` created where cache doesn't contain the root token's vertex
 
-| Test Name | Status | Failure Mode | Location |
-|-----------|--------|--------------|----------|
-| `reject_init_interval_with_zero_end_bound` | #[ignore] | end_bound = 0 | edge_cases.rs |
-| `reject_empty_pattern_search` | #[ignore] | empty pattern | edge_cases.rs |
-| `reject_empty_pattern_insert` | #[ignore] | empty pattern | edge_cases.rs |
-| `integration_partial_match_no_checkpoint` | #[ignore] | integration | edge_cases.rs |
-| `single_token_mismatch_at_start` | passing | boundary check | edge_cases.rs |
+**Debug Output:**
+```
+[DEBUG] insert_init: root=T2w2 (index=2), end_bound=AtomPosition(2)
+[DEBUG] cache entries: [0]  // Cache only has vertex 0, not vertex 2!
+```
 
-## Required Fixes
+**Chain of events:**
+1. context-read calls `insert_or_get_complete` with some pattern
+2. Search traverses graph, caching vertices it visits
+3. `Response` is created with `root_token()` from final path
+4. BUT: The root token (T2) is different from cached vertices (only 0)
+5. `InitInterval::from(Response)` takes cache that doesn't contain root
+6. `SplitCacheCtx::init` tries to get splits for root token
+7. `completed_splits` returns empty because root not in cache
+8. **PANIC**: `get_splits(&(0..1), self)` on empty positions
 
-### context-insert Fixes
+**Tests affected:** `validate_triple_repeat`
 
-1. **Validate InitInterval.end_bound > 0**
-   - Location: `interval/init.rs` or `split/context.rs`
-   - Return error instead of proceeding with empty positions
+**Required fix:** Either:
+1. Ensure search cache always contains the root token, OR
+2. Validate in context-insert that cache contains root token entry
 
-2. **Validate pattern is non-empty**
-   - Location: Search entry points in `context-search`
-   - Return error for empty patterns before attempting search
+### Failure Mode 3: Missing Intermediate Tokens
 
-### context-read Fixes
+**Location:** context-read algorithm
 
-1. **Handle InitInterval validation errors gracefully**
-   - Don't call `insert_or_get_complete` when no atoms were confirmed
+**Trigger:** Input "aaa" should produce `{a, aa, aaa}` but context-read only produces `{a, aaa}`
 
-2. **Prevent creation of empty patterns**
-   - Add validation in `ExpansionCtx::new` recursion
+**Tests affected:** `validate_three_repeated`
+
+**Required fix:** The context-read expansion algorithm needs to identify and create all repeated substrings, not just the final result.
+
+### Failure Mode 4: Wrong Pattern Decomposition
+
+**Tests affected:** `read_sequence1`, `read_infix2`, `sync_read_text2`
+
+**Issue:** context-read produces different token decompositions than expected. This may be an algorithm issue or test expectation issue.
+
+## New Test Coverage in context-insert
+
+| Test Name | Status | Failure Mode | Purpose |
+|-----------|--------|--------------|---------|
+| `reject_init_interval_with_zero_end_bound` | ✅ passing | end_bound = 0 | Validates error returned |
+| `reject_empty_pattern_search` | ✅ passing | empty pattern | Validates error returned |
+| `reject_empty_pattern_insert` | ✅ passing | empty pattern | Validates error returned |
+| `integration_partial_match_no_checkpoint` | ✅ passing | integration | No panic on partial match |
+| `single_token_mismatch_at_start` | ✅ passing | boundary | Graceful handling |
+| `reject_init_interval_with_missing_root_entry` | 🔄 ignored | missing root | Needs fix first |
+| `triple_repeat_pattern_scenario` | 🔄 ignored | scenario | Needs fix first |
+| `repeated_pattern_intermediate_tokens` | 🔄 ignored | algorithm | Needs fix first |
+
+## Required Fixes Summary
+
+### context-read Fixes (Primary)
+
+1. **Check for empty `known` pattern before calling `read_known()`**
+   - Location: `context/mod.rs:read_block()`
+   - Simple fix: `if !known.is_empty() { self.read_known(known); }`
+
+2. **Ensure cache contains root token before creating InitInterval**
+   - Location: Where `insert_or_get_complete` is called
+   - May need to validate Response before conversion
+
+3. **Algorithm fix for intermediate token discovery**
+   - The expansion algorithm should identify all repeated substrings
+   - Reference: ngrams algorithm produces correct output
+
+### context-insert Fixes (Secondary/Defensive)
+
+Already implemented:
+- ✅ `end_bound = 0` validation returns `InvalidEndBound` error
+- ✅ Empty pattern validation returns `EmptyPatterns` error
+
+Still needed:
+- Validate cache contains root token entry (defensive)
 
 ## Conclusions
 
-The edge case tests are now in place with `#[ignore]` attributes. Once the fixes are implemented:
+The root cause of context-read failures is in context-read itself, not context-insert:
 
-1. Remove `#[ignore]` from each test
-2. Update tests to verify proper error types are returned
-3. Update context-read to handle the new error cases gracefully
+1. **Empty patterns**: context-read should not call `read_known()` with empty patterns
+2. **Cache mismatch**: context-read should ensure search cache contains root token
+3. **Missing tokens**: context-read algorithm needs refinement to find all repeated substrings
+
+The validation in context-insert (end_bound=0, empty patterns) works correctly. Additional defensive validation for cache-root mismatch would be helpful but the primary fix should be in context-read.
 
 ## References
 
 - Test file: `crates/context-insert/src/tests/cases/insert/edge_cases.rs`
+- context-read source: `crates/context-read/src/context/mod.rs`
 - Panic location 1: `crates/context-insert/src/interval/partition/info/range/splits.rs:63`
 - Panic location 2: `crates/context-trace/src/path/structs/rooted/pattern_range.rs:175`
 - Related doc: `20251204_CONTEXT_INSERT_ARCHITECTURE.md`
