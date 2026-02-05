@@ -7,6 +7,7 @@ Algorithm analysis and comparisons.
 | Date | File | Confidence | Summary |
 |------|------|------------|----------|
 | 2026-02-05 | [20260205_CONTEXT_INSERT_EDGE_CASES.md](20260205_CONTEXT_INSERT_EDGE_CASES.md) | 🟢 | Analysis of edge case failures discovered through context-read testing, with new test coverage for context-insert |
+| 2026-02-05 | [20260205_SEARCH_REPEAT_PATTERN_BUG.md](20260205_SEARCH_REPEAT_PATTERN_BUG.md) | 🟢 | Critical bug: search for [ab,ab,ab] returns abab (4 atoms) instead of ababab (6 atoms) |
 | 2025-12-04 | [20251204_CONTEXT_INSERT_ARCHITECTURE.md](20251204_CONTEXT_INSERT_ARCHITECTURE.md) | 🟡 |  |
 | 2025-12-04 | [20251204_LOCK_POISONING_ANALYSIS.md](20251204_LOCK_POISONING_ANALYSIS.md) | 🟡 |  |
 | 2025-12-03 | [20251203_ADVANCED_QUERY_CURSOR_RESPONSE.md](20251203_ADVANCED_QUERY_CURSOR_RESPONSE.md) | 🟡 |  |

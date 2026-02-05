@@ -129,6 +129,8 @@ Tests now passing: `validate_three_repeated`
 
 ## New Test Coverage in context-insert
 
+### Edge Case Tests (`edge_cases.rs`)
+
 | Test Name | Status | Failure Mode | Purpose |
 |-----------|--------|--------------|---------|
 | `reject_init_interval_with_zero_end_bound` | ✅ passing | end_bound = 0 | Validates error returned |
@@ -137,8 +139,32 @@ Tests now passing: `validate_three_repeated`
 | `integration_partial_match_no_checkpoint` | ✅ passing | integration | No panic on partial match |
 | `single_token_mismatch_at_start` | ✅ passing | boundary | Graceful handling |
 | `reject_init_interval_with_missing_root_entry` | 🔄 ignored | missing root | Needs fix first |
-| `triple_repeat_pattern_scenario` | 🔄 ignored | scenario | Needs fix first |
-| `repeated_pattern_intermediate_tokens` | 🔄 ignored | algorithm | Needs fix first |
+| `triple_repeat_pattern_scenario` | ✅ passing | scenario | Verifies basic repeat handling |
+| `repeated_pattern_intermediate_tokens` | 🔄 ignored | algorithm | Needs different approach |
+
+### Context-Read Scenario Tests (`context_read_scenarios.rs`)
+
+These tests simulate exact sequences that context-read produces:
+
+| Test Name | Status | Scenario | Purpose |
+|-----------|--------|----------|---------|
+| `scenario_xyyxy_xy_should_be_entire_root` | ✅ passing | "xyyxy" | Verify xy is found as EntireRoot |
+| `search_prefers_standalone_over_embedded` | ✅ passing | ab in abc/cab | Verify search preference |
+| `scenario_heldld_then_hell_creates_intermediate_tokens` | ✅ passing | "heldld" + "hell" | Intermediate token creation |
+| `scenario_abcde_bcdea_overlap` | ✅ passing | "abcde" + "bcdea" | Overlapping pattern handling |
+| `scenario_triple_repeat_ababab` | ❌ **BUG** ignored | "ababab" | Search returns abab instead of ababab |
+| `insert_subpattern_creates_token_with_reference` | ✅ passing | ab in xaby | Subpattern reference |
+| `search_single_atom_returns_single_index_error` | ✅ passing | single atom | Error handling |
+| `insert_same_token_repeated` | ✅ passing | [a, a] | Same token repeated |
+
+### New Bug Discovered
+
+**`scenario_triple_repeat_ababab`**: When searching for `[ab, ab, ab]` (ababab) after insertion:
+- **Expected**: Returns ababab token as EntireRoot
+- **Actual**: Returns abab token (finds partial match in parent)
+
+This reveals a bug in context-search where the search algorithm finds a partial match 
+within a parent pattern and returns that instead of finding the exact pattern.
 
 ## Required Fixes Summary
 
@@ -164,6 +190,12 @@ Tests now passing: `validate_three_repeated`
    - Added validation in `MatchResult::new()` with `debug_assert_eq!`
    - See: `20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md`
 
+2. **Search finds partial match instead of exact pattern** ❌ NEW BUG
+   - Location: Search algorithm when multiple patterns share prefixes
+   - Symptom: Searching for [ab, ab, ab] returns abab instead of ababab
+   - Test: `scenario_triple_repeat_ababab`
+   - Impact: Critical for context-read's `validate_triple_repeat` test
+
 ### context-insert Fixes (Secondary/Defensive)
 
 Already implemented:
@@ -176,18 +208,21 @@ Still needed:
 
 ## Conclusions
 
-The root cause of context-read failures is in context-read itself, not context-insert:
+The root cause of context-read failures is distributed across multiple crates:
 
 1. **Empty patterns**: ✅ FIXED - context-read now checks for empty patterns
 2. **EntireRoot cursor position**: ✅ FIXED - context-search now sets correct position
 3. **Cache mismatch**: context-read should ensure search cache contains root token
 4. **Missing tokens**: context-read algorithm needs refinement to find all repeated substrings
+5. **Search partial match bug**: ❌ NEW - context-search returns partial match within parent instead of exact pattern (test: `scenario_triple_repeat_ababab`)
 
 The validation in context-insert (end_bound=0, empty patterns) works correctly. Additional defensive validation for cache-root mismatch would be helpful but the primary fix should be in context-read.
 
 ## References
 
-- Test file: `crates/context-insert/src/tests/cases/insert/edge_cases.rs`
+- Test files:
+  - `crates/context-insert/src/tests/cases/insert/edge_cases.rs`
+  - `crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs`
 - context-read source: `crates/context-read/src/context/mod.rs`
 - context-search fix: `crates/context-search/src/search/mod.rs`
 - Panic location 1: `crates/context-insert/src/interval/partition/info/range/splits.rs:63`
