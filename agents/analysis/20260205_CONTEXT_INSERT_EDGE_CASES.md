@@ -16,17 +16,18 @@ This analysis documents edge case failures discovered through context-read testi
 
 | context-read Test | Status | Root Cause |
 |-------------------|--------|------------|
-| `validate_single_char` | FAILED | Empty pattern passed to `read_known()` |
-| `validate_two_chars` | FAILED | Empty pattern passed to `read_known()` |
+| `validate_single_char` | ✅ PASSING | Empty pattern passed to `read_known()` - FIXED |
+| `validate_two_chars` | ✅ PASSING | Empty pattern passed to `read_known()` - FIXED |
 | `validate_triple_repeat` | FAILED | Cache missing root token entry |
-| `validate_three_repeated` | FAILED | Missing intermediate token "aa" |
-| `sync_read_text1` | FAILED | Empty pattern root access |
+| `validate_three_repeated` | ✅ PASSING | EntireRoot cursor position fix applied |
+| `sync_read_text1` | ✅ PASSING | Empty pattern root access - FIXED |
 | `sync_read_text2` | FAILED | Wrong pattern decomposition |
 | `read_infix1` | FAILED | Empty pattern root access |
 | `read_infix2` | FAILED | Wrong pattern decomposition |
 | `read_multiple_overlaps1` | FAILED | Empty pattern root access |
 | `read_repeating_known1` | FAILED | Prefix path instead of EntireRoot |
 | `read_sequence1` | FAILED | Wrong pattern decomposition |
+| `read_loose_sequence1` | FAILED | Wrong pattern decomposition |
 
 ## Failure Modes
 
@@ -60,7 +61,29 @@ fn read_block(&mut self, block: NextBlock) {
 
 Tests now passing: `validate_single_char`, `validate_two_chars`, `sync_read_text1`
 
-### Failure Mode 2: Cache Missing Root Token Entry
+### Failure Mode 2: EntireRoot Cursor Position Bug
+
+**Location:** `context-search/src/search/mod.rs` lines 140-162 ("no matches found" case)
+
+**Trigger:** Search finds an `EntireRoot` match but `cursor_position` is 0 instead of token width
+
+**Status: ✅ FIXED** (see `20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md`)
+
+**Chain of events:**
+1. Search finds a complete token match or no match
+2. Creates `EntireRoot` path coverage with `atom_position: AtomPosition::default()` (0)
+3. context-insert receives Response with `cursor_position() = 0`
+4. `InitInterval::from(Response)` creates interval with `end_bound = 0`
+5. Downstream processing fails due to invalid bounds
+
+**Fix applied:**
+- `search/mod.rs`: Set `atom_position: AtomPosition::from(token_width)` for EntireRoot
+- `state/matched/mod.rs`: Added `MatchResult::new()` with `debug_assert_eq!` validation
+- `interval/init.rs`: Now uses `cursor_position()` which returns correct value
+
+Tests now passing: `validate_three_repeated`
+
+### Failure Mode 3: Cache Missing Root Token Entry
 
 **Location:** `context-insert/src/interval/partition/info/range/splits.rs:63`
 
@@ -88,19 +111,19 @@ Tests now passing: `validate_single_char`, `validate_two_chars`, `sync_read_text
 1. Ensure search cache always contains the root token, OR
 2. Validate in context-insert that cache contains root token entry
 
-### Failure Mode 3: Missing Intermediate Tokens
+### Failure Mode 4: Missing Intermediate Tokens
 
 **Location:** context-read algorithm
 
 **Trigger:** Input "aaa" should produce `{a, aa, aaa}` but context-read only produces `{a, aaa}`
 
-**Tests affected:** `validate_three_repeated`
+**Tests affected:** Previously `validate_three_repeated`, but now passing after EntireRoot fix
 
 **Required fix:** The context-read expansion algorithm needs to identify and create all repeated substrings, not just the final result.
 
-### Failure Mode 4: Wrong Pattern Decomposition
+### Failure Mode 5: Wrong Pattern Decomposition
 
-**Tests affected:** `read_sequence1`, `read_infix2`, `sync_read_text2`
+**Tests affected:** `read_sequence1`, `read_infix1`, `read_infix2`, `sync_read_text2`, `read_loose_sequence1`, `read_multiple_overlaps1`, `read_repeating_known1`
 
 **Issue:** context-read produces different token decompositions than expected. This may be an algorithm issue or test expectation issue.
 
@@ -121,9 +144,9 @@ Tests now passing: `validate_single_char`, `validate_two_chars`, `sync_read_text
 
 ### context-read Fixes (Primary)
 
-1. **Check for empty `known` pattern before calling `read_known()`**
+1. **Check for empty `known` pattern before calling `read_known()`** ✅ FIXED
    - Location: `context/mod.rs:read_block()`
-   - Simple fix: `if !known.is_empty() { self.read_known(known); }`
+   - Fix: `if !known.is_empty() { self.read_known(known); }`
 
 2. **Ensure cache contains root token before creating InitInterval**
    - Location: Where `insert_or_get_complete` is called
@@ -133,11 +156,20 @@ Tests now passing: `validate_single_char`, `validate_two_chars`, `sync_read_text
    - The expansion algorithm should identify all repeated substrings
    - Reference: ngrams algorithm produces correct output
 
+### context-search Fixes
+
+1. **EntireRoot cursor_position must equal root token width** ✅ FIXED
+   - Location: `search/mod.rs` - "no matches found" case
+   - Fix: Set `atom_position: AtomPosition::from(token_width)` instead of default
+   - Added validation in `MatchResult::new()` with `debug_assert_eq!`
+   - See: `20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md`
+
 ### context-insert Fixes (Secondary/Defensive)
 
 Already implemented:
 - ✅ `end_bound = 0` validation returns `InvalidEndBound` error
 - ✅ Empty pattern validation returns `EmptyPatterns` error
+- ✅ Uses `cursor_position()` in `InitInterval::from()` (works with EntireRoot fix)
 
 Still needed:
 - Validate cache contains root token entry (defensive)
@@ -146,9 +178,10 @@ Still needed:
 
 The root cause of context-read failures is in context-read itself, not context-insert:
 
-1. **Empty patterns**: context-read should not call `read_known()` with empty patterns
-2. **Cache mismatch**: context-read should ensure search cache contains root token
-3. **Missing tokens**: context-read algorithm needs refinement to find all repeated substrings
+1. **Empty patterns**: ✅ FIXED - context-read now checks for empty patterns
+2. **EntireRoot cursor position**: ✅ FIXED - context-search now sets correct position
+3. **Cache mismatch**: context-read should ensure search cache contains root token
+4. **Missing tokens**: context-read algorithm needs refinement to find all repeated substrings
 
 The validation in context-insert (end_bound=0, empty patterns) works correctly. Additional defensive validation for cache-root mismatch would be helpful but the primary fix should be in context-read.
 
@@ -156,6 +189,9 @@ The validation in context-insert (end_bound=0, empty patterns) works correctly. 
 
 - Test file: `crates/context-insert/src/tests/cases/insert/edge_cases.rs`
 - context-read source: `crates/context-read/src/context/mod.rs`
+- context-search fix: `crates/context-search/src/search/mod.rs`
 - Panic location 1: `crates/context-insert/src/interval/partition/info/range/splits.rs:63`
 - Panic location 2: `crates/context-trace/src/path/structs/rooted/pattern_range.rs:175`
-- Related doc: `20251204_CONTEXT_INSERT_ARCHITECTURE.md`
+- Related docs:
+  - `20251204_CONTEXT_INSERT_ARCHITECTURE.md`
+  - `20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md`
