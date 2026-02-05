@@ -52,16 +52,85 @@ Diff < left / right > :
 
 ## Root Cause Analysis
 
-The search algorithm appears to terminate early when it finds a complete match within a shorter parent pattern (`abab`) rather than continuing to find the exact pattern (`ababab`).
+The search algorithm has a **flawed assumption** about parent exploration.
 
-Likely locations:
-1. `context-search/src/search/context/mod.rs` - AncestorSearchTraversal
-2. `context-search/src/search/mod.rs` - Main search loop
-3. State machine transition logic for EntireRoot matches
+### Bug Location
 
-The algorithm should:
-1. Continue searching when there's more query to consume
-2. Prefer exact-length matches over embedded matches
+**File:** `crates/context-search/src/match/iterator.rs`  
+**Lines:** 102-106
+
+```rust
+// Clear the queue - all better matches are explored via this root cursor and its parent exploration
+debug!("Found matching root - clearing search queue (will explore via parents)");
+self.queue.nodes.clear();
+```
+
+### The Flawed Assumption
+
+The comment claims: "all better matches are explored via this root cursor and its parent exploration"
+
+This is **incorrect** when candidates are siblings rather than ancestors.
+
+### Graph Structure
+
+```
+      ab (width 2)
+     /  \
+  abab   ababab
+ (w:4)   (w:6)
+```
+
+Both `abab=[ab,ab]` and `ababab=[ab,ab,ab]` are **parents of `ab`**, but neither is an ancestor of the other.
+
+### Execution Flow (from logs)
+
+1. **Initial queue** contains both `abab` and `ababab` as parent candidates:
+   ```
+   [0] ParentCandidate(vertex:"abab"(3), pos:4),
+   [1] ParentCandidate(vertex:"abab"(3), pos:4),
+   [2] ParentCandidate(vertex:"ababab"(4), pos:4),
+   [3] ParentCandidate(vertex:"ababab"(4), pos:4),
+   [4] ParentCandidate(vertex:"ababab"(4), pos:4),
+   ```
+
+2. **First match found** - `abab` is processed first (queue order):
+   ```
+   Found matching root - creating RootCursor
+   root_parent="abab"(3), root_width=4
+   ```
+
+3. **Queue cleared** - `ababab` candidates are discarded!
+
+4. **Query advanced** - cursor moves from position 4 to 6 (consuming third `ab`)
+
+5. **Child exhausted** - `abab` only has 2 children, we need a third
+
+6. **Parent exploration fails** - `abab` has no parents, so:
+   ```
+   No parents available - search exhausted
+   ```
+
+7. **Result** - `abab` returned as best match (width 4), not `ababab` (width 6)
+
+### Why the Assumption Fails
+
+The algorithm assumes: "If we find `abab`, we can find `ababab` by exploring `abab`'s parents."
+
+Reality: `ababab` is NOT a parent of `abab`. They are siblings (both parents of `ab`).
+
+To find `ababab`, we must NOT clear the queue - we must continue processing all candidates.
+
+### Fix Required
+
+In `SearchIterator::next()` (iterator.rs:97-117):
+
+**Option A**: Don't clear the queue. Let the iterator yield all matches and pick the best one.
+
+**Option B**: Sort candidates by width descending and process longest first (may need priority queue).
+
+**Option C**: Filter candidates - only clear those that are ancestors of the found match.
+
+The cleanest fix is likely **Option A** - continue processing all queue items and track the best match by query exhaustion status or match length.
 
 ## Related Tests
 
