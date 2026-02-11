@@ -163,6 +163,8 @@ For "aaa" (width 3):
 - `context-read/src/expansion/mod.rs` - `ExpansionCtx` and postfix iteration
 - `context-read/src/expansion/chain/expand.rs` - `ExpandCtx` postfix handling
 - `context-read/src/complement.rs` - `ComplementBuilder` for prefix extraction
+- `context-read/src/expansion/chain/link.rs` - `OverlapLink` structure
+- `context-read/src/expansion/chain/mod.rs` - `BandChain` with overlap links storage
 
 ## Test Case
 
@@ -177,3 +179,81 @@ cargo test -p context-read -- validate_three_repeated
 ## Priority
 
 **High** - This is a correctness bug. The graph structure should contain all valid decompositions for proper pattern matching and search operations.
+
+---
+
+## Implementation Update (2026-02-11)
+
+### Overlap Link Abstraction - IMPLEMENTED
+
+The overlap "link" abstraction has been added to the BandChain to track overlaps between tokens in decompositions.
+
+#### Changes Made:
+
+1. **Enhanced OverlapLink Structure** (`expansion/chain/link.rs`):
+   - `child_path: IndexEndPath` - Top-down child path from starting root to expandable postfix (overlap region from first token's view)
+   - `search_path: IndexStartPath` - Bottom-up then top-down search path from expansion (overlap region from second token's view)
+   - `start_bound: usize` - Position where the overlap starts in the input sequence
+   - Added comprehensive documentation explaining the dual-perspective nature of overlaps
+
+2. **BandChain Storage** (`expansion/chain/mod.rs`):
+   - Added `links: Vec<OverlapLink>` field to store overlap links
+   - Added `append_overlap_link()` method to add links when expansions occur
+   - Updated initialization to create empty links vector
+   - Cleaned up commented-out code
+
+3. **Expansion Logic** (`expansion/mod.rs`):
+   - Modified `apply_op()` to create and store overlap links during expansions
+   - Added `create_overlap_link()` method that converts `ExpansionLink` to `OverlapLink`
+   - Overlap links are now created alongside complement tokens during band chain extension
+
+#### Key Concepts Researched:
+
+**BandChain**:
+- An ordered collection (BTreeSet) of Band structures tracking sequential expansions and overlap decompositions
+- First band contains the sequential expansion result
+- Overlap bands (after first) contain alternate decompositions `[complement, expansion]`
+- Now includes a vector of OverlapLink objects corresponding to each expansion
+
+**RolePath / RangePath**:
+- `RolePath<Start>` - Path with Start role (bottom-up then top-down from expansion)
+- `RolePath<End>` - Path with End role (top-down from root postfix)
+- `PatternRangePath` - Composite of Start/End RolePaths used as cursor
+- `IndexStartPath` - Alias for `IndexRolePath<Start>`
+- `IndexEndPath` - Alias for `IndexRolePath<End>`
+
+**PathCursor**:
+- `CursorCtx` wraps a mutable `PatternRangePath` reference
+- `PatternRangePath` is the actual cursor type tracking position within pattern during expansion
+- Used to navigate through the pattern during expansion and insertion operations
+
+**insert_or_complete**:
+- Defined in `context-insert` crate, implemented on `HypergraphRef`
+- Searches for query pattern and either returns existing match or inserts new pattern
+- Used in `ExpansionCtx::new()` to get/create initial bundle from cursor
+- Returns `Result<Result<IndexWithPath, Error>, ErrorReason>` with multiple success/failure cases
+
+#### How Overlap Links Enable Decomposition Retrieval:
+
+The `OverlapLink` structure provides the necessary information to:
+1. **Identify overlap regions**: The `child_path` and `search_path` both point to the same overlap token from different perspectives
+2. **Build complements**: The paths can be used to reconstruct the prefix (complement) token that wasn't part of the overlap
+3. **Generate alternate decompositions**: By combining the overlap information with band data, we can derive both `[prefix, expansion]` and `[root, suffix]` decompositions
+
+Example for "aaa":
+- Root: "aa"@0-1, Remaining: [a@2]
+- Postfix "a"@1 expands → "aa"@1-2 (overlap at position 1)
+- OverlapLink created:
+  - `child_path`: IndexEndPath to "a"@1 (postfix of "aa"@0-1)
+  - `search_path`: IndexStartPath to "a"@1 (prefix of "aa"@1-2)
+  - `start_bound`: 1
+- This link helps derive:
+  - `[aa@0-1, a@2]` - from forward expansion
+  - `[a@0, aa@1-2]` - from complement using the link
+
+#### Future Work:
+
+The overlap links are now being stored and can be used to:
+- Implement methods to retrieve all decompositions from the band chain
+- Build complement tokens on-demand using the stored path information
+- Potentially optimize storage by using a map keyed by band end bounds (as suggested by the original TODO comment)
