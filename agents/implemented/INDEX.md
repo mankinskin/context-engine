@@ -6,6 +6,7 @@ Completed features and enhancements.
 
 | Date | File | Confidence | Summary |
 |------|------|------------|----------|
+| 2026-02-11 | [20260211_OVERLAP_LINK_ABSTRACTION.md](20260211_OVERLAP_LINK_ABSTRACTION.md) | 🟢 | Implemented overlap link abstraction in BandChain to track overlaps between tokens in decompositions |
 | 2026-02-05 | [20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md](20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md) | 🟢 | Fixed EntireRoot cursor_position to equal root token width, added validation and tests |
 | 2025-12-06 | [20251206_PHASE1_TEST_FRAMEWORK_FOUNDATION.md](20251206_PHASE1_TEST_FRAMEWORK_FOUNDATION.md) | 🟡 |  |
 | 2025-12-05 | [20251205_DOCUMENTATION_COMPACTION_COMPLETE.md](20251205_DOCUMENTATION_COMPACTION_COMPLETE.md) | 🟡 |  |
