@@ -6,6 +6,7 @@ How-to guides and troubleshooting patterns.
 
 | Date | File | Confidence | Summary |
 |------|------|------------|----------|
+| 2026-02-11 | [20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md](20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md) | 🟢 | Complete guide to BandChain, overlap links, path types, and decomposition generation in context-read |
 | 2026-02-07 | [20260207_BLOCK_ITER_OVERLAP_EXPANSION.md](20260207_BLOCK_ITER_OVERLAP_EXPANSION.md) | 🟢 | How BlockIter partitions sequences and ExpansionCtx detects overlaps using BandChain |
 | 2025-12-04 | [20251204_CONTEXT_INSERT_SEARCH_INTEROP.md](20251204_CONTEXT_INSERT_SEARCH_INTEROP.md) | 🟡 |  |
 | 2025-12-03 | [20251203_ADVANCE_CYCLE_GUIDE.md](20251203_ADVANCE_CYCLE_GUIDE.md) | 🟡 |  |
