@@ -53,7 +53,7 @@ graph.insert(pattern), graph.insert_init(extract, init)
 1. **Response fields are private** - Use `.is_complete()`, `.expect_complete()`, NOT `.end.path`
 2. **Always call `.root_parent()`** after `.expect_complete()` - Path ≠ Token
 3. **InitInterval from Response** - Use `checkpoint_position()` not `cursor_position()`
-4. **Check before insert** - `!query_exhausted()` AND `!is_full_token()` before inserting
+4. **Check before insert** - `!query_exhausted()` AND `!is_entire_root()` before inserting
 5. **Test tracing** - Use `init_test_tracing!(&graph)` NOT old `init_tracing()`
 
 ---

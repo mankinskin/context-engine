@@ -33,20 +33,20 @@ response.is_exhausted() == true  // ✓ All query tokens matched
 response.is_exhausted() == false  // ✗ Query has remaining tokens
 ```
 
-#### 2. Full Token Match (`is_full_token()`)
+#### 2. Full Token Match (`is_entire_root()`)
 **Question:** Is the result a complete pre-existing token in the graph?
 
 ```rust
 // Found: Token for "Hello" pattern (exists in graph)
-response.is_full_token() == true  // ✓ Complete token
+response.is_entire_root() == true  // ✓ Complete token
 
 // Found: Intersection path [h, e, l] within "Hello"
-response.is_full_token() == false  // ✗ Partial path within token
+response.is_entire_root() == false  // ✗ Partial path within token
 ```
 
 ### Four Possible Combinations
 
-| is_exhausted() | is_full_token() | Meaning |
+| is_exhausted() | is_entire_root() | Meaning |
 |----------------|------------------|---------|
 | true | true | **Perfect match**: Query fully matched to existing token |
 | true | false | **Exhausted on path**: Query matched but ends within a token |
@@ -60,22 +60,22 @@ response.is_full_token() == false  // ✗ Partial path within token
 
 // Case 1: Perfect match
 let result = search([h, e, l, l, o]);
-// ✓ is_exhausted() && is_full_token()
+// ✓ is_exhausted() && is_entire_root()
 // Found complete "Hello" token, entire query matched
 
 // Case 2: Exhausted on path  
 let result = search([h, e, l]);
-// ✓ is_exhausted() && !is_full_token()
+// ✓ is_exhausted() && !is_entire_root()
 // Matched up to 'l' within "Hello", but "Hello" continues
 
 // Case 3: Prefix match
 let result = search([h, e, l, l, o, x]);
-// !is_exhausted() && ✓ is_full_token()
+// !is_exhausted() && ✓ is_entire_root()
 // Found complete "Hello" token, but query has 'x' remaining
 
 // Case 4: Partial match
 let result = search([h, e, x]);
-// !is_exhausted() && !is_full_token()
+// !is_exhausted() && !is_entire_root()
 // Stopped at 'e' within "Hello", query has 'x' remaining
 ```
 
@@ -149,7 +149,7 @@ Response {
 
 // Check the result
 response.is_exhausted();    // Query fully matched?
-response.is_full_token();   // Result is complete token?
+response.is_entire_root();   // Result is complete token?
 ```
 
 ## Key Features
@@ -201,7 +201,7 @@ let result = query.search::<AncestorSearchTraversal>(graph)?;
 // 6. Complete! Found "Hello"
 
 result.is_exhausted();    // true - entire query matched
-result.is_full_token();   // true - found complete "Hello" token
+result.is_entire_root();   // true - found complete "Hello" token
 result.root_token();      // Token for "Hello" pattern
 ```
 
@@ -234,7 +234,7 @@ If no match found, returns empty mismatch at position 0.
 ```rust
 // ✅ Safe pattern - check both properties
 if response.is_exhausted() {
-    if response.is_full_token() {
+    if response.is_entire_root() {
         // Perfect match: use as complete token
         let token = response.expect_complete("checked").root_parent();
     } else {
@@ -253,7 +253,7 @@ let token = response.expect_complete("hope it's exact!");
 ### Handle All Cases
 
 ```rust
-match (response.is_exhausted(), response.is_full_token()) {
+match (response.is_exhausted(), response.is_entire_root()) {
     (true, true) => {
         // Perfect match: complete token, entire query
         println!("Found exact: {:?}", response.root_token());

@@ -17,13 +17,13 @@ These are two orthogonal properties that were previously conflated under the amb
 
 #### `Response` type (`crates/context-search/src/state/result.rs`)
 - ✅ Added `query_exhausted() -> bool` - Checks if entire query was matched
-- ✅ Added `is_full_token() -> bool` - Checks if result is `PathCoverage::EntireRoot`
+- ✅ Added `is_entire_root() -> bool` - Checks if result is `PathCoverage::EntireRoot`
 - ✅ Updated `expect_complete()` to require both conditions
 - ✅ Updated `as_complete()` to require both conditions
 
 #### `MatchResult` type (`crates/context-search/src/state/matched/mod.rs`)
 - ✅ Added `query_exhausted() -> bool` - Checks cursor position >= query length
-- ✅ Added `is_full_token() -> bool` - Checks for `PathCoverage::EntireRoot`
+- ✅ Added `is_entire_root() -> bool` - Checks for `PathCoverage::EntireRoot`
 
 ### Documentation Updates
 
@@ -52,7 +52,7 @@ These are two orthogonal properties that were previously conflated under the amb
 
 ### Four Result States
 
-| query_exhausted() | is_full_token() | Meaning |
+| query_exhausted() | is_entire_root() | Meaning |
 |-------------------|------------------|---------|
 | `true` | `true` | **Perfect match**: Query fully matched to existing token |
 | `true` | `false` | **Exhausted on path**: Query matched but ends within a token |
@@ -66,19 +66,19 @@ These are two orthogonal properties that were previously conflated under the amb
 
 // Case 1: Perfect match
 let result = search([h, e, l, l, o]);
-assert!(result.query_exhausted() && result.is_full_token());
+assert!(result.query_exhausted() && result.is_entire_root());
 
 // Case 2: Exhausted on path
 let result = search([h, e, l]);
-assert!(result.query_exhausted() && !result.is_full_token());
+assert!(result.query_exhausted() && !result.is_entire_root());
 
 // Case 3: Prefix match
 let result = search([h, e, l, l, o, x]);
-assert!(!result.query_exhausted() && result.is_full_token());
+assert!(!result.query_exhausted() && result.is_entire_root());
 
 // Case 4: Partial match
 let result = search([h, e, x]);
-assert!(!result.query_exhausted() && !result.is_full_token());
+assert!(!result.query_exhausted() && !result.is_entire_root());
 ```
 
 ### Migration Guide
@@ -92,7 +92,7 @@ if response.is_complete() {
 
 **New API:**
 ```rust
-if response.query_exhausted() && response.is_full_token() {
+if response.query_exhausted() && response.is_entire_root() {
     let path = response.expect_complete("found");
 } else if response.query_exhausted() {
     // Query matched but result is intersection path
@@ -140,7 +140,7 @@ tests::traversal::prefix1
 tests::traversal::range1
 ```
 
-These tests likely need to check both `query_exhausted()` AND `is_full_token()`, or adjust expectations for the specific result type they're getting.
+These tests likely need to check both `query_exhausted()` AND `is_entire_root()`, or adjust expectations for the specific result type they're getting.
 
 ## Files Modified
 
