@@ -1,10 +1,8 @@
 //! Document templates for each documentation type.
 
 use crate::schema::{
-    Confidence,
     DocMetadata,
     DocType,
-    PlanStatus,
 };
 
 /// Generate document content from metadata using the appropriate template.
@@ -356,6 +354,7 @@ fn format_date(date: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::schema::Confidence;
 
     #[test]
     fn test_generate_guide() {

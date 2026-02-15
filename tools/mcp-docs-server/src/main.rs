@@ -37,25 +37,111 @@ use std::{
 use tools::{
     CreateDocParams,
     DocsManager,
+    CrateDocsManager,
 };
 
 /// MCP Server for documentation management.
 #[derive(Clone)]
 pub struct DocsServer {
     manager: Arc<DocsManager>,
+    crate_manager: Arc<CrateDocsManager>,
     tool_router: ToolRouter<Self>,
 }
 
 impl DocsServer {
-    pub fn new(agents_dir: PathBuf) -> Self {
+    pub fn new(agents_dir: PathBuf, crates_dir: PathBuf) -> Self {
         Self {
             manager: Arc::new(DocsManager::new(agents_dir)),
+            crate_manager: Arc::new(CrateDocsManager::new(crates_dir)),
             tool_router: Self::tool_router(),
         }
     }
 }
 
 // === Tool Input Types ===
+
+// --- Crate Documentation Tools ---
+
+/// List all context-* crates with documentation
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct ListCratesInput {
+    // No parameters - lists all discovered crates
+}
+
+/// Browse a crate's module tree
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct BrowseCrateInput {
+    /// Name of the crate (e.g., "context-trace", "context-search")
+    crate_name: String,
+}
+
+/// Read crate or module documentation
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct ReadCrateDocInput {
+    /// Name of the crate (e.g., "context-trace")
+    crate_name: String,
+    /// Optional module path within the crate (e.g., "graph/path"). If omitted, reads crate root.
+    #[serde(default)]
+    module_path: Option<String>,
+    /// Include README.md content (default: true)
+    #[serde(default = "default_true")]
+    include_readme: bool,
+}
+
+/// Update crate or module documentation
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct UpdateCrateDocInput {
+    /// Name of the crate
+    crate_name: String,
+    /// Optional module path (if omitted, updates crate root)
+    #[serde(default)]
+    module_path: Option<String>,
+    /// New index.yaml content (optional)
+    #[serde(default)]
+    index_yaml: Option<String>,
+    /// New README.md content (optional)
+    #[serde(default)]
+    readme: Option<String>,
+}
+
+/// Create documentation for a new module
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CreateModuleDocInput {
+    /// Name of the crate
+    crate_name: String,
+    /// Module path to create (e.g., "new_module" or "parent/child")
+    module_path: String,
+    /// Name of the module
+    name: String,
+    /// Description of the module
+    description: String,
+}
+
+/// Search crate documentation
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct SearchCrateDocsInput {
+    /// Search query (case-insensitive)
+    query: String,
+    /// Optional: filter to specific crate
+    #[serde(default)]
+    crate_filter: Option<String>,
+    /// Search in type/trait/macro names (default: true)
+    #[serde(default = "default_true")]
+    search_types: bool,
+    /// Search in README content (default: true)
+    #[serde(default = "default_true")]
+    search_content: bool,
+}
+
+/// Validate crate documentation
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct ValidateCrateDocsInput {
+    /// Optional: validate only specific crate
+    #[serde(default)]
+    crate_filter: Option<String>,
+}
+
+// --- Agent Documentation Tools ---
 
 /// Create a new document from template
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -471,6 +557,201 @@ impl DocsServer {
             ))])),
         }
     }
+
+    // === Crate Documentation Tools ===
+
+    /// List all context-* crates with documentation
+    #[tool(
+        description = "List all context-* crates that have agents/docs directories. Shows crate name, version, description, module count, and whether they have a README."
+    )]
+    async fn list_crates(
+        &self,
+        #[allow(unused_variables)]
+        Parameters(_input): Parameters<ListCratesInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.discover_crates() {
+            Ok(crates) => {
+                let mut md = String::from("# Documented Crates\n\n");
+                md.push_str("| Crate | Version | Modules | README | Description |\n");
+                md.push_str("|-------|---------|---------|--------|-------------|\n");
+                for c in &crates {
+                    let version = c.version.as_deref().unwrap_or("-");
+                    let readme = if c.has_readme { "✅" } else { "❌" };
+                    md.push_str(&format!(
+                        "| {} | {} | {} | {} | {} |\n",
+                        c.name, version, c.module_count, readme, c.description
+                    ));
+                }
+                Ok(CallToolResult::success(vec![Content::text(md)]))
+            }
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Browse a crate's module tree
+    #[tool(
+        description = "Browse the module tree of a specific crate. Shows all modules, submodules, files, and key types hierarchically."
+    )]
+    async fn browse_crate(
+        &self,
+        Parameters(input): Parameters<BrowseCrateInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.browse_crate(&input.crate_name) {
+            Ok(tree) => {
+                let md = format_module_tree(&tree, 0);
+                Ok(CallToolResult::success(vec![Content::text(md)]))
+            }
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Read crate or module documentation
+    #[tool(
+        description = "Read the documentation for a crate or specific module. Returns the index.yaml metadata and optionally the README.md content."
+    )]
+    async fn read_crate_doc(
+        &self,
+        Parameters(input): Parameters<ReadCrateDocInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.read_crate_doc(
+            &input.crate_name,
+            input.module_path.as_deref(),
+            input.include_readme,
+        ) {
+            Ok(result) => Ok(CallToolResult::success(vec![Content::text(
+                result.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Update crate or module documentation
+    #[tool(
+        description = "Update the documentation for a crate or module. Can update index.yaml and/or README.md. Validates YAML before writing."
+    )]
+    async fn update_crate_doc(
+        &self,
+        Parameters(input): Parameters<UpdateCrateDocInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.update_crate_doc(
+            &input.crate_name,
+            input.module_path.as_deref(),
+            input.index_yaml.as_deref(),
+            input.readme.as_deref(),
+        ) {
+            Ok(()) => {
+                let location = match &input.module_path {
+                    Some(p) => format!("{}::{}", input.crate_name, p.replace('/', "::")),
+                    None => input.crate_name.clone(),
+                };
+                Ok(CallToolResult::success(vec![Content::text(format!(
+                    "Updated documentation for: {}",
+                    location
+                ))]))
+            }
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Create documentation for a new module
+    #[tool(
+        description = "Create a new module documentation directory with an initial index.yaml. Use this when documenting a new module that doesn't have docs yet."
+    )]
+    async fn create_module_doc(
+        &self,
+        Parameters(input): Parameters<CreateModuleDocInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.create_module_doc(
+            &input.crate_name,
+            &input.module_path,
+            &input.name,
+            &input.description,
+        ) {
+            Ok(path) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Created module documentation at: {}",
+                path
+            ))])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Search crate documentation
+    #[tool(
+        description = "Search across all crate documentation for types, traits, macros, modules, or content. Returns matches with context."
+    )]
+    async fn search_crate_docs(
+        &self,
+        Parameters(input): Parameters<SearchCrateDocsInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.search_crate_docs(
+            &input.query,
+            input.crate_filter.as_deref(),
+            input.search_types,
+            input.search_content,
+        ) {
+            Ok(results) => {
+                let mut md = format!("# Search Results: \"{}\"\n\n", input.query);
+                md.push_str(&format!("**{} matches found**\n\n", results.len()));
+                
+                if results.is_empty() {
+                    md.push_str("No matches found.\n");
+                } else {
+                    md.push_str("| Crate | Module | Type | Name | Description |\n");
+                    md.push_str("|-------|--------|------|------|-------------|\n");
+                    for r in &results {
+                        let module = if r.module_path.is_empty() { "-" } else { &r.module_path };
+                        let desc = r.description.as_deref()
+                            .or(r.context.as_deref())
+                            .unwrap_or("-");
+                        md.push_str(&format!(
+                            "| {} | {} | {} | {} | {} |\n",
+                            r.crate_name, module, r.match_type, r.name, desc
+                        ));
+                    }
+                }
+                
+                Ok(CallToolResult::success(vec![Content::text(md)]))
+            }
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Validate crate documentation
+    #[tool(
+        description = "Validate crate documentation for consistency: check that all referenced modules exist, YAML is valid, etc. Returns a report of errors and warnings."
+    )]
+    async fn validate_crate_docs(
+        &self,
+        Parameters(input): Parameters<ValidateCrateDocsInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.validate_crate_docs(input.crate_filter.as_deref()) {
+            Ok(report) => Ok(CallToolResult::success(vec![Content::text(
+                report.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
 }
 
 #[tool_handler]
@@ -478,9 +759,13 @@ impl ServerHandler for DocsServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo {
             instructions: Some(
-                "MCP Docs Server for managing structured agent documentation. \
-                 Tools: create_doc, list_docs, update_doc_meta, search_docs, \
-                 regenerate_index, validate_docs."
+                "MCP Docs Server for managing structured agent documentation and crate API docs.\n\n\
+                 Agent Docs (guides, plans, bug-reports, etc.):\n\
+                 - create_doc, list_docs, read_doc, update_doc_meta, search_docs, browse_docs\n\
+                 - regenerate_index, validate_docs, get_docs_needing_review, search_content\n\n\
+                 Crate API Docs (crates/*/agents/docs/):\n\
+                 - list_crates, browse_crate, read_crate_doc, update_crate_doc\n\
+                 - create_module_doc, search_crate_docs, validate_crate_docs"
                     .into(),
             ),
             capabilities: ServerCapabilities::builder().enable_tools().build(),
@@ -531,23 +816,67 @@ fn parse_status(s: &str) -> Option<PlanStatus> {
     }
 }
 
+/// Format a module tree node as markdown
+fn format_module_tree(node: &schema::ModuleTreeNode, depth: usize) -> String {
+    use std::fmt::Write;
+    let mut md = String::new();
+    let indent = "  ".repeat(depth);
+    let prefix = if depth == 0 { "#" } else { &"#".repeat((depth + 1).min(4)) };
+    
+    let _ = writeln!(md, "{} {}", prefix, node.name);
+    if !node.description.is_empty() {
+        let _ = writeln!(md, "{}*{}*\n", indent, node.description);
+    }
+    
+    // Show key types
+    if !node.key_types.is_empty() {
+        let _ = writeln!(md, "{}**Key Types:**", indent);
+        for t in &node.key_types {
+            let desc = t.description().map(|d| format!(" - {}", d)).unwrap_or_default();
+            let _ = writeln!(md, "{}- `{}`{}", indent, t.name(), desc);
+        }
+        let _ = writeln!(md);
+    }
+    
+    // Show files
+    if !node.files.is_empty() {
+        let _ = writeln!(md, "{}**Files:**", indent);
+        for f in &node.files {
+            let _ = writeln!(md, "{}- `{}` - {}", indent, f.name, f.description);
+        }
+        let _ = writeln!(md);
+    }
+    
+    // Recurse into children
+    for child in &node.children {
+        md.push_str(&format_module_tree(child, depth + 1));
+    }
+    
+    md
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get agents directory from environment or use default
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let workspace_root = manifest_dir
+        .parent() // tools/
+        .and_then(|p| p.parent()) // context-engine/
+        .unwrap_or(&manifest_dir);
+    
     let agents_dir = std::env::var("AGENTS_DIR")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| {
-            // Default: assume we're in context-engine/agents/mcp-docs-server
-            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .parent()
-                .unwrap()
-                .to_path_buf()
-        });
+        .unwrap_or_else(|_| workspace_root.join("agents"));
+    
+    let crates_dir = std::env::var("CRATES_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| workspace_root.join("crates"));
 
     eprintln!("MCP Docs Server starting...");
     eprintln!("Agents directory: {}", agents_dir.display());
+    eprintln!("Crates directory: {}", crates_dir.display());
 
-    let server = DocsServer::new(agents_dir);
+    let server = DocsServer::new(agents_dir, crates_dir);
 
     let service = server.serve(stdio()).await.inspect_err(|e| {
         eprintln!("Server error: {:?}", e);
@@ -574,5 +903,27 @@ mod tests {
         assert_eq!(parse_confidence("high"), Confidence::High);
         assert_eq!(parse_confidence("LOW"), Confidence::Low);
         assert_eq!(parse_confidence("unknown"), Confidence::Medium);
+    }
+
+    #[test]
+    fn test_format_module_tree() {
+        use crate::schema::{FileEntry, TypeEntry, ModuleTreeNode};
+        let tree = ModuleTreeNode {
+            name: "test".to_string(),
+            path: "".to_string(),
+            description: "Test module".to_string(),
+            children: vec![],
+            files: vec![FileEntry {
+                name: "mod.rs".to_string(),
+                description: "Module root".to_string(),
+            }],
+            key_types: vec![TypeEntry::Simple("TestType".to_string())],
+            has_readme: true,
+        };
+        let md = format_module_tree(&tree, 0);
+        assert!(md.contains("# test"));
+        assert!(md.contains("*Test module*"));
+        assert!(md.contains("`TestType`"));
+        assert!(md.contains("`mod.rs`"));
     }
 }

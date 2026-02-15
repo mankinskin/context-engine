@@ -1,8 +1,11 @@
 //! Parse existing documents to extract metadata.
 
 use crate::schema::{Confidence, DocMetadata, DocType, IndexEntry, PlanStatus};
+use crate::schema::{CrateMetadata, ModuleMetadata};
 use regex::Regex;
+use serde::de::DeserializeOwned;
 use std::path::Path;
+use std::fs;
 
 /// Parse a document filename to extract date and base name.
 pub fn parse_filename(filename: &str) -> Option<(String, String)> {
@@ -130,6 +133,39 @@ pub fn parse_index(content: &str) -> Vec<IndexEntry> {
     }
     
     entries
+}
+
+// =============================================================================
+// YAML Parsing for Crate Documentation
+// =============================================================================
+
+/// Parse a YAML file into a typed structure.
+pub fn parse_yaml_file<T: DeserializeOwned>(path: &Path) -> Result<T, String> {
+    let content = fs::read_to_string(path)
+        .map_err(|e| format!("Failed to read {}: {}", path.display(), e))?;
+    parse_yaml_content(&content)
+}
+
+/// Parse YAML content into a typed structure.
+pub fn parse_yaml_content<T: DeserializeOwned>(content: &str) -> Result<T, String> {
+    serde_yaml::from_str(content)
+        .map_err(|e| format!("YAML parse error: {}", e))
+}
+
+/// Parse a crate's root index.yaml file.
+pub fn parse_crate_index(path: &Path) -> Result<CrateMetadata, String> {
+    parse_yaml_file(path)
+}
+
+/// Parse a module's index.yaml file.
+pub fn parse_module_index(path: &Path) -> Result<ModuleMetadata, String> {
+    parse_yaml_file(path)
+}
+
+/// Read a markdown file's content.
+pub fn read_markdown_file(path: &Path) -> Result<String, String> {
+    fs::read_to_string(path)
+        .map_err(|e| format!("Failed to read {}: {}", path.display(), e))
 }
 
 #[cfg(test)]

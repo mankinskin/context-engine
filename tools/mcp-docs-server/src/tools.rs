@@ -3,7 +3,9 @@
 use crate::{
     parser::{
         extract_metadata,
-        parse_index,
+        parse_crate_index,
+        parse_module_index,
+        read_markdown_file,
     },
     schema::{
         Confidence,
@@ -11,6 +13,14 @@ use crate::{
         DocType,
         IndexEntry,
         PlanStatus,
+        CrateMetadata,
+        ModuleMetadata,
+        CrateSummary,
+        ModuleTreeNode,
+        CrateSearchResult,
+        CrateValidationIssue,
+        CrateValidationReport,
+        TypeEntry,
     },
     templates::{
         generate_document,
@@ -22,14 +32,12 @@ use serde::{
     Serialize,
 };
 use std::{
-    collections::HashMap,
     fs,
     path::{
         Path,
         PathBuf,
     },
 };
-use walkdir::WalkDir;
 
 /// Result type for tool operations.
 pub type ToolResult<T> = Result<T, ToolError>;
@@ -44,6 +52,14 @@ pub enum ToolError {
     NotFound(String),
     #[error("Document already exists: {0}")]
     AlreadyExists(String),
+    #[error("Parse error: {0}")]
+    ParseError(String),
+}
+
+impl From<String> for ToolError {
+    fn from(s: String) -> Self {
+        ToolError::ParseError(s)
+    }
 }
 
 /// Detail level for document reading
@@ -1163,5 +1179,649 @@ fn truncate(
         s.to_string()
     } else {
         format!("{}...", &s[..max_len.saturating_sub(3)])
+    }
+}
+
+// =============================================================================
+// Crate Documentation Manager
+// =============================================================================
+
+/// Manager for crate API documentation in crates/*/agents/docs/
+pub struct CrateDocsManager {
+    crates_dir: PathBuf,
+}
+
+impl CrateDocsManager {
+    pub fn new(crates_dir: PathBuf) -> Self {
+        Self { crates_dir }
+    }
+
+    /// Discover all context-* crates with agents/docs directories
+    pub fn discover_crates(&self) -> ToolResult<Vec<CrateSummary>> {
+        let mut crates = Vec::new();
+
+        if !self.crates_dir.exists() {
+            return Ok(crates);
+        }
+
+        for entry in fs::read_dir(&self.crates_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            
+            if !path.is_dir() {
+                continue;
+            }
+
+            let name = path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or_default();
+
+            // Only include context-* crates
+            if !name.starts_with("context-") {
+                continue;
+            }
+
+            let docs_path = path.join("agents").join("docs");
+            let index_path = docs_path.join("index.yaml");
+
+            if !index_path.exists() {
+                continue;
+            }
+
+            match parse_crate_index(&index_path) {
+                Ok(meta) => {
+                    let readme_path = docs_path.join("README.md");
+                    crates.push(CrateSummary {
+                        name: meta.name,
+                        version: meta.version,
+                        description: meta.description,
+                        module_count: meta.modules.len(),
+                        has_readme: readme_path.exists(),
+                        docs_path: docs_path.to_string_lossy().to_string(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+
+        crates.sort_by(|a, b| a.name.cmp(&b.name));
+        Ok(crates)
+    }
+
+    /// Browse a crate's module tree
+    pub fn browse_crate(&self, crate_name: &str) -> ToolResult<ModuleTreeNode> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs");
+        let index_path = docs_path.join("index.yaml");
+
+        if !index_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )));
+        }
+
+        let meta = parse_crate_index(&index_path)?;
+        let readme_path = docs_path.join("README.md");
+
+        let mut children = Vec::new();
+        for module_ref in &meta.modules {
+            let module_path = docs_path.join(&module_ref.path);
+            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name) {
+                children.push(node);
+            }
+        }
+
+        // Collect exported items as key_types
+        let mut key_types = Vec::new();
+        if let Some(exported) = &meta.exported_items {
+            key_types.extend(exported.types.clone());
+            key_types.extend(exported.traits.clone());
+            key_types.extend(exported.macros.clone());
+        }
+
+        Ok(ModuleTreeNode {
+            name: meta.name,
+            path: String::new(),
+            description: meta.description,
+            children,
+            files: Vec::new(),
+            key_types,
+            has_readme: readme_path.exists(),
+        })
+    }
+
+    /// Build a module tree node recursively
+    fn build_module_tree(&self, module_path: &Path, name: &str) -> ToolResult<ModuleTreeNode> {
+        let index_path = module_path.join("index.yaml");
+        
+        if !index_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Module docs not found: {}",
+                module_path.display()
+            )));
+        }
+
+        let meta = parse_module_index(&index_path)?;
+        let readme_path = module_path.join("README.md");
+
+        let mut children = Vec::new();
+        for submodule in &meta.submodules {
+            let sub_path = module_path.join(&submodule.path);
+            if let Ok(node) = self.build_module_tree(&sub_path, &submodule.name) {
+                children.push(node);
+            }
+        }
+
+        Ok(ModuleTreeNode {
+            name: name.to_string(),
+            path: module_path.to_string_lossy().to_string(),
+            description: meta.description,
+            children,
+            files: meta.files,
+            key_types: meta.key_types,
+            has_readme: readme_path.exists(),
+        })
+    }
+
+    /// Read documentation for a crate or module
+    pub fn read_crate_doc(
+        &self,
+        crate_name: &str,
+        module_path: Option<&str>,
+        include_readme: bool,
+    ) -> ToolResult<CrateDocResult> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs");
+
+        let target_path = match module_path {
+            Some(rel_path) => docs_path.join(rel_path),
+            None => docs_path.clone(),
+        };
+
+        let index_path = target_path.join("index.yaml");
+        let readme_path = target_path.join("README.md");
+
+        if !index_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Documentation not found: {}/{}",
+                crate_name,
+                module_path.unwrap_or("")
+            )));
+        }
+
+        let index_content = fs::read_to_string(&index_path)?;
+        let readme_content = if include_readme && readme_path.exists() {
+            Some(fs::read_to_string(&readme_path)?)
+        } else {
+            None
+        };
+
+        Ok(CrateDocResult {
+            crate_name: crate_name.to_string(),
+            module_path: module_path.map(|s| s.to_string()),
+            index_yaml: index_content,
+            readme: readme_content,
+        })
+    }
+
+    /// Update documentation for a crate or module
+    pub fn update_crate_doc(
+        &self,
+        crate_name: &str,
+        module_path: Option<&str>,
+        index_yaml: Option<&str>,
+        readme: Option<&str>,
+    ) -> ToolResult<()> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs");
+
+        let target_path = match module_path {
+            Some(rel_path) => docs_path.join(rel_path),
+            None => docs_path.clone(),
+        };
+
+        if !target_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Documentation path not found: {}/{}",
+                crate_name,
+                module_path.unwrap_or("")
+            )));
+        }
+
+        // Validate YAML before writing
+        if let Some(yaml) = index_yaml {
+            // Try to parse the YAML to validate it
+            if module_path.is_some() {
+                serde_yaml::from_str::<ModuleMetadata>(yaml)
+                    .map_err(|e| ToolError::InvalidInput(format!("Invalid module YAML: {}", e)))?;
+            } else {
+                serde_yaml::from_str::<CrateMetadata>(yaml)
+                    .map_err(|e| ToolError::InvalidInput(format!("Invalid crate YAML: {}", e)))?;
+            }
+            fs::write(target_path.join("index.yaml"), yaml)?;
+        }
+
+        if let Some(md) = readme {
+            fs::write(target_path.join("README.md"), md)?;
+        }
+
+        Ok(())
+    }
+
+    /// Create documentation for a new module
+    pub fn create_module_doc(
+        &self,
+        crate_name: &str,
+        module_path: &str,
+        name: &str,
+        description: &str,
+    ) -> ToolResult<String> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs").join(module_path);
+
+        if docs_path.exists() {
+            return Err(ToolError::AlreadyExists(format!(
+                "Module docs already exist: {}/{}",
+                crate_name,
+                module_path
+            )));
+        }
+
+        fs::create_dir_all(&docs_path)?;
+
+        let meta = ModuleMetadata {
+            name: name.to_string(),
+            description: description.to_string(),
+            submodules: Vec::new(),
+            files: Vec::new(),
+            key_types: Vec::new(),
+        };
+
+        let yaml = serde_yaml::to_string(&meta)
+            .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+
+        fs::write(docs_path.join("index.yaml"), yaml)?;
+
+        Ok(docs_path.to_string_lossy().to_string())
+    }
+
+    /// Search crate documentation
+    pub fn search_crate_docs(
+        &self,
+        query: &str,
+        crate_filter: Option<&str>,
+        search_types: bool,
+        search_content: bool,
+    ) -> ToolResult<Vec<CrateSearchResult>> {
+        let mut results = Vec::new();
+        let query_lower = query.to_lowercase();
+
+        let crates = self.discover_crates()?;
+        
+        for crate_summary in crates {
+            if let Some(filter) = crate_filter {
+                if crate_summary.name != filter {
+                    continue;
+                }
+            }
+
+            let crate_path = self.crates_dir.join(&crate_summary.name);
+            let docs_path = crate_path.join("agents").join("docs");
+
+            // Search crate-level
+            if let Ok(meta) = parse_crate_index(&docs_path.join("index.yaml")) {
+                // Search description
+                if meta.description.to_lowercase().contains(&query_lower) {
+                    results.push(CrateSearchResult {
+                        crate_name: crate_summary.name.clone(),
+                        module_path: String::new(),
+                        match_type: "crate".to_string(),
+                        name: meta.name.clone(),
+                        description: Some(meta.description.clone()),
+                        context: None,
+                    });
+                }
+
+                // Search exported items
+                if search_types {
+                    if let Some(exported) = &meta.exported_items {
+                        results.extend(self.search_type_entries(
+                            &exported.types,
+                            &query_lower,
+                            &crate_summary.name,
+                            "",
+                            "type",
+                        ));
+                        results.extend(self.search_type_entries(
+                            &exported.traits,
+                            &query_lower,
+                            &crate_summary.name,
+                            "",
+                            "trait",
+                        ));
+                        results.extend(self.search_type_entries(
+                            &exported.macros,
+                            &query_lower,
+                            &crate_summary.name,
+                            "",
+                            "macro",
+                        ));
+                    }
+                }
+
+                // Search modules recursively
+                for module_ref in &meta.modules {
+                    if module_ref.name.to_lowercase().contains(&query_lower)
+                        || module_ref.description.to_lowercase().contains(&query_lower)
+                    {
+                        results.push(CrateSearchResult {
+                            crate_name: crate_summary.name.clone(),
+                            module_path: module_ref.path.clone(),
+                            match_type: "module".to_string(),
+                            name: module_ref.name.clone(),
+                            description: Some(module_ref.description.clone()),
+                            context: None,
+                        });
+                    }
+
+                    // Search within module
+                    let module_path = docs_path.join(&module_ref.path);
+                    results.extend(self.search_module(
+                        &module_path,
+                        &query_lower,
+                        &crate_summary.name,
+                        &module_ref.path,
+                        search_types,
+                        search_content,
+                    ));
+                }
+            }
+
+            // Search README content
+            if search_content {
+                let readme_path = docs_path.join("README.md");
+                if let Ok(content) = read_markdown_file(&readme_path) {
+                    if let Some(context) = self.find_context_in_content(&content, &query_lower) {
+                        results.push(CrateSearchResult {
+                            crate_name: crate_summary.name.clone(),
+                            module_path: String::new(),
+                            match_type: "content".to_string(),
+                            name: "README.md".to_string(),
+                            description: None,
+                            context: Some(context),
+                        });
+                    }
+                }
+            }
+        }
+
+        Ok(results)
+    }
+
+    fn search_type_entries(
+        &self,
+        entries: &[TypeEntry],
+        query: &str,
+        crate_name: &str,
+        module_path: &str,
+        match_type: &str,
+    ) -> Vec<CrateSearchResult> {
+        entries
+            .iter()
+            .filter(|entry| entry.name().to_lowercase().contains(query))
+            .map(|entry| CrateSearchResult {
+                crate_name: crate_name.to_string(),
+                module_path: module_path.to_string(),
+                match_type: match_type.to_string(),
+                name: entry.name().to_string(),
+                description: entry.description().map(|s| s.to_string()),
+                context: None,
+            })
+            .collect()
+    }
+
+    fn search_module(
+        &self,
+        module_path: &Path,
+        query: &str,
+        crate_name: &str,
+        rel_path: &str,
+        search_types: bool,
+        search_content: bool,
+    ) -> Vec<CrateSearchResult> {
+        let mut results = Vec::new();
+        let index_path = module_path.join("index.yaml");
+
+        if let Ok(meta) = parse_module_index(&index_path) {
+            // Search key_types
+            if search_types {
+                results.extend(self.search_type_entries(
+                    &meta.key_types,
+                    query,
+                    crate_name,
+                    rel_path,
+                    "type",
+                ));
+            }
+
+            // Search files
+            for file in &meta.files {
+                if file.name.to_lowercase().contains(query)
+                    || file.description.to_lowercase().contains(query)
+                {
+                    results.push(CrateSearchResult {
+                        crate_name: crate_name.to_string(),
+                        module_path: rel_path.to_string(),
+                        match_type: "file".to_string(),
+                        name: file.name.clone(),
+                        description: Some(file.description.clone()),
+                        context: None,
+                    });
+                }
+            }
+
+            // Search submodules recursively
+            for submodule in &meta.submodules {
+                if submodule.name.to_lowercase().contains(query)
+                    || submodule.description.to_lowercase().contains(query)
+                {
+                    let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+                    results.push(CrateSearchResult {
+                        crate_name: crate_name.to_string(),
+                        module_path: sub_rel_path.clone(),
+                        match_type: "module".to_string(),
+                        name: submodule.name.clone(),
+                        description: Some(submodule.description.clone()),
+                        context: None,
+                    });
+                }
+
+                let sub_path = module_path.join(&submodule.path);
+                let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+                results.extend(self.search_module(
+                    &sub_path,
+                    query,
+                    crate_name,
+                    &sub_rel_path,
+                    search_types,
+                    search_content,
+                ));
+            }
+
+            // Search README content
+            if search_content {
+                let readme_path = module_path.join("README.md");
+                if let Ok(content) = read_markdown_file(&readme_path) {
+                    if let Some(context) = self.find_context_in_content(&content, query) {
+                        results.push(CrateSearchResult {
+                            crate_name: crate_name.to_string(),
+                            module_path: rel_path.to_string(),
+                            match_type: "content".to_string(),
+                            name: "README.md".to_string(),
+                            description: None,
+                            context: Some(context),
+                        });
+                    }
+                }
+            }
+        }
+
+        results
+    }
+
+    fn find_context_in_content(&self, content: &str, query: &str) -> Option<String> {
+        for line in content.lines() {
+            if line.to_lowercase().contains(query) {
+                return Some(truncate(line.trim(), 100));
+            }
+        }
+        None
+    }
+
+    /// Validate crate documentation for consistency
+    pub fn validate_crate_docs(&self, crate_filter: Option<&str>) -> ToolResult<CrateValidationReport> {
+        let mut report = CrateValidationReport::default();
+        let crates = self.discover_crates()?;
+
+        for crate_summary in crates {
+            if let Some(filter) = crate_filter {
+                if crate_summary.name != filter {
+                    continue;
+                }
+            }
+
+            report.crates_checked += 1;
+
+            let crate_path = self.crates_dir.join(&crate_summary.name);
+            let docs_path = crate_path.join("agents").join("docs");
+            let index_path = docs_path.join("index.yaml");
+
+            // Check crate index
+            match parse_crate_index(&index_path) {
+                Ok(meta) => {
+                    // Check all referenced modules exist
+                    for module_ref in &meta.modules {
+                        let module_path = docs_path.join(&module_ref.path);
+                        if !module_path.exists() {
+                            report.issues.push(CrateValidationIssue {
+                                crate_name: crate_summary.name.clone(),
+                                module_path: Some(module_ref.path.clone()),
+                                issue: format!("Referenced module '{}' does not exist", module_ref.path),
+                                severity: "error".to_string(),
+                            });
+                        } else {
+                            // Recursively validate module
+                            self.validate_module(
+                                &module_path,
+                                &crate_summary.name,
+                                &module_ref.path,
+                                &mut report,
+                            );
+                        }
+                    }
+
+                    // Warn about missing README
+                    if !docs_path.join("README.md").exists() {
+                        report.issues.push(CrateValidationIssue {
+                            crate_name: crate_summary.name.clone(),
+                            module_path: None,
+                            issue: "Missing README.md".to_string(),
+                            severity: "warning".to_string(),
+                        });
+                    }
+                }
+                Err(e) => {
+                    report.issues.push(CrateValidationIssue {
+                        crate_name: crate_summary.name.clone(),
+                        module_path: None,
+                        issue: format!("Failed to parse index.yaml: {}", e),
+                        severity: "error".to_string(),
+                    });
+                }
+            }
+        }
+
+        Ok(report)
+    }
+
+    fn validate_module(
+        &self,
+        module_path: &Path,
+        crate_name: &str,
+        rel_path: &str,
+        report: &mut CrateValidationReport,
+    ) {
+        report.modules_checked += 1;
+
+        let index_path = module_path.join("index.yaml");
+
+        match parse_module_index(&index_path) {
+            Ok(meta) => {
+                // Check all referenced submodules exist
+                for submodule in &meta.submodules {
+                    let sub_path = module_path.join(&submodule.path);
+                    if !sub_path.exists() {
+                        report.issues.push(CrateValidationIssue {
+                            crate_name: crate_name.to_string(),
+                            module_path: Some(format!("{}/{}", rel_path, submodule.path)),
+                            issue: format!("Referenced submodule '{}' does not exist", submodule.path),
+                            severity: "error".to_string(),
+                        });
+                    } else {
+                        let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+                        self.validate_module(&sub_path, crate_name, &sub_rel_path, report);
+                    }
+                }
+
+                // Warn about missing description
+                if meta.description.is_empty() {
+                    report.issues.push(CrateValidationIssue {
+                        crate_name: crate_name.to_string(),
+                        module_path: Some(rel_path.to_string()),
+                        issue: "Empty description".to_string(),
+                        severity: "warning".to_string(),
+                    });
+                }
+            }
+            Err(e) => {
+                report.issues.push(CrateValidationIssue {
+                    crate_name: crate_name.to_string(),
+                    module_path: Some(rel_path.to_string()),
+                    issue: format!("Failed to parse index.yaml: {}", e),
+                    severity: "error".to_string(),
+                });
+            }
+        }
+    }
+}
+
+/// Result of reading crate documentation
+#[derive(Debug, Serialize)]
+pub struct CrateDocResult {
+    pub crate_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub module_path: Option<String>,
+    pub index_yaml: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub readme: Option<String>,
+}
+
+impl CrateDocResult {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        let location = match &self.module_path {
+            Some(path) => format!("{}::{}", self.crate_name, path.replace('/', "::")),
+            None => self.crate_name.clone(),
+        };
+        md.push_str(&format!("# Documentation: {}\n\n", location));
+        md.push_str("## index.yaml\n\n```yaml\n");
+        md.push_str(&self.index_yaml);
+        md.push_str("```\n\n");
+        if let Some(readme) = &self.readme {
+            md.push_str("## README.md\n\n");
+            md.push_str(readme);
+        }
+        md
     }
 }
