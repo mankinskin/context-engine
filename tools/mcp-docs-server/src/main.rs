@@ -25,7 +25,6 @@ use rmcp::{
     ServiceExt,
 };
 use schema::{
-    Confidence,
     DocType,
     PlanStatus,
 };
@@ -157,16 +156,9 @@ pub struct CreateDocInput {
     /// Tags for categorization (without #)
     #[serde(default)]
     tags: Vec<String>,
-    /// Confidence level: "high", "medium", or "low" (default: "medium")
-    #[serde(default = "default_confidence")]
-    confidence: String,
     /// Status for plans: "design", "in-progress", "completed", "blocked", "superseded"
     #[serde(default)]
     status: Option<String>,
-}
-
-fn default_confidence() -> String {
-    "medium".to_string()
 }
 
 /// List documents by type with optional filters
@@ -174,9 +166,6 @@ fn default_confidence() -> String {
 pub struct ListDocsInput {
     /// Document type: "guide", "plan", "implemented", "bug-report", or "analysis"
     doc_type: String,
-    /// Filter by confidence level: "high", "medium", or "low" (optional)
-    #[serde(default)]
-    confidence: Option<String>,
     /// Filter by tag (optional, matches any document containing this tag)
     #[serde(default)]
     tag: Option<String>,
@@ -190,9 +179,6 @@ pub struct ListDocsInput {
 pub struct UpdateMetaInput {
     /// Filename of the document to update
     filename: String,
-    /// New confidence level (optional)
-    #[serde(default)]
-    confidence: Option<String>,
     /// New tags (optional, replaces existing)
     #[serde(default)]
     tags: Option<Vec<String>>,
@@ -204,11 +190,21 @@ pub struct UpdateMetaInput {
     status: Option<String>,
 }
 
-/// Search by tag
+/// Search documents by query and/or tag
 #[derive(Debug, Deserialize, JsonSchema)]
-pub struct SearchTagInput {
-    /// Tag to search for (with or without #)
-    tag: String,
+pub struct SearchDocsInput {
+    /// Search query - searches titles, summaries, and optionally content. Optional if tag is provided.
+    #[serde(default)]
+    query: Option<String>,
+    /// Tag to filter by (with or without #). Optional if query is provided.
+    #[serde(default)]
+    tag: Option<String>,
+    /// Search within document content too (default: false, searches only metadata)
+    #[serde(default)]
+    search_content: bool,
+    /// Filter to specific doc type
+    #[serde(default)]
+    doc_type: Option<String>,
 }
 
 /// Regenerate INDEX
@@ -238,9 +234,6 @@ pub struct BrowseDocsInput {
     /// Optional: filter to specific doc_type ("guide", "plan", etc.). If omitted, shows all categories.
     #[serde(default)]
     doc_type: Option<String>,
-    /// Optional: filter by confidence level
-    #[serde(default)]
-    confidence: Option<String>,
     /// Optional: filter by tag
     #[serde(default)]
     tag: Option<String>,
@@ -252,9 +245,6 @@ pub struct GetDocsNeedingReviewInput {
     /// Maximum age in days - documents older than this will be included (default: 30)
     #[serde(default = "default_max_age_days")]
     max_age_days: u32,
-    /// Include low-confidence documents (default: true)
-    #[serde(default = "default_true")]
-    include_low_confidence: bool,
 }
 
 fn default_max_age_days() -> u32 {
@@ -273,9 +263,6 @@ pub struct SearchContentInput {
     /// Optional: filter to specific doc_type
     #[serde(default)]
     doc_type: Option<String>,
-    /// Optional: filter by confidence level
-    #[serde(default)]
-    confidence: Option<String>,
     /// Optional: filter by tag
     #[serde(default)]
     tag: Option<String>,
@@ -289,6 +276,24 @@ pub struct SearchContentInput {
 
 fn default_context_lines() -> usize {
     2
+}
+
+/// Add frontmatter to documents missing it
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct AddFrontmatterInput {
+    /// Document type to process (or "all" for all types)
+    doc_type: String,
+    /// Preview changes without writing (default: false)
+    #[serde(default)]
+    dry_run: bool,
+}
+
+/// Get documentation health dashboard
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct HealthDashboardInput {
+    /// Include detailed breakdown by category (default: true)
+    #[serde(default = "default_true")]
+    detailed: bool,
 }
 
 // === Tool Implementations ===
@@ -310,7 +315,6 @@ impl DocsServer {
             )
         })?;
 
-        let confidence = parse_confidence(&input.confidence);
         let status = input.status.as_ref().and_then(|s| parse_status(s));
 
         let params = CreateDocParams {
@@ -319,7 +323,6 @@ impl DocsServer {
             title: input.title,
             summary: input.summary,
             tags: Some(input.tags),
-            confidence: Some(confidence),
             status,
         };
 
@@ -350,7 +353,6 @@ impl DocsServer {
         })?;
 
         let filter = tools::ListFilter {
-            confidence: input.confidence.as_ref().map(|s| parse_confidence(s)),
             tag: input.tag,
             status: input.status.as_ref().and_then(|s| parse_status(s)),
         };
@@ -370,7 +372,7 @@ impl DocsServer {
 
     /// Update metadata for an existing document
     #[tool(
-        description = "Update metadata (confidence, tags, summary, status) for an existing document. Also regenerates the INDEX."
+        description = "Update metadata (tags, summary, status) for an existing document. Also regenerates the INDEX."
     )]
     async fn update_doc_meta(
         &self,
@@ -378,7 +380,6 @@ impl DocsServer {
     ) -> Result<CallToolResult, McpError> {
         let params = tools::UpdateMetaParams {
             filename: input.filename.clone(),
-            confidence: input.confidence.as_ref().map(|s| parse_confidence(s)),
             tags: input.tags,
             summary: input.summary,
             status: input.status.as_ref().and_then(|s| parse_status(s)),
@@ -395,13 +396,26 @@ impl DocsServer {
         }
     }
 
-    /// Search documents by tag
-    #[tool(description = "Search for documents across all categories by tag.")]
+    /// Search documents by query and/or tag
+    #[tool(description = "Search for documents using query text (in titles, summaries, content) and/or filter by tag. At least one of query or tag must be provided.")]
     async fn search_docs(
         &self,
-        Parameters(input): Parameters<SearchTagInput>,
+        Parameters(input): Parameters<SearchDocsInput>,
     ) -> Result<CallToolResult, McpError> {
-        match self.manager.search_by_tag(&input.tag) {
+        if input.query.is_none() && input.tag.is_none() {
+            return Ok(CallToolResult::error(vec![Content::text(
+                "Error: At least one of 'query' or 'tag' must be provided"
+            )]));
+        }
+        
+        let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
+        
+        match self.manager.search_docs(
+            input.query.as_deref(),
+            input.tag.as_deref(),
+            input.search_content,
+            doc_type,
+        ) {
             Ok(docs) => {
                 let json =
                     serde_json::to_string_pretty(&docs).unwrap_or_default();
@@ -478,7 +492,7 @@ impl DocsServer {
 
     /// Find documents that may need review or updates
     #[tool(
-        description = "Get documents that may need review: old documents (configurable age) and/or low-confidence documents. Useful for maintenance and summarization workflows."
+        description = "Get documents that may need review based on age. Useful for maintenance and summarization workflows."
     )]
     async fn get_docs_needing_review(
         &self,
@@ -486,7 +500,6 @@ impl DocsServer {
     ) -> Result<CallToolResult, McpError> {
         match self.manager.get_docs_needing_review(
             input.max_age_days,
-            input.include_low_confidence,
         ) {
             Ok(docs) => {
                 let json =
@@ -510,7 +523,6 @@ impl DocsServer {
     ) -> Result<CallToolResult, McpError> {
         let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
         let filter = tools::ListFilter {
-            confidence: input.confidence.as_ref().map(|s| parse_confidence(s)),
             tag: input.tag,
             status: None,
         };
@@ -536,7 +548,6 @@ impl DocsServer {
     ) -> Result<CallToolResult, McpError> {
         let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
         let filter = tools::ListFilter {
-            confidence: input.confidence.as_ref().map(|s| parse_confidence(s)),
             tag: input.tag,
             status: None,
         };
@@ -558,6 +569,55 @@ impl DocsServer {
         }
     }
 
+    /// Add frontmatter to documents missing it
+    #[tool(
+        description = "Add YAML frontmatter to documents that are missing it. Can process a specific doc_type or 'all'. Use dry_run=true to preview changes without writing. Automatically infers tags from content."
+    )]
+    async fn add_frontmatter(
+        &self,
+        Parameters(input): Parameters<AddFrontmatterInput>,
+    ) -> Result<CallToolResult, McpError> {
+        let doc_type = if input.doc_type.to_lowercase() == "all" {
+            None
+        } else {
+            match parse_doc_type(&input.doc_type) {
+                Some(dt) => Some(dt),
+                None => return Ok(CallToolResult::error(vec![Content::text(
+                    format!("Invalid doc_type: {}. Use guide, plan, implemented, bug-report, analysis, or all", input.doc_type)
+                )])),
+            }
+        };
+
+        match self.manager.add_frontmatter(doc_type, input.dry_run) {
+            Ok(result) => Ok(CallToolResult::success(vec![Content::text(
+                result.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Get documentation health dashboard
+    #[tool(
+        description = "Get a comprehensive health dashboard showing documentation metrics: frontmatter coverage, INDEX sync status, naming convention compliance, and document age distribution. Provides actionable recommendations."
+    )]
+    async fn health_dashboard(
+        &self,
+        Parameters(input): Parameters<HealthDashboardInput>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.manager.health_dashboard(input.detailed) {
+            Ok(dashboard) => Ok(CallToolResult::success(vec![Content::text(
+                dashboard.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
     // === Crate Documentation Tools ===
 
     /// List all context-* crates with documentation
@@ -569,19 +629,41 @@ impl DocsServer {
         #[allow(unused_variables)]
         Parameters(_input): Parameters<ListCratesInput>,
     ) -> Result<CallToolResult, McpError> {
-        match self.crate_manager.discover_crates() {
-            Ok(crates) => {
+        match self.crate_manager.discover_crates_with_diagnostics() {
+            Ok(result) => {
                 let mut md = String::from("# Documented Crates\n\n");
-                md.push_str("| Crate | Version | Modules | README | Description |\n");
-                md.push_str("|-------|---------|---------|--------|-------------|\n");
-                for c in &crates {
-                    let version = c.version.as_deref().unwrap_or("-");
-                    let readme = if c.has_readme { "✅" } else { "❌" };
-                    md.push_str(&format!(
-                        "| {} | {} | {} | {} | {} |\n",
-                        c.name, version, c.module_count, readme, c.description
-                    ));
+                
+                // Show directory info
+                md.push_str(&format!(
+                    "**Crates Directory:** `{}`  \n**Exists:** {}\n\n",
+                    result.crates_dir,
+                    if result.crates_dir_exists { "✅" } else { "❌" }
+                ));
+                
+                if result.crates.is_empty() {
+                    md.push_str("*No documented crates found.*\n\n");
+                } else {
+                    md.push_str("| Crate | Version | Modules | README | Description |\n");
+                    md.push_str("|-------|---------|---------|--------|-------------|\n");
+                    for c in &result.crates {
+                        let version = c.version.as_deref().unwrap_or("-");
+                        let readme = if c.has_readme { "✅" } else { "❌" };
+                        md.push_str(&format!(
+                            "| {} | {} | {} | {} | {} |\n",
+                            c.name, version, c.module_count, readme, c.description
+                        ));
+                    }
+                    md.push('\n');
                 }
+                
+                // Show diagnostics if any
+                if !result.diagnostics.is_empty() {
+                    md.push_str("## Diagnostics\n\n");
+                    for diag in &result.diagnostics {
+                        md.push_str(&format!("- {}\n", diag));
+                    }
+                }
+                
                 Ok(CallToolResult::success(vec![Content::text(md)]))
             }
             Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
@@ -762,7 +844,8 @@ impl ServerHandler for DocsServer {
                 "MCP Docs Server for managing structured agent documentation and crate API docs.\n\n\
                  Agent Docs (guides, plans, bug-reports, etc.):\n\
                  - create_doc, list_docs, read_doc, update_doc_meta, search_docs, browse_docs\n\
-                 - regenerate_index, validate_docs, get_docs_needing_review, search_content\n\n\
+                 - regenerate_index, validate_docs, get_docs_needing_review, search_content\n\
+                 - add_frontmatter, health_dashboard\n\n\
                  Crate API Docs (crates/*/agents/docs/):\n\
                  - list_crates, browse_crate, read_crate_doc, update_crate_doc\n\
                  - create_module_doc, search_crate_docs, validate_crate_docs"
@@ -793,14 +876,6 @@ fn parse_detail_level(s: &str) -> tools::DetailLevel {
         "outline" => tools::DetailLevel::Outline,
         "full" => tools::DetailLevel::Full,
         _ => tools::DetailLevel::Summary,
-    }
-}
-
-fn parse_confidence(s: &str) -> Confidence {
-    match s.to_lowercase().as_str() {
-        "high" => Confidence::High,
-        "low" => Confidence::Low,
-        _ => Confidence::Medium,
     }
 }
 
@@ -899,13 +974,6 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_confidence() {
-        assert_eq!(parse_confidence("high"), Confidence::High);
-        assert_eq!(parse_confidence("LOW"), Confidence::Low);
-        assert_eq!(parse_confidence("unknown"), Confidence::Medium);
-    }
-
-    #[test]
     fn test_format_module_tree() {
         use crate::schema::{FileEntry, TypeEntry, ModuleTreeNode};
         let tree = ModuleTreeNode {
@@ -917,7 +985,10 @@ mod tests {
                 name: "mod.rs".to_string(),
                 description: "Module root".to_string(),
             }],
-            key_types: vec![TypeEntry::Simple("TestType".to_string())],
+            key_types: vec![TypeEntry {
+                name: "TestType".to_string(),
+                description: None,
+            }],
             has_readme: true,
         };
         let md = format_module_tree(&tree, 0);

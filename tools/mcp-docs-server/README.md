@@ -6,10 +6,12 @@ A Model Context Protocol (MCP) server for managing structured agent documentatio
 
 - **Create documents** from type-specific templates with automatic dating
 - **List documents** by category with metadata
-- **Update metadata** (confidence, tags, summary, status)
+- **Update metadata** (tags, summary, status)
 - **Search by tag** across all categories
 - **Regenerate INDEX** files from document frontmatter
 - **Validate** naming conventions and structure
+- **Browse crate documentation** with hierarchical module navigation
+- **Read/update crate API docs** in `crates/<crate>/agents/docs/`
 
 ## Document Types
 
@@ -59,7 +61,6 @@ Create a new document from template.
 - `title`: Human-readable title
 - `summary`: One-line summary for INDEX
 - `tags`: Array of tags (without #)
-- `confidence`: "high", "medium", or "low"
 - `status`: (plans only) "design", "in-progress", "completed", "blocked", "superseded"
 
 **Example:**
@@ -69,8 +70,7 @@ Create a new document from template.
   "name": "error handling",
   "title": "Error Handling Patterns",
   "summary": "Common error handling patterns in context-search",
-  "tags": ["error-handling", "patterns"],
-  "confidence": "high"
+  "tags": ["error-handling", "patterns"]
 }
 ```
 
@@ -87,7 +87,6 @@ Update metadata for an existing document.
 
 **Parameters:**
 - `filename`: Document filename
-- `confidence`: (optional) New confidence level
 - `tags`: (optional) New tags (replaces existing)
 - `summary`: (optional) New summary
 - `status`: (optional) New status
@@ -107,13 +106,69 @@ Rebuild INDEX.md from document frontmatter.
 ### `validate_docs`
 Check all documents for convention compliance.
 
+## Crate Documentation Tools
+
+Tools for managing API documentation in `crates/<crate>/agents/docs/`:
+
+### `list_crates`
+List all crates with documentation.
+
+**Parameters:**
+- `pattern`: (optional) Filter to crates matching pattern (e.g., "context-*")
+
+### `browse_crate`
+Browse a crate's documentation structure.
+
+**Parameters:**
+- `crate_name`: Crate name (e.g., "context-trace")
+- `module_path`: (optional) Specific module path (e.g., "graph/vertex")
+- `detail`: "overview" (modules only) or "full" (with types)
+
+### `read_crate_doc`
+Read crate or module documentation.
+
+**Parameters:**
+- `crate_name`: Crate name
+- `module_path`: (optional) Module path (empty for crate root)
+- `content`: "index" (yaml), "readme" (markdown), or "both"
+
+### `update_crate_doc`
+Update crate documentation.
+
+**Parameters:**
+- `crate_name`: Crate name
+- `module_path`: (optional) Module path
+- `field`: Field to update (e.g., "summary", "description")
+- `value`: New value
+
+### `create_module_doc`
+Create documentation for a new module.
+
+**Parameters:**
+- `crate_name`: Crate name
+- `module_path`: Module path (e.g., "graph/vertex")
+- `summary`: One-line description
+
+### `search_crate_docs`
+Search crate documentation by tag or text.
+
+**Parameters:**
+- `crate_name`: (optional) Search in specific crate
+- `query`: Search text
+- `search_in`: "names", "descriptions", or "both"
+
+### `validate_crate_docs`
+Check crate documentation for completeness.
+
+**Parameters:**
+- `crate_name`: (optional) Validate specific crate
+
 ## Document Structure
 
 All documents use YAML frontmatter:
 
 ```markdown
 ---
-confidence: 🟢
 tags: `#tag1` `#tag2`
 summary: One-line summary
 status: 📋  <!-- plans only -->

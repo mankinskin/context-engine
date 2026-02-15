@@ -8,7 +8,6 @@ use crate::{
         read_markdown_file,
     },
     schema::{
-        Confidence,
         DocMetadata,
         DocType,
         IndexEntry,
@@ -76,7 +75,6 @@ pub enum DetailLevel {
 /// Filter criteria for listing documents
 #[derive(Debug, Default)]
 pub struct ListFilter {
-    pub confidence: Option<Confidence>,
     pub tag: Option<String>,
     pub status: Option<PlanStatus>,
 }
@@ -117,7 +115,6 @@ impl DocsManager {
             date,
             title: params.title,
             filename: filename.clone(),
-            confidence: params.confidence.unwrap_or(Confidence::Medium),
             tags: params.tags.unwrap_or_default(),
             summary: params.summary,
             status: params.status,
@@ -169,7 +166,6 @@ impl DocsManager {
                         filename: meta.filename,
                         title: meta.title,
                         date: meta.date,
-                        confidence: meta.confidence,
                         summary: meta.summary,
                         tags: meta.tags,
                         status: meta.status,
@@ -195,7 +191,6 @@ impl DocsManager {
             .map(|d| IndexEntry {
                 date: d.date.clone(),
                 filename: d.filename.clone(),
-                confidence: d.confidence,
                 summary: d.summary.clone(),
                 status: d.status,
             })
@@ -221,9 +216,6 @@ impl DocsManager {
             ToolError::InvalidInput("Cannot parse document".into())
         })?;
 
-        if let Some(conf) = params.confidence {
-            meta.confidence = conf;
-        }
         if let Some(tags) = params.tags {
             meta.tags = tags;
         }
@@ -350,18 +342,6 @@ impl DocsManager {
                 } else {
                     // Parse and validate frontmatter
                     if let Some(fm) = parse_frontmatter(&content) {
-                        // Check confidence is set
-                        if fm.confidence.is_none() {
-                            report.issues.push(ValidationIssue {
-                                file: filename.to_string(),
-                                category: category.clone(),
-                                issue:
-                                    "Missing confidence field in frontmatter"
-                                        .to_string(),
-                                severity: IssueSeverity::Warning,
-                            });
-                        }
-
                         // Check tags exist
                         if fm.tags.is_empty() {
                             report.issues.push(ValidationIssue {
@@ -467,17 +447,17 @@ impl DocsManager {
                     }
 
                     // Check INDEX uses minimal table format
-                    // Should have a table with columns: Date | File | Confidence | Summary
+                    // Should have a table with columns: Date | File | Summary
                     let has_doc_table = index_content
-                        .contains("| Date | File | Confidence | Summary |")
+                        .contains("| Date | File | Summary |")
                         || index_content
-                            .contains("|------|------|------------|");
+                            .contains("|------|------|");
 
                     if !has_doc_table {
                         report.issues.push(ValidationIssue {
                             file: "INDEX.md".to_string(),
                             category: category.clone(),
-                            issue: "INDEX.md should use minimal table format: | Date | File | Confidence | Summary |".to_string(),
+                            issue: "INDEX.md should use minimal table format: | Date | File | Summary |".to_string(),
                             severity: IssueSeverity::Warning,
                         });
                     }
@@ -565,7 +545,6 @@ impl DocsManager {
             doc_type: meta.doc_type.directory().to_string(),
             title: meta.title,
             date: meta.date,
-            confidence: meta.confidence,
             summary: meta.summary,
             tags: meta.tags,
             status: meta.status,
@@ -584,12 +563,6 @@ impl DocsManager {
         let filtered = docs
             .into_iter()
             .filter(|doc| {
-                // Filter by confidence
-                if let Some(conf) = &filter.confidence {
-                    if doc.confidence != *conf {
-                        return false;
-                    }
-                }
                 // Filter by tag
                 if let Some(tag) = &filter.tag {
                     let tag_lower =
@@ -641,7 +614,6 @@ impl DocsManager {
                 .map(|d| TocItem {
                     filename: d.filename,
                     date: d.date,
-                    confidence: d.confidence,
                     summary: d.summary,
                 })
                 .collect();
@@ -659,11 +631,10 @@ impl DocsManager {
         })
     }
 
-    /// Get documents that may need review (old or low confidence).
+    /// Get documents that may need review (old documents).
     pub fn get_docs_needing_review(
         &self,
         max_age_days: u32,
-        include_low_confidence: bool,
     ) -> ToolResult<Vec<ReviewCandidate>> {
         let mut candidates = Vec::new();
         let today = chrono::Local::now().date_naive();
@@ -684,29 +655,15 @@ impl DocsManager {
                         .unwrap_or(today);
                 let age_days = (today - doc_date).num_days().max(0) as u64;
 
-                let mut reasons = Vec::new();
-
                 // Check age
                 if age_days > max_age_days as u64 {
-                    reasons.push(format!("Old ({} days)", age_days));
-                }
-
-                // Check confidence
-                if include_low_confidence
-                    && matches!(doc.confidence, Confidence::Low)
-                {
-                    reasons.push("Low confidence".to_string());
-                }
-
-                if !reasons.is_empty() {
                     candidates.push(ReviewCandidate {
                         filename: doc.filename,
                         doc_type: doc_type.directory().to_string(),
                         date: doc.date,
                         age_days,
-                        confidence: doc.confidence,
                         summary: doc.summary,
-                        reason: reasons.join(", "),
+                        reason: format!("Old ({} days)", age_days),
                     });
                 }
             }
@@ -800,6 +757,364 @@ impl DocsManager {
             matches,
         })
     }
+
+    /// Enhanced search: search by query and/or tag, optionally searching content
+    pub fn search_docs(
+        &self,
+        query: Option<&str>,
+        tag: Option<&str>,
+        search_content: bool,
+        doc_type: Option<DocType>,
+    ) -> ToolResult<Vec<DocSummary>> {
+        let doc_types = match doc_type {
+            Some(dt) => vec![dt],
+            None => vec![
+                DocType::Guide,
+                DocType::Plan,
+                DocType::Implemented,
+                DocType::BugReport,
+                DocType::Analysis,
+            ],
+        };
+
+        let query_lower = query.map(|q| q.to_lowercase());
+        let tag_lower = tag.map(|t| t.to_lowercase().trim_start_matches('#').to_string());
+
+        let mut results = Vec::new();
+
+        for dt in doc_types {
+            let docs = self.list_documents(dt)?;
+
+            for doc in docs {
+                let mut matches = false;
+
+                // Check tag if provided
+                if let Some(ref tag_l) = tag_lower {
+                    if doc.tags.iter().any(|t| t.to_lowercase() == *tag_l) {
+                        matches = true;
+                    }
+                }
+
+                // Check query if provided
+                if let Some(ref query_l) = query_lower {
+                    // Search in title and summary
+                    if doc.title.to_lowercase().contains(query_l) 
+                        || doc.summary.to_lowercase().contains(query_l) 
+                    {
+                        matches = true;
+                    }
+
+                    // Search in content if requested
+                    if !matches && search_content {
+                        let path = self.agents_dir.join(dt.directory()).join(&doc.filename);
+                        if let Ok(content) = fs::read_to_string(&path) {
+                            if content.to_lowercase().contains(query_l) {
+                                matches = true;
+                            }
+                        }
+                    }
+                }
+
+                // If only tag provided and it matches, or if query matches
+                // Handle the case where only one filter is provided
+                if matches || (tag.is_none() && query.is_none()) {
+                    // This shouldn't happen as we validate input, but be safe
+                }
+
+                // More precise logic: if both provided, need tag match; if only one, need that one
+                let tag_ok = tag_lower.as_ref().map_or(true, |tag_l| {
+                    doc.tags.iter().any(|t| t.to_lowercase() == *tag_l)
+                });
+                
+                let query_ok = query_lower.as_ref().map_or(true, |query_l| {
+                    let title_match = doc.title.to_lowercase().contains(query_l);
+                    let summary_match = doc.summary.to_lowercase().contains(query_l);
+                    
+                    if title_match || summary_match {
+                        return true;
+                    }
+                    
+                    if search_content {
+                        let path = self.agents_dir.join(dt.directory()).join(&doc.filename);
+                        if let Ok(content) = fs::read_to_string(&path) {
+                            return content.to_lowercase().contains(query_l);
+                        }
+                    }
+                    false
+                });
+
+                if tag_ok && query_ok {
+                    results.push(doc);
+                }
+            }
+        }
+
+        results.sort_by(|a, b| b.date.cmp(&a.date));
+        Ok(results)
+    }
+
+    /// Add frontmatter to documents that are missing it
+    pub fn add_frontmatter(
+        &self,
+        doc_type: Option<DocType>,
+        dry_run: bool,
+    ) -> ToolResult<AddFrontmatterResult> {
+        use crate::parser::{parse_filename, parse_frontmatter, parse_title};
+        
+        let doc_types = match doc_type {
+            Some(dt) => vec![dt],
+            None => vec![
+                DocType::Guide,
+                DocType::Plan,
+                DocType::Implemented,
+                DocType::BugReport,
+                DocType::Analysis,
+            ],
+        };
+
+        let mut result = AddFrontmatterResult {
+            processed: 0,
+            updated: 0,
+            skipped: 0,
+            errors: Vec::new(),
+            changes: Vec::new(),
+        };
+
+        for dt in doc_types {
+            let dir = self.agents_dir.join(dt.directory());
+            if !dir.exists() {
+                continue;
+            }
+
+            for entry in fs::read_dir(&dir)? {
+                let entry = entry?;
+                let path = entry.path();
+                let filename = path
+                    .file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or_default();
+
+                // Skip non-md files and INDEX.md
+                if !filename.ends_with(".md") || filename == "INDEX.md" {
+                    continue;
+                }
+
+                result.processed += 1;
+
+                let content = match fs::read_to_string(&path) {
+                    Ok(c) => c,
+                    Err(e) => {
+                        result.errors.push(format!("{}: {}", filename, e));
+                        continue;
+                    }
+                };
+
+                // Check if frontmatter exists
+                if content.trim_start().starts_with("---") {
+                    if let Some(_) = parse_frontmatter(&content) {
+                        result.skipped += 1;
+                        continue;
+                    }
+                }
+
+                // Needs frontmatter - infer metadata
+                let (date, _name) = parse_filename(filename).unwrap_or_else(|| {
+                    ("00000000".to_string(), filename.trim_end_matches(".md").to_string())
+                });
+
+                let title = parse_title(&content).unwrap_or_else(|| filename.to_string());
+
+                // Try to extract summary from first paragraph
+                let summary = extract_summary(&content).unwrap_or_default();
+
+                // Infer tags from filename and content
+                let tags = infer_tags(filename, &content, dt);
+
+                let meta = DocMetadata {
+                    doc_type: dt,
+                    date: date.clone(),
+                    filename: filename.to_string(),
+                    tags: tags.clone(),
+                    summary: summary.clone(),
+                    status: if dt == DocType::Plan { Some(PlanStatus::Design) } else { None },
+                    title: title.clone(),
+                };
+
+                let frontmatter = generate_frontmatter(&meta);
+                let new_content = format!("{}\n\n{}", frontmatter, content.trim_start());
+
+                result.changes.push(FrontmatterChange {
+                    filename: filename.to_string(),
+                    doc_type: dt.directory().to_string(),
+                    inferred_tags: tags,
+                    inferred_summary: summary,
+                });
+
+                if !dry_run {
+                    if let Err(e) = fs::write(&path, new_content) {
+                        result.errors.push(format!("{}: {}", filename, e));
+                        continue;
+                    }
+                }
+
+                result.updated += 1;
+            }
+        }
+
+        Ok(result)
+    }
+
+    /// Get a health dashboard summarizing documentation status
+    pub fn health_dashboard(&self, detailed: bool) -> ToolResult<HealthDashboard> {
+        let validation = self.validate()?;
+        
+        let mut dashboard = HealthDashboard {
+            total_documents: 0,
+            frontmatter_coverage: 0.0,
+            index_sync_issues: 0,
+            naming_issues: 0,
+            old_documents: 0,
+            categories: Vec::new(),
+        };
+
+        let mut docs_with_frontmatter = 0;
+
+        for doc_type in [
+            DocType::Guide,
+            DocType::Plan,
+            DocType::Implemented,
+            DocType::BugReport,
+            DocType::Analysis,
+        ] {
+            let docs = self.list_documents(doc_type).unwrap_or_default();
+            let count = docs.len();
+            dashboard.total_documents += count;
+
+            // Count frontmatter
+            let dir = self.agents_dir.join(doc_type.directory());
+            let mut fm_count = 0;
+            let mut old_count = 0;
+
+            for doc in &docs {
+                let path = dir.join(&doc.filename);
+                if let Ok(content) = fs::read_to_string(&path) {
+                    if content.trim_start().starts_with("---") {
+                        if let Some(_) = crate::parser::parse_frontmatter(&content) {
+                            fm_count += 1;
+                            docs_with_frontmatter += 1;
+                        }
+                    }
+                }
+                
+                let today = chrono::Local::now().format("%Y%m%d").to_string();
+                if calculate_age_days(&doc.date, &today) > 30 {
+                    old_count += 1;
+                    dashboard.old_documents += 1;
+                }
+            }
+
+            if detailed {
+                dashboard.categories.push(CategoryHealth {
+                    name: doc_type.directory().to_string(),
+                    total: count,
+                    with_frontmatter: fm_count,
+                    old: old_count,
+                });
+            }
+        }
+
+        // Calculate metrics from validation
+        for issue in &validation.issues {
+            match issue.issue.as_str() {
+                s if s.contains("not listed in INDEX") => dashboard.index_sync_issues += 1,
+                s if s.contains("Invalid filename") => dashboard.naming_issues += 1,
+                _ => {}
+            }
+        }
+
+        dashboard.frontmatter_coverage = if dashboard.total_documents > 0 {
+            (docs_with_frontmatter as f64 / dashboard.total_documents as f64) * 100.0
+        } else {
+            100.0
+        };
+
+        Ok(dashboard)
+    }
+}
+
+/// Calculate age in days between two YYYYMMDD dates
+fn calculate_age_days(date: &str, today: &str) -> u32 {
+    use chrono::NaiveDate;
+    let parse_date = |s: &str| NaiveDate::parse_from_str(s, "%Y%m%d").ok();
+    
+    if let (Some(d), Some(t)) = (parse_date(date), parse_date(today)) {
+        (t - d).num_days().max(0) as u32
+    } else {
+        0
+    }
+}
+
+/// Extract summary from document content (first non-header paragraph)
+fn extract_summary(content: &str) -> Option<String> {
+    let body = extract_body(content);
+    for line in body.lines() {
+        let trimmed = line.trim();
+        if !trimmed.is_empty() 
+            && !trimmed.starts_with('#') 
+            && !trimmed.starts_with('-')
+            && !trimmed.starts_with('|')
+            && !trimmed.starts_with("**")
+        {
+            // Truncate to reasonable length
+            let summary = if trimmed.len() > 150 {
+                format!("{}...", &trimmed[..147])
+            } else {
+                trimmed.to_string()
+            };
+            return Some(summary);
+        }
+    }
+    None
+}
+
+/// Infer tags from filename and content
+fn infer_tags(filename: &str, content: &str, doc_type: DocType) -> Vec<String> {
+    let mut tags = Vec::new();
+    
+    // Add doc type as tag
+    tags.push(doc_type.directory().trim_end_matches('s').to_string());
+    
+    // Check for crate mentions
+    let crates = ["context-trace", "context-search", "context-insert", "context-read"];
+    for crate_name in crates {
+        if filename.to_lowercase().contains(&crate_name.replace('-', "_"))
+            || content.to_lowercase().contains(crate_name)
+        {
+            tags.push(crate_name.to_string());
+        }
+    }
+    
+    // Check for common concepts
+    let concepts = [
+        ("algorithm", "algorithm"),
+        ("bug", "debugging"),
+        ("test", "testing"),
+        ("refactor", "refactoring"),
+        ("api", "api"),
+        ("performance", "performance"),
+    ];
+    
+    let lower_name = filename.to_lowercase();
+    let lower_content = content.to_lowercase();
+    for (pattern, tag) in concepts {
+        if lower_name.contains(pattern) || lower_content.contains(pattern) {
+            if !tags.contains(&tag.to_string()) {
+                tags.push(tag.to_string());
+            }
+        }
+    }
+    
+    tags
 }
 
 fn generate_frontmatter(meta: &DocMetadata) -> String {
@@ -812,7 +1127,6 @@ fn generate_frontmatter(meta: &DocMetadata) -> String {
 
     let mut lines = vec![
         "---".to_string(),
-        format!("confidence: {}", meta.confidence.emoji()),
         format!("tags: {}", tags_str),
         format!("summary: {}", meta.summary),
     ];
@@ -863,7 +1177,6 @@ pub struct CreateDocParams {
     pub title: String,
     pub summary: String,
     pub tags: Option<Vec<String>>,
-    pub confidence: Option<Confidence>,
     pub status: Option<PlanStatus>,
 }
 
@@ -878,7 +1191,6 @@ pub struct DocSummary {
     pub filename: String,
     pub title: String,
     pub date: String,
-    pub confidence: Confidence,
     pub summary: String,
     pub tags: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -888,7 +1200,6 @@ pub struct DocSummary {
 #[derive(Debug, Deserialize)]
 pub struct UpdateMetaParams {
     pub filename: String,
-    pub confidence: Option<Confidence>,
     pub tags: Option<Vec<String>>,
     pub summary: Option<String>,
     pub status: Option<PlanStatus>,
@@ -978,7 +1289,6 @@ pub struct ReadDocResult {
     pub doc_type: String,
     pub title: String,
     pub date: String,
-    pub confidence: Confidence,
     pub summary: String,
     pub tags: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1008,7 +1318,6 @@ pub struct CategorySummary {
 pub struct TocItem {
     pub filename: String,
     pub date: String,
-    pub confidence: Confidence,
     pub summary: String,
 }
 
@@ -1019,7 +1328,6 @@ pub struct ReviewCandidate {
     pub doc_type: String,
     pub date: String,
     pub age_days: u64,
-    pub confidence: Confidence,
     pub summary: String,
     pub reason: String,
 }
@@ -1055,6 +1363,158 @@ pub struct MatchExcerpt {
     pub context_after: Vec<String>,
 }
 
+/// Result of add_frontmatter operation
+#[derive(Debug, Serialize)]
+pub struct AddFrontmatterResult {
+    pub processed: usize,
+    pub updated: usize,
+    pub skipped: usize,
+    pub errors: Vec<String>,
+    pub changes: Vec<FrontmatterChange>,
+}
+
+/// A single frontmatter change
+#[derive(Debug, Serialize)]
+pub struct FrontmatterChange {
+    pub filename: String,
+    pub doc_type: String,
+    pub inferred_tags: Vec<String>,
+    pub inferred_summary: String,
+}
+
+impl AddFrontmatterResult {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        md.push_str(&format!(
+            "# Add Frontmatter Results\n\n**Processed:** {} | **Updated:** {} | **Skipped:** {} | **Errors:** {}\n\n",
+            self.processed, self.updated, self.skipped, self.errors.len()
+        ));
+
+        if !self.changes.is_empty() {
+            md.push_str("## Changes\n\n");
+            md.push_str("| File | Type | Tags |\n");
+            md.push_str("|------|------|------|\n");
+            for change in &self.changes {
+                let tags = change.inferred_tags.join(", ");
+                md.push_str(&format!(
+                    "| {} | {} | {} |\n",
+                    change.filename, change.doc_type, tags
+                ));
+            }
+            md.push('\n');
+        }
+
+        if !self.errors.is_empty() {
+            md.push_str("## Errors\n\n");
+            for err in &self.errors {
+                md.push_str(&format!("- {}\n", err));
+            }
+        }
+
+        md
+    }
+}
+
+/// Health dashboard metrics
+#[derive(Debug, Serialize)]
+pub struct HealthDashboard {
+    pub total_documents: usize,
+    pub frontmatter_coverage: f64,
+    pub index_sync_issues: usize,
+    pub naming_issues: usize,
+    pub old_documents: usize,
+    pub categories: Vec<CategoryHealth>,
+}
+
+/// Health metrics for a single category
+#[derive(Debug, Serialize)]
+pub struct CategoryHealth {
+    pub name: String,
+    pub total: usize,
+    pub with_frontmatter: usize,
+    pub old: usize,
+}
+
+impl HealthDashboard {
+    pub fn to_markdown(&self) -> String {
+        let mut md = String::new();
+        md.push_str("# Documentation Health Dashboard\n\n");
+        
+        // Overall metrics
+        md.push_str("## Overview\n\n");
+        md.push_str("| Metric | Value | Status |\n");
+        md.push_str("|--------|-------|--------|\n");
+        
+        let fm_status = if self.frontmatter_coverage >= 90.0 { "✅" } 
+            else if self.frontmatter_coverage >= 50.0 { "⚠️" } 
+            else { "❌" };
+        md.push_str(&format!(
+            "| Frontmatter Coverage | {:.1}% | {} |\n",
+            self.frontmatter_coverage, fm_status
+        ));
+        
+        let idx_status = if self.index_sync_issues == 0 { "✅" } 
+            else if self.index_sync_issues <= 5 { "⚠️" } 
+            else { "❌" };
+        md.push_str(&format!(
+            "| INDEX Sync Issues | {} | {} |\n",
+            self.index_sync_issues, idx_status
+        ));
+        
+        let name_status = if self.naming_issues == 0 { "✅" } 
+            else if self.naming_issues <= 3 { "⚠️" } 
+            else { "❌" };
+        md.push_str(&format!(
+            "| Naming Issues | {} | {} |\n",
+            self.naming_issues, name_status
+        ));
+        
+        md.push_str(&format!("| Total Documents | {} | ℹ️ |\n", self.total_documents));
+        md.push_str(&format!("| Old Documents (>30d) | {} | ℹ️ |\n", self.old_documents));
+        md.push('\n');
+        
+        // Category breakdown
+        if !self.categories.is_empty() {
+            md.push_str("## By Category\n\n");
+            md.push_str("| Category | Total | Frontmatter | Old |\n");
+            md.push_str("|----------|-------|-------------|-----|\n");
+            for cat in &self.categories {
+                let fm_pct = if cat.total > 0 {
+                    (cat.with_frontmatter as f64 / cat.total as f64) * 100.0
+                } else {
+                    100.0
+                };
+                md.push_str(&format!(
+                    "| {} | {} | {} ({:.0}%) | {} |\n",
+                    cat.name, cat.total, cat.with_frontmatter, fm_pct, cat.old
+                ));
+            }
+            md.push('\n');
+        }
+        
+        // Recommendations
+        md.push_str("## Recommendations\n\n");
+        if self.frontmatter_coverage < 100.0 {
+            let missing = self.total_documents - (self.total_documents as f64 * self.frontmatter_coverage / 100.0) as usize;
+            md.push_str(&format!(
+                "- 🔧 Run `add_frontmatter` to add frontmatter to {} documents\n",
+                missing
+            ));
+        }
+        if self.index_sync_issues > 0 {
+            md.push_str("- 🔧 Run `regenerate_index` for categories with INDEX sync issues\n");
+        }
+        if self.naming_issues > 0 {
+            md.push_str("- 📝 Rename files with invalid naming conventions to YYYYMMDD_NAME.md format\n");
+        }
+        if self.old_documents > 10 {
+            md.push_str("- 📋 Review old documents with `get_docs_needing_review` for potential updates\n");
+        }
+        
+        md
+    }
+}
+
 // === Markdown Formatting ===
 
 impl BrowseResult {
@@ -1075,14 +1535,13 @@ impl BrowseResult {
             if cat.items.is_empty() {
                 md.push_str("*No documents*\n\n");
             } else {
-                md.push_str("| Date | File | Confidence | Summary |\n");
-                md.push_str("|------|------|------------|--------|\n");
+                md.push_str("| Date | File | Summary |\n");
+                md.push_str("|------|------|---------|\n");
                 for item in &cat.items {
                     md.push_str(&format!(
-                        "| {} | {} | {} | {} |\n",
+                        "| {} | {} | {} |\n",
                         &item.date,
                         &item.filename,
-                        item.confidence.emoji(),
                         truncate(&item.summary, 50)
                     ));
                 }
@@ -1099,11 +1558,10 @@ impl ReadDocResult {
         let mut md = String::new();
         md.push_str(&format!("# {}\n\n", self.title));
         md.push_str(&format!(
-            "**File:** `{}`  \n**Type:** {}  \n**Date:** {}  \n**Confidence:** {}  \n",
+            "**File:** `{}`  \n**Type:** {}  \n**Date:** {}  \n",
             self.filename,
             self.doc_type,
             self.date,
-            self.confidence.emoji()
         ));
 
         if !self.tags.is_empty() {
@@ -1186,6 +1644,15 @@ fn truncate(
 // Crate Documentation Manager
 // =============================================================================
 
+/// Result of crate discovery with diagnostics
+#[derive(Debug, Serialize)]
+pub struct CrateDiscoveryResult {
+    pub crates: Vec<CrateSummary>,
+    pub diagnostics: Vec<String>,
+    pub crates_dir: String,
+    pub crates_dir_exists: bool,
+}
+
 /// Manager for crate API documentation in crates/*/agents/docs/
 pub struct CrateDocsManager {
     crates_dir: PathBuf,
@@ -1196,12 +1663,27 @@ impl CrateDocsManager {
         Self { crates_dir }
     }
 
+    /// Get the crates directory path for diagnostics
+    pub fn crates_dir(&self) -> &Path {
+        &self.crates_dir
+    }
+
     /// Discover all context-* crates with agents/docs directories
-    pub fn discover_crates(&self) -> ToolResult<Vec<CrateSummary>> {
-        let mut crates = Vec::new();
+    /// Returns both successful crates and diagnostic information about failures
+    pub fn discover_crates_with_diagnostics(&self) -> ToolResult<CrateDiscoveryResult> {
+        let mut result = CrateDiscoveryResult {
+            crates: Vec::new(),
+            diagnostics: Vec::new(),
+            crates_dir: self.crates_dir.display().to_string(),
+            crates_dir_exists: self.crates_dir.exists(),
+        };
 
         if !self.crates_dir.exists() {
-            return Ok(crates);
+            result.diagnostics.push(format!(
+                "Crates directory does not exist: {}",
+                self.crates_dir.display()
+            ));
+            return Ok(result);
         }
 
         for entry in fs::read_dir(&self.crates_dir)? {
@@ -1224,14 +1706,26 @@ impl CrateDocsManager {
             let docs_path = path.join("agents").join("docs");
             let index_path = docs_path.join("index.yaml");
 
+            if !docs_path.exists() {
+                result.diagnostics.push(format!(
+                    "{}: agents/docs directory not found",
+                    name
+                ));
+                continue;
+            }
+
             if !index_path.exists() {
+                result.diagnostics.push(format!(
+                    "{}: index.yaml not found at {}",
+                    name, index_path.display()
+                ));
                 continue;
             }
 
             match parse_crate_index(&index_path) {
                 Ok(meta) => {
                     let readme_path = docs_path.join("README.md");
-                    crates.push(CrateSummary {
+                    result.crates.push(CrateSummary {
                         name: meta.name,
                         version: meta.version,
                         description: meta.description,
@@ -1240,12 +1734,22 @@ impl CrateDocsManager {
                         docs_path: docs_path.to_string_lossy().to_string(),
                     });
                 }
-                Err(_) => continue,
+                Err(e) => {
+                    result.diagnostics.push(format!(
+                        "{}: YAML parse error - {}",
+                        name, e
+                    ));
+                }
             }
         }
 
-        crates.sort_by(|a, b| a.name.cmp(&b.name));
-        Ok(crates)
+        result.crates.sort_by(|a, b| a.name.cmp(&b.name));
+        Ok(result)
+    }
+
+    /// Discover all context-* crates (simplified, no diagnostics)
+    pub fn discover_crates(&self) -> ToolResult<Vec<CrateSummary>> {
+        Ok(self.discover_crates_with_diagnostics()?.crates)
     }
 
     /// Browse a crate's module tree

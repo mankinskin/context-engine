@@ -8,7 +8,6 @@ All documents include YAML frontmatter for metadata:
 
 ```yaml
 ---
-confidence: 🟢    # 🟢 High | 🟡 Medium | 🔴 Low
 tags: `#tag1` `#tag2`
 summary: One-line description for INDEX
 status: 📋       # Plans only: 📋 Design | 🚧 In Progress | ✅ Complete | ⚠️ Blocked | ❌ Superseded
@@ -23,7 +22,6 @@ status: 📋       # Plans only: 📋 Design | 🚧 In Progress | ✅ Complete |
 
 ```markdown
 ---
-confidence: 🟢
 tags: `#topic` `#pattern`
 summary: Brief description of what this guide solves
 ---
@@ -67,7 +65,6 @@ summary: Brief description of what this guide solves
 
 ```markdown
 ---
-confidence: 🟡
 tags: `#feature` `#refactoring`
 summary: Brief objective statement
 status: 📋
@@ -136,7 +133,6 @@ status: 📋
 
 ```markdown
 ---
-confidence: 🟢
 tags: `#feature` `#api`
 summary: Brief description of what was implemented
 ---
@@ -184,7 +180,6 @@ summary: Brief description of what was implemented
 
 ```markdown
 ---
-confidence: 🟡
 tags: `#bug` `#component`
 summary: One-line description of the bug
 ---
@@ -246,7 +241,6 @@ summary: One-line description of the bug
 
 ```markdown
 ---
-confidence: 🟢
 tags: `#algorithm` `#architecture`
 summary: Brief description of what was analyzed
 ---
@@ -299,17 +293,15 @@ Each category has an INDEX.md that serves only as a table of contents:
 
 Brief description.
 
-**Confidence:** 🟢 High | 🟡 Medium | 🔴 Low
-
-| Date | File | Confidence | Summary |
-|------|------|------------|---------|
-| 2025-12-03 | [EXAMPLE.md](20251203_EXAMPLE.md) | 🟢 | One-line summary |
+| Date | File | Summary |
+|------|------|---------|
+| 2025-12-03 | [EXAMPLE.md](20251203_EXAMPLE.md) | One-line summary |
 ```
 
 For plans, add a Status column:
 
 ```markdown
-| Date | Status | File | Confidence | Summary |
-|------|--------|------|------------|---------|
-| 2025-12-03 | 📋 | [PLAN_EXAMPLE.md](20251203_PLAN_EXAMPLE.md) | 🟡 | One-line summary |
+| Date | Status | File | Summary |
+|------|--------|------|---------|
+| 2025-12-03 | 📋 | [PLAN_EXAMPLE.md](20251203_PLAN_EXAMPLE.md) | One-line summary |
 ```

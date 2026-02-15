@@ -1,6 +1,6 @@
 //! Parse existing documents to extract metadata.
 
-use crate::schema::{Confidence, DocMetadata, DocType, IndexEntry, PlanStatus};
+use crate::schema::{DocMetadata, DocType, IndexEntry, PlanStatus};
 use crate::schema::{CrateMetadata, ModuleMetadata};
 use regex::Regex;
 use serde::de::DeserializeOwned;
@@ -35,7 +35,6 @@ pub fn parse_frontmatter(content: &str) -> Option<FrontMatter> {
             let value = value.trim();
             
             match key {
-                "confidence" => fm.confidence = Confidence::from_emoji(value),
                 "tags" => fm.tags = parse_tags(value),
                 "summary" => fm.summary = Some(value.to_string()),
                 "status" => fm.status = parse_status(value),
@@ -49,7 +48,6 @@ pub fn parse_frontmatter(content: &str) -> Option<FrontMatter> {
 
 #[derive(Default)]
 pub struct FrontMatter {
-    pub confidence: Option<Confidence>,
     pub tags: Vec<String>,
     pub summary: Option<String>,
     pub status: Option<PlanStatus>,
@@ -100,7 +98,6 @@ pub fn extract_metadata(path: &Path, content: &str) -> Option<DocMetadata> {
         date,
         title,
         filename: filename.to_string(),
-        confidence: fm.confidence.unwrap_or(Confidence::Medium),
         tags: fm.tags,
         summary: fm.summary.unwrap_or_default(),
         status: fm.status,
@@ -110,14 +107,14 @@ pub fn extract_metadata(path: &Path, content: &str) -> Option<DocMetadata> {
 /// Parse existing INDEX.md to extract entries.
 pub fn parse_index(content: &str) -> Vec<IndexEntry> {
     let mut entries = Vec::new();
-    let table_re = Regex::new(r"\|\s*(\d{4}-\d{2}-\d{2})\s*\|(?:\s*([^\|]+)\s*\|)?\s*\[([^\]]+)\]\(([^\)]+)\)\s*\|\s*([🟢🟡🔴])\s*\|\s*([^\|]+)\s*\|").unwrap();
+    // Updated regex: | Date | [File](link) | Summary | (optional status column for plans)
+    let table_re = Regex::new(r"\|\s*(\d{4}-\d{2}-\d{2})\s*\|(?:\s*([^\|]+)\s*\|)?\s*\[([^\]]+)\]\(([^\)]+)\)\s*\|\s*([^\|]+)\s*\|").unwrap();
     
     for line in content.lines() {
         if let Some(caps) = table_re.captures(line) {
             let date = caps[1].replace("-", "");
             let filename = caps[3].to_string();
-            let confidence = Confidence::from_emoji(&caps[5]).unwrap_or(Confidence::Medium);
-            let summary = caps[6].trim().to_string();
+            let summary = caps[5].trim().to_string();
             
             // Check if there's a status column (for plans)
             let status = caps.get(2).and_then(|m| parse_status(m.as_str().trim()));
@@ -125,7 +122,6 @@ pub fn parse_index(content: &str) -> Vec<IndexEntry> {
             entries.push(IndexEntry {
                 date,
                 filename,
-                confidence,
                 summary,
                 status,
             });
@@ -182,7 +178,6 @@ mod tests {
     #[test]
     fn test_parse_frontmatter() {
         let content = r#"---
-confidence: 🟢
 tags: `#testing` `#api`
 summary: A test document
 ---
@@ -190,7 +185,6 @@ summary: A test document
 # Title
 "#;
         let fm = parse_frontmatter(content).unwrap();
-        assert_eq!(fm.confidence, Some(Confidence::High));
         assert_eq!(fm.tags, vec!["testing", "api"]);
         assert_eq!(fm.summary, Some("A test document".to_string()));
     }

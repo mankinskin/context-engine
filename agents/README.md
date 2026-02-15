@@ -66,10 +66,7 @@ agents/
 
 **Index:** `agents/guides/INDEX.md` (tag-based search)
 
-**⚠️ REQUIRED:** Add entry to INDEX.md with summary, tags, what it solves, and confidence:
-- 🟢 High - Verified, current, complete
-- 🟡 Medium - Mostly accurate, may have gaps
-- 🔴 Low - Outdated or incomplete
+**⚠️ REQUIRED:** Add entry to INDEX.md with summary and tags.
 
 ---
 
@@ -112,10 +109,7 @@ agents/
 
 **Index:** `agents/implemented/INDEX.md` (tag-based search)
 
-**⚠️ REQUIRED:** Add entry to INDEX.md with summary, tags, what it provides, key locations, and confidence:
-- 🟢 High - Shipped, tested, documented
-- 🟡 Medium - Implemented but evolving
-- 🔴 Low - Partially implemented or deprecated
+**⚠️ REQUIRED:** Add entry to INDEX.md with summary and tags.
 
 ---
 
@@ -135,10 +129,7 @@ agents/
 
 **Required sections:** Summary, Root Cause, Evidence, Fix Options, Related Files
 
-**⚠️ REQUIRED:** Add entry to INDEX.md with summary, tags, root cause, locations, and confidence:
-- 🟢 High - Root cause confirmed, solution verified
-- 🟡 Medium - Analysis incomplete or fix untested
-- 🔴 Low - Preliminary analysis or possibly fixed
+**⚠️ REQUIRED:** Add entry to INDEX.md with summary and tags.
 
 ---
 
@@ -157,7 +148,7 @@ agents/
 
 **Index:** `agents/analysis/INDEX.md` (tag-based search)
 
-**⚠️ REQUIRED:** Add entry to INDEX.md with summary, tags, key findings, and confidence
+**⚠️ REQUIRED:** Add entry to INDEX.md with summary and tags
 
 ---
 
@@ -196,12 +187,7 @@ agents/
 - `agents/bug-reports/INDEX.md` - Bug reports
 - `agents/analysis/INDEX.md` - Algorithm analysis
 
-**Confidence Ratings:** Each entry includes a confidence rating (🟢 High / 🟡 Medium / 🔴 Low) to guide exploration depth:
-- 🟢 High = Trust and apply directly
-- 🟡 Medium = Apply but verify edge cases or current state
-- 🔴 Low = Use as starting point, explore thoroughly
-
-**⚠️ Update indexes:** When adding/removing documents, update appropriate INDEX.md with tags, summary, **and confidence rating**.
+**⚠️ Update indexes:** When adding/removing documents, update appropriate INDEX.md with tags and summary.
 
 ---
 

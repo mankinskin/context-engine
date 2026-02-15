@@ -5,37 +5,6 @@ use serde::{
     Serialize,
 };
 
-/// Confidence rating for documentation entries.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Confidence {
-    /// 🟢 High - Verified, current, complete
-    High,
-    /// 🟡 Medium - Mostly accurate, may have gaps
-    Medium,
-    /// 🔴 Low - Outdated or incomplete
-    Low,
-}
-
-impl Confidence {
-    pub fn emoji(&self) -> &'static str {
-        match self {
-            Confidence::High => "🟢",
-            Confidence::Medium => "🟡",
-            Confidence::Low => "🔴",
-        }
-    }
-
-    pub fn from_emoji(s: &str) -> Option<Self> {
-        match s.trim() {
-            "🟢" | "high" | "High" => Some(Confidence::High),
-            "🟡" | "medium" | "Medium" => Some(Confidence::Medium),
-            "🔴" | "low" | "Low" => Some(Confidence::Low),
-            _ => None,
-        }
-    }
-}
-
 /// Document category/type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -115,7 +84,6 @@ pub struct DocMetadata {
     pub date: String,     // YYYYMMDD format
     pub title: String,    // Human-readable title
     pub filename: String, // Full filename with date prefix
-    pub confidence: Confidence,
     pub tags: Vec<String>,
     pub summary: String, // One-line summary for INDEX
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -127,7 +95,6 @@ pub struct DocMetadata {
 pub struct IndexEntry {
     pub date: String,
     pub filename: String,
-    pub confidence: Confidence,
     pub summary: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<PlanStatus>,
@@ -138,7 +105,6 @@ impl From<&DocMetadata> for IndexEntry {
         IndexEntry {
             date: meta.date.clone(),
             filename: meta.filename.clone(),
-            confidence: meta.confidence,
             summary: meta.summary.clone(),
             status: meta.status,
         }
@@ -173,28 +139,69 @@ pub struct FileEntry {
 }
 
 /// A type entry (for key_types)
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum TypeEntry {
-    /// Simple type name
-    Simple(String),
-    /// Type with description (name: description format in YAML)
-    WithDescription { name: String, description: String },
+/// 
+/// Supports YAML formats:
+/// - Plain string: `"TypeName"`
+/// - Map format: `TypeName: Description text`
+#[derive(Debug, Clone, Serialize)]
+pub struct TypeEntry {
+    pub name: String,
+    pub description: Option<String>,
 }
 
 impl TypeEntry {
     pub fn name(&self) -> &str {
-        match self {
-            TypeEntry::Simple(n) => n,
-            TypeEntry::WithDescription { name, .. } => name,
-        }
+        &self.name
     }
     
     pub fn description(&self) -> Option<&str> {
-        match self {
-            TypeEntry::Simple(_) => None,
-            TypeEntry::WithDescription { description, .. } => Some(description),
+        self.description.as_deref()
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for TypeEntry {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::{self, MapAccess, Visitor};
+        use std::fmt;
+
+        struct TypeEntryVisitor;
+
+        impl<'de> Visitor<'de> for TypeEntryVisitor {
+            type Value = TypeEntry;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a string or a map with one key-value pair")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(TypeEntry {
+                    name: v.to_string(),
+                    description: None,
+                })
+            }
+
+            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+            where
+                A: MapAccess<'de>,
+            {
+                if let Some((key, value)) = map.next_entry::<String, String>()? {
+                    Ok(TypeEntry {
+                        name: key,
+                        description: Some(value),
+                    })
+                } else {
+                    Err(de::Error::custom("expected a map with one key-value pair"))
+                }
+            }
         }
+
+        deserializer.deserialize_any(TypeEntryVisitor)
     }
 }
 
@@ -221,9 +228,9 @@ pub struct CrateMetadata {
     #[serde(default)]
     pub exported_items: Option<ExportedItems>,
     #[serde(default)]
-    pub dependencies: Vec<String>,
+    pub dependencies: Vec<TypeEntry>,
     #[serde(default)]
-    pub features: Vec<String>,
+    pub features: Vec<TypeEntry>,
 }
 
 /// Module-level metadata (from index.yaml in module directories)

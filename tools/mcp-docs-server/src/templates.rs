@@ -26,7 +26,6 @@ fn format_frontmatter(meta: &DocMetadata) -> String {
 
     let mut lines = vec![
         format!("---"),
-        format!("confidence: {}", meta.confidence.emoji()),
         format!("tags: {}", tags_str),
         format!("summary: {}", meta.summary),
     ];
@@ -306,34 +305,29 @@ pub fn generate_index(
     let mut content = String::from(header);
     content.push_str("\n\n");
 
-    // Add legend
-    content.push_str("**Confidence:** 🟢 High | 🟡 Medium | 🔴 Low\n\n");
-
     if doc_type == DocType::Plan {
-        content.push_str("| Date | Status | File | Confidence | Summary |\n");
-        content.push_str("|------|--------|------|------------|----------|\n");
+        content.push_str("| Date | Status | File | Summary |\n");
+        content.push_str("|------|--------|------|---------|\n");
         for entry in entries {
             let status = entry.status.map(|s| s.emoji()).unwrap_or("📋");
             content.push_str(&format!(
-                "| {} | {} | [{}]({}) | {} | {} |\n",
+                "| {} | {} | [{}]({}) | {} |\n",
                 format_date(&entry.date),
                 status,
                 entry.filename,
                 entry.filename,
-                entry.confidence.emoji(),
                 entry.summary
             ));
         }
     } else {
-        content.push_str("| Date | File | Confidence | Summary |\n");
-        content.push_str("|------|------|------------|----------|\n");
+        content.push_str("| Date | File | Summary |\n");
+        content.push_str("|------|------|---------|\n");
         for entry in entries {
             content.push_str(&format!(
-                "| {} | [{}]({}) | {} | {} |\n",
+                "| {} | [{}]({}) | {} |\n",
                 format_date(&entry.date),
                 entry.filename,
                 entry.filename,
-                entry.confidence.emoji(),
                 entry.summary
             ));
         }
@@ -354,7 +348,6 @@ fn format_date(date: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::schema::Confidence;
 
     #[test]
     fn test_generate_guide() {
@@ -363,13 +356,12 @@ mod tests {
             date: "20260131".to_string(),
             title: "Test Guide".to_string(),
             filename: "20260131_TEST_GUIDE.md".to_string(),
-            confidence: Confidence::High,
             tags: vec!["testing".to_string()],
             summary: "A test guide".to_string(),
             status: None,
         };
         let content = generate_document(&meta);
         assert!(content.contains("# Test Guide"));
-        assert!(content.contains("confidence: 🟢"));
+        assert!(content.contains("tags: `#testing`"));
     }
 }

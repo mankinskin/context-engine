@@ -26,6 +26,8 @@ Code requirements and development rules for the context-engine project.
 |------------|-------------|
 | API/types/patterns/macros | `CHEAT_SHEET.md` |
 | Concepts/architecture/modules | `<crate>/HIGH_LEVEL_GUIDE.md` |
+| New crate module | `<crate>/agents/docs/<module>/index.yaml` |
+| New types/traits | `<crate>/agents/docs/index.yaml` exported_items |
 | Unclear behavior/gaps | `QUESTIONS_FOR_AUTHOR.md` |
 | Test structure/workflows/commands | `AGENTS.md` (this file) |
 
@@ -113,12 +115,13 @@ Multi-crate workspace for context analysis and graph traversal (all crates in `c
 **Priority order:**
 1. **`CHEAT_SHEET.md`** - Types, patterns, gotchas (START HERE)
 2. **`agents/guides/INDEX.md`** - How-to guides by topic
-3. `crates/<crate>/HIGH_LEVEL_GUIDE.md` - Concepts, design
-4. `crates/<crate>/README.md` - Purpose, API overview
-5. `crates/<crate>/src/tests/` - Usage examples
-6. `agents/bug-reports/INDEX.md` - Known issues
-7. `QUESTIONS_FOR_AUTHOR.md` - Unclear topics
-8. `cargo doc --package <crate>` - Generated docs
+3. **`crates/<crate>/agents/docs/`** - API documentation (via MCP tools)
+4. `crates/<crate>/HIGH_LEVEL_GUIDE.md` - Concepts, design
+5. `crates/<crate>/README.md` - Purpose, API overview
+6. `crates/<crate>/src/tests/` - Usage examples
+7. `agents/bug-reports/INDEX.md` - Known issues
+8. `QUESTIONS_FOR_AUTHOR.md` - Unclear topics
+9. `cargo doc --package <crate>` - Generated docs
 
 ## Testing & Debugging
 
