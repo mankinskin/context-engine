@@ -17,6 +17,17 @@ pub enum DocType {
 }
 
 impl DocType {
+    /// Returns all doc types for iteration
+    pub fn all() -> [DocType; 5] {
+        [
+            DocType::Guide,
+            DocType::Plan,
+            DocType::Implemented,
+            DocType::BugReport,
+            DocType::Analysis,
+        ]
+    }
+
     pub fn directory(&self) -> &'static str {
         match self {
             DocType::Guide => "guides",

@@ -1,0 +1,17 @@
+name: git
+description: >
+  Git integration for documentation staleness detection. Queries git history
+  to compare source file modification times against documentation sync timestamps.
+
+submodules: []
+
+files:
+  - name: git.rs
+    description: Git command execution and timestamp parsing (~220 lines)
+
+key_types:
+  - GitError: Error type for git operations
+  - GitResult: Result alias for git operations
+
+source_files:
+  - src/git.rs

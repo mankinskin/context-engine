@@ -1,0 +1,64 @@
+name: mcp-docs-server
+version: "0.1.0"
+description: >
+  MCP server for managing structured documentation. Provides tools for both 
+  agent documentation (guides, plans, bug-reports, etc. in agents/ directories) 
+  and crate API documentation (in crates/*/agents/docs/).
+
+modules:
+  - name: main
+    path: main
+    description: Server entry point with MCP tool handlers
+  - name: tools
+    path: tools
+    description: Core documentation management logic (DocsManager, CrateDocsManager)
+  - name: schema
+    path: schema
+    description: Data structures and types for documentation metadata
+  - name: parser
+    path: parser
+    description: Document parsing utilities (frontmatter, YAML, markdown)
+  - name: templates
+    path: templates
+    description: Document template generation
+  - name: git
+    path: git
+    description: Git integration for staleness detection
+
+exported_items:
+  types:
+    - DocsManager: Manages agent documentation (agents/ directory)
+    - CrateDocsManager: Manages crate API documentation (crates/*/agents/docs/)
+    - DocMetadata: Metadata for agent documents
+    - CrateMetadata: Metadata for crate documentation
+    - ModuleMetadata: Metadata for module documentation
+    - ValidationReport: Report from documentation validation
+    - StaleDocsReport: Report from staleness detection
+    - SyncAnalysisResult: Result from source code analysis
+    - ToolError: Error type for tool operations
+  traits: []
+  macros: []
+
+dependencies:
+  - rmcp: MCP protocol implementation
+  - serde: Serialization/deserialization
+  - serde_yaml: YAML parsing
+  - chrono: Date/time handling
+  - regex: Pattern matching for source analysis
+  - walkdir: Directory traversal
+  - thiserror: Error types
+
+features:
+  - Agent documentation management (create, list, search, validate)
+  - Crate API documentation management
+  - Git-based staleness detection
+  - Source code analysis for sync suggestions
+  - Health dashboard and metrics
+
+source_files:
+  - src/main.rs
+  - src/tools.rs
+  - src/schema.rs
+  - src/parser.rs
+  - src/templates.rs
+  - src/git.rs
