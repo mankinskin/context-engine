@@ -1,6 +1,14 @@
 //! MCP tool definitions for documentation management.
 
 use crate::{
+    git::{
+        current_timestamp,
+        days_since,
+        get_files_info,
+        get_files_modified_since,
+        get_most_recent_modification,
+        is_git_repository,
+    },
     parser::{
         extract_metadata,
         parse_crate_index,
@@ -20,6 +28,14 @@ use crate::{
         CrateValidationIssue,
         CrateValidationReport,
         TypeEntry,
+        TypeWithModule,
+        StaleDocItem,
+        StaleDocsReport,
+        StaleSummary,
+        StalenessLevel,
+        SyncAnalysisResult,
+        SyncSuggestion,
+        SyncSummary,
     },
     templates::{
         generate_document,
@@ -1769,19 +1785,36 @@ impl CrateDocsManager {
         let readme_path = docs_path.join("README.md");
 
         let mut children = Vec::new();
+        let mut all_types = Vec::new();
+        
         for module_ref in &meta.modules {
             let module_path = docs_path.join(&module_ref.path);
-            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name) {
+            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name, &module_ref.path) {
+                // Collect types from this module with attribution
+                for entry in &node.key_types {
+                    all_types.push(TypeWithModule::from_entry(entry, &module_ref.path, "type"));
+                }
+                // Recursively collect from children
+                self.collect_types_from_tree(&node, &mut all_types);
                 children.push(node);
             }
         }
 
-        // Collect exported items as key_types
+        // Collect exported items as key_types and all_types
         let mut key_types = Vec::new();
         if let Some(exported) = &meta.exported_items {
-            key_types.extend(exported.types.clone());
-            key_types.extend(exported.traits.clone());
-            key_types.extend(exported.macros.clone());
+            for entry in &exported.types {
+                key_types.push(entry.clone());
+                all_types.push(TypeWithModule::from_entry(entry, "", "type"));
+            }
+            for entry in &exported.traits {
+                key_types.push(entry.clone());
+                all_types.push(TypeWithModule::from_entry(entry, "", "trait"));
+            }
+            for entry in &exported.macros {
+                key_types.push(entry.clone());
+                all_types.push(TypeWithModule::from_entry(entry, "", "macro"));
+            }
         }
 
         Ok(ModuleTreeNode {
@@ -1792,11 +1825,27 @@ impl CrateDocsManager {
             files: Vec::new(),
             key_types,
             has_readme: readme_path.exists(),
+            all_types,
         })
+    }
+    
+    /// Recursively collect types from module tree with attribution
+    fn collect_types_from_tree(&self, node: &ModuleTreeNode, all_types: &mut Vec<TypeWithModule>) {
+        for child in &node.children {
+            let child_path = if node.path.is_empty() {
+                child.name.clone()
+            } else {
+                format!("{}/{}", node.path, child.name)
+            };
+            for entry in &child.key_types {
+                all_types.push(TypeWithModule::from_entry(entry, &child_path, "type"));
+            }
+            self.collect_types_from_tree(child, all_types);
+        }
     }
 
     /// Build a module tree node recursively
-    fn build_module_tree(&self, module_path: &Path, name: &str) -> ToolResult<ModuleTreeNode> {
+    fn build_module_tree(&self, module_path: &Path, name: &str, rel_path: &str) -> ToolResult<ModuleTreeNode> {
         let index_path = module_path.join("index.yaml");
         
         if !index_path.exists() {
@@ -1812,19 +1861,21 @@ impl CrateDocsManager {
         let mut children = Vec::new();
         for submodule in &meta.submodules {
             let sub_path = module_path.join(&submodule.path);
-            if let Ok(node) = self.build_module_tree(&sub_path, &submodule.name) {
+            let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+            if let Ok(node) = self.build_module_tree(&sub_path, &submodule.name, &sub_rel_path) {
                 children.push(node);
             }
         }
 
         Ok(ModuleTreeNode {
             name: name.to_string(),
-            path: module_path.to_string_lossy().to_string(),
+            path: rel_path.to_string(),
             description: meta.description,
             children,
             files: meta.files,
             key_types: meta.key_types,
             has_readme: readme_path.exists(),
+            all_types: Vec::new(), // Only populated at root level
         })
     }
 
@@ -1940,6 +1991,8 @@ impl CrateDocsManager {
             submodules: Vec::new(),
             files: Vec::new(),
             key_types: Vec::new(),
+            source_files: Vec::new(),
+            last_synced: None,
         };
 
         let yaml = serde_yaml::to_string(&meta)
@@ -1948,6 +2001,110 @@ impl CrateDocsManager {
         fs::write(docs_path.join("index.yaml"), yaml)?;
 
         Ok(docs_path.to_string_lossy().to_string())
+    }
+
+    /// Update specific fields in a crate or module's index.yaml
+    ///
+    /// This allows programmatic updates to source_files and other metadata
+    /// without having to rewrite the entire file.
+    pub fn update_crate_index(
+        &self,
+        crate_name: &str,
+        module_path: Option<&str>,
+        source_files: Option<Vec<String>>,
+        add_source_files: Option<Vec<String>>,
+        remove_source_files: Option<Vec<String>>,
+    ) -> ToolResult<String> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs");
+        
+        let target_path = match module_path {
+            Some(mp) => docs_path.join(mp),
+            None => docs_path,
+        };
+        
+        let index_path = target_path.join("index.yaml");
+        
+        if !index_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Index not found: {}/{}",
+                crate_name,
+                module_path.unwrap_or("")
+            )));
+        }
+        
+        let content = fs::read_to_string(&index_path)?;
+        let mut changes = Vec::new();
+        
+        if module_path.is_some() {
+            let mut meta: ModuleMetadata = serde_yaml::from_str(&content)
+                .map_err(|e| ToolError::InvalidInput(format!("Invalid YAML: {}", e)))?;
+            
+            // Handle source_files updates
+            if let Some(files) = source_files {
+                meta.source_files = files;
+                changes.push("Set source_files".to_string());
+            }
+            if let Some(files) = add_source_files {
+                for f in files {
+                    if !meta.source_files.contains(&f) {
+                        meta.source_files.push(f.clone());
+                        changes.push(format!("Added source file: {}", f));
+                    }
+                }
+            }
+            if let Some(files) = remove_source_files {
+                for f in &files {
+                    if let Some(pos) = meta.source_files.iter().position(|x| x == f) {
+                        meta.source_files.remove(pos);
+                        changes.push(format!("Removed source file: {}", f));
+                    }
+                }
+            }
+            
+            let yaml = serde_yaml::to_string(&meta)
+                .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+            fs::write(&index_path, yaml)?;
+        } else {
+            let mut meta: CrateMetadata = serde_yaml::from_str(&content)
+                .map_err(|e| ToolError::InvalidInput(format!("Invalid YAML: {}", e)))?;
+            
+            // Handle source_files updates
+            if let Some(files) = source_files {
+                meta.source_files = files;
+                changes.push("Set source_files".to_string());
+            }
+            if let Some(files) = add_source_files {
+                for f in files {
+                    if !meta.source_files.contains(&f) {
+                        meta.source_files.push(f.clone());
+                        changes.push(format!("Added source file: {}", f));
+                    }
+                }
+            }
+            if let Some(files) = remove_source_files {
+                for f in &files {
+                    if let Some(pos) = meta.source_files.iter().position(|x| x == f) {
+                        meta.source_files.remove(pos);
+                        changes.push(format!("Removed source file: {}", f));
+                    }
+                }
+            }
+            
+            let yaml = serde_yaml::to_string(&meta)
+                .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+            fs::write(&index_path, yaml)?;
+        }
+        
+        if changes.is_empty() {
+            Ok("No changes made".to_string())
+        } else {
+            Ok(format!("Updated {}/{}:\n- {}", 
+                crate_name, 
+                module_path.unwrap_or(""),
+                changes.join("\n- ")
+            ))
+        }
     }
 
     /// Search crate documentation
@@ -2073,16 +2230,59 @@ impl CrateDocsManager {
     ) -> Vec<CrateSearchResult> {
         entries
             .iter()
-            .filter(|entry| entry.name().to_lowercase().contains(query))
-            .map(|entry| CrateSearchResult {
-                crate_name: crate_name.to_string(),
-                module_path: module_path.to_string(),
-                match_type: match_type.to_string(),
-                name: entry.name().to_string(),
-                description: entry.description().map(|s| s.to_string()),
-                context: None,
+            .filter_map(|entry| {
+                let name_lower = entry.name().to_lowercase();
+                let desc = entry.description().unwrap_or("");
+                let desc_lower = desc.to_lowercase();
+                
+                let name_matches = name_lower.contains(query);
+                let desc_matches = desc_lower.contains(query);
+                
+                if name_matches || desc_matches {
+                    // Build context showing what matched
+                    let context = if desc_matches {
+                        Some(self.extract_match_context(desc, query))
+                    } else if !desc.is_empty() {
+                        Some(truncate(desc, 100))
+                    } else {
+                        None
+                    };
+                    
+                    Some(CrateSearchResult {
+                        crate_name: crate_name.to_string(),
+                        module_path: module_path.to_string(),
+                        match_type: match_type.to_string(),
+                        name: entry.name().to_string(),
+                        description: entry.description().map(|s| s.to_string()),
+                        context,
+                    })
+                } else {
+                    None
+                }
             })
             .collect()
+    }
+    
+    /// Extract context around a match, showing surrounding text
+    fn extract_match_context(&self, text: &str, query: &str) -> String {
+        let text_lower = text.to_lowercase();
+        if let Some(pos) = text_lower.find(query) {
+            // Get 30 chars before and after the match
+            let start = pos.saturating_sub(30);
+            let end = (pos + query.len() + 30).min(text.len());
+            
+            let mut ctx = String::new();
+            if start > 0 {
+                ctx.push_str("...");
+            }
+            ctx.push_str(&text[start..end].trim());
+            if end < text.len() {
+                ctx.push_str("...");
+            }
+            ctx
+        } else {
+            truncate(text, 100)
+        }
     }
 
     fn search_module(
@@ -2175,9 +2375,25 @@ impl CrateDocsManager {
     }
 
     fn find_context_in_content(&self, content: &str, query: &str) -> Option<String> {
-        for line in content.lines() {
+        let lines: Vec<&str> = content.lines().collect();
+        for (i, line) in lines.iter().enumerate() {
             if line.to_lowercase().contains(query) {
-                return Some(truncate(line.trim(), 100));
+                // Include previous and next line for context
+                let mut context_parts = Vec::new();
+                if i > 0 {
+                    let prev = truncate(lines[i - 1].trim(), 50);
+                    if !prev.is_empty() {
+                        context_parts.push(prev);
+                    }
+                }
+                context_parts.push(truncate(line.trim(), 100));
+                if i + 1 < lines.len() {
+                    let next = truncate(lines[i + 1].trim(), 50);
+                    if !next.is_empty() {
+                        context_parts.push(next);
+                    }
+                }
+                return Some(context_parts.join(" | "));
             }
         }
         None
@@ -2297,6 +2513,566 @@ impl CrateDocsManager {
                 });
             }
         }
+    }
+
+    // =========================================================================
+    // Stale Detection
+    // =========================================================================
+
+    /// Check documentation staleness using git history
+    ///
+    /// Compares the `last_synced` timestamp in index.yaml files against
+    /// the git modification times of tracked `source_files`.
+    ///
+    /// # Arguments
+    /// * `crate_filter` - Optional crate name to check only one crate
+    /// * `stale_threshold_days` - Number of days after which docs are considered stale (default: 7)
+    /// * `very_stale_threshold_days` - Number of days after which docs are considered very stale (default: 30)
+    pub fn check_stale_docs(
+        &self,
+        crate_filter: Option<&str>,
+        stale_threshold_days: i64,
+        very_stale_threshold_days: i64,
+    ) -> ToolResult<StaleDocsReport> {
+        let mut report = StaleDocsReport::default();
+        let crates = self.discover_crates()?;
+
+        // Check if we're in a git repo
+        if !is_git_repository(&self.crates_dir) {
+            return Err(ToolError::InvalidInput(
+                "Crates directory is not in a git repository".to_string(),
+            ));
+        }
+
+        for crate_summary in crates {
+            if let Some(filter) = crate_filter {
+                if crate_summary.name != filter {
+                    continue;
+                }
+            }
+
+            report.crates_checked += 1;
+
+            let crate_path = self.crates_dir.join(&crate_summary.name);
+            let docs_path = crate_path.join("agents").join("docs");
+            let index_path = docs_path.join("index.yaml");
+
+            // Check crate-level staleness
+            if let Ok(meta) = parse_crate_index(&index_path) {
+                let item = self.check_staleness_for_item(
+                    &crate_path,
+                    &crate_summary.name,
+                    None,
+                    &meta.source_files,
+                    meta.last_synced.as_deref(),
+                    stale_threshold_days,
+                    very_stale_threshold_days,
+                );
+
+                self.categorize_stale_item(&mut report, item);
+
+                // Check module-level staleness
+                for module_ref in &meta.modules {
+                    self.check_module_staleness(
+                        &crate_path,
+                        &docs_path.join(&module_ref.path),
+                        &crate_summary.name,
+                        &module_ref.path,
+                        stale_threshold_days,
+                        very_stale_threshold_days,
+                        &mut report,
+                    );
+                }
+            }
+        }
+
+        // Calculate summary
+        report.summary = StaleSummary {
+            total_items: report.fresh_items.len()
+                + report.stale_items.len()
+                + report.unknown_items.len(),
+            fresh_count: report.fresh_items.len(),
+            stale_count: report.stale_items.iter().filter(|i| i.staleness == StalenessLevel::Stale).count(),
+            very_stale_count: report.stale_items.iter().filter(|i| i.staleness == StalenessLevel::VeryStale).count(),
+            unknown_count: report.unknown_items.len(),
+        };
+
+        Ok(report)
+    }
+
+    fn check_module_staleness(
+        &self,
+        crate_path: &Path,
+        module_docs_path: &Path,
+        crate_name: &str,
+        module_rel_path: &str,
+        stale_threshold_days: i64,
+        very_stale_threshold_days: i64,
+        report: &mut StaleDocsReport,
+    ) {
+        report.modules_checked += 1;
+
+        let index_path = module_docs_path.join("index.yaml");
+
+        if let Ok(meta) = parse_module_index(&index_path) {
+            let item = self.check_staleness_for_item(
+                crate_path,
+                crate_name,
+                Some(module_rel_path),
+                &meta.source_files,
+                meta.last_synced.as_deref(),
+                stale_threshold_days,
+                very_stale_threshold_days,
+            );
+
+            self.categorize_stale_item(report, item);
+
+            // Recursively check submodules
+            for submodule in &meta.submodules {
+                let sub_path = module_docs_path.join(&submodule.path);
+                let sub_rel_path = format!("{}/{}", module_rel_path, submodule.path);
+                self.check_module_staleness(
+                    crate_path,
+                    &sub_path,
+                    crate_name,
+                    &sub_rel_path,
+                    stale_threshold_days,
+                    very_stale_threshold_days,
+                    report,
+                );
+            }
+        }
+    }
+
+    fn check_staleness_for_item(
+        &self,
+        crate_path: &Path,
+        crate_name: &str,
+        module_path: Option<&str>,
+        source_files: &[String],
+        last_synced: Option<&str>,
+        stale_threshold_days: i64,
+        very_stale_threshold_days: i64,
+    ) -> StaleDocItem {
+        // If no source files are configured, status is unknown
+        if source_files.is_empty() {
+            return StaleDocItem {
+                crate_name: crate_name.to_string(),
+                module_path: module_path.map(|s| s.to_string()),
+                staleness: StalenessLevel::Unknown,
+                doc_last_synced: last_synced.map(|s| s.to_string()),
+                source_last_modified: None,
+                days_since_sync: last_synced.and_then(days_since),
+                days_since_source_change: None,
+                source_files: Vec::new(),
+                modified_files: Vec::new(),
+            };
+        }
+
+        // Get git info for source files
+        let file_infos = get_files_info(crate_path, source_files);
+        let source_last_modified = get_most_recent_modification(&file_infos);
+
+        // Determine modified files since last sync
+        let modified_files = match last_synced {
+            Some(synced) => get_files_modified_since(&file_infos, synced),
+            None => source_files.to_vec(), // All files are "modified" if never synced
+        };
+
+        // Calculate days
+        let days_since_sync = last_synced.and_then(days_since);
+        let days_since_source_change = source_last_modified.as_ref().and_then(|ts| days_since(ts));
+
+        // Determine staleness level
+        let staleness = if modified_files.is_empty() {
+            StalenessLevel::Fresh
+        } else {
+            match days_since_sync {
+                Some(days) if days >= very_stale_threshold_days => StalenessLevel::VeryStale,
+                Some(days) if days >= stale_threshold_days => StalenessLevel::Stale,
+                Some(_) => {
+                    // Recent sync but still have modified files
+                    if modified_files.is_empty() {
+                        StalenessLevel::Fresh
+                    } else {
+                        StalenessLevel::Stale
+                    }
+                }
+                None => {
+                    // Never synced
+                    StalenessLevel::VeryStale
+                }
+            }
+        };
+
+        StaleDocItem {
+            crate_name: crate_name.to_string(),
+            module_path: module_path.map(|s| s.to_string()),
+            staleness,
+            doc_last_synced: last_synced.map(|s| s.to_string()),
+            source_last_modified,
+            days_since_sync,
+            days_since_source_change,
+            source_files: file_infos,
+            modified_files,
+        }
+    }
+
+    fn categorize_stale_item(&self, report: &mut StaleDocsReport, item: StaleDocItem) {
+        match item.staleness {
+            StalenessLevel::Fresh => report.fresh_items.push(item),
+            StalenessLevel::Stale | StalenessLevel::VeryStale => report.stale_items.push(item),
+            StalenessLevel::Unknown => report.unknown_items.push(item),
+        }
+    }
+
+    // =========================================================================
+    // Sync Documentation
+    // =========================================================================
+
+    /// Analyze source files and suggest documentation updates
+    ///
+    /// Parses Rust source files to extract public items and compares
+    /// them against the current documentation to suggest additions,
+    /// updates, or removals.
+    ///
+    /// If `summary_only` is true, returns only counts and suggestions
+    /// without listing all found items.
+    pub fn sync_crate_docs(
+        &self,
+        crate_name: &str,
+        module_path: Option<&str>,
+        update_timestamp: bool,
+        summary_only: bool,
+    ) -> ToolResult<SyncAnalysisResult> {
+        let crate_path = self.crates_dir.join(crate_name);
+        let docs_path = crate_path.join("agents").join("docs");
+
+        let target_docs_path = match module_path {
+            Some(mp) => docs_path.join(mp),
+            None => docs_path.clone(),
+        };
+
+        let index_path = target_docs_path.join("index.yaml");
+
+        if !index_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Documentation not found: {}/{}",
+                crate_name,
+                module_path.unwrap_or("")
+            )));
+        }
+
+        let mut result = SyncAnalysisResult {
+            crate_name: crate_name.to_string(),
+            module_path: module_path.map(|s| s.to_string()),
+            suggestions: Vec::new(),
+            public_types: Vec::new(),
+            public_traits: Vec::new(),
+            public_macros: Vec::new(),
+            files_analyzed: Vec::new(),
+            errors: Vec::new(),
+            summary: None,
+        };
+
+        // Get source files to analyze
+        let source_files: Vec<String> = if module_path.is_some() {
+            if let Ok(meta) = parse_module_index(&index_path) {
+                meta.source_files
+            } else {
+                Vec::new()
+            }
+        } else {
+            if let Ok(meta) = parse_crate_index(&index_path) {
+                meta.source_files
+            } else {
+                Vec::new()
+            }
+        };
+
+        if source_files.is_empty() {
+            result.errors.push("No source_files configured in index.yaml".to_string());
+            return Ok(result);
+        }
+
+        // Analyze each source file
+        for source_file in &source_files {
+            let file_path = crate_path.join(source_file);
+            if !file_path.exists() {
+                result.errors.push(format!("Source file not found: {}", source_file));
+                continue;
+            }
+
+            result.files_analyzed.push(source_file.clone());
+
+            match fs::read_to_string(&file_path) {
+                Ok(content) => {
+                    self.analyze_rust_source(&content, source_file, &mut result);
+                }
+                Err(e) => {
+                    result.errors.push(format!("Failed to read {}: {}", source_file, e));
+                }
+            }
+        }
+
+        // Compare with existing documentation and generate suggestions
+        if module_path.is_some() {
+            if let Ok(meta) = parse_module_index(&index_path) {
+                self.compare_module_docs(&meta, &mut result);
+            }
+        } else {
+            if let Ok(meta) = parse_crate_index(&index_path) {
+                self.compare_crate_docs(&meta, &mut result);
+            }
+        }
+
+        // Update last_synced timestamp if requested
+        if update_timestamp {
+            self.update_last_synced(&index_path, module_path.is_some())?;
+        }
+
+        // Calculate summary
+        let to_add = result.suggestions.iter().filter(|s| s.change_type == "add").count();
+        let to_remove = result.suggestions.iter().filter(|s| s.change_type == "remove").count();
+        result.summary = Some(SyncSummary {
+            types_found: result.public_types.len(),
+            traits_found: result.public_traits.len(),
+            macros_found: result.public_macros.len(),
+            to_add,
+            to_remove,
+        });
+
+        // In summary mode, clear verbose data
+        if summary_only {
+            result.public_types.clear();
+            result.public_traits.clear();
+            result.public_macros.clear();
+        }
+
+        Ok(result)
+    }
+
+    /// Simple Rust source analysis using regex patterns
+    /// 
+    /// Note: This is a simplified parser that looks for common patterns.
+    /// For full accuracy, a proper Rust parser like syn would be needed.
+    fn analyze_rust_source(&self, content: &str, file_path: &str, result: &mut SyncAnalysisResult) {
+        use regex::Regex;
+
+        // Match public structs: pub struct Name
+        let struct_re = Regex::new(r"(?m)^pub\s+struct\s+(\w+)").unwrap();
+        for cap in struct_re.captures_iter(content) {
+            let name = cap[1].to_string();
+            if !result.public_types.contains(&name) {
+                result.public_types.push(name);
+            }
+        }
+
+        // Match public enums: pub enum Name
+        let enum_re = Regex::new(r"(?m)^pub\s+enum\s+(\w+)").unwrap();
+        for cap in enum_re.captures_iter(content) {
+            let name = cap[1].to_string();
+            if !result.public_types.contains(&name) {
+                result.public_types.push(name);
+            }
+        }
+
+        // Match public traits: pub trait Name
+        let trait_re = Regex::new(r"(?m)^pub\s+trait\s+(\w+)").unwrap();
+        for cap in trait_re.captures_iter(content) {
+            let name = cap[1].to_string();
+            if !result.public_traits.contains(&name) {
+                result.public_traits.push(name);
+            }
+        }
+
+        // Match macros: macro_rules! name or pub macro name (though latter is rare)
+        let macro_re = Regex::new(r"(?m)^(?:#\[macro_export\]\s*\n)?macro_rules!\s+(\w+)").unwrap();
+        for cap in macro_re.captures_iter(content) {
+            let name = cap[1].to_string();
+            if !result.public_macros.contains(&name) {
+                result.public_macros.push(name);
+            }
+        }
+
+        // Match pub(crate) type aliases: pub type Name
+        let type_alias_re = Regex::new(r"(?m)^pub\s+type\s+(\w+)").unwrap();
+        for cap in type_alias_re.captures_iter(content) {
+            let name = cap[1].to_string();
+            if !result.public_types.contains(&name) {
+                result.public_types.push(name);
+            }
+        }
+
+        // Store file info for suggestions
+        let _ = file_path; // Used in line number detection if we add that later
+    }
+
+    fn compare_crate_docs(&self, meta: &CrateMetadata, result: &mut SyncAnalysisResult) {
+        // Get documented types
+        let mut documented_types: Vec<String> = Vec::new();
+        let mut documented_traits: Vec<String> = Vec::new();
+        let mut documented_macros: Vec<String> = Vec::new();
+
+        if let Some(exported) = &meta.exported_items {
+            documented_types.extend(exported.types.iter().map(|t| t.name.clone()));
+            documented_traits.extend(exported.traits.iter().map(|t| t.name.clone()));
+            documented_macros.extend(exported.macros.iter().map(|t| t.name.clone()));
+        }
+
+        // Find types in source but not documented
+        for type_name in &result.public_types {
+            if !documented_types.contains(type_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: "type".to_string(),
+                    item_name: type_name.clone(),
+                    description: None,
+                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    line_number: None,
+                });
+            }
+        }
+
+        for trait_name in &result.public_traits {
+            if !documented_traits.contains(trait_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: "trait".to_string(),
+                    item_name: trait_name.clone(),
+                    description: None,
+                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    line_number: None,
+                });
+            }
+        }
+
+        for macro_name in &result.public_macros {
+            if !documented_macros.contains(macro_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: "macro".to_string(),
+                    item_name: macro_name.clone(),
+                    description: None,
+                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    line_number: None,
+                });
+            }
+        }
+
+        // Find documented items that don't exist in source (potential removals)
+        for type_name in &documented_types {
+            if !result.public_types.contains(type_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "remove".to_string(),
+                    item_kind: "type".to_string(),
+                    item_name: type_name.clone(),
+                    description: Some("Not found in analyzed source files".to_string()),
+                    source_file: String::new(),
+                    line_number: None,
+                });
+            }
+        }
+
+        for trait_name in &documented_traits {
+            if !result.public_traits.contains(trait_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "remove".to_string(),
+                    item_kind: "trait".to_string(),
+                    item_name: trait_name.clone(),
+                    description: Some("Not found in analyzed source files".to_string()),
+                    source_file: String::new(),
+                    line_number: None,
+                });
+            }
+        }
+
+        for macro_name in &documented_macros {
+            if !result.public_macros.contains(macro_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "remove".to_string(),
+                    item_kind: "macro".to_string(),
+                    item_name: macro_name.clone(),
+                    description: Some("Not found in analyzed source files".to_string()),
+                    source_file: String::new(),
+                    line_number: None,
+                });
+            }
+        }
+    }
+
+    fn compare_module_docs(&self, meta: &ModuleMetadata, result: &mut SyncAnalysisResult) {
+        // Get documented key_types
+        let documented_types: Vec<String> = meta.key_types.iter().map(|t| t.name.clone()).collect();
+
+        // Combine all public items from source
+        let mut all_source_items: Vec<String> = Vec::new();
+        all_source_items.extend(result.public_types.clone());
+        all_source_items.extend(result.public_traits.clone());
+        all_source_items.extend(result.public_macros.clone());
+
+        // Find types in source but not documented
+        for type_name in &result.public_types {
+            if !documented_types.contains(type_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: "type".to_string(),
+                    item_name: type_name.clone(),
+                    description: None,
+                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    line_number: None,
+                });
+            }
+        }
+
+        for trait_name in &result.public_traits {
+            if !documented_types.contains(trait_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: "trait".to_string(),
+                    item_name: trait_name.clone(),
+                    description: None,
+                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    line_number: None,
+                });
+            }
+        }
+
+        // Find documented items that don't exist in source
+        for type_name in &documented_types {
+            if !all_source_items.contains(type_name) {
+                result.suggestions.push(SyncSuggestion {
+                    change_type: "remove".to_string(),
+                    item_kind: "type".to_string(),
+                    item_name: type_name.clone(),
+                    description: Some("Not found in analyzed source files".to_string()),
+                    source_file: String::new(),
+                    line_number: None,
+                });
+            }
+        }
+    }
+
+    fn update_last_synced(&self, index_path: &Path, is_module: bool) -> ToolResult<()> {
+        let content = fs::read_to_string(index_path)?;
+        let timestamp = current_timestamp();
+
+        let new_content = if is_module {
+            let mut meta: ModuleMetadata = serde_yaml::from_str(&content)
+                .map_err(|e| ToolError::InvalidInput(format!("Failed to parse YAML: {}", e)))?;
+            meta.last_synced = Some(timestamp);
+            serde_yaml::to_string(&meta)
+                .map_err(|e| ToolError::InvalidInput(format!("Failed to serialize YAML: {}", e)))?
+        } else {
+            let mut meta: CrateMetadata = serde_yaml::from_str(&content)
+                .map_err(|e| ToolError::InvalidInput(format!("Failed to parse YAML: {}", e)))?;
+            meta.last_synced = Some(timestamp);
+            serde_yaml::to_string(&meta)
+                .map_err(|e| ToolError::InvalidInput(format!("Failed to serialize YAML: {}", e)))?
+        };
+
+        fs::write(index_path, new_content)?;
+        Ok(())
     }
 }
 

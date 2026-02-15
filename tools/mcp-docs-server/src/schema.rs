@@ -138,6 +138,26 @@ pub struct FileEntry {
     pub description: String,
 }
 
+/// A type entry with module attribution (for browse_crate output)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TypeWithModule {
+    pub name: String,
+    pub description: Option<String>,
+    pub module_path: String,
+    pub item_type: String, // "type", "trait", "macro"
+}
+
+impl TypeWithModule {
+    pub fn from_entry(entry: &TypeEntry, module_path: &str, item_type: &str) -> Self {
+        Self {
+            name: entry.name.clone(),
+            description: entry.description.clone(),
+            module_path: module_path.to_string(),
+            item_type: item_type.to_string(),
+        }
+    }
+}
+
 /// A type entry (for key_types)
 /// 
 /// Supports YAML formats:
@@ -231,6 +251,13 @@ pub struct CrateMetadata {
     pub dependencies: Vec<TypeEntry>,
     #[serde(default)]
     pub features: Vec<TypeEntry>,
+    /// Source files that this documentation tracks (for stale detection)
+    /// Paths are relative to crate root (e.g., "src/lib.rs")
+    #[serde(default)]
+    pub source_files: Vec<String>,
+    /// ISO 8601 timestamp of last documentation sync
+    #[serde(default)]
+    pub last_synced: Option<String>,
 }
 
 /// Module-level metadata (from index.yaml in module directories)
@@ -244,6 +271,13 @@ pub struct ModuleMetadata {
     pub files: Vec<FileEntry>,
     #[serde(default)]
     pub key_types: Vec<TypeEntry>,
+    /// Source files that this module documentation tracks (for stale detection)
+    /// Paths are relative to crate root (e.g., "src/graph/mod.rs")
+    #[serde(default)]
+    pub source_files: Vec<String>,
+    /// ISO 8601 timestamp of last documentation sync
+    #[serde(default)]
+    pub last_synced: Option<String>,
 }
 
 /// Summary info for a crate (used in list_crates output)
@@ -270,6 +304,9 @@ pub struct ModuleTreeNode {
     #[serde(default)]
     pub key_types: Vec<TypeEntry>,
     pub has_readme: bool,
+    /// All types/traits/macros with module attribution (only populated at root level)
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub all_types: Vec<TypeWithModule>,
 }
 
 /// Search result for crate documentation
@@ -327,6 +364,312 @@ impl CrateValidationReport {
                     severity_icon, issue.crate_name, module, issue.issue
                 ));
             }
+        }
+
+        out
+    }
+}
+
+// =============================================================================
+// Stale Detection Schema
+// =============================================================================
+
+/// Status of staleness for a documentation item
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum StalenessLevel {
+    /// Documentation is up-to-date with source files
+    Fresh,
+    /// Source files modified recently (within configurable threshold)
+    Stale,
+    /// Source files significantly modified since last sync
+    VeryStale,
+    /// No source files configured - cannot determine staleness
+    Unknown,
+}
+
+impl StalenessLevel {
+    pub fn emoji(&self) -> &'static str {
+        match self {
+            StalenessLevel::Fresh => "✅",
+            StalenessLevel::Stale => "⚠️",
+            StalenessLevel::VeryStale => "🔴",
+            StalenessLevel::Unknown => "❓",
+        }
+    }
+}
+
+/// Information about a file's modification status
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileModificationInfo {
+    /// Path to the file (relative to crate root)
+    pub path: String,
+    /// Last modification timestamp from git (ISO 8601)
+    pub last_modified: Option<String>,
+    /// Short commit hash of last modification
+    pub last_commit: Option<String>,
+    /// Commit message summary
+    pub commit_message: Option<String>,
+    /// Whether the file exists
+    pub exists: bool,
+}
+
+/// Stale status for a single documentation item (crate or module)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StaleDocItem {
+    /// Crate name
+    pub crate_name: String,
+    /// Module path (empty for crate-level docs)
+    pub module_path: Option<String>,
+    /// Overall staleness level
+    pub staleness: StalenessLevel,
+    /// When the documentation was last synced (from index.yaml)
+    pub doc_last_synced: Option<String>,
+    /// Most recent modification time among tracked source files
+    pub source_last_modified: Option<String>,
+    /// Days since documentation was synced
+    pub days_since_sync: Option<i64>,
+    /// Days since source was last modified
+    pub days_since_source_change: Option<i64>,
+    /// Information about each tracked source file
+    pub source_files: Vec<FileModificationInfo>,
+    /// Files modified after documentation was last synced
+    pub modified_files: Vec<String>,
+}
+
+/// Report of stale documentation across crates
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct StaleDocsReport {
+    /// Total crates checked
+    pub crates_checked: usize,
+    /// Total modules checked
+    pub modules_checked: usize,
+    /// Items that are stale or very stale
+    pub stale_items: Vec<StaleDocItem>,
+    /// Items that are fresh
+    pub fresh_items: Vec<StaleDocItem>,
+    /// Items with unknown status (no source files configured)
+    pub unknown_items: Vec<StaleDocItem>,
+    /// Summary statistics
+    pub summary: StaleSummary,
+}
+
+/// Summary statistics for stale docs report
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct StaleSummary {
+    pub total_items: usize,
+    pub fresh_count: usize,
+    pub stale_count: usize,
+    pub very_stale_count: usize,
+    pub unknown_count: usize,
+}
+
+impl StaleDocsReport {
+    pub fn to_markdown(&self) -> String {
+        let mut out = String::new();
+        out.push_str("# Documentation Staleness Report\n\n");
+        out.push_str(&format!(
+            "**Crates checked:** {}\n\
+             **Modules checked:** {}\n\n",
+            self.crates_checked,
+            self.modules_checked
+        ));
+
+        // Summary
+        out.push_str("## Summary\n\n");
+        out.push_str(&format!(
+            "| Status | Count |\n\
+             |--------|-------|\n\
+             | ✅ Fresh | {} |\n\
+             | ⚠️ Stale | {} |\n\
+             | 🔴 Very Stale | {} |\n\
+             | ❓ Unknown | {} |\n\
+             | **Total** | {} |\n\n",
+            self.summary.fresh_count,
+            self.summary.stale_count,
+            self.summary.very_stale_count,
+            self.summary.unknown_count,
+            self.summary.total_items
+        ));
+
+        // Stale items (prioritize these)
+        if !self.stale_items.is_empty() {
+            out.push_str("## Stale Documentation\n\n");
+            out.push_str("| Status | Location | Days Since Sync | Modified Files |\n");
+            out.push_str("|--------|----------|-----------------|----------------|\n");
+            for item in &self.stale_items {
+                let location = match &item.module_path {
+                    Some(mp) => format!("{}::{}", item.crate_name, mp.replace('/', "::")),
+                    None => item.crate_name.clone(),
+                };
+                let days = item.days_since_sync.map(|d| d.to_string()).unwrap_or("-".to_string());
+                let files = if item.modified_files.is_empty() {
+                    "-".to_string()
+                } else {
+                    item.modified_files.join(", ")
+                };
+                out.push_str(&format!(
+                    "| {} | {} | {} | {} |\n",
+                    item.staleness.emoji(),
+                    location,
+                    days,
+                    files
+                ));
+            }
+            out.push('\n');
+        }
+
+        // Unknown items
+        if !self.unknown_items.is_empty() {
+            out.push_str("## No Source Files Configured\n\n");
+            out.push_str("These documentation items don't have `source_files` configured and cannot be checked for staleness:\n\n");
+            for item in &self.unknown_items {
+                let location = match &item.module_path {
+                    Some(mp) => format!("{}::{}", item.crate_name, mp.replace('/', "::")),
+                    None => item.crate_name.clone(),
+                };
+                out.push_str(&format!("- {}\n", location));
+            }
+            out.push('\n');
+        }
+
+        out
+    }
+}
+
+// =============================================================================
+// Sync Documentation Schema
+// =============================================================================
+
+/// A suggested change for documentation sync
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SyncSuggestion {
+    /// Type of change: "add", "update", "remove"
+    pub change_type: String,
+    /// What kind of item: "type", "trait", "macro", "module", "function"
+    pub item_kind: String,
+    /// Name of the item
+    pub item_name: String,
+    /// Description extracted from source (if available)
+    pub description: Option<String>,
+    /// Source file where item was found
+    pub source_file: String,
+    /// Line number in source file
+    pub line_number: Option<usize>,
+}
+
+/// Result of analyzing source files for sync
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SyncAnalysisResult {
+    /// Crate name
+    pub crate_name: String,
+    /// Module path (empty for crate-level)
+    pub module_path: Option<String>,
+    /// Suggested changes
+    pub suggestions: Vec<SyncSuggestion>,
+    /// Public types found in source (omitted in summary mode)
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub public_types: Vec<String>,
+    /// Public traits found in source (omitted in summary mode)
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub public_traits: Vec<String>,
+    /// Public macros found in source (omitted in summary mode)
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub public_macros: Vec<String>,
+    /// Source files analyzed
+    pub files_analyzed: Vec<String>,
+    /// Errors encountered during analysis
+    pub errors: Vec<String>,
+    /// Summary counts (for quick overview)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub summary: Option<SyncSummary>,
+}
+
+/// Summary counts for sync analysis
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SyncSummary {
+    pub types_found: usize,
+    pub traits_found: usize,
+    pub macros_found: usize,
+    pub to_add: usize,
+    pub to_remove: usize,
+}
+
+impl SyncAnalysisResult {
+    pub fn to_markdown(&self) -> String {
+        let mut out = String::new();
+        let location = match &self.module_path {
+            Some(mp) => format!("{}::{}", self.crate_name, mp.replace('/', "::")),
+            None => self.crate_name.clone(),
+        };
+        out.push_str(&format!("# Sync Analysis: {}\n\n", location));
+        
+        out.push_str(&format!("**Files analyzed:** {}\n\n", self.files_analyzed.len()));
+
+        if !self.errors.is_empty() {
+            out.push_str("## Errors\n\n");
+            for err in &self.errors {
+                out.push_str(&format!("- {}\n", err));
+            }
+            out.push('\n');
+        }
+
+        // Show summary if available
+        if let Some(summary) = &self.summary {
+            out.push_str("## Summary\n\n");
+            out.push_str(&format!(
+                "- **Types found:** {}\n- **Traits found:** {}\n- **Macros found:** {}\n- **To add:** {}\n- **To remove:** {}\n\n",
+                summary.types_found, summary.traits_found, summary.macros_found,
+                summary.to_add, summary.to_remove
+            ));
+        }
+
+        // Found items (only if not empty - omitted in summary mode)
+        if !self.public_types.is_empty() || !self.public_traits.is_empty() || !self.public_macros.is_empty() {
+            out.push_str("## Public Items Found\n\n");
+            if !self.public_types.is_empty() {
+                out.push_str(&format!("**Types ({}):** {}\n\n", 
+                    self.public_types.len(), 
+                    self.public_types.join(", ")
+                ));
+            }
+            if !self.public_traits.is_empty() {
+                out.push_str(&format!("**Traits ({}):** {}\n\n", 
+                    self.public_traits.len(), 
+                    self.public_traits.join(", ")
+                ));
+            }
+            if !self.public_macros.is_empty() {
+                out.push_str(&format!("**Macros ({}):** {}\n\n", 
+                    self.public_macros.len(), 
+                    self.public_macros.join(", ")
+                ));
+            }
+        }
+
+        // Suggestions
+        if !self.suggestions.is_empty() {
+            out.push_str("## Suggested Changes\n\n");
+            out.push_str("| Action | Kind | Name | Source |\n");
+            out.push_str("|--------|------|------|--------|\n");
+            for sug in &self.suggestions {
+                let action_icon = match sug.change_type.as_str() {
+                    "add" => "➕",
+                    "update" => "🔄",
+                    "remove" => "➖",
+                    _ => "❓",
+                };
+                let source = match sug.line_number {
+                    Some(ln) => format!("{}:{}", sug.source_file, ln),
+                    None => sug.source_file.clone(),
+                };
+                out.push_str(&format!(
+                    "| {} {} | {} | `{}` | {} |\n",
+                    action_icon, sug.change_type, sug.item_kind, sug.item_name, source
+                ));
+            }
+        } else {
+            out.push_str("✅ No suggested changes - documentation appears up to date.\n");
         }
 
         out

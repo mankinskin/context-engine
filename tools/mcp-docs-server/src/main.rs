@@ -3,6 +3,7 @@
 //! This server provides tools for creating, updating, and managing
 //! documentation files in the agents/ directory structure.
 
+mod git;
 mod parser;
 mod schema;
 mod templates;
@@ -138,6 +139,63 @@ pub struct ValidateCrateDocsInput {
     /// Optional: validate only specific crate
     #[serde(default)]
     crate_filter: Option<String>,
+}
+
+/// Check documentation staleness using git history
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CheckStaleDocs {
+    /// Optional: check only specific crate
+    #[serde(default)]
+    crate_filter: Option<String>,
+    /// Days after which docs are considered stale (default: 7)
+    #[serde(default = "default_stale_threshold")]
+    stale_threshold_days: i64,
+    /// Days after which docs are considered very stale (default: 30)
+    #[serde(default = "default_very_stale_threshold")]
+    very_stale_threshold_days: i64,
+}
+
+fn default_stale_threshold() -> i64 {
+    7
+}
+
+fn default_very_stale_threshold() -> i64 {
+    30
+}
+
+/// Analyze source files and suggest documentation updates
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct SyncCrateDocs {
+    /// Name of the crate to analyze
+    crate_name: String,
+    /// Optional: specific module path to analyze
+    #[serde(default)]
+    module_path: Option<String>,
+    /// Update the last_synced timestamp in index.yaml (default: false)
+    #[serde(default)]
+    update_timestamp: bool,
+    /// Return only summary counts instead of full item lists (default: false)
+    #[serde(default)]
+    summary_only: bool,
+}
+
+/// Update fields in a crate or module's index.yaml
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct UpdateCrateIndex {
+    /// Name of the crate
+    crate_name: String,
+    /// Optional: specific module path to update
+    #[serde(default)]
+    module_path: Option<String>,
+    /// Set source_files to this list (replaces existing)
+    #[serde(default)]
+    source_files: Option<Vec<String>>,
+    /// Add these files to existing source_files
+    #[serde(default)]
+    add_source_files: Option<Vec<String>>,
+    /// Remove these files from source_files
+    #[serde(default)]
+    remove_source_files: Option<Vec<String>>,
 }
 
 // --- Agent Documentation Tools ---
@@ -834,6 +892,76 @@ impl DocsServer {
             ))])),
         }
     }
+
+    /// Check documentation staleness
+    #[tool(
+        description = "Check if crate documentation is stale by comparing git modification times of source files against the last_synced timestamp in index.yaml. Returns a report showing which docs need updating."
+    )]
+    async fn check_stale_docs(
+        &self,
+        Parameters(input): Parameters<CheckStaleDocs>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.check_stale_docs(
+            input.crate_filter.as_deref(),
+            input.stale_threshold_days,
+            input.very_stale_threshold_days,
+        ) {
+            Ok(report) => Ok(CallToolResult::success(vec![Content::text(
+                report.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Sync crate documentation with source
+    #[tool(
+        description = "Analyze source files and suggest documentation updates. Parses Rust source files to find public types, traits, and macros, then compares with current documentation to suggest additions and removals. Optionally updates the last_synced timestamp. Use summary_only=true for a quick overview."
+    )]
+    async fn sync_crate_docs(
+        &self,
+        Parameters(input): Parameters<SyncCrateDocs>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.sync_crate_docs(
+            &input.crate_name,
+            input.module_path.as_deref(),
+            input.update_timestamp,
+            input.summary_only,
+        ) {
+            Ok(result) => Ok(CallToolResult::success(vec![Content::text(
+                result.to_markdown(),
+            )])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
+
+    /// Update a crate's index.yaml configuration
+    #[tool(
+        description = "Update fields in a crate or module's index.yaml, such as source_files for stale detection. Can set, add, or remove source file entries."
+    )]
+    async fn update_crate_index(
+        &self,
+        Parameters(input): Parameters<UpdateCrateIndex>,
+    ) -> Result<CallToolResult, McpError> {
+        match self.crate_manager.update_crate_index(
+            &input.crate_name,
+            input.module_path.as_deref(),
+            input.source_files,
+            input.add_source_files,
+            input.remove_source_files,
+        ) {
+            Ok(result) => Ok(CallToolResult::success(vec![Content::text(result)])),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))])),
+        }
+    }
 }
 
 #[tool_handler]
@@ -848,7 +976,8 @@ impl ServerHandler for DocsServer {
                  - add_frontmatter, health_dashboard\n\n\
                  Crate API Docs (crates/*/agents/docs/):\n\
                  - list_crates, browse_crate, read_crate_doc, update_crate_doc\n\
-                 - create_module_doc, search_crate_docs, validate_crate_docs"
+                 - create_module_doc, search_crate_docs, validate_crate_docs\n\
+                 - check_stale_docs, sync_crate_docs, update_crate_index"
                     .into(),
             ),
             capabilities: ServerCapabilities::builder().enable_tools().build(),

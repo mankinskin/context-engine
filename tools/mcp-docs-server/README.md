@@ -12,6 +12,8 @@ A Model Context Protocol (MCP) server for managing structured agent documentatio
 - **Validate** naming conventions and structure
 - **Browse crate documentation** with hierarchical module navigation
 - **Read/update crate API docs** in `crates/<crate>/agents/docs/`
+- **Detect stale documentation** using git history to find docs that need updating
+- **Sync documentation** by analyzing source files and suggesting additions/removals
 
 ## Document Types
 
@@ -162,6 +164,56 @@ Check crate documentation for completeness.
 
 **Parameters:**
 - `crate_name`: (optional) Validate specific crate
+
+### `check_stale_docs`
+Check if documentation is stale by comparing git modification times of source files against the `last_synced` timestamp in index.yaml.
+
+**Parameters:**
+- `crate_filter`: (optional) Check only specific crate
+- `stale_threshold_days`: Days after which docs are "stale" (default: 7)
+- `very_stale_threshold_days`: Days after which docs are "very stale" (default: 30)
+
+**Returns:** Report showing:
+- Fresh, stale, and very stale documentation
+- Which source files were modified since last sync
+- Days since documentation was last synced
+
+### `sync_crate_docs`
+Analyze source files and suggest documentation updates. Parses Rust source files to find public types, traits, and macros, then compares with documentation.
+
+**Parameters:**
+- `crate_name`: Name of the crate to analyze
+- `module_path`: (optional) Specific module to analyze
+- `update_timestamp`: Update `last_synced` timestamp (default: false)
+
+**Returns:** Report showing:
+- Public items found in source files
+- Suggested additions (items in source but not documented)
+- Suggested removals (documented items not found in source)
+
+## Stale Detection Schema
+
+To enable stale detection, add these fields to `index.yaml`:
+
+```yaml
+# crates/context-trace/agents/docs/index.yaml
+name: context-trace
+description: Graph structures and traversal
+source_files:
+  - src/lib.rs
+  - src/graph/mod.rs
+last_synced: "2026-02-15T10:30:00+00:00"
+modules:
+  - name: graph
+    path: graph
+```
+
+| Field | Description |
+|-------|-------------|
+| `source_files` | List of source file paths (relative to crate root) to track |
+| `last_synced` | ISO 8601 timestamp of when docs were last verified/updated |
+
+The `check_stale_docs` tool compares `last_synced` against git modification times of `source_files` to determine staleness.
 
 ## Document Structure
 
