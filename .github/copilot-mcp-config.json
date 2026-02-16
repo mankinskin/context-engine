@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "docs-server": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": ["run", "--manifest-path", "tools/mcp-docs-server/Cargo.toml"],
+      "env": {
+        "DOCS_ROOT": "."
+      }
+    }
+  }
+}

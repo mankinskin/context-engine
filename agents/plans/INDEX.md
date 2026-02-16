@@ -6,6 +6,7 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-02-15 | [PLAN_MCP_DOCS_SERVER_IMPROVEMENTS](20260215_PLAN_MCP_DOCS_SERVER_IMPROVEMENTS.md) | completed | Refactor tools.rs into modular structure |
 | 2026-02-15 | [PLAN_MCP_CRATE_DOCS](20260215_PLAN_MCP_CRATE_DOCS.md) | design | Extend MCP server to support crate API documentation |
 | 2026-01-27 | [SELECTIVE_PARTITION_MERGE](20260127_SELECTIVE_PARTITION_MERGE.md) | design | Transform complete merge to selective partition creation |
 | 2026-01-27 | [SELECTIVE_PARTITION_MERGE_IMPL](20260127_SELECTIVE_PARTITION_MERGE_IMPL.md) | design | Implementation details for selective partition merge |

@@ -7,8 +7,12 @@ description: >
 submodules: []
 
 files:
-  - name: tools.rs
-    description: DocsManager and CrateDocsManager implementations (~3100 lines)
+  - name: mod.rs
+    description: Module entry point with common types (ToolError, DetailLevel, ListFilter) and re-exports
+  - name: agents.rs
+    description: DocsManager implementation for agent documentation (~1565 lines)
+  - name: crates.rs
+    description: CrateDocsManager implementation for crate API documentation (~1499 lines)
 
 key_types:
   # Common types
@@ -45,4 +49,6 @@ key_types:
   - CrateDocResult: Result of reading crate documentation
 
 source_files:
-  - src/tools.rs
+  - src/tools/mod.rs
+  - src/tools/agents.rs
+  - src/tools/crates.rs

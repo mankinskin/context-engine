@@ -57,7 +57,9 @@ features:
 
 source_files:
   - src/main.rs
-  - src/tools.rs
+  - src/tools/mod.rs
+  - src/tools/agents.rs
+  - src/tools/crates.rs
   - src/schema.rs
   - src/parser.rs
   - src/templates.rs

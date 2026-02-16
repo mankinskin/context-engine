@@ -7,11 +7,13 @@ submodules: []
 
 files:
   - name: git.rs
-    description: Git command execution and timestamp parsing (~220 lines)
+    description: Git command execution and timestamp parsing (~165 lines)
 
 key_types:
-  - GitError: Error type for git operations
-  - GitResult: Result alias for git operations
+  - is_git_repository: Check if path is in a git repository
+  - get_file_info: Get git info for a single file
+  - get_files_info: Get git info for multiple files
+  - days_since: Calculate days between timestamp and now
 
 source_files:
   - src/git.rs

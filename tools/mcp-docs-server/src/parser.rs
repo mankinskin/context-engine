@@ -1,6 +1,6 @@
 //! Parse existing documents to extract metadata.
 
-use crate::schema::{DocMetadata, DocType, IndexEntry, PlanStatus};
+use crate::schema::{DocMetadata, DocType, PlanStatus};
 use crate::schema::{CrateMetadata, ModuleMetadata};
 use regex::Regex;
 use serde::de::DeserializeOwned;
@@ -102,33 +102,6 @@ pub fn extract_metadata(path: &Path, content: &str) -> Option<DocMetadata> {
         summary: fm.summary.unwrap_or_default(),
         status: fm.status,
     })
-}
-
-/// Parse existing INDEX.md to extract entries.
-pub fn parse_index(content: &str) -> Vec<IndexEntry> {
-    let mut entries = Vec::new();
-    // Updated regex: | Date | [File](link) | Summary | (optional status column for plans)
-    let table_re = Regex::new(r"\|\s*(\d{4}-\d{2}-\d{2})\s*\|(?:\s*([^\|]+)\s*\|)?\s*\[([^\]]+)\]\(([^\)]+)\)\s*\|\s*([^\|]+)\s*\|").unwrap();
-    
-    for line in content.lines() {
-        if let Some(caps) = table_re.captures(line) {
-            let date = caps[1].replace("-", "");
-            let filename = caps[3].to_string();
-            let summary = caps[5].trim().to_string();
-            
-            // Check if there's a status column (for plans)
-            let status = caps.get(2).and_then(|m| parse_status(m.as_str().trim()));
-            
-            entries.push(IndexEntry {
-                date,
-                filename,
-                summary,
-                status,
-            });
-        }
-    }
-    
-    entries
 }
 
 // =============================================================================

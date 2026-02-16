@@ -10,32 +10,6 @@ use chrono::{DateTime, Utc};
 
 use crate::schema::FileModificationInfo;
 
-/// Error type for git operations
-#[derive(Debug)]
-pub enum GitError {
-    /// Git command failed or not available
-    CommandFailed(String),
-    /// Failed to parse git output
-    ParseError(String),
-    /// Not a git repository
-    NotARepository,
-}
-
-impl std::fmt::Display for GitError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            GitError::CommandFailed(msg) => write!(f, "Git command failed: {}", msg),
-            GitError::ParseError(msg) => write!(f, "Failed to parse git output: {}", msg),
-            GitError::NotARepository => write!(f, "Not a git repository"),
-        }
-    }
-}
-
-impl std::error::Error for GitError {}
-
-/// Result type for git operations
-pub type GitResult<T> = Result<T, GitError>;
-
 /// Check if a directory is a git repository
 pub fn is_git_repository(path: &Path) -> bool {
     Command::new("git")
@@ -44,23 +18,6 @@ pub fn is_git_repository(path: &Path) -> bool {
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false)
-}
-
-/// Get the root of the git repository containing the given path
-pub fn get_repo_root(path: &Path) -> GitResult<String> {
-    let output = Command::new("git")
-        .args(["rev-parse", "--show-toplevel"])
-        .current_dir(path)
-        .output()
-        .map_err(|e| GitError::CommandFailed(e.to_string()))?;
-
-    if !output.status.success() {
-        return Err(GitError::NotARepository);
-    }
-
-    String::from_utf8(output.stdout)
-        .map(|s| s.trim().to_string())
-        .map_err(|e| GitError::ParseError(e.to_string()))
 }
 
 /// Information about a file's last modification from git
@@ -159,13 +116,6 @@ pub fn parse_timestamp(timestamp: &str) -> Option<DateTime<Utc>> {
         .map(|dt| dt.with_timezone(&Utc))
 }
 
-/// Calculate days between two ISO 8601 timestamps
-pub fn days_between(earlier: &str, later: &str) -> Option<i64> {
-    let earlier_dt = parse_timestamp(earlier)?;
-    let later_dt = parse_timestamp(later)?;
-    Some((later_dt - earlier_dt).num_days())
-}
-
 /// Calculate days from a timestamp until now
 pub fn days_since(timestamp: &str) -> Option<i64> {
     let dt = parse_timestamp(timestamp)?;
@@ -210,13 +160,5 @@ mod tests {
         let ts = "2026-02-15T10:30:00+00:00";
         let dt = parse_timestamp(ts);
         assert!(dt.is_some());
-    }
-
-    #[test]
-    fn test_days_between() {
-        let earlier = "2026-02-10T00:00:00+00:00";
-        let later = "2026-02-15T00:00:00+00:00";
-        let days = days_between(earlier, later);
-        assert_eq!(days, Some(5));
     }
 }

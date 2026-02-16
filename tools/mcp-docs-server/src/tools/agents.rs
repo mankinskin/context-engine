@@ -190,33 +190,6 @@ impl DocsManager {
         Ok(())
     }
 
-    /// Search documents by tag.
-    pub fn search_by_tag(
-        &self,
-        tag: &str,
-    ) -> ToolResult<Vec<DocSummary>> {
-        let mut results = Vec::new();
-        let tag_lower = tag.to_lowercase().trim_start_matches('#').to_string();
-
-        for doc_type in [
-            DocType::Guide,
-            DocType::Plan,
-            DocType::Implemented,
-            DocType::BugReport,
-            DocType::Analysis,
-        ] {
-            let docs = self.list_documents(doc_type)?;
-            for doc in docs {
-                if doc.tags.iter().any(|t| t.to_lowercase() == tag_lower) {
-                    results.push(doc);
-                }
-            }
-        }
-
-        results.sort_by(|a, b| b.date.cmp(&a.date));
-        Ok(results)
-    }
-
     /// Validate all documents and indexes.
     pub fn validate(&self) -> ToolResult<ValidationReport> {
         let mut report = ValidationReport::default();

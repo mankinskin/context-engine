@@ -62,11 +62,6 @@ impl CrateDocsManager {
         Self { crates_dir }
     }
 
-    /// Get the crates directory path for diagnostics
-    pub fn crates_dir(&self) -> &Path {
-        &self.crates_dir
-    }
-
     /// Discover all context-* crates with agents/docs directories
     /// Returns both successful crates and diagnostic information about failures
     pub fn discover_crates_with_diagnostics(&self) -> ToolResult<CrateDiscoveryResult> {
