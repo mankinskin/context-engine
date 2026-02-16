@@ -35,7 +35,7 @@ use std::{
     sync::Arc,
 };
 use tools::{
-    CreateDocParams,
+    agents::CreateDocParams,
     DocsManager,
     CrateDocsManager,
 };
@@ -436,7 +436,7 @@ impl DocsServer {
         &self,
         Parameters(input): Parameters<UpdateMetaInput>,
     ) -> Result<CallToolResult, McpError> {
-        let params = tools::UpdateMetaParams {
+        let params = tools::agents::UpdateMetaParams {
             filename: input.filename.clone(),
             tags: input.tags,
             summary: input.summary,
