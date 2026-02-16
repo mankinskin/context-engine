@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-trace` `#context-search` `#debugging` `#testing` `#performance`
+summary: This guide explains how to use the compact formatting system for readable tracing logs.
+---
+
 # Compact Log Formatting Guide
 
 This guide explains how to use the compact formatting system for readable tracing logs.

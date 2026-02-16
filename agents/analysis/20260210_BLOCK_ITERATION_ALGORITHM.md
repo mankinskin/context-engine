@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#algorithm`
+summary: ```
+---
+
 # Block Iteration Algorithm: Visual Documentation
 
 ## Example: Reading "ababab"

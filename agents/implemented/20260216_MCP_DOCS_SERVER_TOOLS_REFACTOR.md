@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#refactoring` `#api`
+summary: Refactored the monolithic `tools.rs` (~3108 lines) into a modular `tools/` directory structure for better maintainability.
+---
+
 # MCP Docs Server Tools Module Refactoring
 
 **Date:** 2026-02-16  

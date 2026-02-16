@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#debugging` `#testing` `#api`
+summary: Fix `interval_graph1` and `interval_graph2` tests which are failing with `assertion failed: !res.query_exhausted()`.
+status: 📋
+---
+
 # Plan: Fix interval_graph1 and interval_graph2 Test Failures
 
 **Date:** 2025-12-04  

@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-search` `#algorithm` `#debugging` `#testing` `#api` `#performance`
+summary: > **Tags:** #advance-cycle #checkpoint #parent-exploration #search-flow #root-cursor
+---
+
 # Advance Cycle Guide
 
 > **Tags:** #advance-cycle #checkpoint #parent-exploration #search-flow #root-cursor

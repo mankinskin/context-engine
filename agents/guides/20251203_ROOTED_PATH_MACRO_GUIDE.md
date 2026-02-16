@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-trace` `#testing`
+summary: The `rooted_path!` macro provides a convenient way to construct `RootedRolePath` variants (like `IndexRangePath`, `PatternRangePath`, `IndexStartPa...
+---
+
 # rooted_path! Macro Guide
 
 ## Overview

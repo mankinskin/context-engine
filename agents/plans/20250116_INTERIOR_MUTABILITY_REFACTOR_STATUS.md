@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#context-insert` `#testing` `#refactoring` `#api`
+summary: Refactoring the graph from `Arc<RwLock<Hypergraph>>` to `Arc<Hypergraph>` with per-vertex interior mutability using DashMap and per-vertex RwLock.
+status: 📋
+---
+
 # Interior Mutability Refactor - Status Report
 
 ## Summary

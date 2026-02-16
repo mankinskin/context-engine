@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#context-trace` `#context-search` `#debugging` `#testing`
+summary: The `prefix1` test fails because top-down cache entries are recorded at position 5 instead of position 4. The `range1` test passes with correct pos...
+---
+
 # Analysis: PrefixEnd Top-Down Cache Position Bug
 
 **Date:** 2025-11-27  

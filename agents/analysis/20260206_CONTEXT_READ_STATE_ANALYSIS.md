@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#context-trace` `#context-search` `#context-insert` `#context-read` `#debugging` `#testing` `#api`
+summary: The `context-read` crate is the **highest-level abstraction** in the context-engine architecture (trace → search → insert → **read**). It pro...
+---
+
 # Context-Read State Analysis
 
 **Generated:** 2026-02-06  

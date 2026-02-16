@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#algorithm` `#testing` `#api`
+summary: > **Status:** Design Phase
+status: 📋
+---
+
 # Selective Partition Merge - Feature Documentation
 
 > **Status:** Design Phase  

@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#context-search` `#algorithm` `#debugging` `#testing`
+summary: This document compares the desired search algorithm (DESIRED_SEARCH_ALGORITHM.md) with the current `find_ancestor` implementation in context-search.
+---
+
 # Algorithm Comparison: Desired vs Current Implementation
 
 This document compares the desired search algorithm (DESIRED_SEARCH_ALGORITHM.md) with the current `find_ancestor` implementation in context-search.

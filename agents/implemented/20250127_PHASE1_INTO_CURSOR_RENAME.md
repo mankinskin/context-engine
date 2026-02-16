@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-trace` `#context-search` `#testing` `#refactoring` `#api`
+summary: Renamed `ToCursor` trait to `IntoCursor` following Rust naming conventions for consuming conversions. This standardizes conversion trait naming to ...
+---
+
 # Phase 1 Week 2: IntoCursor Trait Rename
 
 **Status:** ✅ Complete  

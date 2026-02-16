@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-insert` `#algorithm` `#debugging` `#testing` `#api` `#performance`
+summary: ```rust
+---
+
 # Context-Insert Guide
 
 **Practical guide for safe pattern insertion via split-join architecture**

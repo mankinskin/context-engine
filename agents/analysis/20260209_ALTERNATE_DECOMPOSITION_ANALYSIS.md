@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#context-insert` `#context-read` `#algorithm` `#debugging` `#testing`
+summary: When reading input "aaa", context-read produces only one child pattern `[a, aa]` for vertex "aaa", but the correct output (per ngrams reference) sh...
+---
+
 # Alternate Decomposition Bug Analysis
 
 ## Issue Summary

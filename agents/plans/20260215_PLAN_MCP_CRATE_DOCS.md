@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#debugging` `#api`
+summary: The existing MCP Docs Server (`tools/mcp-docs-server/`) manages **agent workflow documentation** in `agents/`:
+status: 📋
+---
+
 # MCP Docs Server Update - Work Issues
 
 **Date:** 2026-02-15  

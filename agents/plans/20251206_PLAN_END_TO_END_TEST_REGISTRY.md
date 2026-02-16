@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#api` `#performance`
+summary: Create an extensible, declarative testing harness that:
+status: 📋
+---
+
 # Plan: End-to-End Test Registry & Declarative Test Cases
 
 **Date:** 2025-12-06  

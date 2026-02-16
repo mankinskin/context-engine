@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-read` `#algorithm` `#testing` `#performance`
+summary: When reading input "aaa", context-read produced only one child pattern `[a, aa]` for vertex "aaa", but the correct output (per ngrams reference) sh...
+---
+
 # Alternate Decomposition Fix - Implementation Summary
 
 **Date:** 2026-02-09  

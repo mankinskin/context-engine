@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-insert` `#debugging` `#testing`
+summary: Investigate and explain the color formatting in test-log files captured by context-trace::logging.
+status: 📋
+---
+
 # Plan: Color Formatting Issues in Test Logs
 
 **Date:** 2025-12-04  

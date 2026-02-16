@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#debugging` `#testing` `#refactoring`
+summary: The current partition merge implementation has several design issues:
+status: 📋
+---
+
 # Partition Merge Refactoring Plan
 
 **Created:** 2026-01-25  

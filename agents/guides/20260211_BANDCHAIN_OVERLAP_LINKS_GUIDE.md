@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-trace` `#context-insert` `#context-read` `#algorithm` `#debugging`
+summary: This guide explains how BandChain generates decompositions through expansion, and how the OverlapLink abstraction tracks overlaps between tokens to...
+---
+
 # BandChain and Overlap Links Guide
 
 **Date:** 2026-02-11  

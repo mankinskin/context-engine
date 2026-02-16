@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-insert` `#algorithm` `#testing`
+summary: This guide documents the expected behavior of the root merge algorithm for the `insert_postfix1` test case.
+---
+
 # Root Merge Algorithm - Postfix Mode Example
 
 ## Overview

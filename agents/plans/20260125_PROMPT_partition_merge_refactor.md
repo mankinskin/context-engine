@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#testing` `#refactoring`
+summary: Refactor the partition merging code in context-insert to use generic position types and a unified MergePartitionCtx struct.
+status: 📋
+---
+
 # Agent Prompt: Partition Merge Refactoring
 
 ## Task

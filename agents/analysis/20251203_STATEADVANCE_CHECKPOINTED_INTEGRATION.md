@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#context-trace` `#context-search` `#debugging` `#testing`
+summary: Can we reuse the existing `StateAdvance` trait to implement checkpointed cursor advancement instead of creating a separate `AdvanceCheckpointed` tr...
+---
+
 # StateAdvance Integration with Checkpointed Analysis
 
 ## Question

@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#context-insert` `#context-read` `#testing` `#api` `#performance`
+summary: Address issues discovered during comprehensive MCP tool testing to make the docs server genuinely useful for agents working on context-* crates.
+status: 📋
+---
+
 # MCP Docs Server Improvements Plan
 
 **Created:** 2026-02-15  

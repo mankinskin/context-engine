@@ -1,3 +1,8 @@
+---
+tags: `#analysi` `#debugging` `#testing` `#api`
+summary: Analysis of `Checkpointed<C>` usage patterns to determine which cursor state (checkpoint vs candidate) should be accessed at each call site and whe...
+---
+
 # Checkpointed State Analysis
 
 ## Executive Summary

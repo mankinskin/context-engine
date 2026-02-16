@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#algorithm` `#debugging` `#testing` `#refactoring`
+summary: The current `join_root_partitions` implementation has grown complex with three separate `join_incomplete_*` functions that share structural similar...
+status: 📋
+---
+
 # Specification: Root Node Join Refactoring
 
 **Date:** 2025-01-03  

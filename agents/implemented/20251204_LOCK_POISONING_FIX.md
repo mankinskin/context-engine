@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-trace` `#context-insert` `#debugging` `#testing`
+summary: Fixed lock poisoning in context-insert tests by replacing `lazy_static!` with `thread_local!` for test environment storage. Each test thread now ge...
+---
+
 # Lock Poisoning Fix - Thread-Local Test Isolation
 
 **Date:** 2025-12-04  

@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-search` `#context-insert` `#algorithm` `#testing`
+summary: Investigate why `interval_graph1` and `interval_graph2` tests are failing, understand the root cause, and determine the correct fix.
+status: 📋
+---
+
 # Plan: Investigation of interval_graph Test Failures
 
 **Date:** 2025-12-04  

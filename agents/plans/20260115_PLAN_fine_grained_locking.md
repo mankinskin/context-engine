@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#context-insert` `#context-read` `#debugging` `#testing` `#refactoring` `#api`
+summary: Refactor `Hypergraph` to use per-vertex `RwLock` instead of a global `RwLock<Hypergraph>`, enabling concurrent reads during writes and fixing the t...
+status: 📋
+---
+
 # Plan: Fine-Grained Per-Vertex Locking
 
 ## Objective

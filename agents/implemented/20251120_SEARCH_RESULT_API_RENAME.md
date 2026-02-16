@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-search` `#context-insert` `#algorithm` `#testing` `#api`
+summary: Renamed search result API methods to clarify the distinction between:
+---
+
 # Search Result API Rename Implementation
 
 **Date:** 2025-11-20

@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#algorithm` `#refactoring` `#api` `#performance`
+summary: The refactor-tool now includes AI-powered semantic code analysis to enhance duplication detection and provide intelligent refactoring suggestions.
+---
+
 # AI-Powered Code Analysis Features
 
 The refactor-tool now includes AI-powered semantic code analysis to enhance duplication detection and provide intelligent refactoring suggestions.

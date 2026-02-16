@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-trace` `#context-search` `#context-insert` `#debugging` `#testing` `#performance`
+summary: Created declarative test case framework in `context-trace/src/tests/test_case/`:
+---
+
 # Implementation Summary: Test Case Framework Foundation
 
 **Date:** 2025-12-06  

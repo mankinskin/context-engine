@@ -1,3 +1,8 @@
+---
+tags: `#bug-report` `#context-trace` `#debugging`
+summary: This document explains the separation between standard `Debug` formatting and custom `CompactFormat` formatting in the context-engine codebase.
+---
+
 # Debug vs CompactFormat: Separation of Concerns
 
 ## Overview

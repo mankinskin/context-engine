@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#context-insert` `#testing`
+summary: Establish thread-local test environment pattern to eliminate lock poisoning and enable parallel test execution.
+status: 📋
+---
+
 # Plan: Thread-Local Test Environment Pattern
 
 **Date:** 2025-12-04  

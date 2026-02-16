@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-trace` `#context-search` `#debugging` `#testing` `#api`
+summary: When running tests, tokens in log output appear as cryptic identifiers like `T0w1`, `T1w1`, `T3w1` instead of meaningful string representations lik...
+---
+
 # Token Test Labeling Guide
 
 ## Problem Description

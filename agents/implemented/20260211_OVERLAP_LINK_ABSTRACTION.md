@@ -1,3 +1,8 @@
+---
+tags: `#implemented` `#context-trace` `#context-insert` `#context-read` `#algorithm` `#testing` `#api`
+summary: Implemented the overlap "link" abstraction in the BandChain to track overlaps between tokens in decompositions. The overlap links capture both pers...
+---
+
 # Overlap Link Abstraction Implementation
 
 **Date:** 2026-02-11

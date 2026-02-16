@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-search` `#context-insert` `#algorithm` `#api` `#performance`
+summary: > **Quick reference for understanding how pattern search works in context-search**
+---
+
 # Search Algorithm Guide
 
 > **Quick reference for understanding how pattern search works in context-search**
