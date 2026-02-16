@@ -288,6 +288,9 @@ pub struct CrateSummary {
     pub description: String,
     pub module_count: usize,
     pub has_readme: bool,
+    /// Full path to the crate root directory
+    pub crate_path: String,
+    /// Full path to the agents/docs directory
     pub docs_path: String,
 }
 

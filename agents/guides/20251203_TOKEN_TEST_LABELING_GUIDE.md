@@ -245,7 +245,7 @@ After fixing a test, verify the output:
 
 ```bash
 # Run with trace logging to see token representations
-LOG_STDOUT=1 LOG_FILTER=trace cargo test -p context-search find_pattern1 -- --nocapture ; focus_chat
+LOG_STDOUT=1 LOG_FILTER=trace cargo test -p context-search find_pattern1 -- --nocapture
 ```
 
 **Check the log file:**

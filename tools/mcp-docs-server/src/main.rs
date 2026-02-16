@@ -49,10 +49,10 @@ pub struct DocsServer {
 }
 
 impl DocsServer {
-    pub fn new(agents_dir: PathBuf, crates_dir: PathBuf) -> Self {
+    pub fn new(agents_dir: PathBuf, crates_dirs: Vec<PathBuf>) -> Self {
         Self {
             manager: Arc::new(DocsManager::new(agents_dir)),
-            crate_manager: Arc::new(CrateDocsManager::new(crates_dir)),
+            crate_manager: Arc::new(CrateDocsManager::new(crates_dirs)),
             tool_router: Self::tool_router(),
         }
     }
@@ -692,11 +692,12 @@ impl DocsServer {
                 let mut md = String::from("# Documented Crates\n\n");
                 
                 // Show directory info
-                md.push_str(&format!(
-                    "**Crates Directory:** `{}`  \n**Exists:** {}\n\n",
-                    result.crates_dir,
-                    if result.crates_dir_exists { "✅" } else { "❌" }
-                ));
+                md.push_str("**Crates Directories:**\n");
+                for (dir, exists) in result.crates_dirs.iter().zip(result.dirs_exist.iter()) {
+                    let status = if *exists { "✅" } else { "❌" };
+                    md.push_str(&format!("- `{}` {}\n", dir, status));
+                }
+                md.push('\n');
                 
                 if result.crates.is_empty() {
                     md.push_str("*No documented crates found.*\n\n");
@@ -1072,15 +1073,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(PathBuf::from)
         .unwrap_or_else(|_| workspace_root.join("agents"));
     
-    let crates_dir = std::env::var("CRATES_DIR")
-        .map(PathBuf::from)
-        .unwrap_or_else(|_| workspace_root.join("crates"));
+    // Parse CRATES_DIRS as a path-separated list (like PATH)
+    // Default includes both crates/ and tools/ directories
+    let crates_dirs: Vec<PathBuf> = std::env::var("CRATES_DIRS")
+        .or_else(|_| std::env::var("CRATES_DIR")) // Backwards compatibility
+        .map(|val| std::env::split_paths(&val).collect())
+        .unwrap_or_else(|_| vec![
+            workspace_root.join("crates"),
+            workspace_root.join("tools"),
+        ]);
 
     eprintln!("MCP Docs Server starting...");
     eprintln!("Agents directory: {}", agents_dir.display());
-    eprintln!("Crates directory: {}", crates_dir.display());
+    eprintln!("Crates directories:");
+    for dir in &crates_dirs {
+        eprintln!("  - {}", dir.display());
+    }
 
-    let server = DocsServer::new(agents_dir, crates_dir);
+    let server = DocsServer::new(agents_dir, crates_dirs);
 
     let service = server.serve(stdio()).await.inspect_err(|e| {
         eprintln!("Server error: {:?}", e);
@@ -1119,6 +1129,7 @@ mod tests {
                 description: None,
             }],
             has_readme: true,
+            all_types: vec![],
         };
         let md = format_module_tree(&tree, 0);
         assert!(md.contains("# test"));

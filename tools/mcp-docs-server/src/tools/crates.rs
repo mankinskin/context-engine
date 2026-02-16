@@ -48,91 +48,130 @@ use std::{
 pub struct CrateDiscoveryResult {
     pub crates: Vec<CrateSummary>,
     pub diagnostics: Vec<String>,
-    pub crates_dir: String,
-    pub crates_dir_exists: bool,
+    /// Directories that were scanned (display strings)
+    pub crates_dirs: Vec<String>,
+    /// Which directories exist
+    pub dirs_exist: Vec<bool>,
 }
 
 /// Manager for crate API documentation in crates/*/agents/docs/
+///
+/// Supports multiple crate directories (e.g., `crates/` and `tools/`) to allow
+/// documentation from different parts of the workspace.
 pub struct CrateDocsManager {
-    crates_dir: PathBuf,
+    crates_dirs: Vec<PathBuf>,
 }
 
 impl CrateDocsManager {
-    pub fn new(crates_dir: PathBuf) -> Self {
-        Self { crates_dir }
+    pub fn new(crates_dirs: Vec<PathBuf>) -> Self {
+        Self { crates_dirs }
     }
 
-    /// Discover all context-* crates with agents/docs directories
+    /// Resolve a crate name to its root path.
+    ///
+    /// Searches all configured directories for a crate with matching name
+    /// that has an agents/docs/index.yaml file.
+    fn resolve_crate_path(&self, crate_name: &str) -> Option<PathBuf> {
+        for crates_dir in &self.crates_dirs {
+            let crate_path = crates_dir.join(crate_name);
+            let index_path = crate_path.join("agents").join("docs").join("index.yaml");
+            if index_path.exists() {
+                return Some(crate_path);
+            }
+        }
+        None
+    }
+
+    /// Discover all crates with agents/docs directories
     /// Returns both successful crates and diagnostic information about failures
+    ///
+    /// Scans all configured directories for subdirectories that have
+    /// an `agents/docs/index.yaml` file.
     pub fn discover_crates_with_diagnostics(&self) -> ToolResult<CrateDiscoveryResult> {
         let mut result = CrateDiscoveryResult {
             crates: Vec::new(),
             diagnostics: Vec::new(),
-            crates_dir: self.crates_dir.display().to_string(),
-            crates_dir_exists: self.crates_dir.exists(),
+            crates_dirs: self.crates_dirs.iter()
+                .map(|p| p.display().to_string())
+                .collect(),
+            dirs_exist: self.crates_dirs.iter()
+                .map(|p| p.exists())
+                .collect(),
         };
 
-        if !self.crates_dir.exists() {
-            result.diagnostics.push(format!(
-                "Crates directory does not exist: {}",
-                self.crates_dir.display()
-            ));
-            return Ok(result);
-        }
-
-        for entry in fs::read_dir(&self.crates_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            
-            if !path.is_dir() {
-                continue;
-            }
-
-            let name = path.file_name()
-                .and_then(|n| n.to_str())
-                .unwrap_or_default();
-
-            // Only include context-* crates
-            if !name.starts_with("context-") {
-                continue;
-            }
-
-            let docs_path = path.join("agents").join("docs");
-            let index_path = docs_path.join("index.yaml");
-
-            if !docs_path.exists() {
+        for crates_dir in &self.crates_dirs {
+            if !crates_dir.exists() {
                 result.diagnostics.push(format!(
-                    "{}: agents/docs directory not found",
-                    name
+                    "Crates directory does not exist: {}",
+                    crates_dir.display()
                 ));
                 continue;
             }
 
-            if !index_path.exists() {
-                result.diagnostics.push(format!(
-                    "{}: index.yaml not found at {}",
-                    name, index_path.display()
-                ));
-                continue;
-            }
-
-            match parse_crate_index(&index_path) {
-                Ok(meta) => {
-                    let readme_path = docs_path.join("README.md");
-                    result.crates.push(CrateSummary {
-                        name: meta.name,
-                        version: meta.version,
-                        description: meta.description,
-                        module_count: meta.modules.len(),
-                        has_readme: readme_path.exists(),
-                        docs_path: docs_path.to_string_lossy().to_string(),
-                    });
-                }
+            let entries = match fs::read_dir(crates_dir) {
+                Ok(entries) => entries,
                 Err(e) => {
                     result.diagnostics.push(format!(
-                        "{}: YAML parse error - {}",
-                        name, e
+                        "Failed to read {}: {}",
+                        crates_dir.display(), e
                     ));
+                    continue;
+                }
+            };
+
+            for entry in entries {
+                let entry = match entry {
+                    Ok(e) => e,
+                    Err(e) => {
+                        result.diagnostics.push(format!(
+                            "Failed to read entry in {}: {}",
+                            crates_dir.display(), e
+                        ));
+                        continue;
+                    }
+                };
+                let path = entry.path();
+                
+                if !path.is_dir() {
+                    continue;
+                }
+
+                let name = path.file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or_default()
+                    .to_string();
+
+                // Skip if we already have a crate with this name (first directory wins)
+                if result.crates.iter().any(|c| c.name == name) {
+                    continue;
+                }
+
+                let docs_path = path.join("agents").join("docs");
+                let index_path = docs_path.join("index.yaml");
+
+                if !docs_path.exists() || !index_path.exists() {
+                    continue; // Silently skip directories without docs
+                }
+
+                match parse_crate_index(&index_path) {
+                    Ok(meta) => {
+                        let readme_path = docs_path.join("README.md");
+                        result.crates.push(CrateSummary {
+                            name: meta.name,
+                            version: meta.version,
+                            description: meta.description,
+                            module_count: meta.modules.len(),
+                            has_readme: readme_path.exists(),
+                            crate_path: path.to_string_lossy().to_string(),
+                            docs_path: docs_path.to_string_lossy().to_string(),
+                        });
+                    }
+                    Err(e) => {
+                        result.diagnostics.push(format!(
+                            "{}: YAML parse error - {}",
+                            name, e
+                        ));
+                    }
                 }
             }
         }
@@ -148,16 +187,13 @@ impl CrateDocsManager {
 
     /// Browse a crate's module tree
     pub fn browse_crate(&self, crate_name: &str) -> ToolResult<ModuleTreeNode> {
-        let crate_path = self.crates_dir.join(crate_name);
-        let docs_path = crate_path.join("agents").join("docs");
-        let index_path = docs_path.join("index.yaml");
-
-        if !index_path.exists() {
-            return Err(ToolError::NotFound(format!(
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
                 "Crate docs not found: {}",
                 crate_name
-            )));
-        }
+            )))?;
+        let docs_path = crate_path.join("agents").join("docs");
+        let index_path = docs_path.join("index.yaml");
 
         let meta = parse_crate_index(&index_path)?;
         let readme_path = docs_path.join("README.md");
@@ -264,7 +300,11 @@ impl CrateDocsManager {
         module_path: Option<&str>,
         include_readme: bool,
     ) -> ToolResult<CrateDocResult> {
-        let crate_path = self.crates_dir.join(crate_name);
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_path = match module_path {
@@ -306,7 +346,11 @@ impl CrateDocsManager {
         index_yaml: Option<&str>,
         readme: Option<&str>,
     ) -> ToolResult<()> {
-        let crate_path = self.crates_dir.join(crate_name);
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_path = match module_path {
@@ -350,7 +394,11 @@ impl CrateDocsManager {
         name: &str,
         description: &str,
     ) -> ToolResult<String> {
-        let crate_path = self.crates_dir.join(crate_name);
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
         let docs_path = crate_path.join("agents").join("docs").join(module_path);
 
         if docs_path.exists() {
@@ -393,7 +441,11 @@ impl CrateDocsManager {
         add_source_files: Option<Vec<String>>,
         remove_source_files: Option<Vec<String>>,
     ) -> ToolResult<String> {
-        let crate_path = self.crates_dir.join(crate_name);
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
         let docs_path = crate_path.join("agents").join("docs");
         
         let target_path = match module_path {
@@ -505,8 +557,7 @@ impl CrateDocsManager {
                 }
             }
 
-            let crate_path = self.crates_dir.join(&crate_summary.name);
-            let docs_path = crate_path.join("agents").join("docs");
+            let docs_path = PathBuf::from(&crate_summary.docs_path);
 
             // Search crate-level
             if let Ok(meta) = parse_crate_index(&docs_path.join("index.yaml")) {
@@ -791,8 +842,7 @@ impl CrateDocsManager {
 
             report.crates_checked += 1;
 
-            let crate_path = self.crates_dir.join(&crate_summary.name);
-            let docs_path = crate_path.join("agents").join("docs");
+            let docs_path = PathBuf::from(&crate_summary.docs_path);
             let index_path = docs_path.join("index.yaml");
 
             // Check crate index
@@ -915,13 +965,6 @@ impl CrateDocsManager {
         let mut report = StaleDocsReport::default();
         let crates = self.discover_crates()?;
 
-        // Check if we're in a git repo
-        if !is_git_repository(&self.crates_dir) {
-            return Err(ToolError::InvalidInput(
-                "Crates directory is not in a git repository".to_string(),
-            ));
-        }
-
         for crate_summary in crates {
             if let Some(filter) = crate_filter {
                 if crate_summary.name != filter {
@@ -929,10 +972,17 @@ impl CrateDocsManager {
                 }
             }
 
+            let crate_path = PathBuf::from(&crate_summary.crate_path);
+            
+            // Check if this crate is in a git repo
+            if !is_git_repository(&crate_path) {
+                // Skip crates not in a git repository
+                continue;
+            }
+
             report.crates_checked += 1;
 
-            let crate_path = self.crates_dir.join(&crate_summary.name);
-            let docs_path = crate_path.join("agents").join("docs");
+            let docs_path = PathBuf::from(&crate_summary.docs_path);
             let index_path = docs_path.join("index.yaml");
 
             // Check crate-level staleness
@@ -1123,7 +1173,11 @@ impl CrateDocsManager {
         update_timestamp: bool,
         summary_only: bool,
     ) -> ToolResult<SyncAnalysisResult> {
-        let crate_path = self.crates_dir.join(crate_name);
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_docs_path = match module_path {
