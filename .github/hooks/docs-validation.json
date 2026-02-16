@@ -1,13 +1,11 @@
 {
-  "version": 1,
   "hooks": {
-    "postToolUse": [
+    "PostToolUse": [
       {
         "type": "command",
-        "bash": "./.github/hooks/validate-docs.sh",
-        "powershell": "./.github/hooks/validate-docs.ps1",
+        "command": "bash .github/hooks/validate-docs.sh",
         "cwd": ".",
-        "timeoutSec": 30
+        "timeout": 30
       }
     ]
   }

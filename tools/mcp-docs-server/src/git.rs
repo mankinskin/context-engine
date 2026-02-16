@@ -1,4 +1,4 @@
-//! Git integration for stale detection.
+//! Git integration for documentation staleness detection.
 //!
 //! Uses git commands to determine file modification times and detect
 //! when documentation is out of sync with source files.

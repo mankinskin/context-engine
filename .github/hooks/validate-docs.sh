@@ -1,34 +1,59 @@
 #!/bin/bash
 # Post-tool-use hook for documentation validation
-# Runs after any tool execution in Copilot CLI
+# Runs after any tool execution in Copilot CLI or VS Code Copilot Chat
 
 # Read JSON input from stdin
 INPUT=$(cat)
 
-# Parse tool name (requires jq)
-TOOL_NAME=$(echo "$INPUT" | jq -r '.toolName // empty' 2>/dev/null)
+# Debug: Log raw input to stderr (shows in VS Code Output panel)
+echo "[validate-docs] Raw input (first 500 chars): ${INPUT:0:500}" >&2
 
-# Check if this was a file edit operation
-if [[ "$TOOL_NAME" == "edit" || "$TOOL_NAME" == "write" || "$TOOL_NAME" == "create" ]]; then
-    # Get the file path from tool args
-    FILE_PATH=$(echo "$INPUT" | jq -r '.toolArgs.filePath // .toolArgs.path // empty' 2>/dev/null)
-    
-    # Check if the edited file is in the MCP docs server source
-    if [[ "$FILE_PATH" == *"tools/mcp-docs-server/src/"* ]]; then
-        echo "⚠️  MCP docs server source modified: $FILE_PATH" >&2
-        echo "📋 Remember to run documentation validation:" >&2
-        echo "   - mcp_docs-server_validate_docs" >&2
-        echo "   - mcp_docs-server_check_stale_docs" >&2
-        echo "" >&2
-    fi
-    
-    # Check if agent docs were modified
-    if [[ "$FILE_PATH" == *"agents/"* && "$FILE_PATH" != *"agents/tmp/"* ]]; then
-        echo "📝 Agent docs modified: $FILE_PATH" >&2
-        echo "   Consider updating INDEX.md if adding new files" >&2
-        echo "" >&2
-    fi
+# Parse tool name - handle both CLI format (toolName) and VS Code format (tool_name)
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // .toolName // "unknown"' 2>/dev/null)
+echo "[validate-docs] Tool name: $TOOL_NAME" >&2
+
+# Try to extract file path from various possible locations
+FILE_PATH=$(echo "$INPUT" | jq -r '
+    .tool_input.filePath // 
+    .tool_input.path // 
+    .tool_input.files[0] // 
+    .toolArgs.filePath // 
+    .toolArgs.path //
+    .tool_input.replacements[0].filePath //
+    "none"
+' 2>/dev/null)
+echo "[validate-docs] File path: $FILE_PATH" >&2
+
+# Check if the edited file is in the MCP docs server source
+if [[ "$FILE_PATH" == *"tools/mcp-docs-server/src/"* || "$FILE_PATH" == *"tools\\mcp-docs-server\\src\\"* ]]; then
+    echo "[validate-docs] MATCH: MCP docs server source file" >&2
+    cat << 'EOF'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": "⚠️ MCP docs server source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
+  }
+}
+EOF
+    exit 0
 fi
 
-# Always succeed - hooks shouldn't block execution
+# Check if agent docs were modified
+if [[ "$FILE_PATH" == *"agents/"* && "$FILE_PATH" != *"agents/tmp/"* ]] || \
+   [[ "$FILE_PATH" == *"agents\\"* && "$FILE_PATH" != *"agents\\tmp\\"* ]]; then
+    echo "[validate-docs] MATCH: Agent docs file" >&2
+    cat << 'EOF'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": "📝 Agent docs modified. Consider updating INDEX.md if adding new files."
+  }
+}
+EOF
+    exit 0
+fi
+
+echo "[validate-docs] No match - no action needed" >&2
+# No message needed - output empty JSON
+echo '{}'
 exit 0
