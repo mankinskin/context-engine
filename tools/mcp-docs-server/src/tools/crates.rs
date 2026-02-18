@@ -36,7 +36,8 @@ use crate::{
         SyncSummary,
     },
 };
-use super::{ToolResult, ToolError};
+use super::{ToolResult, ToolError, compile_search_regex, regex_matches};
+use regex::Regex;
 use serde::Serialize;
 use std::{
     fs,
@@ -537,7 +538,7 @@ impl CrateDocsManager {
         }
     }
 
-    /// Search crate documentation
+    /// Search crate documentation (supports regex patterns for flexible matching)
     pub fn search_crate_docs(
         &self,
         query: &str,
@@ -546,7 +547,7 @@ impl CrateDocsManager {
         search_content: bool,
     ) -> ToolResult<Vec<CrateSearchResult>> {
         let mut results = Vec::new();
-        let query_lower = query.to_lowercase();
+        let regex = compile_search_regex(query)?;
 
         let crates = self.discover_crates()?;
         
@@ -562,7 +563,7 @@ impl CrateDocsManager {
             // Search crate-level
             if let Ok(meta) = parse_crate_index(&docs_path.join("index.yaml")) {
                 // Search description
-                if meta.description.to_lowercase().contains(&query_lower) {
+                if regex_matches(&meta.description, &regex) {
                     results.push(CrateSearchResult {
                         crate_name: crate_summary.name.clone(),
                         module_path: String::new(),
@@ -578,21 +579,21 @@ impl CrateDocsManager {
                     if let Some(exported) = &meta.exported_items {
                         results.extend(self.search_type_entries(
                             &exported.types,
-                            &query_lower,
+                            &regex,
                             &crate_summary.name,
                             "",
                             "type",
                         ));
                         results.extend(self.search_type_entries(
                             &exported.traits,
-                            &query_lower,
+                            &regex,
                             &crate_summary.name,
                             "",
                             "trait",
                         ));
                         results.extend(self.search_type_entries(
                             &exported.macros,
-                            &query_lower,
+                            &regex,
                             &crate_summary.name,
                             "",
                             "macro",
@@ -602,9 +603,8 @@ impl CrateDocsManager {
 
                 // Search modules recursively
                 for module_ref in &meta.modules {
-                    if module_ref.name.to_lowercase().contains(&query_lower)
-                        || module_ref.description.to_lowercase().contains(&query_lower)
-                    {
+                    let searchable = format!("{} {}", module_ref.name, module_ref.description);
+                    if regex_matches(&searchable, &regex) {
                         results.push(CrateSearchResult {
                             crate_name: crate_summary.name.clone(),
                             module_path: module_ref.path.clone(),
@@ -619,7 +619,7 @@ impl CrateDocsManager {
                     let module_path = docs_path.join(&module_ref.path);
                     results.extend(self.search_module(
                         &module_path,
-                        &query_lower,
+                        &regex,
                         &crate_summary.name,
                         &module_ref.path,
                         search_types,
@@ -632,7 +632,7 @@ impl CrateDocsManager {
             if search_content {
                 let readme_path = docs_path.join("README.md");
                 if let Ok(content) = read_markdown_file(&readme_path) {
-                    if let Some(context) = self.find_context_in_content(&content, &query_lower) {
+                    if let Some(context) = self.find_context_in_content(&content, &regex) {
                         results.push(CrateSearchResult {
                             crate_name: crate_summary.name.clone(),
                             module_path: String::new(),
@@ -652,7 +652,7 @@ impl CrateDocsManager {
     fn search_type_entries(
         &self,
         entries: &[TypeEntry],
-        query: &str,
+        regex: &Option<Regex>,
         crate_name: &str,
         module_path: &str,
         match_type: &str,
@@ -660,18 +660,15 @@ impl CrateDocsManager {
         entries
             .iter()
             .filter_map(|entry| {
-                let name_lower = entry.name().to_lowercase();
+                let name = entry.name();
                 let desc = entry.description().unwrap_or("");
-                let desc_lower = desc.to_lowercase();
                 
-                let name_matches = name_lower.contains(query);
-                let desc_matches = desc_lower.contains(query);
+                // Combine name and description for regex search
+                let searchable = format!("{} {}", name, desc);
                 
-                if name_matches || desc_matches {
-                    // Build context showing what matched
-                    let context = if desc_matches {
-                        Some(self.extract_match_context(desc, query))
-                    } else if !desc.is_empty() {
+                if regex_matches(&searchable, regex) {
+                    // Build context showing the description
+                    let context = if !desc.is_empty() {
                         Some(truncate(desc, 100))
                     } else {
                         None
@@ -691,33 +688,11 @@ impl CrateDocsManager {
             })
             .collect()
     }
-    
-    /// Extract context around a match, showing surrounding text
-    fn extract_match_context(&self, text: &str, query: &str) -> String {
-        let text_lower = text.to_lowercase();
-        if let Some(pos) = text_lower.find(query) {
-            // Get 30 chars before and after the match
-            let start = pos.saturating_sub(30);
-            let end = (pos + query.len() + 30).min(text.len());
-            
-            let mut ctx = String::new();
-            if start > 0 {
-                ctx.push_str("...");
-            }
-            ctx.push_str(&text[start..end].trim());
-            if end < text.len() {
-                ctx.push_str("...");
-            }
-            ctx
-        } else {
-            truncate(text, 100)
-        }
-    }
 
     fn search_module(
         &self,
         module_path: &Path,
-        query: &str,
+        regex: &Option<Regex>,
         crate_name: &str,
         rel_path: &str,
         search_types: bool,
@@ -731,7 +706,7 @@ impl CrateDocsManager {
             if search_types {
                 results.extend(self.search_type_entries(
                     &meta.key_types,
-                    query,
+                    regex,
                     crate_name,
                     rel_path,
                     "type",
@@ -740,9 +715,8 @@ impl CrateDocsManager {
 
             // Search files
             for file in &meta.files {
-                if file.name.to_lowercase().contains(query)
-                    || file.description.to_lowercase().contains(query)
-                {
+                let searchable = format!("{} {}", file.name, file.description);
+                if regex_matches(&searchable, regex) {
                     results.push(CrateSearchResult {
                         crate_name: crate_name.to_string(),
                         module_path: rel_path.to_string(),
@@ -756,9 +730,8 @@ impl CrateDocsManager {
 
             // Search submodules recursively
             for submodule in &meta.submodules {
-                if submodule.name.to_lowercase().contains(query)
-                    || submodule.description.to_lowercase().contains(query)
-                {
+                let searchable = format!("{} {}", submodule.name, submodule.description);
+                if regex_matches(&searchable, regex) {
                     let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
                     results.push(CrateSearchResult {
                         crate_name: crate_name.to_string(),
@@ -774,7 +747,7 @@ impl CrateDocsManager {
                 let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
                 results.extend(self.search_module(
                     &sub_path,
-                    query,
+                    regex,
                     crate_name,
                     &sub_rel_path,
                     search_types,
@@ -786,7 +759,7 @@ impl CrateDocsManager {
             if search_content {
                 let readme_path = module_path.join("README.md");
                 if let Ok(content) = read_markdown_file(&readme_path) {
-                    if let Some(context) = self.find_context_in_content(&content, query) {
+                    if let Some(context) = self.find_context_in_content(&content, regex) {
                         results.push(CrateSearchResult {
                             crate_name: crate_name.to_string(),
                             module_path: rel_path.to_string(),
@@ -803,10 +776,10 @@ impl CrateDocsManager {
         results
     }
 
-    fn find_context_in_content(&self, content: &str, query: &str) -> Option<String> {
+    fn find_context_in_content(&self, content: &str, regex: &Option<Regex>) -> Option<String> {
         let lines: Vec<&str> = content.lines().collect();
         for (i, line) in lines.iter().enumerate() {
-            if line.to_lowercase().contains(query) {
+            if regex_matches(line, regex) {
                 // Include previous and next line for context
                 let mut context_parts = Vec::new();
                 if i > 0 {

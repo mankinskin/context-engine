@@ -25,7 +25,7 @@ use crate::{
         generate_index,
     },
 };
-use super::{ToolResult, ToolError, DetailLevel, ListFilter};
+use super::{ToolResult, ToolError, DetailLevel, ListFilter, compile_search_regex, regex_matches};
 use serde::{Deserialize, Serialize};
 use std::{
     fs,
@@ -595,7 +595,7 @@ impl DocsManager {
         Ok(candidates)
     }
 
-    /// Search document content for a query string.
+    /// Search document content using regex pattern (case-insensitive).
     pub fn search_content(
         &self,
         query: &str,
@@ -615,7 +615,7 @@ impl DocsManager {
             ],
         };
 
-        let query_lower = query.to_lowercase();
+        let regex = compile_search_regex(query)?;
         let mut matches = Vec::new();
         let mut files_searched = 0;
         let mut total_matches = 0;
@@ -633,7 +633,8 @@ impl DocsManager {
                 let mut excerpts = Vec::new();
 
                 for (idx, line) in lines.iter().enumerate() {
-                    if line.to_lowercase().contains(&query_lower) {
+                    // Check if regex matches the line
+                    if regex_matches(line, &regex) {
                         total_matches += 1;
 
                         // Gather context before
@@ -678,7 +679,8 @@ impl DocsManager {
         })
     }
 
-    /// Enhanced search: search by query and/or tag, optionally searching content
+    /// Enhanced search: search by regex query and/or tag, optionally searching content.
+    /// Query is a case-insensitive regex pattern.
     pub fn search_docs(
         &self,
         query: Option<&str>,
@@ -697,7 +699,7 @@ impl DocsManager {
             ],
         };
 
-        let query_lower = query.map(|q| q.to_lowercase());
+        let regex = query.map(compile_search_regex).transpose()?.flatten();
         let tag_lower = tag.map(|t| t.to_lowercase().trim_start_matches('#').to_string());
 
         let mut results = Vec::new();
@@ -706,62 +708,36 @@ impl DocsManager {
             let docs = self.list_documents(dt)?;
 
             for doc in docs {
-                let mut matches = false;
-
                 // Check tag if provided
-                if let Some(ref tag_l) = tag_lower {
-                    if doc.tags.iter().any(|t| t.to_lowercase() == *tag_l) {
-                        matches = true;
-                    }
-                }
-
-                // Check query if provided
-                if let Some(ref query_l) = query_lower {
-                    // Search in title and summary
-                    if doc.title.to_lowercase().contains(query_l) 
-                        || doc.summary.to_lowercase().contains(query_l) 
-                    {
-                        matches = true;
-                    }
-
-                    // Search in content if requested
-                    if !matches && search_content {
-                        let path = self.agents_dir.join(dt.directory()).join(&doc.filename);
-                        if let Ok(content) = fs::read_to_string(&path) {
-                            if content.to_lowercase().contains(query_l) {
-                                matches = true;
-                            }
-                        }
-                    }
-                }
-
-                // If only tag provided and it matches, or if query matches
-                // Handle the case where only one filter is provided
-                if matches || (tag.is_none() && query.is_none()) {
-                    // This shouldn't happen as we validate input, but be safe
-                }
-
-                // More precise logic: if both provided, need tag match; if only one, need that one
                 let tag_ok = tag_lower.as_ref().map_or(true, |tag_l| {
                     doc.tags.iter().any(|t| t.to_lowercase() == *tag_l)
                 });
                 
-                let query_ok = query_lower.as_ref().map_or(true, |query_l| {
-                    let title_match = doc.title.to_lowercase().contains(query_l);
-                    let summary_match = doc.summary.to_lowercase().contains(query_l);
+                // Check regex if provided
+                let query_ok = if regex.is_none() {
+                    true
+                } else {
+                    // Combine title/summary/tags for searching
+                    let searchable = format!(
+                        "{} {} {}",
+                        doc.title,
+                        doc.summary,
+                        doc.tags.join(" ")
+                    );
                     
-                    if title_match || summary_match {
-                        return true;
-                    }
-                    
-                    if search_content {
+                    if regex_matches(&searchable, &regex) {
+                        true
+                    } else if search_content {
                         let path = self.agents_dir.join(dt.directory()).join(&doc.filename);
                         if let Ok(content) = fs::read_to_string(&path) {
-                            return content.to_lowercase().contains(query_l);
+                            regex_matches(&content, &regex)
+                        } else {
+                            false
                         }
+                    } else {
+                        false
                     }
-                    false
-                });
+                };
 
                 if tag_ok && query_ok {
                     results.push(doc);

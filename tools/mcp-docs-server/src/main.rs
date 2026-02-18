@@ -120,7 +120,7 @@ pub struct CreateModuleDocInput {
 /// Search crate documentation
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct SearchCrateDocsInput {
-    /// Search query (case-insensitive)
+    /// Search query. Supports: regex patterns (graph|path, init.*), quoted literals ("hello world"), backslash escaping (\|). Case-insensitive.
     query: String,
     /// Optional: filter to specific crate
     #[serde(default)]
@@ -251,7 +251,7 @@ pub struct UpdateMetaInput {
 /// Search documents by query and/or tag
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct SearchDocsInput {
-    /// Search query - searches titles, summaries, and optionally content. Optional if tag is provided.
+    /// Search query. Supports: regex patterns (graph|path, init.*), quoted literals ("hello world"), backslash escaping (\|). Case-insensitive. Optional if tag is provided.
     #[serde(default)]
     query: Option<String>,
     /// Tag to filter by (with or without #). Optional if query is provided.
@@ -316,7 +316,7 @@ fn default_true() -> bool {
 /// Search document content for strings
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct SearchContentInput {
-    /// The search query (case-insensitive substring match)
+    /// Search query. Supports: regex patterns (graph|path, init.*), quoted literals ("hello world"), backslash escaping (\|). Case-insensitive.
     query: String,
     /// Optional: filter to specific doc_type
     #[serde(default)]
