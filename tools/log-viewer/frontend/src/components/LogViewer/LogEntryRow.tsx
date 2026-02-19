@@ -131,8 +131,6 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
               {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
               <span class="entry-meta">#{entry.line_number}</span>
               {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
-            </div>
-            <div class="header-row2">
               {entry.span_name && <span class="span-name">{entry.span_name}</span>}
               {isPanic ? (
                 <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
@@ -140,7 +138,7 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
                 <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
               )}
             </div>
-            <div class="header-row3">
+            <div class="header-row2">
               {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
               {hasLocation && (
                 <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
