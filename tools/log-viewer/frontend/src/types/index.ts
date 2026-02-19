@@ -6,6 +6,14 @@ export interface LogFile {
   modified: string | null;
 }
 
+export interface AssertionDiff {
+  title: string;
+  left_label: string;
+  right_label: string;
+  left_value: string;
+  right_value: string;
+}
+
 export interface LogEntry {
   line_number: number;
   level: LogLevel;
@@ -17,6 +25,9 @@ export interface LogEntry {
   fields: Record<string, unknown>;
   file: string | null;
   source_line: number | null;
+  panic_file: string | null;
+  panic_line: number | null;
+  assertion_diff: AssertionDiff | null;
   backtrace: string | null;
   raw: string;
 }

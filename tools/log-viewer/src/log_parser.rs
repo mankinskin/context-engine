@@ -5,6 +5,79 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use regex::Regex;
+use once_cell::sync::Lazy;
+
+// Regex to strip ANSI escape codes
+static ANSI_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"\x1b\[[0-9;]*m").unwrap()
+});
+
+// Regex to parse panic location from message: "panicked at <file>:<line>:<col>:"
+static PANIC_LOCATION_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"panicked at ([^:]+):(\d+):(\d+):").unwrap()
+});
+
+// Regex to parse assertion diff header: "assertion failed: `(left == right)` ... Diff < left / right > :"
+// Uses (?s) for DOTALL mode so . matches newlines
+// Note: there's a space before the colon in the actual format
+static ASSERTION_DIFF_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?s)assertion failed: `\(left == right\)`.*?Diff < (\w+) / (\w+) >\s*:\s*(.+)").unwrap()
+});
+
+/// Strip ANSI escape codes from a string
+fn strip_ansi_codes(s: &str) -> String {
+    ANSI_REGEX.replace_all(s, "").to_string()
+}
+
+/// Parse panic location from message like "panicked at file.rs:123:5: assertion..."
+fn parse_panic_location(message: &str) -> Option<(String, u32, u32)> {
+    PANIC_LOCATION_REGEX.captures(message).map(|caps| {
+        let file = caps.get(1).unwrap().as_str().to_string();
+        let line: u32 = caps.get(2).unwrap().as_str().parse().unwrap_or(0);
+        let col: u32 = caps.get(3).unwrap().as_str().parse().unwrap_or(0);
+        (file, line, col)
+    })
+}
+
+/// Parsed assertion diff data
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AssertionDiff {
+    pub title: String,
+    pub left_label: String,
+    pub right_label: String,
+    pub left_value: String,
+    pub right_value: String,
+}
+
+/// Parse assertion diff from message
+/// Format: "assertion failed: `(left == right)` Diff < left / right >: <value\n<value\n>value"
+fn parse_assertion_diff(message: &str) -> Option<AssertionDiff> {
+    let captures = ASSERTION_DIFF_REGEX.captures(message)?;
+    let left_label = captures.get(1)?.as_str().to_string();
+    let right_label = captures.get(2)?.as_str().to_string();
+    let diff_content = captures.get(3)?.as_str();
+    
+    // Parse diff lines: lines starting with < are left, > are right
+    let mut left_lines = Vec::new();
+    let mut right_lines = Vec::new();
+    
+    for line in diff_content.lines() {
+        if let Some(rest) = line.strip_prefix('<') {
+            left_lines.push(rest.to_string());
+        } else if let Some(rest) = line.strip_prefix('>') {
+            right_lines.push(rest.to_string());
+        }
+    }
+    
+    Some(AssertionDiff {
+        title: "assertion failed: `(left == right)`".to_string(),
+        left_label,
+        right_label,
+        left_value: left_lines.join("\n"),
+        right_value: right_lines.join("\n"),
+    })
+}
 
 /// A parsed log entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,10 +98,16 @@ pub struct LogEntry {
     pub depth: usize,
     /// Additional fields (preserves structured JSON values)
     pub fields: HashMap<String, serde_json::Value>,
-    /// Source file location
+    /// Source file location (from tracing macro)
     pub file: Option<String>,
-    /// Source line number
+    /// Source line number (from tracing macro)
     pub source_line: Option<u32>,
+    /// Panic file location (from panic info, points to actual assertion)
+    pub panic_file: Option<String>,
+    /// Panic line number
+    pub panic_line: Option<u32>,
+    /// Parsed assertion diff (for failed assertions)
+    pub assertion_diff: Option<AssertionDiff>,
     /// Stack trace (for panics)
     pub backtrace: Option<String>,
     /// Raw JSON content (pretty-printed)
@@ -96,6 +175,9 @@ impl LogParser {
                         fields: HashMap::new(),
                         file: None,
                         source_line: None,
+                        panic_file: None,
+                        panic_line: None,
+                        assertion_diff: None,
                         backtrace: None,
                         raw: format!("Parse error at entry {}", entry_num),
                     });
@@ -131,8 +213,9 @@ impl LogParser {
         if let Some(field_value) = &json.fields {
             if let Some(obj) = field_value.as_object() {
                 for (key, value) in obj {
-                    // Skip the message field, we handle it separately
-                    if key != "message" && key != "backtrace" {
+                    // Skip fields we handle separately
+                    if key != "message" && key != "backtrace" 
+                        && key != "panic_file" && key != "panic_line" && key != "panic_column" {
                         fields.insert(key.clone(), value.clone());
                     }
                 }
@@ -148,6 +231,41 @@ impl LogParser {
             }
         }
         
+        // Get tracing macro location (where the log statement is)
+        let file = json.file.clone();
+        let source_line = json.line;
+        
+        // Get panic location - either from fields or parsed from message
+        let mut panic_file = None;
+        let mut panic_line = None;
+        
+        // First check for panic location fields (from new panic hook)
+        if let Some(field_value) = &json.fields {
+            if let Some(obj) = field_value.as_object() {
+                if let Some(pf) = obj.get("panic_file") {
+                    if let Some(s) = pf.as_str() {
+                        panic_file = Some(s.to_string());
+                    }
+                }
+                if let Some(pl) = obj.get("panic_line") {
+                    if let Some(n) = pl.as_u64() {
+                        panic_line = Some(n as u32);
+                    }
+                }
+            }
+        }
+        
+        // If no panic fields, try to parse from message (for old log files)
+        if panic_file.is_none() && message.contains("panicked at") {
+            if let Some((pf, pl, _col)) = parse_panic_location(&message) {
+                panic_file = Some(pf);
+                panic_line = Some(pl);
+            }
+        }
+        
+        // Parse assertion diff from message if this is a panic
+        let assertion_diff = parse_assertion_diff(&message);
+        
         LogEntry {
             line_number,
             level: level.clone(),
@@ -157,8 +275,11 @@ impl LogParser {
             span_name,
             depth,
             fields,
-            file: json.file.clone(),
-            source_line: json.line,
+            file,
+            source_line,
+            panic_file,
+            panic_line,
+            assertion_diff,
             backtrace,
             // Generate a compact summary for raw field
             raw: format!("[{}] {}", level, message),
@@ -175,8 +296,8 @@ impl LogParser {
                 // Check for message field
                 if let Some(msg) = obj.get("message") {
                     message = match msg {
-                        serde_json::Value::String(s) => s.clone(),
-                        other => other.to_string(),
+                        serde_json::Value::String(s) => strip_ansi_codes(s),
+                        other => strip_ansi_codes(&other.to_string()),
                     };
                 }
                 
