@@ -28,7 +28,7 @@ interface Props {
   onHeaderWheel?: (e: WheelEvent) => void; // Wheel scroll handler for header column
 }
 
-export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth: _headerColWidth = 300, onHeaderWheel }: Props) {
+export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth = 500, onHeaderWheel }: Props) {
   // Local state for legacy mode
   const [localExpanded, setLocalExpanded] = useState(false);
   
@@ -107,7 +107,7 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
       onClick={handleEntryClick}
     >
       {/* Header Column - entry metadata and message */}
-      <div class="entry-header-cell" onWheel={onHeaderWheel as any}>
+      <div class="entry-header-cell" style={{ width: `${headerColWidth}px`, maxWidth: `${headerColWidth}px` }} onWheel={onHeaderWheel as any}>
         <div 
           class="entry-header-content"
           ref={(el) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { 
   filteredEntries, 
   showRaw, 
@@ -25,7 +25,8 @@ export function LogViewer() {
   const [expandedEntries, setExpandedEntries] = useState<Set<number>>(new Set());
   const [headerScrollLeft, setHeaderScrollLeft] = useState(0);
   const [maxHeaderWidth, setMaxHeaderWidth] = useState(0);
-  const [headerColWidth, _setHeaderColWidth] = useState(500);
+  const [headerColWidth, setHeaderColWidth] = useState(500);
+  const isResizing = useRef(false);
   
   // Refs for header cells to sync scroll
   const headerCellRefs: { current: HTMLDivElement[] } = { current: [] };
@@ -85,6 +86,35 @@ export function LogViewer() {
     }
   };
 
+  // Handle resize start
+  const handleResizeStart = (e: MouseEvent) => {
+    e.preventDefault();
+    isResizing.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    
+    const startX = e.clientX;
+    const startWidth = headerColWidth;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing.current) return;
+      const delta = e.clientX - startX;
+      const newWidth = Math.max(200, startWidth + delta);
+      setHeaderColWidth(newWidth);
+    };
+    
+    const handleMouseUp = () => {
+      isResizing.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   if (!currentFile.value) {
     return (
       <div class="log-viewer empty">
@@ -138,24 +168,33 @@ export function LogViewer() {
           </div>
         </div>
       )}
-      <div class="log-entries">
-        {filteredEntries.value.map((entry, index) => (
-          <LogEntryRow
-            key={entry.line_number}
-            entry={entry}
-            showRaw={showRaw.value}
-            searchQuery={searchQuery.value}
-            isSelected={selectedEntry.value?.line_number === entry.line_number}
-            onSelect={() => selectEntry(entry)}
-            expandAll={expandAll}
-            isExpanded={expandedEntries.has(entry.line_number)}
-            onToggleExpand={() => toggleExpanded(entry.line_number)}
-            headerCellRef={registerHeaderCell(index)}
-            headerScrollLeft={headerScrollLeft}
-            headerColWidth={headerColWidth}
-            onHeaderWheel={handleHeaderWheel}
-          />
-        ))}
+      {/* Entries wrapper - contains resize handle and scrollable entries */}
+      <div class="log-entries-wrapper">
+        {/* Resize handle */}
+        <div 
+          class="column-resize-handle" 
+          style={{ left: `${headerColWidth}px` }}
+          onMouseDown={handleResizeStart}
+        />
+        <div class="log-entries">
+          {filteredEntries.value.map((entry, index) => (
+            <LogEntryRow
+              key={entry.line_number}
+              entry={entry}
+              showRaw={showRaw.value}
+              searchQuery={searchQuery.value}
+              isSelected={selectedEntry.value?.line_number === entry.line_number}
+              onSelect={() => selectEntry(entry)}
+              expandAll={expandAll}
+              isExpanded={expandedEntries.has(entry.line_number)}
+              onToggleExpand={() => toggleExpanded(entry.line_number)}
+              headerCellRef={registerHeaderCell(index)}
+              headerScrollLeft={headerScrollLeft}
+              headerColWidth={headerColWidth}
+              onHeaderWheel={handleHeaderWheel}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
