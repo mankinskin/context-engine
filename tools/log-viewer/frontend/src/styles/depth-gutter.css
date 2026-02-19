@@ -19,69 +19,50 @@
   --line-color: var(--border-color);
 }
 
-/* │ Vertical pass-through - full height line on right edge */
+/* │ Vertical pass-through - full height line on left edge */
 .depth-line.pass::before {
   content: '';
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 0;
-  border-right: 1px solid var(--line-color);
+  left: 6px;
+  border-left: 1px solid var(--line-color);
 }
 
-/* ├ T-junction - full vertical + horizontal branch at center */
-.depth-line.tee::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  border-right: 1px solid var(--line-color);
-}
-.depth-line.tee::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 8px;
-  border-top: 1px solid var(--line-color);
-  transform: translateY(-0.5px);
-}
-
-/* ┌ Top corner (span enter) - vertical from center DOWN + horizontal */
+/* ┌ Top corner (span enter) - vertical from center DOWN + horizontal RIGHT */
 .depth-line.top-corner::before {
   content: '';
   position: absolute;
   top: 50%;
   bottom: 0;
-  right: 0;
-  border-right: 1px solid var(--line-color);
+  left: 6px;
+  border-left: 1px solid var(--line-color);
 }
 .depth-line.top-corner::after {
   content: '';
   position: absolute;
   top: 50%;
+  left: 6px;
   right: 0;
-  width: 8px;
   border-top: 1px solid var(--line-color);
   transform: translateY(-0.5px);
 }
 
-/* └ Bottom corner (span exit) - vertical from top to CENTER + horizontal */
+/* └ Bottom corner (span exit) - vertical from top to CENTER + horizontal RIGHT */
 .depth-line.bottom-corner::before {
   content: '';
   position: absolute;
   top: 0;
   bottom: 50%;
-  right: 0;
-  border-right: 1px solid var(--line-color);
+  left: 6px;
+  border-left: 1px solid var(--line-color);
 }
 .depth-line.bottom-corner::after {
   content: '';
   position: absolute;
   top: 50%;
+  left: 6px;
   right: 0;
-  width: 8px;
   border-top: 1px solid var(--line-color);
   transform: translateY(-0.5px);
 }

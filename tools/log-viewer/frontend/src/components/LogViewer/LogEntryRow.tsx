@@ -140,15 +140,19 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
           <div class="entry-header-col">
             {/* Span depth gutter with CSS-drawn tree lines */}
             <div class="depth-gutter">
-              {Array.from({ length: indentLevel }).map((_, i) => {
-                const isLastLevel = i === indentLevel - 1;
+              {/* For span-enter: indentLevel lines, last one is top-corner */}
+              {/* For span-exit: indentLevel+1 lines (to show the closing corner at the span's depth) */}
+              {/* For regular events: just vertical pass-through lines */}
+              {Array.from({ length: isSpanExit ? indentLevel + 1 : indentLevel }).map((_, i) => {
+                const effectiveDepth = isSpanExit ? indentLevel + 1 : indentLevel;
+                const isLastLevel = i === effectiveDepth - 1;
                 const lineColor = depthToColor(i);
-                // Determine line type: pass-through, tee, top-corner, bottom-corner
-                let lineType = 'pass'; // │ vertical pass-through
+                // Determine line type
+                let lineType = 'pass'; // │ vertical pass-through (default for all levels)
                 if (isLastLevel) {
-                  if (isSpanEnter) lineType = 'top-corner'; // ┌
-                  else if (isSpanExit) lineType = 'bottom-corner'; // └
-                  else lineType = 'tee'; // ├
+                  if (isSpanEnter) lineType = 'top-corner'; // ┌ span opening
+                  else if (isSpanExit) lineType = 'bottom-corner'; // └ span closing
+                  // Regular events stay as 'pass' - no horizontal branch
                 }
                 return (
                   <span 
