@@ -22,7 +22,7 @@ export async function searchLogs(
   level?: string,
   limit?: number
 ): Promise<SearchResponse> {
-  const url = new URL(`${API_BASE}/logs/${encodeURIComponent(name)}/search`, window.location.origin);
+  const url = new URL(`${API_BASE}/search/${encodeURIComponent(name)}`, window.location.origin);
   url.searchParams.set('q', query);
   if (level) url.searchParams.set('level', level);
   if (limit) url.searchParams.set('limit', limit.toString());

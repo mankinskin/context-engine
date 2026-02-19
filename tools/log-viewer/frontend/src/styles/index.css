@@ -491,6 +491,37 @@ html, body {
   margin-left: 4px;
 }
 
+/* Backtrace display */
+.entry-backtrace {
+  margin-top: 10px;
+  border: 1px solid var(--level-error);
+  border-radius: 4px;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.backtrace-summary {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--level-error);
+  cursor: pointer;
+}
+
+.backtrace-content {
+  margin: 0;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 /* Source snippet */
 .entry-source {
   margin-top: 8px;

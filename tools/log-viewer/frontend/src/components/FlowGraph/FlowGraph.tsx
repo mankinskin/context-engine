@@ -1,7 +1,11 @@
 import { useEffect, useRef } from 'preact/hooks';
 import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
 import { entries, currentFile, selectEntry, setTab } from '../../store';
 import type { LogEntry } from '../../types';
+
+// Register dagre layout
+cytoscape.use(dagre);
 
 interface GraphNode {
   id: string;
@@ -65,6 +69,21 @@ function getLevelColor(level: string): string {
   }
 }
 
+function formatNodeLabel(entry: LogEntry): string {
+  const level = entry.level.toUpperCase().padEnd(5);
+  const type = entry.event_type === 'span_enter' ? '▶' : 
+               entry.event_type === 'span_exit' ? '◀' : '●';
+  const name = entry.span_name || '';
+  const msg = entry.message.length > 60 ? entry.message.slice(0, 60) + '…' : entry.message;
+  const time = entry.timestamp?.split('T')[1]?.slice(0, 12) || '';
+  
+  // Multi-line label: [LEVEL] [TYPE] name\nmessage\ntime
+  if (name) {
+    return `${type} ${level} ${name}\n${msg}\n${time}`;
+  }
+  return `${type} ${level}\n${msg}\n${time}`;
+}
+
 export function FlowGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
@@ -95,7 +114,7 @@ export function FlowGraph() {
         ...limitedNodes.map(node => ({
           data: { 
             id: node.id, 
-            label: node.entry.span_name || node.entry.message.slice(0, 30),
+            label: formatNodeLabel(node.entry),
             entry: node.entry,
             type: node.type,
             level: node.entry.level
@@ -116,30 +135,34 @@ export function FlowGraph() {
           style: {
             'background-color': (ele: any) => getLevelColor(ele.data('level')),
             'label': 'data(label)',
-            'font-size': '10px',
-            'text-wrap': 'ellipsis',
-            'text-max-width': '100px',
+            'font-size': '14px',
+            'font-family': 'monospace',
+            'font-weight': 'bold',
+            'text-wrap': 'wrap',
+            'text-max-width': '280px',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'text-justification': 'left',
             'color': '#fff',
-            'text-outline-color': '#000',
-            'text-outline-width': 1,
-            'width': 40,
-            'height': 40,
-            'shape': 'ellipse'
+            'width': 320,
+            'height': 90,
+            'shape': 'round-rectangle',
+            'padding': '12px'
           }
         },
         {
           selector: 'node[type="span_enter"]',
           style: {
-            'border-width': 2,
-            'border-color': '#fff'
+            'border-width': 3,
+            'border-color': '#2ecc71'
           }
         },
         {
           selector: 'node[type="span_exit"]',
           style: {
-            'border-width': 2,
+            'border-width': 3,
             'border-style': 'dashed',
-            'border-color': '#fff'
+            'border-color': '#e74c3c'
           }
         },
         {
@@ -169,10 +192,24 @@ export function FlowGraph() {
         }
       ],
       layout: {
-        name: 'breadthfirst',
-        directed: true,
-        spacingFactor: 1.5,
-        avoidOverlap: true
+        name: 'dagre',
+        rankDir: 'TB',
+        nodeSep: 30,
+        rankSep: 50,
+        edgeSep: 10,
+        fit: false,
+        padding: 30
+      } as any
+    });
+    
+    // After layout, zoom to show first few nodes readable
+    cy.one('layoutstop', () => {
+      cy.zoom(1.2);
+      cy.pan({ x: 50, y: 50 });
+      // Center on first node if exists
+      const firstNode = cy.nodes().first();
+      if (firstNode.length) {
+        cy.center(firstNode);
       }
     });
     

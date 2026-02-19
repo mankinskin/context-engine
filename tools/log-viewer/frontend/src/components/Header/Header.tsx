@@ -7,7 +7,10 @@ import {
   performSearch,
   levelFilter,
   typeFilter,
-  showRaw
+  showRaw,
+  setLevelFilter,
+  setTypeFilter,
+  clearSearch
 } from '../../store';
 import type { LogLevel, EventType } from '../../types';
 
@@ -46,7 +49,7 @@ export function Header() {
         <select 
           class="filter-select"
           value={levelFilter.value}
-          onChange={(e) => levelFilter.value = (e.target as HTMLSelectElement).value as LogLevel | ''}
+          onChange={(e) => setLevelFilter((e.target as HTMLSelectElement).value as LogLevel | '')}
         >
           <option value="">All Levels</option>
           <option value="TRACE">TRACE</option>
@@ -59,13 +62,16 @@ export function Header() {
         <select 
           class="filter-select"
           value={typeFilter.value}
-          onChange={(e) => typeFilter.value = (e.target as HTMLSelectElement).value as EventType | ''}
-        >
+          onChange={(e) => setTypeFilter((e.target as HTMLSelectElement).value as EventType | '')}>
           <option value="">All Types</option>
           <option value="event">Event</option>
           <option value="span_enter">Span Enter</option>
           <option value="span_exit">Span Exit</option>
         </select>
+        
+        {searchQuerySignal.value && (
+          <button class="btn" onClick={clearSearch}>✕ Clear Search</button>
+        )}
         
         <label class="checkbox-label">
           <input 

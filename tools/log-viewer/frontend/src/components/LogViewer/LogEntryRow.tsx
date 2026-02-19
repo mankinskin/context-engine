@@ -141,6 +141,14 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
           </details>
         )}
         
+        {/* Backtrace for panic/error entries */}
+        {entry.backtrace && (
+          <details class="entry-backtrace" open={entry.level === 'ERROR'}>
+            <summary class="backtrace-summary">📚 Stack Trace</summary>
+            <pre class="backtrace-content">{entry.backtrace}</pre>
+          </details>
+        )}
+        
         {/* Source snippet toggle */}
         {hasLocation && (
           <div class="entry-source">

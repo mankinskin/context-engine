@@ -17,6 +17,7 @@ export interface LogEntry {
   fields: Record<string, string>;
   file: string | null;
   source_line: number | null;
+  backtrace: string | null;
   raw: string;
 }
 
