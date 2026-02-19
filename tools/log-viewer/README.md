@@ -67,10 +67,39 @@ npm run dev
 
 The Vite dev server proxies API requests to the Rust backend.
 
+### Configuration
+
+Create a `log-viewer.toml` file (copy from `log-viewer.toml.example`):
+
+```toml
+# Directory containing log files
+log_dir = "../../target/test-logs"
+
+# Server configuration
+[server]
+host = "127.0.0.1"
+port = 3000
+
+# Logging configuration
+[logging]
+level = "info"
+file_logging = false
+```
+
+**Config file search order:**
+1. Path in `LOG_VIEWER_CONFIG` environment variable
+2. `./log-viewer.toml` (current directory)
+3. `./config/log-viewer.toml` (config subdirectory)
+4. `~/.config/log-viewer/config.toml` (user config directory)
+
 ### Environment Variables
+
+Environment variables override config file values:
 
 - `LOG_DIR` - Override the log directory (default: `target/test-logs/`)
 - `WORKSPACE_ROOT` - Override workspace root for source file access
+- `LOG_LEVEL` - Override log level (trace, debug, info, warn, error)
+- `LOG_FILE` - Enable file logging (set to any value)
 
 ## API Endpoints
 

@@ -8,13 +8,24 @@
 //! - GET /api/source/*path - Get source file content
 //! - Static files served from /static
 //!
-//! # Environment Variables
+//! # Configuration
+//! 
+//! Config file search order:
+//! 1. Path in `LOG_VIEWER_CONFIG` environment variable
+//! 2. `./log-viewer.toml` (current directory)
+//! 3. `./config/log-viewer.toml` (config subdirectory)
+//! 4. `~/.config/log-viewer/config.toml` (user config directory)
+//!
+//! # Environment Variables (override config file values)
 //! - `LOG_DIR` - Directory containing log files (default: target/test-logs)
 //! - `WORKSPACE_ROOT` - Workspace root for source file resolution
 //! - `LOG_LEVEL` - Logging level: trace, debug, info, warn, error (default: info)
 //! - `LOG_FILE` - Enable file logging to logs/log-viewer.log
 
+mod config;
 mod log_parser;
+
+use config::Config;
 
 use axum::{
     Router,
@@ -99,9 +110,8 @@ pub struct ErrorResponse {
 }
 
 /// Initialize tracing with optional file output
-fn init_tracing() {
-    let log_level = env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
-    let filter = EnvFilter::try_new(&log_level)
+fn init_tracing(config: &Config) {
+    let filter = EnvFilter::try_new(&config.logging.level)
         .unwrap_or_else(|_| EnvFilter::new("info"));
 
     let fmt_layer = fmt::layer()
@@ -111,7 +121,7 @@ fn init_tracing() {
         .with_line_number(true);
 
     // Check if file logging is enabled
-    if env::var("LOG_FILE").is_ok() {
+    if config.logging.file_logging {
         let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
         std::fs::create_dir_all(&log_dir).ok();
         
@@ -145,7 +155,16 @@ fn init_tracing() {
     }
 }
 
-/// Create the application state
+/// Create the application state from config
+pub fn create_app_state_from_config(config: &Config) -> AppState {
+    AppState {
+        log_dir: config.resolve_log_dir(),
+        workspace_root: config.resolve_workspace_root(),
+        parser: Arc::new(LogParser::new()),
+    }
+}
+
+/// Create the application state (for backward compatibility and tests)
 pub fn create_app_state(log_dir: Option<PathBuf>, workspace_root: Option<PathBuf>) -> AppState {
     let log_dir = log_dir.or_else(|| {
         env::var("LOG_DIR").map(PathBuf::from).ok()
@@ -198,9 +217,12 @@ pub fn create_router(state: AppState, static_dir: Option<PathBuf>) -> Router {
 
 #[tokio::main]
 async fn main() {
-    init_tracing();
+    // Load configuration from file and environment
+    let config = Config::load();
+    
+    init_tracing(&config);
 
-    let state = create_app_state(None, None);
+    let state = create_app_state_from_config(&config);
     info!(log_dir = %state.log_dir.display(), exists = state.log_dir.exists(), "Log directory");
     info!(workspace_root = %state.workspace_root.display(), "Workspace root");
 
@@ -210,8 +232,10 @@ async fn main() {
 
     let app = create_router(state, Some(static_dir));
 
-    // Bind to address
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    // Bind to address from config
+    let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
+        .parse()
+        .expect("Invalid server address in config");
     info!(%addr, "Starting server");
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();

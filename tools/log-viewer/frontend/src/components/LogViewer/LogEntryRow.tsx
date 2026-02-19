@@ -1,7 +1,8 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import type { LogEntry, SourceSnippet } from '../../types';
 import { openSourceFile } from '../../store';
 import * as api from '../../api';
+import { CompactJsonViewer } from './JsonViewer';
 
 interface Props {
   entry: LogEntry;
@@ -37,7 +38,7 @@ function formatTimestamp(ts: string | null): string {
 export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect }: Props) {
   const [snippet, setSnippet] = useState<SourceSnippet | null>(null);
   const [snippetError, setSnippetError] = useState<string | null>(null);
-  const [showSnippet, setShowSnippet] = useState(false);
+  const [showSnippet, setShowSnippet] = useState(true);
 
   const hasLocation = entry.file && entry.source_line;
   const levelClass = entry.level.toLowerCase();
@@ -47,23 +48,17 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
   const indentLevel = Math.min(entry.depth, 10);
   const indentPx = indentLevel * 20;
 
-  const loadSnippet = async () => {
-    if (!entry.file || !entry.source_line) return;
-    
-    if (showSnippet && snippet) {
-      setShowSnippet(false);
-      return;
+  // Auto-load snippet on mount if location is available
+  useEffect(() => {
+    if (hasLocation && !snippet && !snippetError) {
+      api.fetchSourceSnippet(entry.file!, entry.source_line!, 3)
+        .then(setSnippet)
+        .catch(e => setSnippetError(String(e)));
     }
-    
-    setShowSnippet(true);
-    if (snippet) return; // Already loaded
-    
-    try {
-      const data = await api.fetchSourceSnippet(entry.file, entry.source_line, 3);
-      setSnippet(data);
-    } catch (e) {
-      setSnippetError(String(e));
-    }
+  }, [entry.file, entry.source_line]);
+
+  const toggleSnippet = () => {
+    setShowSnippet(!showSnippet);
   };
 
   const handleLocationClick = (e: MouseEvent) => {
@@ -118,23 +113,23 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
         {importantFields.length > 0 && (
           <div class="entry-fields-inline">
             {importantFields.map(([k, v]) => (
-              <span key={k} class="field-inline">
+              <div key={k} class="field-inline">
                 <span class="field-key">{k}</span>=
-                <span class="field-value">{v}</span>
-              </span>
+                <span class="field-value"><CompactJsonViewer value={v} /></span>
+              </div>
             ))}
           </div>
         )}
         
-        {/* Other fields collapsed */}
+        {/* Other fields expanded by default */}
         {otherFields.length > 0 && (
-          <details class="entry-fields-details">
+          <details class="entry-fields-details" open>
             <summary>{otherFields.length} more fields</summary>
-            <div class="entry-fields-grid">
+            <div class="entry-fields-list">
               {otherFields.map(([k, v]) => (
-                <div key={k} class="field-item">
+                <div key={k} class="field-item-row">
                   <span class="field-key">{k}</span>
-                  <span class="field-value">{v}</span>
+                  <span class="field-value"><CompactJsonViewer value={v} /></span>
                 </div>
               ))}
             </div>
@@ -152,7 +147,7 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
         {/* Source snippet toggle */}
         {hasLocation && (
           <div class="entry-source">
-            <button class="snippet-toggle" onClick={loadSnippet}>
+            <button class="snippet-toggle" onClick={toggleSnippet}>
               {showSnippet ? '▼' : '▶'} Source
             </button>
             {showSnippet && snippet && (

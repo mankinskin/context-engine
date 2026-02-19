@@ -1,0 +1,36 @@
+# Log Viewer Configuration
+# Copy this to log-viewer.toml to use
+#
+# Config file search order:
+# 1. Path in `LOG_VIEWER_CONFIG` environment variable
+# 2. ./log-viewer.toml (current directory)
+# 3. ./config/log-viewer.toml (config subdirectory)
+# 4. ~/.config/log-viewer/config.toml (user config directory)
+#
+# Environment variables override config file values:
+# - LOG_DIR - Directory containing log files
+# - WORKSPACE_ROOT - Workspace root for source file resolution
+# - LOG_LEVEL - Logging level (trace, debug, info, warn, error)
+# - LOG_FILE - Enable file logging (any value)
+
+# Directory containing log files to view
+# Default: {workspace_root}/target/test-logs
+log_dir = "../../target/test-logs"
+
+# Workspace root for source file resolution (for source links)
+# Default: auto-detected by looking for Cargo.toml
+# workspace_root = "/path/to/workspace"
+
+# Server configuration
+[server]
+# Host to bind to (default: 127.0.0.1)
+host = "127.0.0.1"
+# Port to listen on (default: 3000)
+port = 3000
+
+# Logging configuration
+[logging]
+# Log level: trace, debug, info, warn, error (default: info)
+level = "info"
+# Enable file logging to logs/log-viewer.log (default: false)
+file_logging = false
