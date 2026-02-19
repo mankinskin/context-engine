@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { ChevronDown, ChevronRight } from '../Icons';
 
 interface RustValueRendererProps {
   value: unknown;
@@ -210,7 +211,7 @@ export function RustValueRenderer({
           class="rust-collapsible-header"
           onClick={() => setExpanded(!expanded)}
         >
-          <span class="rust-toggle">{expanded ? '▼' : '▶'}</span>
+          <span class="rust-toggle">{expanded ? <ChevronDown size={8} /> : <ChevronRight size={8} />}</span>
           {name && <span class="rust-field-name">{name}: </span>}
           <span class="rust-bracket">[</span>
           {!expanded && (
@@ -290,7 +291,7 @@ export function RustValueRenderer({
             class="rust-collapsible-header"
             onClick={() => setExpanded(!expanded)}
           >
-            <span class="rust-toggle">{expanded ? '▼' : '▶'}</span>
+            <span class="rust-toggle">{expanded ? <ChevronDown size={8} /> : <ChevronRight size={8} />}</span>
             {name && <span class="rust-field-name">{name}: </span>}
             <TypeName name={typeName} />
             <span class="rust-paren">::</span>
@@ -351,7 +352,7 @@ export function RustValueRenderer({
             class="rust-collapsible-header"
             onClick={() => setExpanded(!expanded)}
           >
-            <span class="rust-toggle">{expanded ? '▼' : '▶'}</span>
+            <span class="rust-toggle">{expanded ? <ChevronDown size={8} /> : <ChevronRight size={8} />}</span>
             {name && <span class="rust-field-name">{name}: </span>}
             <TypeName name={typeName} />
             <span class="rust-paren">(</span>
@@ -415,7 +416,7 @@ export function RustValueRenderer({
           class="rust-collapsible-header"
           onClick={() => setExpanded(!expanded)}
         >
-          <span class="rust-toggle">{expanded ? '▼' : '▶'}</span>
+          <span class="rust-toggle">{expanded ? <ChevronDown size={8} /> : <ChevronRight size={8} />}</span>
           {name && <span class="rust-field-name">{name}: </span>}
           <TypeName name={typeName} />
           <span class="rust-brace"> {'{'}</span>
@@ -463,7 +464,7 @@ export function RustValueRenderer({
         class="rust-collapsible-header"
         onClick={() => setExpanded(!expanded)}
       >
-        <span class="rust-toggle">{expanded ? '▼' : '▶'}</span>
+        <span class="rust-toggle">{expanded ? <ChevronDown size={8} /> : <ChevronRight size={8} />}</span>
         {name && <span class="rust-field-name">{name}: </span>}
         <span class="rust-brace">{'{'}</span>
         {!expanded && (

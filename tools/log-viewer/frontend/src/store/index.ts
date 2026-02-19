@@ -185,6 +185,7 @@ export async function loadLogFile(name: string) {
     if (existingState && existingState.entries.length > 0) {
         // Just switch to the file, state is preserved
         currentFile.value = name;
+      activeTab.value = 'logs';  // Switch to logs view
         statusMessage.value = `Loaded ${name} (${existingState.entries.length} entries)`;
         return;
     }
@@ -205,6 +206,7 @@ export async function loadLogFile(name: string) {
       fileStates.value = states;
 
       currentFile.value = name;
+    activeTab.value = 'logs';  // Switch to logs view
     statusMessage.value = `Loaded ${name} (${data.entries.length} entries)`;
   } catch (e) {
     error.value = String(e);

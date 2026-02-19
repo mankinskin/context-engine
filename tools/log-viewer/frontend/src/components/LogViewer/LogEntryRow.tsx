@@ -6,6 +6,7 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-rust';
 import 'prismjs/components/prism-json';
 import { FieldsRenderer } from './RustValueRenderer';
+import { Flame, LocationPin, ChevronDown, ChevronRight } from '../Icons';
 
 interface Props {
   entry: LogEntry;
@@ -13,7 +14,7 @@ interface Props {
   searchQuery: string;
   isSelected: boolean;
   onSelect: () => void;
-  expandAll: boolean | null; // null = default behavior, true = expand all, false = collapse all
+  expandAll: boolean;
 }
 
 interface BacktraceFrame {
@@ -178,19 +179,8 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [panicSnippet, setPanicSnippet] = useState<SourceSnippet | null>(null);
   const [panicSnippetError, setPanicSnippetError] = useState<string | null>(null);
-  const [showSnippet, setShowSnippet] = useState(true);
-  // Track if user has manually toggled snippet after expandAll changed
-  const [snippetOverride, setSnippetOverride] = useState<boolean | null>(null);
-  
-  // Reset override when expandAll changes
-  useEffect(() => {
-    setSnippetOverride(null);
-  }, [expandAll]);
-  
-  // Determine if details should be open based on expandAll override or default
-  const detailsOpen = expandAll !== null ? expandAll : true;
-  // For snippet: use override if set, otherwise respect expandAll, otherwise use local state
-  const snippetVisible = snippetOverride !== null ? snippetOverride : (expandAll !== null ? expandAll : showSnippet);
+  const [headerExpanded, setHeaderExpanded] = useState(false);
+  const [contentExpanded, setContentExpanded] = useState(false);
 
   const hasLocation = entry.file && entry.source_line;
   const hasPanicLocation = entry.panic_file && entry.panic_line;
@@ -219,12 +209,6 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
     }
   }, [entry.panic_file, entry.panic_line]);
 
-  const toggleSnippet = () => {
-    // When user manually toggles, set override to opposite of current visible state
-    setSnippetOverride(!snippetVisible);
-    setShowSnippet(!snippetVisible);
-  };
-
   const handleLocationClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (entry.file) {
@@ -241,11 +225,34 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   // Parse backtrace for relevant frames
   const backtraceFrames = entry.backtrace ? getRelevantFrames(parseBacktrace(entry.backtrace)) : [];
 
+  // Use expandAll or local state
+  const showHeaderDetails = expandAll || headerExpanded;
+  const showContentDetails = expandAll || contentExpanded;
+
+  // Has expandable header content? (only backtrace for non-panics)
+  const hasHeaderExpand = entry.backtrace && !isPanic;
+  // Has expandable content? (message details, fields, snippets)
+  const hasContentExpand = hasFields || (hasLocation && snippet) || (isPanic && (panicSnippet || entry.assertion_diff || backtraceFrames.length > 0)) || showRaw;
+  
+  // Any expandable content at all?
+  const hasAnyExpandable = hasHeaderExpand || hasContentExpand;
+
+  // Click handler: expand all expandables + select
+  const handleEntryClick = () => {
+    onSelect();
+    if (hasAnyExpandable) {
+      const anyExpanded = headerExpanded || contentExpanded;
+      // Toggle: if any expanded, collapse all; otherwise expand all
+      setHeaderExpanded(!anyExpanded);
+      setContentExpanded(!anyExpanded);
+    }
+  };
+
   return (
     <div 
-      class={`log-entry ${isSelected ? 'selected' : ''} level-${levelClass} type-${typeClass} ${isPanic ? 'panic-entry' : ''}`}
-      onClick={onSelect}
-      style={{ paddingLeft: `${indentPx + 12}px` }}
+      class={`log-entry ${isSelected ? 'selected' : ''} level-${levelClass} type-${typeClass} ${isPanic ? 'panic-entry' : ''} ${hasAnyExpandable ? 'expandable' : ''}`}
+      onClick={handleEntryClick}
+      style={{ paddingLeft: `${indentPx}px` }}
     >
       {/* Span depth indicator */}
       {indentLevel > 0 && (
@@ -256,108 +263,122 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
         </div>
       )}
       
-      {/* Main content area */}
-      <div class="entry-content">
-        {/* Header row with type badge and span name */}
-        <div class="entry-header">
+      {/* Header Column - 2 row grid */}
+      <div class="entry-header-col">
+        <div class="header-row1">
           <span class={`level-badge ${levelClass}`}>{entry.level}</span>
-          <span class={`type-badge ${typeClass}`}>{entry.event_type.replace('_', ' ')}</span>
-          {entry.span_name && (
-            <span class="span-name">{entry.span_name}</span>
+          <span class={`type-badge ${typeClass}`}>{entry.event_type === 'span_enter' ? 'ENTER' : entry.event_type === 'span_exit' ? 'EXIT' : 'EVENT'}</span>
+          {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
+          {hasHeaderExpand && (
+            <button class="col-toggle" onClick={(e) => { e.stopPropagation(); setHeaderExpanded(!headerExpanded); }}>
+              {showHeaderDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
+            </button>
           )}
-          {isPanic && <span class="panic-badge">🔥 PANIC</span>}
         </div>
-        
-        {/* Main message - prominently displayed */}
-        {isPanic ? (
-          <PanicMessageRenderer 
-            message={entry.message} 
-            assertionDiff={entry.assertion_diff}
-            searchQuery={searchQuery} 
-          />
-        ) : (
-          <div 
-            class="entry-message"
-            dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }}
-          />
-        )}
-        
-        {/* For panics, show source snippet prominently right after the message */}
-        {isPanic && hasPanicLocation && panicSnippet && (
-          <div class="panic-source">
-            <div class="panic-location">
-              📍 {entry.panic_file}:{entry.panic_line}
-            </div>
-            <div class="code-snippet panic-snippet">
-              <pre class="snippet-code">
-                {(() => {
-                  const language = entry.panic_file?.endsWith('.rs') ? 'rust' : 'plaintext';
-                  const highlightedLines = panicSnippet.content.split('\n').map(line => 
-                    highlightCode(line, language)
-                  );
-                  return highlightedLines.map((line, i) => {
-                    const lineNum = panicSnippet.start_line + i;
-                    const isHighlight = lineNum === panicSnippet.highlight_line;
-                    return (
-                      <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
-                        <span class="line-number">{lineNum}</span>
-                        <code dangerouslySetInnerHTML={{ __html: line || ' ' }} />
-                      </div>
-                    );
-                  });
-                })()}
-              </pre>
-            </div>
+        <div class="header-row2">
+          <span class="entry-meta">#{entry.line_number}</span>
+          {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
+          {hasLocation && (
+            <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
+              <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
+            </button>
+          )}
+        </div>
+        {showHeaderDetails && (
+          <div class="header-details" onClick={(e) => e.stopPropagation()}>
+            {/* Backtrace in header for non-panics */}
+            {entry.backtrace && !isPanic && (
+              <pre class="backtrace-content">{entry.backtrace}</pre>
+            )}
           </div>
         )}
-        
-        {/* Show relevant caller frames for panics (instead of full backtrace) */}
-        {isPanic && backtraceFrames.length > 0 && (
-          <details class="entry-callers" open={expandAll !== null ? expandAll : true}>
-            <summary class="callers-summary">📋 Call Stack ({backtraceFrames.length} frames)</summary>
-            <div class="callers-list">
-              {backtraceFrames.map((frame, i) => (
-                <div key={i} class="caller-frame">
-                  <span class="frame-index">{frame.index}</span>
-                  <span class="frame-function">{frame.function}</span>
-                  {frame.location && (
-                    <span class="frame-location">at {frame.location}</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
-        
-        {/* Full backtrace - only for non-panic errors */}
-        {entry.backtrace && !isPanic && (
-          <details class="entry-backtrace" open={expandAll !== null ? expandAll : entry.level === 'ERROR'}>
-            <summary class="backtrace-summary">📚 Stack Trace</summary>
-            <pre class="backtrace-content">{entry.backtrace}</pre>
-          </details>
-        )}
-        
-        {/* Fields rendered as Rust-style objects */}
-        {hasFields && (
-          <details class="entry-fields-rust" open={detailsOpen}>
-            <summary>{fieldEntries.length} field{fieldEntries.length !== 1 ? 's' : ''}</summary>
-            <div class="fields-rust-container">
-              <FieldsRenderer fields={entry.fields} defaultExpanded={detailsOpen} />
-            </div>
-          </details>
-        )}
-        
-        {/* Source snippet toggle */}
-        {hasLocation && (
-          <div class="entry-source">
-            <button class="snippet-toggle" onClick={toggleSnippet}>
-              {snippetVisible ? '▼' : '▶'} Source
+      </div>
+      
+      {/* Content Column - 2 row grid */}
+      <div class="entry-content-col">
+        <div class="content-row1">
+          {entry.span_name && <span class="span-name">{entry.span_name}</span>}
+          {isPanic ? (
+            <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+          ) : (
+            <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+          )}
+          {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
+          {hasContentExpand && (
+            <button class="col-toggle" onClick={(e) => { e.stopPropagation(); setContentExpanded(!contentExpanded); }}>
+              {showContentDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
             </button>
-            {snippetVisible && snippet && (
+          )}
+        </div>
+        <div class="content-row2">
+          {isPanic && entry.assertion_diff && <span class="content-meta">diff</span>}
+          {isPanic && backtraceFrames.length > 0 && <span class="content-meta">stack</span>}
+        </div>
+        {showContentDetails && (
+          <div class="content-details" onClick={(e) => e.stopPropagation()}>
+            {/* Panic assertion diff */}
+            {isPanic && entry.assertion_diff && (
+              <PanicMessageRenderer 
+                message={entry.message} 
+                assertionDiff={entry.assertion_diff}
+                searchQuery={searchQuery} 
+              />
+            )}
+            
+            {/* Panic source snippet */}
+            {isPanic && hasPanicLocation && panicSnippet && (
+              <div class="panic-source">
+                <div class="panic-location">
+                  <LocationPin size={8} /> {entry.panic_file}:{entry.panic_line}
+                </div>
+                <div class="code-snippet panic-snippet">
+                  <pre class="snippet-code">
+                    {(() => {
+                      const language = entry.panic_file?.endsWith('.rs') ? 'rust' : 'plaintext';
+                      const highlightedLines = panicSnippet.content.split('\n').map(line => 
+                        highlightCode(line, language)
+                      );
+                      return highlightedLines.map((line, i) => {
+                        const lineNum = panicSnippet.start_line + i;
+                        const isHighlight = lineNum === panicSnippet.highlight_line;
+                        return (
+                          <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
+                            <span class="line-number">{lineNum}</span>
+                            <code dangerouslySetInnerHTML={{ __html: line || ' ' }} />
+                          </div>
+                        );
+                      });
+                    })()}
+                  </pre>
+                </div>
+              </div>
+            )}
+            
+            {/* Panic call stack */}
+            {isPanic && backtraceFrames.length > 0 && (
+              <div class="callers-list">
+                {backtraceFrames.map((frame, i) => (
+                  <div key={i} class="caller-frame">
+                    <span class="frame-index">{frame.index}</span>
+                    <span class="frame-function">{frame.function}</span>
+                    {frame.location && <span class="frame-location">at {frame.location}</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Fields */}
+            {hasFields && (
+              <div class="fields-rust-container">
+                <FieldsRenderer fields={entry.fields} defaultExpanded={true} />
+              </div>
+            )}
+            
+            {/* Source snippet */}
+            {hasLocation && snippet && (
               <div class="code-snippet">
                 <pre class="snippet-code">
                   {(() => {
-                    // Highlight the entire snippet as Rust
                     const language = entry.file?.endsWith('.rs') ? 'rust' : 'plaintext';
                     const highlightedLines = snippet.content.split('\n').map(line => 
                       highlightCode(line, language)
@@ -376,28 +397,11 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
                 </pre>
               </div>
             )}
-            {snippetVisible && snippetError && (
-              <div class="snippet-error">{snippetError}</div>
-            )}
+            {hasLocation && snippetError && <span class="snippet-error">{snippetError}</span>}
+            
+            {/* Raw */}
+            {showRaw && <pre class="entry-raw">{entry.raw}</pre>}
           </div>
-        )}
-        
-        {/* Raw output */}
-        {showRaw && (
-          <pre class="entry-raw">{entry.raw}</pre>
-        )}
-      </div>
-      
-      {/* Right side metadata */}
-      <div class="entry-meta">
-        <span class="meta-line">#{entry.line_number}</span>
-        {entry.timestamp && (
-          <span class="meta-timestamp">{formatTimestamp(entry.timestamp)}</span>
-        )}
-        {hasLocation && (
-          <button class="meta-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
-            📍 {entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
-          </button>
         )}
       </div>
     </div>

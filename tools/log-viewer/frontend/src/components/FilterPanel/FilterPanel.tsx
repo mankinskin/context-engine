@@ -11,6 +11,35 @@ import {
   setTypeFilter
 } from '../../store';
 import type { LogLevel, EventType } from '../../types';
+import { ChevronDown, ChevronRight } from '../Icons';
+
+// Minimal file icon
+function FileIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M3 2.5C3 1.95 3.45 1.5 4 1.5H8L11 4.5V11.5C11 12.05 10.55 12.5 10 12.5H4C3.45 12.5 3 12.05 3 11.5V2.5Z" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 1.5V4.5H11" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
+
+// Minimal folder icons
+function FolderIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M2 4C2 3.45 2.45 3 3 3H5.5L6.5 4.5H11C11.55 4.5 12 4.95 12 5.5V10.5C12 11.05 11.55 11.5 11 11.5H3C2.45 11.5 2 11.05 2 10.5V4Z" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
+
+function FolderOpenIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M2 4C2 3.45 2.45 3 3 3H5.5L6.5 4.5H11C11.55 4.5 12 4.95 12 5.5V6" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 7H10.5L12 11.5H2.5L1 7Z" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
 
 // Filter panel visibility state (shared)
 export const showFilterPanel = signal(false);
@@ -190,13 +219,13 @@ function FileTreeItem({
       >
         {hasChildren ? (
           <span class="tree-toggle" onClick={toggleExpand}>
-            {isExpanded ? '▼' : '▶'}
+            {isExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
           </span>
         ) : (
           <span class="tree-toggle-placeholder"></span>
         )}
         <span class={`tree-icon ${node.isFile ? 'file-icon' : 'folder-icon'}`}>
-          {node.isFile ? '📄' : (isExpanded ? '📂' : '📁')}
+          {node.isFile ? <FileIcon size={14} /> : (isExpanded ? <FolderOpenIcon size={14} /> : <FolderIcon size={14} />)}
         </span>
         <span class="tree-name">{node.name}</span>
         {node.count > 0 && (
