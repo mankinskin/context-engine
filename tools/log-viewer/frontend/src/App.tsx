@@ -1,5 +1,6 @@
 import { useEffect } from 'preact/hooks';
 import { Header } from './components/Header/Header';
+import { FilterPanel } from './components/FilterPanel/FilterPanel';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { TabBar } from './components/Tabs/TabBar';
 import { LogViewer } from './components/LogViewer/LogViewer';
@@ -31,6 +32,7 @@ export function App() {
   return (
     <div class="app">
       <Header />
+      <FilterPanel />
       <div class="main-layout">
         <Sidebar />
         <main class="content">

@@ -58,10 +58,18 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   const [snippet, setSnippet] = useState<SourceSnippet | null>(null);
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [showSnippet, setShowSnippet] = useState(true);
+  // Track if user has manually toggled snippet after expandAll changed
+  const [snippetOverride, setSnippetOverride] = useState<boolean | null>(null);
+  
+  // Reset override when expandAll changes
+  useEffect(() => {
+    setSnippetOverride(null);
+  }, [expandAll]);
   
   // Determine if details should be open based on expandAll override or default
   const detailsOpen = expandAll !== null ? expandAll : true;
-  const snippetVisible = expandAll !== null ? expandAll : showSnippet;
+  // For snippet: use override if set, otherwise respect expandAll, otherwise use local state
+  const snippetVisible = snippetOverride !== null ? snippetOverride : (expandAll !== null ? expandAll : showSnippet);
 
   const hasLocation = entry.file && entry.source_line;
   const levelClass = entry.level.toLowerCase();
@@ -81,7 +89,9 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   }, [entry.file, entry.source_line]);
 
   const toggleSnippet = () => {
-    setShowSnippet(!showSnippet);
+    // When user manually toggles, set override to opposite of current visible state
+    setSnippetOverride(!snippetVisible);
+    setShowSnippet(!snippetVisible);
   };
 
   const handleLocationClick = (e: MouseEvent) => {

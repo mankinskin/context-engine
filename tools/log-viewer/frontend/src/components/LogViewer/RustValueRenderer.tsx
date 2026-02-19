@@ -79,9 +79,36 @@ function TokenRenderer({ token }: { token: { text: string; index: number } }) {
 }
 
 /**
+ * Checks if a string represents a number
+ */
+function isNumericString(value: string): boolean {
+  // Match integers, floats, and negative numbers
+  return /^-?\d+(\.\d+)?$/.test(value);
+}
+
+/**
+ * Checks if a field name suggests it contains a type (e.g., type_param, T, Type)
+ */
+function isTypeFieldName(name: string | undefined): boolean {
+  if (!name) return false;
+  // Common type-related field names
+  return /^(type_param|type_name|ty|T|Type|type|generic|param)$/i.test(name);
+}
+
+/**
+ * Checks if a string value looks like a Rust type path
+ */
+function looksLikeTypePath(value: string): boolean {
+  // Type paths have :: or are PascalCase single words
+  if (value.includes('::')) return true;
+  // PascalCase: starts with uppercase, has lowercase, no spaces
+  return /^[A-Z][a-zA-Z0-9]*$/.test(value) && !value.includes(' ');
+}
+
+/**
  * Renders a primitive value with appropriate styling
  */
-function PrimitiveRenderer({ value }: { value: unknown }) {
+function PrimitiveRenderer({ value, fieldName }: { value: unknown; fieldName?: string }) {
   if (value === null) {
     return <span class="rust-keyword">None</span>;
   }
@@ -92,6 +119,14 @@ function PrimitiveRenderer({ value }: { value: unknown }) {
     return <span class="rust-number">{value}</span>;
   }
   if (typeof value === 'string') {
+    // Check if this string looks like a number (from debug formatting)
+    if (isNumericString(value)) {
+      return <span class="rust-number">{value}</span>;
+    }
+    // Check if this field should be rendered as a type
+    if (isTypeFieldName(fieldName) || looksLikeTypePath(value)) {
+      return <TypeName name={value} />;
+    }
     return <span class="rust-string">"{value}"</span>;
   }
   return <span class="rust-unknown">{String(value)}</span>;
@@ -124,7 +159,7 @@ export function RustValueRenderer({
     return (
       <span class="rust-value">
         {name && <span class="rust-field-name">{name}: </span>}
-        <PrimitiveRenderer value={value} />
+        <PrimitiveRenderer value={value} fieldName={name} />
       </span>
     );
   }
