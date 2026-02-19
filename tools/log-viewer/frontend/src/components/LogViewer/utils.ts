@@ -39,18 +39,22 @@ export function parseBacktrace(backtrace: string): BacktraceFrame[] {
   const lines = backtrace.split('\n');
   
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i]?.trim();
+    if (!line) continue;
     // Match frame lines like "   0: rust_begin_unwind" or "   1: std::panicking::..."
     const frameMatch = line.match(/^(\d+):\s+(.+)$/);
     if (frameMatch) {
-      const index = parseInt(frameMatch[1], 10);
+      const indexStr = frameMatch[1];
       const func = frameMatch[2];
+      if (!indexStr || !func) continue;
+      
+      const index = parseInt(indexStr, 10);
       
       // Check next line for location
       let location: string | undefined;
       if (i + 1 < lines.length) {
-        const nextLine = lines[i + 1].trim();
-        if (nextLine.startsWith('at ')) {
+        const nextLine = lines[i + 1]?.trim();
+        if (nextLine?.startsWith('at ')) {
           location = nextLine.slice(3);
           i++; // Skip location line
         }

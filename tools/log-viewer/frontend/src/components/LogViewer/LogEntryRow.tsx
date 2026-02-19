@@ -177,14 +177,16 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
                   <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
                 )}
               </div>
-              <div class="header-row2">
-                {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
-                {hasLocation && (
-                  <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
-                    <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
-                  </button>
-                )}
-              </div>
+              {(hasFields || hasLocation) && (
+                <div class="header-row2">
+                  {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
+                  {hasLocation && (
+                    <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
+                      <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
+                    </button>
+                  )}
+                </div>
+              )}
               {showDetails && (
                 <div class="header-details" onClick={(e) => e.stopPropagation()}>
                   {/* Fields */}
@@ -213,6 +215,14 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
       {/* Viewport Column - source code and visualizations */}
       <div class="entry-viewport-cell">
         <div class="entry-viewport-col">
+          {/* Collapsed view - just the source line */}
+          {!showDetails && hasLocation && snippet && (
+            <div class="viewport-collapsed">
+              <code class="source-line-preview">
+                {snippet.content.split('\n')[snippet.highlight_line - snippet.start_line]?.trim() || ''}
+              </code>
+            </div>
+          )}
           {hasViewportExpand && (
             <div class="viewport-header">
               <span class="viewport-label">Source</span>

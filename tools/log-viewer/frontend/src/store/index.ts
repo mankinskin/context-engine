@@ -122,16 +122,22 @@ export const logStats = computed((): LogStats => {
       if (typeof busyField === 'string') {
         const durationMatch = busyField.match(/([\d.]+)(µs|ms|s)/);
         if (durationMatch) {
-          let duration = parseFloat(durationMatch[1]);
+          const durationStr = durationMatch[1];
           const unit = durationMatch[2];
+          if (!durationStr || !unit) continue;
+          
+          let duration = parseFloat(durationStr);
           if (unit === 'µs') duration /= 1000000;
           else if (unit === 'ms') duration /= 1000;
           
           if (!spanDurations[entry.span_name]) {
             spanDurations[entry.span_name] = { count: 0, totalDuration: 0 };
           }
-          spanDurations[entry.span_name].count++;
-          spanDurations[entry.span_name].totalDuration += duration;
+          const spanData = spanDurations[entry.span_name];
+          if (spanData) {
+            spanData.count++;
+            spanData.totalDuration += duration;
+          }
         }
       }
     }

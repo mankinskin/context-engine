@@ -47,7 +47,10 @@ function buildGraph(logEntries: LogEntry[]): { nodes: GraphNode[]; edges: GraphE
       // Find matching span enter
       const spanIdx = spanStack.findLastIndex(s => s.name === entry.span_name);
       if (spanIdx >= 0) {
-        edges.push({ source: spanStack[spanIdx].nodeId, target: nodeId, type: 'span' });
+        const spanEntry = spanStack[spanIdx];
+        if (spanEntry) {
+          edges.push({ source: spanEntry.nodeId, target: nodeId, type: 'span' });
+        }
         spanStack.splice(spanIdx, 1);
       }
     }

@@ -107,7 +107,7 @@ const fileTree = computed(() => {
     let currentPath = '';
     
     for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
+      const part = parts[i]!;
       currentPath = currentPath ? `${currentPath}/${part}` : part;
       const isFile = i === parts.length - 1;
       
