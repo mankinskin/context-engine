@@ -26,6 +26,7 @@ export function LogViewer() {
   const [headerScrollLeft, setHeaderScrollLeft] = useState(0);
   const [maxHeaderWidth, setMaxHeaderWidth] = useState(0);
   const [headerColWidth, setHeaderColWidth] = useState(500);
+  const [hoveredSpanName, setHoveredSpanName] = useState<string | null>(null);
   const isResizing = useRef(false);
   
   // Refs for header cells to sync scroll
@@ -176,7 +177,7 @@ export function LogViewer() {
           style={{ left: `${headerColWidth}px` }}
           onMouseDown={handleResizeStart}
         />
-        <div class="log-entries">
+        <div class="log-entries" onMouseLeave={() => setHoveredSpanName(null)}>
           {filteredEntries.value.map((entry, index) => (
             <LogEntryRow
               key={entry.line_number}
@@ -192,6 +193,8 @@ export function LogViewer() {
               headerScrollLeft={headerScrollLeft}
               headerColWidth={headerColWidth}
               onHeaderWheel={handleHeaderWheel}
+              hoveredSpanName={hoveredSpanName}
+              onSpanHover={setHoveredSpanName}
             />
           ))}
         </div>

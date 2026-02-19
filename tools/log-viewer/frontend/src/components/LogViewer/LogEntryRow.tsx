@@ -10,7 +10,9 @@ import {
   highlightMatch, 
   formatTimestamp, 
   parseBacktrace, 
-  getRelevantFrames 
+  getRelevantFrames,
+  spanNameToColor,
+  depthToColor
 } from './utils';
 
 interface Props {
@@ -26,9 +28,11 @@ interface Props {
   headerScrollLeft?: number; // Current horizontal scroll position
   headerColWidth?: number; // Header column width
   onHeaderWheel?: (e: WheelEvent) => void; // Wheel scroll handler for header column
+  hoveredSpanName?: string | null; // Currently hovered span name for highlighting
+  onSpanHover?: (spanName: string | null) => void; // Callback when span is hovered
 }
 
-export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth = 500, onHeaderWheel }: Props) {
+export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth = 500, onHeaderWheel, hoveredSpanName, onSpanHover }: Props) {
   // Local state for legacy mode
   const [localExpanded, setLocalExpanded] = useState(false);
   
@@ -43,9 +47,8 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   const levelClass = entry.level.toLowerCase();
   const typeClass = entry.event_type.replace('_', '-');
   
-  // Calculate indentation for spans (1.2em per level, ~13px at 11px font)
+  // Calculate indentation for spans
   const indentLevel = Math.min(entry.depth, 10);
-  const indentEm = indentLevel * 1.2;
 
   // Use hooks for snippet fetching
   const { snippet, error: snippetError } = useSourceSnippet(entry.file, entry.source_line);
@@ -100,11 +103,29 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
     }
   };
 
+  // Determine if this entry's span is currently highlighted
+  const isSpanHighlighted = entry.span_name && hoveredSpanName === entry.span_name;
+  const isSpanEnter = entry.event_type === 'span_enter';
+  const isSpanExit = entry.event_type === 'span_exit';
+  
+  // Generate span color from name
+  const spanColor = spanNameToColor(entry.span_name, 60, 45);
+  const spanColorMuted = spanNameToColor(entry.span_name, 30, 30);
+
+  // Mouse handlers for span highlighting
+  const handleMouseEnter = () => {
+    if (entry.span_name && onSpanHover) {
+      onSpanHover(entry.span_name);
+    }
+  };
+
   // Render as flex row with both columns
   return (
     <div 
-      class={`log-entry ${isSelected ? 'selected' : ''} level-${levelClass} type-${typeClass} ${isPanic ? 'panic-entry' : ''} ${hasAnyExpandable ? 'expandable' : ''}`}
+      class={`log-entry ${isSelected ? 'selected' : ''} level-${levelClass} type-${typeClass} ${isPanic ? 'panic-entry' : ''} ${hasAnyExpandable ? 'expandable' : ''} ${showDetails ? 'expanded' : ''} ${isSpanHighlighted ? 'span-highlighted' : ''} ${isSpanEnter ? 'span-enter' : ''} ${isSpanExit ? 'span-exit' : ''} ${indentLevel > 0 ? 'in-span' : ''}`}
       onClick={handleEntryClick}
+      onMouseEnter={handleMouseEnter}
+      style={indentLevel > 0 ? { '--span-color': spanColor, '--span-color-muted': spanColorMuted } as any : undefined}
     >
       {/* Header Column - entry metadata and message */}
       <div class="entry-header-cell" style={{ width: `${headerColWidth}px`, maxWidth: `${headerColWidth}px` }} onWheel={onHeaderWheel as any}>
@@ -116,50 +137,65 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
           }}
           style={{ transform: `translateX(-${headerScrollLeft}px)` }}
         >
-          <div class="entry-header-col" style={{ paddingLeft: `${indentEm + 0.5}em` }}>
-            {/* Span depth indicator */}
-            {indentLevel > 0 && (
-              <div class="depth-indicator" style={{ left: '0', width: `${indentEm}em` }}>
-                {Array.from({ length: indentLevel }).map((_, i) => (
-                  <span key={i} class="depth-line"></span>
-                ))}
-              </div>
-            )}
-            <div class="header-row1">
-              <span class={`level-badge ${levelClass}`}>{entry.level}</span>
-              <span class={`type-badge ${typeClass}`}>{entry.event_type === 'span_enter' ? 'ENTER' : entry.event_type === 'span_exit' ? 'EXIT' : 'EVENT'}</span>
-              {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
-              <span class="entry-meta">#{entry.line_number}</span>
-              {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
-              {entry.span_name && <span class="span-name">{entry.span_name}</span>}
-              {isPanic ? (
-                <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
-              ) : (
-                <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
-              )}
+          <div class="entry-header-col">
+            {/* Span depth gutter with CSS-drawn tree lines */}
+            <div class="depth-gutter">
+              {Array.from({ length: indentLevel }).map((_, i) => {
+                const isLastLevel = i === indentLevel - 1;
+                const lineColor = depthToColor(i);
+                // Determine line type: pass-through, tee, top-corner, bottom-corner
+                let lineType = 'pass'; // │ vertical pass-through
+                if (isLastLevel) {
+                  if (isSpanEnter) lineType = 'top-corner'; // ┌
+                  else if (isSpanExit) lineType = 'bottom-corner'; // └
+                  else lineType = 'tee'; // ├
+                }
+                return (
+                  <span 
+                    key={i} 
+                    class={`depth-line ${lineType}`}
+                    style={{ '--line-color': lineColor } as any}
+                  ></span>
+                );
+              })}
             </div>
-            <div class="header-row2">
-              {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
-              {hasLocation && (
-                <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
-                  <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
-                </button>
-              )}
-            </div>
-            {showDetails && (
-              <div class="header-details" onClick={(e) => e.stopPropagation()}>
-                {/* Fields */}
-                {hasFields && (
-                  <div class="fields-rust-container">
-                    <FieldsRenderer fields={entry.fields} defaultExpanded={true} />
-                  </div>
-                )}
-                {/* Backtrace in header for non-panics */}
-                {entry.backtrace && !isPanic && (
-                  <pre class="backtrace-content">{entry.backtrace}</pre>
+            <div class="header-content">
+              <div class="header-row1">
+                <span class={`level-badge ${levelClass}`}>{entry.level}</span>
+                <span class={`type-badge ${typeClass}`}>{entry.event_type === 'span_enter' ? 'ENTER' : entry.event_type === 'span_exit' ? 'EXIT' : 'EVENT'}</span>
+                {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
+                <span class="entry-meta">#{entry.line_number}</span>
+                {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
+                {entry.span_name && <span class="span-name">{entry.span_name}</span>}
+                {isPanic ? (
+                  <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+                ) : (
+                  <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
                 )}
               </div>
-            )}
+              <div class="header-row2">
+                {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
+                {hasLocation && (
+                  <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
+                    <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
+                  </button>
+                )}
+              </div>
+              {showDetails && (
+                <div class="header-details" onClick={(e) => e.stopPropagation()}>
+                  {/* Fields */}
+                  {hasFields && (
+                    <div class="fields-rust-container">
+                      <FieldsRenderer fields={entry.fields} defaultExpanded={true} />
+                    </div>
+                  )}
+                  {/* Backtrace in header for non-panics */}
+                  {entry.backtrace && !isPanic && (
+                    <pre class="backtrace-content">{entry.backtrace}</pre>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {/* Expand toggle - positioned outside scrolling content to stick at right */}

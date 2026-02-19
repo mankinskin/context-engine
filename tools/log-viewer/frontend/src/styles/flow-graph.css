@@ -1,0 +1,58 @@
+/* Flow Graph Visualization */
+
+.flow-graph {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.flow-graph.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flow-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.flow-warning {
+  color: var(--level-warn);
+  font-size: 17px;
+}
+
+.flow-legend {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 17px;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-item .dot.event { background: var(--level-info); }
+.legend-item .dot.span-enter { background: var(--accent-green); }
+.legend-item .dot.span-exit { background: var(--accent-orange); }
+
+.flow-container {
+  flex: 1;
+  width: 100%;
+}

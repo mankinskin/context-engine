@@ -1,0 +1,102 @@
+/* Depth Gutter with CSS-drawn Tree Lines */
+
+.depth-gutter {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  height: 100%;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.depth-line {
+  width: 12px;
+  height: 100%;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  --line-color: var(--border-color);
+}
+
+/* │ Vertical pass-through - full height line on right edge */
+.depth-line.pass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-right: 1px solid var(--line-color);
+}
+
+/* ├ T-junction - full vertical + horizontal branch at center */
+.depth-line.tee::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-right: 1px solid var(--line-color);
+}
+.depth-line.tee::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 8px;
+  border-top: 1px solid var(--line-color);
+  transform: translateY(-0.5px);
+}
+
+/* ┌ Top corner (span enter) - vertical from center DOWN + horizontal */
+.depth-line.top-corner::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  right: 0;
+  border-right: 1px solid var(--line-color);
+}
+.depth-line.top-corner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 8px;
+  border-top: 1px solid var(--line-color);
+  transform: translateY(-0.5px);
+}
+
+/* └ Bottom corner (span exit) - vertical from top to CENTER + horizontal */
+.depth-line.bottom-corner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 50%;
+  right: 0;
+  border-right: 1px solid var(--line-color);
+}
+.depth-line.bottom-corner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 8px;
+  border-top: 1px solid var(--line-color);
+  transform: translateY(-0.5px);
+}
+
+/* Span highlighting */
+.log-entry.span-enter,
+.log-entry.span-exit,
+.log-entry.in-span {
+  /* Remove border-left - using gutter colors instead */
+}
+
+.log-entry.span-highlighted {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.log-entry.span-highlighted .span-name {
+  text-decoration: underline;
+}

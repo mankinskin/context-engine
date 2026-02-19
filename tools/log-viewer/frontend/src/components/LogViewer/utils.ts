@@ -92,3 +92,37 @@ export function getRelevantFrames(frames: BacktraceFrame[]): BacktraceFrame[] {
     return !f.function.includes('::{{closure}}') || f.location;
   }).slice(0, 5); // Limit to first 5 relevant frames
 }
+
+/**
+ * Generate a consistent hue (0-360) from a string
+ * Uses simple hash function for fast, deterministic results
+ */
+export function stringToHue(str: string): number {
+  if (!str) return 0;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  // Use golden ratio to spread colors well
+  return Math.abs(hash * 137.508) % 360;
+}
+
+/**
+ * Generate an HSL color string from a span name
+ * Returns a pastel color with consistent hue per span name
+ */
+export function spanNameToColor(spanName: string | null | undefined, saturation = 50, lightness = 35): string {
+  if (!spanName) return 'transparent';
+  const hue = stringToHue(spanName);
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+/**
+ * Generate colors for depth levels (rainbow gradient)
+ */
+export function depthToColor(depth: number, saturation = 40, lightness = 50): string {
+  // Spread colors across spectrum, offset to start at cyan
+  const hue = (depth * 50 + 180) % 360;
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
