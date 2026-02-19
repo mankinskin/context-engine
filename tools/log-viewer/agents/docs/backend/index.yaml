@@ -1,0 +1,53 @@
+name: backend
+description: >
+  Rust HTTP server and MCP server for log-viewer. Provides REST API endpoints
+  for log file operations, source code fetching, and JQ-based querying.
+
+key_types:
+  - AppState: Shared state with log_dir, workspace_root, and LogParser
+  - LogEntry: Parsed log entry (level, message, fields, span_name, source location)
+  - LogParser: Parses tracing JSON logs with caching
+  - LogFileInfo: Metadata about available log files
+  - LogContentResponse: Log file contents with parsed entries
+  - SourceSnippet: Source code snippet with line range and highlighting
+  - Config: Application configuration (log_dir, workspace_root, ports)
+  - McpServer: MCP server for agent JQ queries
+  - JqQueryRequest/Response: JQ query types for MCP
+
+files:
+  - name: main.rs
+    description: >
+      HTTP server entry point using axum. Defines routes for /api/logs, 
+      /api/search, /api/source, and serves static frontend files. Handlers
+      use AppState to access LogParser and workspace paths.
+    
+  - name: config.rs
+    description: >
+      Configuration loading from TOML file and environment variables.
+      Config struct with log_dir, workspace_root, http_port, log_level.
+      Search order: LOG_VIEWER_CONFIG env, ./log-viewer.toml, user config dir.
+    
+  - name: log_parser.rs
+    description: >
+      LogParser struct that reads and caches parsed log files. LogEntry
+      struct with fields: level, message, fields (JSON), timestamp, span_name,
+      event_type (event/span_enter/span_exit), file, source_line, depth.
+      Handles tracing JSON format with span events and field extraction.
+    
+  - name: mcp_server.rs
+    description: >
+      MCP server implementation for agent integration. Provides jq_query
+      tool for filtering logs using JQ syntax. Uses rmcp for protocol handling.
+    
+  - name: query.rs
+    description: >
+      JQ query execution using jaq-core. Compiles and runs JQ expressions
+      against JSON log data, supporting standard JQ operations.
+
+api_endpoints:
+  - GET /api/logs: List available log files with size and modified time
+  - GET /api/logs/:name: Get parsed log content for a specific file
+  - GET /api/search/:name?q=query: Search logs with text/regex filtering
+  - GET /api/source/*path?line=N&context=5: Get source code snippet
+  - GET /api/jq/:name?query=.field: Execute JQ query on log file
+  - Static /: Serves frontend from /static directory

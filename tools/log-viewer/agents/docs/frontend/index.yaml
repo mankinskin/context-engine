@@ -1,0 +1,68 @@
+name: frontend
+description: >
+  Preact/TypeScript web application for viewing tracing logs. Features include
+  log entry list with filtering, span depth visualization, source code preview,
+  statistics dashboard, and flow graph visualization.
+
+key_types:
+  - LogEntry: Log entry type matching backend (level, message, fields, etc.)
+  - SourceSnippet: Source code snippet with highlighted line
+  - ViewTab: Current tab (logs/flow/stats/code)
+  - FilterState: Active filters (levels, files, spans, search query)
+  - Store: Preact signals-based state management
+
+directories:
+  - name: api/
+    description: >
+      HTTP API client functions. fetchLogs, fetchLogContent, fetchSourceSnippet,
+      searchLogs, executeJq. Uses fetch with /api/* endpoints.
+    
+  - name: components/
+    description: >
+      UI components organized by feature area.
+    submodules:
+      - Header: App header with file selector and search input
+      - Sidebar: File tree navigation panel
+      - FilterPanel: Level/span/file filtering controls
+      - LogViewer: Main log entry list with LogEntryRow component
+      - CodeViewer: Full source file viewer with syntax highlighting
+      - FlowGraph: Cytoscape-based span flow visualization
+      - Stats: Statistics dashboard with charts
+      - Tabs: Tab navigation component
+      - Icons: SVG icon components (ChevronDown, Flame, LocationPin, etc.)
+    
+  - name: hooks/
+    description: >
+      Custom Preact hooks. useSourceSnippet for fetching and caching source
+      code snippets around log entry locations.
+    
+  - name: store/
+    description: >
+      Preact signals-based state management. Global signals for entries,
+      filteredEntries, selectedEntry, currentFile, filters, expandedEntries.
+      Computed signals for derived state (spanCounts, levelCounts, stats).
+    
+  - name: styles/
+    description: >
+      Modular CSS files. variables.css (theme), layout.css (grid structure),
+      log-entries.css (row styling), depth-gutter.css (span tree lines),
+      code-snippet.css, fields.css (JSON display), panic.css, etc.
+    
+  - name: types/
+    description: >
+      TypeScript type definitions. LogEntry, SourceSnippet, LogFile,
+      SearchResponse, ViewTab, EventType, Level.
+
+key_components:
+  - LogViewer: Virtual scrolling log list with synchronized header scrolling
+  - LogEntryRow: Individual log entry with depth gutter, badges, source preview
+  - FilterPanel: Multi-select filters for levels, spans, files
+  - CodeSnippet: Highlighted source code with line numbers
+  - FlowGraph: Cytoscape graph showing span enter/exit flow
+  - Stats: Charts for level distribution, span timings, timeline
+
+styling:
+  - CSS custom properties for theming (--bg-primary, --text-primary, etc.)
+  - Tree-style depth gutter with CSS-drawn lines (pass, top-corner, bottom-corner)
+  - Responsive two-column layout (header + viewport)
+  - Dark theme with level-specific colors

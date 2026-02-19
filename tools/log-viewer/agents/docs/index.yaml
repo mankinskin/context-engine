@@ -1,0 +1,47 @@
+name: log-viewer
+version: "0.1.0"
+description: >
+  Trace log viewer application with HTTP server for web interface and MCP server
+  for agent integration. Parses and displays tracing logs with source code context,
+  span visualization, filtering, statistics, and search capabilities.
+
+modules:
+  - name: backend
+    path: backend
+    description: Rust backend with HTTP API and MCP server
+  - name: frontend
+    path: frontend
+    description: Preact/TypeScript web application
+
+exported_items:
+  types:
+    - AppState: Shared application state (log_dir, workspace_root, parser)
+    - LogEntry: Parsed log entry with fields, spans, and source info
+    - LogParser: Parser for tracing JSON log files
+    - Config: Application configuration from TOML/env
+    - McpServer: MCP server for agent integration with JQ query support
+  traits: []
+  macros: []
+
+dependencies:
+  - axum: HTTP server framework
+  - tokio: Async runtime
+  - serde: Serialization
+  - tower-http: HTTP middleware (CORS, static files)
+  - tracing: Structured logging
+  - rmcp: MCP protocol implementation
+  - jaq-core: JQ query execution
+
+features:
+  - HTTP API for log file listing and content
+  - Source code snippet fetching with highlighting
+  - JQ-based log querying via MCP
+  - Static file serving for frontend
+  - Configurable via TOML and environment variables
+
+source_files:
+  - src/main.rs
+  - src/config.rs
+  - src/log_parser.rs
+  - src/mcp_server.rs
+  - src/query.rs
