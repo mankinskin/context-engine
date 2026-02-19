@@ -600,9 +600,9 @@ mod tests {
     async fn test_get_log_file() {
         let (server, log_dir, _workspace_dir) = create_test_app();
         
-        let log_content = r#"│ INFO SPAN ENTERED: test_span
-│   DEBUG EVENT: some debug message
-│ INFO SPAN CLOSED: test_span"#;
+        let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"enter"},"span":{"name":"test_span"}}
+{"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"some debug message"}}
+{"timestamp":"2024-01-01T00:00:02Z","level":"INFO","fields":{"message":"close"},"span":{"name":"test_span"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
         
         let response = server.get("/api/logs/test.log").await;
@@ -638,9 +638,9 @@ mod tests {
     async fn test_search_log() {
         let (server, log_dir, _workspace_dir) = create_test_app();
         
-        let log_content = r#"│ INFO EVENT: hello world
-│ DEBUG EVENT: goodbye world
-│ ERROR EVENT: error occurred"#;
+        let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"hello world"}}
+{"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"goodbye world"}}
+{"timestamp":"2024-01-01T00:00:02Z","level":"ERROR","fields":{"message":"error occurred"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
         
         let response = server.get("/api/search/test.log")
@@ -657,9 +657,9 @@ mod tests {
     async fn test_search_log_with_level_filter() {
         let (server, log_dir, _workspace_dir) = create_test_app();
         
-        let log_content = r#"│ INFO EVENT: info message
-│ DEBUG EVENT: debug message
-│ ERROR EVENT: error message"#;
+        let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"info message"}}
+{"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"debug message"}}
+{"timestamp":"2024-01-01T00:00:02Z","level":"ERROR","fields":{"message":"error message"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
         
         let response = server.get("/api/search/test.log")
