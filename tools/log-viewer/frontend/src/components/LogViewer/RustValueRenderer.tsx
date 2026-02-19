@@ -222,7 +222,7 @@ export function RustValueRenderer({
           )}
         </div>
         {expanded && (
-          <div class="rust-array-items" style={{ marginLeft: `${12}px` }}>
+          <div class="rust-array-items">
             {value.map((item, i) => (
               <div key={i} class="rust-array-item">
                 <RustValueRenderer 
@@ -301,7 +301,7 @@ export function RustValueRenderer({
             {!expanded && <span class="rust-paren">)</span>}
           </div>
           {expanded && (
-            <div class="rust-typed-values" style={{ marginLeft: `${12}px` }}>
+            <div class="rust-typed-values">
               {values.map((v, i) => (
                 <div key={i} class="rust-typed-value">
                   <RustValueRenderer 
@@ -360,7 +360,7 @@ export function RustValueRenderer({
             {!expanded && <span class="rust-paren">)</span>}
           </div>
           {expanded && (
-            <div class="rust-typed-values" style={{ marginLeft: `${12}px` }}>
+            <div class="rust-typed-values">
               {values.map((v, i) => (
                 <div key={i} class="rust-typed-value">
                   <RustValueRenderer 
@@ -428,7 +428,7 @@ export function RustValueRenderer({
           )}
         </div>
         {expanded && (
-          <div class="rust-struct-fields" style={{ marginLeft: `${12}px` }}>
+          <div class="rust-struct-fields">
             {fields.map(([k, v], i) => (
               <div key={k} class="rust-struct-field">
                 <RustValueRenderer 
@@ -475,7 +475,7 @@ export function RustValueRenderer({
         )}
       </div>
       {expanded && (
-        <div class="rust-object-fields" style={{ marginLeft: `${12}px` }}>
+        <div class="rust-object-fields">
           {entries.map(([k, v], i) => (
             <div key={k} class="rust-object-field">
               <RustValueRenderer 

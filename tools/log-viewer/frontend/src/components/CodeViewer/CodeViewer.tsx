@@ -27,7 +27,7 @@ export function CodeViewer() {
   useEffect(() => {
     // Scroll to highlighted line
     if (highlightLineRef.current) {
-      highlightLineRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      highlightLineRef.current.scrollIntoView({ behavior: 'instant', block: 'center' });
     }
   }, [highlightLine, content]);
 
