@@ -14,7 +14,7 @@ export interface LogEntry {
   event_type: EventType;
   span_name: string | null;
   depth: number;
-  fields: Record<string, string>;
+  fields: Record<string, unknown>;
   file: string | null;
   source_line: number | null;
   backtrace: string | null;
@@ -31,6 +31,12 @@ export interface LogContentResponse {
 }
 
 export interface SearchResponse {
+  query: string;
+  matches: LogEntry[];
+  total_matches: number;
+}
+
+export interface JqQueryResponse {
   query: string;
   matches: LogEntry[];
   total_matches: number;

@@ -85,8 +85,24 @@ html, body {
 .search-form {
   display: flex;
   flex: 1;
-  max-width: 500px;
+  max-width: 400px;
   gap: 8px;
+}
+
+.jq-form {
+  display: flex;
+  flex: 1;
+  max-width: 350px;
+  gap: 8px;
+}
+
+.jq-input {
+  font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+  font-size: 12px;
+}
+
+.jq-input::placeholder {
+  font-size: 11px;
 }
 
 .search-input {
@@ -163,6 +179,15 @@ html, body {
 
 .btn-primary:hover {
   background: #005a9e;
+}
+
+.btn-secondary {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
+
+.btn-secondary:hover {
+  background: #b85200;
 }
 
 /* Main Layout */
@@ -305,6 +330,38 @@ html, body {
 /* Log Viewer */
 .log-viewer {
   height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.toolbar-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-small {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.log-entries {
+  flex: 1;
   overflow-y: auto;
   padding: 8px 0;
 }
@@ -455,6 +512,62 @@ html, body {
 
 .field-inline .field-value {
   color: var(--accent-green);
+}
+
+/* Fields as JSON */
+.entry-fields-json {
+  margin-top: 8px;
+}
+
+.entry-fields-json summary {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.entry-fields-json summary:hover {
+  color: var(--text-secondary);
+}
+
+.fields-json-code {
+  margin: 6px 0 0 0;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Field value with code highlighting */
+.field-value-code {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.field-value-plain {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-green);
+}
+
+.rust-debug {
+  color: var(--accent-orange);
 }
 
 .entry-fields-details {
@@ -1118,4 +1231,183 @@ html, body {
 .field-item-row .field-value {
   flex: 1;
   overflow-x: auto;
+}
+
+/* ========================================
+   Rust-Style Value Renderer
+   ======================================== */
+
+.entry-fields-rust {
+  margin-top: 8px;
+}
+
+.entry-fields-rust summary {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.entry-fields-rust summary:hover {
+  color: var(--text-secondary);
+}
+
+.fields-rust-container {
+  margin: 6px 0 0 0;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.rust-fields-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rust-field-row {
+  display: block;
+}
+
+/* Collapsible header */
+.rust-collapsible-header {
+  cursor: pointer;
+  display: inline;
+  user-select: none;
+}
+
+.rust-collapsible-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.rust-toggle {
+  display: inline-block;
+  width: 14px;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+/* Type names */
+.rust-type {
+  display: inline;
+}
+
+.rust-module {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.rust-type-name {
+  color: var(--accent-green);
+  font-weight: 500;
+}
+
+/* Field names */
+.rust-field-name {
+  color: var(--accent-purple);
+}
+
+/* Syntax */
+.rust-colon {
+  color: var(--text-secondary);
+}
+
+.rust-comma {
+  color: var(--text-secondary);
+}
+
+.rust-brace {
+  color: var(--accent-yellow);
+}
+
+.rust-bracket {
+  color: var(--accent-yellow);
+}
+
+.rust-paren {
+  color: var(--text-secondary);
+}
+
+/* Values */
+.rust-string {
+  color: var(--accent-orange);
+}
+
+.rust-number {
+  color: #b5cea8;
+}
+
+.rust-keyword {
+  color: var(--accent-purple);
+  font-style: italic;
+}
+
+.rust-unknown {
+  color: var(--text-secondary);
+}
+
+/* Token display */
+.rust-token {
+  display: inline;
+}
+
+/* Preview text for collapsed */
+.rust-preview {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0 4px;
+}
+
+/* Nested structures */
+.rust-array-items,
+.rust-typed-values,
+.rust-struct-fields,
+.rust-object-fields {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px dashed var(--border-color);
+  padding-left: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.rust-array-item,
+.rust-typed-value,
+.rust-struct-field,
+.rust-object-field {
+  line-height: 1.6;
+}
+
+/* Inline variants */
+.rust-value {
+  display: inline;
+}
+
+.rust-array,
+.rust-typed,
+.rust-struct,
+.rust-object {
+  display: block;
+}
+
+.rust-array-inline,
+.rust-typed-inline,
+.rust-struct-inline {
+  display: inline;
+}
+
+/* Depth-based styling */
+.rust-array-items .rust-array-items,
+.rust-struct-fields .rust-struct-fields {
+  margin-left: 0;
 }

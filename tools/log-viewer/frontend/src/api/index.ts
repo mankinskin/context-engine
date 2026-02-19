@@ -1,6 +1,6 @@
 // API client for the log viewer backend
 
-import type { LogFile, LogContentResponse, SearchResponse, SourceFileResponse, SourceSnippet } from '../types';
+import type { LogFile, LogContentResponse, SearchResponse, JqQueryResponse, SourceFileResponse, SourceSnippet } from '../types';
 
 const API_BASE = '/api';
 
@@ -31,6 +31,23 @@ export async function searchLogs(
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || 'Search failed');
+  }
+  return response.json();
+}
+
+export async function queryLogs(
+  name: string,
+  jqFilter: string,
+  limit?: number
+): Promise<JqQueryResponse> {
+  const url = new URL(`${API_BASE}/query/${encodeURIComponent(name)}`, window.location.origin);
+  url.searchParams.set('jq', jqFilter);
+  if (limit) url.searchParams.set('limit', limit.toString());
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Query failed');
   }
   return response.json();
 }

@@ -1,12 +1,17 @@
-//! Log Viewer HTTP Server
+//! Log Viewer HTTP Server and MCP Server
 //!
 //! Serves a web interface for viewing and querying tracing logs.
-//! Endpoints:
+//!
+//! # HTTP Endpoints
 //! - GET /api/logs - List available log files
 //! - GET /api/logs/:name - Get log file content
 //! - GET /api/search/:name?q=query - Search within a log file
 //! - GET /api/source/*path - Get source file content
 //! - Static files served from /static
+//!
+//! # MCP Server
+//! Run with `--mcp` flag to start the MCP server on stdio for agent integration.
+//! The MCP server provides tools for querying logs using JQ syntax.
 //!
 //! # Configuration
 //! 
@@ -24,6 +29,8 @@
 
 mod config;
 mod log_parser;
+mod mcp_server;
+mod query;
 
 use config::Config;
 
@@ -98,6 +105,23 @@ pub struct SearchQuery {
 /// Search result response
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SearchResponse {
+    pub query: String,
+    pub matches: Vec<LogEntry>,
+    pub total_matches: usize,
+}
+
+/// JQ query parameters
+#[derive(Deserialize, Debug)]
+pub struct JqQuery {
+    /// The jq filter expression
+    pub jq: String,
+    #[serde(default)]
+    pub limit: Option<usize>,
+}
+
+/// JQ query result response
+#[derive(Serialize, Deserialize, Debug)]
+pub struct JqQueryResponse {
     pub query: String,
     pub matches: Vec<LogEntry>,
     pub total_matches: usize,
@@ -201,6 +225,7 @@ pub fn create_router(state: AppState, static_dir: Option<PathBuf>) -> Router {
         .route("/api/logs", get(list_logs))
         .route("/api/logs/:name", get(get_log))
         .route("/api/search/:name", get(search_log))
+        .route("/api/query/:name", get(query_log))
         .route("/api/source/*path", get(get_source))
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
         .with_state(state);
@@ -217,29 +242,45 @@ pub fn create_router(state: AppState, static_dir: Option<PathBuf>) -> Router {
 
 #[tokio::main]
 async fn main() {
+    // Check for --mcp flag to run in MCP server mode
+    let args: Vec<String> = env::args().collect();
+    let mcp_mode = args.iter().any(|arg| arg == "--mcp");
+    
     // Load configuration from file and environment
     let config = Config::load();
     
-    init_tracing(&config);
+    let log_dir = config.resolve_log_dir();
+    let workspace_root = config.resolve_workspace_root();
+    
+    if mcp_mode {
+        // MCP-only mode - run stdio server
+        if let Err(e) = mcp_server::run_mcp_server(log_dir, workspace_root).await {
+            eprintln!("MCP server error: {}", e);
+            std::process::exit(1);
+        }
+    } else {
+        // HTTP server mode (default)
+        init_tracing(&config);
 
-    let state = create_app_state_from_config(&config);
-    info!(log_dir = %state.log_dir.display(), exists = state.log_dir.exists(), "Log directory");
-    info!(workspace_root = %state.workspace_root.display(), "Workspace root");
+        let state = create_app_state_from_config(&config);
+        info!(log_dir = %state.log_dir.display(), exists = state.log_dir.exists(), "Log directory");
+        info!(workspace_root = %state.workspace_root.display(), "Workspace root");
 
-    // Static file serving for the frontend
-    let static_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
-    info!(static_dir = %static_dir.display(), "Static directory");
+        // Static file serving for the frontend
+        let static_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
+        info!(static_dir = %static_dir.display(), "Static directory");
 
-    let app = create_router(state, Some(static_dir));
+        let app = create_router(state, Some(static_dir));
 
-    // Bind to address from config
-    let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
-        .parse()
-        .expect("Invalid server address in config");
-    info!(%addr, "Starting server");
+        // Bind to address from config
+        let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
+            .parse()
+            .expect("Invalid server address in config");
+        info!(%addr, "Starting HTTP server");
 
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+        let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+        axum::serve(listener, app).await.unwrap();
+    }
 }
 
 /// List all available log files
@@ -408,7 +449,9 @@ async fn search_log(
                 regex.is_match(&entry.level) ||
                 entry.span_name.as_ref().map(|s| regex.is_match(s)).unwrap_or(false) ||
                 entry.file.as_ref().map(|f| regex.is_match(f)).unwrap_or(false) ||
-                entry.fields.iter().any(|(k, v)| regex.is_match(k) || regex.is_match(v))
+                entry.fields.iter().any(|(k, v)| {
+                    regex.is_match(k) || regex.is_match(&v.to_string())
+                })
         })
         .collect();
 
@@ -429,6 +472,84 @@ async fn search_log(
 
     Ok(Json(SearchResponse {
         query: query.q,
+        matches,
+        total_matches,
+    }))
+}
+
+/// Query a log file using JQ filter expressions
+#[instrument(skip(state), fields(log_dir = %state.log_dir.display()))]
+async fn query_log(
+    State(state): State<AppState>,
+    Path(name): Path<String>,
+    Query(params): Query<JqQuery>,
+) -> Result<Json<JqQueryResponse>, (StatusCode, Json<ErrorResponse>)> {
+    debug!(file = %name, jq = %params.jq, limit = ?params.limit, "JQ query on log file");
+    
+    // Validate filename
+    if name.contains("..") || name.contains('/') || name.contains('\\') {
+        warn!(file = %name, "Invalid filename - path traversal attempt");
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: "Invalid filename".to_string(),
+            }),
+        ));
+    }
+
+    let path = state.log_dir.join(&name);
+    let content = std::fs::read_to_string(&path).map_err(|e| {
+        error!(error = %e, path = %path.display(), "Failed to read log file for query");
+        (
+            StatusCode::NOT_FOUND,
+            Json(ErrorResponse {
+                error: format!("Failed to read log file: {}", e),
+            }),
+        )
+    })?;
+
+    let entries = state.parser.parse(&content);
+
+    // Compile the JQ filter
+    let filter = query::JqFilter::compile(&params.jq).map_err(|e| {
+        warn!(error = %e.message, jq = %params.jq, "Invalid JQ query");
+        (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: format!("Invalid JQ query: {}", e.message),
+            }),
+        )
+    })?;
+
+    // Filter entries using JQ
+    let mut matches: Vec<LogEntry> = entries
+        .into_iter()
+        .filter(|entry| {
+            let json = serde_json::to_value(entry).ok();
+            match json {
+                Some(val) => filter.matches(&val),
+                None => false,
+            }
+        })
+        .collect();
+
+    let total_matches = matches.len();
+
+    // Apply limit
+    if let Some(limit) = params.limit {
+        matches.truncate(limit);
+    }
+    
+    info!(
+        file = %name,
+        jq = %params.jq,
+        total_matches = total_matches,
+        returned = matches.len(),
+        "JQ query completed"
+    );
+
+    Ok(Json(JqQueryResponse {
+        query: params.jq,
         matches,
         total_matches,
     }))
@@ -807,5 +928,40 @@ mod tests {
         
         let result = resolve_source_path(&workspace, "src/../../../etc/passwd");
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_query_log_jq() {
+        let (server, log_dir, _workspace_dir) = create_test_app();
+        
+        // Create test log file with multiple entries (message inside fields)
+        let log_content = r#"{"timestamp":"0.001","level":"INFO","fields":{"message":"test info 1","target":"test"}}
+{"timestamp":"0.002","level":"ERROR","fields":{"message":"test error","target":"test"}}
+{"timestamp":"0.003","level":"INFO","fields":{"message":"test info 2","target":"test"}}"#;
+        create_log_file(&log_dir, "test.log", log_content);
+        
+        // Filter for ERROR level using JQ
+        let response = server.get("/api/query/test.log")
+            .add_query_param("jq", r#"select(.level == "ERROR")"#)
+            .await;
+        response.assert_status_ok();
+        
+        let result: JqQueryResponse = response.json();
+        assert_eq!(result.total_matches, 1);
+        assert_eq!(result.matches[0].level, "ERROR");
+        assert_eq!(result.matches[0].message, "test error");
+    }
+
+    #[tokio::test]
+    async fn test_query_log_jq_invalid() {
+        let (server, log_dir, _workspace_dir) = create_test_app();
+        
+        create_log_file(&log_dir, "test.log", r#"{"level":"INFO","message":"test"}"#);
+        
+        // Invalid JQ syntax
+        let response = server.get("/api/query/test.log")
+            .add_query_param("jq", "select(.invalid syntax")
+            .await;
+        response.assert_status_bad_request();
     }
 }

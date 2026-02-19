@@ -23,8 +23,8 @@ pub struct LogEntry {
     pub span_name: Option<String>,
     /// Indentation depth (number of parent spans)
     pub depth: usize,
-    /// Additional fields
-    pub fields: HashMap<String, String>,
+    /// Additional fields (preserves structured JSON values)
+    pub fields: HashMap<String, serde_json::Value>,
     /// Source file location
     pub file: Option<String>,
     /// Source line number
@@ -126,18 +126,14 @@ impl LogParser {
         // Calculate depth from spans array
         let depth = json.spans.as_ref().map(|s| s.len()).unwrap_or(0);
         
-        // Extract additional fields
-        let mut fields = HashMap::new();
+        // Extract additional fields - preserve JSON structure for typed values
+        let mut fields: HashMap<String, serde_json::Value> = HashMap::new();
         if let Some(field_value) = &json.fields {
             if let Some(obj) = field_value.as_object() {
                 for (key, value) in obj {
                     // Skip the message field, we handle it separately
                     if key != "message" && key != "backtrace" {
-                        let str_value = match value {
-                            serde_json::Value::String(s) => s.clone(),
-                            other => other.to_string(),
-                        };
-                        fields.insert(key.clone(), str_value);
+                        fields.insert(key.clone(), value.clone());
                     }
                 }
             }
@@ -147,11 +143,7 @@ impl LogParser {
         if let Some(span) = &json.span {
             for (key, value) in &span.fields {
                 if key != "name" {
-                    let str_value = match value {
-                        serde_json::Value::String(s) => s.clone(),
-                        other => other.to_string(),
-                    };
-                    fields.insert(key.clone(), str_value);
+                    fields.insert(key.clone(), value.clone());
                 }
             }
         }

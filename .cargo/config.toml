@@ -90,3 +90,10 @@
 
 # Note: Individual tests can still override these settings using
 # TracingConfig::with_level() or TracingConfig builder methods
+
+# === CARGO ALIASES ===
+# Run these with `cargo <alias>` from the workspace root
+
+[alias]
+# Start the log-viewer server (http://localhost:3000)
+log-viewer = "run --manifest-path tools/log-viewer/Cargo.toml"

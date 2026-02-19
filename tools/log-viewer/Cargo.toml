@@ -2,7 +2,7 @@
 name = "log-viewer"
 version = "0.1.0"
 edition = "2021"
-description = "HTTP server for viewing and querying tracing logs"
+description = "HTTP server and MCP server for viewing and querying tracing logs"
 
 [workspace]
 # Keep this crate independent from parent workspace
@@ -19,6 +19,15 @@ toml = "0.8"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 tracing-appender = "0.2"
+
+# jq query language
+jaq-core = "1"
+jaq-std = "1"
+jaq-interpret = "1"
+jaq-syn = "1"
+
+# MCP protocol
+rmcp = { version = "0.14", features = ["server", "transport-io"] }
 
 [dev-dependencies]
 axum-test = "14"

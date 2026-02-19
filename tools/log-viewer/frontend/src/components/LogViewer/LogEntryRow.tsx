@@ -2,7 +2,10 @@ import { useState, useEffect } from 'preact/hooks';
 import type { LogEntry, SourceSnippet } from '../../types';
 import { openSourceFile } from '../../store';
 import * as api from '../../api';
-import { CompactJsonViewer } from './JsonViewer';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-rust';
+import 'prismjs/components/prism-json';
+import { FieldsRenderer } from './RustValueRenderer';
 
 interface Props {
   entry: LogEntry;
@@ -10,6 +13,7 @@ interface Props {
   searchQuery: string;
   isSelected: boolean;
   onSelect: () => void;
+  expandAll: boolean | null; // null = default behavior, true = expand all, false = collapse all
 }
 
 function escapeHtml(text: string): string {
@@ -35,10 +39,29 @@ function formatTimestamp(ts: string | null): string {
   return `${num.toFixed(2)}s`;
 }
 
-export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect }: Props) {
+/**
+ * Highlight code with Prism, returns HTML string
+ */
+function highlightCode(code: string, language: string): string {
+  try {
+    const grammar = Prism.languages[language];
+    if (grammar) {
+      return Prism.highlight(code, grammar, language);
+    }
+  } catch {
+    // Fall back to plain text
+  }
+  return escapeHtml(code);
+}
+
+export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll }: Props) {
   const [snippet, setSnippet] = useState<SourceSnippet | null>(null);
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [showSnippet, setShowSnippet] = useState(true);
+  
+  // Determine if details should be open based on expandAll override or default
+  const detailsOpen = expandAll !== null ? expandAll : true;
+  const snippetVisible = expandAll !== null ? expandAll : showSnippet;
 
   const hasLocation = entry.file && entry.source_line;
   const levelClass = entry.level.toLowerCase();
@@ -68,14 +91,9 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
     }
   };
 
-  // Render fields as key=value pairs
-  const fieldEntries = Object.entries(entry.fields);
-  const importantFields = fieldEntries.filter(([k]) => 
-    ['busy', 'idle', 'start_token', 'end', 'result'].includes(k)
-  );
-  const otherFields = fieldEntries.filter(([k]) => 
-    !['busy', 'idle', 'start_token', 'end', 'result'].includes(k)
-  );
+  // Check if we have fields to display (exclude 'message' from count)
+  const fieldEntries = Object.entries(entry.fields).filter(([k]) => k !== 'message');
+  const hasFields = fieldEntries.length > 0;
 
   return (
     <div 
@@ -109,36 +127,19 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
           dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }}
         />
         
-        {/* Important fields inline */}
-        {importantFields.length > 0 && (
-          <div class="entry-fields-inline">
-            {importantFields.map(([k, v]) => (
-              <div key={k} class="field-inline">
-                <span class="field-key">{k}</span>=
-                <span class="field-value"><CompactJsonViewer value={v} /></span>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        {/* Other fields expanded by default */}
-        {otherFields.length > 0 && (
-          <details class="entry-fields-details" open>
-            <summary>{otherFields.length} more fields</summary>
-            <div class="entry-fields-list">
-              {otherFields.map(([k, v]) => (
-                <div key={k} class="field-item-row">
-                  <span class="field-key">{k}</span>
-                  <span class="field-value"><CompactJsonViewer value={v} /></span>
-                </div>
-              ))}
+        {/* Fields rendered as Rust-style objects */}
+        {hasFields && (
+          <details class="entry-fields-rust" open={detailsOpen}>
+            <summary>{fieldEntries.length} field{fieldEntries.length !== 1 ? 's' : ''}</summary>
+            <div class="fields-rust-container">
+              <FieldsRenderer fields={entry.fields} defaultExpanded={detailsOpen} />
             </div>
           </details>
         )}
         
         {/* Backtrace for panic/error entries */}
         {entry.backtrace && (
-          <details class="entry-backtrace" open={entry.level === 'ERROR'}>
+          <details class="entry-backtrace" open={expandAll !== null ? expandAll : entry.level === 'ERROR'}>
             <summary class="backtrace-summary">📚 Stack Trace</summary>
             <pre class="backtrace-content">{entry.backtrace}</pre>
           </details>
@@ -148,25 +149,32 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect 
         {hasLocation && (
           <div class="entry-source">
             <button class="snippet-toggle" onClick={toggleSnippet}>
-              {showSnippet ? '▼' : '▶'} Source
+              {snippetVisible ? '▼' : '▶'} Source
             </button>
-            {showSnippet && snippet && (
+            {snippetVisible && snippet && (
               <div class="code-snippet">
                 <pre class="snippet-code">
-                  {snippet.content.split('\n').map((line, i) => {
-                    const lineNum = snippet.start_line + i;
-                    const isHighlight = lineNum === snippet.highlight_line;
-                    return (
-                      <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
-                        <span class="line-number">{lineNum}</span>
-                        <code>{line}</code>
-                      </div>
+                  {(() => {
+                    // Highlight the entire snippet as Rust
+                    const language = entry.file?.endsWith('.rs') ? 'rust' : 'plaintext';
+                    const highlightedLines = snippet.content.split('\n').map(line => 
+                      highlightCode(line, language)
                     );
-                  })}
+                    return highlightedLines.map((line, i) => {
+                      const lineNum = snippet.start_line + i;
+                      const isHighlight = lineNum === snippet.highlight_line;
+                      return (
+                        <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
+                          <span class="line-number">{lineNum}</span>
+                          <code dangerouslySetInnerHTML={{ __html: line || ' ' }} />
+                        </div>
+                      );
+                    });
+                  })()}
                 </pre>
               </div>
             )}
-            {showSnippet && snippetError && (
+            {snippetVisible && snippetError && (
               <div class="snippet-error">{snippetError}</div>
             )}
           </div>

@@ -9,6 +9,7 @@ import * as api from '../api';
 interface FileState {
     entries: LogEntry[];
     searchQuery: string;
+  jqFilter: string;
     levelFilter: LogLevel | '';
     typeFilter: EventType | '';
     selectedEntry: LogEntry | null;
@@ -22,6 +23,7 @@ function createFileState(): FileState {
     return {
         entries: [],
         searchQuery: '',
+      jqFilter: '',
         levelFilter: '',
         typeFilter: '',
         selectedEntry: null,
@@ -75,6 +77,7 @@ const currentFileState = computed(() => getFileState(currentFile.value));
 // Computed accessors for current file's state
 export const entries = computed(() => currentFileState.value.entries);
 export const searchQuery = computed(() => currentFileState.value.searchQuery);
+export const jqFilter = computed(() => currentFileState.value.jqFilter);
 export const levelFilter = computed(() => currentFileState.value.levelFilter);
 export const typeFilter = computed(() => currentFileState.value.typeFilter);
 export const selectedEntry = computed(() => currentFileState.value.selectedEntry);
@@ -116,8 +119,8 @@ export const logStats = computed((): LogStats => {
     // Track span durations
     if (entry.event_type === 'span_exit' && entry.span_name) {
       const busyField = entry.fields['busy'];
-      if (busyField) {
-        const durationMatch = busyField.match(/(\d+(?:\.\d+)?)(µs|ms|s)/);
+      if (typeof busyField === 'string') {
+        const durationMatch = busyField.match(/([\d.]+)(µs|ms|s)/);
         if (durationMatch) {
           let duration = parseFloat(durationMatch[1]);
           const unit = durationMatch[2];
@@ -234,6 +237,34 @@ export async function performSearch(query: string) {
   } catch (e) {
     error.value = String(e);
     statusMessage.value = `Search error: ${e}`;
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+export async function performJqQuery(filter: string) {
+  if (!filter || !currentFile.value) {
+    updateCurrentFileState({ jqFilter: '' });
+    return;
+  }
+
+  isLoading.value = true;
+  statusMessage.value = `Applying JQ filter...`;
+
+  try {
+    const data = await api.queryLogs(
+      currentFile.value,
+      filter
+    );
+    updateCurrentFileState({
+      entries: data.matches,
+      jqFilter: filter,
+      searchQuery: '', // Clear text search when using JQ
+    });
+    statusMessage.value = `JQ filter matched ${data.total_matches} entries`;
+  } catch (e) {
+    error.value = String(e);
+    statusMessage.value = `JQ error: ${e}`;
   } finally {
     isLoading.value = false;
   }

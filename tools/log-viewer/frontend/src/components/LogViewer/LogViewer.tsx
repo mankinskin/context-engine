@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { 
   filteredEntries, 
   showRaw, 
@@ -10,6 +11,7 @@ import {
 import { LogEntryRow } from './LogEntryRow';
 
 export function LogViewer() {
+  const [expandAll, setExpandAll] = useState<boolean | null>(null); // null = default behavior
   if (!currentFile.value) {
     return (
       <div class="log-viewer empty">
@@ -43,6 +45,20 @@ export function LogViewer() {
 
   return (
     <div class="log-viewer">
+      <div class="log-viewer-toolbar">
+        <span class="toolbar-count">{filteredEntries.value.length} entries</span>
+        <div class="toolbar-actions">
+          <button class="btn btn-small" onClick={() => setExpandAll(true)} title="Expand all details">
+            ▼ Expand All
+          </button>
+          <button class="btn btn-small" onClick={() => setExpandAll(false)} title="Collapse all details">
+            ▶ Collapse All
+          </button>
+          <button class="btn btn-small" onClick={() => setExpandAll(null)} title="Reset to default">
+            ↺ Reset
+          </button>
+        </div>
+      </div>
       <div class="log-entries">
         {filteredEntries.value.map(entry => (
           <LogEntryRow
@@ -52,6 +68,7 @@ export function LogViewer() {
             searchQuery={searchQuery.value}
             isSelected={selectedEntry.value?.line_number === entry.line_number}
             onSelect={() => selectEntry(entry)}
+            expandAll={expandAll}
           />
         ))}
       </div>

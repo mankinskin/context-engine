@@ -4,7 +4,9 @@ import {
   loadLogFiles, 
   loadLogFile,
   searchQuery as searchQuerySignal,
+  jqFilter as jqFilterSignal,
   performSearch,
+  performJqQuery,
   levelFilter,
   typeFilter,
   showRaw,
@@ -20,6 +22,13 @@ export function Header() {
     const form = e.target as HTMLFormElement;
     const input = form.querySelector('input') as HTMLInputElement;
     performSearch(input.value);
+  };
+
+  const handleJqQuery = (e: Event) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const input = form.querySelector('input') as HTMLInputElement;
+    performJqQuery(input.value);
   };
 
   const handleRefresh = () => {
@@ -43,6 +52,16 @@ export function Header() {
           value={searchQuerySignal.value}
         />
         <button type="submit" class="btn btn-primary">🔍 Search</button>
+      </form>
+
+      <form class="jq-form" onSubmit={handleJqQuery}>
+        <input 
+          type="text" 
+          class="search-input jq-input" 
+          placeholder='JQ filter: select(.level == "ERROR")'
+          value={jqFilterSignal.value}
+        />
+        <button type="submit" class="btn btn-secondary">⚡ JQ</button>
       </form>
       
       <div class="header-filters">
@@ -69,8 +88,8 @@ export function Header() {
           <option value="span_exit">Span Exit</option>
         </select>
         
-        {searchQuerySignal.value && (
-          <button class="btn" onClick={clearSearch}>✕ Clear Search</button>
+        {(searchQuerySignal.value || jqFilterSignal.value) && (
+          <button class="btn" onClick={clearSearch}>✕ Clear Filter</button>
         )}
         
         <label class="checkbox-label">

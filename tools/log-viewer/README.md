@@ -1,6 +1,6 @@
 # Log Viewer
 
-A modern web-based log viewer for tracing logs from `context-engine` tests, built with Preact + Vite frontend and Axum (Rust) backend.
+A modern web-based log viewer for tracing logs from `context-engine` tests, built with Preact + Vite frontend and Axum (Rust) backend. Also includes an MCP server for agent integration.
 
 ## Features
 
@@ -10,6 +10,18 @@ A modern web-based log viewer for tracing logs from `context-engine` tests, buil
 - **Indentation**: Visual hierarchy showing span depth
 - **Search**: Regex-based search with match highlighting
 - **Filtering**: Filter by log level and event type
+
+### JQ Query Language
+- **Full JQ syntax** for filtering logs (powered by jaq)
+- Filter by level: `select(.level == "ERROR")`
+- Search in messages: `select(.message | contains("panic"))`
+- Complex queries: `select(.level == "ERROR" and .span_name == "my_function")`
+- Regex matching: `select(.message | test("error|panic"; "i"))`
+
+### MCP Server for Agents
+- Run with `--mcp` flag to start MCP server on stdio
+- Tools: `list_logs`, `get_log`, `query_logs`, `get_source`, `analyze_log`, `search_all_logs`
+- Full JQ query support for powerful log filtering
 
 ### Code Integration
 - **Source Snippets**: View source code snippets inline with log entries
@@ -25,8 +37,10 @@ A modern web-based log viewer for tracing logs from `context-engine` tests, buil
 ## Architecture
 
 ### Backend (Rust/Axum)
-- `src/main.rs` - HTTP server with REST API
+- `src/main.rs` - HTTP server with REST API, or MCP server with `--mcp`
 - `src/log_parser.rs` - Parses compact tracing format into structured entries
+- `src/query.rs` - JQ query language support via jaq
+- `src/mcp_server.rs` - MCP protocol server for agent integration
 
 ### Frontend (TypeScript/Preact)
 - `frontend/src/` - Modular component structure
@@ -36,7 +50,7 @@ A modern web-based log viewer for tracing logs from `context-engine` tests, buil
 
 ## Usage
 
-### Quick Start
+### Quick Start (Web UI)
 
 ```bash
 # Build frontend
@@ -50,6 +64,21 @@ cargo run --release
 ```
 
 Visit http://localhost:3000
+
+### MCP Server Mode (for Agents)
+
+```bash
+# Run as MCP server on stdio
+cargo run --release -- --mcp
+```
+
+The MCP server provides these tools:
+- `list_logs` - List available log files
+- `get_log` - Read log file with optional JQ filtering
+- `query_logs` - Filter logs using JQ expressions
+- `get_source` - Get source code snippets
+- `analyze_log` - Get statistics and error summary
+- `search_all_logs` - Search across all log files
 
 ### Development Mode
 
@@ -107,15 +136,33 @@ Environment variables override config file values:
 |----------|--------|-------------|
 | `/api/logs` | GET | List all `.log` files |
 | `/api/logs/:name` | GET | Get parsed content of a log |
-| `/api/logs/:name/search` | GET | Search within a log file |
+| `/api/search/:name` | GET | Search within a log file (regex) |
+| `/api/query/:name` | GET | Filter logs using JQ expressions |
 | `/api/source/*path` | GET | Get source file content |
 | `/api/source/*path?line=N&context=M` | GET | Get source snippet around line N |
 
-### Search Parameters
+### Search Parameters (`/api/search/:name`)
 
 - `q` (required): Search query (regex supported)
 - `level` (optional): Filter by log level (TRACE, DEBUG, INFO, WARN, ERROR)
 - `limit` (optional): Maximum results to return
+
+### JQ Query Parameters (`/api/query/:name`)
+
+- `jq` (required): JQ filter expression
+- `limit` (optional): Maximum results to return
+
+**Example JQ queries:**
+```bash
+# Filter by level
+curl 'localhost:3000/api/query/test.log?jq=select(.level=="ERROR")'
+
+# Search in message
+curl 'localhost:3000/api/query/test.log?jq=select(.message|contains("panic"))'
+
+# Complex filter
+curl 'localhost:3000/api/query/test.log?jq=select(.level=="ERROR" and .span_name=="my_fn")'
+```
 
 ## Tech Stack
 
