@@ -1557,8 +1557,20 @@ html, body {
   padding: 0 2px;
 }
 
+.snippet-line.clickable {
+  cursor: pointer;
+}
+
+.snippet-line.clickable:hover {
+  background: var(--bg-hover);
+}
+
 .snippet-line.highlight {
   background: rgba(255, 213, 0, 0.15);
+}
+
+.snippet-line.clickable.highlight:hover {
+  background: rgba(255, 213, 0, 0.25);
 }
 
 .snippet-line .line-number {
