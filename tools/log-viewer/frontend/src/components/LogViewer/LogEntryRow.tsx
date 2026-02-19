@@ -15,6 +15,12 @@ interface Props {
   isSelected: boolean;
   onSelect: () => void;
   expandAll: boolean;
+  isExpanded?: boolean; // Shared expand state from parent
+  onToggleExpand?: () => void; // Toggle expand callback
+  headerCellRef?: (el: HTMLDivElement | null) => void; // Ref callback for header scroll sync
+  headerScrollLeft?: number; // Current horizontal scroll position
+  headerColWidth?: number; // Header column width
+  onHeaderWheel?: (e: WheelEvent) => void; // Wheel scroll handler for header column
 }
 
 interface BacktraceFrame {
@@ -174,22 +180,28 @@ function highlightCode(code: string, language: string): string {
   return escapeHtml(code);
 }
 
-export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll }: Props) {
+export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth: _headerColWidth = 300, onHeaderWheel }: Props) {
   const [snippet, setSnippet] = useState<SourceSnippet | null>(null);
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [panicSnippet, setPanicSnippet] = useState<SourceSnippet | null>(null);
   const [panicSnippetError, setPanicSnippetError] = useState<string | null>(null);
-  const [headerExpanded, setHeaderExpanded] = useState(false);
-  const [contentExpanded, setContentExpanded] = useState(false);
+  // Local state for legacy mode
+  const [localExpanded, setLocalExpanded] = useState(false);
+  
+  // Use shared state if available, otherwise local
+  const expanded = isExpanded !== undefined ? isExpanded : localExpanded;
+  
+  // Ref for measuring content width
+  const headerContentRef = { current: null as HTMLDivElement | null };
 
   const hasLocation = entry.file && entry.source_line;
   const hasPanicLocation = entry.panic_file && entry.panic_line;
   const levelClass = entry.level.toLowerCase();
   const typeClass = entry.event_type.replace('_', '-');
   
-  // Calculate indentation for spans
+  // Calculate indentation for spans (1.2em per level, ~13px at 11px font)
   const indentLevel = Math.min(entry.depth, 10);
-  const indentPx = indentLevel * 20;
+  const indentEm = indentLevel * 1.2;
 
   // Auto-load snippet on mount if location is available
   useEffect(() => {
@@ -225,122 +237,187 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
   // Parse backtrace for relevant frames
   const backtraceFrames = entry.backtrace ? getRelevantFrames(parseBacktrace(entry.backtrace)) : [];
 
-  // Use expandAll or local state
-  const showHeaderDetails = expandAll || headerExpanded;
-  const showContentDetails = expandAll || contentExpanded;
+  // Unified expanded state
+  const showDetails = expandAll || expanded;
 
-  // Has expandable header content? (only backtrace for non-panics)
-  const hasHeaderExpand = entry.backtrace && !isPanic;
-  // Has expandable content? (message details, fields, snippets)
-  const hasContentExpand = hasFields || (hasLocation && snippet) || (isPanic && (panicSnippet || entry.assertion_diff || backtraceFrames.length > 0)) || showRaw;
+  // Has expandable header content? (fields or backtrace for non-panics)
+  const hasHeaderExpand = hasFields || (entry.backtrace && !isPanic);
+  // Has expandable viewport content? (snippets, panic info, raw)
+  const hasViewportExpand = (hasLocation && snippet) || (isPanic && (panicSnippet || entry.assertion_diff || backtraceFrames.length > 0)) || showRaw;
   
   // Any expandable content at all?
-  const hasAnyExpandable = hasHeaderExpand || hasContentExpand;
+  const hasAnyExpandable = hasHeaderExpand || hasViewportExpand;
 
   // Click handler: expand all expandables + select
   const handleEntryClick = () => {
     onSelect();
     if (hasAnyExpandable) {
-      const anyExpanded = headerExpanded || contentExpanded;
-      // Toggle: if any expanded, collapse all; otherwise expand all
-      setHeaderExpanded(!anyExpanded);
-      setContentExpanded(!anyExpanded);
+      if (onToggleExpand) {
+        onToggleExpand();
+      } else {
+        setLocalExpanded(!localExpanded);
+      }
+    }
+  };
+  
+  // Toggle handler for expand buttons
+  const handleToggle = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleExpand) {
+      onToggleExpand();
+    } else {
+      setLocalExpanded(!localExpanded);
     }
   };
 
+  // Render as flex row with both columns
   return (
     <div 
       class={`log-entry ${isSelected ? 'selected' : ''} level-${levelClass} type-${typeClass} ${isPanic ? 'panic-entry' : ''} ${hasAnyExpandable ? 'expandable' : ''}`}
       onClick={handleEntryClick}
-      style={{ paddingLeft: `${indentPx}px` }}
     >
-      {/* Span depth indicator */}
-      {indentLevel > 0 && (
-        <div class="depth-indicator" style={{ left: '0', width: `${indentPx}px` }}>
-          {Array.from({ length: indentLevel }).map((_, i) => (
-            <span key={i} class="depth-line"></span>
-          ))}
-        </div>
-      )}
-      
-      {/* Header Column - 2 row grid */}
-      <div class="entry-header-col">
-        <div class="header-row1">
-          <span class={`level-badge ${levelClass}`}>{entry.level}</span>
-          <span class={`type-badge ${typeClass}`}>{entry.event_type === 'span_enter' ? 'ENTER' : entry.event_type === 'span_exit' ? 'EXIT' : 'EVENT'}</span>
-          {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
-          {hasHeaderExpand && (
-            <button class="col-toggle" onClick={(e) => { e.stopPropagation(); setHeaderExpanded(!headerExpanded); }}>
-              {showHeaderDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
-            </button>
-          )}
-        </div>
-        <div class="header-row2">
-          <span class="entry-meta">#{entry.line_number}</span>
-          {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
-          {hasLocation && (
-            <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
-              <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
-            </button>
-          )}
-        </div>
-        {showHeaderDetails && (
-          <div class="header-details" onClick={(e) => e.stopPropagation()}>
-            {/* Backtrace in header for non-panics */}
-            {entry.backtrace && !isPanic && (
-              <pre class="backtrace-content">{entry.backtrace}</pre>
+      {/* Header Column - entry metadata and message */}
+      <div class="entry-header-cell" onWheel={onHeaderWheel as any}>
+        <div 
+          class="entry-header-content"
+          ref={(el) => {
+            headerContentRef.current = el;
+            if (headerCellRef) headerCellRef(el);
+          }}
+          style={{ transform: `translateX(-${headerScrollLeft}px)` }}
+        >
+          <div class="entry-header-col" style={{ paddingLeft: `${indentEm + 0.5}em` }}>
+            {/* Span depth indicator */}
+            {indentLevel > 0 && (
+              <div class="depth-indicator" style={{ left: '0', width: `${indentEm}em` }}>
+                {Array.from({ length: indentLevel }).map((_, i) => (
+                  <span key={i} class="depth-line"></span>
+                ))}
+              </div>
+            )}
+            <div class="header-row1">
+              <span class={`level-badge ${levelClass}`}>{entry.level}</span>
+              <span class={`type-badge ${typeClass}`}>{entry.event_type === 'span_enter' ? 'ENTER' : entry.event_type === 'span_exit' ? 'EXIT' : 'EVENT'}</span>
+              {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
+              <span class="entry-meta">#{entry.line_number}</span>
+              {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
+            </div>
+            <div class="header-row2">
+              {entry.span_name && <span class="span-name">{entry.span_name}</span>}
+              {isPanic ? (
+                <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+              ) : (
+                <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+              )}
+            </div>
+            <div class="header-row3">
+              {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
+              {hasLocation && (
+                <button class="header-location" onClick={handleLocationClick} title={`${entry.file}:${entry.source_line}`}>
+                  <LocationPin size={8} />{entry.file?.split(/[/\\]/).pop()}:{entry.source_line}
+                </button>
+              )}
+            </div>
+            {showDetails && (
+              <div class="header-details" onClick={(e) => e.stopPropagation()}>
+                {/* Fields */}
+                {hasFields && (
+                  <div class="fields-rust-container">
+                    <FieldsRenderer fields={entry.fields} defaultExpanded={true} />
+                  </div>
+                )}
+                {/* Backtrace in header for non-panics */}
+                {entry.backtrace && !isPanic && (
+                  <pre class="backtrace-content">{entry.backtrace}</pre>
+                )}
+              </div>
             )}
           </div>
+        </div>
+        {/* Expand toggle - positioned outside scrolling content to stick at right */}
+        {hasAnyExpandable && (
+          <button class="header-expand-toggle" onClick={handleToggle}>
+            {showDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
+          </button>
         )}
       </div>
       
-      {/* Content Column - 2 row grid */}
-      <div class="entry-content-col">
-        <div class="content-row1">
-          {entry.span_name && <span class="span-name">{entry.span_name}</span>}
-          {isPanic ? (
-            <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
-          ) : (
-            <span class="entry-message" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
+      {/* Viewport Column - source code and visualizations */}
+      <div class="entry-viewport-cell">
+        <div class="entry-viewport-col">
+          {hasViewportExpand && (
+            <div class="viewport-header">
+              <span class="viewport-label">Source</span>
+              <button class="col-toggle" onClick={handleToggle}>
+                {showDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
+              </button>
+            </div>
           )}
-          {hasFields && <span class="content-meta">{fieldEntries.length} {fieldEntries.length === 1 ? 'field' : 'fields'}</span>}
-          {hasContentExpand && (
-            <button class="col-toggle" onClick={(e) => { e.stopPropagation(); setContentExpanded(!contentExpanded); }}>
-              {showContentDetails ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
-            </button>
-          )}
-        </div>
-        <div class="content-row2">
-          {isPanic && entry.assertion_diff && <span class="content-meta">diff</span>}
-          {isPanic && backtraceFrames.length > 0 && <span class="content-meta">stack</span>}
-        </div>
-        {showContentDetails && (
-          <div class="content-details" onClick={(e) => e.stopPropagation()}>
-            {/* Panic assertion diff */}
-            {isPanic && entry.assertion_diff && (
-              <PanicMessageRenderer 
-                message={entry.message} 
-                assertionDiff={entry.assertion_diff}
-                searchQuery={searchQuery} 
-              />
-            )}
-            
-            {/* Panic source snippet */}
-            {isPanic && hasPanicLocation && panicSnippet && (
-              <div class="panic-source">
-                <div class="panic-location">
-                  <LocationPin size={8} /> {entry.panic_file}:{entry.panic_line}
+          {showDetails && (
+            <div class="viewport-content" onClick={(e) => e.stopPropagation()}>
+              {/* Panic assertion diff */}
+              {isPanic && entry.assertion_diff && (
+                <PanicMessageRenderer 
+                  message={entry.message} 
+                  assertionDiff={entry.assertion_diff}
+                  searchQuery={searchQuery} 
+                />
+              )}
+              
+              {/* Panic source snippet */}
+              {isPanic && hasPanicLocation && panicSnippet && (
+                <div class="panic-source">
+                  <div class="panic-location">
+                    <LocationPin size={8} /> {entry.panic_file}:{entry.panic_line}
+                  </div>
+                  <div class="code-snippet panic-snippet">
+                    <pre class="snippet-code">
+                      {(() => {
+                        const language = entry.panic_file?.endsWith('.rs') ? 'rust' : 'plaintext';
+                        const highlightedLines = panicSnippet.content.split('\n').map(line => 
+                          highlightCode(line, language)
+                        );
+                        return highlightedLines.map((line, i) => {
+                          const lineNum = panicSnippet.start_line + i;
+                          const isHighlight = lineNum === panicSnippet.highlight_line;
+                          return (
+                            <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
+                              <span class="line-number">{lineNum}</span>
+                              <code dangerouslySetInnerHTML={{ __html: line || ' ' }} />
+                            </div>
+                          );
+                        });
+                      })()}
+                    </pre>
+                  </div>
                 </div>
-                <div class="code-snippet panic-snippet">
+              )}
+              
+              {/* Panic call stack */}
+              {isPanic && backtraceFrames.length > 0 && (
+                <div class="callers-list">
+                  {backtraceFrames.map((frame, i) => (
+                    <div key={i} class="caller-frame">
+                      <span class="frame-index">{frame.index}</span>
+                      <span class="frame-function">{frame.function}</span>
+                      {frame.location && <span class="frame-location">at {frame.location}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Source snippet */}
+              {hasLocation && snippet && (
+                <div class="code-snippet">
                   <pre class="snippet-code">
                     {(() => {
-                      const language = entry.panic_file?.endsWith('.rs') ? 'rust' : 'plaintext';
-                      const highlightedLines = panicSnippet.content.split('\n').map(line => 
+                      const language = entry.file?.endsWith('.rs') ? 'rust' : 'plaintext';
+                      const highlightedLines = snippet.content.split('\n').map(line => 
                         highlightCode(line, language)
                       );
                       return highlightedLines.map((line, i) => {
-                        const lineNum = panicSnippet.start_line + i;
-                        const isHighlight = lineNum === panicSnippet.highlight_line;
+                        const lineNum = snippet.start_line + i;
+                        const isHighlight = lineNum === snippet.highlight_line;
                         return (
                           <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
                             <span class="line-number">{lineNum}</span>
@@ -351,58 +428,14 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
                     })()}
                   </pre>
                 </div>
-              </div>
-            )}
-            
-            {/* Panic call stack */}
-            {isPanic && backtraceFrames.length > 0 && (
-              <div class="callers-list">
-                {backtraceFrames.map((frame, i) => (
-                  <div key={i} class="caller-frame">
-                    <span class="frame-index">{frame.index}</span>
-                    <span class="frame-function">{frame.function}</span>
-                    {frame.location && <span class="frame-location">at {frame.location}</span>}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* Fields */}
-            {hasFields && (
-              <div class="fields-rust-container">
-                <FieldsRenderer fields={entry.fields} defaultExpanded={true} />
-              </div>
-            )}
-            
-            {/* Source snippet */}
-            {hasLocation && snippet && (
-              <div class="code-snippet">
-                <pre class="snippet-code">
-                  {(() => {
-                    const language = entry.file?.endsWith('.rs') ? 'rust' : 'plaintext';
-                    const highlightedLines = snippet.content.split('\n').map(line => 
-                      highlightCode(line, language)
-                    );
-                    return highlightedLines.map((line, i) => {
-                      const lineNum = snippet.start_line + i;
-                      const isHighlight = lineNum === snippet.highlight_line;
-                      return (
-                        <div key={i} class={`snippet-line ${isHighlight ? 'highlight' : ''}`}>
-                          <span class="line-number">{lineNum}</span>
-                          <code dangerouslySetInnerHTML={{ __html: line || ' ' }} />
-                        </div>
-                      );
-                    });
-                  })()}
-                </pre>
-              </div>
-            )}
-            {hasLocation && snippetError && <span class="snippet-error">{snippetError}</span>}
-            
-            {/* Raw */}
-            {showRaw && <pre class="entry-raw">{entry.raw}</pre>}
-          </div>
-        )}
+              )}
+              {hasLocation && snippetError && <span class="snippet-error">{snippetError}</span>}
+              
+              {/* Raw */}
+              {showRaw && <pre class="entry-raw">{entry.raw}</pre>}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

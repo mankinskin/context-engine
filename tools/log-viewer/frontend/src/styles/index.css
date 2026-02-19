@@ -714,7 +714,7 @@ html, body {
 /* Log Viewer */
 .log-viewer {
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 }
@@ -744,10 +744,52 @@ html, body {
   font-size: 18px;
 }
 
+/* Log entries container - scrollable list */
 .log-entries {
   flex: 1;
   overflow-y: auto;
-  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Header column scrollbar - single scrollbar for all header cells */
+.header-scrollbar-container {
+  flex-shrink: 0;
+  height: 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 2px 0;
+}
+
+.header-scrollbar {
+  height: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.header-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.header-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+.header-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+.header-scrollbar-content {
+  height: 1px;
+}
+
+/* Wrapper for vertical scrolling */
+.log-viewer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .log-viewer.empty,
@@ -785,12 +827,11 @@ html, body {
   to { transform: rotate(360deg); }
 }
 
-/* Log Entry */
+/* Log Entry Row - flex row with two columns */
 .log-entry {
   display: flex;
-  position: relative;
-  border-bottom: 1px solid var(--border-subtle);
   cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .log-entry:hover {
@@ -801,83 +842,125 @@ html, body {
   background: var(--bg-active);
 }
 
-/* Header Column - fixed width with 2-row grid */
+/* Header Cell - contains scrollable header content */
+.entry-header-cell {
+  width: 500px;
+  min-width: 200px;
+  max-width: 500px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-right: 2px solid var(--border-color);
+  position: relative;
+}
+
+/* Expand toggle - sticks to right edge of header column */
+.header-expand-toggle {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.header-expand-toggle:hover {
+  color: var(--text-primary);
+}
+
+.entry-header-content {
+  overflow: hidden;
+}
+
+/* Inner content that actually scrolls - must expand to fit all text */
 .entry-header-col {
-  display: grid;
-  grid-template-rows: auto auto auto;
-  grid-template-columns: 1fr;
-  min-width: 140px;
-  max-width: 200px;
-  padding: 1px 4px;
-  border-right: 1px solid var(--border-subtle);
+  display: inline-block;
+  min-width: 100%;
+  padding: 2px 6px;
   font-family: var(--font-mono);
   font-size: 11px;
-  overflow-x: hidden;
-  align-self: start;
+  white-space: nowrap;
+}
+
+/* Viewport Cell - source code column */
+.entry-viewport-cell {
+  flex: 1;
+  min-width: 0;
+  position: relative;
 }
 
 .header-row1 {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .header-row2 {
   display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 1px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.header-row3 {
+  display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--text-muted);
+  margin-top: 2px;
   font-size: 10px;
+  color: var(--text-muted);
 }
 
 .header-details {
-  grid-column: 1;
-  padding-top: 2px;
-  font-size: 10px;
-  overflow: auto;
-  max-height: 200px;
-  word-break: break-word;
-}
-
-/* Content Column - flexible with 2-row grid */
-.entry-content-col {
-  display: grid;
-  grid-template-rows: auto auto auto;
-  grid-template-columns: 1fr;
-  flex: 1;
-  padding: 1px 4px;
-  font-size: 12px;
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-.content-row1 {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.content-row2 {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--text-muted);
-  font-size: 10px;
-}
-
-.content-meta {
-  background: var(--bg-tertiary);
-  padding: 0 3px;
-  border-radius: 2px;
-}
-
-.content-details {
-  grid-column: 1;
-  padding-top: 2px;
+  padding-top: 4px;
   font-size: 11px;
   overflow: auto;
   max-height: 300px;
   word-break: break-word;
+}
+
+/* Viewport Column - source code and visualizations */
+.entry-viewport-col {
+  display: block;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.viewport-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.viewport-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.viewport-content {
+  padding-top: 4px;
+  font-size: 11px;
+  word-break: break-word;
+}
+
+/* Meta badge for fields count etc */
+.content-meta {
+  background: var(--bg-tertiary);
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: var(--text-secondary);
 }
 
 /* Column toggle button */
@@ -990,15 +1073,21 @@ html, body {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--accent-yellow);
-  font-weight: 500;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.span-name::after {
+  content: ':';
+  margin-right: 4px;
+  color: var(--text-muted);
 }
 
 .entry-message {
   font-size: 12px;
-  line-height: 1.2;
+  line-height: 1.3;
   color: var(--text-primary);
-  flex: 1;
-  min-width: 0;
+  white-space: nowrap;
 }
 
 .entry-message.panic-msg {
@@ -1409,6 +1498,8 @@ html, body {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 2px;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .snippet-code {

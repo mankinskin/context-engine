@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { 
   filteredEntries, 
   showRaw, 
@@ -22,6 +22,69 @@ function FolderIcon({ size = 32, color = 'currentColor' }: { size?: number; colo
 
 export function LogViewer() {
   const [expandAll, setExpandAll] = useState<boolean>(false);
+  const [expandedEntries, setExpandedEntries] = useState<Set<number>>(new Set());
+  const [headerScrollLeft, setHeaderScrollLeft] = useState(0);
+  const [maxHeaderWidth, setMaxHeaderWidth] = useState(0);
+  const [headerColWidth, _setHeaderColWidth] = useState(500);
+  
+  // Refs for header cells to sync scroll
+  const headerCellRefs: { current: HTMLDivElement[] } = { current: [] };
+  const scrollbarRef = { current: null as HTMLDivElement | null };
+  
+  // Calculate max header content width
+  useEffect(() => {
+    let maxWidth = 0;
+    headerCellRefs.current.forEach(cell => {
+      if (cell) {
+        maxWidth = Math.max(maxWidth, cell.scrollWidth);
+      }
+    });
+    setMaxHeaderWidth(maxWidth);
+  }, [filteredEntries.value, expandedEntries]);
+  
+  // Sync all header cells when scrollbar moves
+  const handleScrollbarChange = (scrollLeft: number) => {
+    setHeaderScrollLeft(scrollLeft);
+  };
+  
+  // Handle wheel scroll on header column
+  const handleHeaderWheel = (e: WheelEvent) => {
+    // Use deltaX for trackpad horizontal scroll, or deltaY with shift for mouse wheel
+    const delta = e.deltaX !== 0 ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+    if (delta === 0) return;
+    
+    e.preventDefault();
+    setHeaderScrollLeft(prev => {
+      const maxScroll = Math.max(0, maxHeaderWidth - headerColWidth);
+      return Math.max(0, Math.min(maxScroll, prev + delta));
+    });
+    
+    // Sync the scrollbar element if it exists
+    if (scrollbarRef.current) {
+      const maxScroll = Math.max(0, maxHeaderWidth - headerColWidth);
+      const newScroll = Math.max(0, Math.min(maxScroll, headerScrollLeft + delta));
+      scrollbarRef.current.scrollLeft = newScroll;
+    }
+  };
+  
+  const toggleExpanded = (lineNumber: number) => {
+    setExpandedEntries(prev => {
+      const next = new Set(prev);
+      if (next.has(lineNumber)) {
+        next.delete(lineNumber);
+      } else {
+        next.add(lineNumber);
+      }
+      return next;
+    });
+  };
+  
+  const registerHeaderCell = (index: number) => (el: HTMLDivElement | null) => {
+    if (el) {
+      headerCellRefs.current[index] = el;
+    }
+  };
+
   if (!currentFile.value) {
     return (
       <div class="log-viewer empty">
@@ -53,6 +116,8 @@ export function LogViewer() {
     );
   }
 
+  const scrollRange = Math.max(0, maxHeaderWidth - headerColWidth);
+
   return (
     <div class="log-viewer">
       <div class="log-viewer-toolbar">
@@ -61,8 +126,20 @@ export function LogViewer() {
           {expandAll ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
       </div>
+      {/* Header column scrollbar */}
+      {scrollRange > 0 && (
+        <div class="header-scrollbar-container" style={{ width: `${headerColWidth}px` }}>
+          <div 
+            class="header-scrollbar"
+            ref={(el) => { scrollbarRef.current = el; }}
+            onScroll={(e) => handleScrollbarChange((e.target as HTMLDivElement).scrollLeft)}
+          >
+            <div class="header-scrollbar-content" style={{ width: `${maxHeaderWidth}px` }} />
+          </div>
+        </div>
+      )}
       <div class="log-entries">
-        {filteredEntries.value.map(entry => (
+        {filteredEntries.value.map((entry, index) => (
           <LogEntryRow
             key={entry.line_number}
             entry={entry}
@@ -71,6 +148,12 @@ export function LogViewer() {
             isSelected={selectedEntry.value?.line_number === entry.line_number}
             onSelect={() => selectEntry(entry)}
             expandAll={expandAll}
+            isExpanded={expandedEntries.has(entry.line_number)}
+            onToggleExpand={() => toggleExpanded(entry.line_number)}
+            headerCellRef={registerHeaderCell(index)}
+            headerScrollLeft={headerScrollLeft}
+            headerColWidth={headerColWidth}
+            onHeaderWheel={handleHeaderWheel}
           />
         ))}
       </div>
