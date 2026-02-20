@@ -6,6 +6,12 @@
         "command": "bash .github/hooks/validate-docs.sh",
         "cwd": ".",
         "timeout": 30
+      },
+      {
+        "type": "command",
+        "command": "bash .github/hooks/terminal-pwd.sh",
+        "cwd": ".",
+        "timeout": 5
       }
     ]
   }
