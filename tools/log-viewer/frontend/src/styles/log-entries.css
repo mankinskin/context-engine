@@ -48,6 +48,8 @@
 .entry-header-content {
   overflow: hidden;
   flex: 1;
+  /* Add left padding for the absolutely positioned gutter */
+  padding-left: var(--gutter-width, 0px);
 }
 
 /* Inner content that actually scrolls - must expand to fit all text */
