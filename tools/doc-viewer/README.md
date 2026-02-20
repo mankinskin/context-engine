@@ -1,6 +1,19 @@
-# MCP Docs Server
+# Doc Viewer Backend
 
-A Model Context Protocol (MCP) server for managing structured agent documentation.
+Backend server for the doc-viewer tool, supporting both HTTP API and MCP protocols.
+
+## Usage
+
+```bash
+# HTTP server only (default)
+cargo run -- --http
+
+# MCP server only (for AI assistants)
+cargo run -- --mcp
+
+# Both servers simultaneously
+cargo run -- --http --mcp
+```
 
 ## Features
 
@@ -30,11 +43,11 @@ A Model Context Protocol (MCP) server for managing structured agent documentatio
 ### Build
 
 ```bash
-cd context-engine/agents/mcp-docs-server
+cd context-engine/tools/doc-viewer/backend
 cargo build --release
 ```
 
-### VS Code Integration
+### VS Code Integration (MCP)
 
 Add to `.vscode/mcp.json`:
 
@@ -43,7 +56,8 @@ Add to `.vscode/mcp.json`:
   "servers": {
     "docs": {
       "type": "stdio",
-      "command": "${workspaceFolder}/context-engine/agents/mcp-docs-server/target/release/mcp-docs-server",
+      "command": "${workspaceFolder}/context-engine/tools/doc-viewer/backend/target/release/doc-viewer",
+      "args": ["--mcp"],
       "env": {
         "AGENTS_DIR": "${workspaceFolder}/context-engine/agents"
       }

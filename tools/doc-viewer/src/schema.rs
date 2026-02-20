@@ -77,6 +77,18 @@ impl PlanStatus {
     }
 }
 
+impl std::fmt::Display for PlanStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PlanStatus::Design => write!(f, "design"),
+            PlanStatus::InProgress => write!(f, "in-progress"),
+            PlanStatus::Completed => write!(f, "completed"),
+            PlanStatus::Blocked => write!(f, "blocked"),
+            PlanStatus::Superseded => write!(f, "superseded"),
+        }
+    }
+}
+
 /// Metadata extracted from or written to a document.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DocMetadata {

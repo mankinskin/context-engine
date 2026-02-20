@@ -97,3 +97,4 @@
 [alias]
 # Start the log-viewer server (http://localhost:3000)
 log-viewer = "run --manifest-path tools/log-viewer/Cargo.toml"
+doc-viewer = "run --manifest-path tools/doc-viewer/Cargo.toml"

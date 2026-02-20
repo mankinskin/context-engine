@@ -21,18 +21,18 @@ fi
 TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path // empty' 2>/dev/null)
 echo "[validate-docs-stop] Transcript path: $TRANSCRIPT_PATH" >&2
 
-# Check if MCP docs server files were modified in this session
+# Check if doc-viewer backend files were modified in this session
 MCP_MODIFIED=false
 if [[ -n "$TRANSCRIPT_PATH" && -f "$TRANSCRIPT_PATH" ]]; then
-    if grep -q "tools/mcp-docs-server/src/" "$TRANSCRIPT_PATH" 2>/dev/null; then
-        echo "[validate-docs-stop] Found MCP changes in transcript" >&2
+    if grep -q "tools/doc-viewer/backend/src/" "$TRANSCRIPT_PATH" 2>/dev/null; then
+        echo "[validate-docs-stop] Found doc-viewer backend changes in transcript" >&2
         MCP_MODIFIED=true
     fi
 fi
 
-# Also check git for uncommitted changes to mcp-docs-server
-if git diff --name-only 2>/dev/null | grep -q "tools/mcp-docs-server/src/"; then
-    echo "[validate-docs-stop] Found uncommitted MCP changes in git" >&2
+# Also check git for uncommitted changes to doc-viewer backend
+if git diff --name-only 2>/dev/null | grep -q "tools/doc-viewer/backend/src/"; then
+    echo "[validate-docs-stop] Found uncommitted doc-viewer backend changes in git" >&2
     MCP_MODIFIED=true
 fi
 
@@ -46,7 +46,7 @@ if [[ "$MCP_MODIFIED" == "true" ]]; then
   "hookSpecificOutput": {
     "hookEventName": "Stop",
     "decision": "block",
-    "reason": "MCP docs server source files were modified. Please run mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs to verify documentation is up to date before completing."
+    "reason": "Doc viewer backend source files were modified. Please run mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs to verify documentation is up to date before completing."
   }
 }
 EOF

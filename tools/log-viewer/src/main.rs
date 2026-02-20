@@ -37,16 +37,17 @@ use config::Config;
 use axum::{
     Router,
     extract::{Path, Query, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::Json,
     routing::get,
 };
 use serde::{Deserialize, Serialize};
 use std::{
+    collections::HashMap,
     env,
     net::SocketAddr,
     path::PathBuf,
-    sync::Arc,
+    sync::{Arc, RwLock},
 };
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -62,12 +63,43 @@ pub fn to_unix_path(path: &std::path::Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }
 
+/// Session configuration for per-client logging behavior
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SessionConfig {
+    /// Unique session identifier
+    pub session_id: String,
+    /// Whether to enable verbose logging for this session (default: false)
+    #[serde(default)]
+    pub verbose: bool,
+    /// Number of source requests made in this session
+    #[serde(skip_deserializing)]
+    pub source_request_count: usize,
+}
+
+impl Default for SessionConfig {
+    fn default() -> Self {
+        Self {
+            session_id: String::new(),
+            verbose: false,
+            source_request_count: 0,
+        }
+    }
+}
+
+/// Session store - maps session IDs to their configuration
+pub type SessionStore = Arc<RwLock<HashMap<String, SessionConfig>>>;
+
+/// Header name for session identification
+pub const SESSION_HEADER: &str = "x-session-id";
+
 /// Application state shared across handlers
 #[derive(Clone)]
 pub struct AppState {
     pub log_dir: PathBuf,
     pub workspace_root: PathBuf,
     pub parser: Arc<LogParser>,
+    /// Session store for per-client configuration
+    pub sessions: SessionStore,
 }
 
 /// Response for listing log files
@@ -190,6 +222,7 @@ pub fn create_app_state_from_config(config: &Config) -> AppState {
         log_dir: config.resolve_log_dir(),
         workspace_root: config.resolve_workspace_root(),
         parser: Arc::new(LogParser::new()),
+        sessions: Arc::new(RwLock::new(HashMap::new())),
     }
 }
 
@@ -221,7 +254,108 @@ pub fn create_app_state(log_dir: Option<PathBuf>, workspace_root: Option<PathBuf
         log_dir,
         workspace_root,
         parser: Arc::new(LogParser::new()),
+        sessions: Arc::new(RwLock::new(HashMap::new())),
     }
+}
+
+/// Get or create session config from headers
+/// Returns None if no session ID is provided (anonymous request)
+fn get_session_config(sessions: &SessionStore, headers: &HeaderMap) -> Option<SessionConfig> {
+    let session_id = headers
+        .get(SESSION_HEADER)
+        .and_then(|v| v.to_str().ok())?;
+    
+    // Get or create session
+    let sessions_guard = sessions.read().unwrap();
+    if let Some(config) = sessions_guard.get(session_id) {
+        Some(config.clone())
+    } else {
+        drop(sessions_guard);
+        // Create new session with defaults
+        let config = SessionConfig {
+            session_id: session_id.to_string(),
+            verbose: false,
+            source_request_count: 0,
+        };
+        let mut sessions_guard = sessions.write().unwrap();
+        sessions_guard.insert(session_id.to_string(), config.clone());
+        Some(config)
+    }
+}
+
+/// Increment source request counter for a session
+fn increment_source_count(sessions: &SessionStore, session_id: &str) -> usize {
+    let mut sessions_guard = sessions.write().unwrap();
+    if let Some(config) = sessions_guard.get_mut(session_id) {
+        config.source_request_count += 1;
+        config.source_request_count
+    } else {
+        1
+    }
+}
+
+/// Request body for session configuration updates
+#[derive(Deserialize, Debug)]
+pub struct SessionConfigUpdate {
+    /// Whether to enable verbose logging
+    pub verbose: Option<bool>,
+}
+
+/// Get session configuration
+async fn get_session(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> Result<Json<SessionConfig>, (StatusCode, Json<ErrorResponse>)> {
+    let session_id = headers
+        .get(SESSION_HEADER)
+        .and_then(|v| v.to_str().ok())
+        .ok_or_else(|| {
+            (StatusCode::BAD_REQUEST, Json(ErrorResponse {
+                error: format!("Missing {} header", SESSION_HEADER),
+            }))
+        })?;
+    
+    let config = get_session_config(&state.sessions, &headers)
+        .unwrap_or_else(|| SessionConfig {
+            session_id: session_id.to_string(),
+            ..Default::default()
+        });
+    
+    Ok(Json(config))
+}
+
+/// Update session configuration
+async fn update_session(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(update): Json<SessionConfigUpdate>,
+) -> Result<Json<SessionConfig>, (StatusCode, Json<ErrorResponse>)> {
+    let session_id = headers
+        .get(SESSION_HEADER)
+        .and_then(|v| v.to_str().ok())
+        .ok_or_else(|| {
+            (StatusCode::BAD_REQUEST, Json(ErrorResponse {
+                error: format!("Missing {} header", SESSION_HEADER),
+            }))
+        })?;
+    
+    // Ensure session exists
+    get_session_config(&state.sessions, &headers);
+    
+    // Update configuration
+    let mut sessions_guard = state.sessions.write().unwrap();
+    let config = sessions_guard.get_mut(session_id).ok_or_else(|| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse {
+            error: "Session not found after creation".to_string(),
+        }))
+    })?;
+    
+    if let Some(verbose) = update.verbose {
+        config.verbose = verbose;
+        info!(session_id = %session_id, verbose = verbose, "Session verbosity updated");
+    }
+    
+    Ok(Json(config.clone()))
 }
 
 /// Create the router with all routes
@@ -232,6 +366,7 @@ pub fn create_router(state: AppState, static_dir: Option<PathBuf>) -> Router {
         .route("/api/search/:name", get(search_log))
         .route("/api/query/:name", get(query_log))
         .route("/api/source/*path", get(get_source))
+        .route("/api/session", get(get_session).post(update_session))
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
         .with_state(state);
     
@@ -601,12 +736,22 @@ fn resolve_source_path(workspace_root: &PathBuf, path: &str) -> Result<PathBuf, 
 }
 
 /// Get full source file content or snippet around a line
-#[instrument(skip(state), fields(workspace_root = %to_unix_path(&state.workspace_root)))]
+#[instrument(skip(state, headers), fields(workspace_root = %to_unix_path(&state.workspace_root)))]
 async fn get_source(
     State(state): State<AppState>,
+    headers: HeaderMap,
     Path(path): Path<String>,
     Query(query): Query<SourceQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<ErrorResponse>)> {
+    // Get session config for conditional logging
+    let session = get_session_config(&state.sessions, &headers);
+    let verbose = session.as_ref().map(|s| s.verbose).unwrap_or(false);
+    
+    // Track request count for this session
+    let request_count = session.as_ref().map(|s| {
+        increment_source_count(&state.sessions, &s.session_id)
+    });
+    
     debug!(path = %path, line = ?query.line, context = query.context, "Getting source file");
     
     let full_path = resolve_source_path(&state.workspace_root, &path).map_err(|e| {
@@ -640,14 +785,28 @@ async fn get_source(
         let snippet_lines: Vec<&str> = lines[(start_line - 1)..end_line].to_vec();
         let snippet_content = snippet_lines.join("\n");
         
-        info!(
-            path = %path,
-            line = line,
-            start = start_line,
-            end = end_line,
-            language = %language,
-            "Returning source snippet"
-        );
+        // Only log if verbose or first request in session
+        if verbose || request_count == Some(1) {
+            info!(
+                path = %path,
+                line = line,
+                start = start_line,
+                end = end_line,
+                language = %language,
+                session_request = ?request_count,
+                "Returning source snippet"
+            );
+        } else {
+            debug!(
+                path = %path,
+                line = line,
+                start = start_line,
+                end = end_line,
+                language = %language,
+                session_request = ?request_count,
+                "Returning source snippet"
+            );
+        }
         
         Ok(Json(serde_json::json!({
             "path": path,
@@ -660,12 +819,26 @@ async fn get_source(
     } else {
         // Return full file
         let total_lines = content.lines().count();
-        info!(
-            path = %path,
-            total_lines = total_lines,
-            language = %language,
-            "Returning full source file"
-        );
+        
+        // Only log if verbose or first request in session
+        if verbose || request_count == Some(1) {
+            info!(
+                path = %path,
+                total_lines = total_lines,
+                language = %language,
+                session_request = ?request_count,
+                "Returning full source file"
+            );
+        } else {
+            debug!(
+                path = %path,
+                total_lines = total_lines,
+                language = %language,
+                session_request = ?request_count,
+                "Returning source file"
+            );
+        }
+        
         Ok(Json(serde_json::json!({
             "path": path,
             "content": content,
@@ -691,6 +864,7 @@ mod tests {
             log_dir: log_dir.path().to_path_buf(),
             workspace_root: workspace_dir.path().to_path_buf(),
             parser: Arc::new(LogParser::new()),
+            sessions: Arc::new(RwLock::new(HashMap::new())),
         };
         
         let router = create_router(state, None);

@@ -25,13 +25,13 @@ FILE_PATH=$(echo "$INPUT" | jq -r '
 echo "[validate-docs] File path: $FILE_PATH" >&2
 
 # Check if the edited file is in the MCP docs server source
-if [[ "$FILE_PATH" == *"tools/mcp-docs-server/src/"* || "$FILE_PATH" == *"tools\\mcp-docs-server\\src\\"* ]]; then
+if [[ "$FILE_PATH" == *"tools/doc-viewer/backend/src/"* || "$FILE_PATH" == *"tools\\doc-viewer\\backend\\src\\"* ]]; then
     echo "[validate-docs] MATCH: MCP docs server source file" >&2
     cat << 'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
-    "additionalContext": "⚠️ MCP docs server source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
+    "additionalContext": "⚠️ Doc viewer backend source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
   }
 }
 EOF

@@ -1,15 +1,15 @@
-# Install script for mcp-docs-server
+# Install script for doc-viewer
 # Builds the server and copies it to the agents directory
 
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RepoRoot = Resolve-Path "$ScriptDir\..\..\..\.."
-$TargetExe = "$ScriptDir\target\release\mcp-docs-server.exe"
-$InstallDir = "$RepoRoot\context-engine\agents"
-$InstalledExe = "$InstallDir\mcp-docs-server.exe"
+$RepoRoot = Resolve-Path "$ScriptDir\..\.."
+$TargetExe = "$ScriptDir\target\release\doc-viewer.exe"
+$InstallDir = "$RepoRoot\agents"
+$InstalledExe = "$InstallDir\doc-viewer.exe"
 
-Write-Host "Building mcp-docs-server..." -ForegroundColor Cyan
+Write-Host "Building doc-viewer..." -ForegroundColor Cyan
 Push-Location $ScriptDir
 try {
     cargo build --release

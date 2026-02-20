@@ -3,15 +3,66 @@
 import type { LogFile, LogContentResponse, SearchResponse, JqQueryResponse, SourceFileResponse, SourceSnippet } from '../types';
 
 const API_BASE = '/api';
+const SESSION_HEADER = 'x-session-id';
+
+// Session management
+function getSessionId(): string {
+  let sessionId = sessionStorage.getItem('session_id');
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    sessionStorage.setItem('session_id', sessionId);
+  }
+  return sessionId;
+}
+
+// Helper to add session header to fetch options
+function withSession(options: RequestInit = {}): RequestInit {
+  return {
+    ...options,
+    headers: {
+      ...options.headers,
+      [SESSION_HEADER]: getSessionId(),
+    },
+  };
+}
+
+// Session configuration types
+export interface SessionConfig {
+  session_id: string;
+  verbose: boolean;
+  source_request_count: number;
+}
+
+export interface SessionConfigUpdate {
+  verbose?: boolean;
+}
+
+// Get current session config
+export async function getSessionConfig(): Promise<SessionConfig> {
+  const response = await fetch(`${API_BASE}/session`, withSession());
+  if (!response.ok) throw new Error('Failed to get session config');
+  return response.json();
+}
+
+// Update session config
+export async function updateSessionConfig(update: SessionConfigUpdate): Promise<SessionConfig> {
+  const response = await fetch(`${API_BASE}/session`, withSession({
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(update),
+  }));
+  if (!response.ok) throw new Error('Failed to update session config');
+  return response.json();
+}
 
 export async function fetchLogFiles(): Promise<LogFile[]> {
-  const response = await fetch(`${API_BASE}/logs`);
+  const response = await fetch(`${API_BASE}/logs`, withSession());
   if (!response.ok) throw new Error('Failed to fetch log files');
   return response.json();
 }
 
 export async function fetchLogContent(name: string): Promise<LogContentResponse> {
-  const response = await fetch(`${API_BASE}/logs/${encodeURIComponent(name)}`);
+  const response = await fetch(`${API_BASE}/logs/${encodeURIComponent(name)}`, withSession());
   if (!response.ok) throw new Error('Failed to fetch log content');
   return response.json();
 }
@@ -27,7 +78,7 @@ export async function searchLogs(
   if (level) url.searchParams.set('level', level);
   if (limit) url.searchParams.set('limit', limit.toString());
   
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), withSession());
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || 'Search failed');
@@ -44,7 +95,7 @@ export async function queryLogs(
   url.searchParams.set('jq', jqFilter);
   if (limit) url.searchParams.set('limit', limit.toString());
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), withSession());
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || 'Query failed');
@@ -53,7 +104,7 @@ export async function queryLogs(
 }
 
 export async function fetchSourceFile(path: string): Promise<SourceFileResponse> {
-  const response = await fetch(`${API_BASE}/source/${encodeURIComponent(path)}`);
+  const response = await fetch(`${API_BASE}/source/${encodeURIComponent(path)}`, withSession());
   if (!response.ok) throw new Error('Failed to fetch source file');
   return response.json();
 }
@@ -67,7 +118,7 @@ export async function fetchSourceSnippet(
   url.searchParams.set('line', line.toString());
   url.searchParams.set('context', context.toString());
   
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), withSession());
   if (!response.ok) throw new Error('Failed to fetch source snippet');
   return response.json();
 }
