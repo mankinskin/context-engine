@@ -57,6 +57,11 @@ use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Env
 
 use log_parser::{LogEntry, LogParser};
 
+/// Convert a path to Unix-style string (forward slashes)
+pub fn to_unix_path(path: &std::path::Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
 /// Application state shared across handlers
 #[derive(Clone)]
 pub struct AppState {
@@ -263,12 +268,12 @@ async fn main() {
         init_tracing(&config);
 
         let state = create_app_state_from_config(&config);
-        info!(log_dir = %state.log_dir.display(), exists = state.log_dir.exists(), "Log directory");
-        info!(workspace_root = %state.workspace_root.display(), "Workspace root");
+        info!(log_dir = %to_unix_path(&state.log_dir), exists = state.log_dir.exists(), "Log directory");
+        info!(workspace_root = %to_unix_path(&state.workspace_root), "Workspace root");
 
         // Static file serving for the frontend
         let static_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
-        info!(static_dir = %static_dir.display(), "Static directory");
+        info!(static_dir = %to_unix_path(&static_dir), "Static directory");
 
         let app = create_router(state, Some(static_dir));
 
@@ -284,7 +289,7 @@ async fn main() {
 }
 
 /// List all available log files
-#[instrument(skip(state), fields(log_dir = %state.log_dir.display()))]
+#[instrument(skip(state), fields(log_dir = %to_unix_path(&state.log_dir)))]
 async fn list_logs(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<LogFileInfo>>, (StatusCode, Json<ErrorResponse>)> {
@@ -335,7 +340,7 @@ async fn list_logs(
 }
 
 /// Get contents of a specific log file
-#[instrument(skip(state), fields(log_dir = %state.log_dir.display()))]
+#[instrument(skip(state), fields(log_dir = %to_unix_path(&state.log_dir)))]
 async fn get_log(
     State(state): State<AppState>,
     Path(name): Path<String>,
@@ -354,10 +359,10 @@ async fn get_log(
     }
 
     let path = state.log_dir.join(&name);
-    debug!(path = %path.display(), "Reading log file");
+    debug!(path = %to_unix_path(&path), "Reading log file");
     
     let content = std::fs::read_to_string(&path).map_err(|e| {
-        error!(error = %e, path = %path.display(), "Failed to read log file");
+        error!(error = %e, path = %to_unix_path(&path), "Failed to read log file");
         (
             StatusCode::NOT_FOUND,
             Json(ErrorResponse {
@@ -386,7 +391,7 @@ async fn get_log(
 }
 
 /// Search within a log file
-#[instrument(skip(state), fields(log_dir = %state.log_dir.display()))]
+#[instrument(skip(state), fields(log_dir = %to_unix_path(&state.log_dir)))]
 async fn search_log(
     State(state): State<AppState>,
     Path(name): Path<String>,
@@ -407,7 +412,7 @@ async fn search_log(
 
     let path = state.log_dir.join(&name);
     let content = std::fs::read_to_string(&path).map_err(|e| {
-        error!(error = %e, path = %path.display(), "Failed to read log file for search");
+        error!(error = %e, path = %to_unix_path(&path), "Failed to read log file for search");
         (
             StatusCode::NOT_FOUND,
             Json(ErrorResponse {
@@ -478,7 +483,7 @@ async fn search_log(
 }
 
 /// Query a log file using JQ filter expressions
-#[instrument(skip(state), fields(log_dir = %state.log_dir.display()))]
+#[instrument(skip(state), fields(log_dir = %to_unix_path(&state.log_dir)))]
 async fn query_log(
     State(state): State<AppState>,
     Path(name): Path<String>,
@@ -499,7 +504,7 @@ async fn query_log(
 
     let path = state.log_dir.join(&name);
     let content = std::fs::read_to_string(&path).map_err(|e| {
-        error!(error = %e, path = %path.display(), "Failed to read log file for query");
+        error!(error = %e, path = %to_unix_path(&path), "Failed to read log file for query");
         (
             StatusCode::NOT_FOUND,
             Json(ErrorResponse {
@@ -596,7 +601,7 @@ fn resolve_source_path(workspace_root: &PathBuf, path: &str) -> Result<PathBuf, 
 }
 
 /// Get full source file content or snippet around a line
-#[instrument(skip(state), fields(workspace_root = %state.workspace_root.display()))]
+#[instrument(skip(state), fields(workspace_root = %to_unix_path(&state.workspace_root)))]
 async fn get_source(
     State(state): State<AppState>,
     Path(path): Path<String>,
@@ -609,10 +614,10 @@ async fn get_source(
         (StatusCode::BAD_REQUEST, Json(ErrorResponse { error: e }))
     })?;
     
-    debug!(full_path = %full_path.display(), "Resolved source path");
+    debug!(full_path = %to_unix_path(&full_path), "Resolved source path");
     
     let content = std::fs::read_to_string(&full_path).map_err(|e| {
-        error!(error = %e, path = %full_path.display(), "Failed to read source file");
+        error!(error = %e, path = %to_unix_path(&full_path), "Failed to read source file");
         (
             StatusCode::NOT_FOUND,
             Json(ErrorResponse {

@@ -12,6 +12,11 @@ use serde::{Deserialize, Serialize};
 use std::{env, fs, path::PathBuf};
 use tracing::{debug, info, warn};
 
+/// Convert a path to Unix-style string (forward slashes)
+fn to_unix_path(path: &std::path::Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
 /// Main configuration structure
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
@@ -81,15 +86,15 @@ impl Config {
                 match fs::read_to_string(&path) {
                     Ok(content) => match toml::from_str(&content) {
                         Ok(config) => {
-                            info!("Loaded config from: {}", path.display());
+                            info!("Loaded config from: {}", to_unix_path(&path));
                             return Some(config);
                         }
                         Err(e) => {
-                            warn!("Failed to parse config file {}: {}", path.display(), e);
+                            warn!("Failed to parse config file {}: {}", to_unix_path(&path), e);
                         }
                     },
                     Err(e) => {
-                        debug!("Could not read config file {}: {}", path.display(), e);
+                        debug!("Could not read config file {}: {}", to_unix_path(&path), e);
                     }
                 }
             }

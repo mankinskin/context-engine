@@ -21,6 +21,7 @@ use std::{path::PathBuf, sync::Arc};
 
 use crate::log_parser::{LogEntry, LogParser};
 use crate::query::JqFilter;
+use crate::to_unix_path;
 
 /// MCP Server for log debugging
 #[derive(Clone)]
@@ -520,8 +521,8 @@ impl ServerHandler for LogServer {
 /// Run the MCP server
 pub async fn run_mcp_server(log_dir: PathBuf, workspace_root: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("Log Viewer MCP Server starting...");
-    eprintln!("Log directory: {}", log_dir.display());
-    eprintln!("Workspace root: {}", workspace_root.display());
+    eprintln!("Log directory: {}", to_unix_path(&log_dir));
+    eprintln!("Workspace root: {}", to_unix_path(&workspace_root));
 
     let server = LogServer::new(log_dir, workspace_root);
 
