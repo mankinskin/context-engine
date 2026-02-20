@@ -37,8 +37,9 @@
 
 .code-snippet.full-file {
   flex: 1;
-  min-height: 100px;
-  max-height: none;
+  min-height: 0;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .full-file-header {

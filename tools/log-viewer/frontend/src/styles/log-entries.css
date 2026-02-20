@@ -75,9 +75,7 @@
   min-width: 0;
   min-height: 0;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  /* Don't use flex here - let the inner absolute positioned element handle layout */
   overflow: hidden;
 }
 
@@ -108,18 +106,26 @@
 
 /* Viewport Column - source code and visualizations */
 .entry-viewport-col {
+  /* Position absolutely to not affect row height */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   font-size: 11px;
-  min-height: 0;
+  overflow: hidden;
 }
 
 /* Collapsed source line preview */
 .viewport-collapsed {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 2px 6px;
   overflow: hidden;
+  height: 100%;
 }
 
 .source-line-preview {
@@ -164,6 +170,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow: auto;
 }
 
 /* Meta badge for fields count etc */
