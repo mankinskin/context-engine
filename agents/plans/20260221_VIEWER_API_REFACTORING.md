@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#refactoring` `#viewer-api` `#log-viewer` `#doc-viewer`
+summary: Extract shared server infrastructure from viewer-api into a reusable library.
+status: 📋
+---
+
 # Viewer API Refactoring Plan
 
 ## Objective

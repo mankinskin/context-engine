@@ -31,6 +31,59 @@ export const isFilterLoading = signal(false);
 export const openTabs = signal<OpenTab[]>([]);
 export const activeTabId = signal<string | null>(null);
 
+// Tree expansion state - tracks which node IDs are expanded
+export const expandedNodes = signal<Set<string>>(new Set(['agents', 'crates']));
+
+// Helper to expand all ancestors of a node ID
+export function expandPathToNode(nodeId: string): void {
+  const newExpanded = new Set(expandedNodes.value);
+
+  // Always expand root nodes
+  newExpanded.add('agents');
+  newExpanded.add('crates');
+
+  if (nodeId.startsWith('crate:')) {
+    // For crate:name or crate:name:module/path
+    const parts = nodeId.split(':');
+    const crateName = parts[1];
+
+    // Expand the crate node
+    newExpanded.add(`crate:${crateName}`);
+
+    // If there's a module path, expand parent modules
+    if (parts.length > 2) {
+      const modulePath = parts.slice(2).join(':');
+      const segments = modulePath.split('/');
+      // Expand each parent module level
+      for (let i = 1; i < segments.length; i++) {
+        const parentPath = segments.slice(0, i).join('/');
+        newExpanded.add(`crate:${crateName}:${parentPath}`);
+      }
+    }
+  } else if (!nodeId.startsWith('page:')) {
+    // Agent doc - find its category and expand it
+    const category = categories.value.find(c =>
+      c.docs.some(d => d.filename === nodeId)
+    );
+    if (category) {
+      newExpanded.add(`agent:${category.category}`);
+    }
+  }
+
+  expandedNodes.value = newExpanded;
+}
+
+// Toggle expansion of a node
+export function toggleNodeExpanded(nodeId: string): void {
+  const newExpanded = new Set(expandedNodes.value);
+  if (newExpanded.has(nodeId)) {
+    newExpanded.delete(nodeId);
+  } else {
+    newExpanded.add(nodeId);
+  }
+  expandedNodes.value = newExpanded;
+}
+
 // URL routing - sync active document with URL hash
 // Uses human-readable paths like #/crate/context-insert/module/path
 let isNavigatingFromUrl = false; // Prevent loops with hashchange
@@ -135,6 +188,7 @@ export function initUrlListener(): void {
         const existingTab = openTabs.value.find(t => t.filename === path);
         if (existingTab) {
           activeTabId.value = path;
+          expandPathToNode(path);
         } else {
           // Need to open the doc
           await openDocFromPath(path);
@@ -154,6 +208,7 @@ export function initUrlListener(): void {
         const existingTab = openTabs.value.find(t => t.filename === path);
         if (existingTab) {
           activeTabId.value = path;
+          expandPathToNode(path);
         } else {
           await openDocFromPath(path);
         }
@@ -664,6 +719,9 @@ export async function openDocFromPath(path: string): Promise<void> {
     openCategoryPage(path);
     return;
   }
+
+  // Expand tree to show the document
+  expandPathToNode(path);
 
   // Crate documentation
   if (path.startsWith('crate:')) {

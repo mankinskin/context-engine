@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees } from '../store';
+import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded } from '../store';
 import type { TreeNode } from '../types';
 
 export function Sidebar() {
@@ -47,8 +47,10 @@ interface TreeItemProps {
 }
 
 function TreeItem({ node, level }: TreeItemProps) {
-  const [expanded, setExpanded] = useState(level === 0); // Auto-expand root nodes
   const [loading, setLoading] = useState(false);
+  
+  // Use global expanded state
+  const expanded = expandedNodes.value.has(node.id);
   
   const hasChildren = node.children && node.children.length > 0;
   const canExpand = hasChildren || node.type === 'crate'; // Crates can always expand
@@ -66,7 +68,7 @@ function TreeItem({ node, level }: TreeItemProps) {
       } else if (node.id === 'crates') {
         openCategoryPage('page:crate-docs');
       }
-      setExpanded(!expanded);
+      toggleNodeExpanded(node.id);
     } else if (node.type === 'crate') {
       // Load crate modules if not loaded, and open crate doc
       if (!node.children || node.children.length === 0) {
@@ -77,18 +79,18 @@ function TreeItem({ node, level }: TreeItemProps) {
           setLoading(false);
         }
       }
-      setExpanded(!expanded);
+      toggleNodeExpanded(node.id);
       // Open crate root doc
       openCrateDoc(node.crateName!);
     } else if (node.type === 'module') {
       // Open module doc
       openCrateDoc(node.crateName!, node.modulePath);
       if (hasChildren) {
-        setExpanded(!expanded);
+        toggleNodeExpanded(node.id);
       }
     } else if (canExpand) {
       // Toggle expand for category nodes
-      setExpanded(!expanded);
+      toggleNodeExpanded(node.id);
     }
   };
   
