@@ -104,7 +104,7 @@ export function DocViewer() {
           <h1 class="doc-title">{doc.title}</h1>
           <div class="doc-meta">
             <span class="doc-date">{formatDate(doc.date)}</span>
-            {doc.tags.length > 0 && (
+            {doc.tags?.length > 0 && (
               <div class="doc-tags">
                 {doc.tags.map(tag => (
                   <span key={tag} class="doc-tag">#{tag}</span>

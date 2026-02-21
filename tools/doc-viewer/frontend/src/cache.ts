@@ -21,9 +21,11 @@ export const cacheStats = signal({
 });
 
 /**
- * Get a document from cache or fetch it
+ * Get a document from cache or fetch it.
+ * Returns synchronously if cached, otherwise returns a Promise.
  */
-export async function getCachedDoc(filename: string): Promise<DocContent> {
+export function getCachedDoc(filename: string): DocContent | Promise<DocContent> {
+    // Synchronous cache check
   const cached = docCache.get(filename);
   if (cached) {
     cacheStats.value = { ...cacheStats.value, docHits: cacheStats.value.docHits + 1 };
@@ -50,13 +52,16 @@ export async function getCachedDoc(filename: string): Promise<DocContent> {
 }
 
 /**
- * Get crate documentation from cache or fetch it
+ * Get crate documentation from cache or fetch it.
+ * Returns synchronously if cached, otherwise returns a Promise.
  */
-export async function getCachedCrateDoc(
+export function getCachedCrateDoc(
   crateName: string,
   modulePath?: string
-): Promise<CrateDocResponse> {
+): CrateDocResponse | Promise<CrateDocResponse> {
   const cacheKey = `${crateName}:${modulePath || ''}`;
+
+    // Synchronous cache check
   const cached = crateDocCache.get(cacheKey);
   if (cached) {
     cacheStats.value = { ...cacheStats.value, docHits: cacheStats.value.docHits + 1 };
@@ -83,9 +88,11 @@ export async function getCachedCrateDoc(
 }
 
 /**
- * Get crate tree from cache or fetch it
+ * Get crate tree from cache or fetch it.
+ * Returns synchronously if cached, otherwise returns a Promise.
  */
-export async function getCachedCrateTree(crateName: string): Promise<CrateTreeResponse> {
+export function getCachedCrateTree(crateName: string): CrateTreeResponse | Promise<CrateTreeResponse> {
+    // Synchronous cache check
   const cached = crateTreeCache.get(crateName);
   if (cached) {
     return cached;
@@ -112,11 +119,12 @@ export async function getCachedCrateTree(crateName: string): Promise<CrateTreeRe
  * Preload documents in the background.
  * Does not block, silently fails on errors.
  */
-function preloadInBackground(fetchers: (() => Promise<unknown>)[]): void {
+function preloadInBackground(fetchers: (() => unknown)[]): void {
   // Run preloads with a slight delay to not compete with main content
   setTimeout(() => {
     for (const fetcher of fetchers) {
-      fetcher().catch(() => {
+        // Handle both sync (cache hit) and async (fetch) returns
+        Promise.resolve(fetcher()).catch(() => {
         // Silently ignore preload errors
       });
       cacheStats.value = { ...cacheStats.value, preloadCount: cacheStats.value.preloadCount + 1 };
@@ -132,7 +140,7 @@ export function preloadSiblingDocs(category: Category, currentFilename: string):
   const currentIndex = category.docs.findIndex(d => d.filename === currentFilename);
   if (currentIndex < 0) return;
 
-  const toPreload: (() => Promise<unknown>)[] = [];
+    const toPreload: (() => unknown)[] = [];
 
   // Preload 3 docs before and after current
   for (let i = Math.max(0, currentIndex - 3); i <= Math.min(category.docs.length - 1, currentIndex + 3); i++) {
@@ -154,13 +162,13 @@ export function preloadModuleNeighbors(
   modulePath: string | undefined,
   modules: ModuleNode[]
 ): void {
-  const toPreload: (() => Promise<unknown>)[] = [];
+    const toPreload: (() => unknown)[] = [];
 
   // Find current module in the tree
   function findInTree(nodes: ModuleNode[], path: string | undefined): ModuleNode | undefined {
     for (const node of nodes) {
       if (node.path === path) return node;
-      if (node.children.length > 0) {
+        if (node.children?.length > 0) {
         const found = findInTree(node.children, path);
         if (found) return found;
       }
@@ -172,7 +180,7 @@ export function preloadModuleNeighbors(
   function findParentOf(nodes: ModuleNode[], path: string | undefined, parent: ModuleNode | null = null): ModuleNode | null {
     for (const node of nodes) {
       if (node.path === path) return parent;
-      if (node.children.length > 0) {
+        if (node.children?.length > 0) {
         const found = findParentOf(node.children, path, node);
         if (found !== null) return found;
       }
@@ -217,7 +225,7 @@ export function preloadModuleNeighbors(
  * Call this when viewing the crates list.
  */
 export function preloadCrateRoots(crateNames: string[]): void {
-  const toPreload: (() => Promise<unknown>)[] = [];
+    const toPreload: (() => unknown)[] = [];
 
   // Preload first few crate root docs
   for (const name of crateNames.slice(0, 5)) {
@@ -239,7 +247,7 @@ export function preloadCrateRoots(crateNames: string[]): void {
  * Call this when viewing the agent docs list.
  */
 export function preloadCategoryDocs(categories: Category[]): void {
-  const toPreload: (() => Promise<unknown>)[] = [];
+    const toPreload: (() => unknown)[] = [];
 
   // Preload first 2 docs from each category
   for (const cat of categories) {

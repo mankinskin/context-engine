@@ -84,7 +84,7 @@ function AgentDocsPage() {
                   title={doc.title}
                   summary={doc.summary}
                   date={doc.date}
-                  tags={doc.tags}
+                  tags={doc.tags ?? []}
                   onClick={() => openDoc(doc.filename, doc.title)}
                 />
               ))}
@@ -168,7 +168,7 @@ function DocCard({ title, summary, date, tags, onClick }: DocCardProps) {
       </div>
       <h4 class="doc-card-title">{title}</h4>
       {summary && <p class="doc-card-summary">{summary}</p>}
-      {tags.length > 0 && (
+      {tags?.length > 0 && (
         <div class="doc-card-tags">
           {tags.slice(0, 3).map(tag => (
             <span key={tag} class="doc-card-tag">#{tag}</span>

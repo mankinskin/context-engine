@@ -208,7 +208,7 @@ function buildModuleTree(modules: ModuleNode[], crateName: string): TreeNode[] {
     crateName,
     modulePath: mod.path,
     hasReadme: mod.has_readme,
-    children: mod.children.length > 0
+    children: mod.children?.length > 0
       ? buildModuleTree(mod.children, crateName)
       : undefined,
   }));
@@ -268,6 +268,9 @@ export async function loadDocs(): Promise<void> {
     // Preload initial docs in background
     preloadCategoryDocs(docsData.categories);
     preloadCrateRoots(cratesData.crates.map(c => c.name));
+    
+    // Preload all crate trees to show children counts in sidebar
+    preloadAllCrateTrees(cratesData.crates.map(c => c.name));
 
     // Open document from URL or default to home page
     if (openTabs.value.length === 0) {
@@ -278,6 +281,38 @@ export async function loadDocs(): Promise<void> {
     error.value = e instanceof Error ? e.message : 'Failed to load docs';
   } finally {
     isLoading.value = false;
+  }
+}
+
+// Preload all crate module trees and update docTree with children counts
+async function preloadAllCrateTrees(crateNames: string[]): Promise<void> {
+  // Load all crate trees in parallel (with slight stagger to not overwhelm server)
+  const batchSize = 3;
+  for (let i = 0; i < crateNames.length; i += batchSize) {
+    const batch = crateNames.slice(i, i + batchSize);
+    await Promise.all(batch.map(async (crateName) => {
+      try {
+        const tree = await getCachedCrateTree(crateName);
+        // Update the crate node with loaded module tree
+        docTree.value = docTree.value.map(root => {
+          if (root.id !== 'crates') return root;
+          return {
+            ...root,
+            children: root.children?.map(node => {
+              if (node.crateName !== crateName) return node;
+              // Only update if not already loaded
+              if (node.children && node.children.length > 0) return node;
+              return {
+                ...node,
+                children: buildModuleTree(tree.children, crateName),
+              };
+            }),
+          };
+        });
+      } catch {
+        // Silently ignore failures during preload
+      }
+    }));
   }
 }
 
@@ -495,7 +530,7 @@ export const allTags = computed(() => {
   const tags = new Set<string>();
   for (const cat of categories.value) {
     for (const doc of cat.docs) {
-      for (const tag of doc.tags) {
+      for (const tag of doc.tags ?? []) {
         tags.add(tag);
       }
     }
