@@ -3,13 +3,15 @@ import {
   DocumentIcon, 
   FilterIcon, 
   CloseIcon, 
-  RefreshIcon 
+  RefreshIcon,
+  HomeIcon 
 } from '@context-engine/viewer-api-frontend';
 import { 
   showFilterPanel, 
   hasActiveFilters, 
   clearFilters, 
-  loadDocs 
+  loadDocs,
+  openCategoryPage 
 } from '../store';
 
 export function Header() {
@@ -21,8 +23,20 @@ export function Header() {
     loadDocs();
   };
 
+  const handleHome = () => {
+    openCategoryPage('page:home');
+  };
+
   const rightContent = (
     <div class="header-actions">
+      <button 
+        class="btn"
+        onClick={handleHome}
+        title="Home"
+      >
+        <HomeIcon size={12} /> Home
+      </button>
+      
       <button 
         class={`btn ${showFilterPanel.value ? 'btn-active' : ''}`}
         onClick={handleFilterToggle}

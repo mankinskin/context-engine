@@ -22,6 +22,139 @@ export const isFilterLoading = signal(false);
 export const openTabs = signal<OpenTab[]>([]);
 export const activeTabId = signal<string | null>(null);
 
+// URL routing - sync active document with URL hash
+// Uses human-readable paths like #/crate/context-insert/module/path
+let isNavigatingFromUrl = false; // Prevent loops with hashchange
+
+// Convert internal filename to readable URL path
+function filenameToUrlPath(filename: string): string {
+  if (filename.startsWith('page:')) {
+    // page:home -> /home
+    return '/' + filename.slice(5);
+  }
+  if (filename.startsWith('crate:')) {
+    // crate:name -> /crate/name
+    // crate:name:module/path -> /crate/name/module/path
+    const parts = filename.slice(6).split(':');
+    return '/crate/' + parts.join('/');
+  }
+  // Agent docs: filename.md -> /doc/filename.md
+  return '/doc/' + filename;
+}
+
+// Convert URL path back to internal filename
+function urlPathToFilename(urlPath: string): string | null {
+  if (!urlPath || urlPath === '/') return null;
+  
+  // Remove leading slash
+  const path = urlPath.startsWith('/') ? urlPath.slice(1) : urlPath;
+  
+  // /home -> page:home
+  if (path === 'home' || path === 'agent-docs' || path === 'crate-docs') {
+    return 'page:' + path;
+  }
+  
+  // /crate/name/module/path -> crate:name:module/path
+  if (path.startsWith('crate/')) {
+    const parts = path.slice(6).split('/');
+    if (parts.length === 1) {
+      return 'crate:' + parts[0];
+    }
+    // First part is crate name, rest is module path
+    const crateName = parts[0];
+    const modulePath = parts.slice(1).join('/');
+    return `crate:${crateName}:${modulePath}`;
+  }
+  
+  // /doc/path/to/file.md -> path/to/file.md
+  if (path.startsWith('doc/')) {
+    return path.slice(4);
+  }
+  
+  // Fallback: try as-is (for backwards compatibility with old URLs)
+  return path;
+}
+
+function updateUrlHash(filename: string | null): void {
+  if (isNavigatingFromUrl) return; // Don't update URL during URL-triggered navigation
+  
+  if (filename) {
+    const urlPath = filenameToUrlPath(filename);
+    const newUrl = `#${urlPath}`;
+    // Use pushState for new navigations so back/forward work
+    if (window.location.hash !== newUrl) {
+      window.history.pushState(null, '', newUrl);
+    }
+  } else {
+    window.history.pushState(null, '', window.location.pathname);
+  }
+}
+
+export function getDocFromUrl(): string | null {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return null;
+  
+  // Try to decode if it's URL-encoded (backwards compatibility)
+  let path = hash;
+  try {
+    const decoded = decodeURIComponent(hash);
+    // If the decoded version starts with our path prefixes, use decoded
+    // Otherwise it might be old format like "crate:name:path"
+    if (decoded.startsWith('/') || decoded.startsWith('page:') || decoded.startsWith('crate:')) {
+      path = decoded;
+    }
+  } catch {
+    // Keep original
+  }
+  
+  // New format: /crate/name/path
+  if (path.startsWith('/')) {
+    return urlPathToFilename(path);
+  }
+  
+  // Old format: crate:name:path (for backwards compatibility)
+  return path;
+}
+
+// Handle browser back/forward navigation
+export function initUrlListener(): void {
+  window.addEventListener('hashchange', async () => {
+    const path = getDocFromUrl();
+    if (path && path !== activeTabId.value) {
+      isNavigatingFromUrl = true;
+      try {
+        const existingTab = openTabs.value.find(t => t.filename === path);
+        if (existingTab) {
+          activeTabId.value = path;
+        } else {
+          // Need to open the doc
+          await openDocFromPath(path);
+        }
+      } finally {
+        isNavigatingFromUrl = false;
+      }
+    }
+  });
+
+  // Also listen for popstate (back button with same hash)
+  window.addEventListener('popstate', async () => {
+    const path = getDocFromUrl();
+    if (path && path !== activeTabId.value) {
+      isNavigatingFromUrl = true;
+      try {
+        const existingTab = openTabs.value.find(t => t.filename === path);
+        if (existingTab) {
+          activeTabId.value = path;
+        } else {
+          await openDocFromPath(path);
+        }
+      } finally {
+        isNavigatingFromUrl = false;
+      }
+    }
+  });
+}
+
 // Computed: currently active document
 export const activeDoc = computed(() => {
   const tab = openTabs.value.find(t => t.filename === activeTabId.value);
@@ -122,6 +255,12 @@ export async function loadDocs(): Promise<void> {
     }
 
     docTree.value = tree;
+
+    // Open document from URL or default to home page
+    if (openTabs.value.length === 0) {
+      const urlPath = getDocFromUrl();
+      await openDocFromPath(urlPath || 'page:home');
+    }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to load docs';
   } finally {
@@ -183,6 +322,7 @@ export async function openDoc(filename: string, title: string): Promise<void> {
   if (existingIndex >= 0) {
     // Just switch to this tab
     activeTabId.value = filename;
+    updateUrlHash(filename);
     return;
   }
 
@@ -196,6 +336,7 @@ export async function openDoc(filename: string, title: string): Promise<void> {
 
   openTabs.value = [...openTabs.value, newTab];
   activeTabId.value = filename;
+  updateUrlHash(filename);
   
   try {
     const doc = await fetchDoc(filename);
@@ -227,6 +368,7 @@ export async function openCrateDoc(crateName: string, modulePath?: string): Prom
   const existingIndex = openTabs.value.findIndex(t => t.filename === filename);
   if (existingIndex >= 0) {
     activeTabId.value = filename;
+    updateUrlHash(filename);
     return;
   }
 
@@ -240,6 +382,7 @@ export async function openCrateDoc(crateName: string, modulePath?: string): Prom
 
   openTabs.value = [...openTabs.value, newTab];
   activeTabId.value = filename;
+  updateUrlHash(filename);
 
   try {
     const doc = await fetchCrateDoc(crateName, modulePath);
@@ -270,20 +413,24 @@ export function closeTab(filename: string): void {
 
   // If this was the active tab, switch to another
   if (activeTabId.value === filename) {
+    let newActiveId: string | null = null;
     if (newTabs.length === 0) {
-      activeTabId.value = null;
+      newActiveId = null;
     } else if (index >= newTabs.length) {
       // Closed last tab, select previous
-      activeTabId.value = newTabs[newTabs.length - 1].filename;
+      newActiveId = newTabs[newTabs.length - 1].filename;
     } else {
       // Select the tab at same position
-      activeTabId.value = newTabs[index].filename;
+      newActiveId = newTabs[index].filename;
     }
+    activeTabId.value = newActiveId;
+    updateUrlHash(newActiveId);
   }
 }
 
 export function setActiveTab(filename: string): void {
   activeTabId.value = filename;
+  updateUrlHash(filename);
 }
 
 // Legacy: for backwards compatibility with Sidebar
@@ -403,3 +550,83 @@ export const hasActiveFilters = computed(() => {
     jqFilter.value
   );
 });
+
+// Open a category/navigation page (Home, Agent Docs, Crate Docs)
+export function openCategoryPage(pageId: string): void {
+  const titles: Record<string, string> = {
+    'page:home': 'Home',
+    'page:agent-docs': 'Agent Docs',
+    'page:crate-docs': 'Crate Docs',
+  };
+
+  const title = titles[pageId] || pageId;
+
+  // Check if already open
+  const existingIndex = openTabs.value.findIndex(t => t.filename === pageId);
+  if (existingIndex >= 0) {
+    activeTabId.value = pageId;
+    updateUrlHash(pageId);
+    return;
+  }
+
+  // Add new tab (no loading needed for category pages)
+  openTabs.value = [...openTabs.value, {
+    filename: pageId,
+    title,
+    doc: {
+      filename: pageId,
+      doc_type: 'category',
+      title,
+      date: '',
+      summary: '',
+      tags: [],
+      status: null,
+      body: null,
+    },
+    isLoading: false,
+  }];
+  activeTabId.value = pageId;
+  updateUrlHash(pageId);
+}
+
+// Open document from URL path (used on initial load)
+export async function openDocFromPath(path: string): Promise<void> {
+  if (!path) {
+    openCategoryPage('page:home');
+    return;
+  }
+
+  // Category pages
+  if (path.startsWith('page:')) {
+    openCategoryPage(path);
+    return;
+  }
+
+  // Crate documentation
+  if (path.startsWith('crate:')) {
+    const parts = path.split(':');
+    const crateName = parts[1];
+    const modulePath = parts.slice(2).join(':') || undefined;
+    await openCrateDoc(crateName, modulePath);
+    return;
+  }
+
+  // Agent documentation - try to find title from tree
+  const node = findDocInTree(path);
+  const title = node?.label || path;
+  await openDoc(path, title);
+}
+
+function findDocInTree(filename: string): TreeNode | undefined {
+  function search(nodes: TreeNode[]): TreeNode | undefined {
+    for (const node of nodes) {
+      if (node.id === filename) return node;
+      if (node.children) {
+        const found = search(node.children);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  }
+  return search(docTree.value);
+}

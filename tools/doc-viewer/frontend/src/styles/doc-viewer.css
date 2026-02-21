@@ -8,6 +8,10 @@
   background: var(--bg-primary);
 }
 
+.doc-viewer-scrollable {
+  overflow: auto;
+}
+
 .doc-header {
   display: flex;
   align-items: center;
@@ -128,7 +132,13 @@
 .markdown-body pre code {
   padding: 0;
   background: none;
-  color: var(--text-primary);
+  /* Let highlight.js handle syntax colors */
+}
+
+/* Override highlight.js background to match theme */
+.markdown-body pre code.hljs {
+  background: transparent;
+  padding: 0;
 }
 
 .markdown-body blockquote {

@@ -203,11 +203,13 @@ impl CrateDocsManager {
         let mut all_types = Vec::new();
         
         for module_ref in &meta.modules {
-            let module_path = docs_path.join(&module_ref.path);
-            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name, &module_ref.path) {
+            // Strip trailing slashes from path to avoid double slashes in paths
+            let mod_path = module_ref.path.trim_end_matches('/');
+            let module_path = docs_path.join(mod_path);
+            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name, mod_path) {
                 // Collect types from this module with attribution
                 for entry in &node.key_types {
-                    all_types.push(TypeWithModule::from_entry(entry, &module_ref.path, "type"));
+                    all_types.push(TypeWithModule::from_entry(entry, mod_path, "type"));
                 }
                 // Recursively collect from children
                 self.collect_types_from_tree(&node, &mut all_types);
@@ -275,8 +277,10 @@ impl CrateDocsManager {
 
         let mut children = Vec::new();
         for submodule in &meta.submodules {
-            let sub_path = module_path.join(&submodule.path);
-            let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+            // Strip trailing slashes from path to avoid double slashes in paths
+            let submod_path = submodule.path.trim_end_matches('/');
+            let sub_path = module_path.join(submod_path);
+            let sub_rel_path = format!("{}/{}", rel_path, submod_path);
             if let Ok(node) = self.build_module_tree(&sub_path, &submodule.name, &sub_rel_path) {
                 children.push(node);
             }

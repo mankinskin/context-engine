@@ -1,17 +1,44 @@
 import { useMemo } from 'preact/hooks';
-import { activeDoc, isActiveTabLoading, error, openTabs } from '../store';
-import { marked } from 'marked';
+import { activeDoc, isActiveTabLoading, error, openTabs, activeTabId } from '../store';
+import { Marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
+import hljs from 'highlight.js';
+import { CategoryPage } from './CategoryPage';
 
-// Configure marked for safe rendering
-marked.setOptions({
-  gfm: true,
-  breaks: false,
-});
+// Configure marked with syntax highlighting
+const marked = new Marked(
+  markedHighlight({
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          return hljs.highlight(code, { language: lang }).value;
+        } catch {
+          // Fall through to auto-detection
+        }
+      }
+      // Try auto-detection
+      try {
+        return hljs.highlightAuto(code).value;
+      } catch {
+        return code;
+      }
+    },
+  }),
+  {
+    gfm: true,
+    breaks: false,
+  }
+);
 
 export function DocViewer() {
   const doc = activeDoc.value;
   const isLoading = isActiveTabLoading.value;
   const hasOpenTabs = openTabs.value.length > 0;
+  const currentTabId = activeTabId.value;
+  
+  // Check if this is a category page
+  const isCategoryPage = currentTabId?.startsWith('page:');
   
   const htmlContent = useMemo(() => {
     if (!doc?.body) return '';
@@ -43,6 +70,15 @@ export function DocViewer() {
           </svg>
           <span>{error.value}</span>
         </div>
+      </div>
+    );
+  }
+
+  // Render category page if active
+  if (isCategoryPage && currentTabId) {
+    return (
+      <div class="doc-viewer doc-viewer-scrollable">
+        <CategoryPage pageId={currentTabId} />
       </div>
     );
   }

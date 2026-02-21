@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc } from '../store';
+import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage } from '../store';
 import type { TreeNode } from '../types';
 
 export function Sidebar() {
@@ -45,6 +45,14 @@ function TreeItem({ node, level }: TreeItemProps) {
     if (node.type === 'doc') {
       // Open agent doc
       selectDoc(node.id);
+    } else if (node.type === 'root') {
+      // Open category page for root nodes
+      if (node.id === 'agents') {
+        openCategoryPage('page:agent-docs');
+      } else if (node.id === 'crates') {
+        openCategoryPage('page:crate-docs');
+      }
+      setExpanded(!expanded);
     } else if (node.type === 'crate') {
       // Load crate modules if not loaded, and open crate doc
       if (!node.children || node.children.length === 0) {
@@ -65,7 +73,7 @@ function TreeItem({ node, level }: TreeItemProps) {
         setExpanded(!expanded);
       }
     } else if (canExpand) {
-      // Toggle expand for category/root nodes
+      // Toggle expand for category nodes
       setExpanded(!expanded);
     }
   };
