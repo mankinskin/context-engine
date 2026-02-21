@@ -32,9 +32,59 @@ mod templates;
 mod tools;
 
 use rmcp::{transport::stdio, ServiceExt};
-use std::{path::PathBuf, sync::Arc};
+use std::{env, path::PathBuf, sync::Arc};
+use tracing::info;
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 use mcp::DocsServer;
+
+/// Initialize tracing with optional file output
+fn init_tracing() {
+    let log_level = env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
+    let file_logging = env::var("LOG_FILE").is_ok();
+
+    let filter = EnvFilter::try_new(&log_level)
+        .unwrap_or_else(|_| EnvFilter::new("info"));
+
+    let fmt_layer = fmt::layer()
+        .with_target(true)
+        .with_thread_ids(true)
+        .with_file(true)
+        .with_line_number(true);
+
+    // Check if file logging is enabled
+    if file_logging {
+        let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
+        std::fs::create_dir_all(&log_dir).ok();
+        
+        let file_appender = tracing_appender::rolling::daily(&log_dir, "doc-viewer.log");
+        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+        
+        // Store the guard to keep the appender alive
+        std::mem::forget(_guard);
+        
+        let file_layer = fmt::layer()
+            .with_writer(non_blocking)
+            .with_ansi(false)
+            .with_target(true)
+            .with_thread_ids(true)
+            .with_file(true)
+            .with_line_number(true);
+        
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer)
+            .with(file_layer)
+            .init();
+        
+        info!("File logging enabled to logs/doc-viewer.log");
+    } else {
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer)
+            .init();
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -72,17 +122,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             workspace_root.join("tools"),
         ]);
 
-    eprintln!("Doc Viewer Server starting...");
-    eprintln!("  Mode: {}", match (run_http, run_mcp) {
+    // Initialize tracing for HTTP mode (MCP mode uses stderr to avoid stdio conflicts)
+    if run_http {
+        init_tracing();
+    }
+
+    let mode = match (run_http, run_mcp) {
         (true, true) => "HTTP + MCP",
         (true, false) => "HTTP only",
         (false, true) => "MCP only",
         (false, false) => unreachable!(),
-    });
-    eprintln!("  Agents directory: {}", agents_dir.display());
-    eprintln!("  Crates directories:");
-    for dir in &crates_dirs {
-        eprintln!("    - {}", dir.display());
+    };
+    let crates_dirs_display: Vec<_> = crates_dirs.iter().map(|d| d.display().to_string()).collect();
+
+    if run_http {
+        info!(mode, agents_dir = %agents_dir.display(), crates_dirs = ?crates_dirs_display, "Doc Viewer Server starting");
+    } else {
+        // MCP-only mode - use stderr to avoid interfering with stdio transport
+        eprintln!("Doc Viewer Server starting...");
+        eprintln!("  Mode: {}", mode);
+        eprintln!("  Agents directory: {}", agents_dir.display());
+        for dir in &crates_dirs {
+            eprintln!("  Crates directory: {}", dir.display());
+        }
     }
 
     if run_mcp && !run_http {
@@ -138,8 +200,7 @@ async fn run_http_server(
         .and_then(|p| p.parse().ok())
         .unwrap_or(3001);
 
-    eprintln!("  Static directory: {}", static_dir.display());
-    eprintln!("  HTTP port: {}", port);
+    info!(static_dir = %static_dir.display(), "Static directory");
 
     let state = http::HttpState {
         docs_manager: Arc::new(tools::DocsManager::new(agents_dir)),
@@ -148,8 +209,9 @@ async fn run_http_server(
 
     let app = http::create_router(state, Some(static_dir));
 
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
-    eprintln!("HTTP server listening on http://localhost:{}", port);
+    let addr = format!("0.0.0.0:{}", port);
+    info!(%addr, "Starting HTTP server");
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
     viewer_api::axum::serve(listener, app).await?;
 
     Ok(())
