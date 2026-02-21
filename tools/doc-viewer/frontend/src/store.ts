@@ -269,8 +269,8 @@ export async function loadDocs(): Promise<void> {
     preloadCategoryDocs(docsData.categories);
     preloadCrateRoots(cratesData.crates.map(c => c.name));
     
-    // Preload all crate trees to show children counts in sidebar
-    preloadAllCrateTrees(cratesData.crates.map(c => c.name));
+    // Preload crate trees for initially visible crates (root is auto-expanded)
+    preloadVisibleCrateTrees(cratesData.crates.map(c => c.name));
 
     // Open document from URL or default to home page
     if (openTabs.value.length === 0) {
@@ -284,13 +284,11 @@ export async function loadDocs(): Promise<void> {
   }
 }
 
-// Preload all crate module trees and update docTree with children counts
-async function preloadAllCrateTrees(crateNames: string[]): Promise<void> {
-  // Load all crate trees in parallel (with slight stagger to not overwhelm server)
-  const batchSize = 3;
-  for (let i = 0; i < crateNames.length; i += batchSize) {
-    const batch = crateNames.slice(i, i + batchSize);
-    await Promise.all(batch.map(async (crateName) => {
+// Preload crate module trees for visible crates and update docTree with children counts
+export function preloadVisibleCrateTrees(crateNames: string[]): void {
+  // Load in background without blocking
+  setTimeout(async () => {
+    for (const crateName of crateNames) {
       try {
         const tree = await getCachedCrateTree(crateName);
         // Update the crate node with loaded module tree
@@ -312,8 +310,8 @@ async function preloadAllCrateTrees(crateNames: string[]): Promise<void> {
       } catch {
         // Silently ignore failures during preload
       }
-    }));
-  }
+    }
+  }, 100);
 }
 
 // Load crate modules when crate is expanded

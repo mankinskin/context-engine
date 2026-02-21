@@ -1,8 +1,22 @@
-import { useState } from 'preact/hooks';
-import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage } from '../store';
+import { useState, useEffect } from 'preact/hooks';
+import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees } from '../store';
 import type { TreeNode } from '../types';
 
 export function Sidebar() {
+  // Watch for tree changes and preload crate trees that aren't loaded yet
+  useEffect(() => {
+    const cratesRoot = docTree.value.find(n => n.id === 'crates');
+    if (cratesRoot?.children) {
+      const unloadedCrates = cratesRoot.children
+        .filter(child => child.type === 'crate' && (!child.children || child.children.length === 0))
+        .map(child => child.crateName!)
+        .filter(Boolean);
+      if (unloadedCrates.length > 0) {
+        preloadVisibleCrateTrees(unloadedCrates);
+      }
+    }
+  }, [docTree.value]);
+
   return (
     <aside class="sidebar">
       <div class="sidebar-header">
