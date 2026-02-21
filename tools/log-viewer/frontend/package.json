@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@context-engine/viewer-api-frontend": "file:../../viewer-api/frontend",
     "@preact/signals": "^1.2.2",
     "chart.js": "^4.4.1",
     "cytoscape": "^3.28.1",

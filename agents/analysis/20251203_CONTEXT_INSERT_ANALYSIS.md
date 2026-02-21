@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#performance`
+tags: `#analysis` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#performance`
 summary: 1. Cache split results for repeated operations
 ---
 

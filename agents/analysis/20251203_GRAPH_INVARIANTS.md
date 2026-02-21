@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#testing` `#performance`
+tags: `#analysis` `#testing` `#performance`
 summary: The context-engine hypergraph maintains a substring-aware hierarchical structure. These invariants ensure correctness of all operations.
 ---
 

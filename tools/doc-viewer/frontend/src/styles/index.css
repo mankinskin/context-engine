@@ -1,7 +1,11 @@
 /* Doc Viewer Styles */
-@import './variables.css';
-@import './base.css';
+
+/* Import shared base styles */
+@import '@context-engine/viewer-api-frontend/styles';
+
+/* App-specific overrides and styles */
 @import './layout.css';
 @import './tree.css';
 @import './tabs.css';
 @import './doc-viewer.css';
+@import './filter-panel.css';

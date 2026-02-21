@@ -3,7 +3,13 @@
     "docs-server": {
       "type": "stdio",
       "command": "cargo",
-      "args": ["run", "--manifest-path", "${workspaceFolder}/tools/mcp-docs-server/Cargo.toml"],
+      "args": [
+        "run",
+        "--manifest-path",
+        "${workspaceFolder}/tools/doc-viewer/Cargo.toml",
+        "--",
+        "--mcp"
+      ],
       "env": {
         "DOCS_ROOT": "${workspaceFolder}"
       }

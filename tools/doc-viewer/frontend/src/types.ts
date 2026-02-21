@@ -143,3 +143,16 @@ export interface CategoryHealth {
   has_valid_name: number;
   in_index: number;
 }
+
+// === JQ Query Types ===
+
+export interface JqQueryResult {
+  doc_type: string;
+  filename: string;
+  title: string;
+  date: string;
+  summary: string;
+  tags: string[];
+  status: string | null;
+  content?: unknown; // Markdown AST when include_content is true
+}

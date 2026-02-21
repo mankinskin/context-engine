@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#algorithm` `#testing` `#refactoring` `#api` `#performance`
+tags: `#analysis` `#algorithm` `#testing` `#refactoring` `#api` `#performance`
 summary: > Remove CheckpointedRef because it incorrectly discards state information about whether the Path is a candidate or not. We should have something l...
 ---
 

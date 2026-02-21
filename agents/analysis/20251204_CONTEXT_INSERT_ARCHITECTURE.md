@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#refactoring` `#api`
+tags: `#analysis` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#refactoring` `#api`
 summary: 1. Safe modification via split-join (no broken references)
 ---
 

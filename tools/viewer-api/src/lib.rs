@@ -8,34 +8,34 @@
 //! - HTTP server with CORS and static file serving
 //! - MCP server support via rmcp
 //! - Command-line flag parsing (--http, --mcp)
-//! - Tracing/logging initialization
+//! - Tracing/logging initialization (console and file)
 //! - Common utilities
 //!
 //! # Example
 //!
 //! ```rust,no_run
-//! use viewer_api::{ServerConfig, run_server};
+//! use viewer_api::{ServerConfig, run_server, McpServerFactory};
 //! use axum::Router;
+//! use std::path::PathBuf;
 //!
 //! #[derive(Clone)]
-//! struct MyState { /* ... */ }
+//! struct MyState;
 //!
-//! fn create_routes(state: MyState) -> Router {
-//!     Router::new()
-//!         // ... your routes
-//!         .with_state(state)
+//! fn create_routes(state: MyState, _static_dir: Option<PathBuf>) -> Router {
+//!     Router::new().with_state(state)
 //! }
 //!
 //! #[tokio::main]
 //! async fn main() {
 //!     let config = ServerConfig::new("my-viewer", 3000);
-//!     let state = MyState { /* ... */ };
+//!     let state = MyState;
 //!     
-//!     run_server(config, state, create_routes, None::<fn() -> _>).await.unwrap();
+//!     run_server(config, state, create_routes, None::<McpServerFactory<MyState>>).await.unwrap();
 //! }
 //! ```
 
 use axum::Router;
+use std::env;
 use std::future::Future;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -43,7 +43,7 @@ use tower_http::{
     cors::{Any, CorsLayer},
     services::ServeDir,
 };
-use tracing::error;
+use tracing::{error, info};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 // Re-export commonly used types
@@ -51,11 +51,116 @@ pub use axum;
 pub use tower_http;
 pub use tokio;
 pub use tracing;
+pub use tracing_appender;
 pub use rmcp;
 
 /// Convert a path to Unix-style string (forward slashes)
 pub fn to_unix_path(path: &std::path::Path) -> String {
     path.to_string_lossy().replace('\\', "/")
+}
+
+/// Tracing configuration
+#[derive(Clone, Debug)]
+pub struct TracingConfig {
+    /// Log level (trace, debug, info, warn, error)
+    pub level: String,
+    /// Enable file logging
+    pub file_logging: bool,
+    /// Directory for log files (if file_logging is true)
+    pub log_dir: Option<PathBuf>,
+    /// Log file name prefix
+    pub log_file_prefix: String,
+}
+
+impl Default for TracingConfig {
+    fn default() -> Self {
+        Self {
+            level: "info".to_string(),
+            file_logging: false,
+            log_dir: None,
+            log_file_prefix: "app".to_string(),
+        }
+    }
+}
+
+impl TracingConfig {
+    /// Create config from environment variables.
+    /// 
+    /// Reads LOG_LEVEL and LOG_FILE environment variables.
+    pub fn from_env(log_file_prefix: impl Into<String>, default_log_dir: PathBuf) -> Self {
+        let level = env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
+        let file_logging = env::var("LOG_FILE").is_ok();
+        
+        Self {
+            level,
+            file_logging,
+            log_dir: Some(default_log_dir),
+            log_file_prefix: log_file_prefix.into(),
+        }
+    }
+    
+    /// Set log level
+    pub fn with_level(mut self, level: impl Into<String>) -> Self {
+        self.level = level.into();
+        self
+    }
+    
+    /// Enable file logging
+    pub fn with_file_logging(mut self, log_dir: PathBuf, prefix: impl Into<String>) -> Self {
+        self.file_logging = true;
+        self.log_dir = Some(log_dir);
+        self.log_file_prefix = prefix.into();
+        self
+    }
+}
+
+/// Initialize tracing with optional file output.
+///
+/// This is the recommended way to initialize tracing for viewer tools.
+/// It supports both console and file logging based on the configuration.
+pub fn init_tracing_full(config: &TracingConfig) {
+    let filter = EnvFilter::try_new(&config.level)
+        .unwrap_or_else(|_| EnvFilter::new("info"));
+
+    let fmt_layer = fmt::layer()
+        .with_target(true)
+        .with_thread_ids(true)
+        .with_file(true)
+        .with_line_number(true);
+
+    // Check if file logging is enabled
+    if config.file_logging {
+        let log_dir = config.log_dir.clone().unwrap_or_else(|| PathBuf::from("logs"));
+        std::fs::create_dir_all(&log_dir).ok();
+        
+        let log_file_name = format!("{}.log", config.log_file_prefix);
+        let file_appender = tracing_appender::rolling::daily(&log_dir, &log_file_name);
+        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+        
+        // Store the guard to keep the appender alive
+        std::mem::forget(_guard);
+        
+        let file_layer = fmt::layer()
+            .with_writer(non_blocking)
+            .with_ansi(false)
+            .with_target(true)
+            .with_thread_ids(true)
+            .with_file(true)
+            .with_line_number(true);
+        
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer)
+            .with(file_layer)
+            .init();
+        
+        info!("File logging enabled to {}/{}", to_unix_path(&log_dir), log_file_name);
+    } else {
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(fmt_layer)
+            .init();
+    }
 }
 
 /// Server configuration
@@ -114,6 +219,21 @@ impl ServerConfig {
     /// Get the address to bind to
     pub fn get_addr(&self) -> String {
         format!("{}:{}", self.host, self.get_port())
+    }
+
+    /// Get the display address (converts 0.0.0.0 to localhost for user-friendly output)
+    pub fn get_display_addr(&self) -> String {
+        format!("{}:{}", display_host(&self.host), self.get_port())
+    }
+}
+
+/// Convert a host address to a display-friendly version.
+/// Converts `0.0.0.0` to `localhost` since browsers can't open `0.0.0.0`.
+pub fn display_host(host: &str) -> &str {
+    if host == "0.0.0.0" {
+        "localhost"
+    } else {
+        host
     }
 }
 
@@ -207,13 +327,14 @@ pub type McpServerFactory<S> = Box<dyn FnOnce(S) -> Pin<Box<dyn Future<Output = 
 /// # Example
 ///
 /// ```rust,no_run
-/// use viewer_api::{ServerConfig, run_server};
+/// use viewer_api::{ServerConfig, run_server, McpServerFactory};
 /// use axum::Router;
+/// use std::path::PathBuf;
 ///
 /// #[derive(Clone)]
 /// struct AppState;
 ///
-/// fn routes(state: AppState) -> Router {
+/// fn routes(state: AppState, _static_dir: Option<PathBuf>) -> Router {
 ///     Router::new().with_state(state)
 /// }
 ///
@@ -291,7 +412,7 @@ where
     let app = create_router(state, static_dir);
     
     let listener = tokio::net::TcpListener::bind(&addr).await?;
-    eprintln!("HTTP server listening on http://{}", addr);
+    eprintln!("HTTP server listening on http://{}", config.get_display_addr());
     
     axum::serve(listener, app).await?;
     

@@ -23,16 +23,14 @@ regex = "1"
 toml = "0.8"
 once_cell = "1"
 
-# Tracing
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tracing-appender = "0.2"
-
 # jq query language
 jaq-core = "1"
 jaq-std = "1"
 jaq-interpret = "1"
 jaq-syn = "1"
+
+# Tracing (needed for #[instrument] proc macro)
+tracing = "0.1"
 
 # MCP protocol
 rmcp = { version = "0.14", features = ["server", "transport-io"] }

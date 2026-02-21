@@ -6,16 +6,19 @@ use viewer_api::axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
-    routing::get,
+    routing::{get, post},
     Router,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::{path::PathBuf, sync::Arc};
 use viewer_api::tower_http::{
     cors::{Any, CorsLayer},
     services::ServeDir,
 };
 
+use crate::markdown_ast;
+use crate::query;
 use crate::schema::{DocType, ModuleTreeNode};
 use crate::tools::{CrateDocsManager, DetailLevel, DocsManager, ListFilter};
 
@@ -108,7 +111,27 @@ struct CrateDocResponse {
     readme: Option<String>,
 }
 
+#[derive(Serialize)]
+struct JqQueryResponse {
+    query: String,
+    total: usize,
+    results: Vec<Value>,
+}
+
 // === Query Parameters ===
+
+#[derive(Deserialize)]
+struct JqQueryParams {
+    jq: String,
+    #[serde(default)]
+    doc_type: Option<String>,
+    /// If true, transform values (can produce multiple outputs). Default is filter (select matching).
+    #[serde(default)]
+    transform: bool,
+    /// If true, include parsed markdown AST in "content" field for each document.
+    #[serde(default)]
+    include_content: bool,
+}
 
 #[derive(Deserialize)]
 struct ListDocsQuery {
@@ -141,9 +164,11 @@ pub fn create_router(state: HttpState, static_dir: Option<PathBuf>) -> Router {
     let api_routes = Router::new()
         .route("/docs", get(list_docs))
         .route("/docs/:filename", get(read_doc))
+        .route("/docs/:filename/ast", get(get_doc_ast))
         .route("/crates", get(list_crates))
         .route("/crates/:name", get(browse_crate))
-        .route("/crates/:name/doc", get(read_crate_doc));
+        .route("/crates/:name/doc", get(read_crate_doc))
+        .route("/query", post(query_docs));
 
     // Main app
     let app = Router::new()
@@ -380,5 +405,138 @@ fn parse_doc_type(s: &str) -> Option<DocType> {
         "bug-report" | "bug-reports" | "bug_report" | "bugreport" => Some(DocType::BugReport),
         "analysis" => Some(DocType::Analysis),
         _ => None,
+    }
+}
+
+/// POST /api/query - Query documents using JQ expressions
+///
+/// Example queries:
+/// - `select(.doc_type == "guide")` - Filter guides
+/// - `select(.tags | any(. == "testing"))` - Filter by tag
+/// - `select(.title | test("search"; "i"))` - Regex in title
+/// - `{title, date, tags}` - Extract specific fields
+async fn query_docs(
+    State(state): State<HttpState>,
+    Json(params): Json<JqQueryParams>,
+) -> Result<Json<JqQueryResponse>, (StatusCode, Json<ApiError>)> {
+    // Collect all docs into JSON values
+    let doc_types = match params.doc_type.as_deref() {
+        Some(dt) => match parse_doc_type(dt) {
+            Some(t) => vec![t],
+            None => {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(ApiError {
+                        error: format!("Invalid doc_type: {}", dt),
+                    }),
+                ))
+            }
+        },
+        None => vec![
+            DocType::Guide,
+            DocType::Plan,
+            DocType::Implemented,
+            DocType::BugReport,
+            DocType::Analysis,
+        ],
+    };
+
+    let filter = ListFilter::default();
+    let mut all_docs: Vec<Value> = Vec::new();
+
+    for dt in doc_types {
+        match state.docs_manager.list_documents_filtered(dt, &filter) {
+            Ok(docs) => {
+                for d in docs {
+                    // Convert doc to JSON value for JQ query
+                    let mut doc_json = serde_json::json!({
+                        "doc_type": dt.directory(),
+                        "filename": d.filename,
+                        "title": d.title,
+                        "date": d.date,
+                        "summary": d.summary,
+                        "tags": d.tags,
+                        "status": d.status.map(|s| s.to_string()),
+                    });
+                    
+                    // Optionally include parsed markdown content
+                    if params.include_content {
+                        if let Ok(result) = state.docs_manager.read_document(&d.filename, DetailLevel::Full) {
+                            if let Some(body) = &result.body {
+                                if let Ok(ast) = markdown_ast::parse_markdown_to_json(body) {
+                                    doc_json["content"] = ast;
+                                }
+                            }
+                        }
+                    }
+                    
+                    all_docs.push(doc_json);
+                }
+            }
+            Err(e) => {
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ApiError {
+                        error: e.to_string(),
+                    }),
+                ))
+            }
+        }
+    }
+
+    // Apply JQ query
+    let results = if params.transform {
+        query::transform_values(all_docs.iter(), &params.jq)
+    } else {
+        query::filter_values(all_docs.iter(), &params.jq)
+    };
+
+    match results {
+        Ok(values) => Ok(Json(JqQueryResponse {
+            query: params.jq,
+            total: values.len(),
+            results: values,
+        })),
+        Err(e) => Err((
+            StatusCode::BAD_REQUEST,
+            Json(ApiError {
+                error: format!("JQ query error: {}", e.message),
+            }),
+        )),
+    }
+}
+
+/// GET /api/docs/:filename/ast - Get markdown AST for a document
+///
+/// Returns the document with its content parsed into a structured AST.
+/// Useful for querying document structure with JQ.
+async fn get_doc_ast(
+    State(state): State<HttpState>,
+    Path(filename): Path<String>,
+) -> Result<Json<Value>, (StatusCode, Json<ApiError>)> {
+    match state.docs_manager.read_document(&filename, DetailLevel::Full) {
+        Ok(result) => {
+            let content_ast = result.body.as_ref()
+                .and_then(|body| markdown_ast::parse_markdown_to_json(body).ok());
+            
+            Ok(Json(serde_json::json!({
+                "filename": result.filename,
+                "doc_type": result.doc_type,
+                "title": result.title,
+                "date": result.date,
+                "summary": result.summary,
+                "tags": result.tags,
+                "status": result.status.map(|s| s.to_string()),
+                "content": content_ast,
+            })))
+        }
+        Err(e) => {
+            let status = if e.to_string().contains("not found") {
+                StatusCode::NOT_FOUND
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            Err((status, Json(ApiError { error: e.to_string() })))
+        }
     }
 }

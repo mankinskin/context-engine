@@ -201,3 +201,38 @@ export async function fetchCrateDoc(
   const response = await fetch(url);
   return handleResponse<CrateDocResponse>(response);
 }
+
+// === JQ Query API ===
+
+export interface JqQueryRequest {
+  jq: string;
+  doc_type?: string;
+  transform?: boolean;
+  include_content?: boolean;
+}
+
+export interface JqQueryResponse {
+  query: string;
+  total: number;
+  results: unknown[];
+}
+
+/**
+ * Query documents using JQ expressions
+ */
+export async function queryDocs(request: JqQueryRequest): Promise<JqQueryResponse> {
+  const response = await fetch(`${API_BASE}/query`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  return handleResponse<JqQueryResponse>(response);
+}
+
+/**
+ * Fetch a document's markdown AST
+ */
+export async function fetchDocAst(filename: string): Promise<unknown> {
+  const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}/ast`);
+  return handleResponse<unknown>(response);
+}

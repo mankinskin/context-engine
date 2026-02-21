@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-search` `#debugging` `#testing` `#api`
+tags: `#analysis` `#context-search` `#debugging` `#testing` `#api`
 summary: The `find_consecutive1` test fails because after successfully matching "ghi", the search advances the query cursor to look for "a" but never finds ...
 ---
 

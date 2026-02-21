@@ -1,8 +1,8 @@
-name: mcp-docs-server
+name: doc-viewer
 version: "0.1.0"
 description: >
-  MCP server for managing structured documentation. Provides tools for both 
-  agent documentation (guides, plans, bug-reports, etc. in agents/ directories) 
+  Documentation viewer server for context-engine. Provides HTTP API and MCP tools for 
+  viewing and managing agent documentation (guides, plans, bug-reports, etc.) 
   and crate API documentation (in crates/*/agents/docs/).
 
 modules:

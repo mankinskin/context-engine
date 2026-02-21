@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#algorithm`
+tags: `#analysis` `#algorithm`
 summary: ```
 ---
 

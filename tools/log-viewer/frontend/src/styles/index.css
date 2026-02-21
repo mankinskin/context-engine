@@ -1,31 +1,15 @@
 /* Log Viewer - Modern Dark Theme
  * 
  * Modular CSS Architecture:
- * - variables.css: CSS custom properties and design tokens
- * - base.css: Reset and root element styles
- * - header.css: Header bar and search form
- * - buttons.css: Button components and variants
- * - filter-panel.css: Filter panel and columns
- * - file-tree.css: File tree sidebar and jq examples
- * - layout.css: Main layout, sidebar, tabs
- * - log-viewer.css: Log viewer container, toolbar, spinner
- * - log-entries.css: Entry rows and cells
- * - depth-gutter.css: Depth gutter tree lines
- * - entry-content.css: Entry badges, spans, messages
- * - fields.css: Field display styles
- * - panic.css: Panic entries and diff display
- * - code-snippet.css: Source code snippets
- * - code-viewer.css: Full code viewer panel
- * - flow-graph.css: Flow graph visualization
- * - stats.css: Statistics view
- * - prism.css: Prism.js syntax highlighting
- * - json-viewer.css: JSON viewer component
- * - rust-value.css: Rust-style value renderer
- * - utilities.css: Scrollbar and utility classes
+ * - Shared: base variables, layout, buttons from viewer-api-frontend
+ * - App-specific: header, filter-panel, log-viewer, etc.
  */
 
+/* Import shared base styles */
+@import '@context-engine/viewer-api-frontend/styles';
+
+/* App-specific overrides and extensions */
 @import './variables.css';
-@import './base.css';
 @import './header.css';
 @import './buttons.css';
 @import './filter-panel.css';

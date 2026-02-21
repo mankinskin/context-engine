@@ -2,6 +2,14 @@
 # Post-tool-use hook for documentation validation
 # Runs after any tool execution in Copilot CLI or VS Code Copilot Chat
 
+# Path patterns for matching (Unix and Windows style)
+DOC_VIEWER_SRC_UNIX="tools/doc-viewer/src/"
+DOC_VIEWER_SRC_WIN="tools\\\\doc-viewer\\\\src\\\\"
+AGENTS_DIR_UNIX="agents/"
+AGENTS_DIR_WIN="agents\\\\"
+AGENTS_TMP_UNIX="agents/tmp/"
+AGENTS_TMP_WIN="agents\\\\tmp\\\\"
+
 # Read JSON input from stdin
 INPUT=$(cat)
 
@@ -24,14 +32,14 @@ FILE_PATH=$(echo "$INPUT" | jq -r '
 ' 2>/dev/null)
 echo "[validate-docs] File path: $FILE_PATH" >&2
 
-# Check if the edited file is in the MCP docs server source
-if [[ "$FILE_PATH" == *"tools/doc-viewer/backend/src/"* || "$FILE_PATH" == *"tools\\doc-viewer\\backend\\src\\"* ]]; then
-    echo "[validate-docs] MATCH: MCP docs server source file" >&2
+# Check if the edited file is in the doc-viewer source
+if [[ "$FILE_PATH" == *"$DOC_VIEWER_SRC_UNIX"* || "$FILE_PATH" == *"$DOC_VIEWER_SRC_WIN"* ]]; then
+    echo "[validate-docs] MATCH: Doc viewer source file" >&2
     cat << 'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
-    "additionalContext": "⚠️ Doc viewer backend source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
+    "additionalContext": "⚠️ Doc viewer source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
   }
 }
 EOF
@@ -39,8 +47,8 @@ EOF
 fi
 
 # Check if agent docs were modified
-if [[ "$FILE_PATH" == *"agents/"* && "$FILE_PATH" != *"agents/tmp/"* ]] || \
-   [[ "$FILE_PATH" == *"agents\\"* && "$FILE_PATH" != *"agents\\tmp\\"* ]]; then
+if [[ "$FILE_PATH" == *"$AGENTS_DIR_UNIX"* && "$FILE_PATH" != *"$AGENTS_TMP_UNIX"* ]] || \
+   [[ "$FILE_PATH" == *"$AGENTS_DIR_WIN"* && "$FILE_PATH" != *"$AGENTS_TMP_WIN"* ]]; then
     echo "[validate-docs] MATCH: Agent docs file" >&2
     cat << 'EOF'
 {

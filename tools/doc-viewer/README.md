@@ -1,8 +1,23 @@
-# Doc Viewer Backend
+# Doc Viewer
 
-Backend server for the doc-viewer tool, supporting both HTTP API and MCP protocols.
+A web-based documentation viewer for the context-engine project, supporting both HTTP API and MCP protocols.
 
-## Usage
+## Structure
+
+```
+doc-viewer/
+├── src/              # Rust server
+│   ├── main.rs       # HTTP/MCP server entry point
+│   ├── http.rs       # HTTP handlers
+│   ├── mcp.rs        # MCP server implementation
+│   └── query.rs      # JQ query engine
+├── frontend/         # Preact web application
+└── static/           # Built frontend assets
+```
+
+## Running
+
+### Server Modes
 
 ```bash
 # HTTP server only (default)
@@ -15,35 +30,41 @@ cargo run -- --mcp
 cargo run -- --http --mcp
 ```
 
-## Features
+### Development Mode
 
-- **Create documents** from type-specific templates with automatic dating
-- **List documents** by category with metadata
-- **Update metadata** (tags, summary, status)
-- **Search by tag** across all categories
-- **Regenerate INDEX** files from document frontmatter
-- **Validate** naming conventions and structure
-- **Browse crate documentation** with hierarchical module navigation
-- **Read/update crate API docs** in `crates/<crate>/agents/docs/`
-- **Detect stale documentation** using git history to find docs that need updating
-- **Sync documentation** by analyzing source files and suggesting additions/removals
+```bash
+# Terminal 1: Start the server
+cargo run
 
-## Document Types
+# Terminal 2: Start the frontend dev server
+cd frontend
+npm install
+npm run dev
+```
 
-| Type | Directory | Purpose |
-|------|-----------|---------|
-| `guide` | `guides/` | How-to guides and patterns |
-| `plan` | `plans/` | Task plans before implementation |
-| `implemented` | `implemented/` | Completed features |
-| `bug-report` | `bug-reports/` | Bug analyses |
-| `analysis` | `analysis/` | Algorithm comparisons |
+The frontend dev server runs on `http://localhost:5173` and proxies API requests to the server on port 3001.
+
+### Production Mode
+
+```bash
+# Build the frontend
+cd frontend
+npm install
+npm run build
+
+# Run the server (serves built frontend from static/)
+cd ..
+cargo run
+```
+
+Access the app at `http://localhost:3001`.
 
 ## Installation
 
 ### Build
 
 ```bash
-cd context-engine/tools/doc-viewer/backend
+cd context-engine/tools/doc-viewer
 cargo build --release
 ```
 
@@ -56,7 +77,7 @@ Add to `.vscode/mcp.json`:
   "servers": {
     "docs": {
       "type": "stdio",
-      "command": "${workspaceFolder}/context-engine/tools/doc-viewer/backend/target/release/doc-viewer",
+      "command": "${workspaceFolder}/context-engine/tools/doc-viewer/target/release/doc-viewer",
       "args": ["--mcp"],
       "env": {
         "AGENTS_DIR": "${workspaceFolder}/context-engine/agents"

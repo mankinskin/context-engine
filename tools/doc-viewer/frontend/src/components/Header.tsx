@@ -1,17 +1,54 @@
+import { 
+  Header as SharedHeader, 
+  DocumentIcon, 
+  FilterIcon, 
+  CloseIcon, 
+  RefreshIcon 
+} from '@context-engine/viewer-api-frontend';
+import { 
+  showFilterPanel, 
+  hasActiveFilters, 
+  clearFilters, 
+  loadDocs 
+} from '../store';
+
 export function Header() {
+  const handleFilterToggle = () => {
+    showFilterPanel.value = !showFilterPanel.value;
+  };
+
+  const handleRefresh = () => {
+    loadDocs();
+  };
+
+  const rightContent = (
+    <div class="header-actions">
+      <button 
+        class={`btn ${showFilterPanel.value ? 'btn-active' : ''}`}
+        onClick={handleFilterToggle}
+        title="Advanced Filters"
+      >
+        <FilterIcon size={12} /> Filters
+      </button>
+      
+      {hasActiveFilters.value && (
+        <button class="btn" onClick={clearFilters} title="Clear all filters">
+          <CloseIcon size={12} /> Clear
+        </button>
+      )}
+      
+      <button class="btn" onClick={handleRefresh} title="Refresh documentation">
+        <RefreshIcon size={12} /> Refresh
+      </button>
+    </div>
+  );
+
   return (
-    <header class="header">
-      <div class="header-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-          <line x1="10" y1="9" x2="8" y2="9" />
-        </svg>
-        <span class="header-title">Doc Viewer</span>
-      </div>
-      <span class="header-subtitle">context-engine documentation</span>
-    </header>
+    <SharedHeader 
+      title="Doc Viewer"
+      icon={<DocumentIcon size={20} />}
+      subtitle="context-engine documentation"
+      rightContent={rightContent}
+    />
   );
 }

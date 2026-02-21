@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-trace` `#api`
+tags: `#analysis` `#context-trace` `#api`
 summary: The Phase 1 trait consolidation (HasPath/HasRolePath → PathAccessor) left **18 qualified trait calls** and **~30 deprecation warnings** because t...
 ---
 

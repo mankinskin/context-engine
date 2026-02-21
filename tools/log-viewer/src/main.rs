@@ -39,8 +39,7 @@ mod types;
 
 use config::Config;
 use std::{env, net::SocketAddr, path::PathBuf};
-use tracing::info;
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use viewer_api::{TracingConfig, init_tracing_full, display_host, tracing::info};
 
 use handlers::to_unix_path;
 use router::create_router;
@@ -56,48 +55,14 @@ pub use types::{
 
 /// Initialize tracing with optional file output
 fn init_tracing(config: &Config) {
-    let filter = EnvFilter::try_new(&config.logging.level)
-        .unwrap_or_else(|_| EnvFilter::new("info"));
-
-    let fmt_layer = fmt::layer()
-        .with_target(true)
-        .with_thread_ids(true)
-        .with_file(true)
-        .with_line_number(true);
-
-    // Check if file logging is enabled
-    if config.logging.file_logging {
-        let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
-        std::fs::create_dir_all(&log_dir).ok();
-        
-        let file_appender = tracing_appender::rolling::daily(&log_dir, "log-viewer.log");
-        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-        
-        // Store the guard to keep the appender alive
-        // Note: In production, you'd want to store this guard somewhere
-        std::mem::forget(_guard);
-        
-        let file_layer = fmt::layer()
-            .with_writer(non_blocking)
-            .with_ansi(false)
-            .with_target(true)
-            .with_thread_ids(true)
-            .with_file(true)
-            .with_line_number(true);
-        
-        tracing_subscriber::registry()
-            .with(filter)
-            .with(fmt_layer)
-            .with(file_layer)
-            .init();
-        
-        info!("File logging enabled to logs/log-viewer.log");
-    } else {
-        tracing_subscriber::registry()
-            .with(filter)
-            .with(fmt_layer)
-            .init();
-    }
+    let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
+    let tracing_config = TracingConfig {
+        level: config.logging.level.clone(),
+        file_logging: config.logging.file_logging,
+        log_dir: Some(log_dir),
+        log_file_prefix: "log-viewer".to_string(),
+    };
+    init_tracing_full(&tracing_config);
 }
 
 #[tokio::main]
@@ -136,7 +101,8 @@ async fn main() {
         let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
             .parse()
             .expect("Invalid server address in config");
-        info!(%addr, "Starting HTTP server");
+        let display_addr = format!("{}:{}", display_host(&config.server.host), config.server.port);
+        info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
 
         let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
         viewer_api::axum::serve(listener, app).await.unwrap();

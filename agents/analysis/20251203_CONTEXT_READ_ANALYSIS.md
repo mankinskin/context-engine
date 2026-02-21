@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-trace` `#context-search` `#context-read` `#algorithm` `#performance`
+tags: `#analysis` `#context-trace` `#context-search` `#context-read` `#algorithm` `#performance`
 summary: ```rust
 ---
 

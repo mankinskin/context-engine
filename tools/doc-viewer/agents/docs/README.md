@@ -1,6 +1,6 @@
-# MCP Documentation Server
+# Doc Viewer
 
-A Model Context Protocol (MCP) server for managing structured documentation in the context-engine project.
+Documentation viewer server for the context-engine project.
 
 ## Overview
 
@@ -19,14 +19,15 @@ This server provides tools for two types of documentation:
 ## Architecture
 
 ```
-mcp-docs-server/
+doc-viewer/
 ├── src/
-│   ├── main.rs       # MCP server, tool handlers
-│   ├── tools.rs      # DocsManager, CrateDocsManager
+│   ├── main.rs       # HTTP/MCP server entry point
+│   ├── tools/        # DocsManager, CrateDocsManager
 │   ├── schema.rs     # Data types, metadata structures
 │   ├── parser.rs     # Document parsing utilities
 │   ├── templates.rs  # Document generation templates
 │   └── git.rs        # Git integration for staleness
+├── frontend/         # Preact web application
 └── agents/docs/      # This documentation
 ```
 

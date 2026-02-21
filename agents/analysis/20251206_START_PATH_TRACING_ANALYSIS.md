@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#context-trace` `#context-search` `#debugging` `#testing`
+tags: `#analysis` `#context-trace` `#context-search` `#debugging` `#testing`
 summary: This document analyzes how start_path tracing works during parent exploration in the find_ancestor search flow, and identifies where the trace cach...
 ---
 

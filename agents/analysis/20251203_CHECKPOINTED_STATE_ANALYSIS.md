@@ -1,5 +1,5 @@
 ---
-tags: `#analysi` `#debugging` `#testing` `#api`
+tags: `#analysis` `#debugging` `#testing` `#api`
 summary: Analysis of `Checkpointed<C>` usage patterns to determine which cursor state (checkpoint vs candidate) should be accessed at each call site and whe...
 ---
 

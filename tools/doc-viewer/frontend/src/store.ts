@@ -1,12 +1,22 @@
 import { signal, computed } from '@preact/signals';
-import type { Category, TreeNode, OpenTab, DocContent } from './types';
-import { fetchDocs, fetchDoc, fetchCrates, browseCrate, fetchCrateDoc, type ModuleNode, type CrateDocResponse } from './api';
+import type { Category, TreeNode, OpenTab, DocContent, JqQueryResult } from './types';
+import { fetchDocs, fetchDoc, fetchCrates, browseCrate, fetchCrateDoc, queryDocs, type ModuleNode, type CrateDocResponse } from './api';
 
 // State signals
 export const categories = signal<Category[]>([]);
 export const totalDocs = signal(0);
 export const isLoading = signal(false);
 export const error = signal<string | null>(null);
+
+// Filter state signals
+export const showFilterPanel = signal(false);
+export const docTypeFilter = signal<string>('');
+export const tagFilter = signal<string>('');
+export const dateFromFilter = signal<string>('');
+export const dateToFilter = signal<string>('');
+export const jqFilter = signal<string>('');
+export const jqResults = signal<JqQueryResult[] | null>(null);
+export const isFilterLoading = signal(false);
 
 // Tab state
 export const openTabs = signal<OpenTab[]>([]);
@@ -300,3 +310,96 @@ export function selectDoc(filename: string): void {
     openDoc(filename, filename);
   }
 }
+
+// === Filter Functions ===
+
+// Compute all unique tags from loaded documents
+export const allTags = computed(() => {
+  const tags = new Set<string>();
+  for (const cat of categories.value) {
+    for (const doc of cat.docs) {
+      for (const tag of doc.tags) {
+        tags.add(tag);
+      }
+    }
+  }
+  return Array.from(tags).sort();
+});
+
+// Compute all doc types from loaded documents
+export const allDocTypes = computed(() => {
+  return categories.value.map(cat => cat.category);
+});
+
+// Build JQ query from current filters
+export function buildJqQuery(): string {
+  const conditions: string[] = [];
+
+  if (docTypeFilter.value) {
+    conditions.push(`(.doc_type == "${docTypeFilter.value}")`);
+  }
+  if (tagFilter.value) {
+    conditions.push(`(.tags | any(. == "${tagFilter.value}"))`);
+  }
+  if (dateFromFilter.value) {
+    conditions.push(`(.date >= "${dateFromFilter.value}")`);
+  }
+  if (dateToFilter.value) {
+    conditions.push(`(.date <= "${dateToFilter.value}")`);
+  }
+
+  if (conditions.length === 0) {
+    return '.'; // Identity - return all
+  }
+
+  return `select(${conditions.join(' and ')})`;
+}
+
+// Execute JQ query
+export async function executeJqQuery(customQuery?: string): Promise<void> {
+  const query = customQuery || buildJqQuery();
+
+  if (query === '.' && !customQuery) {
+    // No filters applied, clear results
+    jqResults.value = null;
+    jqFilter.value = '';
+    return;
+  }
+
+  isFilterLoading.value = true;
+  jqFilter.value = query;
+
+  try {
+    const response = await queryDocs({
+      jq: query,
+      doc_type: docTypeFilter.value || undefined,
+    });
+    jqResults.value = response.results as JqQueryResult[];
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Query failed';
+    jqResults.value = null;
+  } finally {
+    isFilterLoading.value = false;
+  }
+}
+
+// Clear all filters
+export function clearFilters(): void {
+  docTypeFilter.value = '';
+  tagFilter.value = '';
+  dateFromFilter.value = '';
+  dateToFilter.value = '';
+  jqFilter.value = '';
+  jqResults.value = null;
+}
+
+// Check if any filters are active
+export const hasActiveFilters = computed(() => {
+  return !!(
+    docTypeFilter.value ||
+    tagFilter.value ||
+    dateFromFilter.value ||
+    dateToFilter.value ||
+    jqFilter.value
+  );
+});
