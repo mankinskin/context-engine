@@ -6,6 +6,8 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-02-21 | [VIEWER_API_REFACTORING](20260221_VIEWER_API_REFACTORING.md) | design | Extract shared server infrastructure from viewer-api |
+| 2026-02-18 | [PLAN_CONTEXT_READ_COMPLETION](20260218_PLAN_CONTEXT_READ_COMPLETION.md) | design | Complete context-read crate for text indexing |
 | 2026-02-15 | [PLAN_MCP_DOCS_SERVER_IMPROVEMENTS](20260215_PLAN_MCP_DOCS_SERVER_IMPROVEMENTS.md) | completed | Refactor tools.rs into modular structure |
 | 2026-02-15 | [PLAN_MCP_CRATE_DOCS](20260215_PLAN_MCP_CRATE_DOCS.md) | design | Extend MCP server to support crate API documentation |
 | 2026-01-27 | [SELECTIVE_PARTITION_MERGE](20260127_SELECTIVE_PARTITION_MERGE.md) | design | Transform complete merge to selective partition creation |

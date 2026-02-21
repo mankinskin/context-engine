@@ -23,52 +23,31 @@ modules:
   path: git
 exported_items:
   types:
-  - name: DocsManager
-    description: Manages agent documentation (agents/ directory)
-  - name: CrateDocsManager
-    description: Manages crate API documentation (crates/*/agents/docs/)
-  - name: DocMetadata
-    description: Metadata for agent documents
-  - name: CrateMetadata
-    description: Metadata for crate documentation
-  - name: ModuleMetadata
-    description: Metadata for module documentation
-  - name: ValidationReport
-    description: Report from documentation validation
-  - name: StaleDocsReport
-    description: Report from staleness detection
-  - name: SyncAnalysisResult
-    description: Result from source code analysis
-  - name: ToolError
-    description: Error type for tool operations
+    - DocsManager: Manages agent documentation (agents/ directory)
+    - CrateDocsManager: Manages crate API documentation (crates/*/agents/docs/)
+    - DocMetadata: Metadata for agent documents
+    - CrateMetadata: Metadata for crate documentation
+    - ModuleMetadata: Metadata for module documentation
+    - ValidationReport: Report from documentation validation
+    - StaleDocsReport: Report from staleness detection
+    - SyncAnalysisResult: Result from source code analysis
+    - ToolError: Error type for tool operations
   traits: []
   macros: []
 dependencies:
-- name: rmcp
-  description: MCP protocol implementation
-- name: serde
-  description: Serialization/deserialization
-- name: serde_yaml
-  description: YAML parsing
-- name: chrono
-  description: Date/time handling
-- name: regex
-  description: Pattern matching for source analysis
-- name: walkdir
-  description: Directory traversal
-- name: thiserror
-  description: Error types
+  - rmcp: MCP protocol implementation
+  - serde: Serialization/deserialization
+  - serde_yaml: YAML parsing
+  - chrono: Date/time handling
+  - regex: Pattern matching for source analysis
+  - walkdir: Directory traversal
+  - thiserror: Error types
 features:
-- name: Agent documentation management (create, list, search, validate)
-  description: null
-- name: Crate API documentation management
-  description: null
-- name: Git-based staleness detection
-  description: null
-- name: Source code analysis for sync suggestions
-  description: null
-- name: Health dashboard and metrics
-  description: null
+  - Agent documentation management (create, list, search, validate)
+  - Crate API documentation management
+  - Git-based staleness detection
+  - Source code analysis for sync suggestions
+  - Health dashboard and metrics
 source_files:
 - src/main.rs
 - src/tools/mod.rs
