@@ -2,7 +2,7 @@
 //!
 //! Provides REST API endpoints for browsing and reading documentation.
 
-use axum::{
+use viewer_api::axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
@@ -11,7 +11,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, sync::Arc};
-use tower_http::{
+use viewer_api::tower_http::{
     cors::{Any, CorsLayer},
     services::ServeDir,
 };

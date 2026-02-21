@@ -1,0 +1,28 @@
+[package]
+name = "viewer-api"
+version = "0.1.0"
+edition = "2021"
+description = "Shared HTTP/MCP server API library for viewer tools"
+
+[workspace]
+# Keep this crate independent from parent workspace
+
+[lib]
+name = "viewer_api"
+path = "src/lib.rs"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tower-http = { version = "0.5", features = ["fs", "cors"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# MCP protocol
+rmcp = { version = "0.14", features = ["server", "transport-io"] }
+
+[dev-dependencies]
+axum-test = "14"
+tempfile = "3"

@@ -1,0 +1,80 @@
+//! Request and response types for the log viewer HTTP API.
+
+use serde::{Deserialize, Serialize};
+
+use crate::log_parser::LogEntry;
+
+/// Response for listing log files
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LogFileInfo {
+    pub name: String,
+    pub size: u64,
+    pub modified: Option<String>,
+}
+
+/// Response for log content
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LogContentResponse {
+    pub name: String,
+    pub entries: Vec<LogEntry>,
+    pub total_lines: usize,
+}
+
+/// Query params for source
+#[derive(Deserialize, Debug)]
+pub struct SourceQuery {
+    #[serde(default)]
+    pub line: Option<usize>,
+    #[serde(default = "default_context")]
+    pub context: usize,
+}
+
+fn default_context() -> usize { 5 }
+
+/// Search query parameters
+#[derive(Deserialize, Debug)]
+pub struct SearchQuery {
+    pub q: String,
+    #[serde(default)]
+    pub level: Option<String>,
+    #[serde(default)]
+    pub limit: Option<usize>,
+}
+
+/// Search result response
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SearchResponse {
+    pub query: String,
+    pub matches: Vec<LogEntry>,
+    pub total_matches: usize,
+}
+
+/// JQ query parameters
+#[derive(Deserialize, Debug)]
+pub struct JqQuery {
+    /// The jq filter expression
+    pub jq: String,
+    #[serde(default)]
+    pub limit: Option<usize>,
+}
+
+/// JQ query result response
+#[derive(Serialize, Deserialize, Debug)]
+pub struct JqQueryResponse {
+    pub query: String,
+    pub matches: Vec<LogEntry>,
+    pub total_matches: usize,
+}
+
+/// Error response
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ErrorResponse {
+    pub error: String,
+}
+
+/// Request body for session configuration updates
+#[derive(Deserialize, Debug)]
+pub struct SessionConfigUpdate {
+    /// Whether to enable verbose logging
+    pub verbose: Option<bool>,
+}
