@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "HTTP server and MCP server for viewing and querying documentation files"
 
-[workspace]
-
 [[bin]]
 name = "doc-viewer"
 path = "src/main.rs"

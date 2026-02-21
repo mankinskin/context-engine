@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "HTTP server and frontend for viewing tracing logs"
 
-[workspace]
-
 [[bin]]
 name = "log-viewer"
 path = "src/main.rs"

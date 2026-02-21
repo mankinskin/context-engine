@@ -441,6 +441,24 @@ impl DocsManager {
         Err(ToolError::NotFound(filename.to_string()))
     }
 
+    /// Delete a document and update the index.
+    pub fn delete_document(&self, filename: &str) -> ToolResult<String> {
+        let path = self.find_document(filename)?;
+        
+        // Get doc type to update index
+        let content = fs::read_to_string(&path)?;
+        let meta = extract_metadata(&path, &content)
+            .ok_or_else(|| ToolError::InvalidInput("Cannot parse document".into()))?;
+        
+        // Delete the file
+        fs::remove_file(&path)?;
+        
+        // Update index
+        self.update_index(meta.doc_type)?;
+        
+        Ok(path.display().to_string())
+    }
+
     /// Read the full content of a document.
     pub fn read_document(
         &self,

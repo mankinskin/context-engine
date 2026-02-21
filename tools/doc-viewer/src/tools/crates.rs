@@ -479,6 +479,33 @@ impl CrateDocsManager {
         Ok(docs_path.to_string_lossy().to_string())
     }
 
+    /// Delete module documentation directory
+    pub fn delete_module_doc(
+        &self,
+        crate_name: &str,
+        module_path: &str,
+    ) -> ToolResult<String> {
+        let crate_path = self.resolve_crate_path(crate_name)
+            .ok_or_else(|| ToolError::NotFound(format!(
+                "Crate docs not found: {}",
+                crate_name
+            )))?;
+        let docs_path = crate_path.join("agents").join("docs").join(module_path);
+
+        if !docs_path.exists() {
+            return Err(ToolError::NotFound(format!(
+                "Module docs not found: {}/{}",
+                crate_name,
+                module_path
+            )));
+        }
+
+        // Remove the directory and all contents
+        fs::remove_dir_all(&docs_path)?;
+
+        Ok(docs_path.to_string_lossy().to_string())
+    }
+
     /// Update specific fields in a crate or module's index.yaml
     ///
     /// This allows programmatic updates to source_files and other metadata

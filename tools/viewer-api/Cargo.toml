@@ -4,9 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "Shared HTTP/MCP server API library for viewer tools"
 
-[workspace]
-# Keep this crate independent from parent workspace
-
 [lib]
 name = "viewer_api"
 path = "src/lib.rs"

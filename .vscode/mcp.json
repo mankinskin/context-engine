@@ -1,17 +1,14 @@
 {
   "servers": {
-    "docs-server": {
+    "doc-viewer-mcp": {
       "type": "stdio",
-      "command": "cargo",
+      "autoStart": true,
+      "command": "${workspaceFolder}/tools/doc-viewer/target/release/doc-viewer.exe",
       "args": [
-        "run",
-        "--manifest-path",
-        "${workspaceFolder}/tools/doc-viewer/Cargo.toml",
-        "--",
         "--mcp"
       ],
       "env": {
-        "DOCS_ROOT": "${workspaceFolder}"
+        "WORKSPACE_ROOT": "${workspaceFolder}"
       }
     }
   }

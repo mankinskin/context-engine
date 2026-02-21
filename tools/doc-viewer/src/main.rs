@@ -42,7 +42,10 @@ use mcp::DocsServer;
 
 /// Initialize tracing with optional file output
 fn init_tracing() {
-    let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
+    // Use WORKSPACE_ROOT or fall back to compile-time path
+    let log_dir = std::env::var("WORKSPACE_ROOT")
+        .map(|root| PathBuf::from(root).join("tools/doc-viewer/logs"))
+        .unwrap_or_else(|_| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs"));
     let config = TracingConfig::from_env("doc-viewer", log_dir);
     init_tracing_full(&config);
 }
@@ -61,22 +64,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         (http_mode, mcp_mode)
     };
     
-    // Get agents directory from environment or use default
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    // manifest_dir = tools/doc-viewer/
-    // .parent() = tools/
-    // .parent().parent() = context-engine/ (workspace root)
-    let workspace_root = manifest_dir
-        .parent() // tools/
-        .and_then(|p| p.parent()) // context-engine/
-        .unwrap_or(&manifest_dir);
+    // Get workspace root from environment, or fall back to compile-time path
+    // Priority: WORKSPACE_ROOT env > current working directory detection > compile-time CARGO_MANIFEST_DIR
+    let workspace_root: PathBuf = std::env::var("WORKSPACE_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            // Try to detect workspace root from current directory (look for Cargo.toml with [workspace])
+            if let Ok(cwd) = std::env::current_dir() {
+                if cwd.join("Cargo.toml").exists() && cwd.join("agents").exists() {
+                    return cwd;
+                }
+            }
+            // Fall back to compile-time manifest directory
+            let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            manifest_dir
+                .parent() // tools/
+                .and_then(|p| p.parent()) // context-engine/
+                .map(|p| p.to_path_buf())
+                .unwrap_or(manifest_dir)
+        });
     
+    // Get agents directory - explicit env var or workspace_root/agents
     let agents_dir = std::env::var("AGENTS_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|_| workspace_root.join("agents"));
     
     // Parse CRATES_DIRS as a path-separated list (like PATH)
-    // Default includes both crates/ and tools/ directories
+    // Default includes both crates/ and tools/ directories under workspace root
     let crates_dirs: Vec<PathBuf> = std::env::var("CRATES_DIRS")
         .or_else(|_| std::env::var("CRATES_DIR")) // Backwards compatibility
         .map(|val| std::env::split_paths(&val).collect())
@@ -100,15 +114,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if run_http {
         info!(mode, agents_dir = %to_unix_path(&agents_dir), crates_dirs = ?crates_dirs_display, "Doc Viewer Server starting");
-    } else {
-        // MCP-only mode - use stderr to avoid interfering with stdio transport
-        eprintln!("Doc Viewer Server starting...");
-        eprintln!("  Mode: {}", mode);
-        eprintln!("  Agents directory: {}", to_unix_path(&agents_dir));
-        for dir in &crates_dirs {
-            eprintln!("  Crates directory: {}", to_unix_path(dir));
-        }
     }
+    // MCP-only mode: skip startup messages to avoid VS Code warnings (stderr shows as warnings)
 
     if run_mcp && !run_http {
         // MCP-only mode - run stdio server
@@ -119,7 +126,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         service.waiting().await?;
     } else if run_http && !run_mcp {
         // HTTP-only mode
-        run_http_server(manifest_dir, agents_dir, crates_dirs).await?;
+        run_http_server(workspace_root, agents_dir, crates_dirs).await?;
     } else {
         // Both servers - run MCP in background, HTTP in foreground
         let agents_dir_clone = agents_dir.clone();
@@ -141,7 +148,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
         
         // Run HTTP server in main task
-        run_http_server(manifest_dir, agents_dir, crates_dirs).await?;
+        run_http_server(workspace_root, agents_dir, crates_dirs).await?;
     }
 
     Ok(())
@@ -149,14 +156,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 /// Run the HTTP server
 async fn run_http_server(
-    manifest_dir: PathBuf,
+    workspace_root: PathBuf,
     agents_dir: PathBuf,
     crates_dirs: Vec<PathBuf>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Static files directory
+    // Static files directory - use STATIC_DIR env or workspace_root/tools/doc-viewer/static
     let static_dir = std::env::var("STATIC_DIR")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| manifest_dir.join("static"));
+        .unwrap_or_else(|_| workspace_root.join("tools/doc-viewer/static"));
 
     let port: u16 = std::env::var("PORT")
         .ok()
