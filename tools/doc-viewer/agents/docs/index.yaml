@@ -2,7 +2,25 @@ name: doc-viewer
 version: 0.1.0
 description: |
   Documentation viewer server for context-engine. Provides HTTP API and MCP tools for  viewing and managing agent documentation (guides, plans, bug-reports, etc.)  and crate API documentation (in crates/*/agents/docs/).
-modules: []
+modules:
+- name: main
+  description: Server entry point with MCP tool handlers
+  path: main
+- name: tools
+  description: Core documentation management logic (DocsManager, CrateDocsManager)
+  path: tools
+- name: schema
+  description: Data structures and types for documentation metadata
+  path: schema
+- name: parser
+  description: Document parsing utilities (frontmatter, YAML, markdown)
+  path: parser
+- name: templates
+  description: Document template generation
+  path: templates
+- name: git
+  description: Git integration for staleness detection
+  path: git
 exported_items:
   types:
   - name: DocsManager
@@ -60,4 +78,4 @@ source_files:
 - src/parser.rs
 - src/templates.rs
 - src/git.rs
-last_synced: "2026-02-21T00:00:00Z"
+last_synced: null

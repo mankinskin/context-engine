@@ -1,58 +1,73 @@
 name: log-viewer
-version: 0.1.0
-description: |
-  Web-based log viewer for tracing logs from the context-engine project. Provides HTTP API and MCP tools for viewing, searching, and querying structured log files with JQ support.
-modules: []
+version: "0.1.0"
+description: >
+  Web-based log viewer for tracing logs from the context-engine project.
+  Provides HTTP API and MCP tools for viewing, searching, and querying
+  structured log files with JQ support.
+
+modules:
+  - name: main
+    path: main
+    description: Server entry point with HTTP and MCP mode handling
+  - name: config
+    path: config
+    description: Configuration loading from files and environment
+  - name: log_parser
+    path: log_parser
+    description: Log file parsing and structured data extraction
+  - name: query
+    path: query
+    description: JQ query engine for log filtering
+  - name: handlers
+    path: handlers
+    description: HTTP request handlers for API endpoints
+  - name: router
+    path: router
+    description: HTTP routing configuration
+  - name: state
+    path: state
+    description: Application state and session management
+  - name: source
+    path: source
+    description: Source file resolution and language detection
+  - name: mcp_server
+    path: mcp_server
+    description: MCP server implementation for agent integration
+
 exported_items:
   types:
-  - name: AppState
-    description: Application state containing log directory and parser
-  - name: Config
-    description: Configuration from file or environment
-  - name: LogEntry
-    description: Parsed log entry structure
-  - name: LogParser
-    description: Parser for structured log files
-  - name: SessionConfig
-    description: Session configuration for customization
-  - name: SessionStore
-    description: Thread-safe session storage
+    - AppState: Application state containing log directory and parser
+    - Config: Configuration from file or environment
+    - LogEntry: Parsed log entry structure
+    - LogParser: Parser for structured log files
+    - SessionConfig: Session configuration for customization
+    - SessionStore: Thread-safe session storage
   traits: []
   macros: []
+
 dependencies:
-- name: viewer-api
-  description: Shared server infrastructure
-- name: tokio
-  description: Async runtime
-- name: axum
-  description: HTTP framework
-- name: serde
-  description: Serialization
-- name: jaq-core
-  description: JQ query engine
-- name: rmcp
-  description: MCP protocol
+  - viewer-api: Shared server infrastructure
+  - tokio: Async runtime
+  - axum: HTTP framework
+  - serde: Serialization
+  - jaq-core: JQ query engine
+  - rmcp: MCP protocol
+
 features:
-- name: HTTP API for log listing and viewing
-  description: null
-- name: JQ query support for log filtering
-  description: null
-- name: Source file resolution and preview
-  description: null
-- name: Session-based customization
-  description: null
-- name: MCP server mode for agent integration
-  description: null
-- name: Configurable via TOML or environment
-  description: null
+  - HTTP API for log listing and viewing
+  - JQ query support for log filtering
+  - Source file resolution and preview
+  - Session-based customization
+  - MCP server mode for agent integration
+  - Configurable via TOML or environment
+
 source_files:
-- src/main.rs
-- src/config.rs
-- src/log_parser.rs
-- src/query.rs
-- src/handlers.rs
-- src/router.rs
-- src/state.rs
-- src/source.rs
-- src/mcp_server.rs
-last_synced: "2026-02-21T00:00:00Z"
+  - src/main.rs
+  - src/config.rs
+  - src/log_parser.rs
+  - src/query.rs
+  - src/handlers.rs
+  - src/router.rs
+  - src/state.rs
+  - src/source.rs
+  - src/mcp_server.rs
