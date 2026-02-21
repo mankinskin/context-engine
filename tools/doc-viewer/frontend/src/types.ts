@@ -33,7 +33,13 @@ export interface DocContent {
 
 // === Tree View Types ===
 
-export type TreeNodeType = 'root' | 'category' | 'doc' | 'crate' | 'module';
+export type TreeNodeType = 'root' | 'category' | 'doc' | 'crate' | 'module' | 'file';
+
+export interface SourceFileLink {
+  rel_path: string;
+  abs_path: string;
+  vscode_uri: string;
+}
 
 export interface TreeNode {
   id: string;
@@ -46,6 +52,8 @@ export interface TreeNode {
   crateName?: string;
   modulePath?: string;
   hasReadme?: boolean;
+  // For file nodes
+  sourceFile?: SourceFileLink;
 }
 
 // === Tab Types ===

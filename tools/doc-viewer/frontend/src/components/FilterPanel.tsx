@@ -1,4 +1,4 @@
-import { signal } from '@preact/signals';
+import { signal } from '@context-engine/viewer-api-frontend';
 import { 
   showFilterPanel, 
   docTypeFilter, 

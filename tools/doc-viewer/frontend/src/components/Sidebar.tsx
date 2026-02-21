@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'preact/hooks';
-import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded } from '../store';
+import { useState, useEffect } from '@context-engine/viewer-api-frontend';
+import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded, openSourceFile, codeViewerFile } from '../store';
 import type { TreeNode } from '../types';
 
 export function Sidebar() {
@@ -18,7 +18,7 @@ export function Sidebar() {
   }, [docTree.value]);
 
   return (
-    <aside class="sidebar">
+    <>
       <div class="sidebar-header">
         <h2>Documentation</h2>
         <span class="doc-count">{totalDocs.value}</span>
@@ -37,7 +37,7 @@ export function Sidebar() {
           </div>
         )}
       </div>
-    </aside>
+    </>
   );
 }
 
@@ -56,11 +56,16 @@ function TreeItem({ node, level }: TreeItemProps) {
   const canExpand = hasChildren || node.type === 'crate'; // Crates can always expand
   const isSelected = (node.type === 'doc' || node.type === 'module' || node.type === 'crate') 
     && selectedFilename.value === node.id;
+  const isFileSelected = node.type === 'file' && node.sourceFile 
+    && codeViewerFile.value === node.sourceFile.rel_path;
   
   const handleClick = async () => {
     if (node.type === 'doc') {
       // Open agent doc
       selectDoc(node.id);
+    } else if (node.type === 'file' && node.sourceFile) {
+      // Open source file in code viewer
+      openSourceFile(node.sourceFile);
     } else if (node.type === 'root') {
       // Open category page for root nodes
       if (node.id === 'agents') {
@@ -105,6 +110,8 @@ function TreeItem({ node, level }: TreeItemProps) {
         return <CrateIcon />;
       case 'module':
         return hasChildren ? <FolderIcon /> : <ModuleIcon />;
+      case 'file':
+        return <SourceFileIcon />;
       case 'doc':
         return <FileIcon />;
       default:
@@ -123,6 +130,8 @@ function TreeItem({ node, level }: TreeItemProps) {
         return 'crate';
       case 'module':
         return 'module';
+      case 'file':
+        return 'source-file';
       case 'doc':
         return 'file';
       default:
@@ -133,7 +142,7 @@ function TreeItem({ node, level }: TreeItemProps) {
   return (
     <div class="tree-item">
       <div 
-        class={`tree-row ${isSelected ? 'selected' : ''}`}
+        class={`tree-row ${isSelected || isFileSelected ? 'selected' : ''}`}
         onClick={handleClick}
       >
         <span class={`tree-toggle ${expanded ? 'expanded' : ''} ${!canExpand ? 'empty' : ''}`}>
@@ -207,6 +216,17 @@ function FileIcon() {
       <polyline points="14 2 14 8 20 8" />
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
+function SourceFileIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+      <polyline points="9 13 7 15 9 17" />
+      <polyline points="15 13 17 15 15 17" />
     </svg>
   );
 }

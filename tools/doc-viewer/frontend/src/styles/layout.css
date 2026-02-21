@@ -54,13 +54,13 @@
 
 /* Sidebar */
 .sidebar {
-  width: var(--sidebar-width);
   background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   overflow: hidden;
+  min-width: 180px;
+  max-width: 500px;
 }
 
 .sidebar-header {
@@ -137,4 +137,92 @@
   width: 48px;
   height: 48px;
   opacity: 0.5;
+}
+
+/* Content panels for split view */
+.content-panels {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.content-panels > .doc-viewer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Split view mode */
+.content.split-view .content-panels > .doc-viewer {
+  flex: 1;
+  border-right: 1px solid var(--border-color);
+}
+
+.content.split-view .code-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Full-width code panel (replaces doc viewer) */
+.code-panel.full-width {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Code panel header */
+.code-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.code-panel-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.code-panel-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--text-muted);
+  border-radius: 3px;
+}
+
+.code-panel-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Resize handles */
+.resize-handle {
+  flex-shrink: 0;
+  background: var(--border-color);
+  transition: background 0.15s ease;
+}
+
+.resize-handle:hover {
+  background: var(--accent-blue);
+}
+
+.resize-handle-horizontal {
+  width: 3px;
+  cursor: col-resize;
+}
+
+.resize-handle-vertical {
+  height: 3px;
+  cursor: row-resize;
 }

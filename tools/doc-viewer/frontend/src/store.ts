@@ -1,6 +1,6 @@
-import { signal, computed } from '@preact/signals';
-import type { Category, TreeNode, OpenTab, DocContent, JqQueryResult } from './types';
-import { fetchDocs, fetchCrates, queryDocs, type ModuleNode, type CrateDocResponse } from './api';
+import { signal, computed } from '@context-engine/viewer-api-frontend';
+import type { Category, TreeNode, OpenTab, DocContent, JqQueryResult, SourceFileLink } from './types';
+import { fetchDocs, fetchCrates, queryDocs, fetchSourceFile, type ModuleNode, type CrateDocResponse } from './api';
 import {
   getCachedDoc,
   getCachedCrateDoc,
@@ -16,6 +16,12 @@ export const categories = signal<Category[]>([]);
 export const totalDocs = signal(0);
 export const isLoading = signal(false);
 export const error = signal<string | null>(null);
+
+// Code viewer state signals
+export const codeViewerFile = signal<string | null>(null);
+export const codeViewerContent = signal<string>('');
+export const codeViewerLine = signal<number | null>(null);
+export const codeViewerLoading = signal<boolean>(false);
 
 // Filter state signals
 export const showFilterPanel = signal(false);
@@ -256,17 +262,82 @@ function buildAgentDocsTree(cats: Category[]): TreeNode {
 }
 
 function buildModuleTree(modules: ModuleNode[], crateName: string): TreeNode[] {
-  return modules.map(mod => ({
-    id: `crate:${crateName}:${mod.path}`,
-    label: mod.name,
-    type: 'module' as const,
-    crateName,
-    modulePath: mod.path,
-    hasReadme: mod.has_readme,
-    children: mod.children?.length > 0
-      ? buildModuleTree(mod.children, crateName)
-      : undefined,
-  }));
+  return modules.flatMap(mod => {
+    // Build module node
+    const moduleNode: TreeNode = {
+      id: `crate:${crateName}:${mod.path}`,
+      label: mod.name,
+      type: 'module' as const,
+      crateName,
+      modulePath: mod.path,
+      hasReadme: mod.has_readme,
+      children: mod.children?.length > 0
+        ? buildModuleTree(mod.children, crateName)
+        : undefined,
+    };
+
+    // Build file nodes from source_files if present
+    const fileNodes = mod.source_files?.length > 0
+      ? buildFileNodes(mod.source_files, crateName, mod.path)
+      : [];
+
+    // Add file nodes as children to the module node
+    if (fileNodes.length > 0) {
+      moduleNode.children = [...(moduleNode.children || []), ...fileNodes];
+    }
+
+    return [moduleNode];
+  });
+}
+
+// Build file nodes from source files (filter out directories)
+function buildFileNodes(sourceFiles: SourceFileLink[], crateName: string, modulePath?: string): TreeNode[] {
+  return sourceFiles
+    .filter(sf => !sf.rel_path.endsWith('/')) // Only include actual files, not directories
+    .map(sf => ({
+      id: `file:${sf.abs_path}`,
+      label: sf.rel_path.split('/').pop() || sf.rel_path,
+      type: 'file' as const,
+      crateName,
+      modulePath,
+      sourceFile: sf,
+    }));
+}
+
+// Update tree node children with file nodes
+function addFileNodesToTree(sourceFiles: SourceFileLink[], crateName: string, modulePath?: string): void {
+  if (sourceFiles.length === 0) return;
+
+  const fileNodes = buildFileNodes(sourceFiles, crateName, modulePath);
+  const nodeId = modulePath ? `crate:${crateName}:${modulePath}` : `crate:${crateName}`;
+
+  docTree.value = docTree.value.map(root => {
+    if (root.id !== 'crates') return root;
+    return updateNodeChildren(root, nodeId, fileNodes);
+  });
+
+  // Expand the node so files are visible
+  const newExpanded = new Set(expandedNodes.value);
+  newExpanded.add(nodeId);
+  expandedNodes.value = newExpanded;
+}
+
+function updateNodeChildren(node: TreeNode, targetId: string, fileNodes: TreeNode[]): TreeNode {
+  if (node.id === targetId) {
+    // Found the target node - add file nodes as children
+    const existingChildren = node.children?.filter(c => c.type !== 'file') || [];
+    return {
+      ...node,
+      children: [...existingChildren, ...fileNodes],
+    };
+  }
+
+  if (!node.children) return node;
+
+  return {
+    ...node,
+    children: node.children.map(child => updateNodeChildren(child, targetId, fileNodes)),
+  };
 }
 
 function formatCategoryName(name: string): string {
@@ -346,6 +417,15 @@ export function preloadVisibleCrateTrees(crateNames: string[]): void {
     for (const crateName of crateNames) {
       try {
         const tree = await getCachedCrateTree(crateName);
+
+        // Build file nodes from crate-level source files
+        const crateFileNodes = tree.source_files?.length > 0
+          ? buildFileNodes(tree.source_files, crateName)
+          : [];
+
+        // Build module children tree
+        const moduleChildren = buildModuleTree(tree.children, crateName);
+
         // Update the crate node with loaded module tree
         docTree.value = docTree.value.map(root => {
           if (root.id !== 'crates') return root;
@@ -357,7 +437,7 @@ export function preloadVisibleCrateTrees(crateNames: string[]): void {
               if (node.children && node.children.length > 0) return node;
               return {
                 ...node,
-                children: buildModuleTree(tree.children, crateName),
+                children: [...moduleChildren, ...crateFileNodes],
               };
             }),
           };
@@ -374,7 +454,15 @@ export async function loadCrateModules(crateName: string): Promise<void> {
   try {
     const tree = await getCachedCrateTree(crateName);
 
-    // Update the crate node with loaded module tree
+    // Build file nodes from crate-level source files
+    const crateFileNodes = tree.source_files?.length > 0
+      ? buildFileNodes(tree.source_files, crateName)
+      : [];
+
+    // Build module children tree
+    const moduleChildren = buildModuleTree(tree.children, crateName);
+
+    // Update the crate node with loaded module tree and crate-level source files
     docTree.value = docTree.value.map(root => {
       if (root.id !== 'crates') return root;
       return {
@@ -383,7 +471,7 @@ export async function loadCrateModules(crateName: string): Promise<void> {
           if (node.crateName !== crateName) return node;
           return {
             ...node,
-            children: buildModuleTree(tree.children, crateName),
+            children: [...moduleChildren, ...crateFileNodes],
           };
         }),
       };
@@ -502,6 +590,11 @@ export async function openCrateDoc(crateName: string, modulePath?: string): Prom
         ? { ...t, doc: content, isLoading: false }
         : t
     );
+
+    // Add file nodes to the tree for this module's source files
+    if (doc.source_files && doc.source_files.length > 0) {
+      addFileNodesToTree(doc.source_files, crateName, modulePath);
+    }
 
     // Preload module neighbors - need to get the crate tree first
     const crateNode = docTree.value
@@ -750,4 +843,28 @@ function findDocInTree(filename: string): TreeNode | undefined {
     return undefined;
   }
   return search(docTree.value);
+}
+
+// Open a source file in the code viewer
+export async function openSourceFile(sourceFile: SourceFileLink): Promise<void> {
+  codeViewerLoading.value = true;
+  codeViewerFile.value = sourceFile.rel_path;
+
+  try {
+    const result = await fetchSourceFile(sourceFile.abs_path);
+    codeViewerContent.value = result.content;
+    codeViewerLine.value = null;
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to load source file';
+    codeViewerContent.value = '';
+  } finally {
+    codeViewerLoading.value = false;
+  }
+}
+
+// Close the code viewer
+export function closeCodeViewer(): void {
+  codeViewerFile.value = null;
+  codeViewerContent.value = '';
+  codeViewerLine.value = null;
 }

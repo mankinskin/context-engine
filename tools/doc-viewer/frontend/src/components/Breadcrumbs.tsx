@@ -1,9 +1,19 @@
-import { activeDoc, activeTabId, openTabs, openCrateDoc, openCategoryPage } from '../store';
+import { activeDoc, activeTabId, openTabs, openCrateDoc, openCategoryPage, codeViewerFile, closeCodeViewer } from '../store';
 import { ChevronRightIcon, DocumentIcon, CrateIcon, FolderIcon, HomeIcon } from '@context-engine/viewer-api-frontend';
+
+// Source file icon for breadcrumbs
+function SourceFileIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor">
+      <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+      <path d="M4.5 12.5A.5.5 0 0 1 5 12h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+    </svg>
+  );
+}
 
 interface BreadcrumbPart {
   label: string;
-  type: 'home' | 'root' | 'category' | 'crate' | 'module' | 'doc';
+  type: 'home' | 'root' | 'category' | 'crate' | 'module' | 'doc' | 'file';
   onClick?: () => void;
 }
 
@@ -119,6 +129,8 @@ function getIcon(type: BreadcrumbPart['type']) {
     case 'category':
     case 'module':
       return <FolderIcon size={12} />;
+    case 'file':
+      return <SourceFileIcon size={12} />;
     case 'doc':
       return <DocumentIcon size={12} />;
     default:
@@ -126,7 +138,105 @@ function getIcon(type: BreadcrumbPart['type']) {
   }
 }
 
+// Parse breadcrumbs for a source file path
+function parseSourceFileBreadcrumbs(filePath: string): BreadcrumbPart[] {
+  const parts: BreadcrumbPart[] = [];
+  
+  // Always start with Home
+  parts.push({
+    label: 'Home',
+    type: 'home',
+    onClick: () => {
+      closeCodeViewer();
+      openCategoryPage('page:home');
+    },
+  });
+  
+  // Add Crate Docs root
+  parts.push({
+    label: 'Crate Docs',
+    type: 'root',
+    onClick: () => {
+      closeCodeViewer();
+      openCategoryPage('page:crate-docs');
+    },
+  });
+  
+  // Parse the file path to extract crate and module info
+  // Paths look like: src/some/module/file.rs or agents/docs/module/index.yaml
+  const pathParts = filePath.split('/');
+  
+  // Find crate name by looking for common patterns
+  // The rel_path typically starts after the crate folder
+  // e.g., "src/foo/bar.rs" - we need to figure out the crate
+  // For now, just show the path segments
+  
+  // Show just the filename as the current item
+  const filename = pathParts[pathParts.length - 1];
+  
+  // Add intermediate path segments as module breadcrumbs
+  if (pathParts.length > 1) {
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      parts.push({
+        label: pathParts[i],
+        type: 'module',
+        onClick: () => closeCodeViewer(), // Just close viewer for path segments
+      });
+    }
+  }
+  
+  // Add the file itself (not clickable - it's current)
+  parts.push({
+    label: filename,
+    type: 'file',
+  });
+  
+  return parts;
+}
+
 export function Breadcrumbs() {
+  const sourceFile = codeViewerFile.value;
+  
+  // If viewing a source file, show source file breadcrumbs
+  if (sourceFile) {
+    const parts = parseSourceFileBreadcrumbs(sourceFile);
+    
+    return (
+      <div class="breadcrumbs">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+          {parts.map((part, idx) => (
+            <span key={idx} class="breadcrumb-item">
+              {idx > 0 && (
+                <span class="breadcrumb-separator">
+                  <ChevronRightIcon size={12} />
+                </span>
+              )}
+              {part.onClick ? (
+                <button
+                  type="button"
+                  class="breadcrumb-label clickable"
+                  title={part.label}
+                  onClick={part.onClick}
+                >
+                  <span class="breadcrumb-icon">{getIcon(part.type)}</span>
+                  {part.label}
+                </button>
+              ) : (
+                <span 
+                  class={`breadcrumb-label current`}
+                  title={part.label}
+                >
+                  <span class="breadcrumb-icon">{getIcon(part.type)}</span>
+                  {part.label}
+                </span>
+              )}
+            </span>
+          ))}
+        </nav>
+      </div>
+    );
+  }
+  
   const doc = activeDoc.value;
   const activeId = activeTabId.value;
   const activeTab = openTabs.value.find(t => t.filename === activeId);

@@ -8,12 +8,14 @@
     "./styles": "./src/styles/index.css",
     "./styles/*": "./src/styles/*"
   },
-  "peerDependencies": {
-    "preact": "^10.19.3"
+  "dependencies": {
+    "preact": "^10.19.3",
+    "@preact/signals": "^1.2.2",
+    "prismjs": "^1.29.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "preact": "^10.19.3",
+    "@types/prismjs": "^1.26.3",
     "typescript": "^5.3.3"
   }
 }

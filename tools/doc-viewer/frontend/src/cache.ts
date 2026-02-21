@@ -1,7 +1,7 @@
 // Document cache and preloading for doc-viewer
 // Preloads reachable documents to minimize loading times
 
-import { signal } from '@preact/signals';
+import { signal } from '@context-engine/viewer-api-frontend';
 import type { DocContent, Category } from './types';
 import { fetchDoc, fetchCrateDoc, browseCrate, type CrateDocResponse, type CrateTreeResponse, type ModuleNode } from './api';
 

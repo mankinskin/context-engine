@@ -86,6 +86,8 @@ struct CrateSummaryResponse {
     description: String,
     module_count: usize,
     has_readme: bool,
+    /// Absolute path to the crate root directory
+    crate_path: String,
 }
 
 #[derive(Serialize)]
@@ -93,6 +95,10 @@ struct CrateTreeResponse {
     name: String,
     description: String,
     children: Vec<ModuleNodeResponse>,
+    /// Source files at the crate root level
+    source_files: Vec<SourceFileLinkResponse>,
+    /// Crate root path for file resolution
+    crate_path: String,
 }
 
 #[derive(Serialize)]
@@ -102,6 +108,8 @@ struct ModuleNodeResponse {
     description: String,
     has_readme: bool,
     children: Vec<ModuleNodeResponse>,
+    /// Source files within this module
+    source_files: Vec<SourceFileLinkResponse>,
 }
 
 #[derive(Serialize)]
@@ -112,6 +120,20 @@ struct CrateDocResponse {
     index_yaml: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     readme: Option<String>,
+    /// Absolute path to the crate root directory
+    crate_path: String,
+    /// Source files with absolute paths and editor URIs
+    source_files: Vec<SourceFileLinkResponse>,
+}
+
+#[derive(Serialize)]
+struct SourceFileLinkResponse {
+    /// Relative path from crate root (e.g., "src/lib.rs")
+    rel_path: String,
+    /// Absolute filesystem path
+    abs_path: String,
+    /// VS Code URI to open the file (vscode://file/...)
+    vscode_uri: String,
 }
 
 #[derive(Serialize)]
@@ -171,6 +193,7 @@ pub fn create_router(state: HttpState, static_dir: Option<PathBuf>) -> Router {
         .route("/crates", get(list_crates))
         .route("/crates/:name", get(browse_crate))
         .route("/crates/:name/doc", get(read_crate_doc))
+        .route("/source/*path", get(read_source_file))
         .route("/query", post(query_docs))
         .route("/session", get(get_session).post(update_session));
 
@@ -321,6 +344,7 @@ async fn list_crates(
                         description: c.description,
                         module_count: c.module_count,
                         has_readme: c.has_readme,
+                        crate_path: c.crate_path,
                     })
                     .collect(),
             }))
@@ -341,11 +365,22 @@ async fn browse_crate(
 ) -> Result<Json<CrateTreeResponse>, (StatusCode, Json<ApiError>)> {
     match state.crate_manager.browse_crate(&name) {
         Ok(tree) => {
-            info!(crate_name = %name, modules = tree.children.len(), "Browsed crate");
+            let crate_path = state.crate_manager.get_crate_path(&name)
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_default();
+            
+            // Scan for source files at the crate root (src/ and agents/docs/)
+            let root_source_files = scan_crate_source_files(&crate_path, None);
+            
+            info!(crate_name = %name, modules = tree.children.len(), files = root_source_files.len(), "Browsed crate");
             Ok(Json(CrateTreeResponse {
                 name: tree.name.clone(),
                 description: tree.description.clone(),
-                children: tree.children.iter().map(convert_module_node).collect(),
+                children: tree.children.iter()
+                    .map(|n| convert_module_node(n, &crate_path))
+                    .collect(),
+                source_files: root_source_files,
+                crate_path,
             }))
         }
         Err(e) => {
@@ -384,6 +419,12 @@ async fn read_crate_doc(
                 module_path: result.module_path,
                 index_yaml: result.index_yaml,
                 readme: result.readme,
+                crate_path: result.crate_path,
+                source_files: result.source_files.into_iter().map(|f| SourceFileLinkResponse {
+                    rel_path: f.rel_path,
+                    abs_path: f.abs_path,
+                    vscode_uri: f.vscode_uri,
+                }).collect(),
             }))
         }
         Err(e) => {
@@ -402,14 +443,100 @@ async fn read_crate_doc(
     }
 }
 
-fn convert_module_node(node: &ModuleTreeNode) -> ModuleNodeResponse {
+fn convert_module_node(node: &ModuleTreeNode, crate_path: &str) -> ModuleNodeResponse {
+    // Scan source files for this module (src/module_name/ and agents/docs/module_path/)
+    let source_files = scan_crate_source_files(crate_path, Some(&node.path));
+    
     ModuleNodeResponse {
         name: node.name.clone(),
         path: node.path.clone(),
         description: node.description.clone(),
         has_readme: node.has_readme,
-        children: node.children.iter().map(convert_module_node).collect(),
+        children: node.children.iter()
+            .map(|n| convert_module_node(n, crate_path))
+            .collect(),
+        source_files,
     }
+}
+
+/// Scan for source files in a crate or module directory
+fn scan_crate_source_files(crate_path: &str, module_path: Option<&str>) -> Vec<SourceFileLinkResponse> {
+    use std::path::Path;
+    
+    let crate_dir = Path::new(crate_path);
+    let mut files = Vec::new();
+    
+    // Determine which directories to scan based on module_path
+    let (src_dir, docs_dir) = match module_path {
+        None => {
+            // Root level: scan src/ root files and agents/docs/ index.yaml
+            (crate_dir.join("src"), crate_dir.join("agents").join("docs"))
+        }
+        Some(mod_path) => {
+            // Module level: scan src/module_path/ and agents/docs/module_path/
+            (crate_dir.join("src").join(mod_path), crate_dir.join("agents").join("docs").join(mod_path))
+        }
+    };
+    
+    // Scan src/ directory for .rs files (only direct children, not recursive)
+    if src_dir.exists() && src_dir.is_dir() {
+        if let Ok(entries) = std::fs::read_dir(&src_dir) {
+            for entry in entries.filter_map(|e| e.ok()) {
+                let path = entry.path();
+                if path.is_file() {
+                    if let Some(ext) = path.extension() {
+                        if ext == "rs" {
+                            let rel_path = path.strip_prefix(crate_dir)
+                                .map(|p| p.to_string_lossy().to_string().replace('\\', "/"))
+                                .unwrap_or_default();
+                            let abs_path = path.to_string_lossy().to_string();
+                            let vscode_uri = format!(
+                                "vscode://file/{}",
+                                abs_path.replace('\\', "/")
+                            );
+                            files.push(SourceFileLinkResponse {
+                                rel_path,
+                                abs_path,
+                                vscode_uri,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Scan agents/docs/ directory for .yaml and .md files
+    if docs_dir.exists() && docs_dir.is_dir() {
+        if let Ok(entries) = std::fs::read_dir(&docs_dir) {
+            for entry in entries.filter_map(|e| e.ok()) {
+                let path = entry.path();
+                if path.is_file() {
+                    if let Some(ext) = path.extension() {
+                        if ext == "yaml" || ext == "yml" || ext == "md" {
+                            let rel_path = path.strip_prefix(crate_dir)
+                                .map(|p| p.to_string_lossy().to_string().replace('\\', "/"))
+                                .unwrap_or_default();
+                            let abs_path = path.to_string_lossy().to_string();
+                            let vscode_uri = format!(
+                                "vscode://file/{}",
+                                abs_path.replace('\\', "/")
+                            );
+                            files.push(SourceFileLinkResponse {
+                                rel_path,
+                                abs_path,
+                                vscode_uri,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Sort files by name
+    files.sort_by(|a, b| a.rel_path.cmp(&b.rel_path));
+    files
 }
 
 // === Helpers ===
@@ -613,4 +740,79 @@ async fn update_session(
 
     info!(session_id = %session_id, verbose = config.verbose, "Session updated");
     Ok(Json(config))
+}
+
+// === Source File Handler ===
+
+#[derive(Serialize)]
+struct SourceFileResponse {
+    path: String,
+    content: String,
+    language: String,
+    total_lines: usize,
+}
+
+/// Detect language from file extension
+fn detect_language(path: &str) -> &'static str {
+    let ext = path.rsplit('.').next().unwrap_or("");
+    match ext {
+        "rs" => "rust",
+        "ts" | "tsx" => "typescript",
+        "js" | "jsx" => "javascript",
+        "json" => "json",
+        "toml" => "toml",
+        "yaml" | "yml" => "yaml",
+        "md" => "markdown",
+        "html" => "html",
+        "css" => "css",
+        _ => "plaintext",
+    }
+}
+
+/// GET /api/source/*path - Read a source file
+/// The path should be an absolute filesystem path
+async fn read_source_file(
+    State(state): State<HttpState>,
+    Path(path): Path<String>,
+) -> Result<Json<SourceFileResponse>, (StatusCode, Json<ApiError>)> {
+    // Normalize path separators for cross-platform support
+    let normalized_path = path.replace('/', std::path::MAIN_SEPARATOR_STR);
+    let file_path = PathBuf::from(&normalized_path);
+    
+    // Security check: path must be within one of the crates directories
+    let crates_dirs = state.crate_manager.crates_dirs();
+    let is_allowed = crates_dirs.iter().any(|dir| {
+        file_path.starts_with(dir)
+    });
+    
+    if !is_allowed {
+        return Err((StatusCode::FORBIDDEN, Json(ApiError {
+            error: "Access denied: path outside allowed directories".to_string(),
+        })));
+    }
+    
+    // Additional check: no path traversal
+    if normalized_path.contains("..") {
+        return Err((StatusCode::FORBIDDEN, Json(ApiError {
+            error: "Path traversal not allowed".to_string(),
+        })));
+    }
+    
+    // Read file content
+    let content = std::fs::read_to_string(&file_path)
+        .map_err(|e| (StatusCode::NOT_FOUND, Json(ApiError {
+            error: format!("Failed to read file: {}", e),
+        })))?;
+    
+    let total_lines = content.lines().count();
+    let language = detect_language(&normalized_path).to_string();
+    
+    info!(path = %normalized_path, lines = total_lines, language = %language, "Read source file");
+    
+    Ok(Json(SourceFileResponse {
+        path: normalized_path,
+        content,
+        language,
+        total_lines,
+    }))
 }

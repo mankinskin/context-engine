@@ -153,12 +153,15 @@ export interface ModuleNode {
   description: string;
   has_readme: boolean;
   children: ModuleNode[];
+  source_files: SourceFileLink[];
 }
 
 export interface CrateTreeResponse {
   name: string;
   description: string;
   children: ModuleNode[];
+  source_files: SourceFileLink[];
+  crate_path: string;
 }
 
 /**
@@ -182,6 +185,14 @@ export interface CrateDocResponse {
   module_path: string | null;
   index_yaml: string;
   readme: string | null;
+  crate_path: string;
+  source_files: SourceFileLink[];
+}
+
+export interface SourceFileLink {
+  rel_path: string;
+  abs_path: string;
+  vscode_uri: string;
 }
 
 /**
@@ -237,4 +248,24 @@ export async function queryDocs(request: JqQueryRequest): Promise<JqQueryRespons
 export async function fetchDocAst(filename: string): Promise<unknown> {
   const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}/ast`, withSession());
   return handleResponse<unknown>(response);
+}
+
+// === Source File API ===
+
+export interface SourceFileContent {
+  path: string;
+  content: string;
+  language: string;
+  total_lines: number;
+}
+
+/**
+ * Fetch source file content
+ */
+export async function fetchSourceFile(absPath: string): Promise<SourceFileContent> {
+  // Convert backslashes to forward slashes and don't encode the path
+  // The path needs to remain a valid filesystem path for the backend
+  const normalizedPath = absPath.replace(/\\/g, '/');
+  const response = await fetch(`${API_BASE}/source/${normalizedPath}`, withSession());
+  return handleResponse<SourceFileContent>(response);
 }

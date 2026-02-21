@@ -7,6 +7,10 @@ export default defineConfig({
     outDir: '../static',
     emptyOutDir: true,
   },
+  resolve: {
+    // Ensure only one copy of preact is used (prevents hooks issues with shared components)
+    dedupe: ['preact', 'preact/hooks', '@preact/signals'],
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3001'

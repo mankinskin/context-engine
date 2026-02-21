@@ -74,6 +74,10 @@
   color: var(--accent-purple, #a855f7);
 }
 
+.tree-icon.source-file {
+  color: var(--accent-green, #22c55e);
+}
+
 .tree-toggle .spinner {
   animation: spin 1s linear infinite;
 }

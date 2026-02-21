@@ -1,4 +1,4 @@
-import { useMemo } from 'preact/hooks';
+import { useMemo } from '@context-engine/viewer-api-frontend';
 import { activeDoc, isActiveTabLoading, error, openTabs, activeTabId } from '../store';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';

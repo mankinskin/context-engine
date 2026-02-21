@@ -68,6 +68,16 @@ impl CrateDocsManager {
         Self { crates_dirs }
     }
 
+    /// Get the configured crates directories
+    pub fn crates_dirs(&self) -> &[PathBuf] {
+        &self.crates_dirs
+    }
+
+    /// Resolve a crate name to its root path (public version).
+    pub fn get_crate_path(&self, crate_name: &str) -> Option<PathBuf> {
+        self.resolve_crate_path(crate_name)
+    }
+
     /// Resolve a crate name to its root path.
     ///
     /// Searches all configured directories for a crate with matching name
@@ -335,12 +345,47 @@ impl CrateDocsManager {
             None
         };
 
+        // Parse source_files from index.yaml and create file links
+        let source_files = self.extract_source_file_links(&index_content, &crate_path);
+
+        let crate_path_str = crate_path.to_string_lossy().to_string();
+
         Ok(CrateDocResult {
             crate_name: crate_name.to_string(),
             module_path: module_path.map(|s| s.to_string()),
             index_yaml: index_content,
             readme: readme_content,
+            crate_path: crate_path_str,
+            source_files,
         })
+    }
+
+    /// Extract source file links from index.yaml content
+    fn extract_source_file_links(&self, yaml_content: &str, crate_path: &Path) -> Vec<SourceFileLink> {
+        // Try to extract source_files from YAML - handles both crate and module formats
+        let source_files: Vec<String> = serde_yaml::from_str::<serde_yaml::Value>(yaml_content)
+            .ok()
+            .and_then(|v| v.get("source_files").cloned())
+            .and_then(|v| serde_yaml::from_value(v).ok())
+            .unwrap_or_default();
+
+        source_files
+            .into_iter()
+            .map(|rel_path| {
+                let abs_path = crate_path.join(&rel_path);
+                let abs_path_str = abs_path.to_string_lossy().to_string();
+                // Create VS Code URI - encode the path properly
+                let vscode_uri = format!(
+                    "vscode://file/{}",
+                    abs_path_str.replace('\\', "/")
+                );
+                SourceFileLink {
+                    rel_path,
+                    abs_path: abs_path_str,
+                    vscode_uri,
+                }
+            })
+            .collect()
     }
 
     /// Update documentation for a crate or module
@@ -1507,6 +1552,22 @@ pub struct CrateDocResult {
     pub index_yaml: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub readme: Option<String>,
+    /// Absolute path to the crate root directory
+    pub crate_path: String,
+    /// Source files with absolute paths and editor URIs
+    #[serde(default)]
+    pub source_files: Vec<SourceFileLink>,
+}
+
+/// Source file information with linkable paths
+#[derive(Debug, Clone, Serialize)]
+pub struct SourceFileLink {
+    /// Relative path from crate root (e.g., "src/lib.rs")
+    pub rel_path: String,
+    /// Absolute filesystem path
+    pub abs_path: String,
+    /// VS Code URI to open the file (vscode://file/...)
+    pub vscode_uri: String,
 }
 
 impl CrateDocResult {
@@ -1517,6 +1578,16 @@ impl CrateDocResult {
             None => self.crate_name.clone(),
         };
         md.push_str(&format!("# Documentation: {}\n\n", location));
+        
+        // Add source files section with clickable links
+        if !self.source_files.is_empty() {
+            md.push_str("## Source Files\n\n");
+            for file in &self.source_files {
+                md.push_str(&format!("- [{}]({})\n", file.rel_path, file.vscode_uri));
+            }
+            md.push_str("\n");
+        }
+        
         md.push_str("## index.yaml\n\n```yaml\n");
         md.push_str(&self.index_yaml);
         md.push_str("```\n\n");
