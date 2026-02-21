@@ -9,6 +9,7 @@ use viewer_api::axum::{
     routing::{get, post},
     Router,
 };
+use viewer_api::tracing::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{path::PathBuf, sync::Arc};
@@ -254,6 +255,7 @@ async fn list_docs(
         }
     }
 
+    info!(total, categories = categories.len(), doc_type = ?params.doc_type, tag = ?filter.tag, "Listed docs");
     Ok(Json(DocListResponse { total, categories }))
 }
 
@@ -270,16 +272,19 @@ async fn read_doc(
     };
 
     match state.docs_manager.read_document(&filename, detail) {
-        Ok(result) => Ok(Json(DocContentResponse {
-            filename: result.filename,
-            doc_type: result.doc_type,
-            title: result.title,
-            date: result.date,
-            summary: result.summary,
-            tags: result.tags,
-            status: result.status.map(|s| s.to_string()),
-            body: result.body,
-        })),
+        Ok(result) => {
+            info!(filename = %filename, doc_type = %result.doc_type, "Read doc");
+            Ok(Json(DocContentResponse {
+                filename: result.filename,
+                doc_type: result.doc_type,
+                title: result.title,
+                date: result.date,
+                summary: result.summary,
+                tags: result.tags,
+                status: result.status.map(|s| s.to_string()),
+                body: result.body,
+            }))
+        }
         Err(e) => {
             let status = if e.to_string().contains("not found") {
                 StatusCode::NOT_FOUND
@@ -301,19 +306,22 @@ async fn list_crates(
     State(state): State<HttpState>,
 ) -> Result<Json<CrateListResponse>, (StatusCode, Json<ApiError>)> {
     match state.crate_manager.discover_crates_with_diagnostics() {
-        Ok(result) => Ok(Json(CrateListResponse {
-            crates: result
-                .crates
-                .into_iter()
-                .map(|c| CrateSummaryResponse {
-                    name: c.name,
-                    version: c.version,
-                    description: c.description,
-                    module_count: c.module_count,
-                    has_readme: c.has_readme,
-                })
-                .collect(),
-        })),
+        Ok(result) => {
+            info!(count = result.crates.len(), "Listed crates");
+            Ok(Json(CrateListResponse {
+                crates: result
+                    .crates
+                    .into_iter()
+                    .map(|c| CrateSummaryResponse {
+                        name: c.name,
+                        version: c.version,
+                        description: c.description,
+                        module_count: c.module_count,
+                        has_readme: c.has_readme,
+                    })
+                    .collect(),
+            }))
+        }
         Err(e) => Err((
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ApiError {
@@ -329,11 +337,14 @@ async fn browse_crate(
     Path(name): Path<String>,
 ) -> Result<Json<CrateTreeResponse>, (StatusCode, Json<ApiError>)> {
     match state.crate_manager.browse_crate(&name) {
-        Ok(tree) => Ok(Json(CrateTreeResponse {
-            name: tree.name.clone(),
-            description: tree.description.clone(),
-            children: tree.children.iter().map(convert_module_node).collect(),
-        })),
+        Ok(tree) => {
+            info!(crate_name = %name, modules = tree.children.len(), "Browsed crate");
+            Ok(Json(CrateTreeResponse {
+                name: tree.name.clone(),
+                description: tree.description.clone(),
+                children: tree.children.iter().map(convert_module_node).collect(),
+            }))
+        }
         Err(e) => {
             let status = if e.to_string().contains("not found") {
                 StatusCode::NOT_FOUND
@@ -363,12 +374,15 @@ async fn read_crate_doc(
         params.module.as_deref(),
         include_readme,
     ) {
-        Ok(result) => Ok(Json(CrateDocResponse {
-            crate_name: result.crate_name,
-            module_path: result.module_path,
-            index_yaml: result.index_yaml,
-            readme: result.readme,
-        })),
+        Ok(result) => {
+            info!(crate_name = %name, module = ?params.module, "Read crate doc");
+            Ok(Json(CrateDocResponse {
+                crate_name: result.crate_name,
+                module_path: result.module_path,
+                index_yaml: result.index_yaml,
+                readme: result.readme,
+            }))
+        }
         Err(e) => {
             let status = if e.to_string().contains("not found") {
                 StatusCode::NOT_FOUND
@@ -492,11 +506,14 @@ async fn query_docs(
     };
 
     match results {
-        Ok(values) => Ok(Json(JqQueryResponse {
-            query: params.jq,
-            total: values.len(),
-            results: values,
-        })),
+        Ok(values) => {
+            info!(query = %params.jq, results = values.len(), transform = params.transform, "Query docs");
+            Ok(Json(JqQueryResponse {
+                query: params.jq,
+                total: values.len(),
+                results: values,
+            }))
+        }
         Err(e) => Err((
             StatusCode::BAD_REQUEST,
             Json(ApiError {
@@ -519,6 +536,7 @@ async fn get_doc_ast(
             let content_ast = result.body.as_ref()
                 .and_then(|body| markdown_ast::parse_markdown_to_json(body).ok());
             
+            info!(filename = %filename, "Get doc AST");
             Ok(Json(serde_json::json!({
                 "filename": result.filename,
                 "doc_type": result.doc_type,
