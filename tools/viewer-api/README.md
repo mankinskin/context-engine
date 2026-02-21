@@ -92,3 +92,43 @@ This library re-exports commonly used crates:
 - `tokio` - Async runtime
 - `tracing` - Logging
 - `rmcp` - MCP protocol
+
+## Frontend Package
+
+The `frontend/` directory contains shared frontend components and styles for viewer applications.
+
+### Components
+
+- **TreeView** - Expandable tree component with folder/file/doc icons
+- **Spinner** - Loading spinner in sm/md/lg sizes
+
+### Styles
+
+Import shared styles in your frontend:
+
+```typescript
+import '@context-engine/viewer-api-frontend/styles';
+```
+
+Or individual CSS files:
+
+```css
+@import '@context-engine/viewer-api-frontend/styles/variables.css';
+@import '@context-engine/viewer-api-frontend/styles/base.css';
+```
+
+### Usage
+
+Add to your frontend's `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@context-engine/viewer-api-frontend": "file:../../viewer-api/frontend"
+  }
+}
+```
+
+```typescript
+import { TreeView, Spinner } from '@context-engine/viewer-api-frontend';
+```
