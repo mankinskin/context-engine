@@ -5,8 +5,8 @@ import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocViewer } from './components/DocViewer';
 import { FilterPanel } from './components/FilterPanel';
 import { ResizeHandle } from './components/ResizeHandle';
-import { CodeViewer } from '@context-engine/viewer-api-frontend';
-import { loadDocs, initUrlListener, codeViewerFile, codeViewerContent, codeViewerLine, closeCodeViewer } from './store';
+import { FileViewer } from './components/FileViewer';
+import { loadDocs, initUrlListener, codeViewerFile, closeCodeViewer } from './store';
 import '@context-engine/viewer-api-frontend/styles/code-viewer.css';
 
 const MIN_SIDEBAR_WIDTH = 180;
@@ -44,13 +44,7 @@ export function App() {
                   <span class="code-panel-title">{codeViewerFile.value}</span>
                   <button class="code-panel-close" onClick={closeCodeViewer} title="Close">×</button>
                 </div>
-                <CodeViewer 
-                  file={codeViewerFile}
-                  content={codeViewerContent}
-                  highlightLine={codeViewerLine}
-                  placeholderMessage="Select a source file"
-                  placeholderIcon="📄"
-                />
+                <FileViewer />
               </div>
             ) : (
               <DocViewer />
