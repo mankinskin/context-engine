@@ -102,9 +102,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Get agents directory from environment or use default
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    // manifest_dir = tools/doc-viewer/
+    // .parent() = tools/
+    // .parent().parent() = context-engine/ (workspace root)
     let workspace_root = manifest_dir
-        .parent() // doc-viewer/
-        .and_then(|p| p.parent()) // tools/
+        .parent() // tools/
         .and_then(|p| p.parent()) // context-engine/
         .unwrap_or(&manifest_dir);
     

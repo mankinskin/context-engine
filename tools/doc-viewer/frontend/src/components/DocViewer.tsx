@@ -1,5 +1,5 @@
 import { useMemo } from 'preact/hooks';
-import { selectedDoc, isLoading, error } from '../store';
+import { activeDoc, isActiveTabLoading, error, openTabs } from '../store';
 import { marked } from 'marked';
 
 // Configure marked for safe rendering
@@ -9,14 +9,16 @@ marked.setOptions({
 });
 
 export function DocViewer() {
-  const doc = selectedDoc.value;
+  const doc = activeDoc.value;
+  const isLoading = isActiveTabLoading.value;
+  const hasOpenTabs = openTabs.value.length > 0;
   
   const htmlContent = useMemo(() => {
     if (!doc?.body) return '';
     return marked.parse(doc.body) as string;
   }, [doc?.body]);
   
-  if (isLoading.value && !doc) {
+  if (isLoading) {
     return (
       <div class="doc-viewer">
         <div class="loading">
@@ -30,7 +32,7 @@ export function DocViewer() {
     );
   }
   
-  if (error.value) {
+  if (error.value && hasOpenTabs) {
     return (
       <div class="doc-viewer">
         <div class="empty-state">

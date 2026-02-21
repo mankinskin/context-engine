@@ -66,6 +66,27 @@
   color: var(--accent-blue);
 }
 
+.tree-icon.crate {
+  color: var(--accent-orange, #f97316);
+}
+
+.tree-icon.module {
+  color: var(--accent-purple, #a855f7);
+}
+
+.tree-toggle .spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .tree-label {
   flex: 1;
   overflow: hidden;

@@ -98,6 +98,16 @@ struct ModuleNodeResponse {
     children: Vec<ModuleNodeResponse>,
 }
 
+#[derive(Serialize)]
+struct CrateDocResponse {
+    crate_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    module_path: Option<String>,
+    index_yaml: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    readme: Option<String>,
+}
+
 // === Query Parameters ===
 
 #[derive(Deserialize)]
@@ -109,6 +119,12 @@ struct ListDocsQuery {
 #[derive(Deserialize)]
 struct ReadDocQuery {
     detail: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct ReadCrateDocQuery {
+    module: Option<String>,
+    include_readme: Option<bool>,
 }
 
 // === Router Creation ===
@@ -124,9 +140,10 @@ pub fn create_router(state: HttpState, static_dir: Option<PathBuf>) -> Router {
     // API routes
     let api_routes = Router::new()
         .route("/docs", get(list_docs))
-        .route("/docs/{filename}", get(read_doc))
+        .route("/docs/:filename", get(read_doc))
         .route("/crates", get(list_crates))
-        .route("/crates/{name}", get(browse_crate));
+        .route("/crates/:name", get(browse_crate))
+        .route("/crates/:name/doc", get(read_crate_doc));
 
     // Main app
     let app = Router::new()
@@ -291,6 +308,41 @@ async fn browse_crate(
             name: tree.name.clone(),
             description: tree.description.clone(),
             children: tree.children.iter().map(convert_module_node).collect(),
+        })),
+        Err(e) => {
+            let status = if e.to_string().contains("not found") {
+                StatusCode::NOT_FOUND
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            Err((
+                status,
+                Json(ApiError {
+                    error: e.to_string(),
+                }),
+            ))
+        }
+    }
+}
+
+/// GET /api/crates/:name/doc - Read crate or module documentation
+async fn read_crate_doc(
+    State(state): State<HttpState>,
+    Path(name): Path<String>,
+    Query(params): Query<ReadCrateDocQuery>,
+) -> Result<Json<CrateDocResponse>, (StatusCode, Json<ApiError>)> {
+    let include_readme = params.include_readme.unwrap_or(true);
+    
+    match state.crate_manager.read_crate_doc(
+        &name,
+        params.module.as_deref(),
+        include_readme,
+    ) {
+        Ok(result) => Ok(Json(CrateDocResponse {
+            crate_name: result.crate_name,
+            module_path: result.module_path,
+            index_yaml: result.index_yaml,
+            readme: result.readme,
         })),
         Err(e) => {
             let status = if e.to_string().contains("not found") {
