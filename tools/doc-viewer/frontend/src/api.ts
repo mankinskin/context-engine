@@ -9,6 +9,7 @@ import type {
   ValidationResponse,
   HealthDashboardResponse,
 } from './types';
+import { withSession } from '@context-engine/viewer-api-frontend';
 
 const API_BASE = '/api';
 
@@ -54,7 +55,7 @@ export async function fetchDocs(options?: {
     ? `${API_BASE}/docs?${params}`
     : `${API_BASE}/docs`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, withSession());
   return handleResponse<DocListResponse>(response);
 }
 
@@ -67,7 +68,8 @@ export async function fetchDoc(
 ): Promise<DocContent> {
   const params = new URLSearchParams({ detail });
   const response = await fetch(
-    `${API_BASE}/docs/${encodeURIComponent(filename)}?${params}`
+    `${API_BASE}/docs/${encodeURIComponent(filename)}?${params}`,
+    withSession()
   );
   return handleResponse<DocContent>(response);
 }
@@ -76,11 +78,11 @@ export async function fetchDoc(
  * Create a new document
  */
 export async function createDoc(data: CreateDocRequest): Promise<CreateDocResponse> {
-  const response = await fetch(`${API_BASE}/docs`, {
+  const response = await fetch(`${API_BASE}/docs`, withSession({
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-  });
+  }));
   return handleResponse<CreateDocResponse>(response);
 }
 
@@ -91,11 +93,11 @@ export async function updateDocMeta(
   filename: string,
   data: UpdateMetaRequest
 ): Promise<DocContent> {
-  const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}`, {
+  const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}`, withSession({
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-  });
+  }));
   return handleResponse<DocContent>(response);
 }
 
@@ -111,7 +113,7 @@ export async function searchDocs(query: SearchQuery): Promise<SearchResultsRespo
   if (query.linesBefore !== undefined) params.set('lines_before', String(query.linesBefore));
   if (query.linesAfter !== undefined) params.set('lines_after', String(query.linesAfter));
 
-  const response = await fetch(`${API_BASE}/docs/search?${params}`);
+  const response = await fetch(`${API_BASE}/docs/search?${params}`, withSession());
   return handleResponse<SearchResultsResponse>(response);
 }
 
@@ -119,7 +121,7 @@ export async function searchDocs(query: SearchQuery): Promise<SearchResultsRespo
  * Validate all documents
  */
 export async function validateDocs(): Promise<ValidationResponse> {
-  const response = await fetch(`${API_BASE}/docs/validate`);
+  const response = await fetch(`${API_BASE}/docs/validate`, withSession());
   return handleResponse<ValidationResponse>(response);
 }
 
@@ -127,7 +129,7 @@ export async function validateDocs(): Promise<ValidationResponse> {
  * Get health dashboard
  */
 export async function getHealthDashboard(): Promise<HealthDashboardResponse> {
-  const response = await fetch(`${API_BASE}/docs/health`);
+  const response = await fetch(`${API_BASE}/docs/health`, withSession());
   return handleResponse<HealthDashboardResponse>(response);
 }
 
@@ -163,7 +165,7 @@ export interface CrateTreeResponse {
  * List all documented crates
  */
 export async function fetchCrates(): Promise<CrateListResponse> {
-  const response = await fetch(`${API_BASE}/crates`);
+  const response = await fetch(`${API_BASE}/crates`, withSession());
   return handleResponse<CrateListResponse>(response);
 }
 
@@ -171,7 +173,7 @@ export async function fetchCrates(): Promise<CrateListResponse> {
  * Browse a crate's module tree
  */
 export async function browseCrate(name: string): Promise<CrateTreeResponse> {
-  const response = await fetch(`${API_BASE}/crates/${encodeURIComponent(name)}`);
+  const response = await fetch(`${API_BASE}/crates/${encodeURIComponent(name)}`, withSession());
   return handleResponse<CrateTreeResponse>(response);
 }
 
@@ -198,7 +200,7 @@ export async function fetchCrateDoc(
     ? `${API_BASE}/crates/${encodeURIComponent(crateName)}/doc?${params}`
     : `${API_BASE}/crates/${encodeURIComponent(crateName)}/doc`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, withSession());
   return handleResponse<CrateDocResponse>(response);
 }
 
@@ -221,11 +223,11 @@ export interface JqQueryResponse {
  * Query documents using JQ expressions
  */
 export async function queryDocs(request: JqQueryRequest): Promise<JqQueryResponse> {
-  const response = await fetch(`${API_BASE}/query`, {
+  const response = await fetch(`${API_BASE}/query`, withSession({
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
-  });
+  }));
   return handleResponse<JqQueryResponse>(response);
 }
 
@@ -233,6 +235,6 @@ export async function queryDocs(request: JqQueryRequest): Promise<JqQueryRespons
  * Fetch a document's markdown AST
  */
 export async function fetchDocAst(filename: string): Promise<unknown> {
-  const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}/ast`);
+  const response = await fetch(`${API_BASE}/docs/${encodeURIComponent(filename)}/ast`, withSession());
   return handleResponse<unknown>(response);
 }

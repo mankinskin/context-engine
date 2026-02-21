@@ -36,6 +36,7 @@ mod tools;
 use rmcp::{transport::stdio, ServiceExt};
 use std::{env, path::PathBuf, sync::Arc};
 use viewer_api::{TracingConfig, init_tracing_full, to_unix_path, display_host, tracing::info};
+use viewer_api::session::SessionStore;
 
 use mcp::DocsServer;
 
@@ -167,6 +168,7 @@ async fn run_http_server(
     let state = http::HttpState {
         docs_manager: Arc::new(tools::DocsManager::new(agents_dir)),
         crate_manager: Arc::new(tools::CrateDocsManager::new(crates_dirs)),
+        sessions: SessionStore::new(),
     };
 
     let app = http::create_router(state, Some(static_dir));

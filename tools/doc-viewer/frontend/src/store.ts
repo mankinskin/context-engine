@@ -1,6 +1,15 @@
 import { signal, computed } from '@preact/signals';
 import type { Category, TreeNode, OpenTab, DocContent, JqQueryResult } from './types';
-import { fetchDocs, fetchDoc, fetchCrates, browseCrate, fetchCrateDoc, queryDocs, type ModuleNode, type CrateDocResponse } from './api';
+import { fetchDocs, fetchCrates, queryDocs, type ModuleNode, type CrateDocResponse } from './api';
+import {
+  getCachedDoc,
+  getCachedCrateDoc,
+  getCachedCrateTree,
+  preloadSiblingDocs,
+  preloadModuleNeighbors,
+  preloadCrateRoots,
+  preloadCategoryDocs,
+} from './cache';
 
 // State signals
 export const categories = signal<Category[]>([]);
@@ -256,6 +265,10 @@ export async function loadDocs(): Promise<void> {
 
     docTree.value = tree;
 
+    // Preload initial docs in background
+    preloadCategoryDocs(docsData.categories);
+    preloadCrateRoots(cratesData.crates.map(c => c.name));
+
     // Open document from URL or default to home page
     if (openTabs.value.length === 0) {
       const urlPath = getDocFromUrl();
@@ -271,7 +284,7 @@ export async function loadDocs(): Promise<void> {
 // Load crate modules when crate is expanded
 export async function loadCrateModules(crateName: string): Promise<void> {
   try {
-    const tree = await browseCrate(crateName);
+    const tree = await getCachedCrateTree(crateName);
 
     // Update the crate node with loaded module tree
     docTree.value = docTree.value.map(root => {
@@ -287,6 +300,9 @@ export async function loadCrateModules(crateName: string): Promise<void> {
         }),
       };
     });
+
+    // Preload root-level module docs
+    preloadModuleNeighbors(crateName, undefined, tree.children);
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to load crate modules';
   }
@@ -339,13 +355,19 @@ export async function openDoc(filename: string, title: string): Promise<void> {
   updateUrlHash(filename);
   
   try {
-    const doc = await fetchDoc(filename);
+    const doc = await getCachedDoc(filename);
     // Update the tab with loaded content
     openTabs.value = openTabs.value.map(t =>
       t.filename === filename
         ? { ...t, doc, isLoading: false }
         : t
     );
+
+    // Preload sibling documents from the same category
+    const category = categories.value.find(c => c.docs.some(d => d.filename === filename));
+    if (category) {
+      preloadSiblingDocs(category, filename);
+    }
   } catch (e) {
     // Update tab to show error state
     openTabs.value = openTabs.value.map(t =>
@@ -385,13 +407,21 @@ export async function openCrateDoc(crateName: string, modulePath?: string): Prom
   updateUrlHash(filename);
 
   try {
-    const doc = await fetchCrateDoc(crateName, modulePath);
+    const doc = await getCachedCrateDoc(crateName, modulePath);
     const content = crateDocToContent(doc);
     openTabs.value = openTabs.value.map(t =>
       t.filename === filename
         ? { ...t, doc: content, isLoading: false }
         : t
     );
+
+    // Preload module neighbors - need to get the crate tree first
+    const crateNode = docTree.value
+      .find(n => n.id === 'crates')?.children
+      ?.find(n => n.crateName === crateName);
+    if (crateNode?.children && crateNode.children.length > 0) {
+      preloadModuleNeighbors(crateName, modulePath, crateNode.children as unknown as ModuleNode[]);
+    }
   } catch (e) {
     openTabs.value = openTabs.value.map(t =>
       t.filename === filename

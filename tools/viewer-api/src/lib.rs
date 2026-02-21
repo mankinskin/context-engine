@@ -46,6 +46,9 @@ use tower_http::{
 use tracing::{error, info};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
+// Session management module
+pub mod session;
+
 // Re-export commonly used types
 pub use axum;
 pub use tower_http;

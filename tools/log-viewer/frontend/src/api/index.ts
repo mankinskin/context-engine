@@ -1,32 +1,11 @@
 // API client for the log viewer backend
 
 import type { LogFile, LogContentResponse, SearchResponse, JqQueryResponse, SourceFileResponse, SourceSnippet } from '../types';
+import { withSession } from '@context-engine/viewer-api-frontend';
 
 const API_BASE = '/api';
-const SESSION_HEADER = 'x-session-id';
 
-// Session management
-function getSessionId(): string {
-  let sessionId = sessionStorage.getItem('session_id');
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    sessionStorage.setItem('session_id', sessionId);
-  }
-  return sessionId;
-}
-
-// Helper to add session header to fetch options
-function withSession(options: RequestInit = {}): RequestInit {
-  return {
-    ...options,
-    headers: {
-      ...options.headers,
-      [SESSION_HEADER]: getSessionId(),
-    },
-  };
-}
-
-// Session configuration types
+// Log-viewer specific session config (extends base with source_request_count)
 export interface SessionConfig {
   session_id: string;
   verbose: boolean;

@@ -12,6 +12,9 @@ use viewer_api::axum::http::HeaderMap;
 use crate::config::Config;
 use crate::log_parser::LogParser;
 
+// Re-export session header from shared module
+pub use viewer_api::session::SESSION_HEADER;
+
 /// Session configuration for per-client logging behavior
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SessionConfig {
@@ -37,9 +40,6 @@ impl Default for SessionConfig {
 
 /// Session store - maps session IDs to their configuration
 pub type SessionStore = Arc<RwLock<HashMap<String, SessionConfig>>>;
-
-/// Header name for session identification
-pub const SESSION_HEADER: &str = "x-session-id";
 
 /// Application state shared across handlers
 #[derive(Clone)]

@@ -4,11 +4,12 @@
 
 use viewer_api::axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::Json,
     routing::{get, post},
     Router,
 };
+use viewer_api::session::{SessionStore, SessionConfig, SessionConfigUpdate, SESSION_HEADER, get_session_id};
 use viewer_api::tracing::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -28,6 +29,7 @@ use crate::tools::{CrateDocsManager, DetailLevel, DocsManager, ListFilter};
 pub struct HttpState {
     pub docs_manager: Arc<DocsManager>,
     pub crate_manager: Arc<CrateDocsManager>,
+    pub sessions: SessionStore,
 }
 
 // === API Response Types ===
@@ -169,7 +171,8 @@ pub fn create_router(state: HttpState, static_dir: Option<PathBuf>) -> Router {
         .route("/crates", get(list_crates))
         .route("/crates/:name", get(browse_crate))
         .route("/crates/:name/doc", get(read_crate_doc))
-        .route("/query", post(query_docs));
+        .route("/query", post(query_docs))
+        .route("/session", get(get_session).post(update_session));
 
     // Main app
     let app = Router::new()
@@ -557,4 +560,57 @@ async fn get_doc_ast(
             Err((status, Json(ApiError { error: e.to_string() })))
         }
     }
+}
+
+// === Session Handlers ===
+
+/// GET /api/session - Get current session configuration
+async fn get_session(
+    State(state): State<HttpState>,
+    headers: HeaderMap,
+) -> Result<Json<SessionConfig>, (StatusCode, Json<ApiError>)> {
+    let session_id = get_session_id(&headers).ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, Json(ApiError {
+            error: format!("Missing {} header", SESSION_HEADER),
+        }))
+    })?;
+
+    let config = state.sessions.get_or_create(session_id);
+    info!(session_id = %session_id, "Get session");
+    Ok(Json(config))
+}
+
+/// POST /api/session - Update session configuration
+async fn update_session(
+    State(state): State<HttpState>,
+    headers: HeaderMap,
+    Json(update): Json<SessionConfigUpdate>,
+) -> Result<Json<SessionConfig>, (StatusCode, Json<ApiError>)> {
+    let session_id = get_session_id(&headers).ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, Json(ApiError {
+            error: format!("Missing {} header", SESSION_HEADER),
+        }))
+    })?;
+
+    // Ensure session exists
+    state.sessions.get_or_create(session_id);
+
+    // Update configuration
+    let config = state.sessions.update(session_id, |config| {
+        if let Some(verbose) = update.verbose {
+            config.verbose = verbose;
+        }
+        if let Some(data) = &update.data {
+            for (key, value) in data {
+                config.data.insert(key.clone(), value.clone());
+            }
+        }
+    }).ok_or_else(|| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiError {
+            error: "Session not found after creation".to_string(),
+        }))
+    })?;
+
+    info!(session_id = %session_id, verbose = config.verbose, "Session updated");
+    Ok(Json(config))
 }
