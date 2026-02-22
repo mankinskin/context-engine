@@ -63,7 +63,8 @@
 }
 
 .btn-gpu.btn-active {
-  background: rgba(160, 109, 208, 0.25);
+  background: rgba(160, 109, 208, 0.3);
   border-color: var(--accent-purple);
   color: var(--accent-purple);
+  text-shadow: 0 0 6px rgba(160, 109, 208, 0.6);
 }

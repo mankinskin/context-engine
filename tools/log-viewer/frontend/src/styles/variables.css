@@ -34,3 +34,37 @@
   --tab-height: 20px;
   --z-overlay: 9999;
 }
+
+/* ----- GPU overlay mode: transparent backgrounds reveal GPU canvas behind HTML ----- */
+:root.gpu-active {
+  --bg-primary: transparent;
+  --bg-secondary: rgba(33, 33, 36, 0.18);
+  --bg-tertiary: rgba(40, 40, 44, 0.22);
+  --bg-hover: rgba(50, 50, 58, 0.28);
+  --bg-active: rgba(42, 58, 74, 0.35);
+  --border-color: rgba(56, 56, 62, 0.4);
+  --border-subtle: rgba(42, 42, 48, 0.3);
+}
+
+:root.gpu-active body {
+  background: transparent !important;
+}
+
+/* Cytoscape renders its own canvas — make its container transparent too */
+:root.gpu-active .flow-container,
+:root.gpu-active .flow-graph {
+  background: transparent !important;
+}
+
+/* Level badges keep their colours but become slightly translucent */
+:root.gpu-active .level-badge {
+  opacity: 0.85;
+}
+
+/* Scrollbar track should also be transparent */
+:root.gpu-active ::-webkit-scrollbar-track {
+  background: transparent;
+}
+:root.gpu-active ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}

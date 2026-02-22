@@ -81,7 +81,7 @@ export function Header() {
           title={gpuOverlayEnabled.value ? 'Disable GPU overlay (WebGPU / wgpu WGSL shaders)' : 'Enable GPU overlay (WebGPU / wgpu WGSL shaders)'}
           onClick={() => gpuOverlayEnabled.value = !gpuOverlayEnabled.value}
         >
-          ⬡ GPU
+          {gpuOverlayEnabled.value ? '⬢' : '⬡'} GPU
         </button>
         <button class="btn" onClick={handleRefresh}><RefreshIcon size={12} /> Refresh</button>
       </div>

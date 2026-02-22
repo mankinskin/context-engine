@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'preact/hooks';
+import { signal } from '@preact/signals';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import { entries, currentFile, selectEntry, setTab } from '../../store';
+import { gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
 import type { LogEntry } from '../../types';
 
 // Register dagre layout
 cytoscape.use(dagre);
+
+/** Expose the live Cytoscape instance so WgpuOverlay can read node positions. */
+export const cytoscapeInstance = signal<cytoscape.Core | null>(null);
 
 interface GraphNode {
   id: string;
@@ -137,6 +142,7 @@ export function FlowGraph() {
           selector: 'node',
           style: {
             'background-color': (ele: any) => getLevelColor(ele.data('level')),
+            'background-opacity': gpuOverlayEnabled.value ? 0.25 : 1.0,
             'label': 'data(label)',
             'font-size': '14px',
             'font-family': 'monospace',
@@ -226,11 +232,13 @@ export function FlowGraph() {
     });
     
     cyRef.current = cy;
+    cytoscapeInstance.value = cy;
     
     return () => {
       if (cyRef.current) {
         cyRef.current.destroy();
         cyRef.current = null;
+        cytoscapeInstance.value = null;
       }
     };
   }, [logEntries, file]);
