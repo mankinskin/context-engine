@@ -33,11 +33,20 @@ function FileIcon({ size = 14, color = 'currentColor' }: { size?: number; color?
   );
 }
 
+function EffectsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1L8.5 5L13 5.5L9.5 8.5L10.5 13L7 10.5L3.5 13L4.5 8.5L1 5.5L5.5 5Z" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
+
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
   { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },
+  { id: 'debug', label: 'Effects', icon: () => <EffectsIcon size={14} /> },
 ];
 
 export function TabBar() {

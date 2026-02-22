@@ -145,22 +145,22 @@ fn update_ember(idx: u32) {
     particles[idx] = p;
 }
 
-// ---- angelic beam physics (pixel-thin vertical rays rising from hovered) -----
+// ---- angelic beam physics (pixel-thin vertical rays from selected/opened) ---
 
 fn update_god_ray(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
-    let hover_idx = i32(u.hover_elem);
+    let sel_idx = i32(u.selected_elem);
 
     p.life -= dt;
 
     if p.life <= 0.0 {
-        if hover_idx < 0 || hover_idx >= i32(u.element_count) {
+        if sel_idx < 0 || sel_idx >= i32(u.element_count) {
             park_dead(idx);
             return;
         }
 
-        let ei   = u32(hover_idx);
+        let ei   = u32(sel_idx);
         let seed = idx * 7919u + u32(u.time * 800.0);
 
         // Spawn on element perimeter
@@ -188,25 +188,25 @@ fn update_god_ray(idx: u32) {
     particles[idx] = p;
 }
 
-// ---- angelic glitter physics (around selected element border) ----------------
+// ---- angelic glitter physics (around hovered element border) ----------------
 
 fn update_glitter(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
-    let sel_idx = i32(u.selected_elem);
+    let hover_idx = i32(u.hover_elem);
 
     p.life -= dt;
 
     if p.life <= 0.0 {
-        if sel_idx < 0 || sel_idx >= i32(u.element_count) {
+        if hover_idx < 0 || hover_idx >= i32(u.element_count) {
             park_dead(idx);
             return;
         }
 
-        let ei   = u32(sel_idx);
+        let ei   = u32(hover_idx);
         let seed = idx * 7919u + u32(u.time * 1200.0);
 
-        // Spawn on the selected element perimeter
+        // Spawn on the hovered element perimeter
         p.pos = spawn_on_perimeter(ei, seed);
 
         // Mostly tangential drift along border with tiny outward float

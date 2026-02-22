@@ -7,6 +7,7 @@ import { LogViewer } from './components/LogViewer/LogViewer';
 import { CodeViewer } from './components/CodeViewer/CodeViewer';
 import { FlowGraph } from './components/FlowGraph/FlowGraph';
 import { Stats } from './components/Stats/Stats';
+import { EffectsDebug } from './components/EffectsDebug/EffectsDebug';
 import { activeTab, loadLogFiles } from './store';
 import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
 
@@ -25,6 +26,8 @@ export function App() {
         return <FlowGraph />;
       case 'stats':
         return <Stats />;
+      case 'debug':
+        return <EffectsDebug />;
       default:
         return <LogViewer />;
     }
