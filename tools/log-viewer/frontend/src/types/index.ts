@@ -69,7 +69,28 @@ export interface SourceSnippet {
   language: string;
 }
 
-export type ViewTab = 'logs' | 'flow' | 'stats' | 'code' | 'debug' | 'scene3d';
+export type ViewTab = 'logs' | 'flow' | 'stats' | 'code' | 'debug' | 'scene3d' | 'hypergraph';
+
+// ── Hypergraph snapshot types (from Rust graph serialization) ──
+
+export interface HypergraphSnapshot {
+  nodes: HypergraphNode[];
+  edges: HypergraphEdge[];
+}
+
+export interface HypergraphNode {
+  index: number;
+  label: string;
+  width: number;
+  is_atom: boolean;
+}
+
+export interface HypergraphEdge {
+  from: number;
+  to: number;
+  pattern_idx: number;
+  sub_index: number;
+}
 
 export interface FlowNode {
   id: string;

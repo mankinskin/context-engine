@@ -2,7 +2,7 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats } from '../types';
+import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot } from '../types';
 import * as api from '../api';
 
 // Per-file state interface
@@ -100,6 +100,26 @@ export const filteredEntries = computed(() => {
   }
   
   return result;
+});
+
+// Computed: extract hypergraph snapshot from log entries (first graph_snapshot event)
+export const hypergraphSnapshot = computed((): HypergraphSnapshot | null => {
+  const allEntries = entries.value;
+  for (const entry of allEntries) {
+    if (entry.message === 'graph_snapshot' && entry.fields?.graph_data) {
+      try {
+        const data = typeof entry.fields.graph_data === 'string'
+          ? JSON.parse(entry.fields.graph_data)
+          : entry.fields.graph_data;
+        if (data && Array.isArray(data.nodes) && Array.isArray(data.edges)) {
+          return data as HypergraphSnapshot;
+        }
+      } catch {
+        // skip invalid JSON
+      }
+    }
+  }
+  return null;
 });
 
 export const logStats = computed((): LogStats => {

@@ -9,6 +9,7 @@ import { FlowGraph } from './components/FlowGraph/FlowGraph';
 import { Stats } from './components/Stats/Stats';
 import { EffectsDebug } from './components/EffectsDebug/EffectsDebug';
 import { Scene3D } from './components/Scene3D/Scene3D';
+import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { activeTab, loadLogFiles } from './store';
 import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
 
@@ -25,6 +26,8 @@ export function App() {
         return <CodeViewer />;
       case 'flow':
         return <FlowGraph />;
+      case 'hypergraph':
+        return <HypergraphView />;
       case 'stats':
         return <Stats />;
       case 'debug':

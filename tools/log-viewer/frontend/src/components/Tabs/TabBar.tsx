@@ -50,9 +50,22 @@ function CubeIcon({ size = 14, color = 'currentColor' }: { size?: number; color?
   );
 }
 
+function GraphIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <circle cx="3" cy="3" r="1.5" stroke={color} stroke-width="1.2"/>
+      <circle cx="11" cy="3" r="1.5" stroke={color} stroke-width="1.2"/>
+      <circle cx="7" cy="11" r="1.5" stroke={color} stroke-width="1.2"/>
+      <path d="M4.2 4.2L6 9.5M9.8 4.2L8 9.5" stroke={color} stroke-width="1.0" stroke-linecap="round"/>
+      <path d="M4 3H10" stroke={color} stroke-width="1.0" stroke-linecap="round" stroke-dasharray="1.5 1.5"/>
+    </svg>
+  );
+}
+
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
   { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
+  { id: 'hypergraph', label: 'Hypergraph', icon: () => <GraphIcon size={14} /> },
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },
   { id: 'debug', label: 'Effects', icon: () => <EffectsIcon size={14} /> },
