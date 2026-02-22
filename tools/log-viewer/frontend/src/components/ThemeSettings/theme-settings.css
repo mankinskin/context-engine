@@ -1,0 +1,250 @@
+/* ThemeSettings — color theme settings page styles */
+
+.theme-settings {
+  padding: 20px 28px;
+  max-width: 720px;
+  overflow-y: auto;
+  height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.theme-settings-header {
+  margin-bottom: 20px;
+}
+
+.theme-settings-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+
+.theme-settings-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.theme-settings-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Collapsible sections ── */
+
+.theme-section {
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.theme-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.theme-section-header:hover {
+  background: var(--bg-hover);
+}
+
+.theme-section-icon {
+  font-size: 0.9rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.theme-section-title {
+  flex: 1;
+}
+
+.theme-section-chevron {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.theme-section-body {
+  padding: 8px 12px 12px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.theme-section-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  padding: 0;
+  line-height: 1.4;
+}
+
+/* ── Color row ── */
+
+.theme-color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  gap: 12px;
+}
+
+.theme-color-row + .theme-color-row {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.theme-color-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.theme-color-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.theme-color-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.theme-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.theme-color-picker {
+  width: 28px;
+  height: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.theme-color-picker::-webkit-color-swatch-wrapper {
+  padding: 1px;
+}
+
+.theme-color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.theme-color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.theme-color-hex {
+  width: 72px;
+  padding: 2px 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+.theme-color-hex:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.theme-color-reset {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.theme-color-reset:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+}
+
+/* ── Preset cards ── */
+
+.theme-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.theme-preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-primary);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.theme-preset-card:hover {
+  border-color: var(--accent-orange);
+  background: var(--bg-hover);
+}
+
+.theme-preset-swatches {
+  display: flex;
+  gap: 3px;
+}
+
+.theme-preset-swatch {
+  width: 24px;
+  height: 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.theme-preset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.theme-preset-info strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.theme-preset-info span {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}

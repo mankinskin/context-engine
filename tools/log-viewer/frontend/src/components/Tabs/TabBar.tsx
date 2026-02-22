@@ -62,6 +62,17 @@ function GraphIcon({ size = 14, color = 'currentColor' }: { size?: number; color
   );
 }
 
+function PaletteIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1C3.7 1 1 3.7 1 7s2.7 6 6 6c.6 0 1-.4 1-1 0-.3-.1-.5-.2-.7-.1-.2-.2-.4-.2-.7 0-.6.4-1 1-1h1.2c2.2 0 4-1.8 4-4 0-2.8-2.7-4.6-6.8-4.6z" stroke={color} stroke-width="1.1" stroke-linecap="round"/>
+      <circle cx="4.5" cy="5.5" r="1" fill={color}/>
+      <circle cx="7" cy="4" r="1" fill={color}/>
+      <circle cx="9.5" cy="5.5" r="1" fill={color}/>
+    </svg>
+  );
+}
+
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
   { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
@@ -70,6 +81,7 @@ const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },
   { id: 'debug', label: 'Effects', icon: () => <EffectsIcon size={14} /> },
   { id: 'scene3d', label: '3D Scene', icon: () => <CubeIcon size={14} /> },
+  { id: 'settings', label: 'Theme', icon: () => <PaletteIcon size={14} /> },
 ];
 
 export function TabBar() {

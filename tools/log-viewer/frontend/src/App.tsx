@@ -10,8 +10,10 @@ import { Stats } from './components/Stats/Stats';
 import { EffectsDebug } from './components/EffectsDebug/EffectsDebug';
 import { Scene3D } from './components/Scene3D/Scene3D';
 import { HypergraphView } from './components/HypergraphView/HypergraphView';
+import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
 import { activeTab, loadLogFiles } from './store';
 import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
+import './store/theme';  // initialize theme effects on startup
 
 export function App() {
   useEffect(() => {
@@ -34,6 +36,8 @@ export function App() {
         return <EffectsDebug />;
       case 'scene3d':
         return <Scene3D />;
+      case 'settings':
+        return <ThemeSettings />;
       default:
         return <LogViewer />;
     }

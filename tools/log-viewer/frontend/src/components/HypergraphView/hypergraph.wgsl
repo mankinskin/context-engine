@@ -164,5 +164,113 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
 
 
 // ══════════════════════════════════════════════════════
+//  PARTICLE EFFECTS  (angelic beams + glitter on nodes)
+// ══════════════════════════════════════════════════════
+
+struct ParticleInstance {
+    @location(2) center   : vec3<f32>,  // world position of particle
+    @location(3) size     : f32,        // billboard radius / beam half-width
+    @location(4) color    : vec4<f32>,  // RGBA
+    @location(5) params   : vec4<f32>,  // x=kind(0=beam,1=glitter), y=tLife, z=hue, w=spawnT
+};
+
+struct ParticleVsOut {
+    @builtin(position) pos : vec4<f32>,
+    @location(0) uv        : vec2<f32>,
+    @location(1) color     : vec4<f32>,
+    @location(2) params    : vec4<f32>,
+};
+
+@vertex
+fn vs_particle(
+    @location(0) quadPos : vec2<f32>,
+    inst : ParticleInstance,
+) -> ParticleVsOut {
+    let right = normalize(vec3(cam.viewProj[0][0], cam.viewProj[1][0], cam.viewProj[2][0]));
+    let up    = normalize(vec3(cam.viewProj[0][1], cam.viewProj[1][1], cam.viewProj[2][1]));
+
+    var worldPos: vec3<f32>;
+    let kind = inst.params.x;
+
+    if (kind < 0.5) {
+        // Angelic beam: tall thin vertical billboard (world-up, not camera-up)
+        let half_w = inst.size * 0.04;
+        let half_h = inst.size * 0.6;
+        worldPos = inst.center
+            + right * quadPos.x * half_w
+            + vec3(0.0, 1.0, 0.0) * quadPos.y * half_h;
+    } else {
+        // Glitter: small camera-facing billboard
+        let r = inst.size * 0.06;
+        worldPos = inst.center
+            + right * quadPos.x * r
+            + up    * quadPos.y * r;
+    }
+
+    var out: ParticleVsOut;
+    out.pos    = cam.viewProj * vec4(worldPos, 1.0);
+    out.uv     = quadPos;
+    out.color  = inst.color;
+    out.params = inst.params;
+    return out;
+}
+
+@fragment
+fn fs_particle(in: ParticleVsOut) -> @location(0) vec4<f32> {
+    let kind   = in.params.x;
+    let t_life = in.params.y;
+    let hue    = in.params.z;
+    let spawnT = in.params.w;
+
+    if (kind < 0.5) {
+        // ── Angelic beam: double-pointed crystalline shard ──
+        let dx = in.uv.x;
+        let dy = in.uv.y;
+
+        let t   = (dy + 1.0) * 0.5;
+        let mid = abs(t - 0.5) * 2.0;
+        let shard_width = (1.0 - mid * mid) * 0.22;
+
+        let hx = abs(dx) / max(shard_width, 0.005);
+        let edge = smoothstep(1.2, 0.8, hx);
+
+        let core = exp(-dx * dx / max(shard_width * shard_width * 0.1, 0.0005));
+        let h_falloff = edge * (0.25 + 0.75 * core);
+
+        let v_fade = 1.0 - mid * mid;
+        let bright = h_falloff * v_fade * t_life * 1.6;
+
+        if (bright < 0.003) { discard; }
+
+        let center_col = vec3(1.6, 1.5, 1.3);
+        let edge_col   = vec3(1.1, 0.85, 0.4);
+        let ray_col = mix(edge_col, center_col, core * 0.95);
+
+        let col = ray_col * bright * 0.6;
+        let a   = min(bright * 0.4, 1.0);
+        return vec4(col * a, a);
+    } else {
+        // ── Angelic glitter: twinkling sparkle ──
+        let d = length(in.uv);
+        let dot_mask = smoothstep(1.0, 0.15, d);
+
+        let twinkle = 0.6 + 0.4 * sin(cam.time.x * 12.0 + spawnT * 7.3);
+        let bright = t_life * dot_mask * twinkle * 1.4;
+
+        if (bright < 0.008) { discard; }
+
+        let warm = vec3(1.3, 1.15, 0.85);
+        let cool = vec3(0.85, 0.90, 1.25);
+        let phase = fract(hue * 3.7 + cam.time.x * 0.5);
+        let glitter_col = mix(warm, cool, smoothstep(0.3, 0.7, phase));
+
+        let col = glitter_col * bright;
+        let a   = min(bright * 0.9, 1.0);
+        return vec4(col * a, a);
+    }
+}
+
+
+// ══════════════════════════════════════════════════════
 //  LABEL TEXT  (reserved for future: SDF text rendering)
 // ══════════════════════════════════════════════════════
