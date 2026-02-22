@@ -12,15 +12,22 @@
  *   - Cinder Palette
  *   - Background Smoke
  */
-import { useState } from 'preact/hooks';
+import { useState, useRef } from 'preact/hooks';
 import {
   themeColors,
   updateThemeColor,
   applyPreset,
   resetTheme,
+  randomizeTheme,
   THEME_PRESETS,
   DEFAULT_THEME,
+  savedThemes,
+  saveCurrentTheme,
+  deleteSavedTheme,
+  applySavedTheme,
+  renameSavedTheme,
   type ThemeColors,
+  type SavedTheme,
 } from '../../store/theme';
 import './theme-settings.css';
 
@@ -94,10 +101,150 @@ function Section({ title, icon, children, defaultOpen = false }: SectionProps) {
   );
 }
 
+// ── Save theme dialog ────────────────────────────────────────────────────────
+
+function SaveThemeButton() {
+  const [showInput, setShowInput] = useState(false);
+  const [name, setName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleSave() {
+    const trimmed = name.trim();
+    if (trimmed) {
+      saveCurrentTheme(trimmed);
+      setName('');
+      setShowInput(false);
+    }
+  }
+
+  if (!showInput) {
+    return (
+      <button class="btn btn-primary" onClick={() => { setShowInput(true); setTimeout(() => inputRef.current?.focus(), 0); }}>
+        💾 Save Theme
+      </button>
+    );
+  }
+
+  return (
+    <div class="save-theme-inline">
+      <input
+        ref={inputRef}
+        type="text"
+        class="save-theme-input"
+        placeholder="Theme name…"
+        value={name}
+        maxLength={40}
+        onInput={(e) => setName((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSave();
+          if (e.key === 'Escape') { setShowInput(false); setName(''); }
+        }}
+      />
+      <button class="btn btn-primary" onClick={handleSave} disabled={!name.trim()}>Save</button>
+      <button class="btn btn-secondary" onClick={() => { setShowInput(false); setName(''); }}>✕</button>
+    </div>
+  );
+}
+
+// ── Saved theme card ─────────────────────────────────────────────────────────
+
+function SavedThemeCard({ theme }: { theme: SavedTheme }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(theme.name);
+
+  function handleRename() {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== theme.name) {
+      renameSavedTheme(theme.id, trimmed);
+    }
+    setEditing(false);
+  }
+
+  const date = new Date(theme.createdAt);
+  const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  return (
+    <div class="saved-theme-card">
+      <div class="saved-theme-swatches">
+        <span class="theme-preset-swatch" style={{ background: theme.colors.bgPrimary }} />
+        <span class="theme-preset-swatch" style={{ background: theme.colors.accentOrange }} />
+        <span class="theme-preset-swatch" style={{ background: theme.colors.accentBlue }} />
+        <span class="theme-preset-swatch" style={{ background: theme.colors.levelError }} />
+        <span class="theme-preset-swatch" style={{ background: theme.colors.cinderEmber }} />
+        <span class="theme-preset-swatch" style={{ background: theme.colors.textPrimary }} />
+      </div>
+      <div class="saved-theme-info">
+        {editing ? (
+          <input
+            type="text"
+            class="save-theme-input saved-theme-rename"
+            value={editName}
+            maxLength={40}
+            onInput={(e) => setEditName((e.target as HTMLInputElement).value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRename();
+              if (e.key === 'Escape') { setEditing(false); setEditName(theme.name); }
+            }}
+            onBlur={handleRename}
+            autoFocus
+          />
+        ) : (
+          <strong class="saved-theme-name" onDblClick={() => setEditing(true)} title="Double-click to rename">
+            {theme.name}
+          </strong>
+        )}
+        <span class="saved-theme-date">{dateStr}</span>
+      </div>
+      <div class="saved-theme-actions">
+        <button class="btn btn-primary btn-sm" onClick={() => applySavedTheme(theme)} title="Apply this theme">
+          Apply
+        </button>
+        {confirmDelete ? (
+          <button class="btn btn-danger btn-sm" onClick={() => { deleteSavedTheme(theme.id); setConfirmDelete(false); }}>
+            Confirm
+          </button>
+        ) : (
+          <button class="btn btn-secondary btn-sm" onClick={() => setConfirmDelete(true)} title="Delete this theme">
+            🗑
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Saved themes panel ───────────────────────────────────────────────────────
+
+function SavedThemesPanel() {
+  const themes = savedThemes.value;
+
+  return (
+    <div class="saved-themes-panel">
+      <h3 class="saved-themes-title">Saved Themes</h3>
+      <p class="saved-themes-subtitle">
+        Your custom themes, stored in the browser.
+      </p>
+      {themes.length === 0 ? (
+        <div class="saved-themes-empty">
+          <span class="saved-themes-empty-icon">◇</span>
+          <p>No saved themes yet.</p>
+          <p class="saved-themes-empty-hint">Use the "💾 Save Theme" button to save your current color configuration.</p>
+        </div>
+      ) : (
+        <div class="saved-themes-list">
+          {themes.map(t => <SavedThemeCard key={t.id} theme={t} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ──────────────────────────────────────────────────────────
 
 export function ThemeSettings() {
   return (
+    <div class="theme-settings-layout">
     <div class="theme-settings">
       <div class="theme-settings-header">
         <h2 class="theme-settings-title">Color Theme Settings</h2>
@@ -108,6 +255,10 @@ export function ThemeSettings() {
           <button class="btn btn-primary" onClick={resetTheme}>
             Reset to Default
           </button>
+          <button class="btn btn-primary" onClick={randomizeTheme}>
+            🎲 Randomize
+          </button>
+          <SaveThemeButton />
         </div>
       </div>
 
@@ -233,6 +384,8 @@ export function ThemeSettings() {
         <ColorRow label="Warm Tone" description="Brown-amber base" colorKey="smokeWarm" />
         <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
       </Section>
+    </div>
+    <SavedThemesPanel />
     </div>
   );
 }

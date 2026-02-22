@@ -1,7 +1,15 @@
 /* ThemeSettings — color theme settings page styles */
 
+.theme-settings-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
 .theme-settings {
   padding: 20px 28px;
+  flex: 1 1 0;
+  min-width: 0;
   max-width: 720px;
   overflow-y: auto;
   height: 100%;
@@ -247,4 +255,166 @@
 .theme-preset-info span {
   font-size: 0.68rem;
   color: var(--text-secondary);
+}
+
+/* ── Save theme inline input ── */
+
+.save-theme-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.save-theme-input {
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  width: 160px;
+}
+
+.save-theme-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.btn-sm {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--bg-tertiary);
+  border: 1px solid #a33;
+  border-radius: 4px;
+  color: #e55;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background: #2a1010;
+}
+
+/* ── Saved themes panel (right side) ── */
+
+.saved-themes-panel {
+  flex: 1 1 0;
+  min-width: 260px;
+  max-width: 480px;
+  padding: 20px 24px;
+  overflow-y: auto;
+  height: 100%;
+  border-left: 1px solid var(--border-subtle);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.saved-themes-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.saved-themes-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.saved-themes-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--text-muted);
+}
+
+.saved-themes-empty-icon {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.saved-themes-empty p {
+  margin: 4px 0;
+  font-size: 0.82rem;
+}
+
+.saved-themes-empty-hint {
+  font-size: 0.72rem !important;
+  color: var(--text-muted);
+}
+
+.saved-themes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saved-theme-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: border-color 0.15s;
+}
+
+.saved-theme-card:hover {
+  border-color: var(--accent-orange);
+}
+
+.saved-theme-swatches {
+  display: flex;
+  gap: 3px;
+}
+
+.saved-theme-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.saved-theme-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: default;
+}
+
+.saved-theme-rename {
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
+.saved-theme-date {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.saved-theme-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
 }

@@ -358,6 +358,145 @@ export function resetTheme() {
   themeColors.value = { ...DEFAULT_THEME };
 }
 
+/** Generate a random hex colour, optionally clamping lightness to a range. */
+function randHex(minL = 0, maxL = 1): string {
+  // Generate in HSL then convert to hex for better perceptual distribution
+  const h = Math.random() * 360;
+  const s = 0.4 + Math.random() * 0.5;           // 40-90 % saturation
+  const l = minL + Math.random() * (maxL - minL); // lightness in range
+
+  // HSL → RGB (standard conversion)
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r1: number, g1: number, b1: number;
+  if (h < 60)       { r1 = c; g1 = x; b1 = 0; }
+  else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+  else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+  else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+  else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+  else              { r1 = c; g1 = 0; b1 = x; }
+  return vec3ToHex(r1 + m, g1 + m, b1 + m);
+}
+
+/** Randomize every color in the theme. */
+export function randomizeTheme() {
+  themeColors.value = {
+    // Backgrounds — keep dark (lightness 0.02–0.15)
+    bgPrimary:   randHex(0.02, 0.08),
+    bgSecondary: randHex(0.05, 0.12),
+    bgTertiary:  randHex(0.07, 0.14),
+    bgHover:     randHex(0.08, 0.16),
+    bgActive:    randHex(0.10, 0.18),
+
+    // Text — keep light (0.55–0.95)
+    textPrimary:   randHex(0.80, 0.95),
+    textSecondary: randHex(0.60, 0.78),
+    textMuted:     randHex(0.40, 0.55),
+
+    // Borders (0.15–0.30)
+    borderColor:  randHex(0.15, 0.28),
+    borderSubtle: randHex(0.10, 0.20),
+
+    // Accents (0.35–0.65)
+    accentBlue:   randHex(0.35, 0.60),
+    accentGreen:  randHex(0.35, 0.60),
+    accentOrange: randHex(0.40, 0.65),
+    accentPurple: randHex(0.35, 0.55),
+    accentYellow: randHex(0.45, 0.65),
+
+    // Log levels (0.35–0.60)
+    levelTrace: randHex(0.30, 0.50),
+    levelDebug: randHex(0.30, 0.50),
+    levelInfo:  randHex(0.40, 0.60),
+    levelWarn:  randHex(0.45, 0.65),
+    levelError: randHex(0.40, 0.55),
+
+    // Particles — vivid (0.45–0.85)
+    particleSparkCore:  randHex(0.70, 0.90),
+    particleSparkEmber: randHex(0.35, 0.55),
+    particleSparkSteel: randHex(0.40, 0.60),
+    particleEmberHot:   randHex(0.55, 0.75),
+    particleEmberBase:  randHex(0.30, 0.50),
+    particleBeamCenter: randHex(0.70, 0.90),
+    particleBeamEdge:   randHex(0.40, 0.60),
+    particleGlitterWarm: randHex(0.60, 0.80),
+    particleGlitterCool: randHex(0.50, 0.70),
+
+    // Cinder palette (0.25–0.55)
+    cinderEmber: randHex(0.30, 0.50),
+    cinderGold:  randHex(0.35, 0.55),
+    cinderAsh:   randHex(0.20, 0.35),
+    cinderVine:  randHex(0.20, 0.40),
+
+    // Smoke tones — very dark (0.02–0.08)
+    smokeCool: randHex(0.02, 0.06),
+    smokeWarm: randHex(0.02, 0.06),
+    smokeMoss: randHex(0.02, 0.06),
+  };
+}
+
+// ── Saved themes (user-created, persisted in localStorage) ──────────────────
+
+export interface SavedTheme {
+  id: string;
+  name: string;
+  colors: ThemeColors;
+  createdAt: number;
+}
+
+const SAVED_THEMES_KEY = 'log-viewer-saved-themes';
+
+function loadSavedThemes(): SavedTheme[] {
+  try {
+    const raw = localStorage.getItem(SAVED_THEMES_KEY);
+    if (raw) return JSON.parse(raw) as SavedTheme[];
+  } catch { /* ignore */ }
+  return [];
+}
+
+function persistSavedThemes(themes: SavedTheme[]) {
+  try {
+    localStorage.setItem(SAVED_THEMES_KEY, JSON.stringify(themes));
+  } catch { /* storage full */ }
+}
+
+export const savedThemes = signal<SavedTheme[]>(loadSavedThemes());
+
+/** Save the current theme under the given name. */
+export function saveCurrentTheme(name: string) {
+  const theme: SavedTheme = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    name,
+    colors: { ...themeColors.value },
+    createdAt: Date.now(),
+  };
+  const updated = [...savedThemes.value, theme];
+  savedThemes.value = updated;
+  persistSavedThemes(updated);
+}
+
+/** Delete a saved theme by id. */
+export function deleteSavedTheme(id: string) {
+  const updated = savedThemes.value.filter(t => t.id !== id);
+  savedThemes.value = updated;
+  persistSavedThemes(updated);
+}
+
+/** Apply a saved theme. */
+export function applySavedTheme(theme: SavedTheme) {
+  themeColors.value = { ...theme.colors };
+}
+
+/** Rename a saved theme. */
+export function renameSavedTheme(id: string, newName: string) {
+  const updated = savedThemes.value.map(t =>
+    t.id === id ? { ...t, name: newName } : t
+  );
+  savedThemes.value = updated;
+  persistSavedThemes(updated);
+}
+
 // ── Helpers for converting hex to shader-compatible vec3 ────────────────────
 
 /** Convert "#rrggbb" to [r, g, b] in 0..1 range */
