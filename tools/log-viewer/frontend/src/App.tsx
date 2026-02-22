@@ -8,6 +8,7 @@ import { CodeViewer } from './components/CodeViewer/CodeViewer';
 import { FlowGraph } from './components/FlowGraph/FlowGraph';
 import { Stats } from './components/Stats/Stats';
 import { activeTab, loadLogFiles } from './store';
+import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
 
 export function App() {
   useEffect(() => {
@@ -31,6 +32,7 @@ export function App() {
 
   return (
     <div class="app">
+      <WgpuOverlay />
       <Header />
       <FilterPanel />
       <div class="main-layout">
