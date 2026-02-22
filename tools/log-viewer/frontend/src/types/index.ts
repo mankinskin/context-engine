@@ -4,6 +4,7 @@ export interface LogFile {
   name: string;
   size: number;
   modified: string | null;
+  has_graph_snapshot: boolean;
 }
 
 export interface AssertionDiff {

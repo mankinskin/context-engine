@@ -10,6 +10,8 @@ pub struct LogFileInfo {
     pub name: String,
     pub size: u64,
     pub modified: Option<String>,
+    /// Whether this log file contains a hypergraph snapshot event
+    pub has_graph_snapshot: bool,
 }
 
 /// Response for log content
