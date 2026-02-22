@@ -1,26 +1,24 @@
 /// <reference types="@webgpu/types" />
 /**
- * WgpuOverlay — GPU-accelerated canvas composited **on top** of HTML.
+ * WgpuOverlay — GPU-accelerated canvas rendered **behind** HTML.
  *
- * Uses premultiplied-alpha compositing to achieve true post-processing:
- *
- *   - CRT effects (scanlines, vignette, phosphor) are output as alpha,
- *     which darkens the HTML beneath through the browser's compositor.
- *   - Scene content (aurora, element glows) adds light on top of HTML.
+ * Architecture:
+ *   - Canvas sits at z-index -1 (opaque), HTML backgrounds are transparent
+ *     so content appears on top of the aurora/shader scene.
+ *   - Compute shader (compute.wgsl) simulates spark particles on the GPU.
+ *   - Fragment shader (fragment.wgsl) renders: aurora background, static
+ *     shadows for non-hovered elements, animated borders + particles for
+ *     hovered elements, graph nodes, and CRT post-processing.
  *   - `pointer-events: none` keeps HTML fully interactive.
  *
- * This hooks into the browser's native GPU compositing pipeline — the
- * browser blends the WebGPU output with the HTML render target in
- * GPU space (zero JS cost, no texture capture needed).
- *
- * Shaders live in vertex.wgsl / fragment.wgsl (same directory) and are
- * bundled at build time via Vite's `?raw` import.
+ * Shaders are loaded at build time via Vite's `?raw` import.
  */
 import { useEffect, useRef } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import { cytoscapeInstance } from '../FlowGraph/FlowGraph';
 import vsCode from './vertex.wgsl?raw';
 import fsCode from './fragment.wgsl?raw';
+import csCode from './compute.wgsl?raw';
 
 export const gpuOverlayEnabled = signal(true);
 
@@ -68,6 +66,14 @@ const MAX_ELEMENTS = 128;
 /** f32 values per element in the storage buffer: [x, y, w, h, hue, kind, _p1, _p2] */
 const ELEM_FLOATS = 8;
 const ELEM_BYTES  = ELEM_FLOATS * 4;  // 32 bytes, 16-byte aligned
+
+/** Number of spark particles simulated by the compute shader. */
+const NUM_PARTICLES    = 512;
+/** Floats per particle: [px, py, vx, vy, life, max_life, hue, size] */
+const PARTICLE_FLOATS  = 8;
+const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 32 bytes
+const PARTICLE_BUF_SIZE = NUM_PARTICLES * PARTICLE_BYTES;
+const COMPUTE_WORKGROUP = 64;
 
 /**
  * Element kind constants — passed to the shader so it can vary the glow
@@ -212,13 +218,17 @@ function scanElements(): void {
 // ---------------------------------------------------------------------------
 
 interface GpuState {
-    device:        GPUDevice;
-    pipeline:      GPURenderPipeline;
-    uniformBuffer: GPUBuffer;
-    elemBuffer:    GPUBuffer;
-    bindGroup:     GPUBindGroup;
-    context:       GPUCanvasContext;
-    animId:        number;
+    device:           GPUDevice;
+    renderPipeline:   GPURenderPipeline;
+    particlePipeline: GPURenderPipeline;
+    computePipeline:  GPUComputePipeline;
+    uniformBuffer:    GPUBuffer;
+    elemBuffer:       GPUBuffer;
+    particleBuffer:   GPUBuffer;
+    computeBindGroup: GPUBindGroup;
+    renderBindGroup:  GPUBindGroup;
+    context:          GPUCanvasContext;
+    animId:           number;
 }
 
 export function WgpuOverlay() {
@@ -297,14 +307,22 @@ export function WgpuOverlay() {
 
             const ctx    = canvas!.getContext('webgpu') as GPUCanvasContext;
             const format = navigator.gpu.getPreferredCanvasFormat();
-            ctx.configure({ device, format, alphaMode: 'premultiplied' });
+            ctx.configure({ device, format, alphaMode: 'opaque' });
 
-            const shader = device.createShaderModule({
-                label: 'element-shader-wgsl',
+            // --- Shader modules ------------------------------------------------
+            const renderShader = device.createShaderModule({
+                label: 'render-shader-wgsl',
                 code:  vsCode + '\n' + fsCode,
             });
 
-            // Uniform buffer (32 bytes): [time, width, height, element_count, mouse_x, mouse_y, pad, pad]
+            const computeShader = device.createShaderModule({
+                label: 'compute-shader-wgsl',
+                code:  csCode,
+            });
+
+            // --- Buffers -------------------------------------------------------
+            // Uniform buffer (32 bytes): [time, width, height, element_count,
+            //                             mouse_x, mouse_y, delta_time, hover_elem]
             const uniformBuffer = device.createBuffer({
                 size:  32,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -316,51 +334,100 @@ export function WgpuOverlay() {
                 usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
             });
 
-            const bindGroupLayout = device.createBindGroupLayout({
+            // Particle buffer: read_write in compute, read-only in fragment
+            const particleBuffer = device.createBuffer({
+                size:  PARTICLE_BUF_SIZE,
+                usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+            });
+
+            // Zero-init particle buffer (all dead particles)
+            device.queue.writeBuffer(particleBuffer, 0,
+                new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
+
+            // --- Bind group layouts --------------------------------------------
+            // Compute: uniform + elems (read) + particles (read_write)
+            const computeBGL = device.createBindGroupLayout({
                 entries: [
-                    {
-                        binding:    0,
-                        visibility: GPUShaderStage.FRAGMENT,
-                        buffer:     { type: 'uniform' },
-                    },
-                    {
-                        binding:    1,
-                        visibility: GPUShaderStage.FRAGMENT,
-                        buffer:     { type: 'read-only-storage' },
-                    },
+                    { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
+                    { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'read-only-storage' } },
+                    { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
                 ],
             });
 
-            const pipeline = device.createRenderPipeline({
-                layout:   device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
-                vertex:   { module: shader, entryPoint: 'vs_main' },
+            // Render: uniform + elems (read) + particles (read)
+            // VERTEX | FRAGMENT visibility so vs_particle can read particles
+            const renderBGL = device.createBindGroupLayout({
+                entries: [
+                    { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
+                    { binding: 1, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                    { binding: 2, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                ],
+            });
+
+            // --- Pipelines -----------------------------------------------------
+            const computePipeline = device.createComputePipeline({
+                layout:  device.createPipelineLayout({ bindGroupLayouts: [computeBGL] }),
+                compute: { module: computeShader, entryPoint: 'cs_main' },
+            });
+
+            const renderPipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [renderBGL] });
+
+            const renderPipeline = device.createRenderPipeline({
+                layout:   renderPipelineLayout,
+                vertex:   { module: renderShader, entryPoint: 'vs_main' },
                 fragment: {
-                    module:     shader,
+                    module:     renderShader,
                     entryPoint: 'fs_main',
+                    targets: [{ format }],
+                },
+                primitive: { topology: 'triangle-list' },
+            });
+
+            // Particle pipeline: instanced quads with additive blend
+            const particlePipeline = device.createRenderPipeline({
+                layout:   renderPipelineLayout,
+                vertex:   { module: renderShader, entryPoint: 'vs_particle' },
+                fragment: {
+                    module:     renderShader,
+                    entryPoint: 'fs_particle',
                     targets: [{
                         format,
                         blend: {
-                            color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                            color: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
+                            alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
                         },
                     }],
                 },
                 primitive: { topology: 'triangle-list' },
             });
 
-            const bindGroup = device.createBindGroup({
-                layout:  bindGroupLayout,
+            // --- Bind groups ---------------------------------------------------
+            const computeBindGroup = device.createBindGroup({
+                layout:  computeBGL,
                 entries: [
-                    { binding: 0, resource: { buffer: uniformBuffer } },
-                    { binding: 1, resource: { buffer: elemBuffer    } },
+                    { binding: 0, resource: { buffer: uniformBuffer  } },
+                    { binding: 1, resource: { buffer: elemBuffer     } },
+                    { binding: 2, resource: { buffer: particleBuffer } },
+                ],
+            });
+
+            const renderBindGroup = device.createBindGroup({
+                layout:  renderBGL,
+                entries: [
+                    { binding: 0, resource: { buffer: uniformBuffer  } },
+                    { binding: 1, resource: { buffer: elemBuffer     } },
+                    { binding: 2, resource: { buffer: particleBuffer } },
                 ],
             });
 
             const state: GpuState = {
-                device, pipeline, uniformBuffer, elemBuffer, bindGroup, context: ctx, animId: 0,
+                device, renderPipeline, particlePipeline, computePipeline,
+                uniformBuffer, elemBuffer, particleBuffer,
+                computeBindGroup, renderBindGroup, context: ctx, animId: 0,
             };
             gpuRef.current = state;
 
+            let prevTime = performance.now() / 1000;
             const startTime = performance.now();
 
             // Start throttled DOM scanner (runs independently of GPU frames)
@@ -369,42 +436,79 @@ export function WgpuOverlay() {
 
             function frame() {
                 if (cancelled) return;
+                const nowSec = performance.now() / 1000;
                 const time = (performance.now() - startTime) / 1000;
+                const dt   = Math.min(nowSec - prevTime, 0.05); // cap at 50ms
+                prevTime   = nowSec;
 
                 // Upload cached element snapshot (no DOM access here)
                 const count = _cachedCount;
                 const mx = mouseRef.current.x;
                 const my = mouseRef.current.y;
+
+                // Determine hovered element index
+                let hoverIdx = -1;
+                for (let i = 0; i < count; i++) {
+                    const base = i * ELEM_FLOATS;
+                    const ex = _cachedData[base];
+                    const ey = _cachedData[base + 1];
+                    const ew = _cachedData[base + 2];
+                    const eh = _cachedData[base + 3];
+                    const kind = _cachedData[base + 5];
+                    if (kind === KIND_GRAPH_NODE) continue; // graph nodes use proximity
+                    if (mx >= ex && mx < ex + ew && my >= ey && my < ey + eh) {
+                        hoverIdx = i;
+                        // Don't break — last match wins (topmost in DOM order)
+                    }
+                }
+
                 _uniformF32[0] = time;
                 _uniformF32[1] = canvas!.width;
                 _uniformF32[2] = canvas!.height;
                 _uniformF32[3] = count;
                 _uniformF32[4] = mx;
                 _uniformF32[5] = my;
-                _uniformF32[6] = 0;
-                _uniformF32[7] = 0;
+                _uniformF32[6] = dt;
+                _uniformF32[7] = hoverIdx;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
                 if (count > 0) {
                     device.queue.writeBuffer(elemBuffer, 0,
                         _cachedData.buffer, 0, count * ELEM_BYTES);
                 }
 
-                // Render pass
-                const enc  = device.createCommandEncoder();
-                const pass = enc.beginRenderPass({
+                const enc = device.createCommandEncoder();
+
+                // --- Compute pass: simulate particles --------------------------
+                const computePass = enc.beginComputePass();
+                computePass.setPipeline(computePipeline);
+                computePass.setBindGroup(0, computeBindGroup);
+                computePass.dispatchWorkgroups(
+                    Math.ceil(NUM_PARTICLES / COMPUTE_WORKGROUP));
+                computePass.end();
+
+                // --- Render pass -----------------------------------------------
+                const renderPass = enc.beginRenderPass({
                     colorAttachments: [{
                         view:       ctx.getCurrentTexture().createView(),
                         loadOp:     'clear',
                         storeOp:    'store',
-                        clearValue: { r: 0, g: 0, b: 0, a: 0 },
+                        clearValue: { r: 0, g: 0, b: 0, a: 1 },
                     }],
                 });
-                pass.setPipeline(pipeline);
-                pass.setBindGroup(0, bindGroup);
-                pass.draw(6);
-                pass.end();
-                device.queue.submit([enc.finish()]);
 
+                // Draw 1: full-screen quad (aurora + elements + CRT)
+                renderPass.setPipeline(renderPipeline);
+                renderPass.setBindGroup(0, renderBindGroup);
+                renderPass.draw(6);
+
+                // Draw 2: instanced particle quads (additive blend)
+                renderPass.setPipeline(particlePipeline);
+                renderPass.setBindGroup(0, renderBindGroup);
+                renderPass.draw(6, NUM_PARTICLES);
+
+                renderPass.end();
+
+                device.queue.submit([enc.finish()]);
                 state.animId = requestAnimationFrame(frame);
             }
 
@@ -434,7 +538,7 @@ export function WgpuOverlay() {
                 width:         '100vw',
                 height:        '100vh',
                 pointerEvents: 'none',
-                zIndex:        'var(--z-overlay)',
+                zIndex:        -1,
             }}
         />
     );

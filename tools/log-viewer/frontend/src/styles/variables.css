@@ -36,12 +36,31 @@
 }
 
 /* ----- GPU overlay mode -----
-   Canvas is composited on TOP of HTML with premultiplied alpha.
-   CRT effects (scanlines, vignette) darken the HTML through alpha.
-   Scene content (aurora, glows) adds light on top.
-   HTML backgrounds stay opaque — no transparency needed. */
+   Canvas is rendered BEHIND HTML (z-index -1, opaque).
+   HTML backgrounds become transparent so the aurora shows through.
+   Scene effects (shadows, hover glows, particles) are visible
+   behind the HTML text. */
+:root.gpu-active {
+  --bg-primary:   transparent;
+  --bg-secondary: rgba(33, 33, 36, 0.3);
+  --bg-tertiary:  rgba(40, 40, 44, 0.3);
+  --bg-hover:     rgba(50, 50, 58, 0.4);
+  --bg-active:    rgba(42, 58, 74, 0.4);
+  --border-color: rgba(56, 56, 62, 0.4);
+  --border-subtle: rgba(42, 42, 48, 0.3);
+}
+
+:root.gpu-active body {
+  background: transparent !important;
+}
+
+:root.gpu-active #app {
+  isolation: isolate;
+  will-change: transform;
+}
+
 :root.gpu-active .flow-container,
 :root.gpu-active .flow-graph {
   /* Cytoscape nodes are rendered by the shader; dim native rendering */
-  background: var(--bg-primary);
+  background: transparent;
 }
