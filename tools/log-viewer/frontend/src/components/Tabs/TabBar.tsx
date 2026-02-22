@@ -41,12 +41,22 @@ function EffectsIcon({ size = 14, color = 'currentColor' }: { size?: number; col
   );
 }
 
+function CubeIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1L12.5 4V10L7 13L1.5 10V4L7 1Z" stroke={color} stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M7 7L12.5 4M7 7L1.5 4M7 7V13" stroke={color} stroke-width="1.2"/>
+    </svg>
+  );
+}
+
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
   { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },
   { id: 'debug', label: 'Effects', icon: () => <EffectsIcon size={14} /> },
+  { id: 'scene3d', label: '3D Scene', icon: () => <CubeIcon size={14} /> },
 ];
 
 export function TabBar() {

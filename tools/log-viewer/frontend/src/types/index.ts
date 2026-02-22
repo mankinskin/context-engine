@@ -69,7 +69,7 @@ export interface SourceSnippet {
   language: string;
 }
 
-export type ViewTab = 'logs' | 'flow' | 'stats' | 'code' | 'debug';
+export type ViewTab = 'logs' | 'flow' | 'stats' | 'code' | 'debug' | 'scene3d';
 
 export interface FlowNode {
   id: string;
