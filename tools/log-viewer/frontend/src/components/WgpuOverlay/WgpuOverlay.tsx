@@ -154,6 +154,9 @@ let _hoverStartTime = 0;
 let _cachedData  = _elemData;
 let _cachedCount = 0;
 
+/** Dirty flag — set by scroll/resize events to trigger a re-scan on the next frame. */
+let _scanDirty = false;
+
 function scanElements(): void {
     _elemData.fill(0);
     let count = 0;
@@ -457,8 +460,19 @@ export function WgpuOverlay() {
             scanTimer = setInterval(scanElements, SCAN_INTERVAL_MS);
             scanElements(); // initial scan
 
+            // Mark scan dirty on any scroll so positions update promptly
+            const onScroll = () => { _scanDirty = true; };
+            window.addEventListener('scroll', onScroll, true); // capture phase catches inner scrolls
+
             function frame() {
                 if (cancelled) return;
+
+                // Re-scan if a scroll happened since last frame
+                if (_scanDirty) {
+                    _scanDirty = false;
+                    scanElements();
+                }
+
                 const nowSec = performance.now() / 1000;
                 const time = (performance.now() - startTime) / 1000;
                 const dt   = Math.min(nowSec - prevTime, 0.05); // cap at 50ms
@@ -561,6 +575,7 @@ export function WgpuOverlay() {
         return () => {
             cancelled = true;
             if (scanTimer) clearInterval(scanTimer);
+            window.removeEventListener('scroll', onScroll, true);
             teardown(gpuRef.current);
             gpuRef.current = null;
         };
