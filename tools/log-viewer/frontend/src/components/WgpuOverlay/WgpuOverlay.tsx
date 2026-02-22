@@ -1,15 +1,17 @@
 /// <reference types="@webgpu/types" />
 /**
- * WgpuOverlay — GPU-accelerated canvas **behind** the HTML content.
+ * WgpuOverlay — GPU-accelerated canvas composited **on top** of HTML.
  *
- * When enabled, the canvas sits at z-index -1 and the HTML backgrounds
- * are made transparent (via the `gpu-active` class on the root element).
- * The GPU effects (aurora, CRT scanlines, vignette, element glows) show
- * through the transparent HTML, giving the appearance that the page
- * content is rendered inside the GPU scene.
+ * Uses premultiplied-alpha compositing to achieve true post-processing:
  *
- * HTML elements remain fully interactive because they sit above the
- * canvas in the stacking order.
+ *   - CRT effects (scanlines, vignette, phosphor) are output as alpha,
+ *     which darkens the HTML beneath through the browser's compositor.
+ *   - Scene content (aurora, element glows) adds light on top of HTML.
+ *   - `pointer-events: none` keeps HTML fully interactive.
+ *
+ * This hooks into the browser's native GPU compositing pipeline — the
+ * browser blends the WebGPU output with the HTML render target in
+ * GPU space (zero JS cost, no texture capture needed).
  *
  * Shaders live in vertex.wgsl / fragment.wgsl (same directory) and are
  * bundled at build time via Vite's `?raw` import.
@@ -104,30 +106,57 @@ function selectorKind(selectorIndex: number): number {
     return KIND_STRUCTURAL;
 }
 
-/** Scan matching DOM elements and build a Float32Array for the GPU. */
-function collectElements(): { data: Float32Array; count: number } {
-    const data = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
+// ---------------------------------------------------------------------------
+// Pre-computed selector metadata (avoids per-element `matches()` calls)
+// ---------------------------------------------------------------------------
+const SELECTOR_META: Array<{ sel: string; hue: number; kind: number }> =
+    ELEMENT_SELECTORS.map((sel, i) => ({
+        sel,
+        hue:  i / ELEMENT_SELECTORS.length,
+        kind: selectorKind(i),
+    }));
+
+// ---------------------------------------------------------------------------
+// Throttled element collector — scans the DOM at a fixed cadence (not every
+// animation frame) and caches the result.  The render loop reads the cached
+// snapshot, so GPU frames never trigger layout recalc.
+// ---------------------------------------------------------------------------
+const SCAN_INTERVAL_MS = 120;   // ~8 Hz DOM scanning
+
+/** Reusable buffer — avoids a 4 KB allocation every scan. */
+const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
+/** Reusable 32-byte uniform upload buffer. */
+const _uniformF32 = new Float32Array(8);
+
+/** Cached element snapshot read by the GPU render loop. */
+let _cachedData  = _elemData;
+let _cachedCount = 0;
+
+function scanElements(): void {
+    _elemData.fill(0);
     let count = 0;
-    const combined = ELEMENT_SELECTORS.join(', ');
-    document.querySelectorAll(combined).forEach(el => {
-        if (count >= MAX_ELEMENTS) return;
-        const r = el.getBoundingClientRect();
-        if (r.width === 0 || r.height === 0) return;
-        // Skip elements outside the viewport (log entries scrolled away)
-        if (r.bottom < 0 || r.top > window.innerHeight) return;
-        const si   = ELEMENT_SELECTORS.findIndex(sel => el.matches(sel));
-        const hue  = si >= 0 ? si / ELEMENT_SELECTORS.length : 0;
-        const kind = si >= 0 ? selectorKind(si) : 0;
-        const base = count * ELEM_FLOATS;
-        data[base + 0] = r.left;
-        data[base + 1] = r.top;
-        data[base + 2] = r.width;
-        data[base + 3] = r.height;
-        data[base + 4] = hue;
-        data[base + 5] = kind;
-        // data[base + 6..7] = 0 (padding)
-        count++;
-    });
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Query each selector group separately — O(selectors) queries but no
+    // per-element re-matching, which is much cheaper overall.
+    for (let si = 0; si < SELECTOR_META.length && count < MAX_ELEMENTS; si++) {
+        const { sel, hue, kind } = SELECTOR_META[si];
+        const elems = document.querySelectorAll(sel);
+        for (let j = 0; j < elems.length && count < MAX_ELEMENTS; j++) {
+            const r = elems[j].getBoundingClientRect();
+            if (r.width === 0 || r.height === 0) continue;
+            if (r.bottom < 0 || r.top > vh) continue;
+            const base = count * ELEM_FLOATS;
+            _elemData[base    ] = r.left;
+            _elemData[base + 1] = r.top;
+            _elemData[base + 2] = r.width;
+            _elemData[base + 3] = r.height;
+            _elemData[base + 4] = hue;
+            _elemData[base + 5] = kind;
+            count++;
+        }
+    }
 
     // --- Collect graph nodes from Cytoscape --------------------------------
     const cy = cytoscapeInstance.value;
@@ -135,18 +164,16 @@ function collectElements(): { data: Float32Array; count: number } {
         const container = cy.container();
         if (container) {
             const containerRect = container.getBoundingClientRect();
-            cy.nodes().forEach((node: any) => {
-                if (count >= MAX_ELEMENTS) return;
+            const nodes = cy.nodes();
+            for (let i = 0; i < nodes.length && count < MAX_ELEMENTS; i++) {
+                const node = nodes[i];
                 const bb = node.renderedBoundingBox({ includeLabels: false });
-                // Convert from container-relative to viewport-relative
                 const x = containerRect.left + bb.x1;
                 const y = containerRect.top + bb.y1;
                 const w = bb.x2 - bb.x1;
                 const h = bb.y2 - bb.y1;
-                // Skip nodes outside viewport
-                if (y + h < 0 || y > window.innerHeight) return;
-                if (x + w < 0 || x > window.innerWidth) return;
-                // Level → hue for colouring
+                if (y + h < 0 || y > vh) continue;
+                if (x + w < 0 || x > vw) continue;
                 const level = (node.data('level') || 'info').toUpperCase();
                 const levelHue = level === 'ERROR' ? 0.0
                                : level === 'WARN'  ? 0.08
@@ -154,26 +181,26 @@ function collectElements(): { data: Float32Array; count: number } {
                                : level === 'DEBUG' ? 0.75
                                : level === 'TRACE' ? 0.48
                                : 0.58;
-                // Node type → _p1 (0=event, 1=span_enter, 2=span_exit)
                 const nodeType = node.data('type');
                 const p1 = nodeType === 'span_enter' ? 1.0
                          : nodeType === 'span_exit'  ? 2.0
                          : 0.0;
                 const base = count * ELEM_FLOATS;
-                data[base + 0] = x;
-                data[base + 1] = y;
-                data[base + 2] = w;
-                data[base + 3] = h;
-                data[base + 4] = levelHue;
-                data[base + 5] = KIND_GRAPH_NODE;
-                data[base + 6] = p1;   // node type
-                data[base + 7] = 0.0;  // reserved
+                _elemData[base    ] = x;
+                _elemData[base + 1] = y;
+                _elemData[base + 2] = w;
+                _elemData[base + 3] = h;
+                _elemData[base + 4] = levelHue;
+                _elemData[base + 5] = KIND_GRAPH_NODE;
+                _elemData[base + 6] = p1;
+                _elemData[base + 7] = 0.0;
                 count++;
-            });
+            }
         }
     }
 
-    return { data, count };
+    _cachedData  = _elemData;
+    _cachedCount = count;
 }
 
 // Shaders are loaded from vertex.wgsl / fragment.wgsl at build time via
@@ -254,6 +281,7 @@ export function WgpuOverlay() {
         if (!canvas) return;
 
         let cancelled = false;
+        let scanTimer: ReturnType<typeof setInterval> | null = null;
 
         async function init() {
             if (!('gpu' in navigator)) {
@@ -269,7 +297,7 @@ export function WgpuOverlay() {
 
             const ctx    = canvas!.getContext('webgpu') as GPUCanvasContext;
             const format = navigator.gpu.getPreferredCanvasFormat();
-            ctx.configure({ device, format, alphaMode: 'opaque' });
+            ctx.configure({ device, format, alphaMode: 'premultiplied' });
 
             const shader = device.createShaderModule({
                 label: 'element-shader-wgsl',
@@ -311,7 +339,10 @@ export function WgpuOverlay() {
                     entryPoint: 'fs_main',
                     targets: [{
                         format,
-                        // Canvas is opaque (behind HTML), no blending needed
+                        blend: {
+                            color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                        },
                     }],
                 },
                 primitive: { topology: 'triangle-list' },
@@ -332,19 +363,30 @@ export function WgpuOverlay() {
 
             const startTime = performance.now();
 
+            // Start throttled DOM scanner (runs independently of GPU frames)
+            scanTimer = setInterval(scanElements, SCAN_INTERVAL_MS);
+            scanElements(); // initial scan
+
             function frame() {
                 if (cancelled) return;
                 const time = (performance.now() - startTime) / 1000;
 
-                // Upload per-frame data
-                const { data, count } = collectElements();
+                // Upload cached element snapshot (no DOM access here)
+                const count = _cachedCount;
                 const mx = mouseRef.current.x;
                 const my = mouseRef.current.y;
-                device.queue.writeBuffer(uniformBuffer, 0,
-                    new Float32Array([time, canvas!.width, canvas!.height, count, mx, my, 0, 0]));
+                _uniformF32[0] = time;
+                _uniformF32[1] = canvas!.width;
+                _uniformF32[2] = canvas!.height;
+                _uniformF32[3] = count;
+                _uniformF32[4] = mx;
+                _uniformF32[5] = my;
+                _uniformF32[6] = 0;
+                _uniformF32[7] = 0;
+                device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
                 if (count > 0) {
                     device.queue.writeBuffer(elemBuffer, 0,
-                        data.buffer, 0, count * ELEM_BYTES);
+                        _cachedData.buffer, 0, count * ELEM_BYTES);
                 }
 
                 // Render pass
@@ -354,7 +396,7 @@ export function WgpuOverlay() {
                         view:       ctx.getCurrentTexture().createView(),
                         loadOp:     'clear',
                         storeOp:    'store',
-                        clearValue: { r: 0, g: 0, b: 0, a: 1 },
+                        clearValue: { r: 0, g: 0, b: 0, a: 0 },
                     }],
                 });
                 pass.setPipeline(pipeline);
@@ -373,6 +415,7 @@ export function WgpuOverlay() {
 
         return () => {
             cancelled = true;
+            if (scanTimer) clearInterval(scanTimer);
             teardown(gpuRef.current);
             gpuRef.current = null;
         };
@@ -391,7 +434,7 @@ export function WgpuOverlay() {
                 width:         '100vw',
                 height:        '100vh',
                 pointerEvents: 'none',
-                zIndex:        '-1',
+                zIndex:        'var(--z-overlay)',
             }}
         />
     );

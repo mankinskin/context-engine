@@ -320,9 +320,16 @@ fn barrel_distort(uv_in: vec2f) -> vec2f {
 
 // CRT scanlines: darken every other pixel row (based on original screen coords)
 fn crt_scanlines(py: f32) -> f32 {
-    // Fine scanlines: alternating rows with slight darkening
+    // Fine horizontal scanlines: alternating rows with slight darkening
     let line = 0.85 + 0.15 * sin(py * 3.14159);
     return line;
+}
+
+// Vertical CRT phosphor column lines (subtler than horizontal scanlines)
+fn crt_vertical_lines(px: f32) -> f32 {
+    // Simulate RGB phosphor column mask — every 3rd sub-pixel column dims
+    let col = 0.90 + 0.10 * sin(px * 3.14159 * 0.6667);  // period ≈ 3px
+    return col;
 }
 
 // RGB sub-pixel fringe (chromatic aberration near edges)
@@ -334,32 +341,24 @@ fn rgb_fringe(uv: vec2f) -> vec3f {
     return vec3f(shift, 0.0, -shift);  // R shifts out, B shifts in
 }
 
-// CRT vignette: darken corners of the screen
-fn crt_vignette(uv: vec2f) -> f32 {
-    let c  = uv - 0.5;
-    let r2 = dot(c, c);
-    return smoothstep(0.55, 0.2, r2);
+// Thin occlusion shadow along screen edges (replaces full vignette)
+fn crt_edge_shadow(uv: vec2f) -> f32 {
+    // Distance from each edge in UV space (0 at edge, 0.5 at centre)
+    let d_left   = uv.x;
+    let d_right  = 1.0 - uv.x;
+    let d_top    = uv.y;
+    let d_bottom = 1.0 - uv.y;
+    // Minimum distance to any edge
+    let d = min(min(d_left, d_right), min(d_top, d_bottom));
+    // Very thin shadow band: fully dark at edge, fades out over ~0.8% of screen
+    return smoothstep(0.0, 0.008, d);
 }
 
 // ---- main fragment --------------------------------------------------------
 
-// Sample the scene at a given pixel position (aurora + element glows)
+// Sample the scene at a given pixel position (element glows only)
 fn sample_scene(px: vec2f) -> vec4f {
-    let uv = px / vec2f(u.width, u.height);
-    let t  = u.time * 0.35;
-
-    // Aurora background
-    var p  = uv * 3.5 + vec2f(t * 0.25, 0.0);
-    let n1 = fbm(p);
-    let n2 = fbm(p + vec2f(0.0, t * 0.08) + vec2f(n1 * 1.8));
-    let n3 = fbm(p + vec2f(n2 * 1.4, 0.0) - vec2f(0.0, t * 0.06));
-    let band      = smoothstep(0.25, 0.80, n3) * (1.0 - uv.y * 0.9);
-    let intensity = band * 0.18;
-    let c1        = vec3f(0.10, 0.42, 0.50);
-    let c2        = vec3f(0.18, 0.35, 0.58);
-    let c3        = vec3f(0.38, 0.25, 0.52);
-    let aurora_rgb = mix(mix(c1, c2, n2), c3, n1 * 0.6);
-    var out = vec4f(aurora_rgb * intensity, intensity * 0.55);
+    var out = vec4f(0.0);
 
     // Per-element thin border glows with 3D hover
     let count = u32(u.element_count);
@@ -430,23 +429,33 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     let scene_g = sample_scene(px_g);
     let scene_b = sample_scene(px_b);
 
-    // Merge RGB channels with chromatic split
-    var color = vec4f(scene_r.r, scene_g.g, scene_b.b,
-                      max(max(scene_r.a, scene_g.a), scene_b.a));
+    // Scene content (aurora + glows) — these are additive light
+    let scene_rgb = vec3f(scene_r.r, scene_g.g, scene_b.b);
+    let scene_a   = max(max(scene_r.a, scene_g.a), scene_b.a);
 
-    // --- CRT fine scanlines ------------------------------------------------
+    // --- CRT multiplicative effects (darken the HTML beneath) --------------
+    // These produce a 0..1 dimming factor.  We convert them to an overlay
+    // alpha: where dim < 1 we output black at (1-dim) opacity, which darkens
+    // whatever HTML is underneath via premultiplied-alpha compositing.
     let scanline_dim = crt_scanlines(raw_px.y);
-    color = vec4f(color.rgb * scanline_dim, color.a);
+    let vline_dim    = crt_vertical_lines(raw_px.x);
+    let edge         = crt_edge_shadow(raw_uv);
+    let phosphor     = 0.97 + 0.03 * sin(raw_px.x * 6.28 * 0.333);
+    let crt_dim      = scanline_dim * vline_dim * edge * phosphor; // combined 0..1
 
-    // --- CRT vignette ------------------------------------------------------
-    let vig = crt_vignette(raw_uv);
-    color = vec4f(color.rgb * vig, color.a * vig);
+    // CRT darkening alpha: how much to dim the HTML beneath
+    // crt_dim=1 → no darkening (alpha=0), crt_dim=0 → full black (alpha=1)
+    let darken_a = 1.0 - crt_dim;
 
-    // --- Slight phosphor glow (softens the look) ---------------------------
-    let phosphor = 0.97 + 0.03 * sin(raw_px.x * 6.28 * 0.333);
-    color = vec4f(color.rgb * phosphor, color.a);
+    // Combine: scene light sits on top of the CRT darkening layer.
+    // Premultiplied alpha output:
+    //   rgb = scene_rgb * scene_a   (additive glow, premultiplied)
+    //   a   = scene_a + darken_a    (scene coverage + CRT darkening)
+    // The darken layer itself has rgb=0 (pure black), so the only colour
+    // contribution comes from the scene.  Where there's no scene content,
+    // the output is (0,0,0, darken_a) which dims the HTML by crt_dim.
+    let combined_a = clamp(scene_a + darken_a * (1.0 - scene_a), 0.0, 1.0);
+    let combined_rgb = scene_rgb * scene_a;   // already premultiplied
 
-    // Canvas is behind HTML — force fully opaque so there are no holes
-    let final_color = clamp(color, vec4f(0.0), vec4f(1.0));
-    return vec4f(final_color.rgb, 1.0);
+    return clamp(vec4f(combined_rgb, combined_a), vec4f(0.0), vec4f(1.0));
 }
