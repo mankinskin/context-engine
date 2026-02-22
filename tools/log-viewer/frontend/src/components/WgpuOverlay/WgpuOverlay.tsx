@@ -4,11 +4,18 @@
  *
  * Architecture:
  *   - Canvas sits at z-index -1 (opaque), HTML backgrounds are transparent
- *     so content appears on top of the aurora/shader scene.
- *   - Compute shader (compute.wgsl) simulates spark particles on the GPU.
- *   - Fragment shader (fragment.wgsl) renders: aurora background, static
- *     shadows for non-hovered elements, animated borders + particles for
- *     hovered elements, graph nodes, and CRT post-processing.
+ *     so content appears on top of the shader scene.
+ *   - Shaders are split into modules (types/noise/background/particles/compute)
+ *     and concatenated at pipeline creation time.
+ *   - Compute shader simulates four particle types:
+ *       [0..96)    metal sparks (spawn at mouse cursor on hover)
+ *       [96..288)  flying embers/ash (continuous rise)
+ *       [288..416) angelic beams (pixel-thin tall vertical rays)
+ *       [416..512) angelic glitter (twinkle around selected element)
+ *   - Background shader renders: smoky texture, static shadows, ember
+ *     hover borders, graph nodes, and CRT post-processing.
+ *   - Particle shader renders all four particle types via instanced quads
+ *     with additive blending.
  *   - `pointer-events: none` keeps HTML fully interactive.
  *
  * Shaders are loaded at build time via Vite's `?raw` import.
@@ -16,8 +23,10 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import { cytoscapeInstance } from '../FlowGraph/FlowGraph';
-import vsCode from './vertex.wgsl?raw';
-import fsCode from './fragment.wgsl?raw';
+import typesCode from './types.wgsl?raw';
+import noiseCode from './noise.wgsl?raw';
+import bgCode from './background.wgsl?raw';
+import particleCode from './particles.wgsl?raw';
 import csCode from './compute.wgsl?raw';
 
 export const gpuOverlayEnabled = signal(true);
@@ -67,11 +76,14 @@ const MAX_ELEMENTS = 128;
 const ELEM_FLOATS = 8;
 const ELEM_BYTES  = ELEM_FLOATS * 4;  // 32 bytes, 16-byte aligned
 
-/** Number of spark particles simulated by the compute shader. */
+/** Number of particles simulated by the compute shader. */
 const NUM_PARTICLES    = 512;
-/** Floats per particle: [px, py, vx, vy, life, max_life, hue, size] */
-const PARTICLE_FLOATS  = 8;
-const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 32 bytes
+/**
+ * Floats per particle: [px, py, vx, vy, life, max_life, hue, size,
+ *                        kind, spawn_t, _p1, _p2]
+ */
+const PARTICLE_FLOATS  = 12;
+const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 48 bytes
 const PARTICLE_BUF_SIZE = NUM_PARTICLES * PARTICLE_BYTES;
 const COMPUTE_WORKGROUP = 64;
 
@@ -131,8 +143,12 @@ const SCAN_INTERVAL_MS = 120;   // ~8 Hz DOM scanning
 
 /** Reusable buffer — avoids a 4 KB allocation every scan. */
 const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
-/** Reusable 32-byte uniform upload buffer. */
-const _uniformF32 = new Float32Array(8);
+/** Reusable 48-byte uniform upload buffer (12 × f32). */
+const _uniformF32 = new Float32Array(12);
+
+/** Hover tracking — detect impact (new hover start) for metal spark burst. */
+let _prevHoverIdx   = -1;
+let _hoverStartTime = 0;
 
 /** Cached element snapshot read by the GPU render loop. */
 let _cachedData  = _elemData;
@@ -209,9 +225,8 @@ function scanElements(): void {
     _cachedCount = count;
 }
 
-// Shaders are loaded from vertex.wgsl / fragment.wgsl at build time via
-// Vite's `?raw` import.  See src/types/wgsl.d.ts for the TypeScript module
-// declaration.
+// Shaders are loaded from types/noise/background/particles/compute .wgsl at
+// build time via Vite's `?raw` import.  See src/types/wgsl.d.ts.
 
 // ---------------------------------------------------------------------------
 // Component
@@ -309,22 +324,30 @@ export function WgpuOverlay() {
             const format = navigator.gpu.getPreferredCanvasFormat();
             ctx.configure({ device, format, alphaMode: 'opaque' });
 
-            // --- Shader modules ------------------------------------------------
+            // --- Shader modules (concatenated from split files) ----------------
+            const sharedCode = typesCode + '\n' + noiseCode + '\n';
+
             const renderShader = device.createShaderModule({
-                label: 'render-shader-wgsl',
-                code:  vsCode + '\n' + fsCode,
+                label: 'background-shader',
+                code:  sharedCode + bgCode,
+            });
+
+            const particleShader = device.createShaderModule({
+                label: 'particle-shader',
+                code:  sharedCode + particleCode,
             });
 
             const computeShader = device.createShaderModule({
-                label: 'compute-shader-wgsl',
-                code:  csCode,
+                label: 'compute-shader',
+                code:  sharedCode + csCode,
             });
 
             // --- Buffers -------------------------------------------------------
-            // Uniform buffer (32 bytes): [time, width, height, element_count,
-            //                             mouse_x, mouse_y, delta_time, hover_elem]
+            // Uniform buffer (48 bytes): [time, width, height, element_count,
+            //   mouse_x, mouse_y, delta_time, hover_elem, hover_start_time,
+            //   selected_elem, _pad × 2]
             const uniformBuffer = device.createBuffer({
-                size:  32,
+                size:  48,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             });
 
@@ -386,9 +409,9 @@ export function WgpuOverlay() {
             // Particle pipeline: instanced quads with additive blend
             const particlePipeline = device.createRenderPipeline({
                 layout:   renderPipelineLayout,
-                vertex:   { module: renderShader, entryPoint: 'vs_particle' },
+                vertex:   { module: particleShader, entryPoint: 'vs_particle' },
                 fragment: {
-                    module:     renderShader,
+                    module:     particleShader,
                     entryPoint: 'fs_particle',
                     targets: [{
                         format,
@@ -462,6 +485,22 @@ export function WgpuOverlay() {
                     }
                 }
 
+                // Track hover transitions for metal-spark burst
+                if (hoverIdx !== _prevHoverIdx) {
+                    _hoverStartTime = time;
+                    _prevHoverIdx   = hoverIdx;
+                }
+
+                // Find selected element index (kind === KIND_SELECTED)
+                let selectedIdx = -1;
+                for (let i = 0; i < count; i++) {
+                    const base = i * ELEM_FLOATS;
+                    if (_cachedData[base + 5] === KIND_SELECTED) {
+                        selectedIdx = i;
+                        break; // first selected element wins
+                    }
+                }
+
                 _uniformF32[0] = time;
                 _uniformF32[1] = canvas!.width;
                 _uniformF32[2] = canvas!.height;
@@ -470,6 +509,8 @@ export function WgpuOverlay() {
                 _uniformF32[5] = my;
                 _uniformF32[6] = dt;
                 _uniformF32[7] = hoverIdx;
+                _uniformF32[8] = _hoverStartTime;
+                _uniformF32[9] = selectedIdx;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
                 if (count > 0) {
                     device.queue.writeBuffer(elemBuffer, 0,
