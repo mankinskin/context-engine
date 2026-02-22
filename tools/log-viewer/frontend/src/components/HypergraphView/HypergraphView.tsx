@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from 'preact/hooks';
 import type { HypergraphSnapshot } from '../../types';
 import { hypergraphSnapshot, selectedEntry } from '../../store';
+import paletteWgsl from '../../effects/palette.wgsl?raw';
+import particleShadingWgsl from '../../effects/particle-shading.wgsl?raw';
 import shaderSource from './hypergraph.wgsl?raw';
 import './hypergraph.css';
 import { buildLayout, type GraphLayout, type LayoutNode } from './layout';
@@ -9,6 +11,13 @@ import {
     mat4Perspective, mat4LookAt, mat4Multiply, mat4Inverse,
     screenToRay, rayPlaneIntersect, vec3Normalize,
 } from '../Scene3D/math3d';
+import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
+import { themeColors, hexToVec3 } from '../../store/theme';
+import {
+    type Particle3D,
+    PARTICLE_INSTANCE_FLOATS as SHARED_PARTICLE_FLOATS,
+    spawnBeam, spawnGlitter, updateParticles3D, fillParticleBuffer,
+} from '../../effects/particle-sim';
 
 // ── constants ──
 
@@ -19,23 +28,12 @@ const QUAD_VERTS = new Float32Array([
 
 const NODE_INSTANCE_FLOATS = 12;   // center(3) + radius(1) + color(4) + flags(4)
 const EDGE_INSTANCE_FLOATS = 12;   // posA(3) + posB(3) + color(4) + flags(1) + pad(1)
-const PARTICLE_INSTANCE_FLOATS = 12;  // center(3) + size(1) + color(4) + params(4)
+const PARTICLE_INSTANCE_FLOATS = SHARED_PARTICLE_FLOATS;
 
 // ── particle system constants ──
 const MAX_BEAMS    = 64;
 const MAX_GLITTER  = 96;
 const MAX_PARTICLES = MAX_BEAMS + MAX_GLITTER;
-
-interface Particle {
-    x: number; y: number; z: number;
-    vx: number; vy: number; vz: number;
-    size: number;
-    life: number;
-    maxLife: number;
-    hue: number;
-    kind: number;   // 0=beam, 1=glitter
-    spawnT: number;
-}
 
 // ── ray-sphere intersection ──
 
@@ -89,8 +87,9 @@ export function HypergraphView() {
             const format = navigator.gpu.getPreferredCanvasFormat();
             ctx.configure({ device, format, alphaMode: 'opaque' });
 
-            // ── shader ──
-            const shader = device.createShaderModule({ code: shaderSource });
+            // ── shader (concatenated with shared palette + particle shading) ──
+            const fullShader = paletteWgsl + '\n' + particleShadingWgsl + '\n' + shaderSource;
+            const shader = device.createShaderModule({ code: fullShader });
 
             // ── quad vertex buffer ──
             const quadVB = device.createBuffer({
@@ -105,17 +104,33 @@ export function HypergraphView() {
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             });
 
+            // ── palette uniform ──
+            const paletteUB = device.createBuffer({
+                size: PALETTE_BYTE_SIZE,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
             const camBGL = device.createBindGroupLayout({
-                entries: [{
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                }],
+                entries: [
+                    {
+                        binding: 0,
+                        visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+                        buffer: { type: 'uniform' },
+                    },
+                    {
+                        binding: 1,
+                        visibility: GPUShaderStage.FRAGMENT,
+                        buffer: { type: 'uniform' },
+                    },
+                ],
             });
 
             const camBG = device.createBindGroup({
                 layout: camBGL,
-                entries: [{ binding: 0, resource: { buffer: camUB } }],
+                entries: [
+                    { binding: 0, resource: { buffer: camUB } },
+                    { binding: 1, resource: { buffer: paletteUB } },
+                ],
             });
 
             const pipelineLayout = device.createPipelineLayout({
@@ -287,67 +302,17 @@ export function HypergraphView() {
                 usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
             });
 
-            // ── particle state ──
-            const particles: Particle[] = [];
+            // ── particle state (uses shared particle-sim module) ──
+            const particles: Particle3D[] = [];
             let lastFrameTime = performance.now() / 1000;
 
-            function spawnBeam(cx: number, cy: number, cz: number, radius: number, time: number) {
-                if (particles.filter(p => p.kind === 0).length >= MAX_BEAMS) return;
-                const angle = Math.random() * Math.PI * 2;
-                const r = radius * (0.8 + Math.random() * 0.4);
-                const p: Particle = {
-                    x: cx + Math.cos(angle) * r,
-                    y: cy,
-                    z: cz + Math.sin(angle) * r,
-                    vx: (Math.random() - 0.5) * 0.15,
-                    vy: 1.2 + Math.random() * 0.8,
-                    vz: (Math.random() - 0.5) * 0.15,
-                    size: 0.6 + Math.random() * 1.0,
-                    life: 2.0 + Math.random() * 2.0,
-                    maxLife: 0,
-                    hue: 0.08 + Math.random() * 0.06,
-                    kind: 0,
-                    spawnT: time,
-                };
-                p.maxLife = p.life;
-                particles.push(p);
-            }
-
-            function spawnGlitter(cx: number, cy: number, cz: number, radius: number, time: number) {
-                if (particles.filter(p => p.kind === 1).length >= MAX_GLITTER) return;
-                const angle = Math.random() * Math.PI * 2;
-                const phi = (Math.random() - 0.5) * Math.PI;
-                const r = radius * (0.9 + Math.random() * 0.3);
-                // Tangential drift around the sphere surface
-                const tangX = -Math.sin(angle);
-                const tangZ = Math.cos(angle);
-                const dir = Math.random() > 0.5 ? 1 : -1;
-                const p: Particle = {
-                    x: cx + Math.cos(angle) * Math.cos(phi) * r,
-                    y: cy + Math.sin(phi) * r,
-                    z: cz + Math.sin(angle) * Math.cos(phi) * r,
-                    vx: tangX * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1,
-                    vy: (Math.random() - 0.5) * 0.3,
-                    vz: tangZ * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1,
-                    size: 0.4 + Math.random() * 0.8,
-                    life: 0.8 + Math.random() * 1.5,
-                    maxLife: 0,
-                    hue: Math.random(),
-                    kind: 1,
-                    spawnT: time,
-                };
-                p.maxLife = p.life;
-                particles.push(p);
-            }
-
-            function updateParticles(dt: number, time: number) {
+            function updateParticlesLocal(dt: number, time: number) {
                 // Spawn particles for selected node (beams)
                 if (selectedIdx >= 0) {
                     const sn = layout.nodeMap.get(selectedIdx);
                     if (sn) {
-                        // Spawn ~4 beams per frame when below cap
                         for (let i = 0; i < 4; i++) {
-                            spawnBeam(sn.x, sn.y, sn.z, sn.radius, time);
+                            spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
                         }
                     }
                 }
@@ -356,36 +321,13 @@ export function HypergraphView() {
                     const hn = layout.nodeMap.get(hoverIdx);
                     if (hn) {
                         for (let i = 0; i < 6; i++) {
-                            spawnGlitter(hn.x, hn.y, hn.z, hn.radius, time);
+                            spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
                         }
                     }
                 }
 
                 // Update existing particles
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    const p = particles[i]!;
-                    p.life -= dt;
-                    if (p.life <= 0) {
-                        particles.splice(i, 1);
-                        continue;
-                    }
-                    if (p.kind === 0) {
-                        // Beam: rise upward with gentle sway
-                        const sway = Math.sin(time * 1.5 + p.spawnT * 7.0) * 0.08;
-                        p.vx = p.vx * (1 - 0.5 * dt) + sway * dt;
-                        p.vz = p.vz * (1 - 0.5 * dt);
-                        p.vy *= (1 - 0.2 * dt);
-                    } else {
-                        // Glitter: drift along surface with sparkle sway
-                        const sway = Math.sin(time * 4.0 + p.spawnT * 13.0) * 0.15;
-                        p.vx = p.vx * (1 - 3 * dt) + sway * dt;
-                        p.vy = p.vy * (1 - 3 * dt) - 0.05 * dt;
-                        p.vz = p.vz * (1 - 3 * dt);
-                    }
-                    p.x += p.vx * dt;
-                    p.y += p.vy * dt;
-                    p.z += p.vz * dt;
-                }
+                updateParticles3D(particles, dt, time);
             }
 
             // ── camera state ──
@@ -685,26 +627,8 @@ export function HypergraphView() {
                 device.queue.writeBuffer(edgeIB, 0, edgeData);
 
                 // ── update & fill particle instances ──
-                updateParticles(dt, time);
-                const liveCount = Math.min(particles.length, MAX_PARTICLES);
-                for (let i = 0; i < liveCount; i++) {
-                    const p = particles[i]!;
-                    const off = i * PARTICLE_INSTANCE_FLOATS;
-                    particleData[off + 0]  = p.x;
-                    particleData[off + 1]  = p.y;
-                    particleData[off + 2]  = p.z;
-                    particleData[off + 3]  = p.size;
-                    // color (white-ish, actual coloring done in shader)
-                    particleData[off + 4]  = 1.0;
-                    particleData[off + 5]  = 1.0;
-                    particleData[off + 6]  = 1.0;
-                    particleData[off + 7]  = 1.0;
-                    // params: kind, tLife, hue, spawnT
-                    particleData[off + 8]  = p.kind;
-                    particleData[off + 9]  = p.life / p.maxLife;
-                    particleData[off + 10] = p.hue;
-                    particleData[off + 11] = p.spawnT;
-                }
+                updateParticlesLocal(dt, time);
+                const liveCount = fillParticleBuffer(particles, particleData, MAX_PARTICLES);
                 if (liveCount > 0) {
                     device.queue.writeBuffer(particleIB, 0, particleData, 0, liveCount * PARTICLE_INSTANCE_FLOATS);
                 }
@@ -716,12 +640,16 @@ export function HypergraphView() {
                 camBuf.set([time, 0, 0, 0], 20);
                 device.queue.writeBuffer(camUB, 0, camBuf);
 
+                // ── palette uniform (theme colors for shaders) ──
+                device.queue.writeBuffer(paletteUB, 0, buildPaletteBuffer(themeColors.value));
+
                 // ── draw ──
+                const bgCol = hexToVec3(themeColors.value.bgPrimary);
                 const encoder = device.createCommandEncoder();
                 const pass = encoder.beginRenderPass({
                     colorAttachments: [{
                         view: ctx.getCurrentTexture().createView(),
-                        clearValue: { r: 0.04, g: 0.04, b: 0.06, a: 1 },
+                        clearValue: { r: bgCol[0], g: bgCol[1], b: bgCol[2], a: 1 },
                         loadOp: 'clear',
                         storeOp: 'store',
                     }],

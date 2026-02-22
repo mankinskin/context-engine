@@ -198,9 +198,9 @@ fn hover_border(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
     let pulse = 0.6 + 0.4 * sin(t * 1.5 + pt * 6.28);
 
     // Ember colour: deep orange → dull red, with vine-green flickers
-    let ember_core = vec3f(0.90, 0.35, 0.06);
-    let ember_edge = vec3f(0.50, 0.12, 0.03);
-    let vine_flick = vec3f(0.15, 0.40, 0.08);
+    let ember_core = palette.cinder_ember.rgb;
+    let ember_edge = palette.cinder_gold.rgb;
+    let vine_flick = palette.cinder_vine.rgb;
     var ember_rgb = mix(ember_edge, ember_core, crack * pulse);
     let vine_f = smoothstep(0.7, 0.9, smooth_noise(vec2f(pt * 20.0 + 5.0, t * 0.5)));
     ember_rgb = mix(ember_rgb, vine_flick, vine_f * 0.4);
@@ -281,9 +281,9 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
 
     // Varied base palette — subtle colour variation across the screen
     let palette_t = smooth_noise(ds_px * 0.003 + drift * 5.0);
-    let cool_tone = vec3f(0.03, 0.035, 0.05);   // blue-grey
-    let warm_tone = vec3f(0.055, 0.035, 0.025);  // brown-amber
-    let mid_tone  = vec3f(0.035, 0.04, 0.035);   // mossy
+    let cool_tone = palette.smoke_cool.rgb;
+    let warm_tone = palette.smoke_warm.rgb;
+    let mid_tone  = palette.smoke_moss.rgb;
     var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
     base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, smooth_noise(ds_px * 0.005 + vec2f(3.0, -t * 0.02))) * 0.5);
     var bg = base_col + vec3f(n_fine + n_coarse + n_grain);

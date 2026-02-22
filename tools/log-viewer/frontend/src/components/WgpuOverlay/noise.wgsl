@@ -1,42 +1,10 @@
-// noise.wgsl — procedural noise, RNG, and colour helpers
+// noise.wgsl — procedural noise, RNG helpers
 //
 // Shared utility functions concatenated between types.wgsl and the
 // pipeline-specific shader file.  No bindings declared here.
-
-// ---- colour helpers ---------------------------------------------------------
-
-fn hue_to_rgb(h: f32) -> vec3f {
-    let h6 = fract(h) * 6.0;
-    let r  = abs(h6 - 3.0) - 1.0;
-    let g  = 2.0 - abs(h6 - 2.0);
-    let b  = 2.0 - abs(h6 - 4.0);
-    return clamp(vec3f(r, g, b), vec3f(0.0), vec3f(1.0));
-}
-
-// Cinder palette: 0..1 → ember / gold / ash / vine cycle
-fn cinder_rgb(t: f32) -> vec3f {
-    let ember = vec3f(0.85, 0.30, 0.08);
-    let gold  = vec3f(0.80, 0.55, 0.12);
-    let ash   = vec3f(0.35, 0.32, 0.28);
-    let vine  = vec3f(0.18, 0.45, 0.15);
-    let s = fract(t);
-    if s < 0.25 { return mix(ember, gold, s * 4.0); }
-    if s < 0.50 { return mix(gold, ash, (s - 0.25) * 4.0); }
-    if s < 0.75 { return mix(ash, vine, (s - 0.50) * 4.0); }
-    return mix(vine, ember, (s - 0.75) * 4.0);
-}
-
-// Kind-aware palette for element borders/glows
-fn kind_ember(kind: u32, hue: f32) -> vec3f {
-    if kind == 1u { return vec3f(0.80, 0.15, 0.05); }   // error: deep red
-    if kind == 2u { return vec3f(0.75, 0.50, 0.10); }   // warn: bonfire gold
-    if kind == 3u { return vec3f(0.30, 0.35, 0.42); }   // info: stone blue
-    if kind == 4u { return vec3f(0.25, 0.24, 0.22); }   // debug: dim ash
-    if kind == 5u { return vec3f(0.20, 0.50, 0.18); }   // span: vine green
-    if kind == 6u { return vec3f(0.90, 0.40, 0.10); }   // selected: bright ember
-    if kind == 7u { return vec3f(0.75, 0.08, 0.05); }   // panic: blood red
-    return vec3f(0.22, 0.20, 0.18);                      // structural: dark iron
-}
+//
+// Colour helpers (cinder_rgb, kind_ember) have moved to
+// effects/particle-shading.wgsl so they can be shared with HypergraphView.
 
 // ---- hash / noise -----------------------------------------------------------
 

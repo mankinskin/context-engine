@@ -1,7 +1,10 @@
 // types.wgsl — shared struct definitions for all shader modules
 //
-// Concatenated before noise.wgsl and the pipeline-specific shader file.
-// Does NOT declare @group/@binding — each pipeline file does that.
+// Concatenated after palette.wgsl and before noise.wgsl / pipeline files.
+// Declares the palette uniform binding (shared across ALL pipelines).
+
+// ---- palette uniform (binding 3, shared by compute + render) ----------------
+@group(0) @binding(3) var<uniform> palette : ThemePalette;
 
 // ---- particle kind constants ------------------------------------------------
 const PK_METAL_SPARK : f32 = 0.0;

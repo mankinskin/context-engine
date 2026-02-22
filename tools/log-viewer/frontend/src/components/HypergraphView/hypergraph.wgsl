@@ -1,4 +1,7 @@
 // ── Hypergraph 3D View – shaders ──
+//
+// Concatenated after: palette.wgsl + particle-shading.wgsl
+// Particle fragment shading uses shared functions (shade_beam_fx, shade_glitter_fx).
 
 struct Camera {
     viewProj : mat4x4<f32>,
@@ -7,6 +10,7 @@ struct Camera {
 };
 
 @group(0) @binding(0) var<uniform> cam : Camera;
+@group(0) @binding(1) var<uniform> palette : ThemePalette;
 
 // ══════════════════════════════════════════════════════
 //  NODE RENDERING  (instanced billboard impostor spheres)
@@ -223,50 +227,11 @@ fn fs_particle(in: ParticleVsOut) -> @location(0) vec4<f32> {
     let spawnT = in.params.w;
 
     if (kind < 0.5) {
-        // ── Angelic beam: double-pointed crystalline shard ──
-        let dx = in.uv.x;
-        let dy = in.uv.y;
-
-        let t   = (dy + 1.0) * 0.5;
-        let mid = abs(t - 0.5) * 2.0;
-        let shard_width = (1.0 - mid * mid) * 0.22;
-
-        let hx = abs(dx) / max(shard_width, 0.005);
-        let edge = smoothstep(1.2, 0.8, hx);
-
-        let core = exp(-dx * dx / max(shard_width * shard_width * 0.1, 0.0005));
-        let h_falloff = edge * (0.25 + 0.75 * core);
-
-        let v_fade = 1.0 - mid * mid;
-        let bright = h_falloff * v_fade * t_life * 1.6;
-
-        if (bright < 0.003) { discard; }
-
-        let center_col = vec3(1.6, 1.5, 1.3);
-        let edge_col   = vec3(1.1, 0.85, 0.4);
-        let ray_col = mix(edge_col, center_col, core * 0.95);
-
-        let col = ray_col * bright * 0.6;
-        let a   = min(bright * 0.4, 1.0);
-        return vec4(col * a, a);
+        // Angelic beam — delegate to shared shade function
+        return shade_beam_fx(in.uv, t_life, 0.2);
     } else {
-        // ── Angelic glitter: twinkling sparkle ──
-        let d = length(in.uv);
-        let dot_mask = smoothstep(1.0, 0.15, d);
-
-        let twinkle = 0.6 + 0.4 * sin(cam.time.x * 12.0 + spawnT * 7.3);
-        let bright = t_life * dot_mask * twinkle * 1.4;
-
-        if (bright < 0.008) { discard; }
-
-        let warm = vec3(1.3, 1.15, 0.85);
-        let cool = vec3(0.85, 0.90, 1.25);
-        let phase = fract(hue * 3.7 + cam.time.x * 0.5);
-        let glitter_col = mix(warm, cool, smoothstep(0.3, 0.7, phase));
-
-        let col = glitter_col * bright;
-        let a   = min(bright * 0.9, 1.0);
-        return vec4(col * a, a);
+        // Glitter — delegate to shared shade function
+        return shade_glitter_fx(in.uv, t_life, hue, cam.time.x, spawnT);
     }
 }
 

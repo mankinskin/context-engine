@@ -23,11 +23,15 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import { cytoscapeInstance } from '../FlowGraph/FlowGraph';
+import paletteWgsl from '../../effects/palette.wgsl?raw';
+import particleShadingWgsl from '../../effects/particle-shading.wgsl?raw';
 import typesCode from './types.wgsl?raw';
 import noiseCode from './noise.wgsl?raw';
 import bgCode from './background.wgsl?raw';
 import particleCode from './particles.wgsl?raw';
 import csCode from './compute.wgsl?raw';
+import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
+import { themeColors } from '../../store/theme';
 
 export const gpuOverlayEnabled = signal(true);
 
@@ -243,6 +247,7 @@ interface GpuState {
     uniformBuffer:    GPUBuffer;
     elemBuffer:       GPUBuffer;
     particleBuffer:   GPUBuffer;
+    paletteBuffer:    GPUBuffer;
     computeBindGroup: GPUBindGroup;
     renderBindGroup:  GPUBindGroup;
     context:          GPUCanvasContext;
@@ -328,16 +333,17 @@ export function WgpuOverlay() {
             ctx.configure({ device, format, alphaMode: 'opaque' });
 
             // --- Shader modules (concatenated from split files) ----------------
-            const sharedCode = typesCode + '\n' + noiseCode + '\n';
+            const sharedCode = paletteWgsl + '\n' + typesCode + '\n' + noiseCode + '\n';
+            const renderShared = sharedCode + particleShadingWgsl + '\n';
 
             const renderShader = device.createShaderModule({
                 label: 'background-shader',
-                code:  sharedCode + bgCode,
+                code:  renderShared + bgCode,
             });
 
             const particleShader = device.createShaderModule({
                 label: 'particle-shader',
-                code:  sharedCode + particleCode,
+                code:  renderShared + particleCode,
             });
 
             const computeShader = device.createShaderModule({
@@ -370,6 +376,12 @@ export function WgpuOverlay() {
             device.queue.writeBuffer(particleBuffer, 0,
                 new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
 
+            // Palette uniform buffer (theme colors for shaders)
+            const paletteBuffer = device.createBuffer({
+                size:  PALETTE_BYTE_SIZE,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
             // --- Bind group layouts --------------------------------------------
             // Compute: uniform + elems (read) + particles (read_write)
             const computeBGL = device.createBindGroupLayout({
@@ -377,6 +389,7 @@ export function WgpuOverlay() {
                     { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
                     { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'read-only-storage' } },
                     { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
+                    { binding: 3, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
                 ],
             });
 
@@ -387,6 +400,7 @@ export function WgpuOverlay() {
                     { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
                     { binding: 1, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
                     { binding: 2, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                    { binding: 3, visibility: GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
                 ],
             });
 
@@ -434,6 +448,7 @@ export function WgpuOverlay() {
                     { binding: 0, resource: { buffer: uniformBuffer  } },
                     { binding: 1, resource: { buffer: elemBuffer     } },
                     { binding: 2, resource: { buffer: particleBuffer } },
+                    { binding: 3, resource: { buffer: paletteBuffer  } },
                 ],
             });
 
@@ -443,12 +458,13 @@ export function WgpuOverlay() {
                     { binding: 0, resource: { buffer: uniformBuffer  } },
                     { binding: 1, resource: { buffer: elemBuffer     } },
                     { binding: 2, resource: { buffer: particleBuffer } },
+                    { binding: 3, resource: { buffer: paletteBuffer  } },
                 ],
             });
 
             const state: GpuState = {
                 device, renderPipeline, particlePipeline, computePipeline,
-                uniformBuffer, elemBuffer, particleBuffer,
+                uniformBuffer, elemBuffer, particleBuffer, paletteBuffer,
                 computeBindGroup, renderBindGroup, context: ctx, animId: 0,
             };
             gpuRef.current = state;
@@ -526,6 +542,10 @@ export function WgpuOverlay() {
                 _uniformF32[8] = _hoverStartTime;
                 _uniformF32[9] = selectedIdx;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
+
+                // Upload current theme palette to GPU
+                device.queue.writeBuffer(paletteBuffer, 0, buildPaletteBuffer(themeColors.value));
+
                 if (count > 0) {
                     device.queue.writeBuffer(elemBuffer, 0,
                         _cachedData.buffer, 0, count * ELEM_BYTES);
