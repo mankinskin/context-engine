@@ -181,8 +181,8 @@ const SELECTOR_META: Array<{ sel: string; hue: number; kind: number }> =
 
 /** Reusable buffer — avoids a 4 KB allocation every scan. */
 const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
-/** Reusable 64-byte uniform upload buffer (16 × f32). */
-const _uniformF32 = new Float32Array(16);
+/** Reusable 112-byte uniform upload buffer (28 × f32). */
+const _uniformF32 = new Float32Array(28);
 
 /** Hover tracking — detect impact (new hover start) for metal spark burst. */
 let _prevHoverIdx   = -1;
@@ -372,12 +372,15 @@ export function WgpuOverlay() {
             });
 
             // --- Buffers -------------------------------------------------------
-            // Uniform buffer (64 bytes): [time, width, height, element_count,
+            // Uniform buffer (112 bytes): [time, width, height, element_count,
             //   mouse_x, mouse_y, delta_time, hover_elem, hover_start_time,
             //   selected_elem, crt_scanlines_h, crt_scanlines_v,
-            //   crt_edge_shadow, crt_flicker, cursor_style, _pad]
+            //   crt_edge_shadow, crt_flicker, cursor_style,
+            //   smoke_intensity, smoke_speed, warm_scale, cool_scale, fine_scale,
+            //   grain_intensity, grain_coarseness, grain_size,
+            //   vignette_str, underglow_str, _pad2, _pad3, _pad4]
             const uniformBuffer = device.createBuffer({
-                size:  64,
+                size:  112,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             });
 
@@ -578,6 +581,16 @@ export function WgpuOverlay() {
                 _uniformF32[12] = crtOn ? eff.crtEdgeShadow / 100 : 0.0;
                 _uniformF32[13] = crtOn ? eff.crtFlicker / 100 : 0.0;
                 _uniformF32[14] = CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0;
+                _uniformF32[15] = eff.smokeIntensity / 100;
+                _uniformF32[16] = eff.smokeSpeed / 100;       // 0–500 → 0.0–5.0
+                _uniformF32[17] = eff.smokeWarmScale / 100;   // 0–200 → 0.0–2.0
+                _uniformF32[18] = eff.smokeCoolScale / 100;
+                _uniformF32[19] = eff.smokeFineScale / 100;
+                _uniformF32[20] = eff.grainIntensity / 100;
+                _uniformF32[21] = eff.grainCoarseness / 100;
+                _uniformF32[22] = eff.grainSize / 100;
+                _uniformF32[23] = eff.vignetteStrength / 100;
+                _uniformF32[24] = eff.underglowStrength / 100;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32.buffer);
 
                 // Upload current theme palette to GPU

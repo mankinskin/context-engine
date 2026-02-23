@@ -380,11 +380,42 @@ export function ThemeSettings() {
       {/* ── Background Smoke ── */}
       <Section title="Background Smoke" icon="☁">
         <p class="theme-section-hint">
-          Base tones for the animated smoky background layers.
+          Base tones and noise parameters for the animated smoky background layers.
         </p>
         <ColorRow label="Cool Tone" description="Blue-grey base" colorKey="smokeCool" />
         <ColorRow label="Warm Tone" description="Brown-amber base" colorKey="smokeWarm" />
         <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
+        {[
+          { key: 'smokeIntensity' as const, label: 'Intensity', desc: 'Overall smoke brightness/amount', max: 100 },
+          { key: 'smokeSpeed' as const, label: 'Speed', desc: 'Smoke drift and animation speed (up to 5×)', max: 500 },
+          { key: 'smokeWarmScale' as const, label: 'Warm Scale', desc: 'UV scale for warm base smoke layers', max: 200 },
+          { key: 'smokeCoolScale' as const, label: 'Cool Scale', desc: 'UV scale for cool blue-tinted wisps', max: 200 },
+          { key: 'smokeFineScale' as const, label: 'Fine Scale', desc: 'UV scale for fine fast wisps', max: 200 },
+          { key: 'grainIntensity' as const, label: 'Grain Intensity', desc: 'Grain brightness / amplitude', max: 100 },
+          { key: 'grainCoarseness' as const, label: 'Grain Coarseness', desc: 'Lower = finer detail, higher = chunkier', max: 100 },
+          { key: 'grainSize' as const, label: 'Grain Size', desc: 'Pixel block size for grain pattern', max: 100 },
+          { key: 'vignetteStrength' as const, label: 'Vignette', desc: 'Edge darkening intensity', max: 100 },
+          { key: 'underglowStrength' as const, label: 'Underglow', desc: 'Warm glow from bottom edge', max: 100 },
+        ].map(({ key, label, desc, max }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max={String(max)}
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}{max === 100 ? '%' : ''}</span>
+            </div>
+          </div>
+        ))}
       </Section>
 
       {/* ── Cursor Style ── */}

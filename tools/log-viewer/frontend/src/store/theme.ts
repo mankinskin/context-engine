@@ -298,6 +298,26 @@ export interface EffectSettings {
   crtFlicker: number;
     /** Custom GPU cursor style. */
     cursorStyle: CursorStyle;
+    /** Overall smoke layer brightness/amount 0–100. */
+    smokeIntensity: number;
+    /** Smoke animation speed 0–500 (maps to 0.0–5.0×). */
+    smokeSpeed: number;
+    /** UV scale for warm base smoke (layers 1+4) 0–200. */
+    smokeWarmScale: number;
+    /** UV scale for cool mid wisps (layer 2) 0–200. */
+    smokeCoolScale: number;
+    /** UV scale for fine fast wisps (layer 3) 0–200. */
+    smokeFineScale: number;
+    /** Grain brightness / amplitude 0–100. */
+    grainIntensity: number;
+    /** Grain coarseness — lower = finer, higher = chunkier 0–100 (maps to frequency scale). */
+    grainCoarseness: number;
+    /** Grain pixel block size 0–100 (maps to 1–8 px). */
+    grainSize: number;
+    /** Edge vignette darkening intensity 0–100. */
+    vignetteStrength: number;
+    /** Warm underglow from bottom edge intensity 0–100. */
+    underglowStrength: number;
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
@@ -307,6 +327,16 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
   crtEdgeShadow: 100,
   crtFlicker: 100,
     cursorStyle: 'default',
+    smokeIntensity: 100,
+    smokeSpeed: 100,
+    smokeWarmScale: 100,
+    smokeCoolScale: 100,
+    smokeFineScale: 100,
+    grainIntensity: 100,
+    grainCoarseness: 50,
+    grainSize: 50,
+    vignetteStrength: 100,
+    underglowStrength: 100,
 };
 
 export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {

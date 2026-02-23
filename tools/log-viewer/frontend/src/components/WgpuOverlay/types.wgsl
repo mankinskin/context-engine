@@ -35,7 +35,19 @@ struct Uniforms {
     crt_edge_shadow  : f32,    // edge/border shadow intensity 0.0–1.0
     crt_flicker      : f32,    // torch flicker intensity 0.0–1.0
     cursor_style     : f32,    // 0 = default, 1 = metal, 2 = glass
+    smoke_intensity  : f32,    // background smoke brightness 0.0–1.0
+    smoke_speed      : f32,    // smoke animation speed multiplier 0.0–5.0
+    smoke_warm_scale : f32,    // UV scale for warm smoke layers 0.0–2.0
+    smoke_cool_scale : f32,    // UV scale for cool wisp layer 0.0–2.0
+    smoke_fine_scale : f32,    // UV scale for fine wisp layer 0.0–2.0
+    grain_intensity  : f32,    // grain brightness/amplitude 0.0–1.0
+    grain_coarseness : f32,    // grain frequency scale 0.0–1.0
+    grain_size       : f32,    // grain pixel block size (1–8 px, normalized 0.0–1.0)
+    vignette_str     : f32,    // edge vignette darkening 0.0–1.0
+    underglow_str    : f32,    // warm bottom underglow 0.0–1.0
     _pad2            : f32,
+    _pad3            : f32,
+    _pad4            : f32,
 }
 
 // ---- DOM element rectangle --------------------------------------------------
