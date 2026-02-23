@@ -617,10 +617,30 @@ fn hover_border(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
 // ---- main scene compositing -------------------------------------------------
 
 fn sample_scene(px: vec2f) -> vec4f {
+    let hover_idx = i32(u.hover_elem);
+    let cs = u.cinder_size;
+
+    // FAST PATH: no hover and cinder disabled → skip entire loop
+    if hover_idx < 0 && cs <= 0.0 {
+        return vec4f(0.0);
+    }
+
     var out = vec4f(0.0);
     let count = u32(u.element_count);
-    let hover_idx = i32(u.hover_elem);
 
+    // When hovering, only process the hovered element (skip full loop)
+    if hover_idx >= 0 && cs > 0.0 {
+        let i = u32(hover_idx);
+        if i < count {
+            let e = elems[i];
+            let prox = hover_proximity(e.rect.x, e.rect.y, e.rect.z, e.rect.w);
+            let border = hover_border(px, e.rect.x, e.rect.y, e.rect.z, e.rect.w, e.hue, u.time, prox);
+            out = out + border;
+        }
+        return out;
+    }
+
+    // Full loop only when cinder enabled but no hover (static shadows)
     for (var i = 0u; i < count; i++) {
         let e  = elems[i];
         let ex = e.rect.x;
@@ -665,41 +685,68 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     // Speed is baked into the base time so ALL time-dependent effects scale uniformly
     let t = u.time * 0.35 * s_speed;
 
-    // --- Smoky dark background with varied palette and vignette ---------------
-    // Downsample coordinates for a chunky/pixelated feel
-    let pixel_size = 4.0;
-    let ds_px = floor(raw_px / pixel_size) * pixel_size;
-    let ds_uv = ds_px / vec2f(u.width, u.height);
+    // --- FAST PATH: minimal background when smoke+grain disabled --------------
+    // This avoids expensive noise calls when only particles are animating.
+    let effects_minimal = s_intensity <= 0.0 && s_grain_i <= 0.0;
 
-    // Vignette — darken edges, bright centre (scaled by vignette_str)
-    let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
-    let vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
+    var bg: vec3f;
+    var vignette: f32;
+    var ds_px: vec2f;
+    var ds_uv: vec2f;
+    var drift: vec2f;
+    var grain_px: vec2f;
 
-    // Grain pixel-block downsampling (s_grain_sz controls block size)
-    let grain_px = floor(ds_px / s_grain_sz) * s_grain_sz;
+    if effects_minimal {
+        // Simple UV-based gradient — no noise calls at all
+        let cool_tone = palette.smoke_cool.rgb;
+        let warm_tone = palette.smoke_warm.rgb;
+        // Vertical gradient from cool (top) to warm (bottom)
+        let grad_t = raw_uv.y * 0.5 + raw_uv.x * 0.2;
+        bg = mix(cool_tone, warm_tone, grad_t);
+        // Cheap vignette
+        let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
+        vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
+        ds_px = raw_px;
+        ds_uv = raw_uv;
+        drift = vec2f(0.0);
+        grain_px = raw_px;
+    } else {
+        // --- Full quality path with noise effects ---------------------------------
+        // Downsample coordinates for a chunky/pixelated feel
+        let pixel_size = 4.0;
+        ds_px = floor(raw_px / pixel_size) * pixel_size;
+        ds_uv = ds_px / vec2f(u.width, u.height);
 
-    // Animated coarse noise — drifting (speed already baked into t)
-    let drift = vec2f(t * 0.12, t * 0.06);
-    var grain_sum = 0.0;
-    if (s_grain_i > 0.0) {
-        let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
-        let n_coarse = smooth_noise((grain_px + drift * 20.0) * 0.006 * s_grain_c + vec2f(7.3, 2.1)) * 0.018 * s_grain_i;
-        let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
-        grain_sum = n_fine + n_coarse + n_grain;
+        // Vignette — darken edges, bright centre (scaled by vignette_str)
+        let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
+        vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
+
+        // Grain pixel-block downsampling (s_grain_sz controls block size)
+        grain_px = floor(ds_px / s_grain_sz) * s_grain_sz;
+
+        // Animated coarse noise — drifting (speed already baked into t)
+        drift = vec2f(t * 0.12, t * 0.06);
+        var grain_sum = 0.0;
+        if (s_grain_i > 0.0) {
+            let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
+            let n_coarse = smooth_noise((grain_px + drift * 20.0) * 0.006 * s_grain_c + vec2f(7.3, 2.1)) * 0.018 * s_grain_i;
+            let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
+            grain_sum = n_fine + n_coarse + n_grain;
+        }
+
+        // Varied base palette — subtle colour variation across the screen
+        let palette_t = smooth_noise(ds_px * 0.003 + drift * 5.0);
+        let cool_tone = palette.smoke_cool.rgb;
+        let warm_tone = palette.smoke_warm.rgb;
+        let mid_tone  = palette.smoke_moss.rgb;
+        var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
+        // Reuse palette_t with offset instead of second smooth_noise call
+        base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, palette_t * 0.8 + 0.1) * 0.5);
+        bg = base_col + vec3f(grain_sum);
     }
 
-    // Varied base palette — subtle colour variation across the screen
-    let palette_t = smooth_noise(ds_px * 0.003 + drift * 5.0);
-    let cool_tone = palette.smoke_cool.rgb;
-    let warm_tone = palette.smoke_warm.rgb;
-    let mid_tone  = palette.smoke_moss.rgb;
-    var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
-    // Reuse palette_t with offset instead of second smooth_noise call
-    base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, palette_t * 0.8 + 0.1) * 0.5);
-    var bg = base_col + vec3f(grain_sum);
-
     // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
-    if (s_intensity > 0.0) {
+    if (s_intensity > 0.0 && !effects_minimal) {
         // Per-layer UV scales control the visible "size" of each color group.
         // Speed is already embedded in t.
         // Layer 1: large slow rolling smoke (warm)
@@ -725,7 +772,7 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     }
 
     // Faint animated grain shimmer (skip noise when grain disabled)
-    if (s_grain_i > 0.0) {
+    if (s_grain_i > 0.0 && !effects_minimal) {
         let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
         bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
     }

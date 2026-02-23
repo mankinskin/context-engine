@@ -56,6 +56,7 @@ export class RenderLoop {
     private prevEmbersEnabled = true;
     private prevBeamsEnabled = true;
     private prevGlitterEnabled = true;
+    private frameSkipCounter = 0;  // For 30fps limiter in particles-only mode
 
     constructor(
         pipelines: GpuPipelines,
@@ -209,6 +210,11 @@ export class RenderLoop {
         const particlesEnabled = eff.sparksEnabled || eff.embersEnabled
             || eff.beamsEnabled || eff.glitterEnabled;
 
+        // "Minimal background" mode — smoke and grain both disabled
+        // In this mode, the shader uses a cheap gradient instead of noise.
+        const minimalBackground = (!eff.smokeEnabled || eff.smokeIntensity === 0)
+            && eff.grainIntensity === 0;
+
         // Time-dependent effects that require continuous rendering
         const anyAnimated =
             (eff.smokeEnabled && eff.smokeIntensity > 0)
@@ -232,6 +238,22 @@ export class RenderLoop {
         if (!anyAnimated && !inputDirty) {
             this.animId = requestAnimationFrame(this.frame);
             return;
+        }
+
+        // Frame rate limiter: skip every other frame when background is minimal
+        // and only particles are animating. This halves GPU load.
+        const particlesOnlyAnimated = anyAnimated && minimalBackground
+            && !(eff.smokeEnabled && eff.smokeIntensity > 0)
+            && !(eff.crtEnabled && eff.crtFlicker > 0)
+            && eff.cursorStyle === 'default';
+        if (particlesOnlyAnimated && !inputDirty) {
+            this.frameSkipCounter = (this.frameSkipCounter + 1) % 2;
+            if (this.frameSkipCounter !== 0) {
+                this.animId = requestAnimationFrame(this.frame);
+                return;
+            }
+        } else {
+            this.frameSkipCounter = 0;
         }
 
         // Track state for next frame's dirty check
