@@ -31,6 +31,10 @@ export const overlayGpu = signal<{ device: GPUDevice; format: GPUTextureFormat }
  * Receivers can set their own pipeline, bind groups, viewport/scissor,
  * and issue draw calls.  Buffer writes via `device.queue.writeBuffer()`
  * are safe here — they're staged before `queue.submit()`.
+ *
+ * The `depthView` parameter provides the shared depth texture (format:
+ * depth24plus) for 3D callbacks that need depth testing.  2D overlay
+ * pipelines can ignore it.
  */
 export type OverlayRenderCallback = (
     pass: GPURenderPassEncoder,
@@ -39,6 +43,7 @@ export type OverlayRenderCallback = (
     dt: number,
     canvasWidth: number,
     canvasHeight: number,
+    depthView: GPUTextureView,
 ) => void;
 
 const _overlayCallbacks = new Set<OverlayRenderCallback>();
@@ -104,4 +109,25 @@ export function setScanInvalidator(fn: (() => void) | null): void {
  */
 export function markOverlayScanDirty(): void {
     _scanInvalidator?.();
+}
+
+// ---------------------------------------------------------------------------
+// Particle reset — delegates to the live BufferManager instance
+// ---------------------------------------------------------------------------
+
+/** Callback set by WgpuOverlay component when buffers are created/destroyed. */
+let _particleResetter: (() => void) | null = null;
+
+/** Register/unregister the buffer's resetParticles method. */
+export function setParticleResetter(fn: (() => void) | null): void {
+    _particleResetter = fn;
+}
+
+/**
+ * Clear all overlay particles immediately.  Call this when switching tabs
+ * or any context change where particles from the previous view should not
+ * persist into the new view.
+ */
+export function resetOverlayParticles(): void {
+    _particleResetter?.();
 }

@@ -481,7 +481,7 @@ export interface EffectSettings {
     /** UV scale for cool mid wisps (layer 2) 0–200. */
     smokeCoolScale: number;
     /** UV scale for fine fast wisps (layer 3) 0–200. */
-    smokeFineScale: number;
+  smokeMossScale: number;
     /** Grain brightness / amplitude 0–100. */
     grainIntensity: number;
     /** Grain coarseness — lower = finer, higher = chunkier 0–100 (maps to frequency scale). */
@@ -544,7 +544,7 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
     smokeSpeed: 100,
     smokeWarmScale: 100,
     smokeCoolScale: 100,
-    smokeFineScale: 100,
+  smokeMossScale: 100,
     grainIntensity: 100,
     grainCoarseness: 50,
     grainSize: 50,

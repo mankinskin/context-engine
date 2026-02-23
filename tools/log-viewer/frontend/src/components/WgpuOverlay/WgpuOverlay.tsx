@@ -18,7 +18,7 @@ import { initGpu, type GpuPipelines } from './gpu-init';
 import { GpuBufferManager } from './gpu-buffers';
 import { ElementScanner } from './element-scanner';
 import { RenderLoop } from './gpu-render-loop';
-import { gpuOverlayEnabled, overlayGpu, setScanInvalidator } from './overlay-api';
+import { gpuOverlayEnabled, overlayGpu, setScanInvalidator, setParticleResetter } from './overlay-api';
 
 // ---------------------------------------------------------------------------
 // Re-exports — preserve the public API surface so that external consumers
@@ -33,6 +33,7 @@ export {
     registerOverlayRenderer,
     unregisterOverlayRenderer,
     markOverlayScanDirty,
+    resetOverlayParticles,
     type OverlayRenderCallback,
 } from './overlay-api';
 
@@ -136,6 +137,9 @@ export function WgpuOverlay() {
             // Wire up markOverlayScanDirty to delegate to this scanner
             setScanInvalidator(() => scanner.invalidateAll());
 
+            // Wire up resetOverlayParticles to delegate to buffer manager
+            setParticleResetter(() => buffers.resetParticles());
+
             // Start observing DOM and launch render loop
             scanner.start();
             loop.start();
@@ -174,6 +178,7 @@ function teardown(session: GpuSession | null) {
     session.loop.stop();
     session.scanner.destroy();
     setScanInvalidator(null);
+    setParticleResetter(null);
     session.buffers.destroy();
     overlayGpu.value = null;
     session.pipelines.device.destroy();

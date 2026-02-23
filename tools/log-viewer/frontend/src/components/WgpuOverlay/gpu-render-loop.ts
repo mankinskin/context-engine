@@ -31,6 +31,12 @@ export class RenderLoop {
     private renderBindGroup: GPUBindGroup;
     private lastGeneration: number;
 
+    // Depth buffer for 3D callbacks
+    private depthTexture: GPUTexture | null = null;
+    private depthView: GPUTextureView | null = null;
+    private depthW = 0;
+    private depthH = 0;
+
     private animId = 0;
     private cancelled = false;
     private prevTime = performance.now() / 1000;
@@ -111,6 +117,20 @@ export class RenderLoop {
             this.renderBindGroup = this.buildRenderBindGroup();
             this.lastGeneration = gen;
         }
+    }
+
+    /** Ensure depth texture exists and matches canvas size. */
+    private ensureDepth(w: number, h: number): void {
+        if (w === this.depthW && h === this.depthH && this.depthTexture) return;
+        this.depthTexture?.destroy();
+        this.depthTexture = this.pipelines.device.createTexture({
+            size: [w, h],
+            format: 'depth24plus',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        });
+        this.depthView = this.depthTexture.createView();
+        this.depthW = w;
+        this.depthH = h;
     }
 
     // --- Public API --------------------------------------------------------
@@ -305,7 +325,7 @@ export class RenderLoop {
         u[16] = eff.smokeEnabled ? eff.smokeSpeed / 100 : 0.0;
         u[17] = eff.smokeEnabled ? eff.smokeWarmScale / 100 : 0.0;
         u[18] = eff.smokeEnabled ? eff.smokeCoolScale / 100 : 0.0;
-        u[19] = eff.smokeEnabled ? eff.smokeFineScale / 100 : 0.0;
+        u[19] = eff.smokeEnabled ? eff.smokeMossScale / 100 : 0.0;
         u[20] = eff.grainIntensity / 100;
         u[21] = eff.grainCoarseness / 100;
         u[22] = eff.grainSize / 100;
@@ -342,6 +362,9 @@ export class RenderLoop {
         const { device, context, computePipeline, renderPipeline, particlePipeline } = this.pipelines;
         const enc = device.createCommandEncoder();
 
+        // Ensure depth buffer for 3D callbacks
+        this.ensureDepth(this.canvas.width, this.canvas.height);
+
         // Compute pass: simulate particles (skip when all particle types disabled)
         if (particlesEnabled) {
             const computePass = enc.beginComputePass();
@@ -351,7 +374,7 @@ export class RenderLoop {
             computePass.end();
         }
 
-        // Render pass
+        // Render pass (with depth attachment for 3D callbacks)
         const renderPass = enc.beginRenderPass({
             colorAttachments: [{
                 view:       context.getCurrentTexture().createView(),
@@ -359,6 +382,12 @@ export class RenderLoop {
                 storeOp:    'store',
                 clearValue: { r: 0, g: 0, b: 0, a: 1 },
             }],
+            depthStencilAttachment: {
+                view: this.depthView!,
+                depthClearValue: 1,
+                depthLoadOp: 'clear',
+                depthStoreOp: 'store',
+            },
         });
 
         // Draw 1: full-screen quad (aurora + elements + CRT)
@@ -375,7 +404,7 @@ export class RenderLoop {
 
         // Draw 3+: external overlay renderers
         for (const cb of getOverlayCallbacks()) {
-            cb(renderPass, device, time, dt, this.canvas.width, this.canvas.height);
+            cb(renderPass, device, time, dt, this.canvas.width, this.canvas.height, this.depthView!);
         }
 
         renderPass.end();

@@ -275,6 +275,7 @@ export function HypergraphView() {
             vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
             fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
             primitive: { topology: 'triangle-list' },
+            depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
         });
 
         const gridPipeline = device.createRenderPipeline({
@@ -282,6 +283,7 @@ export function HypergraphView() {
             vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
             fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
             primitive: { topology: 'triangle-list' },
+            depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
         });
 
         // ── Particle pipeline (3D world-space beams & glitter) ──
@@ -316,6 +318,7 @@ export function HypergraphView() {
                 }],
             },
             primitive: { topology: 'triangle-list' },
+            depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
         });
 
         // ── Instance buffers ──
@@ -360,7 +363,7 @@ export function HypergraphView() {
         ];
 
         // ── Overlay render callback ──
-        const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH) => {
+        const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
             // Get container bounds in viewport coords (= canvas pixel coords,
             // since the overlay canvas uses 1:1 CSS-to-pixel mapping).
             const rect = container.getBoundingClientRect();

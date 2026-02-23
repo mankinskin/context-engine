@@ -85,3 +85,53 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
     let lit = ambient + diffuse * 0.65 + specular * 0.28 + rim * 0.08;
     return vec4(base * lit + vec3(specular * 0.12), 1.0);
 }
+
+// ── Grid line shaders ──
+
+struct GridUniforms {
+    viewProj  : mat4x4<f32>,
+    cameraPos : vec4<f32>,
+    screenSize: vec4<f32>,  // xy = screen size, z = time
+};
+
+@group(0) @binding(1) var<uniform> grid: GridUniforms;
+
+struct GridVsOut {
+    @builtin(position) pos   : vec4<f32>,
+    @location(0)       color : vec4<f32>,
+    @location(1)       dist  : f32,
+};
+
+@vertex
+fn vs_grid(
+    @location(0) quad      : vec2<f32>,   // [-1,1] quad corner
+    @location(1) startPos  : vec3<f32>,   // line start in world
+    @location(2) endPos    : vec3<f32>,   // line end in world
+    @location(3) color     : vec4<f32>,   // RGBA
+    @location(4) width     : f32,         // line thickness multiplier
+) -> GridVsOut {
+    let lineDir = endPos - startPos;
+    let t = quad.x * 0.5 + 0.5;
+    let center = mix(startPos, endPos, t);
+
+    // billboard expansion perpendicular to view
+    let toCamera = normalize(grid.cameraPos.xyz - center);
+    let right = normalize(cross(lineDir, toCamera));
+    let up = cross(right, normalize(lineDir));
+
+    let thickness = mix(0.015, 0.025, width);
+    let expandedPos = center + right * quad.y * thickness;
+
+    var out: GridVsOut;
+    out.pos = grid.viewProj * vec4(expandedPos, 1.0);
+    out.color = color;
+    out.dist = length(center - grid.cameraPos.xyz);
+    return out;
+}
+
+@fragment
+fn fs_grid(in: GridVsOut) -> @location(0) vec4<f32> {
+    // fade with distance
+    let fade = 1.0 - smoothstep(20.0, 40.0, in.dist);
+    return vec4(in.color.rgb, in.color.a * fade);
+}

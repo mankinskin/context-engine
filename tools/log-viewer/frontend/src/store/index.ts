@@ -4,6 +4,7 @@
 import { signal, computed } from '@preact/signals';
 import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot } from '../types';
 import * as api from '../api';
+import { resetOverlayParticles } from '../components/WgpuOverlay/overlay-api';
 
 // Per-file state interface
 interface FileState {
@@ -320,6 +321,7 @@ export function selectEntry(entry: LogEntry | null) {
 }
 
 export function setTab(tab: ViewTab) {
+  resetOverlayParticles();  // Clear lingering particles when switching tabs
   activeTab.value = tab;
   updateCurrentFileState({ activeTab: tab });
 }

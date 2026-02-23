@@ -675,7 +675,7 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     let s_speed      = u.smoke_speed;           // 0.0–5.0
     let s_warm_scale = u.smoke_warm_scale;      // 0.0–2.0 (warm layers 1+4)
     let s_cool_scale = u.smoke_cool_scale;      // 0.0–2.0 (cool layer 2)
-    let s_fine_scale = u.smoke_fine_scale;      // 0.0–2.0 (fine layer 3)
+    let s_moss_scale = u.smoke_moss_scale;      // 0.0–2.0 (moss-tone layer)
     let s_grain_i    = u.grain_intensity;       // 0.0–1.0 brightness
     let s_grain_c    = mix(0.5, 2.0, u.grain_coarseness);  // freq scale 0.5–2.0
     let s_grain_sz   = mix(1.0, 8.0, u.grain_size);         // pixel block 1–8
@@ -712,17 +712,18 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
         grain_px = raw_px;
     } else {
         // --- Full quality path with noise effects ---------------------------------
-        // Downsample coordinates for a chunky/pixelated feel
-        let pixel_size = 4.0;
-        ds_px = floor(raw_px / pixel_size) * pixel_size;
-        ds_uv = ds_px / vec2f(u.width, u.height);
+        // Smoke uses full-resolution coordinates for smooth blending.
+        // Only grain gets intentional pixel-block downsampling.
+        ds_px = raw_px;
+        ds_uv = raw_uv;
 
         // Vignette — darken edges, bright centre (scaled by vignette_str)
         let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
         vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
 
         // Grain pixel-block downsampling (s_grain_sz controls block size)
-        grain_px = floor(ds_px / s_grain_sz) * s_grain_sz;
+        let grain_base = floor(raw_px / 4.0) * 4.0;
+        grain_px = floor(grain_base / s_grain_sz) * s_grain_sz;
 
         // Animated coarse noise — drifting (speed already baked into t)
         drift = vec2f(t * 0.12, t * 0.06);
@@ -734,14 +735,20 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
             grain_sum = n_fine + n_coarse + n_grain;
         }
 
-        // Varied base palette — subtle colour variation across the screen
-        let palette_t = smooth_noise(ds_px * 0.003 + drift * 5.0);
+        // Varied base palette — colour variation across the screen.
+        // s_warm_scale controls base warm/cool blending frequency;
+        // s_cool_scale biases toward cool tones; s_moss_scale drives moss-tone blending.
+        let palette_t = smooth_noise(ds_px * (0.003 * s_warm_scale) + drift * 5.0);
+        let cool_var  = smooth_noise(ds_px * (0.005 * s_cool_scale) + drift * 3.0 + vec2f(3.7, 1.2));
+        let moss_var  = smooth_noise(ds_px * (0.008 * s_moss_scale) + drift * 4.0 + vec2f(5.1, 9.3));
         let cool_tone = palette.smoke_cool.rgb;
         let warm_tone = palette.smoke_warm.rgb;
-        let mid_tone  = palette.smoke_moss.rgb;
+        let moss_tone = palette.smoke_moss.rgb;
         var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
-        // Reuse palette_t with offset instead of second smooth_noise call
-        base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, palette_t * 0.8 + 0.1) * 0.5);
+        // Cool-scale noise pulls toward cool tones
+        base_col = mix(base_col, cool_tone, smoothstep(0.4, 0.7, cool_var) * 0.3);
+        // Moss-scale noise blends in the moss mid-tone (higher scale = more varied moss patches)
+        base_col = mix(base_col, moss_tone, smoothstep(0.3, 0.7, moss_var) * 0.5 * s_moss_scale);
         bg = base_col + vec3f(grain_sum);
     }
 
@@ -751,24 +758,24 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
         // Speed is already embedded in t.
         // Layer 1: large slow rolling smoke (warm)
         let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
-        let smoke1 = fbm(smoke1_uv) * 0.05 * s_intensity;
+        let smoke1 = fbm(smoke1_uv) * 0.10 * s_intensity;
 
         // Layer 2: medium tendrils drifting opposite direction (cool)
         let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
-        let smoke2 = fbm(smoke2_uv) * 0.03 * s_intensity;
+        let smoke2 = fbm(smoke2_uv) * 0.06 * s_intensity;
 
-        // Layer 3: fine fast wisps — curling upward (warm fine)
-        let smoke3_uv = ds_uv * (7.0 * s_fine_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
-        let smoke3 = fbm(smoke3_uv) * 0.018 * s_intensity;
+        // Layer 3: mossy mid-tone wisps — curling upward
+        let smoke3_uv = ds_uv * (5.0 * s_moss_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
+        let smoke3 = fbm(smoke3_uv) * 0.05 * s_intensity;
 
         // Layer 4: very slow deep background churn (warm)
         let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
-        let smoke4 = fbm(smoke4_uv) * 0.035 * s_intensity;
+        let smoke4 = fbm(smoke4_uv) * 0.07 * s_intensity;
 
         // Composite smoke with slight colour tinting per layer
         bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
         bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
-        bg = bg + vec3f(smoke3) * vec3f(0.9, 0.85, 0.7);              // warm fine wisps
+        bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
     }
 
     // Faint animated grain shimmer (skip noise when grain disabled)

@@ -109,6 +109,7 @@ export async function initGpu(canvas: HTMLCanvasElement): Promise<GpuPipelines |
             targets: [{ format }],
         },
         primitive: { topology: 'triangle-list' },
+        depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
     });
 
     const particlePipeline = device.createRenderPipeline({
@@ -126,6 +127,7 @@ export async function initGpu(canvas: HTMLCanvasElement): Promise<GpuPipelines |
             }],
         },
         primitive: { topology: 'triangle-list' },
+        depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
     });
 
     return {

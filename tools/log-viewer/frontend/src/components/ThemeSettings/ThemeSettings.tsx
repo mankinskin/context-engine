@@ -693,7 +693,7 @@ export function ThemeSettings() {
           { key: 'smokeSpeed' as const, label: 'Speed', desc: 'Smoke drift and animation speed (up to 5×)', max: 500 },
           { key: 'smokeWarmScale' as const, label: 'Warm Scale', desc: 'UV scale for warm base smoke layers', max: 200 },
           { key: 'smokeCoolScale' as const, label: 'Cool Scale', desc: 'UV scale for cool blue-tinted wisps', max: 200 },
-          { key: 'smokeFineScale' as const, label: 'Fine Scale', desc: 'UV scale for fine fast wisps', max: 200 },
+          { key: 'smokeMossScale' as const, label: 'Moss Scale', desc: 'UV scale for moss-tone blending and wisps', max: 200 },
           { key: 'grainIntensity' as const, label: 'Grain Intensity', desc: 'Grain brightness / amplitude', max: 100 },
           { key: 'grainCoarseness' as const, label: 'Grain Coarseness', desc: 'Lower = finer detail, higher = chunkier', max: 100 },
           { key: 'grainSize' as const, label: 'Grain Size', desc: 'Pixel block size for grain pattern', max: 100 },

@@ -45,7 +45,7 @@ struct Uniforms {
     smoke_speed      : f32,    // smoke animation speed multiplier 0.0–5.0
     smoke_warm_scale : f32,    // UV scale for warm smoke layers 0.0–2.0
     smoke_cool_scale : f32,    // UV scale for cool wisp layer 0.0–2.0
-    smoke_fine_scale : f32,    // UV scale for fine wisp layer 0.0–2.0
+    smoke_moss_scale : f32,    // UV scale for moss-tone blending 0.0–2.0
     grain_intensity  : f32,    // grain brightness/amplitude 0.0–1.0
     grain_coarseness : f32,    // grain frequency scale 0.0–1.0
     grain_size       : f32,    // grain pixel block size (1–8 px, normalized 0.0–1.0)

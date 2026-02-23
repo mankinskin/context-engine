@@ -8,10 +8,13 @@
 
 // ---- hash / noise -----------------------------------------------------------
 
-// Integer-based hash — avoids expensive sin() transcendental.
-// Uses bitcast to reinterpret f32 bits as u32 for fast mixing.
+// Integer-lattice hash — converts floor()ed coordinates to integers first,
+// then mixes with a standard uint hash.  Avoids the bitcast-on-float
+// correlation artefacts that caused visible checker patterns.
 fn hash2(p: vec2f) -> f32 {
-    var n = bitcast<u32>(p.x) + bitcast<u32>(p.y) * 0x45d9f3bu;
+    let ix = u32(i32(p.x) + 32768);
+    let iy = u32(i32(p.y) + 32768);
+    var n = ix + iy * 0x45d9f3bu;
     n = (n ^ (n >> 16u)) * 0x45d9f3bu;
     n = (n ^ (n >> 16u)) * 0x45d9f3bu;
     n = n ^ (n >> 16u);
@@ -34,7 +37,7 @@ fn fbm(p_in: vec2f) -> f32 {
     var amp  = 0.5;
     var freq = 1.0;
     var p    = p_in;
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 4; i++) {
         val  += amp * smooth_noise(p * freq);
         amp  *= 0.5;
         freq *= 2.0;
