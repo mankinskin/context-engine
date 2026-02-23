@@ -1,6 +1,19 @@
-import { useRef, useEffect, useState } from 'preact/hooks';
-import type { HypergraphSnapshot } from '../../types';
-import { hypergraphSnapshot, selectedEntry } from '../../store';
+/// <reference types="@webgpu/types" />
+/**
+ * HypergraphView — DOM-based 3D node display, unified with WgpuOverlay.
+ *
+ * Nodes are rendered as regular DOM `div` elements with CSS `transform`
+ * positioning, styled as `.log-entry` elements so the global WgpuOverlay
+ * automatically applies ember glow, angelic beams, and glitter effects
+ * via its element scanner.
+ *
+ * Edges, coordinate grid, and 3D particles are rendered on the **shared
+ * WgpuOverlay canvas** through the overlay render callback system — no
+ * separate WebGPU canvas is created.  The callback sets viewport/scissor
+ * to the container's screen region so draw calls are clipped correctly.
+ */
+import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
+import { hypergraphSnapshot } from '../../store';
 import paletteWgsl from '../../effects/palette.wgsl?raw';
 import particleShadingWgsl from '../../effects/particle-shading.wgsl?raw';
 import shaderSource from './hypergraph.wgsl?raw';
@@ -9,15 +22,21 @@ import { buildLayout, type GraphLayout, type LayoutNode } from './layout';
 import {
     Vec3,
     mat4Perspective, mat4LookAt, mat4Multiply, mat4Inverse,
-    screenToRay, rayPlaneIntersect, vec3Normalize,
+    screenToRay, rayPlaneIntersect,
 } from '../Scene3D/math3d';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
-import { themeColors, hexToVec3 } from '../../store/theme';
+import { themeColors } from '../../store/theme';
 import {
     type Particle3D,
-    PARTICLE_INSTANCE_FLOATS as SHARED_PARTICLE_FLOATS,
+    PARTICLE_INSTANCE_FLOATS,
     spawnBeam, spawnGlitter, updateParticles3D, fillParticleBuffer,
 } from '../../effects/particle-sim';
+import {
+    overlayGpu,
+    registerOverlayRenderer,
+    unregisterOverlayRenderer,
+    type OverlayRenderCallback,
+} from '../WgpuOverlay/WgpuOverlay';
 
 // ── constants ──
 
@@ -26,683 +45,562 @@ const QUAD_VERTS = new Float32Array([
     -1, -1,   1,  1,  -1, 1,
 ]);
 
-const NODE_INSTANCE_FLOATS = 12;   // center(3) + radius(1) + color(4) + flags(4)
-const EDGE_INSTANCE_FLOATS = 12;   // posA(3) + posB(3) + color(4) + flags(1) + pad(1)
-const PARTICLE_INSTANCE_FLOATS = SHARED_PARTICLE_FLOATS;
+const EDGE_INSTANCE_FLOATS = 12;
+const GRID_LINE_FLOATS = 12;
 
-// ── particle system constants ──
 const MAX_BEAMS    = 64;
 const MAX_GLITTER  = 96;
 const MAX_PARTICLES = MAX_BEAMS + MAX_GLITTER;
 
-// ── ray-sphere intersection ──
+// ── helpers ──
+
+function nodeWidthClass(width: number, maxWidth: number): string {
+    if (width === 1) return 'level-info';       // atoms → calm blue glow
+    const t = (width - 1) / Math.max(maxWidth - 1, 1);
+    if (t > 0.7) return 'level-error';          // wide nodes → hot red
+    if (t > 0.4) return 'level-warn';           // medium → amber
+    return 'level-debug';                       // small compounds → dim green
+}
+
+function worldToScreen(
+    worldPos: Vec3,
+    viewProj: Float32Array,
+    cw: number, ch: number,
+): { x: number; y: number; z: number; visible: boolean } {
+    const vp = viewProj;
+    const cx = vp[0]*worldPos[0] + vp[4]*worldPos[1] + vp[8]*worldPos[2]  + vp[12];
+    const cy = vp[1]*worldPos[0] + vp[5]*worldPos[1] + vp[9]*worldPos[2]  + vp[13];
+    const cz = vp[2]*worldPos[0] + vp[6]*worldPos[1] + vp[10]*worldPos[2] + vp[14];
+    const cw2 = vp[3]*worldPos[0] + vp[7]*worldPos[1] + vp[11]*worldPos[2] + vp[15];
+
+    if (cw2 <= 0.001) return { x: -9999, y: -9999, z: 1, visible: false };
+
+    const ndcX = cx / cw2;
+    const ndcY = cy / cw2;
+    const ndcZ = cz / cw2;
+
+    const sx = (ndcX * 0.5 + 0.5) * cw;
+    const sy = (1 - (ndcY * 0.5 + 0.5)) * ch;
+
+    return { x: sx, y: sy, z: ndcZ, visible: ndcZ >= 0 && ndcZ <= 1 };
+}
+
+function worldScaleAtDepth(
+    viewProj: Float32Array,
+    worldPos: Vec3,
+    cw: number,
+): number {
+    const vp = viewProj;
+    const clipW = vp[3]*worldPos[0] + vp[7]*worldPos[1] + vp[11]*worldPos[2] + vp[15];
+    if (clipW <= 0.001) return 0;
+    return Math.abs(vp[0] / clipW) * cw * 0.5;
+}
 
 function raySphere(
     ro: Vec3, rd: Vec3, center: Vec3, radius: number,
 ): number | null {
     const oc: Vec3 = [ro[0] - center[0], ro[1] - center[1], ro[2] - center[2]];
-    const a = rd[0] * rd[0] + rd[1] * rd[1] + rd[2] * rd[2];
-    const b = 2 * (oc[0] * rd[0] + oc[1] * rd[1] + oc[2] * rd[2]);
-    const c = oc[0] * oc[0] + oc[1] * oc[1] + oc[2] * oc[2] - radius * radius;
-    const disc = b * b - 4 * a * c;
+    const a = rd[0]*rd[0] + rd[1]*rd[1] + rd[2]*rd[2];
+    const b = 2 * (oc[0]*rd[0] + oc[1]*rd[1] + oc[2]*rd[2]);
+    const c = oc[0]*oc[0] + oc[1]*oc[1] + oc[2]*oc[2] - radius*radius;
+    const disc = b*b - 4*a*c;
     if (disc < 0) return null;
     const t = (-b - Math.sqrt(disc)) / (2 * a);
     return t > 0 ? t : null;
 }
 
-// ── component ──
+// ══════════════════════════════════════════════════════
+//  Component
+// ══════════════════════════════════════════════════════
 
 export function HypergraphView() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const tooltipRef = useRef<HTMLDivElement>(null);
+    const nodeLayerRef = useRef<HTMLDivElement>(null);
     const [tooltip, setTooltip] = useState<{ x: number; y: number; node: LayoutNode } | null>(null);
+    const [selectedIdx, setSelectedIdx] = useState(-1);
+    const [hoverIdx, setHoverIdx] = useState(-1);
 
     const snapshot = hypergraphSnapshot.value;
+    const gpu = overlayGpu.value;
 
+    const layoutRef = useRef<GraphLayout | null>(null);
+    const camRef = useRef({
+        yaw: 0.5, pitch: 0.4, dist: 6,
+        targetY: 0, target: [0, 0, 0] as Vec3,
+    });
+    const interRef = useRef({
+        dragIdx: -1, dragPlaneY: 0, dragOffset: [0, 0, 0] as Vec3,
+        orbiting: false, lastMX: 0, lastMY: 0, mouseX: 0, mouseY: 0,
+        selectedIdx: -1, hoverIdx: -1,
+    });
+
+    // Build layout when snapshot changes
     useEffect(() => {
-        const canvas = canvasRef.current;
+        if (!snapshot) { layoutRef.current = null; return; }
+        const layout = buildLayout(snapshot);
+        layoutRef.current = layout;
+        camRef.current.dist = Math.max(6, layout.nodes.length * 0.5);
+        camRef.current.targetY = (layout.maxWidth - 1) * 0.75;
+        camRef.current.target = [0, camRef.current.targetY, 0];
+    }, [snapshot]);
+
+    const getCamPos = useCallback((): Vec3 => {
+        const c = camRef.current;
+        return [
+            c.target[0] + c.dist * Math.cos(c.pitch) * Math.sin(c.yaw),
+            c.target[1] + c.dist * Math.sin(c.pitch),
+            c.target[2] + c.dist * Math.cos(c.pitch) * Math.cos(c.yaw),
+        ];
+    }, []);
+
+    const getViewProj = useCallback((cw: number, ch: number) => {
+        const camPos = getCamPos();
+        const c = camRef.current;
+        const view = mat4LookAt(camPos, c.target, [0, 1, 0]);
+        const proj = mat4Perspective(Math.PI / 4, cw / Math.max(ch, 1), 0.1, 200);
+        return { viewProj: mat4Multiply(proj, view), camPos };
+    }, [getCamPos]);
+
+    // ── Register overlay renderer for edges, grid, particles ──
+    useEffect(() => {
+        const layout = layoutRef.current;
         const container = containerRef.current;
-        if (!canvas || !container || !snapshot) return;
+        const nodeLayer = nodeLayerRef.current;
+        if (!gpu || !layout || !container || !nodeLayer || layout.nodes.length === 0) return;
 
-        let destroyed = false;
-        let animId = 0;
-        const cleanups: (() => void)[] = [];
+        const { device, format } = gpu;
 
-        const run = async () => {
-            // ── build layout ──
-            const layout = buildLayout(snapshot);
-            if (layout.nodes.length === 0) return;
+        // ── Create pipelines & buffers using the shared overlay device ──
+        const fullShader = paletteWgsl + '\n' + particleShadingWgsl + '\n' + shaderSource;
+        const shader = device.createShaderModule({ code: fullShader });
 
-            // ── WebGPU init ──
-            if (!navigator.gpu) return;
-            const adapter = await navigator.gpu.requestAdapter();
-            if (!adapter || destroyed) return;
-            const device = await adapter.requestDevice();
-            if (destroyed) { device.destroy(); return; }
-            cleanups.push(() => device.destroy());
+        const quadVB = device.createBuffer({
+            size: QUAD_VERTS.byteLength,
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+        device.queue.writeBuffer(quadVB, 0, QUAD_VERTS);
 
-            const ctx = canvas.getContext('webgpu');
-            if (!ctx) return;
-            const format = navigator.gpu.getPreferredCanvasFormat();
-            ctx.configure({ device, format, alphaMode: 'opaque' });
+        const camUB = device.createBuffer({
+            size: 128,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+        const paletteUB = device.createBuffer({
+            size: PALETTE_BYTE_SIZE,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
 
-            // ── shader (concatenated with shared palette + particle shading) ──
-            const fullShader = paletteWgsl + '\n' + particleShadingWgsl + '\n' + shaderSource;
-            const shader = device.createShaderModule({ code: fullShader });
+        const camBGL = device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
+                { binding: 1, visibility: GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
+            ],
+        });
+        const camBG = device.createBindGroup({
+            layout: camBGL,
+            entries: [
+                { binding: 0, resource: { buffer: camUB } },
+                { binding: 1, resource: { buffer: paletteUB } },
+            ],
+        });
+        const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [camBGL] });
 
-            // ── quad vertex buffer ──
-            const quadVB = device.createBuffer({
-                size: QUAD_VERTS.byteLength,
-                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-            });
-            device.queue.writeBuffer(quadVB, 0, QUAD_VERTS);
+        const edgeVertexBuffers: GPUVertexBufferLayout[] = [
+            {
+                arrayStride: 8, stepMode: 'vertex',
+                attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
+            },
+            {
+                arrayStride: EDGE_INSTANCE_FLOATS * 4, stepMode: 'instance',
+                attributes: [
+                    { shaderLocation: 6, offset: 0,  format: 'float32x3' as GPUVertexFormat },
+                    { shaderLocation: 7, offset: 12, format: 'float32x3' as GPUVertexFormat },
+                    { shaderLocation: 8, offset: 24, format: 'float32x4' as GPUVertexFormat },
+                    { shaderLocation: 9, offset: 40, format: 'float32'   as GPUVertexFormat },
+                ],
+            },
+        ];
+        const edgeBlend: GPUBlendState = {
+            color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+        };
 
-            // ── camera uniform ──
-            const camUB = device.createBuffer({
-                size: 128,   // mat4(64) + vec4(16) + vec4(16) = 96, pad to 128
-                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-            });
+        const edgePipeline = device.createRenderPipeline({
+            layout: pipelineLayout,
+            vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
+            fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
+            primitive: { topology: 'triangle-list' },
+        });
 
-            // ── palette uniform ──
-            const paletteUB = device.createBuffer({
-                size: PALETTE_BYTE_SIZE,
-                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-            });
+        const gridPipeline = device.createRenderPipeline({
+            layout: pipelineLayout,
+            vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
+            fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
+            primitive: { topology: 'triangle-list' },
+        });
 
-            const camBGL = device.createBindGroupLayout({
-                entries: [
+        const particlePipeline = device.createRenderPipeline({
+            layout: pipelineLayout,
+            vertex: {
+                module: shader, entryPoint: 'vs_particle',
+                buffers: [
                     {
-                        binding: 0,
-                        visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                        buffer: { type: 'uniform' },
+                        arrayStride: 8, stepMode: 'vertex',
+                        attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
                     },
                     {
-                        binding: 1,
-                        visibility: GPUShaderStage.FRAGMENT,
-                        buffer: { type: 'uniform' },
+                        arrayStride: PARTICLE_INSTANCE_FLOATS * 4, stepMode: 'instance',
+                        attributes: [
+                            { shaderLocation: 2, offset: 0,  format: 'float32x3' as GPUVertexFormat },
+                            { shaderLocation: 3, offset: 12, format: 'float32'   as GPUVertexFormat },
+                            { shaderLocation: 4, offset: 16, format: 'float32x4' as GPUVertexFormat },
+                            { shaderLocation: 5, offset: 32, format: 'float32x4' as GPUVertexFormat },
+                        ],
                     },
                 ],
-            });
+            },
+            fragment: {
+                module: shader, entryPoint: 'fs_particle',
+                targets: [{
+                    format,
+                    blend: {
+                        color: { srcFactor: 'src-alpha', dstFactor: 'one', operation: 'add' },
+                        alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
+                    },
+                }],
+            },
+            primitive: { topology: 'triangle-list' },
+        });
 
-            const camBG = device.createBindGroup({
-                layout: camBGL,
-                entries: [
-                    { binding: 0, resource: { buffer: camUB } },
-                    { binding: 1, resource: { buffer: paletteUB } },
-                ],
-            });
+        // ── Instance buffers ──
+        const maxEdges = layout.edges.length;
+        const edgeIB = device.createBuffer({
+            size: Math.max(maxEdges * EDGE_INSTANCE_FLOATS * 4, 48),
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
 
-            const pipelineLayout = device.createPipelineLayout({
-                bindGroupLayouts: [camBGL],
-            });
+        // ── Grid lines at y=0 plane ──
+        const GRID_EXTENT = 20;
+        const GRID_STEP = 2;
+        const gridLines: number[] = [];
+        for (let i = -GRID_EXTENT; i <= GRID_EXTENT; i += GRID_STEP) {
+            gridLines.push(i, 0, -GRID_EXTENT,  i, 0, GRID_EXTENT,  0.25, 0.22, 0.18, 0.06,  0, 0);
+            gridLines.push(-GRID_EXTENT, 0, i,  GRID_EXTENT, 0, i,  0.25, 0.22, 0.18, 0.06,  0, 0);
+        }
+        gridLines.push(-GRID_EXTENT, 0, 0,  GRID_EXTENT, 0, 0,  0.55, 0.25, 0.15, 0.12,  0, 0); // X red
+        gridLines.push(0, 0, -GRID_EXTENT,  0, 0, GRID_EXTENT,  0.15, 0.25, 0.55, 0.12,  0, 0); // Z blue
+        const gridData = new Float32Array(gridLines);
+        const gridCount = gridLines.length / GRID_LINE_FLOATS;
+        const gridIB = device.createBuffer({
+            size: gridData.byteLength,
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+        device.queue.writeBuffer(gridIB, 0, gridData);
 
-            // ── node pipeline ──
-            const nodePipeline = device.createRenderPipeline({
-                layout: pipelineLayout,
-                vertex: {
-                    module: shader,
-                    entryPoint: 'vs_node',
-                    buffers: [
-                        {   // quad
-                            arrayStride: 8,
-                            stepMode: 'vertex',
-                            attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
-                        },
-                        {   // instance
-                            arrayStride: NODE_INSTANCE_FLOATS * 4,
-                            stepMode: 'instance',
-                            attributes: [
-                                { shaderLocation: 2, offset: 0,  format: 'float32x3' as GPUVertexFormat },  // center
-                                { shaderLocation: 3, offset: 12, format: 'float32'   as GPUVertexFormat },  // radius
-                                { shaderLocation: 4, offset: 16, format: 'float32x4' as GPUVertexFormat },  // color
-                                { shaderLocation: 5, offset: 32, format: 'float32x4' as GPUVertexFormat },  // flags
-                            ],
-                        },
-                    ],
-                },
-                fragment: {
-                    module: shader,
-                    entryPoint: 'fs_node',
-                    targets: [{
-                        format,
-                        blend: {
-                            color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                        },
-                    }],
-                },
-                primitive: { topology: 'triangle-list' },
-                depthStencil: {
-                    format: 'depth24plus',
-                    depthWriteEnabled: true,
-                    depthCompare: 'less',
-                },
-            });
+        const particleIB = device.createBuffer({
+            size: Math.max(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS * 4, 48),
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
 
-            // ── edge pipeline ──
-            const edgePipeline = device.createRenderPipeline({
-                layout: pipelineLayout,
-                vertex: {
-                    module: shader,
-                    entryPoint: 'vs_edge',
-                    buffers: [
-                        {   // quad (reuse)
-                            arrayStride: 8,
-                            stepMode: 'vertex',
-                            attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
-                        },
-                        {   // instance
-                            arrayStride: EDGE_INSTANCE_FLOATS * 4,
-                            stepMode: 'instance',
-                            attributes: [
-                                { shaderLocation: 6, offset: 0,  format: 'float32x3' as GPUVertexFormat },  // posA
-                                { shaderLocation: 7, offset: 12, format: 'float32x3' as GPUVertexFormat },  // posB
-                                { shaderLocation: 8, offset: 24, format: 'float32x4' as GPUVertexFormat },  // color
-                                { shaderLocation: 9, offset: 40, format: 'float32'   as GPUVertexFormat },  // flags
-                            ],
-                        },
-                    ],
-                },
-                fragment: {
-                    module: shader,
-                    entryPoint: 'fs_edge',
-                    targets: [{
-                        format,
-                        blend: {
-                            color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                        },
-                    }],
-                },
-                primitive: { topology: 'triangle-list' },
-                depthStencil: {
-                    format: 'depth24plus',
-                    depthWriteEnabled: false,
-                    depthCompare: 'less',
-                },
-            });
+        // ── Render state (captured by callback closure) ──
+        const particles: Particle3D[] = [];
+        const edgeDataBuf = new Float32Array(maxEdges * EDGE_INSTANCE_FLOATS);
+        const particleDataBuf = new Float32Array(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS);
 
-            // ── instance buffers ──
-            const maxNodes = layout.nodes.length;
-            const maxEdges = layout.edges.length;
+        const PATTERN_COLORS: [number, number, number][] = [
+            [0.45, 0.55, 0.7],  [0.7, 0.45, 0.55],  [0.5, 0.7, 0.45],
+            [0.65, 0.55, 0.7],  [0.7, 0.65, 0.4],   [0.4, 0.7, 0.65],
+        ];
 
-            const nodeIB = device.createBuffer({
-                size: Math.max(maxNodes * NODE_INSTANCE_FLOATS * 4, 48),
-                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-            });
+        // ── Overlay render callback ──
+        const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH) => {
+            // Get container bounds in viewport coords (= canvas pixel coords,
+            // since the overlay canvas uses 1:1 CSS-to-pixel mapping).
+            const rect = container.getBoundingClientRect();
+            const vx = Math.max(0, Math.round(rect.left));
+            const vy = Math.max(0, Math.round(rect.top));
+            const vw = Math.min(Math.round(rect.width),  canvasW - vx);
+            const vh = Math.min(Math.round(rect.height), canvasH - vy);
 
-            const edgeIB = device.createBuffer({
-                size: Math.max(maxEdges * EDGE_INSTANCE_FLOATS * 4, 48),
-                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-            });
+            if (vw <= 0 || vh <= 0) return;
 
-            // ── depth buffer ──
-            let depthTex: GPUTexture | null = null;
-            let depthView: GPUTextureView | null = null;
-            let lastW = 0, lastH = 0;
+            // Restrict rendering to the container's region of the overlay canvas
+            pass.setViewport(vx, vy, vw, vh, 0, 1);
+            pass.setScissorRect(vx, vy, vw, vh);
 
-            function ensureDepth(w: number, h: number) {
-                if (w === lastW && h === lastH && depthTex) return;
-                depthTex?.destroy();
-                depthTex = device.createTexture({
-                    size: [w, h],
-                    format: 'depth24plus',
-                    usage: GPUTextureUsage.RENDER_ATTACHMENT,
-                });
-                depthView = depthTex.createView();
-                lastW = w; lastH = h;
-            }
+            const { viewProj, camPos } = getViewProj(vw, vh);
+            const inter = interRef.current;
 
-            // ── particle pipeline (angelic beams + glitter) ──
-            const particlePipeline = device.createRenderPipeline({
-                layout: pipelineLayout,
-                vertex: {
-                    module: shader,
-                    entryPoint: 'vs_particle',
-                    buffers: [
-                        {   // quad
-                            arrayStride: 8,
-                            stepMode: 'vertex',
-                            attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
-                        },
-                        {   // instance: center(3) + size(1) + color(4) + params(4)
-                            arrayStride: PARTICLE_INSTANCE_FLOATS * 4,
-                            stepMode: 'instance',
-                            attributes: [
-                                { shaderLocation: 2, offset: 0,  format: 'float32x3' as GPUVertexFormat },  // center
-                                { shaderLocation: 3, offset: 12, format: 'float32'   as GPUVertexFormat },  // size
-                                { shaderLocation: 4, offset: 16, format: 'float32x4' as GPUVertexFormat },  // color
-                                { shaderLocation: 5, offset: 32, format: 'float32x4' as GPUVertexFormat },  // params
-                            ],
-                        },
-                    ],
-                },
-                fragment: {
-                    module: shader,
-                    entryPoint: 'fs_particle',
-                    targets: [{
-                        format,
-                        blend: {
-                            color: { srcFactor: 'src-alpha', dstFactor: 'one', operation: 'add' },
-                            alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
-                        },
-                    }],
-                },
-                primitive: { topology: 'triangle-list' },
-                depthStencil: {
-                    format: 'depth24plus',
-                    depthWriteEnabled: false,
-                    depthCompare: 'less',
-                },
-            });
-
-            const particleIB = device.createBuffer({
-                size: Math.max(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS * 4, 48),
-                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-            });
-
-            // ── particle state (uses shared particle-sim module) ──
-            const particles: Particle3D[] = [];
-            let lastFrameTime = performance.now() / 1000;
-
-            function updateParticlesLocal(dt: number, time: number) {
-                // Spawn particles for selected node (beams)
-                if (selectedIdx >= 0) {
-                    const sn = layout.nodeMap.get(selectedIdx);
-                    if (sn) {
-                        for (let i = 0; i < 4; i++) {
-                            spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
-                        }
+            // ── Connected set for selection highlighting ──
+            const connectedSet = new Set<number>();
+            const connectedEdges = new Set<string>();
+            if (inter.selectedIdx >= 0) {
+                connectedSet.add(inter.selectedIdx);
+                const sel = layout.nodeMap.get(inter.selectedIdx);
+                if (sel) {
+                    for (const ci of sel.childIndices) connectedSet.add(ci);
+                    for (const pi of sel.parentIndices) connectedSet.add(pi);
+                }
+                for (const e of layout.edges) {
+                    if (e.from === inter.selectedIdx || e.to === inter.selectedIdx) {
+                        connectedEdges.add(`${e.from}-${e.to}-${e.patternIdx}`);
                     }
                 }
-                // Spawn particles for hovered node (glitter)
-                if (hoverIdx >= 0) {
-                    const hn = layout.nodeMap.get(hoverIdx);
-                    if (hn) {
-                        for (let i = 0; i < 6; i++) {
-                            spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
-                        }
-                    }
+            }
+
+            // ── Position DOM nodes (runs every frame via overlay rAF) ──
+            const nodeDivs = nodeLayer.children;
+            for (let i = 0; i < layout.nodes.length && i < nodeDivs.length; i++) {
+                const n = layout.nodes[i]!;
+                const el = nodeDivs[i] as HTMLDivElement;
+                const screen = worldToScreen([n.x, n.y, n.z], viewProj, vw, vh);
+                const scale = worldScaleAtDepth(viewProj, [n.x, n.y, n.z], vw);
+                const pixelScale = Math.max(0.1, scale * n.radius * 2.5 / 80);
+
+                if (!screen.visible || pixelScale < 0.02) {
+                    el.style.display = 'none';
+                    continue;
                 }
+                el.style.display = '';
 
-                // Update existing particles
-                updateParticles3D(particles, dt, time);
+                const dimmed = inter.selectedIdx >= 0 && !connectedSet.has(n.index);
+                el.style.opacity = dimmed ? '0.15' : '1';
+                el.style.transform =
+                    `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+                el.style.zIndex = String(Math.round((1 - screen.z) * 10000));
             }
 
-            // ── camera state ──
-            let camYaw = 0.5;
-            let camPitch = 0.4;
-            let camDist = Math.max(6, layout.nodes.length * 0.5);
-            let camTargetY = (layout.maxWidth - 1) * 0.75;
-            const camTarget: Vec3 = [0, camTargetY, 0];
+            // ── Fill edge instances ──
+            for (let i = 0; i < layout.edges.length; i++) {
+                const e = layout.edges[i]!;
+                const a = layout.nodeMap.get(e.from);
+                const b = layout.nodeMap.get(e.to);
+                if (!a || !b) continue;
+                const off = i * EDGE_INSTANCE_FLOATS;
+                edgeDataBuf[off    ] = a.x; edgeDataBuf[off + 1] = a.y; edgeDataBuf[off + 2] = a.z;
+                edgeDataBuf[off + 3] = b.x; edgeDataBuf[off + 4] = b.y; edgeDataBuf[off + 5] = b.z;
+                const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                const highlighted = connectedEdges.has(`${e.from}-${e.to}-${e.patternIdx}`);
+                const alpha = inter.selectedIdx >= 0 ? (highlighted ? 0.8 : 0.12) : 0.4;
+                edgeDataBuf[off + 6] = pc[0]; edgeDataBuf[off + 7] = pc[1]; edgeDataBuf[off + 8] = pc[2];
+                edgeDataBuf[off + 9] = alpha;
+                edgeDataBuf[off + 10] = highlighted ? 1 : 0;
+                edgeDataBuf[off + 11] = 0;
+            }
+            dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 
-            function getCamPos(): Vec3 {
-                return [
-                    camTarget[0] + camDist * Math.cos(camPitch) * Math.sin(camYaw),
-                    camTarget[1] + camDist * Math.sin(camPitch),
-                    camTarget[2] + camDist * Math.cos(camPitch) * Math.cos(camYaw),
-                ];
+            // ── Update 3D particles ──
+            if (inter.selectedIdx >= 0) {
+                const sn = layout.nodeMap.get(inter.selectedIdx);
+                if (sn) {
+                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
+                }
+            }
+            if (inter.hoverIdx >= 0) {
+                const hn = layout.nodeMap.get(inter.hoverIdx);
+                if (hn) {
+                    for (let i = 0; i < 6; i++) spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
+                }
+            }
+            updateParticles3D(particles, dt, time);
+            const liveCount = fillParticleBuffer(particles, particleDataBuf, MAX_PARTICLES);
+            if (liveCount > 0) {
+                dev.queue.writeBuffer(particleIB, 0, particleDataBuf, 0, liveCount * PARTICLE_INSTANCE_FLOATS);
             }
 
-            // ── interaction state ──
-            let selectedIdx = -1;
-            let hoverIdx = -1;
-            let dragIdx = -1;
-            let dragPlaneY = 0;
-            let dragOffset: Vec3 = [0, 0, 0];
-            let orbiting = false;
-            let lastMX = 0, lastMY = 0;
-            let mouseX = 0, mouseY = 0;
+            // ── Camera + palette uniforms ──
+            const camBuf = new Float32Array(32);
+            camBuf.set(viewProj, 0);
+            camBuf.set([camPos[0], camPos[1], camPos[2], 0], 16);
+            camBuf.set([time, 0, 0, 0], 20);
+            dev.queue.writeBuffer(camUB, 0, camBuf);
+            dev.queue.writeBuffer(paletteUB, 0, buildPaletteBuffer(themeColors.value));
 
-            function getViewProj(): { viewProj: Float32Array; camPos: Vec3 } {
-                const camPos = getCamPos();
-                const view = mat4LookAt(camPos, camTarget, [0, 1, 0]);
-                const proj = mat4Perspective(
-                    Math.PI / 4,
-                    canvas.clientWidth / Math.max(canvas.clientHeight, 1),
-                    0.1, 200,
-                );
-                return { viewProj: mat4Multiply(proj, view), camPos };
+            // ── Draw grid, edges, particles ──
+            pass.setPipeline(gridPipeline);
+            pass.setVertexBuffer(0, quadVB);
+            pass.setVertexBuffer(1, gridIB);
+            pass.setBindGroup(0, camBG);
+            pass.draw(6, gridCount);
+
+            pass.setPipeline(edgePipeline);
+            pass.setVertexBuffer(0, quadVB);
+            pass.setVertexBuffer(1, edgeIB);
+            pass.setBindGroup(0, camBG);
+            pass.draw(6, layout.edges.length);
+
+            if (liveCount > 0) {
+                pass.setPipeline(particlePipeline);
+                pass.setVertexBuffer(0, quadVB);
+                pass.setVertexBuffer(1, particleIB);
+                pass.setBindGroup(0, camBG);
+                pass.draw(6, liveCount);
             }
 
-            function pickNode(sx: number, sy: number): number {
-                const { viewProj, camPos } = getViewProj();
+            // Restore viewport/scissor to full canvas for subsequent callbacks
+            pass.setViewport(0, 0, canvasW, canvasH, 0, 1);
+            pass.setScissorRect(0, 0, canvasW, canvasH);
+        };
+
+        registerOverlayRenderer(renderCallback);
+
+        return () => {
+            unregisterOverlayRenderer(renderCallback);
+            quadVB.destroy();
+            camUB.destroy();
+            paletteUB.destroy();
+            edgeIB.destroy();
+            gridIB.destroy();
+            particleIB.destroy();
+        };
+    }, [gpu, snapshot, getViewProj]);
+
+    // ── Mouse interaction ──
+    useEffect(() => {
+        const container = containerRef.current;
+        const layout = layoutRef.current;
+        if (!container || !layout) return;
+
+        const inter = interRef.current;
+
+        const onMouseDown = (e: MouseEvent) => {
+            const rect = container.getBoundingClientRect();
+            inter.mouseX = e.clientX - rect.left;
+            inter.mouseY = e.clientY - rect.top;
+            inter.lastMX = e.clientX;
+            inter.lastMY = e.clientY;
+
+            const cw = container.clientWidth;
+            const ch = container.clientHeight;
+
+            if (e.button === 0) {
+                const { viewProj } = getViewProj(cw, ch);
                 const invVP = mat4Inverse(viewProj);
-                if (!invVP) return -1;
-                const ray = screenToRay(sx, sy, canvas.clientWidth, canvas.clientHeight, invVP);
-
-                let bestT = Infinity;
-                let bestIdx = -1;
-                for (const n of layout.nodes) {
-                    const t = raySphere(ray.origin, ray.direction, [n.x, n.y, n.z], n.radius);
-                    if (t !== null && t < bestT) {
-                        bestT = t;
-                        bestIdx = n.index;
+                if (invVP) {
+                    const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
+                    let bestT = Infinity;
+                    let bestIdx = -1;
+                    for (const n of layout.nodes) {
+                        const t = raySphere(ray.origin, ray.direction, [n.x, n.y, n.z], n.radius * 1.5);
+                        if (t !== null && t < bestT) { bestT = t; bestIdx = n.index; }
                     }
-                }
-                return bestIdx;
-            }
-
-            // ── mouse handlers ──
-
-            const onMouseDown = (e: MouseEvent) => {
-                const rect = canvas.getBoundingClientRect();
-                mouseX = e.clientX - rect.left;
-                mouseY = e.clientY - rect.top;
-                lastMX = e.clientX;
-                lastMY = e.clientY;
-
-                if (e.button === 0) {
-                    const hit = pickNode(mouseX, mouseY);
-                    if (hit >= 0) {
-                        const node = layout.nodeMap.get(hit);
+                    if (bestIdx >= 0) {
+                        const node = layout.nodeMap.get(bestIdx);
                         if (node) {
-                            dragIdx = hit;
-                            dragPlaneY = node.y;
-                            const { viewProj } = getViewProj();
-                            const invVP = mat4Inverse(viewProj);
-                            if (invVP) {
-                                const ray = screenToRay(mouseX, mouseY, canvas.clientWidth, canvas.clientHeight, invVP);
-                                const pt = rayPlaneIntersect(ray, dragPlaneY);
-                                if (pt) {
-                                    dragOffset = [node.x - pt[0], 0, node.z - pt[2]];
-                                }
-                            }
+                            inter.dragIdx = bestIdx;
+                            inter.dragPlaneY = node.y;
+                            const pt = rayPlaneIntersect(ray, node.y);
+                            if (pt) inter.dragOffset = [node.x - pt[0], 0, node.z - pt[2]];
                         }
                         e.preventDefault();
                     } else {
-                        // Click empty → deselect or start orbit
-                        orbiting = true;
+                        inter.orbiting = true;
                     }
-                } else if (e.button === 2) {
-                    orbiting = true;
-                    e.preventDefault();
                 }
-            };
-
-            const onMouseMove = (e: MouseEvent) => {
-                const rect = canvas.getBoundingClientRect();
-                mouseX = e.clientX - rect.left;
-                mouseY = e.clientY - rect.top;
-
-                if (dragIdx >= 0) {
-                    const node = layout.nodeMap.get(dragIdx);
-                    if (node) {
-                        const { viewProj } = getViewProj();
-                        const invVP = mat4Inverse(viewProj);
-                        if (invVP) {
-                            const ray = screenToRay(mouseX, mouseY, canvas.clientWidth, canvas.clientHeight, invVP);
-                            const pt = rayPlaneIntersect(ray, dragPlaneY);
-                            if (pt) {
-                                node.x = pt[0] + dragOffset[0];
-                                node.z = pt[2] + dragOffset[2];
-                            }
-                        }
-                    }
-                    return;
-                }
-
-                if (orbiting) {
-                    const dx = e.clientX - lastMX;
-                    const dy = e.clientY - lastMY;
-                    camYaw += dx * 0.005;
-                    camPitch = Math.max(-1.2, Math.min(1.2, camPitch + dy * 0.005));
-                    lastMX = e.clientX;
-                    lastMY = e.clientY;
-                }
-            };
-
-            const onMouseUp = (e: MouseEvent) => {
-                if (dragIdx >= 0 && e.button === 0) {
-                    // Select the node on release (if barely moved)
-                    const rect = canvas.getBoundingClientRect();
-                    const sx = e.clientX - rect.left;
-                    const sy = e.clientY - rect.top;
-                    const moved = Math.abs(sx - mouseX) + Math.abs(sy - mouseY);
-                    // We always select on drag release for simplicity
-                    selectedIdx = dragIdx;
-                }
-                if (!orbiting && dragIdx < 0 && e.button === 0) {
-                    // Clicked empty space
-                    selectedIdx = -1;
-                    setTooltip(null);
-                }
-                dragIdx = -1;
-                orbiting = false;
-            };
-
-            const onWheel = (e: WheelEvent) => {
-                camDist = Math.max(2, Math.min(80, camDist + e.deltaY * 0.02));
+            } else if (e.button === 2) {
+                inter.orbiting = true;
                 e.preventDefault();
-            };
+            }
+        };
 
-            const onCtx = (e: Event) => e.preventDefault();
+        const onMouseMove = (e: MouseEvent) => {
+            const rect = container.getBoundingClientRect();
+            inter.mouseX = e.clientX - rect.left;
+            inter.mouseY = e.clientY - rect.top;
+            const cw = container.clientWidth;
+            const ch = container.clientHeight;
 
-            canvas.addEventListener('mousedown', onMouseDown);
-            window.addEventListener('mousemove', onMouseMove);
-            window.addEventListener('mouseup', onMouseUp);
-            canvas.addEventListener('wheel', onWheel, { passive: false });
-            canvas.addEventListener('contextmenu', onCtx);
-
-            cleanups.push(() => {
-                canvas.removeEventListener('mousedown', onMouseDown);
-                window.removeEventListener('mousemove', onMouseMove);
-                window.removeEventListener('mouseup', onMouseUp);
-                canvas.removeEventListener('wheel', onWheel);
-                canvas.removeEventListener('contextmenu', onCtx);
-            });
-
-            // ── render loop ──
-
-            const t0 = performance.now() / 1000;
-            const nodeData = new Float32Array(maxNodes * NODE_INSTANCE_FLOATS);
-            const edgeData = new Float32Array(maxEdges * EDGE_INSTANCE_FLOATS);
-            const particleData = new Float32Array(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS);
-
-            // Precompute edge colors from pattern index
-            const PATTERN_COLORS: [number, number, number][] = [
-                [0.45, 0.55, 0.7],
-                [0.7, 0.45, 0.55],
-                [0.5, 0.7, 0.45],
-                [0.65, 0.55, 0.7],
-                [0.7, 0.65, 0.4],
-                [0.4, 0.7, 0.65],
-            ];
-
-            function frame() {
-                if (destroyed) return;
-                animId = requestAnimationFrame(frame);
-
-                // resize
-                const dpr = window.devicePixelRatio || 1;
-                const cw = container.clientWidth;
-                const ch = container.clientHeight;
-                const pw = Math.max(1, Math.floor(cw * dpr));
-                const ph = Math.max(1, Math.floor(ch * dpr));
-                if (canvas.width !== pw || canvas.height !== ph) {
-                    canvas.width = pw;
-                    canvas.height = ph;
-                }
-                ensureDepth(pw, ph);
-
-                const time = performance.now() / 1000 - t0;
-                const now = performance.now() / 1000;
-                const dt = Math.min(now - lastFrameTime, 0.05);
-                lastFrameTime = now;
-                const { viewProj, camPos } = getViewProj();
-
-                // Hover detection
-                if (dragIdx < 0 && !orbiting) {
-                    const newHover = pickNode(mouseX, mouseY);
-                    if (newHover !== hoverIdx) {
-                        hoverIdx = newHover;
-                        if (hoverIdx >= 0) {
-                            const n = layout.nodeMap.get(hoverIdx);
-                            if (n) {
-                                setTooltip({ x: mouseX, y: mouseY, node: n });
-                            }
-                        } else {
-                            setTooltip(null);
-                        }
-                    }
-                    // Update tooltip position
-                    if (hoverIdx >= 0) {
-                        const n = layout.nodeMap.get(hoverIdx);
-                        if (n) setTooltip({ x: mouseX, y: mouseY, node: n });
+            if (inter.dragIdx >= 0) {
+                const node = layout.nodeMap.get(inter.dragIdx);
+                if (node) {
+                    const { viewProj } = getViewProj(cw, ch);
+                    const invVP = mat4Inverse(viewProj);
+                    if (invVP) {
+                        const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
+                        const pt = rayPlaneIntersect(ray, inter.dragPlaneY);
+                        if (pt) { node.x = pt[0] + inter.dragOffset[0]; node.z = pt[2] + inter.dragOffset[2]; }
                     }
                 }
-
-                // Cursor
-                if (dragIdx >= 0) canvas.style.cursor = 'grabbing';
-                else if (hoverIdx >= 0) canvas.style.cursor = 'grab';
-                else canvas.style.cursor = 'default';
-
-                // Connected set for selected node
-                const connectedSet = new Set<number>();
-                const connectedEdges = new Set<string>();
-                if (selectedIdx >= 0) {
-                    connectedSet.add(selectedIdx);
-                    const sel = layout.nodeMap.get(selectedIdx);
-                    if (sel) {
-                        for (const ci of sel.childIndices) connectedSet.add(ci);
-                        for (const pi of sel.parentIndices) connectedSet.add(pi);
-                    }
-                    for (const e of layout.edges) {
-                        if (e.from === selectedIdx || e.to === selectedIdx) {
-                            connectedEdges.add(`${e.from}-${e.to}-${e.patternIdx}`);
-                        }
-                    }
-                }
-
-                // ── fill node instances ──
-                for (let i = 0; i < layout.nodes.length; i++) {
-                    const n = layout.nodes[i]!;
-                    const off = i * NODE_INSTANCE_FLOATS;
-                    nodeData[off + 0] = n.x;
-                    nodeData[off + 1] = n.y;
-                    nodeData[off + 2] = n.z;
-                    nodeData[off + 3] = n.radius;
-                    nodeData[off + 4] = n.color[0];
-                    nodeData[off + 5] = n.color[1];
-                    nodeData[off + 6] = n.color[2];
-                    nodeData[off + 7] = n.color[3];
-                    // flags: selected, hovered, isAtom, dimmed
-                    const isSel = n.index === selectedIdx ? 1 : 0;
-                    const isHov = n.index === hoverIdx ? 1 : 0;
-                    const isAtom = n.isAtom ? 1 : 0;
-                    const dimmed = selectedIdx >= 0 && !connectedSet.has(n.index) ? 1 : 0;
-                    nodeData[off + 8]  = isSel;
-                    nodeData[off + 9]  = isHov;
-                    nodeData[off + 10] = isAtom;
-                    nodeData[off + 11] = dimmed;
-                }
-                device.queue.writeBuffer(nodeIB, 0, nodeData);
-
-                // ── fill edge instances ──
-                for (let i = 0; i < layout.edges.length; i++) {
-                    const e = layout.edges[i]!;
-                    const a = layout.nodeMap.get(e.from);
-                    const b = layout.nodeMap.get(e.to);
-                    if (!a || !b) continue;
-
-                    const off = i * EDGE_INSTANCE_FLOATS;
-                    edgeData[off + 0] = a.x;
-                    edgeData[off + 1] = a.y;
-                    edgeData[off + 2] = a.z;
-                    edgeData[off + 3] = b.x;
-                    edgeData[off + 4] = b.y;
-                    edgeData[off + 5] = b.z;
-
-                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
-                    const highlighted = connectedEdges.has(`${e.from}-${e.to}-${e.patternIdx}`);
-                    const alpha = selectedIdx >= 0 ? (highlighted ? 0.8 : 0.12) : 0.4;
-                    edgeData[off + 6] = pc[0];
-                    edgeData[off + 7] = pc[1];
-                    edgeData[off + 8] = pc[2];
-                    edgeData[off + 9] = alpha;
-                    edgeData[off + 10] = highlighted ? 1 : 0;
-                    edgeData[off + 11] = 0;
-                }
-                device.queue.writeBuffer(edgeIB, 0, edgeData);
-
-                // ── update & fill particle instances ──
-                updateParticlesLocal(dt, time);
-                const liveCount = fillParticleBuffer(particles, particleData, MAX_PARTICLES);
-                if (liveCount > 0) {
-                    device.queue.writeBuffer(particleIB, 0, particleData, 0, liveCount * PARTICLE_INSTANCE_FLOATS);
-                }
-
-                // ── camera uniform ──
-                const camBuf = new Float32Array(32);  // 128 bytes = 32 floats
-                camBuf.set(viewProj, 0);
-                camBuf.set([camPos[0], camPos[1], camPos[2], 0], 16);
-                camBuf.set([time, 0, 0, 0], 20);
-                device.queue.writeBuffer(camUB, 0, camBuf);
-
-                // ── palette uniform (theme colors for shaders) ──
-                device.queue.writeBuffer(paletteUB, 0, buildPaletteBuffer(themeColors.value));
-
-                // ── draw ──
-                const bgCol = hexToVec3(themeColors.value.bgPrimary);
-                const encoder = device.createCommandEncoder();
-                const pass = encoder.beginRenderPass({
-                    colorAttachments: [{
-                        view: ctx.getCurrentTexture().createView(),
-                        clearValue: { r: bgCol[0], g: bgCol[1], b: bgCol[2], a: 1 },
-                        loadOp: 'clear',
-                        storeOp: 'store',
-                    }],
-                    depthStencilAttachment: {
-                        view: depthView!,
-                        depthClearValue: 1,
-                        depthLoadOp: 'clear',
-                        depthStoreOp: 'store',
-                    },
-                });
-
-                // Draw edges first (behind)
-                pass.setPipeline(edgePipeline);
-                pass.setVertexBuffer(0, quadVB);
-                pass.setVertexBuffer(1, edgeIB);
-                pass.setBindGroup(0, camBG);
-                pass.draw(6, layout.edges.length);
-
-                // Draw nodes
-                pass.setPipeline(nodePipeline);
-                pass.setVertexBuffer(0, quadVB);
-                pass.setVertexBuffer(1, nodeIB);
-                pass.setBindGroup(0, camBG);
-                pass.draw(6, layout.nodes.length);
-
-                // Draw particles (additive blend, after nodes)
-                if (liveCount > 0) {
-                    pass.setPipeline(particlePipeline);
-                    pass.setVertexBuffer(0, quadVB);
-                    pass.setVertexBuffer(1, particleIB);
-                    pass.setBindGroup(0, camBG);
-                    pass.draw(6, liveCount);
-                }
-
-                pass.end();
-                device.queue.submit([encoder.finish()]);
+                return;
             }
 
-            frame();
+            if (inter.orbiting) {
+                const dx = e.clientX - inter.lastMX;
+                const dy = e.clientY - inter.lastMY;
+                camRef.current.yaw += dx * 0.005;
+                camRef.current.pitch = Math.max(-1.2, Math.min(1.2, camRef.current.pitch + dy * 0.005));
+                inter.lastMX = e.clientX;
+                inter.lastMY = e.clientY;
+                return;
+            }
+
+            // Hover detection
+            const { viewProj } = getViewProj(cw, ch);
+            const invVP = mat4Inverse(viewProj);
+            if (invVP) {
+                const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
+                let bestT = Infinity;
+                let bestIdx = -1;
+                for (const n of layout.nodes) {
+                    const t = raySphere(ray.origin, ray.direction, [n.x, n.y, n.z], n.radius * 1.5);
+                    if (t !== null && t < bestT) { bestT = t; bestIdx = n.index; }
+                }
+                if (bestIdx !== inter.hoverIdx) {
+                    inter.hoverIdx = bestIdx;
+                    setHoverIdx(bestIdx);
+                    if (bestIdx >= 0) {
+                        const n = layout.nodeMap.get(bestIdx);
+                        if (n) setTooltip({ x: inter.mouseX, y: inter.mouseY, node: n });
+                    } else {
+                        setTooltip(null);
+                    }
+                } else if (bestIdx >= 0) {
+                    const n = layout.nodeMap.get(bestIdx);
+                    if (n) setTooltip({ x: inter.mouseX, y: inter.mouseY, node: n });
+                }
+            }
         };
 
-        run();
+        const onMouseUp = (e: MouseEvent) => {
+            if (inter.dragIdx >= 0 && e.button === 0) {
+                inter.selectedIdx = inter.dragIdx;
+                setSelectedIdx(inter.dragIdx);
+            }
+            if (!inter.orbiting && inter.dragIdx < 0 && e.button === 0) {
+                inter.selectedIdx = -1;
+                setSelectedIdx(-1);
+                setTooltip(null);
+            }
+            inter.dragIdx = -1;
+            inter.orbiting = false;
+        };
+
+        const onWheel = (e: WheelEvent) => {
+            camRef.current.dist = Math.max(2, Math.min(80, camRef.current.dist + e.deltaY * 0.02));
+            e.preventDefault();
+        };
+
+        const onCtx = (e: Event) => e.preventDefault();
+
+        container.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        container.addEventListener('wheel', onWheel, { passive: false });
+        container.addEventListener('contextmenu', onCtx);
 
         return () => {
-            destroyed = true;
-            cancelAnimationFrame(animId);
-            cleanups.forEach(fn => fn());
+            container.removeEventListener('mousedown', onMouseDown);
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            container.removeEventListener('wheel', onWheel);
+            container.removeEventListener('contextmenu', onCtx);
         };
-    }, [snapshot]);
+    }, [snapshot, getViewProj]);
+
+    // ── Render ──
 
     if (!snapshot) {
         return (
-            <div class="hypergraph-container">
+            <div class="hypergraph-container hg-dom-mode">
                 <div class="hypergraph-empty">
                     <span>No hypergraph data found in current log</span>
                     <div class="hg-hint">
@@ -715,10 +613,36 @@ export function HypergraphView() {
         );
     }
 
-    return (
-        <div ref={containerRef} class="hypergraph-container">
-            <canvas ref={canvasRef} class="hypergraph-canvas" />
+    const layout = layoutRef.current;
+    const maxWidth = layout?.maxWidth ?? 1;
 
+    return (
+        <div ref={containerRef} class="hypergraph-container hg-dom-mode">
+            {/* DOM node layer — styled as log-entry elements for WgpuOverlay integration */}
+            <div ref={nodeLayerRef} class="hg-node-layer">
+                {layout?.nodes.map(n => {
+                    const isSel = n.index === selectedIdx;
+                    const isHov = n.index === hoverIdx;
+                    const levelClass = nodeWidthClass(n.width, maxWidth);
+                    return (
+                        <div
+                            key={n.index}
+                            class={`log-entry hg-node ${levelClass} ${isSel ? 'selected' : ''} ${isHov ? 'span-highlighted' : ''} ${n.isAtom ? 'hg-atom' : 'hg-compound'}`}
+                            data-node-idx={n.index}
+                        >
+                            <div class="hg-node-content">
+                                <span class={`level-badge ${levelClass}`}>
+                                    {n.isAtom ? 'ATOM' : `W${n.width}`}
+                                </span>
+                                <span class="hg-node-label">{n.label}</span>
+                                <span class="hg-node-idx">#{n.index}</span>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Info overlay */}
             <div class="hypergraph-info">
                 <div class="hg-title">Hypergraph</div>
                 <div class="hg-row">
@@ -735,9 +659,9 @@ export function HypergraphView() {
                 </div>
             </div>
 
+            {/* Tooltip */}
             {tooltip && (
                 <div
-                    ref={tooltipRef}
                     class="hypergraph-tooltip"
                     style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
                 >
@@ -749,6 +673,7 @@ export function HypergraphView() {
                 </div>
             )}
 
+            {/* HUD */}
             <div class="hypergraph-hud">
                 <span>Left drag: Move nodes</span>
                 <span>Right drag / Left empty: Orbit</span>

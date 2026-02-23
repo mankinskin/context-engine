@@ -280,6 +280,51 @@ export const THEME_PRESETS: ThemePreset[] = [
 // ── Reactive state ──────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'log-viewer-theme';
+const SETTINGS_KEY = 'log-viewer-effect-settings';
+
+// ── Effect settings (non-color toggles) ──────────────────────────────────────
+
+export interface EffectSettings {
+  crtEnabled: boolean;
+  /** Horizontal scanlines (+ pixel grid) intensity 0–100. */
+  crtScanlinesH: number;
+  /** Vertical scanlines (+ pixel grid) intensity 0–100. */
+  crtScanlinesV: number;
+  /** Edge/border shadow intensity 0–100. */
+  crtEdgeShadow: number;
+  /** Torch flicker intensity 0–100. */
+  crtFlicker: number;
+}
+
+export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
+  crtEnabled: true,
+  crtScanlinesH: 100,
+  crtScanlinesV: 100,
+  crtEdgeShadow: 100,
+  crtFlicker: 100,
+};
+
+function loadEffectSettings(): EffectSettings {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    if (saved) {
+      return { ...DEFAULT_EFFECT_SETTINGS, ...JSON.parse(saved) };
+    }
+  } catch { /* ignore */ }
+  return { ...DEFAULT_EFFECT_SETTINGS };
+}
+
+export const effectSettings = signal<EffectSettings>(loadEffectSettings());
+
+effect(() => {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(effectSettings.value));
+  } catch { /* storage full */ }
+});
+
+export function updateEffectSetting<K extends keyof EffectSettings>(key: K, value: EffectSettings[K]) {
+  effectSettings.value = { ...effectSettings.value, [key]: value };
+}
 
 function loadSavedTheme(): ThemeColors {
   try {

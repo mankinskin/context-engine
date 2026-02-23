@@ -317,15 +317,27 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     let scene = sample_scene(raw_px);
     var color = bg * (1.0 - scene.a) + scene.rgb;
 
-    // --- Atmospheric CRT effects ---------------------------------------------
-    let scanline = crt_scanlines(raw_px.y);
-    let vline    = crt_vertical_lines(raw_px.x);
-    let edge     = crt_edge_shadow(raw_uv);
-    let torch_flicker = 0.97 + 0.03 * sin(t * 3.0 + raw_uv.x * 2.0);
-    let pixel_grid = crt_pixel_grid(raw_px);
-    let crt_dim  = scanline * vline * edge * torch_flicker;
+    // --- Atmospheric CRT effects (independently controlled) ------------------
+    let sh_i = u.crt_scanlines_h;  // horizontal scanlines
+    let sv_i = u.crt_scanlines_v;  // vertical scanlines
+    let es_i = u.crt_edge_shadow;  // edge/border shadow
+    let fl_i = u.crt_flicker;      // torch flicker
 
-    color = color * crt_dim * pixel_grid;
+    let any_crt = max(max(sh_i, sv_i), max(es_i, fl_i));
+    if (any_crt > 0.001) {
+        // Horizontal scanlines + horizontal component of pixel grid
+        let scanline = mix(1.0, crt_scanlines(raw_px.y), sh_i);
+        // Vertical scanlines + vertical component of pixel grid
+        let vline    = mix(1.0, crt_vertical_lines(raw_px.x), sv_i);
+        // Pixel grid: blend of both axes — only visible where both have intensity
+        let grid_i = min(sh_i, sv_i);
+        let pgrid  = mix(1.0, crt_pixel_grid(raw_px), grid_i);
+
+        let edge     = mix(1.0, crt_edge_shadow(raw_uv), es_i);
+        let torch_flicker = 1.0 - fl_i * (0.03 - 0.03 * sin(t * 3.0 + raw_uv.x * 2.0));
+
+        color = color * scanline * vline * pgrid * edge * torch_flicker;
+    }
 
     return vec4f(clamp(color, vec3f(0.0), vec3f(1.0)), 1.0);
 }

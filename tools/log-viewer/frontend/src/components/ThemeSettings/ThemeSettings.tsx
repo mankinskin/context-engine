@@ -26,6 +26,8 @@ import {
   deleteSavedTheme,
   applySavedTheme,
   renameSavedTheme,
+  effectSettings,
+  updateEffectSetting,
   type ThemeColors,
   type SavedTheme,
 } from '../../store/theme';
@@ -383,6 +385,52 @@ export function ThemeSettings() {
         <ColorRow label="Cool Tone" description="Blue-grey base" colorKey="smokeCool" />
         <ColorRow label="Warm Tone" description="Brown-amber base" colorKey="smokeWarm" />
         <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
+      </Section>
+
+      {/* ── CRT Effect ── */}
+      <Section title="CRT Effect" icon="▤" defaultOpen={true}>
+        <p class="theme-section-hint">
+          Retro CRT post-processing — scanlines, pixel grid, edge shadow, torch flicker.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable CRT</span>
+            <span class="theme-color-desc">Toggle the CRT overlay effect</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.crtEnabled}
+              onChange={(e) => updateEffectSetting('crtEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.crtEnabled && [
+          { key: 'crtScanlinesH' as const, label: 'H Scanlines', desc: 'Horizontal lines and grid rows' },
+          { key: 'crtScanlinesV' as const, label: 'V Scanlines', desc: 'Vertical lines and grid columns' },
+          { key: 'crtEdgeShadow' as const, label: 'Edge Shadow', desc: 'Border/vignette darkening' },
+          { key: 'crtFlicker' as const, label: 'Flicker', desc: 'Torch-like brightness variation' },
+        ].map(({ key, label, desc }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}%</span>
+            </div>
+          </div>
+        ))}
       </Section>
     </div>
     <SavedThemesPanel />

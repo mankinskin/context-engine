@@ -31,9 +31,46 @@ import bgCode from './background.wgsl?raw';
 import particleCode from './particles.wgsl?raw';
 import csCode from './compute.wgsl?raw';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
-import { themeColors } from '../../store/theme';
+import { themeColors, effectSettings } from '../../store/theme';
 
 export const gpuOverlayEnabled = signal(true);
+
+// ---------------------------------------------------------------------------
+// Overlay render callback system — allows external components (e.g.
+// HypergraphView) to draw into the shared WgpuOverlay canvas.
+// ---------------------------------------------------------------------------
+
+/**
+ * Callback invoked during the overlay's render pass each frame.
+ * Receivers can set their own pipeline, bind groups, viewport/scissor,
+ * and issue draw calls.  Buffer writes via `device.queue.writeBuffer()`
+ * are safe here — they're staged before `queue.submit()`.
+ */
+export type OverlayRenderCallback = (
+    pass: GPURenderPassEncoder,
+    device: GPUDevice,
+    time: number,
+    dt: number,
+    canvasWidth: number,
+    canvasHeight: number,
+) => void;
+
+const _overlayCallbacks = new Set<OverlayRenderCallback>();
+
+export function registerOverlayRenderer(cb: OverlayRenderCallback): void {
+    _overlayCallbacks.add(cb);
+}
+
+export function unregisterOverlayRenderer(cb: OverlayRenderCallback): void {
+    _overlayCallbacks.delete(cb);
+}
+
+/**
+ * Exposes the shared GPU device + canvas format so external components
+ * can create pipelines compatible with the overlay's render pass.
+ * `null` when WebGPU is not available or the overlay is disabled.
+ */
+export const overlayGpu = signal<{ device: GPUDevice; format: GPUTextureFormat } | null>(null);
 
 // ---------------------------------------------------------------------------
 // Element scanning
@@ -144,8 +181,8 @@ const SCAN_INTERVAL_MS = 120;   // ~8 Hz DOM scanning
 
 /** Reusable buffer — avoids a 4 KB allocation every scan. */
 const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
-/** Reusable 48-byte uniform upload buffer (12 × f32). */
-const _uniformF32 = new Float32Array(12);
+/** Reusable 64-byte uniform upload buffer (16 × f32). */
+const _uniformF32 = new Float32Array(16);
 
 /** Hover tracking — detect impact (new hover start) for metal spark burst. */
 let _prevHoverIdx   = -1;
@@ -288,6 +325,9 @@ export function WgpuOverlay() {
             const format = navigator.gpu.getPreferredCanvasFormat();
             ctx.configure({ device, format, alphaMode: 'opaque' });
 
+            // Expose device for external renderers (e.g. HypergraphView)
+            overlayGpu.value = { device, format };
+
             // --- Shader modules (concatenated from split files) ----------------
             const sharedCode = paletteWgsl + '\n' + typesCode + '\n' + noiseCode + '\n';
             const renderShared = sharedCode + particleShadingWgsl + '\n';
@@ -308,11 +348,12 @@ export function WgpuOverlay() {
             });
 
             // --- Buffers -------------------------------------------------------
-            // Uniform buffer (48 bytes): [time, width, height, element_count,
+            // Uniform buffer (64 bytes): [time, width, height, element_count,
             //   mouse_x, mouse_y, delta_time, hover_elem, hover_start_time,
-            //   selected_elem, _pad × 2]
+            //   selected_elem, crt_scanlines_h, crt_scanlines_v,
+            //   crt_edge_shadow, crt_flicker, _pad × 2]
             const uniformBuffer = device.createBuffer({
-                size:  48,
+                size:  64,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             });
 
@@ -497,6 +538,11 @@ export function WgpuOverlay() {
                 _uniformF32[7] = hoverIdx;
                 _uniformF32[8] = _hoverStartTime;
                 _uniformF32[9] = selectedIdx;
+                const crtOn = effectSettings.value.crtEnabled;
+                _uniformF32[10] = crtOn ? effectSettings.value.crtScanlinesH / 100 : 0.0;
+                _uniformF32[11] = crtOn ? effectSettings.value.crtScanlinesV / 100 : 0.0;
+                _uniformF32[12] = crtOn ? effectSettings.value.crtEdgeShadow / 100 : 0.0;
+                _uniformF32[13] = crtOn ? effectSettings.value.crtFlicker / 100 : 0.0;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
 
                 // Upload current theme palette to GPU
@@ -536,6 +582,11 @@ export function WgpuOverlay() {
                 renderPass.setPipeline(particlePipeline);
                 renderPass.setBindGroup(0, renderBindGroup);
                 renderPass.draw(6, NUM_PARTICLES);
+
+                // Draw 3+: external overlay renderers
+                for (const cb of _overlayCallbacks) {
+                    cb(renderPass, device, time, dt, canvas!.width, canvas!.height);
+                }
 
                 renderPass.end();
 
@@ -579,5 +630,6 @@ export function WgpuOverlay() {
 function teardown(state: GpuState | null) {
     if (!state) return;
     cancelAnimationFrame(state.animId);
+    overlayGpu.value = null;
     state.device.destroy();
 }

@@ -18,7 +18,7 @@ const EMBER_END   : u32 = 288u;
 const RAY_END     : u32 = 416u;
 const GLITTER_END : u32 = 512u;
 
-// ---- uniforms (48 bytes = 12 × f32) ----------------------------------------
+// ---- uniforms (64 bytes = 16 × f32) ----------------------------------------
 struct Uniforms {
     time             : f32,
     width            : f32,
@@ -30,8 +30,12 @@ struct Uniforms {
     hover_elem       : f32,
     hover_start_time : f32,
     selected_elem    : f32,    // index of selected element (-1 if none)
+    crt_scanlines_h  : f32,    // horizontal scanlines (+grid) intensity 0.0–1.0
+    crt_scanlines_v  : f32,    // vertical scanlines (+grid) intensity 0.0–1.0
+    crt_edge_shadow  : f32,    // edge/border shadow intensity 0.0–1.0
+    crt_flicker      : f32,    // torch flicker intensity 0.0–1.0
+    _pad1            : f32,
     _pad2            : f32,
-    _pad3            : f32,
 }
 
 // ---- DOM element rectangle --------------------------------------------------
