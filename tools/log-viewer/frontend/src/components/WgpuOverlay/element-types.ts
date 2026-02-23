@@ -98,3 +98,17 @@ export const SELECTOR_META: ReadonlyArray<{ sel: string; hue: number; kind: numb
  *  effects (beams, glitter, glow).  We scan them first so they always get
  *  slots in the element buffer. */
 export const PRIORITY_SELECTOR_INDICES = new Set([13, 14, 15]); // span-highlighted, selected, panic
+
+/**
+ * Pre-computed selector scan order: priority selectors first, then the rest.
+ * Ensures interactive-state selectors (selected, span-highlighted, panic)
+ * win over level selectors when an element matches both.
+ */
+export const SELECTOR_SCAN_ORDER: readonly number[] = (() => {
+    const order: number[] = [];
+    for (const si of PRIORITY_SELECTOR_INDICES) order.push(si);
+    for (let i = 0; i < ELEMENT_SELECTORS.length; i++) {
+        if (!PRIORITY_SELECTOR_INDICES.has(i)) order.push(i);
+    }
+    return order;
+})();

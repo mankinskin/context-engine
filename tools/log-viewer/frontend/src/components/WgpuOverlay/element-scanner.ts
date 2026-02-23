@@ -13,6 +13,7 @@ import {
     ELEM_FLOATS,
     SELECTOR_META,
     PRIORITY_SELECTOR_INDICES,
+    SELECTOR_SCAN_ORDER,
 } from './element-types';
 
 // ---------------------------------------------------------------------------
@@ -292,7 +293,7 @@ export class ElementScanner {
         // overlay callback — skip them here to avoid doubling with 2D effects.
         if (el.classList.contains('hg-node')) return;
 
-        for (let si = 0; si < SELECTOR_META.length; si++) {
+        for (const si of SELECTOR_SCAN_ORDER) {
             const meta = SELECTOR_META[si]!;
             try {
                 if (el.matches(meta.sel)) {
@@ -310,7 +311,7 @@ export class ElementScanner {
                     this._io?.observe(el);
                     this._ro?.observe(el);
                     this._rectsStale = true;
-                    break; // first match wins
+                    break; // first match wins (priority selectors checked first)
                 }
             } catch {
                 // Invalid selector (shouldn't happen with our known selectors)
@@ -340,9 +341,11 @@ export class ElementScanner {
     private _reclassifyElement(el: Element): void {
         const existing = this._elementMap.get(el);
 
-        // Check if element now matches any selector
+        // Check if element now matches any selector — priority selectors
+        // first so that .selected / .span-highlighted / .panic-entry win
+        // over level selectors when both match.
         let matched = false;
-        for (let si = 0; si < SELECTOR_META.length; si++) {
+        for (const si of SELECTOR_SCAN_ORDER) {
             const meta = SELECTOR_META[si]!;
             try {
                 if (el.matches(meta.sel)) {
