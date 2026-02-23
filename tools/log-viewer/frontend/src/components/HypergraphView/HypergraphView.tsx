@@ -35,6 +35,7 @@ import {
     overlayGpu,
     registerOverlayRenderer,
     unregisterOverlayRenderer,
+    markOverlayScanDirty,
     type OverlayRenderCallback,
 } from '../WgpuOverlay/WgpuOverlay';
 
@@ -411,6 +412,9 @@ export function HypergraphView() {
                     `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
                 el.style.zIndex = String(Math.round((1 - screen.z) * 10000));
             }
+
+            // Ensure overlay re-scans element rects on the next frame
+            markOverlayScanDirty();
 
             // ── Fill edge instances ──
             for (let i = 0; i < curLayout.edges.length; i++) {

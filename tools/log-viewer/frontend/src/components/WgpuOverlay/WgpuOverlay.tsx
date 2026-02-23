@@ -173,11 +173,11 @@ const SELECTOR_META: Array<{ sel: string; hue: number; kind: number }> =
     }));
 
 // ---------------------------------------------------------------------------
-// Throttled element collector — scans the DOM at a fixed cadence (not every
-// animation frame) and caches the result.  The render loop reads the cached
-// snapshot, so GPU frames never trigger layout recalc.
+// Event-driven element collector — scans the DOM only when something changes
+// (DOM mutations, scroll, resize, or explicit external trigger).  The render
+// loop reads the cached snapshot, so GPU frames never trigger layout recalc
+// unless a dirty flag is set.
 // ---------------------------------------------------------------------------
-const SCAN_INTERVAL_MS = 120;   // ~8 Hz DOM scanning
 
 /** Reusable buffer — avoids a 4 KB allocation every scan. */
 const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
@@ -192,8 +192,18 @@ let _hoverStartTime = 0;
 let _cachedData  = _elemData;
 let _cachedCount = 0;
 
-/** Dirty flag — set by scroll/resize events to trigger a re-scan on the next frame. */
+/** Dirty flag — set by scroll/resize/mutation events to trigger a re-scan on the next frame. */
 let _scanDirty = false;
+
+/**
+ * Mark the element scan as dirty so positions are re-queried on the next
+ * animation frame.  Call this from any component that moves, adds, or
+ * removes overlay-tracked DOM elements (e.g. HypergraphView after
+ * repositioning nodes).
+ */
+export function markOverlayScanDirty(): void {
+    _scanDirty = true;
+}
 
 function scanElements(): void {
     _elemData.fill(0);
@@ -318,7 +328,9 @@ export function WgpuOverlay() {
         if (!canvas) return;
 
         let cancelled = false;
-        let scanTimer: ReturnType<typeof setInterval> | null = null;
+        let mutationObserver: MutationObserver | null = null;
+        const onScroll = () => { _scanDirty = true; };
+        const onResize = () => { _scanDirty = true; };
 
         async function init() {
             if (!('gpu' in navigator)) {
@@ -480,18 +492,28 @@ export function WgpuOverlay() {
             let prevTime = performance.now() / 1000;
             const startTime = performance.now();
 
-            // Start throttled DOM scanner (runs independently of GPU frames)
-            scanTimer = setInterval(scanElements, SCAN_INTERVAL_MS);
-            scanElements(); // initial scan
+            // Initial scan
+            scanElements();
 
-            // Mark scan dirty on any scroll so positions update promptly
-            const onScroll = () => { _scanDirty = true; };
+            // Mark scan dirty on scroll / resize so positions update on next frame
             window.addEventListener('scroll', onScroll, true); // capture phase catches inner scrolls
+            window.addEventListener('resize', onResize);
+
+            // Watch for DOM mutations that affect tracked elements:
+            // class changes (hover, selected, level), child additions/removals,
+            // and inline style changes (HypergraphView node transforms).
+            mutationObserver = new MutationObserver(() => { _scanDirty = true; });
+            mutationObserver.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['class', 'style'],
+            });
 
             function frame() {
                 if (cancelled) return;
 
-                // Re-scan if a scroll happened since last frame
+                // Re-scan if anything changed since last frame
                 if (_scanDirty) {
                     _scanDirty = false;
                     scanElements();
@@ -614,8 +636,9 @@ export function WgpuOverlay() {
 
         return () => {
             cancelled = true;
-            if (scanTimer) clearInterval(scanTimer);
+            if (mutationObserver) mutationObserver.disconnect();
             window.removeEventListener('scroll', onScroll, true);
+            window.removeEventListener('resize', onResize);
             teardown(gpuRef.current);
             gpuRef.current = null;
         };
