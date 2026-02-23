@@ -78,6 +78,16 @@ export const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 48 bytes
 export const PARTICLE_BUF_SIZE = NUM_PARTICLES * PARTICLE_BYTES;
 export const COMPUTE_WORKGROUP = 64;
 
+/** Particle index ranges per type (must match WGSL constants). */
+export const SPARK_START = 0;
+export const SPARK_END = 96;
+export const EMBER_START = SPARK_END;
+export const EMBER_END = 288;
+export const RAY_START = EMBER_END;
+export const RAY_END = 544;
+export const GLITTER_START = RAY_END;
+export const GLITTER_END = 640;
+
 /** Map selector index → element kind for the shader. */
 export function selectorKind(selectorIndex: number): number {
     if (selectorIndex < 8)  return KIND_STRUCTURAL; // 0-7: header, sidebar, etc.

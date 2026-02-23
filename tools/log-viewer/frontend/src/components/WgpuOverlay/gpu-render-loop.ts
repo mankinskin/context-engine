@@ -12,8 +12,12 @@ import type { ElementScanner } from './element-scanner';
 import {
     ELEM_FLOATS, NUM_PARTICLES, COMPUTE_WORKGROUP,
     KIND_SELECTED, KIND_PANIC,
+    SPARK_START, SPARK_END,
+    EMBER_START, EMBER_END,
+    RAY_START, RAY_END,
+    GLITTER_START, GLITTER_END,
 } from './element-types';
-import { getOverlayCallbacks, consumeCaptureRequest } from './overlay-api';
+import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest } from './overlay-api';
 import { captureFrame } from './thumbnail-capture';
 import { effectSettings, themeColors, CURSOR_STYLE_VALUE } from '../../store/theme';
 
@@ -39,6 +43,19 @@ export class RenderLoop {
     // Hover tracking — detect impact (new hover start) for metal spark burst
     private prevHoverIdx = -1;
     private hoverStartTime = 0;
+
+    // Dirty tracking — skip GPU submission when scene is static
+    private prevRenderMx = -9999;
+    private prevRenderMy = -9999;
+    private prevCanvasW = 0;
+    private prevCanvasH = 0;
+    private prevSelectedIdx = -1;
+    private prevEffects: object | null = null;
+    private prevParticlesEnabled = true;
+    private prevSparksEnabled = true;
+    private prevEmbersEnabled = true;
+    private prevBeamsEnabled = true;
+    private prevGlitterEnabled = true;
 
     constructor(
         pipelines: GpuPipelines,
@@ -120,7 +137,7 @@ export class RenderLoop {
         const scanner = this.scanner;
 
         // Let the scanner update rect measurements for stale/visible elements
-        scanner.updateFrame();
+        const dataChanged = scanner.updateFrame();
 
         // If a full re-scan just occurred (view change), kill all particles
         if (scanner.didFullRescan) {
@@ -162,9 +179,11 @@ export class RenderLoop {
             }
         }
 
+        let hoverChanged = false;
         if (hoverIdx !== this.prevHoverIdx) {
             this.hoverStartTime = time;
             this.prevHoverIdx = hoverIdx;
+            hoverChanged = true;
         }
 
         // --- Selected element detection ------------------------------------
@@ -185,6 +204,63 @@ export class RenderLoop {
             }
         }
 
+        // --- Frame skip: avoid GPU work when scene is static ---------------
+        const eff = effectSettings.value;
+        const particlesEnabled = eff.sparksEnabled || eff.embersEnabled
+            || eff.beamsEnabled || eff.glitterEnabled;
+
+        // Time-dependent effects that require continuous rendering
+        const anyAnimated =
+            (eff.smokeEnabled && eff.smokeIntensity > 0)
+            || (eff.crtEnabled && eff.crtFlicker > 0)
+            || eff.cursorStyle !== 'default'
+            || (hoverIdx >= 0 && (eff.cinderEnabled || particlesEnabled))
+            || (selectedIdx >= 0 && eff.beamsEnabled);
+
+        // Input changes since last rendered frame
+        const inputDirty =
+            mx !== this.prevRenderMx || my !== this.prevRenderMy
+            || this.canvas.width !== this.prevCanvasW
+            || this.canvas.height !== this.prevCanvasH
+            || scrollDelta.dx !== 0 || scrollDelta.dy !== 0
+            || scanner.didFullRescan || dataChanged
+            || hoverChanged
+            || selectedIdx !== this.prevSelectedIdx
+            || eff !== this.prevEffects
+            || hasCaptureRequest();
+
+        if (!anyAnimated && !inputDirty) {
+            this.animId = requestAnimationFrame(this.frame);
+            return;
+        }
+
+        // Track state for next frame's dirty check
+        this.prevRenderMx = mx;
+        this.prevRenderMy = my;
+        this.prevCanvasW = this.canvas.width;
+        this.prevCanvasH = this.canvas.height;
+        this.prevSelectedIdx = selectedIdx;
+        this.prevEffects = eff;
+
+        // Zero-fill particle ranges for types that just got disabled
+        if (!eff.sparksEnabled && this.prevSparksEnabled) {
+            this.buffers.resetParticleRange(SPARK_START, SPARK_END - SPARK_START);
+        }
+        if (!eff.embersEnabled && this.prevEmbersEnabled) {
+            this.buffers.resetParticleRange(EMBER_START, EMBER_END - EMBER_START);
+        }
+        if (!eff.beamsEnabled && this.prevBeamsEnabled) {
+            this.buffers.resetParticleRange(RAY_START, RAY_END - RAY_START);
+        }
+        if (!eff.glitterEnabled && this.prevGlitterEnabled) {
+            this.buffers.resetParticleRange(GLITTER_START, GLITTER_END - GLITTER_START);
+        }
+        this.prevSparksEnabled = eff.sparksEnabled;
+        this.prevEmbersEnabled = eff.embersEnabled;
+        this.prevBeamsEnabled = eff.beamsEnabled;
+        this.prevGlitterEnabled = eff.glitterEnabled;
+        this.prevParticlesEnabled = particlesEnabled;
+
         // --- Pack uniforms -------------------------------------------------
         const u = this.buffers.uniformF32;
         u[0] = time;
@@ -197,7 +273,6 @@ export class RenderLoop {
         u[7] = hoverIdx;
         u[8] = this.hoverStartTime;
         u[9] = selectedIdx;
-        const eff = effectSettings.value;
         const crtOn = eff.crtEnabled;
         u[10] = crtOn ? eff.crtScanlinesH / 100 : 0.0;
         u[11] = crtOn ? eff.crtScanlinesV / 100 : 0.0;
@@ -245,12 +320,14 @@ export class RenderLoop {
         const { device, context, computePipeline, renderPipeline, particlePipeline } = this.pipelines;
         const enc = device.createCommandEncoder();
 
-        // Compute pass: simulate particles
-        const computePass = enc.beginComputePass();
-        computePass.setPipeline(computePipeline);
-        computePass.setBindGroup(0, this.computeBindGroup);
-        computePass.dispatchWorkgroups(Math.ceil(NUM_PARTICLES / COMPUTE_WORKGROUP));
-        computePass.end();
+        // Compute pass: simulate particles (skip when all particle types disabled)
+        if (particlesEnabled) {
+            const computePass = enc.beginComputePass();
+            computePass.setPipeline(computePipeline);
+            computePass.setBindGroup(0, this.computeBindGroup);
+            computePass.dispatchWorkgroups(Math.ceil(NUM_PARTICLES / COMPUTE_WORKGROUP));
+            computePass.end();
+        }
 
         // Render pass
         const renderPass = enc.beginRenderPass({
@@ -267,10 +344,12 @@ export class RenderLoop {
         renderPass.setBindGroup(0, this.renderBindGroup);
         renderPass.draw(6);
 
-        // Draw 2: instanced particle quads (additive blend)
-        renderPass.setPipeline(particlePipeline);
-        renderPass.setBindGroup(0, this.renderBindGroup);
-        renderPass.draw(6, NUM_PARTICLES);
+        // Draw 2: instanced particle quads (skip when all disabled)
+        if (particlesEnabled) {
+            renderPass.setPipeline(particlePipeline);
+            renderPass.setBindGroup(0, this.renderBindGroup);
+            renderPass.draw(6, NUM_PARTICLES);
+        }
 
         // Draw 3+: external overlay renderers
         for (const cb of getOverlayCallbacks()) {

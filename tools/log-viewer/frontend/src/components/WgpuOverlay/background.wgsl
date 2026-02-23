@@ -694,9 +694,13 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
 
     // Animated coarse noise — drifting (speed already baked into t)
     let drift = vec2f(t * 0.12, t * 0.06);
-    let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
-    let n_coarse = smooth_noise((grain_px + drift * 20.0) * 0.006 * s_grain_c + vec2f(7.3, 2.1)) * 0.018 * s_grain_i;
-    let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
+    var grain_sum = 0.0;
+    if (s_grain_i > 0.0) {
+        let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
+        let n_coarse = smooth_noise((grain_px + drift * 20.0) * 0.006 * s_grain_c + vec2f(7.3, 2.1)) * 0.018 * s_grain_i;
+        let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
+        grain_sum = n_fine + n_coarse + n_grain;
+    }
 
     // Varied base palette — subtle colour variation across the screen
     let palette_t = smooth_noise(ds_px * 0.003 + drift * 5.0);
@@ -705,39 +709,45 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     let mid_tone  = palette.smoke_moss.rgb;
     var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
     base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, smooth_noise(ds_px * 0.005 + vec2f(3.0, -t * 0.02))) * 0.5);
-    var bg = base_col + vec3f(n_fine + n_coarse + n_grain);
+    var bg = base_col + vec3f(grain_sum);
 
-    // --- Layered animated smoke wisps ----------------------------------------
-    // Per-layer UV scales control the visible "size" of each color group.
-    // Speed is already embedded in t.
-    // Layer 1: large slow rolling smoke (warm)
-    let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
-    let smoke1 = fbm(smoke1_uv) * 0.05 * s_intensity;
+    // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
+    if (s_intensity > 0.0) {
+        // Per-layer UV scales control the visible "size" of each color group.
+        // Speed is already embedded in t.
+        // Layer 1: large slow rolling smoke (warm)
+        let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
+        let smoke1 = fbm(smoke1_uv) * 0.05 * s_intensity;
 
-    // Layer 2: medium tendrils drifting opposite direction (cool)
-    let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
-    let smoke2 = fbm(smoke2_uv) * 0.03 * s_intensity;
+        // Layer 2: medium tendrils drifting opposite direction (cool)
+        let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
+        let smoke2 = fbm(smoke2_uv) * 0.03 * s_intensity;
 
-    // Layer 3: fine fast wisps — curling upward (warm fine)
-    let smoke3_uv = ds_uv * (7.0 * s_fine_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
-    let smoke3 = fbm(smoke3_uv) * 0.018 * s_intensity;
+        // Layer 3: fine fast wisps — curling upward (warm fine)
+        let smoke3_uv = ds_uv * (7.0 * s_fine_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
+        let smoke3 = fbm(smoke3_uv) * 0.018 * s_intensity;
 
-    // Layer 4: very slow deep background churn (warm)
-    let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
-    let smoke4 = fbm(smoke4_uv) * 0.035 * s_intensity;
+        // Layer 4: very slow deep background churn (warm)
+        let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
+        let smoke4 = fbm(smoke4_uv) * 0.035 * s_intensity;
 
-    // Composite smoke with slight colour tinting per layer
-    bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
-    bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
-    bg = bg + vec3f(smoke3) * vec3f(0.9, 0.85, 0.7);              // warm fine wisps
+        // Composite smoke with slight colour tinting per layer
+        bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
+        bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
+        bg = bg + vec3f(smoke3) * vec3f(0.9, 0.85, 0.7);              // warm fine wisps
+    }
 
-    // Faint animated grain shimmer (scaled by grain intensity + coarseness)
-    let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
-    bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
+    // Faint animated grain shimmer (skip noise when grain disabled)
+    if (s_grain_i > 0.0) {
+        let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
+        bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
+    }
 
-    // Dim warm underglow from bottom edge (scaled by underglow_str)
-    let underglow = smoothstep(1.0, 0.4, raw_uv.y) * 0.015 * s_underglow;
-    bg = bg + vec3f(0.5, 0.18, 0.05) * underglow;
+    // Dim warm underglow from bottom edge (skip when off)
+    if (s_underglow > 0.001) {
+        let underglow = smoothstep(1.0, 0.4, raw_uv.y) * 0.015 * s_underglow;
+        bg = bg + vec3f(0.5, 0.18, 0.05) * underglow;
+    }
 
     // Apply vignette
     bg = bg * vignette;

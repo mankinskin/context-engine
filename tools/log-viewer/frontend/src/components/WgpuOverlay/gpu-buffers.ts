@@ -8,7 +8,7 @@
  * must be rebuilt because the elem buffer was reallocated.
  */
 
-import { ELEM_BYTES, NUM_PARTICLES, PARTICLE_FLOATS, PARTICLE_BUF_SIZE } from './element-types';
+import { ELEM_BYTES, NUM_PARTICLES, PARTICLE_FLOATS, PARTICLE_BYTES, PARTICLE_BUF_SIZE } from './element-types';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
 import type { ThemeColors } from '../../store/theme';
 
@@ -121,6 +121,13 @@ export class GpuBufferManager {
     resetParticles(): void {
         this.device.queue.writeBuffer(this.particleBuffer, 0,
             new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
+    }
+
+    /** Zero-fill a range of particles [startIdx, startIdx + count). */
+    resetParticleRange(startIdx: number, count: number): void {
+        const offset = startIdx * PARTICLE_BYTES;
+        const data = new Float32Array(count * PARTICLE_FLOATS);
+        this.device.queue.writeBuffer(this.particleBuffer, offset, data.buffer);
     }
 
     /** Destroy all GPU buffers. */

@@ -72,7 +72,12 @@ export function captureOverlayThumbnail(): Promise<string> {
     });
 }
 
-/** Check if a capture is pending (used by render loop). */
+/** Non-destructive check for pending capture request (used by frame skip logic). */
+export function hasCaptureRequest(): boolean {
+    return _captureResolve != null;
+}
+
+/** Consume and return a pending capture resolver (used by render loop). */
 export function consumeCaptureRequest(): ((url: string) => void) | null {
     const resolve = _captureResolve;
     _captureResolve = null;

@@ -70,10 +70,13 @@ fn hover_allows(fx_kind: f32) -> bool {
 // ---- metal spark physics (at mouse cursor, continuous while hovering) --------
 
 fn update_metal_spark(idx: u32) {
+    // Speed == 0 means sparks are disabled — buffer already zeroed by CPU
+    if u.spark_speed <= 0.0 { return; }
+
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
-    let spd = max(u.spark_speed, 0.01);
+    let spd = u.spark_speed;
 
     // Respect spark count limit — park excess sparks
     let spark_frac = select(1.0, u.spark_count, u.spark_count > 0.0);
@@ -128,10 +131,13 @@ fn update_metal_spark(idx: u32) {
 // ---- ember / ash physics (continuous rising embers) -------------------------
 
 fn update_ember(idx: u32) {
+    // Speed == 0 means embers are disabled — buffer already zeroed by CPU
+    if u.ember_speed <= 0.0 { return; }
+
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
-    let spd = max(u.ember_speed, 0.01);
+    let spd = u.ember_speed;
 
     // Respect ember count limit
     let ember_frac = select(1.0, u.ember_count, u.ember_count > 0.0);
@@ -184,9 +190,12 @@ fn update_ember(idx: u32) {
 // ---- angelic beam physics (pixel-thin vertical rays from selected/opened) ---
 
 fn update_god_ray(idx: u32) {
+    // Speed == 0 means beams are disabled — buffer already zeroed by CPU
+    if u.beam_speed <= 0.0 { return; }
+
     var p  = particles[idx];
     let dt = u.delta_time;
-    let spd = max(u.beam_speed, 0.01);
+    let spd = u.beam_speed;
 
     // Beam source: normally selected_elem, or hovered beam-preview container
     var beam_src = i32(u.selected_elem);
@@ -245,10 +254,13 @@ fn update_god_ray(idx: u32) {
 // ---- angelic glitter physics (around hovered element border) ----------------
 
 fn update_glitter(idx: u32) {
+    // Speed == 0 means glitter is disabled — buffer already zeroed by CPU
+    if u.glitter_speed <= 0.0 { return; }
+
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
-    let spd = max(u.glitter_speed, 0.01);
+    let spd = u.glitter_speed;
 
     // Respect glitter count limit
     let glitter_frac = select(1.0, u.glitter_count, u.glitter_count > 0.0);
