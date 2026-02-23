@@ -70,7 +70,7 @@ export interface SourceSnippet {
   language: string;
 }
 
-export type ViewTab = 'logs' | 'flow' | 'stats' | 'code' | 'debug' | 'scene3d' | 'hypergraph' | 'settings';
+export type ViewTab = 'logs' | 'stats' | 'code' | 'debug' | 'scene3d' | 'hypergraph' | 'settings';
 
 // ── Hypergraph snapshot types (from Rust graph serialization) ──
 

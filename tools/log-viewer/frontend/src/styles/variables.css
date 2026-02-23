@@ -63,8 +63,4 @@
   will-change: transform;
 }
 
-:root.gpu-active .flow-container,
-:root.gpu-active .flow-graph {
-  /* Cytoscape nodes are rendered by the shader; dim native rendering */
-  background: transparent;
-}
+

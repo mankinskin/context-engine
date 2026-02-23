@@ -4,16 +4,6 @@ import { ListIcon } from '../Icons';
 import type { JSX } from 'preact';
 
 // SVG icons for tabs
-function FlowIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-      <path d="M2 4H6L8 7L6 10H2" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M8 7H12" stroke={color} stroke-width="1.2" stroke-linecap="round"/>
-      <circle cx="12" cy="7" r="1.5" stroke={color} stroke-width="1.2"/>
-    </svg>
-  );
-}
-
 function StatsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
@@ -75,7 +65,6 @@ function PaletteIcon({ size = 14, color = 'currentColor' }: { size?: number; col
 
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
-  { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
   { id: 'hypergraph', label: 'Hypergraph', icon: () => <GraphIcon size={14} /> },
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },

@@ -22,7 +22,7 @@
  */
 import { useEffect, useRef } from 'preact/hooks';
 import { signal } from '@preact/signals';
-import { cytoscapeInstance } from '../FlowGraph/FlowGraph';
+
 import paletteWgsl from '../../effects/palette.wgsl?raw';
 import particleShadingWgsl from '../../effects/particle-shading.wgsl?raw';
 import typesCode from './types.wgsl?raw';
@@ -58,7 +58,6 @@ const ELEMENT_SELECTORS = [
     '.filter-panel',
     '.view-container',
     '.stats-view',
-    '.flow-graph-container',
     '.log-list',
     '.code-viewer',
     // --- per-level log entries (hue 0.53 – 0.82) ---
@@ -102,7 +101,6 @@ const COMPUTE_WORKGROUP = 64;
  *   5 = span-highlighted       (bright shimmer wave)
  *   6 = selected entry         (intense focus ring)
  *   7 = panic entry            (alarm strobe)
- *   8 = graph node              (3D-shaded rounded rectangle)
  */
 const KIND_STRUCTURAL = 0;
 const KIND_ERROR      = 1;
@@ -112,7 +110,6 @@ const KIND_DEBUG      = 4;
 const KIND_SPAN_HL    = 5;
 const KIND_SELECTED   = 6;
 const KIND_PANIC      = 7;
-const KIND_GRAPH_NODE = 8;
 
 /** Map selector index → element kind for the shader. */
 function selectorKind(selectorIndex: number): number {
@@ -184,47 +181,6 @@ function scanElements(): void {
             _elemData[base + 4] = hue;
             _elemData[base + 5] = kind;
             count++;
-        }
-    }
-
-    // --- Collect graph nodes from Cytoscape --------------------------------
-    const cy = cytoscapeInstance.value;
-    if (cy && !cy.destroyed()) {
-        const container = cy.container();
-        if (container) {
-            const containerRect = container.getBoundingClientRect();
-            const nodes = cy.nodes();
-            for (let i = 0; i < nodes.length && count < MAX_ELEMENTS; i++) {
-                const node = nodes[i];
-                const bb = node.renderedBoundingBox({ includeLabels: false });
-                const x = containerRect.left + bb.x1;
-                const y = containerRect.top + bb.y1;
-                const w = bb.x2 - bb.x1;
-                const h = bb.y2 - bb.y1;
-                if (y + h < 0 || y > vh) continue;
-                if (x + w < 0 || x > vw) continue;
-                const level = (node.data('level') || 'info').toUpperCase();
-                const levelHue = level === 'ERROR' ? 0.0
-                               : level === 'WARN'  ? 0.08
-                               : level === 'INFO'  ? 0.58
-                               : level === 'DEBUG' ? 0.75
-                               : level === 'TRACE' ? 0.48
-                               : 0.58;
-                const nodeType = node.data('type');
-                const p1 = nodeType === 'span_enter' ? 1.0
-                         : nodeType === 'span_exit'  ? 2.0
-                         : 0.0;
-                const base = count * ELEM_FLOATS;
-                _elemData[base    ] = x;
-                _elemData[base + 1] = y;
-                _elemData[base + 2] = w;
-                _elemData[base + 3] = h;
-                _elemData[base + 4] = levelHue;
-                _elemData[base + 5] = KIND_GRAPH_NODE;
-                _elemData[base + 6] = p1;
-                _elemData[base + 7] = 0.0;
-                count++;
-            }
         }
     }
 
@@ -508,7 +464,7 @@ export function WgpuOverlay() {
                     const ew = _cachedData[base + 2];
                     const eh = _cachedData[base + 3];
                     const kind = _cachedData[base + 5];
-                    if (kind === KIND_GRAPH_NODE) continue; // graph nodes use proximity
+
                     if (mx >= ex && mx < ex + ew && my >= ey && my < ey + eh) {
                         hoverIdx = i;
                         // Don't break — last match wins (topmost in DOM order)

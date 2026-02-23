@@ -231,14 +231,6 @@ fn sample_scene(px: vec2f) -> vec4f {
         let ey = e.rect.y;
         let ew = e.rect.z;
         let eh = e.rect.w;
-        let kind = u32(e.kind);
-
-        if kind == 8u {
-            let prox = hover_proximity(ex, ey, ew, eh);
-            let contrib = graph_node(px, ex, ey, ew, eh, e.hue, e._p1, u.time, prox);
-            out = out + contrib;
-            continue;
-        }
 
         let is_hovered = i32(i) == hover_idx;
 

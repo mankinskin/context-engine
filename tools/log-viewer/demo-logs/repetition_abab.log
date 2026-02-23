@@ -1,0 +1,6115 @@
+{
+  "fields": {
+    "log_file": {
+      "_type": "Option",
+      "_values": [
+        "C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/target/test-logs/repetition_abab.log"
+      ],
+      "_variant": "Some"
+    },
+    "message": "Test tracing initialized",
+    "test_name": "repetition_abab"
+  },
+  "filename": "crates/context-trace/src/logging/tracing_utils/test_tracing.rs",
+  "level": "INFO",
+  "line_number": 927,
+  "target": "context_trace::logging::tracing_utils::test_tracing",
+  "timestamp": "2026-02-22T23:10:35.559879Z"
+}
+
+{
+  "fields": {
+    "message": "New ReadCtx"
+  },
+  "filename": "crates/context-read/src/context/mod.rs",
+  "level": "DEBUG",
+  "line_number": 44,
+  "target": "context_read::context",
+  "timestamp": "2026-02-22T23:10:35.560199Z"
+}
+
+{
+  "fields": {
+    "known": {
+      "_type": "Pattern",
+      "_values": [
+        [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ]
+      ]
+    },
+    "known_len": 2,
+    "message": "read_segment",
+    "unknown": {
+      "_type": "Pattern",
+      "_values": [
+        [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ]
+      ]
+    },
+    "unknown_len": 2
+  },
+  "filename": "crates/context-read/src/context/mod.rs",
+  "level": "DEBUG",
+  "line_number": 72,
+  "target": "context_read::context",
+  "timestamp": "2026-02-22T23:10:35.560373Z"
+}
+
+{
+  "fields": {
+    "known": {
+      "_type": "Pattern",
+      "_values": [
+        [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ]
+      ]
+    },
+    "known_len": 2,
+    "message": "BlockExpansionCtx::new"
+  },
+  "filename": "crates/context-read/src/expansion/block.rs",
+  "level": "DEBUG",
+  "line_number": 35,
+  "target": "context_read::expansion::block",
+  "timestamp": "2026-02-22T23:10:35.560707Z"
+}
+
+{
+  "fields": {
+    "has_root": true,
+    "message": "Starting block expansion",
+    "root_last_token": {
+      "_type": "Option",
+      "_values": [
+        {
+          "index": 1,
+          "text": "b"
+        }
+      ],
+      "_variant": "Some"
+    }
+  },
+  "filename": "crates/context-read/src/expansion/block.rs",
+  "level": "DEBUG",
+  "line_number": 43,
+  "target": "context_read::expansion::block",
+  "timestamp": "2026-02-22T23:10:35.560897Z"
+}
+
+{
+  "fields": {
+    "initial_band": {
+      "_type": "Band",
+      "end_bound": {
+        "_type": "AtomPosition",
+        "_values": [
+          1
+        ]
+      },
+      "pattern": {
+        "_type": "Pattern",
+        "_values": [
+          [
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ]
+        ]
+      },
+      "start_bound": {
+        "_type": "AtomPosition",
+        "_values": [
+          0
+        ]
+      }
+    },
+    "message": "New BandState"
+  },
+  "filename": "crates/context-read/src/expansion/chain/mod.rs",
+  "level": "DEBUG",
+  "line_number": 57,
+  "target": "context_read::expansion::chain",
+  "timestamp": "2026-02-22T23:10:35.561052Z"
+}
+
+{
+  "fields": {
+    "cursor_root": {
+      "_type": "Pattern",
+      "_values": [
+        [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ]
+      ]
+    },
+    "message": "New ExpansionCtx"
+  },
+  "filename": "crates/context-read/src/expansion/mod.rs",
+  "level": "DEBUG",
+  "line_number": 81,
+  "target": "context_read::expansion",
+  "timestamp": "2026-02-22T23:10:35.561255Z"
+}
+
+{
+  "fields": {
+    "band": {
+      "_type": "Single",
+      "band": {
+        "_type": "Band",
+        "end_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            1
+          ]
+        },
+        "pattern": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            0
+          ]
+        }
+      }
+    },
+    "message": "Using root's last token for overlap detection"
+  },
+  "filename": "crates/context-read/src/expansion/mod.rs",
+  "level": "DEBUG",
+  "line_number": 89,
+  "target": "context_read::expansion",
+  "timestamp": "2026-02-22T23:10:35.561445Z"
+}
+
+{
+  "fields": {
+    "cursor_root": {
+      "_type": "Pattern",
+      "_values": [
+        [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ]
+      ]
+    },
+    "end_path": {
+      "_ty": {
+        "_type": "PhantomData",
+        "type_param": "context_trace::path::accessors::role::End"
+      },
+      "_type": "RolePath",
+      "sub_path": {
+        "_type": "SubPath",
+        "path": [],
+        "root_entry": 0
+      }
+    },
+    "message": "New CursorCtx",
+    "start_path": {
+      "_ty": {
+        "_type": "PhantomData",
+        "type_param": "context_trace::path::accessors::role::Start"
+      },
+      "_type": "RolePath",
+      "sub_path": {
+        "_type": "SubPath",
+        "path": [],
+        "root_entry": 0
+      }
+    }
+  },
+  "filename": "crates/context-read/src/expansion/cursor.rs",
+  "level": "DEBUG",
+  "line_number": 21,
+  "target": "context_read::expansion::cursor",
+  "timestamp": "2026-02-22T23:10:35.561736Z"
+}
+
+{
+  "fields": {
+    "first": {
+      "_type": "Option",
+      "_values": [
+        {
+          "index": 1,
+          "text": "b"
+        }
+      ],
+      "_variant": "Some"
+    },
+    "message": "expansion state before processing",
+    "state": {
+      "_type": "Single",
+      "band": {
+        "_type": "Band",
+        "end_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            1
+          ]
+        },
+        "pattern": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            0
+          ]
+        }
+      }
+    }
+  },
+  "filename": "crates/context-read/src/expansion/block.rs",
+  "level": "DEBUG",
+  "line_number": 62,
+  "target": "context_read::expansion::block",
+  "timestamp": "2026-02-22T23:10:35.562095Z"
+}
+
+{
+  "fields": {
+    "last_end_postfix": {
+      "index": 1,
+      "text": "b"
+    },
+    "message": "Try new ExpandCtx"
+  },
+  "filename": "crates/context-read/src/expansion/chain/expand.rs",
+  "level": "DEBUG",
+  "line_number": 29,
+  "target": "context_read::expansion::chain::expand",
+  "timestamp": "2026-02-22T23:10:35.562358Z"
+}
+
+{
+  "fields": {
+    "message": "ExpandCtx: no postfix positions available"
+  },
+  "filename": "crates/context-read/src/expansion/chain/expand.rs",
+  "level": "DEBUG",
+  "line_number": 39,
+  "target": "context_read::expansion::chain::expand",
+  "timestamp": "2026-02-22T23:10:35.562542Z"
+}
+
+{
+  "fields": {
+    "final_state": {
+      "_type": "Single",
+      "band": {
+        "_type": "Band",
+        "end_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            1
+          ]
+        },
+        "pattern": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start_bound": {
+          "_type": "AtomPosition",
+          "_values": [
+            0
+          ]
+        }
+      }
+    },
+    "message": "BlockExpansionCtx::process complete"
+  },
+  "filename": "crates/context-read/src/expansion/block.rs",
+  "level": "DEBUG",
+  "line_number": 68,
+  "target": "context_read::expansion::block",
+  "timestamp": "2026-02-22T23:10:35.562654Z"
+}
+
+{
+  "fields": {
+    "edge_count": 2,
+    "graph_data": "{\"nodes\":[{\"index\":0,\"label\":\"a\",\"width\":1,\"is_atom\":true},{\"index\":1,\"label\":\"b\",\"width\":1,\"is_atom\":true},{\"index\":2,\"label\":\"ab\",\"width\":2,\"is_atom\":false}],\"edges\":[{\"from\":2,\"to\":0,\"pattern_idx\":0,\"sub_index\":0},{\"from\":2,\"to\":1,\"pattern_idx\":0,\"sub_index\":1}]}",
+    "message": "graph_snapshot",
+    "node_count": 3
+  },
+  "filename": "crates/context-trace/src/graph/snapshot.rs",
+  "level": "INFO",
+  "line_number": 100,
+  "target": "context_trace::graph::snapshot",
+  "timestamp": "2026-02-22T23:10:35.562940Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "INFO",
+  "line_number": 78,
+  "span": {
+    "fn_sig": {
+      "name": "find_ancestor",
+      "params": [
+        {
+          "self": "&self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+        }
+      ],
+      "return_type": "SearchResult"
+    },
+    "name": "find_ancestor",
+    "self_type": "context_trace::graph::HypergraphRef"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.563160Z"
+}
+
+{
+  "fields": {
+    "message": "starting ancestor search"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 86,
+  "span": {
+    "fn_sig": {
+      "name": "find_ancestor",
+      "params": [
+        {
+          "self": "&self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+        }
+      ],
+      "return_type": "SearchResult"
+    },
+    "name": "find_ancestor",
+    "self_type": "context_trace::graph::HypergraphRef"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.563373Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.563613Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 197,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "path": {
+      "_type": "RootedRangePath",
+      "end": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::End"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      },
+      "root": {
+        "_type": "Pattern",
+        "_values": [
+          [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ]
+        ]
+      },
+      "start": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::Start"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      }
+    },
+    "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.563931Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 79,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.564601Z"
+}
+
+{
+  "fields": {
+    "message": "starting search from token",
+    "start_token": {
+      "index": 0,
+      "text": "a"
+    }
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "DEBUG",
+  "line_number": 86,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.565221Z"
+}
+
+{
+  "fields": {
+    "cursor": {
+      "_type": "PathCursor",
+      "path": {
+        "_type": "PatternRangePath",
+        "end": "entry=0",
+        "path=[]": "",
+        "pattern": [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ],
+        "start": "entry=0"
+      },
+      "position": 1
+    },
+    "message": "creating search from start context",
+    "start_token": {
+      "index": 0,
+      "text": "a"
+    }
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 94,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:10:35.565835Z"
+}
+
+{
+  "fields": {
+    "cursor_path": {
+      "_type": "RootedRangePath",
+      "end": "entry=0",
+      "path=[]": "",
+      "root": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 1,
+          "text": "b"
+        }
+      ],
+      "start": "entry=0"
+    },
+    "message": "get_parent_batch called"
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 121,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:10:35.566561Z"
+}
+
+{
+  "fields": {
+    "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
+  },
+  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "level": "TRACE",
+  "line_number": 102,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_trace::path::structs::rooted::pattern_range",
+  "timestamp": "2026-02-22T23:10:35.567212Z"
+}
+
+{
+  "fields": {
+    "message": "PathCursor::move_root_index: child_index=1, child_width=1, old_atom_pos=1, will advance to 2"
+  },
+  "filename": "crates/context-search/src/cursor/path.rs",
+  "level": "TRACE",
+  "line_number": 74,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::cursor::path",
+  "timestamp": "2026-02-22T23:10:35.567864Z"
+}
+
+{
+  "fields": {
+    "batch_len": 1,
+    "message": "first parent batch obtained"
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 97,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:10:35.568463Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "4.49ms",
+    "time.idle": "6.10µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 79,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.569098Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "5.72ms",
+    "time.idle": "5.40µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 197,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "path": {
+      "_type": "RootedRangePath",
+      "end": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::End"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      },
+      "root": {
+        "_type": "Pattern",
+        "_values": [
+          [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ]
+        ]
+      },
+      "start": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::Start"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      }
+    },
+    "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.569652Z"
+}
+
+{
+  "fields": {
+    "message": "start search successful, beginning fold"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 67,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.570121Z"
+}
+
+{
+  "fields": {
+    "message": "initial state",
+    "queue": {
+      "_type": "SearchQueue",
+      "count": 1,
+      "nodes": [
+        "[0] ParentCandidate(vertex:\"ab\"(2), pos:2)"
+      ]
+    }
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 123,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.570425Z"
+}
+
+{
+  "fields": {
+    "message": "searching for next match"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 340,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.570785Z"
+}
+
+{
+  "fields": {
+    "message": "finding next match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 58,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.571075Z"
+}
+
+{
+  "fields": {
+    "message": "finding next root match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 70,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.571352Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/compare/parent.rs",
+  "level": "DEBUG",
+  "line_number": 47,
+  "span": {
+    "cursor": {
+      "_type": "Checkpointed",
+      "checkpoint": {
+        "_type": "PathCursor",
+        "path": {
+          "_type": "PatternRangePath",
+          "end": "entry=0",
+          "path=[]": "",
+          "pattern": [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ],
+          "start": "entry=0"
+        },
+        "position": 1
+      }
+    },
+    "fn_sig": {
+      "name": "advance_state",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "&G"
+        }
+      ],
+      "return_type": "Result<Self::Next, Self>"
+    },
+    "name": "advance_state",
+    "next_type": "context_search::compare::parent::CompareRootState",
+    "parent_state": {
+      "_type": "ParentState",
+      "path": {
+        "_type": "RootedRolePath",
+        "role_path": {
+          "_type": "RolePath",
+          "_values": [
+            "entry:0",
+            "len:0"
+          ]
+        },
+        "root": {
+          "_type": "Root",
+          "_values": [
+            {
+              "_type": "PatternLocation",
+              "_values": [
+                {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "d81f375d"
+              ]
+            }
+          ]
+        }
+      },
+      "prev_pos": 1,
+      "root_pos": 1
+    },
+    "self_type": "context_search::compare::parent::ParentCompareState",
+    "trait_name": "StateAdvance"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "cursor": {
+        "_type": "Checkpointed",
+        "checkpoint": {
+          "_type": "PathCursor",
+          "path": {
+            "_type": "PatternRangePath",
+            "end": "entry=0",
+            "path=[]": "",
+            "pattern": [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ],
+            "start": "entry=0"
+          },
+          "position": 1
+        }
+      },
+      "fn_sig": {
+        "name": "advance_state",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "&G"
+          }
+        ],
+        "return_type": "Result<Self::Next, Self>"
+      },
+      "name": "advance_state",
+      "next_type": "context_search::compare::parent::CompareRootState",
+      "parent_state": {
+        "_type": "ParentState",
+        "path": {
+          "_type": "RootedRolePath",
+          "role_path": {
+            "_type": "RolePath",
+            "_values": [
+              "entry:0",
+              "len:0"
+            ]
+          },
+          "root": {
+            "_type": "Root",
+            "_values": [
+              {
+                "_type": "PatternLocation",
+                "_values": [
+                  {
+                    "index": 2,
+                    "text": "ab"
+                  },
+                  "d81f375d"
+                ]
+              }
+            ]
+          }
+        },
+        "prev_pos": 1,
+        "root_pos": 1
+      },
+      "self_type": "context_search::compare::parent::ParentCompareState",
+      "trait_name": "StateAdvance"
+    }
+  ],
+  "target": "context_search::compare::parent",
+  "timestamp": "2026-02-22T23:10:35.571794Z"
+}
+
+{
+  "fields": {
+    "message": "Found next child in pattern",
+    "next_i": 1
+  },
+  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "level": "DEBUG",
+  "line_number": 43,
+  "span": {
+    "cursor": {
+      "_type": "Checkpointed",
+      "checkpoint": {
+        "_type": "PathCursor",
+        "path": {
+          "_type": "PatternRangePath",
+          "end": "entry=0",
+          "path=[]": "",
+          "pattern": [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ],
+          "start": "entry=0"
+        },
+        "position": 1
+      }
+    },
+    "fn_sig": {
+      "name": "advance_state",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "&G"
+        }
+      ],
+      "return_type": "Result<Self::Next, Self>"
+    },
+    "name": "advance_state",
+    "next_type": "context_search::compare::parent::CompareRootState",
+    "parent_state": {
+      "_type": "ParentState",
+      "path": {
+        "_type": "RootedRolePath",
+        "role_path": {
+          "_type": "RolePath",
+          "_values": [
+            "entry:0",
+            "len:0"
+          ]
+        },
+        "root": {
+          "_type": "Root",
+          "_values": [
+            {
+              "_type": "PatternLocation",
+              "_values": [
+                {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "d81f375d"
+              ]
+            }
+          ]
+        }
+      },
+      "prev_pos": 1,
+      "root_pos": 1
+    },
+    "self_type": "context_search::compare::parent::ParentCompareState",
+    "trait_name": "StateAdvance"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "cursor": {
+        "_type": "Checkpointed",
+        "checkpoint": {
+          "_type": "PathCursor",
+          "path": {
+            "_type": "PatternRangePath",
+            "end": "entry=0",
+            "path=[]": "",
+            "pattern": [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ],
+            "start": "entry=0"
+          },
+          "position": 1
+        }
+      },
+      "fn_sig": {
+        "name": "advance_state",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "&G"
+          }
+        ],
+        "return_type": "Result<Self::Next, Self>"
+      },
+      "name": "advance_state",
+      "next_type": "context_search::compare::parent::CompareRootState",
+      "parent_state": {
+        "_type": "ParentState",
+        "path": {
+          "_type": "RootedRolePath",
+          "role_path": {
+            "_type": "RolePath",
+            "_values": [
+              "entry:0",
+              "len:0"
+            ]
+          },
+          "root": {
+            "_type": "Root",
+            "_values": [
+              {
+                "_type": "PatternLocation",
+                "_values": [
+                  {
+                    "index": 2,
+                    "text": "ab"
+                  },
+                  "d81f375d"
+                ]
+              }
+            ]
+          }
+        },
+        "prev_pos": 1,
+        "root_pos": 1
+      },
+      "self_type": "context_search::compare::parent::ParentCompareState",
+      "trait_name": "StateAdvance"
+    }
+  ],
+  "target": "context_trace::trace::state::parent",
+  "timestamp": "2026-02-22T23:10:35.572728Z"
+}
+
+{
+  "fields": {
+    "child_cursor": {
+      "_type": "ChildState",
+      "entry_pos": 1,
+      "exit_pos": 1,
+      "path": {
+        "_type": "IndexRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 1
+          }
+        },
+        "path=[]": "",
+        "root": {
+          "_type": "Root",
+          "_values": [
+            {
+              "_type": "PatternLocation",
+              "_values": [
+                {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "d81f375d"
+              ]
+            }
+          ]
+        },
+        "start": "entry=0"
+      }
+    },
+    "message": "Created child_cursor from parent_state"
+  },
+  "filename": "crates/context-search/src/compare/parent.rs",
+  "level": "TRACE",
+  "line_number": 55,
+  "span": {
+    "cursor": {
+      "_type": "Checkpointed",
+      "checkpoint": {
+        "_type": "PathCursor",
+        "path": {
+          "_type": "PatternRangePath",
+          "end": "entry=0",
+          "path=[]": "",
+          "pattern": [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ],
+          "start": "entry=0"
+        },
+        "position": 1
+      }
+    },
+    "fn_sig": {
+      "name": "advance_state",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "&G"
+        }
+      ],
+      "return_type": "Result<Self::Next, Self>"
+    },
+    "name": "advance_state",
+    "next_type": "context_search::compare::parent::CompareRootState",
+    "parent_state": {
+      "_type": "ParentState",
+      "path": {
+        "_type": "RootedRolePath",
+        "role_path": {
+          "_type": "RolePath",
+          "_values": [
+            "entry:0",
+            "len:0"
+          ]
+        },
+        "root": {
+          "_type": "Root",
+          "_values": [
+            {
+              "_type": "PatternLocation",
+              "_values": [
+                {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "d81f375d"
+              ]
+            }
+          ]
+        }
+      },
+      "prev_pos": 1,
+      "root_pos": 1
+    },
+    "self_type": "context_search::compare::parent::ParentCompareState",
+    "trait_name": "StateAdvance"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "cursor": {
+        "_type": "Checkpointed",
+        "checkpoint": {
+          "_type": "PathCursor",
+          "path": {
+            "_type": "PatternRangePath",
+            "end": "entry=0",
+            "path=[]": "",
+            "pattern": [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 1,
+                "text": "b"
+              }
+            ],
+            "start": "entry=0"
+          },
+          "position": 1
+        }
+      },
+      "fn_sig": {
+        "name": "advance_state",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "&G"
+          }
+        ],
+        "return_type": "Result<Self::Next, Self>"
+      },
+      "name": "advance_state",
+      "next_type": "context_search::compare::parent::CompareRootState",
+      "parent_state": {
+        "_type": "ParentState",
+        "path": {
+          "_type": "RootedRolePath",
+          "role_path": {
+            "_type": "RolePath",
+            "_values": [
+              "entry:0",
+              "len:0"
+            ]
+          },
+          "root": {
+            "_type": "Root",
+            "_values": [
+              {
+                "_type": "PatternLocation",
+                "_values": [
+                  {
+                    "index": 2,
+                    "text": "ab"
+                  },
+                  "d81f375d"
+                ]
+              }
+            ]
+          }
+        },
+        "prev_pos": 1,
+        "root_pos": 1
+      },
+      "self_type": "context_search::compare::parent::ParentCompareState",
+      "trait_name": "StateAdvance"
+    }
+  ],
+  "target": "context_search::compare::parent",
+  "timestamp": "2026-02-22T23:10:35.573625Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "3.09ms",
+    "time.idle": "7.50µs"
+  },
+  "filename": "crates/context-search/src/compare/parent.rs",
+  "level": "DEBUG",
+  "line_number": 47,
+  "span": {
+    "cursor": {
+      "_type": "Checkpointed",
+      "checkpoint": {
+        "_type": "PathCursor",
+        "path": {
+          "_type": "PatternRangePath",
+          "end": "entry=0",
+          "path=[]": "",
+          "pattern": [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 1,
+              "text": "b"
+            }
+          ],
+          "start": "entry=0"
+        },
+        "position": 1
+      }
+    },
+    "fn_sig": {
+      "name": "advance_state",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "&G"
+        }
+      ],
+      "return_type": "Result<Self::Next, Self>"
+    },
+    "name": "advance_state",
+    "next_type": "context_search::compare::parent::CompareRootState",
+    "parent_state": {
+      "_type": "ParentState",
+      "path": {
+        "_type": "RootedRolePath",
+        "role_path": {
+          "_type": "RolePath",
+          "_values": [
+            "entry:0",
+            "len:0"
+          ]
+        },
+        "root": {
+          "_type": "Root",
+          "_values": [
+            {
+              "_type": "PatternLocation",
+              "_values": [
+                {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "d81f375d"
+              ]
+            }
+          ]
+        }
+      },
+      "prev_pos": 1,
+      "root_pos": 1
+    },
+    "self_type": "context_search::compare::parent::ParentCompareState",
+    "trait_name": "StateAdvance"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::compare::parent",
+  "timestamp": "2026-02-22T23:10:35.574885Z"
+}
+
+{
+  "fields": {
+    "checkpoint_pos": "1",
+    "cursor_end_index": 1,
+    "cursor_pos": "2",
+    "message": "comparing candidate tokens (position-annotated)",
+    "mode": "GraphMajor",
+    "path_leaf": {
+      "index": 1,
+      "text": "b"
+    },
+    "path_width": 1,
+    "query_leaf": {
+      "index": 1,
+      "text": "b"
+    },
+    "query_width": 1
+  },
+  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "level": "TRACE",
+  "line_number": 197,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::compare::state::decomposition",
+  "timestamp": "2026-02-22T23:10:35.575542Z"
+}
+
+{
+  "fields": {
+    "message": "tokens matched",
+    "token": 1,
+    "width": 1
+  },
+  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "level": "TRACE",
+  "line_number": 210,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::compare::state::decomposition",
+  "timestamp": "2026-02-22T23:10:35.576047Z"
+}
+
+{
+  "fields": {
+    "cursor_end_index": 1,
+    "cursor_pos": "2",
+    "matched_end_index": 1,
+    "message": "mark_match: converting to Matched state and updating checkpoints",
+    "new_checkpoint_pos": "2",
+    "old_checkpoint_pos": "1"
+  },
+  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "level": "TRACE",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::compare::state::transitions",
+  "timestamp": "2026-02-22T23:10:35.576381Z"
+}
+
+{
+  "fields": {
+    "message": "Found matching root - clearing search queue (will explore via parents)"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "DEBUG",
+  "line_number": 103,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.576720Z"
+}
+
+{
+  "fields": {
+    "message": "found matching root - creating RootCursor",
+    "root_parent": {
+      "index": 2,
+      "text": "ab"
+    },
+    "root_width": 2
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "DEBUG",
+  "line_number": 110,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.577126Z"
+}
+
+{
+  "fields": {
+    "checkpoint_pos": 2,
+    "message": "New root match - finishing root cursor",
+    "root": {
+      "index": 2,
+      "text": "ab"
+    }
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 181,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.577537Z"
+}
+
+{
+  "fields": {
+    "message": "Marking current positions as checkpoints",
+    "query.candidate": {
+      "_type": "PathCursor",
+      "path": {
+        "_type": "PatternRangePath",
+        "end": "entry=1",
+        "path=[]": "",
+        "pattern": [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ],
+        "start": "entry=0"
+      },
+      "position": 2
+    },
+    "query.checkpoint": {
+      "_type": "PathCursor",
+      "path": {
+        "_type": "PatternRangePath",
+        "end": "entry=1",
+        "path=[]": "",
+        "pattern": [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ],
+        "start": "entry=0"
+      },
+      "position": 2
+    }
+  },
+  "filename": "crates/context-search/src/compare/state/core.rs",
+  "level": "DEBUG",
+  "line_number": 154,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::compare::state::core",
+  "timestamp": "2026-02-22T23:10:35.577902Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "DEBUG",
+  "line_number": 55,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.578496Z"
+}
+
+{
+  "fields": {
+    "message": "→ advance_to_next_match: starting advancement"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "INFO",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.578858Z"
+}
+
+{
+  "fields": {
+    "message": "  → advance_both_cursors_internal: Step 1 - calling advance_query"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 145,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.579216Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 206,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.579748Z"
+}
+
+{
+  "fields": {
+    "message": "    → advance_query: attempting to advance query cursor",
+    "query_pos": 2,
+    "root": {
+      "index": 2,
+      "text": "ab"
+    }
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 214,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.580170Z"
+}
+
+{
+  "fields": {
+    "cursor": {
+      "_type": "PathCursor",
+      "path": {
+        "_type": "PatternRangePath",
+        "end": "entry=1",
+        "path=[]": "",
+        "pattern": [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 1,
+            "text": "b"
+          }
+        ],
+        "start": "entry=0"
+      },
+      "position": 2
+    },
+    "message": "advancing query cursor only"
+  },
+  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "level": "TRACE",
+  "line_number": 93,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::compare::state::transitions",
+  "timestamp": "2026-02-22T23:10:35.580671Z"
+}
+
+{
+  "fields": {
+    "message": "PatternRangePath::move_root_index - reached end of pattern, returning Break"
+  },
+  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "level": "TRACE",
+  "line_number": 111,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_trace::path::structs::rooted::pattern_range",
+  "timestamp": "2026-02-22T23:10:35.581289Z"
+}
+
+{
+  "fields": {
+    "message": "query cursor cannot advance - query pattern ended"
+  },
+  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "level": "DEBUG",
+  "line_number": 117,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::compare::state::transitions",
+  "timestamp": "2026-02-22T23:10:35.581766Z"
+}
+
+{
+  "fields": {
+    "message": "    → advance_query: QUERY ENDED - creating QueryExhausted state",
+    "query_pos": 2,
+    "root": {
+      "index": 2,
+      "text": "ab"
+    }
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "DEBUG",
+  "line_number": 241,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.582257Z"
+}
+
+{
+  "fields": {
+    "message": "root_cursor advance_query: root_parent=\"ab\"(2), entry_pos=1, exit_pos=1, checkpoint.atom_position=2, last_token_width=1, end_pos=2"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 261,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.582735Z"
+}
+
+{
+  "fields": {
+    "checkpoint_pos": "2",
+    "final_end_index": 1,
+    "message": "advance_query: returning checkpoint cursor for exhausted query"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 277,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.583236Z"
+}
+
+{
+  "fields": {
+    "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
+  },
+  "filename": "crates/context-search/src/state/end/mod.rs",
+  "level": "TRACE",
+  "line_number": 112,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_query",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+      },
+      "name": "advance_query",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::state::end",
+  "timestamp": "2026-02-22T23:10:35.583673Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "4.34ms",
+    "time.idle": "6.00µs"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "TRACE",
+  "line_number": 206,
+  "span": {
+    "fn_sig": {
+      "name": "advance_query",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "Result<RootCursor<K, Candidate, Matched>, Box<MatchResult>>"
+    },
+    "name": "advance_query",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.584087Z"
+}
+
+{
+  "fields": {
+    "message": "  → advance_both_cursors_internal: Step 1 - query ended (QueryExhausted)"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "DEBUG",
+  "line_number": 161,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.584450Z"
+}
+
+{
+  "fields": {
+    "message": "→ advance_to_next_match: query exhausted - complete match"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "DEBUG",
+  "line_number": 70,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    },
+    {
+      "fn_sig": {
+        "name": "advance_to_next_match",
+        "params": [
+          {
+            "self": "self"
+          }
+        ],
+        "return_type": "RootAdvanceResult<K>"
+      },
+      "name": "advance_to_next_match",
+      "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.584797Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "6.64ms",
+    "time.idle": "7.30µs"
+  },
+  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "level": "DEBUG",
+  "line_number": 55,
+  "span": {
+    "fn_sig": {
+      "name": "advance_to_next_match",
+      "params": [
+        {
+          "self": "self"
+        }
+      ],
+      "return_type": "RootAdvanceResult<K>"
+    },
+    "name": "advance_to_next_match",
+    "self_type": "context_search::match::root_cursor::core::RootCursor<context_search::search::context::AncestorSearchTraversal<context_trace::graph::HypergraphRef>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::root_cursor::advance",
+  "timestamp": "2026-02-22T23:10:35.585142Z"
+}
+
+{
+  "fields": {
+    "message": "Conclusive end: Exhausted - keeping best match"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 231,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.585444Z"
+}
+
+{
+  "fields": {
+    "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
+  },
+  "filename": "crates/context-search/src/state/end/mod.rs",
+  "level": "TRACE",
+  "line_number": 112,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::state::end",
+  "timestamp": "2026-02-22T23:10:35.585733Z"
+}
+
+{
+  "fields": {
+    "at_end": true,
+    "end_index": 1,
+    "end_path_len": "0",
+    "message": "query_exhausted check",
+    "path_empty": true
+  },
+  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "level": "TRACE",
+  "line_number": 155,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::state::matched",
+  "timestamp": "2026-02-22T23:10:35.586031Z"
+}
+
+{
+  "fields": {
+    "checkpoint_pos": 2,
+    "message": "found matched state",
+    "query_exhausted": true
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 347,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.586333Z"
+}
+
+{
+  "fields": {
+    "message": "searching for next match"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 340,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.586622Z"
+}
+
+{
+  "fields": {
+    "message": "finding next match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 58,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.586907Z"
+}
+
+{
+  "fields": {
+    "message": "finding next root match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 70,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.587211Z"
+}
+
+{
+  "fields": {
+    "message": "no root cursor found, iteration complete"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 85,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:10:35.587512Z"
+}
+
+{
+  "fields": {
+    "message": "no more matches found"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 355,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.587820Z"
+}
+
+{
+  "fields": {
+    "at_end": true,
+    "end_index": 1,
+    "end_path_len": "0",
+    "message": "query_exhausted check",
+    "path_empty": true
+  },
+  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "level": "TRACE",
+  "line_number": 155,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::state::matched",
+  "timestamp": "2026-02-22T23:10:35.588121Z"
+}
+
+{
+  "fields": {
+    "checkpoint_pos": 2,
+    "message": "Using best_match as final result",
+    "query_exhausted": true,
+    "root": {
+      "index": 2,
+      "text": "ab"
+    }
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 132,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.588435Z"
+}
+
+{
+  "fields": {
+    "end": {
+      "_type": "MatchResult",
+      "cursor": {
+        "_type": "AtCheckpoint",
+        "_values": [
+          {
+            "_state": {
+              "_type": "PhantomData",
+              "type_param": "context_search::cursor::checkpointed::AtCheckpoint"
+            },
+            "_type": "Checkpointed",
+            "candidate": null,
+            "checkpoint": {
+              "_state": {
+                "_type": "PhantomData",
+                "type_param": "context_search::cursor::Matched"
+              },
+              "_type": "PathCursor",
+              "atom_position": {
+                "_type": "AtomPosition",
+                "_values": [
+                  2
+                ]
+              },
+              "path": {
+                "_type": "RootedRangePath",
+                "end": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::End"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 1
+                  }
+                },
+                "root": {
+                  "_type": "Pattern",
+                  "_values": [
+                    [
+                      {
+                        "index": 0,
+                        "text": "a"
+                      },
+                      {
+                        "index": 1,
+                        "text": "b"
+                      }
+                    ]
+                  ]
+                },
+                "start": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::Start"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "path": {
+        "_type": "EntireRoot",
+        "_values": [
+          {
+            "_type": "RootedRangePath",
+            "end": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::End"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 1
+              }
+            },
+            "root": {
+              "_type": "IndexRoot",
+              "location": {
+                "_type": "PatternLocation",
+                "parent": {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "pattern_id": {
+                  "_type": "PatternId",
+                  "_values": [
+                    "d81f375d-50ee-4dc9-826e-4bd5e96b8578"
+                  ]
+                }
+              }
+            },
+            "start": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::Start"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "final matched state"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 162,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.588934Z"
+}
+
+{
+  "fields": {
+    "end": {
+      "_type": "MatchResult",
+      "cursor": {
+        "_type": "AtCheckpoint",
+        "_values": [
+          {
+            "_state": {
+              "_type": "PhantomData",
+              "type_param": "context_search::cursor::checkpointed::AtCheckpoint"
+            },
+            "_type": "Checkpointed",
+            "candidate": null,
+            "checkpoint": {
+              "_state": {
+                "_type": "PhantomData",
+                "type_param": "context_search::cursor::Matched"
+              },
+              "_type": "PathCursor",
+              "atom_position": {
+                "_type": "AtomPosition",
+                "_values": [
+                  2
+                ]
+              },
+              "path": {
+                "_type": "RootedRangePath",
+                "end": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::End"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 1
+                  }
+                },
+                "root": {
+                  "_type": "Pattern",
+                  "_values": [
+                    [
+                      {
+                        "index": 0,
+                        "text": "a"
+                      },
+                      {
+                        "index": 1,
+                        "text": "b"
+                      }
+                    ]
+                  ]
+                },
+                "start": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::Start"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "path": {
+        "_type": "EntireRoot",
+        "_values": [
+          {
+            "_type": "RootedRangePath",
+            "end": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::End"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 1
+              }
+            },
+            "root": {
+              "_type": "IndexRoot",
+              "location": {
+                "_type": "PatternLocation",
+                "parent": {
+                  "index": 2,
+                  "text": "ab"
+                },
+                "pattern_id": {
+                  "_type": "PatternId",
+                  "_values": [
+                    "d81f375d-50ee-4dc9-826e-4bd5e96b8578"
+                  ]
+                }
+              }
+            },
+            "start": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::Start"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "search complete"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "INFO",
+  "line_number": 172,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "core::str::iter::Chars<'_>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.590674Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "28.2ms",
+    "time.idle": "6.60µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "core::str::iter::Chars<'_>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:10:35.591851Z"
+}
+
+{
+  "fields": {
+    "message": "ancestor search succeeded"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 90,
+  "span": {
+    "fn_sig": {
+      "name": "find_ancestor",
+      "params": [
+        {
+          "self": "&self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+        }
+      ],
+      "return_type": "SearchResult"
+    },
+    "name": "find_ancestor",
+    "self_type": "context_trace::graph::HypergraphRef"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "find_ancestor",
+        "params": [
+          {
+            "self": "&self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+          }
+        ],
+        "return_type": "SearchResult"
+      },
+      "name": "find_ancestor",
+      "self_type": "context_trace::graph::HypergraphRef"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.592160Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "29.3ms",
+    "time.idle": "8.90µs"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "INFO",
+  "line_number": 78,
+  "span": {
+    "fn_sig": {
+      "name": "find_ancestor",
+      "params": [
+        {
+          "self": "&self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<AncestorSearchTraversal<Self>>"
+        }
+      ],
+      "return_type": "SearchResult"
+    },
+    "name": "find_ancestor",
+    "self_type": "context_trace::graph::HypergraphRef"
+  },
+  "spans": [],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:10:35.592418Z"
+}
+
+{
+  "fields": {
+    "at_end": true,
+    "end_index": 1,
+    "end_path_len": "0",
+    "message": "query_exhausted check",
+    "path_empty": true
+  },
+  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "level": "TRACE",
+  "line_number": 155,
+  "target": "context_search::state::matched",
+  "timestamp": "2026-02-22T23:10:35.592612Z"
+}
+
+{
+  "fields": {
+    "backtrace": "   0: std::backtrace_rs::backtrace::win64::trace\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/../../backtrace/src/backtrace/win64.rs:85\n   1: std::backtrace_rs::backtrace::trace_unsynchronized\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/../../backtrace/src/backtrace/mod.rs:66\n   2: std::backtrace::Backtrace::create\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/backtrace.rs:331\n   3: std::backtrace::Backtrace::force_capture\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/backtrace.rs:312\n   4: context_trace::logging::tracing_utils::panic::install_panic_hook::closure$0::closure$0\n             at C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/crates/context-trace/src/logging/tracing_utils/panic.rs:15\n   5: std::panicking::panic_with_hook\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:842\n   6: std::panicking::panic_handler::closure$0\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:707\n   7: std::sys::backtrace::__rust_end_short_backtrace<std::panicking::panic_handler::closure_env$0,never$>\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/backtrace.rs:174\n   8: std::panicking::panic_handler\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:698\n   9: core::panicking::panic_fmt\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/panicking.rs:80\n  10: context_read::tests::linear::repetition_abab\n             at ./src/tests/linear.rs:329\n  11: context_read::tests::linear::repetition_abab::closure$0\n             at ./src/tests/linear.rs:319\n  12: core::ops::function::FnOnce::call_once<context_read::tests::linear::repetition_abab::closure_env$0,tuple$<> >\n             at C:/Users/linus_behrbohm/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/lib/rustlib/src/rust/library/core/src/ops/function.rs:250\n  13: core::ops::function::FnOnce::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/ops/function.rs:250\n  14: test::__rust_begin_short_backtrace<enum2$<core::result::Result<tuple$<>,alloc::string::String> >,enum2$<core::result::Result<tuple$<>,alloc::string::String> > (*)()>\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:663\n  15: test::run_test_in_process\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:686\n  16: test::run_test::closure$0\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:607\n  17: test::run_test::closure$1\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:637\n  18: std::sys::backtrace::__rust_begin_short_backtrace<test::run_test::closure_env$1,tuple$<> >\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/backtrace.rs:158\n  19: core::ops::function::FnOnce::call_once<std::thread::impl$0::spawn_unchecked_::closure_env$1<test::run_test::closure_env$1,tuple$<> >,tuple$<> >\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/ops/function.rs:250\n  20: alloc::boxed::impl$29::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/alloc/src/boxed.rs:2004\n  21: alloc::boxed::impl$29::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/alloc/src/boxed.rs:2004\n  22: std::sys::thread::windows::impl$0::new::thread_start\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/thread/windows.rs:60\n  23: BaseThreadInitThunk\n  24: RtlUserThreadStart\n",
+    "message": "PANIC: assertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n TokenWidth(\n\u001b[31m<    \u001b[0m\u001b[1;48;5;52;31m2\u001b[0m\u001b[31m,\u001b[0m\n\u001b[32m>    \u001b[0m\u001b[1;48;5;22;32m4\u001b[0m\u001b[32m,\u001b[0m\n )\n\n",
+    "panic_column": 5,
+    "panic_file": "crates/context-read/src/tests/linear.rs",
+    "panic_line": 329
+  },
+  "filename": "crates/context-trace/src/logging/tracing_utils/panic.rs",
+  "level": "ERROR",
+  "line_number": 33,
+  "target": "context_trace::logging::tracing_utils::panic",
+  "timestamp": "2026-02-22T23:10:35.799044Z"
+}
+

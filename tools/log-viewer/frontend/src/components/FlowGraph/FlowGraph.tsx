@@ -1,9 +1,8 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useMemo, useState } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import { entries, currentFile, selectEntry, setTab } from '../../store';
-import { gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
 import type { LogEntry } from '../../types';
 
 // Register dagre layout
@@ -23,6 +22,10 @@ interface GraphEdge {
   target: string;
   type: 'sequence' | 'span';
 }
+
+/** Node dimensions for layout and HTML overlays */
+const NODE_WIDTH = 340;
+const NODE_HEIGHT = 72;
 
 function buildGraph(logEntries: LogEntry[]): { nodes: GraphNode[]; edges: GraphEdge[] } {
   const nodes: GraphNode[] = [];
@@ -66,51 +69,36 @@ function buildGraph(logEntries: LogEntry[]): { nodes: GraphNode[]; edges: GraphE
   return { nodes, edges };
 }
 
-function getLevelColor(level: string): string {
-  switch (level.toUpperCase()) {
-    case 'ERROR': return '#e74c3c';
-    case 'WARN': return '#f39c12';
-    case 'INFO': return '#3498db';
-    case 'DEBUG': return '#9b59b6';
-    case 'TRACE': return '#95a5a6';
-    default: return '#7f8c8d';
-  }
-}
-
-function formatNodeLabel(entry: LogEntry): string {
-  const level = entry.level.toUpperCase().padEnd(5);
-  const type = entry.event_type === 'span_enter' ? '▶' : 
-               entry.event_type === 'span_exit' ? '◀' : '●';
-  const name = entry.span_name || '';
-  const msg = entry.message.length > 60 ? entry.message.slice(0, 60) + '…' : entry.message;
-  const time = entry.timestamp?.split('T')[1]?.slice(0, 12) || '';
-  
-  // Multi-line label: [LEVEL] [TYPE] name\nmessage\ntime
-  if (name) {
-    return `${type} ${level} ${name}\n${msg}\n${time}`;
-  }
-  return `${type} ${level}\n${msg}\n${time}`;
-}
-
 export function FlowGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
   
   const logEntries = entries.value;
   const file = currentFile.value;
 
+  // Compute graph structure
+  const { nodes: allNodes, edges: allEdges } = useMemo(
+    () => buildGraph(logEntries),
+    [logEntries]
+  );
+
+  const maxNodes = 200;
+  const limitedNodes = useMemo(() => allNodes.slice(0, maxNodes), [allNodes]);
+  const limitedNodeIds = useMemo(
+    () => new Set(limitedNodes.map(n => n.id)),
+    [limitedNodes]
+  );
+  const limitedEdges = useMemo(
+    () => allEdges.filter(e => limitedNodeIds.has(e.source) && limitedNodeIds.has(e.target)),
+    [allEdges, limitedNodeIds]
+  );
+
+  // Node positions from Cytoscape layout — set once after layout completes
+  const [positions, setPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
+
   useEffect(() => {
-    if (!containerRef.current || logEntries.length === 0) return;
-    
-    const { nodes, edges } = buildGraph(logEntries);
-    
-    // Limit nodes for performance
-    const maxNodes = 200;
-    const limitedNodes = nodes.slice(0, maxNodes);
-    const limitedNodeIds = new Set(limitedNodes.map(n => n.id));
-    const limitedEdges = edges.filter(e => 
-      limitedNodeIds.has(e.source) && limitedNodeIds.has(e.target)
-    );
+    if (!containerRef.current || limitedNodes.length === 0) return;
     
     if (cyRef.current) {
       cyRef.current.destroy();
@@ -121,11 +109,9 @@ export function FlowGraph() {
       elements: [
         ...limitedNodes.map(node => ({
           data: { 
-            id: node.id, 
-            label: formatNodeLabel(node.entry),
-            entry: node.entry,
+            id: node.id,
             type: node.type,
-            level: node.entry.level
+            level: node.entry.level,
           }
         })),
         ...limitedEdges.map((edge, i) => ({
@@ -141,37 +127,12 @@ export function FlowGraph() {
         {
           selector: 'node',
           style: {
-            'background-color': (ele: any) => getLevelColor(ele.data('level')),
-            'background-opacity': gpuOverlayEnabled.value ? 0.25 : 1.0,
-            'label': 'data(label)',
-            'font-size': '14px',
-            'font-family': 'monospace',
-            'font-weight': 'bold',
-            'text-wrap': 'wrap',
-            'text-max-width': '280px',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'text-justification': 'left',
-            'color': '#fff',
-            'width': 320,
-            'height': 90,
-            'shape': 'round-rectangle',
-            'padding': '12px'
-          }
-        },
-        {
-          selector: 'node[type="span_enter"]',
-          style: {
-            'border-width': 3,
-            'border-color': '#2ecc71'
-          }
-        },
-        {
-          selector: 'node[type="span_exit"]',
-          style: {
-            'border-width': 3,
-            'border-style': 'dashed',
-            'border-color': '#e74c3c'
+            // Invisible nodes — just for layout; HTML overlays render on top
+            'background-opacity': 0,
+            'border-width': 0,
+            'label': '',
+            'width': NODE_WIDTH,
+            'height': NODE_HEIGHT,
           }
         },
         {
@@ -191,13 +152,6 @@ export function FlowGraph() {
             'target-arrow-color': '#27ae60',
             'line-style': 'dashed'
           }
-        },
-        {
-          selector: ':selected',
-          style: {
-            'border-width': 4,
-            'border-color': '#f1c40f'
-          }
         }
       ],
       layout: {
@@ -210,26 +164,37 @@ export function FlowGraph() {
         padding: 30
       } as any
     });
+
+    // Sync the HTML overlay container transform to match Cytoscape pan/zoom
+    const syncOverlay = () => {
+      if (!overlayRef.current) return;
+      const pan = cy.pan();
+      const zoom = cy.zoom();
+      overlayRef.current.style.transform =
+        `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`;
+    };
     
-    // After layout, zoom to show first few nodes readable
+    // After layout, set up initial view then read model positions
     cy.one('layoutstop', () => {
+      // Set view first so syncOverlay captures the final pan/zoom
       cy.zoom(1.2);
       cy.pan({ x: 50, y: 50 });
-      // Center on first node if exists
-      const firstNode = cy.nodes().first();
-      if (firstNode.length) {
-        cy.center(firstNode);
-      }
+      const first = cy.nodes().first();
+      if (first.length) cy.center(first);
+
+      const pos = new Map<string, { x: number; y: number }>();
+      cy.nodes().forEach(node => {
+        const p = node.position();
+        pos.set(node.id(), { x: p.x, y: p.y });
+      });
+      setPositions(pos);
+
+      // Sync after a microtask so the re-render from setPositions has completed
+      queueMicrotask(syncOverlay);
     });
     
-    // Handle node clicks
-    cy.on('tap', 'node', (evt) => {
-      const entry = evt.target.data('entry') as LogEntry;
-      if (entry) {
-        selectEntry(entry);
-        setTab('logs');
-      }
-    });
+    // Keep overlay in sync on every pan/zoom change
+    cy.on('viewport', syncOverlay);
     
     cyRef.current = cy;
     cytoscapeInstance.value = cy;
@@ -265,12 +230,17 @@ export function FlowGraph() {
     );
   }
 
+  const handleNodeClick = (entry: LogEntry) => {
+    selectEntry(entry);
+    setTab('logs');
+  };
+
   return (
     <div class="flow-graph">
       <div class="flow-header">
         <span>Flow Graph</span>
         {logEntries.length > 200 && (
-          <span class="flow-warning">⚠️ Showing first 200 of {logEntries.length} entries</span>
+          <span class="flow-warning">Warning: Showing first 200 of {logEntries.length} entries</span>
         )}
         <div class="flow-legend">
           <span class="legend-item"><span class="dot event"></span> Event</span>
@@ -278,7 +248,53 @@ export function FlowGraph() {
           <span class="legend-item"><span class="dot span-exit"></span> Span Exit</span>
         </div>
       </div>
-      <div class="flow-container" ref={containerRef}></div>
+      <div class="flow-viewport">
+        {/* Cytoscape container — edges only (nodes are invisible) */}
+        <div class="flow-cy-container" ref={containerRef}></div>
+        {/* HTML node overlays — positioned using Cytoscape layout coordinates */}
+        <div class="flow-nodes-overlay" ref={overlayRef}>
+          {limitedNodes.map(node => {
+            const pos = positions.get(node.id);
+            if (!pos) return null;
+            const level = node.entry.level.toLowerCase();
+            const typeClass = node.type === 'span_enter' ? 'span_enter'
+                            : node.type === 'span_exit'  ? 'span_exit'
+                            : 'event';
+            const typeLabel = node.type === 'span_enter' ? 'ENTER'
+                            : node.type === 'span_exit'  ? 'EXIT'
+                            : 'EVENT';
+            const msg = node.entry.message.length > 80
+              ? node.entry.message.slice(0, 80) + '…'
+              : node.entry.message;
+            const time = node.entry.timestamp?.split('T')[1]?.slice(0, 12) || '';
+
+            return (
+              <div
+                key={node.id}
+                class={`flow-node level-${level} type-${typeClass}`}
+                style={{
+                  left: `${pos.x - NODE_WIDTH / 2}px`,
+                  top:  `${pos.y - NODE_HEIGHT / 2}px`,
+                  width:  `${NODE_WIDTH}px`,
+                  height: `${NODE_HEIGHT}px`,
+                }}
+                onClick={() => handleNodeClick(node.entry)}
+              >
+                <div class="flow-node-row1">
+                  <span class={`level-badge ${level}`}>{node.entry.level}</span>
+                  <span class={`type-badge ${typeClass}`}>{typeLabel}</span>
+                  {node.entry.span_name && (
+                    <span class="span-name">{node.entry.span_name}</span>
+                  )}
+                  <span class="entry-meta">#{node.entry.line_number}</span>
+                </div>
+                <div class="flow-node-message">{msg}</div>
+                {time && <div class="flow-node-time">{time}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
