@@ -1,9 +1,8 @@
 // API client for the log viewer backend
-
-import type { LogFile, LogContentResponse, SearchResponse, JqQueryResponse, SourceFileResponse, SourceSnippet } from '../types';
-import { withSession } from '@context-engine/viewer-api-frontend';
-
-const API_BASE = '/api';
+//
+// When VITE_STATIC_MODE is set (GitHub Pages build), all exports are
+// re-exported from ./static.ts which reads pre-parsed JSON bundles
+// instead of hitting a live Rust server.
 
 // Log-viewer specific session config (extends base with source_request_count)
 export interface SessionConfig {
@@ -16,88 +15,25 @@ export interface SessionConfigUpdate {
   verbose?: boolean;
 }
 
-// Get current session config
-export async function getSessionConfig(): Promise<SessionConfig> {
-  const response = await fetch(`${API_BASE}/session`, withSession());
-  if (!response.ok) throw new Error('Failed to get session config');
-  return response.json();
+// ── Mode selection ──
+
+export const STATIC_MODE = !!import.meta.env.VITE_STATIC_MODE;
+
+if (STATIC_MODE) {
+  console.info('[log-viewer] Running in static demo mode');
 }
 
-// Update session config
-export async function updateSessionConfig(update: SessionConfigUpdate): Promise<SessionConfig> {
-  const response = await fetch(`${API_BASE}/session`, withSession({
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(update),
-  }));
-  if (!response.ok) throw new Error('Failed to update session config');
-  return response.json();
-}
+import * as staticApi from './static';
+import * as liveApi from './live';
 
-export async function fetchLogFiles(): Promise<LogFile[]> {
-  const response = await fetch(`${API_BASE}/logs`, withSession());
-  if (!response.ok) throw new Error('Failed to fetch log files');
-  return response.json();
-}
+const impl = STATIC_MODE ? staticApi : liveApi;
 
-export async function fetchLogContent(name: string): Promise<LogContentResponse> {
-  const response = await fetch(`${API_BASE}/logs/${encodeURIComponent(name)}`, withSession());
-  if (!response.ok) throw new Error('Failed to fetch log content');
-  return response.json();
-}
+export const getSessionConfig = impl.getSessionConfig;
+export const updateSessionConfig = impl.updateSessionConfig;
+export const fetchLogFiles = impl.fetchLogFiles;
+export const fetchLogContent = impl.fetchLogContent;
+export const searchLogs = impl.searchLogs;
+export const queryLogs = impl.queryLogs;
+export const fetchSourceFile = impl.fetchSourceFile;
+export const fetchSourceSnippet = impl.fetchSourceSnippet;
 
-export async function searchLogs(
-  name: string,
-  query: string,
-  level?: string,
-  limit?: number
-): Promise<SearchResponse> {
-  const url = new URL(`${API_BASE}/search/${encodeURIComponent(name)}`, window.location.origin);
-  url.searchParams.set('q', query);
-  if (level) url.searchParams.set('level', level);
-  if (limit) url.searchParams.set('limit', limit.toString());
-  
-  const response = await fetch(url.toString(), withSession());
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Search failed');
-  }
-  return response.json();
-}
-
-export async function queryLogs(
-  name: string,
-  jqFilter: string,
-  limit?: number
-): Promise<JqQueryResponse> {
-  const url = new URL(`${API_BASE}/query/${encodeURIComponent(name)}`, window.location.origin);
-  url.searchParams.set('jq', jqFilter);
-  if (limit) url.searchParams.set('limit', limit.toString());
-
-  const response = await fetch(url.toString(), withSession());
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Query failed');
-  }
-  return response.json();
-}
-
-export async function fetchSourceFile(path: string): Promise<SourceFileResponse> {
-  const response = await fetch(`${API_BASE}/source/${encodeURIComponent(path)}`, withSession());
-  if (!response.ok) throw new Error('Failed to fetch source file');
-  return response.json();
-}
-
-export async function fetchSourceSnippet(
-  path: string,
-  line: number,
-  context: number = 5
-): Promise<SourceSnippet> {
-  const url = new URL(`${API_BASE}/source/${encodeURIComponent(path)}`, window.location.origin);
-  url.searchParams.set('line', line.toString());
-  url.searchParams.set('context', context.toString());
-  
-  const response = await fetch(url.toString(), withSession());
-  if (!response.ok) throw new Error('Failed to fetch source snippet');
-  return response.json();
-}

@@ -1,0 +1,2936 @@
+{
+  "fields": {
+    "log_file": {
+      "_type": "Option",
+      "_values": [
+        "C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/target/test-logs/four_repeated_atoms_hierarchical.log"
+      ],
+      "_variant": "Some"
+    },
+    "message": "Test tracing initialized",
+    "test_name": "four_repeated_atoms_hierarchical"
+  },
+  "filename": "crates/context-trace/src/logging/tracing_utils/test_tracing.rs",
+  "level": "INFO",
+  "line_number": 927,
+  "target": "context_trace::logging::tracing_utils::test_tracing",
+  "timestamp": "2026-02-22T23:08:38.504240Z"
+}
+
+{
+  "fields": {
+    "edge_count": 0,
+    "graph_data": "{\"nodes\":[{\"index\":0,\"label\":\"a\",\"width\":1,\"is_atom\":true}],\"edges\":[]}",
+    "message": "graph_snapshot",
+    "node_count": 1
+  },
+  "filename": "crates/context-trace/src/graph/snapshot.rs",
+  "level": "INFO",
+  "line_number": 100,
+  "target": "context_trace::graph::snapshot",
+  "timestamp": "2026-02-22T23:08:38.504690Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-insert/src/insert/context.rs",
+  "level": "INFO",
+  "line_number": 53,
+  "span": {
+    "fn_sig": {
+      "name": "insert",
+      "params": [
+        {
+          "self": "&mut self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<InsertTraversal>+ Debug"
+        }
+      ],
+      "return_type": "Result<R, ErrorState>"
+    },
+    "name": "insert",
+    "searchable": [
+      {
+        "index": 0,
+        "text": "a"
+      },
+      {
+        "index": 0,
+        "text": "a"
+      }
+    ],
+    "self_type": "context_insert::insert::context::InsertCtx"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    }
+  ],
+  "target": "context_insert::insert::context",
+  "timestamp": "2026-02-22T23:08:38.504904Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.505237Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 197,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "path": {
+      "_type": "RootedRangePath",
+      "end": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::End"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      },
+      "root": {
+        "_type": "Pattern",
+        "_values": [
+          [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 0,
+              "text": "a"
+            }
+          ]
+        ]
+      },
+      "start": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::Start"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      }
+    },
+    "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.505442Z"
+}
+
+{
+  "fields": {
+    "message": "enter"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 79,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.505862Z"
+}
+
+{
+  "fields": {
+    "message": "starting search from token",
+    "start_token": {
+      "index": 0,
+      "text": "a"
+    }
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "DEBUG",
+  "line_number": 86,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.506158Z"
+}
+
+{
+  "fields": {
+    "cursor": {
+      "_type": "PathCursor",
+      "path": {
+        "_type": "PatternRangePath",
+        "end": "entry=0",
+        "path=[]": "",
+        "pattern": [
+          {
+            "index": 0,
+            "text": "a"
+          },
+          {
+            "index": 0,
+            "text": "a"
+          }
+        ],
+        "start": "entry=0"
+      },
+      "position": 1
+    },
+    "message": "creating search from start context",
+    "start_token": {
+      "index": 0,
+      "text": "a"
+    }
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 94,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:08:38.506478Z"
+}
+
+{
+  "fields": {
+    "cursor_path": {
+      "_type": "RootedRangePath",
+      "end": "entry=0",
+      "path=[]": "",
+      "root": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "start": "entry=0"
+    },
+    "message": "get_parent_batch called"
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 121,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:08:38.506871Z"
+}
+
+{
+  "fields": {
+    "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
+  },
+  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "level": "TRACE",
+  "line_number": 102,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_trace::path::structs::rooted::pattern_range",
+  "timestamp": "2026-02-22T23:08:38.507257Z"
+}
+
+{
+  "fields": {
+    "message": "PathCursor::move_root_index: child_index=1, child_width=1, old_atom_pos=1, will advance to 2"
+  },
+  "filename": "crates/context-search/src/cursor/path.rs",
+  "level": "TRACE",
+  "line_number": 74,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::cursor::path",
+  "timestamp": "2026-02-22T23:08:38.507579Z"
+}
+
+{
+  "fields": {
+    "batch_len": 0,
+    "message": "first parent batch obtained"
+  },
+  "filename": "crates/context-search/src/state/start/core.rs",
+  "level": "TRACE",
+  "line_number": 97,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+    }
+  ],
+  "target": "context_search::state::start::core",
+  "timestamp": "2026-02-22T23:08:38.507968Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "3.01ms",
+    "time.idle": "4.50µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 79,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "self_type": "context_search::cursor::PathCursor<context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    },
+    {
+      "fn_sig": {
+        "name": "start_search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<SearchState<K>, ErrorState>"
+      },
+      "name": "start_search",
+      "path": {
+        "_type": "RootedRangePath",
+        "end": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::End"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        },
+        "root": {
+          "_type": "Pattern",
+          "_values": [
+            [
+              {
+                "index": 0,
+                "text": "a"
+              },
+              {
+                "index": 0,
+                "text": "a"
+              }
+            ]
+          ]
+        },
+        "start": {
+          "_ty": {
+            "_type": "PhantomData",
+            "type_param": "context_trace::path::accessors::role::Start"
+          },
+          "_type": "RolePath",
+          "sub_path": {
+            "_type": "SubPath",
+            "path": [],
+            "root_entry": 0
+          }
+        }
+      },
+      "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.508871Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "3.99ms",
+    "time.idle": "4.60µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 197,
+  "span": {
+    "fn_sig": {
+      "name": "start_search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<SearchState<K>, ErrorState>"
+    },
+    "name": "start_search",
+    "path": {
+      "_type": "RootedRangePath",
+      "end": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::End"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      },
+      "root": {
+        "_type": "Pattern",
+        "_values": [
+          [
+            {
+              "index": 0,
+              "text": "a"
+            },
+            {
+              "index": 0,
+              "text": "a"
+            }
+          ]
+        ]
+      },
+      "start": {
+        "_ty": {
+          "_type": "PhantomData",
+          "type_param": "context_trace::path::accessors::role::Start"
+        },
+        "_type": "RolePath",
+        "sub_path": {
+          "_type": "SubPath",
+          "path": [],
+          "root_entry": 0
+        }
+      }
+    },
+    "self_type": "context_trace::path::structs::rooted::RootedRangePath<context_trace::graph::vertex::pattern::Pattern>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.509437Z"
+}
+
+{
+  "fields": {
+    "message": "start search successful, beginning fold"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 67,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.509919Z"
+}
+
+{
+  "fields": {
+    "message": "initial state",
+    "queue": {
+      "_type": "SearchQueue",
+      "count": 0
+    }
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 123,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.510226Z"
+}
+
+{
+  "fields": {
+    "message": "searching for next match"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 340,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.510539Z"
+}
+
+{
+  "fields": {
+    "message": "finding next match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 58,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:08:38.510858Z"
+}
+
+{
+  "fields": {
+    "message": "finding next root match"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 70,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:08:38.511166Z"
+}
+
+{
+  "fields": {
+    "message": "no root cursor found, iteration complete"
+  },
+  "filename": "crates/context-search/src/match/iterator.rs",
+  "level": "TRACE",
+  "line_number": 85,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::r#match::iterator",
+  "timestamp": "2026-02-22T23:08:38.511484Z"
+}
+
+{
+  "fields": {
+    "message": "no more matches found"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 355,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.511928Z"
+}
+
+{
+  "fields": {
+    "message": "No matches found, creating EntireRoot at token width"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 142,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.512229Z"
+}
+
+{
+  "fields": {
+    "end": {
+      "_type": "MatchResult",
+      "cursor": {
+        "_type": "AtCheckpoint",
+        "_values": [
+          {
+            "_state": {
+              "_type": "PhantomData",
+              "type_param": "context_search::cursor::checkpointed::AtCheckpoint"
+            },
+            "_type": "Checkpointed",
+            "candidate": null,
+            "checkpoint": {
+              "_state": {
+                "_type": "PhantomData",
+                "type_param": "context_search::cursor::Matched"
+              },
+              "_type": "PathCursor",
+              "atom_position": {
+                "_type": "AtomPosition",
+                "_values": [
+                  1
+                ]
+              },
+              "path": {
+                "_type": "RootedRangePath",
+                "end": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::End"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                },
+                "root": {
+                  "_type": "Pattern",
+                  "_values": [
+                    [
+                      {
+                        "index": 0,
+                        "text": "a"
+                      },
+                      {
+                        "index": 0,
+                        "text": "a"
+                      }
+                    ]
+                  ]
+                },
+                "start": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::Start"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "path": {
+        "_type": "EntireRoot",
+        "_values": [
+          {
+            "_type": "RootedRangePath",
+            "end": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::End"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            },
+            "root": {
+              "_type": "IndexRoot",
+              "location": {
+                "_type": "PatternLocation",
+                "parent": {
+                  "index": 0,
+                  "text": "a"
+                },
+                "pattern_id": {
+                  "_type": "PatternId",
+                  "_values": [
+                    "a54ba41f-d0a5-4b42-8692-bd091208bd26"
+                  ]
+                }
+              }
+            },
+            "start": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::Start"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "final matched state"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "TRACE",
+  "line_number": 162,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.512405Z"
+}
+
+{
+  "fields": {
+    "end": {
+      "_type": "MatchResult",
+      "cursor": {
+        "_type": "AtCheckpoint",
+        "_values": [
+          {
+            "_state": {
+              "_type": "PhantomData",
+              "type_param": "context_search::cursor::checkpointed::AtCheckpoint"
+            },
+            "_type": "Checkpointed",
+            "candidate": null,
+            "checkpoint": {
+              "_state": {
+                "_type": "PhantomData",
+                "type_param": "context_search::cursor::Matched"
+              },
+              "_type": "PathCursor",
+              "atom_position": {
+                "_type": "AtomPosition",
+                "_values": [
+                  1
+                ]
+              },
+              "path": {
+                "_type": "RootedRangePath",
+                "end": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::End"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                },
+                "root": {
+                  "_type": "Pattern",
+                  "_values": [
+                    [
+                      {
+                        "index": 0,
+                        "text": "a"
+                      },
+                      {
+                        "index": 0,
+                        "text": "a"
+                      }
+                    ]
+                  ]
+                },
+                "start": {
+                  "_ty": {
+                    "_type": "PhantomData",
+                    "type_param": "context_trace::path::accessors::role::Start"
+                  },
+                  "_type": "RolePath",
+                  "sub_path": {
+                    "_type": "SubPath",
+                    "path": [],
+                    "root_entry": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "path": {
+        "_type": "EntireRoot",
+        "_values": [
+          {
+            "_type": "RootedRangePath",
+            "end": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::End"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            },
+            "root": {
+              "_type": "IndexRoot",
+              "location": {
+                "_type": "PatternLocation",
+                "parent": {
+                  "index": 0,
+                  "text": "a"
+                },
+                "pattern_id": {
+                  "_type": "PatternId",
+                  "_values": [
+                    "a54ba41f-d0a5-4b42-8692-bd091208bd26"
+                  ]
+                }
+              }
+            },
+            "start": {
+              "_ty": {
+                "_type": "PhantomData",
+                "type_param": "context_trace::path::accessors::role::Start"
+              },
+              "_type": "RolePath",
+              "sub_path": {
+                "_type": "SubPath",
+                "path": [],
+                "root_entry": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "search complete"
+  },
+  "filename": "crates/context-search/src/search/mod.rs",
+  "level": "INFO",
+  "line_number": 172,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    },
+    {
+      "fn_sig": {
+        "name": "search",
+        "params": [
+          {
+            "self": "self"
+          },
+          {
+            "name": "trav",
+            "type": "K::Trav"
+          }
+        ],
+        "return_type": "Result<Response, ErrorState>"
+      },
+      "name": "search",
+      "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+    }
+  ],
+  "target": "context_search::search",
+  "timestamp": "2026-02-22T23:08:38.513205Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "8.50ms",
+    "time.idle": "4.30µs"
+  },
+  "filename": "crates/context-search/src/search/searchable.rs",
+  "level": "TRACE",
+  "line_number": 57,
+  "span": {
+    "fn_sig": {
+      "name": "search",
+      "params": [
+        {
+          "self": "self"
+        },
+        {
+          "name": "trav",
+          "type": "K::Trav"
+        }
+      ],
+      "return_type": "Result<Response, ErrorState>"
+    },
+    "name": "search",
+    "self_type": "alloc::vec::Vec<context_trace::graph::vertex::token::Token>"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    }
+  ],
+  "target": "context_search::search::searchable",
+  "timestamp": "2026-02-22T23:08:38.513741Z"
+}
+
+{
+  "fields": {
+    "at_end": false,
+    "end_index": 0,
+    "end_path_len": "0",
+    "message": "query_exhausted check",
+    "path_empty": true
+  },
+  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "level": "TRACE",
+  "line_number": 155,
+  "span": {
+    "fn_sig": {
+      "name": "insert",
+      "params": [
+        {
+          "self": "&mut self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<InsertTraversal>+ Debug"
+        }
+      ],
+      "return_type": "Result<R, ErrorState>"
+    },
+    "name": "insert",
+    "searchable": [
+      {
+        "index": 0,
+        "text": "a"
+      },
+      {
+        "index": 0,
+        "text": "a"
+      }
+    ],
+    "self_type": "context_insert::insert::context::InsertCtx"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    }
+  ],
+  "target": "context_search::state::matched",
+  "timestamp": "2026-02-22T23:08:38.513888Z"
+}
+
+{
+  "fields": {
+    "at_end": false,
+    "end_index": 0,
+    "end_path_len": "0",
+    "message": "query_exhausted check",
+    "path_empty": true
+  },
+  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "level": "TRACE",
+  "line_number": 155,
+  "span": {
+    "fn_sig": {
+      "name": "insert",
+      "params": [
+        {
+          "self": "&mut self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<InsertTraversal>+ Debug"
+        }
+      ],
+      "return_type": "Result<R, ErrorState>"
+    },
+    "name": "insert",
+    "searchable": [
+      {
+        "index": 0,
+        "text": "a"
+      },
+      {
+        "index": 0,
+        "text": "a"
+      }
+    ],
+    "self_type": "context_insert::insert::context::InsertCtx"
+  },
+  "spans": [
+    {
+      "fn_sig": {
+        "name": "insert",
+        "params": [
+          {
+            "self": "&mut self"
+          },
+          {
+            "name": "searchable",
+            "type": "impl Searchable<InsertTraversal>+ Debug"
+          }
+        ],
+        "return_type": "Result<R, ErrorState>"
+      },
+      "name": "insert",
+      "searchable": [
+        {
+          "index": 0,
+          "text": "a"
+        },
+        {
+          "index": 0,
+          "text": "a"
+        }
+      ],
+      "self_type": "context_insert::insert::context::InsertCtx"
+    }
+  ],
+  "target": "context_search::state::matched",
+  "timestamp": "2026-02-22T23:08:38.514072Z"
+}
+
+{
+  "fields": {
+    "message": "close",
+    "time.busy": "9.32ms",
+    "time.idle": "9.00µs"
+  },
+  "filename": "crates/context-insert/src/insert/context.rs",
+  "level": "INFO",
+  "line_number": 53,
+  "span": {
+    "fn_sig": {
+      "name": "insert",
+      "params": [
+        {
+          "self": "&mut self"
+        },
+        {
+          "name": "searchable",
+          "type": "impl Searchable<InsertTraversal>+ Debug"
+        }
+      ],
+      "return_type": "Result<R, ErrorState>"
+    },
+    "name": "insert",
+    "searchable": [
+      {
+        "index": 0,
+        "text": "a"
+      },
+      {
+        "index": 0,
+        "text": "a"
+      }
+    ],
+    "self_type": "context_insert::insert::context::InsertCtx"
+  },
+  "spans": [],
+  "target": "context_insert::insert::context",
+  "timestamp": "2026-02-22T23:08:38.514226Z"
+}
+
+{
+  "fields": {
+    "backtrace": "   0: std::backtrace_rs::backtrace::win64::trace\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/../../backtrace/src/backtrace/win64.rs:85\n   1: std::backtrace_rs::backtrace::trace_unsynchronized\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/../../backtrace/src/backtrace/mod.rs:66\n   2: std::backtrace::Backtrace::create\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/backtrace.rs:331\n   3: std::backtrace::Backtrace::force_capture\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/backtrace.rs:312\n   4: context_trace::logging::tracing_utils::panic::install_panic_hook::closure$0::closure$0\n             at C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/crates/context-trace/src/logging/tracing_utils/panic.rs:15\n   5: std::panicking::panic_with_hook\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:842\n   6: std::panicking::panic_handler::closure$0\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:707\n   7: std::sys::backtrace::__rust_end_short_backtrace<std::panicking::panic_handler::closure_env$0,never$>\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/backtrace.rs:174\n   8: std::panicking::panic_handler\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/panicking.rs:698\n   9: core::panicking::panic_fmt\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/panicking.rs:80\n  10: core::panicking::assert_failed_inner\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/panicking.rs:439\n  11: core::panicking::assert_failed<context_trace::graph::vertex::token::TokenWidth,context_trace::graph::vertex::token::TokenWidth>\n             at C:/Users/linus_behrbohm/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/lib/rustlib/src/rust/library/core/src/panicking.rs:399\n  12: context_insert::tests::cases::insert::repeat_patterns::four_repeated_atoms_hierarchical\n             at ./src/tests/cases/insert/repeat_patterns.rs:104\n  13: context_insert::tests::cases::insert::repeat_patterns::four_repeated_atoms_hierarchical::closure$0\n             at ./src/tests/cases/insert/repeat_patterns.rs:97\n  14: core::ops::function::FnOnce::call_once<context_insert::tests::cases::insert::repeat_patterns::four_repeated_atoms_hierarchical::closure_env$0,tuple$<> >\n             at C:/Users/linus_behrbohm/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/lib/rustlib/src/rust/library/core/src/ops/function.rs:250\n  15: core::ops::function::FnOnce::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/ops/function.rs:250\n  16: test::__rust_begin_short_backtrace<enum2$<core::result::Result<tuple$<>,alloc::string::String> >,enum2$<core::result::Result<tuple$<>,alloc::string::String> > (*)()>\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:663\n  17: test::run_test_in_process\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:686\n  18: test::run_test::closure$0\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:607\n  19: test::run_test::closure$1\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/test/src/lib.rs:637\n  20: std::sys::backtrace::__rust_begin_short_backtrace<test::run_test::closure_env$1,tuple$<> >\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/backtrace.rs:158\n  21: core::ops::function::FnOnce::call_once<std::thread::impl$0::spawn_unchecked_::closure_env$1<test::run_test::closure_env$1,tuple$<> >,tuple$<> >\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/core/src/ops/function.rs:250\n  22: alloc::boxed::impl$29::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/alloc/src/boxed.rs:2004\n  23: alloc::boxed::impl$29::call_once\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/alloc/src/boxed.rs:2004\n  24: std::sys::thread::windows::impl$0::new::thread_start\n             at /rustc/9725c4baacef19345e13f91b27e66e10ef5592ae/library/std/src/sys/thread/windows.rs:60\n  25: BaseThreadInitThunk\n  26: RtlUserThreadStart\n",
+    "message": "PANIC: assertion `left == right` failed\n  left: TokenWidth(1)\n right: TokenWidth(2)",
+    "panic_column": 5,
+    "panic_file": "crates/context-insert/src/tests/cases/insert/repeat_patterns.rs",
+    "panic_line": 104
+  },
+  "filename": "crates/context-trace/src/logging/tracing_utils/panic.rs",
+  "level": "ERROR",
+  "line_number": 33,
+  "target": "context_trace::logging::tracing_utils::panic",
+  "timestamp": "2026-02-22T23:08:38.693864Z"
+}
+

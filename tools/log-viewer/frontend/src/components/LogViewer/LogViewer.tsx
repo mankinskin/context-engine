@@ -69,6 +69,15 @@ export function LogViewer() {
     }
   };
   
+  const toggleExpandAll = () => {
+    setExpandAll(prev => !prev);
+    setExpandedEntries(new Set());
+  };
+
+  const resetExpandStates = () => {
+    setExpandedEntries(new Set());
+  };
+
   const toggleExpanded = (lineNumber: number) => {
     setExpandedEntries(prev => {
       const next = new Set(prev);
@@ -153,9 +162,14 @@ export function LogViewer() {
     <div class="log-viewer">
       <div class="log-viewer-toolbar">
         <span class="toolbar-count">{filteredEntries.value.length} entries</span>
-        <button class="expand-toggle" onClick={() => setExpandAll(!expandAll)} title={expandAll ? "Collapse all" : "Expand all"}>
+        <button class="expand-toggle" onClick={toggleExpandAll} title={expandAll ? "Collapse all" : "Expand all"}>
           {expandAll ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
+        {expandedEntries.size > 0 && (
+          <button class="expand-toggle reset-toggle" onClick={resetExpandStates} title="Reset all to current orientation">
+            ↺
+          </button>
+        )}
       </div>
       {/* Header column scrollbar */}
       {scrollRange > 0 && (

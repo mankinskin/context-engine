@@ -2,7 +2,7 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats } from '../types';
+import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot } from '../types';
 import * as api from '../api';
 
 // Per-file state interface
@@ -16,6 +16,7 @@ interface FileState {
     codeViewerFile: string | null;
     codeViewerContent: string;
     codeViewerLine: number | null;
+  activeTab: ViewTab;
 }
 
 // Create default file state
@@ -30,6 +31,7 @@ function createFileState(): FileState {
         codeViewerFile: null,
         codeViewerContent: '',
         codeViewerLine: null,
+      activeTab: 'logs',
     };
 }
 
@@ -100,6 +102,26 @@ export const filteredEntries = computed(() => {
   }
   
   return result;
+});
+
+// Computed: extract hypergraph snapshot from log entries (first graph_snapshot event)
+export const hypergraphSnapshot = computed((): HypergraphSnapshot | null => {
+  const allEntries = entries.value;
+  for (const entry of allEntries) {
+    if (entry.message === 'graph_snapshot' && entry.fields?.graph_data) {
+      try {
+        const data = typeof entry.fields.graph_data === 'string'
+          ? JSON.parse(entry.fields.graph_data)
+          : entry.fields.graph_data;
+        if (data && Array.isArray(data.nodes) && Array.isArray(data.edges)) {
+          return data as HypergraphSnapshot;
+        }
+      } catch {
+        // skip invalid JSON
+      }
+    }
+  }
+  return null;
 });
 
 export const logStats = computed((): LogStats => {
@@ -189,9 +211,8 @@ export async function loadLogFile(name: string) {
     // Check if we already have entries for this file
     const existingState = fileStates.value.get(name);
     if (existingState && existingState.entries.length > 0) {
-        // Just switch to the file, state is preserved
-        currentFile.value = name;
-      activeTab.value = 'logs';  // Switch to logs view
+      // Just switch to the file, keep the currently active tab
+      currentFile.value = name;
         statusMessage.value = `Loaded ${name} (${existingState.entries.length} entries)`;
         return;
     }
@@ -203,16 +224,17 @@ export async function loadLogFile(name: string) {
   try {
     const data = await api.fetchLogContent(name);
 
-      // Create state for this file
+    // Create state for this file, inheriting the currently active tab
       const states = new Map(fileStates.value);
       states.set(name, {
           ...createFileState(),
           entries: data.entries,
+        activeTab: activeTab.value,
       });
       fileStates.value = states;
 
       currentFile.value = name;
-    activeTab.value = 'logs';  // Switch to logs view
+    // Keep the currently active tab type when opening a new file
     statusMessage.value = `Loaded ${name} (${data.entries.length} entries)`;
   } catch (e) {
     error.value = String(e);
@@ -287,6 +309,7 @@ export async function openSourceFile(path: string, line?: number) {
           codeViewerLine: line ?? null,
       });
     activeTab.value = 'code';
+    updateCurrentFileState({ activeTab: 'code' });
   } catch (e) {
     error.value = `Failed to load source: ${e}`;
   }
@@ -298,6 +321,7 @@ export function selectEntry(entry: LogEntry | null) {
 
 export function setTab(tab: ViewTab) {
   activeTab.value = tab;
+  updateCurrentFileState({ activeTab: tab });
 }
 
 export function setLevelFilter(level: LogLevel | '') {

@@ -4,16 +4,6 @@ import { ListIcon } from '../Icons';
 import type { JSX } from 'preact';
 
 // SVG icons for tabs
-function FlowIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-      <path d="M2 4H6L8 7L6 10H2" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M8 7H12" stroke={color} stroke-width="1.2" stroke-linecap="round"/>
-      <circle cx="12" cy="7" r="1.5" stroke={color} stroke-width="1.2"/>
-    </svg>
-  );
-}
-
 function StatsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
@@ -33,11 +23,54 @@ function FileIcon({ size = 14, color = 'currentColor' }: { size?: number; color?
   );
 }
 
+function EffectsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1L8.5 5L13 5.5L9.5 8.5L10.5 13L7 10.5L3.5 13L4.5 8.5L1 5.5L5.5 5Z" stroke={color} stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  );
+}
+
+function CubeIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1L12.5 4V10L7 13L1.5 10V4L7 1Z" stroke={color} stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M7 7L12.5 4M7 7L1.5 4M7 7V13" stroke={color} stroke-width="1.2"/>
+    </svg>
+  );
+}
+
+function GraphIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <circle cx="3" cy="3" r="1.5" stroke={color} stroke-width="1.2"/>
+      <circle cx="11" cy="3" r="1.5" stroke={color} stroke-width="1.2"/>
+      <circle cx="7" cy="11" r="1.5" stroke={color} stroke-width="1.2"/>
+      <path d="M4.2 4.2L6 9.5M9.8 4.2L8 9.5" stroke={color} stroke-width="1.0" stroke-linecap="round"/>
+      <path d="M4 3H10" stroke={color} stroke-width="1.0" stroke-linecap="round" stroke-dasharray="1.5 1.5"/>
+    </svg>
+  );
+}
+
+function PaletteIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+      <path d="M7 1C3.7 1 1 3.7 1 7s2.7 6 6 6c.6 0 1-.4 1-1 0-.3-.1-.5-.2-.7-.1-.2-.2-.4-.2-.7 0-.6.4-1 1-1h1.2c2.2 0 4-1.8 4-4 0-2.8-2.7-4.6-6.8-4.6z" stroke={color} stroke-width="1.1" stroke-linecap="round"/>
+      <circle cx="4.5" cy="5.5" r="1" fill={color}/>
+      <circle cx="7" cy="4" r="1" fill={color}/>
+      <circle cx="9.5" cy="5.5" r="1" fill={color}/>
+    </svg>
+  );
+}
+
 const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'logs', label: 'Logs', icon: () => <ListIcon size={14} /> },
-  { id: 'flow', label: 'Flow Graph', icon: () => <FlowIcon size={14} /> },
+  { id: 'hypergraph', label: 'Hypergraph', icon: () => <GraphIcon size={14} /> },
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
   { id: 'code', label: 'Code', icon: () => <FileIcon size={14} /> },
+  { id: 'debug', label: 'Effects', icon: () => <EffectsIcon size={14} /> },
+  { id: 'scene3d', label: '3D Scene', icon: () => <CubeIcon size={14} /> },
+  { id: 'settings', label: 'Theme', icon: () => <PaletteIcon size={14} /> },
 ];
 
 export function TabBar() {

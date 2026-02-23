@@ -4,6 +4,7 @@ export interface LogFile {
   name: string;
   size: number;
   modified: string | null;
+  has_graph_snapshot: boolean;
 }
 
 export interface AssertionDiff {
@@ -69,7 +70,28 @@ export interface SourceSnippet {
   language: string;
 }
 
-export type ViewTab = 'logs' | 'flow' | 'stats' | 'code';
+export type ViewTab = 'logs' | 'stats' | 'code' | 'debug' | 'scene3d' | 'hypergraph' | 'settings';
+
+// ── Hypergraph snapshot types (from Rust graph serialization) ──
+
+export interface HypergraphSnapshot {
+  nodes: HypergraphNode[];
+  edges: HypergraphEdge[];
+}
+
+export interface HypergraphNode {
+  index: number;
+  label: string;
+  width: number;
+  is_atom: boolean;
+}
+
+export interface HypergraphEdge {
+  from: number;
+  to: number;
+  pattern_idx: number;
+  sub_index: number;
+}
 
 export interface FlowNode {
   id: string;

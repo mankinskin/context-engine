@@ -13,10 +13,10 @@ import {
   searchQuery as searchQuerySignal,
   jqFilter as jqFilterSignal,
   performSearch,
-  clearSearch,
-  showRaw
+  clearSearch
 } from '../../store';
 import { showFilterPanel, resetFilterPanel } from '../FilterPanel/FilterPanel';
+import { gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
 
 export function Header() {
   const handleSearch = (e: Event) => {
@@ -62,19 +62,17 @@ export function Header() {
         {(searchQuerySignal.value || jqFilterSignal.value) && (
           <button class="btn" onClick={() => { resetFilterPanel(); clearSearch(); }}><CloseIcon size={12} /> Clear</button>
         )}
-        
-        <label class="checkbox-label">
-          <input 
-            type="checkbox" 
-            checked={showRaw.value}
-            onChange={(e) => showRaw.value = (e.target as HTMLInputElement).checked}
-          />
-          Show Raw
-        </label>
       </div>
       
       <div class="header-right">
         <span class="status-text">{statusMessage.value}</span>
+        <button
+          class={`btn btn-gpu ${gpuOverlayEnabled.value ? 'btn-active' : ''}`}
+          title={gpuOverlayEnabled.value ? 'Disable GPU overlay (WebGPU / wgpu WGSL shaders)' : 'Enable GPU overlay (WebGPU / wgpu WGSL shaders)'}
+          onClick={() => gpuOverlayEnabled.value = !gpuOverlayEnabled.value}
+        >
+          {gpuOverlayEnabled.value ? '⬢' : '⬡'} GPU
+        </button>
         <button class="btn" onClick={handleRefresh}><RefreshIcon size={12} /> Refresh</button>
       </div>
     </header>

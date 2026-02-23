@@ -108,6 +108,16 @@ pub async fn list_logs(
         let path = entry.path();
         if path.extension().map_or(false, |ext| ext == "log") {
             let metadata = entry.metadata().ok();
+            // Quick scan for graph_snapshot marker (check first 64KB for speed)
+            let has_graph_snapshot = std::fs::read(&path)
+                .map(|bytes| {
+                    let scan_len = bytes.len().min(64 * 1024);
+                    bytes[..scan_len]
+                        .windows(b"graph_snapshot".len())
+                        .any(|w| w == b"graph_snapshot")
+                })
+                .unwrap_or(false);
+
             let file_info = LogFileInfo {
                 name: path.file_name().unwrap().to_string_lossy().to_string(),
                 size: metadata.as_ref().map_or(0, |m| m.len()),
@@ -117,6 +127,7 @@ pub async fn list_logs(
                         datetime.format("%Y-%m-%d %H:%M:%S").to_string()
                     })
                 }),
+                has_graph_snapshot,
             };
             debug!(file = %file_info.name, size = file_info.size, "Found log file");
             logs.push(file_info);

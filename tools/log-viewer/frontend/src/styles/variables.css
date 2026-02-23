@@ -1,30 +1,35 @@
-/* CSS Variables and Design Tokens */
+/* CSS Variables and Design Tokens  —  Dark Souls "Cinder" Theme */
 
 :root {
-  --bg-primary: #1a1a1c;
-  --bg-secondary: #212124;
-  --bg-tertiary: #28282c;
-  --bg-hover: #32323a;
-  --bg-active: #2a3a4a;
+  /* — Gothic stone backgrounds — */
+  --bg-primary: #0d0c0b;
+  --bg-secondary: #141311;
+  --bg-tertiary: #1a1816;
+  --bg-hover: #24201c;
+  --bg-active: #2a2218;
   
-  --text-primary: #e0e0e4;
-  --text-secondary: #a0a0a8;
-  --text-muted: #606068;
+  /* — Ashen / bone text — */
+  --text-primary: #c8c0b4;
+  --text-secondary: #8a8478;
+  --text-muted: #524e46;
   
-  --border-color: #38383e;
-  --border-subtle: #2a2a30;
+  /* — Iron borders — */
+  --border-color: #2e2a24;
+  --border-subtle: #1e1c18;
   
-  --accent-blue: #4a8fd4;
-  --accent-green: #3da060;
-  --accent-orange: #d97a3a;
-  --accent-purple: #a06dd0;
-  --accent-yellow: #c9a820;
+  /* — Ember & vine accents — */
+  --accent-blue: #3a6a80;      /* faded steel blue */
+  --accent-green: #2a5a28;     /* deep vine green */
+  --accent-orange: #c85a18;    /* bonfire orange */
+  --accent-purple: #5a3a6a;    /* dark soul purple */
+  --accent-yellow: #a08018;    /* tarnished gold */
   
-  --level-trace: #505058;
-  --level-debug: #7050a8;
-  --level-info: #2878c8;
-  --level-warn: #c88820;
-  --level-error: #c83838;
+  /* — Log levels: cinder palette — */
+  --level-trace: #3a3830;      /* ash grey */
+  --level-debug: #4a5a3a;      /* moss green */
+  --level-info: #3a5a6a;       /* cold iron blue */
+  --level-warn: #a07020;       /* bonfire amber */
+  --level-error: #8a2a18;      /* blood ember */
   
   --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -32,4 +37,36 @@
   --sidebar-width: 220px;
   --header-height: 24px;
   --tab-height: 20px;
+  --z-overlay: 9999;
 }
+
+/* ----- GPU overlay mode -----
+   Canvas renders gothic stone wall BEHIND HTML (z-index -1, opaque).
+   HTML backgrounds become transparent so stone texture + vine growth
+   and ember effects show through. */
+:root.gpu-active {
+  --bg-primary:    transparent;
+  --bg-secondary:  rgba(20, 19, 17, 0.25);
+  --bg-tertiary:   rgba(26, 24, 22, 0.25);
+  --bg-hover:      rgba(36, 32, 28, 0.35);
+  --bg-active:     rgba(42, 34, 24, 0.35);
+  --border-color:  rgba(46, 42, 36, 0.35);
+  --border-subtle: rgba(30, 28, 24, 0.25);
+}
+
+:root.gpu-active body {
+  background: transparent !important;
+}
+
+/* Hide native cursor when GPU cursor is active */
+:root.gpu-custom-cursor,
+:root.gpu-custom-cursor * {
+  cursor: none !important;
+}
+
+:root.gpu-active #app {
+  isolation: isolate;
+  will-change: transform;
+}
+
+

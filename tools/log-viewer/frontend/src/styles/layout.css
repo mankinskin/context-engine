@@ -97,6 +97,48 @@
   margin-top: 2px;
 }
 
+/* Sidebar graph filter button */
+.sidebar-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: calc(100% - 12px);
+  margin: 4px 6px 2px;
+  padding: 4px 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sidebar-filter-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-filter-btn.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
+}
+
+/* Graph snapshot badge on file items */
+.graph-badge {
+  color: var(--accent-purple);
+  font-size: 10px;
+  margin-right: 4px;
+  opacity: 0.7;
+}
+
+.file-item:hover .graph-badge,
+.file-item.active .graph-badge {
+  opacity: 1;
+}
+
 /* Content Area */
 .content {
   flex: 1;
