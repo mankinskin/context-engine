@@ -208,16 +208,17 @@ export function markOverlayScanDirty(): void {
 function scanElements(): void {
     _elemData.fill(0);
     let count = 0;
-    const vw = window.innerWidth;
     const vh = window.innerHeight;
 
     // Query each selector group separately — O(selectors) queries but no
     // per-element re-matching, which is much cheaper overall.
     for (let si = 0; si < SELECTOR_META.length && count < MAX_ELEMENTS; si++) {
-        const { sel, hue, kind } = SELECTOR_META[si];
+        const meta = SELECTOR_META[si];
+        if (!meta) continue;
+        const { sel, hue, kind } = meta;
         const elems = document.querySelectorAll(sel);
         for (let j = 0; j < elems.length && count < MAX_ELEMENTS; j++) {
-            const r = elems[j].getBoundingClientRect();
+            const r = elems[j]!.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
             if (r.bottom < 0 || r.top > vh) continue;
             const base = count * ELEM_FLOATS;
@@ -533,11 +534,10 @@ export function WgpuOverlay() {
                 let hoverIdx = -1;
                 for (let i = 0; i < count; i++) {
                     const base = i * ELEM_FLOATS;
-                    const ex = _cachedData[base];
-                    const ey = _cachedData[base + 1];
-                    const ew = _cachedData[base + 2];
-                    const eh = _cachedData[base + 3];
-                    const kind = _cachedData[base + 5];
+                    const ex = _cachedData[base]!;
+                    const ey = _cachedData[base + 1]!;
+                    const ew = _cachedData[base + 2]!;
+                    const eh = _cachedData[base + 3]!;
 
                     if (mx >= ex && mx < ex + ew && my >= ey && my < ey + eh) {
                         hoverIdx = i;
@@ -578,10 +578,11 @@ export function WgpuOverlay() {
                 _uniformF32[12] = crtOn ? eff.crtEdgeShadow / 100 : 0.0;
                 _uniformF32[13] = crtOn ? eff.crtFlicker / 100 : 0.0;
                 _uniformF32[14] = CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0;
-                device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
+                device.queue.writeBuffer(uniformBuffer, 0, _uniformF32.buffer);
 
                 // Upload current theme palette to GPU
-                device.queue.writeBuffer(paletteBuffer, 0, buildPaletteBuffer(themeColors.value));
+                const palBuf = buildPaletteBuffer(themeColors.value);
+                device.queue.writeBuffer(paletteBuffer, 0, palBuf.buffer);
 
                 if (count > 0) {
                     device.queue.writeBuffer(elemBuffer, 0,
