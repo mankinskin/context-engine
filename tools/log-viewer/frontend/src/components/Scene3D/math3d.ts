@@ -234,3 +234,12 @@ export function rayPlaneIntersect(ray: Ray, planeY: number): Vec3 | null {
     if (t < 0) return null;
     return vec3Add(ray.origin, vec3Scale(ray.direction, t));
 }
+
+/** Ray–plane intersection for an arbitrary plane defined by a point and normal */
+export function rayPlaneIntersectGeneral(ray: Ray, planePoint: Vec3, planeNormal: Vec3): Vec3 | null {
+    const denom = vec3Dot(ray.direction, planeNormal);
+    if (Math.abs(denom) < 1e-8) return null; // ray parallel to plane
+    const t = vec3Dot(vec3Sub(planePoint, ray.origin), planeNormal) / denom;
+    if (t < 0) return null;
+    return vec3Add(ray.origin, vec3Scale(ray.direction, t));
+}

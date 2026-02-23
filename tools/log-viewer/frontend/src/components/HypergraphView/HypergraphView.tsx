@@ -22,7 +22,7 @@ import { buildLayout, type GraphLayout, type LayoutNode } from './layout';
 import {
     Vec3,
     mat4Perspective, mat4LookAt, mat4Multiply, mat4Inverse,
-    screenToRay, rayPlaneIntersect,
+    screenToRay, rayPlaneIntersectGeneral, vec3Sub, vec3Normalize,
 } from '../Scene3D/math3d';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
 import { themeColors } from '../../store/theme';
@@ -145,7 +145,7 @@ export function HypergraphView() {
         focusSpeed: 4.0,                    // lerp speed (units/sec)
     });
     const interRef = useRef({
-        dragIdx: -1, dragPlaneY: 0, dragOffset: [0, 0, 0] as Vec3,
+        dragIdx: -1, dragPlanePoint: [0, 0, 0] as Vec3, dragPlaneNormal: [0, 0, 1] as Vec3, dragOffset: [0, 0, 0] as Vec3,
         orbiting: false, panning: false,
         lastMX: 0, lastMY: 0, mouseX: 0, mouseY: 0,
         selectedIdx: -1, hoverIdx: -1,
@@ -535,9 +535,13 @@ export function HypergraphView() {
                         const node = layout.nodeMap.get(bestIdx);
                         if (node) {
                             inter.dragIdx = bestIdx;
-                            inter.dragPlaneY = node.y;
-                            const pt = rayPlaneIntersect(ray, node.y);
-                            if (pt) inter.dragOffset = [node.x - pt[0], 0, node.z - pt[2]];
+                            // Drag plane perpendicular to view direction through the node
+                            const nodePos: Vec3 = [node.x, node.y, node.z];
+                            const camPos = getCamPos();
+                            inter.dragPlaneNormal = vec3Normalize(vec3Sub(camPos, nodePos));
+                            inter.dragPlanePoint = nodePos;
+                            const pt = rayPlaneIntersectGeneral(ray, nodePos, inter.dragPlaneNormal);
+                            if (pt) inter.dragOffset = [node.x - pt[0], node.y - pt[1], node.z - pt[2]];
                         }
                         e.preventDefault();
                     } else {
@@ -564,8 +568,8 @@ export function HypergraphView() {
                     const invVP = mat4Inverse(viewProj);
                     if (invVP) {
                         const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
-                        const pt = rayPlaneIntersect(ray, inter.dragPlaneY);
-                        if (pt) { node.x = pt[0] + inter.dragOffset[0]; node.z = pt[2] + inter.dragOffset[2]; }
+                        const pt = rayPlaneIntersectGeneral(ray, inter.dragPlanePoint, inter.dragPlaneNormal);
+                        if (pt) { node.x = pt[0] + inter.dragOffset[0]; node.y = pt[1] + inter.dragOffset[1]; node.z = pt[2] + inter.dragOffset[2]; }
                     }
                 }
                 return;
