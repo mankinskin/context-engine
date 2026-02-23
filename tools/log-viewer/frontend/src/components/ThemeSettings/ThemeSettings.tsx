@@ -387,6 +387,28 @@ export function ThemeSettings() {
         <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
       </Section>
 
+      {/* ── Cursor Style ── */}
+      <Section title="Cursor" icon="⇱" defaultOpen={true}>
+        <p class="theme-section-hint">
+          Custom GPU-rendered cursor with shading and lighting effects.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Cursor Style</span>
+            <span class="theme-color-desc">Choose a GPU-rendered cursor or use the default</span>
+          </div>
+          <select
+            class="theme-cursor-select"
+            value={effectSettings.value.cursorStyle}
+            onChange={(e) => updateEffectSetting('cursorStyle', (e.target as HTMLSelectElement).value as any)}
+          >
+            <option value="default">Default</option>
+            <option value="metal">Metal</option>
+            <option value="glass">Glass</option>
+          </select>
+        </div>
+      </Section>
+
       {/* ── CRT Effect ── */}
       <Section title="CRT Effect" icon="▤" defaultOpen={true}>
         <p class="theme-section-hint">

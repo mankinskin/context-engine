@@ -34,7 +34,7 @@ struct Uniforms {
     crt_scanlines_v  : f32,    // vertical scanlines (+grid) intensity 0.0–1.0
     crt_edge_shadow  : f32,    // edge/border shadow intensity 0.0–1.0
     crt_flicker      : f32,    // torch flicker intensity 0.0–1.0
-    _pad1            : f32,
+    cursor_style     : f32,    // 0 = default, 1 = metal, 2 = glass
     _pad2            : f32,
 }
 

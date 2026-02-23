@@ -529,3 +529,31 @@
   min-width: 36px;
   text-align: right;
 }
+
+/* ── Cursor style dropdown ── */
+.theme-cursor-select {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  outline: none;
+  min-width: 90px;
+}
+
+.theme-cursor-select:hover {
+  border-color: var(--accent-orange);
+}
+
+.theme-cursor-select:focus {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 3px rgba(var(--accent-orange-rgb, 230, 140, 60), 0.3);
+}
+
+.theme-cursor-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}

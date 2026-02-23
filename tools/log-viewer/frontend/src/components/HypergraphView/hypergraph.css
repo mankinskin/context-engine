@@ -25,13 +25,30 @@
     cursor: pointer;
     transform-origin: center center;
     white-space: nowrap;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, background 0.15s ease;
     /* Remove the default log-entry block layout – make it inline-like */
     display: inline-flex !important;
     padding: 3px 10px !important;
     border-radius: 4px;
     min-width: 50px;
     max-width: 200px;
+    /* Explicit background so nodes are visible without hovering (gpu-active
+       makes all log-entry backgrounds transparent by default). */
+    background: rgba(18, 16, 14, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.hg-node:hover {
+    background: rgba(36, 32, 28, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 10px rgba(200, 150, 80, 0.15);
+}
+
+.hg-node.selected {
+    background: rgba(42, 34, 24, 0.9) !important;
+    border-color: rgba(200, 150, 80, 0.4);
+    box-shadow: 0 0 12px rgba(200, 90, 24, 0.25);
 }
 
 .hg-node .hg-node-content {
@@ -203,8 +220,8 @@
     font-family: var(--font-mono, monospace);
     white-space: nowrap;
     z-index: 100;
-    transform: translate(-50%, -100%);
-    margin-top: -8px;
+    transform: translate(-50%, 0%);
+    margin-top: 12px;
 }
 
 .hypergraph-tooltip .tt-label {

@@ -58,6 +58,12 @@
   background: transparent !important;
 }
 
+/* Hide native cursor when GPU cursor is active */
+:root.gpu-custom-cursor,
+:root.gpu-custom-cursor * {
+  cursor: none !important;
+}
+
 :root.gpu-active #app {
   isolation: isolate;
   will-change: transform;

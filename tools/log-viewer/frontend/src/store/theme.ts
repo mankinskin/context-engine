@@ -284,6 +284,8 @@ const SETTINGS_KEY = 'log-viewer-effect-settings';
 
 // ── Effect settings (non-color toggles) ──────────────────────────────────────
 
+export type CursorStyle = 'default' | 'metal' | 'glass';
+
 export interface EffectSettings {
   crtEnabled: boolean;
   /** Horizontal scanlines (+ pixel grid) intensity 0–100. */
@@ -294,6 +296,8 @@ export interface EffectSettings {
   crtEdgeShadow: number;
   /** Torch flicker intensity 0–100. */
   crtFlicker: number;
+    /** Custom GPU cursor style. */
+    cursorStyle: CursorStyle;
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
@@ -302,6 +306,13 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
   crtScanlinesV: 100,
   crtEdgeShadow: 100,
   crtFlicker: 100,
+    cursorStyle: 'default',
+};
+
+export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {
+    default: 0,
+    metal: 1,
+    glass: 2,
 };
 
 function loadEffectSettings(): EffectSettings {

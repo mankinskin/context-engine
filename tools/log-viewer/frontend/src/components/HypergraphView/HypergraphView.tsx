@@ -85,15 +85,27 @@ function worldToScreen(
     return { x: sx, y: sy, z: ndcZ, visible: ndcZ >= 0 && ndcZ <= 1 };
 }
 
+/**
+ * Pixels-per-world-unit at a given world position.
+ *
+ * Uses the Euclidean distance from the camera to the point and the known
+ * vertical FOV.  This is completely independent of camera orientation —
+ * a node at a given distance from the camera always has the same on-screen
+ * scale regardless of which direction the camera faces.
+ */
+const HALF_FOV_TAN = Math.tan(Math.PI / 8); // tan(fov/2) where fov = PI/4
+
 function worldScaleAtDepth(
-    viewProj: Float32Array,
+    camPos: Vec3,
     worldPos: Vec3,
-    cw: number,
+    ch: number,
 ): number {
-    const vp = viewProj;
-    const clipW = vp[3]*worldPos[0] + vp[7]*worldPos[1] + vp[11]*worldPos[2] + vp[15];
-    if (clipW <= 0.001) return 0;
-    return Math.abs(vp[0] / clipW) * cw * 0.5;
+    const dx = worldPos[0] - camPos[0];
+    const dy = worldPos[1] - camPos[1];
+    const dz = worldPos[2] - camPos[2];
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    if (dist < 0.001) return ch; // prevent division by zero
+    return ch / (2 * dist * HALF_FOV_TAN);
 }
 
 function raySphere(
@@ -123,25 +135,37 @@ export function HypergraphView() {
     const snapshot = hypergraphSnapshot.value;
     const gpu = overlayGpu.value;
 
-    const layoutRef = useRef<GraphLayout | null>(null);
+    const [layout, setLayout] = useState<GraphLayout | null>(null);
+    const layoutRef = useRef<GraphLayout | null>(null); // non-reactive ref for callbacks
     const camRef = useRef({
         yaw: 0.5, pitch: 0.4, dist: 6,
         targetY: 0, target: [0, 0, 0] as Vec3,
+        // Smooth focus animation
+        focusTarget: null as Vec3 | null,   // where the camera should animate to
+        focusSpeed: 4.0,                    // lerp speed (units/sec)
     });
     const interRef = useRef({
         dragIdx: -1, dragPlaneY: 0, dragOffset: [0, 0, 0] as Vec3,
-        orbiting: false, lastMX: 0, lastMY: 0, mouseX: 0, mouseY: 0,
+        orbiting: false, panning: false,
+        lastMX: 0, lastMY: 0, mouseX: 0, mouseY: 0,
         selectedIdx: -1, hoverIdx: -1,
     });
 
     // Build layout when snapshot changes
     useEffect(() => {
-        if (!snapshot) { layoutRef.current = null; return; }
-        const layout = buildLayout(snapshot);
-        layoutRef.current = layout;
-        camRef.current.dist = Math.max(6, layout.nodes.length * 0.5);
-        camRef.current.targetY = (layout.maxWidth - 1) * 0.75;
+        if (!snapshot) { layoutRef.current = null; setLayout(null); return; }
+        const newLayout = buildLayout(snapshot);
+        layoutRef.current = newLayout;
+        setLayout(newLayout);
+        camRef.current.dist = Math.max(6, newLayout.nodes.length * 0.5);
+        camRef.current.targetY = (newLayout.maxWidth - 1) * 0.75;
         camRef.current.target = [0, camRef.current.targetY, 0];
+        // Reset selection/hover since node indices may differ
+        interRef.current.selectedIdx = -1;
+        interRef.current.hoverIdx = -1;
+        setSelectedIdx(-1);
+        setHoverIdx(-1);
+        setTooltip(null);
     }, [snapshot]);
 
     const getCamPos = useCallback((): Vec3 => {
@@ -153,9 +177,28 @@ export function HypergraphView() {
         ];
     }, []);
 
-    const getViewProj = useCallback((cw: number, ch: number) => {
-        const camPos = getCamPos();
+    const getViewProj = useCallback((cw: number, ch: number, dt?: number) => {
         const c = camRef.current;
+
+        // Smooth-lerp camera target toward focusTarget if set
+        if (c.focusTarget && dt && dt > 0) {
+            const alpha = 1 - Math.exp(-c.focusSpeed * dt);
+            c.target = [
+                c.target[0] + (c.focusTarget[0] - c.target[0]) * alpha,
+                c.target[1] + (c.focusTarget[1] - c.target[1]) * alpha,
+                c.target[2] + (c.focusTarget[2] - c.target[2]) * alpha,
+            ];
+            // Stop animating once close enough
+            const dx = c.focusTarget[0] - c.target[0];
+            const dy = c.focusTarget[1] - c.target[1];
+            const dz = c.focusTarget[2] - c.target[2];
+            if (dx * dx + dy * dy + dz * dz < 0.0001) {
+                c.target = [...c.focusTarget] as Vec3;
+                c.focusTarget = null;
+            }
+        }
+
+        const camPos = getCamPos();
         const view = mat4LookAt(camPos, c.target, [0, 1, 0]);
         const proj = mat4Perspective(Math.PI / 4, cw / Math.max(ch, 1), 0.1, 200);
         return { viewProj: mat4Multiply(proj, view), camPos };
@@ -163,10 +206,10 @@ export function HypergraphView() {
 
     // ── Register overlay renderer for edges, grid, particles ──
     useEffect(() => {
-        const layout = layoutRef.current;
+        const curLayout = layoutRef.current;
         const container = containerRef.current;
         const nodeLayer = nodeLayerRef.current;
-        if (!gpu || !layout || !container || !nodeLayer || layout.nodes.length === 0) return;
+        if (!gpu || !curLayout || !container || !nodeLayer || curLayout.nodes.length === 0) return;
 
         const { device, format } = gpu;
 
@@ -272,7 +315,7 @@ export function HypergraphView() {
         });
 
         // ── Instance buffers ──
-        const maxEdges = layout.edges.length;
+        const maxEdges = curLayout.edges.length;
         const edgeIB = device.createBuffer({
             size: Math.max(maxEdges * EDGE_INSTANCE_FLOATS * 4, 48),
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
@@ -327,7 +370,7 @@ export function HypergraphView() {
             pass.setViewport(vx, vy, vw, vh, 0, 1);
             pass.setScissorRect(vx, vy, vw, vh);
 
-            const { viewProj, camPos } = getViewProj(vw, vh);
+            const { viewProj, camPos } = getViewProj(vw, vh, dt);
             const inter = interRef.current;
 
             // ── Connected set for selection highlighting ──
@@ -335,12 +378,12 @@ export function HypergraphView() {
             const connectedEdges = new Set<string>();
             if (inter.selectedIdx >= 0) {
                 connectedSet.add(inter.selectedIdx);
-                const sel = layout.nodeMap.get(inter.selectedIdx);
+                const sel = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sel) {
                     for (const ci of sel.childIndices) connectedSet.add(ci);
                     for (const pi of sel.parentIndices) connectedSet.add(pi);
                 }
-                for (const e of layout.edges) {
+                for (const e of curLayout.edges) {
                     if (e.from === inter.selectedIdx || e.to === inter.selectedIdx) {
                         connectedEdges.add(`${e.from}-${e.to}-${e.patternIdx}`);
                     }
@@ -349,11 +392,11 @@ export function HypergraphView() {
 
             // ── Position DOM nodes (runs every frame via overlay rAF) ──
             const nodeDivs = nodeLayer.children;
-            for (let i = 0; i < layout.nodes.length && i < nodeDivs.length; i++) {
-                const n = layout.nodes[i]!;
+            for (let i = 0; i < curLayout.nodes.length && i < nodeDivs.length; i++) {
+                const n = curLayout.nodes[i]!;
                 const el = nodeDivs[i] as HTMLDivElement;
                 const screen = worldToScreen([n.x, n.y, n.z], viewProj, vw, vh);
-                const scale = worldScaleAtDepth(viewProj, [n.x, n.y, n.z], vw);
+                const scale = worldScaleAtDepth(camPos, [n.x, n.y, n.z], vh);
                 const pixelScale = Math.max(0.1, scale * n.radius * 2.5 / 80);
 
                 if (!screen.visible || pixelScale < 0.02) {
@@ -370,10 +413,10 @@ export function HypergraphView() {
             }
 
             // ── Fill edge instances ──
-            for (let i = 0; i < layout.edges.length; i++) {
-                const e = layout.edges[i]!;
-                const a = layout.nodeMap.get(e.from);
-                const b = layout.nodeMap.get(e.to);
+            for (let i = 0; i < curLayout.edges.length; i++) {
+                const e = curLayout.edges[i]!;
+                const a = curLayout.nodeMap.get(e.from);
+                const b = curLayout.nodeMap.get(e.to);
                 if (!a || !b) continue;
                 const off = i * EDGE_INSTANCE_FLOATS;
                 edgeDataBuf[off    ] = a.x; edgeDataBuf[off + 1] = a.y; edgeDataBuf[off + 2] = a.z;
@@ -390,13 +433,13 @@ export function HypergraphView() {
 
             // ── Update 3D particles ──
             if (inter.selectedIdx >= 0) {
-                const sn = layout.nodeMap.get(inter.selectedIdx);
+                const sn = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sn) {
                     for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
                 }
             }
             if (inter.hoverIdx >= 0) {
-                const hn = layout.nodeMap.get(inter.hoverIdx);
+                const hn = curLayout.nodeMap.get(inter.hoverIdx);
                 if (hn) {
                     for (let i = 0; i < 6; i++) spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
                 }
@@ -426,7 +469,7 @@ export function HypergraphView() {
             pass.setVertexBuffer(0, quadVB);
             pass.setVertexBuffer(1, edgeIB);
             pass.setBindGroup(0, camBG);
-            pass.draw(6, layout.edges.length);
+            pass.draw(6, curLayout.edges.length);
 
             if (liveCount > 0) {
                 pass.setPipeline(particlePipeline);
@@ -472,7 +515,12 @@ export function HypergraphView() {
             const cw = container.clientWidth;
             const ch = container.clientHeight;
 
-            if (e.button === 0) {
+            if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+                // Middle mouse or Shift+Left → pan
+                inter.panning = true;
+                camRef.current.focusTarget = null; // cancel any focus animation
+                e.preventDefault();
+            } else if (e.button === 0) {
                 const { viewProj } = getViewProj(cw, ch);
                 const invVP = mat4Inverse(viewProj);
                 if (invVP) {
@@ -523,6 +571,28 @@ export function HypergraphView() {
                 return;
             }
 
+            if (inter.panning) {
+                const dx = e.clientX - inter.lastMX;
+                const dy = e.clientY - inter.lastMY;
+                inter.lastMX = e.clientX;
+                inter.lastMY = e.clientY;
+
+                // Move camera target along right/up vectors in world space
+                const cam = camRef.current;
+                const speed = cam.dist * 0.002;
+                const cosY = Math.cos(cam.yaw);
+                const sinY = Math.sin(cam.yaw);
+                // Right vector (in XZ plane)
+                const rx = cosY, rz = -sinY;
+                // Up vector (projected): approximate as world Y
+                cam.target = [
+                    cam.target[0] - dx * speed * rx,
+                    cam.target[1] + dy * speed,
+                    cam.target[2] - dx * speed * rz,
+                ];
+                return;
+            }
+
             if (inter.orbiting) {
                 const dx = e.clientX - inter.lastMX;
                 const dy = e.clientY - inter.lastMY;
@@ -564,14 +634,20 @@ export function HypergraphView() {
             if (inter.dragIdx >= 0 && e.button === 0) {
                 inter.selectedIdx = inter.dragIdx;
                 setSelectedIdx(inter.dragIdx);
+                // Focus camera on the selected node
+                const node = layout.nodeMap.get(inter.dragIdx);
+                if (node) {
+                    camRef.current.focusTarget = [node.x, node.y, node.z];
+                }
             }
-            if (!inter.orbiting && inter.dragIdx < 0 && e.button === 0) {
+            if (!inter.orbiting && !inter.panning && inter.dragIdx < 0 && e.button === 0) {
                 inter.selectedIdx = -1;
                 setSelectedIdx(-1);
                 setTooltip(null);
             }
             inter.dragIdx = -1;
             inter.orbiting = false;
+            inter.panning = false;
         };
 
         const onWheel = (e: WheelEvent) => {
@@ -613,7 +689,6 @@ export function HypergraphView() {
         );
     }
 
-    const layout = layoutRef.current;
     const maxWidth = layout?.maxWidth ?? 1;
 
     return (
@@ -676,9 +751,10 @@ export function HypergraphView() {
             {/* HUD */}
             <div class="hypergraph-hud">
                 <span>Left drag: Move nodes</span>
-                <span>Right drag / Left empty: Orbit</span>
+                <span>Right / Left empty: Orbit</span>
+                <span>Middle / Shift+Left: Pan</span>
                 <span>Scroll: Zoom</span>
-                <span>Click node: Select</span>
+                <span>Click node: Select &amp; Focus</span>
             </div>
         </div>
     );

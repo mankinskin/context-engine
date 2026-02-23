@@ -31,7 +31,7 @@ import bgCode from './background.wgsl?raw';
 import particleCode from './particles.wgsl?raw';
 import csCode from './compute.wgsl?raw';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
-import { themeColors, effectSettings } from '../../store/theme';
+import { themeColors, effectSettings, CURSOR_STYLE_VALUE } from '../../store/theme';
 
 export const gpuOverlayEnabled = signal(true);
 
@@ -280,6 +280,17 @@ export function WgpuOverlay() {
         return () => document.documentElement.classList.remove('gpu-active');
     }, [gpuOverlayEnabled.value]);
 
+    // --- toggle custom-cursor class when GPU cursor is active ---------------
+    useEffect(() => {
+        const style = effectSettings.value.cursorStyle;
+        if (gpuOverlayEnabled.value && style !== 'default') {
+            document.documentElement.classList.add('gpu-custom-cursor');
+        } else {
+            document.documentElement.classList.remove('gpu-custom-cursor');
+        }
+        return () => document.documentElement.classList.remove('gpu-custom-cursor');
+    }, [gpuOverlayEnabled.value, effectSettings.value.cursorStyle]);
+
     // --- keep canvas sized to the viewport --------------------------------
     useEffect(() => {
         if (!gpuOverlayEnabled.value) return;
@@ -351,7 +362,7 @@ export function WgpuOverlay() {
             // Uniform buffer (64 bytes): [time, width, height, element_count,
             //   mouse_x, mouse_y, delta_time, hover_elem, hover_start_time,
             //   selected_elem, crt_scanlines_h, crt_scanlines_v,
-            //   crt_edge_shadow, crt_flicker, _pad × 2]
+            //   crt_edge_shadow, crt_flicker, cursor_style, _pad]
             const uniformBuffer = device.createBuffer({
                 size:  64,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -538,11 +549,13 @@ export function WgpuOverlay() {
                 _uniformF32[7] = hoverIdx;
                 _uniformF32[8] = _hoverStartTime;
                 _uniformF32[9] = selectedIdx;
-                const crtOn = effectSettings.value.crtEnabled;
-                _uniformF32[10] = crtOn ? effectSettings.value.crtScanlinesH / 100 : 0.0;
-                _uniformF32[11] = crtOn ? effectSettings.value.crtScanlinesV / 100 : 0.0;
-                _uniformF32[12] = crtOn ? effectSettings.value.crtEdgeShadow / 100 : 0.0;
-                _uniformF32[13] = crtOn ? effectSettings.value.crtFlicker / 100 : 0.0;
+                const eff = effectSettings.value;
+                const crtOn = eff.crtEnabled;
+                _uniformF32[10] = crtOn ? eff.crtScanlinesH / 100 : 0.0;
+                _uniformF32[11] = crtOn ? eff.crtScanlinesV / 100 : 0.0;
+                _uniformF32[12] = crtOn ? eff.crtEdgeShadow / 100 : 0.0;
+                _uniformF32[13] = crtOn ? eff.crtFlicker / 100 : 0.0;
+                _uniformF32[14] = CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0;
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32);
 
                 // Upload current theme palette to GPU

@@ -133,6 +133,414 @@ fn graph_node(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
     return vec4f(total_rgb, total_a);
 }
 
+// ---- GPU cursor rendering ---------------------------------------------------
+
+// Signed distance to a line segment (a → b), returns distance from point p
+fn sd_segment(p: vec2f, a: vec2f, b: vec2f) -> f32 {
+    let pa = p - a;
+    let ba = b - a;
+    let h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    return length(pa - ba * h);
+}
+
+// Arrow cursor SDF — proper pointer shape with shaft notch
+fn cursor_arrow_sdf(p: vec2f) -> f32 {
+    // 7-vertex polygon:  tip → right diagonal → notch-in → shaft-bottom-right
+    //                   → shaft-bottom-left → notch-left → left edge
+    let v0 = vec2f(0.0,  0.0);    // tip
+    let v1 = vec2f(16.0, 16.8);   // right diagonal end
+    let v2 = vec2f(6.8,  14.0);   // notch inward
+    let v3 = vec2f(11.0, 24.0);   // shaft bottom-right
+    let v4 = vec2f(5.5,  24.0);   // shaft bottom-left
+    let v5 = vec2f(4.0,  16.0);   // notch left
+    let v6 = vec2f(0.0,  22.0);   // left edge bottom
+
+    // Winding-number polygon SDF (7 edges)
+    var d = dot(p - v0, p - v0);
+    var s = 1.0;
+
+    // Helper: per-edge distance + winding update
+    // Edge v0→v6
+    var e = v6 - v0; var w = p - v0;
+    var b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    var c0 = w.y >= 0.0; var c1 = e.y * w.x > e.x * w.y; var c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v6→v5
+    e = v5 - v6; w = p - v6;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v5→v4
+    e = v4 - v5; w = p - v5;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v4→v3
+    e = v3 - v4; w = p - v4;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v3→v2
+    e = v2 - v3; w = p - v3;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v2→v1
+    e = v1 - v2; w = p - v2;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    // Edge v1→v0
+    e = v0 - v1; w = p - v1;
+    b2 = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b2, b2));
+    c0 = w.y >= 0.0; c1 = e.y * w.x > e.x * w.y; c2 = w.y >= e.y;
+    if ((c0 && c1 && !c2) || (!c0 && !c1 && c2)) { s *= -1.0; }
+
+    return s * sqrt(d);
+}
+
+// ---- procedural texture helpers for cursors ---------------------------------
+
+// Voronoi cell noise — returns (cell_distance, cell_id) for metallic grain
+fn voronoi(p: vec2f) -> vec2f {
+    let ip = floor(p);
+    let fp = fract(p);
+    var min_d = 8.0;
+    var cell_id = 0.0;
+    for (var j = -1; j <= 1; j++) {
+        for (var i = -1; i <= 1; i++) {
+            let neighbor = vec2f(f32(i), f32(j));
+            let point = vec2f(hash2(ip + neighbor + vec2f(0.0, 0.0)),
+                              hash2(ip + neighbor + vec2f(17.3, 31.7)));
+            let diff = neighbor + point - fp;
+            let dist = dot(diff, diff);
+            if (dist < min_d) {
+                min_d = dist;
+                cell_id = hash2(ip + neighbor + vec2f(53.1, 97.3));
+            }
+        }
+    }
+    return vec2f(sqrt(min_d), cell_id);
+}
+
+// High-detail FBM with more octaves for texturing
+fn fbm5(p_in: vec2f) -> f32 {
+    var val  = 0.0;
+    var amp  = 0.5;
+    var freq = 1.0;
+    var p    = p_in;
+    for (var i = 0; i < 5; i++) {
+        val  += amp * smooth_noise(p * freq);
+        amp  *= 0.5;
+        freq *= 2.1;
+        // Rotate each octave slightly for less axis-alignment
+        p = vec2f(p.x * 0.866 - p.y * 0.5, p.x * 0.5 + p.y * 0.866);
+    }
+    return val;
+}
+
+// ---- Metal cursor — forged dark iron with hammer marks, rust, patina --------
+
+fn cursor_metal(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
+    let local = px - mouse;
+
+    // Expanded bounding box for shadow
+    if (local.x < -4.0 || local.x > 22.0 || local.y < -4.0 || local.y > 30.0) {
+        return vec4f(0.0);
+    }
+
+    let sdf = cursor_arrow_sdf(local);
+
+    // Anti-aliased edge (sub-pixel smooth)
+    let aa = 1.0 - smoothstep(-1.2, 0.6, sdf);
+    if (aa < 0.001) { return vec4f(0.0); }
+
+    let uv = local / vec2f(16.0, 24.0);
+
+    // ── Surface normal with height-field detail ──
+    // Base dome curvature (convex shield shape)
+    let dome = vec2f((uv.x - 0.4) * 0.5, (uv.y - 0.45) * 0.3);
+
+    // Hammer-strike dents — large low-frequency deformations
+    let dent1 = smooth_noise(local * 0.35 + vec2f(42.0, 17.0));
+    let dent2 = smooth_noise(local * 0.22 + vec2f(88.0, 53.0));
+    let dent_h = (dent1 * 0.6 + dent2 * 0.4) * 0.15;
+
+    // Forged grain — directional, running along the cursor axis
+    let grain_angle = 0.15; // slight rotation
+    let grain_p = vec2f(
+        local.x * cos(grain_angle) - local.y * sin(grain_angle),
+        local.x * sin(grain_angle) + local.y * cos(grain_angle)
+    );
+    let grain = smooth_noise(vec2f(grain_p.x * 6.0, grain_p.y * 0.8 + 200.0)) * 0.06;
+
+    // Fine micro-scratches (high freq, anisotropic)
+    let scratch1 = smooth_noise(vec2f(local.x * 12.0, local.y * 1.5 + 500.0)) * 0.02;
+    let scratch2 = smooth_noise(vec2f(local.x * 1.8 + 300.0, local.y * 10.0)) * 0.015;
+
+    // Compute normal from height field via central differences
+    let eps = 0.5;
+    let h_center = dent_h + grain + scratch1 + scratch2;
+    let h_right  = smooth_noise((local + vec2f(eps, 0.0)) * 0.35 + vec2f(42.0, 17.0)) * 0.09
+                 + smooth_noise(vec2f((grain_p.x + eps) * 6.0, grain_p.y * 0.8 + 200.0)) * 0.06;
+    let h_up     = smooth_noise((local + vec2f(0.0, eps)) * 0.35 + vec2f(42.0, 17.0)) * 0.09
+                 + smooth_noise(vec2f(grain_p.x * 6.0, (grain_p.y + eps) * 0.8 + 200.0)) * 0.06;
+
+    let normal = normalize(vec3f(
+        dome.x + (h_center - h_right) * 3.0,
+        dome.y + (h_center - h_up) * 3.0,
+        1.0
+    ));
+
+    // ── Material: dark forged iron with rust and patina ──
+    // Base: dark gunmetal
+    let base_iron = vec3f(0.32, 0.30, 0.28);
+
+    // Voronoi crystalline grain structure (like real metal microstructure)
+    let vor = voronoi(local * 0.8 + vec2f(73.0, 11.0));
+    let crystal_tint = mix(vec3f(0.30, 0.28, 0.26), vec3f(0.36, 0.34, 0.30), vor.y);
+
+    // Rust patches — warm orange-brown, mostly in concavities
+    let rust_mask = smoothstep(0.35, 0.65, fbm5(local * 0.3 + vec2f(15.0, 27.0)));
+    let rust_detail = fbm5(local * 0.9 + vec2f(50.0, 80.0));
+    let rust_col = mix(vec3f(0.35, 0.18, 0.08), vec3f(0.50, 0.25, 0.10), rust_detail);
+    let rust_amount = rust_mask * smoothstep(0.3, 0.7, dent_h / 0.15) * 0.45;
+
+    // Blue-black patina in protected areas
+    let patina_mask = smoothstep(0.6, 0.4, fbm5(local * 0.25 + vec2f(200.0, 150.0)));
+    let patina_col = vec3f(0.15, 0.18, 0.25);
+    let patina_amount = patina_mask * 0.3 * (1.0 - rust_amount * 2.0);
+
+    // Combine base material
+    var metal_col = mix(crystal_tint, base_iron, grain * 8.0);
+    metal_col = mix(metal_col, rust_col, rust_amount);
+    metal_col = mix(metal_col, patina_col, patina_amount);
+
+    // Brushed highlight streaks
+    let brush_streak = pow(smooth_noise(vec2f(grain_p.x * 15.0, grain_p.y * 0.4 + 400.0)), 3.0) * 0.12;
+    metal_col = metal_col + vec3f(brush_streak);
+
+    // ── Lighting: PBR-ish with two lights ──
+    let view = vec3f(0.0, 0.0, 1.0);
+
+    // Key light: warm upper-left
+    let light1 = normalize(vec3f(-0.5, -0.8, 1.0));
+    let diff1 = max(dot(normal, light1), 0.0);
+    let half1 = normalize(light1 + view);
+    // Roughness varies: rust is rough, polished metal is sharp
+    let roughness = mix(0.3, 0.9, rust_amount + patina_amount * 0.5);
+    let spec_power = mix(80.0, 8.0, roughness);
+    let spec1 = pow(max(dot(normal, half1), 0.0), spec_power) * mix(1.2, 0.15, roughness);
+
+    // Fill light: cool from lower-right
+    let light2 = normalize(vec3f(0.6, 0.3, 0.8));
+    let diff2 = max(dot(normal, light2), 0.0) * 0.3;
+    let half2 = normalize(light2 + view);
+    let spec2 = pow(max(dot(normal, half2), 0.0), spec_power * 0.5) * mix(0.4, 0.05, roughness);
+
+    // Ambient occlusion from SDF (edges darker)
+    let ao = smoothstep(0.0, 5.0, -sdf) * 0.3 + 0.7;
+
+    // Fresnel rim
+    let fresnel = pow(1.0 - max(dot(normal, view), 0.0), 4.0);
+    let rim_col = vec3f(0.4, 0.42, 0.5) * fresnel * 0.25;
+
+    let ambient = vec3f(0.06, 0.055, 0.05);
+    var col = metal_col * (ambient + (diff1 * vec3f(1.0, 0.95, 0.85) + diff2 * vec3f(0.7, 0.8, 1.0)) * ao)
+            + vec3f(spec1) * vec3f(1.0, 0.95, 0.88) * (1.0 - rust_amount)
+            + vec3f(spec2) * vec3f(0.7, 0.8, 1.0) * (1.0 - rust_amount)
+            + rim_col;
+
+    // Subtle heat shimmer near the tip (this IS a cinder theme)
+    let tip_glow = exp(-length(local) * 0.15) * 0.08;
+    col = col + vec3f(tip_glow * 0.8, tip_glow * 0.3, tip_glow * 0.05);
+
+    // ── Dark forged border (bevelled edge) ──
+    let bevel = smoothstep(0.5, -1.5, sdf);
+    let bevel_light = max(dot(normalize(vec3f(-sign(sdf) * 0.5, -sign(sdf) * 0.3, 1.0)), light1), 0.0);
+    col = mix(vec3f(0.05, 0.04, 0.03), col, bevel);
+    col = col + vec3f(bevel_light * 0.1) * (1.0 - bevel);
+
+    // ── Drop shadow ──
+    let shadow_sdf = cursor_arrow_sdf(local - vec2f(2.0, 2.5));
+    let shadow = (1.0 - smoothstep(-3.0, 2.0, shadow_sdf)) * 0.45;
+
+    let shadow_result = vec4f(0.0, 0.0, 0.0, shadow);
+    let cursor_result = vec4f(col, aa);
+    let out_a = cursor_result.a + shadow_result.a * (1.0 - cursor_result.a);
+    let out_rgb = (cursor_result.rgb * cursor_result.a + shadow_result.rgb * shadow_result.a * (1.0 - cursor_result.a)) / max(out_a, 0.001);
+    return vec4f(out_rgb, out_a);
+}
+
+// ---- Glass cursor — crystal with internal fractures, caustics, dispersion ---
+
+fn cursor_glass(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
+    let local = px - mouse;
+
+    if (local.x < -6.0 || local.x > 24.0 || local.y < -6.0 || local.y > 34.0) {
+        return vec4f(0.0);
+    }
+
+    let sdf = cursor_arrow_sdf(local);
+
+    let aa = 1.0 - smoothstep(-1.2, 0.6, sdf);
+    if (aa < 0.001) { return vec4f(0.0); }
+
+    let uv = local / vec2f(16.0, 24.0);
+
+    // ── Glass surface normals: thick convex lens ──
+    let dome_strength = 0.7;
+    let dome_x = (uv.x - 0.4) * dome_strength;
+    let dome_y = (uv.y - 0.45) * dome_strength * 0.7;
+
+    // Wavy imperfections in glass surface (hand-blown look)
+    let wave1 = smooth_noise(local * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12;
+    let wave2 = smooth_noise(local * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
+    let wave3 = smooth_noise(local * 2.5 + vec2f(t * 0.04, 22.0)) * 0.03;
+
+    let eps = 0.4;
+    let h_c = wave1 + wave2 + wave3;
+    let h_r = smooth_noise((local + vec2f(eps, 0.0)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12
+            + smooth_noise((local + vec2f(eps, 0.0)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
+    let h_u = smooth_noise((local + vec2f(0.0, eps)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12
+            + smooth_noise((local + vec2f(0.0, eps)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
+
+    let normal = normalize(vec3f(
+        dome_x + (h_c - h_r) * 2.5,
+        dome_y + (h_c - h_u) * 2.5,
+        1.0
+    ));
+
+    // ── Internal structure: fractures, bubbles, inclusions ──
+    // Voronoi fracture pattern (like cracked ice / crystal structure)
+    let fracture_vor = voronoi(local * 0.5 + vec2f(100.0, 200.0));
+    let fracture_lines = smoothstep(0.12, 0.08, fracture_vor.x) * 0.3;
+    let fracture_tint = hash2(vec2f(fracture_vor.y * 100.0, 33.0));
+
+    // Air bubbles (small bright spots scattered inside)
+    let bubble_vor = voronoi(local * 1.5 + vec2f(300.0, 400.0));
+    let bubbles = smoothstep(0.08, 0.04, bubble_vor.x) * 0.5;
+
+    // Deep internal caustic pattern (light bending inside the glass)
+    let internal_caustic = fbm5(local * 0.15 + normal.xy * 3.0 + vec2f(t * 0.12, -t * 0.08));
+
+    // ── Refraction: chromatic aberration (R/G/B refract differently) ──
+    let refract_base = 10.0;
+    let r_offset = normal.xy * (refract_base * 1.05);
+    let g_offset = normal.xy * (refract_base * 1.00);
+    let b_offset = normal.xy * (refract_base * 0.95);
+
+    // Sample "background" at three offset positions (simulated via noise)
+    let bg_scale = 0.008;
+    let bg_r = smooth_noise((px + r_offset) * bg_scale + vec2f(t * 0.03, 0.0)) * 0.12 + 0.04;
+    let bg_g = smooth_noise((px + g_offset) * bg_scale + vec2f(0.0, t * 0.03)) * 0.13 + 0.045;
+    let bg_b = smooth_noise((px + b_offset) * bg_scale + vec2f(t * 0.02, t * 0.02)) * 0.14 + 0.05;
+    var refracted = vec3f(bg_r, bg_g, bg_b);
+
+    // Tint by glass body colour (very slight blue-green)
+    let glass_tint = vec3f(0.85, 0.92, 0.95);
+    refracted = refracted * glass_tint;
+
+    // Add internal structures
+    refracted = refracted + vec3f(fracture_lines * 0.7, fracture_lines * 0.8, fracture_lines);
+    refracted = refracted + vec3f(bubbles * 0.8, bubbles * 0.9, bubbles);
+    refracted = refracted + vec3f(internal_caustic * 0.04, internal_caustic * 0.05, internal_caustic * 0.06);
+
+    // ── Fresnel: Schlick's approximation ──
+    let view = vec3f(0.0, 0.0, 1.0);
+    let n_dot_v = max(dot(normal, view), 0.0);
+    let f0 = 0.04;  // glass IOR ~1.5
+    let fresnel = f0 + (1.0 - f0) * pow(1.0 - n_dot_v, 5.0);
+
+    // ── Reflection: environment approximation (multi-layer) ──
+    let refl_dir = reflect(-view, normal);
+    let refl_uv1 = refl_dir.xy * 5.0 + vec2f(t * 0.06, -t * 0.04);
+    let refl_uv2 = refl_dir.xy * 12.0 + vec2f(-t * 0.03, t * 0.07);
+    let refl1 = smooth_noise(refl_uv1) * 0.25 + 0.08;
+    let refl2 = smooth_noise(refl_uv2) * 0.1;
+    let reflection = vec3f(refl1 + refl2) * vec3f(0.9, 0.95, 1.0);
+
+    // ── Specular highlights: two lights ──
+    // Key: sharp point light upper-left
+    let light1 = normalize(vec3f(-0.4, -0.7, 1.0));
+    let half1 = normalize(light1 + view);
+    let spec1 = pow(max(dot(normal, half1), 0.0), 128.0) * 1.5;
+
+    // Fill: softer warm light from right
+    let light2 = normalize(vec3f(0.7, -0.2, 0.9));
+    let half2 = normalize(light2 + view);
+    let spec2 = pow(max(dot(normal, half2), 0.0), 64.0) * 0.4;
+
+    // ── Edge caustics: rainbow dispersion along borders ──
+    let edge_d = abs(sdf);
+    let edge_bright = smoothstep(3.5, 0.0, edge_d);
+
+    // Travelling rainbow wave along the perimeter
+    let perim_t = atan2(local.y - 12.0, local.x - 6.0); // angle around center
+    let rainbow_phase = perim_t * 2.0 + t * 0.8 + sdf * 0.5;
+    let caustic_r = sin(rainbow_phase) * 0.5 + 0.5;
+    let caustic_g = sin(rainbow_phase + 2.094) * 0.5 + 0.5;
+    let caustic_b = sin(rainbow_phase + 4.189) * 0.5 + 0.5;
+    let caustic = vec3f(caustic_r, caustic_g, caustic_b) * edge_bright * 0.4;
+
+    // Secondary: internal total-internal-reflection caustic bands
+    let tir_bands = pow(sin(sdf * 1.2 + t * 0.3) * 0.5 + 0.5, 4.0) * edge_bright * 0.2;
+
+    // ── Compose ──
+    var col = mix(refracted, reflection, fresnel)
+            + vec3f(spec1) * vec3f(1.0, 0.98, 0.95)
+            + vec3f(spec2) * vec3f(1.0, 0.95, 0.85)
+            + caustic
+            + vec3f(tir_bands * 0.5, tir_bands * 0.7, tir_bands);
+
+    // Glass alpha: mostly transparent body, opaque at edges (Fresnel)
+    let body_alpha = 0.18 + fresnel * 0.55;
+
+    // Bright crisp edge highlight (like polished glass bevels catching light)
+    let edge_highlight = smoothstep(1.2, 0.0, edge_d) * 0.7;
+    let edge_shadow_inner = smoothstep(0.0, 2.5, edge_d) * smoothstep(4.0, 2.5, edge_d) * 0.15;
+    col = col + vec3f(edge_highlight * 0.9, edge_highlight * 0.95, edge_highlight);
+    col = col - vec3f(edge_shadow_inner * 0.3);
+
+    // ── Drop shadow (soft, slightly coloured by caustics) ──
+    let shadow_sdf = cursor_arrow_sdf(local - vec2f(2.0, 3.0));
+    let shadow_base = (1.0 - smoothstep(-4.0, 3.0, shadow_sdf)) * 0.25;
+    // Caustic light leaking into shadow
+    let shadow_caustic_phase = shadow_sdf * 0.6 + t * 0.4;
+    let sc_r = sin(shadow_caustic_phase) * 0.5 + 0.5;
+    let sc_g = sin(shadow_caustic_phase + 2.094) * 0.5 + 0.5;
+    let sc_b = sin(shadow_caustic_phase + 4.189) * 0.5 + 0.5;
+    let shadow_caustic_bright = smoothstep(3.0, 0.0, abs(shadow_sdf + 1.0)) * 0.12;
+    let shadow_col_rgb = vec3f(sc_r, sc_g, sc_b) * shadow_caustic_bright;
+
+    let cursor_a = clamp(aa * (body_alpha + edge_highlight * 0.3), 0.0, 1.0);
+    let shadow_result = vec4f(shadow_col_rgb, shadow_base);
+    let cursor_result = vec4f(col, cursor_a);
+    let out_a = cursor_result.a + shadow_result.a * (1.0 - cursor_result.a);
+    let out_rgb = (cursor_result.rgb * cursor_result.a + shadow_result.rgb * shadow_result.a * (1.0 - cursor_result.a)) / max(out_a, 0.001);
+    return vec4f(out_rgb, out_a);
+}
+
+// Dispatch cursor rendering based on style uniform
+fn gpu_cursor(px: vec2f, mouse: vec2f, style: f32, t: f32) -> vec4f {
+    if (style < 0.5) { return vec4f(0.0); }       // 0 = default (no GPU cursor)
+    if (style < 1.5) { return cursor_metal(px, mouse, t); } // 1 = metal
+    return cursor_glass(px, mouse, t);                       // 2 = glass
+}
+
 // ---- CRT post-processing ---------------------------------------------------
 
 fn crt_scanlines(py: f32) -> f32 {
@@ -338,6 +746,10 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
 
         color = color * scanline * vline * pgrid * edge * torch_flicker;
     }
+
+    // --- Custom GPU cursor (after CRT, drawn last) --------------------------
+    let cursor_col = gpu_cursor(raw_px, vec2f(u.mouse_x, u.mouse_y), u.cursor_style, u.time);
+    color = mix(color, cursor_col.rgb, cursor_col.a);
 
     return vec4f(clamp(color, vec3f(0.0), vec3f(1.0)), 1.0);
 }
