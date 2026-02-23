@@ -24,7 +24,7 @@ const EMBER_END   : u32 = 288u;
 const RAY_END     : u32 = 544u;
 const GLITTER_END : u32 = 640u;
 
-// ---- uniforms (192 bytes = 48 × f32) ----------------------------------------
+// ---- uniforms (320 bytes = 48 × f32 + 2 × mat4x4<f32>) ---------------------
 struct Uniforms {
     time             : f32,
     width            : f32,
@@ -67,28 +67,37 @@ struct Uniforms {
     glitter_count    : f32,    // max active glitter (fraction of slots, 0–2)
     glitter_size     : f32,    // glitter size multiplier 0.0–3.0
     cinder_size      : f32,    // cinder border glow size multiplier 0.0–3.0
-    _pad0            : f32,    // padding to 48 f32 (192 bytes)
+    ref_depth        : f32,    // reference NDC depth for unprojection (0.0 for 2D views)
+    world_scale      : f32,    // world units per screen pixel (1.0 for 2D views)
+    vp_x             : f32,    // particle viewport left (canvas pixels)
+    vp_y             : f32,    // particle viewport top (canvas pixels)
+    vp_w             : f32,    // particle viewport width (pixels)
+    vp_h             : f32,    // particle viewport height (pixels)
+    current_view     : f32,    // active view/tab ID (0=logs,1=stats,2=code,3=debug,4=scene3d,5=hypergraph,6=settings)
+    // ---- projection matrices (column-major, 16 f32 each) ----
+    particle_vp      : mat4x4<f32>,   // world → clip (ortho for 2D, camera VP for 3D)
+    particle_inv_vp  : mat4x4<f32>,   // clip → world (for unprojecting spawn positions)
 }
 
 // ---- DOM element rectangle --------------------------------------------------
 struct ElemRect {
-    rect : vec4f,   // x, y, w, h
-    hue  : f32,
-    kind : f32,
-    _p1  : f32,
-    _p2  : f32,
+    rect  : vec4f,   // x, y, w, h
+    hue   : f32,
+    kind  : f32,
+    depth : f32,     // NDC depth (0 = flat/2D; >0 = 3D-positioned element)
+    _p2   : f32,
 }
 
-// ---- particle state (48 bytes = 12 × f32) -----------------------------------
+// ---- particle state (48 bytes) -----------------------------------------------
+// vec3f has alignment 16 in storage buffers, so life/max_life fill the
+// padding slots after each vec3f → total 48 bytes with no waste.
 struct Particle {
-    pos      : vec2f,
-    vel      : vec2f,
-    life     : f32,
-    max_life : f32,
-    hue      : f32,
-    size     : f32,
-    kind     : f32,     // PK_METAL_SPARK, PK_EMBER, PK_GOD_RAY
-    spawn_t  : f32,     // absolute time when particle was spawned
-    _p1      : f32,
-    _p2      : f32,
+    pos       : vec3f,      // world-space position (screen pixels for 2D, world units for 3D)
+    life      : f32,
+    vel       : vec3f,      // world-space velocity
+    max_life  : f32,
+    hue       : f32,
+    size      : f32,        // visual size in screen pixels
+    kind_view : f32,        // packed: kind + view_id * 8 (kind 0-3, view_id 0-7)
+    spawn_t   : f32,        // absolute time when particle was spawned
 }

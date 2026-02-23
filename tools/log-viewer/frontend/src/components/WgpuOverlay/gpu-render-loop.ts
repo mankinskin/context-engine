@@ -2,8 +2,18 @@
 /**
  * GPU render loop — rAF orchestration, uniform packing, compute/render passes.
  *
+ * Single-pass architecture on one opaque canvas:
+ *   1. **Compute pass** — particle physics simulation (when particles enabled)
+ *   2. **Render pass** (single, on back canvas):
+ *      a. Background quad — smoke, element rects, CRT, grain, vignette
+ *      b. Overlay callbacks — 3D edges, grids, cubes (may change viewport)
+ *      c. Particles — sparks, embers, beams, glitter (additive blend)
+ *
  * Reads element data from the ElementScanner, uploads via GpuBufferManager,
  * and rebuilds bind groups when the buffer generation changes.
+ *
+ * Uniform packing: 80 × f32 (320 bytes) = 48 scalars + 2 × mat4x4.
+ * See types.wgsl Uniforms struct for the field layout.
  */
 
 import type { GpuPipelines } from './gpu-init';
@@ -16,10 +26,12 @@ import {
     EMBER_START, EMBER_END,
     RAY_START, RAY_END,
     GLITTER_START, GLITTER_END,
+    VIEW_ID,
 } from './element-types';
-import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest } from './overlay-api';
+import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale } from './overlay-api';
 import { captureFrame } from './thumbnail-capture';
 import { effectSettings, themeColors, CURSOR_STYLE_VALUE } from '../../store/theme';
+import { activeTab } from '../../store';
 
 export class RenderLoop {
     private readonly pipelines: GpuPipelines;
@@ -160,10 +172,8 @@ export class RenderLoop {
         // Let the scanner update rect measurements for stale/visible elements
         const dataChanged = scanner.updateFrame();
 
-        // If a full re-scan just occurred (view change), kill all particles
-        if (scanner.didFullRescan) {
-            this.buffers.resetParticles();
-        }
+        // Note: No particle reset on full rescan — particles now have view_id
+        // and are automatically hidden when not matching the current view.
 
         // Consume accumulated scroll delta for this frame
         const scrollDelta = scanner.consumeScrollDelta();
@@ -338,6 +348,7 @@ export class RenderLoop {
         u[29] = eff.beamHeight;
         u[30] = eff.beamCount;
         u[31] = eff.beamDrift / 100;
+        // Scroll delta (no longer merged with camera delta — 3D views don't need it)
         u[32] = scrollDelta.dx;
         u[33] = scrollDelta.dy;
         u[34] = eff.sparksEnabled ? eff.sparkCount / 100 : 0.0;
@@ -347,6 +358,48 @@ export class RenderLoop {
         u[38] = eff.glitterEnabled ? eff.glitterCount / 100 : 0.0;
         u[39] = eff.glitterEnabled ? eff.glitterSize / 100 : 0.0;
         u[40] = eff.cinderEnabled ? eff.cinderSize / 100 : 0.0;
+
+        // Particle projection — 3D views set these each frame in their
+        // overlay callbacks (1-frame latency, imperceptible).
+        const is3DView = activeTab.value === 'scene3d' || activeTab.value === 'hypergraph';
+        const W = this.canvas.width;
+        const H = this.canvas.height;
+        if (is3DView && consumeParticleVPDirty()) {
+            // 3D view provided a custom viewProj — use its values
+            const vp3d = getOverlayParticleViewport();
+            u[41] = getOverlayRefDepth();
+            u[42] = getOverlayWorldScale();
+            u[43] = vp3d[0];  // vp_x
+            u[44] = vp3d[1];  // vp_y
+            u[45] = vp3d[2];  // vp_w
+            u[46] = vp3d[3];  // vp_h
+            // Copy particle_vp and particle_inv_vp (mat4 × 2, 32 floats)
+            u.set(getOverlayParticleVP(), 48);
+            u.set(getOverlayParticleInvVP(), 64);
+        } else if (!is3DView) {
+            // 2D views: orthographic screen→clip matrices
+            u[41] = 0;     // ref_depth = 0 (particles at z=0)
+            u[42] = 1;     // world_scale = 1 (world ≡ screen pixels)
+            u[43] = 0;     // vp_x
+            u[44] = 0;     // vp_y
+            u[45] = W;     // vp_w
+            u[46] = H;     // vp_h
+            // Ortho viewProj: screen pixels → clip [-1,1]
+            // ndc_x = x * 2/W - 1,  ndc_y = -y * 2/H + 1,  ndc_z = z
+            // Column-major mat4:
+            u[48] = 2 / W; u[49] = 0; u[50] = 0; u[51] = 0;   // col 0
+            u[52] = 0; u[53] = -2 / H; u[54] = 0; u[55] = 0;   // col 1
+            u[56] = 0; u[57] = 0; u[58] = 1; u[59] = 0;   // col 2
+            u[60] = -1; u[61] = 1; u[62] = 0; u[63] = 1;   // col 3
+            // Inverse ortho: clip → screen pixels
+            u[64] = W / 2; u[65] = 0; u[66] = 0; u[67] = 0;  // col 0
+            u[68] = 0; u[69] = -H / 2; u[70] = 0; u[71] = 0;  // col 1
+            u[72] = 0; u[73] = 0; u[74] = 1; u[75] = 0;  // col 2
+            u[76] = W / 2; u[77] = H / 2; u[78] = 0; u[79] = 1;  // col 3
+        }
+        // else: is3DView but no dirty update this frame — keep previous values
+
+        u[47] = VIEW_ID[activeTab.value] ?? 0;  // current_view for per-view particle filtering
         this.buffers.uploadUniforms();
 
         // Upload palette
@@ -374,8 +427,9 @@ export class RenderLoop {
             computePass.end();
         }
 
-        // Render pass (with depth attachment for 3D callbacks)
-        const renderPass = enc.beginRenderPass({
+        // ── Back render pass (z-index -1, BEHIND DOM) ──
+        // Background effects, element rect decorations, 3D overlays (edges, grids, cubes).
+        const backPass = enc.beginRenderPass({
             colorAttachments: [{
                 view:       context.getCurrentTexture().createView(),
                 loadOp:     'clear',
@@ -391,23 +445,27 @@ export class RenderLoop {
         });
 
         // Draw 1: full-screen quad (aurora + elements + CRT)
-        renderPass.setPipeline(renderPipeline);
-        renderPass.setBindGroup(0, this.renderBindGroup);
-        renderPass.draw(6);
+        backPass.setPipeline(renderPipeline);
+        backPass.setBindGroup(0, this.renderBindGroup);
+        backPass.draw(6);
 
-        // Draw 2: instanced particle quads (skip when all disabled)
-        if (particlesEnabled) {
-            renderPass.setPipeline(particlePipeline);
-            renderPass.setBindGroup(0, this.renderBindGroup);
-            renderPass.draw(6, NUM_PARTICLES);
-        }
-
-        // Draw 3+: external overlay renderers
+        // Draw 2+: external overlay renderers (edges, grids, cubes — behind DOM)
         for (const cb of getOverlayCallbacks()) {
-            cb(renderPass, device, time, dt, this.canvas.width, this.canvas.height, this.depthView!);
+            cb(backPass, device, time, dt, this.canvas.width, this.canvas.height, this.depthView!);
         }
 
-        renderPass.end();
+        // Draw 3: particles (additive, on top of everything in the back canvas).
+        // Reset viewport/scissor — overlay callbacks may have changed them.
+        if (particlesEnabled) {
+            backPass.setViewport(0, 0, W, H, 0, 1);
+            backPass.setScissorRect(0, 0, W, H);
+            backPass.setPipeline(particlePipeline);
+            backPass.setBindGroup(0, this.renderBindGroup);
+            backPass.draw(6, NUM_PARTICLES);
+        }
+
+        backPass.end();
+
         device.queue.submit([enc.finish()]);
 
         // --- One-shot capture ---

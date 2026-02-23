@@ -2,6 +2,12 @@
 /**
  * WgpuOverlay — GPU-accelerated canvas rendered **behind** HTML.
  *
+ * Single opaque canvas (z-index -1) renders everything:
+ *   - Background effects (smoke, grain, CRT, vignette)
+ *   - Element rect decorations (underglow, cinders)
+ *   - 3D overlays (edges, grids, cubes via registered callbacks)
+ *   - Particles (sparks, embers, beams, glitter via additive blend)
+ *
  * Thin component shell.  All heavy lifting is delegated to:
  *   - element-types.ts     — selector registry, kind constants
  *   - element-scanner.ts   — reactive DOM scanning (no MAX_ELEMENTS limit)
@@ -34,6 +40,10 @@ export {
     unregisterOverlayRenderer,
     markOverlayScanDirty,
     resetOverlayParticles,
+    setOverlayParticleVP,
+    setOverlayParticleViewport,
+    setOverlayRefDepth,
+    setOverlayWorldScale,
     type OverlayRenderCallback,
 } from './overlay-api';
 

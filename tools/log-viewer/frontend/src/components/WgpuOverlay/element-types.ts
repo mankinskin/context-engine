@@ -63,15 +63,17 @@ export const KIND_FX_EMBER = 9;
 export const KIND_FX_BEAM = 10;
 export const KIND_FX_GLITTER = 11;
 
-/** f32 values per element in the storage buffer: [x, y, w, h, hue, kind, _p1, _p2] */
+/** f32 values per element in the storage buffer: [x, y, w, h, hue, kind, depth, _p2] */
 export const ELEM_FLOATS = 8;
 export const ELEM_BYTES  = ELEM_FLOATS * 4;  // 32 bytes, 16-byte aligned
 
 /** Number of particles simulated by the compute shader. */
 export const NUM_PARTICLES = 640;
 /**
- * Floats per particle: [px, py, vx, vy, life, max_life, hue, size,
- *                        kind, spawn_t, _p1, _p2]
+ * Floats per particle (48 bytes total).
+ * Layout: [pos.x, pos.y, pos.z, life, vel.x, vel.y, vel.z, max_life,
+ *          hue, size, kind_view, spawn_t]
+ * Note: vec3f has alignment 16 in storage; life/max_life fill the padding.
  */
 export const PARTICLE_FLOATS  = 12;
 export const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 48 bytes
@@ -136,3 +138,21 @@ export const SELECTOR_SCAN_ORDER: readonly number[] = (() => {
     }
     return order;
 })();
+
+// ---------------------------------------------------------------------------
+// View/tab ID mapping for per-view particle filtering.
+// Must match types.wgsl current_view values.
+// ---------------------------------------------------------------------------
+
+import type { ViewTab } from '../../types';
+
+/** Map View tab names to numeric IDs for GPU uniforms. */
+export const VIEW_ID: Record<ViewTab, number> = {
+    logs: 0,
+    stats: 1,
+    code: 2,
+    debug: 3,
+    scene3d: 4,
+    hypergraph: 5,
+    settings: 6,
+};

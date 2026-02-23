@@ -39,11 +39,12 @@ fn vs_particle(
     out.aspect = 1.0;
 
     let p = particles[iid];
-    let kind = u32(p.kind);
+    let kind = u32(p.kind_view) % 8u;
+    let view_id = u32(p.kind_view) / 8u;
     out.pkind = kind;
 
-    // Dead → degenerate quad (off-screen)
-    if p.life <= 0.0 {
+    // Dead or wrong view → degenerate quad (off-screen)
+    if p.life <= 0.0 || f32(view_id) != u.current_view {
         out.clip_pos = vec4f(-2.0, -2.0, 0.0, 1.0);
         out.local_uv = vec2f(0.0);
         return out;
@@ -61,42 +62,76 @@ fn vs_particle(
     }
     out.local_uv = corner;
 
-    var world_pos: vec2f;
+    // Project particle center to clip space (works for both 2D ortho and 3D perspective)
+    let clip_center = u.particle_vp * vec4f(p.pos, 1.0);
+    let cw = clip_center.w;
+
+    // All offsets are computed in PIXEL space (Y down), then converted to clip
+    // at the end via:  clip_x += pixel_x * 2/vp_w * w
+    //                  clip_y -= pixel_y * 2/vp_h * w   (Y flip: pixel Y↓, NDC Y↑)
+    var pixel_offset: vec2f;
 
     if kind == 0u {
         // ---- METAL SPARK: velocity-aligned thin streak ----
-        let spd = length(p.vel);
-        let fwd = select(vec2f(0.0, -1.0), p.vel / spd, spd > 0.5);
-        let right = vec2f(-fwd.y, fwd.x);
-        // Length scales with speed; width stays thin
-        let half_len = p.size * (2.0 + spd * 0.04);
+        let vel_len = length(p.vel);
+        let fwd_world = select(vec3f(0.0, -1.0, 0.0), p.vel / vel_len, vel_len > 0.0001);
+        // Project a point slightly ahead to get pixel-space velocity direction
+        let clip_ahead = u.particle_vp * vec4f(p.pos + fwd_world * u.world_scale, 1.0);
+        let ndc_c = clip_center.xy / cw;
+        let ndc_a = clip_ahead.xy / clip_ahead.w;
+        // Full-canvas NDC → pixel direction (Y flipped)
+        let pd = vec2f((ndc_a.x - ndc_c.x) * u.width * 0.5,
+                       -(ndc_a.y - ndc_c.y) * u.height * 0.5);
+        let pd_len = length(pd);
+        let pixel_fwd   = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
+        let pixel_right  = vec2f(-pixel_fwd.y, pixel_fwd.x);
+
+        // Length scales with on-screen speed; width stays thin
+        let speed_px = vel_len / max(u.world_scale, 0.0001);
+        let half_len = p.size * (2.0 + speed_px * 0.04);
         let half_wid = p.size * 0.35;
         out.aspect = half_len / max(half_wid, 0.1);
-        world_pos = p.pos + fwd * corner.y * half_len + right * corner.x * half_wid;
+        pixel_offset = pixel_fwd * corner.y * half_len + pixel_right * corner.x * half_wid;
 
     } else if kind == 1u {
         // ---- EMBER / ASH: tiny pixel-size dot ----
         let radius = p.size * 1.2;
-        world_pos = p.pos + corner * radius;
+        pixel_offset = corner * radius;
 
     } else if kind == 2u {
-        // ---- ANGELIC BEAM: pixel-thin tall vertical line ----
-        // Offset upward so the bottom tip sits at the spawn point
-        let half_w = p.size * 2.0;         // wider quad for AA margin
+        // ---- ANGELIC BEAM: tall line oriented along world up ----
+        let up_w = select(vec3f(0.0, -1.0, 0.0), vec3f(0.0, 1.0, 0.0), u.current_view >= 4.0 && u.current_view <= 5.0);
+        let clip_up_pt = u.particle_vp * vec4f(p.pos + up_w * u.world_scale, 1.0);
+        let ndc_c = clip_center.xy / cw;
+        let ndc_u = clip_up_pt.xy / clip_up_pt.w;
+        // Full-canvas NDC → pixel direction (Y flipped)
+        let pd = vec2f((ndc_u.x - ndc_c.x) * u.width * 0.5,
+                       -(ndc_u.y - ndc_c.y) * u.height * 0.5);
+        let pd_len = length(pd);
+        let pixel_up = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
+        let pixel_rt = vec2f(-pixel_up.y, pixel_up.x);
+
+        let half_w = p.size * 2.0;
         let bh = select(35.0, u.beam_height, u.beam_height > 0.0);
-        let half_h = p.size * bh;          // configurable height
+        let half_h = p.size * bh;
         out.aspect = half_h / max(half_w, 0.1);
-        world_pos = p.pos + vec2f(corner.x * half_w, corner.y * half_h - half_h);
+        // Beam extends upward from spawn point: base at pos, top at pos + 2×half_h
+        pixel_offset = pixel_rt * corner.x * half_w + pixel_up * (corner.y * half_h + half_h);
 
     } else {
         // ---- GLITTER: slightly larger sparkle ----
         let radius = p.size * 1.8;
-        world_pos = p.pos + corner * radius;
+        pixel_offset = corner * radius;
     }
 
-    let clip_x = world_pos.x / u.width  *  2.0 - 1.0;
-    let clip_y = world_pos.y / u.height * -2.0 + 1.0;
-    out.clip_pos = vec4f(clip_x, clip_y, 0.0, 1.0);
+    // Convert pixel offset to clip-space offset (perspective-correct billboard).
+    // particle_vp outputs full-canvas clip coords, so use full canvas dims.
+    // Pixel Y increases downward, NDC Y increases upward → negate Y.
+    out.clip_pos = clip_center + vec4f(
+        pixel_offset.x *  2.0 / u.width * cw,
+        pixel_offset.y * -2.0 / u.height * cw,
+        0.0, 0.0
+    );
 
     return out;
 }

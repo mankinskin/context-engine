@@ -1,9 +1,7 @@
 // ── Hypergraph 3D View – shaders ──
 //
-// Concatenated after: palette.wgsl + particle-shading.wgsl
-// Particle fragment shading uses shared functions (shade_beam_fx, shade_glitter_fx).
-// Effects operate in 3D world space — beams rise along world-Y, glitter orbits
-// in world coordinates — so camera movement does not affect effect direction.
+// Concatenated after: palette.wgsl
+// Effects operate in 3D world space.
 
 struct Camera {
     viewProj : mat4x4<f32>,
@@ -166,80 +164,6 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
     a *= endFade;
 
     return vec4(col * a, a);
-}
-
-
-// ══════════════════════════════════════════════════════
-//  PARTICLE EFFECTS  (3D world-space beams + glitter)
-//
-//  Beams rise along world-Y (not camera-up), so they always
-//  go "upward" regardless of camera orientation.  Glitter uses
-//  camera-facing billboards for sparkle visibility.
-// ══════════════════════════════════════════════════════
-
-struct ParticleInstance {
-    @location(2) center   : vec3<f32>,  // world position of particle
-    @location(3) size     : f32,        // billboard radius / beam half-width
-    @location(4) color    : vec4<f32>,  // RGBA
-    @location(5) params   : vec4<f32>,  // x=kind(0=beam,1=glitter), y=tLife, z=hue, w=spawnT
-};
-
-struct ParticleVsOut {
-    @builtin(position) pos : vec4<f32>,
-    @location(0) uv        : vec2<f32>,
-    @location(1) color     : vec4<f32>,
-    @location(2) params    : vec4<f32>,
-};
-
-@vertex
-fn vs_particle(
-    @location(0) quadPos : vec2<f32>,
-    inst : ParticleInstance,
-) -> ParticleVsOut {
-    let right = normalize(vec3(cam.viewProj[0][0], cam.viewProj[1][0], cam.viewProj[2][0]));
-    let up    = normalize(vec3(cam.viewProj[0][1], cam.viewProj[1][1], cam.viewProj[2][1]));
-
-    var worldPos: vec3<f32>;
-    let kind = inst.params.x;
-
-    if (kind < 0.5) {
-        // Angelic beam: tall thin billboard using WORLD up (0,1,0)
-        // so beams always rise vertically regardless of camera angle.
-        let half_w = inst.size * 0.04;
-        let half_h = inst.size * cam.time.y * 0.017;
-        worldPos = inst.center
-            + right * quadPos.x * half_w
-            + vec3(0.0, 1.0, 0.0) * quadPos.y * half_h;
-    } else {
-        // Glitter: small camera-facing billboard
-        let r = inst.size * 0.06;
-        worldPos = inst.center
-            + right * quadPos.x * r
-            + up    * quadPos.y * r;
-    }
-
-    var out: ParticleVsOut;
-    out.pos    = cam.viewProj * vec4(worldPos, 1.0);
-    out.uv     = quadPos;
-    out.color  = inst.color;
-    out.params = inst.params;
-    return out;
-}
-
-@fragment
-fn fs_particle(in: ParticleVsOut) -> @location(0) vec4<f32> {
-    let kind   = in.params.x;
-    let t_life = in.params.y;
-    let hue    = in.params.z;
-    let spawnT = in.params.w;
-
-    if (kind < 0.5) {
-        // Angelic beam — delegate to shared shade function
-        return shade_beam_fx(in.uv, t_life, 0.2);
-    } else {
-        // Glitter — delegate to shared shade function
-        return shade_glitter_fx(in.uv, t_life, hue, cam.time.x, spawnT);
-    }
 }
 
 

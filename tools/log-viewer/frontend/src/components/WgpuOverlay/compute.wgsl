@@ -19,6 +19,52 @@ const BURST_WINDOW : f32 = 0.25;   // seconds — initial intense burst
 
 // ---- helpers ----------------------------------------------------------------
 
+// True when the active view is a real 3D scene (scene3d=4, hypergraph=5).
+// Other views (logs=0..debug=3, settings=6) use screen-space 2D.
+fn is_3d_view() -> bool {
+    return u.current_view >= 4.0 && u.current_view <= 5.0;
+}
+
+// World-space "up" direction.
+// 2D views: (0, -1, 0) because screen Y increases downward.
+// 3D views: (0, +1, 0) because Y is up in world space.
+fn world_up() -> vec3f {
+    return select(vec3f(0.0, -1.0, 0.0), vec3f(0.0, 1.0, 0.0), is_3d_view());
+}
+
+// World-space "right" direction (always +X).
+fn world_right() -> vec3f {
+    return vec3f(1.0, 0.0, 0.0);
+}
+
+// Convert a screen-pixel position to world space using the inverse viewProj.
+// For 2D views (ortho), world ≈ screen pixels with z=0.
+// For 3D views, unprojecting at the given NDC depth gives a world position
+// on the corresponding depth plane.
+fn screen_to_world(screen_pos: vec2f) -> vec3f {
+    return screen_to_world_at(screen_pos, u.ref_depth);
+}
+
+// Like screen_to_world but with an explicit NDC depth parameter.
+// Converts screen-pixel coordinates to full-canvas NDC, then unprojections
+// via particle_inv_vp (which maps full-canvas NDC → world space).
+fn screen_to_world_at(screen_pos: vec2f, ndc_z: f32) -> vec3f {
+    let ndc_x = screen_pos.x / u.width * 2.0 - 1.0;
+    let ndc_y = -(screen_pos.y / u.height * 2.0 - 1.0);
+    let clip = vec4f(ndc_x, ndc_y, ndc_z, 1.0);
+    let world4 = u.particle_inv_vp * clip;
+    return world4.xyz / world4.w;
+}
+
+// Resolve per-element depth: use the element's own NDC depth if set (>0),
+// otherwise fall back to the global reference depth (camera target plane).
+fn elem_depth(ei: u32) -> f32 {
+    let d = elems[ei].depth;
+    return select(u.ref_depth, d, d > 0.0001);
+}
+
+// Spawn a random point on the perimeter of an element's screen-space rect.
+// Returns SCREEN-PIXEL coordinates (call screen_to_world to convert).
 fn spawn_on_perimeter(elem_idx: u32, seed: u32) -> vec2f {
     let e  = elems[elem_idx];
     let ex = e.rect.x;
@@ -41,10 +87,21 @@ fn outward_normal(pos: vec2f, elem_idx: u32) -> vec2f {
     return normalize(pos - vec2f(cx, cy) + vec2f(0.001, 0.001));
 }
 
+// Convert a 2D screen-space outward normal to a world-space direction.
+// For 2D: maps directly (x, y, 0). For 3D: uses the projection to
+// find the world-space direction corresponding to a screen offset.
+fn normal_to_world(n: vec2f, center_world: vec3f, center_screen: vec2f) -> vec3f {
+    let offset_world = screen_to_world(center_screen + n * 10.0);
+    let d = offset_world - center_world;
+    let len = length(d);
+    if len < 0.0001 { return vec3f(n.x, n.y, 0.0); }
+    return d / len;
+}
+
 fn park_dead(idx: u32) {
     var p = particles[idx];
-    p.pos  = vec2f(-9999.0);
-    p.vel  = vec2f(0.0);
+    p.pos  = vec3f(-9999.0);
+    p.vel  = vec3f(0.0);
     p.life = 0.0;
     p.size = 0.0;
     particles[idx] = p;
@@ -67,6 +124,11 @@ fn hover_allows(fx_kind: f32) -> bool {
     return abs(hk - fx_kind) < 0.5;     // preview — must match
 }
 
+// Decode particle kind from packed kind_view field.
+fn p_kind(p: Particle) -> u32 { return u32(p.kind_view) % 8u; }
+// Decode view_id from packed kind_view field.
+fn p_view(p: Particle) -> u32 { return u32(p.kind_view) / 8u; }
+
 // ---- metal spark physics (at mouse cursor, continuous while hovering) --------
 
 fn update_metal_spark(idx: u32) {
@@ -77,6 +139,7 @@ fn update_metal_spark(idx: u32) {
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
     let spd = u.spark_speed;
+    let ws  = u.world_scale;  // world units per screen pixel
 
     // Respect spark count limit — park excess sparks
     let spark_frac = select(1.0, u.spark_count, u.spark_count > 0.0);
@@ -97,11 +160,11 @@ fn update_metal_spark(idx: u32) {
 
         let seed = idx * 7919u + u32(u.time * 5000.0);
 
-        // Spawn at mouse cursor with random radial offset
+        // Spawn at mouse cursor (screen space) → unproject to world
         let base_angle = rand_f(seed) * 6.2832;
         let scatter_r  = 5.0 + rand_f(seed + 1u) * 35.0;
         let scatter = vec2f(cos(base_angle), sin(base_angle)) * scatter_r;
-        p.pos = vec2f(u.mouse_x, u.mouse_y) + scatter;
+        p.pos = screen_to_world(vec2f(u.mouse_x, u.mouse_y) + scatter);
 
         // Velocity points outward from cursor, with ±25° angular spread
         let spread = (rand_f(seed + 2u) - 0.5) * 0.87;  // ±25°
@@ -109,19 +172,23 @@ fn update_metal_spark(idx: u32) {
         let sa = sin(base_angle + spread);
         let since_hover = u.time - u.hover_start_time;
         let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
-        let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd;
-        p.vel = vec2f(ca, sa) * speed;
+        let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd * ws;
+        // Scatter in world-right and world-up directions
+        let rt = world_right();
+        let up = world_up();
+        p.vel = rt * ca * speed + up * sa * speed;
 
         p.max_life = 0.5 + rand_f(seed + 5u) * 0.8;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u) * 0.12;
         p.size     = (1.0 + rand_f(seed + 7u) * 2.0) * max(u.spark_size, 0.01);
-        p.kind     = PK_METAL_SPARK;
+        p.kind_view = PK_METAL_SPARK + u.current_view * 8.0;
         p.spawn_t  = u.time;
     } else {
         // Moderate drag — particles trail behind with gravity
         p.vel = p.vel * (1.0 - 2.0 * dt * spd);
-        p.vel.y = p.vel.y + 80.0 * dt * spd;
+        // Gravity pulls "down" in world = opposite of world_up
+        p.vel = p.vel - world_up() * 80.0 * dt * spd * ws;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -138,6 +205,7 @@ fn update_ember(idx: u32) {
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
     let spd = u.ember_speed;
+    let ws  = u.world_scale;
 
     // Respect ember count limit
     let ember_frac = select(1.0, u.ember_count, u.ember_count > 0.0);
@@ -159,11 +227,16 @@ fn update_ember(idx: u32) {
         let ei   = u32(hover_idx);
         let seed = idx * 7919u + u32(u.time * 1000.0);
 
-        p.pos = spawn_on_perimeter(ei, seed);
+        let screen_pos = spawn_on_perimeter(ei, seed);
+        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
 
-        let normal = outward_normal(p.pos, ei);
+        let normal = outward_normal(screen_pos, ei);
         let speed  = 10.0 + rand_f(seed + 3u) * 25.0;
-        p.vel = (normal * speed * 0.5 + vec2f(0.0, -20.0 - rand_f(seed + 4u) * 15.0)) * spd;
+        // Rise upward in world space + outward drift
+        let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
+                             elems[ei].rect.y + elems[ei].rect.w * 0.5);
+        let n_world = normal_to_world(normal, screen_to_world_at(e_center, elem_depth(ei)), e_center);
+        p.vel = (n_world * speed * 0.5 + world_up() * (20.0 + rand_f(seed + 4u) * 15.0)) * spd * ws;
 
         p.max_life = 1.0 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
@@ -175,12 +248,13 @@ fn update_ember(idx: u32) {
             p.hue = 0.25 + rand_f(seed + 8u) * 0.15;
         }
 
-        p.size    = (0.4 + rand_f(seed + 7u) * 1.0) * max(u.ember_size, 0.01);
-        p.kind    = PK_EMBER;
-        p.spawn_t = u.time;
+        p.size     = (0.4 + rand_f(seed + 7u) * 1.0) * max(u.ember_size, 0.01);
+        p.kind_view = PK_EMBER + u.current_view * 8.0;
+        p.spawn_t  = u.time;
     } else {
-        let drift = sin(u.time * 2.0 + f32(idx) * 0.3) * 8.0;
-        p.vel = p.vel * (1.0 - 1.5 * dt * spd) + vec2f(drift * dt * spd, -25.0 * dt * spd);
+        let drift = sin(u.time * 2.0 + f32(idx) * 0.3) * 8.0 * ws;
+        // Drift sideways + continue rising in world-up direction
+        p.vel = p.vel * (1.0 - 1.5 * dt * spd) + world_right() * drift * dt * spd + world_up() * 25.0 * dt * spd * ws;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -196,6 +270,7 @@ fn update_god_ray(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
     let spd = u.beam_speed;
+    let ws  = u.world_scale;
 
     // Beam source: normally selected_elem, or hovered beam-preview container
     var beam_src = i32(u.selected_elem);
@@ -226,25 +301,31 @@ fn update_god_ray(idx: u32) {
         let seed = idx * 7919u + u32(u.time * 800.0);
 
         // Spawn on the element perimeter (beams rise upward from any border)
-        p.pos = spawn_on_perimeter(ei, seed);
+        let screen_pos = spawn_on_perimeter(ei, seed);
+        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
 
-        // Rise upward only — drift distance scaled by beam_drift setting
+        // Rise upward in world space — drift distance scaled by beam_drift setting
         let drift_scale = select(1.0, u.beam_drift, u.beam_drift > 0.0);
-        p.vel = vec2f(
-            (rand_f(seed + 2u) - 0.5) * 2.0,
-            (-12.0 - rand_f(seed + 3u) * 10.0) * drift_scale,
-        ) * spd;
+        let up = world_up();
+        let rt = world_right();
+        p.vel = (rt * (rand_f(seed + 2u) - 0.5) * 2.0
+              + up * (12.0 + rand_f(seed + 3u) * 10.0) * drift_scale) * spd * ws;
 
         p.max_life = 2.0 + rand_f(seed + 4u) * 2.0;
         p.life     = p.max_life;
         p.hue      = 0.08 + rand_f(seed + 5u) * 0.06;
         p.size     = 0.6 + rand_f(seed + 6u) * 1.0;   // wider beam, still thin
-        p.kind     = PK_GOD_RAY;
+        p.kind_view = PK_GOD_RAY + u.current_view * 8.0;
         p.spawn_t  = u.time;
     } else {
-        let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5;
-        p.vel.x = p.vel.x * (1.0 - 0.5 * dt * spd) + sway * dt * spd;
-        p.vel.y = p.vel.y * (1.0 - 0.2 * dt * spd);
+        let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5 * ws;
+        // Sway sideways, drift upward
+        let rt = world_right();
+        p.vel = p.vel * (1.0 - 0.5 * dt * spd) + rt * sway * dt * spd;
+        // Dampen along world_up direction
+        let up = world_up();
+        let vel_up = dot(p.vel, up);
+        p.vel = p.vel - up * vel_up * 0.2 * dt * spd;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -261,6 +342,7 @@ fn update_glitter(idx: u32) {
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
     let spd = u.glitter_speed;
+    let ws  = u.world_scale;
 
     // Respect glitter count limit
     let glitter_frac = select(1.0, u.glitter_count, u.glitter_count > 0.0);
@@ -283,25 +365,34 @@ fn update_glitter(idx: u32) {
         let seed = idx * 7919u + u32(u.time * 1200.0);
 
         // Spawn on the hovered element perimeter
-        p.pos = spawn_on_perimeter(ei, seed);
+        let screen_pos = spawn_on_perimeter(ei, seed);
+        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
 
         // Mostly tangential drift along border with tiny outward float
-        let norm    = outward_normal(p.pos, ei);
+        let norm    = outward_normal(screen_pos, ei);
         let tangent = vec2f(-norm.y, norm.x);
         let tang_dir = select(-1.0, 1.0, rand_f(seed + 2u) > 0.5);
-        p.vel = (tangent * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
-              + norm * (0.5 + rand_f(seed + 4u) * 2.5)) * spd;
+
+        // Convert 2D screen tangent/normal to world-space directions
+        let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
+                             elems[ei].rect.y + elems[ei].rect.w * 0.5);
+        let center_world = screen_to_world_at(e_center, elem_depth(ei));
+        let tang_world = normal_to_world(tangent, center_world, e_center);
+        let norm_world = normal_to_world(norm, center_world, e_center);
+        p.vel = (tang_world * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
+              + norm_world * (0.5 + rand_f(seed + 4u) * 2.5)) * spd * ws;
 
         p.max_life = 0.8 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u);
         p.size     = (0.6 + rand_f(seed + 7u) * 1.2) * max(u.glitter_size, 0.01);   // slightly larger — 0.6-1.8 px
-        p.kind     = PK_GLITTER;
+        p.kind_view = PK_GLITTER + u.current_view * 8.0;
         p.spawn_t  = u.time;
     } else {
         // Slow drift with sparkle-like sway, stays near border
-        let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0;
-        p.vel = p.vel * (1.0 - 3.0 * dt * spd) + vec2f(sway * dt * spd, -1.5 * dt * spd);
+        let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0 * ws;
+        // Sway sideways + gentle upward float
+        p.vel = p.vel * (1.0 - 3.0 * dt * spd) + world_right() * sway * dt * spd + world_up() * 1.5 * dt * spd * ws;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -316,16 +407,17 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
     let total = arrayLength(&particles);
     if idx >= total { return; }
 
-    // Shift live particles by scroll delta so they track world-space positions.
-    // The scroll delta is computed on the CPU as the negated change in
-    // scrollTop/scrollLeft of the scrollable container, matching the direction
-    // elements move on screen when the user scrolls.
-    let sd = vec2f(u.scroll_dx, u.scroll_dy);
-    if sd.x != 0.0 || sd.y != 0.0 {
-        var p = particles[idx];
-        if p.life > 0.0 {
-            p.pos = p.pos + sd;
-            particles[idx] = p;
+    // Shift live particles by scroll delta (2D views only).
+    // In 2D, "world space" = screen pixels, so scroll delta is a direct
+    // world-space offset. For 3D views, scroll delta is always 0.
+    if !is_3d_view() {
+        let sd = vec2f(u.scroll_dx, u.scroll_dy);
+        if sd.x != 0.0 || sd.y != 0.0 {
+            var p = particles[idx];
+            if p.life > 0.0 {
+                p.pos = p.pos + vec3f(sd, 0.0);
+                particles[idx] = p;
+            }
         }
     }
 

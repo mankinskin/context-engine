@@ -3,9 +3,16 @@
  * GPU device, pipeline, and shader module factory.
  *
  * Creates the WebGPU adapter/device, concatenates WGSL shader sources,
- * and builds all three pipelines (background render, particle render,
- * compute).  Does NOT create buffers or bind groups — those belong to
- * GpuBufferManager.
+ * and builds all three pipelines:
+ *   - **background** — full-screen quad: smoke, element rects, CRT, grain
+ *   - **particle**   — instanced quads: sparks, embers, beams, glitter
+ *   - **compute**    — particle physics simulation
+ *
+ * Everything renders on a single opaque canvas (z-index -1, behind DOM).
+ * Particles use additive blending so they glow through the transparent
+ * DOM backgrounds without requiring a separate transparent canvas.
+ *
+ * Does NOT create buffers or bind groups — those belong to GpuBufferManager.
  */
 
 import paletteWgsl from '../../effects/palette.wgsl?raw';
@@ -39,7 +46,9 @@ export interface GpuPipelines {
  * Request a WebGPU adapter + device, build shader modules and pipelines.
  * Returns `null` if WebGPU is not available or the adapter request fails.
  */
-export async function initGpu(canvas: HTMLCanvasElement): Promise<GpuPipelines | null> {
+export async function initGpu(
+    canvas: HTMLCanvasElement,
+): Promise<GpuPipelines | null> {
     if (!('gpu' in navigator)) {
         console.warn('[WgpuOverlay] WebGPU not supported in this browser.');
         return null;
@@ -121,6 +130,9 @@ export async function initGpu(canvas: HTMLCanvasElement): Promise<GpuPipelines |
             targets: [{
                 format,
                 blend: {
+                    // Additive blending: particles add light on top of the
+                    // opaque background.  No alpha compositing issues since
+                    // the back canvas is opaque (alphaMode: 'opaque').
                     color: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
                     alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
                 },

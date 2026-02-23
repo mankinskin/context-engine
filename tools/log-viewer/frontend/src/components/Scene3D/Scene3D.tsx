@@ -22,6 +22,10 @@ import {
     overlayGpu,
     registerOverlayRenderer,
     unregisterOverlayRenderer,
+    setOverlayParticleVP,
+    setOverlayParticleViewport,
+    setOverlayRefDepth,
+    setOverlayWorldScale,
     type OverlayRenderCallback,
 } from '../WgpuOverlay/WgpuOverlay';
 
@@ -321,6 +325,44 @@ export function Scene3D() {
 
             const camPos = getCamPos();
             const viewProj = getViewProj(vw / vh);
+
+            // ── Pass viewProj to particle system for world-space projection ──
+            const s = stateRef.current;
+            const W = canvasW, H = canvasH;
+            {
+                const sx = vw / W, sy = vh / H;
+                const tx = (2 * vx + vw) / W - 1;
+                const ty = 1 - (2 * vy + vh) / H;
+                const post = new Float32Array(16);
+                post[0] = sx; post[5] = sy; post[10] = 1; post[15] = 1;
+                post[12] = tx; post[13] = ty;
+                const fullVP = mat4Multiply(post, viewProj);
+                const invSubVP = mat4Inverse(viewProj);
+                if (invSubVP) {
+                    const invPost = new Float32Array(16);
+                    invPost[0] = 1 / sx; invPost[5] = 1 / sy; invPost[10] = 1; invPost[15] = 1;
+                    invPost[12] = -tx / sx; invPost[13] = -ty / sy;
+                    const fullInvVP = mat4Multiply(invSubVP, invPost);
+                    setOverlayParticleVP(fullVP, fullInvVP);
+                }
+                setOverlayParticleViewport(vx, vy, vw, vh);
+            }
+
+            // Compute reference depth and world scale
+            {
+                const ttx = s.camTarget[0], tty = s.camTarget[1], ttz = s.camTarget[2];
+                const vp = viewProj;
+                const tw = vp[3]*ttx + vp[7]*tty + vp[11]*ttz + vp[15];
+                const refZ = tw > 0.001 ? (vp[2]*ttx + vp[6]*tty + vp[10]*ttz + vp[14]) / tw : 0;
+                setOverlayRefDepth(refZ);
+
+                const dist = Math.sqrt(
+                    (camPos[0] - ttx) ** 2 + (camPos[1] - tty) ** 2 + (camPos[2] - ttz) ** 2
+                );
+                const fov = Math.PI / 4;
+                const worldScale = 2 * dist * Math.tan(fov / 2) / vh;
+                setOverlayWorldScale(worldScale);
+            }
 
             // ── Hover detection ──
             if (s.dragIdx < 0 && !s.orbiting) {

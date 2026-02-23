@@ -340,9 +340,6 @@ export class ElementScanner {
     /** Try to match an element against selectors and track it if matched. */
     private _tryTrackElement(el: Element): void {
         if (this._elementMap.has(el)) return; // already tracked
-        // Hypergraph nodes render their own 3D world-space effects via the
-        // overlay callback — skip them here to avoid doubling with 2D effects.
-        if (el.classList.contains('hg-node')) return;
 
         for (const si of SELECTOR_SCAN_ORDER) {
             const meta = SELECTOR_META[si]!;
@@ -475,9 +472,6 @@ export class ElementScanner {
         for (let j = 0; j < elems.length; j++) {
             const el = elems[j]!;
             if (this._elementMap.has(el)) continue; // already tracked by a higher-priority selector
-            // Hypergraph nodes render their own 3D world-space effects —
-            // skip them here to avoid doubling with 2D screen-space effects.
-            if (el.classList.contains('hg-node')) continue;
 
             const tracked: TrackedElement = {
                 ref: new WeakRef(el),
@@ -585,6 +579,9 @@ export class ElementScanner {
             this._data[base + 3] = t.rect.height;
             this._data[base + 4] = t.hue;
             this._data[base + 5] = t.kind;
+            // Per-element NDC depth (set by 3D views via data-depth attribute)
+            const el = t.ref.deref();
+            this._data[base + 6] = el ? parseFloat(el.getAttribute('data-depth') ?? '0') || 0 : 0;
             idx++;
         }
 
@@ -599,6 +596,8 @@ export class ElementScanner {
             this._data[base + 3] = t.rect.height;
             this._data[base + 4] = t.hue;
             this._data[base + 5] = t.kind;
+            const el2 = t.ref.deref();
+            this._data[base + 6] = el2 ? parseFloat(el2.getAttribute('data-depth') ?? '0') || 0 : 0;
             idx++;
         }
 

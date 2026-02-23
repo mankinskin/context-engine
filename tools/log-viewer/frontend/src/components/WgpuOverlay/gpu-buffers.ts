@@ -18,9 +18,9 @@ const INITIAL_ELEM_CAPACITY = 128;
 export class GpuBufferManager {
     readonly device: GPUDevice;
 
-    // Uniform buffer (fixed 192 bytes = 48 × f32, 16-byte aligned)
+    // Uniform buffer (fixed 320 bytes = 48 × f32 + 2 × mat4x4, 16-byte aligned)
     readonly uniformBuffer: GPUBuffer;
-    readonly uniformF32 = new Float32Array(48);
+    readonly uniformF32 = new Float32Array(80);
 
     // Element buffer (dynamically resizable)
     private _elemBuffer: GPUBuffer;
@@ -39,7 +39,7 @@ export class GpuBufferManager {
         this.device = device;
 
         this.uniformBuffer = device.createBuffer({
-            size: 192,
+            size: 320,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 

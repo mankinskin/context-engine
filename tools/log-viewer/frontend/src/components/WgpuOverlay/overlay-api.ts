@@ -1,6 +1,14 @@
 /**
  * Public API surface for the WgpuOverlay system.
- * Signals, render callback registration, and capture trigger.
+ *
+ * Provides:
+ *   - **Signals** — `gpuOverlayEnabled`, `overlayGpu`
+ *   - **Overlay callbacks** — register/unregister renderers that draw into
+ *     the single shared render pass (edges, grids, cubes)
+ *   - **Particle projection** — viewProj/inverse, viewport region, depth,
+ *     world-scale; set by 3D views each frame in their overlay callbacks
+ *   - **Capture** — one-shot JPEG thumbnail (theme previews)
+ *   - **Invalidation** — scan dirty / particle reset delegates
  */
 import { signal } from '@preact/signals';
 
@@ -131,3 +139,96 @@ export function setParticleResetter(fn: (() => void) | null): void {
 export function resetOverlayParticles(): void {
     _particleResetter?.();
 }
+
+// ---------------------------------------------------------------------------
+// Particle projection for 3D views (viewProj, viewport, depth)
+// ---------------------------------------------------------------------------
+
+/**
+ * ViewProj and inverse ViewProj matrices for projecting world-space particles
+ * to clip space. For 2D views these are set to orthographic matrices by the
+ * render loop. For 3D views, the view component (HypergraphView, Scene3D)
+ * sets these each frame with its camera's projection.
+ *
+ * The matrices are "full-canvas" viewProj, i.e. they map world positions to
+ * NDC coordinates relative to the full overlay canvas (not the sub-viewport).
+ */
+let _particleVP: Float32Array = new Float32Array(16);
+let _particleInvVP: Float32Array = new Float32Array(16);
+let _vpDirty = false;
+
+/**
+ * Set the viewProj and inverse viewProj for particle projection this frame.
+ * Call from 3D view overlay callbacks. The matrices should be pre-composed
+ * with the viewport transform so they produce full-canvas clip coordinates.
+ */
+export function setOverlayParticleVP(vp: Float32Array, invVp: Float32Array): void {
+    _particleVP = vp;
+    _particleInvVP = invVp;
+    _vpDirty = true;
+}
+
+/** Read the current particle viewProj (used by render loop). */
+export function getOverlayParticleVP(): Float32Array { return _particleVP; }
+
+/** Read the current inverse viewProj (used by render loop). */
+export function getOverlayParticleInvVP(): Float32Array { return _particleInvVP; }
+
+/** Check and consume the dirty flag (render loop uses this to detect 3D updates). */
+export function consumeParticleVPDirty(): boolean {
+    const d = _vpDirty;
+    _vpDirty = false;
+    return d;
+}
+
+// ---------------------------------------------------------------------------
+// Particle viewport (sub-region of canvas used by 3D view)
+// ---------------------------------------------------------------------------
+
+let _particleViewport: [number, number, number, number] = [0, 0, 0, 0];
+
+/**
+ * Set the viewport region for the active 3D view (canvas-pixel coordinates).
+ * The render loop uses this as the default for 3D views; 2D views use
+ * (0, 0, canvasWidth, canvasHeight) automatically.
+ */
+export function setOverlayParticleViewport(x: number, y: number, w: number, h: number): void {
+    _particleViewport = [x, y, w, h];
+}
+
+/** Read the particle viewport (used by render loop). */
+export function getOverlayParticleViewport(): [number, number, number, number] {
+    return _particleViewport;
+}
+
+// ---------------------------------------------------------------------------
+// Reference depth for unprojection
+// ---------------------------------------------------------------------------
+
+let _refDepth: number = 0;
+
+/**
+ * Set the NDC depth used when unprojecting screen positions to world space.
+ * For 2D views: 0 (particles at z=0). For 3D views: the NDC z of the
+ * camera target (approximate depth of scene elements).
+ */
+export function setOverlayRefDepth(z: number): void { _refDepth = z; }
+
+/** Read the reference depth (used by render loop). */
+export function getOverlayRefDepth(): number { return _refDepth; }
+
+// ---------------------------------------------------------------------------
+// World scale (world units per screen pixel)
+// ---------------------------------------------------------------------------
+
+let _worldScale: number = 1;
+
+/**
+ * Set the conversion factor from screen pixels to world units.
+ * For 2D views: 1.0 (world ≡ screen pixels). For 3D views: computed
+ * from camera distance & viewport height.
+ */
+export function setOverlayWorldScale(s: number): void { _worldScale = s; }
+
+/** Read the world scale (used by render loop). */
+export function getOverlayWorldScale(): number { return _worldScale; }

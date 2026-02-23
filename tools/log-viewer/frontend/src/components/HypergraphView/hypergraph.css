@@ -14,6 +14,9 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
+    /* preserve-3d enables CSS depth sorting among child nodes,
+       so nodes closer to the camera render on top without manual z-index. */
+    transform-style: preserve-3d;
 }
 
 /* ── Individual DOM node: positioned with CSS transform ── */
