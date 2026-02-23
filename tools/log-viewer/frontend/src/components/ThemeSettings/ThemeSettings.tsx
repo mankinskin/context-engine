@@ -374,6 +374,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           Sparks spawn at the mouse cursor when hovering over elements.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Sparks</span>
+            <span class="theme-color-desc">Toggle metal spark particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.sparksEnabled}
+              onChange={(e) => updateEffectSetting('sparksEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.sparksEnabled && (<>
         <ColorRow label="Hot Core" description="White-yellow center" colorKey="particleSparkCore" />
         <ColorRow label="Ember" description="Outer ember glow" colorKey="particleSparkEmber" />
         <ColorRow label="Steel" description="Metallic highlight" colorKey="particleSparkSteel" />
@@ -413,6 +428,7 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.sparkSize}%</span>
           </div>
         </div>
+        </>)}
       </Section>
 
       {/* ── Particle: Embers ── */}
@@ -420,6 +436,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           Rising embers/ash from hovered element borders.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Embers</span>
+            <span class="theme-color-desc">Toggle ember/ash particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.embersEnabled}
+              onChange={(e) => updateEffectSetting('embersEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.embersEnabled && (<>
         <ColorRow label="Hot" description="Bright center glow" colorKey="particleEmberHot" />
         <ColorRow label="Base" description="Outer ember color" colorKey="particleEmberBase" />
         <div class="theme-slider-row">
@@ -458,6 +489,7 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.emberSize}%</span>
           </div>
         </div>
+        </>)}
       </Section>
 
       {/* ── Particle: Angelic Beams ── */}
@@ -465,6 +497,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           Pixel-thin vertical rays rising from the selected element.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Beams</span>
+            <span class="theme-color-desc">Toggle angelic beam particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.beamsEnabled}
+              onChange={(e) => updateEffectSetting('beamsEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.beamsEnabled && (<>
         <ColorRow label="Center" description="Bright core color" colorKey="particleBeamCenter" />
         <ColorRow label="Edge" description="Warm outer glow" colorKey="particleBeamEdge" />
         <div class="theme-slider-row">
@@ -515,6 +562,7 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.beamDrift}%</span>
           </div>
         </div>
+        </>)}
       </Section>
 
       {/* ── Particle: Glitter ── */}
@@ -522,6 +570,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           Twinkling sparkles drifting along hovered element borders.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Glitter</span>
+            <span class="theme-color-desc">Toggle glitter sparkle particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.glitterEnabled}
+              onChange={(e) => updateEffectSetting('glitterEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.glitterEnabled && (<>
         <ColorRow label="Warm" description="Golden-white base" colorKey="particleGlitterWarm" />
         <ColorRow label="Cool" description="Blue-white variation" colorKey="particleGlitterCool" />
         <div class="theme-slider-row">
@@ -560,6 +623,7 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.glitterSize}%</span>
           </div>
         </div>
+        </>)}
       </Section>
 
       {/* ── Cinder Palette ── */}
@@ -567,6 +631,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           The four-color cycle used for border glows and hover effects.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Cinder</span>
+            <span class="theme-color-desc">Toggle cinder border glows</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.cinderEnabled}
+              onChange={(e) => updateEffectSetting('cinderEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.cinderEnabled && (<>
         <ColorRow label="Ember" description="Deep orange-red" colorKey="cinderEmber" />
         <ColorRow label="Gold" description="Tarnished gold" colorKey="cinderGold" />
         <ColorRow label="Ash" description="Cool grey" colorKey="cinderAsh" />
@@ -583,6 +662,7 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.cinderSize}%</span>
           </div>
         </div>
+        </>)}
       </Section>
 
       {/* ── Background Smoke ── */}
@@ -590,6 +670,21 @@ export function ThemeSettings() {
         <p class="theme-section-hint">
           Base tones and noise parameters for the animated smoky background layers.
         </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Smoke</span>
+            <span class="theme-color-desc">Toggle background smoke layers</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.smokeEnabled}
+              onChange={(e) => updateEffectSetting('smokeEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.smokeEnabled && (<>
         <ColorRow label="Cool Tone" description="Blue-grey base" colorKey="smokeCool" />
         <ColorRow label="Warm Tone" description="Brown-amber base" colorKey="smokeWarm" />
         <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
@@ -624,6 +719,7 @@ export function ThemeSettings() {
             </div>
           </div>
         ))}
+        </>)}
       </Section>
 
       {/* ── Cursor Style ── */}

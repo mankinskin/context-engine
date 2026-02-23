@@ -470,6 +470,8 @@ export interface EffectSettings {
   crtFlicker: number;
     /** Custom GPU cursor style. */
     cursorStyle: CursorStyle;
+    /** Enable/disable background smoke. */
+    smokeEnabled: boolean;
     /** Overall smoke layer brightness/amount 0–100. */
     smokeIntensity: number;
     /** Smoke animation speed 0–500 (maps to 0.0–5.0×). */
@@ -492,12 +494,20 @@ export interface EffectSettings {
     underglowStrength: number;
     /** Metal spark animation speed 0–300 (maps to 0.0–3.0×). */
     sparkSpeed: number;
+    /** Enable/disable metal sparks. */
+    sparksEnabled: boolean;
     /** Ember/ash animation speed 0–300 (maps to 0.0–3.0×). */
     emberSpeed: number;
+    /** Enable/disable embers. */
+    embersEnabled: boolean;
     /** Angelic beam animation speed 0–300 (maps to 0.0–3.0×). */
     beamSpeed: number;
+    /** Enable/disable angelic beams. */
+    beamsEnabled: boolean;
     /** Glitter animation speed 0–300 (maps to 0.0–3.0×). */
     glitterSpeed: number;
+    /** Enable/disable glitter. */
+    glitterEnabled: boolean;
     /** Angelic beam quad height multiplier 10–100 (maps to 10.0–100.0). Default 35. */
     beamHeight: number;
   /** Angelic beam upward drift distance 0–300 (maps to 0.0–3.0×). Default 100. */
@@ -518,6 +528,8 @@ export interface EffectSettings {
   glitterSize: number;
   /** Cinder border glow size multiplier 0–300 (0.0x–3.0x). Default 100. */
   cinderSize: number;
+  /** Enable/disable cinder border glows. */
+  cinderEnabled: boolean;
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
@@ -527,6 +539,7 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
   crtEdgeShadow: 100,
   crtFlicker: 100,
     cursorStyle: 'default',
+    smokeEnabled: true,
     smokeIntensity: 100,
     smokeSpeed: 100,
     smokeWarmScale: 100,
@@ -538,9 +551,13 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
     vignetteStrength: 100,
     underglowStrength: 100,
     sparkSpeed: 100,
+    sparksEnabled: true,
     emberSpeed: 100,
+    embersEnabled: true,
     beamSpeed: 100,
+    beamsEnabled: true,
     glitterSpeed: 100,
+    glitterEnabled: true,
     beamHeight: 35,
   beamDrift: 100,
   beamCount: 256,
@@ -551,6 +568,7 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
   glitterCount: 100,
   glitterSize: 100,
   cinderSize: 100,
+  cinderEnabled: true,
 };
 
 export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {
