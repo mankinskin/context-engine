@@ -1,9 +1,13 @@
-// particle-sim.ts — Shared 3D particle simulation for angelic beams & glitter
+// particle-sim.ts — Shared particle simulation for angelic beams & glitter
 //
-// Extracted from HypergraphView so other 3D views can reuse the same
-// particle system.  These functions are pure — no side effects, no globals.
+// Works in both 2D and 3D contexts.  In 3D mode, coordinates are world-space
+// positions.  In 2D mode, they can be screen-space pixel coordinates.
+// All functions are pure — no side effects, no globals.
+//
+// Effect settings (speed, drift, count, etc.) are passed explicitly so
+// callers can wire them from any settings source.
 
-/** Particle state for 3D scenes with beam and glitter effects. */
+/** Particle state for beam and glitter effects (works in 2D or 3D). */
 export interface Particle3D {
     x: number; y: number; z: number;
     vx: number; vy: number; vz: number;
@@ -15,6 +19,29 @@ export interface Particle3D {
     kind: number;
     spawnT: number;
 }
+
+/** Effect settings passed to the particle simulation functions. */
+export interface ParticleEffectSettings {
+    /** Beam animation speed multiplier (0–3). Default 1. */
+    beamSpeed: number;
+    /** Beam upward drift distance multiplier (0–3). Default 1. */
+    beamDrift: number;
+    /** Max simultaneous beams. 0 = unlimited. */
+    beamCount: number;
+    /** Beam visual height multiplier (10–100). Default 35. */
+    beamHeight: number;
+    /** Glitter animation speed multiplier (0–3). Default 1. */
+    glitterSpeed: number;
+}
+
+/** Default effect settings matching the theme store defaults. */
+export const DEFAULT_PARTICLE_SETTINGS: ParticleEffectSettings = {
+    beamSpeed: 1,
+    beamDrift: 1,
+    beamCount: 256,
+    beamHeight: 35,
+    glitterSpeed: 1,
+};
 
 /** Instance floats per particle: center(3) + size(1) + color(4) + params(4) */
 export const PARTICLE_INSTANCE_FLOATS = 12;
@@ -31,19 +58,22 @@ export const PARTICLE_INSTANCE_FLOATS = 12;
 export function spawnBeam(
     particles: Particle3D[],
     cx: number, cy: number, cz: number,
-    radius: number, time: number, maxBeams: number,
-    driftScale: number = 1.0,
+    radius: number, time: number,
+    settings: ParticleEffectSettings = DEFAULT_PARTICLE_SETTINGS,
 ): void {
+    const maxBeams = settings.beamCount || 256;
     if (particles.filter(p => p.kind === 0).length >= maxBeams) return;
+    const spd = Math.max(settings.beamSpeed, 0.01);
+    const drift = settings.beamDrift;
     const angle = Math.random() * Math.PI * 2;
     const r = radius * (0.8 + Math.random() * 0.4);
     const p: Particle3D = {
         x: cx + Math.cos(angle) * r,
         y: cy,
         z: cz + Math.sin(angle) * r,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (1.2 + Math.random() * 0.8) * driftScale,
-        vz: (Math.random() - 0.5) * 0.15,
+        vx: (Math.random() - 0.5) * 0.15 * spd,
+        vy: (1.2 + Math.random() * 0.8) * drift * spd,
+        vz: (Math.random() - 0.5) * 0.15 * spd,
         size: 0.6 + Math.random() * 1.0,
         life: 2.0 + Math.random() * 2.0,
         maxLife: 0,
@@ -68,8 +98,10 @@ export function spawnGlitter(
     particles: Particle3D[],
     cx: number, cy: number, cz: number,
     radius: number, time: number, maxGlitter: number,
+    settings: ParticleEffectSettings = DEFAULT_PARTICLE_SETTINGS,
 ): void {
     if (particles.filter(p => p.kind === 1).length >= maxGlitter) return;
+    const spd = Math.max(settings.glitterSpeed, 0.01);
     const angle = Math.random() * Math.PI * 2;
     const phi = (Math.random() - 0.5) * Math.PI;
     const r = radius * (0.9 + Math.random() * 0.3);
@@ -80,9 +112,9 @@ export function spawnGlitter(
         x: cx + Math.cos(angle) * Math.cos(phi) * r,
         y: cy + Math.sin(phi) * r,
         z: cz + Math.sin(angle) * Math.cos(phi) * r,
-        vx: tangX * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1,
-        vy: (Math.random() - 0.5) * 0.3,
-        vz: tangZ * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1,
+        vx: (tangX * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1) * spd,
+        vy: (Math.random() - 0.5) * 0.3 * spd,
+        vz: (tangZ * dir * (0.3 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.1) * spd,
         size: 0.4 + Math.random() * 0.8,
         life: 0.8 + Math.random() * 1.5,
         maxLife: 0,
@@ -98,10 +130,18 @@ export function spawnGlitter(
  * Simulate all active 3D particles.
  * Removes dead particles and updates positions.
  */
-export function updateParticles3D(particles: Particle3D[], dt: number, time: number): void {
+export function updateParticles3D(
+    particles: Particle3D[], dt: number, time: number,
+    settings: ParticleEffectSettings = DEFAULT_PARTICLE_SETTINGS,
+): void {
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i]!;
-        p.life -= dt;
+        // Scale dt by per-kind speed so particles animate faster/slower
+        const spd = p.kind === 0
+            ? Math.max(settings.beamSpeed, 0.01)
+            : Math.max(settings.glitterSpeed, 0.01);
+        const sdt = dt * spd;
+        p.life -= sdt;
         if (p.life <= 0) {
             particles.splice(i, 1);
             continue;
@@ -109,19 +149,19 @@ export function updateParticles3D(particles: Particle3D[], dt: number, time: num
         if (p.kind === 0) {
             // Beam: rise upward with gentle sway
             const sway = Math.sin(time * 1.5 + p.spawnT * 7.0) * 0.08;
-            p.vx = p.vx * (1 - 0.5 * dt) + sway * dt;
-            p.vz = p.vz * (1 - 0.5 * dt);
-            p.vy *= (1 - 0.2 * dt);
+            p.vx = p.vx * (1 - 0.5 * sdt) + sway * sdt;
+            p.vz = p.vz * (1 - 0.5 * sdt);
+            p.vy *= (1 - 0.2 * sdt);
         } else {
             // Glitter: drift along surface with sparkle sway
             const sway = Math.sin(time * 4.0 + p.spawnT * 13.0) * 0.15;
-            p.vx = p.vx * (1 - 3 * dt) + sway * dt;
-            p.vy = p.vy * (1 - 3 * dt) - 0.05 * dt;
-            p.vz = p.vz * (1 - 3 * dt);
+            p.vx = p.vx * (1 - 3 * sdt) + sway * sdt;
+            p.vy = p.vy * (1 - 3 * sdt) - 0.05 * sdt;
+            p.vz = p.vz * (1 - 3 * sdt);
         }
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.z += p.vz * dt;
+        p.x += p.vx * sdt;
+        p.y += p.vy * sdt;
+        p.z += p.vz * sdt;
     }
 }
 

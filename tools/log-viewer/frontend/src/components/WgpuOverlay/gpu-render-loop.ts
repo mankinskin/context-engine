@@ -133,7 +133,12 @@ export class RenderLoop {
         const my = this.my;
 
         // --- Hover detection -----------------------------------------------
+        // When multiple elements overlap at the mouse position, prefer the
+        // one with the highest kind value.  This ensures effect-preview
+        // containers (kind 8–11) win over structural parents (kind 0) that
+        // also contain the cursor.
         let hoverIdx = -1;
+        let hoverKind = -1;
         for (let i = 0; i < count; i++) {
             const base = i * ELEM_FLOATS;
             const ex = data[base]!;
@@ -141,7 +146,11 @@ export class RenderLoop {
             const ew = data[base + 2]!;
             const eh = data[base + 3]!;
             if (mx >= ex && mx < ex + ew && my >= ey && my < ey + eh) {
-                hoverIdx = i;
+                const k = data[base + 5]!;
+                if (k >= hoverKind) {
+                    hoverIdx = i;
+                    hoverKind = k;
+                }
             }
         }
 
@@ -151,12 +160,21 @@ export class RenderLoop {
         }
 
         // --- Selected element detection ------------------------------------
+        // When multiple elements have KIND_SELECTED (e.g. an "always on"
+        // demo element plus a user-toggled one), prefer the one that is
+        // also being hovered — that's the element the user is interacting
+        // with.  Otherwise fall back to the last match so newly-toggled
+        // elements (later in DOM order) win over permanent ones.
         let selectedIdx = -1;
         for (let i = 0; i < count; i++) {
             const base = i * ELEM_FLOATS;
             const k = data[base + 5]!;
-            if (k === KIND_SELECTED) { selectedIdx = i; break; }
-            if (k === KIND_PANIC && selectedIdx < 0) { selectedIdx = i; }
+            if (k === KIND_SELECTED) {
+                selectedIdx = i;
+                if (i === hoverIdx) break; // hovered selected element wins
+            } else if (k === KIND_PANIC && selectedIdx < 0) {
+                selectedIdx = i;
+            }
         }
 
         // --- Pack uniforms -------------------------------------------------

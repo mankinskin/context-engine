@@ -8,7 +8,7 @@
 struct Camera {
     viewProj : mat4x4<f32>,
     eye      : vec4<f32>,
-    time     : vec4<f32>,   // x=time, y=0, z=0, w=0
+    time     : vec4<f32>,   // x=time, y=beam_height, z=0, w=0
 };
 
 @group(0) @binding(0) var<uniform> cam : Camera;
@@ -206,7 +206,7 @@ fn vs_particle(
         // Angelic beam: tall thin billboard using WORLD up (0,1,0)
         // so beams always rise vertically regardless of camera angle.
         let half_w = inst.size * 0.04;
-        let half_h = inst.size * 0.6;
+        let half_h = inst.size * cam.time.y * 0.017;
         worldPos = inst.center
             + right * quadPos.x * half_w
             + vec3(0.0, 1.0, 0.0) * quadPos.y * half_h;

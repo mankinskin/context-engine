@@ -424,6 +424,9 @@ export class ElementScanner {
         for (let j = 0; j < elems.length; j++) {
             const el = elems[j]!;
             if (this._elementMap.has(el)) continue; // already tracked by a higher-priority selector
+            // Hypergraph nodes render their own 3D world-space effects —
+            // skip them here to avoid doubling with 2D screen-space effects.
+            if (el.classList.contains('hg-node')) continue;
 
             const tracked: TrackedElement = {
                 ref: new WeakRef(el),

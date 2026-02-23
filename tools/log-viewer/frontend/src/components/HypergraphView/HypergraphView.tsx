@@ -30,6 +30,7 @@ import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
 import { themeColors, effectSettings } from '../../store/theme';
 import {
     type Particle3D,
+    type ParticleEffectSettings,
     PARTICLE_INSTANCE_FLOATS,
     spawnBeam, spawnGlitter, updateParticles3D, fillParticleBuffer,
 } from '../../effects/particle-sim';
@@ -51,9 +52,8 @@ const QUAD_VERTS = new Float32Array([
 const EDGE_INSTANCE_FLOATS = 12;
 const GRID_LINE_FLOATS = 12;
 
-const MAX_BEAMS    = 64;
 const MAX_GLITTER  = 96;
-const MAX_PARTICLES = MAX_BEAMS + MAX_GLITTER;
+const MAX_PARTICLES = 256 + MAX_GLITTER;
 
 // ── helpers ──
 
@@ -440,20 +440,27 @@ export function HypergraphView() {
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 
             // ── Spawn & update 3D world-space particles ──
+            const eff = effectSettings.value;
+            const pSettings: ParticleEffectSettings = {
+                beamSpeed: eff.beamSpeed / 100,
+                beamDrift: eff.beamDrift / 100,
+                beamCount: eff.beamCount,
+                beamHeight: eff.beamHeight,
+                glitterSpeed: eff.glitterSpeed / 100,
+            };
             if (inter.selectedIdx >= 0) {
                 const sn = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sn) {
-                    const drift = effectSettings.value.beamDrift / 100;
-                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS, drift);
+                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, pSettings);
                 }
             }
             if (inter.hoverIdx >= 0) {
                 const hn = curLayout.nodeMap.get(inter.hoverIdx);
                 if (hn) {
-                    for (let i = 0; i < 6; i++) spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
+                    for (let i = 0; i < 6; i++) spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER, pSettings);
                 }
             }
-            updateParticles3D(particles, dt, time);
+            updateParticles3D(particles, dt, time, pSettings);
             const liveCount = fillParticleBuffer(particles, particleDataBuf, MAX_PARTICLES);
             if (liveCount > 0) {
                 dev.queue.writeBuffer(particleIB, 0, particleDataBuf, 0, liveCount * PARTICLE_INSTANCE_FLOATS);
@@ -463,7 +470,7 @@ export function HypergraphView() {
             const camBuf = new Float32Array(32);
             camBuf.set(viewProj, 0);
             camBuf.set([camPos[0], camPos[1], camPos[2], 0], 16);
-            camBuf.set([time, 0, 0, 0], 20);
+            camBuf.set([time, pSettings.beamHeight, 0, 0], 20);
             dev.queue.writeBuffer(camUB, 0, camBuf);
             dev.queue.writeBuffer(paletteUB, 0, buildPaletteBuffer(themeColors.value));
 
