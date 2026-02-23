@@ -68,6 +68,8 @@ export class ElementScanner {
 
     /** IntersectionObserver for viewport visibility. */
     private _io: IntersectionObserver | null = null;
+    /** ResizeObserver for per-element size change detection. */
+    private _ro: ResizeObserver | null = null;
     /** MutationObserver for incremental DOM tracking. */
     private _mo: MutationObserver | null = null;
 
@@ -116,6 +118,19 @@ export class ElementScanner {
             { threshold: 0 },
         );
 
+        // ResizeObserver — fires per-element when its border box changes.
+        // Catches expanding/collapsing entries, CSS transitions/animations,
+        // and any layout change the browser detects on a tracked element.
+        this._ro = new ResizeObserver((entries) => {
+            for (const e of entries) {
+                const tracked = this._elementMap.get(e.target);
+                if (tracked) {
+                    tracked.rectStale = true;
+                    this._rectsStale = true;
+                }
+            }
+        });
+
         // MutationObserver for incremental DOM changes
         this._mo = new MutationObserver((records) => {
             this._processMutations(records);
@@ -139,6 +154,8 @@ export class ElementScanner {
     destroy(): void {
         this._io?.disconnect();
         this._io = null;
+        this._ro?.disconnect();
+        this._ro = null;
         this._mo?.disconnect();
         this._mo = null;
         window.removeEventListener('scroll', this._onScroll, true);
@@ -190,9 +207,11 @@ export class ElementScanner {
 
     private _processMutations(records: MutationRecord[]): void {
         let totalAdded = 0;
+        let hasChildListMutation = false;
 
         for (const rec of records) {
             if (rec.type === 'childList') {
+                hasChildListMutation = true;
                 // Remove tracked elements whose DOM nodes were removed
                 for (let i = 0; i < rec.removedNodes.length; i++) {
                     const node = rec.removedNodes[i]!;
@@ -207,12 +226,14 @@ export class ElementScanner {
                 if (target.nodeType === Node.ELEMENT_NODE) {
                     if (rec.attributeName === 'class') {
                         this._reclassifyElement(target as Element);
-                    } else if (rec.attributeName === 'style') {
-                        const tracked = this._elementMap.get(target as Element);
-                        if (tracked) {
-                            tracked.rectStale = true;
-                            this._rectsStale = true;
-                        }
+                    }
+                    // For class/style changes, mark only the target element
+                    // stale.  ResizeObserver will reactively catch any
+                    // cascading size changes on other tracked elements.
+                    const tracked = this._elementMap.get(target as Element);
+                    if (tracked) {
+                        tracked.rectStale = true;
+                        this._rectsStale = true;
                     }
                 }
             }
@@ -233,7 +254,15 @@ export class ElementScanner {
                     }
                 }
             }
-            this._rectsStale = true;
+        }
+
+        // childList mutations (add/remove nodes) shift sibling positions
+        // without resizing them, which ResizeObserver won't catch.
+        // Mark all rects stale so positions are re-measured.
+        // For attribute-only mutations (class/style), we rely on
+        // ResizeObserver to reactively mark affected elements.
+        if (hasChildListMutation) {
+            this._markAllRectsStale();
         }
     }
 
@@ -267,6 +296,7 @@ export class ElementScanner {
                     this._tracked.push(tracked);
                     this._elementMap.set(el, tracked);
                     this._io?.observe(el);
+                    this._ro?.observe(el);
                     this._rectsStale = true;
                     break; // first match wins
                 }
@@ -290,8 +320,7 @@ export class ElementScanner {
         if (tracked) {
             this._elementMap.delete(el);
             this._io?.unobserve(el);
-            // Mark for removal during compact (set ref to allow GC to handle it,
-            // or we remove from _tracked during compact)
+            this._ro?.unobserve(el);
         }
     }
 
@@ -325,6 +354,7 @@ export class ElementScanner {
                         this._tracked.push(tracked);
                         this._elementMap.set(el, tracked);
                         this._io?.observe(el);
+                        this._ro?.observe(el);
                     }
                     this._rectsStale = true;
                     matched = true;
@@ -339,16 +369,20 @@ export class ElementScanner {
             // Element no longer matches any selector — untrack
             this._elementMap.delete(el);
             this._io?.unobserve(el);
+            this._ro?.unobserve(el);
         }
     }
 
     // --- Internal: full re-scan --------------------------------------------
 
     private _fullRescan(): void {
-        // Disconnect IO for old elements
+        // Disconnect observers for old elements
         for (const tracked of this._tracked) {
             const el = tracked.ref.deref();
-            if (el) this._io?.unobserve(el);
+            if (el) {
+                this._io?.unobserve(el);
+                this._ro?.unobserve(el);
+            }
         }
         this._tracked = [];
         this._elementMap.clear();
@@ -385,6 +419,7 @@ export class ElementScanner {
             this._tracked.push(tracked);
             this._elementMap.set(el, tracked);
             this._io?.observe(el);
+            this._ro?.observe(el);
         }
     }
 
