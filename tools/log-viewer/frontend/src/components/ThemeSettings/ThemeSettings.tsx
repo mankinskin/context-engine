@@ -25,12 +25,14 @@ import {
   saveCurrentTheme,
   deleteSavedTheme,
   applySavedTheme,
+  updateSavedTheme,
   renameSavedTheme,
   effectSettings,
   updateEffectSetting,
   type ThemeColors,
   type SavedTheme,
 } from '../../store/theme';
+import { captureOverlayThumbnail } from '../WgpuOverlay/WgpuOverlay';
 import './theme-settings.css';
 
 // ── Color picker row ─────────────────────────────────────────────────────────
@@ -107,16 +109,24 @@ function Section({ title, icon, children, defaultOpen = false }: SectionProps) {
 
 function SaveThemeButton() {
   const [showInput, setShowInput] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [name, setName] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleSave() {
+  async function handleSave() {
     const trimmed = name.trim();
-    if (trimmed) {
+    if (!trimmed || saving) return;
+    setSaving(true);
+    try {
+      // Capture a low-res thumbnail of the current frame
+      const thumbnail = await captureOverlayThumbnail();
+      saveCurrentTheme(trimmed, thumbnail);
+    } catch {
       saveCurrentTheme(trimmed);
-      setName('');
-      setShowInput(false);
     }
+    setName('');
+    setShowInput(false);
+    setSaving(false);
   }
 
   if (!showInput) {
@@ -142,7 +152,9 @@ function SaveThemeButton() {
           if (e.key === 'Escape') { setShowInput(false); setName(''); }
         }}
       />
-      <button class="btn btn-primary" onClick={handleSave} disabled={!name.trim()}>Save</button>
+      <button class="btn btn-primary" onClick={handleSave} disabled={!name.trim() || saving}>
+        {saving ? '…' : 'Save'}
+      </button>
       <button class="btn btn-secondary" onClick={() => { setShowInput(false); setName(''); }}>✕</button>
     </div>
   );
@@ -152,8 +164,22 @@ function SaveThemeButton() {
 
 function SavedThemeCard({ theme }: { theme: SavedTheme }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmUpdate, setConfirmUpdate] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(theme.name);
+
+  async function handleUpdate() {
+    setUpdating(true);
+    try {
+      const thumbnail = await captureOverlayThumbnail();
+      updateSavedTheme(theme.id, thumbnail);
+    } catch {
+      updateSavedTheme(theme.id);
+    }
+    setUpdating(false);
+    setConfirmUpdate(false);
+  }
 
   function handleRename() {
     const trimmed = editName.trim();
@@ -168,14 +194,18 @@ function SavedThemeCard({ theme }: { theme: SavedTheme }) {
 
   return (
     <div class="saved-theme-card">
-      <div class="saved-theme-swatches">
-        <span class="theme-preset-swatch" style={{ background: theme.colors.bgPrimary }} />
-        <span class="theme-preset-swatch" style={{ background: theme.colors.accentOrange }} />
-        <span class="theme-preset-swatch" style={{ background: theme.colors.accentBlue }} />
-        <span class="theme-preset-swatch" style={{ background: theme.colors.levelError }} />
-        <span class="theme-preset-swatch" style={{ background: theme.colors.cinderEmber }} />
-        <span class="theme-preset-swatch" style={{ background: theme.colors.textPrimary }} />
-      </div>
+      {theme.thumbnail ? (
+        <img class="saved-theme-thumbnail" src={theme.thumbnail} alt={theme.name} />
+      ) : (
+        <div class="saved-theme-swatches">
+          <span class="theme-preset-swatch" style={{ background: theme.colors.bgPrimary }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.accentOrange }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.accentBlue }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.levelError }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.cinderEmber }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.textPrimary }} />
+        </div>
+      )}
       <div class="saved-theme-info">
         {editing ? (
           <input
@@ -202,6 +232,15 @@ function SavedThemeCard({ theme }: { theme: SavedTheme }) {
         <button class="btn btn-primary btn-sm" onClick={() => applySavedTheme(theme)} title="Apply this theme">
           Apply
         </button>
+        {confirmUpdate ? (
+          <button class="btn btn-warn btn-sm" onClick={handleUpdate} disabled={updating}>
+            {updating ? '…' : 'Confirm'}
+          </button>
+        ) : (
+          <button class="btn btn-secondary btn-sm" onClick={() => setConfirmUpdate(true)} title="Overwrite with current colors">
+            ✏️
+          </button>
+        )}
         {confirmDelete ? (
           <button class="btn btn-danger btn-sm" onClick={() => { deleteSavedTheme(theme.id); setConfirmDelete(false); }}>
             Confirm
@@ -337,6 +376,18 @@ export function ThemeSettings() {
         <ColorRow label="Hot Core" description="White-yellow center" colorKey="particleSparkCore" />
         <ColorRow label="Ember" description="Outer ember glow" colorKey="particleSparkEmber" />
         <ColorRow label="Steel" description="Metallic highlight" colorKey="particleSparkSteel" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.sparkSpeed}
+              onInput={(e) => updateEffectSetting('sparkSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkSpeed}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Particle: Embers ── */}
@@ -346,6 +397,18 @@ export function ThemeSettings() {
         </p>
         <ColorRow label="Hot" description="Bright center glow" colorKey="particleEmberHot" />
         <ColorRow label="Base" description="Outer ember color" colorKey="particleEmberBase" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.emberSpeed}
+              onInput={(e) => updateEffectSetting('emberSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberSpeed}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Particle: Angelic Beams ── */}
@@ -355,6 +418,42 @@ export function ThemeSettings() {
         </p>
         <ColorRow label="Center" description="Bright core color" colorKey="particleBeamCenter" />
         <ColorRow label="Edge" description="Warm outer glow" colorKey="particleBeamEdge" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.beamSpeed}
+              onInput={(e) => updateEffectSetting('beamSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Height</span>
+            <span class="theme-color-desc">Beam length multiplier (10–100)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="10" max="100" step="1" value={effectSettings.value.beamHeight}
+              onInput={(e) => updateEffectSetting('beamHeight', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamHeight}</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Maximum active beams (0 = all 128 slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="128" step="1" value={effectSettings.value.beamCount}
+              onInput={(e) => updateEffectSetting('beamCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamCount || 'All'}</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Particle: Glitter ── */}
@@ -364,6 +463,18 @@ export function ThemeSettings() {
         </p>
         <ColorRow label="Warm" description="Golden-white base" colorKey="particleGlitterWarm" />
         <ColorRow label="Cool" description="Blue-white variation" colorKey="particleGlitterCool" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.glitterSpeed}
+              onInput={(e) => updateEffectSetting('glitterSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterSpeed}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Cinder Palette ── */}

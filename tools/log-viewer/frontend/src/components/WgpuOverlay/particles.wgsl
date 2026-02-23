@@ -75,10 +75,12 @@ fn vs_particle(
 
     } else if kind == 2u {
         // ---- ANGELIC BEAM: pixel-thin tall vertical line ----
+        // Offset upward so the bottom tip sits at the spawn point
         let half_w = p.size * 2.0;         // wider quad for AA margin
-        let half_h = p.size * 35.0;        // taller vertical
+        let bh = select(35.0, u.beam_height, u.beam_height > 0.0);
+        let half_h = p.size * bh;          // configurable height
         out.aspect = half_h / max(half_w, 0.1);
-        world_pos = p.pos + vec2f(corner.x * half_w, corner.y * half_h);
+        world_pos = p.pos + vec2f(corner.x * half_w, corner.y * half_h - half_h);
 
     } else {
         // ---- GLITTER: slightly larger sparkle ----

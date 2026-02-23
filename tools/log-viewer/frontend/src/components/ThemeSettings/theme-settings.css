@@ -312,6 +312,19 @@
   background: #2a1010;
 }
 
+.btn-warn {
+  background: var(--bg-tertiary);
+  border: 1px solid #a93;
+  border-radius: 4px;
+  color: #da3;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-warn:hover {
+  background: #2a2010;
+}
+
 /* ── Saved themes panel (right side) ── */
 
 .saved-themes-panel {
@@ -381,6 +394,17 @@
 
 .saved-theme-card:hover {
   border-color: var(--accent-orange);
+}
+
+.saved-theme-thumbnail {
+  width: 100%;
+  border-radius: 3px;
+  image-rendering: pixelated;
+  opacity: 0.9;
+}
+
+.saved-theme-card:hover .saved-theme-thumbnail {
+  opacity: 1;
 }
 
 .saved-theme-swatches {

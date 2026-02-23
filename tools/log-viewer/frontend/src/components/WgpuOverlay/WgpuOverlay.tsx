@@ -65,6 +65,22 @@ export function unregisterOverlayRenderer(cb: OverlayRenderCallback): void {
     _overlayCallbacks.delete(cb);
 }
 
+// ---------------------------------------------------------------------------
+// One-shot frame capture (for theme thumbnails)
+// ---------------------------------------------------------------------------
+
+let _captureResolve: ((url: string) => void) | null = null;
+
+/**
+ * Request a low-res JPEG thumbnail of the next rendered frame.
+ * The promise resolves after the frame is submitted to the GPU.
+ */
+export function captureOverlayThumbnail(): Promise<string> {
+    return new Promise(resolve => {
+        _captureResolve = resolve;
+    });
+}
+
 /**
  * Exposes the shared GPU device + canvas format so external components
  * can create pipelines compatible with the overlay's render pass.
@@ -81,11 +97,11 @@ export const overlayGpu = signal<{ device: GPUDevice; format: GPUTextureFormat }
  * Each selector gets its own stable hue (index / length of this array).
  *
  * Entries are grouped:
- *   0-8  : structural UI regions  (low-intensity border glow)
- *   9-13 : log entry levels       (colour-coded per severity)
- *   14   : highlighted span group (bright shimmer)
- *   15   : selected log entry     (intense focus glow)
- *   16   : panic entries          (alarm pulse)
+ *   0-7  : structural UI regions  (low-intensity border glow)
+ *   8-12 : log entry levels       (colour-coded per severity)
+ *   13   : highlighted span group (bright shimmer)
+ *   14   : selected log entry     (intense focus glow)
+ *   15   : panic entries          (alarm pulse)
  */
 const ELEMENT_SELECTORS = [
     // --- structural regions (hue 0.00 – 0.53) ---
@@ -150,15 +166,15 @@ const KIND_PANIC      = 7;
 
 /** Map selector index → element kind for the shader. */
 function selectorKind(selectorIndex: number): number {
-    if (selectorIndex < 9)  return KIND_STRUCTURAL;
-    if (selectorIndex === 9)  return KIND_ERROR;
-    if (selectorIndex === 10) return KIND_WARN;
-    if (selectorIndex === 11) return KIND_INFO;
-    if (selectorIndex === 12) return KIND_DEBUG;
-    if (selectorIndex === 13) return KIND_DEBUG; // trace → same as debug
-    if (selectorIndex === 14) return KIND_SPAN_HL;
-    if (selectorIndex === 15) return KIND_SELECTED;
-    if (selectorIndex === 16) return KIND_PANIC;
+    if (selectorIndex < 8)  return KIND_STRUCTURAL; // 0-7: header, sidebar, etc.
+    if (selectorIndex === 8)  return KIND_ERROR;
+    if (selectorIndex === 9)  return KIND_WARN;
+    if (selectorIndex === 10) return KIND_INFO;
+    if (selectorIndex === 11) return KIND_DEBUG;
+    if (selectorIndex === 12) return KIND_DEBUG; // trace → same as debug
+    if (selectorIndex === 13) return KIND_SPAN_HL;
+    if (selectorIndex === 14) return KIND_SELECTED;
+    if (selectorIndex === 15) return KIND_PANIC;
     return KIND_STRUCTURAL;
 }
 
@@ -181,8 +197,8 @@ const SELECTOR_META: Array<{ sel: string; hue: number; kind: number }> =
 
 /** Reusable buffer — avoids a 4 KB allocation every scan. */
 const _elemData  = new Float32Array(MAX_ELEMENTS * ELEM_FLOATS);
-/** Reusable 112-byte uniform upload buffer (28 × f32). */
-const _uniformF32 = new Float32Array(28);
+/** Reusable 128-byte uniform upload buffer (32 × f32). */
+const _uniformF32 = new Float32Array(32);
 
 /** Hover tracking — detect impact (new hover start) for metal spark burst. */
 let _prevHoverIdx   = -1;
@@ -205,30 +221,52 @@ export function markOverlayScanDirty(): void {
     _scanDirty = true;
 }
 
+/** Selector indices that MUST be included even when the buffer is nearly full.
+ *  These are small-cardinality interactive-state selectors that drive particle
+ *  effects (beams, glitter, glow).  We scan them first so they always get
+ *  slots in the element buffer. */
+const PRIORITY_SELECTOR_INDICES = new Set([13, 14, 15]); // span-highlighted, selected, panic
+
 function scanElements(): void {
     _elemData.fill(0);
     let count = 0;
     const vh = window.innerHeight;
 
-    // Query each selector group separately — O(selectors) queries but no
-    // per-element re-matching, which is much cheaper overall.
-    for (let si = 0; si < SELECTOR_META.length && count < MAX_ELEMENTS; si++) {
+    const addElement = (r: DOMRect, hue: number, kind: number): void => {
+        if (count >= MAX_ELEMENTS) return;
+        if (r.width === 0 || r.height === 0) return;
+        if (r.bottom < 0 || r.top > vh) return;
+        const base = count * ELEM_FLOATS;
+        _elemData[base    ] = r.left;
+        _elemData[base + 1] = r.top;
+        _elemData[base + 2] = r.width;
+        _elemData[base + 3] = r.height;
+        _elemData[base + 4] = hue;
+        _elemData[base + 5] = kind;
+        count++;
+    };
+
+    // 1. Scan priority selectors FIRST — selected, panic, span-highlighted
+    //    must always be in the buffer so beams/glitter effects target them.
+    for (const si of PRIORITY_SELECTOR_INDICES) {
         const meta = SELECTOR_META[si];
         if (!meta) continue;
         const { sel, hue, kind } = meta;
         const elems = document.querySelectorAll(sel);
         for (let j = 0; j < elems.length && count < MAX_ELEMENTS; j++) {
-            const r = elems[j]!.getBoundingClientRect();
-            if (r.width === 0 || r.height === 0) continue;
-            if (r.bottom < 0 || r.top > vh) continue;
-            const base = count * ELEM_FLOATS;
-            _elemData[base    ] = r.left;
-            _elemData[base + 1] = r.top;
-            _elemData[base + 2] = r.width;
-            _elemData[base + 3] = r.height;
-            _elemData[base + 4] = hue;
-            _elemData[base + 5] = kind;
-            count++;
+            addElement(elems[j]!.getBoundingClientRect(), hue, kind);
+        }
+    }
+
+    // 2. Scan remaining selectors (structural + level entries).
+    for (let si = 0; si < SELECTOR_META.length && count < MAX_ELEMENTS; si++) {
+        if (PRIORITY_SELECTOR_INDICES.has(si)) continue; // already scanned
+        const meta = SELECTOR_META[si];
+        if (!meta) continue;
+        const { sel, hue, kind } = meta;
+        const elems = document.querySelectorAll(sel);
+        for (let j = 0; j < elems.length && count < MAX_ELEMENTS; j++) {
+            addElement(elems[j]!.getBoundingClientRect(), hue, kind);
         }
     }
 
@@ -372,15 +410,17 @@ export function WgpuOverlay() {
             });
 
             // --- Buffers -------------------------------------------------------
-            // Uniform buffer (112 bytes): [time, width, height, element_count,
+            // Uniform buffer (128 bytes): [time, width, height, element_count,
             //   mouse_x, mouse_y, delta_time, hover_elem, hover_start_time,
             //   selected_elem, crt_scanlines_h, crt_scanlines_v,
             //   crt_edge_shadow, crt_flicker, cursor_style,
             //   smoke_intensity, smoke_speed, warm_scale, cool_scale, fine_scale,
             //   grain_intensity, grain_coarseness, grain_size,
-            //   vignette_str, underglow_str, _pad2, _pad3, _pad4]
+            //   vignette_str, underglow_str,
+            //   spark_speed, ember_speed, beam_speed, glitter_speed,
+            //   _pad3, _pad4, _pad5]
             const uniformBuffer = device.createBuffer({
-                size:  112,
+                size:  128,
                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             });
 
@@ -554,13 +594,17 @@ export function WgpuOverlay() {
                     _prevHoverIdx   = hoverIdx;
                 }
 
-                // Find selected element index (kind === KIND_SELECTED)
+                // Find selected element index (kind === KIND_SELECTED or KIND_PANIC)
                 let selectedIdx = -1;
                 for (let i = 0; i < count; i++) {
                     const base = i * ELEM_FLOATS;
-                    if (_cachedData[base + 5] === KIND_SELECTED) {
+                    const k = _cachedData[base + 5]!;
+                    if (k === KIND_SELECTED) {
                         selectedIdx = i;
-                        break; // first selected element wins
+                        break; // selected takes priority
+                    }
+                    if (k === KIND_PANIC && selectedIdx < 0) {
+                        selectedIdx = i; // fallback to panic, keep looking for selected
                     }
                 }
 
@@ -591,6 +635,12 @@ export function WgpuOverlay() {
                 _uniformF32[22] = eff.grainSize / 100;
                 _uniformF32[23] = eff.vignetteStrength / 100;
                 _uniformF32[24] = eff.underglowStrength / 100;
+                _uniformF32[25] = eff.sparkSpeed / 100;        // 0–300 → 0.0–3.0
+                _uniformF32[26] = eff.emberSpeed / 100;
+                _uniformF32[27] = eff.beamSpeed / 100;
+                _uniformF32[28] = eff.glitterSpeed / 100;
+                _uniformF32[29] = eff.beamHeight;              // raw multiplier (default 35)
+                _uniformF32[30] = eff.beamCount;               // max active beams (0 = all)
                 device.queue.writeBuffer(uniformBuffer, 0, _uniformF32.buffer);
 
                 // Upload current theme palette to GPU
@@ -640,6 +690,98 @@ export function WgpuOverlay() {
                 renderPass.end();
 
                 device.queue.submit([enc.finish()]);
+
+                // One-shot capture: grab a low-res thumbnail of this frame
+                if (_captureResolve) {
+                    const resolve = _captureResolve;
+                    _captureResolve = null;
+                    try {
+                        const fullW = canvas!.width;
+                        const fullH = canvas!.height;
+                        const thumbW = 192;
+                        const thumbH = Math.round(thumbW * fullH / fullW);
+                        const scaleX = thumbW / window.innerWidth;
+                        const scaleY = thumbH / window.innerHeight;
+                        const offscreen = document.createElement('canvas');
+                        offscreen.width = thumbW;
+                        offscreen.height = thumbH;
+                        const c = offscreen.getContext('2d')!;
+
+                        // Layer 1: GPU canvas background
+                        c.drawImage(canvas!, 0, 0, thumbW, thumbH);
+
+                        // Layer 2: composite visible DOM elements on top
+                        const walker = document.createTreeWalker(
+                            document.body,
+                            NodeFilter.SHOW_ELEMENT,
+                            {
+                                acceptNode(node) {
+                                    const el = node as HTMLElement;
+                                    // Skip the GPU canvas itself, hidden elements, and very small ones
+                                    if (el === canvas || el.tagName === 'CANVAS') return NodeFilter.FILTER_REJECT;
+                                    if (el.offsetWidth === 0 && el.offsetHeight === 0) return NodeFilter.FILTER_REJECT;
+                                    return NodeFilter.FILTER_ACCEPT;
+                                },
+                            },
+                        );
+
+                        let node: Node | null;
+                        while ((node = walker.nextNode())) {
+                            const el = node as HTMLElement;
+                            const rect = el.getBoundingClientRect();
+                            // Skip off-screen elements
+                            if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
+                            if (rect.right < 0 || rect.left > window.innerWidth) continue;
+                            if (rect.width < 2 || rect.height < 2) continue;
+
+                            const style = getComputedStyle(el);
+                            const tx = rect.left * scaleX;
+                            const ty = rect.top * scaleY;
+                            const tw = rect.width * scaleX;
+                            const th = rect.height * scaleY;
+
+                            // Draw background if non-transparent
+                            const bg = style.backgroundColor;
+                            if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
+                                c.fillStyle = bg;
+                                c.fillRect(tx, ty, tw, th);
+                            }
+
+                            // Draw visible borders
+                            const bw = parseFloat(style.borderTopWidth);
+                            if (bw >= 1) {
+                                const bc = style.borderTopColor;
+                                if (bc && bc !== 'transparent' && bc !== 'rgba(0, 0, 0, 0)') {
+                                    c.strokeStyle = bc;
+                                    c.lineWidth = Math.max(0.5, bw * scaleX);
+                                    c.strokeRect(tx, ty, tw, th);
+                                }
+                            }
+
+                            // Draw a simplified text line if element has direct text content
+                            if (th >= 3 && el.childNodes.length > 0 && el.childNodes[0]?.nodeType === Node.TEXT_NODE) {
+                                const text = el.childNodes[0].textContent?.trim();
+                                if (text && text.length > 0) {
+                                    const color = style.color;
+                                    if (color && color !== 'transparent') {
+                                        c.fillStyle = color;
+                                        c.globalAlpha = 0.6;
+                                        // Draw a thin line representing text
+                                        const lineH = Math.max(1, th * 0.35);
+                                        const lineW = Math.min(tw * 0.85, text.length * tw * 0.04);
+                                        c.fillRect(tx + tw * 0.05, ty + (th - lineH) / 2, lineW, lineH);
+                                        c.globalAlpha = 1.0;
+                                    }
+                                }
+                            }
+                        }
+
+                        resolve(offscreen.toDataURL('image/jpeg', 0.55));
+                    } catch {
+                        resolve('');
+                    }
+                }
+
                 state.animId = requestAnimationFrame(frame);
             }
 

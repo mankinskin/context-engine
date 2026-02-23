@@ -151,13 +151,13 @@ export const THEME_PRESETS: ThemePreset[] = [
     description: 'Icy blue — cold steel & aurora',
     colors: {
       ...DEFAULT_THEME,
-      bgPrimary: '#080b10',
-      bgSecondary: '#0c1018',
-      bgTertiary: '#111620',
-      bgHover: '#1a2030',
-      bgActive: '#1e2838',
+        bgPrimary: '#060a12',
+        bgSecondary: '#0a1020',
+        bgTertiary: '#0e1628',
+        bgHover: '#162438',
+        bgActive: '#1c2e44',
       textPrimary: '#b8c8d8',
-      textSecondary: '#6878888',
+        textSecondary: '#687888',
       textMuted: '#384858',
       borderColor: '#1e2838',
       borderSubtle: '#141c28',
@@ -184,9 +184,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       cinderGold: '#5588aa',
       cinderAsh: '#445566',
       cinderVine: '#2a6a58',
-      smokeCool: '#060810',
-      smokeWarm: '#080a12',
-      smokeMoss: '#070910',
+        smokeCool: '#040814',
+        smokeWarm: '#060810',
+        smokeMoss: '#050810',
     },
   },
   {
@@ -194,11 +194,11 @@ export const THEME_PRESETS: ThemePreset[] = [
     description: 'Crimson darkness — blood & shadow',
     colors: {
       ...DEFAULT_THEME,
-      bgPrimary: '#0e0808',
-      bgSecondary: '#160c0c',
-      bgTertiary: '#1e1212',
-      bgHover: '#2a1818',
-      bgActive: '#321c1c',
+        bgPrimary: '#100606',
+        bgSecondary: '#1a0a0a',
+        bgTertiary: '#221010',
+        bgHover: '#2e1616',
+        bgActive: '#381c1a',
       textPrimary: '#d0b8b0',
       textSecondary: '#8a7068',
       textMuted: '#4e3a34',
@@ -227,9 +227,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       cinderGold: '#aa4422',
       cinderAsh: '#4a3030',
       cinderVine: '#443828',
-      smokeCool: '#0a0608',
-      smokeWarm: '#100808',
-      smokeMoss: '#0a0808',
+        smokeCool: '#080408',
+        smokeWarm: '#120606',
+        smokeMoss: '#0a0606',
     },
   },
   {
@@ -237,11 +237,11 @@ export const THEME_PRESETS: ThemePreset[] = [
     description: 'Forest depths — moss & ancient growth',
     colors: {
       ...DEFAULT_THEME,
-      bgPrimary: '#080c08',
-      bgSecondary: '#0c120c',
-      bgTertiary: '#121a12',
-      bgHover: '#1a261a',
-      bgActive: '#1e2e1e',
+        bgPrimary: '#060c06',
+        bgSecondary: '#0a140a',
+        bgTertiary: '#101c10',
+        bgHover: '#182818',
+        bgActive: '#1e321e',
       textPrimary: '#b4c8b0',
       textSecondary: '#6a8468',
       textMuted: '#3a4e38',
@@ -270,11 +270,183 @@ export const THEME_PRESETS: ThemePreset[] = [
       cinderGold: '#66aa44',
       cinderAsh: '#3a4a38',
       cinderVine: '#228822',
-      smokeCool: '#060a06',
-      smokeWarm: '#080a06',
-      smokeMoss: '#060a06',
+            smokeCool: '#040a04',
+            smokeWarm: '#060c04',
+            smokeMoss: '#050c06',
+        },
     },
-  },
+    {
+        name: 'Void',
+        description: 'Cosmic abyss — deep purple & starlight',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#06040e',
+            bgSecondary: '#0c081a',
+            bgTertiary: '#120e24',
+            bgHover: '#1c1636',
+            bgActive: '#241c42',
+            textPrimary: '#c4bcd8',
+            textSecondary: '#7a7090',
+            textMuted: '#443e56',
+            borderColor: '#241e34',
+            borderSubtle: '#181428',
+            accentBlue: '#5a60aa',
+            accentGreen: '#3a6a5a',
+            accentOrange: '#aa5a6a',
+            accentPurple: '#7a3aaa',
+            accentYellow: '#8a7a5a',
+            levelTrace: '#2a2838',
+            levelDebug: '#3a2a5a',
+            levelInfo: '#2a3a6a',
+            levelWarn: '#7a5a3a',
+            levelError: '#7a2a3a',
+            particleSparkCore: '#ccaaff',
+            particleSparkEmber: '#8844cc',
+            particleSparkSteel: '#9988bb',
+            particleEmberHot: '#bb88ff',
+            particleEmberBase: '#7733bb',
+            particleBeamCenter: '#eeddff',
+            particleBeamEdge: '#9966cc',
+            particleGlitterWarm: '#ccbbff',
+            particleGlitterCool: '#aabbee',
+            cinderEmber: '#8844cc',
+            cinderGold: '#7766aa',
+            cinderAsh: '#3a3448',
+            cinderVine: '#3a5a6a',
+            smokeCool: '#040314',
+            smokeWarm: '#0a050e',
+            smokeMoss: '#06040c',
+        },
+    },
+    {
+        name: 'Amber Terminal',
+        description: 'Vintage phosphor — warm amber on black',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#0c0a02',
+            bgSecondary: '#141004',
+            bgTertiary: '#1c1808',
+            bgHover: '#26200e',
+            bgActive: '#302814',
+            textPrimary: '#d4a830',
+            textSecondary: '#8a7020',
+            textMuted: '#4a3c14',
+            borderColor: '#2e2410',
+            borderSubtle: '#1e1a0a',
+            accentBlue: '#6a6a28',
+            accentGreen: '#5a7a18',
+            accentOrange: '#cc8820',
+            accentPurple: '#7a6a28',
+            accentYellow: '#bba020',
+            levelTrace: '#2a2810',
+            levelDebug: '#3a3a10',
+            levelInfo: '#4a4018',
+            levelWarn: '#8a6820',
+            levelError: '#8a3a10',
+            particleSparkCore: '#ffd066',
+            particleSparkEmber: '#cc8818',
+            particleSparkSteel: '#aa9944',
+            particleEmberHot: '#eebb44',
+            particleEmberBase: '#bb7710',
+            particleBeamCenter: '#ffe8aa',
+            particleBeamEdge: '#cc9930',
+            particleGlitterWarm: '#ffdd88',
+            particleGlitterCool: '#ccbb66',
+            cinderEmber: '#cc8818',
+            cinderGold: '#bba020',
+            cinderAsh: '#4a4430',
+            cinderVine: '#5a6a18',
+            smokeCool: '#060400',
+            smokeWarm: '#0e0a04',
+            smokeMoss: '#0a0802',
+        },
+    },
+    {
+        name: 'Ocean Abyss',
+        description: 'Deep sea darkness — bioluminescent teal',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#04080e',
+            bgSecondary: '#061018',
+            bgTertiary: '#0a1822',
+            bgHover: '#10222e',
+            bgActive: '#162c38',
+            textPrimary: '#a8c8cc',
+            textSecondary: '#5a8088',
+            textMuted: '#344a50',
+            borderColor: '#1a2a30',
+            borderSubtle: '#101c22',
+            accentBlue: '#2888aa',
+            accentGreen: '#18886a',
+            accentOrange: '#887040',
+            accentPurple: '#4a5a8a',
+            accentYellow: '#6a8a50',
+            levelTrace: '#1a2a30',
+            levelDebug: '#1a3a3a',
+            levelInfo: '#1a4a5a',
+            levelWarn: '#5a5a28',
+            levelError: '#5a2a2a',
+            particleSparkCore: '#88eeff',
+            particleSparkEmber: '#2299aa',
+            particleSparkSteel: '#6699aa',
+            particleEmberHot: '#66ddcc',
+            particleEmberBase: '#1a8888',
+            particleBeamCenter: '#ccffee',
+            particleBeamEdge: '#44aaaa',
+            particleGlitterWarm: '#88eedd',
+            particleGlitterCool: '#66bbcc',
+            cinderEmber: '#2299aa',
+            cinderGold: '#44aa88',
+            cinderAsh: '#344848',
+            cinderVine: '#1a6a5a',
+            smokeCool: '#030812',
+            smokeWarm: '#050a10',
+            smokeMoss: '#040c0c',
+        },
+    },
+    {
+        name: 'Sakura',
+        description: 'Twilight garden — soft pink & mauve',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#0e080e',
+            bgSecondary: '#160c16',
+            bgTertiary: '#1e1220',
+            bgHover: '#281c2c',
+            bgActive: '#322436',
+            textPrimary: '#d0c0cc',
+            textSecondary: '#887888',
+            textMuted: '#4a3e4a',
+            borderColor: '#2a2028',
+            borderSubtle: '#1c161c',
+            accentBlue: '#6a5a8a',
+            accentGreen: '#5a7a68',
+            accentOrange: '#bb6a5a',
+            accentPurple: '#884a7a',
+            accentYellow: '#aa8a5a',
+            levelTrace: '#2a2228',
+            levelDebug: '#3a2a3a',
+            levelInfo: '#3a3a5a',
+            levelWarn: '#8a5a3a',
+            levelError: '#8a2a3a',
+            particleSparkCore: '#ffbbcc',
+            particleSparkEmber: '#cc5577',
+            particleSparkSteel: '#aa88aa',
+            particleEmberHot: '#ff99aa',
+            particleEmberBase: '#bb4466',
+            particleBeamCenter: '#ffdde6',
+            particleBeamEdge: '#cc7799',
+            particleGlitterWarm: '#ffccdd',
+            particleGlitterCool: '#bbaacc',
+            cinderEmber: '#cc5577',
+            cinderGold: '#bb7788',
+            cinderAsh: '#443a44',
+            cinderVine: '#5a7a68',
+            smokeCool: '#06040a',
+            smokeWarm: '#0c060c',
+            smokeMoss: '#0a060a',
+        },
+    },
 ];
 
 // ── Reactive state ──────────────────────────────────────────────────────────
@@ -318,6 +490,18 @@ export interface EffectSettings {
     vignetteStrength: number;
     /** Warm underglow from bottom edge intensity 0–100. */
     underglowStrength: number;
+    /** Metal spark animation speed 0–300 (maps to 0.0–3.0×). */
+    sparkSpeed: number;
+    /** Ember/ash animation speed 0–300 (maps to 0.0–3.0×). */
+    emberSpeed: number;
+    /** Angelic beam animation speed 0–300 (maps to 0.0–3.0×). */
+    beamSpeed: number;
+    /** Glitter animation speed 0–300 (maps to 0.0–3.0×). */
+    glitterSpeed: number;
+    /** Angelic beam quad height multiplier 10–100 (maps to 10.0–100.0). Default 35. */
+    beamHeight: number;
+    /** Maximum number of active beams 0–128 (0 = use all available slots). Default 128. */
+    beamCount: number;
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
@@ -337,6 +521,12 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
     grainSize: 50,
     vignetteStrength: 100,
     underglowStrength: 100,
+    sparkSpeed: 100,
+    emberSpeed: 100,
+    beamSpeed: 100,
+    glitterSpeed: 100,
+    beamHeight: 35,
+    beamCount: 128,
 };
 
 export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {
@@ -529,6 +719,8 @@ export interface SavedTheme {
   name: string;
   colors: ThemeColors;
   createdAt: number;
+    /** Low-res JPEG data-URL thumbnail captured at save time. */
+    thumbnail?: string;
 }
 
 const SAVED_THEMES_KEY = 'log-viewer-saved-themes';
@@ -549,13 +741,14 @@ function persistSavedThemes(themes: SavedTheme[]) {
 
 export const savedThemes = signal<SavedTheme[]>(loadSavedThemes());
 
-/** Save the current theme under the given name. */
-export function saveCurrentTheme(name: string) {
+/** Save the current theme under the given name, with an optional thumbnail. */
+export function saveCurrentTheme(name: string, thumbnail?: string) {
   const theme: SavedTheme = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     name,
     colors: { ...themeColors.value },
     createdAt: Date.now(),
+      thumbnail: thumbnail || undefined,
   };
   const updated = [...savedThemes.value, theme];
   savedThemes.value = updated;
@@ -572,6 +765,17 @@ export function deleteSavedTheme(id: string) {
 /** Apply a saved theme. */
 export function applySavedTheme(theme: SavedTheme) {
   themeColors.value = { ...theme.colors };
+}
+
+/** Overwrite a saved theme's colors (and thumbnail) with the current palette. */
+export function updateSavedTheme(id: string, thumbnail?: string) {
+    const updated = savedThemes.value.map(t =>
+        t.id === id
+            ? { ...t, colors: { ...themeColors.value }, thumbnail: thumbnail || t.thumbnail }
+            : t
+    );
+    savedThemes.value = updated;
+    persistSavedThemes(updated);
 }
 
 /** Rename a saved theme. */

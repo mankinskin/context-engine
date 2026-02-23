@@ -56,8 +56,9 @@ fn update_metal_spark(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
+    let spd = max(u.spark_speed, 0.01);
 
-    p.life -= dt;
+    p.life -= dt * spd;
 
     if p.life <= 0.0 {
         if hover_idx < 0 || hover_idx >= i32(u.element_count) {
@@ -80,7 +81,7 @@ fn update_metal_spark(idx: u32) {
         let since_hover = u.time - u.hover_start_time;
         // Mild burst on impact, very light continuous trickle
         let burst_mult = select(0.2, 0.5, since_hover < BURST_WINDOW);
-        let speed = (20.0 + rand_f(seed + 3u) * 60.0) * burst_mult;
+        let speed = (20.0 + rand_f(seed + 3u) * 60.0) * burst_mult * spd;
         p.vel = vec2f(cos(angle), sin(angle)) * speed;
 
         p.max_life = 0.3 + rand_f(seed + 5u) * 0.6;
@@ -91,9 +92,9 @@ fn update_metal_spark(idx: u32) {
         p.spawn_t  = u.time;
     } else {
         // Low drag — particles linger and trail behind
-        p.vel = p.vel * (1.0 - 2.5 * dt);
-        p.vel.y = p.vel.y + 60.0 * dt;
-        p.pos = p.pos + p.vel * dt;
+        p.vel = p.vel * (1.0 - 2.5 * dt * spd);
+        p.vel.y = p.vel.y + 60.0 * dt * spd;
+        p.pos = p.pos + p.vel * dt * spd;
     }
 
     particles[idx] = p;
@@ -105,8 +106,9 @@ fn update_ember(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
+    let spd = max(u.ember_speed, 0.01);
 
-    p.life -= dt;
+    p.life -= dt * spd;
 
     if p.life <= 0.0 {
         if hover_idx < 0 || hover_idx >= i32(u.element_count) {
@@ -121,7 +123,7 @@ fn update_ember(idx: u32) {
 
         let normal = outward_normal(p.pos, ei);
         let speed  = 10.0 + rand_f(seed + 3u) * 25.0;
-        p.vel = normal * speed * 0.5 + vec2f(0.0, -20.0 - rand_f(seed + 4u) * 15.0);
+        p.vel = (normal * speed * 0.5 + vec2f(0.0, -20.0 - rand_f(seed + 4u) * 15.0)) * spd;
 
         p.max_life = 1.0 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
@@ -138,8 +140,8 @@ fn update_ember(idx: u32) {
         p.spawn_t = u.time;
     } else {
         let drift = sin(u.time * 2.0 + f32(idx) * 0.3) * 8.0;
-        p.vel = p.vel * (1.0 - 1.5 * dt) + vec2f(drift * dt, -25.0 * dt);
-        p.pos = p.pos + p.vel * dt;
+        p.vel = p.vel * (1.0 - 1.5 * dt * spd) + vec2f(drift * dt * spd, -25.0 * dt * spd);
+        p.pos = p.pos + p.vel * dt * spd;
     }
 
     particles[idx] = p;
@@ -151,8 +153,16 @@ fn update_god_ray(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
     let sel_idx = i32(u.selected_elem);
+    let spd = max(u.beam_speed, 0.01);
 
-    p.life -= dt;
+    // Respect beam count limit — park excess beams
+    let max_beams = u32(u.beam_count);
+    if max_beams > 0u && (idx - EMBER_END) >= max_beams {
+        park_dead(idx);
+        return;
+    }
+
+    p.life -= dt * spd;
 
     if p.life <= 0.0 {
         if sel_idx < 0 || sel_idx >= i32(u.element_count) {
@@ -163,14 +173,14 @@ fn update_god_ray(idx: u32) {
         let ei   = u32(sel_idx);
         let seed = idx * 7919u + u32(u.time * 800.0);
 
-        // Spawn on element perimeter
+        // Spawn on the element perimeter (beams rise upward from any border)
         p.pos = spawn_on_perimeter(ei, seed);
 
-        // Gentle upward rise
+        // Rise upward only
         p.vel = vec2f(
             (rand_f(seed + 2u) - 0.5) * 2.0,
-            -10.0 - rand_f(seed + 3u) * 8.0,
-        );
+            -12.0 - rand_f(seed + 3u) * 10.0,
+        ) * spd;
 
         p.max_life = 2.0 + rand_f(seed + 4u) * 2.0;
         p.life     = p.max_life;
@@ -180,9 +190,9 @@ fn update_god_ray(idx: u32) {
         p.spawn_t  = u.time;
     } else {
         let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5;
-        p.vel.x = p.vel.x * (1.0 - 0.5 * dt) + sway * dt;
-        p.vel.y = p.vel.y * (1.0 - 0.2 * dt);
-        p.pos = p.pos + p.vel * dt;
+        p.vel.x = p.vel.x * (1.0 - 0.5 * dt * spd) + sway * dt * spd;
+        p.vel.y = p.vel.y * (1.0 - 0.2 * dt * spd);
+        p.pos = p.pos + p.vel * dt * spd;
     }
 
     particles[idx] = p;
@@ -194,8 +204,9 @@ fn update_glitter(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
+    let spd = max(u.glitter_speed, 0.01);
 
-    p.life -= dt;
+    p.life -= dt * spd;
 
     if p.life <= 0.0 {
         if hover_idx < 0 || hover_idx >= i32(u.element_count) {
@@ -213,8 +224,8 @@ fn update_glitter(idx: u32) {
         let norm    = outward_normal(p.pos, ei);
         let tangent = vec2f(-norm.y, norm.x);
         let tang_dir = select(-1.0, 1.0, rand_f(seed + 2u) > 0.5);
-        p.vel = tangent * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
-              + norm * (0.5 + rand_f(seed + 4u) * 2.5);
+        p.vel = (tangent * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
+              + norm * (0.5 + rand_f(seed + 4u) * 2.5)) * spd;
 
         p.max_life = 0.8 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
@@ -225,8 +236,8 @@ fn update_glitter(idx: u32) {
     } else {
         // Slow drift with sparkle-like sway, stays near border
         let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0;
-        p.vel = p.vel * (1.0 - 3.0 * dt) + vec2f(sway * dt, -1.5 * dt);
-        p.pos = p.pos + p.vel * dt;
+        p.vel = p.vel * (1.0 - 3.0 * dt * spd) + vec2f(sway * dt * spd, -1.5 * dt * spd);
+        p.pos = p.pos + p.vel * dt * spd;
     }
 
     particles[idx] = p;

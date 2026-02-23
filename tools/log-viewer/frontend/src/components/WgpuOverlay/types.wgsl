@@ -45,8 +45,12 @@ struct Uniforms {
     grain_size       : f32,    // grain pixel block size (1–8 px, normalized 0.0–1.0)
     vignette_str     : f32,    // edge vignette darkening 0.0–1.0
     underglow_str    : f32,    // warm bottom underglow 0.0–1.0
-    _pad2            : f32,
-    _pad3            : f32,
+    spark_speed      : f32,    // metal spark speed multiplier 0.0–3.0
+    ember_speed      : f32,    // ember/ash speed multiplier 0.0–3.0
+    beam_speed       : f32,    // angelic beam speed multiplier 0.0–3.0
+    glitter_speed    : f32,    // glitter speed multiplier 0.0–3.0
+    beam_height      : f32,    // beam quad height multiplier (default 35.0)
+    beam_count       : f32,    // max active beams (0 = all slots)
     _pad4            : f32,
 }
 
