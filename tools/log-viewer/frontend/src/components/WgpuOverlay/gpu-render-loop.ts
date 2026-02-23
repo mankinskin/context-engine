@@ -122,6 +122,14 @@ export class RenderLoop {
         // Let the scanner update rect measurements for stale/visible elements
         scanner.updateFrame();
 
+        // If a full re-scan just occurred (view change), kill all particles
+        if (scanner.didFullRescan) {
+            this.buffers.resetParticles();
+        }
+
+        // Consume accumulated scroll delta for this frame
+        const scrollDelta = scanner.consumeScrollDelta();
+
         const nowSec = performance.now() / 1000;
         const time = (performance.now() - this.startTime) / 1000;
         const dt   = Math.min(nowSec - this.prevTime, 0.05);
@@ -213,6 +221,15 @@ export class RenderLoop {
         u[29] = eff.beamHeight;
         u[30] = eff.beamCount;
         u[31] = eff.beamDrift / 100;
+        u[32] = scrollDelta.dx;
+        u[33] = scrollDelta.dy;
+        u[34] = eff.sparkCount / 100;
+        u[35] = eff.sparkSize / 100;
+        u[36] = eff.emberCount / 100;
+        u[37] = eff.emberSize / 100;
+        u[38] = eff.glitterCount / 100;
+        u[39] = eff.glitterSize / 100;
+        u[40] = eff.cinderSize / 100;
         this.buffers.uploadUniforms();
 
         // Upload palette

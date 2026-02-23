@@ -2,7 +2,7 @@
 //
 // Concatenated after: palette.wgsl + types.wgsl + noise.wgsl + particle-shading.wgsl
 // Four particle types rendered in one instanced draw call:
-//   PK_METAL_SPARK (0) — tiny pixel-size metallic dot (at mouse cursor)
+//   PK_METAL_SPARK (0) — velocity-aligned thin streak (grinding spark)
 //   PK_EMBER       (1) — tiny pixel-size warm ember/ash glow (continuous)
 //   PK_GOD_RAY     (2) — pixel-thin tall vertical angelic beam (continuous)
 //   PK_GLITTER     (3) — tiny angelic twinkle around selected element border
@@ -64,9 +64,15 @@ fn vs_particle(
     var world_pos: vec2f;
 
     if kind == 0u {
-        // ---- METAL SPARK: tiny pixel-size dot ----
-        let radius = p.size * 1.5;
-        world_pos = p.pos + corner * radius;
+        // ---- METAL SPARK: velocity-aligned thin streak ----
+        let spd = length(p.vel);
+        let fwd = select(vec2f(0.0, -1.0), p.vel / spd, spd > 0.5);
+        let right = vec2f(-fwd.y, fwd.x);
+        // Length scales with speed; width stays thin
+        let half_len = p.size * (2.0 + spd * 0.04);
+        let half_wid = p.size * 0.35;
+        out.aspect = half_len / max(half_wid, 0.1);
+        world_pos = p.pos + fwd * corner.y * half_len + right * corner.x * half_wid;
 
     } else if kind == 1u {
         // ---- EMBER / ASH: tiny pixel-size dot ----

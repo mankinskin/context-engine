@@ -43,21 +43,30 @@ fn kind_ember(kind: u32) -> vec3f {
 // ── Metal spark fragment ────────────────────────────────────────────────────
 
 fn shade_spark_fx(uv: vec2f, t_life: f32, hue: f32) -> vec4f {
-    let d = length(uv);
-    let dot_mask = smoothstep(1.0, 0.2, d);
-    let bright = t_life * t_life * dot_mask * 0.8;
+    // Streak shape: tapered along length (Y), thin across width (X)
+    let ax = abs(uv.x);              // cross-axis (thin)
+    let ay = uv.y;                   // along-axis (long), -1 = tail, +1 = head
 
+    // Width falloff — very thin hot wire
+    let width_mask = exp(-ax * ax * 12.0);
+
+    // Length taper — bright hot head, fading tail
+    let head_t = (ay + 1.0) * 0.5;   // 0 at tail, 1 at head
+    let len_mask = smoothstep(0.0, 0.15, head_t) * smoothstep(1.0, 0.7, head_t);
+
+    let bright = t_life * width_mask * len_mask * 2.2;
     if bright < 0.005 { discard; }
 
-    let ember = cinder_rgb(hue);
+    // Colour: white-hot core at head, orange-red ember at tail
     let hot_core = palette.spark_core.rgb;
     let steel    = palette.spark_steel.rgb;
-    let core_t = smoothstep(0.5, 0.0, d);
-    var spark_col = mix(ember * 1.3, hot_core, core_t * 0.8);
-    spark_col = mix(spark_col, steel, smoothstep(0.3, 0.8, d) * 0.3);
+    let ember    = cinder_rgb(hue);
+    let core_t   = head_t * width_mask;                        // hot at head centre
+    var spark_col = mix(ember * 1.5, hot_core * 1.2, core_t);
+    spark_col = mix(spark_col, steel, (1.0 - head_t) * 0.4);  // steel tint at tail
 
     let col = spark_col * bright;
-    let a   = min(bright * 0.85, 1.0);
+    let a   = min(bright, 1.0);
     return vec4f(col * a, a);
 }
 

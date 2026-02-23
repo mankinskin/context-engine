@@ -18,9 +18,9 @@ const INITIAL_ELEM_CAPACITY = 128;
 export class GpuBufferManager {
     readonly device: GPUDevice;
 
-    // Uniform buffer (fixed 128 bytes = 32 × f32)
+    // Uniform buffer (fixed 192 bytes = 48 × f32, 16-byte aligned)
     readonly uniformBuffer: GPUBuffer;
-    readonly uniformF32 = new Float32Array(32);
+    readonly uniformF32 = new Float32Array(48);
 
     // Element buffer (dynamically resizable)
     private _elemBuffer: GPUBuffer;
@@ -39,7 +39,7 @@ export class GpuBufferManager {
         this.device = device;
 
         this.uniformBuffer = device.createBuffer({
-            size:  128,
+            size: 192,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -115,6 +115,12 @@ export class GpuBufferManager {
     uploadPalette(colors: ThemeColors): void {
         const palBuf = buildPaletteBuffer(colors);
         this.device.queue.writeBuffer(this.paletteBuffer, 0, palBuf.buffer);
+    }
+
+    /** Zero-fill the particle buffer, killing all live particles instantly. */
+    resetParticles(): void {
+        this.device.queue.writeBuffer(this.particleBuffer, 0,
+            new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
     }
 
     /** Destroy all GPU buffers. */

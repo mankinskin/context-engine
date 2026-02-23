@@ -83,9 +83,41 @@ export class ElementScanner {
      */
     private _dataStale = false;
 
+    /** Accumulated scroll deltas since last frame (pixels, screen-space). */
+    private _scrollDx = 0;
+    private _scrollDy = 0;
+    /** True when a full re-scan was just performed (view change). */
+    private _justDidFullRescan = false;
+
     /** Event listeners (stored for cleanup). */
-    private readonly _onScroll = () => { this._markAllRectsStale(); };
+    private readonly _onScroll = (e: Event) => {
+        this._markAllRectsStale();
+        // Accumulate the scroll delta from the target element.
+        // getBoundingClientRect on tracked elements will reflect the new
+        // scroll offset, but live particles need to be shifted to match.
+        const tgt = e.target as Element | Document;
+        const el = (tgt === document || tgt === document.documentElement)
+            ? document.documentElement : tgt as Element;
+        // We can't easily get "delta" from a scroll event, so we store
+        // the last known scrollTop/scrollLeft per element and diff.
+        const key = el;
+        const prev = this._scrollPositions.get(key);
+        const sx = el.scrollLeft;
+        const sy = el.scrollTop;
+        if (prev) {
+            // Scroll delta in screen space: elements move opposite to scroll direction
+            this._scrollDx -= sx - prev.x;
+            this._scrollDy -= sy - prev.y;
+            prev.x = sx;
+            prev.y = sy;
+        } else {
+            this._scrollPositions.set(key, { x: sx, y: sy });
+        }
+    };
     private readonly _onResize = () => { this._markAllRectsStale(); };
+
+    /** Tracked scroll positions per scrollable container. */
+    private _scrollPositions = new Map<Element, { x: number; y: number }>();
 
     constructor() {
         this._capacity = INITIAL_CAPACITY;
@@ -102,6 +134,18 @@ export class ElementScanner {
 
     /** Capacity of the internal buffer (in elements). */
     get capacity(): number { return this._capacity; }
+
+    /** Consume accumulated scroll deltas (resets to 0 after reading). */
+    consumeScrollDelta(): { dx: number; dy: number } {
+        const dx = this._scrollDx;
+        const dy = this._scrollDy;
+        this._scrollDx = 0;
+        this._scrollDy = 0;
+        return { dx, dy };
+    }
+
+    /** True if a full re-scan just completed (view change / invalidateAll). */
+    get didFullRescan(): boolean { return this._justDidFullRescan; }
 
     // --- Lifecycle ----------------------------------------------------------
 
@@ -168,6 +212,7 @@ export class ElementScanner {
         window.removeEventListener('resize', this._onResize);
         this._tracked = [];
         this._elementMap.clear();
+        this._scrollPositions.clear();
         this._count = 0;
     }
 
@@ -182,11 +227,17 @@ export class ElementScanner {
      */
     updateFrame(): boolean {
         let changed = false;
+        this._justDidFullRescan = false;
 
         // 1. Full re-scan if pending
         if (this._fullRescanPending) {
             this._fullRescan();
             this._fullRescanPending = false;
+            this._justDidFullRescan = true;
+            // Reset scroll tracking — old positions are meaningless after view change
+            this._scrollPositions.clear();
+            this._scrollDx = 0;
+            this._scrollDy = 0;
             changed = true;
         }
 

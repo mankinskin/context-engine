@@ -504,6 +504,20 @@ export interface EffectSettings {
   beamDrift: number;
     /** Maximum number of active beams 0–128 (0 = use all available slots). Default 128. */
     beamCount: number;
+  /** Metal spark count 0–200 (percentage of available slots). Default 100. */
+  sparkCount: number;
+  /** Metal spark size multiplier 0–300 (0.0x–3.0x). Default 100. */
+  sparkSize: number;
+  /** Ember count 0–200 (percentage of available slots). Default 100. */
+  emberCount: number;
+  /** Ember size multiplier 0–300 (0.0x–3.0x). Default 100. */
+  emberSize: number;
+  /** Glitter count 0–200 (percentage of available slots). Default 100. */
+  glitterCount: number;
+  /** Glitter size multiplier 0–300 (0.0x–3.0x). Default 100. */
+  glitterSize: number;
+  /** Cinder border glow size multiplier 0–300 (0.0x–3.0x). Default 100. */
+  cinderSize: number;
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
@@ -530,6 +544,13 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
     beamHeight: 35,
   beamDrift: 100,
   beamCount: 256,
+  sparkCount: 100,
+  sparkSize: 100,
+  emberCount: 100,
+  emberSize: 100,
+  glitterCount: 100,
+  glitterSize: 100,
+  cinderSize: 100,
 };
 
 export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {

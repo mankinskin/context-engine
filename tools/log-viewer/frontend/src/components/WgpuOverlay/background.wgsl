@@ -587,8 +587,10 @@ fn static_shadow(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32) -> f32 {
 
 fn hover_border(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
                 hue: f32, t: f32, prox: f32) -> vec4f {
-    let inside_x = px.x >= ex - 4.0 && px.x < ex + ew + 4.0;
-    let inside_y = px.y >= ey - 4.0 && px.y < ey + eh + 4.0;
+    let cs = max(u.cinder_size, 0.01);
+    let margin = 4.0 * cs;
+    let inside_x = px.x >= ex - margin && px.x < ex + ew + margin;
+    let inside_y = px.y >= ey - margin && px.y < ey + eh + margin;
     if !(inside_x && inside_y) { return vec4f(0.0); }
 
     if !(inside_x && inside_y) { return vec4f(0.0); }
@@ -596,7 +598,7 @@ fn hover_border(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
     let dist = edge_dist(px, ex, ey, ew, eh);
     let pt   = perimeter_t(px, ex, ey, ew, eh);
 
-    if dist > 7.0 { return vec4f(0.0); }
+    if dist > 7.0 * cs { return vec4f(0.0); }
 
     // Crackling ember wave — irregular, like smouldering cracks
     let crack_n = smooth_noise(vec2f(pt * 40.0, t * 1.5));
@@ -614,7 +616,7 @@ fn hover_border(px: vec2f, ex: f32, ey: f32, ew: f32, eh: f32,
     ember_rgb = mix(ember_rgb, vine_flick, vine_f * 0.4);
 
     // Border glow profile
-    let glow = smoothstep(0.0, 0.5, dist) * smoothstep(6.0, 1.0, dist);
+    let glow = smoothstep(0.0, 0.5 * cs, dist) * smoothstep(6.0 * cs, 1.0 * cs, dist);
 
     // Impact: bonfire flare
     let impact = prox * prox * 0.5;

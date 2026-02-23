@@ -389,6 +389,30 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.sparkSpeed}%</span>
           </div>
         </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active sparks (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.sparkCount}
+              onInput={(e) => updateEffectSetting('sparkCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Spark size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.sparkSize}
+              onInput={(e) => updateEffectSetting('sparkSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkSize}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Particle: Embers ── */}
@@ -408,6 +432,30 @@ export function ThemeSettings() {
               onInput={(e) => updateEffectSetting('emberSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
               class="theme-range-slider" />
             <span class="theme-slider-value">{effectSettings.value.emberSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active embers (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.emberCount}
+              onInput={(e) => updateEffectSetting('emberCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Ember size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.emberSize}
+              onInput={(e) => updateEffectSetting('emberSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberSize}%</span>
           </div>
         </div>
       </Section>
@@ -446,10 +494,10 @@ export function ThemeSettings() {
         <div class="theme-slider-row">
           <div class="theme-color-info">
             <span class="theme-color-label">Count</span>
-            <span class="theme-color-desc">Maximum active beams (0 = all 256 slots)</span>
+            <span class="theme-color-desc">Maximum active beams (0 = unlimited)</span>
           </div>
           <div class="theme-slider-controls">
-            <input type="range" min="0" max="256" step="1" value={effectSettings.value.beamCount}
+            <input type="range" min="0" max="1024" step="1" value={effectSettings.value.beamCount}
               onInput={(e) => updateEffectSetting('beamCount', parseInt((e.target as HTMLInputElement).value, 10))}
               class="theme-range-slider" />
             <span class="theme-slider-value">{effectSettings.value.beamCount || 'All'}</span>
@@ -488,6 +536,30 @@ export function ThemeSettings() {
             <span class="theme-slider-value">{effectSettings.value.glitterSpeed}%</span>
           </div>
         </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active glitter (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.glitterCount}
+              onInput={(e) => updateEffectSetting('glitterCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Glitter size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.glitterSize}
+              onInput={(e) => updateEffectSetting('glitterSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterSize}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Cinder Palette ── */}
@@ -499,6 +571,18 @@ export function ThemeSettings() {
         <ColorRow label="Gold" description="Tarnished gold" colorKey="cinderGold" />
         <ColorRow label="Ash" description="Cool grey" colorKey="cinderAsh" />
         <ColorRow label="Vine" description="Deep green" colorKey="cinderVine" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Border glow size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.cinderSize}
+              onInput={(e) => updateEffectSetting('cinderSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.cinderSize}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Background Smoke ── */}

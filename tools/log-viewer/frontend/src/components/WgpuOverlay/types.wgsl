@@ -24,7 +24,7 @@ const EMBER_END   : u32 = 288u;
 const RAY_END     : u32 = 544u;
 const GLITTER_END : u32 = 640u;
 
-// ---- uniforms (64 bytes = 16 × f32) ----------------------------------------
+// ---- uniforms (192 bytes = 48 × f32) ----------------------------------------
 struct Uniforms {
     time             : f32,
     width            : f32,
@@ -58,6 +58,16 @@ struct Uniforms {
     beam_height      : f32,    // beam quad height multiplier (default 35.0)
     beam_count       : f32,    // max active beams (0 = all slots)
     beam_drift       : f32,    // beam upward drift distance multiplier 0.0–3.0
+    scroll_dx        : f32,    // scroll delta X this frame (pixels, screen space)
+    scroll_dy        : f32,    // scroll delta Y this frame (pixels, screen space)
+    spark_count      : f32,    // max active sparks (fraction of slots, 0–2)
+    spark_size       : f32,    // spark size multiplier 0.0–3.0
+    ember_count      : f32,    // max active embers (fraction of slots, 0–2)
+    ember_size       : f32,    // ember size multiplier 0.0–3.0
+    glitter_count    : f32,    // max active glitter (fraction of slots, 0–2)
+    glitter_size     : f32,    // glitter size multiplier 0.0–3.0
+    cinder_size      : f32,    // cinder border glow size multiplier 0.0–3.0
+    _pad0            : f32,    // padding to 48 f32 (192 bytes)
 }
 
 // ---- DOM element rectangle --------------------------------------------------

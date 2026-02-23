@@ -53,7 +53,7 @@ const EDGE_INSTANCE_FLOATS = 12;
 const GRID_LINE_FLOATS = 12;
 
 const MAX_GLITTER  = 96;
-const MAX_PARTICLES = 256 + MAX_GLITTER;
+const MAX_PARTICLES = 1024 + MAX_GLITTER;
 
 // ── helpers ──
 
@@ -451,7 +451,8 @@ export function HypergraphView() {
             if (inter.selectedIdx >= 0) {
                 const sn = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sn) {
-                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, pSettings);
+                    const spawnRate = Math.max(4, Math.ceil(pSettings.beamCount / 64));
+                    for (let i = 0; i < spawnRate; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, pSettings);
                 }
             }
             if (inter.hoverIdx >= 0) {

@@ -75,6 +75,14 @@ fn update_metal_spark(idx: u32) {
     let hover_idx = i32(u.hover_elem);
     let spd = max(u.spark_speed, 0.01);
 
+    // Respect spark count limit — park excess sparks
+    let spark_frac = select(1.0, u.spark_count, u.spark_count > 0.0);
+    let max_sparks = u32(f32(SPARK_END) * clamp(spark_frac, 0.0, 2.0));
+    if idx >= max_sparks {
+        park_dead(idx);
+        return;
+    }
+
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
@@ -86,32 +94,31 @@ fn update_metal_spark(idx: u32) {
 
         let seed = idx * 7919u + u32(u.time * 5000.0);
 
-        // Spawn at mouse cursor position with wider random scatter
-        // (particles trail behind the cursor)
-        let scatter = vec2f(
-            (rand_f(seed) - 0.5) * 30.0,
-            (rand_f(seed + 1u) - 0.5) * 30.0,
-        );
+        // Spawn at mouse cursor with random radial offset
+        let base_angle = rand_f(seed) * 6.2832;
+        let scatter_r  = 5.0 + rand_f(seed + 1u) * 35.0;
+        let scatter = vec2f(cos(base_angle), sin(base_angle)) * scatter_r;
         p.pos = vec2f(u.mouse_x, u.mouse_y) + scatter;
 
-        // Gentle radial drift outward from mouse
-        let angle = rand_f(seed + 2u) * 6.2832;
+        // Velocity points outward from cursor, with ±25° angular spread
+        let spread = (rand_f(seed + 2u) - 0.5) * 0.87;  // ±25°
+        let ca = cos(base_angle + spread);
+        let sa = sin(base_angle + spread);
         let since_hover = u.time - u.hover_start_time;
-        // Mild burst on impact, very light continuous trickle
-        let burst_mult = select(0.2, 0.5, since_hover < BURST_WINDOW);
-        let speed = (20.0 + rand_f(seed + 3u) * 60.0) * burst_mult * spd;
-        p.vel = vec2f(cos(angle), sin(angle)) * speed;
+        let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
+        let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd;
+        p.vel = vec2f(ca, sa) * speed;
 
-        p.max_life = 0.3 + rand_f(seed + 5u) * 0.6;
+        p.max_life = 0.5 + rand_f(seed + 5u) * 0.8;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u) * 0.12;
-        p.size     = 0.4 + rand_f(seed + 7u) * 1.0;
+        p.size     = (1.0 + rand_f(seed + 7u) * 2.0) * max(u.spark_size, 0.01);
         p.kind     = PK_METAL_SPARK;
         p.spawn_t  = u.time;
     } else {
-        // Low drag — particles linger and trail behind
-        p.vel = p.vel * (1.0 - 2.5 * dt * spd);
-        p.vel.y = p.vel.y + 60.0 * dt * spd;
+        // Moderate drag — particles trail behind with gravity
+        p.vel = p.vel * (1.0 - 2.0 * dt * spd);
+        p.vel.y = p.vel.y + 80.0 * dt * spd;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -125,6 +132,14 @@ fn update_ember(idx: u32) {
     let dt = u.delta_time;
     let hover_idx = i32(u.hover_elem);
     let spd = max(u.ember_speed, 0.01);
+
+    // Respect ember count limit
+    let ember_frac = select(1.0, u.ember_count, u.ember_count > 0.0);
+    let max_embers = u32(f32(EMBER_END - SPARK_END) * clamp(ember_frac, 0.0, 2.0));
+    if (idx - SPARK_END) >= max_embers {
+        park_dead(idx);
+        return;
+    }
 
     p.life -= dt * spd;
 
@@ -154,7 +169,7 @@ fn update_ember(idx: u32) {
             p.hue = 0.25 + rand_f(seed + 8u) * 0.15;
         }
 
-        p.size    = 0.4 + rand_f(seed + 7u) * 1.0;
+        p.size    = (0.4 + rand_f(seed + 7u) * 1.0) * max(u.ember_size, 0.01);
         p.kind    = PK_EMBER;
         p.spawn_t = u.time;
     } else {
@@ -235,6 +250,14 @@ fn update_glitter(idx: u32) {
     let hover_idx = i32(u.hover_elem);
     let spd = max(u.glitter_speed, 0.01);
 
+    // Respect glitter count limit
+    let glitter_frac = select(1.0, u.glitter_count, u.glitter_count > 0.0);
+    let max_glitter = u32(f32(GLITTER_END - RAY_END) * clamp(glitter_frac, 0.0, 2.0));
+    if (idx - RAY_END) >= max_glitter {
+        park_dead(idx);
+        return;
+    }
+
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
@@ -260,7 +283,7 @@ fn update_glitter(idx: u32) {
         p.max_life = 0.8 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u);
-        p.size     = 0.6 + rand_f(seed + 7u) * 1.2;   // slightly larger — 0.6-1.8 px
+        p.size     = (0.6 + rand_f(seed + 7u) * 1.2) * max(u.glitter_size, 0.01);   // slightly larger — 0.6-1.8 px
         p.kind     = PK_GLITTER;
         p.spawn_t  = u.time;
     } else {
@@ -280,6 +303,19 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
     let idx   = gid.x;
     let total = arrayLength(&particles);
     if idx >= total { return; }
+
+    // Shift live particles by scroll delta so they track world-space positions.
+    // The scroll delta is computed on the CPU as the negated change in
+    // scrollTop/scrollLeft of the scrollable container, matching the direction
+    // elements move on screen when the user scrolls.
+    let sd = vec2f(u.scroll_dx, u.scroll_dy);
+    if sd.x != 0.0 || sd.y != 0.0 {
+        var p = particles[idx];
+        if p.life > 0.0 {
+            p.pos = p.pos + sd;
+            particles[idx] = p;
+        }
+    }
 
     if idx < SPARK_END {
         update_metal_spark(idx);
