@@ -44,6 +44,7 @@ export {
     setOverlayParticleViewport,
     setOverlayRefDepth,
     setOverlayWorldScale,
+    setOverlayCameraPos,
     type OverlayRenderCallback,
 } from './overlay-api';
 

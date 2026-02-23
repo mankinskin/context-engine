@@ -2,7 +2,7 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot } from '../types';
+import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent } from '../types';
 import * as api from '../api';
 
 // Per-file state interface
@@ -123,6 +123,45 @@ export const hypergraphSnapshot = computed((): HypergraphSnapshot | null => {
   }
   return null;
 });
+
+// ── Search State Visualization ──
+
+// Computed: extract all search_state events from log entries (sorted by step)
+export const searchStates = computed((): SearchStateEvent[] => {
+  const allEntries = entries.value;
+  const states: SearchStateEvent[] = [];
+  for (const entry of allEntries) {
+    if (entry.message === 'search_state' && entry.fields?.search_state) {
+      try {
+        const data = typeof entry.fields.search_state === 'string'
+          ? JSON.parse(entry.fields.search_state)
+          : entry.fields.search_state;
+        if (data && typeof data.step === 'number') {
+          states.push(data as SearchStateEvent);
+        }
+      } catch {
+        // skip invalid JSON
+      }
+    }
+  }
+  return states.sort((a, b) => a.step - b.step);
+});
+
+// Currently active search step (controlled by slider/playback)
+export const activeSearchStep = signal<number>(-1);
+
+// The active search state snapshot
+export const activeSearchState = computed((): SearchStateEvent | null => {
+  const step = activeSearchStep.value;
+  const states = searchStates.value;
+  if (step < 0 || step >= states.length) return null;
+  return states[step];
+});
+
+// Action to set the active search step
+export function setActiveSearchStep(step: number) {
+  activeSearchStep.value = step;
+}
 
 export const logStats = computed((): LogStats => {
   const allEntries = entries.value;

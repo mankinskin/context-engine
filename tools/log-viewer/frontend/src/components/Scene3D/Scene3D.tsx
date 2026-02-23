@@ -26,6 +26,7 @@ import {
     setOverlayParticleViewport,
     setOverlayRefDepth,
     setOverlayWorldScale,
+    setOverlayCameraPos,
     type OverlayRenderCallback,
 } from '../WgpuOverlay/WgpuOverlay';
 
@@ -344,6 +345,7 @@ export function Scene3D() {
                     invPost[12] = -tx / sx; invPost[13] = -ty / sy;
                     const fullInvVP = mat4Multiply(invSubVP, invPost);
                     setOverlayParticleVP(fullVP, fullInvVP);
+                    setOverlayCameraPos(camPos[0], camPos[1], camPos[2]);
                 }
                 setOverlayParticleViewport(vx, vy, vw, vh);
             }

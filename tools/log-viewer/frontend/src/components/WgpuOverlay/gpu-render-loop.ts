@@ -12,7 +12,7 @@
  * Reads element data from the ElementScanner, uploads via GpuBufferManager,
  * and rebuilds bind groups when the buffer generation changes.
  *
- * Uniform packing: 80 × f32 (320 bytes) = 48 scalars + 2 × mat4x4.
+ * Uniform packing: 84 × f32 (336 bytes) = 48 scalars + 4 camera floats + 2 × mat4x4.
  * See types.wgsl Uniforms struct for the field layout.
  */
 
@@ -28,7 +28,7 @@ import {
     GLITTER_START, GLITTER_END,
     VIEW_ID,
 } from './element-types';
-import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale } from './overlay-api';
+import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale, getOverlayCameraPos } from './overlay-api';
 import { captureFrame } from './thumbnail-capture';
 import { effectSettings, themeColors, CURSOR_STYLE_VALUE } from '../../store/theme';
 import { activeTab } from '../../store';
@@ -373,9 +373,15 @@ export class RenderLoop {
             u[44] = vp3d[1];  // vp_y
             u[45] = vp3d[2];  // vp_w
             u[46] = vp3d[3];  // vp_h
-            // Copy particle_vp and particle_inv_vp (mat4 × 2, 32 floats)
-            u.set(getOverlayParticleVP(), 48);
-            u.set(getOverlayParticleInvVP(), 64);
+            // Camera position for skybox rendering
+            const camPos = getOverlayCameraPos();
+            u[48] = camPos[0];  // camera_pos_x
+            u[49] = camPos[1];  // camera_pos_y
+            u[50] = camPos[2];  // camera_pos_z
+            u[51] = 0;          // padding
+            // Copy particle_vp and particle_inv_vp (mat4 × 2, 32 floats), shifted by 4
+            u.set(getOverlayParticleVP(), 52);
+            u.set(getOverlayParticleInvVP(), 68);
         } else if (!is3DView) {
             // 2D views: orthographic screen→clip matrices
             u[41] = 0;     // ref_depth = 0 (particles at z=0)
@@ -384,18 +390,20 @@ export class RenderLoop {
             u[44] = 0;     // vp_y
             u[45] = W;     // vp_w
             u[46] = H;     // vp_h
+            // Camera position (not used in 2D, set to 0)
+            u[48] = 0; u[49] = 0; u[50] = 0; u[51] = 0;
             // Ortho viewProj: screen pixels → clip [-1,1]
             // ndc_x = x * 2/W - 1,  ndc_y = -y * 2/H + 1,  ndc_z = z
-            // Column-major mat4:
-            u[48] = 2 / W; u[49] = 0; u[50] = 0; u[51] = 0;   // col 0
-            u[52] = 0; u[53] = -2 / H; u[54] = 0; u[55] = 0;   // col 1
-            u[56] = 0; u[57] = 0; u[58] = 1; u[59] = 0;   // col 2
-            u[60] = -1; u[61] = 1; u[62] = 0; u[63] = 1;   // col 3
+            // Column-major mat4 (shifted by 4 for camera padding):
+            u[52] = 2 / W; u[53] = 0; u[54] = 0; u[55] = 0;   // col 0
+            u[56] = 0; u[57] = -2 / H; u[58] = 0; u[59] = 0;   // col 1
+            u[60] = 0; u[61] = 0; u[62] = 1; u[63] = 0;   // col 2
+            u[64] = -1; u[65] = 1; u[66] = 0; u[67] = 1;   // col 3
             // Inverse ortho: clip → screen pixels
-            u[64] = W / 2; u[65] = 0; u[66] = 0; u[67] = 0;  // col 0
-            u[68] = 0; u[69] = -H / 2; u[70] = 0; u[71] = 0;  // col 1
-            u[72] = 0; u[73] = 0; u[74] = 1; u[75] = 0;  // col 2
-            u[76] = W / 2; u[77] = H / 2; u[78] = 0; u[79] = 1;  // col 3
+            u[68] = W / 2; u[69] = 0; u[70] = 0; u[71] = 0;  // col 0
+            u[72] = 0; u[73] = -H / 2; u[74] = 0; u[75] = 0;  // col 1
+            u[76] = 0; u[77] = 0; u[78] = 1; u[79] = 0;  // col 2
+            u[80] = W / 2; u[81] = H / 2; u[82] = 0; u[83] = 1;  // col 3
         }
         // else: is3DView but no dirty update this frame — keep previous values
 

@@ -164,19 +164,23 @@ fn update_metal_spark(idx: u32) {
         let base_angle = rand_f(seed) * 6.2832;
         let scatter_r  = 5.0 + rand_f(seed + 1u) * 35.0;
         let scatter = vec2f(cos(base_angle), sin(base_angle)) * scatter_r;
-        p.pos = screen_to_world(vec2f(u.mouse_x, u.mouse_y) + scatter);
+        let cursor_screen = vec2f(u.mouse_x, u.mouse_y);
+        let spawn_screen  = cursor_screen + scatter;
+        p.pos = screen_to_world(spawn_screen);
 
-        // Velocity points outward from cursor, with ±25° angular spread
+        // Velocity points outward from cursor, with ±25° angular spread.
+        // Convert screen-space direction to world-space via normal_to_world
+        // so sparks fly correctly in both 2D and 3D views.
         let spread = (rand_f(seed + 2u) - 0.5) * 0.87;  // ±25°
-        let ca = cos(base_angle + spread);
-        let sa = sin(base_angle + spread);
+        let spread_angle = base_angle + spread;
+        let screen_dir = vec2f(cos(spread_angle), sin(spread_angle));
+        let cursor_world = screen_to_world(cursor_screen);
+        let vel_dir = normal_to_world(screen_dir, cursor_world, cursor_screen);
+
         let since_hover = u.time - u.hover_start_time;
         let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
         let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd * ws;
-        // Scatter in world-right and world-up directions
-        let rt = world_right();
-        let up = world_up();
-        p.vel = rt * ca * speed + up * sa * speed;
+        p.vel = vel_dir * speed;
 
         p.max_life = 0.5 + rand_f(seed + 5u) * 0.8;
         p.life     = p.max_life;
@@ -272,12 +276,17 @@ fn update_god_ray(idx: u32) {
     let spd = u.beam_speed;
     let ws  = u.world_scale;
 
-    // Beam source: normally selected_elem, or hovered beam-preview container
+    // Beam source: selected element, hovered beam-preview, or any hovered element
+    // (allows beams on hover in 3D views like hypergraph)
     var beam_src = i32(u.selected_elem);
     let hover_idx = i32(u.hover_elem);
     if hover_idx >= 0 && hover_idx < i32(u.element_count) {
         let hk = elems[u32(hover_idx)].kind;
         if abs(hk - KIND_FX_BEAM) < 0.5 {
+            // Beam-preview container always wins
+            beam_src = hover_idx;
+        } else if beam_src < 0 {
+            // No selected element → fall back to hovered element
             beam_src = hover_idx;
         }
     }
@@ -304,7 +313,9 @@ fn update_god_ray(idx: u32) {
         let screen_pos = spawn_on_perimeter(ei, seed);
         p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
 
-        // Rise upward in world space — drift distance scaled by beam_drift setting
+        // Rise upward in world space — drift distance scaled by beam_drift setting.
+        // Multiply by ws (world units per pixel) so that apparent screen-space
+        // velocity is the same regardless of camera zoom (ws=1 in 2D).
         let drift_scale = select(1.0, u.beam_drift, u.beam_drift > 0.0);
         let up = world_up();
         let rt = world_right();
@@ -314,12 +325,14 @@ fn update_god_ray(idx: u32) {
         p.max_life = 2.0 + rand_f(seed + 4u) * 2.0;
         p.life     = p.max_life;
         p.hue      = 0.08 + rand_f(seed + 5u) * 0.06;
-        p.size     = 0.6 + rand_f(seed + 6u) * 1.0;   // wider beam, still thin
+        // Size in WORLD units (pixel-equivalent × ws) so the vertex shader
+        // can project to correct pixel size at any zoom level.
+        p.size     = (0.6 + rand_f(seed + 6u) * 1.0) * ws;
         p.kind_view = PK_GOD_RAY + u.current_view * 8.0;
         p.spawn_t  = u.time;
     } else {
         let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5 * ws;
-        // Sway sideways, drift upward
+        // Sway sideways, drift upward (ws keeps screen-space speed consistent)
         let rt = world_right();
         p.vel = p.vel * (1.0 - 0.5 * dt * spd) + rt * sway * dt * spd;
         // Dampen along world_up direction

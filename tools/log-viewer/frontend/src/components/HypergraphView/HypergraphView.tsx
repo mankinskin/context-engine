@@ -13,7 +13,7 @@
  * region so draw calls are clipped correctly.
  */
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
-import { hypergraphSnapshot } from '../../store';
+import { hypergraphSnapshot, searchStates, activeSearchStep, setActiveSearchStep } from '../../store';
 import paletteWgsl from '../../effects/palette.wgsl?raw';
 import shaderSource from './hypergraph.wgsl?raw';
 import './hypergraph.css';
@@ -34,6 +34,7 @@ import {
     setOverlayParticleViewport,
     setOverlayRefDepth,
     setOverlayWorldScale,
+    setOverlayCameraPos,
     type OverlayRenderCallback,
 } from '../WgpuOverlay/WgpuOverlay';
 
@@ -114,6 +115,80 @@ function raySphere(
     if (disc < 0) return null;
     const t = (-b - Math.sqrt(disc)) / (2 * a);
     return t > 0 ? t : null;
+}
+
+// ══════════════════════════════════════════════════════
+//  Search State Panel — floating list of algorithm steps
+// ══════════════════════════════════════════════════════
+
+function SearchStatePanel() {
+    const states = searchStates.value;
+    const currentStep = activeSearchStep.value;
+    const listRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll to active item when step changes
+    useEffect(() => {
+        if (listRef.current && currentStep >= 0) {
+            const activeEl = listRef.current.querySelector('.ssp-item.active');
+            if (activeEl) {
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [currentStep]);
+
+    // Don't render if no search states
+    if (states.length === 0) return null;
+
+    const handlePrev = () => {
+        const newStep = currentStep <= 0 ? 0 : currentStep - 1;
+        setActiveSearchStep(newStep);
+    };
+
+    const handleNext = () => {
+        const newStep = currentStep >= states.length - 1 ? states.length - 1 : currentStep + 1;
+        setActiveSearchStep(newStep);
+    };
+
+    const handleItemClick = (step: number) => {
+        setActiveSearchStep(step);
+    };
+
+    const phaseClass = (phase: string) => `phase-${phase.toLowerCase()}`;
+
+    return (
+        <div class="search-state-panel">
+            <div class="ssp-header">
+                <span class="ssp-title">Search States</span>
+                <span class="ssp-count">{states.length} steps</span>
+            </div>
+            <div ref={listRef} class="ssp-list">
+                {states.map((state, idx) => (
+                    <div
+                        key={state.step}
+                        class={`ssp-item ${currentStep === idx ? 'active' : ''}`}
+                        onClick={() => handleItemClick(idx)}
+                    >
+                        <span class="ssp-step">{state.step}</span>
+                        <div class="ssp-content">
+                            <div class={`ssp-phase ${phaseClass(state.phase)}`}>{state.phase}</div>
+                            <div class="ssp-desc">{state.description}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div class="ssp-controls">
+                <button class="ssp-btn" onClick={handlePrev} disabled={currentStep <= 0}>
+                    ← Prev
+                </button>
+                <span class="ssp-position">
+                    {currentStep >= 0 ? currentStep + 1 : '—'} / {states.length}
+                </span>
+                <button class="ssp-btn" onClick={handleNext} disabled={currentStep >= states.length - 1}>
+                    Next →
+                </button>
+            </div>
+        </div>
+    );
 }
 
 // ══════════════════════════════════════════════════════
@@ -351,6 +426,7 @@ export function HypergraphView() {
                 invPost[12] = -tx / sx; invPost[13] = -ty / sy;
                 const fullInvVP = mat4Multiply(invSubVP, invPost);
                 setOverlayParticleVP(fullVP, fullInvVP);
+                setOverlayCameraPos(camPos[0], camPos[1], camPos[2]);
             }
             setOverlayParticleViewport(vx, vy, vw, vh);
 
@@ -405,11 +481,13 @@ export function HypergraphView() {
 
                 const dimmed = inter.selectedIdx >= 0 && !connectedSet.has(n.index);
                 el.style.opacity = dimmed ? '0.15' : '1';
-                // Position in 3D: translate3d provides CSS depth sorting via preserve-3d
-                // on the parent .hg-node-layer — closer nodes render on top automatically.
-                const cssZ = (1 - screen.z) * 2000;
+                // Position with 2D translate + scale.  Depth sorting via z-index
+                // (no translate3d/preserve-3d — avoids GPU compositing layers
+                // that bitmap-stretch and cause blurry text when zoomed in).
+                const zIdx = Math.round((1 - screen.z) * 1000);
+                el.style.zIndex = String(zIdx);
                 el.style.transform =
-                    `translate(-50%, -50%) translate3d(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px, ${cssZ.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+                    `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
                 // Store NDC depth for the element scanner (Phase 3 integration)
                 el.setAttribute('data-depth', screen.z.toFixed(4));
             }
@@ -714,6 +792,9 @@ export function HypergraphView() {
                     <span class="hg-value">{snapshot.nodes.filter(n => n.is_atom).length}</span>
                 </div>
             </div>
+
+            {/* Search State Panel - floating list of algorithm steps */}
+            <SearchStatePanel />
 
             {/* Tooltip */}
             {tooltip && (

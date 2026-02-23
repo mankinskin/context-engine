@@ -100,8 +100,16 @@ fn vs_particle(
 
     } else if kind == 2u {
         // ---- ANGELIC BEAM: tall line oriented along world up ----
+        // p.size is in world units (set at spawn: pixel_size × ws).
+        // We project a 1-world-unit offset to find how many pixels one
+        // world unit covers on screen, then scale p.size by that.
+        // In 2D (ortho, ws=1): 1 world unit = 1 pixel, so sizes match 2D.
+        // In 3D: beams grow/shrink with perspective, keeping consistent
+        // apparent size relative to the scene geometry.
         let up_w = select(vec3f(0.0, -1.0, 0.0), vec3f(0.0, 1.0, 0.0), u.current_view >= 4.0 && u.current_view <= 5.0);
-        let clip_up_pt = u.particle_vp * vec4f(p.pos + up_w * u.world_scale, 1.0);
+
+        // Project p.pos + 1 world unit in the up direction
+        let clip_up_pt = u.particle_vp * vec4f(p.pos + up_w, 1.0);
         let ndc_c = clip_center.xy / cw;
         let ndc_u = clip_up_pt.xy / clip_up_pt.w;
         // Full-canvas NDC → pixel direction (Y flipped)
@@ -110,10 +118,13 @@ fn vs_particle(
         let pd_len = length(pd);
         let pixel_up = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
         let pixel_rt = vec2f(-pixel_up.y, pixel_up.x);
+        // px_per_world: how many screen pixels 1 world unit covers
+        let px_per_world = pd_len;
 
-        let half_w = p.size * 2.0;
+        // World-space half-extents → pixel sizes via px_per_world
+        let half_w = p.size * 2.0 * px_per_world;
         let bh = select(35.0, u.beam_height, u.beam_height > 0.0);
-        let half_h = p.size * bh;
+        let half_h = p.size * bh * px_per_world;
         out.aspect = half_h / max(half_w, 0.1);
         // Beam extends upward from spawn point: base at pos, top at pos + 2×half_h
         pixel_offset = pixel_rt * corner.x * half_w + pixel_up * (corner.y * half_h + half_h);

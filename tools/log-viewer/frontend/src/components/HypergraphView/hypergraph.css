@@ -14,9 +14,10 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    /* preserve-3d enables CSS depth sorting among child nodes,
-       so nodes closer to the camera render on top without manual z-index. */
-    transform-style: preserve-3d;
+    /* Depth sorting uses z-index (set per-frame in JS) instead of
+       preserve-3d + translate3d.  This avoids GPU compositing layers
+       which would rasterize nodes at their base CSS size and bitmap-
+       stretch on scale() — causing blurry text when zoomed in. */
 }
 
 /* ── Individual DOM node: positioned with CSS transform ── */
@@ -236,4 +237,153 @@
     color: rgba(255, 255, 255, 0.5);
     font-size: 10px;
     margin-top: 2px;
+}
+
+/* ── Search State Panel: floating list of search algorithm steps ── */
+.search-state-panel {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    max-width: 320px;
+    max-height: calc(100% - 80px);
+    background: rgba(10, 10, 14, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 50;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.search-state-panel .ssp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-state-panel .ssp-title {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono, monospace);
+}
+
+.search-state-panel .ssp-count {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+}
+
+.search-state-panel .ssp-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 0;
+}
+
+.search-state-panel .ssp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-family: var(--font-mono, monospace);
+}
+
+.search-state-panel .ssp-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-state-panel .ssp-item.active {
+    background: rgba(80, 160, 255, 0.12);
+    border-left: 2px solid #60a8ff;
+    padding-left: 10px;
+}
+
+.search-state-panel .ssp-step {
+    flex-shrink: 0;
+    min-width: 28px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.search-state-panel .ssp-item.active .ssp-step {
+    background: rgba(80, 160, 255, 0.25);
+    color: #80c0ff;
+}
+
+.search-state-panel .ssp-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-state-panel .ssp-phase {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.search-state-panel .ssp-phase.phase-init { color: #60d8ff; }
+.search-state-panel .ssp-phase.phase-dequeue { color: #ffa860; }
+.search-state-panel .ssp-phase.phase-compare { color: #ffdc60; }
+.search-state-panel .ssp-phase.phase-rootexplore { color: #c090ff; }
+.search-state-panel .ssp-phase.phase-matchadvance { color: #70e080; }
+.search-state-panel .ssp-phase.phase-parentexplore { color: #ff9070; }
+.search-state-panel .ssp-phase.phase-done { color: #80ff80; }
+
+.search-state-panel .ssp-desc {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Navigation controls at bottom of panel */
+.search-state-panel .ssp-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-state-panel .ssp-btn {
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 10px;
+    font-family: var(--font-mono, monospace);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.search-state-panel .ssp-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.search-state-panel .ssp-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.search-state-panel .ssp-position {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-mono, monospace);
+    min-width: 60px;
+    text-align: center;
 }

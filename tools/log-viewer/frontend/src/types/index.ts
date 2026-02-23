@@ -104,6 +104,24 @@ export interface FlowEdge {
   target: string;
 }
 
+// ── Search state types (for algorithm visualization) ──
+
+export type SearchPhase = 'Init' | 'Dequeue' | 'Compare' | 'RootExplore' | 'MatchAdvance' | 'ParentExplore' | 'Done';
+
+export interface SearchStateEvent {
+  step: number;
+  description: string;
+  phase: SearchPhase;
+  query_tokens: number[];
+  cursor_position: number;
+  start_node: number;
+  matched_nodes: number[];
+  partial_node: number | null;
+  candidate_parents: number[];
+  candidate_children: number[];
+  current_root: number | null;
+}
+
 export interface LogStats {
   levelCounts: Record<LogLevel, number>;
   typeCounts: Record<EventType, number>;

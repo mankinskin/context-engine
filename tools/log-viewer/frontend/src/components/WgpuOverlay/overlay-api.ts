@@ -232,3 +232,20 @@ export function setOverlayWorldScale(s: number): void { _worldScale = s; }
 
 /** Read the world scale (used by render loop). */
 export function getOverlayWorldScale(): number { return _worldScale; }
+// ---------------------------------------------------------------------------
+// Camera position for 3D skybox rendering
+// ---------------------------------------------------------------------------
+
+let _cameraPos: [number, number, number] = [0, 0, 0];
+
+/**
+ * Set the camera world-space position for skybox rendering.
+ * Call from 3D views each frame along with setOverlayParticleVP.
+ * The background shader uses this to compute view rays for spherical sampling.
+ */
+export function setOverlayCameraPos(x: number, y: number, z: number): void {
+    _cameraPos = [x, y, z];
+}
+
+/** Read the camera position (used by render loop for skybox uniforms). */
+export function getOverlayCameraPos(): [number, number, number] { return _cameraPos; }

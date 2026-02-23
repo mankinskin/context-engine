@@ -663,6 +663,59 @@ fn sample_scene(px: vec2f) -> vec4f {
     return out;
 }
 
+// ---- 3D skybox helpers (triplanar mapping) ----------------------------------
+
+// Triplanar blend weights from ray direction - avoids pole singularities
+// Returns weights for XY, XZ, YZ planes (sums to 1.0)
+fn triplanar_weights(dir: vec3f) -> vec3f {
+    let n = abs(dir);
+    // Sharpen the blend with power to reduce visible transitions
+    let weights = pow(n, vec3f(4.0));
+    return weights / (weights.x + weights.y + weights.z);
+}
+
+// Sample 2D noise with triplanar blending - no pole artifacts
+fn triplanar_noise(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
+    let w = triplanar_weights(dir);
+    let d = dir * scale;
+    // Sample from each plane with offset for animation
+    let n_xy = smooth_noise(d.xy + offset);
+    let n_xz = smooth_noise(d.xz + offset);
+    let n_yz = smooth_noise(d.yz + offset);
+    return n_xy * w.z + n_xz * w.y + n_yz * w.x;
+}
+
+// Sample fbm noise with triplanar blending
+fn triplanar_fbm(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
+    let w = triplanar_weights(dir);
+    let d = dir * scale;
+    let f_xy = fbm(d.xy + offset);
+    let f_xz = fbm(d.xz + offset);
+    let f_yz = fbm(d.yz + offset);
+    return f_xy * w.z + f_xz * w.y + f_yz * w.x;
+}
+
+// Compute world-space ray direction from screen pixel using inverse VP matrix
+fn screen_to_ray_dir(px: vec2f, width: f32, height: f32) -> vec3f {
+    // Convert pixel to NDC (clip space)
+    let ndc = vec2f(
+        (px.x / width) * 2.0 - 1.0,
+        1.0 - (px.y / height) * 2.0  // flip Y for screen coords
+    );
+    
+    // Unproject near and far points using inverse VP
+    let near_clip = vec4f(ndc.x, ndc.y, -1.0, 1.0);
+    let far_clip = vec4f(ndc.x, ndc.y, 1.0, 1.0);
+    
+    let near_world = u.particle_inv_vp * near_clip;
+    let far_world = u.particle_inv_vp * far_clip;
+    
+    let near_pos = near_world.xyz / near_world.w;
+    let far_pos = far_world.xyz / far_world.w;
+    
+    return normalize(far_pos - near_pos);
+}
+
 // ---- fragment entry point ---------------------------------------------------
 
 @fragment
@@ -685,9 +738,8 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     // Speed is baked into the base time so ALL time-dependent effects scale uniformly
     let t = u.time * 0.35 * s_speed;
 
-    // --- FAST PATH: minimal background when smoke+grain disabled --------------
-    // This avoids expensive noise calls when only particles are animating.
-    let effects_minimal = s_intensity <= 0.0 && s_grain_i <= 0.0;
+    // --- Check if we're in a 3D view (scene3d=4, hypergraph=5) ----------------
+    let is_3d_view = u.current_view >= 4.0 && u.current_view <= 5.0;
 
     var bg: vec3f;
     var vignette: f32;
@@ -696,37 +748,38 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     var drift: vec2f;
     var grain_px: vec2f;
 
-    if effects_minimal {
-        // Simple UV-based gradient — no noise calls at all
+    // --- 3D SKYBOX PATH: triplanar projection (no pole artifacts) --------------
+    if is_3d_view {
+        // Compute ray direction from camera through this pixel
+        let ray_dir = screen_to_ray_dir(raw_px, u.width, u.height);
+        
+        // Triplanar mapping: sample noise from XY, XZ, YZ planes and blend
+        // This eliminates singularities at poles that spherical mapping has
+        
+        drift = vec2f(t * 0.12, t * 0.06);
+        grain_px = floor(raw_px / 4.0) * 4.0;  // grain uses screen coords
+        ds_px = raw_px;
+        ds_uv = raw_uv;
+        
+        // Scale factor to match 2D appearance (ray_dir is normalized to length 1)
+        let skybox_scale = max(u.width, u.height) * 0.5;
+        
+        // --- Vignette for 3D: gentle edge darkening --------------------------
+        let vig_d = length((raw_uv - 0.5) * vec2f(1.0, 0.8));
+        vignette = 1.0 - smoothstep(0.5, 1.2, vig_d) * 0.35 * s_vignette;
+        
+        // --- Base palette using triplanar noise (same logic as 2D) -----------
+        let palette_t = triplanar_noise(ray_dir, skybox_scale * 0.003 * s_warm_scale, drift * 5.0);
+        let cool_var  = triplanar_noise(ray_dir, skybox_scale * 0.005 * s_cool_scale, drift * 3.0 + vec2f(3.7, 2.1));
+        let moss_var  = triplanar_noise(ray_dir, skybox_scale * 0.008 * s_moss_scale, drift * 4.0 + vec2f(5.1, 9.3));
         let cool_tone = palette.smoke_cool.rgb;
         let warm_tone = palette.smoke_warm.rgb;
-        // Vertical gradient from cool (top) to warm (bottom)
-        let grad_t = raw_uv.y * 0.5 + raw_uv.x * 0.2;
-        bg = mix(cool_tone, warm_tone, grad_t);
-        // Cheap vignette
-        let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
-        vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
-        ds_px = raw_px;
-        ds_uv = raw_uv;
-        drift = vec2f(0.0);
-        grain_px = raw_px;
-    } else {
-        // --- Full quality path with noise effects ---------------------------------
-        // Smoke uses full-resolution coordinates for smooth blending.
-        // Only grain gets intentional pixel-block downsampling.
-        ds_px = raw_px;
-        ds_uv = raw_uv;
-
-        // Vignette — darken edges, bright centre (scaled by vignette_str)
-        let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
-        vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
-
-        // Grain pixel-block downsampling (s_grain_sz controls block size)
-        let grain_base = floor(raw_px / 4.0) * 4.0;
-        grain_px = floor(grain_base / s_grain_sz) * s_grain_sz;
-
-        // Animated coarse noise — drifting (speed already baked into t)
-        drift = vec2f(t * 0.12, t * 0.06);
+        let moss_tone = palette.smoke_moss.rgb;
+        var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
+        base_col = mix(base_col, cool_tone, smoothstep(0.4, 0.7, cool_var) * 0.3);
+        base_col = mix(base_col, moss_tone, smoothstep(0.3, 0.7, moss_var) * 0.5 * s_moss_scale);
+        
+        // Add grain (using screen coords for temporal stability)
         var grain_sum = 0.0;
         if (s_grain_i > 0.0) {
             let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
@@ -734,64 +787,146 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
             let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
             grain_sum = n_fine + n_coarse + n_grain;
         }
-
-        // Varied base palette — colour variation across the screen.
-        // s_warm_scale controls base warm/cool blending frequency;
-        // s_cool_scale biases toward cool tones; s_moss_scale drives moss-tone blending.
-        let palette_t = smooth_noise(ds_px * (0.003 * s_warm_scale) + drift * 5.0);
-        let cool_var  = smooth_noise(ds_px * (0.005 * s_cool_scale) + drift * 3.0 + vec2f(3.7, 1.2));
-        let moss_var  = smooth_noise(ds_px * (0.008 * s_moss_scale) + drift * 4.0 + vec2f(5.1, 9.3));
-        let cool_tone = palette.smoke_cool.rgb;
-        let warm_tone = palette.smoke_warm.rgb;
-        let moss_tone = palette.smoke_moss.rgb;
-        var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
-        // Cool-scale noise pulls toward cool tones
-        base_col = mix(base_col, cool_tone, smoothstep(0.4, 0.7, cool_var) * 0.3);
-        // Moss-scale noise blends in the moss mid-tone (higher scale = more varied moss patches)
-        base_col = mix(base_col, moss_tone, smoothstep(0.3, 0.7, moss_var) * 0.5 * s_moss_scale);
         bg = base_col + vec3f(grain_sum);
+        
+        // --- Layered smoke wisps using triplanar fbm -------------------------
+        if (s_intensity > 0.0) {
+            // Layer 1: large slow rolling smoke (warm)
+            let smoke1 = triplanar_fbm(ray_dir, 2.0 * s_warm_scale, vec2f(t * 0.06, t * 0.025)) * 0.10 * s_intensity;
+
+            // Layer 2: medium tendrils drifting opposite direction (cool)
+            let smoke2 = triplanar_fbm(ray_dir, 4.0 * s_cool_scale, vec2f(-t * 0.09, t * 0.05)) * 0.06 * s_intensity;
+
+            // Layer 3: mossy mid-tone wisps — curling upward
+            let smoke3 = triplanar_fbm(ray_dir, 5.0 * s_moss_scale, vec2f(sin(t * 0.3) * 0.5, -t * 0.12)) * 0.05 * s_intensity;
+
+            // Layer 4: very slow deep background churn (warm)
+            let smoke4 = triplanar_fbm(ray_dir, 1.2 * s_warm_scale, vec2f(t * 0.015, -t * 0.01)) * 0.07 * s_intensity;
+
+            // Composite smoke with slight colour tinting per layer
+            bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
+            bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
+            bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
+        }
+        
+        // Grain shimmer
+        if (s_grain_i > 0.0) {
+            let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
+            bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
+        }
+        
+        // Underglow (based on screen position, not spherical)
+        if (s_underglow > 0.001) {
+            let underglow = smoothstep(1.0, 0.4, raw_uv.y) * 0.015 * s_underglow;
+            bg = bg + vec3f(0.5, 0.18, 0.05) * underglow;
+        }
+        
+        // Apply vignette
+        bg = bg * vignette;
+    } else {
+        // --- 2D PATH: Original screen-space background -------------------------
+        // Existing logic preserved for non-3D views
+        
+        // FAST PATH: minimal background when smoke+grain disabled
+        let effects_minimal = s_intensity <= 0.0 && s_grain_i <= 0.0;
+
+        if effects_minimal {
+            // Simple UV-based gradient — no noise calls at all
+            let cool_tone = palette.smoke_cool.rgb;
+            let warm_tone = palette.smoke_warm.rgb;
+            // Vertical gradient from cool (top) to warm (bottom)
+            let grad_t = raw_uv.y * 0.5 + raw_uv.x * 0.2;
+            bg = mix(cool_tone, warm_tone, grad_t);
+            // Cheap vignette
+            let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
+            vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
+            ds_px = raw_px;
+            ds_uv = raw_uv;
+            drift = vec2f(0.0);
+            grain_px = raw_px;
+        } else {
+            // --- Full quality path with noise effects ---------------------------------
+            // Smoke uses full-resolution coordinates for smooth blending.
+            // Only grain gets intentional pixel-block downsampling.
+            ds_px = raw_px;
+            ds_uv = raw_uv;
+
+            // Vignette — darken edges, bright centre (scaled by vignette_str)
+            let vig_d = length((raw_uv - 0.5) * vec2f(1.2, 1.0));
+            vignette = 1.0 - smoothstep(0.3, 1.1, vig_d) * 0.55 * s_vignette;
+
+            // Grain pixel-block downsampling (s_grain_sz controls block size)
+            let grain_base = floor(raw_px / 4.0) * 4.0;
+            grain_px = floor(grain_base / s_grain_sz) * s_grain_sz;
+
+            // Animated coarse noise — drifting (speed already baked into t)
+            drift = vec2f(t * 0.12, t * 0.06);
+            var grain_sum = 0.0;
+            if (s_grain_i > 0.0) {
+                let n_fine   = smooth_noise((grain_px + drift * 40.0) * 0.025 * s_grain_c) * 0.028 * s_grain_i;
+                let n_coarse = smooth_noise((grain_px + drift * 20.0) * 0.006 * s_grain_c + vec2f(7.3, 2.1)) * 0.018 * s_grain_i;
+                let n_grain  = hash2(grain_px * 0.37 * s_grain_c + vec2f(floor(u.time * 8.0 * s_speed))) * 0.015 * s_grain_i;
+                grain_sum = n_fine + n_coarse + n_grain;
+            }
+
+            // Varied base palette — colour variation across the screen.
+            // s_warm_scale controls base warm/cool blending frequency;
+            // s_cool_scale biases toward cool tones; s_moss_scale drives moss-tone blending.
+            let palette_t = smooth_noise(ds_px * (0.003 * s_warm_scale) + drift * 5.0);
+            let cool_var  = smooth_noise(ds_px * (0.005 * s_cool_scale) + drift * 3.0 + vec2f(3.7, 2.1));
+            let moss_var  = smooth_noise(ds_px * (0.008 * s_moss_scale) + drift * 4.0 + vec2f(5.1, 9.3));
+            let cool_tone = palette.smoke_cool.rgb;
+            let warm_tone = palette.smoke_warm.rgb;
+            let moss_tone = palette.smoke_moss.rgb;
+            var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
+            // Cool-scale noise pulls toward cool tones
+            base_col = mix(base_col, cool_tone, smoothstep(0.4, 0.7, cool_var) * 0.3);
+            // Moss-scale noise blends in the moss mid-tone (higher scale = more varied moss patches)
+            base_col = mix(base_col, moss_tone, smoothstep(0.3, 0.7, moss_var) * 0.5 * s_moss_scale);
+            bg = base_col + vec3f(grain_sum);
+        }
+
+        // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
+        if (s_intensity > 0.0 && !effects_minimal) {
+            // Per-layer UV scales control the visible "size" of each color group.
+            // Speed is already embedded in t.
+            // Layer 1: large slow rolling smoke (warm)
+            let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
+            let smoke1 = fbm(smoke1_uv) * 0.10 * s_intensity;
+
+            // Layer 2: medium tendrils drifting opposite direction (cool)
+            let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
+            let smoke2 = fbm(smoke2_uv) * 0.06 * s_intensity;
+
+            // Layer 3: mossy mid-tone wisps — curling upward
+            let smoke3_uv = ds_uv * (5.0 * s_moss_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
+            let smoke3 = fbm(smoke3_uv) * 0.05 * s_intensity;
+
+            // Layer 4: very slow deep background churn (warm)
+            let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
+            let smoke4 = fbm(smoke4_uv) * 0.07 * s_intensity;
+
+            // Composite smoke with slight colour tinting per layer
+            bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
+            bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
+            bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
+        }
+
+        // Faint animated grain shimmer (skip noise when grain disabled)
+        if (s_grain_i > 0.0 && !effects_minimal) {
+            let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
+            bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
+        }
+
+        // Dim warm underglow from bottom edge (skip when off)
+        if (s_underglow > 0.001) {
+            let underglow = smoothstep(1.0, 0.4, raw_uv.y) * 0.015 * s_underglow;
+            bg = bg + vec3f(0.5, 0.18, 0.05) * underglow;
+        }
+
+        // Apply vignette
+        bg = bg * vignette;
     }
-
-    // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
-    if (s_intensity > 0.0 && !effects_minimal) {
-        // Per-layer UV scales control the visible "size" of each color group.
-        // Speed is already embedded in t.
-        // Layer 1: large slow rolling smoke (warm)
-        let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
-        let smoke1 = fbm(smoke1_uv) * 0.10 * s_intensity;
-
-        // Layer 2: medium tendrils drifting opposite direction (cool)
-        let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
-        let smoke2 = fbm(smoke2_uv) * 0.06 * s_intensity;
-
-        // Layer 3: mossy mid-tone wisps — curling upward
-        let smoke3_uv = ds_uv * (5.0 * s_moss_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
-        let smoke3 = fbm(smoke3_uv) * 0.05 * s_intensity;
-
-        // Layer 4: very slow deep background churn (warm)
-        let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
-        let smoke4 = fbm(smoke4_uv) * 0.07 * s_intensity;
-
-        // Composite smoke with slight colour tinting per layer
-        bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
-        bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
-        bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
-    }
-
-    // Faint animated grain shimmer (skip noise when grain disabled)
-    if (s_grain_i > 0.0 && !effects_minimal) {
-        let grain_hi = smooth_noise((grain_px + drift * 60.0) * 0.12 * s_grain_c) * 0.012 * s_grain_i;
-        bg = bg + vec3f(grain_hi * 0.6, grain_hi * 0.55, grain_hi * 0.5);
-    }
-
-    // Dim warm underglow from bottom edge (skip when off)
-    if (s_underglow > 0.001) {
-        let underglow = smoothstep(1.0, 0.4, raw_uv.y) * 0.015 * s_underglow;
-        bg = bg + vec3f(0.5, 0.18, 0.05) * underglow;
-    }
-
-    // Apply vignette
-    bg = bg * vignette;
 
     // --- Scene elements ------------------------------------------------------
     let scene = sample_scene(raw_px);

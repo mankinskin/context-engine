@@ -24,7 +24,7 @@ const EMBER_END   : u32 = 288u;
 const RAY_END     : u32 = 544u;
 const GLITTER_END : u32 = 640u;
 
-// ---- uniforms (320 bytes = 48 × f32 + 2 × mat4x4<f32>) ---------------------
+// ---- uniforms (336 bytes = 48 scalars + 4 camera floats + 2 × mat4x4<f32>) ---------------------
 struct Uniforms {
     time             : f32,
     width            : f32,
@@ -74,6 +74,11 @@ struct Uniforms {
     vp_w             : f32,    // particle viewport width (pixels)
     vp_h             : f32,    // particle viewport height (pixels)
     current_view     : f32,    // active view/tab ID (0=logs,1=stats,2=code,3=debug,4=scene3d,5=hypergraph,6=settings)
+    // ---- camera position for 3D skybox (4 floats for mat4 alignment) ----
+    camera_pos_x     : f32,    // camera world-space X position
+    camera_pos_y     : f32,    // camera world-space Y position
+    camera_pos_z     : f32,    // camera world-space Z position
+    _cam_pad         : f32,    // padding for mat4 alignment
     // ---- projection matrices (column-major, 16 f32 each) ----
     particle_vp      : mat4x4<f32>,   // world → clip (ortho for 2D, camera VP for 3D)
     particle_inv_vp  : mat4x4<f32>,   // clip → world (for unprojecting spawn positions)
