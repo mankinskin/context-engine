@@ -1,0 +1,100 @@
+/**
+ * Element selector registry, kind constants, and precomputed metadata.
+ * Pure data — no DOM access, no GPU dependency.
+ */
+
+// ---------------------------------------------------------------------------
+// CSS selectors for UI regions to shade.
+// ---------------------------------------------------------------------------
+
+/**
+ * Each selector gets its own stable hue (index / length).
+ *
+ * Entries are grouped:
+ *   0-7  : structural UI regions  (low-intensity border glow)
+ *   8-12 : log entry levels       (colour-coded per severity)
+ *   13   : highlighted span group (bright shimmer)
+ *   14   : selected log entry     (intense focus glow)
+ *   15   : panic entries          (alarm pulse)
+ */
+export const ELEMENT_SELECTORS = [
+    // --- structural regions (hue 0.00 – 0.53) ---
+    '.header',
+    '.sidebar',
+    '.tab-bar',
+    '.filter-panel',
+    '.view-container',
+    '.stats-view',
+    '.log-list',
+    '.code-viewer',
+    // --- per-level log entries (hue 0.53 – 0.82) ---
+    '.log-entry.level-error',
+    '.log-entry.level-warn',
+    '.log-entry.level-info',
+    '.log-entry.level-debug',
+    '.log-entry.level-trace',
+    // --- interactive states ---
+    '.log-entry.span-highlighted',
+    '.log-entry.selected',
+    '.log-entry.panic-entry',
+] as const;
+
+// ---------------------------------------------------------------------------
+// Element kind constants — passed to the shader so it can vary the glow
+// style per element category.
+// ---------------------------------------------------------------------------
+
+export const KIND_STRUCTURAL = 0;
+export const KIND_ERROR      = 1;
+export const KIND_WARN       = 2;
+export const KIND_INFO       = 3;
+export const KIND_DEBUG      = 4;
+export const KIND_SPAN_HL    = 5;
+export const KIND_SELECTED   = 6;
+export const KIND_PANIC      = 7;
+
+/** f32 values per element in the storage buffer: [x, y, w, h, hue, kind, _p1, _p2] */
+export const ELEM_FLOATS = 8;
+export const ELEM_BYTES  = ELEM_FLOATS * 4;  // 32 bytes, 16-byte aligned
+
+/** Number of particles simulated by the compute shader. */
+export const NUM_PARTICLES    = 512;
+/**
+ * Floats per particle: [px, py, vx, vy, life, max_life, hue, size,
+ *                        kind, spawn_t, _p1, _p2]
+ */
+export const PARTICLE_FLOATS  = 12;
+export const PARTICLE_BYTES   = PARTICLE_FLOATS * 4;  // 48 bytes
+export const PARTICLE_BUF_SIZE = NUM_PARTICLES * PARTICLE_BYTES;
+export const COMPUTE_WORKGROUP = 64;
+
+/** Map selector index → element kind for the shader. */
+export function selectorKind(selectorIndex: number): number {
+    if (selectorIndex < 8)  return KIND_STRUCTURAL; // 0-7: header, sidebar, etc.
+    if (selectorIndex === 8)  return KIND_ERROR;
+    if (selectorIndex === 9)  return KIND_WARN;
+    if (selectorIndex === 10) return KIND_INFO;
+    if (selectorIndex === 11) return KIND_DEBUG;
+    if (selectorIndex === 12) return KIND_DEBUG; // trace → same as debug
+    if (selectorIndex === 13) return KIND_SPAN_HL;
+    if (selectorIndex === 14) return KIND_SELECTED;
+    if (selectorIndex === 15) return KIND_PANIC;
+    return KIND_STRUCTURAL;
+}
+
+// ---------------------------------------------------------------------------
+// Pre-computed selector metadata (avoids per-element `matches()` calls)
+// ---------------------------------------------------------------------------
+
+export const SELECTOR_META: ReadonlyArray<{ sel: string; hue: number; kind: number }> =
+    ELEMENT_SELECTORS.map((sel, i) => ({
+        sel,
+        hue:  i / ELEMENT_SELECTORS.length,
+        kind: selectorKind(i),
+    }));
+
+/** Selector indices that MUST be included even when the buffer is nearly full.
+ *  These are small-cardinality interactive-state selectors that drive particle
+ *  effects (beams, glitter, glow).  We scan them first so they always get
+ *  slots in the element buffer. */
+export const PRIORITY_SELECTOR_INDICES = new Set([13, 14, 15]); // span-highlighted, selected, panic
