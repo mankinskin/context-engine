@@ -76,6 +76,11 @@ export class ElementScanner {
     /** Dirty flags. */
     private _fullRescanPending = true;
     private _rectsStale = false;
+    /**
+     * Set when element classification (kind/hue) changes without a rect
+     * change.  Forces `_rebuildData()` even if no rects moved.
+     */
+    private _dataStale = false;
 
     /** Event listeners (stored for cleanup). */
     private readonly _onScroll = () => { this._markAllRectsStale(); };
@@ -196,6 +201,10 @@ export class ElementScanner {
         }
 
         // 4. Rebuild Float32Array if anything changed
+        if (this._dataStale) {
+            changed = true;
+            this._dataStale = false;
+        }
         if (changed) {
             this._rebuildData();
         }
@@ -279,6 +288,9 @@ export class ElementScanner {
     /** Try to match an element against selectors and track it if matched. */
     private _tryTrackElement(el: Element): void {
         if (this._elementMap.has(el)) return; // already tracked
+        // Hypergraph nodes render their own 3D world-space effects via the
+        // overlay callback — skip them here to avoid doubling with 2D effects.
+        if (el.classList.contains('hg-node')) return;
 
         for (let si = 0; si < SELECTOR_META.length; si++) {
             const meta = SELECTOR_META[si]!;
@@ -336,6 +348,9 @@ export class ElementScanner {
                 if (el.matches(meta.sel)) {
                     if (existing) {
                         // Already tracked — just update classification
+                        if (existing.kind !== meta.kind || existing.hue !== meta.hue) {
+                            this._dataStale = true;
+                        }
                         existing.selectorIdx = si;
                         existing.kind = meta.kind;
                         existing.hue = meta.hue;

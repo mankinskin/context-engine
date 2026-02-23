@@ -3,21 +3,21 @@
  * HypergraphView — DOM-based 3D node display, unified with WgpuOverlay.
  *
  * Nodes are rendered as regular DOM `div` elements with CSS `transform`
- * positioning, styled as `.log-entry` elements so the global WgpuOverlay
- * automatically applies ember glow, angelic beams, and glitter effects
- * via its element scanner.
+ * positioning.  The global WgpuOverlay element scanner skips `.hg-node`
+ * elements so that effects are not doubled.  Instead, this view renders
+ * its own 3D world-space particle effects (angelic beams, glitter) via
+ * the overlay render callback — beams rise along world-Y, glitter orbits
+ * in world space, and everything responds correctly to camera movement.
  *
- * Edges and coordinate grid are rendered on the **shared WgpuOverlay
- * canvas** through the overlay render callback system — no separate
- * WebGPU canvas is created.  The callback sets viewport/scissor to the
- * container's screen region so draw calls are clipped correctly.
- *
- * Particle effects (beams, glitter) are NOT duplicated here — the global
- * WgpuOverlay element scanner already handles them for `.log-entry` nodes.
+ * Edges, coordinate grid, and 3D particles are rendered on the **shared
+ * WgpuOverlay canvas** through the overlay render callback system — no
+ * separate WebGPU canvas is created.  The callback sets viewport/scissor
+ * to the container's screen region so draw calls are clipped correctly.
  */
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
 import { hypergraphSnapshot } from '../../store';
 import paletteWgsl from '../../effects/palette.wgsl?raw';
+import particleShadingWgsl from '../../effects/particle-shading.wgsl?raw';
 import shaderSource from './hypergraph.wgsl?raw';
 import './hypergraph.css';
 import { buildLayout, type GraphLayout, type LayoutNode } from './layout';
@@ -28,6 +28,11 @@ import {
 } from '../Scene3D/math3d';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
 import { themeColors } from '../../store/theme';
+import {
+    type Particle3D,
+    PARTICLE_INSTANCE_FLOATS,
+    spawnBeam, spawnGlitter, updateParticles3D, fillParticleBuffer,
+} from '../../effects/particle-sim';
 import {
     overlayGpu,
     registerOverlayRenderer,
@@ -45,6 +50,10 @@ const QUAD_VERTS = new Float32Array([
 
 const EDGE_INSTANCE_FLOATS = 12;
 const GRID_LINE_FLOATS = 12;
+
+const MAX_BEAMS    = 64;
+const MAX_GLITTER  = 96;
+const MAX_PARTICLES = MAX_BEAMS + MAX_GLITTER;
 
 // ── helpers ──
 
@@ -198,7 +207,7 @@ export function HypergraphView() {
         return { viewProj: mat4Multiply(proj, view), camPos };
     }, [getCamPos]);
 
-    // ── Register overlay renderer for edges and grid ──
+    // ── Register overlay renderer for edges, grid, and 3D particles ──
     useEffect(() => {
         const curLayout = layoutRef.current;
         const container = containerRef.current;
@@ -208,7 +217,7 @@ export function HypergraphView() {
         const { device, format } = gpu;
 
         // ── Create pipelines & buffers using the shared overlay device ──
-        const fullShader = paletteWgsl + '\n' + shaderSource;
+        const fullShader = paletteWgsl + '\n' + particleShadingWgsl + '\n' + shaderSource;
         const shader = device.createShaderModule({ code: fullShader });
 
         const quadVB = device.createBuffer({
@@ -275,6 +284,40 @@ export function HypergraphView() {
             primitive: { topology: 'triangle-list' },
         });
 
+        // ── Particle pipeline (3D world-space beams & glitter) ──
+        const particlePipeline = device.createRenderPipeline({
+            layout: pipelineLayout,
+            vertex: {
+                module: shader, entryPoint: 'vs_particle',
+                buffers: [
+                    {
+                        arrayStride: 8, stepMode: 'vertex',
+                        attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
+                    },
+                    {
+                        arrayStride: PARTICLE_INSTANCE_FLOATS * 4, stepMode: 'instance',
+                        attributes: [
+                            { shaderLocation: 2, offset: 0,  format: 'float32x3' as GPUVertexFormat },
+                            { shaderLocation: 3, offset: 12, format: 'float32'   as GPUVertexFormat },
+                            { shaderLocation: 4, offset: 16, format: 'float32x4' as GPUVertexFormat },
+                            { shaderLocation: 5, offset: 32, format: 'float32x4' as GPUVertexFormat },
+                        ],
+                    },
+                ],
+            },
+            fragment: {
+                module: shader, entryPoint: 'fs_particle',
+                targets: [{
+                    format,
+                    blend: {
+                        color: { srcFactor: 'src-alpha', dstFactor: 'one', operation: 'add' },
+                        alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'add' },
+                    },
+                }],
+            },
+            primitive: { topology: 'triangle-list' },
+        });
+
         // ── Instance buffers ──
         const maxEdges = curLayout.edges.length;
         const edgeIB = device.createBuffer({
@@ -300,8 +343,16 @@ export function HypergraphView() {
         });
         device.queue.writeBuffer(gridIB, 0, gridData);
 
+        // ── Particle buffer (3D world-space beams & glitter) ──
+        const particleIB = device.createBuffer({
+            size: Math.max(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS * 4, 48),
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+
         // ── Render state (captured by callback closure) ──
+        const particles: Particle3D[] = [];
         const edgeDataBuf = new Float32Array(maxEdges * EDGE_INSTANCE_FLOATS);
+        const particleDataBuf = new Float32Array(MAX_PARTICLES * PARTICLE_INSTANCE_FLOATS);
 
         const PATTERN_COLORS: [number, number, number][] = [
             [0.45, 0.55, 0.7],  [0.7, 0.45, 0.55],  [0.5, 0.7, 0.45],
@@ -388,6 +439,25 @@ export function HypergraphView() {
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 
+            // ── Spawn & update 3D world-space particles ──
+            if (inter.selectedIdx >= 0) {
+                const sn = curLayout.nodeMap.get(inter.selectedIdx);
+                if (sn) {
+                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
+                }
+            }
+            if (inter.hoverIdx >= 0) {
+                const hn = curLayout.nodeMap.get(inter.hoverIdx);
+                if (hn) {
+                    for (let i = 0; i < 6; i++) spawnGlitter(particles, hn.x, hn.y, hn.z, hn.radius, time, MAX_GLITTER);
+                }
+            }
+            updateParticles3D(particles, dt, time);
+            const liveCount = fillParticleBuffer(particles, particleDataBuf, MAX_PARTICLES);
+            if (liveCount > 0) {
+                dev.queue.writeBuffer(particleIB, 0, particleDataBuf, 0, liveCount * PARTICLE_INSTANCE_FLOATS);
+            }
+
             // ── Camera + palette uniforms ──
             const camBuf = new Float32Array(32);
             camBuf.set(viewProj, 0);
@@ -396,7 +466,7 @@ export function HypergraphView() {
             dev.queue.writeBuffer(camUB, 0, camBuf);
             dev.queue.writeBuffer(paletteUB, 0, buildPaletteBuffer(themeColors.value));
 
-            // ── Draw grid and edges ──
+            // ── Draw grid, edges, and particles ──
             pass.setPipeline(gridPipeline);
             pass.setVertexBuffer(0, quadVB);
             pass.setVertexBuffer(1, gridIB);
@@ -408,6 +478,14 @@ export function HypergraphView() {
             pass.setVertexBuffer(1, edgeIB);
             pass.setBindGroup(0, camBG);
             pass.draw(6, curLayout.edges.length);
+
+            if (liveCount > 0) {
+                pass.setPipeline(particlePipeline);
+                pass.setVertexBuffer(0, quadVB);
+                pass.setVertexBuffer(1, particleIB);
+                pass.setBindGroup(0, camBG);
+                pass.draw(6, liveCount);
+            }
 
             // Restore viewport/scissor to full canvas for subsequent callbacks
             pass.setViewport(0, 0, canvasW, canvasH, 0, 1);
@@ -423,6 +501,7 @@ export function HypergraphView() {
             paletteUB.destroy();
             edgeIB.destroy();
             gridIB.destroy();
+            particleIB.destroy();
         };
     }, [gpu, snapshot, getViewProj]);
 
