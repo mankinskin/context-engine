@@ -8,8 +8,14 @@
 
 // ---- hash / noise -----------------------------------------------------------
 
+// Integer-based hash — avoids expensive sin() transcendental.
+// Uses bitcast to reinterpret f32 bits as u32 for fast mixing.
 fn hash2(p: vec2f) -> f32 {
-    return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453);
+    var n = bitcast<u32>(p.x) + bitcast<u32>(p.y) * 0x45d9f3bu;
+    n = (n ^ (n >> 16u)) * 0x45d9f3bu;
+    n = (n ^ (n >> 16u)) * 0x45d9f3bu;
+    n = n ^ (n >> 16u);
+    return f32(n) / 4294967295.0;
 }
 
 fn smooth_noise(p: vec2f) -> f32 {
@@ -28,7 +34,7 @@ fn fbm(p_in: vec2f) -> f32 {
     var amp  = 0.5;
     var freq = 1.0;
     var p    = p_in;
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 2; i++) {
         val  += amp * smooth_noise(p * freq);
         amp  *= 0.5;
         freq *= 2.0;

@@ -236,17 +236,16 @@ fn voronoi(p: vec2f) -> vec2f {
     return vec2f(sqrt(min_d), cell_id);
 }
 
-// High-detail FBM with more octaves for texturing
-fn fbm5(p_in: vec2f) -> f32 {
+// Medium-detail FBM for cursor texturing (3 octaves, rotated)
+fn fbm3(p_in: vec2f) -> f32 {
     var val  = 0.0;
     var amp  = 0.5;
     var freq = 1.0;
     var p    = p_in;
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 3; i++) {
         val  += amp * smooth_noise(p * freq);
         amp  *= 0.5;
         freq *= 2.1;
-        // Rotate each octave slightly for less axis-alignment
         p = vec2f(p.x * 0.866 - p.y * 0.5, p.x * 0.5 + p.y * 0.866);
     }
     return val;
@@ -271,29 +270,24 @@ fn cursor_metal(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
     let uv = local / vec2f(16.0, 24.0);
 
     // ── Surface normal with height-field detail ──
-    // Base dome curvature (convex shield shape)
     let dome = vec2f((uv.x - 0.4) * 0.5, (uv.y - 0.45) * 0.3);
 
-    // Hammer-strike dents — large low-frequency deformations
-    let dent1 = smooth_noise(local * 0.35 + vec2f(42.0, 17.0));
-    let dent2 = smooth_noise(local * 0.22 + vec2f(88.0, 53.0));
-    let dent_h = (dent1 * 0.6 + dent2 * 0.4) * 0.15;
+    // Hammer-strike dents — single pass
+    let dent_h = smooth_noise(local * 0.35 + vec2f(42.0, 17.0)) * 0.15;
 
-    // Forged grain — directional, running along the cursor axis
-    let grain_angle = 0.15; // slight rotation
+    // Forged grain — directional, precomputed rotation
     let grain_p = vec2f(
-        local.x * cos(grain_angle) - local.y * sin(grain_angle),
-        local.x * sin(grain_angle) + local.y * cos(grain_angle)
+        local.x * 0.9888 - local.y * 0.1494,
+        local.x * 0.1494 + local.y * 0.9888
     );
     let grain = smooth_noise(vec2f(grain_p.x * 6.0, grain_p.y * 0.8 + 200.0)) * 0.06;
 
-    // Fine micro-scratches (high freq, anisotropic)
-    let scratch1 = smooth_noise(vec2f(local.x * 12.0, local.y * 1.5 + 500.0)) * 0.02;
-    let scratch2 = smooth_noise(vec2f(local.x * 1.8 + 300.0, local.y * 10.0)) * 0.015;
+    // Fine micro-scratches (single anisotropic pass)
+    let scratch1 = smooth_noise(vec2f(local.x * 12.0, local.y * 1.5 + 500.0)) * 0.025;
 
-    // Compute normal from height field via central differences
+    // Simplified normal from height field
     let eps = 0.5;
-    let h_center = dent_h + grain + scratch1 + scratch2;
+    let h_center = dent_h + grain + scratch1;
     let h_right  = smooth_noise((local + vec2f(eps, 0.0)) * 0.35 + vec2f(42.0, 17.0)) * 0.09
                  + smooth_noise(vec2f((grain_p.x + eps) * 6.0, grain_p.y * 0.8 + 200.0)) * 0.06;
     let h_up     = smooth_noise((local + vec2f(0.0, eps)) * 0.35 + vec2f(42.0, 17.0)) * 0.09
@@ -305,29 +299,24 @@ fn cursor_metal(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
         1.0
     ));
 
-    // ── Material: dark forged iron with rust and patina ──
-    // Base: dark gunmetal
+    // ── Material: dark forged iron with rust + patina combined ──
     let base_iron = vec3f(0.32, 0.30, 0.28);
 
-    // Voronoi crystalline grain structure (like real metal microstructure)
-    let vor = voronoi(local * 0.8 + vec2f(73.0, 11.0));
-    let crystal_tint = mix(vec3f(0.30, 0.28, 0.26), vec3f(0.36, 0.34, 0.30), vor.y);
+    // Single noise-based grain variation (replaces voronoi)
+    let crystal_var = smooth_noise(local * 0.8 + vec2f(73.0, 11.0));
+    let crystal_tint = mix(vec3f(0.30, 0.28, 0.26), vec3f(0.36, 0.34, 0.30), crystal_var);
 
-    // Rust patches — warm orange-brown, mostly in concavities
-    let rust_mask = smoothstep(0.35, 0.65, fbm5(local * 0.3 + vec2f(15.0, 27.0)));
-    let rust_detail = fbm5(local * 0.9 + vec2f(50.0, 80.0));
-    let rust_col = mix(vec3f(0.35, 0.18, 0.08), vec3f(0.50, 0.25, 0.10), rust_detail);
+    // Rust + patina in one fbm3 pass
+    let weathering = fbm3(local * 0.3 + vec2f(15.0, 27.0));
+    let rust_mask = smoothstep(0.35, 0.65, weathering);
+    let rust_col = mix(vec3f(0.35, 0.18, 0.08), vec3f(0.50, 0.25, 0.10), weathering);
     let rust_amount = rust_mask * smoothstep(0.3, 0.7, dent_h / 0.15) * 0.45;
-
-    // Blue-black patina in protected areas
-    let patina_mask = smoothstep(0.6, 0.4, fbm5(local * 0.25 + vec2f(200.0, 150.0)));
-    let patina_col = vec3f(0.15, 0.18, 0.25);
-    let patina_amount = patina_mask * 0.3 * (1.0 - rust_amount * 2.0);
+    let patina_amount = (1.0 - rust_mask) * 0.2 * (1.0 - rust_amount * 2.0);
 
     // Combine base material
     var metal_col = mix(crystal_tint, base_iron, grain * 8.0);
     metal_col = mix(metal_col, rust_col, rust_amount);
-    metal_col = mix(metal_col, patina_col, patina_amount);
+    metal_col = mix(metal_col, vec3f(0.15, 0.18, 0.25), patina_amount);
 
     // Brushed highlight streaks
     let brush_streak = pow(smooth_noise(vec2f(grain_p.x * 15.0, grain_p.y * 0.4 + 400.0)), 3.0) * 0.12;
@@ -406,17 +395,16 @@ fn cursor_glass(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
     let dome_x = (uv.x - 0.4) * dome_strength;
     let dome_y = (uv.y - 0.45) * dome_strength * 0.7;
 
-    // Wavy imperfections in glass surface (hand-blown look)
-    let wave1 = smooth_noise(local * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12;
-    let wave2 = smooth_noise(local * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
-    let wave3 = smooth_noise(local * 2.5 + vec2f(t * 0.04, 22.0)) * 0.03;
+    // Wavy imperfections in glass surface (2 layers instead of 3)
+    let wave1 = smooth_noise(local * 0.6 + vec2f(t * 0.08, 7.0)) * 0.14;
+    let wave2 = smooth_noise(local * 1.3 + vec2f(13.0, t * 0.06)) * 0.07;
 
     let eps = 0.4;
-    let h_c = wave1 + wave2 + wave3;
-    let h_r = smooth_noise((local + vec2f(eps, 0.0)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12
-            + smooth_noise((local + vec2f(eps, 0.0)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
-    let h_u = smooth_noise((local + vec2f(0.0, eps)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.12
-            + smooth_noise((local + vec2f(0.0, eps)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.06;
+    let h_c = wave1 + wave2;
+    let h_r = smooth_noise((local + vec2f(eps, 0.0)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.14
+            + smooth_noise((local + vec2f(eps, 0.0)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.07;
+    let h_u = smooth_noise((local + vec2f(0.0, eps)) * 0.6 + vec2f(t * 0.08, 7.0)) * 0.14
+            + smooth_noise((local + vec2f(0.0, eps)) * 1.3 + vec2f(13.0, t * 0.06)) * 0.07;
 
     let normal = normalize(vec3f(
         dome_x + (h_c - h_r) * 2.5,
@@ -424,18 +412,16 @@ fn cursor_glass(px: vec2f, mouse: vec2f, t: f32) -> vec4f {
         1.0
     ));
 
-    // ── Internal structure: fractures, bubbles, inclusions ──
-    // Voronoi fracture pattern (like cracked ice / crystal structure)
+    // ── Internal structure: fractures, bubbles (single voronoi pass) ──
     let fracture_vor = voronoi(local * 0.5 + vec2f(100.0, 200.0));
     let fracture_lines = smoothstep(0.12, 0.08, fracture_vor.x) * 0.3;
-    let fracture_tint = hash2(vec2f(fracture_vor.y * 100.0, 33.0));
 
-    // Air bubbles (small bright spots scattered inside)
-    let bubble_vor = voronoi(local * 1.5 + vec2f(300.0, 400.0));
-    let bubbles = smoothstep(0.08, 0.04, bubble_vor.x) * 0.5;
+    // Use hash for bubbles instead of second voronoi
+    let bubble_h = smooth_noise(local * 1.5 + vec2f(300.0, 400.0));
+    let bubbles = smoothstep(0.85, 0.95, bubble_h) * 0.5;
 
-    // Deep internal caustic pattern (light bending inside the glass)
-    let internal_caustic = fbm5(local * 0.15 + normal.xy * 3.0 + vec2f(t * 0.12, -t * 0.08));
+    // Simplified internal caustic (single smooth_noise instead of fbm3)
+    let internal_caustic = smooth_noise(local * 0.15 + normal.xy * 3.0 + vec2f(t * 0.12, -t * 0.08));
 
     // ── Refraction: chromatic aberration (R/G/B refract differently) ──
     let refract_base = 10.0;
@@ -708,7 +694,8 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
     let warm_tone = palette.smoke_warm.rgb;
     let mid_tone  = palette.smoke_moss.rgb;
     var base_col = mix(cool_tone, warm_tone, smoothstep(0.3, 0.7, palette_t));
-    base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, smooth_noise(ds_px * 0.005 + vec2f(3.0, -t * 0.02))) * 0.5);
+    // Reuse palette_t with offset instead of second smooth_noise call
+    base_col = mix(base_col, mid_tone, smoothstep(0.5, 0.8, palette_t * 0.8 + 0.1) * 0.5);
     var bg = base_col + vec3f(grain_sum);
 
     // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
