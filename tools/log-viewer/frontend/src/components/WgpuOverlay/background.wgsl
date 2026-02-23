@@ -665,6 +665,28 @@ fn sample_scene(px: vec2f) -> vec4f {
 
 // ---- 3D skybox helpers (triplanar mapping) ----------------------------------
 
+// ---- Optimised smoke noise (Book of Shaders / domain warping) ---------------
+// 2-octave fbm for cheap warping / palette blending
+fn fbm_lo(p: vec2f) -> f32 {
+    return smooth_noise(p) * 0.667 + smooth_noise(p * 2.0) * 0.333;
+}
+
+// 3-octave fbm with inter-octave rotation for richer patterns at lower cost.
+// Rotation breaks axis-aligned grid artefacts, making 3 octaves look as good
+// as 4 non-rotated ones.  (Inspired by Book of Shaders ch.13.)
+fn smoke_noise(p_in: vec2f) -> f32 {
+    var val = 0.0;
+    var amp = 0.5;
+    var p = p_in;
+    for (var i = 0; i < 3; i++) {
+        val += amp * smooth_noise(p);
+        amp *= 0.5;
+        // Rotate ≈37° + lacunarity 2.0 between octaves
+        p = vec2f(p.x * 1.6 - p.y * 1.2, p.x * 1.2 + p.y * 1.6);
+    }
+    return val;
+}
+
 // Triplanar blend weights from ray direction - avoids pole singularities
 // Returns weights for XY, XZ, YZ planes (sums to 1.0)
 fn triplanar_weights(dir: vec3f) -> vec3f {
@@ -678,21 +700,28 @@ fn triplanar_weights(dir: vec3f) -> vec3f {
 fn triplanar_noise(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
     let w = triplanar_weights(dir);
     let d = dir * scale;
-    // Sample from each plane with offset for animation
     let n_xy = smooth_noise(d.xy + offset);
     let n_xz = smooth_noise(d.xz + offset);
     let n_yz = smooth_noise(d.yz + offset);
     return n_xy * w.z + n_xz * w.y + n_yz * w.x;
 }
 
-// Sample fbm noise with triplanar blending
-fn triplanar_fbm(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
+// Cheap triplanar warp noise (2 octaves)
+fn triplanar_fbm_lo(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
     let w = triplanar_weights(dir);
     let d = dir * scale;
-    let f_xy = fbm(d.xy + offset);
-    let f_xz = fbm(d.xz + offset);
-    let f_yz = fbm(d.yz + offset);
-    return f_xy * w.z + f_xz * w.y + f_yz * w.x;
+    return fbm_lo(d.xy + offset) * w.z +
+           fbm_lo(d.xz + offset) * w.y +
+           fbm_lo(d.yz + offset) * w.x;
+}
+
+// Triplanar domain-warped smoke (3 octaves, rotated)
+fn triplanar_smoke(dir: vec3f, scale: f32, offset: vec2f) -> f32 {
+    let w = triplanar_weights(dir);
+    let d = dir * scale;
+    return smoke_noise(d.xy + offset) * w.z +
+           smoke_noise(d.xz + offset) * w.y +
+           smoke_noise(d.yz + offset) * w.x;
 }
 
 // Compute world-space ray direction from screen pixel using inverse VP matrix
@@ -789,24 +818,29 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
         }
         bg = base_col + vec3f(grain_sum);
         
-        // --- Layered smoke wisps using triplanar fbm -------------------------
+        // --- Domain-warped smoke (Book of Shaders ch.13) ---------------------
+        // Instead of 4 independent fbm layers, use 1 cheap warp + 2 warped
+        // smoke layers.  Domain warping produces organic, swirling patterns
+        // with fewer texture lookups.
         if (s_intensity > 0.0) {
-            // Layer 1: large slow rolling smoke (warm)
-            let smoke1 = triplanar_fbm(ray_dir, 2.0 * s_warm_scale, vec2f(t * 0.06, t * 0.025)) * 0.10 * s_intensity;
+            // Cheap warp field (2 octaves) — shifts sample coords for organic curl
+            let warp = triplanar_fbm_lo(ray_dir, 2.0, vec2f(t * 0.04, t * 0.02));
+            let warp_offset = vec3f(warp * 0.15, warp * 0.1, warp * 0.12);
+            let warped_dir = normalize(ray_dir + warp_offset);
 
-            // Layer 2: medium tendrils drifting opposite direction (cool)
-            let smoke2 = triplanar_fbm(ray_dir, 4.0 * s_cool_scale, vec2f(-t * 0.09, t * 0.05)) * 0.06 * s_intensity;
+            // Layer 1: warm rolling smoke (3 oct, rotated)
+            let smoke_warm = triplanar_smoke(warped_dir, 2.0 * s_warm_scale,
+                             vec2f(t * 0.05, t * 0.02)) * 0.14 * s_intensity;
 
-            // Layer 3: mossy mid-tone wisps — curling upward
-            let smoke3 = triplanar_fbm(ray_dir, 5.0 * s_moss_scale, vec2f(sin(t * 0.3) * 0.5, -t * 0.12)) * 0.05 * s_intensity;
+            // Layer 2: cool tendrils drifting opposite direction (3 oct, rotated)
+            let smoke_cool = triplanar_smoke(warped_dir, 3.5 * s_cool_scale,
+                             vec2f(-t * 0.07, t * 0.04)) * 0.09 * s_intensity;
 
-            // Layer 4: very slow deep background churn (warm)
-            let smoke4 = triplanar_fbm(ray_dir, 1.2 * s_warm_scale, vec2f(t * 0.015, -t * 0.01)) * 0.07 * s_intensity;
-
-            // Composite smoke with slight colour tinting per layer
-            bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
-            bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
-            bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
+            // Composite with colour tinting
+            bg = bg + vec3f(smoke_warm) * vec3f(0.85, 0.80, 0.75);  // warm smoke
+            bg = bg + vec3f(smoke_cool) * vec3f(0.6, 0.7, 0.85);    // cool wisps
+            // Moss tinting from warp noise (free — reuses existing value)
+            bg = bg + vec3f(warp * 0.04 * s_intensity * s_moss_scale) * palette.smoke_moss.rgb;
         }
         
         // Grain shimmer
@@ -886,30 +920,27 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
             bg = base_col + vec3f(grain_sum);
         }
 
-        // --- Layered animated smoke wisps (skip fbm when smoke disabled) --------
+        // --- Domain-warped smoke (Book of Shaders ch.13) ---------------------
+        // 1 cheap warp + 2 warped smoke layers replaces 4 plain fbm layers.
+        // Domain warping produces organic swirling with fewer lookups.
         if (s_intensity > 0.0 && !effects_minimal) {
-            // Per-layer UV scales control the visible "size" of each color group.
-            // Speed is already embedded in t.
-            // Layer 1: large slow rolling smoke (warm)
-            let smoke1_uv = ds_uv * (2.0 * s_warm_scale) + vec2f(t * 0.06, t * 0.025);
-            let smoke1 = fbm(smoke1_uv) * 0.10 * s_intensity;
+            // Cheap warp field (2 octaves) — swirls the sample coordinates
+            let warp = fbm_lo(ds_uv * 2.0 + vec2f(t * 0.04, t * 0.02));
+            let warped_uv = ds_uv + vec2f(warp * 0.15, warp * 0.1);
 
-            // Layer 2: medium tendrils drifting opposite direction (cool)
-            let smoke2_uv = ds_uv * (4.0 * s_cool_scale) + vec2f(-t * 0.09, t * 0.05);
-            let smoke2 = fbm(smoke2_uv) * 0.06 * s_intensity;
+            // Layer 1: warm rolling smoke (3 oct, rotated)
+            let smoke_warm = smoke_noise(warped_uv * (2.0 * s_warm_scale)
+                             + vec2f(t * 0.05, t * 0.02)) * 0.14 * s_intensity;
 
-            // Layer 3: mossy mid-tone wisps — curling upward
-            let smoke3_uv = ds_uv * (5.0 * s_moss_scale) + vec2f(sin(t * 0.3) * 0.5, -t * 0.12);
-            let smoke3 = fbm(smoke3_uv) * 0.05 * s_intensity;
+            // Layer 2: cool tendrils drifting opposite direction (3 oct, rotated)
+            let smoke_cool = smoke_noise(warped_uv * (3.5 * s_cool_scale)
+                             + vec2f(-t * 0.07, t * 0.04)) * 0.09 * s_intensity;
 
-            // Layer 4: very slow deep background churn (warm)
-            let smoke4_uv = ds_uv * (1.2 * s_warm_scale) + vec2f(t * 0.015, -t * 0.01);
-            let smoke4 = fbm(smoke4_uv) * 0.07 * s_intensity;
-
-            // Composite smoke with slight colour tinting per layer
-            bg = bg + vec3f(smoke1 + smoke4) * vec3f(0.85, 0.80, 0.75);  // warm base smoke
-            bg = bg + vec3f(smoke2) * vec3f(0.6, 0.7, 0.85);              // cool mid wisps
-            bg = bg + vec3f(smoke3) * palette.smoke_moss.rgb;              // moss-tone wisps
+            // Composite with colour tinting
+            bg = bg + vec3f(smoke_warm) * vec3f(0.85, 0.80, 0.75);  // warm smoke
+            bg = bg + vec3f(smoke_cool) * vec3f(0.6, 0.7, 0.85);    // cool wisps
+            // Moss tinting from warp noise (free — reuses existing value)
+            bg = bg + vec3f(warp * 0.04 * s_intensity * s_moss_scale) * palette.smoke_moss.rgb;
         }
 
         // Faint animated grain shimmer (skip noise when grain disabled)
