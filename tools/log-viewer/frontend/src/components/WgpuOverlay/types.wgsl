@@ -12,11 +12,17 @@ const PK_EMBER       : f32 = 1.0;
 const PK_GOD_RAY     : f32 = 2.0;
 const PK_GLITTER     : f32 = 3.0;
 
+// ---- element kind constants for effect preview containers -------------------
+const KIND_FX_SPARK   : f32 = 8.0;
+const KIND_FX_EMBER   : f32 = 9.0;
+const KIND_FX_BEAM    : f32 = 10.0;
+const KIND_FX_GLITTER : f32 = 11.0;
+
 // ---- index ranges per particle type (must match TypeScript) -----------------
 const SPARK_END   : u32 = 96u;
 const EMBER_END   : u32 = 288u;
-const RAY_END     : u32 = 416u;
-const GLITTER_END : u32 = 512u;
+const RAY_END     : u32 = 544u;
+const GLITTER_END : u32 = 640u;
 
 // ---- uniforms (64 bytes = 16 × f32) ----------------------------------------
 struct Uniforms {
@@ -51,7 +57,7 @@ struct Uniforms {
     glitter_speed    : f32,    // glitter speed multiplier 0.0–3.0
     beam_height      : f32,    // beam quad height multiplier (default 35.0)
     beam_count       : f32,    // max active beams (0 = all slots)
-    _pad4            : f32,
+    beam_drift       : f32,    // beam upward drift distance multiplier 0.0–3.0
 }
 
 // ---- DOM element rectangle --------------------------------------------------

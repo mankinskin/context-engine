@@ -500,6 +500,8 @@ export interface EffectSettings {
     glitterSpeed: number;
     /** Angelic beam quad height multiplier 10–100 (maps to 10.0–100.0). Default 35. */
     beamHeight: number;
+  /** Angelic beam upward drift distance 0–300 (maps to 0.0–3.0×). Default 100. */
+  beamDrift: number;
     /** Maximum number of active beams 0–128 (0 = use all available slots). Default 128. */
     beamCount: number;
 }
@@ -526,7 +528,8 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
     beamSpeed: 100,
     glitterSpeed: 100,
     beamHeight: 35,
-    beamCount: 128,
+  beamDrift: 100,
+  beamCount: 256,
 };
 
 export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {

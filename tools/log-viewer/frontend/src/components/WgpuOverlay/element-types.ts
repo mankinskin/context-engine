@@ -16,6 +16,7 @@
  *   13   : highlighted span group (bright shimmer)
  *   14   : selected log entry     (intense focus glow)
  *   15   : panic entries          (alarm pulse)
+ *   16-19: effect preview containers (theme settings)
  */
 export const ELEMENT_SELECTORS = [
     // --- structural regions (hue 0.00 – 0.53) ---
@@ -37,6 +38,11 @@ export const ELEMENT_SELECTORS = [
     '.log-entry.span-highlighted',
     '.log-entry.selected',
     '.log-entry.panic-entry',
+    // --- effect preview containers (theme settings) ---
+    '.effect-preview-sparks',
+    '.effect-preview-embers',
+    '.effect-preview-beams',
+    '.effect-preview-glitter',
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -52,13 +58,17 @@ export const KIND_DEBUG      = 4;
 export const KIND_SPAN_HL    = 5;
 export const KIND_SELECTED   = 6;
 export const KIND_PANIC      = 7;
+export const KIND_FX_SPARK = 8;
+export const KIND_FX_EMBER = 9;
+export const KIND_FX_BEAM = 10;
+export const KIND_FX_GLITTER = 11;
 
 /** f32 values per element in the storage buffer: [x, y, w, h, hue, kind, _p1, _p2] */
 export const ELEM_FLOATS = 8;
 export const ELEM_BYTES  = ELEM_FLOATS * 4;  // 32 bytes, 16-byte aligned
 
 /** Number of particles simulated by the compute shader. */
-export const NUM_PARTICLES    = 512;
+export const NUM_PARTICLES = 640;
 /**
  * Floats per particle: [px, py, vx, vy, life, max_life, hue, size,
  *                        kind, spawn_t, _p1, _p2]
@@ -79,6 +89,10 @@ export function selectorKind(selectorIndex: number): number {
     if (selectorIndex === 13) return KIND_SPAN_HL;
     if (selectorIndex === 14) return KIND_SELECTED;
     if (selectorIndex === 15) return KIND_PANIC;
+    if (selectorIndex === 16) return KIND_FX_SPARK;
+    if (selectorIndex === 17) return KIND_FX_EMBER;
+    if (selectorIndex === 18) return KIND_FX_BEAM;
+    if (selectorIndex === 19) return KIND_FX_GLITTER;
     return KIND_STRUCTURAL;
 }
 
@@ -89,7 +103,7 @@ export function selectorKind(selectorIndex: number): number {
 export const SELECTOR_META: ReadonlyArray<{ sel: string; hue: number; kind: number }> =
     ELEMENT_SELECTORS.map((sel, i) => ({
         sel,
-        hue:  i / ELEMENT_SELECTORS.length,
+        hue: i < 16 ? i / 16 : 0.5,  // stable hues for original 16; previews use neutral
         kind: selectorKind(i),
     }));
 
@@ -97,7 +111,7 @@ export const SELECTOR_META: ReadonlyArray<{ sel: string; hue: number; kind: numb
  *  These are small-cardinality interactive-state selectors that drive particle
  *  effects (beams, glitter, glow).  We scan them first so they always get
  *  slots in the element buffer. */
-export const PRIORITY_SELECTOR_INDICES = new Set([13, 14, 15]); // span-highlighted, selected, panic
+export const PRIORITY_SELECTOR_INDICES = new Set([13, 14, 15, 16, 17, 18, 19]);
 
 /**
  * Pre-computed selector scan order: priority selectors first, then the rest.

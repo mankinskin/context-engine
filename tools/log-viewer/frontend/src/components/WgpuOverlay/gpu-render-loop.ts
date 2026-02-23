@@ -194,6 +194,7 @@ export class RenderLoop {
         u[28] = eff.glitterSpeed / 100;
         u[29] = eff.beamHeight;
         u[30] = eff.beamCount;
+        u[31] = eff.beamDrift / 100;
         this.buffers.uploadUniforms();
 
         // Upload palette

@@ -50,6 +50,23 @@ fn park_dead(idx: u32) {
     particles[idx] = p;
 }
 
+// Returns the kind of the currently hovered element, or -1.0 if none.
+fn hovered_elem_kind() -> f32 {
+    let hi = i32(u.hover_elem);
+    if hi < 0 || hi >= i32(u.element_count) { return -1.0; }
+    return elems[u32(hi)].kind;
+}
+
+// Returns true if this hover-based effect should spawn on the hovered element.
+// Regular elements (kind < 8) allow all effects.
+// Preview containers (kind 8-11) only allow their matching effect.
+fn hover_allows(fx_kind: f32) -> bool {
+    let hk = hovered_elem_kind();
+    if hk < 0.0 { return false; }       // nothing hovered
+    if hk < 7.5 { return true; }        // regular element — all effects
+    return abs(hk - fx_kind) < 0.5;     // preview — must match
+}
+
 // ---- metal spark physics (at mouse cursor, continuous while hovering) --------
 
 fn update_metal_spark(idx: u32) {
@@ -61,7 +78,8 @@ fn update_metal_spark(idx: u32) {
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
-        if hover_idx < 0 || hover_idx >= i32(u.element_count) {
+        if hover_idx < 0 || hover_idx >= i32(u.element_count)
+           || !hover_allows(KIND_FX_SPARK) {
             park_dead(idx);
             return;
         }
@@ -111,7 +129,8 @@ fn update_ember(idx: u32) {
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
-        if hover_idx < 0 || hover_idx >= i32(u.element_count) {
+        if hover_idx < 0 || hover_idx >= i32(u.element_count)
+           || !hover_allows(KIND_FX_EMBER) {
             park_dead(idx);
             return;
         }
@@ -152,8 +171,17 @@ fn update_ember(idx: u32) {
 fn update_god_ray(idx: u32) {
     var p  = particles[idx];
     let dt = u.delta_time;
-    let sel_idx = i32(u.selected_elem);
     let spd = max(u.beam_speed, 0.01);
+
+    // Beam source: normally selected_elem, or hovered beam-preview container
+    var beam_src = i32(u.selected_elem);
+    let hover_idx = i32(u.hover_elem);
+    if hover_idx >= 0 && hover_idx < i32(u.element_count) {
+        let hk = elems[u32(hover_idx)].kind;
+        if abs(hk - KIND_FX_BEAM) < 0.5 {
+            beam_src = hover_idx;
+        }
+    }
 
     // Respect beam count limit — park excess beams
     let max_beams = u32(u.beam_count);
@@ -165,21 +193,22 @@ fn update_god_ray(idx: u32) {
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
-        if sel_idx < 0 || sel_idx >= i32(u.element_count) {
+        if beam_src < 0 || beam_src >= i32(u.element_count) {
             park_dead(idx);
             return;
         }
 
-        let ei   = u32(sel_idx);
+        let ei   = u32(beam_src);
         let seed = idx * 7919u + u32(u.time * 800.0);
 
         // Spawn on the element perimeter (beams rise upward from any border)
         p.pos = spawn_on_perimeter(ei, seed);
 
-        // Rise upward only
+        // Rise upward only — drift distance scaled by beam_drift setting
+        let drift_scale = select(1.0, u.beam_drift, u.beam_drift > 0.0);
         p.vel = vec2f(
             (rand_f(seed + 2u) - 0.5) * 2.0,
-            -12.0 - rand_f(seed + 3u) * 10.0,
+            (-12.0 - rand_f(seed + 3u) * 10.0) * drift_scale,
         ) * spd;
 
         p.max_life = 2.0 + rand_f(seed + 4u) * 2.0;
@@ -209,7 +238,8 @@ fn update_glitter(idx: u32) {
     p.life -= dt * spd;
 
     if p.life <= 0.0 {
-        if hover_idx < 0 || hover_idx >= i32(u.element_count) {
+        if hover_idx < 0 || hover_idx >= i32(u.element_count)
+           || !hover_allows(KIND_FX_GLITTER) {
             park_dead(idx);
             return;
         }

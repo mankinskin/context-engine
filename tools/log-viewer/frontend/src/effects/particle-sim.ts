@@ -32,6 +32,7 @@ export function spawnBeam(
     particles: Particle3D[],
     cx: number, cy: number, cz: number,
     radius: number, time: number, maxBeams: number,
+    driftScale: number = 1.0,
 ): void {
     if (particles.filter(p => p.kind === 0).length >= maxBeams) return;
     const angle = Math.random() * Math.PI * 2;
@@ -41,7 +42,7 @@ export function spawnBeam(
         y: cy,
         z: cz + Math.sin(angle) * r,
         vx: (Math.random() - 0.5) * 0.15,
-        vy: 1.2 + Math.random() * 0.8,
+        vy: (1.2 + Math.random() * 0.8) * driftScale,
         vz: (Math.random() - 0.5) * 0.15,
         size: 0.6 + Math.random() * 1.0,
         life: 2.0 + Math.random() * 2.0,

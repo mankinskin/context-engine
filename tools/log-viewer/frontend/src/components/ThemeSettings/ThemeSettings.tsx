@@ -89,12 +89,13 @@ interface SectionProps {
   icon: string;
   children: preact.ComponentChildren;
   defaultOpen?: boolean;
+  className?: string;
 }
 
-function Section({ title, icon, children, defaultOpen = false }: SectionProps) {
+function Section({ title, icon, children, defaultOpen = false, className }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section class={`theme-section ${open ? 'open' : ''}`}>
+    <section class={`theme-section ${open ? 'open' : ''}${className ? ' ' + className : ''}`}>
       <button class="theme-section-header" onClick={() => setOpen(!open)}>
         <span class="theme-section-icon">{icon}</span>
         <span class="theme-section-title">{title}</span>
@@ -369,7 +370,7 @@ export function ThemeSettings() {
       </Section>
 
       {/* ── Particle: Metal Sparks ── */}
-      <Section title="Particles: Metal Sparks" icon="✦">
+      <Section title="Particles: Metal Sparks" icon="✦" className="effect-preview-sparks">
         <p class="theme-section-hint">
           Sparks spawn at the mouse cursor when hovering over elements.
         </p>
@@ -391,7 +392,7 @@ export function ThemeSettings() {
       </Section>
 
       {/* ── Particle: Embers ── */}
-      <Section title="Particles: Embers / Ash" icon="🔥">
+      <Section title="Particles: Embers / Ash" icon="🔥" className="effect-preview-embers">
         <p class="theme-section-hint">
           Rising embers/ash from hovered element borders.
         </p>
@@ -412,7 +413,7 @@ export function ThemeSettings() {
       </Section>
 
       {/* ── Particle: Angelic Beams ── */}
-      <Section title="Particles: Angelic Beams" icon="✧">
+      <Section title="Particles: Angelic Beams" icon="✧" className="effect-preview-beams">
         <p class="theme-section-hint">
           Pixel-thin vertical rays rising from the selected element.
         </p>
@@ -445,19 +446,31 @@ export function ThemeSettings() {
         <div class="theme-slider-row">
           <div class="theme-color-info">
             <span class="theme-color-label">Count</span>
-            <span class="theme-color-desc">Maximum active beams (0 = all 128 slots)</span>
+            <span class="theme-color-desc">Maximum active beams (0 = all 256 slots)</span>
           </div>
           <div class="theme-slider-controls">
-            <input type="range" min="0" max="128" step="1" value={effectSettings.value.beamCount}
+            <input type="range" min="0" max="256" step="1" value={effectSettings.value.beamCount}
               onInput={(e) => updateEffectSetting('beamCount', parseInt((e.target as HTMLInputElement).value, 10))}
               class="theme-range-slider" />
             <span class="theme-slider-value">{effectSettings.value.beamCount || 'All'}</span>
           </div>
         </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Drift</span>
+            <span class="theme-color-desc">Upward drift distance (0–300%)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.beamDrift}
+              onInput={(e) => updateEffectSetting('beamDrift', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamDrift}%</span>
+          </div>
+        </div>
       </Section>
 
       {/* ── Particle: Glitter ── */}
-      <Section title="Particles: Glitter" icon="✨">
+      <Section title="Particles: Glitter" icon="✨" className="effect-preview-glitter">
         <p class="theme-section-hint">
           Twinkling sparkles drifting along hovered element borders.
         </p>

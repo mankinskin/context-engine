@@ -27,7 +27,7 @@ import {
     screenToRay, rayPlaneIntersectGeneral, vec3Sub, vec3Normalize,
 } from '../Scene3D/math3d';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../effects/palette';
-import { themeColors } from '../../store/theme';
+import { themeColors, effectSettings } from '../../store/theme';
 import {
     type Particle3D,
     PARTICLE_INSTANCE_FLOATS,
@@ -443,7 +443,8 @@ export function HypergraphView() {
             if (inter.selectedIdx >= 0) {
                 const sn = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sn) {
-                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS);
+                    const drift = effectSettings.value.beamDrift / 100;
+                    for (let i = 0; i < 4; i++) spawnBeam(particles, sn.x, sn.y, sn.z, sn.radius, time, MAX_BEAMS, drift);
                 }
             }
             if (inter.hoverIdx >= 0) {
