@@ -136,9 +136,14 @@ fn hovered_elem_kind() -> f32 {
 // Returns true if this hover-based effect should spawn on the hovered element.
 // Regular elements (kind < 8) allow all effects.
 // Preview containers (kind 8-11) only allow their matching effect.
+// In 3D views (scene3d=4, hypergraph=5), skip structural elements (kind=0)
+// like the view-container — effects should only apply to scene objects.
 fn hover_allows(fx_kind: f32) -> bool {
     let hk = hovered_elem_kind();
     if hk < 0.0 { return false; }       // nothing hovered
+    // Skip structural elements in 3D views
+    let is_3d_view = u.current_view >= 4.0 && u.current_view <= 5.0;
+    if is_3d_view && hk < 0.5 { return false; }
     if hk < 7.5 { return true; }        // regular element — all effects
     return abs(hk - fx_kind) < 0.5;     // preview — must match
 }

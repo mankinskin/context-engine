@@ -13,7 +13,7 @@
  * region so draw calls are clipped correctly.
  */
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
-import { hypergraphSnapshot, searchStates, activeSearchStep, setActiveSearchStep } from '../../store';
+import { hypergraphSnapshot, searchStates, activeSearchStep, activeSearchState, setActiveSearchStep } from '../../store';
 import paletteWgsl from '../../effects/palette.wgsl?raw';
 import shaderSource from './hypergraph.wgsl?raw';
 import './hypergraph.css';
@@ -153,12 +153,29 @@ function SearchStatePanel() {
         setActiveSearchStep(step);
     };
 
-    const phaseClass = (phase: string) => `phase-${phase.toLowerCase()}`;
+    // Convert transition kind to display name
+    const getTransitionName = (state: typeof states[0]) => {
+        const kind = state.transition?.kind ?? 'unknown';
+        // Convert snake_case to Title Case
+        return kind.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    };
+
+    const phaseClass = (state: typeof states[0]) => {
+        const kind = state.transition?.kind ?? 'unknown';
+        return `phase-${kind.toLowerCase().replace(/_/g, '')}`;
+    };
+
+    // Get operation type badge
+    const opTypeBadge = (opType: string) => {
+        if (opType === 'search') return '🔍';
+        if (opType === 'insert') return '+';
+        return '📖';
+    };
 
     return (
         <div class="search-state-panel">
             <div class="ssp-header">
-                <span class="ssp-title">Search States</span>
+                <span class="ssp-title">Operation Steps</span>
                 <span class="ssp-count">{states.length} steps</span>
             </div>
             <div ref={listRef} class="ssp-list">
@@ -168,9 +185,9 @@ function SearchStatePanel() {
                         class={`ssp-item ${currentStep === idx ? 'active' : ''}`}
                         onClick={() => handleItemClick(idx)}
                     >
-                        <span class="ssp-step">{state.step}</span>
+                        <span class="ssp-step">{opTypeBadge(state.op_type)}{state.step}</span>
                         <div class="ssp-content">
-                            <div class={`ssp-phase ${phaseClass(state.phase)}`}>{state.phase}</div>
+                            <div class={`ssp-phase ${phaseClass(state)}`}>{getTransitionName(state)}</div>
                             <div class="ssp-desc">{state.description}</div>
                         </div>
                     </div>
@@ -749,6 +766,15 @@ export function HypergraphView() {
     }
 
     const maxWidth = layout?.maxWidth ?? 1;
+    
+    // Get location info from active search state for node styling
+    const loc = activeSearchState.value?.location;
+    const selectedNode = loc?.selected_node;
+    const rootNode = loc?.root_node;
+    const tracePath = new Set(loc?.trace_path ?? []);
+    const completedNodes = new Set(loc?.completed_nodes ?? []);
+    const pendingParents = new Set(loc?.pending_parents ?? []);
+    const pendingChildren = new Set(loc?.pending_children ?? []);
 
     return (
         <div ref={containerRef} class="hypergraph-container hg-dom-mode">
@@ -758,10 +784,28 @@ export function HypergraphView() {
                     const isSel = n.index === selectedIdx;
                     const isHov = n.index === hoverIdx;
                     const levelClass = nodeWidthClass(n.width, maxWidth);
+                    
+                    // Visualization state classes
+                    const isSelected = n.index === selectedNode;
+                    const isRoot = n.index === rootNode;
+                    const isPath = tracePath.has(n.index);
+                    const isCompleted = completedNodes.has(n.index);
+                    const isPendingParent = pendingParents.has(n.index);
+                    const isPendingChild = pendingChildren.has(n.index);
+                    
+                    const vizClasses = [
+                        isSelected && 'viz-selected',
+                        isRoot && 'viz-root',
+                        isPath && 'viz-path',
+                        isCompleted && 'viz-completed',
+                        isPendingParent && 'viz-pending-parent',
+                        isPendingChild && 'viz-pending-child',
+                    ].filter(Boolean).join(' ');
+                    
                     return (
                         <div
                             key={n.index}
-                            class={`log-entry hg-node ${levelClass} ${isSel ? 'selected' : ''} ${isHov ? 'span-highlighted' : ''} ${n.isAtom ? 'hg-atom' : 'hg-compound'}`}
+                            class={`log-entry hg-node ${levelClass} ${isSel ? 'selected' : ''} ${isHov ? 'span-highlighted' : ''} ${n.isAtom ? 'hg-atom' : 'hg-compound'} ${vizClasses}`}
                             data-node-idx={n.index}
                         >
                             <div class="hg-node-content">

@@ -1,21 +1,28 @@
 //! Request and response types for the log viewer HTTP API.
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::log_parser::LogEntry;
 
 /// Response for listing log files
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct LogFileInfo {
     pub name: String,
     pub size: u64,
     pub modified: Option<String>,
     /// Whether this log file contains a hypergraph snapshot event
     pub has_graph_snapshot: bool,
+    /// Whether this log file contains search operation events
+    pub has_search_ops: bool,
+    /// Whether this log file contains insert operation events
+    pub has_insert_ops: bool,
 }
 
 /// Response for log content
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct LogContentResponse {
     pub name: String,
     pub entries: Vec<LogEntry>,
@@ -44,7 +51,8 @@ pub struct SearchQuery {
 }
 
 /// Search result response
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct SearchResponse {
     pub query: String,
     pub matches: Vec<LogEntry>,
@@ -61,7 +69,8 @@ pub struct JqQuery {
 }
 
 /// JQ query result response
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct JqQueryResponse {
     pub query: String,
     pub matches: Vec<LogEntry>,

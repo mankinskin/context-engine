@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use regex::Regex;
 use once_cell::sync::Lazy;
+use ts_rs::TS;
 
 // Regex to strip ANSI escape codes
 static ANSI_REGEX: Lazy<Regex> = Lazy::new(|| {
@@ -41,7 +42,8 @@ fn parse_panic_location(message: &str) -> Option<(String, u32, u32)> {
 }
 
 /// Parsed assertion diff data
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct AssertionDiff {
     pub title: String,
     pub left_label: String,
@@ -80,7 +82,8 @@ fn parse_assertion_diff(message: &str) -> Option<AssertionDiff> {
 }
 
 /// A parsed log entry
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/types/generated/")]
 pub struct LogEntry {
     /// Entry index (1-based)
     pub line_number: usize,
@@ -97,6 +100,7 @@ pub struct LogEntry {
     /// Indentation depth (number of parent spans)
     pub depth: usize,
     /// Additional fields (preserves structured JSON values)
+    #[ts(type = "Record<string, unknown>")]
     pub fields: HashMap<String, serde_json::Value>,
     /// Source file location (from tracing macro)
     pub file: Option<String>,

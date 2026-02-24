@@ -126,6 +126,28 @@
   color: var(--accent-purple);
 }
 
+/* Sidebar filters container */
+.sidebar-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+}
+
+/* Search filter button */
+.sidebar-filter-btn.filter-search.active {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+/* Insert filter button */
+.sidebar-filter-btn.filter-insert.active {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
 /* Graph snapshot badge on file items */
 .graph-badge {
   color: var(--accent-purple);
@@ -137,6 +159,27 @@
 .file-item:hover .graph-badge,
 .file-item.active .graph-badge {
   opacity: 1;
+}
+
+/* Search ops badge */
+.search-badge {
+  font-size: 9px;
+  margin-right: 3px;
+  opacity: 0.7;
+}
+
+.file-item:hover .search-badge,
+.file-item.active .search-badge {
+  opacity: 1;
+}
+
+/* Insert ops badge */
+.insert-badge {
+  color: var(--accent-green);
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 3px;
+  opacity: 0.7;
 }
 
 /* Content Area */

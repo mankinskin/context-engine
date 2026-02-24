@@ -30,6 +30,9 @@ jaq-syn = "1"
 # Tracing (needed for #[instrument] proc macro)
 tracing = "0.1"
 
+# TypeScript type generation
+ts-rs = { version = "10", features = ["serde-json-impl"] }
+
 # MCP protocol
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 

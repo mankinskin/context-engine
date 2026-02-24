@@ -108,15 +108,30 @@ pub async fn list_logs(
         let path = entry.path();
         if path.extension().map_or(false, |ext| ext == "log") {
             let metadata = entry.metadata().ok();
-            // Quick scan for graph_snapshot marker (check first 64KB for speed)
-            let has_graph_snapshot = std::fs::read(&path)
-                .map(|bytes| {
-                    let scan_len = bytes.len().min(64 * 1024);
-                    bytes[..scan_len]
-                        .windows(b"graph_snapshot".len())
-                        .any(|w| w == b"graph_snapshot")
-                })
-                .unwrap_or(false);
+            // Quick scan for markers (check first 64KB for speed)
+            let bytes = std::fs::read(&path).unwrap_or_default();
+            let scan_len = bytes.len().min(64 * 1024);
+            let scan_bytes = &bytes[..scan_len];
+            
+            let has_graph_snapshot = scan_bytes
+                .windows(b"graph_snapshot".len())
+                .any(|w| w == b"graph_snapshot");
+            
+            // Scan for op_type markers in graph_op events
+            // Support both old (escaped string) and new (raw object) log formats
+            let has_search_ops = scan_bytes
+                .windows(br#"\"op_type\":\"search\""#.len())
+                .any(|w| w == br#"\"op_type\":\"search\""#)
+                || scan_bytes
+                    .windows(br#""op_type": "search""#.len())
+                    .any(|w| w == br#""op_type": "search""#);
+            
+            let has_insert_ops = scan_bytes
+                .windows(br#"\"op_type\":\"insert\""#.len())
+                .any(|w| w == br#"\"op_type\":\"insert\""#)
+                || scan_bytes
+                    .windows(br#""op_type": "insert""#.len())
+                    .any(|w| w == br#""op_type": "insert""#);
 
             let file_info = LogFileInfo {
                 name: path.file_name().unwrap().to_string_lossy().to_string(),
@@ -128,6 +143,8 @@ pub async fn list_logs(
                     })
                 }),
                 has_graph_snapshot,
+                has_search_ops,
+                has_insert_ops,
             };
             debug!(file = %file_info.name, size = file_info.size, "Found log file");
             logs.push(file_info);

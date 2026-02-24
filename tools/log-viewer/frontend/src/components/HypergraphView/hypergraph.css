@@ -387,3 +387,110 @@
     min-width: 60px;
     text-align: center;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Visualization State Styles — node highlighting for search/insert operations
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Selected node — bright cyan with pulsing glow */
+.hg-node.viz-selected {
+    background: rgba(0, 180, 220, 0.25) !important;
+    border-color: rgba(0, 220, 255, 0.8) !important;
+    box-shadow: 
+        0 0 12px rgba(0, 220, 255, 0.5),
+        0 0 24px rgba(0, 180, 220, 0.25);
+    animation: viz-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes viz-pulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(0, 220, 255, 0.5), 0 0 24px rgba(0, 180, 220, 0.25); }
+    50% { box-shadow: 0 0 18px rgba(0, 220, 255, 0.7), 0 0 32px rgba(0, 180, 220, 0.4); }
+}
+
+/* Root node — gold ring indicator */
+.hg-node.viz-root {
+    border-color: rgba(255, 200, 80, 0.8) !important;
+    box-shadow: 
+        0 0 8px rgba(255, 200, 80, 0.4),
+        inset 0 0 8px rgba(255, 200, 80, 0.1);
+}
+
+.hg-node.viz-root::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid rgba(255, 200, 80, 0.6);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* Path nodes — connected trace line styling */
+.hg-node.viz-path {
+    background: rgba(100, 200, 255, 0.15) !important;
+    border-color: rgba(100, 200, 255, 0.5) !important;
+    box-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
+}
+
+/* Completed/matched nodes — green success */
+.hg-node.viz-completed {
+    background: rgba(80, 200, 120, 0.2) !important;
+    border-color: rgba(80, 220, 120, 0.6) !important;
+    box-shadow: 0 0 8px rgba(80, 200, 120, 0.35);
+}
+
+/* Pending parent candidates — orange */
+.hg-node.viz-pending-parent {
+    background: rgba(255, 160, 80, 0.15) !important;
+    border-color: rgba(255, 160, 80, 0.5) !important;
+    box-shadow: 0 0 6px rgba(255, 160, 80, 0.3);
+}
+
+/* Pending child candidates — purple */
+.hg-node.viz-pending-child {
+    background: rgba(180, 120, 255, 0.15) !important;
+    border-color: rgba(180, 120, 255, 0.5) !important;
+    box-shadow: 0 0 6px rgba(180, 120, 255, 0.3);
+}
+
+/* Combination states — selected + root gets both effects */
+.hg-node.viz-selected.viz-root {
+    border-color: rgba(255, 220, 100, 0.8) !important;
+    box-shadow: 
+        0 0 12px rgba(0, 220, 255, 0.5),
+        0 0 24px rgba(255, 200, 80, 0.3);
+}
+
+/* ── Operation Timeline Phase Badges ── */
+.ssp-phase.phase-start_node,
+.ssp-phase.phase-startnode { color: #60d8ff; }
+.ssp-phase.phase-visit_parent,
+.ssp-phase.phase-visitparent { color: #ffa860; }
+.ssp-phase.phase-visit_child,
+.ssp-phase.phase-visitchild { color: #c090ff; }
+.ssp-phase.phase-child_match,
+.ssp-phase.phase-childmatch { color: #70e080; }
+.ssp-phase.phase-child_mismatch,
+.ssp-phase.phase-childmismatch { color: #ff7060; }
+.ssp-phase.phase-dequeue { color: #ffa860; }
+.ssp-phase.phase-root_explore,
+.ssp-phase.phase-rootexplore { color: #c090ff; }
+.ssp-phase.phase-match_advance,
+.ssp-phase.phase-matchadvance { color: #70e080; }
+.ssp-phase.phase-parent_explore,
+.ssp-phase.phase-parentexplore { color: #ff9070; }
+.ssp-phase.phase-split_start,
+.ssp-phase.phase-splitstart { color: #ff9070; }
+.ssp-phase.phase-split_complete,
+.ssp-phase.phase-splitcomplete { color: #70e080; }
+.ssp-phase.phase-join_start,
+.ssp-phase.phase-joinstart { color: #c090ff; }
+.ssp-phase.phase-join_step,
+.ssp-phase.phase-joinstep { color: #a0c0ff; }
+.ssp-phase.phase-join_complete,
+.ssp-phase.phase-joincomplete { color: #70e080; }
+.ssp-phase.phase-create_pattern,
+.ssp-phase.phase-createpattern { color: #ffdc60; }
+.ssp-phase.phase-create_root,
+.ssp-phase.phase-createroot { color: #ffa860; }
+.ssp-phase.phase-update_pattern,
+.ssp-phase.phase-updatepattern { color: #a0c0ff; }

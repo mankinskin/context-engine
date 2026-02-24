@@ -628,11 +628,20 @@ fn sample_scene(px: vec2f) -> vec4f {
     var out = vec4f(0.0);
     let count = u32(u.element_count);
 
+    // In 3D views (scene3d=4, hypergraph=5), skip cinder border on structural
+    // elements (kind=0) like the view-container — effects should only apply
+    // to actual scene objects, not the outer viewport frame.
+    let is_3d_view = u.current_view >= 4.0 && u.current_view <= 5.0;
+
     // When hovering, only process the hovered element (skip full loop)
     if hover_idx >= 0 && cs > 0.0 {
         let i = u32(hover_idx);
         if i < count {
             let e = elems[i];
+            // Skip structural elements (kind=0) in 3D views
+            if is_3d_view && e.kind < 0.5 {
+                return vec4f(0.0);
+            }
             let prox = hover_proximity(e.rect.x, e.rect.y, e.rect.z, e.rect.w);
             let border = hover_border(px, e.rect.x, e.rect.y, e.rect.z, e.rect.w, e.hue, u.time, prox);
             out = out + border;
@@ -643,6 +652,8 @@ fn sample_scene(px: vec2f) -> vec4f {
     // Full loop only when cinder enabled but no hover (static shadows)
     for (var i = 0u; i < count; i++) {
         let e  = elems[i];
+        // Skip structural elements in 3D views
+        if is_3d_view && e.kind < 0.5 { continue; }
         let ex = e.rect.x;
         let ey = e.rect.y;
         let ew = e.rect.z;
