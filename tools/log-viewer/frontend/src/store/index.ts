@@ -124,41 +124,60 @@ export const hypergraphSnapshot = computed((): HypergraphSnapshot | null => {
   return null;
 });
 
-// ── Search State Visualization ──
+// ── Graph Operation Visualization ──
 
-// Computed: extract all search_state events from log entries (sorted by step)
-export const searchStates = computed((): SearchStateEvent[] => {
+// Computed: extract all graph_op events from log entries (sorted by step)
+// Also supports legacy search_state events for backwards compatibility
+export const graphOpEvents = computed((): SearchStateEvent[] => {
   const allEntries = entries.value;
-  const states: SearchStateEvent[] = [];
+  const events: SearchStateEvent[] = [];
   for (const entry of allEntries) {
-    if (entry.message === 'search_state' && entry.fields?.search_state) {
+    // New format: graph_op events
+    if (entry.message === 'graph_op' && entry.fields?.graph_op) {
+      try {
+        const data = typeof entry.fields.graph_op === 'string'
+          ? JSON.parse(entry.fields.graph_op)
+          : entry.fields.graph_op;
+        if (data && typeof data.step === 'number') {
+          events.push(data as SearchStateEvent);
+        }
+      } catch {
+        // skip invalid JSON
+      }
+    }
+    // Legacy format: search_state events (for old log files)
+    else if (entry.message === 'search_state' && entry.fields?.search_state) {
       try {
         const data = typeof entry.fields.search_state === 'string'
           ? JSON.parse(entry.fields.search_state)
           : entry.fields.search_state;
         if (data && typeof data.step === 'number') {
-          states.push(data as SearchStateEvent);
+          // Convert legacy format to new format
+          events.push(data as SearchStateEvent);
         }
       } catch {
         // skip invalid JSON
       }
     }
   }
-  return states.sort((a, b) => a.step - b.step);
+  return events.sort((a, b) => a.step - b.step);
 });
 
-// Currently active search step (controlled by slider/playback)
+// Alias for backwards compatibility
+export const searchStates = graphOpEvents;
+
+// Currently active step (controlled by slider/playback)
 export const activeSearchStep = signal<number>(-1);
 
-// The active search state snapshot
+// The active graph op event
 export const activeSearchState = computed((): SearchStateEvent | null => {
   const step = activeSearchStep.value;
-  const states = searchStates.value;
-  if (step < 0 || step >= states.length) return null;
-  return states[step];
+  const events = graphOpEvents.value;
+  if (step < 0 || step >= events.length) return null;
+  return events[step] ?? null;
 });
 
-// Action to set the active search step
+// Action to set the active step
 export function setActiveSearchStep(step: number) {
   activeSearchStep.value = step;
 }

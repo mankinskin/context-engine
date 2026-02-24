@@ -104,23 +104,57 @@ export interface FlowEdge {
   target: string;
 }
 
-// ── Search state types (for algorithm visualization) ──
+// ── Graph Operation Visualization Types ──
 
-export type SearchPhase = 'Init' | 'Dequeue' | 'Compare' | 'RootExplore' | 'MatchAdvance' | 'ParentExplore' | 'Done';
+export type OperationType = 'search' | 'insert' | 'read';
 
-export interface SearchStateEvent {
-  step: number;
-  description: string;
-  phase: SearchPhase;
+// Transition kinds (tagged union discriminated by 'kind')
+export type Transition =
+  | { kind: 'start_node'; node: number }
+  | { kind: 'visit_parent'; from: number; to: number; entry_pos: number }
+  | { kind: 'visit_child'; from: number; to: number; child_index: number }
+  | { kind: 'child_match'; node: number; cursor_pos: number }
+  | { kind: 'child_mismatch'; node: number; cursor_pos: number; expected: number; actual: number }
+  | { kind: 'done'; final_node: number | null; success: boolean }
+  | { kind: 'dequeue'; node: number; queue_remaining: number; is_parent: boolean }
+  | { kind: 'root_explore'; root: number }
+  | { kind: 'match_advance'; root: number; prev_pos: number; new_pos: number }
+  | { kind: 'parent_explore'; current_root: number; parent_candidates: number[] }
+  | { kind: 'split_start'; node: number; split_position: number }
+  | { kind: 'split_complete'; original_node: number; left_fragment: number | null; right_fragment: number | null }
+  | { kind: 'join_start'; nodes: number[] }
+  | { kind: 'join_step'; left: number; right: number; result: number }
+  | { kind: 'join_complete'; result_node: number }
+  | { kind: 'create_pattern'; parent: number; pattern_id: number; children: number[] }
+  | { kind: 'create_root'; node: number; width: number }
+  | { kind: 'update_pattern'; parent: number; pattern_id: number; old_children: number[]; new_children: number[] };
+
+export interface LocationInfo {
+  selected_node: number | null;
+  root_node: number | null;
+  trace_path: number[];
+  completed_nodes: number[];
+  pending_parents: number[];
+  pending_children: number[];
+}
+
+export interface QueryInfo {
   query_tokens: number[];
   cursor_position: number;
-  start_node: number;
-  matched_nodes: number[];
-  partial_node: number | null;
-  candidate_parents: number[];
-  candidate_children: number[];
-  current_root: number | null;
+  query_width: number;
 }
+
+export interface GraphOpEvent {
+  step: number;
+  op_type: OperationType;
+  transition: Transition;
+  location: LocationInfo;
+  query: QueryInfo;
+  description: string;
+}
+
+// Legacy alias for backwards compatibility
+export type SearchStateEvent = GraphOpEvent;
 
 export interface LogStats {
   levelCounts: Record<LogLevel, number>;
