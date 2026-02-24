@@ -513,6 +513,19 @@ export function HypergraphView() {
             markOverlayScanDirty();
 
             // ── Fill edge instances ──
+            // Build set of trace-path edges for highlighting
+            const vizEvent = activeSearchState.value;
+            const vizTracePath = vizEvent?.location?.trace_path ?? [];
+            const pathEdgeSet = new Set<string>();
+            for (let p = 0; p < vizTracePath.length - 1; p++) {
+                const from = vizTracePath[p]!, to = vizTracePath[p + 1]!;
+                pathEdgeSet.add(`${from}-${to}`);
+                pathEdgeSet.add(`${to}-${from}`); // edges may be stored in either direction
+            }
+            const hasViz = vizTracePath.length > 0 || (vizEvent?.location?.selected_node != null);
+            // Trace path edge color: bright cyan
+            const PATH_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];
+            
             for (let i = 0; i < curLayout.edges.length; i++) {
                 const e = curLayout.edges[i]!;
                 const a = curLayout.nodeMap.get(e.from);
@@ -521,12 +534,39 @@ export function HypergraphView() {
                 const off = i * EDGE_INSTANCE_FLOATS;
                 edgeDataBuf[off    ] = a.x; edgeDataBuf[off + 1] = a.y; edgeDataBuf[off + 2] = a.z;
                 edgeDataBuf[off + 3] = b.x; edgeDataBuf[off + 4] = b.y; edgeDataBuf[off + 5] = b.z;
-                const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                
+                const isPathEdge = pathEdgeSet.has(`${e.from}-${e.to}`);
                 const highlighted = connectedEdges.has(`${e.from}-${e.to}-${e.patternIdx}`);
-                const alpha = inter.selectedIdx >= 0 ? (highlighted ? 0.8 : 0.12) : 0.4;
-                edgeDataBuf[off + 6] = pc[0]; edgeDataBuf[off + 7] = pc[1]; edgeDataBuf[off + 8] = pc[2];
+                
+                let r: number, g: number, b2: number, alpha: number, hlFlag: number;
+                if (isPathEdge) {
+                    // Path edges: bright cyan, always fully visible
+                    r = PATH_EDGE_COLOR[0]; g = PATH_EDGE_COLOR[1]; b2 = PATH_EDGE_COLOR[2];
+                    alpha = 0.9;
+                    hlFlag = 1;
+                } else if (inter.selectedIdx >= 0) {
+                    // Selection highlighting (existing behavior)
+                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                    r = pc[0]; g = pc[1]; b2 = pc[2];
+                    alpha = highlighted ? 0.8 : 0.12;
+                    hlFlag = highlighted ? 1 : 0;
+                } else if (hasViz) {
+                    // Viz state active but no node selected: dim non-path edges
+                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                    r = pc[0]; g = pc[1]; b2 = pc[2];
+                    alpha = 0.12;
+                    hlFlag = 0;
+                } else {
+                    // No viz state: default
+                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                    r = pc[0]; g = pc[1]; b2 = pc[2];
+                    alpha = 0.4;
+                    hlFlag = 0;
+                }
+                
+                edgeDataBuf[off + 6] = r; edgeDataBuf[off + 7] = g; edgeDataBuf[off + 8] = b2;
                 edgeDataBuf[off + 9] = alpha;
-                edgeDataBuf[off + 10] = highlighted ? 1 : 0;
+                edgeDataBuf[off + 10] = hlFlag;
                 edgeDataBuf[off + 11] = 0;
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
@@ -768,13 +808,40 @@ export function HypergraphView() {
     const maxWidth = layout?.maxWidth ?? 1;
     
     // Get location info from active search state for node styling
-    const loc = activeSearchState.value?.location;
+    const activeEvent = activeSearchState.value;
+    const loc = activeEvent?.location;
+    const trans = activeEvent?.transition;
     const selectedNode = loc?.selected_node;
     const rootNode = loc?.root_node;
     const tracePath = new Set(loc?.trace_path ?? []);
     const completedNodes = new Set(loc?.completed_nodes ?? []);
     const pendingParents = new Set(loc?.pending_parents ?? []);
     const pendingChildren = new Set(loc?.pending_children ?? []);
+    
+    // Derive transition-specific node roles from the Transition variant
+    const startNode: number | null = trans?.kind === 'start_node' ? trans.node : null;
+    const candidateParent: number | null = trans?.kind === 'visit_parent' ? trans.to : null;
+    const candidateChild: number | null = trans?.kind === 'visit_child' ? trans.to : null;
+    const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node : null;
+    const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node : null;
+    // Build the set of all "involved" nodes for dimming non-involved ones
+    const involvedNodes = new Set<number>();
+    if (loc) {
+        if (selectedNode != null) involvedNodes.add(selectedNode);
+        if (rootNode != null) involvedNodes.add(rootNode);
+        for (const n of loc.trace_path) involvedNodes.add(n);
+        for (const n of loc.completed_nodes) involvedNodes.add(n);
+        for (const n of loc.pending_parents) involvedNodes.add(n);
+        for (const n of loc.pending_children) involvedNodes.add(n);
+    }
+    if (startNode != null) involvedNodes.add(startNode);
+    if (candidateParent != null) involvedNodes.add(candidateParent);
+    if (candidateChild != null) involvedNodes.add(candidateChild);
+    if (matchedNode != null) involvedNodes.add(matchedNode);
+    if (mismatchedNode != null) involvedNodes.add(mismatchedNode);
+    // Also include transition 'from' nodes
+    if (trans?.kind === 'visit_parent' || trans?.kind === 'visit_child') involvedNodes.add(trans.from);
+    const hasVizState = involvedNodes.size > 0;
 
     return (
         <div ref={containerRef} class="hypergraph-container hg-dom-mode">
@@ -785,21 +852,33 @@ export function HypergraphView() {
                     const isHov = n.index === hoverIdx;
                     const levelClass = nodeWidthClass(n.width, maxWidth);
                     
-                    // Visualization state classes
-                    const isSelected = n.index === selectedNode;
+                    // Visualization state classes — transition-specific roles take priority
+                    const isStart = n.index === startNode;
+                    const isSelected = n.index === selectedNode && !isStart;
                     const isRoot = n.index === rootNode;
-                    const isPath = tracePath.has(n.index);
-                    const isCompleted = completedNodes.has(n.index);
-                    const isPendingParent = pendingParents.has(n.index);
-                    const isPendingChild = pendingChildren.has(n.index);
+                    const isCandidateParent = n.index === candidateParent;
+                    const isCandidateChild = n.index === candidateChild;
+                    const isMatched = n.index === matchedNode;
+                    const isMismatched = n.index === mismatchedNode;
+                    const isPath = tracePath.has(n.index) && !isStart && !isRoot && !isCandidateParent && !isCandidateChild && !isMatched && !isMismatched;
+                    const isCompleted = completedNodes.has(n.index) && !isStart && !isMatched && !isMismatched;
+                    const isPendingParent = pendingParents.has(n.index) && !isCandidateParent;
+                    const isPendingChild = pendingChildren.has(n.index) && !isCandidateChild;
+                    const isDimmed = hasVizState && !involvedNodes.has(n.index);
                     
                     const vizClasses = [
+                        isStart && 'viz-start',
                         isSelected && 'viz-selected',
                         isRoot && 'viz-root',
+                        isCandidateParent && 'viz-candidate-parent',
+                        isCandidateChild && 'viz-candidate-child',
+                        isMatched && 'viz-matched',
+                        isMismatched && 'viz-mismatched',
                         isPath && 'viz-path',
                         isCompleted && 'viz-completed',
                         isPendingParent && 'viz-pending-parent',
                         isPendingChild && 'viz-pending-child',
+                        isDimmed && 'viz-dimmed',
                     ].filter(Boolean).join(' ');
                     
                     return (

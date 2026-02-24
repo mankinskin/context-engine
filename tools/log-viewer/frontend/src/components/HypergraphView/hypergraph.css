@@ -392,26 +392,42 @@
    Visualization State Styles — node highlighting for search/insert operations
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* Selected node — bright cyan with pulsing glow */
-.hg-node.viz-selected {
-    background: rgba(0, 180, 220, 0.25) !important;
-    border-color: rgba(0, 220, 255, 0.8) !important;
-    box-shadow: 
-        0 0 12px rgba(0, 220, 255, 0.5),
-        0 0 24px rgba(0, 180, 220, 0.25);
+/* -- Dim all non-involved nodes when a viz state is active -- */
+.hg-node.viz-dimmed {
+    opacity: 0.2 !important;
+    filter: saturate(0.3);
+    transition: opacity 0.3s, filter 0.3s;
+}
+
+/* -- Start node — bright cyan with pulsing glow -- */
+.hg-node.viz-start {
+    background: rgba(0, 180, 220, 0.3) !important;
+    border-color: rgba(0, 220, 255, 0.9) !important;
+    box-shadow:
+        0 0 14px rgba(0, 220, 255, 0.6),
+        0 0 28px rgba(0, 180, 220, 0.3);
     animation: viz-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes viz-pulse {
-    0%, 100% { box-shadow: 0 0 12px rgba(0, 220, 255, 0.5), 0 0 24px rgba(0, 180, 220, 0.25); }
-    50% { box-shadow: 0 0 18px rgba(0, 220, 255, 0.7), 0 0 32px rgba(0, 180, 220, 0.4); }
+    0%, 100% { box-shadow: 0 0 14px rgba(0, 220, 255, 0.6), 0 0 28px rgba(0, 180, 220, 0.3); }
+    50% { box-shadow: 0 0 22px rgba(0, 220, 255, 0.8), 0 0 36px rgba(0, 180, 220, 0.5); }
 }
 
-/* Root node — gold ring indicator */
+/* -- Selected node (the node being acted upon this step) — white highlight -- */
+.hg-node.viz-selected {
+    background: rgba(220, 240, 255, 0.25) !important;
+    border-color: rgba(200, 230, 255, 0.85) !important;
+    box-shadow:
+        0 0 12px rgba(200, 230, 255, 0.5),
+        0 0 24px rgba(200, 230, 255, 0.2);
+}
+
+/* -- Candidate root — gold ring indicator -- */
 .hg-node.viz-root {
     border-color: rgba(255, 200, 80, 0.8) !important;
-    box-shadow: 
-        0 0 8px rgba(255, 200, 80, 0.4),
+    box-shadow:
+        0 0 10px rgba(255, 200, 80, 0.5),
         inset 0 0 8px rgba(255, 200, 80, 0.1);
 }
 
@@ -424,40 +440,76 @@
     pointer-events: none;
 }
 
-/* Path nodes — connected trace line styling */
+/* -- Candidate parent — orange glow -- */
+.hg-node.viz-candidate-parent {
+    background: rgba(255, 160, 80, 0.2) !important;
+    border-color: rgba(255, 160, 80, 0.7) !important;
+    box-shadow: 0 0 10px rgba(255, 160, 80, 0.4);
+}
+
+/* -- Candidate child — soft purple -- */
+.hg-node.viz-candidate-child {
+    background: rgba(180, 120, 255, 0.2) !important;
+    border-color: rgba(180, 120, 255, 0.7) !important;
+    box-shadow: 0 0 10px rgba(180, 120, 255, 0.4);
+}
+
+/* -- Matched child — green success -- */
+.hg-node.viz-matched {
+    background: rgba(80, 220, 120, 0.25) !important;
+    border-color: rgba(80, 240, 120, 0.8) !important;
+    box-shadow: 0 0 12px rgba(80, 220, 120, 0.45);
+}
+
+/* -- Mismatched child — red failure -- */
+.hg-node.viz-mismatched {
+    background: rgba(255, 90, 70, 0.2) !important;
+    border-color: rgba(255, 100, 80, 0.7) !important;
+    box-shadow: 0 0 10px rgba(255, 90, 70, 0.4);
+}
+
+/* -- Path nodes — lighter blue trace line -- */
 .hg-node.viz-path {
     background: rgba(100, 200, 255, 0.15) !important;
     border-color: rgba(100, 200, 255, 0.5) !important;
     box-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
 }
 
-/* Completed/matched nodes — green success */
+/* -- Completed/confirmed nodes — dim green (already matched) -- */
 .hg-node.viz-completed {
-    background: rgba(80, 200, 120, 0.2) !important;
-    border-color: rgba(80, 220, 120, 0.6) !important;
-    box-shadow: 0 0 8px rgba(80, 200, 120, 0.35);
+    background: rgba(80, 200, 120, 0.15) !important;
+    border-color: rgba(80, 220, 120, 0.5) !important;
+    box-shadow: 0 0 6px rgba(80, 200, 120, 0.25);
 }
 
-/* Pending parent candidates — orange */
+/* -- Pending parent queue — dim orange -- */
 .hg-node.viz-pending-parent {
-    background: rgba(255, 160, 80, 0.15) !important;
-    border-color: rgba(255, 160, 80, 0.5) !important;
-    box-shadow: 0 0 6px rgba(255, 160, 80, 0.3);
+    background: rgba(255, 160, 80, 0.1) !important;
+    border-color: rgba(255, 160, 80, 0.35) !important;
+    box-shadow: 0 0 4px rgba(255, 160, 80, 0.2);
 }
 
-/* Pending child candidates — purple */
+/* -- Pending child queue — dim purple -- */
 .hg-node.viz-pending-child {
-    background: rgba(180, 120, 255, 0.15) !important;
-    border-color: rgba(180, 120, 255, 0.5) !important;
-    box-shadow: 0 0 6px rgba(180, 120, 255, 0.3);
+    background: rgba(180, 120, 255, 0.1) !important;
+    border-color: rgba(180, 120, 255, 0.35) !important;
+    box-shadow: 0 0 4px rgba(180, 120, 255, 0.2);
 }
 
-/* Combination states — selected + root gets both effects */
+/* Combination: selected + root */
 .hg-node.viz-selected.viz-root {
     border-color: rgba(255, 220, 100, 0.8) !important;
-    box-shadow: 
-        0 0 12px rgba(0, 220, 255, 0.5),
+    box-shadow:
+        0 0 12px rgba(200, 230, 255, 0.5),
         0 0 24px rgba(255, 200, 80, 0.3);
+}
+
+/* Combination: start node is always prominent */
+.hg-node.viz-start.viz-root {
+    border-color: rgba(0, 220, 255, 0.9) !important;
+    box-shadow:
+        0 0 14px rgba(0, 220, 255, 0.6),
+        0 0 28px rgba(255, 200, 80, 0.2);
 }
 
 /* ── Operation Timeline Phase Badges ── */
