@@ -150,7 +150,7 @@
 .hypergraph-info {
     position: absolute;
     top: 12px;
-    right: 12px;
+    left: 12px;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
@@ -161,6 +161,142 @@
     pointer-events: none;
     min-width: 140px;
 }
+
+/* ── Selected Node Info Panel (right side) ── */
+.node-info-panel {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    pointer-events: auto;
+    min-width: 200px;
+    max-width: 280px;
+    backdrop-filter: blur(8px);
+}
+
+.node-info-panel .nip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.node-info-panel .nip-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.node-info-panel .nip-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.node-info-panel .nip-badge.atom {
+    background: rgba(100, 180, 255, 0.25);
+    color: rgba(140, 200, 255, 0.95);
+}
+
+.node-info-panel .nip-badge.compound {
+    background: rgba(255, 180, 100, 0.25);
+    color: rgba(255, 200, 140, 0.95);
+}
+
+.node-info-panel .nip-section {
+    margin-bottom: 8px;
+}
+
+.node-info-panel .nip-section-title {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.node-info-panel .nip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 0;
+}
+
+.node-info-panel .nip-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.node-info-panel .nip-value {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+}
+
+.node-info-panel .nip-indices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.node-info-panel .nip-idx {
+    font-size: 10px;
+    padding: 2px 5px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.node-info-panel .nip-link {
+    cursor: pointer;
+    color: rgba(100, 180, 255, 0.9);
+    background: rgba(100, 180, 255, 0.15);
+    transition: all 0.15s ease;
+}
+
+.node-info-panel .nip-link:hover {
+    background: rgba(100, 180, 255, 0.3);
+    color: #64c8ff;
+    transform: scale(1.05);
+}
+
+.node-info-panel .nip-viz-state {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.node-info-panel .nip-viz-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.node-info-panel .nip-viz-badge.start { background: rgba(0, 180, 220, 0.3); color: #60d8ff; }
+.node-info-panel .nip-viz-badge.root { background: rgba(255, 200, 80, 0.3); color: #ffc850; }
+.node-info-panel .nip-viz-badge.candidate-parent { background: rgba(255, 160, 80, 0.3); color: #ffa050; }
+.node-info-panel .nip-viz-badge.candidate-child { background: rgba(180, 120, 255, 0.3); color: #b478ff; }
+.node-info-panel .nip-viz-badge.matched { background: rgba(80, 220, 120, 0.3); color: #50dc78; }
+.node-info-panel .nip-viz-badge.mismatched { background: rgba(255, 90, 70, 0.3); color: #ff5a46; }
+.node-info-panel .nip-viz-badge.path { background: rgba(100, 200, 255, 0.3); color: #64c8ff; }
+.node-info-panel .nip-viz-badge.completed { background: rgba(80, 200, 120, 0.3); color: #50c878; }
+.node-info-panel .nip-viz-badge.pending-parent { background: rgba(255, 160, 80, 0.2); color: #ffa050; }
+.node-info-panel .nip-viz-badge.pending-child { background: rgba(180, 120, 255, 0.2); color: #b478ff; }
 
 .hypergraph-info .hg-title {
     color: rgba(255, 255, 255, 0.85);
@@ -521,32 +657,13 @@
         0 0 20px rgba(80, 180, 255, 0.25);
 }
 
-/* -- Completed/confirmed nodes — explored and matched (green checkmark) -- */
+/* -- Completed/confirmed nodes — explored and matched (green) -- */
 .hg-node.viz-completed {
     background: rgba(60, 200, 110, 0.22) !important;
     border-color: rgba(80, 220, 120, 0.7) !important;
     box-shadow:
         0 0 10px rgba(80, 220, 120, 0.45),
         0 0 20px rgba(60, 200, 110, 0.2);
-}
-
-/* Add subtle checkmark indicator to completed nodes */
-.hg-node.viz-completed::after {
-    content: '✓';
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    font-size: 10px;
-    color: rgba(80, 255, 120, 0.9);
-    background: rgba(20, 40, 30, 0.85);
-    border-radius: 50%;
-    width: 14px;
-    height: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 6px rgba(80, 220, 120, 0.5);
-    pointer-events: none;
 }
 
 /* -- Pending parent queue — dim orange -- */

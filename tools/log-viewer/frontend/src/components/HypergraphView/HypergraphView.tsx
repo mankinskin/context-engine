@@ -974,6 +974,107 @@ export function HypergraphView() {
                 </div>
             </div>
 
+            {/* Selected Node Info Panel */}
+            {selectedIdx >= 0 && layout?.nodeMap.get(selectedIdx) && (() => {
+                const node = layout.nodeMap.get(selectedIdx)!;
+                // Determine viz state for the selected node
+                const vizStates: string[] = [];
+                if (node.index === startNode) vizStates.push('start');
+                if (node.index === selectedNode) vizStates.push('selected');
+                if (node.index === rootNode) vizStates.push('root');
+                if (node.index === candidateParent) vizStates.push('candidate-parent');
+                if (node.index === candidateChild) vizStates.push('candidate-child');
+                if (node.index === matchedNode) vizStates.push('matched');
+                if (node.index === mismatchedNode) vizStates.push('mismatched');
+                if (tracePath.has(node.index)) vizStates.push('path');
+                if (completedNodes.has(node.index)) vizStates.push('completed');
+                if (pendingParents.has(node.index)) vizStates.push('pending-parent');
+                if (pendingChildren.has(node.index)) vizStates.push('pending-child');
+
+                return (
+                    <div class="node-info-panel">
+                        <div class="nip-header">
+                            <span class="nip-title">{node.label}</span>
+                            <span class={`nip-badge ${node.isAtom ? 'atom' : 'compound'}`}>
+                                {node.isAtom ? 'Atom' : `W${node.width}`}
+                            </span>
+                        </div>
+
+                        <div class="nip-section">
+                            <div class="nip-row">
+                                <span class="nip-label">Index</span>
+                                <span class="nip-value">#{node.index}</span>
+                            </div>
+                            <div class="nip-row">
+                                <span class="nip-label">Width</span>
+                                <span class="nip-value">{node.width}</span>
+                            </div>
+                        </div>
+
+                        {node.parentIndices.length > 0 && (
+                            <div class="nip-section">
+                                <div class="nip-section-title">Parents ({node.parentIndices.length})</div>
+                                <div class="nip-indices">
+                                    {node.parentIndices.slice(0, 8).map(idx => (
+                                        <span 
+                                            key={idx} 
+                                            class="nip-idx nip-link"
+                                            onClick={() => {
+                                                const target = layout.nodeMap.get(idx);
+                                                if (target) {
+                                                    camRef.current.focusTarget = [target.x, target.y, target.z];
+                                                    setSelectedIdx(idx);
+                                                }
+                                            }}
+                                        >#{idx}</span>
+                                    ))}
+                                    {node.parentIndices.length > 8 && (
+                                        <span class="nip-idx">+{node.parentIndices.length - 8}</span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {node.childIndices.length > 0 && (
+                            <div class="nip-section">
+                                <div class="nip-section-title">Children ({node.childIndices.length})</div>
+                                <div class="nip-indices">
+                                    {node.childIndices.slice(0, 8).map(idx => (
+                                        <span 
+                                            key={idx} 
+                                            class="nip-idx nip-link"
+                                            onClick={() => {
+                                                const target = layout.nodeMap.get(idx);
+                                                if (target) {
+                                                    camRef.current.focusTarget = [target.x, target.y, target.z];
+                                                    setSelectedIdx(idx);
+                                                }
+                                            }}
+                                        >#{idx}</span>
+                                    ))}
+                                    {node.childIndices.length > 8 && (
+                                        <span class="nip-idx">+{node.childIndices.length - 8}</span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {vizStates.length > 0 && (
+                            <div class="nip-viz-state">
+                                <div class="nip-section-title">Visualization State</div>
+                                <div class="nip-indices">
+                                    {vizStates.map(state => (
+                                        <span key={state} class={`nip-viz-badge ${state}`}>
+                                            {state.replace('-', ' ')}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
+
             {/* Search State Panel - floating list of algorithm steps */}
             <SearchStatePanel />
 
