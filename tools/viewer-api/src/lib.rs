@@ -35,27 +35,40 @@
 //! ```
 
 use axum::Router;
-use std::env;
-use std::future::Future;
-use std::path::PathBuf;
-use std::pin::Pin;
+use std::{
+    env,
+    future::Future,
+    path::PathBuf,
+    pin::Pin,
+};
 use tower_http::{
-    cors::{Any, CorsLayer},
+    cors::{
+        Any,
+        CorsLayer,
+    },
     services::ServeDir,
 };
-use tracing::{error, info};
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use tracing::{
+    error,
+    info,
+};
+use tracing_subscriber::{
+    fmt,
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
+    EnvFilter,
+};
 
 // Session management module
 pub mod session;
 
 // Re-export commonly used types
 pub use axum;
-pub use tower_http;
+pub use rmcp;
 pub use tokio;
+pub use tower_http;
 pub use tracing;
 pub use tracing_appender;
-pub use rmcp;
 
 /// Convert a path to Unix-style string (forward slashes)
 pub fn to_unix_path(path: &std::path::Path) -> String {
@@ -88,12 +101,16 @@ impl Default for TracingConfig {
 
 impl TracingConfig {
     /// Create config from environment variables.
-    /// 
+    ///
     /// Reads LOG_LEVEL and LOG_FILE environment variables.
-    pub fn from_env(log_file_prefix: impl Into<String>, default_log_dir: PathBuf) -> Self {
-        let level = env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
+    pub fn from_env(
+        log_file_prefix: impl Into<String>,
+        default_log_dir: PathBuf,
+    ) -> Self {
+        let level =
+            env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
         let file_logging = env::var("LOG_FILE").is_ok();
-        
+
         Self {
             level,
             file_logging,
@@ -101,15 +118,22 @@ impl TracingConfig {
             log_file_prefix: log_file_prefix.into(),
         }
     }
-    
+
     /// Set log level
-    pub fn with_level(mut self, level: impl Into<String>) -> Self {
+    pub fn with_level(
+        mut self,
+        level: impl Into<String>,
+    ) -> Self {
         self.level = level.into();
         self
     }
-    
+
     /// Enable file logging
-    pub fn with_file_logging(mut self, log_dir: PathBuf, prefix: impl Into<String>) -> Self {
+    pub fn with_file_logging(
+        mut self,
+        log_dir: PathBuf,
+        prefix: impl Into<String>,
+    ) -> Self {
         self.file_logging = true;
         self.log_dir = Some(log_dir);
         self.log_file_prefix = prefix.into();
@@ -133,16 +157,21 @@ pub fn init_tracing_full(config: &TracingConfig) {
 
     // Check if file logging is enabled
     if config.file_logging {
-        let log_dir = config.log_dir.clone().unwrap_or_else(|| PathBuf::from("logs"));
+        let log_dir = config
+            .log_dir
+            .clone()
+            .unwrap_or_else(|| PathBuf::from("logs"));
         std::fs::create_dir_all(&log_dir).ok();
-        
+
         let log_file_name = format!("{}.log", config.log_file_prefix);
-        let file_appender = tracing_appender::rolling::daily(&log_dir, &log_file_name);
-        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-        
+        let file_appender =
+            tracing_appender::rolling::daily(&log_dir, &log_file_name);
+        let (non_blocking, _guard) =
+            tracing_appender::non_blocking(file_appender);
+
         // Store the guard to keep the appender alive
         std::mem::forget(_guard);
-        
+
         let file_layer = fmt::layer()
             .with_writer(non_blocking)
             .with_ansi(false)
@@ -150,14 +179,18 @@ pub fn init_tracing_full(config: &TracingConfig) {
             .with_thread_ids(true)
             .with_file(true)
             .with_line_number(true);
-        
+
         tracing_subscriber::registry()
             .with(filter)
             .with(fmt_layer)
             .with(file_layer)
             .init();
-        
-        info!("File logging enabled to {}/{}", to_unix_path(&log_dir), log_file_name);
+
+        info!(
+            "File logging enabled to {}/{}",
+            to_unix_path(&log_dir),
+            log_file_name
+        );
     } else {
         tracing_subscriber::registry()
             .with(filter)
@@ -183,7 +216,10 @@ pub struct ServerConfig {
 
 impl ServerConfig {
     /// Create a new server configuration with defaults
-    pub fn new(name: impl Into<String>, default_port: u16) -> Self {
+    pub fn new(
+        name: impl Into<String>,
+        default_port: u16,
+    ) -> Self {
         Self {
             name: name.into(),
             default_port,
@@ -194,19 +230,28 @@ impl ServerConfig {
     }
 
     /// Set the static files directory
-    pub fn with_static_dir(mut self, dir: PathBuf) -> Self {
+    pub fn with_static_dir(
+        mut self,
+        dir: PathBuf,
+    ) -> Self {
         self.static_dir = Some(dir);
         self
     }
 
     /// Set the host to bind to
-    pub fn with_host(mut self, host: impl Into<String>) -> Self {
+    pub fn with_host(
+        mut self,
+        host: impl Into<String>,
+    ) -> Self {
         self.host = host.into();
         self
     }
 
     /// Set the workspace root
-    pub fn with_workspace_root(mut self, root: PathBuf) -> Self {
+    pub fn with_workspace_root(
+        mut self,
+        root: PathBuf,
+    ) -> Self {
         self.workspace_root = Some(root);
         self
     }
@@ -255,14 +300,14 @@ impl ServerArgs {
         let args: Vec<String> = std::env::args().collect();
         let http = args.iter().any(|arg| arg == "--http");
         let mcp = args.iter().any(|arg| arg == "--mcp");
-        
+
         // Default to HTTP if no flags specified
         let (http, mcp) = if !http && !mcp {
             (true, false)
         } else {
             (http, mcp)
         };
-        
+
         Self { http, mcp }
     }
 
@@ -279,8 +324,8 @@ impl ServerArgs {
 
 /// Initialize tracing with console output
 pub fn init_tracing(level: &str) {
-    let filter = EnvFilter::try_new(level)
-        .unwrap_or_else(|_| EnvFilter::new("info"));
+    let filter =
+        EnvFilter::try_new(level).unwrap_or_else(|_| EnvFilter::new("info"));
 
     let fmt_layer = fmt::layer()
         .with_target(true)
@@ -303,7 +348,10 @@ pub fn default_cors() -> CorsLayer {
 }
 
 /// Create a router with static file serving
-pub fn with_static_files(router: Router, static_dir: Option<PathBuf>) -> Router {
+pub fn with_static_files(
+    router: Router,
+    static_dir: Option<PathBuf>,
+) -> Router {
     if let Some(dir) = static_dir {
         if dir.exists() {
             router.fallback_service(ServeDir::new(dir))
@@ -316,7 +364,20 @@ pub fn with_static_files(router: Router, static_dir: Option<PathBuf>) -> Router 
 }
 
 /// Type alias for MCP server factory function
-pub type McpServerFactory<S> = Box<dyn FnOnce(S) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn std::error::Error + Send + Sync>>> + Send>> + Send>;
+pub type McpServerFactory<S> = Box<
+    dyn FnOnce(
+            S,
+        ) -> Pin<
+            Box<
+                dyn Future<
+                        Output = Result<
+                            (),
+                            Box<dyn std::error::Error + Send + Sync>,
+                        >,
+                    > + Send,
+            >,
+        > + Send,
+>;
 
 /// Run the server based on command-line arguments.
 ///
@@ -355,19 +416,36 @@ pub async fn run_server<S, F>(
 ) -> Result<(), Box<dyn std::error::Error>>
 where
     S: Clone + Send + Sync + 'static,
-    F: FnOnce(S) -> Pin<Box<dyn Future<Output = Result<(), Box<dyn std::error::Error + Send + Sync>>> + Send>> + Send + 'static,
+    F: FnOnce(
+            S,
+        ) -> Pin<
+            Box<
+                dyn Future<
+                        Output = Result<
+                            (),
+                            Box<dyn std::error::Error + Send + Sync>,
+                        >,
+                    > + Send,
+            >,
+        > + Send
+        + 'static,
 {
     let args = ServerArgs::parse();
-    
+
     eprintln!("{} starting...", config.name);
     eprintln!("  Mode: {}", args.mode_str());
-    
+
     if args.mcp && !args.http {
         // MCP-only mode
         if let Some(factory) = mcp_factory {
-            factory(state).await.map_err(|e| -> Box<dyn std::error::Error> { 
-                Box::new(std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
-            })?;
+            factory(state).await.map_err(
+                |e| -> Box<dyn std::error::Error> {
+                    Box::new(std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        e.to_string(),
+                    ))
+                },
+            )?;
         } else {
             eprintln!("MCP mode requested but no MCP handler provided");
             return Err("MCP mode not supported".into());
@@ -379,7 +457,7 @@ where
         // Both servers
         if let Some(factory) = mcp_factory {
             let state_clone = state.clone();
-            
+
             // Spawn MCP server in background
             tokio::spawn(async move {
                 if let Err(e) = factory(state_clone).await {
@@ -387,11 +465,11 @@ where
                 }
             });
         }
-        
+
         // Run HTTP server in main task
         run_http_server(config, state, create_router).await?;
     }
-    
+
     Ok(())
 }
 
@@ -406,19 +484,22 @@ where
 {
     let addr = config.get_addr();
     let static_dir = config.static_dir.clone();
-    
+
     if let Some(ref dir) = static_dir {
         eprintln!("  Static directory: {}", to_unix_path(dir));
     }
     eprintln!("  HTTP address: {}", addr);
-    
+
     let app = create_router(state, static_dir);
-    
+
     let listener = tokio::net::TcpListener::bind(&addr).await?;
-    eprintln!("HTTP server listening on http://{}", config.get_display_addr());
-    
+    eprintln!(
+        "HTTP server listening on http://{}",
+        config.get_display_addr()
+    );
+
     axum::serve(listener, app).await?;
-    
+
     Ok(())
 }
 
@@ -437,7 +518,7 @@ mod tests {
         let config = ServerConfig::new("test", 3000)
             .with_host("0.0.0.0")
             .with_static_dir(PathBuf::from("/static"));
-        
+
         assert_eq!(config.name, "test");
         assert_eq!(config.default_port, 3000);
         assert_eq!(config.host, "0.0.0.0");

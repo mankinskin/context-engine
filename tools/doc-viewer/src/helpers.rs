@@ -1,7 +1,13 @@
 //! Helper functions for parsing and formatting.
 
-use crate::schema::{DocType, PlanStatus, ModuleTreeNode};
-use crate::tools;
+use crate::{
+    schema::{
+        DocType,
+        ModuleTreeNode,
+        PlanStatus,
+    },
+    tools,
+};
 
 /// Parse a document type string
 pub fn parse_doc_type(s: &str) -> Option<DocType> {
@@ -39,40 +45,51 @@ pub fn parse_status(s: &str) -> Option<PlanStatus> {
 }
 
 /// Format a module tree node as markdown
-pub fn format_module_tree(node: &ModuleTreeNode, depth: usize) -> String {
+pub fn format_module_tree(
+    node: &ModuleTreeNode,
+    depth: usize,
+) -> String {
     use std::fmt::Write;
     let mut md = String::new();
     let indent = "  ".repeat(depth);
-    let prefix = if depth == 0 { "#" } else { &"#".repeat((depth + 1).min(4)) };
-    
+    let prefix = if depth == 0 {
+        "#"
+    } else {
+        &"#".repeat((depth + 1).min(4))
+    };
+
     let _ = writeln!(md, "{} {}", prefix, node.name);
     if !node.description.is_empty() {
         let _ = writeln!(md, "{}*{}*\n", indent, node.description);
     }
-    
+
     // Show key types
     if !node.key_types.is_empty() {
         let _ = writeln!(md, "{}**Key Types:**", indent);
         for t in &node.key_types {
-            let desc = t.description().map(|d| format!(" - {}", d)).unwrap_or_default();
+            let desc = t
+                .description()
+                .map(|d| format!(" - {}", d))
+                .unwrap_or_default();
             let _ = writeln!(md, "{}- `{}`{}", indent, t.name(), desc);
         }
         let _ = writeln!(md);
     }
-    
+
     // Show files
     if !node.files.is_empty() {
         let _ = writeln!(md, "{}**Files:**", indent);
         for f in &node.files {
-            let _ = writeln!(md, "{}- `{}` - {}", indent, f.name, f.description);
+            let _ =
+                writeln!(md, "{}- `{}` - {}", indent, f.name, f.description);
         }
         let _ = writeln!(md);
     }
-    
+
     // Recurse into children
     for child in &node.children {
         md.push_str(&format_module_tree(child, depth + 1));
     }
-    
+
     md
 }

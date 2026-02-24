@@ -3,8 +3,10 @@
 //! Provides tools for agents to query and analyze tracing logs.
 
 use rmcp::{
-    handler::server::tool::ToolRouter,
-    handler::server::wrapper::Parameters,
+    handler::server::{
+        tool::ToolRouter,
+        wrapper::Parameters,
+    },
     model::*,
     schemars,
     schemars::JsonSchema,
@@ -16,12 +18,23 @@ use rmcp::{
     ServerHandler,
     ServiceExt,
 };
-use serde::{Deserialize, Serialize};
-use std::{path::PathBuf, sync::Arc};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use std::{
+    path::PathBuf,
+    sync::Arc,
+};
 
-use crate::log_parser::{LogEntry, LogParser};
-use crate::query::JqFilter;
-use crate::to_unix_path;
+use crate::{
+    log_parser::{
+        LogEntry,
+        LogParser,
+    },
+    query::JqFilter,
+    to_unix_path,
+};
 
 /// MCP Server for log debugging
 #[derive(Clone)]
@@ -33,7 +46,10 @@ pub struct LogServer {
 }
 
 impl LogServer {
-    pub fn new(log_dir: PathBuf, workspace_root: PathBuf) -> Self {
+    pub fn new(
+        log_dir: PathBuf,
+        workspace_root: PathBuf,
+    ) -> Self {
         Self {
             log_dir,
             workspace_root,
@@ -166,12 +182,15 @@ impl LogServer {
     ) -> Result<CallToolResult, McpError> {
         if !self.log_dir.exists() {
             return Ok(CallToolResult::success(vec![Content::text(
-                "Log directory does not exist or is empty"
+                "Log directory does not exist or is empty",
             )]));
         }
 
         let entries = std::fs::read_dir(&self.log_dir).map_err(|e| {
-            McpError::internal_error(format!("Failed to read log directory: {}", e), None)
+            McpError::internal_error(
+                format!("Failed to read log directory: {}", e),
+                None,
+            )
         })?;
 
         let pattern = input.pattern.as_deref();
@@ -180,15 +199,16 @@ impl LogServer {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.extension().map_or(false, |ext| ext == "log") {
-                let name = path.file_name().unwrap().to_string_lossy().to_string();
-                
+                let name =
+                    path.file_name().unwrap().to_string_lossy().to_string();
+
                 // Apply pattern filter if specified
                 if let Some(pat) = pattern {
                     if !name.contains(pat) {
                         continue;
                     }
                 }
-                
+
                 let metadata = entry.metadata().ok();
                 logs.push(LogFileInfo {
                     name,
@@ -218,15 +238,21 @@ impl LogServer {
         Parameters(input): Parameters<GetLogInput>,
     ) -> Result<CallToolResult, McpError> {
         // Validate filename
-        if input.filename.contains("..") || input.filename.contains('/') || input.filename.contains('\\') {
+        if input.filename.contains("..")
+            || input.filename.contains('/')
+            || input.filename.contains('\\')
+        {
             return Ok(CallToolResult::error(vec![Content::text(
-                "Invalid filename"
+                "Invalid filename",
             )]));
         }
 
         let path = self.log_dir.join(&input.filename);
         let content = std::fs::read_to_string(&path).map_err(|e| {
-            McpError::invalid_params(format!("Failed to read log file: {}", e), None)
+            McpError::invalid_params(
+                format!("Failed to read log file: {}", e),
+                None,
+            )
         })?;
 
         let mut entries = self.parser.parse(&content);
@@ -264,7 +290,7 @@ impl LogServer {
         });
 
         Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&result).unwrap_or_default()
+            serde_json::to_string_pretty(&result).unwrap_or_default(),
         )]))
     }
 
@@ -277,13 +303,21 @@ impl LogServer {
         Parameters(input): Parameters<QueryLogsInput>,
     ) -> Result<CallToolResult, McpError> {
         // Validate filename
-        if input.filename.contains("..") || input.filename.contains('/') || input.filename.contains('\\') {
-            return Ok(CallToolResult::error(vec![Content::text("Invalid filename")]));
+        if input.filename.contains("..")
+            || input.filename.contains('/')
+            || input.filename.contains('\\')
+        {
+            return Ok(CallToolResult::error(vec![Content::text(
+                "Invalid filename",
+            )]));
         }
 
         let path = self.log_dir.join(&input.filename);
         let content = std::fs::read_to_string(&path).map_err(|e| {
-            McpError::invalid_params(format!("Failed to read log file: {}", e), None)
+            McpError::invalid_params(
+                format!("Failed to read log file: {}", e),
+                None,
+            )
         })?;
 
         let entries = self.parser.parse(&content);
@@ -308,7 +342,7 @@ impl LogServer {
         });
 
         Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&result).unwrap_or_default()
+            serde_json::to_string_pretty(&result).unwrap_or_default(),
         )]))
     }
 
@@ -324,17 +358,20 @@ impl LogServer {
         let normalized = input.path.replace('\\', "/");
         if normalized.contains("..") {
             return Ok(CallToolResult::error(vec![Content::text(
-                "Path traversal not allowed"
+                "Path traversal not allowed",
             )]));
         }
 
         let full_path = self.workspace_root.join(&normalized);
         let content = std::fs::read_to_string(&full_path).map_err(|e| {
-            McpError::invalid_params(format!("Failed to read source file: {}", e), None)
+            McpError::invalid_params(
+                format!("Failed to read source file: {}", e),
+                None,
+            )
         })?;
 
         let lines: Vec<&str> = content.lines().collect();
-        
+
         let (start, end, highlight) = if let Some(line) = input.line {
             let ctx = input.context;
             let start = line.saturating_sub(ctx + 1);
@@ -349,7 +386,11 @@ impl LogServer {
             .enumerate()
             .map(|(i, line)| {
                 let line_num = start + i + 1;
-                let marker = if highlight == Some(line_num) { ">" } else { " " };
+                let marker = if highlight == Some(line_num) {
+                    ">"
+                } else {
+                    " "
+                };
                 format!("{} {:4} | {}", marker, line_num, line)
             })
             .collect::<Vec<_>>()
@@ -364,7 +405,7 @@ impl LogServer {
         });
 
         Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&result).unwrap_or_default()
+            serde_json::to_string_pretty(&result).unwrap_or_default(),
         )]))
     }
 
@@ -377,21 +418,32 @@ impl LogServer {
         Parameters(input): Parameters<AnalyzeLogInput>,
     ) -> Result<CallToolResult, McpError> {
         // Validate filename
-        if input.filename.contains("..") || input.filename.contains('/') || input.filename.contains('\\') {
-            return Ok(CallToolResult::error(vec![Content::text("Invalid filename")]));
+        if input.filename.contains("..")
+            || input.filename.contains('/')
+            || input.filename.contains('\\')
+        {
+            return Ok(CallToolResult::error(vec![Content::text(
+                "Invalid filename",
+            )]));
         }
 
         let path = self.log_dir.join(&input.filename);
         let content = std::fs::read_to_string(&path).map_err(|e| {
-            McpError::invalid_params(format!("Failed to read log file: {}", e), None)
+            McpError::invalid_params(
+                format!("Failed to read log file: {}", e),
+                None,
+            )
         })?;
 
         let entries = self.parser.parse(&content);
 
         // Count by level
-        let mut by_level: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-        let mut by_event_type: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-        let mut span_info: std::collections::HashMap<String, (usize, bool)> = std::collections::HashMap::new();
+        let mut by_level: std::collections::HashMap<String, usize> =
+            std::collections::HashMap::new();
+        let mut by_event_type: std::collections::HashMap<String, usize> =
+            std::collections::HashMap::new();
+        let mut span_info: std::collections::HashMap<String, (usize, bool)> =
+            std::collections::HashMap::new();
         let mut error_entries = Vec::new();
 
         for entry in &entries {
@@ -399,7 +451,8 @@ impl LogServer {
             *by_event_type.entry(entry.event_type.clone()).or_insert(0) += 1;
 
             if let Some(span_name) = &entry.span_name {
-                let (count, has_error) = span_info.entry(span_name.clone()).or_insert((0, false));
+                let (count, has_error) =
+                    span_info.entry(span_name.clone()).or_insert((0, false));
                 *count += 1;
                 if entry.level == "ERROR" {
                     *has_error = true;
@@ -415,7 +468,11 @@ impl LogServer {
 
         let span_summary: Vec<_> = span_info
             .into_iter()
-            .map(|(name, (count, has_errors))| SpanSummary { name, count, has_errors })
+            .map(|(name, (count, has_errors))| SpanSummary {
+                name,
+                count,
+                has_errors,
+            })
             .collect();
 
         let analysis = LogAnalysis {
@@ -427,7 +484,7 @@ impl LogServer {
         };
 
         Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&analysis).unwrap_or_default()
+            serde_json::to_string_pretty(&analysis).unwrap_or_default(),
         )]))
     }
 
@@ -441,7 +498,7 @@ impl LogServer {
     ) -> Result<CallToolResult, McpError> {
         if !self.log_dir.exists() {
             return Ok(CallToolResult::success(vec![Content::text(
-                "Log directory does not exist"
+                "Log directory does not exist",
             )]));
         }
 
@@ -450,7 +507,10 @@ impl LogServer {
         })?;
 
         let entries = std::fs::read_dir(&self.log_dir).map_err(|e| {
-            McpError::internal_error(format!("Failed to read log directory: {}", e), None)
+            McpError::internal_error(
+                format!("Failed to read log directory: {}", e),
+                None,
+            )
         })?;
 
         let mut all_results: Vec<serde_json::Value> = Vec::new();
@@ -458,15 +518,17 @@ impl LogServer {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.extension().map_or(false, |ext| ext == "log") {
-                let filename = path.file_name().unwrap().to_string_lossy().to_string();
-                
+                let filename =
+                    path.file_name().unwrap().to_string_lossy().to_string();
+
                 if let Ok(content) = std::fs::read_to_string(&path) {
                     let log_entries = self.parser.parse(&content);
-                    
+
                     let matches: Vec<_> = log_entries
                         .into_iter()
                         .filter(|e| {
-                            let json = serde_json::to_value(e).unwrap_or_default();
+                            let json =
+                                serde_json::to_value(e).unwrap_or_default();
                             filter.matches(&json)
                         })
                         .take(input.limit_per_file)
@@ -490,7 +552,7 @@ impl LogServer {
         });
 
         Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&result).unwrap_or_default()
+            serde_json::to_string_pretty(&result).unwrap_or_default(),
         )]))
     }
 }
@@ -519,7 +581,10 @@ impl ServerHandler for LogServer {
     }
 }
 /// Run the MCP server
-pub async fn run_mcp_server(log_dir: PathBuf, workspace_root: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_mcp_server(
+    log_dir: PathBuf,
+    workspace_root: PathBuf,
+) -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("Log Viewer MCP Server starting...");
     eprintln!("Log directory: {}", to_unix_path(&log_dir));
     eprintln!("Workspace root: {}", to_unix_path(&workspace_root));

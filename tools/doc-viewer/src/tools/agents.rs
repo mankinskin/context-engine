@@ -7,11 +7,19 @@
 //! - bug-reports/ - Known issues and analyses
 //! - analysis/ - Algorithm analysis and comparisons
 
+use super::{
+    compile_search_regex,
+    regex_matches,
+    DetailLevel,
+    ListFilter,
+    ToolError,
+    ToolResult,
+};
 use crate::{
     parser::{
         extract_metadata,
-        parse_frontmatter,
         parse_filename,
+        parse_frontmatter,
         parse_title,
     },
     schema::{
@@ -25,8 +33,10 @@ use crate::{
         generate_index,
     },
 };
-use super::{ToolResult, ToolError, DetailLevel, ListFilter, compile_search_regex, regex_matches};
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::{
     fs,
     path::PathBuf,
@@ -370,8 +380,7 @@ impl DocsManager {
                     // Should have a table with columns: Date | File | Summary
                     let has_doc_table = index_content
                         .contains("| Date | File | Summary |")
-                        || index_content
-                            .contains("|------|------|");
+                        || index_content.contains("|------|------|");
 
                     if !has_doc_table {
                         report.issues.push(ValidationIssue {
@@ -442,20 +451,24 @@ impl DocsManager {
     }
 
     /// Delete a document and update the index.
-    pub fn delete_document(&self, filename: &str) -> ToolResult<String> {
+    pub fn delete_document(
+        &self,
+        filename: &str,
+    ) -> ToolResult<String> {
         let path = self.find_document(filename)?;
-        
+
         // Get doc type to update index
         let content = fs::read_to_string(&path)?;
-        let meta = extract_metadata(&path, &content)
-            .ok_or_else(|| ToolError::InvalidInput("Cannot parse document".into()))?;
-        
+        let meta = extract_metadata(&path, &content).ok_or_else(|| {
+            ToolError::InvalidInput("Cannot parse document".into())
+        })?;
+
         // Delete the file
         fs::remove_file(&path)?;
-        
+
         // Update index
         self.update_index(meta.doc_type)?;
-        
+
         Ok(path.display().to_string())
     }
 
@@ -718,7 +731,8 @@ impl DocsManager {
         };
 
         let regex = query.map(compile_search_regex).transpose()?.flatten();
-        let tag_lower = tag.map(|t| t.to_lowercase().trim_start_matches('#').to_string());
+        let tag_lower =
+            tag.map(|t| t.to_lowercase().trim_start_matches('#').to_string());
 
         let mut results = Vec::new();
 
@@ -730,7 +744,7 @@ impl DocsManager {
                 let tag_ok = tag_lower.as_ref().map_or(true, |tag_l| {
                     doc.tags.iter().any(|t| t.to_lowercase() == *tag_l)
                 });
-                
+
                 // Check regex if provided
                 let query_ok = if regex.is_none() {
                     true
@@ -742,11 +756,14 @@ impl DocsManager {
                         doc.summary,
                         doc.tags.join(" ")
                     );
-                    
+
                     if regex_matches(&searchable, &regex) {
                         true
                     } else if search_content {
-                        let path = self.agents_dir.join(dt.directory()).join(&doc.filename);
+                        let path = self
+                            .agents_dir
+                            .join(dt.directory())
+                            .join(&doc.filename);
                         if let Ok(content) = fs::read_to_string(&path) {
                             regex_matches(&content, &regex)
                         } else {
@@ -818,7 +835,7 @@ impl DocsManager {
                     Err(e) => {
                         result.errors.push(format!("{}: {}", filename, e));
                         continue;
-                    }
+                    },
                 };
 
                 // Check if frontmatter exists
@@ -830,11 +847,16 @@ impl DocsManager {
                 }
 
                 // Needs frontmatter - infer metadata
-                let (date, _name) = parse_filename(filename).unwrap_or_else(|| {
-                    ("00000000".to_string(), filename.trim_end_matches(".md").to_string())
-                });
+                let (date, _name) =
+                    parse_filename(filename).unwrap_or_else(|| {
+                        (
+                            "00000000".to_string(),
+                            filename.trim_end_matches(".md").to_string(),
+                        )
+                    });
 
-                let title = parse_title(&content).unwrap_or_else(|| filename.to_string());
+                let title = parse_title(&content)
+                    .unwrap_or_else(|| filename.to_string());
 
                 // Try to extract summary from first paragraph
                 let summary = extract_summary(&content).unwrap_or_default();
@@ -848,12 +870,17 @@ impl DocsManager {
                     filename: filename.to_string(),
                     tags: tags.clone(),
                     summary: summary.clone(),
-                    status: if dt == DocType::Plan { Some(PlanStatus::Design) } else { None },
+                    status: if dt == DocType::Plan {
+                        Some(PlanStatus::Design)
+                    } else {
+                        None
+                    },
                     title: title.clone(),
                 };
 
                 let frontmatter = generate_frontmatter(&meta);
-                let new_content = format!("{}\n\n{}", frontmatter, content.trim_start());
+                let new_content =
+                    format!("{}\n\n{}", frontmatter, content.trim_start());
 
                 result.changes.push(FrontmatterChange {
                     filename: filename.to_string(),
@@ -877,9 +904,12 @@ impl DocsManager {
     }
 
     /// Get a health dashboard summarizing documentation status
-    pub fn health_dashboard(&self, detailed: bool) -> ToolResult<HealthDashboard> {
+    pub fn health_dashboard(
+        &self,
+        detailed: bool,
+    ) -> ToolResult<HealthDashboard> {
         let validation = self.validate()?;
-        
+
         let mut dashboard = HealthDashboard {
             total_documents: 0,
             frontmatter_coverage: 0.0,
@@ -917,7 +947,7 @@ impl DocsManager {
                         }
                     }
                 }
-                
+
                 let today = chrono::Local::now().format("%Y%m%d").to_string();
                 if calculate_age_days(&doc.date, &today) > 30 {
                     old_count += 1;
@@ -938,14 +968,17 @@ impl DocsManager {
         // Calculate metrics from validation
         for issue in &validation.issues {
             match issue.issue.as_str() {
-                s if s.contains("not listed in INDEX") => dashboard.index_sync_issues += 1,
-                s if s.contains("Invalid filename") => dashboard.naming_issues += 1,
-                _ => {}
+                s if s.contains("not listed in INDEX") =>
+                    dashboard.index_sync_issues += 1,
+                s if s.contains("Invalid filename") =>
+                    dashboard.naming_issues += 1,
+                _ => {},
             }
         }
 
         dashboard.frontmatter_coverage = if dashboard.total_documents > 0 {
-            (docs_with_frontmatter as f64 / dashboard.total_documents as f64) * 100.0
+            (docs_with_frontmatter as f64 / dashboard.total_documents as f64)
+                * 100.0
         } else {
             100.0
         };
@@ -959,10 +992,13 @@ impl DocsManager {
 // =============================================================================
 
 /// Calculate age in days between two YYYYMMDD dates
-fn calculate_age_days(date: &str, today: &str) -> u32 {
+fn calculate_age_days(
+    date: &str,
+    today: &str,
+) -> u32 {
     use chrono::NaiveDate;
     let parse_date = |s: &str| NaiveDate::parse_from_str(s, "%Y%m%d").ok();
-    
+
     if let (Some(d), Some(t)) = (parse_date(date), parse_date(today)) {
         (t - d).num_days().max(0) as u32
     } else {
@@ -975,8 +1011,8 @@ fn extract_summary(content: &str) -> Option<String> {
     let body = extract_body(content);
     for line in body.lines() {
         let trimmed = line.trim();
-        if !trimmed.is_empty() 
-            && !trimmed.starts_with('#') 
+        if !trimmed.is_empty()
+            && !trimmed.starts_with('#')
             && !trimmed.starts_with('-')
             && !trimmed.starts_with('|')
             && !trimmed.starts_with("**")
@@ -994,22 +1030,33 @@ fn extract_summary(content: &str) -> Option<String> {
 }
 
 /// Infer tags from filename and content
-fn infer_tags(filename: &str, content: &str, doc_type: DocType) -> Vec<String> {
+fn infer_tags(
+    filename: &str,
+    content: &str,
+    doc_type: DocType,
+) -> Vec<String> {
     let mut tags = Vec::new();
-    
+
     // Add doc type as tag
     tags.push(doc_type.directory().trim_end_matches('s').to_string());
-    
+
     // Check for crate mentions
-    let crates = ["context-trace", "context-search", "context-insert", "context-read"];
+    let crates = [
+        "context-trace",
+        "context-search",
+        "context-insert",
+        "context-read",
+    ];
     for crate_name in crates {
-        if filename.to_lowercase().contains(&crate_name.replace('-', "_"))
+        if filename
+            .to_lowercase()
+            .contains(&crate_name.replace('-', "_"))
             || content.to_lowercase().contains(crate_name)
         {
             tags.push(crate_name.to_string());
         }
     }
-    
+
     // Check for common concepts
     let concepts = [
         ("algorithm", "algorithm"),
@@ -1019,7 +1066,7 @@ fn infer_tags(filename: &str, content: &str, doc_type: DocType) -> Vec<String> {
         ("api", "api"),
         ("performance", "performance"),
     ];
-    
+
     let lower_name = filename.to_lowercase();
     let lower_content = content.to_lowercase();
     for (pattern, tag) in concepts {
@@ -1029,7 +1076,7 @@ fn infer_tags(filename: &str, content: &str, doc_type: DocType) -> Vec<String> {
             }
         }
     }
-    
+
     tags
 }
 
@@ -1092,7 +1139,10 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn truncate(s: &str, max_len: usize) -> String {
+fn truncate(
+    s: &str,
+    max_len: usize,
+) -> String {
     if s.len() <= max_len {
         s.to_string()
     } else {
@@ -1373,40 +1423,58 @@ impl HealthDashboard {
     pub fn to_markdown(&self) -> String {
         let mut md = String::new();
         md.push_str("# Documentation Health Dashboard\n\n");
-        
+
         // Overall metrics
         md.push_str("## Overview\n\n");
         md.push_str("| Metric | Value | Status |\n");
         md.push_str("|--------|-------|--------|\n");
-        
-        let fm_status = if self.frontmatter_coverage >= 90.0 { "✅" } 
-            else if self.frontmatter_coverage >= 50.0 { "⚠️" } 
-            else { "❌" };
+
+        let fm_status = if self.frontmatter_coverage >= 90.0 {
+            "✅"
+        } else if self.frontmatter_coverage >= 50.0 {
+            "⚠️"
+        } else {
+            "❌"
+        };
         md.push_str(&format!(
             "| Frontmatter Coverage | {:.1}% | {} |\n",
             self.frontmatter_coverage, fm_status
         ));
-        
-        let idx_status = if self.index_sync_issues == 0 { "✅" } 
-            else if self.index_sync_issues <= 5 { "⚠️" } 
-            else { "❌" };
+
+        let idx_status = if self.index_sync_issues == 0 {
+            "✅"
+        } else if self.index_sync_issues <= 5 {
+            "⚠️"
+        } else {
+            "❌"
+        };
         md.push_str(&format!(
             "| INDEX Sync Issues | {} | {} |\n",
             self.index_sync_issues, idx_status
         ));
-        
-        let name_status = if self.naming_issues == 0 { "✅" } 
-            else if self.naming_issues <= 3 { "⚠️" } 
-            else { "❌" };
+
+        let name_status = if self.naming_issues == 0 {
+            "✅"
+        } else if self.naming_issues <= 3 {
+            "⚠️"
+        } else {
+            "❌"
+        };
         md.push_str(&format!(
             "| Naming Issues | {} | {} |\n",
             self.naming_issues, name_status
         ));
-        
-        md.push_str(&format!("| Total Documents | {} | ℹ️ |\n", self.total_documents));
-        md.push_str(&format!("| Old Documents (>30d) | {} | ℹ️ |\n", self.old_documents));
+
+        md.push_str(&format!(
+            "| Total Documents | {} | ℹ️ |\n",
+            self.total_documents
+        ));
+        md.push_str(&format!(
+            "| Old Documents (>30d) | {} | ℹ️ |\n",
+            self.old_documents
+        ));
         md.push('\n');
-        
+
         // Category breakdown
         if !self.categories.is_empty() {
             md.push_str("## By Category\n\n");
@@ -1425,11 +1493,13 @@ impl HealthDashboard {
             }
             md.push('\n');
         }
-        
+
         // Recommendations
         md.push_str("## Recommendations\n\n");
         if self.frontmatter_coverage < 100.0 {
-            let missing = self.total_documents - (self.total_documents as f64 * self.frontmatter_coverage / 100.0) as usize;
+            let missing = self.total_documents
+                - (self.total_documents as f64 * self.frontmatter_coverage
+                    / 100.0) as usize;
             md.push_str(&format!(
                 "- 🔧 Run `add_frontmatter` to add frontmatter to {} documents\n",
                 missing
@@ -1444,7 +1514,7 @@ impl HealthDashboard {
         if self.old_documents > 10 {
             md.push_str("- 📋 Review old documents with `get_docs_needing_review` for potential updates\n");
         }
-        
+
         md
     }
 }
@@ -1495,9 +1565,7 @@ impl ReadDocResult {
         md.push_str(&format!("# {}\n\n", self.title));
         md.push_str(&format!(
             "**File:** `{}`  \n**Type:** {}  \n**Date:** {}  \n",
-            self.filename,
-            self.doc_type,
-            self.date,
+            self.filename, self.doc_type, self.date,
         ));
 
         if !self.tags.is_empty() {

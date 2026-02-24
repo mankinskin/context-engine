@@ -28,7 +28,13 @@
 //! select(.path | startswith("search/"))
 //! ```
 
-use jaq_interpret::{Ctx, FilterT, ParseCtx, RcIter, Val};
+use jaq_interpret::{
+    Ctx,
+    FilterT,
+    ParseCtx,
+    RcIter,
+    Val,
+};
 use serde_json::Value;
 
 /// Error type for query operations
@@ -38,7 +44,10 @@ pub struct QueryError {
 }
 
 impl std::fmt::Display for QueryError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "{}", self.message)
     }
 }
@@ -87,7 +96,10 @@ impl JqFilter {
     }
 
     /// Run the filter on a JSON value, returning all outputs
-    pub fn run(&self, input: &Value) -> Vec<Result<Value, String>> {
+    pub fn run(
+        &self,
+        input: &Value,
+    ) -> Vec<Result<Value, String>> {
         let inputs = RcIter::new(std::iter::empty());
         let val = Val::from(input.clone());
         let ctx = Ctx::new([], &inputs);
@@ -103,7 +115,10 @@ impl JqFilter {
     }
 
     /// Run the filter on a value, returning true if any output is truthy
-    pub fn matches(&self, input: &Value) -> bool {
+    pub fn matches(
+        &self,
+        input: &Value,
+    ) -> bool {
         let results = self.run(input);
         results.into_iter().any(|r| match r {
             Ok(Value::Bool(true)) => true,
@@ -170,10 +185,10 @@ mod tests {
     #[test]
     fn test_filter_select() {
         let filter = JqFilter::compile("select(.level == \"ERROR\")").unwrap();
-        
+
         let error_doc = json!({"level": "ERROR", "title": "Bug"});
         let info_doc = json!({"level": "INFO", "title": "Guide"});
-        
+
         assert!(filter.matches(&error_doc));
         assert!(!filter.matches(&info_doc));
     }
@@ -181,11 +196,12 @@ mod tests {
     #[test]
     fn test_filter_contains() {
         // Note: contains() is case-sensitive in jq
-        let filter = JqFilter::compile("select(.title | contains(\"search\"))").unwrap();
-        
+        let filter =
+            JqFilter::compile("select(.title | contains(\"search\"))").unwrap();
+
         let match_doc = json!({"title": "search guide"});
         let no_match = json!({"title": "Other guide"});
-        
+
         assert!(filter.matches(&match_doc));
         assert!(!filter.matches(&no_match));
     }
@@ -193,12 +209,14 @@ mod tests {
     #[test]
     fn test_filter_case_insensitive() {
         // Use test() with "i" flag for case-insensitive matching
-        let filter = JqFilter::compile("select(.title | test(\"search\"; \"i\"))").unwrap();
-        
+        let filter =
+            JqFilter::compile("select(.title | test(\"search\"; \"i\"))")
+                .unwrap();
+
         let match_upper = json!({"title": "Search Guide"});
         let match_lower = json!({"title": "search guide"});
         let no_match = json!({"title": "Other guide"});
-        
+
         assert!(filter.matches(&match_upper));
         assert!(filter.matches(&match_lower));
         assert!(!filter.matches(&no_match));
@@ -206,11 +224,12 @@ mod tests {
 
     #[test]
     fn test_filter_array_any() {
-        let filter = JqFilter::compile("select(.tags | any(. == \"testing\"))").unwrap();
-        
+        let filter =
+            JqFilter::compile("select(.tags | any(. == \"testing\"))").unwrap();
+
         let match_doc = json!({"tags": ["testing", "debug"]});
         let no_match = json!({"tags": ["production"]});
-        
+
         assert!(filter.matches(&match_doc));
         assert!(!filter.matches(&no_match));
     }
@@ -221,9 +240,9 @@ mod tests {
             json!({"title": "Doc A", "date": "20250101"}),
             json!({"title": "Doc B", "date": "20250102"}),
         ];
-        
+
         let results = transform_values(docs.iter(), "{title}").unwrap();
-        
+
         assert_eq!(results.len(), 2);
         assert_eq!(results[0], json!({"title": "Doc A"}));
         assert_eq!(results[1], json!({"title": "Doc B"}));
@@ -236,9 +255,11 @@ mod tests {
             json!({"doc_type": "plan", "title": "Plan"}),
             json!({"doc_type": "guide", "title": "Another Guide"}),
         ];
-        
-        let results = filter_values(docs.iter(), "select(.doc_type == \"guide\")").unwrap();
-        
+
+        let results =
+            filter_values(docs.iter(), "select(.doc_type == \"guide\")")
+                .unwrap();
+
         assert_eq!(results.len(), 2);
         assert_eq!(results[0]["title"], "Guide");
         assert_eq!(results[1]["title"], "Another Guide");
@@ -246,11 +267,12 @@ mod tests {
 
     #[test]
     fn test_date_comparison() {
-        let filter = JqFilter::compile("select(.date >= \"20250201\")").unwrap();
-        
+        let filter =
+            JqFilter::compile("select(.date >= \"20250201\")").unwrap();
+
         let after = json!({"date": "20250215"});
         let before = json!({"date": "20250115"});
-        
+
         assert!(filter.matches(&after));
         assert!(!filter.matches(&before));
     }

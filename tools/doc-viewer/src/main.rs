@@ -33,10 +33,23 @@ mod schema;
 mod templates;
 mod tools;
 
-use rmcp::{transport::stdio, ServiceExt};
-use std::{env, path::PathBuf, sync::Arc};
-use viewer_api::{TracingConfig, init_tracing_full, to_unix_path, display_host, tracing::info};
-use viewer_api::session::SessionStore;
+use rmcp::{
+    transport::stdio,
+    ServiceExt,
+};
+use std::{
+    env,
+    path::PathBuf,
+    sync::Arc,
+};
+use viewer_api::{
+    display_host,
+    init_tracing_full,
+    session::SessionStore,
+    to_unix_path,
+    tracing::info,
+    TracingConfig,
+};
 
 use mcp::DocsServer;
 
@@ -45,7 +58,9 @@ fn init_tracing() {
     // Use WORKSPACE_ROOT or fall back to compile-time path
     let log_dir = std::env::var("WORKSPACE_ROOT")
         .map(|root| PathBuf::from(root).join("tools/doc-viewer/logs"))
-        .unwrap_or_else(|_| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs"));
+        .unwrap_or_else(|_| {
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs")
+        });
     let config = TracingConfig::from_env("doc-viewer", log_dir);
     init_tracing_full(&config);
 }
@@ -56,14 +71,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().collect();
     let http_mode = args.iter().any(|arg| arg == "--http");
     let mcp_mode = args.iter().any(|arg| arg == "--mcp");
-    
+
     // If no flags specified, default to HTTP mode
     let (run_http, run_mcp) = if !http_mode && !mcp_mode {
         (true, false)
     } else {
         (http_mode, mcp_mode)
     };
-    
+
     // Get workspace root from environment, or fall back to compile-time path
     // Priority: WORKSPACE_ROOT env > current working directory detection > compile-time CARGO_MANIFEST_DIR
     let workspace_root: PathBuf = std::env::var("WORKSPACE_ROOT")
@@ -71,7 +86,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap_or_else(|_| {
             // Try to detect workspace root from current directory (look for Cargo.toml with [workspace])
             if let Ok(cwd) = std::env::current_dir() {
-                if cwd.join("Cargo.toml").exists() && cwd.join("agents").exists() {
+                if cwd.join("Cargo.toml").exists()
+                    && cwd.join("agents").exists()
+                {
                     return cwd;
                 }
             }
@@ -83,21 +100,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .map(|p| p.to_path_buf())
                 .unwrap_or(manifest_dir)
         });
-    
+
     // Get agents directory - explicit env var or workspace_root/agents
     let agents_dir = std::env::var("AGENTS_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|_| workspace_root.join("agents"));
-    
+
     // Parse CRATES_DIRS as a path-separated list (like PATH)
     // Default includes both crates/ and tools/ directories under workspace root
     let crates_dirs: Vec<PathBuf> = std::env::var("CRATES_DIRS")
         .or_else(|_| std::env::var("CRATES_DIR")) // Backwards compatibility
         .map(|val| std::env::split_paths(&val).collect())
-        .unwrap_or_else(|_| vec![
-            workspace_root.join("crates"),
-            workspace_root.join("tools"),
-        ]);
+        .unwrap_or_else(|_| {
+            vec![workspace_root.join("crates"), workspace_root.join("tools")]
+        });
 
     // Initialize tracing for HTTP mode (MCP mode uses stderr to avoid stdio conflicts)
     if run_http {
@@ -110,7 +126,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         (false, true) => "MCP only",
         (false, false) => unreachable!(),
     };
-    let crates_dirs_display: Vec<_> = crates_dirs.iter().map(|d| to_unix_path(d)).collect();
+    let crates_dirs_display: Vec<_> =
+        crates_dirs.iter().map(|d| to_unix_path(d)).collect();
 
     if run_http {
         info!(mode, agents_dir = %to_unix_path(&agents_dir), crates_dirs = ?crates_dirs_display, "Doc Viewer Server starting");
@@ -131,22 +148,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Both servers - run MCP in background, HTTP in foreground
         let agents_dir_clone = agents_dir.clone();
         let crates_dirs_clone = crates_dirs.clone();
-        
+
         // Spawn MCP server in background task
         tokio::spawn(async move {
             let server = DocsServer::new(agents_dir_clone, crates_dirs_clone);
             match server.serve(stdio()).await {
-                Ok(service) => {
+                Ok(service) =>
                     if let Err(e) = service.waiting().await {
                         eprintln!("MCP server error while waiting: {:?}", e);
-                    }
-                }
+                    },
                 Err(e) => {
                     eprintln!("MCP server initialization error: {:?}", e);
-                }
+                },
             }
         });
-        
+
         // Run HTTP server in main task
         run_http_server(workspace_root, agents_dir, crates_dirs).await?;
     }
@@ -192,7 +208,10 @@ async fn run_http_server(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use helpers::{parse_doc_type, format_module_tree};
+    use helpers::{
+        format_module_tree,
+        parse_doc_type,
+    };
     use schema::DocType;
 
     #[test]
@@ -204,7 +223,11 @@ mod tests {
 
     #[test]
     fn test_format_module_tree() {
-        use schema::{FileEntry, TypeEntry, ModuleTreeNode};
+        use schema::{
+            FileEntry,
+            ModuleTreeNode,
+            TypeEntry,
+        };
         let tree = ModuleTreeNode {
             name: "test".to_string(),
             path: "".to_string(),

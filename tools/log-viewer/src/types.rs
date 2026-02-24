@@ -1,6 +1,9 @@
 //! Request and response types for the log viewer HTTP API.
 
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use ts_rs::TS;
 
 use crate::log_parser::LogEntry;
@@ -38,7 +41,9 @@ pub struct SourceQuery {
     pub context: usize,
 }
 
-fn default_context() -> usize { 5 }
+fn default_context() -> usize {
+    5
+}
 
 /// Search query parameters
 #[derive(Deserialize, Debug)]

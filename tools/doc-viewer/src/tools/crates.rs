@@ -3,6 +3,12 @@
 //! This module handles the structured API documentation for each crate,
 //! including module trees, type entries, and sync with source files.
 
+use super::{
+    compile_search_regex,
+    regex_matches,
+    ToolError,
+    ToolResult,
+};
 use crate::{
     git::{
         current_timestamp,
@@ -19,14 +25,12 @@ use crate::{
     },
     schema::{
         CrateMetadata,
-        ModuleMetadata,
-        CrateSummary,
-        ModuleTreeNode,
         CrateSearchResult,
+        CrateSummary,
         CrateValidationIssue,
         CrateValidationReport,
-        TypeEntry,
-        TypeWithModule,
+        ModuleMetadata,
+        ModuleTreeNode,
         StaleDocItem,
         StaleDocsReport,
         StaleSummary,
@@ -34,14 +38,18 @@ use crate::{
         SyncAnalysisResult,
         SyncSuggestion,
         SyncSummary,
+        TypeEntry,
+        TypeWithModule,
     },
 };
-use super::{ToolResult, ToolError, compile_search_regex, regex_matches};
 use regex::Regex;
 use serde::Serialize;
 use std::{
     fs,
-    path::{Path, PathBuf},
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
 /// Result of crate discovery with diagnostics
@@ -74,7 +82,10 @@ impl CrateDocsManager {
     }
 
     /// Resolve a crate name to its root path (public version).
-    pub fn get_crate_path(&self, crate_name: &str) -> Option<PathBuf> {
+    pub fn get_crate_path(
+        &self,
+        crate_name: &str,
+    ) -> Option<PathBuf> {
         self.resolve_crate_path(crate_name)
     }
 
@@ -82,10 +93,14 @@ impl CrateDocsManager {
     ///
     /// Searches all configured directories for a crate with matching name
     /// that has an agents/docs/index.yaml file.
-    fn resolve_crate_path(&self, crate_name: &str) -> Option<PathBuf> {
+    fn resolve_crate_path(
+        &self,
+        crate_name: &str,
+    ) -> Option<PathBuf> {
         for crates_dir in &self.crates_dirs {
             let crate_path = crates_dir.join(crate_name);
-            let index_path = crate_path.join("agents").join("docs").join("index.yaml");
+            let index_path =
+                crate_path.join("agents").join("docs").join("index.yaml");
             if index_path.exists() {
                 return Some(crate_path);
             }
@@ -98,16 +113,18 @@ impl CrateDocsManager {
     ///
     /// Scans all configured directories for subdirectories that have
     /// an `agents/docs/index.yaml` file.
-    pub fn discover_crates_with_diagnostics(&self) -> ToolResult<CrateDiscoveryResult> {
+    pub fn discover_crates_with_diagnostics(
+        &self
+    ) -> ToolResult<CrateDiscoveryResult> {
         let mut result = CrateDiscoveryResult {
             crates: Vec::new(),
             diagnostics: Vec::new(),
-            crates_dirs: self.crates_dirs.iter()
+            crates_dirs: self
+                .crates_dirs
+                .iter()
                 .map(|p| p.display().to_string())
                 .collect(),
-            dirs_exist: self.crates_dirs.iter()
-                .map(|p| p.exists())
-                .collect(),
+            dirs_exist: self.crates_dirs.iter().map(|p| p.exists()).collect(),
         };
 
         for crates_dir in &self.crates_dirs {
@@ -124,10 +141,11 @@ impl CrateDocsManager {
                 Err(e) => {
                     result.diagnostics.push(format!(
                         "Failed to read {}: {}",
-                        crates_dir.display(), e
+                        crates_dir.display(),
+                        e
                     ));
                     continue;
-                }
+                },
             };
 
             for entry in entries {
@@ -136,18 +154,20 @@ impl CrateDocsManager {
                     Err(e) => {
                         result.diagnostics.push(format!(
                             "Failed to read entry in {}: {}",
-                            crates_dir.display(), e
+                            crates_dir.display(),
+                            e
                         ));
                         continue;
-                    }
+                    },
                 };
                 let path = entry.path();
-                
+
                 if !path.is_dir() {
                     continue;
                 }
 
-                let name = path.file_name()
+                let name = path
+                    .file_name()
                     .and_then(|n| n.to_str())
                     .unwrap_or_default()
                     .to_string();
@@ -176,13 +196,13 @@ impl CrateDocsManager {
                             crate_path: path.to_string_lossy().to_string(),
                             docs_path: docs_path.to_string_lossy().to_string(),
                         });
-                    }
+                    },
                     Err(e) => {
                         result.diagnostics.push(format!(
                             "{}: YAML parse error - {}",
                             name, e
                         ));
-                    }
+                    },
                 }
             }
         }
@@ -197,12 +217,17 @@ impl CrateDocsManager {
     }
 
     /// Browse a crate's module tree
-    pub fn browse_crate(&self, crate_name: &str) -> ToolResult<ModuleTreeNode> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
+    pub fn browse_crate(
+        &self,
+        crate_name: &str,
+    ) -> ToolResult<ModuleTreeNode> {
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
         let docs_path = crate_path.join("agents").join("docs");
         let index_path = docs_path.join("index.yaml");
 
@@ -211,15 +236,19 @@ impl CrateDocsManager {
 
         let mut children = Vec::new();
         let mut all_types = Vec::new();
-        
+
         for module_ref in &meta.modules {
             // Strip trailing slashes from path to avoid double slashes in paths
             let mod_path = module_ref.path.trim_end_matches('/');
             let module_path = docs_path.join(mod_path);
-            if let Ok(node) = self.build_module_tree(&module_path, &module_ref.name, mod_path) {
+            if let Ok(node) =
+                self.build_module_tree(&module_path, &module_ref.name, mod_path)
+            {
                 // Collect types from this module with attribution
                 for entry in &node.key_types {
-                    all_types.push(TypeWithModule::from_entry(entry, mod_path, "type"));
+                    all_types.push(TypeWithModule::from_entry(
+                        entry, mod_path, "type",
+                    ));
                 }
                 // Recursively collect from children
                 self.collect_types_from_tree(&node, &mut all_types);
@@ -255,9 +284,13 @@ impl CrateDocsManager {
             all_types,
         })
     }
-    
+
     /// Recursively collect types from module tree with attribution
-    fn collect_types_from_tree(&self, node: &ModuleTreeNode, all_types: &mut Vec<TypeWithModule>) {
+    fn collect_types_from_tree(
+        &self,
+        node: &ModuleTreeNode,
+        all_types: &mut Vec<TypeWithModule>,
+    ) {
         for child in &node.children {
             let child_path = if node.path.is_empty() {
                 child.name.clone()
@@ -265,16 +298,25 @@ impl CrateDocsManager {
                 format!("{}/{}", node.path, child.name)
             };
             for entry in &child.key_types {
-                all_types.push(TypeWithModule::from_entry(entry, &child_path, "type"));
+                all_types.push(TypeWithModule::from_entry(
+                    entry,
+                    &child_path,
+                    "type",
+                ));
             }
             self.collect_types_from_tree(child, all_types);
         }
     }
 
     /// Build a module tree node recursively
-    fn build_module_tree(&self, module_path: &Path, name: &str, rel_path: &str) -> ToolResult<ModuleTreeNode> {
+    fn build_module_tree(
+        &self,
+        module_path: &Path,
+        name: &str,
+        rel_path: &str,
+    ) -> ToolResult<ModuleTreeNode> {
         let index_path = module_path.join("index.yaml");
-        
+
         if !index_path.exists() {
             return Err(ToolError::NotFound(format!(
                 "Module docs not found: {}",
@@ -291,7 +333,11 @@ impl CrateDocsManager {
             let submod_path = submodule.path.trim_end_matches('/');
             let sub_path = module_path.join(submod_path);
             let sub_rel_path = format!("{}/{}", rel_path, submod_path);
-            if let Ok(node) = self.build_module_tree(&sub_path, &submodule.name, &sub_rel_path) {
+            if let Ok(node) = self.build_module_tree(
+                &sub_path,
+                &submodule.name,
+                &sub_rel_path,
+            ) {
                 children.push(node);
             }
         }
@@ -315,11 +361,13 @@ impl CrateDocsManager {
         module_path: Option<&str>,
         include_readme: bool,
     ) -> ToolResult<CrateDocResult> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_path = match module_path {
@@ -346,7 +394,8 @@ impl CrateDocsManager {
         };
 
         // Parse source_files from index.yaml and create file links
-        let source_files = self.extract_source_file_links(&index_content, &crate_path);
+        let source_files =
+            self.extract_source_file_links(&index_content, &crate_path);
 
         let crate_path_str = crate_path.to_string_lossy().to_string();
 
@@ -361,13 +410,18 @@ impl CrateDocsManager {
     }
 
     /// Extract source file links from index.yaml content
-    fn extract_source_file_links(&self, yaml_content: &str, crate_path: &Path) -> Vec<SourceFileLink> {
+    fn extract_source_file_links(
+        &self,
+        yaml_content: &str,
+        crate_path: &Path,
+    ) -> Vec<SourceFileLink> {
         // Try to extract source_files from YAML - handles both crate and module formats
-        let source_files: Vec<String> = serde_yaml::from_str::<serde_yaml::Value>(yaml_content)
-            .ok()
-            .and_then(|v| v.get("source_files").cloned())
-            .and_then(|v| serde_yaml::from_value(v).ok())
-            .unwrap_or_default();
+        let source_files: Vec<String> =
+            serde_yaml::from_str::<serde_yaml::Value>(yaml_content)
+                .ok()
+                .and_then(|v| v.get("source_files").cloned())
+                .and_then(|v| serde_yaml::from_value(v).ok())
+                .unwrap_or_default();
 
         source_files
             .into_iter()
@@ -396,11 +450,13 @@ impl CrateDocsManager {
         index_yaml: Option<&str>,
         readme: Option<&str>,
     ) -> ToolResult<()> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_path = match module_path {
@@ -420,11 +476,19 @@ impl CrateDocsManager {
         if let Some(yaml) = index_yaml {
             // Try to parse the YAML to validate it
             if module_path.is_some() {
-                serde_yaml::from_str::<ModuleMetadata>(yaml)
-                    .map_err(|e| ToolError::InvalidInput(format!("Invalid module YAML: {}", e)))?;
+                serde_yaml::from_str::<ModuleMetadata>(yaml).map_err(|e| {
+                    ToolError::InvalidInput(format!(
+                        "Invalid module YAML: {}",
+                        e
+                    ))
+                })?;
             } else {
-                serde_yaml::from_str::<CrateMetadata>(yaml)
-                    .map_err(|e| ToolError::InvalidInput(format!("Invalid crate YAML: {}", e)))?;
+                serde_yaml::from_str::<CrateMetadata>(yaml).map_err(|e| {
+                    ToolError::InvalidInput(format!(
+                        "Invalid crate YAML: {}",
+                        e
+                    ))
+                })?;
             }
             fs::write(target_path.join("index.yaml"), yaml)?;
         }
@@ -444,18 +508,20 @@ impl CrateDocsManager {
         name: &str,
         description: &str,
     ) -> ToolResult<String> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
-        let docs_path = crate_path.join("agents").join("docs").join(module_path);
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
+        let docs_path =
+            crate_path.join("agents").join("docs").join(module_path);
 
         if docs_path.exists() {
             return Err(ToolError::AlreadyExists(format!(
                 "Module docs already exist: {}/{}",
-                crate_name,
-                module_path
+                crate_name, module_path
             )));
         }
 
@@ -471,8 +537,9 @@ impl CrateDocsManager {
             last_synced: None,
         };
 
-        let yaml = serde_yaml::to_string(&meta)
-            .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+        let yaml = serde_yaml::to_string(&meta).map_err(|e| {
+            ToolError::InvalidInput(format!("YAML serialization error: {}", e))
+        })?;
 
         fs::write(docs_path.join("index.yaml"), yaml)?;
 
@@ -485,18 +552,20 @@ impl CrateDocsManager {
         crate_name: &str,
         module_path: &str,
     ) -> ToolResult<String> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
-        let docs_path = crate_path.join("agents").join("docs").join(module_path);
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
+        let docs_path =
+            crate_path.join("agents").join("docs").join(module_path);
 
         if !docs_path.exists() {
             return Err(ToolError::NotFound(format!(
                 "Module docs not found: {}/{}",
-                crate_name,
-                module_path
+                crate_name, module_path
             )));
         }
 
@@ -518,20 +587,22 @@ impl CrateDocsManager {
         add_source_files: Option<Vec<String>>,
         remove_source_files: Option<Vec<String>>,
     ) -> ToolResult<String> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
         let docs_path = crate_path.join("agents").join("docs");
-        
+
         let target_path = match module_path {
             Some(mp) => docs_path.join(mp),
             None => docs_path,
         };
-        
+
         let index_path = target_path.join("index.yaml");
-        
+
         if !index_path.exists() {
             return Err(ToolError::NotFound(format!(
                 "Index not found: {}/{}",
@@ -539,14 +610,16 @@ impl CrateDocsManager {
                 module_path.unwrap_or("")
             )));
         }
-        
+
         let content = fs::read_to_string(&index_path)?;
         let mut changes = Vec::new();
-        
+
         if module_path.is_some() {
             let mut meta: ModuleMetadata = serde_yaml::from_str(&content)
-                .map_err(|e| ToolError::InvalidInput(format!("Invalid YAML: {}", e)))?;
-            
+                .map_err(|e| {
+                    ToolError::InvalidInput(format!("Invalid YAML: {}", e))
+                })?;
+
             // Handle source_files updates
             if let Some(files) = source_files {
                 meta.source_files = files;
@@ -562,20 +635,28 @@ impl CrateDocsManager {
             }
             if let Some(files) = remove_source_files {
                 for f in &files {
-                    if let Some(pos) = meta.source_files.iter().position(|x| x == f) {
+                    if let Some(pos) =
+                        meta.source_files.iter().position(|x| x == f)
+                    {
                         meta.source_files.remove(pos);
                         changes.push(format!("Removed source file: {}", f));
                     }
                 }
             }
-            
-            let yaml = serde_yaml::to_string(&meta)
-                .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+
+            let yaml = serde_yaml::to_string(&meta).map_err(|e| {
+                ToolError::InvalidInput(format!(
+                    "YAML serialization error: {}",
+                    e
+                ))
+            })?;
             fs::write(&index_path, yaml)?;
         } else {
             let mut meta: CrateMetadata = serde_yaml::from_str(&content)
-                .map_err(|e| ToolError::InvalidInput(format!("Invalid YAML: {}", e)))?;
-            
+                .map_err(|e| {
+                    ToolError::InvalidInput(format!("Invalid YAML: {}", e))
+                })?;
+
             // Handle source_files updates
             if let Some(files) = source_files {
                 meta.source_files = files;
@@ -591,23 +672,30 @@ impl CrateDocsManager {
             }
             if let Some(files) = remove_source_files {
                 for f in &files {
-                    if let Some(pos) = meta.source_files.iter().position(|x| x == f) {
+                    if let Some(pos) =
+                        meta.source_files.iter().position(|x| x == f)
+                    {
                         meta.source_files.remove(pos);
                         changes.push(format!("Removed source file: {}", f));
                     }
                 }
             }
-            
-            let yaml = serde_yaml::to_string(&meta)
-                .map_err(|e| ToolError::InvalidInput(format!("YAML serialization error: {}", e)))?;
+
+            let yaml = serde_yaml::to_string(&meta).map_err(|e| {
+                ToolError::InvalidInput(format!(
+                    "YAML serialization error: {}",
+                    e
+                ))
+            })?;
             fs::write(&index_path, yaml)?;
         }
-        
+
         if changes.is_empty() {
             Ok("No changes made".to_string())
         } else {
-            Ok(format!("Updated {}/{}:\n- {}", 
-                crate_name, 
+            Ok(format!(
+                "Updated {}/{}:\n- {}",
+                crate_name,
                 module_path.unwrap_or(""),
                 changes.join("\n- ")
             ))
@@ -626,7 +714,7 @@ impl CrateDocsManager {
         let regex = compile_search_regex(query)?;
 
         let crates = self.discover_crates()?;
-        
+
         for crate_summary in crates {
             if let Some(filter) = crate_filter {
                 if crate_summary.name != filter {
@@ -679,7 +767,10 @@ impl CrateDocsManager {
 
                 // Search modules recursively
                 for module_ref in &meta.modules {
-                    let searchable = format!("{} {}", module_ref.name, module_ref.description);
+                    let searchable = format!(
+                        "{} {}",
+                        module_ref.name, module_ref.description
+                    );
                     if regex_matches(&searchable, &regex) {
                         results.push(CrateSearchResult {
                             crate_name: crate_summary.name.clone(),
@@ -708,7 +799,9 @@ impl CrateDocsManager {
             if search_content {
                 let readme_path = docs_path.join("README.md");
                 if let Ok(content) = read_markdown_file(&readme_path) {
-                    if let Some(context) = self.find_context_in_content(&content, &regex) {
+                    if let Some(context) =
+                        self.find_context_in_content(&content, &regex)
+                    {
                         results.push(CrateSearchResult {
                             crate_name: crate_summary.name.clone(),
                             module_path: String::new(),
@@ -738,10 +831,10 @@ impl CrateDocsManager {
             .filter_map(|entry| {
                 let name = entry.name();
                 let desc = entry.description().unwrap_or("");
-                
+
                 // Combine name and description for regex search
                 let searchable = format!("{} {}", name, desc);
-                
+
                 if regex_matches(&searchable, regex) {
                     // Build context showing the description
                     let context = if !desc.is_empty() {
@@ -749,7 +842,7 @@ impl CrateDocsManager {
                     } else {
                         None
                     };
-                    
+
                     Some(CrateSearchResult {
                         crate_name: crate_name.to_string(),
                         module_path: module_path.to_string(),
@@ -806,9 +899,11 @@ impl CrateDocsManager {
 
             // Search submodules recursively
             for submodule in &meta.submodules {
-                let searchable = format!("{} {}", submodule.name, submodule.description);
+                let searchable =
+                    format!("{} {}", submodule.name, submodule.description);
                 if regex_matches(&searchable, regex) {
-                    let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
+                    let sub_rel_path =
+                        format!("{}/{}", rel_path, submodule.path);
                     results.push(CrateSearchResult {
                         crate_name: crate_name.to_string(),
                         module_path: sub_rel_path.clone(),
@@ -835,7 +930,9 @@ impl CrateDocsManager {
             if search_content {
                 let readme_path = module_path.join("README.md");
                 if let Ok(content) = read_markdown_file(&readme_path) {
-                    if let Some(context) = self.find_context_in_content(&content, regex) {
+                    if let Some(context) =
+                        self.find_context_in_content(&content, regex)
+                    {
                         results.push(CrateSearchResult {
                             crate_name: crate_name.to_string(),
                             module_path: rel_path.to_string(),
@@ -852,7 +949,11 @@ impl CrateDocsManager {
         results
     }
 
-    fn find_context_in_content(&self, content: &str, regex: &Option<Regex>) -> Option<String> {
+    fn find_context_in_content(
+        &self,
+        content: &str,
+        regex: &Option<Regex>,
+    ) -> Option<String> {
         let lines: Vec<&str> = content.lines().collect();
         for (i, line) in lines.iter().enumerate() {
             if regex_matches(line, regex) {
@@ -878,7 +979,10 @@ impl CrateDocsManager {
     }
 
     /// Validate crate documentation for consistency
-    pub fn validate_crate_docs(&self, crate_filter: Option<&str>) -> ToolResult<CrateValidationReport> {
+    pub fn validate_crate_docs(
+        &self,
+        crate_filter: Option<&str>,
+    ) -> ToolResult<CrateValidationReport> {
         let mut report = CrateValidationReport::default();
         let crates = self.discover_crates()?;
 
@@ -904,7 +1008,10 @@ impl CrateDocsManager {
                             report.issues.push(CrateValidationIssue {
                                 crate_name: crate_summary.name.clone(),
                                 module_path: Some(module_ref.path.clone()),
-                                issue: format!("Referenced module '{}' does not exist", module_ref.path),
+                                issue: format!(
+                                    "Referenced module '{}' does not exist",
+                                    module_ref.path
+                                ),
                                 severity: "error".to_string(),
                             });
                         } else {
@@ -927,7 +1034,7 @@ impl CrateDocsManager {
                             severity: "warning".to_string(),
                         });
                     }
-                }
+                },
                 Err(e) => {
                     report.issues.push(CrateValidationIssue {
                         crate_name: crate_summary.name.clone(),
@@ -935,7 +1042,7 @@ impl CrateDocsManager {
                         issue: format!("Failed to parse index.yaml: {}", e),
                         severity: "error".to_string(),
                     });
-                }
+                },
             }
         }
 
@@ -961,13 +1068,25 @@ impl CrateDocsManager {
                     if !sub_path.exists() {
                         report.issues.push(CrateValidationIssue {
                             crate_name: crate_name.to_string(),
-                            module_path: Some(format!("{}/{}", rel_path, submodule.path)),
-                            issue: format!("Referenced submodule '{}' does not exist", submodule.path),
+                            module_path: Some(format!(
+                                "{}/{}",
+                                rel_path, submodule.path
+                            )),
+                            issue: format!(
+                                "Referenced submodule '{}' does not exist",
+                                submodule.path
+                            ),
                             severity: "error".to_string(),
                         });
                     } else {
-                        let sub_rel_path = format!("{}/{}", rel_path, submodule.path);
-                        self.validate_module(&sub_path, crate_name, &sub_rel_path, report);
+                        let sub_rel_path =
+                            format!("{}/{}", rel_path, submodule.path);
+                        self.validate_module(
+                            &sub_path,
+                            crate_name,
+                            &sub_rel_path,
+                            report,
+                        );
                     }
                 }
 
@@ -980,7 +1099,7 @@ impl CrateDocsManager {
                         severity: "warning".to_string(),
                     });
                 }
-            }
+            },
             Err(e) => {
                 report.issues.push(CrateValidationIssue {
                     crate_name: crate_name.to_string(),
@@ -988,7 +1107,7 @@ impl CrateDocsManager {
                     issue: format!("Failed to parse index.yaml: {}", e),
                     severity: "error".to_string(),
                 });
-            }
+            },
         }
     }
 
@@ -1022,7 +1141,7 @@ impl CrateDocsManager {
             }
 
             let crate_path = PathBuf::from(&crate_summary.crate_path);
-            
+
             // Check if this crate is in a git repo
             if !is_git_repository(&crate_path) {
                 // Skip crates not in a git repository
@@ -1069,8 +1188,16 @@ impl CrateDocsManager {
                 + report.stale_items.len()
                 + report.unknown_items.len(),
             fresh_count: report.fresh_items.len(),
-            stale_count: report.stale_items.iter().filter(|i| i.staleness == StalenessLevel::Stale).count(),
-            very_stale_count: report.stale_items.iter().filter(|i| i.staleness == StalenessLevel::VeryStale).count(),
+            stale_count: report
+                .stale_items
+                .iter()
+                .filter(|i| i.staleness == StalenessLevel::Stale)
+                .count(),
+            very_stale_count: report
+                .stale_items
+                .iter()
+                .filter(|i| i.staleness == StalenessLevel::VeryStale)
+                .count(),
             unknown_count: report.unknown_items.len(),
         };
 
@@ -1107,7 +1234,8 @@ impl CrateDocsManager {
             // Recursively check submodules
             for submodule in &meta.submodules {
                 let sub_path = module_docs_path.join(&submodule.path);
-                let sub_rel_path = format!("{}/{}", module_rel_path, submodule.path);
+                let sub_rel_path =
+                    format!("{}/{}", module_rel_path, submodule.path);
                 self.check_module_staleness(
                     crate_path,
                     &sub_path,
@@ -1158,15 +1286,18 @@ impl CrateDocsManager {
 
         // Calculate days
         let days_since_sync = last_synced.and_then(days_since);
-        let days_since_source_change = source_last_modified.as_ref().and_then(|ts| days_since(ts));
+        let days_since_source_change =
+            source_last_modified.as_ref().and_then(|ts| days_since(ts));
 
         // Determine staleness level
         let staleness = if modified_files.is_empty() {
             StalenessLevel::Fresh
         } else {
             match days_since_sync {
-                Some(days) if days >= very_stale_threshold_days => StalenessLevel::VeryStale,
-                Some(days) if days >= stale_threshold_days => StalenessLevel::Stale,
+                Some(days) if days >= very_stale_threshold_days =>
+                    StalenessLevel::VeryStale,
+                Some(days) if days >= stale_threshold_days =>
+                    StalenessLevel::Stale,
                 Some(_) => {
                     // Recent sync but still have modified files
                     if modified_files.is_empty() {
@@ -1174,11 +1305,11 @@ impl CrateDocsManager {
                     } else {
                         StalenessLevel::Stale
                     }
-                }
+                },
                 None => {
                     // Never synced
                     StalenessLevel::VeryStale
-                }
+                },
             }
         };
 
@@ -1195,10 +1326,15 @@ impl CrateDocsManager {
         }
     }
 
-    fn categorize_stale_item(&self, report: &mut StaleDocsReport, item: StaleDocItem) {
+    fn categorize_stale_item(
+        &self,
+        report: &mut StaleDocsReport,
+        item: StaleDocItem,
+    ) {
         match item.staleness {
             StalenessLevel::Fresh => report.fresh_items.push(item),
-            StalenessLevel::Stale | StalenessLevel::VeryStale => report.stale_items.push(item),
+            StalenessLevel::Stale | StalenessLevel::VeryStale =>
+                report.stale_items.push(item),
             StalenessLevel::Unknown => report.unknown_items.push(item),
         }
     }
@@ -1222,11 +1358,13 @@ impl CrateDocsManager {
         update_timestamp: bool,
         summary_only: bool,
     ) -> ToolResult<SyncAnalysisResult> {
-        let crate_path = self.resolve_crate_path(crate_name)
-            .ok_or_else(|| ToolError::NotFound(format!(
-                "Crate docs not found: {}",
-                crate_name
-            )))?;
+        let crate_path =
+            self.resolve_crate_path(crate_name).ok_or_else(|| {
+                ToolError::NotFound(format!(
+                    "Crate docs not found: {}",
+                    crate_name
+                ))
+            })?;
         let docs_path = crate_path.join("agents").join("docs");
 
         let target_docs_path = match module_path {
@@ -1272,7 +1410,9 @@ impl CrateDocsManager {
         };
 
         if source_files.is_empty() {
-            result.errors.push("No source_files configured in index.yaml".to_string());
+            result
+                .errors
+                .push("No source_files configured in index.yaml".to_string());
             return Ok(result);
         }
 
@@ -1280,7 +1420,9 @@ impl CrateDocsManager {
         for source_file in &source_files {
             let file_path = crate_path.join(source_file);
             if !file_path.exists() {
-                result.errors.push(format!("Source file not found: {}", source_file));
+                result
+                    .errors
+                    .push(format!("Source file not found: {}", source_file));
                 continue;
             }
 
@@ -1288,11 +1430,17 @@ impl CrateDocsManager {
 
             match fs::read_to_string(&file_path) {
                 Ok(content) => {
-                    self.analyze_rust_source(&content, source_file, &mut result);
-                }
+                    self.analyze_rust_source(
+                        &content,
+                        source_file,
+                        &mut result,
+                    );
+                },
                 Err(e) => {
-                    result.errors.push(format!("Failed to read {}: {}", source_file, e));
-                }
+                    result
+                        .errors
+                        .push(format!("Failed to read {}: {}", source_file, e));
+                },
             }
         }
 
@@ -1313,8 +1461,16 @@ impl CrateDocsManager {
         }
 
         // Calculate summary
-        let to_add = result.suggestions.iter().filter(|s| s.change_type == "add").count();
-        let to_remove = result.suggestions.iter().filter(|s| s.change_type == "remove").count();
+        let to_add = result
+            .suggestions
+            .iter()
+            .filter(|s| s.change_type == "add")
+            .count();
+        let to_remove = result
+            .suggestions
+            .iter()
+            .filter(|s| s.change_type == "remove")
+            .count();
         result.summary = Some(SyncSummary {
             types_found: result.public_types.len(),
             traits_found: result.public_traits.len(),
@@ -1334,10 +1490,15 @@ impl CrateDocsManager {
     }
 
     /// Simple Rust source analysis using regex patterns
-    /// 
+    ///
     /// Note: This is a simplified parser that looks for common patterns.
     /// For full accuracy, a proper Rust parser like syn would be needed.
-    fn analyze_rust_source(&self, content: &str, _file_path: &str, result: &mut SyncAnalysisResult) {
+    fn analyze_rust_source(
+        &self,
+        content: &str,
+        _file_path: &str,
+        result: &mut SyncAnalysisResult,
+    ) {
         use regex::Regex;
 
         // Match public structs: pub struct Name
@@ -1368,7 +1529,9 @@ impl CrateDocsManager {
         }
 
         // Match macros: macro_rules! name or pub macro name (though latter is rare)
-        let macro_re = Regex::new(r"(?m)^(?:#\[macro_export\]\s*\n)?macro_rules!\s+(\w+)").unwrap();
+        let macro_re =
+            Regex::new(r"(?m)^(?:#\[macro_export\]\s*\n)?macro_rules!\s+(\w+)")
+                .unwrap();
         for cap in macro_re.captures_iter(content) {
             let name = cap[1].to_string();
             if !result.public_macros.contains(&name) {
@@ -1386,16 +1549,23 @@ impl CrateDocsManager {
         }
     }
 
-    fn compare_crate_docs(&self, meta: &CrateMetadata, result: &mut SyncAnalysisResult) {
+    fn compare_crate_docs(
+        &self,
+        meta: &CrateMetadata,
+        result: &mut SyncAnalysisResult,
+    ) {
         // Get documented types
         let mut documented_types: Vec<String> = Vec::new();
         let mut documented_traits: Vec<String> = Vec::new();
         let mut documented_macros: Vec<String> = Vec::new();
 
         if let Some(exported) = &meta.exported_items {
-            documented_types.extend(exported.types.iter().map(|t| t.name.clone()));
-            documented_traits.extend(exported.traits.iter().map(|t| t.name.clone()));
-            documented_macros.extend(exported.macros.iter().map(|t| t.name.clone()));
+            documented_types
+                .extend(exported.types.iter().map(|t| t.name.clone()));
+            documented_traits
+                .extend(exported.traits.iter().map(|t| t.name.clone()));
+            documented_macros
+                .extend(exported.macros.iter().map(|t| t.name.clone()));
         }
 
         // Find types in source but not documented
@@ -1406,7 +1576,11 @@ impl CrateDocsManager {
                     item_kind: "type".to_string(),
                     item_name: type_name.clone(),
                     description: None,
-                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    source_file: result
+                        .files_analyzed
+                        .first()
+                        .cloned()
+                        .unwrap_or_default(),
                     line_number: None,
                 });
             }
@@ -1419,7 +1593,11 @@ impl CrateDocsManager {
                     item_kind: "trait".to_string(),
                     item_name: trait_name.clone(),
                     description: None,
-                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    source_file: result
+                        .files_analyzed
+                        .first()
+                        .cloned()
+                        .unwrap_or_default(),
                     line_number: None,
                 });
             }
@@ -1432,7 +1610,11 @@ impl CrateDocsManager {
                     item_kind: "macro".to_string(),
                     item_name: macro_name.clone(),
                     description: None,
-                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    source_file: result
+                        .files_analyzed
+                        .first()
+                        .cloned()
+                        .unwrap_or_default(),
                     line_number: None,
                 });
             }
@@ -1445,7 +1627,9 @@ impl CrateDocsManager {
                     change_type: "remove".to_string(),
                     item_kind: "type".to_string(),
                     item_name: type_name.clone(),
-                    description: Some("Not found in analyzed source files".to_string()),
+                    description: Some(
+                        "Not found in analyzed source files".to_string(),
+                    ),
                     source_file: String::new(),
                     line_number: None,
                 });
@@ -1458,7 +1642,9 @@ impl CrateDocsManager {
                     change_type: "remove".to_string(),
                     item_kind: "trait".to_string(),
                     item_name: trait_name.clone(),
-                    description: Some("Not found in analyzed source files".to_string()),
+                    description: Some(
+                        "Not found in analyzed source files".to_string(),
+                    ),
                     source_file: String::new(),
                     line_number: None,
                 });
@@ -1471,7 +1657,9 @@ impl CrateDocsManager {
                     change_type: "remove".to_string(),
                     item_kind: "macro".to_string(),
                     item_name: macro_name.clone(),
-                    description: Some("Not found in analyzed source files".to_string()),
+                    description: Some(
+                        "Not found in analyzed source files".to_string(),
+                    ),
                     source_file: String::new(),
                     line_number: None,
                 });
@@ -1479,9 +1667,14 @@ impl CrateDocsManager {
         }
     }
 
-    fn compare_module_docs(&self, meta: &ModuleMetadata, result: &mut SyncAnalysisResult) {
+    fn compare_module_docs(
+        &self,
+        meta: &ModuleMetadata,
+        result: &mut SyncAnalysisResult,
+    ) {
         // Get documented key_types
-        let documented_types: Vec<String> = meta.key_types.iter().map(|t| t.name.clone()).collect();
+        let documented_types: Vec<String> =
+            meta.key_types.iter().map(|t| t.name.clone()).collect();
 
         // Combine all public items from source
         let mut all_source_items: Vec<String> = Vec::new();
@@ -1497,7 +1690,11 @@ impl CrateDocsManager {
                     item_kind: "type".to_string(),
                     item_name: type_name.clone(),
                     description: None,
-                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    source_file: result
+                        .files_analyzed
+                        .first()
+                        .cloned()
+                        .unwrap_or_default(),
                     line_number: None,
                 });
             }
@@ -1510,7 +1707,11 @@ impl CrateDocsManager {
                     item_kind: "trait".to_string(),
                     item_name: trait_name.clone(),
                     description: None,
-                    source_file: result.files_analyzed.first().cloned().unwrap_or_default(),
+                    source_file: result
+                        .files_analyzed
+                        .first()
+                        .cloned()
+                        .unwrap_or_default(),
                     line_number: None,
                 });
             }
@@ -1523,7 +1724,9 @@ impl CrateDocsManager {
                     change_type: "remove".to_string(),
                     item_kind: "type".to_string(),
                     item_name: type_name.clone(),
-                    description: Some("Not found in analyzed source files".to_string()),
+                    description: Some(
+                        "Not found in analyzed source files".to_string(),
+                    ),
                     source_file: String::new(),
                     line_number: None,
                 });
@@ -1531,22 +1734,44 @@ impl CrateDocsManager {
         }
     }
 
-    fn update_last_synced(&self, index_path: &Path, is_module: bool) -> ToolResult<()> {
+    fn update_last_synced(
+        &self,
+        index_path: &Path,
+        is_module: bool,
+    ) -> ToolResult<()> {
         let content = fs::read_to_string(index_path)?;
         let timestamp = current_timestamp();
 
         let new_content = if is_module {
             let mut meta: ModuleMetadata = serde_yaml::from_str(&content)
-                .map_err(|e| ToolError::InvalidInput(format!("Failed to parse YAML: {}", e)))?;
+                .map_err(|e| {
+                    ToolError::InvalidInput(format!(
+                        "Failed to parse YAML: {}",
+                        e
+                    ))
+                })?;
             meta.last_synced = Some(timestamp);
-            serde_yaml::to_string(&meta)
-                .map_err(|e| ToolError::InvalidInput(format!("Failed to serialize YAML: {}", e)))?
+            serde_yaml::to_string(&meta).map_err(|e| {
+                ToolError::InvalidInput(format!(
+                    "Failed to serialize YAML: {}",
+                    e
+                ))
+            })?
         } else {
             let mut meta: CrateMetadata = serde_yaml::from_str(&content)
-                .map_err(|e| ToolError::InvalidInput(format!("Failed to parse YAML: {}", e)))?;
+                .map_err(|e| {
+                    ToolError::InvalidInput(format!(
+                        "Failed to parse YAML: {}",
+                        e
+                    ))
+                })?;
             meta.last_synced = Some(timestamp);
-            serde_yaml::to_string(&meta)
-                .map_err(|e| ToolError::InvalidInput(format!("Failed to serialize YAML: {}", e)))?
+            serde_yaml::to_string(&meta).map_err(|e| {
+                ToolError::InvalidInput(format!(
+                    "Failed to serialize YAML: {}",
+                    e
+                ))
+            })?
         };
 
         fs::write(index_path, new_content)?;
@@ -1558,7 +1783,10 @@ impl CrateDocsManager {
 // Helper Functions
 // =============================================================================
 
-fn truncate(s: &str, max_len: usize) -> String {
+fn truncate(
+    s: &str,
+    max_len: usize,
+) -> String {
     if s.len() <= max_len {
         s.to_string()
     } else {
@@ -1601,20 +1829,24 @@ impl CrateDocResult {
     pub fn to_markdown(&self) -> String {
         let mut md = String::new();
         let location = match &self.module_path {
-            Some(path) => format!("{}::{}", self.crate_name, path.replace('/', "::")),
+            Some(path) =>
+                format!("{}::{}", self.crate_name, path.replace('/', "::")),
             None => self.crate_name.clone(),
         };
         md.push_str(&format!("# Documentation: {}\n\n", location));
-        
+
         // Add source files section with clickable links
         if !self.source_files.is_empty() {
             md.push_str("## Source Files\n\n");
             for file in &self.source_files {
-                md.push_str(&format!("- [{}]({})\n", file.rel_path, file.vscode_uri));
+                md.push_str(&format!(
+                    "- [{}]({})\n",
+                    file.rel_path, file.vscode_uri
+                ));
             }
             md.push_str("\n");
         }
-        
+
         md.push_str("## index.yaml\n\n```yaml\n");
         md.push_str(&self.index_yaml);
         md.push_str("```\n\n");

@@ -14,7 +14,7 @@
 //! The MCP server provides tools for querying logs using JQ syntax.
 //!
 //! # Configuration
-//! 
+//!
 //! Config file search order:
 //! 1. Path in `LOG_VIEWER_CONFIG` environment variable
 //! 2. `./log-viewer.toml` (current directory)
@@ -38,19 +38,42 @@ mod state;
 mod types;
 
 use config::Config;
-use std::{env, net::SocketAddr, path::PathBuf};
-use viewer_api::{TracingConfig, init_tracing_full, display_host, tracing::info};
+use std::{
+    env,
+    net::SocketAddr,
+    path::PathBuf,
+};
+use viewer_api::{
+    display_host,
+    init_tracing_full,
+    tracing::info,
+    TracingConfig,
+};
 
 use handlers::to_unix_path;
 use router::create_router;
 use state::create_app_state_from_config;
 
 // Re-export types needed by tests
-pub use log_parser::{LogEntry, LogParser};
-pub use state::{AppState, SessionConfig, SessionStore, SESSION_HEADER, create_app_state};
+pub use log_parser::{
+    LogEntry,
+    LogParser,
+};
+pub use state::{
+    create_app_state,
+    AppState,
+    SessionConfig,
+    SessionStore,
+    SESSION_HEADER,
+};
 pub use types::{
-    ErrorResponse, JqQuery, JqQueryResponse, LogContentResponse, LogFileInfo,
-    SearchQuery, SearchResponse,
+    ErrorResponse,
+    JqQuery,
+    JqQueryResponse,
+    LogContentResponse,
+    LogFileInfo,
+    SearchQuery,
+    SearchResponse,
 };
 
 /// Initialize tracing with optional file output
@@ -70,16 +93,18 @@ async fn main() {
     // Check for --mcp flag to run in MCP server mode
     let args: Vec<String> = env::args().collect();
     let mcp_mode = args.iter().any(|arg| arg == "--mcp");
-    
+
     // Load configuration from file and environment
     let config = Config::load();
-    
+
     let log_dir = config.resolve_log_dir();
     let workspace_root = config.resolve_workspace_root();
-    
+
     if mcp_mode {
         // MCP-only mode - run stdio server
-        if let Err(e) = mcp_server::run_mcp_server(log_dir, workspace_root).await {
+        if let Err(e) =
+            mcp_server::run_mcp_server(log_dir, workspace_root).await
+        {
             eprintln!("MCP server error: {}", e);
             std::process::exit(1);
         }
@@ -92,16 +117,22 @@ async fn main() {
         info!(workspace_root = %to_unix_path(&state.workspace_root), "Workspace root");
 
         // Static file serving for the frontend
-        let static_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
+        let static_dir =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
         info!(static_dir = %to_unix_path(&static_dir), "Static directory");
 
         let app = create_router(state, Some(static_dir));
 
         // Bind to address from config
-        let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
-            .parse()
-            .expect("Invalid server address in config");
-        let display_addr = format!("{}:{}", display_host(&config.server.host), config.server.port);
+        let addr: SocketAddr =
+            format!("{}:{}", config.server.host, config.server.port)
+                .parse()
+                .expect("Invalid server address in config");
+        let display_addr = format!(
+            "{}:{}",
+            display_host(&config.server.host),
+            config.server.port
+        );
         info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
 
         let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
@@ -113,39 +144,54 @@ async fn main() {
 mod tests {
     use super::*;
     use axum_test::TestServer;
+    use source::{
+        detect_language,
+        resolve_source_path,
+    };
+    use std::{
+        collections::HashMap,
+        fs,
+        sync::{
+            Arc,
+            RwLock,
+        },
+    };
     use tempfile::TempDir;
-    use std::fs;
-    use std::collections::HashMap;
-    use std::sync::{Arc, RwLock};
-    use source::detect_language;
-    use source::resolve_source_path;
 
     /// Create a test app with a temporary log directory
     fn create_test_app() -> (TestServer, TempDir, TempDir) {
         let log_dir = TempDir::new().unwrap();
         let workspace_dir = TempDir::new().unwrap();
-        
+
         let state = AppState {
             log_dir: log_dir.path().to_path_buf(),
             workspace_root: workspace_dir.path().to_path_buf(),
             parser: Arc::new(LogParser::new()),
             sessions: Arc::new(RwLock::new(HashMap::new())),
         };
-        
+
         let router = create_router(state, None);
         let server = TestServer::new(router).unwrap();
-        
+
         (server, log_dir, workspace_dir)
     }
-    
+
     /// Helper to create a sample log file
-    fn create_log_file(dir: &TempDir, name: &str, content: &str) {
+    fn create_log_file(
+        dir: &TempDir,
+        name: &str,
+        content: &str,
+    ) {
         let path = dir.path().join(name);
         fs::write(&path, content).unwrap();
     }
-    
+
     /// Helper to create a sample source file
-    fn create_source_file(dir: &TempDir, path: &str, content: &str) {
+    fn create_source_file(
+        dir: &TempDir,
+        path: &str,
+        content: &str,
+    ) {
         let full_path = dir.path().join(path);
         if let Some(parent) = full_path.parent() {
             fs::create_dir_all(parent).unwrap();
@@ -156,10 +202,10 @@ mod tests {
     #[tokio::test]
     async fn test_list_logs_empty() {
         let (server, _log_dir, _workspace_dir) = create_test_app();
-        
+
         let response = server.get("/api/logs").await;
         response.assert_status_ok();
-        
+
         let logs: Vec<LogFileInfo> = response.json();
         assert!(logs.is_empty());
     }
@@ -167,18 +213,18 @@ mod tests {
     #[tokio::test]
     async fn test_list_logs_with_files() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         create_log_file(&log_dir, "test1.log", "INFO test message");
         create_log_file(&log_dir, "test2.log", "DEBUG another message");
         // Create a non-log file that should be ignored
         create_log_file(&log_dir, "readme.txt", "not a log");
-        
+
         let response = server.get("/api/logs").await;
         response.assert_status_ok();
-        
+
         let logs: Vec<LogFileInfo> = response.json();
         assert_eq!(logs.len(), 2);
-        
+
         let names: Vec<&str> = logs.iter().map(|l| l.name.as_str()).collect();
         assert!(names.contains(&"test1.log"));
         assert!(names.contains(&"test2.log"));
@@ -188,15 +234,15 @@ mod tests {
     #[tokio::test]
     async fn test_get_log_file() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"enter"},"span":{"name":"test_span"}}
 {"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"some debug message"}}
 {"timestamp":"2024-01-01T00:00:02Z","level":"INFO","fields":{"message":"close"},"span":{"name":"test_span"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
-        
+
         let response = server.get("/api/logs/test.log").await;
         response.assert_status_ok();
-        
+
         let content: LogContentResponse = response.json();
         assert_eq!(content.name, "test.log");
         assert!(!content.entries.is_empty());
@@ -205,7 +251,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_log_file_not_found() {
         let (server, _log_dir, _workspace_dir) = create_test_app();
-        
+
         let response = server.get("/api/logs/nonexistent.log").await;
         response.assert_status_not_found();
     }
@@ -213,11 +259,11 @@ mod tests {
     #[tokio::test]
     async fn test_get_log_path_traversal_blocked() {
         let (server, _log_dir, _workspace_dir) = create_test_app();
-        
+
         // URL-encoded path traversal attempt
         let response = server.get("/api/logs/..%2Fsecret.log").await;
         response.assert_status_bad_request();
-        
+
         // Backslash in filename
         let response = server.get("/api/logs/foo%5Cbar.log").await;
         response.assert_status_bad_request();
@@ -226,17 +272,18 @@ mod tests {
     #[tokio::test]
     async fn test_search_log() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"hello world"}}
 {"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"goodbye world"}}
 {"timestamp":"2024-01-01T00:00:02Z","level":"ERROR","fields":{"message":"error occurred"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
-        
-        let response = server.get("/api/search/test.log")
+
+        let response = server
+            .get("/api/search/test.log")
             .add_query_param("q", "hello")
             .await;
         response.assert_status_ok();
-        
+
         let result: SearchResponse = response.json();
         assert_eq!(result.query, "hello");
         assert!(result.total_matches > 0);
@@ -245,18 +292,19 @@ mod tests {
     #[tokio::test]
     async fn test_search_log_with_level_filter() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         let log_content = r#"{"timestamp":"2024-01-01T00:00:00Z","level":"INFO","fields":{"message":"info message"}}
 {"timestamp":"2024-01-01T00:00:01Z","level":"DEBUG","fields":{"message":"debug message"}}
 {"timestamp":"2024-01-01T00:00:02Z","level":"ERROR","fields":{"message":"error message"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
-        
-        let response = server.get("/api/search/test.log")
+
+        let response = server
+            .get("/api/search/test.log")
             .add_query_param("q", "message")
             .add_query_param("level", "ERROR")
             .await;
         response.assert_status_ok();
-        
+
         let result: SearchResponse = response.json();
         // Should only match ERROR level
         for entry in &result.matches {
@@ -267,11 +315,12 @@ mod tests {
     #[tokio::test]
     async fn test_search_invalid_regex() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         create_log_file(&log_dir, "test.log", "INFO test");
-        
+
         // Invalid regex with unclosed bracket
-        let response = server.get("/api/search/test.log")
+        let response = server
+            .get("/api/search/test.log")
             .add_query_param("q", "[invalid")
             .await;
         response.assert_status_bad_request();
@@ -280,16 +329,16 @@ mod tests {
     #[tokio::test]
     async fn test_get_source_file() {
         let (server, _log_dir, workspace_dir) = create_test_app();
-        
+
         let source_content = r#"fn main() {
     println!("Hello, world!");
 }
 "#;
         create_source_file(&workspace_dir, "src/main.rs", source_content);
-        
+
         let response = server.get("/api/source/src/main.rs").await;
         response.assert_status_ok();
-        
+
         let result: serde_json::Value = response.json();
         assert_eq!(result["path"], "src/main.rs");
         assert_eq!(result["language"], "rust");
@@ -299,16 +348,17 @@ mod tests {
     #[tokio::test]
     async fn test_get_source_snippet() {
         let (server, _log_dir, workspace_dir) = create_test_app();
-        
+
         let source_content = "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\nline10";
         create_source_file(&workspace_dir, "test.txt", source_content);
-        
-        let response = server.get("/api/source/test.txt")
+
+        let response = server
+            .get("/api/source/test.txt")
             .add_query_param("line", "5")
             .add_query_param("context", "2")
             .await;
         response.assert_status_ok();
-        
+
         let result: serde_json::Value = response.json();
         assert_eq!(result["highlight_line"], 5);
         assert_eq!(result["start_line"], 3);
@@ -318,16 +368,17 @@ mod tests {
     #[tokio::test]
     async fn test_get_source_path_traversal_blocked() {
         let (server, _log_dir, _workspace_dir) = create_test_app();
-        
+
         // URL-encoded path traversal attempt
-        let response = server.get("/api/source/..%2F..%2F..%2Fetc%2Fpasswd").await;
+        let response =
+            server.get("/api/source/..%2F..%2F..%2Fetc%2Fpasswd").await;
         response.assert_status_bad_request();
     }
 
     #[tokio::test]
     async fn test_get_source_not_found() {
         let (server, _log_dir, _workspace_dir) = create_test_app();
-        
+
         let response = server.get("/api/source/nonexistent.rs").await;
         response.assert_status_not_found();
     }
@@ -349,15 +400,15 @@ mod tests {
     #[tokio::test]
     async fn test_resolve_source_path_normalization() {
         let workspace = PathBuf::from("/workspace");
-        
+
         // Forward slashes
         let result = resolve_source_path(&workspace, "src/main.rs");
         assert!(result.is_ok());
-        
+
         // Backslashes (Windows)
         let result = resolve_source_path(&workspace, "src\\main.rs");
         assert!(result.is_ok());
-        
+
         // Leading slashes removed
         let result = resolve_source_path(&workspace, "/src/main.rs");
         assert!(result.is_ok());
@@ -366,10 +417,10 @@ mod tests {
     #[tokio::test]
     async fn test_resolve_source_path_traversal_blocked() {
         let workspace = PathBuf::from("/workspace");
-        
+
         let result = resolve_source_path(&workspace, "../etc/passwd");
         assert!(result.is_err());
-        
+
         let result = resolve_source_path(&workspace, "src/../../../etc/passwd");
         assert!(result.is_err());
     }
@@ -377,19 +428,20 @@ mod tests {
     #[tokio::test]
     async fn test_query_log_jq() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
+
         // Create test log file with multiple entries (message inside fields)
         let log_content = r#"{"timestamp":"0.001","level":"INFO","fields":{"message":"test info 1","target":"test"}}
 {"timestamp":"0.002","level":"ERROR","fields":{"message":"test error","target":"test"}}
 {"timestamp":"0.003","level":"INFO","fields":{"message":"test info 2","target":"test"}}"#;
         create_log_file(&log_dir, "test.log", log_content);
-        
+
         // Filter for ERROR level using JQ
-        let response = server.get("/api/query/test.log")
+        let response = server
+            .get("/api/query/test.log")
             .add_query_param("jq", r#"select(.level == "ERROR")"#)
             .await;
         response.assert_status_ok();
-        
+
         let result: JqQueryResponse = response.json();
         assert_eq!(result.total_matches, 1);
         assert_eq!(result.matches[0].level, "ERROR");
@@ -399,11 +451,16 @@ mod tests {
     #[tokio::test]
     async fn test_query_log_jq_invalid() {
         let (server, log_dir, _workspace_dir) = create_test_app();
-        
-        create_log_file(&log_dir, "test.log", r#"{"level":"INFO","message":"test"}"#);
-        
+
+        create_log_file(
+            &log_dir,
+            "test.log",
+            r#"{"level":"INFO","message":"test"}"#,
+        );
+
         // Invalid JQ syntax
-        let response = server.get("/api/query/test.log")
+        let response = server
+            .get("/api/query/test.log")
             .add_query_param("jq", "select(.invalid syntax")
             .await;
         response.assert_status_bad_request();

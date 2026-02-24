@@ -24,7 +24,13 @@
 //! {level, message, timestamp}
 //! ```
 
-use jaq_interpret::{Ctx, FilterT, ParseCtx, RcIter, Val};
+use jaq_interpret::{
+    Ctx,
+    FilterT,
+    ParseCtx,
+    RcIter,
+    Val,
+};
 use serde_json::Value;
 
 /// Error type for query operations
@@ -34,7 +40,10 @@ pub struct QueryError {
 }
 
 impl std::fmt::Display for QueryError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "{}", self.message)
     }
 }
@@ -55,37 +64,42 @@ impl JqFilter {
         let mut ctx = ParseCtx::new(Vec::new());
         ctx.insert_natives(jaq_core::core());
         ctx.insert_defs(jaq_std::std());
-        
+
         // Parse the query - jaq_syn::parse returns Option<T>
         let parsed = jaq_syn::parse(query, |p| p.module(|p| p.term()));
-        
+
         let main = parsed.ok_or_else(|| QueryError {
             message: "Parse error: invalid jq expression".to_string(),
         })?;
-        
+
         // Convert and compile
         let filter = main.conv(query);
         let filter = ctx.compile(filter);
-        
+
         if !ctx.errs.is_empty() {
-            let msg = ctx.errs.iter()
-                .map(|(e, _span)| format!("{}", e)) 
+            let msg = ctx
+                .errs
+                .iter()
+                .map(|(e, _span)| format!("{}", e))
                 .collect::<Vec<_>>()
                 .join(", ");
             return Err(QueryError {
                 message: format!("Compilation error: {}", msg),
             });
         }
-        
+
         Ok(Self { ctx, filter })
     }
 
     /// Run the filter on a JSON value, returning all outputs
-    pub fn run(&self, input: &Value) -> Vec<Result<Value, String>> {
+    pub fn run(
+        &self,
+        input: &Value,
+    ) -> Vec<Result<Value, String>> {
         let inputs = RcIter::new(std::iter::empty());
         let val = Val::from(input.clone());
         let ctx = Ctx::new([], &inputs);
-        
+
         self.filter
             .run((ctx, val))
             .map(|result| {
@@ -97,7 +111,10 @@ impl JqFilter {
     }
 
     /// Run the filter on a value, returning true if any output is truthy
-    pub fn matches(&self, input: &Value) -> bool {
+    pub fn matches(
+        &self,
+        input: &Value,
+    ) -> bool {
         let results = self.run(input);
         results.into_iter().any(|r| {
             match r {
@@ -116,14 +133,14 @@ pub fn filter_values<'a>(
     query: &str,
 ) -> Result<Vec<Value>, QueryError> {
     let filter = JqFilter::compile(query)?;
-    
+
     let mut results = Vec::new();
     for value in values {
         if filter.matches(value) {
             results.push(value.clone());
         }
     }
-    
+
     Ok(results)
 }
 
@@ -133,7 +150,7 @@ pub fn transform_values<'a>(
     query: &str,
 ) -> Result<Vec<Value>, QueryError> {
     let filter = JqFilter::compile(query)?;
-    
+
     let mut results = Vec::new();
     for value in values {
         for result in filter.run(value) {
@@ -142,7 +159,7 @@ pub fn transform_values<'a>(
             }
         }
     }
-    
+
     Ok(results)
 }
 
@@ -163,21 +180,24 @@ mod tests {
     #[test]
     fn test_select_filter() {
         let filter = JqFilter::compile("select(.level == \"ERROR\")").unwrap();
-        
+
         let error_entry = json!({"level": "ERROR", "message": "bad"});
         let info_entry = json!({"level": "INFO", "message": "ok"});
-        
+
         assert!(filter.matches(&error_entry));
         assert!(!filter.matches(&info_entry));
     }
 
     #[test]
     fn test_contains_filter() {
-        let filter = JqFilter::compile("select(.message | contains(\"panic\"))").unwrap();
-        
-        let panic_entry = json!({"level": "ERROR", "message": "panic occurred!"});
+        let filter =
+            JqFilter::compile("select(.message | contains(\"panic\"))")
+                .unwrap();
+
+        let panic_entry =
+            json!({"level": "ERROR", "message": "panic occurred!"});
         let normal_entry = json!({"level": "INFO", "message": "all good"});
-        
+
         assert!(filter.matches(&panic_entry));
         assert!(!filter.matches(&normal_entry));
     }
@@ -189,8 +209,9 @@ mod tests {
             json!({"level": "INFO", "message": "ok"}),
             json!({"level": "ERROR", "message": "worse"}),
         ];
-        
-        let filtered = filter_values(&entries, "select(.level == \"ERROR\")").unwrap();
+
+        let filtered =
+            filter_values(&entries, "select(.level == \"ERROR\")").unwrap();
         assert_eq!(filtered.len(), 2);
     }
 
@@ -208,8 +229,9 @@ mod tests {
     #[test]
     fn test_filter_by_type_name() {
         let filter = JqFilter::compile(
-            r#"select(.fields | .. | objects | select(._type == "Pattern"))"#
-        ).unwrap();
+            r#"select(.fields | .. | objects | select(._type == "Pattern"))"#,
+        )
+        .unwrap();
 
         let entry_with_pattern = json!({
             "level": "DEBUG",
@@ -238,8 +260,9 @@ mod tests {
     #[test]
     fn test_filter_by_nested_type() {
         let filter = JqFilter::compile(
-            r#"select(.fields | .. | objects | select(._type == "NodeId"))"#
-        ).unwrap();
+            r#"select(.fields | .. | objects | select(._type == "NodeId"))"#,
+        )
+        .unwrap();
 
         let entry = json!({
             "level": "DEBUG",
@@ -263,8 +286,9 @@ mod tests {
     #[test]
     fn test_filter_by_target() {
         let filter = JqFilter::compile(
-            r#"select(.target | contains("context_search"))"#
-        ).unwrap();
+            r#"select(.target | contains("context_search"))"#,
+        )
+        .unwrap();
 
         let search_entry = json!({
             "level": "DEBUG",
@@ -285,9 +309,8 @@ mod tests {
     /// Test filtering by field existence (has)
     #[test]
     fn test_filter_by_field_existence() {
-        let filter = JqFilter::compile(
-            r#"select(.fields | has("known"))"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.fields | has("known"))"#).unwrap();
 
         let entry_with_field = json!({
             "level": "DEBUG",
@@ -313,9 +336,8 @@ mod tests {
     /// Test filtering by file name
     #[test]
     fn test_filter_by_file_name() {
-        let filter = JqFilter::compile(
-            r#"select(.file | contains("mod.rs"))"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.file | contains("mod.rs"))"#).unwrap();
 
         let mod_entry = json!({
             "level": "DEBUG",
@@ -337,8 +359,9 @@ mod tests {
     #[test]
     fn test_filter_by_file_path() {
         let filter = JqFilter::compile(
-            r#"select(.file | startswith("crates/context-insert"))"#
-        ).unwrap();
+            r#"select(.file | startswith("crates/context-insert"))"#,
+        )
+        .unwrap();
 
         let insert_entry = json!({
             "level": "DEBUG",
@@ -359,9 +382,9 @@ mod tests {
     /// Test filtering by span name
     #[test]
     fn test_filter_by_span_name() {
-        let filter = JqFilter::compile(
-            r#"select(.span_name == "search_pattern")"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.span_name == "search_pattern")"#)
+                .unwrap();
 
         let search_span = json!({
             "level": "DEBUG",
@@ -384,9 +407,7 @@ mod tests {
     /// Test filtering by field value
     #[test]
     fn test_filter_by_field_value() {
-        let filter = JqFilter::compile(
-            r#"select(.fields.depth > 5)"#
-        ).unwrap();
+        let filter = JqFilter::compile(r#"select(.fields.depth > 5)"#).unwrap();
 
         let deep_entry = json!({
             "level": "DEBUG",
@@ -408,8 +429,9 @@ mod tests {
     #[test]
     fn test_filter_by_enum_variant() {
         let filter = JqFilter::compile(
-            r#"select(.fields | .. | objects | select(._variant == "Some"))"#
-        ).unwrap();
+            r#"select(.fields | .. | objects | select(._variant == "Some"))"#,
+        )
+        .unwrap();
 
         let some_entry = json!({
             "level": "DEBUG",
@@ -442,8 +464,9 @@ mod tests {
     #[test]
     fn test_filter_by_nested_value() {
         let filter = JqFilter::compile(
-            r#"select(.fields | .. | numbers | select(. == 42))"#
-        ).unwrap();
+            r#"select(.fields | .. | numbers | select(. == 42))"#,
+        )
+        .unwrap();
 
         let entry_with_42 = json!({
             "level": "DEBUG",
@@ -477,8 +500,9 @@ mod tests {
     #[test]
     fn test_filter_multiple_conditions_and() {
         let filter = JqFilter::compile(
-            r#"select(.level == "ERROR" and (.message | contains("panic")))"#
-        ).unwrap();
+            r#"select(.level == "ERROR" and (.message | contains("panic")))"#,
+        )
+        .unwrap();
 
         let error_panic = json!({
             "level": "ERROR",
@@ -504,8 +528,9 @@ mod tests {
     #[test]
     fn test_filter_multiple_conditions_or() {
         let filter = JqFilter::compile(
-            r#"select(.level == "ERROR" or .level == "WARN")"#
-        ).unwrap();
+            r#"select(.level == "ERROR" or .level == "WARN")"#,
+        )
+        .unwrap();
 
         let error = json!({"level": "ERROR", "message": "bad"});
         let warn = json!({"level": "WARN", "message": "caution"});
@@ -519,9 +544,9 @@ mod tests {
     /// Test filtering by event type
     #[test]
     fn test_filter_by_event_type() {
-        let filter = JqFilter::compile(
-            r#"select(.event_type == "span_enter")"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.event_type == "span_enter")"#)
+                .unwrap();
 
         let span_enter = json!({
             "level": "DEBUG",
@@ -542,9 +567,8 @@ mod tests {
     /// Test filtering entries that have a backtrace (panics)
     #[test]
     fn test_filter_has_backtrace() {
-        let filter = JqFilter::compile(
-            r#"select(.backtrace != null)"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.backtrace != null)"#).unwrap();
 
         let panic_entry = json!({
             "level": "ERROR",
@@ -566,8 +590,9 @@ mod tests {
     #[test]
     fn test_filter_recursive_string_search() {
         let filter = JqFilter::compile(
-            r#"select(.. | strings | select(contains("important")))"#
-        ).unwrap();
+            r#"select(.. | strings | select(contains("important")))"#,
+        )
+        .unwrap();
 
         let entry_with_match = json!({
             "level": "DEBUG",
@@ -600,9 +625,7 @@ mod tests {
     /// Test negation filter
     #[test]
     fn test_filter_negation() {
-        let filter = JqFilter::compile(
-            r#"select(.level != "TRACE")"#
-        ).unwrap();
+        let filter = JqFilter::compile(r#"select(.level != "TRACE")"#).unwrap();
 
         let trace = json!({"level": "TRACE", "message": "verbose"});
         let debug = json!({"level": "DEBUG", "message": "less verbose"});
@@ -615,8 +638,9 @@ mod tests {
     #[test]
     fn test_filter_by_line_range() {
         let filter = JqFilter::compile(
-            r#"select(.source_line >= 100 and .source_line <= 200)"#
-        ).unwrap();
+            r#"select(.source_line >= 100 and .source_line <= 200)"#,
+        )
+        .unwrap();
 
         let in_range = json!({
             "level": "DEBUG",
@@ -637,9 +661,9 @@ mod tests {
     /// Test that empty results don't match
     #[test]
     fn test_no_match_empty_result() {
-        let filter = JqFilter::compile(
-            r#"select(.nonexistent_field == "value")"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.nonexistent_field == "value")"#)
+                .unwrap();
 
         let entry = json!({
             "level": "DEBUG",
@@ -653,9 +677,9 @@ mod tests {
     #[test]
     fn test_case_insensitive_match() {
         // jq's test() function with "i" flag for case-insensitive
-        let filter = JqFilter::compile(
-            r#"select(.message | test("ERROR"; "i"))"#
-        ).unwrap();
+        let filter =
+            JqFilter::compile(r#"select(.message | test("ERROR"; "i"))"#)
+                .unwrap();
 
         let upper = json!({"level": "INFO", "message": "ERROR occurred"});
         let lower = json!({"level": "INFO", "message": "error occurred"});
@@ -717,8 +741,9 @@ mod tests {
             r#"select(
                 .span_name == "search" and 
                 (.fields | .. | objects | select(._type == "Pattern"))
-            )"#
-        ).unwrap();
+            )"#,
+        )
+        .unwrap();
 
         let matching_entry = json!({
             "level": "DEBUG",

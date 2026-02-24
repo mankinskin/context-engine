@@ -1,11 +1,18 @@
-use std::collections::BTreeMap;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::{
+    collections::BTreeMap,
+    fs,
+    path::{
+        Path,
+        PathBuf,
+    },
+};
 
 use serde::Serialize;
 
-use crate::function_collector::FunctionCollector;
-use crate::tracing_collector::TracingCollector;
+use crate::{
+    function_collector::FunctionCollector,
+    tracing_collector::TracingCollector,
+};
 
 /// Information about a function and its tracing coverage
 #[derive(Debug, Clone, Serialize)]
@@ -75,10 +82,12 @@ pub enum TracingKind {
 
 /// Analyze a single Rust source file
 pub fn analyze_file(path: &Path) -> Result<Vec<FunctionInfo>, String> {
-    let content = fs::read_to_string(path).map_err(|e| format!("Failed to read file: {}", e))?;
+    let content = fs::read_to_string(path)
+        .map_err(|e| format!("Failed to read file: {}", e))?;
 
     // Parse the file
-    let syntax = syn::parse_file(&content).map_err(|e| format!("Failed to parse: {}", e))?;
+    let syntax = syn::parse_file(&content)
+        .map_err(|e| format!("Failed to parse: {}", e))?;
 
     // Collect all functions
     let mut function_collector = FunctionCollector::new(path);
@@ -102,7 +111,8 @@ pub fn analyze_file(path: &Path) -> Result<Vec<FunctionInfo>, String> {
         let mut count = 0;
 
         // Count statements within the function's line range
-        for (_line, locs) in tracing_map.range(func.start_line..=func.end_line) {
+        for (_line, locs) in tracing_map.range(func.start_line..=func.end_line)
+        {
             count += locs.len();
         }
 

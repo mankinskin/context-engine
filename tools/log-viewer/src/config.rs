@@ -8,9 +8,20 @@
 //!
 //! Environment variables override config file values.
 
-use serde::{Deserialize, Serialize};
-use std::{env, fs, path::PathBuf};
-use tracing::{debug, info, warn};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use std::{
+    env,
+    fs,
+    path::PathBuf,
+};
+use tracing::{
+    debug,
+    info,
+    warn,
+};
 
 /// Convert a path to Unix-style string (forward slashes)
 fn to_unix_path(path: &std::path::Path) -> String {
@@ -80,26 +91,37 @@ impl Config {
     /// Search for and load config file
     fn load_from_file() -> Option<Self> {
         let config_paths = Self::config_search_paths();
-        
+
         for path in config_paths {
             if path.exists() {
                 match fs::read_to_string(&path) {
                     Ok(content) => match toml::from_str(&content) {
                         Ok(config) => {
-                            info!("Loaded config from: {}", to_unix_path(&path));
+                            info!(
+                                "Loaded config from: {}",
+                                to_unix_path(&path)
+                            );
                             return Some(config);
-                        }
+                        },
                         Err(e) => {
-                            warn!("Failed to parse config file {}: {}", to_unix_path(&path), e);
-                        }
+                            warn!(
+                                "Failed to parse config file {}: {}",
+                                to_unix_path(&path),
+                                e
+                            );
+                        },
                     },
                     Err(e) => {
-                        debug!("Could not read config file {}: {}", to_unix_path(&path), e);
-                    }
+                        debug!(
+                            "Could not read config file {}: {}",
+                            to_unix_path(&path),
+                            e
+                        );
+                    },
                 }
             }
         }
-        
+
         debug!("No config file found, using defaults");
         None
     }
@@ -107,23 +129,25 @@ impl Config {
     /// Get list of paths to search for config file
     fn config_search_paths() -> Vec<PathBuf> {
         let mut paths = Vec::new();
-        
+
         // 1. Environment variable
         if let Ok(path) = env::var("LOG_VIEWER_CONFIG") {
             paths.push(PathBuf::from(path));
         }
-        
+
         // 2. Current directory
         if let Ok(cwd) = env::current_dir() {
             paths.push(cwd.join("log-viewer.toml"));
             paths.push(cwd.join("config").join("log-viewer.toml"));
         }
-        
+
         // 3. User config directory
         if let Some(home) = dirs_path() {
-            paths.push(home.join(".config").join("log-viewer").join("config.toml"));
+            paths.push(
+                home.join(".config").join("log-viewer").join("config.toml"),
+            );
         }
-        
+
         paths
     }
 
@@ -133,17 +157,17 @@ impl Config {
         if let Ok(log_dir) = env::var("LOG_DIR") {
             self.log_dir = Some(PathBuf::from(log_dir));
         }
-        
+
         // WORKSPACE_ROOT overrides config file
         if let Ok(workspace_root) = env::var("WORKSPACE_ROOT") {
             self.workspace_root = Some(PathBuf::from(workspace_root));
         }
-        
+
         // LOG_LEVEL overrides config file
         if let Ok(level) = env::var("LOG_LEVEL") {
             self.logging.level = level;
         }
-        
+
         // LOG_FILE enables file logging
         if env::var("LOG_FILE").is_ok() {
             self.logging.file_logging = true;
@@ -154,7 +178,8 @@ impl Config {
     pub fn resolve_log_dir(&self) -> PathBuf {
         self.log_dir.clone().unwrap_or_else(|| {
             // Default to target/test-logs in workspace root
-            let mut path = env::current_dir().expect("Failed to get current directory");
+            let mut path =
+                env::current_dir().expect("Failed to get current directory");
             // Try to find workspace root by looking for Cargo.toml
             while !path.join("Cargo.toml").exists() && path.parent().is_some() {
                 path = path.parent().unwrap().to_path_buf();
@@ -166,7 +191,8 @@ impl Config {
     /// Resolve workspace_root with fallback logic
     pub fn resolve_workspace_root(&self) -> PathBuf {
         self.workspace_root.clone().unwrap_or_else(|| {
-            let mut path = env::current_dir().expect("Failed to get current directory");
+            let mut path =
+                env::current_dir().expect("Failed to get current directory");
             while !path.join("Cargo.toml").exists() && path.parent().is_some() {
                 path = path.parent().unwrap().to_path_buf();
             }
@@ -214,7 +240,7 @@ mod tests {
             level = "debug"
             file_logging = true
         "#;
-        
+
         let config: Config = toml::from_str(toml_content).unwrap();
         assert_eq!(config.log_dir, Some(PathBuf::from("/path/to/logs")));
         assert_eq!(config.server.port, 8080);

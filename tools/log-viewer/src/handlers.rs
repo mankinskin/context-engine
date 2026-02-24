@@ -1,21 +1,44 @@
 //! HTTP request handlers for log operations.
 
+use tracing::{
+    debug,
+    error,
+    info,
+    instrument,
+    warn,
+};
 use viewer_api::axum::{
-    extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    extract::{
+        Path,
+        Query,
+        State,
+    },
+    http::{
+        HeaderMap,
+        StatusCode,
+    },
     response::Json,
 };
-use tracing::{debug, error, info, warn, instrument};
 
-use crate::log_parser::LogEntry;
-use crate::query;
-use crate::state::{
-    AppState, SessionConfig, SESSION_HEADER,
-    get_session_config,
-};
-use crate::types::{
-    ErrorResponse, JqQuery, JqQueryResponse, LogContentResponse, LogFileInfo,
-    SearchQuery, SearchResponse, SessionConfigUpdate,
+use crate::{
+    log_parser::LogEntry,
+    query,
+    state::{
+        get_session_config,
+        AppState,
+        SessionConfig,
+        SESSION_HEADER,
+    },
+    types::{
+        ErrorResponse,
+        JqQuery,
+        JqQueryResponse,
+        LogContentResponse,
+        LogFileInfo,
+        SearchQuery,
+        SearchResponse,
+        SessionConfigUpdate,
+    },
 };
 
 /// Convert a path to Unix-style string (forward slashes)
@@ -32,17 +55,22 @@ pub async fn get_session(
         .get(SESSION_HEADER)
         .and_then(|v| v.to_str().ok())
         .ok_or_else(|| {
-            (StatusCode::BAD_REQUEST, Json(ErrorResponse {
-                error: format!("Missing {} header", SESSION_HEADER),
-            }))
+            (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse {
+                    error: format!("Missing {} header", SESSION_HEADER),
+                }),
+            )
         })?;
-    
-    let config = get_session_config(&state.sessions, &headers)
-        .unwrap_or_else(|| SessionConfig {
-            session_id: session_id.to_string(),
-            ..Default::default()
+
+    let config =
+        get_session_config(&state.sessions, &headers).unwrap_or_else(|| {
+            SessionConfig {
+                session_id: session_id.to_string(),
+                ..Default::default()
+            }
         });
-    
+
     Ok(Json(config))
 }
 
@@ -56,43 +84,49 @@ pub async fn update_session(
         .get(SESSION_HEADER)
         .and_then(|v| v.to_str().ok())
         .ok_or_else(|| {
-            (StatusCode::BAD_REQUEST, Json(ErrorResponse {
-                error: format!("Missing {} header", SESSION_HEADER),
-            }))
+            (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse {
+                    error: format!("Missing {} header", SESSION_HEADER),
+                }),
+            )
         })?;
-    
+
     // Ensure session exists
     get_session_config(&state.sessions, &headers);
-    
+
     // Update configuration
     let mut sessions_guard = state.sessions.write().unwrap();
     let config = sessions_guard.get_mut(session_id).ok_or_else(|| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse {
-            error: "Session not found after creation".to_string(),
-        }))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: "Session not found after creation".to_string(),
+            }),
+        )
     })?;
-    
+
     if let Some(verbose) = update.verbose {
         config.verbose = verbose;
         info!(session_id = %session_id, verbose = verbose, "Session verbosity updated");
     }
-    
+
     Ok(Json(config.clone()))
 }
 
 /// List all available log files
 #[instrument(skip(state), fields(log_dir = %to_unix_path(&state.log_dir)))]
 pub async fn list_logs(
-    State(state): State<AppState>,
+    State(state): State<AppState>
 ) -> Result<Json<Vec<LogFileInfo>>, (StatusCode, Json<ErrorResponse>)> {
     debug!("Listing log files");
-    
+
     // If directory doesn't exist, return empty list
     if !state.log_dir.exists() {
         info!("Log directory does not exist, returning empty list");
         return Ok(Json(Vec::new()));
     }
-    
+
     let entries = std::fs::read_dir(&state.log_dir).map_err(|e| {
         error!(error = %e, "Failed to read log directory");
         (
@@ -112,11 +146,11 @@ pub async fn list_logs(
             let bytes = std::fs::read(&path).unwrap_or_default();
             let scan_len = bytes.len().min(64 * 1024);
             let scan_bytes = &bytes[..scan_len];
-            
+
             let has_graph_snapshot = scan_bytes
                 .windows(b"graph_snapshot".len())
                 .any(|w| w == b"graph_snapshot");
-            
+
             // Scan for op_type markers in graph_op events
             // Support both old (escaped string) and new (raw object) log formats
             let has_search_ops = scan_bytes
@@ -125,7 +159,7 @@ pub async fn list_logs(
                 || scan_bytes
                     .windows(br#""op_type": "search""#.len())
                     .any(|w| w == br#""op_type": "search""#);
-            
+
             let has_insert_ops = scan_bytes
                 .windows(br#"\"op_type\":\"insert\""#.len())
                 .any(|w| w == br#"\"op_type\":\"insert\""#)
@@ -153,7 +187,7 @@ pub async fn list_logs(
 
     // Sort by modified time (newest first)
     logs.sort_by(|a, b| b.modified.cmp(&a.modified));
-    
+
     info!(count = logs.len(), "Listed log files");
 
     Ok(Json(logs))
@@ -166,7 +200,7 @@ pub async fn get_log(
     Path(name): Path<String>,
 ) -> Result<Json<LogContentResponse>, (StatusCode, Json<ErrorResponse>)> {
     debug!(file = %name, "Getting log file content");
-    
+
     // Validate filename (prevent path traversal)
     if name.contains("..") || name.contains('/') || name.contains('\\') {
         warn!(file = %name, "Invalid filename - path traversal attempt");
@@ -180,7 +214,7 @@ pub async fn get_log(
 
     let path = state.log_dir.join(&name);
     debug!(path = %to_unix_path(&path), "Reading log file");
-    
+
     let content = std::fs::read_to_string(&path).map_err(|e| {
         error!(error = %e, path = %to_unix_path(&path), "Failed to read log file");
         (
@@ -194,7 +228,7 @@ pub async fn get_log(
     let content_len = content.len();
     let entries = state.parser.parse(&content);
     let total_lines = content.lines().count();
-    
+
     info!(
         file = %name,
         entries = entries.len(),
@@ -218,7 +252,7 @@ pub async fn search_log(
     Query(query): Query<SearchQuery>,
 ) -> Result<Json<SearchResponse>, (StatusCode, Json<ErrorResponse>)> {
     debug!(file = %name, query = %query.q, level = ?query.level, limit = ?query.limit, "Searching log file");
-    
+
     // Validate filename
     if name.contains("..") || name.contains('/') || name.contains('\\') {
         warn!(file = %name, "Invalid filename - path traversal attempt");
@@ -242,7 +276,7 @@ pub async fn search_log(
     })?;
 
     let entries = state.parser.parse(&content);
-    
+
     // Build regex for search
     let regex = regex::RegexBuilder::new(&query.q)
         .case_insensitive(true)
@@ -268,13 +302,21 @@ pub async fn search_log(
                 }
             }
             // Check query match against multiple fields
-            regex.is_match(&entry.message) || 
-                regex.is_match(&entry.raw) ||
-                regex.is_match(&entry.event_type) ||
-                regex.is_match(&entry.level) ||
-                entry.span_name.as_ref().map(|s| regex.is_match(s)).unwrap_or(false) ||
-                entry.file.as_ref().map(|f| regex.is_match(f)).unwrap_or(false) ||
-                entry.fields.iter().any(|(k, v)| {
+            regex.is_match(&entry.message)
+                || regex.is_match(&entry.raw)
+                || regex.is_match(&entry.event_type)
+                || regex.is_match(&entry.level)
+                || entry
+                    .span_name
+                    .as_ref()
+                    .map(|s| regex.is_match(s))
+                    .unwrap_or(false)
+                || entry
+                    .file
+                    .as_ref()
+                    .map(|f| regex.is_match(f))
+                    .unwrap_or(false)
+                || entry.fields.iter().any(|(k, v)| {
                     regex.is_match(k) || regex.is_match(&v.to_string())
                 })
         })
@@ -286,7 +328,7 @@ pub async fn search_log(
     if let Some(limit) = query.limit {
         matches.truncate(limit);
     }
-    
+
     info!(
         file = %name,
         query = %query.q,
@@ -310,7 +352,7 @@ pub async fn query_log(
     Query(params): Query<JqQuery>,
 ) -> Result<Json<JqQueryResponse>, (StatusCode, Json<ErrorResponse>)> {
     debug!(file = %name, jq = %params.jq, limit = ?params.limit, "JQ query on log file");
-    
+
     // Validate filename
     if name.contains("..") || name.contains('/') || name.contains('\\') {
         warn!(file = %name, "Invalid filename - path traversal attempt");
@@ -364,7 +406,7 @@ pub async fn query_log(
     if let Some(limit) = params.limit {
         matches.truncate(limit);
     }
-    
+
     info!(
         file = %name,
         jq = %params.jq,

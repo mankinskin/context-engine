@@ -13,12 +13,18 @@
 //! // ... use in handlers
 //! ```
 
-use serde::{Deserialize, Serialize};
+use crate::axum::http::HeaderMap;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::{
     collections::HashMap,
-    sync::{Arc, RwLock},
+    sync::{
+        Arc,
+        RwLock,
+    },
 };
-use crate::axum::http::HeaderMap;
 
 /// Session configuration for per-client behavior.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -67,7 +73,10 @@ impl SessionStore {
     }
 
     /// Get or create a session by ID
-    pub fn get_or_create(&self, session_id: &str) -> SessionConfig {
+    pub fn get_or_create(
+        &self,
+        session_id: &str,
+    ) -> SessionConfig {
         // Try read first
         {
             let guard = self.sessions.read().unwrap();
@@ -79,19 +88,27 @@ impl SessionStore {
         // Create new session
         let config = SessionConfig::new(session_id);
         let mut guard = self.sessions.write().unwrap();
-        guard.entry(session_id.to_string())
+        guard
+            .entry(session_id.to_string())
             .or_insert_with(|| config.clone());
         config
     }
 
     /// Get a session if it exists
-    pub fn get(&self, session_id: &str) -> Option<SessionConfig> {
+    pub fn get(
+        &self,
+        session_id: &str,
+    ) -> Option<SessionConfig> {
         let guard = self.sessions.read().unwrap();
         guard.get(session_id).cloned()
     }
 
     /// Update a session's configuration
-    pub fn update<F>(&self, session_id: &str, f: F) -> Option<SessionConfig>
+    pub fn update<F>(
+        &self,
+        session_id: &str,
+        f: F,
+    ) -> Option<SessionConfig>
     where
         F: FnOnce(&mut SessionConfig),
     {
@@ -105,7 +122,12 @@ impl SessionStore {
     }
 
     /// Set a data value for a session
-    pub fn set_data(&self, session_id: &str, key: &str, value: &str) -> bool {
+    pub fn set_data(
+        &self,
+        session_id: &str,
+        key: &str,
+        value: &str,
+    ) -> bool {
         let mut guard = self.sessions.write().unwrap();
         if let Some(config) = guard.get_mut(session_id) {
             config.data.insert(key.to_string(), value.to_string());
@@ -116,10 +138,13 @@ impl SessionStore {
     }
 
     /// Get a data value from a session
-    pub fn get_data(&self, session_id: &str, key: &str) -> Option<String> {
+    pub fn get_data(
+        &self,
+        session_id: &str,
+        key: &str,
+    ) -> Option<String> {
         let guard = self.sessions.read().unwrap();
-        guard.get(session_id)
-            .and_then(|c| c.data.get(key).cloned())
+        guard.get(session_id).and_then(|c| c.data.get(key).cloned())
     }
 }
 
@@ -128,14 +153,15 @@ pub const SESSION_HEADER: &str = "x-session-id";
 
 /// Get the session ID from request headers
 pub fn get_session_id(headers: &HeaderMap) -> Option<&str> {
-    headers
-        .get(SESSION_HEADER)
-        .and_then(|v| v.to_str().ok())
+    headers.get(SESSION_HEADER).and_then(|v| v.to_str().ok())
 }
 
 /// Get or create session config from headers.
 /// Returns None if no session ID header is present.
-pub fn get_session_config(store: &SessionStore, headers: &HeaderMap) -> Option<SessionConfig> {
+pub fn get_session_config(
+    store: &SessionStore,
+    headers: &HeaderMap,
+) -> Option<SessionConfig> {
     let session_id = get_session_id(headers)?;
     Some(store.get_or_create(session_id))
 }

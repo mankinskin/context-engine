@@ -64,19 +64,19 @@ pub use agents::DocsManager;
 pub use crates::CrateDocsManager;
 
 /// Compile a case-insensitive regex from the query string.
-/// 
+///
 /// Supports:
 /// - Quoted strings (`"hello world"` or `'hello world'`) - treated as literal text
 /// - Regex patterns (`graph|path`, `init.*interval`) - full regex syntax
 /// - Backslash escaping for literal metacharacters (`\|`, `\.`, `\*`)
-/// 
+///
 /// Returns None if query is empty, Err if regex is invalid.
 pub fn compile_search_regex(query: &str) -> ToolResult<Option<Regex>> {
     let query = query.trim();
     if query.is_empty() {
         return Ok(None);
     }
-    
+
     // Check for quoted literal strings
     let pattern = if (query.starts_with('"') && query.ends_with('"'))
         || (query.starts_with('\'') && query.ends_with('\''))
@@ -88,13 +88,16 @@ pub fn compile_search_regex(query: &str) -> ToolResult<Option<Regex>> {
         // Treat as regex pattern
         format!("(?i){}", query)
     };
-    
+
     Ok(Some(Regex::new(&pattern)?))
 }
 
 /// Check if the regex matches the given text.
 /// Returns true if regex is None (empty query matches all).
-pub fn regex_matches(text: &str, regex: &Option<Regex>) -> bool {
+pub fn regex_matches(
+    text: &str,
+    regex: &Option<Regex>,
+) -> bool {
     match regex {
         Some(re) => re.is_match(text),
         None => true,
@@ -106,7 +109,10 @@ mod tests {
     use super::*;
 
     // Helper to test if query matches text
-    fn matches(query: &str, text: &str) -> bool {
+    fn matches(
+        query: &str,
+        text: &str,
+    ) -> bool {
         let regex = compile_search_regex(query).unwrap();
         regex_matches(text, &regex)
     }

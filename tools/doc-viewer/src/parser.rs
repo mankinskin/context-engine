@@ -1,11 +1,18 @@
 //! Parse existing documents to extract metadata.
 
-use crate::schema::{DocMetadata, DocType, PlanStatus};
-use crate::schema::{CrateMetadata, ModuleMetadata};
+use crate::schema::{
+    CrateMetadata,
+    DocMetadata,
+    DocType,
+    ModuleMetadata,
+    PlanStatus,
+};
 use regex::Regex;
 use serde::de::DeserializeOwned;
-use std::path::Path;
-use std::fs;
+use std::{
+    fs,
+    path::Path,
+};
 
 /// Parse a document filename to extract date and base name.
 pub fn parse_filename(filename: &str) -> Option<(String, String)> {
@@ -17,32 +24,29 @@ pub fn parse_filename(filename: &str) -> Option<(String, String)> {
 /// Parse frontmatter from document content.
 pub fn parse_frontmatter(content: &str) -> Option<FrontMatter> {
     let lines: Vec<&str> = content.lines().collect();
-    
+
     if lines.first()?.trim() != "---" {
         return None;
     }
-    
-    let end_idx = lines.iter()
-        .skip(1)
-        .position(|l| l.trim() == "---")?
-        + 1;
-    
+
+    let end_idx = lines.iter().skip(1).position(|l| l.trim() == "---")? + 1;
+
     let mut fm = FrontMatter::default();
-    
+
     for line in &lines[1..end_idx] {
         if let Some((key, value)) = line.split_once(':') {
             let key = key.trim();
             let value = value.trim();
-            
+
             match key {
                 "tags" => fm.tags = parse_tags(value),
                 "summary" => fm.summary = Some(value.to_string()),
                 "status" => fm.status = parse_status(value),
-                _ => {}
+                _ => {},
             }
         }
     }
-    
+
     Some(fm)
 }
 
@@ -83,16 +87,19 @@ pub fn parse_title(content: &str) -> Option<String> {
 }
 
 /// Extract document metadata from file path and content.
-pub fn extract_metadata(path: &Path, content: &str) -> Option<DocMetadata> {
+pub fn extract_metadata(
+    path: &Path,
+    content: &str,
+) -> Option<DocMetadata> {
     let filename = path.file_name()?.to_str()?;
     let parent = path.parent()?.file_name()?.to_str()?;
-    
+
     let doc_type = DocType::from_directory(parent)?;
     let (date, _base_name) = parse_filename(filename)?;
-    
+
     let fm = parse_frontmatter(content).unwrap_or_default();
     let title = parse_title(content).unwrap_or_else(|| filename.to_string());
-    
+
     Some(DocMetadata {
         doc_type,
         date,
@@ -116,7 +123,9 @@ pub fn parse_yaml_file<T: DeserializeOwned>(path: &Path) -> Result<T, String> {
 }
 
 /// Parse YAML content into a typed structure.
-pub fn parse_yaml_content<T: DeserializeOwned>(content: &str) -> Result<T, String> {
+pub fn parse_yaml_content<T: DeserializeOwned>(
+    content: &str
+) -> Result<T, String> {
     serde_yaml::from_str(content)
         .map_err(|e| format!("YAML parse error: {}", e))
 }
@@ -143,7 +152,8 @@ mod tests {
 
     #[test]
     fn test_parse_filename() {
-        let (date, name) = parse_filename("20251203_SEARCH_ALGORITHM_GUIDE.md").unwrap();
+        let (date, name) =
+            parse_filename("20251203_SEARCH_ALGORITHM_GUIDE.md").unwrap();
         assert_eq!(date, "20251203");
         assert_eq!(name, "SEARCH_ALGORITHM_GUIDE");
     }

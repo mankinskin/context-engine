@@ -78,7 +78,10 @@ impl PlanStatus {
 }
 
 impl std::fmt::Display for PlanStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         match self {
             PlanStatus::Design => write!(f, "design"),
             PlanStatus::InProgress => write!(f, "in-progress"),
@@ -160,7 +163,11 @@ pub struct TypeWithModule {
 }
 
 impl TypeWithModule {
-    pub fn from_entry(entry: &TypeEntry, module_path: &str, item_type: &str) -> Self {
+    pub fn from_entry(
+        entry: &TypeEntry,
+        module_path: &str,
+        item_type: &str,
+    ) -> Self {
         Self {
             name: entry.name.clone(),
             description: entry.description.clone(),
@@ -171,7 +178,7 @@ impl TypeWithModule {
 }
 
 /// A type entry (for key_types)
-/// 
+///
 /// Supports YAML formats:
 /// - Plain string: `"TypeName"`
 /// - Map format: `TypeName: Description text`
@@ -185,7 +192,7 @@ impl TypeEntry {
     pub fn name(&self) -> &str {
         &self.name
     }
-    
+
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
@@ -196,7 +203,11 @@ impl<'de> serde::Deserialize<'de> for TypeEntry {
     where
         D: serde::Deserializer<'de>,
     {
-        use serde::de::{self, MapAccess, Visitor};
+        use serde::de::{
+            self,
+            MapAccess,
+            Visitor,
+        };
         use std::fmt;
 
         struct TypeEntryVisitor;
@@ -204,11 +215,17 @@ impl<'de> serde::Deserialize<'de> for TypeEntry {
         impl<'de> Visitor<'de> for TypeEntryVisitor {
             type Value = TypeEntry;
 
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            fn expecting(
+                &self,
+                formatter: &mut fmt::Formatter,
+            ) -> fmt::Result {
                 formatter.write_str("a string or a map with one key-value pair")
             }
 
-            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            fn visit_str<E>(
+                self,
+                v: &str,
+            ) -> Result<Self::Value, E>
             where
                 E: de::Error,
             {
@@ -218,17 +235,24 @@ impl<'de> serde::Deserialize<'de> for TypeEntry {
                 })
             }
 
-            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+            fn visit_map<A>(
+                self,
+                mut map: A,
+            ) -> Result<Self::Value, A::Error>
             where
                 A: MapAccess<'de>,
             {
-                if let Some((key, value)) = map.next_entry::<String, String>()? {
+                if let Some((key, value)) =
+                    map.next_entry::<String, String>()?
+                {
                     Ok(TypeEntry {
                         name: key,
                         description: Some(value),
                     })
                 } else {
-                    Err(de::Error::custom("expected a map with one key-value pair"))
+                    Err(de::Error::custom(
+                        "expected a map with one key-value pair",
+                    ))
                 }
             }
         }
@@ -373,7 +397,11 @@ impl CrateValidationReport {
             out.push_str("|----------|-------|--------|-------|\n");
             for issue in &self.issues {
                 let module = issue.module_path.as_deref().unwrap_or("-");
-                let severity_icon = if issue.severity == "error" { "❌" } else { "⚠️" };
+                let severity_icon = if issue.severity == "error" {
+                    "❌"
+                } else {
+                    "⚠️"
+                };
                 out.push_str(&format!(
                     "| {} | {} | {} | {} |\n",
                     severity_icon, issue.crate_name, module, issue.issue
@@ -486,8 +514,7 @@ impl StaleDocsReport {
         out.push_str(&format!(
             "**Crates checked:** {}\n\
              **Modules checked:** {}\n\n",
-            self.crates_checked,
-            self.modules_checked
+            self.crates_checked, self.modules_checked
         ));
 
         // Summary
@@ -510,14 +537,25 @@ impl StaleDocsReport {
         // Stale items (prioritize these)
         if !self.stale_items.is_empty() {
             out.push_str("## Stale Documentation\n\n");
-            out.push_str("| Status | Location | Days Since Sync | Modified Files |\n");
-            out.push_str("|--------|----------|-----------------|----------------|\n");
+            out.push_str(
+                "| Status | Location | Days Since Sync | Modified Files |\n",
+            );
+            out.push_str(
+                "|--------|----------|-----------------|----------------|\n",
+            );
             for item in &self.stale_items {
                 let location = match &item.module_path {
-                    Some(mp) => format!("{}::{}", item.crate_name, mp.replace('/', "::")),
+                    Some(mp) => format!(
+                        "{}::{}",
+                        item.crate_name,
+                        mp.replace('/', "::")
+                    ),
                     None => item.crate_name.clone(),
                 };
-                let days = item.days_since_sync.map(|d| d.to_string()).unwrap_or("-".to_string());
+                let days = item
+                    .days_since_sync
+                    .map(|d| d.to_string())
+                    .unwrap_or("-".to_string());
                 let files = if item.modified_files.is_empty() {
                     "-".to_string()
                 } else {
@@ -540,7 +578,11 @@ impl StaleDocsReport {
             out.push_str("These documentation items don't have `source_files` configured and cannot be checked for staleness:\n\n");
             for item in &self.unknown_items {
                 let location = match &item.module_path {
-                    Some(mp) => format!("{}::{}", item.crate_name, mp.replace('/', "::")),
+                    Some(mp) => format!(
+                        "{}::{}",
+                        item.crate_name,
+                        mp.replace('/', "::")
+                    ),
                     None => item.crate_name.clone(),
                 };
                 out.push_str(&format!("- {}\n", location));
@@ -614,12 +656,16 @@ impl SyncAnalysisResult {
     pub fn to_markdown(&self) -> String {
         let mut out = String::new();
         let location = match &self.module_path {
-            Some(mp) => format!("{}::{}", self.crate_name, mp.replace('/', "::")),
+            Some(mp) =>
+                format!("{}::{}", self.crate_name, mp.replace('/', "::")),
             None => self.crate_name.clone(),
         };
         out.push_str(&format!("# Sync Analysis: {}\n\n", location));
-        
-        out.push_str(&format!("**Files analyzed:** {}\n\n", self.files_analyzed.len()));
+
+        out.push_str(&format!(
+            "**Files analyzed:** {}\n\n",
+            self.files_analyzed.len()
+        ));
 
         if !self.errors.is_empty() {
             out.push_str("## Errors\n\n");
@@ -640,23 +686,29 @@ impl SyncAnalysisResult {
         }
 
         // Found items (only if not empty - omitted in summary mode)
-        if !self.public_types.is_empty() || !self.public_traits.is_empty() || !self.public_macros.is_empty() {
+        if !self.public_types.is_empty()
+            || !self.public_traits.is_empty()
+            || !self.public_macros.is_empty()
+        {
             out.push_str("## Public Items Found\n\n");
             if !self.public_types.is_empty() {
-                out.push_str(&format!("**Types ({}):** {}\n\n", 
-                    self.public_types.len(), 
+                out.push_str(&format!(
+                    "**Types ({}):** {}\n\n",
+                    self.public_types.len(),
                     self.public_types.join(", ")
                 ));
             }
             if !self.public_traits.is_empty() {
-                out.push_str(&format!("**Traits ({}):** {}\n\n", 
-                    self.public_traits.len(), 
+                out.push_str(&format!(
+                    "**Traits ({}):** {}\n\n",
+                    self.public_traits.len(),
                     self.public_traits.join(", ")
                 ));
             }
             if !self.public_macros.is_empty() {
-                out.push_str(&format!("**Macros ({}):** {}\n\n", 
-                    self.public_macros.len(), 
+                out.push_str(&format!(
+                    "**Macros ({}):** {}\n\n",
+                    self.public_macros.len(),
                     self.public_macros.join(", ")
                 ));
             }
@@ -680,14 +732,19 @@ impl SyncAnalysisResult {
                 };
                 out.push_str(&format!(
                     "| {} {} | {} | `{}` | {} |\n",
-                    action_icon, sug.change_type, sug.item_kind, sug.item_name, source
+                    action_icon,
+                    sug.change_type,
+                    sug.item_kind,
+                    sug.item_name,
+                    source
                 ));
             }
         } else {
-            out.push_str("✅ No suggested changes - documentation appears up to date.\n");
+            out.push_str(
+                "✅ No suggested changes - documentation appears up to date.\n",
+            );
         }
 
         out
     }
 }
-
