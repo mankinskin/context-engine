@@ -333,6 +333,7 @@ fn update_god_ray(idx: u32) {
     // (allows beams on hover in 3D views like hypergraph)
     var beam_src = i32(u.selected_elem);
     let hover_idx = i32(u.hover_elem);
+    let is_3d_view = u.current_view >= 4.0 && u.current_view <= 5.0;
     if hover_idx >= 0 && hover_idx < i32(u.element_count) {
         let hk = elems[u32(hover_idx)].kind;
         if abs(hk - KIND_FX_BEAM) < 0.5 {
@@ -340,7 +341,12 @@ fn update_god_ray(idx: u32) {
             beam_src = hover_idx;
         } else if beam_src < 0 {
             // No selected element → fall back to hovered element
-            beam_src = hover_idx;
+            // But skip structural elements (kind=0) in 3D views — these are
+            // containers like view-container/hypergraph-container, not scene objects
+            let is_structural = hk < 0.5;
+            if !is_3d_view || !is_structural {
+                beam_src = hover_idx;
+            }
         }
     }
 

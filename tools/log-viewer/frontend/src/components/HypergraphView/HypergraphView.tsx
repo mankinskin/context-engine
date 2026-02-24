@@ -255,6 +255,64 @@ export function HypergraphView() {
         setTooltip(null);
     }, [snapshot]);
 
+    // Focus camera on primary node when search step changes
+    useEffect(() => {
+        const curLayout = layoutRef.current;
+        if (!curLayout) return;
+
+        const event = activeSearchState.value;
+        if (!event) return;
+
+        // Determine primary node from transition or location
+        let primaryNode: number | null = null;
+        const trans = event.transition;
+        const loc = event.location;
+
+        if (trans) {
+            switch (trans.kind) {
+                case 'start_node': primaryNode = trans.node; break;
+                case 'visit_parent': primaryNode = trans.to; break;
+                case 'visit_child': primaryNode = trans.to; break;
+                case 'child_match': primaryNode = trans.node; break;
+                case 'child_mismatch': primaryNode = trans.node; break;
+                case 'done': primaryNode = trans.final_node; break;
+                case 'dequeue': primaryNode = trans.node; break;
+                case 'root_explore': primaryNode = trans.root; break;
+                case 'match_advance': primaryNode = trans.root; break;
+                case 'parent_explore': primaryNode = trans.current_root; break;
+                case 'split_start': primaryNode = trans.node; break;
+                case 'split_complete': primaryNode = trans.original_node; break;
+                case 'join_start': primaryNode = trans.nodes[0] ?? null; break;
+                case 'join_step': primaryNode = trans.result; break;
+                case 'join_complete': primaryNode = trans.result_node; break;
+                case 'create_pattern': primaryNode = trans.parent; break;
+                case 'create_root': primaryNode = trans.node; break;
+                case 'update_pattern': primaryNode = trans.parent; break;
+            }
+        }
+
+        // Fall back to location's root_node or selected_node if no transition primary
+        if (primaryNode == null) {
+            // Prefer root_node as the primary focus (it's the anchor of exploration)
+            if (loc?.root_node != null) {
+                primaryNode = loc.root_node;
+            } else if (loc?.selected_node != null) {
+                primaryNode = loc.selected_node;
+            }
+        }
+
+        // Focus camera on the primary node
+        if (primaryNode != null) {
+            const node = curLayout.nodeMap.get(primaryNode);
+            if (node) {
+                camRef.current.focusTarget = [node.x, node.y, node.z];
+                // Also update the internal selected index to highlight the node
+                interRef.current.selectedIdx = primaryNode;
+                setSelectedIdx(primaryNode);
+            }
+        }
+    }, [activeSearchStep.value]);
+
     const getCamPos = useCallback((): Vec3 => {
         const c = camRef.current;
         return [

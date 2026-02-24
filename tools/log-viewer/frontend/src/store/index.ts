@@ -17,6 +17,7 @@ interface FileState {
     codeViewerContent: string;
     codeViewerLine: number | null;
   activeTab: ViewTab;
+  activeSearchStep: number;
 }
 
 // Create default file state
@@ -32,6 +33,7 @@ function createFileState(): FileState {
         codeViewerContent: '',
         codeViewerLine: null,
       activeTab: 'logs',
+      activeSearchStep: -1,
     };
 }
 
@@ -166,8 +168,8 @@ export const graphOpEvents = computed((): SearchStateEvent[] => {
 // Alias for backwards compatibility
 export const searchStates = graphOpEvents;
 
-// Currently active step (controlled by slider/playback)
-export const activeSearchStep = signal<number>(-1);
+// Currently active step (per-file, controlled by slider/playback)
+export const activeSearchStep = computed(() => currentFileState.value.activeSearchStep);
 
 // The active graph op event
 export const activeSearchState = computed((): SearchStateEvent | null => {
@@ -177,9 +179,9 @@ export const activeSearchState = computed((): SearchStateEvent | null => {
   return events[step] ?? null;
 });
 
-// Action to set the active step
+// Action to set the active step (cached per-file)
 export function setActiveSearchStep(step: number) {
-  activeSearchStep.value = step;
+  updateCurrentFileState({ activeSearchStep: step });
 }
 
 export const logStats = computed((): LogStats => {
