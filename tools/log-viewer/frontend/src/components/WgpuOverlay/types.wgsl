@@ -12,6 +12,10 @@ const PK_EMBER       : f32 = 1.0;
 const PK_GOD_RAY     : f32 = 2.0;
 const PK_GLITTER     : f32 = 3.0;
 
+// Screen-space flag for kind_view packing
+// kind_view = kind + view_id * 8 + is_screen_space * 64
+const PK_SCREEN_SPACE : f32 = 64.0;
+
 // ---- element kind constants for effect preview containers -------------------
 const KIND_FX_SPARK   : f32 = 8.0;
 const KIND_FX_EMBER   : f32 = 9.0;

@@ -25,7 +25,26 @@ fn is_3d_view() -> bool {
     return u.current_view >= 4.0 && u.current_view <= 5.0;
 }
 
-// World-space "up" direction.
+// True when an element is positioned in screen-space (not 3D world space).
+// Elements with depth ≈ 0 are static UI / containers that should not move
+// when the camera moves in a 3D viewport.
+fn is_elem_screen_space(ei: u32) -> bool {
+    return elems[ei].depth < 0.0001;
+}
+
+// World-space "up" direction for a particle's coordinate space.
+// 2D screen-space: (0, -1, 0) because screen Y increases downward.
+// 3D world-space: (0, +1, 0) because Y is up.
+fn particle_up(is_screen: bool) -> vec3f {
+    return select(vec3f(0.0, 1.0, 0.0), vec3f(0.0, -1.0, 0.0), is_screen);
+}
+
+// World-space "right" direction (always +X).
+fn particle_right() -> vec3f {
+    return vec3f(1.0, 0.0, 0.0);
+}
+
+// World-space "up" direction based on current view (legacy helper).
 // 2D views: (0, -1, 0) because screen Y increases downward.
 // 3D views: (0, +1, 0) because Y is up in world space.
 fn world_up() -> vec3f {
@@ -127,7 +146,9 @@ fn hover_allows(fx_kind: f32) -> bool {
 // Decode particle kind from packed kind_view field.
 fn p_kind(p: Particle) -> u32 { return u32(p.kind_view) % 8u; }
 // Decode view_id from packed kind_view field.
-fn p_view(p: Particle) -> u32 { return u32(p.kind_view) / 8u; }
+fn p_view(p: Particle) -> u32 { return (u32(p.kind_view) / 8u) % 8u; }
+// Check if particle is screen-space (not 3D world-space).
+fn p_is_screen_space(p: Particle) -> bool { return u32(p.kind_view) >= 64u; }
 
 // ---- metal spark physics (at mouse cursor, continuous while hovering) --------
 
@@ -158,41 +179,53 @@ fn update_metal_spark(idx: u32) {
             return;
         }
 
+        let ei = u32(hover_idx);
+        let is_screen = is_elem_screen_space(ei);
         let seed = idx * 7919u + u32(u.time * 5000.0);
 
-        // Spawn at mouse cursor (screen space) → unproject to world
+        // Spawn at mouse cursor
         let base_angle = rand_f(seed) * 6.2832;
         let scatter_r  = 5.0 + rand_f(seed + 1u) * 35.0;
         let scatter = vec2f(cos(base_angle), sin(base_angle)) * scatter_r;
         let cursor_screen = vec2f(u.mouse_x, u.mouse_y);
         let spawn_screen  = cursor_screen + scatter;
-        p.pos = screen_to_world(spawn_screen);
 
-        // Velocity points outward from cursor, with ±25° angular spread.
-        // Convert screen-space direction to world-space via normal_to_world
-        // so sparks fly correctly in both 2D and 3D views.
         let spread = (rand_f(seed + 2u) - 0.5) * 0.87;  // ±25°
         let spread_angle = base_angle + spread;
         let screen_dir = vec2f(cos(spread_angle), sin(spread_angle));
-        let cursor_world = screen_to_world(cursor_screen);
-        let vel_dir = normal_to_world(screen_dir, cursor_world, cursor_screen);
 
-        let since_hover = u.time - u.hover_start_time;
-        let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
-        let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd * ws;
-        p.vel = vel_dir * speed;
+        if is_screen {
+            // Screen-space: position IS screen pixels
+            p.pos = vec3f(spawn_screen, 0.0);
+            // Velocity in screen pixels per second
+            let since_hover = u.time - u.hover_start_time;
+            let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
+            let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd;
+            p.vel = vec3f(screen_dir * speed, 0.0);
+        } else {
+            // World-space: unproject to world
+            p.pos = screen_to_world(spawn_screen);
+            let cursor_world = screen_to_world(cursor_screen);
+            let vel_dir = normal_to_world(screen_dir, cursor_world, cursor_screen);
+            let since_hover = u.time - u.hover_start_time;
+            let burst_mult = select(0.5, 1.2, since_hover < BURST_WINDOW);
+            let speed = (40.0 + rand_f(seed + 3u) * 100.0) * burst_mult * spd * ws;
+            p.vel = vel_dir * speed;
+        }
 
         p.max_life = 0.5 + rand_f(seed + 5u) * 0.8;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u) * 0.12;
         p.size     = (1.0 + rand_f(seed + 7u) * 2.0) * max(u.spark_size, 0.01);
-        p.kind_view = PK_METAL_SPARK + u.current_view * 8.0;
+        p.kind_view = PK_METAL_SPARK + u.current_view * 8.0 + select(0.0, PK_SCREEN_SPACE, is_screen);
         p.spawn_t  = u.time;
     } else {
+        let is_screen = p_is_screen_space(p);
         // Moderate drag — particles trail behind with gravity
         p.vel = p.vel * (1.0 - 2.0 * dt * spd);
-        // Gravity pulls "down" in world = opposite of world_up
-        p.vel = p.vel - world_up() * 80.0 * dt * spd * ws;
+        // Gravity pulls "down" — screen Y positive, world Y negative
+        let grav_scale = select(ws, 1.0, is_screen);
+        p.vel = p.vel + particle_up(is_screen) * -80.0 * dt * spd * grav_scale;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -229,18 +262,29 @@ fn update_ember(idx: u32) {
         }
 
         let ei   = u32(hover_idx);
+        let is_screen = is_elem_screen_space(ei);
         let seed = idx * 7919u + u32(u.time * 1000.0);
 
         let screen_pos = spawn_on_perimeter(ei, seed);
-        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
-
         let normal = outward_normal(screen_pos, ei);
         let speed  = 10.0 + rand_f(seed + 3u) * 25.0;
-        // Rise upward in world space + outward drift
-        let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
-                             elems[ei].rect.y + elems[ei].rect.w * 0.5);
-        let n_world = normal_to_world(normal, screen_to_world_at(e_center, elem_depth(ei)), e_center);
-        p.vel = (n_world * speed * 0.5 + world_up() * (20.0 + rand_f(seed + 4u) * 15.0)) * spd * ws;
+        let up_speed = 20.0 + rand_f(seed + 4u) * 15.0;
+
+        if is_screen {
+            // Screen-space: position IS pixels, velocity in pixels/sec
+            p.pos = vec3f(screen_pos, 0.0);
+            // Rise upward (screen Y negative) + outward drift
+            let up = particle_up(true);
+            let vel_screen = vec3f(normal * speed * 0.5, 0.0) + up * up_speed;
+            p.vel = vel_screen * spd;
+        } else {
+            // World-space: unproject position and directions
+            p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
+            let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
+                                 elems[ei].rect.y + elems[ei].rect.w * 0.5);
+            let n_world = normal_to_world(normal, screen_to_world_at(e_center, elem_depth(ei)), e_center);
+            p.vel = (n_world * speed * 0.5 + world_up() * up_speed) * spd * ws;
+        }
 
         p.max_life = 1.0 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
@@ -253,12 +297,16 @@ fn update_ember(idx: u32) {
         }
 
         p.size     = (0.4 + rand_f(seed + 7u) * 1.0) * max(u.ember_size, 0.01);
-        p.kind_view = PK_EMBER + u.current_view * 8.0;
+        p.kind_view = PK_EMBER + u.current_view * 8.0 + select(0.0, PK_SCREEN_SPACE, is_screen);
         p.spawn_t  = u.time;
     } else {
-        let drift = sin(u.time * 2.0 + f32(idx) * 0.3) * 8.0 * ws;
-        // Drift sideways + continue rising in world-up direction
-        p.vel = p.vel * (1.0 - 1.5 * dt * spd) + world_right() * drift * dt * spd + world_up() * 25.0 * dt * spd * ws;
+        let is_screen = p_is_screen_space(p);
+        let scale = select(ws, 1.0, is_screen);
+        let drift = sin(u.time * 2.0 + f32(idx) * 0.3) * 8.0 * scale;
+        // Drift sideways + continue rising in appropriate space
+        let up = particle_up(is_screen);
+        let rt = particle_right();
+        p.vel = p.vel * (1.0 - 1.5 * dt * spd) + rt * drift * dt * spd + up * 25.0 * dt * spd * scale;
         p.pos = p.pos + p.vel * dt * spd;
     }
 
@@ -307,36 +355,46 @@ fn update_god_ray(idx: u32) {
         }
 
         let ei   = u32(beam_src);
+        let is_screen = is_elem_screen_space(ei);
         let seed = idx * 7919u + u32(u.time * 800.0);
 
-        // Spawn on the element perimeter (beams rise upward from any border)
         let screen_pos = spawn_on_perimeter(ei, seed);
-        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
-
-        // Rise upward in world space — drift distance scaled by beam_drift setting.
-        // Multiply by ws (world units per pixel) so that apparent screen-space
-        // velocity is the same regardless of camera zoom (ws=1 in 2D).
         let drift_scale = select(1.0, u.beam_drift, u.beam_drift > 0.0);
-        let up = world_up();
-        let rt = world_right();
-        p.vel = (rt * (rand_f(seed + 2u) - 0.5) * 2.0
-              + up * (12.0 + rand_f(seed + 3u) * 10.0) * drift_scale) * spd * ws;
+        let up_speed = (12.0 + rand_f(seed + 3u) * 10.0) * drift_scale;
+        let side_drift = (rand_f(seed + 2u) - 0.5) * 2.0;
+
+        if is_screen {
+            // Screen-space: position IS pixels, velocity in pixels/sec
+            p.pos = vec3f(screen_pos, 0.0);
+            let up = particle_up(true);
+            let rt = particle_right();
+            p.vel = (rt * side_drift + up * up_speed) * spd;
+            // Size in pixels
+            p.size = 0.6 + rand_f(seed + 6u) * 1.0;
+        } else {
+            // World-space: unproject position
+            p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
+            let up = world_up();
+            let rt = world_right();
+            p.vel = (rt * side_drift + up * up_speed) * spd * ws;
+            // Size in WORLD units (pixel-equivalent × ws)
+            p.size = (0.6 + rand_f(seed + 6u) * 1.0) * ws;
+        }
 
         p.max_life = 2.0 + rand_f(seed + 4u) * 2.0;
         p.life     = p.max_life;
         p.hue      = 0.08 + rand_f(seed + 5u) * 0.06;
-        // Size in WORLD units (pixel-equivalent × ws) so the vertex shader
-        // can project to correct pixel size at any zoom level.
-        p.size     = (0.6 + rand_f(seed + 6u) * 1.0) * ws;
-        p.kind_view = PK_GOD_RAY + u.current_view * 8.0;
+        p.kind_view = PK_GOD_RAY + u.current_view * 8.0 + select(0.0, PK_SCREEN_SPACE, is_screen);
         p.spawn_t  = u.time;
     } else {
-        let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5 * ws;
-        // Sway sideways, drift upward (ws keeps screen-space speed consistent)
-        let rt = world_right();
+        let is_screen = p_is_screen_space(p);
+        let scale = select(ws, 1.0, is_screen);
+        let sway = sin(u.time * 1.5 + f32(idx) * 0.7) * 1.5 * scale;
+        // Sway sideways, drift upward
+        let rt = particle_right();
         p.vel = p.vel * (1.0 - 0.5 * dt * spd) + rt * sway * dt * spd;
-        // Dampen along world_up direction
-        let up = world_up();
+        // Dampen along up direction
+        let up = particle_up(is_screen);
         let vel_up = dot(p.vel, up);
         p.vel = p.vel - up * vel_up * 0.2 * dt * spd;
         p.pos = p.pos + p.vel * dt * spd;
@@ -376,36 +434,62 @@ fn update_glitter(idx: u32) {
 
         let ei   = u32(hover_idx);
         let seed = idx * 7919u + u32(u.time * 1200.0);
+        let is_screen = is_elem_screen_space(ei);
 
         // Spawn on the hovered element perimeter
         let screen_pos = spawn_on_perimeter(ei, seed);
-        p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
 
-        // Mostly tangential drift along border with tiny outward float
+        // Position: screen-space elements store screen pixels directly,
+        // world-space elements go through inverse viewProj
+        if is_screen {
+            p.pos = vec3f(screen_pos, 0.0);
+        } else {
+            p.pos = screen_to_world_at(screen_pos, elem_depth(ei));
+        }
+
+        // Velocity: tangential drift along border
         let norm    = outward_normal(screen_pos, ei);
         let tangent = vec2f(-norm.y, norm.x);
         let tang_dir = select(-1.0, 1.0, rand_f(seed + 2u) > 0.5);
 
-        // Convert 2D screen tangent/normal to world-space directions
-        let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
-                             elems[ei].rect.y + elems[ei].rect.w * 0.5);
-        let center_world = screen_to_world_at(e_center, elem_depth(ei));
-        let tang_world = normal_to_world(tangent, center_world, e_center);
-        let norm_world = normal_to_world(norm, center_world, e_center);
-        p.vel = (tang_world * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
-              + norm_world * (0.5 + rand_f(seed + 4u) * 2.5)) * spd * ws;
+        if is_screen {
+            // Screen-space: velocity in pixel units (no ws scaling)
+            let vel_2d = tangent * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
+                       + norm * (0.5 + rand_f(seed + 4u) * 2.5);
+            p.vel = vec3f(vel_2d * spd, 0.0);
+        } else {
+            // World-space: convert 2D screen directions to world directions
+            let e_center = vec2f(elems[ei].rect.x + elems[ei].rect.z * 0.5,
+                                 elems[ei].rect.y + elems[ei].rect.w * 0.5);
+            let center_world = screen_to_world_at(e_center, elem_depth(ei));
+            let tang_world = normal_to_world(tangent, center_world, e_center);
+            let norm_world = normal_to_world(norm, center_world, e_center);
+            p.vel = (tang_world * tang_dir * (4.0 + rand_f(seed + 3u) * 10.0)
+                  + norm_world * (0.5 + rand_f(seed + 4u) * 2.5)) * spd * ws;
+        }
 
         p.max_life = 0.8 + rand_f(seed + 5u) * 1.5;
         p.life     = p.max_life;
         p.hue      = rand_f(seed + 6u);
-        p.size     = (0.6 + rand_f(seed + 7u) * 1.2) * max(u.glitter_size, 0.01);   // slightly larger — 0.6-1.8 px
-        p.kind_view = PK_GLITTER + u.current_view * 8.0;
+        p.size     = (0.6 + rand_f(seed + 7u) * 1.2) * max(u.glitter_size, 0.01);
+        // Pack: kind + view_id * 8 + (is_screen ? 64 : 0)
+        p.kind_view = PK_GLITTER + u.current_view * 8.0 + select(0.0, PK_SCREEN_SPACE, is_screen);
         p.spawn_t  = u.time;
     } else {
-        // Slow drift with sparkle-like sway, stays near border
-        let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0 * ws;
-        // Sway sideways + gentle upward float
-        p.vel = p.vel * (1.0 - 3.0 * dt * spd) + world_right() * sway * dt * spd + world_up() * 1.5 * dt * spd * ws;
+        // Update: check if this particle is screen-space
+        let is_screen = p_is_screen_space(p);
+        let up = particle_up(is_screen);
+        let rt = particle_right();
+
+        if is_screen {
+            // Screen-space: velocity in pixels, no ws scaling
+            let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0;
+            p.vel = p.vel * (1.0 - 3.0 * dt * spd) + rt * sway * dt * spd + up * 1.5 * dt * spd;
+        } else {
+            // World-space: velocity scaled by ws
+            let sway = sin(u.time * 4.0 + f32(idx) * 1.3) * 4.0 * ws;
+            p.vel = p.vel * (1.0 - 3.0 * dt * spd) + rt * sway * dt * spd + up * 1.5 * dt * spd * ws;
+        }
         p.pos = p.pos + p.vel * dt * spd;
     }
 

@@ -40,7 +40,8 @@ fn vs_particle(
 
     let p = particles[iid];
     let kind = u32(p.kind_view) % 8u;
-    let view_id = u32(p.kind_view) / 8u;
+    let view_id = (u32(p.kind_view) / 8u) % 8u;
+    let is_screen_space = u32(p.kind_view) >= 64u;
     out.pkind = kind;
 
     // Dead or wrong view → degenerate quad (off-screen)
@@ -62,8 +63,18 @@ fn vs_particle(
     }
     out.local_uv = corner;
 
-    // Project particle center to clip space (works for both 2D ortho and 3D perspective)
-    let clip_center = u.particle_vp * vec4f(p.pos, 1.0);
+    // Project particle center to clip space.
+    // Screen-space particles: orthographic (screen pixels → clip)
+    // World-space particles: use particle_vp (3D or 2D viewProj)
+    var clip_center: vec4f;
+    if is_screen_space {
+        // Orthographic: screen pixels → NDC → clip
+        let ndc_x = p.pos.x / u.width * 2.0 - 1.0;
+        let ndc_y = -(p.pos.y / u.height * 2.0 - 1.0);  // Y flip
+        clip_center = vec4f(ndc_x, ndc_y, 0.0, 1.0);
+    } else {
+        clip_center = u.particle_vp * vec4f(p.pos, 1.0);
+    }
     let cw = clip_center.w;
 
     // All offsets are computed in PIXEL space (Y down), then converted to clip
@@ -74,20 +85,32 @@ fn vs_particle(
     if kind == 0u {
         // ---- METAL SPARK: velocity-aligned thin streak ----
         let vel_len = length(p.vel);
-        let fwd_world = select(vec3f(0.0, -1.0, 0.0), p.vel / vel_len, vel_len > 0.0001);
-        // Project a point slightly ahead to get pixel-space velocity direction
-        let clip_ahead = u.particle_vp * vec4f(p.pos + fwd_world * u.world_scale, 1.0);
-        let ndc_c = clip_center.xy / cw;
-        let ndc_a = clip_ahead.xy / clip_ahead.w;
-        // Full-canvas NDC → pixel direction (Y flipped)
-        let pd = vec2f((ndc_a.x - ndc_c.x) * u.width * 0.5,
-                       -(ndc_a.y - ndc_c.y) * u.height * 0.5);
-        let pd_len = length(pd);
-        let pixel_fwd   = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
-        let pixel_right  = vec2f(-pixel_fwd.y, pixel_fwd.x);
+        var pixel_fwd: vec2f;
+        var speed_px: f32;
+
+        if is_screen_space {
+            // Screen-space: velocity is already in pixels/sec
+            let vel2d = p.vel.xy;
+            let vel2d_len = length(vel2d);
+            // Screen Y is down, so use velocity direction directly
+            pixel_fwd = select(vec2f(0.0, 1.0), vel2d / vel2d_len, vel2d_len > 0.0001);
+            speed_px = vel2d_len;
+        } else {
+            // World-space: project velocity direction to screen
+            let fwd_world = select(vec3f(0.0, -1.0, 0.0), p.vel / vel_len, vel_len > 0.0001);
+            let clip_ahead = u.particle_vp * vec4f(p.pos + fwd_world * u.world_scale, 1.0);
+            let ndc_c = clip_center.xy / cw;
+            let ndc_a = clip_ahead.xy / clip_ahead.w;
+            // Full-canvas NDC → pixel direction (Y flipped)
+            let pd = vec2f((ndc_a.x - ndc_c.x) * u.width * 0.5,
+                           -(ndc_a.y - ndc_c.y) * u.height * 0.5);
+            let pd_len = length(pd);
+            pixel_fwd = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
+            speed_px = vel_len / max(u.world_scale, 0.0001);
+        }
+        let pixel_right = vec2f(-pixel_fwd.y, pixel_fwd.x);
 
         // Length scales with on-screen speed; width stays thin
-        let speed_px = vel_len / max(u.world_scale, 0.0001);
         let half_len = p.size * (2.0 + speed_px * 0.04);
         let half_wid = p.size * 0.35;
         out.aspect = half_len / max(half_wid, 0.1);
@@ -100,26 +123,33 @@ fn vs_particle(
 
     } else if kind == 2u {
         // ---- ANGELIC BEAM: tall line oriented along world up ----
-        // p.size is in world units (set at spawn: pixel_size × ws).
-        // We project a 1-world-unit offset to find how many pixels one
-        // world unit covers on screen, then scale p.size by that.
-        // In 2D (ortho, ws=1): 1 world unit = 1 pixel, so sizes match 2D.
-        // In 3D: beams grow/shrink with perspective, keeping consistent
-        // apparent size relative to the scene geometry.
-        let up_w = select(vec3f(0.0, -1.0, 0.0), vec3f(0.0, 1.0, 0.0), u.current_view >= 4.0 && u.current_view <= 5.0);
+        var pixel_up: vec2f;
+        var px_per_world: f32;
 
-        // Project p.pos + 1 world unit in the up direction
-        let clip_up_pt = u.particle_vp * vec4f(p.pos + up_w, 1.0);
-        let ndc_c = clip_center.xy / cw;
-        let ndc_u = clip_up_pt.xy / clip_up_pt.w;
-        // Full-canvas NDC → pixel direction (Y flipped)
-        let pd = vec2f((ndc_u.x - ndc_c.x) * u.width * 0.5,
-                       -(ndc_u.y - ndc_c.y) * u.height * 0.5);
-        let pd_len = length(pd);
-        let pixel_up = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
+        if is_screen_space {
+            // Screen-space: up is negative Y (toward top of screen)
+            pixel_up = vec2f(0.0, -1.0);
+            px_per_world = 1.0;  // p.size is already in pixels
+        } else {
+            // World-space: project direction to screen
+            // p.size is in world units (set at spawn: pixel_size × ws).
+            // We project a 1-world-unit offset to find how many pixels one
+            // world unit covers on screen, then scale p.size by that.
+            let up_w = select(vec3f(0.0, -1.0, 0.0), vec3f(0.0, 1.0, 0.0), u.current_view >= 4.0 && u.current_view <= 5.0);
+
+            // Project p.pos + 1 world unit in the up direction
+            let clip_up_pt = u.particle_vp * vec4f(p.pos + up_w, 1.0);
+            let ndc_c = clip_center.xy / cw;
+            let ndc_u = clip_up_pt.xy / clip_up_pt.w;
+            // Full-canvas NDC → pixel direction (Y flipped)
+            let pd = vec2f((ndc_u.x - ndc_c.x) * u.width * 0.5,
+                           -(ndc_u.y - ndc_c.y) * u.height * 0.5);
+            let pd_len = length(pd);
+            pixel_up = select(vec2f(0.0, -1.0), pd / pd_len, pd_len > 0.0001);
+            // px_per_world: how many screen pixels 1 world unit covers
+            px_per_world = pd_len;
+        }
         let pixel_rt = vec2f(-pixel_up.y, pixel_up.x);
-        // px_per_world: how many screen pixels 1 world unit covers
-        let px_per_world = pd_len;
 
         // World-space half-extents → pixel sizes via px_per_world
         let half_w = p.size * 2.0 * px_per_world;
