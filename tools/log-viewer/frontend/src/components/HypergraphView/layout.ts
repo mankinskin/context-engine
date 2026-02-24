@@ -66,14 +66,14 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
     // Initial positions: circular in XZ, Y by width
     const nodes: LayoutNode[] = snapshot.nodes.map((n, i) => {
         const angle = (i / snapshot.nodes.length) * Math.PI * 2;
-        const r = 2 + snapshot.nodes.length * 0.3;
+        const r = 1 + snapshot.nodes.length * 0.15;
         return {
             index: n.index,
             label: n.label,
             width: n.width,
             isAtom: n.is_atom,
             x: Math.cos(angle) * r * (0.5 + Math.random() * 0.5),
-            y: (n.width - 1) * 1.5,
+            y: (n.width - 1) * 0.8,
             z: Math.sin(angle) * r * (0.5 + Math.random() * 0.5),
             vx: 0, vy: 0, vz: 0,
             radius: 0.15 + Math.min(n.width * 0.06, 0.3),
@@ -117,11 +117,11 @@ function simulate(
     nodeMap: Map<number, LayoutNode>,
     iterations: number,
 ) {
-    const repulsion = 3.0;
-    const springK = 0.12;
-    const springLen = 1.8;
+    const repulsion = 1.5;
+    const springK = 0.15;
+    const springLen = 0.9;
     const damping = 0.85;
-    const ySpringK = 0.08;
+    const ySpringK = 0.1;
     const dt = 0.4;
 
     for (let iter = 0; iter < iterations; iter++) {
@@ -162,7 +162,7 @@ function simulate(
 
         // Y-axis spring to target level
         for (const n of nodes) {
-            const targetY = (n.width - 1) * 1.5;
+            const targetY = (n.width - 1) * 0.8;
             n.vy += (targetY - n.y) * ySpringK;
         }
 
