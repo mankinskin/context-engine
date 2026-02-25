@@ -221,7 +221,6 @@ export const pathGroups = computed((): PathGroup[] => {
   for (let i = 0; i < all.length; i++) {
     const ev = all[i]!;
     const pid = ev.path_id;
-    if (!pid) continue;
     let group = groupMap.get(pid);
     if (!group) {
       group = { events: [], globalIndices: [] };
@@ -283,12 +282,10 @@ export const activeSearchPath = computed((): VizPathGraph | null => {
   const limit = Math.min(step, group.events.length - 1);
   for (let i = 0; i <= limit; i++) {
     const pt = group.events[i]?.path_transition;
-    if (pt) {
-      try {
-        applyTransition(graph, pt);
-      } catch {
-        // Skip invalid transitions gracefully
-      }
+    try {
+      applyTransition(graph, pt);
+    } catch {
+    // Skip invalid transitions gracefully
     }
   }
   return graph;

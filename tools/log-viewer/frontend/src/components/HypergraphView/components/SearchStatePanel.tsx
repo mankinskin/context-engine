@@ -138,11 +138,9 @@ function PathGroupSection({ group }: { group: PathGroup }) {
                                     <div class={`ssp-phase ${phaseClass(ev)}`}>
                                         {getTransitionName(ev)}
                                     </div>
-                                    {ev.path_transition && (
-                                        <div class="ssp-path-trans">
+                                    <div class="ssp-path-trans">
                                             ↳ {pathTransitionName(ev.path_transition)}
                                         </div>
-                                    )}
                                     <div class="ssp-desc">{ev.description}</div>
                                 </div>
                             </div>

@@ -15,14 +15,9 @@ import type { VizPathGraph } from "./VizPathGraph";
  * # Example
  *
  * ```ignore
- * let event = GraphOpEvent {
- *     step: 0,
- *     op_type: OperationType::Search,
- *     transition: Transition::StartNode { node: 42 },
- *     location: LocationInfo { selected_node: Some(42), ..Default::default() },
- *     query: QueryInfo { query_tokens: vec![1, 2, 3], cursor_position: 0, query_width: 3 },
- *     description: "Search started at node 42".into(),
- * };
+ * let event = GraphOpEvent::search(0, "search-42-0", Transition::StartNode { node: 42 }, "Search started at node 42")
+ *     .with_location(LocationInfo::selected(42))
+ *     .with_query(QueryInfo::new(vec![1, 2, 3], 0, 3));
  * event.emit();
  * ```
  */
@@ -52,21 +47,21 @@ query: QueryInfo,
  */
 description: string, 
 /**
- * Search path identifier (scopes to a particular `search()` call).
- * Multiple concurrent searches in the same log can be distinguished
- * by `path_id`. Only present for search operations that track a path.
+ * Search path identifier (scopes to a particular operation).
+ * Every graph-op event belongs to exactly one path. Multiple
+ * concurrent operations in the same log are distinguished by this id.
  */
-path_id: string | null, 
+    path_id: string, 
 /**
  * Incremental path transition at this step.
  * Describes how the `(start_path, root, end_path)` triple changed.
- * Only present for search operations that emit path data.
  */
-path_transition: PathTransition | null, 
+    path_transition: PathTransition, 
 /**
  * Full path graph snapshot AFTER applying the transition.
  * Redundant (can reconstruct from transitions in order), but included
  * for debugging and so the frontend can display the path without
  * reconstructing from history.
  */
-path_graph: VizPathGraph | null, };
+    path_graph: VizPathGraph,
+};
