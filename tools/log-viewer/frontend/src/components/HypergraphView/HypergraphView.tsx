@@ -10,7 +10,7 @@
  * through the overlay render callback system.
  */
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
-import { hypergraphSnapshot, activeSearchStep, activeSearchState } from '../../store';
+import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep } from '../../store';
 import './hypergraph.css';
 import { buildLayout, type GraphLayout } from './layout';
 
@@ -49,8 +49,10 @@ export function HypergraphView() {
     // Camera controller
     const camera = useCamera();
 
-    // Visualization state from search events
-    const vizState = useVisualizationState(activeSearchState.value);
+    // Visualization state from search events + search path
+    // Prefer path-group event when a path is selected, fall back to global step
+    const currentEvent = activePathEvent.value ?? activeSearchState.value;
+    const vizState = useVisualizationState(currentEvent, activeSearchPath.value);
 
     // Mouse interaction
     const { selectedIdx, setSelectedIdx, hoverIdx, tooltip, interRef } = useMouseInteraction(
@@ -81,7 +83,7 @@ export function HypergraphView() {
         const curLayout = layoutRef.current;
         if (!curLayout) return;
 
-        const event = activeSearchState.value;
+        const event = activePathEvent.value ?? activeSearchState.value;
         if (!event) return;
 
         const primaryNode = getPrimaryNode(event.transition, event.location);
@@ -94,7 +96,7 @@ export function HypergraphView() {
                 setSelectedIdx(primaryNode);
             }
         }
-    }, [activeSearchStep.value, camera, setSelectedIdx]);
+    }, [activeSearchStep.value, activePathStep.value, camera, setSelectedIdx]);
 
     // Register WebGPU overlay renderer
     useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState);

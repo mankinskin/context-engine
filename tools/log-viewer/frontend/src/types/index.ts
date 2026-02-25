@@ -6,6 +6,7 @@
 // ── Re-export generated types ──
 export type {
   AssertionDiff,
+  EdgeRef,
   GraphOpEvent,
   GraphSnapshot,
   JqQueryResponse,
@@ -14,11 +15,14 @@ export type {
   LogEntry,
   LogFileInfo,
   OperationType,
+  PathNode,
+  PathTransition,
   QueryInfo,
   SearchResponse,
   SnapshotEdge,
   SnapshotNode,
   Transition,
+  VizPathGraph,
 } from './generated';
 
 // ── Frontend-only types (not generated from Rust) ──

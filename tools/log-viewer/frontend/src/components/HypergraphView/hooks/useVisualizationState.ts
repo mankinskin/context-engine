@@ -1,9 +1,12 @@
 /**
  * Hook for deriving visualization state from graph operation events.
  * Extracts node roles and styling information from search/insert/read states.
+ * Integrates VizPathGraph for precise search path edge highlighting.
  */
 import { useMemo } from 'preact/hooks';
-import type { GraphOpEvent, LocationInfo, Transition } from '../../../types/generated';
+import type { GraphOpEvent, LocationInfo, Transition, VizPathGraph } from '../../../types/generated';
+import { edgeTripleKey } from '../utils/math';
+import { allNodeIndices } from '../../../search-path/reconstruction';
 
 export interface VisualizationState {
     /** Primary node being operated on */
@@ -36,6 +39,14 @@ export interface VisualizationState {
     transition: Transition | null;
     /** The raw location info */
     location: LocationInfo | null;
+    /** Active search path graph (null when no search path data) */
+    searchPath: VizPathGraph | null;
+    /** Edge triple keys for start_path edges (upward exploration) */
+    searchStartEdgeKeys: Set<number>;
+    /** Edge triple key for the root edge (null if no root edge) */
+    searchRootEdgeKey: number | null;
+    /** Edge triple keys for end_path edges (downward comparison) */
+    searchEndEdgeKeys: Set<number>;
 }
 
 /**
@@ -90,12 +101,17 @@ export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | nul
 }
 
 /**
- * Hook to derive visualization state from an active graph operation event.
+ * Hook to derive visualization state from an active graph operation event
+ * and optional search path graph.
  */
-export function useVisualizationState(event: GraphOpEvent | null): VisualizationState {
+export function useVisualizationState(
+    event: GraphOpEvent | null,
+    searchPath?: VizPathGraph | null,
+): VisualizationState {
     return useMemo(() => {
         const loc = event?.location ?? null;
         const trans = event?.transition ?? null;
+        const sp = searchPath ?? null;
 
         const selectedNode = loc?.selected_node ?? null;
         const rootNode = loc?.root_node ?? null;
@@ -110,6 +126,27 @@ export function useVisualizationState(event: GraphOpEvent | null): Visualization
         const candidateChild: number | null = trans?.kind === 'visit_child' ? trans.to : null;
         const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node : null;
         const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node : null;
+
+        // ── Search path edge key sets ──
+        const searchStartEdgeKeys = new Set<number>();
+        const searchEndEdgeKeys = new Set<number>();
+        let searchRootEdgeKey: number | null = null;
+
+        if (sp) {
+            for (const e of sp.start_edges) {
+                searchStartEdgeKeys.add(edgeTripleKey(e.from, e.to, e.pattern_idx));
+            }
+            if (sp.root_edge) {
+                searchRootEdgeKey = edgeTripleKey(
+                    sp.root_edge.from,
+                    sp.root_edge.to,
+                    sp.root_edge.pattern_idx,
+                );
+            }
+            for (const e of sp.end_edges) {
+                searchEndEdgeKeys.add(edgeTripleKey(e.from, e.to, e.pattern_idx));
+            }
+        }
 
         // Build the set of all "involved" nodes for dimming non-involved ones
         const involvedNodes = new Set<number>();
@@ -131,6 +168,13 @@ export function useVisualizationState(event: GraphOpEvent | null): Visualization
             involvedNodes.add(trans.from);
         }
 
+        // Include search path nodes in the involved set
+        if (sp) {
+            for (const idx of allNodeIndices(sp)) {
+                involvedNodes.add(idx);
+            }
+        }
+
         const hasVizState = involvedNodes.size > 0;
 
         return {
@@ -149,8 +193,12 @@ export function useVisualizationState(event: GraphOpEvent | null): Visualization
             hasVizState,
             transition: trans,
             location: loc,
+            searchPath: sp,
+            searchStartEdgeKeys,
+            searchRootEdgeKey,
+            searchEndEdgeKeys,
         };
-    }, [event]);
+    }, [event, searchPath]);
 }
 
 /**
@@ -171,11 +219,22 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
         pendingChildren,
         hasVizState,
         involvedNodes,
+        searchPath,
     } = viz;
 
     const isStart = nodeIndex === startNode;
     const isSelected = nodeIndex === selectedNode && !isStart;
     const isRoot = nodeIndex === rootNode;
+
+    // Search path node roles
+    const spStartNode = searchPath?.start_node?.index ?? -1;
+    const spRootNode = searchPath?.root?.index ?? -1;
+    const isSpStart = nodeIndex === spStartNode;
+    const isSpRoot = nodeIndex === spRootNode && !isSpStart;
+    const isSpStartPath = !isSpStart && !isSpRoot &&
+        (searchPath?.start_path.some(n => n.index === nodeIndex) ?? false);
+    const isSpEndPath = !isSpStart && !isSpRoot &&
+        (searchPath?.end_path.some(n => n.index === nodeIndex) ?? false);
     const isCandidateParent = nodeIndex === candidateParent;
     const isCandidateChild = nodeIndex === candidateChild;
     const isMatched = nodeIndex === matchedNode;
@@ -205,6 +264,10 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
         isCompleted && 'viz-completed',
         isPendingParent && 'viz-pending-parent',
         isPendingChild && 'viz-pending-child',
+        isSpStart && 'viz-sp-start',
+        isSpRoot && 'viz-sp-root',
+        isSpStartPath && 'viz-sp-start-path',
+        isSpEndPath && 'viz-sp-end-path',
         isDimmed && 'viz-dimmed',
     ]
         .filter(Boolean)
@@ -227,5 +290,11 @@ export function getNodeVizStates(nodeIndex: number, viz: VisualizationState): st
     if (viz.completedNodes.has(nodeIndex)) states.push('completed');
     if (viz.pendingParents.has(nodeIndex)) states.push('pending-parent');
     if (viz.pendingChildren.has(nodeIndex)) states.push('pending-child');
+    if (viz.searchPath) {
+        if (viz.searchPath.start_node?.index === nodeIndex) states.push('sp-start');
+        if (viz.searchPath.root?.index === nodeIndex) states.push('sp-root');
+        if (viz.searchPath.start_path.some(n => n.index === nodeIndex)) states.push('sp-start-path');
+        if (viz.searchPath.end_path.some(n => n.index === nodeIndex)) states.push('sp-end-path');
+    }
     return states;
 }

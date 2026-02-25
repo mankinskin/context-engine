@@ -14,7 +14,6 @@ export type { OperationType } from './OperationType';
 export type { PathNode } from './PathNode';
 export type { PathTransition } from './PathTransition';
 export type { QueryInfo } from './QueryInfo';
-export type { SearchPathEvent } from './SearchPathEvent';
 export type { SearchResponse } from './SearchResponse';
 export type { SnapshotEdge } from './SnapshotEdge';
 export type { SnapshotNode } from './SnapshotNode';

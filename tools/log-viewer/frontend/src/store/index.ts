@@ -2,7 +2,8 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent } from '../types';
+import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph, PathTransition } from '../types';
+import { applyTransition, emptyPathGraph } from '../search-path/reconstruction';
 import * as api from '../api';
 
 // Per-file state interface
@@ -18,6 +19,10 @@ interface FileState {
     codeViewerLine: number | null;
   activeTab: ViewTab;
   activeSearchStep: number;
+  /** Currently selected path_id (null = show flat list) */
+  activePathId: string | null;
+  /** Step index within the active path group */
+  activePathStep: number;
 }
 
 // Create default file state
@@ -34,6 +39,8 @@ function createFileState(): FileState {
         codeViewerLine: null,
       activeTab: 'logs',
       activeSearchStep: -1,
+      activePathId: null,
+      activePathStep: -1,
     };
 }
 
@@ -128,12 +135,18 @@ export const hypergraphSnapshot = computed((): HypergraphSnapshot | null => {
 
 // ── Graph Operation Visualization ──
 
-// Computed: extract all graph_op events from log entries (sorted by step)
-// Also supports legacy search_state events for backwards compatibility
-export const graphOpEvents = computed((): SearchStateEvent[] => {
+// Internal: graph op events paired with their log entry index for
+// chronological association with search path events.
+interface IndexedGraphOp {
+  entryIdx: number;
+  event: SearchStateEvent;
+}
+
+const _graphOpEventsIndexed = computed((): IndexedGraphOp[] => {
   const allEntries = entries.value;
-  const events: SearchStateEvent[] = [];
-  for (const entry of allEntries) {
+  const events: IndexedGraphOp[] = [];
+  for (let i = 0; i < allEntries.length; i++) {
+    const entry = allEntries[i]!;
     // New format: graph_op events
     if (entry.message === 'graph_op' && entry.fields?.graph_op) {
       try {
@@ -141,7 +154,7 @@ export const graphOpEvents = computed((): SearchStateEvent[] => {
           ? JSON.parse(entry.fields.graph_op)
           : entry.fields.graph_op;
         if (data && typeof data.step === 'number') {
-          events.push(data as SearchStateEvent);
+          events.push({ entryIdx: i, event: data as SearchStateEvent });
         }
       } catch {
         // skip invalid JSON
@@ -154,15 +167,20 @@ export const graphOpEvents = computed((): SearchStateEvent[] => {
           ? JSON.parse(entry.fields.search_state)
           : entry.fields.search_state;
         if (data && typeof data.step === 'number') {
-          // Convert legacy format to new format
-          events.push(data as SearchStateEvent);
+          events.push({ entryIdx: i, event: data as SearchStateEvent });
         }
       } catch {
         // skip invalid JSON
       }
     }
   }
-  return events.sort((a, b) => a.step - b.step);
+  return events.sort((a, b) => a.event.step - b.event.step);
+});
+
+// Computed: extract all graph_op events from log entries (sorted by step)
+// Also supports legacy search_state events for backwards compatibility
+export const graphOpEvents = computed((): SearchStateEvent[] => {
+  return _graphOpEventsIndexed.value.map(e => e.event);
 });
 
 // Alias for backwards compatibility
@@ -183,6 +201,98 @@ export const activeSearchState = computed((): SearchStateEvent | null => {
 export function setActiveSearchStep(step: number) {
   updateCurrentFileState({ activeSearchStep: step });
 }
+
+// ── Path Group Navigation ──
+
+/** A group of events sharing the same path_id. */
+export interface PathGroup {
+  pathId: string;
+  events: SearchStateEvent[];
+  /** Global indices into graphOpEvents for each event in this group */
+  globalIndices: number[];
+}
+
+// Computed: all distinct path groups, ordered by first appearance
+export const pathGroups = computed((): PathGroup[] => {
+  const all = graphOpEvents.value;
+  const groupMap = new Map<string, { events: SearchStateEvent[]; globalIndices: number[] }>();
+  const order: string[] = [];
+
+  for (let i = 0; i < all.length; i++) {
+    const ev = all[i]!;
+    const pid = ev.path_id;
+    if (!pid) continue;
+    let group = groupMap.get(pid);
+    if (!group) {
+      group = { events: [], globalIndices: [] };
+      groupMap.set(pid, group);
+      order.push(pid);
+    }
+    group.events.push(ev);
+    group.globalIndices.push(i);
+  }
+
+  return order.map(pid => {
+    const g = groupMap.get(pid)!;
+    return { pathId: pid, events: g.events, globalIndices: g.globalIndices };
+  });
+});
+
+// Per-file: currently selected path_id
+export const activePathId = computed(() => currentFileState.value.activePathId);
+
+// Per-file: step within active path group
+export const activePathStep = computed(() => currentFileState.value.activePathStep);
+
+// The active path group (if any)
+export const activePathGroup = computed((): PathGroup | null => {
+  const pid = activePathId.value;
+  if (!pid) return null;
+  return pathGroups.value.find(g => g.pathId === pid) ?? null;
+});
+
+// The active event from the active path group
+export const activePathEvent = computed((): SearchStateEvent | null => {
+  const group = activePathGroup.value;
+  const step = activePathStep.value;
+  if (!group || step < 0 || step >= group.events.length) return null;
+  return group.events[step] ?? null;
+});
+
+// Actions for path navigation
+export function setActivePathId(pathId: string | null) {
+  updateCurrentFileState({ activePathId: pathId, activePathStep: pathId ? 0 : -1 });
+}
+
+export function setActivePathStep(step: number) {
+  updateCurrentFileState({ activePathStep: step });
+}
+
+// ── Search Path Visualization (unified in GraphOpEvent) ──
+
+/**
+ * Reconstruct VizPathGraph by replaying all path_transition events
+ * in the active path group up to and including the activePathStep.
+ */
+export const activeSearchPath = computed((): VizPathGraph | null => {
+  const group = activePathGroup.value;
+  const step = activePathStep.value;
+  if (!group || step < 0) return null;
+
+  const graph = emptyPathGraph();
+  const limit = Math.min(step, group.events.length - 1);
+  for (let i = 0; i <= limit; i++) {
+    const pt = group.events[i]?.path_transition;
+    if (pt) {
+      try {
+        applyTransition(graph, pt);
+      } catch {
+        // Skip invalid transitions gracefully
+      }
+    }
+  }
+  return graph;
+});
 
 export const logStats = computed((): LogStats => {
   const allEntries = entries.value;

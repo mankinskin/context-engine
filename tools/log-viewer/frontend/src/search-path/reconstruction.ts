@@ -12,8 +12,7 @@
 import type {
   EdgeRef,
   PathNode,
-  PathTransition,
-  SearchPathEvent,
+    PathTransition,
   VizPathGraph,
 } from '../types/generated';
 
@@ -141,53 +140,6 @@ export function fromTransitions(
     }
   }
   return graph;
-}
-
-// ---------------------------------------------------------------------------
-// Log file reconstruction
-// ---------------------------------------------------------------------------
-
-/**
- * Group SearchPathEvents by path_id.
- *
- * Returns a map from path_id to ordered list of events.
- * Events within each group are sorted by step number.
- */
-export function groupByPathId(
-  events: SearchPathEvent[],
-): Map<string, SearchPathEvent[]> {
-  const groups = new Map<string, SearchPathEvent[]>();
-  for (const event of events) {
-    let group = groups.get(event.path_id);
-    if (!group) {
-      group = [];
-      groups.set(event.path_id, group);
-    }
-    group.push(event);
-  }
-  // Sort each group by step
-  for (const group of groups.values()) {
-    group.sort((a, b) => a.step - b.step);
-  }
-  return groups;
-}
-
-/**
- * Reconstruct all search paths from a list of SearchPathEvents.
- *
- * Returns a map from path_id to the reconstructed VizPathGraph.
- * Each path is reconstructed by applying transitions in step order.
- */
-export function reconstructAllPaths(
-  events: SearchPathEvent[],
-): Map<string, VizPathGraph> {
-  const groups = groupByPathId(events);
-  const result = new Map<string, VizPathGraph>();
-  for (const [pathId, groupEvents] of groups) {
-    const transitions = groupEvents.map((e) => e.transition);
-    result.set(pathId, fromTransitions(transitions));
-  }
-  return result;
 }
 
 /**

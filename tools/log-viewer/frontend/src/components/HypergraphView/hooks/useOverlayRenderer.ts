@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef } from 'preact/hooks';
 import { mat4Multiply, mat4Inverse } from '../../Scene3D/math3d';
-import { worldToScreen, worldScaleAtDepth } from '../utils/math';
+import { worldToScreen, worldScaleAtDepth, edgePairKey, edgeTripleKey } from '../utils/math';
 import type { GraphLayout } from '../layout';
 import type { CameraController } from './useCamera';
 import type { InteractionState } from './useMouseInteraction';
@@ -45,15 +45,10 @@ const PATTERN_COLORS: [number, number, number][] = [
 
 const PATH_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];
 
-/** Encode two node indices into a single numeric key (supports up to 65535 nodes). */
-function edgePairKey(from: number, to: number): number {
-    return (from << 16) | to;
-}
-
-/** Encode edge identity (from, to, patternIdx) into a single numeric key. */
-function edgeTripleKey(from: number, to: number, patternIdx: number): number {
-    return from * 1_000_000 + to * 1_000 + patternIdx;
-}
+// Search path edge colors (VizPathGraph-based, more precise than trace_path pairs)
+const SP_START_EDGE_COLOR: [number, number, number] = [0.95, 0.55, 0.15]; // warm orange for upward exploration
+const SP_ROOT_EDGE_COLOR: [number, number, number] = [1.0, 0.8, 0.3];    // gold for root edge
+const SP_END_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];   // cyan for downward comparison
 
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
@@ -314,7 +309,13 @@ export function useOverlayRenderer(
                 pathEdgeKeys.add(edgePairKey(from, to));
                 pathEdgeKeys.add(edgePairKey(to, from));
             }
-            const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null;
+
+            // Search path edge keys (from VizPathGraph — precise triple keys)
+            const spStartKeys = curVizState.searchStartEdgeKeys;
+            const spRootKey = curVizState.searchRootEdgeKey;
+            const spEndKeys = curVizState.searchEndEdgeKeys;
+            const hasSearchPath = spStartKeys.size > 0 || spRootKey !== null || spEndKeys.size > 0;
+            const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
 
             for (let i = 0; i < curLayout.edges.length; i++) {
                 const e = curLayout.edges[i]!;
@@ -329,11 +330,31 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 4] = b.y;
                 edgeDataBuf[off + 5] = b.z;
 
-                const isPathEdge = pathEdgeKeys.has(edgePairKey(e.from, e.to));
+                // Search path edge identification (triple keys for precision)
+                const tripleKey = edgeTripleKey(e.from, e.to, e.patternIdx);
+                const isSpStartEdge = spStartKeys.has(tripleKey);
+                const isSpRootEdge = spRootKey === tripleKey;
+                const isSpEndEdge = spEndKeys.has(tripleKey);
+                const isSearchPathEdge = isSpStartEdge || isSpRootEdge || isSpEndEdge;
+
+                // Legacy trace_path-based detection (pair keys, fallback)
+                const isPathEdge = !isSearchPathEdge && pathEdgeKeys.has(edgePairKey(e.from, e.to));
                 const highlighted = connectedEdgeKeys.has(edgeTripleKey(e.from, e.to, e.patternIdx));
 
                 let r: number, g: number, b2: number, alpha: number, hlFlag: number;
-                if (isPathEdge) {
+                if (isSpRootEdge) {
+                    // Gold for root edge
+                    r = SP_ROOT_EDGE_COLOR[0]; g = SP_ROOT_EDGE_COLOR[1]; b2 = SP_ROOT_EDGE_COLOR[2];
+                    alpha = 0.95; hlFlag = 1;
+                } else if (isSpStartEdge) {
+                    // Orange for upward exploration
+                    r = SP_START_EDGE_COLOR[0]; g = SP_START_EDGE_COLOR[1]; b2 = SP_START_EDGE_COLOR[2];
+                    alpha = 0.9; hlFlag = 1;
+                } else if (isSpEndEdge) {
+                    // Cyan for downward comparison
+                    r = SP_END_EDGE_COLOR[0]; g = SP_END_EDGE_COLOR[1]; b2 = SP_END_EDGE_COLOR[2];
+                    alpha = 0.9; hlFlag = 1;
+                } else if (isPathEdge) {
                     r = PATH_EDGE_COLOR[0];
                     g = PATH_EDGE_COLOR[1];
                     b2 = PATH_EDGE_COLOR[2];

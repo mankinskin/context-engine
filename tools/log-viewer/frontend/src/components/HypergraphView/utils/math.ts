@@ -3,6 +3,18 @@
  */
 import type { Vec3 } from '../../Scene3D/math3d';
 
+// ── Edge key helpers ──
+
+/** Encode two node indices into a single numeric key (supports up to 65535 nodes). */
+export function edgePairKey(from: number, to: number): number {
+    return (from << 16) | to;
+}
+
+/** Encode edge identity (from, to, patternIdx) into a single numeric key. */
+export function edgeTripleKey(from: number, to: number, patternIdx: number): number {
+    return from * 1_000_000 + to * 1_000 + patternIdx;
+}
+
 /**
  * Project a world position to screen coordinates.
  */
