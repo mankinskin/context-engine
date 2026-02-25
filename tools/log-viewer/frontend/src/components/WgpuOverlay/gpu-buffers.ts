@@ -15,6 +15,9 @@ import type { ThemeColors } from '../../store/theme';
 /** Initial element capacity (doubled on overflow). */
 const INITIAL_ELEM_CAPACITY = 128;
 
+/** Pre-allocated zero buffer for particle resets (shared, never mutated). */
+const ZERO_PARTICLES = new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS);
+
 export class GpuBufferManager {
     readonly device: GPUDevice;
 
@@ -31,6 +34,10 @@ export class GpuBufferManager {
 
     // Palette buffer (fixed)
     readonly paletteBuffer: GPUBuffer;
+
+    // Palette caching — avoid rebuilding when theme colors haven't changed
+    private _cachedPaletteColors: ThemeColors | null = null;
+    private _cachedPaletteBuf: Float32Array | null = null;
 
     // Generation counter — incremented when elem buffer is reallocated
     private _generation = 0;
@@ -53,9 +60,8 @@ export class GpuBufferManager {
             size:  PARTICLE_BUF_SIZE,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         });
-        // Zero-init (all dead particles)
-        device.queue.writeBuffer(this.particleBuffer, 0,
-            new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
+        // Zero-init (all dead particles) — reuse shared zero buffer
+        device.queue.writeBuffer(this.particleBuffer, 0, ZERO_PARTICLES);
 
         this.paletteBuffer = device.createBuffer({
             size:  PALETTE_BYTE_SIZE,
@@ -111,23 +117,30 @@ export class GpuBufferManager {
         this.device.queue.writeBuffer(this.uniformBuffer, 0, this.uniformF32.buffer);
     }
 
-    /** Upload theme palette colors to the GPU. */
+    /** Upload theme palette colors to the GPU. Skips if colors haven't changed. */
     uploadPalette(colors: ThemeColors): void {
-        const palBuf = buildPaletteBuffer(colors);
-        this.device.queue.writeBuffer(this.paletteBuffer, 0, palBuf.buffer);
+        if (colors === this._cachedPaletteColors) return;
+        this._cachedPaletteColors = colors;
+        this._cachedPaletteBuf = buildPaletteBuffer(colors);
+        this.device.queue.writeBuffer(this.paletteBuffer, 0, this._cachedPaletteBuf.buffer);
     }
 
     /** Zero-fill the particle buffer, killing all live particles instantly. */
     resetParticles(): void {
-        this.device.queue.writeBuffer(this.particleBuffer, 0,
-            new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS));
+        this.device.queue.writeBuffer(this.particleBuffer, 0, ZERO_PARTICLES);
     }
 
     /** Zero-fill a range of particles [startIdx, startIdx + count). */
     resetParticleRange(startIdx: number, count: number): void {
         const offset = startIdx * PARTICLE_BYTES;
-        const data = new Float32Array(count * PARTICLE_FLOATS);
-        this.device.queue.writeBuffer(this.particleBuffer, offset, data.buffer);
+        // Use a subarray view of the shared zero buffer (no allocation)
+        this.device.queue.writeBuffer(
+            this.particleBuffer,
+            offset,
+            ZERO_PARTICLES.buffer,
+            0,
+            count * PARTICLE_BYTES,
+        );
     }
 
     /** Destroy all GPU buffers. */

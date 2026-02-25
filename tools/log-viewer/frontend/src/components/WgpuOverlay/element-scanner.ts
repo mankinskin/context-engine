@@ -135,13 +135,16 @@ export class ElementScanner {
     /** Capacity of the internal buffer (in elements). */
     get capacity(): number { return this._capacity; }
 
+    /** Reusable scroll delta object (avoids per-frame allocation). */
+    private readonly _scrollDeltaResult = { dx: 0, dy: 0 };
+
     /** Consume accumulated scroll deltas (resets to 0 after reading). */
     consumeScrollDelta(): { dx: number; dy: number } {
-        const dx = this._scrollDx;
-        const dy = this._scrollDy;
+        this._scrollDeltaResult.dx = this._scrollDx;
+        this._scrollDeltaResult.dy = this._scrollDy;
         this._scrollDx = 0;
         this._scrollDy = 0;
-        return { dx, dy };
+        return this._scrollDeltaResult;
     }
 
     /** True if a full re-scan just completed (view change / invalidateAll). */
