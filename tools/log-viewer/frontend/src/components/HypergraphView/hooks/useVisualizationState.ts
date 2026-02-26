@@ -133,16 +133,20 @@ export function useVisualizationState(
         let searchRootEdgeKey: number | null = null;
 
         if (sp) {
+            // Start edges point UP (from=child, to=parent), but layout edges
+            // always go parent→child. Swap from/to to match layout direction.
             for (const e of sp.start_edges) {
-                searchStartEdgeKeys.add(edgeTripleKey(e.from, e.to, e.pattern_idx));
+                searchStartEdgeKeys.add(edgeTripleKey(e.to, e.from, e.pattern_idx));
             }
             if (sp.root_edge) {
+                // Root edge also points UP (from=start_path_top, to=root)
                 searchRootEdgeKey = edgeTripleKey(
-                    sp.root_edge.from,
                     sp.root_edge.to,
+                    sp.root_edge.from,
                     sp.root_edge.pattern_idx,
                 );
             }
+            // End edges already point DOWN (from=parent, to=child) — no swap needed
             for (const e of sp.end_edges) {
                 searchEndEdgeKeys.add(edgeTripleKey(e.from, e.to, e.pattern_idx));
             }

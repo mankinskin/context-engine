@@ -54,7 +54,7 @@ describe('search path reconstruction edge cases', () => {
         {
           kind: 'push_parent',
           parent: { index: 1, width: 1 },
-          edge: { from: 1, to: 0, pattern_idx: 0, sub_index: 0 },
+          edge: { from: 0, to: 1, pattern_idx: 0, sub_index: 0 },
         },
       ]),
     ).toThrow(/SetStartNode/);
@@ -89,7 +89,7 @@ describe('search path reconstruction edge cases', () => {
         {
           kind: 'set_root',
           root: { index: 10, width: 2 },
-          edge: { from: 10, to: 1, pattern_idx: 0, sub_index: 0 },
+          edge: { from: 1, to: 10, pattern_idx: 0, sub_index: 0 },
         },
         { kind: 'pop_child' },
       ]),
@@ -103,7 +103,7 @@ describe('search path reconstruction edge cases', () => {
         {
           kind: 'set_root',
           root: { index: 10, width: 2 },
-          edge: { from: 10, to: 1, pattern_idx: 0, sub_index: 0 },
+          edge: { from: 1, to: 10, pattern_idx: 0, sub_index: 0 },
         },
         {
           kind: 'replace_child',

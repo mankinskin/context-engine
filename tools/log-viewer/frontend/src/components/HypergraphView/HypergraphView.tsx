@@ -31,6 +31,7 @@ import {
     NodeTooltip,
     ControlsHUD,
     NodeLayer,
+    PathChainPanel,
 } from './components';
 
 /**
@@ -161,6 +162,9 @@ export function HypergraphView() {
 
             {/* Search State Panel - floating list of algorithm steps */}
             <SearchStatePanel />
+
+            {/* Path Chain Panel - breadcrumb of current search path */}
+            <PathChainPanel onFocusNode={handleFocusNode} />
 
             {/* Tooltip */}
             <NodeTooltip tooltip={tooltip} />

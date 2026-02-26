@@ -19,7 +19,7 @@ start_node: PathNode | null,
  */
 start_path: Array<PathNode>, 
 /**
- * Edges in the start_path (bottom-up).
+ * Edges in the start_path (bottom-up: from=child, to=parent).
  */
 start_edges: Array<EdgeRef>, 
 /**
@@ -27,7 +27,7 @@ start_edges: Array<EdgeRef>,
  */
 root: PathNode | null, 
 /**
- * Edge connecting the top of start_path to the root.
+ * Edge connecting the top of start_path to the root (from=start_path_top, to=root).
  */
 root_edge: EdgeRef | null, 
 /**
@@ -36,7 +36,7 @@ root_edge: EdgeRef | null,
  */
 end_path: Array<PathNode>, 
 /**
- * Edges in the end_path (top-down).
+ * Edges in the end_path (top-down: from=parent, to=child).
  */
 end_edges: Array<EdgeRef>, 
 /**

@@ -101,8 +101,39 @@ fn fs_node(in: NodeVsOut) -> @location(0) vec4<f32> {
 
 
 // ══════════════════════════════════════════════════════
-//  EDGE RENDERING  (instanced line segments as thin quads)
+//  EDGE RENDERING  (instanced energy beams between nodes)
 // ══════════════════════════════════════════════════════
+
+// ── Procedural noise for energy beam effects ──
+
+fn hash21(p: vec2<f32>) -> f32 {
+    var p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+fn noise2d(p: vec2<f32>) -> f32 {
+    let i = floor(p);
+    let f = fract(p);
+    let u = f * f * (3.0 - 2.0 * f);
+    return mix(
+        mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x),
+        mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x),
+        u.y
+    );
+}
+
+fn fbm2(p: vec2<f32>) -> f32 {
+    var val = 0.0;
+    var amp = 0.5;
+    var pos = p;
+    for (var i = 0; i < 3; i++) {
+        val += amp * noise2d(pos);
+        pos *= 2.1;
+        amp *= 0.5;
+    }
+    return val;
+}
 
 struct EdgeInstance {
     @location(2) posA   : vec3<f32>,    // start point
@@ -116,53 +147,184 @@ struct EdgeVsOut {
     @location(0) color     : vec4<f32>,
     @location(1) edgeUV    : vec2<f32>,
     @location(2) flags     : f32,
+    @location(3) edgeType  : f32,
 };
+
+// edgeType encoding:
+//   0 = grid / simple (no animation)
+//   1 = normal edge (subtle energy flow)
+//   2 = search-path start (warm orange, fast A→B flow)
+//   3 = search-path root (gold, radiant bidirectional)
+//   4 = search-path end (cyan, ripple at B)
+//   5 = trace path (cyan, gentle flow)
 
 @vertex
 fn vs_edge(
-    @location(0) quadPos : vec2<f32>,
-    @location(6) posA    : vec3<f32>,
-    @location(7) posB    : vec3<f32>,
-    @location(8) color   : vec4<f32>,
-    @location(9) flags   : f32,  // x=highlighted
+    @location(0) quadPos  : vec2<f32>,
+    @location(6) posA     : vec3<f32>,
+    @location(7) posB     : vec3<f32>,
+    @location(8) color    : vec4<f32>,
+    @location(9) flags    : f32,   // highlighted flag
+    @location(10) edgeType : f32,  // beam type
 ) -> EdgeVsOut {
-    let midA = posA;
-    let midB = posB;
-    let dir = midB - midA;
+    let dir = posB - posA;
     let pos01 = quadPos.x * 0.5 + 0.5;  // 0..1 along line
-    let center = mix(midA, midB, pos01);
+    let center = mix(posA, posB, pos01);
 
     let viewDir = normalize(cam.eye.xyz - center);
     let lineDir = normalize(dir);
     let side = normalize(cross(lineDir, viewDir));
 
-    let halfWidth = select(0.015, 0.035, flags > 0.5);
+    // Width varies by edge type
+    var halfWidth: f32;
+    if (edgeType < 0.5) {
+        // Grid: thin line
+        halfWidth = select(0.015, 0.035, flags > 0.5);
+    } else if (edgeType < 1.5) {
+        // Normal edge: subtle beam
+        halfWidth = select(0.03, 0.05, flags > 0.5);
+    } else {
+        // Search/trace path edges: dramatic beam
+        halfWidth = select(0.06, 0.08, flags > 0.5);
+    }
+
     let worldPos = center + side * quadPos.y * halfWidth;
 
     var out: EdgeVsOut;
-    out.pos   = cam.viewProj * vec4(worldPos, 1.0);
-    out.color = color;
-    out.edgeUV = quadPos;
-    out.flags = flags;
+    out.pos      = cam.viewProj * vec4(worldPos, 1.0);
+    out.color    = color;
+    out.edgeUV   = quadPos;
+    out.flags    = flags;
+    out.edgeType = edgeType;
     return out;
 }
 
 @fragment
 fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
-    let alpha = 1.0 - smoothstep(0.6, 1.0, abs(in.edgeUV.y));
-    var col = in.color.rgb;
-    var a = in.color.a * alpha;
+    let t = in.edgeUV.x * 0.5 + 0.5;       // 0..1 along beam (A=0, B=1)
+    let across = abs(in.edgeUV.y);           // 0..1 from center outward
+    let side_sign = in.edgeUV.y;             // signed lateral position
+    let time = cam.time.x;
 
-    // Highlighted edges are brighter
-    if (in.flags > 0.5) {
-        col = mix(col, vec3(1.0), 0.3);
-        a *= 1.4;
+    // ── Grid / simple edges (edgeType 0) ──
+    if (in.edgeType < 0.5) {
+        let alpha = 1.0 - smoothstep(0.6, 1.0, across);
+        var col = in.color.rgb;
+        var a = in.color.a * alpha;
+        if (in.flags > 0.5) {
+            col = mix(col, vec3(1.0), 0.3);
+            a *= 1.4;
+        }
+        let endFade = smoothstep(0.0, 0.08, 0.5 - abs(in.edgeUV.x));
+        a *= endFade;
+        return vec4(col * a, a);
     }
 
-    // Fade at endpoints
-    let endFade = smoothstep(0.0, 0.08, 0.5 - abs(in.edgeUV.x));
-    a *= endFade;
+    // ── Energy beam rendering (edgeType >= 1) ──
 
+    // Radial beam profiles
+    let core     = exp(-across * across * 18.0);           // tight hot center
+    let innerGlow = exp(-across * across * 5.0);           // medium glow
+    let outerGlow = exp(-across * across * 1.8);           // soft halo
+
+    // Animated noise layers (flow from A→B)
+    let flowSpeed = select(1.2, 2.5, in.edgeType > 1.5);
+    let n1 = noise2d(vec2(t * 10.0 - time * flowSpeed, across * 5.0));
+    let n2 = noise2d(vec2(t * 7.0 - time * flowSpeed * 0.6, across * 3.0 + 7.7));
+    let plasma = n1 * 0.6 + n2 * 0.4;
+
+    // FBM turbulence for wispy tendrils
+    let turb = fbm2(vec2(t * 6.0 - time * flowSpeed * 0.8, side_sign * 3.0 + time * 0.3));
+
+    // Traveling pulse waves (A→B direction)
+    let pulse1 = pow(0.5 + 0.5 * sin((t * 6.28318 * 3.0) - time * 4.0), 3.0);
+    let pulse2 = pow(0.5 + 0.5 * sin((t * 6.28318 * 2.0) - time * 2.5 + 1.5), 2.0);
+
+    // Asymmetric endpoint glow
+    //   A-side (source): bright emission burst
+    //   B-side (target): softer trailing glow
+    let sourceGlow = exp(-t * t * 6.0);             // peaks at A
+    let targetGlow = exp(-(1.0 - t) * (1.0 - t) * 8.0);  // peaks at B
+
+    // ── Compose base intensity ──
+    var intensity = core * 0.7
+        + innerGlow * 0.2 * (0.6 + 0.4 * plasma)
+        + outerGlow * 0.08 * (0.5 + 0.5 * turb)
+        + core * pulse1 * 0.25
+        + innerGlow * pulse2 * 0.1;
+
+    var col = in.color.rgb;
+    var hotCenter = vec3(1.0);  // white-hot for core brightening
+
+    // ── Per-type effects ──
+    if (in.edgeType > 1.5 && in.edgeType < 2.5) {
+        // ═══ SP START (type 2): warm upward energy, fast A→B ═══
+        // Strong emission at source (A), fast-moving sparks
+        let warmPulse = pow(0.5 + 0.5 * sin(t * 25.0 - time * 6.0), 4.0);
+        intensity += core * warmPulse * 0.3;
+        intensity += sourceGlow * innerGlow * 0.5;  // bright at A
+        intensity += targetGlow * outerGlow * 0.15;  // subtle at B
+        // Warm-white center at source
+        hotCenter = vec3(1.0, 0.92, 0.7);
+        col = mix(col, vec3(1.0, 0.75, 0.3), sourceGlow * 0.4);
+
+    } else if (in.edgeType > 2.5 && in.edgeType < 3.5) {
+        // ═══ SP ROOT (type 3): golden radiance, bidirectional ═══
+        // Pulses emanate from center outward in both directions
+        let centerDist = abs(t - 0.5);
+        let biPulse = pow(0.5 + 0.5 * sin(centerDist * 20.0 - time * 5.0), 3.0);
+        intensity += core * biPulse * 0.4;
+        // Strong center glow
+        let center_glow = exp(-centerDist * centerDist * 12.0);
+        intensity += center_glow * innerGlow * 0.5;
+        // Shimmer
+        let shimmer = noise2d(vec2(t * 15.0, time * 3.0));
+        intensity += core * shimmer * 0.15;
+        hotCenter = vec3(1.0, 0.95, 0.75);
+        col = mix(col, vec3(1.0, 0.9, 0.5), center_glow * 0.3);
+
+    } else if (in.edgeType > 3.5 && in.edgeType < 4.5) {
+        // ═══ SP END (type 4): cool energy, emphasis at target B ═══
+        // Ripple effect expanding at destination
+        let ripple = pow(0.5 + 0.5 * sin((1.0 - t) * 18.0 + time * 3.0), 3.0);
+        intensity += core * ripple * 0.25 * smoothstep(0.3, 0.9, t);
+        intensity += targetGlow * innerGlow * 0.5;  // bright at B
+        intensity += sourceGlow * outerGlow * 0.1;  // subtle at A
+        // Cool-white at target
+        hotCenter = vec3(0.8, 0.95, 1.0);
+        col = mix(col, vec3(0.6, 0.95, 1.0), targetGlow * 0.4);
+
+    } else if (in.edgeType > 4.5) {
+        // ═══ TRACE PATH (type 5): gentle cyan flow ═══
+        let gentlePulse = 0.5 + 0.5 * sin(t * 12.56 - time * 2.0);
+        intensity += core * gentlePulse * 0.15;
+        intensity += sourceGlow * outerGlow * 0.2;
+        intensity += targetGlow * outerGlow * 0.2;
+        hotCenter = vec3(0.85, 1.0, 1.0);
+
+    } else {
+        // ═══ NORMAL edge (type 1): subtle energy ═══
+        // Gentle symmetric glow, understated
+        intensity *= 0.8;
+        let subtlePulse = 0.5 + 0.5 * sin(t * 8.0 - time * 1.5);
+        intensity += core * subtlePulse * 0.08;
+    }
+
+    // ── Hot-core brightening (white center like a plasma arc) ──
+    col = mix(col, hotCenter, core * 0.4);
+
+    // Highlight whitening
+    if (in.flags > 0.5) {
+        col = mix(col, vec3(1.0), 0.15 * core);
+        intensity *= 1.2;
+    }
+
+    // Endpoint fade
+    let endFade = smoothstep(0.0, 0.06, min(t, 1.0 - t));
+    intensity *= endFade;
+
+    // Final output with premultiplied alpha
+    let a = clamp(intensity * in.color.a * 1.6, 0.0, 1.0);
     return vec4(col * a, a);
 }
 

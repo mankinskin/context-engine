@@ -128,6 +128,7 @@ export function useOverlayRenderer(
                     { shaderLocation: 7, offset: 12, format: 'float32x3' as GPUVertexFormat },
                     { shaderLocation: 8, offset: 24, format: 'float32x4' as GPUVertexFormat },
                     { shaderLocation: 9, offset: 40, format: 'float32' as GPUVertexFormat },
+                    { shaderLocation: 10, offset: 44, format: 'float32' as GPUVertexFormat },
                 ],
             },
         ];
@@ -388,7 +389,12 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 8] = b2;
                 edgeDataBuf[off + 9] = alpha;
                 edgeDataBuf[off + 10] = hlFlag;
-                edgeDataBuf[off + 11] = 0;
+                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path
+                edgeDataBuf[off + 11] = isSpStartEdge ? 2
+                    : isSpRootEdge ? 3
+                        : isSpEndEdge ? 4
+                            : isPathEdge ? 5
+                                : 1;  // normal edge (energy beam)
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 
