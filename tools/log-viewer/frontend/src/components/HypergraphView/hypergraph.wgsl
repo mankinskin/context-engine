@@ -153,10 +153,11 @@ struct EdgeVsOut {
 // edgeType encoding:
 //   0 = grid / simple (no animation)
 //   1 = normal edge (subtle energy flow)
-//   2 = search-path start (warm orange, fast A→B flow)
+//   2 = search-path start (uniform teal, arrow toward A / parent)
 //   3 = search-path root (gold, radiant bidirectional)
-//   4 = search-path end (cyan, ripple at B)
-//   5 = trace path (cyan, gentle flow)
+//   4 = search-path end (uniform teal, arrow toward B / child)
+//   5 = trace path (gentle flow)
+//   6 = candidate edge (muted violet, transparent)
 
 @vertex
 fn vs_edge(
@@ -183,8 +184,14 @@ fn vs_edge(
     } else if (edgeType < 1.5) {
         // Normal edge: subtle beam
         halfWidth = select(0.03, 0.05, flags > 0.5);
+    } else if (edgeType > 5.5) {
+        // Candidate edge (type 6): medium-thin
+        halfWidth = 0.035;
+    } else if (edgeType > 1.5 && edgeType < 4.5) {
+        // Search path edges with arrows (types 2,3,4): extra wide for arrowhead room
+        halfWidth = select(0.10, 0.12, flags > 0.5);
     } else {
-        // Search/trace path edges: dramatic beam
+        // Trace path (type 5): moderate beam
         halfWidth = select(0.06, 0.08, flags > 0.5);
     }
 
@@ -197,6 +204,29 @@ fn vs_edge(
     out.flags    = flags;
     out.edgeType = edgeType;
     return out;
+}
+
+// ── Arrow helper: computes arrowhead intensity ──
+// arrowDir: 0.0 = arrow at A (low t), 1.0 = arrow at B (high t)
+fn arrowHead(t_in: f32, across: f32, arrowDir: f32) -> f32 {
+    // Flip t so the arrow always points toward high values
+    let t_a = select(1.0 - t_in, t_in, arrowDir > 0.5);
+
+    // Arrow region: last 18% of the beam
+    let arrowStart = 0.82;
+    let inArrow = smoothstep(arrowStart - 0.02, arrowStart, t_a);
+    let arrowProgress = clamp((t_a - arrowStart) / (1.0 - arrowStart), 0.0, 1.0);
+
+    // Triangle shape: wide at base, narrows to point
+    // across is 0..1 from centre; triangle boundary shrinks linearly
+    let triangleBound = (1.0 - arrowProgress) * 0.85;
+    let arrowShape = smoothstep(0.04, 0.0, across - triangleBound) * inArrow;
+
+    // Bright edge outline of the triangle
+    let edgeDist = abs(across - triangleBound);
+    let arrowEdge = exp(-edgeDist * edgeDist * 800.0) * inArrow * 0.6;
+
+    return arrowShape * 0.7 + arrowEdge;
 }
 
 @fragment
@@ -220,17 +250,37 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         return vec4(col * a, a);
     }
 
-    // ── Energy beam rendering (edgeType >= 1) ──
+    // ── Candidate edges (edgeType 6): muted, transparent, gentle pulse ──
+    if (in.edgeType > 5.5) {
+        let core_c = exp(-across * across * 12.0);
+        let glow_c = exp(-across * across * 3.5);
+        let gentlePulse = 0.5 + 0.5 * sin(t * 8.0 - time * 1.0);
+        let intensity_c = core_c * 0.45 + glow_c * 0.15 * gentlePulse;
+        var col_c = in.color.rgb;
+        col_c = mix(col_c, vec3(0.7, 0.6, 0.9), 0.2);  // slight violet tint
+        let endFade_c = smoothstep(0.0, 0.08, min(t, 1.0 - t));
+        let a_c = clamp(intensity_c * in.color.a * endFade_c, 0.0, 1.0);
+        return vec4(col_c * a_c, a_c);
+    }
 
-    // Radial beam profiles
-    let core     = exp(-across * across * 18.0);           // tight hot center
-    let innerGlow = exp(-across * across * 5.0);           // medium glow
-    let outerGlow = exp(-across * across * 1.8);           // soft halo
+    // ── Energy beam rendering (edgeType 1-5) ──
+
+    // For path edges (2,3,4), narrow the beam core relative to the wide quad
+    // so the arrowhead can spread wider than the beam body.
+    let isArrowType = (in.edgeType > 1.5 && in.edgeType < 4.5);
+    // Beam occupies the central ~40% of quad width for arrow types
+    let beamScale = select(1.0, 2.2, isArrowType);
+    let beamAcross = across * beamScale;  // stretched so core stays narrow
+
+    // Radial beam profiles (using beamAcross for arrow types)
+    let core     = exp(-beamAcross * beamAcross * 18.0);           // tight hot center
+    let innerGlow = exp(-beamAcross * beamAcross * 5.0);           // medium glow
+    let outerGlow = exp(-beamAcross * beamAcross * 1.8);           // soft halo
 
     // Animated noise layers (flow from A→B)
     let flowSpeed = select(1.2, 2.5, in.edgeType > 1.5);
-    let n1 = noise2d(vec2(t * 10.0 - time * flowSpeed, across * 5.0));
-    let n2 = noise2d(vec2(t * 7.0 - time * flowSpeed * 0.6, across * 3.0 + 7.7));
+    let n1 = noise2d(vec2(t * 10.0 - time * flowSpeed, beamAcross * 5.0));
+    let n2 = noise2d(vec2(t * 7.0 - time * flowSpeed * 0.6, beamAcross * 3.0 + 7.7));
     let plasma = n1 * 0.6 + n2 * 0.4;
 
     // FBM turbulence for wispy tendrils
@@ -241,8 +291,6 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
     let pulse2 = pow(0.5 + 0.5 * sin((t * 6.28318 * 2.0) - time * 2.5 + 1.5), 2.0);
 
     // Asymmetric endpoint glow
-    //   A-side (source): bright emission burst
-    //   B-side (target): softer trailing glow
     let sourceGlow = exp(-t * t * 6.0);             // peaks at A
     let targetGlow = exp(-(1.0 - t) * (1.0 - t) * 8.0);  // peaks at B
 
@@ -258,44 +306,41 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
 
     // ── Per-type effects ──
     if (in.edgeType > 1.5 && in.edgeType < 2.5) {
-        // ═══ SP START (type 2): warm upward energy, fast A→B ═══
-        // Strong emission at source (A), fast-moving sparks
-        let warmPulse = pow(0.5 + 0.5 * sin(t * 25.0 - time * 6.0), 4.0);
-        intensity += core * warmPulse * 0.3;
-        intensity += sourceGlow * innerGlow * 0.5;  // bright at A
-        intensity += targetGlow * outerGlow * 0.15;  // subtle at B
-        // Warm-white center at source
-        hotCenter = vec3(1.0, 0.92, 0.7);
-        col = mix(col, vec3(1.0, 0.75, 0.3), sourceGlow * 0.4);
+        // ═══ SP START (type 2): uniform teal, arrow at A (toward parent) ═══
+        // Arrow points toward posA (parent). Flow travels B→A (child→parent).
+        let flowPulse = pow(0.5 + 0.5 * sin(t * 20.0 + time * 5.0), 3.0);  // reversed flow
+        intensity += core * flowPulse * 0.25;
+        intensity += sourceGlow * innerGlow * 0.3;
+        // Arrowhead at A end (arrowDir = 0.0)
+        let arrow = arrowHead(t, across, 0.0);
+        intensity += arrow * 0.8;
+        hotCenter = vec3(0.85, 1.0, 1.0);
 
     } else if (in.edgeType > 2.5 && in.edgeType < 3.5) {
         // ═══ SP ROOT (type 3): golden radiance, bidirectional ═══
-        // Pulses emanate from center outward in both directions
         let centerDist = abs(t - 0.5);
         let biPulse = pow(0.5 + 0.5 * sin(centerDist * 20.0 - time * 5.0), 3.0);
         intensity += core * biPulse * 0.4;
-        // Strong center glow
         let center_glow = exp(-centerDist * centerDist * 12.0);
         intensity += center_glow * innerGlow * 0.5;
-        // Shimmer
         let shimmer = noise2d(vec2(t * 15.0, time * 3.0));
         intensity += core * shimmer * 0.15;
         hotCenter = vec3(1.0, 0.95, 0.75);
         col = mix(col, vec3(1.0, 0.9, 0.5), center_glow * 0.3);
 
     } else if (in.edgeType > 3.5 && in.edgeType < 4.5) {
-        // ═══ SP END (type 4): cool energy, emphasis at target B ═══
-        // Ripple effect expanding at destination
-        let ripple = pow(0.5 + 0.5 * sin((1.0 - t) * 18.0 + time * 3.0), 3.0);
-        intensity += core * ripple * 0.25 * smoothstep(0.3, 0.9, t);
-        intensity += targetGlow * innerGlow * 0.5;  // bright at B
-        intensity += sourceGlow * outerGlow * 0.1;  // subtle at A
-        // Cool-white at target
-        hotCenter = vec3(0.8, 0.95, 1.0);
-        col = mix(col, vec3(0.6, 0.95, 1.0), targetGlow * 0.4);
+        // ═══ SP END (type 4): uniform teal, arrow at B (toward child) ═══
+        // Arrow points toward posB (child). Flow travels A→B (parent→child).
+        let flowPulse = pow(0.5 + 0.5 * sin(t * 20.0 - time * 5.0), 3.0);
+        intensity += core * flowPulse * 0.25;
+        intensity += targetGlow * innerGlow * 0.3;
+        // Arrowhead at B end (arrowDir = 1.0)
+        let arrow = arrowHead(t, across, 1.0);
+        intensity += arrow * 0.8;
+        hotCenter = vec3(0.85, 1.0, 1.0);
 
-    } else if (in.edgeType > 4.5) {
-        // ═══ TRACE PATH (type 5): gentle cyan flow ═══
+    } else if (in.edgeType > 4.5 && in.edgeType < 5.5) {
+        // ═══ TRACE PATH (type 5): gentle teal flow ═══
         let gentlePulse = 0.5 + 0.5 * sin(t * 12.56 - time * 2.0);
         intensity += core * gentlePulse * 0.15;
         intensity += sourceGlow * outerGlow * 0.2;
@@ -304,7 +349,6 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
 
     } else {
         // ═══ NORMAL edge (type 1): subtle energy ═══
-        // Gentle symmetric glow, understated
         intensity *= 0.8;
         let subtlePulse = 0.5 + 0.5 * sin(t * 8.0 - time * 1.5);
         intensity += core * subtlePulse * 0.08;
@@ -319,9 +363,17 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         intensity *= 1.2;
     }
 
-    // Endpoint fade
-    let endFade = smoothstep(0.0, 0.06, min(t, 1.0 - t));
-    intensity *= endFade;
+    // Endpoint fade (skip arrow tip end for arrow types)
+    var endFadeA = smoothstep(0.0, 0.06, t);
+    var endFadeB = smoothstep(0.0, 0.06, 1.0 - t);
+    // Don't fade the arrow tip — let the arrowhead geometry define the end
+    if (in.edgeType > 1.5 && in.edgeType < 2.5) {
+        endFadeA = 1.0;  // arrow at A end, don't fade there
+    }
+    if (in.edgeType > 3.5 && in.edgeType < 4.5) {
+        endFadeB = 1.0;  // arrow at B end, don't fade there
+    }
+    intensity *= min(endFadeA, endFadeB);
 
     // Final output with premultiplied alpha
     let a = clamp(intensity * in.color.a * 1.6, 0.0, 1.0);

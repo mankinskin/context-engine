@@ -3,10 +3,8 @@
 /**
  * Reference to a directed edge in the hypergraph snapshot.
  *
- * Edge direction follows traversal direction:
- * - Start path edges point UP: `from` = child, `to` = parent.
- * - End path edges point DOWN: `from` = parent, `to` = child.
- * - Root edge points UP: `from` = start_path top, `to` = root.
+ * Matches the fields of [`SnapshotEdge`](super::snapshot::SnapshotEdge):
+ * `(from, to, pattern_idx, sub_index)`.
  */
 export type EdgeRef = { 
 /**

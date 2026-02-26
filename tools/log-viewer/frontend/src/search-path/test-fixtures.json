@@ -657,5 +657,134 @@
       "done": true,
       "success": true
     }
+  },
+  {
+    "name": "push_parent_after_root",
+    "transitions": [
+      {
+        "kind": "set_start_node",
+        "node": {
+          "index": 1,
+          "width": 1
+        }
+      },
+      {
+        "kind": "set_root",
+        "root": {
+          "index": 10,
+          "width": 3
+        },
+        "edge": {
+          "from": 1,
+          "to": 10,
+          "pattern_idx": 0,
+          "sub_index": 0
+        }
+      },
+      {
+        "kind": "push_parent",
+        "parent": {
+          "index": 20,
+          "width": 6
+        },
+        "edge": {
+          "from": 10,
+          "to": 20,
+          "pattern_idx": 0,
+          "sub_index": 0
+        }
+      },
+      {
+        "kind": "set_root",
+        "root": {
+          "index": 30,
+          "width": 8
+        },
+        "edge": {
+          "from": 20,
+          "to": 30,
+          "pattern_idx": 0,
+          "sub_index": 0
+        }
+      },
+      {
+        "kind": "push_child",
+        "child": {
+          "index": 5,
+          "width": 1
+        },
+        "edge": {
+          "from": 30,
+          "to": 5,
+          "pattern_idx": 0,
+          "sub_index": 1
+        }
+      },
+      {
+        "kind": "child_match",
+        "cursor_pos": 3
+      },
+      {
+        "kind": "done",
+        "success": true
+      }
+    ],
+    "expected": {
+      "start_node": {
+        "index": 1,
+        "width": 1
+      },
+      "start_path": [
+        {
+          "index": 10,
+          "width": 3
+        },
+        {
+          "index": 20,
+          "width": 6
+        }
+      ],
+      "start_edges": [
+        {
+          "from": 1,
+          "to": 10,
+          "pattern_idx": 0,
+          "sub_index": 0
+        },
+        {
+          "from": 10,
+          "to": 20,
+          "pattern_idx": 0,
+          "sub_index": 0
+        }
+      ],
+      "root": {
+        "index": 30,
+        "width": 8
+      },
+      "root_edge": {
+        "from": 20,
+        "to": 30,
+        "pattern_idx": 0,
+        "sub_index": 0
+      },
+      "end_path": [
+        {
+          "index": 5,
+          "width": 1
+        }
+      ],
+      "end_edges": [
+        {
+          "from": 30,
+          "to": 5,
+          "pattern_idx": 0,
+          "sub_index": 1
+        }
+      ],
+      "cursor_pos": 3,
+      "done": true,
+      "success": true
+    }
   }
 ]

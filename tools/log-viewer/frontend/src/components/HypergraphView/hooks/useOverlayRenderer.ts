@@ -46,9 +46,10 @@ const PATTERN_COLORS: [number, number, number][] = [
 const PATH_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];
 
 // Search path edge colors (VizPathGraph-based, more precise than trace_path pairs)
-const SP_START_EDGE_COLOR: [number, number, number] = [0.95, 0.55, 0.15]; // warm orange for upward exploration
-const SP_ROOT_EDGE_COLOR: [number, number, number] = [1.0, 0.8, 0.3];    // gold for root edge
-const SP_END_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];   // cyan for downward comparison
+// Start & end paths share a uniform teal – arrows in the shader distinguish direction
+const SP_PATH_EDGE_COLOR: [number, number, number] = [0.25, 0.75, 1.0];  // uniform teal for start & end paths
+const SP_ROOT_EDGE_COLOR: [number, number, number] = [1.0, 0.85, 0.3];   // gold for root edge
+const CANDIDATE_EDGE_COLOR: [number, number, number] = [0.55, 0.4, 0.8]; // muted violet for candidate edges
 
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
@@ -318,6 +319,13 @@ export function useOverlayRenderer(
             const hasSearchPath = spStartKeys.size > 0 || spRootKey !== null || spEndKeys.size > 0;
             const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
 
+            // Candidate node set (pending + current candidates)
+            const candidateNodes = new Set<number>();
+            if (curVizState.candidateParent != null) candidateNodes.add(curVizState.candidateParent);
+            if (curVizState.candidateChild != null) candidateNodes.add(curVizState.candidateChild);
+            for (const n of curVizState.pendingParents) candidateNodes.add(n);
+            for (const n of curVizState.pendingChildren) candidateNodes.add(n);
+
             for (let i = 0; i < curLayout.edges.length; i++) {
                 const e = curLayout.edges[i]!;
                 const a = curLayout.nodeMap.get(e.from);
@@ -331,16 +339,22 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 4] = b.y;
                 edgeDataBuf[off + 5] = b.z;
 
-                // Search path edge identification (triple keys for precision)
-                const tripleKey = edgeTripleKey(e.from, e.to, e.patternIdx);
-                const isSpStartEdge = spStartKeys.has(tripleKey);
-                const isSpRootEdge = spRootKey === tripleKey;
-                const isSpEndEdge = spEndKeys.has(tripleKey);
+                // Search path edge identification (pair keys — pattern_idx independent)
+                const pairKey = edgePairKey(e.from, e.to);
+                const isSpStartEdge = spStartKeys.has(pairKey);
+                const isSpRootEdge = spRootKey === pairKey;
+                const isSpEndEdge = spEndKeys.has(pairKey);
                 const isSearchPathEdge = isSpStartEdge || isSpRootEdge || isSpEndEdge;
 
                 // Legacy trace_path-based detection (pair keys, fallback)
                 const isPathEdge = !isSearchPathEdge && pathEdgeKeys.has(edgePairKey(e.from, e.to));
                 const highlighted = connectedEdgeKeys.has(edgeTripleKey(e.from, e.to, e.patternIdx));
+
+                // Detect candidate edges: one endpoint is a pending/candidate node,
+                // and the edge is not already part of the confirmed search path.
+                const isCandidateEdge = !isSearchPathEdge && !isPathEdge &&
+                    candidateNodes.size > 0 &&
+                    (candidateNodes.has(e.from) || candidateNodes.has(e.to));
 
                 let r: number, g: number, b2: number, alpha: number, hlFlag: number;
                 if (isSpRootEdge) {
@@ -348,12 +362,12 @@ export function useOverlayRenderer(
                     r = SP_ROOT_EDGE_COLOR[0]; g = SP_ROOT_EDGE_COLOR[1]; b2 = SP_ROOT_EDGE_COLOR[2];
                     alpha = 0.95; hlFlag = 1;
                 } else if (isSpStartEdge) {
-                    // Orange for upward exploration
-                    r = SP_START_EDGE_COLOR[0]; g = SP_START_EDGE_COLOR[1]; b2 = SP_START_EDGE_COLOR[2];
+                    // Uniform teal for upward path (arrows in shader show direction)
+                    r = SP_PATH_EDGE_COLOR[0]; g = SP_PATH_EDGE_COLOR[1]; b2 = SP_PATH_EDGE_COLOR[2];
                     alpha = 0.9; hlFlag = 1;
                 } else if (isSpEndEdge) {
-                    // Cyan for downward comparison
-                    r = SP_END_EDGE_COLOR[0]; g = SP_END_EDGE_COLOR[1]; b2 = SP_END_EDGE_COLOR[2];
+                    // Uniform teal for downward path (arrows in shader show direction)
+                    r = SP_PATH_EDGE_COLOR[0]; g = SP_PATH_EDGE_COLOR[1]; b2 = SP_PATH_EDGE_COLOR[2];
                     alpha = 0.9; hlFlag = 1;
                 } else if (isPathEdge) {
                     r = PATH_EDGE_COLOR[0];
@@ -361,6 +375,13 @@ export function useOverlayRenderer(
                     b2 = PATH_EDGE_COLOR[2];
                     alpha = 0.9;
                     hlFlag = 1;
+                } else if (isCandidateEdge) {
+                    // Muted violet for candidate/pending edges – more transparent
+                    r = CANDIDATE_EDGE_COLOR[0];
+                    g = CANDIDATE_EDGE_COLOR[1];
+                    b2 = CANDIDATE_EDGE_COLOR[2];
+                    alpha = 0.30;
+                    hlFlag = 0;
                 } else if (inter.selectedIdx >= 0) {
                     const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
                     r = pc[0];
@@ -389,12 +410,13 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 8] = b2;
                 edgeDataBuf[off + 9] = alpha;
                 edgeDataBuf[off + 10] = hlFlag;
-                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path
+                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path, 6=candidate
                 edgeDataBuf[off + 11] = isSpStartEdge ? 2
                     : isSpRootEdge ? 3
                         : isSpEndEdge ? 4
                             : isPathEdge ? 5
-                                : 1;  // normal edge (energy beam)
+                                : isCandidateEdge ? 6
+                                    : 1;  // normal edge (energy beam)
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 

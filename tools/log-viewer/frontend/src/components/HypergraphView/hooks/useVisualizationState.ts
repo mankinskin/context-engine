@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'preact/hooks';
 import type { GraphOpEvent, LocationInfo, Transition, VizPathGraph } from '../../../types/generated';
-import { edgeTripleKey } from '../utils/math';
+import { edgePairKey } from '../utils/math';
 import { allNodeIndices } from '../../../search-path/reconstruction';
 
 export interface VisualizationState {
@@ -41,11 +41,11 @@ export interface VisualizationState {
     location: LocationInfo | null;
     /** Active search path graph (null when no search path data) */
     searchPath: VizPathGraph | null;
-    /** Edge triple keys for start_path edges (upward exploration) */
+    /** Edge pair keys for start_path edges (upward exploration) */
     searchStartEdgeKeys: Set<number>;
-    /** Edge triple key for the root edge (null if no root edge) */
+    /** Edge pair key for the root edge (null if no root edge) */
     searchRootEdgeKey: number | null;
-    /** Edge triple keys for end_path edges (downward comparison) */
+    /** Edge pair keys for end_path edges (downward comparison) */
     searchEndEdgeKeys: Set<number>;
 }
 
@@ -127,7 +127,7 @@ export function useVisualizationState(
         const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node : null;
         const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node : null;
 
-        // ── Search path edge key sets ──
+        // ── Search path edge key sets (pair keys — pattern_idx independent) ──
         const searchStartEdgeKeys = new Set<number>();
         const searchEndEdgeKeys = new Set<number>();
         let searchRootEdgeKey: number | null = null;
@@ -136,19 +136,18 @@ export function useVisualizationState(
             // Start edges point UP (from=child, to=parent), but layout edges
             // always go parent→child. Swap from/to to match layout direction.
             for (const e of sp.start_edges) {
-                searchStartEdgeKeys.add(edgeTripleKey(e.to, e.from, e.pattern_idx));
+                searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
             }
             if (sp.root_edge) {
                 // Root edge also points UP (from=start_path_top, to=root)
-                searchRootEdgeKey = edgeTripleKey(
+                searchRootEdgeKey = edgePairKey(
                     sp.root_edge.to,
                     sp.root_edge.from,
-                    sp.root_edge.pattern_idx,
                 );
             }
             // End edges already point DOWN (from=parent, to=child) — no swap needed
             for (const e of sp.end_edges) {
-                searchEndEdgeKeys.add(edgeTripleKey(e.from, e.to, e.pattern_idx));
+                searchEndEdgeKeys.add(edgePairKey(e.from, e.to));
             }
         }
 

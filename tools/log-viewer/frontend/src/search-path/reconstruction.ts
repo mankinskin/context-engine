@@ -59,7 +59,12 @@ export function applyTransition(
         throw new Error('PushParent before SetStartNode');
       }
       if (graph.root !== null) {
-        throw new Error('PushParent after SetRoot');
+        // Root already set — extend start path upward past the old root.
+        // Demote old root + its edge into start_path, then push the new parent.
+        graph.start_path.push(graph.root);
+        graph.start_edges.push(graph.root_edge!);
+        graph.root = null;
+        graph.root_edge = null;
       }
       graph.start_path.push(transition.parent);
       graph.start_edges.push(transition.edge);
