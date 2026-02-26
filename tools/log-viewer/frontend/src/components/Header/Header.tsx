@@ -16,7 +16,7 @@ import {
   clearSearch
 } from '../../store';
 import { showFilterPanel, resetFilterPanel } from '../FilterPanel/FilterPanel';
-import { gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
+import { fxEnabled } from '../WgpuOverlay/WgpuOverlay';
 
 export function Header() {
   const handleSearch = (e: Event) => {
@@ -67,11 +67,11 @@ export function Header() {
       <div class="header-right">
         <span class="status-text">{statusMessage.value}</span>
         <button
-          class={`btn btn-gpu ${gpuOverlayEnabled.value ? 'btn-active' : ''}`}
-          title={gpuOverlayEnabled.value ? 'Disable GPU overlay (WebGPU / wgpu WGSL shaders)' : 'Enable GPU overlay (WebGPU / wgpu WGSL shaders)'}
-          onClick={() => gpuOverlayEnabled.value = !gpuOverlayEnabled.value}
+          class={`btn btn-gpu ${fxEnabled.value ? 'btn-active' : ''}`}
+          title={fxEnabled.value ? 'Disable visual effects (particles, smoke, CRT)' : 'Enable visual effects (particles, smoke, CRT)'}
+          onClick={() => fxEnabled.value = !fxEnabled.value}
         >
-          {gpuOverlayEnabled.value ? '⬢' : '⬡'} GPU
+          {fxEnabled.value ? '✦' : '✧'} FX
         </button>
         <button class="btn" onClick={handleRefresh}><RefreshIcon size={12} /> Refresh</button>
       </div>

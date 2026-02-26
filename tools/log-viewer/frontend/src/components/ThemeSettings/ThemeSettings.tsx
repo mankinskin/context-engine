@@ -32,7 +32,7 @@ import {
   type ThemeColors,
   type SavedTheme,
 } from '../../store/theme';
-import { captureOverlayThumbnail } from '../WgpuOverlay/WgpuOverlay';
+import { captureOverlayThumbnail, gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
 import './theme-settings.css';
 
 // ── Color picker row ─────────────────────────────────────────────────────────
@@ -367,6 +367,28 @@ export function ThemeSettings() {
         <ColorRow label="INFO" description="Informational" colorKey="levelInfo" />
         <ColorRow label="WARN" description="Warnings" colorKey="levelWarn" />
         <ColorRow label="ERROR" description="Errors" colorKey="levelError" />
+      </Section>
+
+      {/* ── GPU Rendering ── */}
+      <Section title="GPU Rendering" icon="⬢">
+        <p class="theme-section-hint">
+          Controls the WebGPU rendering pipeline. When disabled, all GPU-accelerated
+          features are turned off including visual effects and 3D graph rendering.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable GPU</span>
+            <span class="theme-color-desc">Master switch for WebGPU rendering</span>
+          </div>
+          <label class="theme-toggle">
+            <input
+              type="checkbox"
+              checked={gpuOverlayEnabled.value}
+              onChange={(e) => gpuOverlayEnabled.value = (e.target as HTMLInputElement).checked}
+            />
+            <span class="theme-toggle-slider" />
+          </label>
+        </div>
       </Section>
 
       {/* ── Particle: Metal Sparks ── */}

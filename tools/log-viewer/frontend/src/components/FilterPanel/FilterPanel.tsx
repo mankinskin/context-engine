@@ -1,4 +1,5 @@
 import { signal, computed } from '@preact/signals';
+import { useRef, useCallback } from 'preact/hooks';
 import { 
   performJqQuery, 
   jqFilter,
@@ -248,7 +249,39 @@ function FileTreeItem({
   );
 }
 
+// Persisted panel height (null = auto/default)
+const panelHeight = signal<number | null>(null);
+
 export function FilterPanel() {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+
+  const onResizeStart = useCallback((e: MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    const startY = e.clientY;
+    const startHeight = panelRef.current?.offsetHeight ?? 200;
+
+    const onMouseMove = (ev: MouseEvent) => {
+      if (!isDragging.current) return;
+      const newHeight = Math.max(80, startHeight + (ev.clientY - startY));
+      panelHeight.value = newHeight;
+    };
+
+    const onMouseUp = () => {
+      isDragging.current = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, []);
+
   if (!showFilterPanel.value) return null;
 
   const applyFilter = (jq: string) => {
@@ -329,7 +362,11 @@ export function FilterPanel() {
   });
 
   return (
-    <div class="filter-panel">
+    <div
+      class="filter-panel"
+      ref={panelRef}
+      style={panelHeight.value != null ? { height: `${panelHeight.value}px`, maxHeight: 'none' } : undefined}
+    >
       <div class="filter-panel-header">
         <h3>🔍 Advanced Filters</h3>
         <button 
@@ -508,6 +545,7 @@ export function FilterPanel() {
           </div>
         )}
       </div>
+      <div class="filter-panel-resize-handle" onMouseDown={onResizeStart} />
     </div>
   );
 }

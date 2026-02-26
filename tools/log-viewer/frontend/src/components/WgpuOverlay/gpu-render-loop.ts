@@ -28,7 +28,7 @@ import {
     GLITTER_START, GLITTER_END,
     VIEW_ID,
 } from './element-types';
-import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale, getOverlayCameraPos } from './overlay-api';
+import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale, getOverlayCameraPos, fxEnabled } from './overlay-api';
 import { captureFrame } from './thumbnail-capture';
 import { effectSettings, themeColors, CURSOR_STYLE_VALUE } from '../../store/theme';
 import { activeTab } from '../../store';
@@ -237,23 +237,24 @@ export class RenderLoop {
 
         // --- Frame skip: avoid GPU work when scene is static ---------------
         const eff = effectSettings.value;
-        const particlesEnabled = eff.sparksEnabled || eff.embersEnabled
-            || eff.beamsEnabled || eff.glitterEnabled;
+        const fx = fxEnabled.value;
+        const particlesEnabled = fx && (eff.sparksEnabled || eff.embersEnabled
+            || eff.beamsEnabled || eff.glitterEnabled);
 
-        // "Minimal background" mode — smoke and grain both disabled
-        // In this mode, the shader uses a cheap gradient instead of noise.
-        const minimalBackground = (!eff.smokeEnabled || eff.smokeIntensity === 0)
-            && eff.grainIntensity === 0;
+        // "Minimal background" mode — smoke and grain both disabled (or FX off)
+        const minimalBackground = !fx || ((!eff.smokeEnabled || eff.smokeIntensity === 0)
+            && eff.grainIntensity === 0);
 
         // Time-dependent effects that require continuous rendering
-        const anyAnimated =
+        const anyAnimated = fx && (
             (eff.smokeEnabled && eff.smokeIntensity > 0)
             || (eff.crtEnabled && eff.crtFlicker > 0)
             || eff.cursorStyle !== 'default'
             || (hoverIdx >= 0 && (eff.cinderEnabled || particlesEnabled))
-            || (selectedIdx >= 0 && eff.beamsEnabled);
+            || (selectedIdx >= 0 && eff.beamsEnabled));
 
         // Input changes since last rendered frame
+        const hasOverlayCallbacks = getOverlayCallbacks().size > 0;
         const inputDirty =
             mx !== this.prevRenderMx || my !== this.prevRenderMy
             || this.canvas.width !== this.prevCanvasW
@@ -265,7 +266,9 @@ export class RenderLoop {
             || eff !== this.prevEffects
             || hasCaptureRequest();
 
-        if (!anyAnimated && !inputDirty) {
+        // Always render when overlay callbacks are registered (3D views need
+        // continuous frames for camera movement even when FX is off).
+        if (!anyAnimated && !inputDirty && !hasOverlayCallbacks) {
             this.animId = requestAnimationFrame(this.frame);
             return;
         }
@@ -318,46 +321,46 @@ export class RenderLoop {
         u[0] = time;
         u[1] = this.canvas.width;
         u[2] = this.canvas.height;
-        u[3] = count;
-        u[4] = mx;
-        u[5] = my;
+        u[3] = fx ? count : 0;  // zero element count when FX off — disables background effects
+        u[4] = fx ? mx : -9999;
+        u[5] = fx ? my : -9999;
         u[6] = dt;
-        u[7] = hoverIdx;
+        u[7] = fx ? hoverIdx : -1;
         u[8] = this.hoverStartTime;
-        u[9] = selectedIdx;
-        const crtOn = eff.crtEnabled;
+        u[9] = fx ? selectedIdx : -1;
+        const crtOn = fx && eff.crtEnabled;
         u[10] = crtOn ? eff.crtScanlinesH / 100 : 0.0;
         u[11] = crtOn ? eff.crtScanlinesV / 100 : 0.0;
         u[12] = crtOn ? eff.crtEdgeShadow / 100 : 0.0;
         u[13] = crtOn ? eff.crtFlicker / 100 : 0.0;
-        u[14] = CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0;
-        u[15] = eff.smokeEnabled ? eff.smokeIntensity / 100 : 0.0;
-        u[16] = eff.smokeEnabled ? eff.smokeSpeed / 100 : 0.0;
-        u[17] = eff.smokeEnabled ? eff.smokeWarmScale / 100 : 0.0;
-        u[18] = eff.smokeEnabled ? eff.smokeCoolScale / 100 : 0.0;
-        u[19] = eff.smokeEnabled ? eff.smokeMossScale / 100 : 0.0;
-        u[20] = eff.grainIntensity / 100;
-        u[21] = eff.grainCoarseness / 100;
-        u[22] = eff.grainSize / 100;
-        u[23] = eff.vignetteStrength / 100;
-        u[24] = eff.underglowStrength / 100;
-        u[25] = eff.sparksEnabled ? eff.sparkSpeed / 100 : 0.0;
-        u[26] = eff.embersEnabled ? eff.emberSpeed / 100 : 0.0;
-        u[27] = eff.beamsEnabled ? eff.beamSpeed / 100 : 0.0;
-        u[28] = eff.glitterEnabled ? eff.glitterSpeed / 100 : 0.0;
-        u[29] = eff.beamHeight;
-        u[30] = eff.beamCount;
-        u[31] = eff.beamDrift / 100;
+        u[14] = (fx && eff.cursorStyle !== 'default') ? (CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0) : 0;
+        u[15] = (fx && eff.smokeEnabled) ? eff.smokeIntensity / 100 : 0.0;
+        u[16] = (fx && eff.smokeEnabled) ? eff.smokeSpeed / 100 : 0.0;
+        u[17] = (fx && eff.smokeEnabled) ? eff.smokeWarmScale / 100 : 0.0;
+        u[18] = (fx && eff.smokeEnabled) ? eff.smokeCoolScale / 100 : 0.0;
+        u[19] = (fx && eff.smokeEnabled) ? eff.smokeMossScale / 100 : 0.0;
+        u[20] = fx ? eff.grainIntensity / 100 : 0.0;
+        u[21] = fx ? eff.grainCoarseness / 100 : 0.0;
+        u[22] = fx ? eff.grainSize / 100 : 0.0;
+        u[23] = fx ? eff.vignetteStrength / 100 : 0.0;
+        u[24] = fx ? eff.underglowStrength / 100 : 0.0;
+        u[25] = (fx && eff.sparksEnabled) ? eff.sparkSpeed / 100 : 0.0;
+        u[26] = (fx && eff.embersEnabled) ? eff.emberSpeed / 100 : 0.0;
+        u[27] = (fx && eff.beamsEnabled) ? eff.beamSpeed / 100 : 0.0;
+        u[28] = (fx && eff.glitterEnabled) ? eff.glitterSpeed / 100 : 0.0;
+        u[29] = fx ? eff.beamHeight : 0;
+        u[30] = fx ? eff.beamCount : 0;
+        u[31] = fx ? eff.beamDrift / 100 : 0;
         // Scroll delta (no longer merged with camera delta — 3D views don't need it)
         u[32] = scrollDelta.dx;
         u[33] = scrollDelta.dy;
-        u[34] = eff.sparksEnabled ? eff.sparkCount / 100 : 0.0;
-        u[35] = eff.sparksEnabled ? eff.sparkSize / 100 : 0.0;
-        u[36] = eff.embersEnabled ? eff.emberCount / 100 : 0.0;
-        u[37] = eff.embersEnabled ? eff.emberSize / 100 : 0.0;
-        u[38] = eff.glitterEnabled ? eff.glitterCount / 100 : 0.0;
-        u[39] = eff.glitterEnabled ? eff.glitterSize / 100 : 0.0;
-        u[40] = eff.cinderEnabled ? eff.cinderSize / 100 : 0.0;
+        u[34] = (fx && eff.sparksEnabled) ? eff.sparkCount / 100 : 0.0;
+        u[35] = (fx && eff.sparksEnabled) ? eff.sparkSize / 100 : 0.0;
+        u[36] = (fx && eff.embersEnabled) ? eff.emberCount / 100 : 0.0;
+        u[37] = (fx && eff.embersEnabled) ? eff.emberSize / 100 : 0.0;
+        u[38] = (fx && eff.glitterEnabled) ? eff.glitterCount / 100 : 0.0;
+        u[39] = (fx && eff.glitterEnabled) ? eff.glitterSize / 100 : 0.0;
+        u[40] = (fx && eff.cinderEnabled) ? eff.cinderSize / 100 : 0.0;
 
         // Particle projection — 3D views set these each frame in their
         // overlay callbacks (1-frame latency, imperceptible).

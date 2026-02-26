@@ -71,7 +71,7 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
             index: n.index,
             label: n.label,
             width: n.width,
-            isAtom: n.is_atom,
+            isAtom: n.width === 1,
             x: Math.cos(angle) * r * (0.5 + Math.random() * 0.5),
             y: (n.width - 1) * 0.8,
             z: Math.sin(angle) * r * (0.5 + Math.random() * 0.5),

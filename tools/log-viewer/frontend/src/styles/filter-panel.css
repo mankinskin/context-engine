@@ -1,9 +1,11 @@
 /* Filter Panel */
 
 .filter-panel {
+  position: relative;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   padding: 4px;
+  padding-bottom: 8px;
   overflow-y: auto;
   max-height: 50vh;
 }
@@ -173,4 +175,22 @@
   font-size: 17px;
   color: var(--accent-orange);
   word-break: break-all;
+}
+
+/* Resize handle at the bottom edge of the filter panel */
+.filter-panel-resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  cursor: ns-resize;
+  background: transparent;
+  z-index: 10;
+  transition: background 0.15s;
+}
+
+.filter-panel-resize-handle:hover,
+.filter-panel-resize-handle:active {
+  background: var(--accent-blue);
 }

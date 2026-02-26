@@ -19,6 +19,14 @@ import { signal } from '@preact/signals';
 export const gpuOverlayEnabled = signal(true);
 
 // ---------------------------------------------------------------------------
+// FX enabled toggle — controls visual effects (particles, background smoke,
+// CRT, element decorations, cursors) independently of the GPU pipeline.
+// When off, overlay callbacks (3D edges, grids) still render.
+// ---------------------------------------------------------------------------
+
+export const fxEnabled = signal(true);
+
+// ---------------------------------------------------------------------------
 // Shared GPU device + format for external renderers
 // ---------------------------------------------------------------------------
 

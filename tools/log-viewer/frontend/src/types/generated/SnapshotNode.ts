@@ -15,8 +15,5 @@ label: string,
 /**
  * Token width (1 for atoms, >1 for merged).
  */
-width: number, 
-/**
- * Whether this is a leaf atom vertex.
- */
-is_atom: boolean, };
+    width: number,
+};

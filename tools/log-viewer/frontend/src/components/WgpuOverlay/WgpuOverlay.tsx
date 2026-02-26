@@ -24,7 +24,7 @@ import { initGpu, type GpuPipelines } from './gpu-init';
 import { GpuBufferManager } from './gpu-buffers';
 import { ElementScanner } from './element-scanner';
 import { RenderLoop } from './gpu-render-loop';
-import { gpuOverlayEnabled, overlayGpu, setScanInvalidator, setParticleResetter } from './overlay-api';
+import { gpuOverlayEnabled, fxEnabled, overlayGpu, setScanInvalidator, setParticleResetter } from './overlay-api';
 
 // ---------------------------------------------------------------------------
 // Re-exports — preserve the public API surface so that external consumers
@@ -34,6 +34,7 @@ import { gpuOverlayEnabled, overlayGpu, setScanInvalidator, setParticleResetter 
 
 export {
     gpuOverlayEnabled,
+    fxEnabled,
     overlayGpu,
     captureOverlayThumbnail,
     registerOverlayRenderer,
@@ -89,16 +90,26 @@ export function WgpuOverlay() {
         return () => document.documentElement.classList.remove('gpu-active');
     }, [gpuOverlayEnabled.value]);
 
+    // --- toggle fx-active class on document root ---------------------------
+    useEffect(() => {
+        if (gpuOverlayEnabled.value && fxEnabled.value) {
+            document.documentElement.classList.add('fx-active');
+        } else {
+            document.documentElement.classList.remove('fx-active');
+        }
+        return () => document.documentElement.classList.remove('fx-active');
+    }, [gpuOverlayEnabled.value, fxEnabled.value]);
+
     // --- toggle custom-cursor class when GPU cursor is active ---------------
     useEffect(() => {
         const style = effectSettings.value.cursorStyle;
-        if (gpuOverlayEnabled.value && style !== 'default') {
+        if (gpuOverlayEnabled.value && fxEnabled.value && style !== 'default') {
             document.documentElement.classList.add('gpu-custom-cursor');
         } else {
             document.documentElement.classList.remove('gpu-custom-cursor');
         }
         return () => document.documentElement.classList.remove('gpu-custom-cursor');
-    }, [gpuOverlayEnabled.value, effectSettings.value.cursorStyle]);
+    }, [gpuOverlayEnabled.value, fxEnabled.value, effectSettings.value.cursorStyle]);
 
     // --- keep canvas sized to the viewport --------------------------------
     useEffect(() => {

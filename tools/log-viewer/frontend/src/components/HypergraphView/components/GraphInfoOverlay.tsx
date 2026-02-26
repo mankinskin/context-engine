@@ -21,7 +21,7 @@ export function GraphInfoOverlay({ snapshot }: GraphInfoOverlayProps) {
             </div>
             <div class="hg-row">
                 <span class="hg-label">Atoms</span>
-                <span class="hg-value">{snapshot.nodes.filter(n => n.is_atom).length}</span>
+                <span class="hg-value">{snapshot.nodes.filter(n => n.width === 1).length}</span>
             </div>
         </div>
     );
