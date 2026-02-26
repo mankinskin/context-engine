@@ -127,6 +127,13 @@ export function useVisualizationState(
         const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node : null;
         const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node : null;
 
+        // Include parent_candidates from parent_explore transitions in pendingParents.
+        // LocationInfo.pending_parents comes from the queue, but the queue may be empty
+        // by the time the event is emitted; the transition itself carries the canonical list.
+        if (trans?.kind === 'parent_explore') {
+            for (const n of trans.parent_candidates) pendingParents.add(n);
+        }
+
         // ── Search path edge key sets (pair keys — pattern_idx independent) ──
         const searchStartEdgeKeys = new Set<number>();
         const searchEndEdgeKeys = new Set<number>();
@@ -139,11 +146,12 @@ export function useVisualizationState(
                 searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
             }
             if (sp.root_edge) {
-                // Root edge also points UP (from=start_path_top, to=root)
-                searchRootEdgeKey = edgePairKey(
+                // Root edge is the top segment of the start path — treat it
+                // as a start-path edge so it keeps the directed arrow style.
+                searchStartEdgeKeys.add(edgePairKey(
                     sp.root_edge.to,
                     sp.root_edge.from,
-                );
+                ));
             }
             // End edges already point DOWN (from=parent, to=child) — no swap needed
             for (const e of sp.end_edges) {
@@ -229,14 +237,15 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isSelected = nodeIndex === selectedNode && !isStart;
     const isRoot = nodeIndex === rootNode;
 
-    // Search path node roles
+    // Search path node roles — all nodes in the search path get the same
+    // start-path or end-path highlight; sp-start/sp-root are additive badges.
     const spStartNode = searchPath?.start_node?.index ?? -1;
     const spRootNode = searchPath?.root?.index ?? -1;
     const isSpStart = nodeIndex === spStartNode;
-    const isSpRoot = nodeIndex === spRootNode && !isSpStart;
-    const isSpStartPath = !isSpStart && !isSpRoot &&
+    const isSpRoot = nodeIndex === spRootNode;
+    const isInStartPath = isSpStart || isSpRoot ||
         (searchPath?.start_path.some(n => n.index === nodeIndex) ?? false);
-    const isSpEndPath = !isSpStart && !isSpRoot &&
+    const isSpEndPath =
         (searchPath?.end_path.some(n => n.index === nodeIndex) ?? false);
     const isCandidateParent = nodeIndex === candidateParent;
     const isCandidateChild = nodeIndex === candidateChild;
@@ -253,7 +262,9 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isCompleted = completedNodes.has(nodeIndex) && !isStart && !isMatched && !isMismatched;
     const isPendingParent = pendingParents.has(nodeIndex) && !isCandidateParent;
     const isPendingChild = pendingChildren.has(nodeIndex) && !isCandidateChild;
-    const isDimmed = hasVizState && !involvedNodes.has(nodeIndex);
+    // Search path nodes are never dimmed — they are always "involved"
+    const isInSearchPath = isInStartPath || isSpEndPath;
+    const isDimmed = hasVizState && !involvedNodes.has(nodeIndex) && !isInSearchPath;
 
     return [
         isStart && 'viz-start',
@@ -269,7 +280,7 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
         isPendingChild && 'viz-pending-child',
         isSpStart && 'viz-sp-start',
         isSpRoot && 'viz-sp-root',
-        isSpStartPath && 'viz-sp-start-path',
+        isInStartPath && 'viz-sp-start-path',
         isSpEndPath && 'viz-sp-end-path',
         isDimmed && 'viz-dimmed',
     ]

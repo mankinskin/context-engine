@@ -148,6 +148,7 @@ struct EdgeVsOut {
     @location(1) edgeUV    : vec2<f32>,
     @location(2) flags     : f32,
     @location(3) edgeType  : f32,
+    @location(4) edgeLen   : f32,
 };
 
 // edgeType encoding:
@@ -169,6 +170,7 @@ fn vs_edge(
     @location(10) edgeType : f32,  // beam type
 ) -> EdgeVsOut {
     let dir = posB - posA;
+    let edgeLength = length(dir);
     let pos01 = quadPos.x * 0.5 + 0.5;  // 0..1 along line
     let center = mix(posA, posB, pos01);
 
@@ -203,19 +205,23 @@ fn vs_edge(
     out.edgeUV   = quadPos;
     out.flags    = flags;
     out.edgeType = edgeType;
+    out.edgeLen  = edgeLength;
     return out;
 }
 
 // ── Arrow helper: computes arrowhead intensity ──
 // arrowDir: 0.0 = arrow at A (low t), 1.0 = arrow at B (high t)
-fn arrowHead(t_in: f32, across: f32, arrowDir: f32) -> f32 {
+// edgeLen: world-space length of the edge, used for constant-size arrowheads
+fn arrowHead(t_in: f32, across: f32, arrowDir: f32, edgeLen: f32) -> f32 {
     // Flip t so the arrow always points toward high values
     let t_a = select(1.0 - t_in, t_in, arrowDir > 0.5);
 
-    // Arrow region: last 18% of the beam
-    let arrowStart = 0.82;
-    let inArrow = smoothstep(arrowStart - 0.02, arrowStart, t_a);
-    let arrowProgress = clamp((t_a - arrowStart) / (1.0 - arrowStart), 0.0, 1.0);
+    // Fixed world-space arrow length (~0.25 units), clamped to at most 40% of edge
+    let arrowFrac = clamp(0.25 / max(edgeLen, 0.01), 0.04, 0.40);
+    let arrowStart = 1.0 - arrowFrac;
+    let fadeWidth = arrowFrac * 0.1;  // soft transition at base
+    let inArrow = smoothstep(arrowStart - fadeWidth, arrowStart, t_a);
+    let arrowProgress = clamp((t_a - arrowStart) / arrowFrac, 0.0, 1.0);
 
     // Triangle shape: wide at base, narrows to point
     // across is 0..1 from centre; triangle boundary shrinks linearly
@@ -312,7 +318,7 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         intensity += core * flowPulse * 0.25;
         intensity += sourceGlow * innerGlow * 0.3;
         // Arrowhead at A end (arrowDir = 0.0)
-        let arrow = arrowHead(t, across, 0.0);
+        let arrow = arrowHead(t, across, 0.0, in.edgeLen);
         intensity += arrow * 0.8;
         hotCenter = vec3(0.85, 1.0, 1.0);
 
@@ -335,7 +341,7 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         intensity += core * flowPulse * 0.25;
         intensity += targetGlow * innerGlow * 0.3;
         // Arrowhead at B end (arrowDir = 1.0)
-        let arrow = arrowHead(t, across, 1.0);
+        let arrow = arrowHead(t, across, 1.0, in.edgeLen);
         intensity += arrow * 0.8;
         hotCenter = vec3(0.85, 1.0, 1.0);
 

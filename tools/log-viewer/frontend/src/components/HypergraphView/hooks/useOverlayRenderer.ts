@@ -189,6 +189,9 @@ export function useOverlayRenderer(
         const connectedSet = new Set<number>();
         const connectedEdgeKeys = new Set<number>();
         const pathEdgeKeys = new Set<number>();
+        // Persistent parent candidates — carried forward from parent_explore
+        // so that visit_parent and root_explore still show candidate edges.
+        let lastParentCandidates: number[] = [];
         let cachedPaletteColors: unknown = null;
         let cachedPaletteBuf: Float32Array | null = null;
 
@@ -278,6 +281,7 @@ export function useOverlayRenderer(
 
             // ── Position DOM nodes ──
             const nodeDivs = nodeLayer.children;
+            const curVizInvolved = vizStateRef.current.involvedNodes;
             for (let i = 0; i < curLayout.nodes.length && i < nodeDivs.length; i++) {
                 const n = curLayout.nodes[i]!;
                 const el = nodeDivs[i] as HTMLDivElement;
@@ -291,7 +295,11 @@ export function useOverlayRenderer(
                 }
                 el.style.display = '';
 
-                const dimmed = inter.selectedIdx >= 0 && !connectedSet.has(n.index);
+                // Dim nodes not connected to mouse-selected node, but never dim
+                // nodes that are part of the active visualization (search path etc.)
+                const dimmed = inter.selectedIdx >= 0
+                    && !connectedSet.has(n.index)
+                    && !curVizInvolved.has(n.index);
                 el.style.opacity = dimmed ? '0.15' : '1';
                 const zIdx = Math.round((1 - screen.z) * 1000);
                 el.style.zIndex = String(zIdx);
@@ -319,12 +327,28 @@ export function useOverlayRenderer(
             const hasSearchPath = spStartKeys.size > 0 || spRootKey !== null || spEndKeys.size > 0;
             const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
 
-            // Candidate node set (pending + current candidates)
+            // Track parent candidates across steps: parent_explore sets them,
+            // they persist through visit_parent / root_explore / match_advance,
+            // and reset on any other transition (new phase).
+            const trans = curVizState.transition;
+            if (trans?.kind === 'parent_explore') {
+                lastParentCandidates = trans.parent_candidates;
+            } else if (
+                trans?.kind !== 'visit_parent' &&
+                trans?.kind !== 'root_explore' &&
+                trans?.kind !== 'match_advance'
+            ) {
+                lastParentCandidates = [];
+            }
+
+            // Candidate node set (pending + current candidates + carried-forward)
             const candidateNodes = new Set<number>();
             if (curVizState.candidateParent != null) candidateNodes.add(curVizState.candidateParent);
             if (curVizState.candidateChild != null) candidateNodes.add(curVizState.candidateChild);
             for (const n of curVizState.pendingParents) candidateNodes.add(n);
             for (const n of curVizState.pendingChildren) candidateNodes.add(n);
+            // Include carried-forward parent candidates from last parent_explore.
+            for (const n of lastParentCandidates) candidateNodes.add(n);
 
             for (let i = 0; i < curLayout.edges.length; i++) {
                 const e = curLayout.edges[i]!;

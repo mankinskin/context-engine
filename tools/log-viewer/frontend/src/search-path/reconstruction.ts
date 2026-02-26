@@ -77,8 +77,20 @@ export function applyTransition(
       if (graph.root !== null) {
         throw new Error('SetRoot called twice');
       }
-      graph.root = transition.root;
-      graph.root_edge = transition.edge;
+      // If root matches the last start_path entry, pop it
+      // (the node is "graduating" from candidate to confirmed root).
+      // Use the popped edge as root_edge since it correctly connects
+      // the prior start_path node to this root.
+      if (graph.start_path.length > 0 &&
+        graph.start_path[graph.start_path.length - 1].index === transition.root.index) {
+        graph.start_path.pop();
+        const poppedEdge = graph.start_edges.pop();
+        graph.root = transition.root;
+        graph.root_edge = poppedEdge ?? transition.edge;
+      } else {
+        graph.root = transition.root;
+        graph.root_edge = transition.edge;
+      }
       break;
 
     case 'push_child':

@@ -779,32 +779,6 @@
    Search Path Styles — VizPathGraph-based node highlighting
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* -- Search path start node — bright cyan (same as viz-start) -- */
-.hg-node.viz-sp-start {
-    background: rgba(0, 180, 220, 0.3) !important;
-    border-color: rgba(0, 220, 255, 0.85) !important;
-    box-shadow:
-        0 0 12px rgba(0, 220, 255, 0.5),
-        0 0 24px rgba(0, 180, 220, 0.25);
-}
-
-/* -- Search path root — gold ring -- */
-.hg-node.viz-sp-root {
-    border-color: rgba(255, 200, 80, 0.85) !important;
-    box-shadow:
-        0 0 10px rgba(255, 200, 80, 0.5),
-        inset 0 0 8px rgba(255, 200, 80, 0.1);
-}
-
-.hg-node.viz-sp-root::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border: 2px solid rgba(255, 200, 80, 0.5);
-    border-radius: 8px;
-    pointer-events: none;
-}
-
 /* -- Start path nodes (upward exploration) — warm orange breadcrumb -- */
 .hg-node.viz-sp-start-path {
     background: rgba(240, 140, 40, 0.22) !important;
@@ -821,6 +795,32 @@
     box-shadow:
         0 0 10px rgba(80, 200, 255, 0.45),
         0 0 20px rgba(30, 170, 230, 0.2);
+}
+
+/* -- Search path start node — bright cyan, declared after start-path so it wins -- */
+.hg-node.viz-sp-start {
+    background: rgba(0, 180, 220, 0.3) !important;
+    border-color: rgba(0, 220, 255, 0.85) !important;
+    box-shadow:
+        0 0 12px rgba(0, 220, 255, 0.5),
+        0 0 24px rgba(0, 180, 220, 0.25);
+}
+
+/* -- Search path root — gold ring, declared after start-path so it wins -- */
+.hg-node.viz-sp-root {
+    border-color: rgba(255, 200, 80, 0.85) !important;
+    box-shadow:
+        0 0 10px rgba(255, 200, 80, 0.5),
+        inset 0 0 8px rgba(255, 200, 80, 0.1);
+}
+
+.hg-node.viz-sp-root::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid rgba(255, 200, 80, 0.5);
+    border-radius: 8px;
+    pointer-events: none;
 }
 
 /* ── Operation Timeline Phase Badges ── */

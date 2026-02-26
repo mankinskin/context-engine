@@ -282,6 +282,7 @@ export const activeSearchPath = computed((): VizPathGraph | null => {
   const limit = Math.min(step, group.events.length - 1);
   for (let i = 0; i <= limit; i++) {
     const pt = group.events[i]?.path_transition;
+    if (!pt) continue; // Skip informational events (no path change)
     try {
       applyTransition(graph, pt);
     } catch {

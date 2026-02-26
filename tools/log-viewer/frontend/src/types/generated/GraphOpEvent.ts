@@ -51,17 +51,18 @@ description: string,
  * Every graph-op event belongs to exactly one path. Multiple
  * concurrent operations in the same log are distinguished by this id.
  */
-    path_id: string, 
+path_id: string, 
 /**
  * Incremental path transition at this step.
  * Describes how the `(start_path, root, end_path)` triple changed.
+ * `None` for informational events (e.g., ParentExplore) that don't
+ * modify the search path state.
  */
-    path_transition: PathTransition, 
+path_transition: PathTransition | null, 
 /**
  * Full path graph snapshot AFTER applying the transition.
  * Redundant (can reconstruct from transitions in order), but included
  * for debugging and so the frontend can display the path without
  * reconstructing from history.
  */
-    path_graph: VizPathGraph,
-};
+path_graph: VizPathGraph, };

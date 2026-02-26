@@ -697,12 +697,12 @@
       {
         "kind": "set_root",
         "root": {
-          "index": 30,
-          "width": 8
+          "index": 20,
+          "width": 6
         },
         "edge": {
-          "from": 20,
-          "to": 30,
+          "from": 1,
+          "to": 20,
           "pattern_idx": 0,
           "sub_index": 0
         }
@@ -714,7 +714,7 @@
           "width": 1
         },
         "edge": {
-          "from": 30,
+          "from": 20,
           "to": 5,
           "pattern_idx": 0,
           "sub_index": 1
@@ -738,10 +738,6 @@
         {
           "index": 10,
           "width": 3
-        },
-        {
-          "index": 20,
-          "width": 6
         }
       ],
       "start_edges": [
@@ -750,21 +746,15 @@
           "to": 10,
           "pattern_idx": 0,
           "sub_index": 0
-        },
-        {
-          "from": 10,
-          "to": 20,
-          "pattern_idx": 0,
-          "sub_index": 0
         }
       ],
       "root": {
-        "index": 30,
-        "width": 8
+        "index": 20,
+        "width": 6
       },
       "root_edge": {
-        "from": 20,
-        "to": 30,
+        "from": 10,
+        "to": 20,
         "pattern_idx": 0,
         "sub_index": 0
       },
@@ -776,7 +766,7 @@
       ],
       "end_edges": [
         {
-          "from": 30,
+          "from": 20,
           "to": 5,
           "pattern_idx": 0,
           "sub_index": 1
