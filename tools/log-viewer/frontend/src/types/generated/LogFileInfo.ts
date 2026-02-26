@@ -15,4 +15,9 @@ has_search_ops: boolean,
 /**
  * Whether this log file contains insert operation events
  */
-has_insert_ops: boolean, };
+    has_insert_ops: boolean,
+    /**
+     * Whether this log file contains search path transitions (path_transition field)
+     */
+    has_search_paths: boolean,
+};

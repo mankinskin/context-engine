@@ -21,6 +21,8 @@ pub struct LogFileInfo {
     pub has_search_ops: bool,
     /// Whether this log file contains insert operation events
     pub has_insert_ops: bool,
+    /// Whether this log file contains search path transitions (path_transition field)
+    pub has_search_paths: bool,
 }
 
 /// Response for log content

@@ -1,8 +1,8 @@
 import { logFiles, currentFile, loadLogFile, isLoading } from '../../store';
 import { signal } from '@preact/signals';
 
-// Filter state: 'all' | 'graph' | 'search' | 'insert'
-const activeFilter = signal<'all' | 'graph' | 'search' | 'insert'>('all');
+// Filter state: 'all' | 'graph' | 'search' | 'insert' | 'paths'
+const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('all');
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -18,13 +18,16 @@ export function Sidebar() {
     ? logFiles.value.filter(f => f.has_graph_snapshot)
     : filter === 'search'
     ? logFiles.value.filter(f => f.has_search_ops)
+    : filter === 'paths'
+    ? logFiles.value.filter(f => f.has_search_paths)
     : logFiles.value.filter(f => f.has_insert_ops);
   
   const graphCount = logFiles.value.filter(f => f.has_graph_snapshot).length;
   const searchCount = logFiles.value.filter(f => f.has_search_ops).length;
   const insertCount = logFiles.value.filter(f => f.has_insert_ops).length;
+  const pathsCount = logFiles.value.filter(f => f.has_search_paths).length;
 
-  const toggleFilter = (newFilter: 'all' | 'graph' | 'search' | 'insert') => {
+  const toggleFilter = (newFilter: 'all' | 'graph' | 'search' | 'insert' | 'paths') => {
     activeFilter.value = activeFilter.value === newFilter ? 'all' : newFilter;
   };
 
@@ -75,6 +78,19 @@ export function Sidebar() {
             <span>Insert ({insertCount})</span>
           </button>
         )}
+        {pathsCount > 0 && (
+          <button
+            class={`sidebar-filter-btn filter-paths ${filter === 'paths' ? 'active' : ''}`}
+            onClick={() => toggleFilter('paths')}
+            title={filter === 'paths' ? 'Show all logs' : 'Show only logs with search paths'}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="21" x2="12" y2="8"/>
+              <polyline points="8 12 12 8 16 12"/>
+            </svg>
+            <span>Paths ({pathsCount})</span>
+          </button>
+        )}
       </div>
       
       <div class="file-list">
@@ -93,6 +109,7 @@ export function Sidebar() {
                 {file.has_graph_snapshot && <span class="graph-badge" title="Contains graph snapshot">⬡</span>}
                 {file.has_search_ops && <span class="search-badge" title="Contains search ops">🔍</span>}
                 {file.has_insert_ops && <span class="insert-badge" title="Contains insert ops">+</span>}
+                {file.has_search_paths && <span class="paths-badge" title="Contains search paths">⤴</span>}
                 {file.name}
               </div>
               <div class="file-meta">

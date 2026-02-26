@@ -603,6 +603,70 @@
     font-style: italic;
 }
 
+/* ── Node Group Styles (within path groups) ── */
+
+.search-state-panel .ssp-node-group {
+    border-left: 2px solid rgba(255, 255, 255, 0.06);
+    margin-left: 6px;
+}
+
+.search-state-panel .ssp-node-group.active-node-group {
+    border-left-color: rgba(80, 160, 255, 0.3);
+}
+
+.search-state-panel .ssp-node-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-family: var(--font-mono, monospace);
+}
+
+.search-state-panel .ssp-node-group-header:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-state-panel .ssp-node-group-chevron {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+    width: 10px;
+    text-align: center;
+}
+
+.search-state-panel .ssp-node-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(160, 210, 255, 0.8);
+    white-space: nowrap;
+}
+
+.search-state-panel .ssp-node-group-range {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.3);
+    flex: 1;
+    text-align: right;
+}
+
+.search-state-panel .ssp-node-group-count {
+    flex-shrink: 0;
+    padding: 0px 5px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-state-panel .ssp-node-group-items {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.search-state-panel .ssp-item.ssp-item-indented {
+    padding-left: 20px;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    Visualization State Styles — node highlighting for search/insert operations
    ══════════════════════════════════════════════════════════════════════════ */

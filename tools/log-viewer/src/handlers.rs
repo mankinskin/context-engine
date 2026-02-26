@@ -167,6 +167,11 @@ pub async fn list_logs(
                     .windows(br#""op_type": "insert""#.len())
                     .any(|w| w == br#""op_type": "insert""#);
 
+            // Detect search path transitions (path_transition field with actual content)
+            let has_search_paths = scan_bytes
+                .windows(b"path_transition".len())
+                .any(|w| w == b"path_transition");
+
             let file_info = LogFileInfo {
                 name: path.file_name().unwrap().to_string_lossy().to_string(),
                 size: metadata.as_ref().map_or(0, |m| m.len()),
@@ -179,6 +184,7 @@ pub async fn list_logs(
                 has_graph_snapshot,
                 has_search_ops,
                 has_insert_ops,
+                has_search_paths,
             };
             debug!(file = %file_info.name, size = file_info.size, "Found log file");
             logs.push(file_info);

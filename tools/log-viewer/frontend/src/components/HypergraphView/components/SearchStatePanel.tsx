@@ -2,10 +2,12 @@
  * SearchStatePanel - Floating panel for navigating algorithm steps.
  *
  * When path_id groups exist, displays each group as a collapsible section.
+ * Within each path group, consecutive steps on the same node are collapsed
+ * into a single row that can be expanded to show internal sub-steps.
  * Selecting a step reconstructs the path graph up to that point.
  * Falls back to a flat list for events without path_id.
  */
-import { useRef, useEffect, useState } from 'preact/hooks';
+import { useRef, useEffect, useState, useMemo } from 'preact/hooks';
 import {
     searchStates,
     activeSearchStep,
@@ -17,6 +19,7 @@ import {
     setActivePathStep,
     type PathGroup,
 } from '../../../store';
+import type { GraphOpEvent } from '../../../types/generated/GraphOpEvent';
 
 /**
  * Convert transition kind to display name.
@@ -57,6 +60,155 @@ function pathTransitionName(pt: { kind?: string } | null | undefined): string {
         .join(' ');
 }
 
+// ── Node grouping ──────────────────────────────────────────────────────
+
+/**
+ * A group of consecutive events that share the same `location.selected_node`.
+ */
+interface NodeGroup {
+    /** The shared node index, or null when events have no selected node. */
+    nodeIndex: number | null;
+    /** The events in this group (references into the parent PathGroup.events). */
+    events: GraphOpEvent[];
+    /** Indices of these events within the parent PathGroup.events array. */
+    stepIndices: number[];
+}
+
+/**
+ * Extract selected_node from an event.
+ */
+function selectedNode(ev: GraphOpEvent): number | null {
+    return ev.location?.selected_node ?? null;
+}
+
+/**
+ * Group a flat event list into consecutive runs sharing the same selected_node.
+ */
+function groupByNode(events: GraphOpEvent[]): NodeGroup[] {
+    if (events.length === 0) return [];
+    const groups: NodeGroup[] = [];
+    const first = events[0]!;
+    let cur: NodeGroup = { nodeIndex: selectedNode(first), events: [first], stepIndices: [0] };
+    for (let i = 1; i < events.length; i++) {
+        const ev = events[i]!;
+        const node = selectedNode(ev);
+        if (node === cur.nodeIndex) {
+            cur.events.push(ev);
+            cur.stepIndices.push(i);
+        } else {
+            groups.push(cur);
+            cur = { nodeIndex: node, events: [ev], stepIndices: [i] };
+        }
+    }
+    groups.push(cur);
+    return groups;
+}
+
+// ── Render a single event row ──────────────────────────────────────────
+
+function EventItem({
+    ev,
+    isActive,
+    onClick,
+    indented,
+}: {
+    ev: GraphOpEvent;
+    isActive: boolean;
+    onClick: () => void;
+    indented?: boolean;
+}) {
+    return (
+        <div
+            class={`ssp-item ${isActive ? 'active' : ''} ${indented ? 'ssp-item-indented' : ''}`}
+            onClick={onClick}
+        >
+            <span class="ssp-step">
+                {opTypeBadge(ev.op_type)}
+                {ev.step}
+            </span>
+            <div class="ssp-content">
+                <div class={`ssp-phase ${phaseClass(ev)}`}>
+                    {getTransitionName(ev)}
+                </div>
+                <div class="ssp-path-trans">
+                    ↳ {pathTransitionName(ev.path_transition)}
+                </div>
+                <div class="ssp-desc">{ev.description}</div>
+            </div>
+        </div>
+    );
+}
+
+// ── Node group row (collapsed / expanded) ──────────────────────────────
+
+function NodeGroupRow({
+    group,
+    currentStep,
+    onStepClick,
+    expandedNodes,
+    onToggle,
+}: {
+    group: NodeGroup;
+    currentStep: number;
+    onStepClick: (idx: number) => void;
+    expandedNodes: Set<number>;
+    onToggle: (firstIdx: number) => void;
+}) {
+    const firstIdx = group.stepIndices[0]!;
+    const containsActive = group.stepIndices.includes(currentStep);
+
+    // Single-event groups render directly — no collapse needed
+    if (group.events.length === 1) {
+        return (
+            <EventItem
+                ev={group.events[0]!}
+                isActive={currentStep === firstIdx}
+                onClick={() => onStepClick(firstIdx)}
+            />
+        );
+    }
+
+    const isExpanded = expandedNodes.has(firstIdx) || containsActive;
+    const firstEv = group.events[0]!;
+    const lastEv = group.events[group.events.length - 1]!;
+
+    return (
+        <div class={`ssp-node-group ${containsActive ? 'active-node-group' : ''}`}>
+            <div
+                class="ssp-node-group-header"
+                onClick={() => onToggle(firstIdx)}
+            >
+                <span class="ssp-node-group-chevron">{isExpanded ? '▾' : '▸'}</span>
+                <span class="ssp-node-group-label">
+                    node {group.nodeIndex ?? '?'}
+                </span>
+                <span class="ssp-node-group-range">
+                    {firstEv.step}–{lastEv.step}
+                </span>
+                <span class="ssp-node-group-count">{group.events.length}</span>
+            </div>
+            {isExpanded && (
+                <div class="ssp-node-group-items">
+                    {group.events.map((ev, i) => {
+                        const idx = group.stepIndices[i]!;
+                        return (
+                            <EventItem
+                                key={idx}
+                                ev={ev}
+                                isActive={currentStep === idx}
+                                onClick={() => onStepClick(idx)}
+                                indented
+                            />
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ── Path group section ─────────────────────────────────────────────────
+
 /**
  * A single path group section.
  */
@@ -65,6 +217,9 @@ function PathGroupSection({ group }: { group: PathGroup }) {
     const currentStep = activePathStep.value;
     const listRef = useRef<HTMLDivElement>(null);
     const [collapsed, setCollapsed] = useState(false);
+    const [expandedNodes, setExpandedNodes] = useState<Set<number>>(new Set());
+
+    const nodeGroups = useMemo(() => groupByNode(group.events), [group.events]);
 
     // Auto-scroll to active item
     useEffect(() => {
@@ -97,6 +252,18 @@ function PathGroupSection({ group }: { group: PathGroup }) {
         }
     };
 
+    const handleToggleNodeGroup = (firstIdx: number) => {
+        setExpandedNodes(prev => {
+            const next = new Set(prev);
+            if (next.has(firstIdx)) {
+                next.delete(firstIdx);
+            } else {
+                next.add(firstIdx);
+            }
+            return next;
+        });
+    };
+
     const handlePrev = () => {
         if (currentStep > 0) {
             handleStepClick(currentStep - 1);
@@ -124,26 +291,15 @@ function PathGroupSection({ group }: { group: PathGroup }) {
             {isActive && !collapsed && (
                 <>
                     <div ref={listRef} class="ssp-group-list">
-                        {group.events.map((ev, idx) => (
-                            <div
-                                key={idx}
-                                class={`ssp-item ${currentStep === idx ? 'active' : ''}`}
-                                onClick={() => handleStepClick(idx)}
-                            >
-                                <span class="ssp-step">
-                                    {opTypeBadge(ev.op_type)}
-                                    {ev.step}
-                                </span>
-                                <div class="ssp-content">
-                                    <div class={`ssp-phase ${phaseClass(ev)}`}>
-                                        {getTransitionName(ev)}
-                                    </div>
-                                    <div class="ssp-path-trans">
-                                            ↳ {pathTransitionName(ev.path_transition)}
-                                        </div>
-                                    <div class="ssp-desc">{ev.description}</div>
-                                </div>
-                            </div>
+                        {nodeGroups.map((ng, gi) => (
+                            <NodeGroupRow
+                                key={gi}
+                                group={ng}
+                                currentStep={currentStep}
+                                onStepClick={handleStepClick}
+                                expandedNodes={expandedNodes}
+                                onToggle={handleToggleNodeGroup}
+                            />
                         ))}
                     </div>
                     <div class="ssp-controls">
