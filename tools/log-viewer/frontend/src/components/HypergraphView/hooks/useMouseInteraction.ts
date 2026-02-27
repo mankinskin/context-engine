@@ -149,6 +149,10 @@ export function useMouseInteraction(
                             node.x = pt[0] + inter.dragOffset[0];
                             node.y = pt[1] + inter.dragOffset[1];
                             node.z = pt[2] + inter.dragOffset[2];
+                            // Sync target so lerp doesn't fight the drag
+                            node.tx = node.x;
+                            node.ty = node.y;
+                            node.tz = node.z;
                         }
                     }
                 }

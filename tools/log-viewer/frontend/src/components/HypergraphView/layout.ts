@@ -16,6 +16,12 @@ export interface LayoutNode {
     x: number;
     y: number;
     z: number;
+    /** Animation target X — lerp toward this each frame */
+    tx: number;
+    /** Animation target Y */
+    ty: number;
+    /** Animation target Z */
+    tz: number;
     vx: number;
     vy: number;
     vz: number;
@@ -29,6 +35,7 @@ export interface LayoutEdge {
     from: number;
     to: number;
     patternIdx: number;
+    subIndex: number;
 }
 
 export interface GraphLayout {
@@ -75,6 +82,7 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
             x: Math.cos(angle) * r * (0.5 + Math.random() * 0.5),
             y: (n.width - 1) * 0.8,
             z: Math.sin(angle) * r * (0.5 + Math.random() * 0.5),
+            tx: 0, ty: 0, tz: 0, // set after simulate
             vx: 0, vy: 0, vz: 0,
             radius: 0.15 + Math.min(n.width * 0.06, 0.3),
             color: widthColor(n.width, maxWidth),
@@ -93,7 +101,7 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
         const key = `${e.from}-${e.to}-${e.pattern_idx}`;
         if (!edgeSet.has(key)) {
             edgeSet.add(key);
-            edges.push({ from: e.from, to: e.to, patternIdx: e.pattern_idx });
+            edges.push({ from: e.from, to: e.to, patternIdx: e.pattern_idx, subIndex: e.sub_index });
         }
     }
 
@@ -108,7 +116,103 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
         for (const n of nodes) { n.x -= cx; n.z -= cz; }
     }
 
+    // Sync animation targets to initial positions
+    for (const n of nodes) { n.tx = n.x; n.ty = n.y; n.tz = n.z; }
+
     return { nodes, nodeMap, edges, maxWidth };
+}
+
+/**
+ * Compute focused-layout positions for a selected node.
+ * - Parents arranged above the selected node, grouped by width (smallest closest)
+ * - Children arranged below, each pattern_id on its own horizontal line
+ * Returns a map of node index → new {x, y, z} position.
+ */
+export function computeFocusedLayout(
+    layout: GraphLayout,
+    selectedIdx: number,
+): Map<number, { x: number; y: number; z: number }> | null {
+    const selected = layout.nodeMap.get(selectedIdx);
+    if (!selected) return null;
+
+    const SPACING_X = 1.8;
+    const SPACING_Y = 1.5;
+    const positions = new Map<number, { x: number; y: number; z: number }>();
+
+    // Selected node stays at its current target position
+    positions.set(selectedIdx, { x: selected.tx, y: selected.ty, z: selected.tz });
+
+    // ── Parents above ──
+    const parents = selected.parentIndices
+        .map(idx => layout.nodeMap.get(idx))
+        .filter((n): n is LayoutNode => n != null);
+
+    // Group parents by width, sort ascending (smaller width = closer to selected)
+    const parentsByWidth = new Map<number, LayoutNode[]>();
+    for (const p of parents) {
+        if (!parentsByWidth.has(p.width)) parentsByWidth.set(p.width, []);
+        parentsByWidth.get(p.width)!.push(p);
+    }
+
+    const sortedWidths = [...parentsByWidth.keys()].sort((a, b) => a - b);
+    for (let rowIdx = 0; rowIdx < sortedWidths.length; rowIdx++) {
+        const group = parentsByWidth.get(sortedWidths[rowIdx]!)!;
+        const y = selected.ty + (rowIdx + 1) * SPACING_Y;
+        const totalW = (group.length - 1) * SPACING_X;
+        const startX = selected.tx - totalW / 2;
+        for (let i = 0; i < group.length; i++) {
+            positions.set(group[i]!.index, {
+                x: startX + i * SPACING_X,
+                y,
+                z: selected.tz,
+            });
+        }
+    }
+
+    // ── Children below, grouped by patternIdx ──
+    // Each pattern is one valid decomposition of the selected node's string
+    // into smaller substrings. Show each decomposition as a tight horizontal
+    // row, ordered by sub_index (left-to-right reading order).
+    const childEdgesByPattern = new Map<number, { to: number; subIndex: number }[]>();
+    for (const e of layout.edges) {
+        if (e.from === selectedIdx) {
+            if (!childEdgesByPattern.has(e.patternIdx)) {
+                childEdgesByPattern.set(e.patternIdx, []);
+            }
+            childEdgesByPattern.get(e.patternIdx)!.push({ to: e.to, subIndex: e.subIndex });
+        }
+    }
+
+    const sortedPatterns = [...childEdgesByPattern.entries()].sort((a, b) => a[0] - b[0]);
+
+    // First pass: measure the widest pattern row so we can center-align all rows
+    let maxRowNodes = 0;
+    for (const [, children] of sortedPatterns) {
+        if (children.length > maxRowNodes) maxRowNodes = children.length;
+    }
+
+    // Place each pattern as a complete horizontal row.
+    // A child node that appears in multiple patterns gets positioned at its
+    // lowest (most recently placed) row — this is intentional: the last
+    // pattern wins, and earlier patterns may have "gaps" where that node
+    // animates down.  In practice shared children are uncommon.
+    for (let pi = 0; pi < sortedPatterns.length; pi++) {
+        const [, children] = sortedPatterns[pi]!;
+        children.sort((a, b) => a.subIndex - b.subIndex);
+        const y = selected.ty - (pi + 1) * SPACING_Y;
+        const totalW = (children.length - 1) * SPACING_X;
+        const startX = selected.tx - totalW / 2;
+        for (let ci = 0; ci < children.length; ci++) {
+            const childIdx = children[ci]!.to;
+            positions.set(childIdx, {
+                x: startX + ci * SPACING_X,
+                y,
+                z: selected.tz,
+            });
+        }
+    }
+
+    return positions;
 }
 
 function simulate(

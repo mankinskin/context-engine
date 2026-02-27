@@ -7,7 +7,7 @@
  * Selecting a step reconstructs the path graph up to that point.
  * Falls back to a flat list for events without path_id.
  */
-import { useRef, useEffect, useState, useMemo } from 'preact/hooks';
+import { useState, useMemo, useEffect } from 'preact/hooks';
 import {
     searchStates,
     activeSearchStep,
@@ -215,21 +215,10 @@ function NodeGroupRow({
 function PathGroupSection({ group }: { group: PathGroup }) {
     const isActive = activePathId.value === group.pathId;
     const currentStep = activePathStep.value;
-    const listRef = useRef<HTMLDivElement>(null);
     const [collapsed, setCollapsed] = useState(false);
     const [expandedNodes, setExpandedNodes] = useState<Set<number>>(new Set());
 
     const nodeGroups = useMemo(() => groupByNode(group.events), [group.events]);
-
-    // Auto-scroll to active item
-    useEffect(() => {
-        if (listRef.current && isActive && currentStep >= 0) {
-            const activeEl = listRef.current.querySelector('.ssp-item.active');
-            if (activeEl) {
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-    }, [isActive, currentStep]);
 
     const handleGroupClick = () => {
         if (isActive) {
@@ -290,7 +279,9 @@ function PathGroupSection({ group }: { group: PathGroup }) {
 
             {isActive && !collapsed && (
                 <>
-                    <div ref={listRef} class="ssp-group-list">
+                    <div
+                        class="ssp-group-list"
+                    >
                         {nodeGroups.map((ng, gi) => (
                             <NodeGroupRow
                                 key={gi}
@@ -325,16 +316,6 @@ function PathGroupSection({ group }: { group: PathGroup }) {
 function FlatStepList() {
     const states = searchStates.value;
     const currentStep = activeSearchStep.value;
-    const listRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (listRef.current && currentStep >= 0) {
-            const activeEl = listRef.current.querySelector('.ssp-item.active');
-            if (activeEl) {
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-    }, [currentStep]);
 
     const handlePrev = () => {
         if (currentStep > 0) setActiveSearchStep(currentStep - 1);
@@ -346,7 +327,9 @@ function FlatStepList() {
 
     return (
         <>
-            <div ref={listRef} class="ssp-list">
+            <div
+                class="ssp-list"
+            >
                 {states.map((state, idx) => (
                     <div
                         key={state.step}
@@ -389,6 +372,64 @@ export function SearchStatePanel() {
     const hasGroups = groups.length > 0;
     const totalSteps = states.length;
     const groupCount = groups.length;
+
+    // Window-level Up/Down navigation for search steps
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            const tag = (e.target as HTMLElement)?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            // Don't intercept if focus is on a list that handles its own arrows
+            const target = e.target as HTMLElement;
+            if (target.closest('.file-list, .log-entries')) return;
+
+            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+            e.preventDefault();
+
+            const delta = e.key === 'ArrowDown' ? 1 : -1;
+
+            if (hasGroups) {
+                // Navigate within the active path group
+                const activeGroup = groups.find(g => g.pathId === activePathId.value);
+                if (!activeGroup) {
+                    // No active group yet — activate the first one
+                    if (groups.length > 0) {
+                        setActivePathId(groups[0]!.pathId);
+                        setActivePathStep(0);
+                        const gi = groups[0]!.globalIndices[0];
+                        if (gi != null) setActiveSearchStep(gi);
+                    }
+                    return;
+                }
+                const cur = activePathStep.value;
+                const next = Math.max(0, Math.min(activeGroup.events.length - 1, cur + delta));
+                if (next !== cur) {
+                    setActivePathStep(next);
+                    const gi = activeGroup.globalIndices[next];
+                    if (gi != null) setActiveSearchStep(gi);
+                }
+            } else {
+                // Flat list navigation
+                const cur = activeSearchStep.value;
+                const next = Math.max(0, Math.min(states.length - 1, cur + delta));
+                if (next !== cur) {
+                    setActiveSearchStep(next);
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [states, groups, hasGroups]);
+
+    // Auto-scroll the active item into view
+    useEffect(() => {
+        const panel = document.querySelector('.search-state-panel');
+        if (!panel) return;
+        const activeEl = panel.querySelector('.ssp-item.active');
+        if (activeEl) {
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }, [activeSearchStep.value, activePathStep.value]);
 
     return (
         <div class="search-state-panel">

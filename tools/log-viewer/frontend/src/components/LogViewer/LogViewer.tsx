@@ -10,6 +10,7 @@ import {
 } from '../../store';
 import { LogEntryRow } from './LogEntryRow';
 import { ChevronDown, ChevronRight } from '../Icons';
+import { useListKeyboard, useScrollIntoView, focusedPanel } from '../../hooks';
 
 // Minimal folder icon
 function FolderIcon({ size = 32, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -32,6 +33,19 @@ export function LogViewer() {
   // Refs for header cells to sync scroll
   const headerCellRefs: { current: HTMLDivElement[] } = { current: [] };
   const scrollbarRef = { current: null as HTMLDivElement | null };
+
+  // Keyboard navigation for log entries
+  const entries = filteredEntries.value;
+  const selIndex = entries.findIndex(e => e.line_number === selectedEntry.value?.line_number);
+
+  const { containerRef: entriesRef, onKeyDown: entriesOnKeyDown } = useListKeyboard({
+    items: entries,
+    selectedIndex: selIndex,
+    onSelect: (i) => { const entry = entries[i]; if (entry) selectEntry(entry); },
+    onActivate: (i) => { const entry = entries[i]; if (entry) toggleExpanded(entry.line_number); },
+  });
+
+  useScrollIntoView(entriesRef, selIndex, '.log-entry-row');
   
   // Calculate max header content width
   useEffect(() => {
@@ -191,7 +205,17 @@ export function LogViewer() {
           style={{ left: `${headerColWidth}px` }}
           onMouseDown={handleResizeStart}
         />
-        <div class="log-entries" onMouseLeave={() => setHoveredSpanName(null)}>
+        <div
+          class={`log-entries ${focusedPanel.value === 'content' ? 'focused' : ''}`}
+          ref={entriesRef}
+          tabIndex={0}
+          onKeyDown={entriesOnKeyDown}
+          onMouseEnter={() => {
+            focusedPanel.value = 'content';
+            entriesRef.current?.focus({ preventScroll: true });
+          }}
+          onMouseLeave={() => setHoveredSpanName(null)}
+        >
           {filteredEntries.value.map((entry, index) => (
             <LogEntryRow
               key={entry.line_number}

@@ -2,6 +2,7 @@ import { activeTab, setTab, filteredEntries } from '../../store';
 import type { ViewTab } from '../../types';
 import { ListIcon } from '../Icons';
 import type { JSX } from 'preact';
+import { useListKeyboard, usePanelFocus, focusedPanel } from '../../hooks';
 
 // SVG icons for tabs
 function StatsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -74,14 +75,41 @@ const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
 ];
 
 export function TabBar() {
+  const selectedIndex = tabs.findIndex(t => t.id === activeTab.value);
+  const panelRef = usePanelFocus('tabs');
+
+  const { containerRef, onKeyDown } = useListKeyboard({
+    items: tabs,
+    selectedIndex,
+    onSelect: (i) => { const t = tabs[i]; if (t) setTab(t.id); },
+    onActivate: (i) => { const t = tabs[i]; if (t) setTab(t.id); },
+    orientation: 'horizontal',
+  });
+
+  const setRef = (el: HTMLDivElement | null) => {
+    containerRef.current = el;
+    panelRef.current = el;
+  };
+
   return (
     <div class="tab-bar">
-      <div class="tabs">
-        {tabs.map(tab => (
+      <div
+        class={`tabs ${focusedPanel.value === 'tabs' ? 'focused' : ''}`}
+        ref={setRef}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onMouseEnter={() => {
+          focusedPanel.value = 'tabs';
+          containerRef.current?.focus({ preventScroll: true });
+        }}
+      >
+        {tabs.map((tab, i) => (
           <button
             key={tab.id}
             class={`tab ${activeTab.value === tab.id ? 'active' : ''}`}
+            data-index={i}
             onClick={() => setTab(tab.id)}
+            tabIndex={-1}
           >
             <span class="tab-icon">{tab.icon()}</span>
             <span class="tab-label">{tab.label}</span>

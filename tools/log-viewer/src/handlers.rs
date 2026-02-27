@@ -191,8 +191,8 @@ pub async fn list_logs(
         }
     }
 
-    // Sort by modified time (newest first)
-    logs.sort_by(|a, b| b.modified.cmp(&a.modified));
+    // Sort by file name
+    logs.sort_by(|a, b| a.name.cmp(&b.name));
 
     info!(count = logs.len(), "Listed log files");
 

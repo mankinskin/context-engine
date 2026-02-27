@@ -224,7 +224,7 @@ impl LogServer {
             }
         }
 
-        logs.sort_by(|a, b| b.modified.cmp(&a.modified));
+        logs.sort_by(|a, b| a.name.cmp(&b.name));
         let json = serde_json::to_string_pretty(&logs).unwrap_or_default();
         Ok(CallToolResult::success(vec![Content::text(json)]))
     }

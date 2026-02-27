@@ -51,6 +51,10 @@ const SP_PATH_EDGE_COLOR: [number, number, number] = [0.25, 0.75, 1.0];  // unif
 const SP_ROOT_EDGE_COLOR: [number, number, number] = [1.0, 0.85, 0.3];   // gold for root edge
 const CANDIDATE_EDGE_COLOR: [number, number, number] = [0.55, 0.4, 0.8]; // muted violet for candidate edges
 
+// Parent/child edge colors for selection-mode highlighting
+const PARENT_EDGE_COLOR: [number, number, number] = [0.95, 0.65, 0.2];  // warm amber for parent edges
+const CHILD_EDGE_COLOR: [number, number, number] = [0.3, 0.7, 0.9];    // cool teal for child edges
+
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
  */
@@ -279,6 +283,15 @@ export function useOverlayRenderer(
                 }
             }
 
+            // ── Animate nodes toward targets ──
+            const lerpSpeed = 12; // exponential decay rate (higher = snappier)
+            const lerpFactor = 1 - Math.exp(-lerpSpeed * dt);
+            for (const n of curLayout.nodes) {
+                n.x += (n.tx - n.x) * lerpFactor;
+                n.y += (n.ty - n.y) * lerpFactor;
+                n.z += (n.tz - n.z) * lerpFactor;
+            }
+
             // ── Position DOM nodes ──
             const nodeDivs = nodeLayer.children;
             const curVizInvolved = vizStateRef.current.involvedNodes;
@@ -407,12 +420,22 @@ export function useOverlayRenderer(
                     alpha = 0.30;
                     hlFlag = 0;
                 } else if (inter.selectedIdx >= 0) {
-                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
-                    r = pc[0];
-                    g = pc[1];
-                    b2 = pc[2];
-                    alpha = highlighted ? 0.8 : 0.12;
-                    hlFlag = highlighted ? 1 : 0;
+                    if (highlighted) {
+                        // Differentiate parent vs child edges of selected node
+                        const isParentEdge = e.to === inter.selectedIdx;
+                        if (isParentEdge) {
+                            r = PARENT_EDGE_COLOR[0]; g = PARENT_EDGE_COLOR[1]; b2 = PARENT_EDGE_COLOR[2];
+                        } else {
+                            r = CHILD_EDGE_COLOR[0]; g = CHILD_EDGE_COLOR[1]; b2 = CHILD_EDGE_COLOR[2];
+                        }
+                        alpha = 0.85;
+                        hlFlag = 1;
+                    } else {
+                        const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
+                        r = pc[0]; g = pc[1]; b2 = pc[2];
+                        alpha = 0.12;
+                        hlFlag = 0;
+                    }
                 } else if (hasViz) {
                     const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
                     r = pc[0];

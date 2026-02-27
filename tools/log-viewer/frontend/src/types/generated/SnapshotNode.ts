@@ -15,5 +15,4 @@ label: string,
 /**
  * Token width (1 for atoms, >1 for merged).
  */
-    width: number,
-};
+width: number, };

@@ -12,9 +12,13 @@ import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
 import { activeTab, loadLogFiles } from './store';
 import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
+import { useGlobalKeyboard, usePanelFocus, focusedPanel } from './hooks';
 import './store/theme';  // initialize theme effects on startup
 
 export function App() {
+  useGlobalKeyboard();
+  const contentRef = usePanelFocus('content');
+
   useEffect(() => {
     loadLogFiles();
   }, []);
@@ -49,7 +53,11 @@ export function App() {
         <Sidebar />
         <main class="content">
           <TabBar />
-          <div class="view-container">
+          <div
+            class={`view-container ${focusedPanel.value === 'content' ? 'focused' : ''}`}
+            ref={(el: HTMLDivElement | null) => { contentRef.current = el; }}
+            tabIndex={-1}
+          >
             {renderContent()}
           </div>
         </main>

@@ -1,5 +1,6 @@
 import { logFiles, currentFile, loadLogFile, isLoading } from '../../store';
 import { signal } from '@preact/signals';
+import { useListKeyboard, useScrollIntoView, usePanelFocus, focusedPanel } from '../../hooks';
 
 // Filter state: 'all' | 'graph' | 'search' | 'insert' | 'paths'
 const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('all');
@@ -29,6 +30,36 @@ export function Sidebar() {
 
   const toggleFilter = (newFilter: 'all' | 'graph' | 'search' | 'insert' | 'paths') => {
     activeFilter.value = activeFilter.value === newFilter ? 'all' : newFilter;
+  };
+
+  // Keyboard navigation for the file list
+  const selectedIndex = files.findIndex(f => f.name === currentFile.value);
+  const panelRef = usePanelFocus('sidebar');
+
+  const { containerRef: listRef, onKeyDown } = useListKeyboard({
+    items: files,
+    selectedIndex,
+    onSelect: (i) => {
+      const file = files[i];
+      if (file) loadLogFile(file.name);
+    },
+    onActivate: (i) => {
+      const file = files[i];
+      if (file) loadLogFile(file.name);
+    },
+  });
+
+  useScrollIntoView(listRef, selectedIndex, '.file-item');
+
+  // Merge the two refs onto the file-list div
+  const setListRef = (el: HTMLDivElement | null) => {
+    listRef.current = el;
+    panelRef.current = el;
+  };
+
+  const handleMouseEnter = () => {
+    focusedPanel.value = 'sidebar';
+    listRef.current?.focus({ preventScroll: true });
   };
 
   return (
@@ -93,16 +124,23 @@ export function Sidebar() {
         )}
       </div>
       
-      <div class="file-list">
+      <div
+        class={`file-list ${focusedPanel.value === 'sidebar' ? 'focused' : ''}`}
+        ref={setListRef}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onMouseEnter={handleMouseEnter}
+      >
         {isLoading.value && logFiles.value.length === 0 ? (
           <p class="loading">Loading...</p>
         ) : files.length === 0 ? (
           <p class="placeholder">{filter !== 'all' ? `No logs with ${filter} data` : 'No log files found'}</p>
         ) : (
-          files.map(file => (
+          files.map((file, i) => (
             <div 
               key={file.name}
               class={`file-item ${file.name === currentFile.value ? 'active' : ''}`}
+              data-index={i}
               onClick={() => loadLogFile(file.name)}
             >
               <div class="file-name" title={file.name}>

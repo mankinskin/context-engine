@@ -12,7 +12,7 @@
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
 import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep } from '../../store';
 import './hypergraph.css';
-import { buildLayout, type GraphLayout } from './layout';
+import { buildLayout, computeFocusedLayout, type GraphLayout } from './layout';
 
 // Hooks
 import {
@@ -46,6 +46,7 @@ export function HypergraphView() {
     // Layout state
     const [layout, setLayout] = useState<GraphLayout | null>(null);
     const layoutRef = useRef<GraphLayout | null>(null);
+    const originalPositionsRef = useRef<Map<number, { x: number; y: number; z: number }> | null>(null);
 
     // Camera controller
     const camera = useCamera();
@@ -72,12 +73,58 @@ export function HypergraphView() {
         const newLayout = buildLayout(snapshot);
         layoutRef.current = newLayout;
         setLayout(newLayout);
+        originalPositionsRef.current = null; // Clear saved positions for fresh layout
         camera.resetForLayout(newLayout.nodes.length, newLayout.maxWidth);
         // Reset selection/hover since node indices may differ
         interRef.current.selectedIdx = -1;
         interRef.current.hoverIdx = -1;
         setSelectedIdx(-1);
     }, [snapshot, camera, setSelectedIdx]);
+
+    // ── Focused layout: set animation targets for connected nodes ──
+    useEffect(() => {
+        const curLayout = layoutRef.current;
+        if (!curLayout) return;
+
+        if (selectedIdx >= 0) {
+            // Save original positions on first selection
+            if (!originalPositionsRef.current) {
+                const saved = new Map<number, { x: number; y: number; z: number }>();
+                for (const n of curLayout.nodes) {
+                    saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+                }
+                originalPositionsRef.current = saved;
+            }
+
+            // Reset all targets to originals before recomputing
+            for (const n of curLayout.nodes) {
+                const orig = originalPositionsRef.current.get(n.index);
+                if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
+            }
+
+            // Compute focused layout and set as animation targets
+            const focusedPositions = computeFocusedLayout(curLayout, selectedIdx);
+            if (focusedPositions) {
+                for (const [idx, pos] of focusedPositions) {
+                    const node = curLayout.nodeMap.get(idx);
+                    if (node) {
+                        node.tx = pos.x;
+                        node.ty = pos.y;
+                        node.tz = pos.z;
+                    }
+                }
+            }
+        } else {
+            // Deselected — animate back to original positions
+            if (originalPositionsRef.current && curLayout) {
+                for (const n of curLayout.nodes) {
+                    const orig = originalPositionsRef.current.get(n.index);
+                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
+                }
+                originalPositionsRef.current = null;
+            }
+        }
+    }, [selectedIdx]);
 
     // Focus camera on primary node when search step changes
     useEffect(() => {
@@ -92,7 +139,7 @@ export function HypergraphView() {
         if (primaryNode != null) {
             const node = curLayout.nodeMap.get(primaryNode);
             if (node) {
-                camera.focusOn([node.x, node.y, node.z]);
+                camera.focusOn([node.tx, node.ty, node.tz]);
                 interRef.current.selectedIdx = primaryNode;
                 setSelectedIdx(primaryNode);
             }
@@ -108,7 +155,7 @@ export function HypergraphView() {
         if (!curLayout) return;
         const target = curLayout.nodeMap.get(nodeIndex);
         if (target) {
-            camera.focusOn([target.x, target.y, target.z]);
+            camera.focusOn([target.tx, target.ty, target.tz]);
             setSelectedIdx(nodeIndex);
         }
     }, [camera, setSelectedIdx]);
