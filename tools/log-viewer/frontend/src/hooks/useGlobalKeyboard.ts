@@ -47,7 +47,7 @@ export function useGlobalKeyboard() {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         // Skip if focus is inside a scrollable/interactive child that handles arrows
         const target = e.target as HTMLElement;
-        if (target.closest('.file-list, .log-entries, .ssp-list, .ssp-group-list')) return;
+          if (target.closest('.log-entries, .ssp-list, .ssp-group-list')) return;
 
         const idx = TAB_ORDER.indexOf(activeTab.value);
         if (idx < 0) return;

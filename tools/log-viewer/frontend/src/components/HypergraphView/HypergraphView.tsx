@@ -74,7 +74,7 @@ export function HypergraphView() {
         layoutRef.current = newLayout;
         setLayout(newLayout);
         originalPositionsRef.current = null; // Clear saved positions for fresh layout
-        camera.resetForLayout(newLayout.nodes.length, newLayout.maxWidth);
+        camera.resetForLayout(newLayout.nodes.length, newLayout.center);
         // Reset selection/hover since node indices may differ
         interRef.current.selectedIdx = -1;
         interRef.current.hoverIdx = -1;
@@ -114,6 +114,12 @@ export function HypergraphView() {
                     }
                 }
             }
+
+            // Focus camera on the selected node's new target position
+            const selNode = curLayout.nodeMap.get(selectedIdx);
+            if (selNode) {
+                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
+            }
         } else {
             // Deselected — animate back to original positions
             if (originalPositionsRef.current && curLayout) {
@@ -124,7 +130,7 @@ export function HypergraphView() {
                 originalPositionsRef.current = null;
             }
         }
-    }, [selectedIdx]);
+    }, [selectedIdx, camera]);
 
     // Focus camera on primary node when search step changes
     useEffect(() => {
@@ -139,7 +145,7 @@ export function HypergraphView() {
         if (primaryNode != null) {
             const node = curLayout.nodeMap.get(primaryNode);
             if (node) {
-                camera.focusOn([node.tx, node.ty, node.tz]);
+                // camera.focusOn is handled by the focused layout effect
                 interRef.current.selectedIdx = primaryNode;
                 setSelectedIdx(primaryNode);
             }
@@ -155,10 +161,10 @@ export function HypergraphView() {
         if (!curLayout) return;
         const target = curLayout.nodeMap.get(nodeIndex);
         if (target) {
-            camera.focusOn([target.tx, target.ty, target.tz]);
+            // camera.focusOn is handled by the focused layout effect
             setSelectedIdx(nodeIndex);
         }
-    }, [camera, setSelectedIdx]);
+    }, [setSelectedIdx]);
 
     // Empty state
     if (!snapshot) {

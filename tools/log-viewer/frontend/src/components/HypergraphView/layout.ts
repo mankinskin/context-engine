@@ -43,6 +43,8 @@ export interface GraphLayout {
     nodeMap: Map<number, LayoutNode>;
     edges: LayoutEdge[];
     maxWidth: number;
+    /** Center of mass of all nodes (for initial camera target) */
+    center: [number, number, number];
 }
 
 // ── Color palette (hue-based on node width) ──
@@ -119,7 +121,12 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
     // Sync animation targets to initial positions
     for (const n of nodes) { n.tx = n.x; n.ty = n.y; n.tz = n.z; }
 
-    return { nodes, nodeMap, edges, maxWidth };
+    // Compute center of mass
+    let cenX = 0, cenY = 0, cenZ = 0;
+    for (const n of nodes) { cenX += n.x; cenY += n.y; cenZ += n.z; }
+    if (nodes.length > 0) { cenX /= nodes.length; cenY /= nodes.length; cenZ /= nodes.length; }
+
+    return { nodes, nodeMap, edges, maxWidth, center: [cenX, cenY, cenZ] };
 }
 
 /**

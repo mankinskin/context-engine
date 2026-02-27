@@ -27,7 +27,7 @@ export interface CameraController {
     /** Cancel any active focus animation */
     cancelFocus: () => void;
     /** Reset camera to view a new layout */
-    resetForLayout: (nodeCount: number, maxWidth: number) => void;
+    resetForLayout: (nodeCount: number, center: [number, number, number]) => void;
 }
 
 /**
@@ -90,11 +90,10 @@ export function useCamera(): CameraController {
         stateRef.current.focusTarget = null;
     }, []);
 
-    const resetForLayout = useCallback((nodeCount: number, maxWidth: number) => {
+    const resetForLayout = useCallback((nodeCount: number, center: [number, number, number]) => {
         const c = stateRef.current;
         c.dist = Math.max(6, nodeCount * 0.5);
-        const targetY = (maxWidth - 1) * 0.75;
-        c.target = [0, targetY, 0];
+        c.target = [center[0], center[1], center[2]];
         c.focusTarget = null;
     }, []);
 
