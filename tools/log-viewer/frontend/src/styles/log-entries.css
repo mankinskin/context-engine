@@ -13,6 +13,7 @@
 
 .log-entry.selected {
   background: var(--bg-active);
+  box-shadow: inset 3px 0 0 var(--accent-blue);
 }
 
 /* Header Cell - contains scrollable header content */
