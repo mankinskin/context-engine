@@ -134,18 +134,49 @@ const SPACING_X = 1.8;
 const SPACING_Y = 1.5;
 
 /**
+ * Camera-relative axes for screen-oriented layout.
+ * `right` points rightward on screen, `up` points upward on screen.
+ * Each is a unit vector in world space.
+ */
+export interface CameraAxes {
+    right: [number, number, number];
+    up: [number, number, number];
+}
+
+/**
+ * Abstract 2D offset from the anchor node in screen-local coordinates.
+ * `dRight` = displacement along screen-right axis.
+ * `dUp`    = displacement along screen-up axis.
+ */
+export interface FocusedOffset {
+    dRight: number;
+    dUp: number;
+}
+
+/**
+ * Result of a focused layout computation.
+ * Contains the anchor node index and abstract 2D offsets for each affected node.
+ * To convert to world positions, project each offset using camera right/up vectors:
+ *   worldPos = anchorPos + dRight * cameraRight + dUp * cameraUp
+ */
+export interface FocusedLayoutOffsets {
+    anchorIdx: number;
+    offsets: Map<number, FocusedOffset>;
+}
+
+/**
  * Position children of a node below it, grouped by pattern.
  * Each pattern is one valid decomposition of the node's string into smaller
  * substrings. Each decomposition becomes a horizontal row ordered by sub_index.
- * Mutates the `positions` map. Returns the number of pattern rows placed.
+ * Offsets are in abstract 2D (dRight, dUp) relative to the anchor position.
+ * Mutates the `offsets` map. Returns the number of pattern rows placed.
  */
 function layoutChildrenBelow(
     layout: GraphLayout,
     parentIdx: number,
-    positions: Map<number, { x: number; y: number; z: number }>,
-    anchorX: number,
-    anchorY: number,
-    anchorZ: number,
+    offsets: Map<number, FocusedOffset>,
+    anchorRight: number,
+    anchorUp: number,
 ): number {
     const childEdgesByPattern = new Map<number, { to: number; subIndex: number }[]>();
     for (const e of layout.edges) {
@@ -162,12 +193,15 @@ function layoutChildrenBelow(
     for (let pi = 0; pi < sortedPatterns.length; pi++) {
         const [, children] = sortedPatterns[pi]!;
         children.sort((a, b) => a.subIndex - b.subIndex);
-        const y = anchorY - (pi + 1) * SPACING_Y;
+        const rowUp = anchorUp - (pi + 1) * SPACING_Y;
         const totalW = (children.length - 1) * SPACING_X;
-        const startX = anchorX - totalW / 2;
+        const halfW = totalW / 2;
         for (let ci = 0; ci < children.length; ci++) {
             const childIdx = children[ci]!.to;
-            positions.set(childIdx, { x: startX + ci * SPACING_X, y, z: anchorZ });
+            offsets.set(childIdx, {
+                dRight: anchorRight + ci * SPACING_X - halfW,
+                dUp: rowUp,
+            });
         }
     }
 
@@ -175,22 +209,25 @@ function layoutChildrenBelow(
 }
 
 /**
- * Compute focused-layout positions for a selected node.
+ * Compute focused-layout offsets for a selected node.
  * - Parents arranged above the selected node, grouped by width (smallest closest)
  * - Children arranged below, each pattern_id on its own horizontal line
- * Returns a map of node index → new {x, y, z} position.
+ *
+ * Returns abstract 2D offsets (dRight, dUp) from the anchor node.
+ * The caller projects these onto camera axes to get world positions:
+ *   worldPos = anchorWorldPos + dRight * cameraRight + dUp * cameraUp
  */
 export function computeFocusedLayout(
     layout: GraphLayout,
     selectedIdx: number,
-): Map<number, { x: number; y: number; z: number }> | null {
+): FocusedLayoutOffsets | null {
     const selected = layout.nodeMap.get(selectedIdx);
     if (!selected) return null;
 
-    const positions = new Map<number, { x: number; y: number; z: number }>();
+    const offsets = new Map<number, FocusedOffset>();
 
-    // Selected node stays at its current target position
-    positions.set(selectedIdx, { x: selected.tx, y: selected.ty, z: selected.tz });
+    // Anchor node has zero offset
+    offsets.set(selectedIdx, { dRight: 0, dUp: 0 });
 
     // ── Parents above ──
     const parents = selected.parentIndices
@@ -207,37 +244,38 @@ export function computeFocusedLayout(
     const sortedWidths = [...parentsByWidth.keys()].sort((a, b) => a - b);
     for (let rowIdx = 0; rowIdx < sortedWidths.length; rowIdx++) {
         const group = parentsByWidth.get(sortedWidths[rowIdx]!)!;
-        const y = selected.ty + (rowIdx + 1) * SPACING_Y;
+        const rowUp = (rowIdx + 1) * SPACING_Y;
         const totalW = (group.length - 1) * SPACING_X;
-        const startX = selected.tx - totalW / 2;
+        const halfW = totalW / 2;
         for (let i = 0; i < group.length; i++) {
-            positions.set(group[i]!.index, {
-                x: startX + i * SPACING_X,
-                y,
-                z: selected.tz,
+            offsets.set(group[i]!.index, {
+                dRight: i * SPACING_X - halfW,
+                dUp: rowUp,
             });
         }
     }
 
     // ── Children below, grouped by patternIdx ──
-    layoutChildrenBelow(layout, selectedIdx, positions, selected.tx, selected.ty, selected.tz);
+    layoutChildrenBelow(layout, selectedIdx, offsets, 0, 0);
 
-    return positions;
+    return { anchorIdx: selectedIdx, offsets };
 }
 
 /**
- * Compute search-path-aware layout positions.
+ * Compute search-path-aware layout offsets.
  * Anchors the layout on the search path ROOT (not the currently selected child),
  * then expands children hierarchically along the end_path chain.
  *
  * This keeps the root and start_path nodes stable while the user traverses
  * deeper into the end_path (child comparisons).
+ *
+ * Returns abstract 2D offsets (same format as computeFocusedLayout).
  */
 export function computeSearchPathLayout(
     layout: GraphLayout,
     searchPath: VizPathGraph,
     selectedIdx: number,
-): Map<number, { x: number; y: number; z: number }> | null {
+): FocusedLayoutOffsets | null {
     const root = searchPath.root;
     if (!root) {
         // No root set yet — fall back to regular focused layout
@@ -245,22 +283,18 @@ export function computeSearchPathLayout(
     }
 
     // Use the root as the anchor for the focused layout
-    const positions = computeFocusedLayout(layout, root.index);
-    if (!positions) return null;
+    const result = computeFocusedLayout(layout, root.index);
+    if (!result) return null;
+    const { offsets } = result;
 
     // Expand children for each node along the end_path chain.
-    // end_path is ordered root→leaf: end_path[0] is root's direct child,
-    // end_path[1] is end_path[0]'s child, etc.
-    // After computeFocusedLayout(root), end_path[0] is already positioned
-    // (it's one of root's children). We position end_path[0]'s children,
-    // which places end_path[1], then end_path[1]'s children, etc.
     for (const endNode of searchPath.end_path) {
-        const nodePos = positions.get(endNode.index);
-        if (!nodePos) continue;
+        const parentOff = offsets.get(endNode.index);
+        if (!parentOff) continue;
 
         layoutChildrenBelow(
-            layout, endNode.index, positions,
-            nodePos.x, nodePos.y, nodePos.z,
+            layout, endNode.index, offsets,
+            parentOff.dRight, parentOff.dUp,
         );
     }
 
@@ -269,17 +303,17 @@ export function computeSearchPathLayout(
     if (selectedIdx !== root.index) {
         const endPathIndices = new Set(searchPath.end_path.map(n => n.index));
         if (!endPathIndices.has(selectedIdx)) {
-            const selPos = positions.get(selectedIdx);
-            if (selPos) {
+            const selOff = offsets.get(selectedIdx);
+            if (selOff) {
                 layoutChildrenBelow(
-                    layout, selectedIdx, positions,
-                    selPos.x, selPos.y, selPos.z,
+                    layout, selectedIdx, offsets,
+                    selOff.dRight, selOff.dUp,
                 );
             }
         }
     }
 
-    return positions;
+    return { anchorIdx: root.index, offsets };
 }
 
 function simulate(

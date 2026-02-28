@@ -10,7 +10,6 @@ import type { GraphLayout } from '../layout';
 import type { CameraController } from './useCamera';
 import type { InteractionState } from './useMouseInteraction';
 import type { VisualizationState } from './useVisualizationState';
-import { selectHighlightMode } from '../../../store';
 import paletteWgsl from '../../../effects/palette.wgsl?raw';
 import shaderSource from '../hypergraph.wgsl?raw';
 import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../../effects/palette';
@@ -268,12 +267,10 @@ export function useOverlayRenderer(
             setOverlayWorldScale(worldScale);
 
             // ── Connected set for selection highlighting (reuse sets) ──
-            // Only compute when selectHighlightMode is enabled; otherwise
-            // clicking a node only focuses the camera without visual changes.
+            // Always compute — edge highlights and node dimming are always active.
             connectedSet.clear();
             connectedEdgeKeys.clear();
-            const selHighlight = selectHighlightMode.value;
-            if (selHighlight && inter.selectedIdx >= 0) {
+            if (inter.selectedIdx >= 0) {
                 connectedSet.add(inter.selectedIdx);
                 const sel = curLayout.nodeMap.get(inter.selectedIdx);
                 if (sel) {
@@ -314,9 +311,7 @@ export function useOverlayRenderer(
 
                 // Dim nodes not connected to mouse-selected node, but never dim
                 // nodes that are part of the active visualization (search path etc.)
-                // Only dim when selectHighlightMode is enabled.
-                const dimmed = selHighlight
-                    && inter.selectedIdx >= 0
+                const dimmed = inter.selectedIdx >= 0
                     && !connectedSet.has(n.index)
                     && !curVizInvolved.has(n.index);
                 el.style.opacity = dimmed ? '0.15' : '1';
@@ -425,7 +420,7 @@ export function useOverlayRenderer(
                     b2 = CANDIDATE_EDGE_COLOR[2];
                     alpha = 0.30;
                     hlFlag = 0;
-                } else if (selHighlight && inter.selectedIdx >= 0) {
+                } else if (inter.selectedIdx >= 0) {
                     if (highlighted) {
                         // Differentiate parent vs child edges of selected node
                         const isParentEdge = e.to === inter.selectedIdx;

@@ -28,6 +28,8 @@ export interface CameraController {
     cancelFocus: () => void;
     /** Reset camera to view a new layout */
     resetForLayout: (nodeCount: number, center: [number, number, number]) => void;
+    /** Get the camera's screen-space right and up axes in world coordinates */
+    getAxes: () => { right: [number, number, number]; up: [number, number, number] };
 }
 
 /**
@@ -97,6 +99,40 @@ export function useCamera(): CameraController {
         c.focusTarget = null;
     }, []);
 
+    /** Compute camera right and up axes from current yaw/pitch. */
+    const getAxes = useCallback((): { right: [number, number, number]; up: [number, number, number] } => {
+        const c = stateRef.current;
+        const cosY = Math.cos(c.yaw);
+        const sinY = Math.sin(c.yaw);
+        const cosP = Math.cos(c.pitch);
+        const sinP = Math.sin(c.pitch);
+
+        // Forward = target - camPos (normalized), but we derive from spherical coords:
+        // camPos offset = (cosP*sinY, sinP, cosP*cosY) * dist
+        // forward = -normalized(offset) = (-cosP*sinY, -sinP, -cosP*cosY)
+        // right = cross(forward, worldUp=[0,1,0]) normalized
+        // up = cross(right, forward) normalized
+        const fx = -cosP * sinY;
+        const fy = -sinP;
+        const fz = -cosP * cosY;
+
+        // right = cross(forward, worldUp=(0,1,0)) = (-fz, 0, fx)
+        let rx = -fz;
+        let ry = 0;
+        let rz = fx;
+        const rLen = Math.sqrt(rx * rx + ry * ry + rz * rz);
+        if (rLen > 1e-6) { rx /= rLen; ry /= rLen; rz /= rLen; }
+
+        // up = cross(right, forward)
+        let ux = ry * fz - rz * fy;
+        let uy = rz * fx - rx * fz;
+        let uz = rx * fy - ry * fx;
+        const uLen = Math.sqrt(ux * ux + uy * uy + uz * uz);
+        if (uLen > 1e-6) { ux /= uLen; uy /= uLen; uz /= uLen; }
+
+        return { right: [rx, ry, rz], up: [ux, uy, uz] };
+    }, []);
+
     return useMemo<CameraController>(
         () => ({
             stateRef,
@@ -105,7 +141,8 @@ export function useCamera(): CameraController {
             focusOn,
             cancelFocus,
             resetForLayout,
+            getAxes,
         }),
-        [stateRef, getCamPos, getViewProj, focusOn, cancelFocus, resetForLayout]
+        [stateRef, getCamPos, getViewProj, focusOn, cancelFocus, resetForLayout, getAxes]
     );
 }

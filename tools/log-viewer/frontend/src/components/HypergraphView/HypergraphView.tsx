@@ -12,7 +12,7 @@
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
 import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep, selectHighlightMode } from '../../store';
 import './hypergraph.css';
-import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout } from './layout';
+import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout, type CameraAxes, type FocusedLayoutOffsets } from './layout';
 
 // Hooks
 import {
@@ -85,63 +85,97 @@ export function HypergraphView() {
     // When a search path with a root is active, anchor layout on the root
     // so start_path nodes stay stable and children expand below the root.
     // Gated by selectHighlightMode — when off, clicking only focuses the camera.
+    //
+    // Two-phase approach for performance:
+    //   Phase 1 (once, on selection change): compute abstract 2D offsets
+    //   Phase 2 (per frame, cheap): project offsets using current camera axes
     const currentSearchPath = activeSearchPath.value;
     const highlightMode = selectHighlightMode.value;
+    const focusedOffsetsRef = useRef<FocusedLayoutOffsets | null>(null);
     useEffect(() => {
         const curLayout = layoutRef.current;
         if (!curLayout) return;
 
-        if (selectedIdx >= 0) {
-            if (highlightMode) {
-                // Save original positions on first selection
-                if (!originalPositionsRef.current) {
-                    const saved = new Map<number, { x: number; y: number; z: number }>();
+        if (selectedIdx >= 0 && highlightMode) {
+            // Save original positions on first selection
+            if (!originalPositionsRef.current) {
+                const saved = new Map<number, { x: number; y: number; z: number }>();
+                for (const n of curLayout.nodes) {
+                    saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+                }
+                originalPositionsRef.current = saved;
+            }
+
+            // Focus camera once on the selected node
+            const selNode = curLayout.nodeMap.get(selectedIdx);
+            if (selNode) {
+                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
+            }
+
+            // Phase 1: compute abstract 2D offsets (expensive, runs once)
+            let layoutResult: FocusedLayoutOffsets | null;
+            if (currentSearchPath?.root) {
+                layoutResult = computeSearchPathLayout(curLayout, currentSearchPath, selectedIdx);
+            } else {
+                layoutResult = computeFocusedLayout(curLayout, selectedIdx);
+            }
+            focusedOffsetsRef.current = layoutResult;
+
+            if (!layoutResult) return;
+
+            const { anchorIdx, offsets } = layoutResult;
+            const anchorOrig = originalPositionsRef.current.get(anchorIdx);
+            if (!anchorOrig) return;
+
+            // Phase 2: lightweight per-frame projection of offsets onto camera axes
+            let rafId: number;
+            const projectLayout = () => {
+                // Reset all targets to originals
+                const origPositions = originalPositionsRef.current;
+                if (origPositions) {
                     for (const n of curLayout.nodes) {
-                        saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+                        const orig = origPositions.get(n.index);
+                        if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
                     }
-                    originalPositionsRef.current = saved;
                 }
 
-                // Reset all targets to originals before recomputing
+                // Get current camera orientation
+                const axes: CameraAxes = camera.getAxes();
+                const [rx, ry, rz] = axes.right;
+                const [ux, uy, uz] = axes.up;
+
+                // Project each offset: worldPos = anchor + dRight * right + dUp * up
+                for (const [idx, off] of offsets) {
+                    const node = curLayout.nodeMap.get(idx);
+                    if (node) {
+                        node.tx = anchorOrig.x + off.dRight * rx + off.dUp * ux;
+                        node.ty = anchorOrig.y + off.dRight * ry + off.dUp * uy;
+                        node.tz = anchorOrig.z + off.dRight * rz + off.dUp * uz;
+                    }
+                }
+
+                rafId = requestAnimationFrame(projectLayout);
+            };
+
+            projectLayout();
+            return () => cancelAnimationFrame(rafId);
+        } else if (selectedIdx >= 0) {
+            // Focus-only mode: restore original positions and just pan camera
+            focusedOffsetsRef.current = null;
+            if (originalPositionsRef.current && curLayout) {
                 for (const n of curLayout.nodes) {
                     const orig = originalPositionsRef.current.get(n.index);
                     if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
                 }
-
-                // Use search-path-aware layout when a search path with a root is active;
-                // this anchors on the root and expands children hierarchically below it.
-                // Otherwise fall back to regular focused layout around the selected node.
-                let focusedPositions: Map<number, { x: number; y: number; z: number }> | null;
-                if (currentSearchPath?.root) {
-                    focusedPositions = computeSearchPathLayout(curLayout, currentSearchPath, selectedIdx);
-                } else {
-                    focusedPositions = computeFocusedLayout(curLayout, selectedIdx);
-                }
-                if (focusedPositions) {
-                    for (const [idx, pos] of focusedPositions) {
-                        const node = curLayout.nodeMap.get(idx);
-                        if (node) {
-                            node.tx = pos.x;
-                            node.ty = pos.y;
-                            node.tz = pos.z;
-                        }
-                    }
-                }
-
-                // Focus camera on the selected node's new target position
-                const selNode = curLayout.nodeMap.get(selectedIdx);
-                if (selNode) {
-                    camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
-                }
-            } else {
-                // Focus-only mode: just pan camera to the node, no layout changes
-                const selNode = curLayout.nodeMap.get(selectedIdx);
-                if (selNode) {
-                    camera.focusOn([selNode.x, selNode.y, selNode.z]);
-                }
+                originalPositionsRef.current = null;
+            }
+            const selNode = curLayout.nodeMap.get(selectedIdx);
+            if (selNode) {
+                camera.focusOn([selNode.x, selNode.y, selNode.z]);
             }
         } else {
             // Deselected — animate back to original positions
+            focusedOffsetsRef.current = null;
             if (originalPositionsRef.current && curLayout) {
                 for (const n of curLayout.nodes) {
                     const orig = originalPositionsRef.current.get(n.index);

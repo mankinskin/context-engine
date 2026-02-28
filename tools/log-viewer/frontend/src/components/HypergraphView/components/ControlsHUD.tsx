@@ -15,9 +15,9 @@ export function ControlsHUD() {
             <button
                 class={`hg-btn hg-toggle ${active ? 'hg-toggle-on' : ''}`}
                 onClick={() => { selectHighlightMode.value = !active; }}
-                title="When enabled, clicking a node highlights its neighborhood and reflows the layout. When disabled, clicking only pans the camera."
+                title="When enabled, clicking a node reflows the layout around it. When disabled, clicking only pans the camera."
             >
-                {active ? '🔗 Highlight ON' : '🔗 Highlight OFF'}
+                {active ? '📐 Layout ON' : '📐 Layout OFF'}
             </button>
         </div>
     );
