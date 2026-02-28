@@ -6,7 +6,7 @@
  * XZ positions computed via spring-electrical force simulation.
  */
 
-import type { HypergraphSnapshot, HypergraphNode, HypergraphEdge } from '../../types';
+import type { HypergraphSnapshot, HypergraphNode, HypergraphEdge, VizPathGraph } from '../../types';
 
 export interface LayoutNode {
     index: number;
@@ -129,6 +129,51 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
     return { nodes, nodeMap, edges, maxWidth, center: [cenX, cenY, cenZ] };
 }
 
+// ── Layout constants ──
+const SPACING_X = 1.8;
+const SPACING_Y = 1.5;
+
+/**
+ * Position children of a node below it, grouped by pattern.
+ * Each pattern is one valid decomposition of the node's string into smaller
+ * substrings. Each decomposition becomes a horizontal row ordered by sub_index.
+ * Mutates the `positions` map. Returns the number of pattern rows placed.
+ */
+function layoutChildrenBelow(
+    layout: GraphLayout,
+    parentIdx: number,
+    positions: Map<number, { x: number; y: number; z: number }>,
+    anchorX: number,
+    anchorY: number,
+    anchorZ: number,
+): number {
+    const childEdgesByPattern = new Map<number, { to: number; subIndex: number }[]>();
+    for (const e of layout.edges) {
+        if (e.from === parentIdx) {
+            if (!childEdgesByPattern.has(e.patternIdx)) {
+                childEdgesByPattern.set(e.patternIdx, []);
+            }
+            childEdgesByPattern.get(e.patternIdx)!.push({ to: e.to, subIndex: e.subIndex });
+        }
+    }
+
+    const sortedPatterns = [...childEdgesByPattern.entries()].sort((a, b) => a[0] - b[0]);
+
+    for (let pi = 0; pi < sortedPatterns.length; pi++) {
+        const [, children] = sortedPatterns[pi]!;
+        children.sort((a, b) => a.subIndex - b.subIndex);
+        const y = anchorY - (pi + 1) * SPACING_Y;
+        const totalW = (children.length - 1) * SPACING_X;
+        const startX = anchorX - totalW / 2;
+        for (let ci = 0; ci < children.length; ci++) {
+            const childIdx = children[ci]!.to;
+            positions.set(childIdx, { x: startX + ci * SPACING_X, y, z: anchorZ });
+        }
+    }
+
+    return sortedPatterns.length;
+}
+
 /**
  * Compute focused-layout positions for a selected node.
  * - Parents arranged above the selected node, grouped by width (smallest closest)
@@ -142,8 +187,6 @@ export function computeFocusedLayout(
     const selected = layout.nodeMap.get(selectedIdx);
     if (!selected) return null;
 
-    const SPACING_X = 1.8;
-    const SPACING_Y = 1.5;
     const positions = new Map<number, { x: number; y: number; z: number }>();
 
     // Selected node stays at its current target position
@@ -177,45 +220,62 @@ export function computeFocusedLayout(
     }
 
     // ── Children below, grouped by patternIdx ──
-    // Each pattern is one valid decomposition of the selected node's string
-    // into smaller substrings. Show each decomposition as a tight horizontal
-    // row, ordered by sub_index (left-to-right reading order).
-    const childEdgesByPattern = new Map<number, { to: number; subIndex: number }[]>();
-    for (const e of layout.edges) {
-        if (e.from === selectedIdx) {
-            if (!childEdgesByPattern.has(e.patternIdx)) {
-                childEdgesByPattern.set(e.patternIdx, []);
+    layoutChildrenBelow(layout, selectedIdx, positions, selected.tx, selected.ty, selected.tz);
+
+    return positions;
+}
+
+/**
+ * Compute search-path-aware layout positions.
+ * Anchors the layout on the search path ROOT (not the currently selected child),
+ * then expands children hierarchically along the end_path chain.
+ *
+ * This keeps the root and start_path nodes stable while the user traverses
+ * deeper into the end_path (child comparisons).
+ */
+export function computeSearchPathLayout(
+    layout: GraphLayout,
+    searchPath: VizPathGraph,
+    selectedIdx: number,
+): Map<number, { x: number; y: number; z: number }> | null {
+    const root = searchPath.root;
+    if (!root) {
+        // No root set yet — fall back to regular focused layout
+        return computeFocusedLayout(layout, selectedIdx);
+    }
+
+    // Use the root as the anchor for the focused layout
+    const positions = computeFocusedLayout(layout, root.index);
+    if (!positions) return null;
+
+    // Expand children for each node along the end_path chain.
+    // end_path is ordered root→leaf: end_path[0] is root's direct child,
+    // end_path[1] is end_path[0]'s child, etc.
+    // After computeFocusedLayout(root), end_path[0] is already positioned
+    // (it's one of root's children). We position end_path[0]'s children,
+    // which places end_path[1], then end_path[1]'s children, etc.
+    for (const endNode of searchPath.end_path) {
+        const nodePos = positions.get(endNode.index);
+        if (!nodePos) continue;
+
+        layoutChildrenBelow(
+            layout, endNode.index, positions,
+            nodePos.x, nodePos.y, nodePos.z,
+        );
+    }
+
+    // If the selected node is not root and not in end_path,
+    // also expand its children (e.g. manual selection within the view)
+    if (selectedIdx !== root.index) {
+        const endPathIndices = new Set(searchPath.end_path.map(n => n.index));
+        if (!endPathIndices.has(selectedIdx)) {
+            const selPos = positions.get(selectedIdx);
+            if (selPos) {
+                layoutChildrenBelow(
+                    layout, selectedIdx, positions,
+                    selPos.x, selPos.y, selPos.z,
+                );
             }
-            childEdgesByPattern.get(e.patternIdx)!.push({ to: e.to, subIndex: e.subIndex });
-        }
-    }
-
-    const sortedPatterns = [...childEdgesByPattern.entries()].sort((a, b) => a[0] - b[0]);
-
-    // First pass: measure the widest pattern row so we can center-align all rows
-    let maxRowNodes = 0;
-    for (const [, children] of sortedPatterns) {
-        if (children.length > maxRowNodes) maxRowNodes = children.length;
-    }
-
-    // Place each pattern as a complete horizontal row.
-    // A child node that appears in multiple patterns gets positioned at its
-    // lowest (most recently placed) row — this is intentional: the last
-    // pattern wins, and earlier patterns may have "gaps" where that node
-    // animates down.  In practice shared children are uncommon.
-    for (let pi = 0; pi < sortedPatterns.length; pi++) {
-        const [, children] = sortedPatterns[pi]!;
-        children.sort((a, b) => a.subIndex - b.subIndex);
-        const y = selected.ty - (pi + 1) * SPACING_Y;
-        const totalW = (children.length - 1) * SPACING_X;
-        const startX = selected.tx - totalW / 2;
-        for (let ci = 0; ci < children.length; ci++) {
-            const childIdx = children[ci]!.to;
-            positions.set(childIdx, {
-                x: startX + ci * SPACING_X,
-                y,
-                z: selected.tz,
-            });
         }
     }
 
@@ -233,7 +293,14 @@ function simulate(
     const springLen = 0.9;
     const damping = 0.85;
     const ySpringK = 0.1;
+    const gravity = 0.05;
     const dt = 0.4;
+    // Minimum repulsion distance (prevents near-zero denominators from
+    // producing enormous forces that fling nodes to extreme positions).
+    const minRepulsionDist = 0.3;
+    // Maximum velocity per axis per iteration — prevents a single unlucky
+    // close encounter from launching a node far away from the cluster.
+    const maxVelocity = 3.0;
 
     for (let iter = 0; iter < iterations; iter++) {
         const temp = 1.0 - iter / iterations;
@@ -247,6 +314,8 @@ function simulate(
                 let dz = a.z - b.z;
                 let dist = Math.sqrt(dx * dx + dz * dz);
                 if (dist < 0.01) { dx = Math.random() - 0.5; dz = Math.random() - 0.5; dist = 0.5; }
+                // Clamp distance to prevent explosion when nodes are very close
+                if (dist < minRepulsionDist) dist = minRepulsionDist;
                 const force = repulsion / (dist * dist) * temp;
                 const fx = (dx / dist) * force;
                 const fz = (dz / dist) * force;
@@ -277,9 +346,27 @@ function simulate(
             n.vy += (targetY - n.y) * ySpringK;
         }
 
-        // Integrate
+        // Center gravity (prevents disconnected components from drifting apart)
+        if (nodes.length > 1) {
+            let cx = 0, cz = 0;
+            for (const n of nodes) { cx += n.x; cz += n.z; }
+            cx /= nodes.length; cz /= nodes.length;
+            for (const n of nodes) {
+                n.vx -= (n.x - cx) * gravity * temp;
+                n.vz -= (n.z - cz) * gravity * temp;
+            }
+        }
+
+        // Integrate with velocity capping
         for (const n of nodes) {
             n.vx *= damping; n.vy *= damping; n.vz *= damping;
+            // Clamp velocity to prevent outlier nodes
+            if (n.vx > maxVelocity) n.vx = maxVelocity;
+            else if (n.vx < -maxVelocity) n.vx = -maxVelocity;
+            if (n.vy > maxVelocity) n.vy = maxVelocity;
+            else if (n.vy < -maxVelocity) n.vy = -maxVelocity;
+            if (n.vz > maxVelocity) n.vz = maxVelocity;
+            else if (n.vz < -maxVelocity) n.vz = -maxVelocity;
             n.x += n.vx * dt;
             n.y += n.vy * dt;
             n.z += n.vz * dt;

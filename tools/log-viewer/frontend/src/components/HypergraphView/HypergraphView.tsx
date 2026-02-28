@@ -10,9 +10,9 @@
  * through the overlay render callback system.
  */
 import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
-import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep } from '../../store';
+import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep, selectHighlightMode } from '../../store';
 import './hypergraph.css';
-import { buildLayout, computeFocusedLayout, type GraphLayout } from './layout';
+import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout } from './layout';
 
 // Hooks
 import {
@@ -82,43 +82,63 @@ export function HypergraphView() {
     }, [snapshot, camera, setSelectedIdx]);
 
     // ── Focused layout: set animation targets for connected nodes ──
+    // When a search path with a root is active, anchor layout on the root
+    // so start_path nodes stay stable and children expand below the root.
+    // Gated by selectHighlightMode — when off, clicking only focuses the camera.
+    const currentSearchPath = activeSearchPath.value;
+    const highlightMode = selectHighlightMode.value;
     useEffect(() => {
         const curLayout = layoutRef.current;
         if (!curLayout) return;
 
         if (selectedIdx >= 0) {
-            // Save original positions on first selection
-            if (!originalPositionsRef.current) {
-                const saved = new Map<number, { x: number; y: number; z: number }>();
-                for (const n of curLayout.nodes) {
-                    saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+            if (highlightMode) {
+                // Save original positions on first selection
+                if (!originalPositionsRef.current) {
+                    const saved = new Map<number, { x: number; y: number; z: number }>();
+                    for (const n of curLayout.nodes) {
+                        saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+                    }
+                    originalPositionsRef.current = saved;
                 }
-                originalPositionsRef.current = saved;
-            }
 
-            // Reset all targets to originals before recomputing
-            for (const n of curLayout.nodes) {
-                const orig = originalPositionsRef.current.get(n.index);
-                if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
-            }
+                // Reset all targets to originals before recomputing
+                for (const n of curLayout.nodes) {
+                    const orig = originalPositionsRef.current.get(n.index);
+                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
+                }
 
-            // Compute focused layout and set as animation targets
-            const focusedPositions = computeFocusedLayout(curLayout, selectedIdx);
-            if (focusedPositions) {
-                for (const [idx, pos] of focusedPositions) {
-                    const node = curLayout.nodeMap.get(idx);
-                    if (node) {
-                        node.tx = pos.x;
-                        node.ty = pos.y;
-                        node.tz = pos.z;
+                // Use search-path-aware layout when a search path with a root is active;
+                // this anchors on the root and expands children hierarchically below it.
+                // Otherwise fall back to regular focused layout around the selected node.
+                let focusedPositions: Map<number, { x: number; y: number; z: number }> | null;
+                if (currentSearchPath?.root) {
+                    focusedPositions = computeSearchPathLayout(curLayout, currentSearchPath, selectedIdx);
+                } else {
+                    focusedPositions = computeFocusedLayout(curLayout, selectedIdx);
+                }
+                if (focusedPositions) {
+                    for (const [idx, pos] of focusedPositions) {
+                        const node = curLayout.nodeMap.get(idx);
+                        if (node) {
+                            node.tx = pos.x;
+                            node.ty = pos.y;
+                            node.tz = pos.z;
+                        }
                     }
                 }
-            }
 
-            // Focus camera on the selected node's new target position
-            const selNode = curLayout.nodeMap.get(selectedIdx);
-            if (selNode) {
-                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
+                // Focus camera on the selected node's new target position
+                const selNode = curLayout.nodeMap.get(selectedIdx);
+                if (selNode) {
+                    camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
+                }
+            } else {
+                // Focus-only mode: just pan camera to the node, no layout changes
+                const selNode = curLayout.nodeMap.get(selectedIdx);
+                if (selNode) {
+                    camera.focusOn([selNode.x, selNode.y, selNode.z]);
+                }
             }
         } else {
             // Deselected — animate back to original positions
@@ -130,7 +150,7 @@ export function HypergraphView() {
                 originalPositionsRef.current = null;
             }
         }
-    }, [selectedIdx, camera]);
+    }, [selectedIdx, camera, currentSearchPath, highlightMode]);
 
     // Focus camera on primary node when search step changes
     useEffect(() => {

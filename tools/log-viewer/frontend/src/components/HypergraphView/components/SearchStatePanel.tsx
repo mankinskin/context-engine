@@ -75,10 +75,22 @@ interface NodeGroup {
 }
 
 /**
- * Extract selected_node from an event.
+ * Extract the node that an event should be grouped under.
+ *
+ * - `visit_parent` steps are grouped with the parent being visited (`to`).
+ * - `visit_child` steps are grouped with the child being visited (`to`).
+ * - All other transitions use `location.selected_node`.
  */
 function selectedNode(ev: GraphOpEvent): number | null {
-    return ev.location?.selected_node ?? null;
+    const t = ev.transition;
+    if (!t) return ev.location?.selected_node ?? null;
+    switch (t.kind) {
+        case 'visit_parent':
+        case 'visit_child':
+            return t.to;
+        default:
+            return ev.location?.selected_node ?? null;
+    }
 }
 
 /**

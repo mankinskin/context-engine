@@ -146,12 +146,12 @@ export function useVisualizationState(
                 searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
             }
             if (sp.root_edge) {
-                // Root edge is the top segment of the start path — treat it
-                // as a start-path edge so it keeps the directed arrow style.
-                searchStartEdgeKeys.add(edgePairKey(
+                // Root edge connects top of start_path to root — give it
+                // the distinct gold highlight via searchRootEdgeKey.
+                searchRootEdgeKey = edgePairKey(
                     sp.root_edge.to,
                     sp.root_edge.from,
-                ));
+                );
             }
             // End edges already point DOWN (from=parent, to=child) — no swap needed
             for (const e of sp.end_edges) {
