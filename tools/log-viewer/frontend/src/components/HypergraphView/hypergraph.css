@@ -169,7 +169,7 @@
 
 .hypergraph-info {
     position: absolute;
-    top: 12px;
+    bottom: 12px;
     left: 12px;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -180,6 +180,7 @@
     font-family: var(--font-mono, monospace);
     pointer-events: none;
     min-width: 140px;
+    z-index: 20;
 }
 
 /* ── Selected Node Info Panel (right side) ── */
@@ -1351,7 +1352,7 @@
 
 .qp-panel {
     position: absolute;
-    bottom: 14px;
+    bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 30;
