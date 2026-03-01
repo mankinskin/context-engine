@@ -26,12 +26,14 @@ import {
 // Components
 import {
     SearchStatePanel,
+    InsertStatePanel,
     NodeInfoPanel,
     GraphInfoOverlay,
     NodeTooltip,
     ControlsHUD,
     NodeLayer,
     PathChainPanel,
+    QueryPathPanel,
 } from './components';
 
 /**
@@ -272,8 +274,14 @@ export function HypergraphView() {
             {/* Search State Panel - floating list of algorithm steps */}
             <SearchStatePanel />
 
+            {/* Insert State Panel - details for insert operations */}
+            <InsertStatePanel />
+
             {/* Path Chain Panel - breadcrumb of current search path */}
             <PathChainPanel onFocusNode={handleFocusNode} />
+
+            {/* Query Path Panel - input pattern token strip with cursor */}
+            <QueryPathPanel />
 
             {/* Tooltip */}
             <NodeTooltip tooltip={tooltip} />

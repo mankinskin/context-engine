@@ -568,6 +568,26 @@
     background: rgba(80, 160, 255, 0.04);
 }
 
+/* Insert path groups — warm orange accent instead of blue */
+.search-state-panel .ssp-path-group.ssp-op-insert {
+    border-left: 2px solid rgba(255, 140, 50, 0.4);
+}
+
+.search-state-panel .ssp-path-group.ssp-op-insert.active-group {
+    background: rgba(255, 140, 50, 0.06);
+    border-left-color: rgba(255, 160, 80, 0.7);
+}
+
+/* Read path groups — subtle blue-grey accent */
+.search-state-panel .ssp-path-group.ssp-op-read {
+    border-left: 2px solid rgba(140, 160, 200, 0.3);
+}
+
+.search-state-panel .ssp-path-group.ssp-op-read.active-group {
+    background: rgba(140, 160, 200, 0.04);
+    border-left-color: rgba(160, 180, 220, 0.6);
+}
+
 .search-state-panel .ssp-group-header {
     display: flex;
     align-items: center;
@@ -705,6 +725,20 @@
     opacity: 0.2 !important;
     filter: saturate(0.3);
     transition: opacity 0.3s, filter 0.3s;
+}
+
+/* -- Query token nodes — subtle dashed border to show input pattern -- */
+.hg-node.viz-query-token {
+    border: 2px dashed rgba(180, 120, 255, 0.6) !important;
+    opacity: 0.7;
+    transition: opacity 0.3s, border-color 0.3s;
+}
+
+/* -- Active query token — the token currently being compared -- */
+.hg-node.viz-query-active {
+    border: 2px solid rgba(255, 200, 60, 0.9) !important;
+    box-shadow: 0 0 10px rgba(255, 200, 60, 0.5);
+    opacity: 1 !important;
 }
 
 /* -- Start node — bright cyan with pulsing glow -- */
@@ -916,6 +950,96 @@
     pointer-events: none;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   Insert Operation Node Styles — split/join/create phases
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* -- Split source — warm orange, the node being split -- */
+.hg-node.viz-split-source {
+    background: rgba(255, 140, 50, 0.3) !important;
+    border-color: rgba(255, 160, 80, 0.9) !important;
+    box-shadow:
+        0 0 14px rgba(255, 140, 50, 0.6),
+        0 0 28px rgba(255, 100, 20, 0.3);
+    animation: viz-insert-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes viz-insert-pulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(255, 140, 50, 0.6), 0 0 28px rgba(255, 100, 20, 0.3); }
+    50% { box-shadow: 0 0 22px rgba(255, 160, 80, 0.8), 0 0 36px rgba(255, 120, 30, 0.5); }
+}
+
+/* -- Split left fragment — orange-left tint -- */
+.hg-node.viz-split-left {
+    background: rgba(255, 180, 60, 0.25) !important;
+    border-color: rgba(255, 200, 80, 0.85) !important;
+    box-shadow:
+        0 0 10px rgba(255, 180, 60, 0.45),
+        0 0 20px rgba(255, 160, 40, 0.2);
+}
+
+/* -- Split right fragment — orange-right tint -- */
+.hg-node.viz-split-right {
+    background: rgba(255, 120, 40, 0.25) !important;
+    border-color: rgba(255, 140, 60, 0.85) !important;
+    box-shadow:
+        0 0 10px rgba(255, 120, 40, 0.45),
+        0 0 20px rgba(255, 100, 20, 0.2);
+}
+
+/* -- Join left / right — cool blue inputs -- */
+.hg-node.viz-join-left,
+.hg-node.viz-join-right {
+    background: rgba(100, 160, 255, 0.22) !important;
+    border-color: rgba(130, 180, 255, 0.8) !important;
+    box-shadow:
+        0 0 10px rgba(100, 160, 255, 0.4),
+        0 0 20px rgba(80, 140, 240, 0.2);
+}
+
+/* -- Join result — green output -- */
+.hg-node.viz-join-result {
+    background: rgba(80, 220, 130, 0.25) !important;
+    border-color: rgba(100, 240, 150, 0.85) !important;
+    box-shadow:
+        0 0 12px rgba(80, 220, 130, 0.5),
+        0 0 24px rgba(60, 200, 110, 0.25);
+    animation: viz-join-glow 1.2s ease-in-out infinite;
+}
+
+@keyframes viz-join-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(80, 220, 130, 0.5), 0 0 24px rgba(60, 200, 110, 0.25); }
+    50% { box-shadow: 0 0 18px rgba(100, 240, 150, 0.7), 0 0 32px rgba(80, 220, 130, 0.4); }
+}
+
+/* -- New pattern parent — yellow glow for pattern host -- */
+.hg-node.viz-new-pattern {
+    background: rgba(255, 220, 80, 0.22) !important;
+    border-color: rgba(255, 230, 100, 0.8) !important;
+    box-shadow:
+        0 0 10px rgba(255, 220, 80, 0.4),
+        0 0 20px rgba(255, 200, 60, 0.2);
+}
+
+/* -- New pattern child — lighter yellow subtlety -- */
+.hg-node.viz-new-pattern-child {
+    background: rgba(255, 240, 130, 0.18) !important;
+    border-color: rgba(255, 240, 130, 0.65) !important;
+    box-shadow:
+        0 0 8px rgba(255, 240, 130, 0.35),
+        0 0 16px rgba(255, 220, 80, 0.15);
+}
+
+/* -- New root — bright white-gold for newly created root -- */
+.hg-node.viz-new-root {
+    background: rgba(255, 250, 200, 0.25) !important;
+    border-color: rgba(255, 250, 200, 0.9) !important;
+    box-shadow:
+        0 0 16px rgba(255, 250, 200, 0.6),
+        0 0 32px rgba(255, 230, 150, 0.3);
+    animation: viz-insert-pulse 1.4s ease-in-out infinite;
+}
+
 /* ── Operation Timeline Phase Badges ── */
 .ssp-phase.phase-start_node,
 .ssp-phase.phase-startnode { color: #60d8ff; }
@@ -1069,3 +1193,295 @@
 .pc-arrow-up { color: rgba(255, 170, 80, 0.7); }
 .pc-arrow-down { color: rgba(80, 200, 255, 0.7); }
 .pc-arrow-root { color: rgba(255, 200, 80, 0.8); font-size: 10px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Insert State Panel — dedicated panel for insert operation details
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.insert-state-panel {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(20, 22, 28, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    pointer-events: auto;
+    z-index: 50;
+    max-width: 320px;
+    min-width: 200px;
+    backdrop-filter: blur(8px);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.isp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.isp-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.isp-step {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.isp-detail {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    border-left: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.isp-description {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+/* ── Delta Section ── */
+
+.isp-delta-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 6px;
+}
+
+.isp-delta-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.isp-delta-title {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.isp-delta-summary {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.isp-delta-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.isp-badge-add {
+    background: rgba(80, 220, 130, 0.2);
+    color: #60e080;
+}
+
+.isp-badge-remove {
+    background: rgba(255, 90, 70, 0.2);
+    color: #ff6050;
+}
+
+.isp-badge-update {
+    background: rgba(100, 160, 255, 0.2);
+    color: #80b0ff;
+}
+
+.isp-delta-ops {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.isp-delta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.isp-delta-row.isp-delta-add {
+    color: #60e080;
+    background: rgba(80, 220, 130, 0.06);
+}
+
+.isp-delta-row.isp-delta-remove {
+    color: #ff6050;
+    background: rgba(255, 90, 70, 0.06);
+}
+
+.isp-delta-row.isp-delta-update {
+    color: #80b0ff;
+    background: rgba(100, 160, 255, 0.06);
+}
+
+.isp-delta-icon {
+    font-size: 11px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.isp-delta-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   QueryPathPanel — query token strip with cursor & match highlighting
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.qp-panel {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    background: rgba(18, 18, 24, 0.92);
+    border: 1px solid rgba(100, 100, 140, 0.35);
+    border-radius: 10px;
+    padding: 8px 14px 10px;
+    min-width: 200px;
+    max-width: 70vw;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.qp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.qp-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(180, 180, 200, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.qp-progress-label {
+    font-size: 10px;
+    color: rgba(140, 140, 170, 0.7);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Thin progress bar */
+.qp-progress-bar {
+    height: 3px;
+    background: rgba(60, 60, 80, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.qp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 200, 255, 0.7), rgba(100, 255, 180, 0.7));
+    border-radius: 2px;
+    transition: width 0.25s ease-out;
+}
+
+/* Token strip */
+.qp-tokens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.qp-token {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    font-size: 11px;
+    line-height: 1.3;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+}
+
+.qp-token-label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.qp-token-width {
+    font-size: 9px;
+    opacity: 0.5;
+}
+
+/* Token states */
+.qp-token-idle {
+    background: rgba(60, 60, 80, 0.4);
+    color: rgba(160, 160, 180, 0.7);
+}
+
+.qp-token-cursor {
+    background: rgba(0, 180, 220, 0.15);
+    border-color: rgba(0, 220, 255, 0.6);
+    color: rgba(0, 220, 255, 0.95);
+    box-shadow: 0 0 6px rgba(0, 220, 255, 0.3);
+}
+
+.qp-token-matched {
+    background: rgba(60, 200, 120, 0.15);
+    border-color: rgba(60, 200, 120, 0.5);
+    color: rgba(100, 240, 160, 0.9);
+}
+
+.qp-token-active-match {
+    background: rgba(60, 240, 120, 0.2);
+    border-color: rgba(60, 255, 120, 0.7);
+    color: rgba(120, 255, 180, 1);
+    box-shadow: 0 0 8px rgba(60, 255, 120, 0.4);
+    animation: qp-pulse-match 0.6s ease-out;
+}
+
+.qp-token-active-mismatch {
+    background: rgba(240, 60, 80, 0.2);
+    border-color: rgba(255, 80, 100, 0.7);
+    color: rgba(255, 120, 140, 1);
+    box-shadow: 0 0 8px rgba(255, 60, 80, 0.4);
+    animation: qp-pulse-mismatch 0.4s ease-out;
+}
+
+.qp-token-compared {
+    box-shadow: 0 0 0 2px rgba(255, 200, 60, 0.6);
+}
+
+@keyframes qp-pulse-match {
+    0% { transform: scale(1.15); box-shadow: 0 0 14px rgba(60, 255, 120, 0.6); }
+    100% { transform: scale(1); }
+}
+
+@keyframes qp-pulse-mismatch {
+    0% { transform: translateX(-3px); }
+    25% { transform: translateX(3px); }
+    50% { transform: translateX(-2px); }
+    75% { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+}

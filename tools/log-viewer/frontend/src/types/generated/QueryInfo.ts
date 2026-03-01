@@ -15,4 +15,14 @@ cursor_position: number,
 /**
  * Total width of the query in atoms
  */
-query_width: number, };
+query_width: number, 
+/**
+ * Atom positions that have been confirmed as matched so far.
+ * The frontend uses this to highlight matched portions of the query.
+ */
+matched_positions: Array<number>, 
+/**
+ * Token index that was just compared (for match/mismatch highlighting).
+ * Points into the graph, not the query.
+ */
+active_token: number | null, };

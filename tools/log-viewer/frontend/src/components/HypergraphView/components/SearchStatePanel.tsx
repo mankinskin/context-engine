@@ -258,6 +258,10 @@ function PathGroupSection({ group }: { group: PathGroup }) {
 
     const nodeGroups = useMemo(() => groupByNode(group.events), [group.events]);
 
+    // Determine operation type for visual styling (insert groups get orange accent)
+    const { opType } = parsePathId(group.pathId);
+    const opClass = opType ? `ssp-op-${opType}` : '';
+
     const handleGroupClick = () => {
         if (isActive) {
             setCollapsed(!collapsed);
@@ -304,7 +308,7 @@ function PathGroupSection({ group }: { group: PathGroup }) {
     };
 
     return (
-        <div class={`ssp-path-group ${isActive ? 'active-group' : ''}`}>
+        <div class={`ssp-path-group ${isActive ? 'active-group' : ''} ${opClass}`}>
             <div class="ssp-group-header" onClick={handleGroupClick}>
                 <span class={`ssp-group-chevron ${collapsed && isActive ? 'collapsed' : ''}`}>
                     {isActive ? (collapsed ? '▶' : '▼') : '▷'}

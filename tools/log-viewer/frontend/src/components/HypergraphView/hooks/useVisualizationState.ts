@@ -5,85 +5,8 @@
  */
 import { useMemo } from 'preact/hooks';
 import type { GraphOpEvent, LocationInfo, SnapshotEdge, Transition, VizPathGraph } from '../../../types/generated';
-import { edgePairKey } from '../utils/math';
 import { allNodeIndices } from '../../../search-path/reconstruction';
-
-// ---------------------------------------------------------------------------
-// Graph topology helpers for intermediate edge computation
-// ---------------------------------------------------------------------------
-
-/** Build a child-adjacency map from snapshot edges. */
-function buildChildMap(edges: SnapshotEdge[]): Map<number, number[]> {
-    const childMap = new Map<number, number[]>();
-    for (const e of edges) {
-        let children = childMap.get(e.from);
-        if (!children) {
-            children = [];
-            childMap.set(e.from, children);
-        }
-        children.push(e.to);
-    }
-    return childMap;
-}
-
-/**
- * BFS from ancestor to descendant through parent→child edges.
- * Returns the path as [ancestor, ..., descendant] or null if unreachable.
- */
-function findDescendantPath(
-    ancestor: number,
-    descendant: number,
-    childMap: Map<number, number[]>,
-): number[] | null {
-    if (ancestor === descendant) return [ancestor];
-
-    const visited = new Set<number>();
-    const parentOf = new Map<number, number>();
-    const queue = [ancestor];
-    visited.add(ancestor);
-
-    while (queue.length > 0) {
-        const node = queue.shift()!;
-        const children = childMap.get(node);
-        if (!children) continue;
-
-        for (const child of children) {
-            if (visited.has(child)) continue;
-            visited.add(child);
-            parentOf.set(child, node);
-
-            if (child === descendant) {
-                // Reconstruct path
-                const path: number[] = [];
-                let curr = child;
-                while (curr !== ancestor) {
-                    path.unshift(curr);
-                    curr = parentOf.get(curr)!;
-                }
-                path.unshift(ancestor);
-                return path;
-            }
-
-            queue.push(child);
-        }
-    }
-
-    return null; // unreachable
-}
-
-/**
- * Determine the end-path target node from the current transition.
- * For visit_child, child_match, child_mismatch the target is clear.
- */
-function endPathTargetFromTransition(trans: Transition | null): number | null {
-    if (!trans) return null;
-    switch (trans.kind) {
-        case 'visit_child':    return trans.to;
-        case 'child_match':    return trans.node;
-        case 'child_mismatch': return trans.node;
-        default:               return null;
-    }
-}
+import { computeSearchEdgeKeys, edgePairKey } from '../../../search-path/edge-highlighting';
 
 export interface VisualizationState {
     /** Primary node being operated on */
@@ -120,10 +43,39 @@ export interface VisualizationState {
     searchPath: VizPathGraph | null;
     /** Edge pair keys for start_path edges (upward exploration) */
     searchStartEdgeKeys: Set<number>;
-    /** Edge pair key for the root edge (null if no root edge) */
-    searchRootEdgeKey: number | null;
+    /** Edge pair keys for root edge(s) — may include intermediate hops */
+    searchRootEdgeKeys: Set<number>;
     /** Edge pair keys for end_path edges (downward comparison) */
     searchEndEdgeKeys: Set<number>;
+    /** Query token indices (nodes in the input pattern) */
+    queryTokens: Set<number>;
+    /** The token currently being compared against the query (gold ring) */
+    activeQueryToken: number | null;
+    /** Edge pair keys for insert-specific edges (create_pattern, update_pattern, join) */
+    insertEdgeKeys: Set<number>;
+    /** The join result node index (for specialized edge coloring), null when not in a join */
+    joinResult: number | null;
+
+    // ── Insert-specific node roles ──
+
+    /** Source node being split (split_start / split_complete) */
+    splitSource: number | null;
+    /** Left fragment after split */
+    splitLeft: number | null;
+    /** Right fragment after split */
+    splitRight: number | null;
+    /** Left node in a join step */
+    joinLeft: number | null;
+    /** Right node in a join step */
+    joinRight: number | null;
+    /** Parent node of a create_pattern / update_pattern */
+    newPatternParent: number | null;
+    /** Children of a create_pattern */
+    newPatternChildren: Set<number>;
+    /** Newly created root node */
+    newRoot: number | null;
+    /** Whether the current event is an insert operation */
+    isInsertOp: boolean;
 }
 
 /**
@@ -216,97 +168,12 @@ export function useVisualizationState(
         }
 
         // ── Search path edge key sets (pair keys — pattern_idx independent) ──
-        const searchStartEdgeKeys = new Set<number>();
-        const searchEndEdgeKeys = new Set<number>();
-        let searchRootEdgeKey: number | null = null;
-
-        // Build child-adjacency map once when we have both a search path
-        // and snapshot topology.  Used to find intermediate graph edges
-        // that the VizPathGraph may skip (e.g. root → leaf shortcuts).
-        const childMap = (sp && snapshotEdges) ? buildChildMap(snapshotEdges) : null;
-
-        if (sp) {
-            // ── Start path edges ──
-            // Start edges point UP (from=child, to=parent), but layout edges
-            // always go parent→child. Swap from/to to match layout direction.
-            if (childMap) {
-                // Use graph topology to find intermediate edges for each
-                // link in the start path chain:
-                //   start_node → start_path[0] → … → start_path[n]
-                // Each link is child→parent; layout edges are parent→child.
-                const startChain: number[] = [];
-                if (sp.start_node) startChain.push(sp.start_node.index);
-                for (const n of sp.start_path) startChain.push(n.index);
-
-                for (let i = 0; i < startChain.length - 1; i++) {
-                    // parent is upper node (chain[i+1]), child is lower (chain[i])
-                    const path = findDescendantPath(startChain[i + 1]!, startChain[i]!, childMap);
-                    if (path) {
-                        for (let j = 0; j < path.length - 1; j++) {
-                            searchStartEdgeKeys.add(edgePairKey(path[j]!, path[j + 1]!));
-                        }
-                    }
-                }
-            } else {
-                for (const e of sp.start_edges) {
-                    searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
-                }
-            }
-
-            // ── Root edge ──
-            if (sp.root_edge) {
-                if (childMap && sp.root) {
-                    // Root edge connects top-of-start-path → root.
-                    // root is the parent; start_path top is the child.
-                    const startTop = sp.start_path.length > 0
-                        ? sp.start_path[sp.start_path.length - 1]!.index
-                        : sp.start_node?.index ?? -1;
-                    if (startTop >= 0) {
-                        const path = findDescendantPath(sp.root.index, startTop, childMap);
-                        if (path && path.length >= 2) {
-                            searchRootEdgeKey = edgePairKey(path[0]!, path[1]!);
-                        } else {
-                            searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
-                        }
-                    } else {
-                        searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
-                    }
-                } else {
-                    searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
-                }
-            }
-
-            // ── End path edges ──
-            // Compute the actual graph path from root to the target child,
-            // filling in intermediate edges that end_edges may skip.
-            if (childMap && sp.root) {
-                // Determine the deepest target node: prefer the transition's
-                // target (visit_child/child_match/child_mismatch) so the
-                // arrows update during child comparison, then fall back to
-                // the last end_path node.
-                let target = endPathTargetFromTransition(trans);
-                if (target == null && sp.end_path.length > 0) {
-                    target = sp.end_path[sp.end_path.length - 1]!.index;
-                }
-
-                if (target != null && target !== sp.root.index) {
-                    const path = findDescendantPath(sp.root.index, target, childMap);
-                    if (path) {
-                        for (let j = 0; j < path.length - 1; j++) {
-                            searchEndEdgeKeys.add(edgePairKey(path[j]!, path[j + 1]!));
-                        }
-                        // Also add all intermediate nodes to involvedNodes
-                        // (computed later, but captured in `endPathIntermediates`
-                        // so they aren't dimmed).
-                    }
-                }
-            } else {
-                // Fallback: use end_edges directly (no snapshot topology).
-                for (const e of sp.end_edges) {
-                    searchEndEdgeKeys.add(edgePairKey(e.from, e.to));
-                }
-            }
-        }
+        const edgeKeys = sp
+            ? computeSearchEdgeKeys(sp, snapshotEdges ?? null, trans)
+            : null;
+        const searchStartEdgeKeys = edgeKeys?.startEdgeKeys ?? new Set<number>();
+        const searchRootEdgeKeys = edgeKeys?.rootEdgeKeys ?? new Set<number>();
+        const searchEndEdgeKeys = edgeKeys?.endEdgeKeys ?? new Set<number>();
 
         // Build the set of all "involved" nodes for dimming non-involved ones
         const involvedNodes = new Set<number>();
@@ -345,12 +212,85 @@ export function useVisualizationState(
             involvedNodes.add(key >>> 16);
             involvedNodes.add(key & 0xFFFF);
         }
-        if (searchRootEdgeKey != null) {
-            involvedNodes.add(searchRootEdgeKey >>> 16);
-            involvedNodes.add(searchRootEdgeKey & 0xFFFF);
+        for (const key of searchRootEdgeKeys) {
+            involvedNodes.add(key >>> 16);
+            involvedNodes.add(key & 0xFFFF);
         }
 
         const hasVizState = involvedNodes.size > 0;
+
+        // Query token tracking from QueryInfo
+        const queryTokens = new Set<number>(event?.query?.query_tokens ?? []);
+        const activeQueryToken = event?.query?.active_token ?? null;
+
+        // ── Insert-specific node roles + edge keys ──
+        const isInsertOp = event?.op_type === 'insert';
+        const insertEdgeKeys = new Set<number>();
+        let joinResult: number | null = null;
+        let splitSource: number | null = null;
+        let splitLeft: number | null = null;
+        let splitRight: number | null = null;
+        let joinLeft: number | null = null;
+        let joinRight: number | null = null;
+        let newPatternParent: number | null = null;
+        const newPatternChildren = new Set<number>();
+        let newRoot: number | null = null;
+
+        if (trans) {
+            switch (trans.kind) {
+                case 'split_start':
+                    splitSource = trans.node;
+                    break;
+                case 'split_complete':
+                    splitSource = trans.original_node;
+                    splitLeft = trans.left_fragment;
+                    splitRight = trans.right_fragment ?? null;
+                    if (splitLeft != null) {
+                        insertEdgeKeys.add(edgePairKey(trans.original_node, splitLeft));
+                    }
+                    if (splitRight != null) {
+                        insertEdgeKeys.add(edgePairKey(trans.original_node, splitRight));
+                    }
+                    break;
+                case 'join_step':
+                    joinLeft = trans.left;
+                    joinRight = trans.right;
+                    joinResult = trans.result;
+                    insertEdgeKeys.add(edgePairKey(trans.result, trans.left));
+                    insertEdgeKeys.add(edgePairKey(trans.result, trans.right));
+                    break;
+                case 'join_complete':
+                    joinResult = trans.result_node;
+                    break;
+                case 'create_pattern':
+                    newPatternParent = trans.parent;
+                    for (const child of trans.children) {
+                        newPatternChildren.add(child);
+                        insertEdgeKeys.add(edgePairKey(trans.parent, child));
+                    }
+                    break;
+                case 'create_root':
+                    newRoot = trans.node;
+                    break;
+                case 'update_pattern':
+                    newPatternParent = trans.parent;
+                    for (const child of trans.new_children) {
+                        insertEdgeKeys.add(edgePairKey(trans.parent, child));
+                    }
+                    break;
+            }
+        }
+
+        // Add insert nodes to involved set so they aren't dimmed
+        if (splitSource != null) involvedNodes.add(splitSource);
+        if (splitLeft != null) involvedNodes.add(splitLeft);
+        if (splitRight != null) involvedNodes.add(splitRight);
+        if (joinLeft != null) involvedNodes.add(joinLeft);
+        if (joinRight != null) involvedNodes.add(joinRight);
+        if (joinResult != null) involvedNodes.add(joinResult);
+        if (newPatternParent != null) involvedNodes.add(newPatternParent);
+        for (const c of newPatternChildren) involvedNodes.add(c);
+        if (newRoot != null) involvedNodes.add(newRoot);
 
         return {
             selectedNode,
@@ -370,8 +310,21 @@ export function useVisualizationState(
             location: loc,
             searchPath: sp,
             searchStartEdgeKeys,
-            searchRootEdgeKey,
+            searchRootEdgeKeys,
             searchEndEdgeKeys,
+            queryTokens,
+            activeQueryToken,
+            insertEdgeKeys,
+            joinResult,
+            splitSource,
+            splitLeft,
+            splitRight,
+            joinLeft,
+            joinRight,
+            newPatternParent,
+            newPatternChildren,
+            newRoot,
+            isInsertOp,
         };
     }, [event, searchPath, snapshotEdges]);
 }
@@ -426,9 +379,12 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isCompleted = completedNodes.has(nodeIndex) && !isStart && !isMatched && !isMismatched;
     const isPendingParent = pendingParents.has(nodeIndex) && !isCandidateParent;
     const isPendingChild = pendingChildren.has(nodeIndex) && !isCandidateChild;
-    // Search path nodes are never dimmed — they are always "involved"
+    // Query token roles — nodes that are part of the input pattern
+    const isQueryToken = viz.queryTokens.has(nodeIndex);
+    const isActiveQueryToken = nodeIndex === viz.activeQueryToken;
+    // Search path nodes and query tokens are never dimmed — they are always "involved"
     const isInSearchPath = isInStartPath || isSpEndPath;
-    const isDimmed = hasVizState && !involvedNodes.has(nodeIndex) && !isInSearchPath;
+    const isDimmed = hasVizState && !involvedNodes.has(nodeIndex) && !isInSearchPath && !isQueryToken;
 
     return [
         isStart && 'viz-start',
@@ -446,6 +402,18 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
         isSpRoot && 'viz-sp-root',
         isInStartPath && 'viz-sp-start-path',
         isSpEndPath && 'viz-sp-end-path',
+        isQueryToken && 'viz-query-token',
+        isActiveQueryToken && 'viz-query-active',
+        // Insert-specific classes
+        nodeIndex === viz.splitSource && 'viz-split-source',
+        nodeIndex === viz.splitLeft && 'viz-split-left',
+        nodeIndex === viz.splitRight && 'viz-split-right',
+        nodeIndex === viz.joinLeft && 'viz-join-left',
+        nodeIndex === viz.joinRight && 'viz-join-right',
+        nodeIndex === viz.joinResult && 'viz-join-result',
+        nodeIndex === viz.newPatternParent && 'viz-new-pattern',
+        viz.newPatternChildren.has(nodeIndex) && 'viz-new-pattern-child',
+        nodeIndex === viz.newRoot && 'viz-new-root',
         isDimmed && 'viz-dimmed',
     ]
         .filter(Boolean)
@@ -474,5 +442,17 @@ export function getNodeVizStates(nodeIndex: number, viz: VisualizationState): st
         if (viz.searchPath.start_path.some(n => n.index === nodeIndex)) states.push('sp-start-path');
         if (viz.searchPath.end_path.some(n => n.index === nodeIndex)) states.push('sp-end-path');
     }
+    if (viz.queryTokens.has(nodeIndex)) states.push('query-token');
+    if (nodeIndex === viz.activeQueryToken) states.push('query-active');
+    // Insert-specific states
+    if (nodeIndex === viz.splitSource) states.push('split-source');
+    if (nodeIndex === viz.splitLeft) states.push('split-left');
+    if (nodeIndex === viz.splitRight) states.push('split-right');
+    if (nodeIndex === viz.joinLeft) states.push('join-left');
+    if (nodeIndex === viz.joinRight) states.push('join-right');
+    if (nodeIndex === viz.joinResult) states.push('join-result');
+    if (nodeIndex === viz.newPatternParent) states.push('new-pattern');
+    if (viz.newPatternChildren.has(nodeIndex)) states.push('new-pattern-child');
+    if (nodeIndex === viz.newRoot) states.push('new-root');
     return states;
 }

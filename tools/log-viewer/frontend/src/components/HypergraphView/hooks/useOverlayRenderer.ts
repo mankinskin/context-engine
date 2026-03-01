@@ -55,6 +55,10 @@ const CANDIDATE_EDGE_COLOR: [number, number, number] = [0.55, 0.4, 0.8]; // mute
 const PARENT_EDGE_COLOR: [number, number, number] = [0.95, 0.65, 0.2];  // warm amber for parent edges
 const CHILD_EDGE_COLOR: [number, number, number] = [0.3, 0.7, 0.9];    // cool teal for child edges
 
+// Insert-specific edge colors
+const INSERT_EDGE_COLOR: [number, number, number] = [1.0, 0.55, 0.2];   // warm orange for insert pattern edges
+const INSERT_JOIN_EDGE_COLOR: [number, number, number] = [0.5, 0.85, 0.5]; // green for join result edges
+
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
  */
@@ -336,11 +340,12 @@ export function useOverlayRenderer(
 
             // Search path edge keys (from VizPathGraph — precise triple keys)
             const spStartKeys = curVizState.searchStartEdgeKeys;
-            const spRootKey = curVizState.searchRootEdgeKey;
+            const spRootKeys = curVizState.searchRootEdgeKeys;
             const spEndKeys = curVizState.searchEndEdgeKeys;
-            const hasSearchPath = spStartKeys.size > 0 || spRootKey !== null || spEndKeys.size > 0;
+            const hasSearchPath = spStartKeys.size > 0 || spRootKeys.size > 0 || spEndKeys.size > 0;
             const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
-
+            // Insert edge keys (from insert-specific state: create_pattern, join, delta)
+            const insertKeys = curVizState.insertEdgeKeys;
             // Track parent candidates across steps: parent_explore sets them,
             // they persist through visit_parent / root_explore / match_advance,
             // and reset on any other transition (new phase).
@@ -380,7 +385,7 @@ export function useOverlayRenderer(
                 // Search path edge identification (pair keys — pattern_idx independent)
                 const pairKey = edgePairKey(e.from, e.to);
                 const isSpStartEdge = spStartKeys.has(pairKey);
-                const isSpRootEdge = spRootKey === pairKey;
+                const isSpRootEdge = spRootKeys.has(pairKey);
                 const isSpEndEdge = spEndKeys.has(pairKey);
                 const isSearchPathEdge = isSpStartEdge || isSpRootEdge || isSpEndEdge;
 
@@ -393,6 +398,15 @@ export function useOverlayRenderer(
                 const isCandidateEdge = !isSearchPathEdge && !isPathEdge &&
                     candidateNodes.size > 0 &&
                     (candidateNodes.has(e.from) || candidateNodes.has(e.to));
+
+                // Detect insert edges: edges that were created/modified by insert operations.
+                const isInsertEdge = !isSearchPathEdge && !isPathEdge && !isCandidateEdge &&
+                    insertKeys.size > 0 &&
+                    insertKeys.has(edgePairKey(e.from, e.to));
+
+                // Choose between join-result color vs general insert color
+                const isJoinEdge = isInsertEdge && curVizState.joinResult != null &&
+                    (e.from === curVizState.joinResult || e.to === curVizState.joinResult);
 
                 let r: number, g: number, b2: number, alpha: number, hlFlag: number;
                 if (isSpRootEdge) {
@@ -420,6 +434,15 @@ export function useOverlayRenderer(
                     b2 = CANDIDATE_EDGE_COLOR[2];
                     alpha = 0.30;
                     hlFlag = 0;
+                } else if (isInsertEdge) {
+                    // Insert edges — green for join results, warm orange for others
+                    if (isJoinEdge) {
+                        r = INSERT_JOIN_EDGE_COLOR[0]; g = INSERT_JOIN_EDGE_COLOR[1]; b2 = INSERT_JOIN_EDGE_COLOR[2];
+                    } else {
+                        r = INSERT_EDGE_COLOR[0]; g = INSERT_EDGE_COLOR[1]; b2 = INSERT_EDGE_COLOR[2];
+                    }
+                    alpha = 0.85;
+                    hlFlag = 1;
                 } else if (inter.selectedIdx >= 0) {
                     if (highlighted) {
                         // Differentiate parent vs child edges of selected node
@@ -458,13 +481,14 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 8] = b2;
                 edgeDataBuf[off + 9] = alpha;
                 edgeDataBuf[off + 10] = hlFlag;
-                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path, 6=candidate
+                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path, 6=candidate, 7=insert
                 edgeDataBuf[off + 11] = isSpStartEdge ? 2
                     : isSpRootEdge ? 3
                         : isSpEndEdge ? 4
                             : isPathEdge ? 5
                                 : isCandidateEdge ? 6
-                                    : 1;  // normal edge (energy beam)
+                                    : isInsertEdge ? 7
+                                        : 1;  // normal edge (energy beam)
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 

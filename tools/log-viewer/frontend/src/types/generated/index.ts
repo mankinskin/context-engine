@@ -2,7 +2,9 @@
 // Regenerate with: cargo test -p context-trace -p log-viewer export_bindings
 
 export type { AssertionDiff } from './AssertionDiff';
+export type { DeltaOp } from './DeltaOp';
 export type { EdgeRef } from './EdgeRef';
+export type { GraphDelta } from './GraphDelta';
 export type { GraphOpEvent } from './GraphOpEvent';
 export type { GraphSnapshot } from './GraphSnapshot';
 export type { JqQueryResponse } from './JqQueryResponse';

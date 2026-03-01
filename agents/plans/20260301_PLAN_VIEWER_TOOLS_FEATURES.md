@@ -3,7 +3,7 @@
 **Date:** 2026-03-01
 **Scope:** log-viewer, doc-viewer, viewer-api
 **Interview:** `agents/interviews/20260301_VIEWER_TOOLS_FEATURE_PLAN.md`
-**Status:** READY
+**Status:** IN PROGRESS — Phases 1, 3 done; Phases 4-7 in parallel
 
 ---
 
@@ -18,9 +18,11 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 
 ---
 
-## Phase 1: Extract Infrastructure to viewer-api
+## Phase 1: Extract Infrastructure to viewer-api ✅
 
 **Goal:** Move duplicated code from log-viewer to viewer-api so both tools share it.
+
+**Completed:** Phase 1A (JQ engine, source utils) and Phase 1B (theme system) extracted. MCP boilerplate (1.3), WebGPU effects (1.7), list components (1.8), HypergraphView (1.9) deferred — HypergraphView tightly coupled to log-viewer store signals.
 
 ### Phase 1A: Rust Backend Extraction
 
@@ -71,9 +73,11 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 
 ---
 
-## Phase 2: Integrate New Features into doc-viewer
+## Phase 2: Integrate New Features into doc-viewer ⏸️
 
 **Goal:** Add hypergraph visualization and shared components to doc-viewer.
+
+**Blocked:** Depends on HypergraphView extraction (Phase 1B step 1.9).
 
 | Step | Description |
 |------|-------------|
@@ -96,9 +100,11 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 
 ---
 
-## Phase 3: Refactor Event Names & Modular ID Paths
+## Phase 3: Refactor Event Names & Modular ID Paths ✅
 
 **Goal:** Make event naming semantic, consistent, namespaced by operation type and module.
+
+**Completed:** path_id format changed to `<op_type>/<module>/<semantic_id>`. Added `parse_path_id()` + `OperationType::from_path_id()`. Legacy `search_state` parsing removed. Frontend `SearchStatePanel` updated with `parsePathId`/`formatPathIdShort`. Transition names audited — all 18 already consistent, no renames needed.
 
 ### Phase 3A: path_id Refactoring (Rust)
 
@@ -145,11 +151,17 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 
 ---
 
-## Phase 4: Add Query Path Visualization
+## Phase 4: Add Query Path Visualization ✅
 
 **Goal:** Visualize the input pattern (query) as a separate path with its own panel, events, and styling.
 
-### Phase 4A: Rust Event Emission
+**Implementation notes:**
+- No new Transition variants needed — cursor position and matched state are metadata on existing events via `QueryInfo` fields
+- Added `matched_positions: Vec<usize>` and `active_token: Option<usize>` to `QueryInfo`
+- `emit_graph_op` infers cursor position from transition variant fields (ChildMatch, ChildMismatch, MatchAdvance)
+- QueryPathPanel renders as horizontal token strip with progress bar and animated states
+
+### Phase 4A: Rust Event Emission ✅
 
 | Step | Description |
 |------|-------------|
@@ -158,7 +170,7 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | 4.3 | Emit query path events from `context-search` during search |
 | 4.4 | Include pattern info in `QueryInfo` (or new dedicated field on `GraphOpEvent`) |
 
-### Phase 4B: Frontend Visualization
+### Phase 4B: Frontend Visualization ✅
 
 | Step | Description |
 |------|-------------|
@@ -235,30 +247,30 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 
 ---
 
-## Phase 7: Complete Context-Insert Visualization
+## Phase 7: Complete Context-Insert Visualization ✅ DONE
 
 **Goal:** Full visualization overhaul for insert operations: dedicated styling, graph mutation tracking, separate panel.
 
-### Phase 7A: Graph Mutation Events (Rust)
+### Phase 7A: Graph Mutation Events (Rust) ✅
 
-| Step | Description |
-|------|-------------|
-| 7.1 | Design graph update event schema — add/remove nodes, edges, node data changes |
-| 7.2 | Extend `GraphOpEvent` or `Transition` to carry graph delta information |
-| 7.3 | Emit graph deltas from `context-insert` split/join operations |
-| 7.4 | Frontend: handle graph snapshot updates from mutation events |
+| Step | Description | Status |
+|------|-------------|--------|
+| 7.1 | Design graph update event schema — `DeltaOp` enum + `GraphDelta` struct | ✅ |
+| 7.2 | Extend `GraphOpEvent` with `graph_delta: Option<GraphDelta>` field | ✅ |
+| 7.3 | Emit graph deltas from `context-insert` split/join operations | ✅ |
+| 7.4 | Frontend: regenerate TS bindings, update barrel exports | ✅ |
 
-### Phase 7B: Frontend Insert Visualization
+### Phase 7B: Frontend Insert Visualization ✅
 
-| Step | Description |
-|------|-------------|
-| 7.5 | Add CSS classes for insert-specific node roles: `viz-split-source`, `viz-split-left`, `viz-split-right`, `viz-join-left`, `viz-join-right`, `viz-join-result`, `viz-new-pattern`, `viz-new-root` |
-| 7.6 | Update `useVisualizationState.ts` to derive insert-specific node states from Transition |
-| 7.7 | Update `getNodeVizClasses` and `getNodeVizStates` for insert roles |
-| 7.8 | Create `InsertStatePanel` component (separate from SearchStatePanel) |
-| 7.9 | Show before/after graph states in InsertStatePanel (graph mutation tracking) |
-| 7.10 | Add insert-specific edge colors to `useOverlayRenderer.ts` |
-| 7.11 | Update SearchStatePanel to distinguish insert path groups visually |
+| Step | Description | Status |
+|------|-------------|--------|
+| 7.5 | Add CSS classes for insert-specific node roles: `viz-split-source`, `viz-split-left`, `viz-split-right`, `viz-join-left`, `viz-join-right`, `viz-join-result`, `viz-new-pattern`, `viz-new-pattern-child`, `viz-new-root` | ✅ |
+| 7.6 | Update `useVisualizationState.ts` to derive insert-specific node states from Transition | ✅ |
+| 7.7 | Update `getNodeVizClasses` and `getNodeVizStates` for insert roles | ✅ |
+| 7.8 | Create `InsertStatePanel` component (separate from SearchStatePanel) | ✅ |
+| 7.9 | Show before/after graph states in InsertStatePanel (graph mutation tracking) | ✅ |
+| 7.10 | Add insert-specific edge colors to `useOverlayRenderer.ts` | ✅ |
+| 7.11 | Update SearchStatePanel to distinguish insert path groups visually | ✅ |
 
 **Files affected:**
 - `crates/context-trace/src/graph/visualization.rs` — GraphOpEvent extensions
