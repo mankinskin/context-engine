@@ -4,6 +4,7 @@ How-to guides and troubleshooting patterns.
 
 | Date | File | Summary |
 |------|------|----------|
+| 2026-03-01 | [20260301_GRAPH_OP_EVENTS_GUIDE.md](20260301_GRAPH_OP_EVENTS_GUIDE.md) | Complete reference for all Transition variants, CSS class mappings, edge colors, and context-read schema design |
 | 2026-02-25 | [20260225_SEARCH_PATH_CROSS_LANGUAGE_TESTS.md](20260225_SEARCH_PATH_CROSS_LANGUAGE_TESTS.md) | How the search path visualization types are tested across Rust and TypeScript using shared JSON fixtures |
 | 2026-02-11 | [20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md](20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md) |  |
 | 2026-02-07 | [20260207_BLOCK_ITER_OVERLAP_EXPANSION.md](20260207_BLOCK_ITER_OVERLAP_EXPANSION.md) | How SegmentIter partitions sequences and BlockExpansionCtx expands blocks using context-search |
