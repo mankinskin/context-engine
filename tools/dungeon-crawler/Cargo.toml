@@ -1,0 +1,12 @@
+[package]
+name = "dungeon-crawler"
+version = "0.1.0"
+edition = "2021"
+description = "A terminal dungeon crawler with skills, magic, inventory, NPCs, and trading"
+
+[[bin]]
+name = "dungeon"
+path = "src/main.rs"
+
+[dependencies]
+rand = "0.8"
