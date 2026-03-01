@@ -29,6 +29,8 @@ import {
   renameSavedTheme,
   effectSettings,
   updateEffectSetting,
+  exportTheme,
+  importAndApplyTheme,
   type ThemeColors,
   type SavedTheme,
 } from '../../store/theme';
@@ -282,6 +284,43 @@ function SavedThemesPanel() {
   );
 }
 
+// ── Import theme button ──────────────────────────────────────────────────────
+
+function ImportThemeButton() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleFile(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const err = await importAndApplyTheme(file);
+    if (err) setError(err);
+    else setError(null);
+    input.value = '';  // allow re-selecting same file
+  }
+
+  return (
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json,application/json"
+        style={{ display: 'none' }}
+        onChange={handleFile}
+      />
+      <button
+        class="btn btn-secondary"
+        onClick={() => fileRef.current?.click()}
+        title="Load a theme from a .json file"
+      >
+        📂 Import
+      </button>
+      {error && <span class="theme-import-error">{error}</span>}
+    </>
+  );
+}
+
 // ── Main component ──────────────────────────────────────────────────────────
 
 export function ThemeSettings() {
@@ -301,6 +340,10 @@ export function ThemeSettings() {
             🎲 Randomize
           </button>
           <SaveThemeButton />
+          <button class="btn btn-secondary" onClick={() => exportTheme()} title="Export current theme as .json">
+            📤 Export
+          </button>
+          <ImportThemeButton />
         </div>
       </div>
 

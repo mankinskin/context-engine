@@ -227,11 +227,9 @@ export function useMouseInteraction(
             if (inter.dragIdx >= 0 && e.button === 0) {
                 inter.selectedIdx = inter.dragIdx;
                 setSelectedIdx(inter.dragIdx);
-                // Focus camera on the selected node
-                const node = layout.nodeMap.get(inter.dragIdx);
-                if (node) {
-                    camera.focusOn([node.x, node.y, node.z]);
-                }
+                // Camera focus is handled by the focused layout effect in HypergraphView,
+                // which accounts for layout-mode positions. Don't focus here to avoid
+                // briefly sending the camera toward the pre-layout position.
             }
             if (!inter.orbiting && !inter.panning && inter.dragIdx < 0 && e.button === 0) {
                 inter.selectedIdx = -1;

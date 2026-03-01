@@ -106,12 +106,6 @@ export function HypergraphView() {
                 originalPositionsRef.current = saved;
             }
 
-            // Focus camera once on the selected node
-            const selNode = curLayout.nodeMap.get(selectedIdx);
-            if (selNode) {
-                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
-            }
-
             // Phase 1: compute abstract 2D offsets (expensive, runs once)
             let layoutResult: FocusedLayoutOffsets | null;
             if (currentSearchPath?.root) {
@@ -158,6 +152,14 @@ export function HypergraphView() {
             };
 
             projectLayout();
+
+            // Focus camera on the selected node's layout position (after projection
+            // has updated tx/ty/tz to reflect the layout, not the original position)
+            const selNode = curLayout.nodeMap.get(selectedIdx);
+            if (selNode) {
+                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
+            }
+
             return () => cancelAnimationFrame(rafId);
         } else if (selectedIdx >= 0) {
             // Focus-only mode: restore original positions and just pan camera

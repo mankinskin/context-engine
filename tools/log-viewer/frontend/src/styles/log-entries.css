@@ -91,7 +91,7 @@
   align-items: center;
   gap: 4px;
   margin-top: 1px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
 }
 
@@ -125,7 +125,7 @@
 
 .source-line-preview {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -173,7 +173,7 @@
   background: var(--bg-tertiary);
   padding: 0 4px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-secondary);
 }
 
@@ -217,14 +217,14 @@
 
 .entry-meta {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .header-location {
   background: none;
   border: none;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;

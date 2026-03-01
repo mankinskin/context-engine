@@ -36,7 +36,15 @@
 
 .theme-settings-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+}
+
+.theme-import-error {
+  color: var(--level-error);
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 /* ── Collapsible sections ── */

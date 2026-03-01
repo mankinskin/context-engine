@@ -73,63 +73,97 @@ export interface ThemeColors {
 }
 
 export const DEFAULT_THEME: ThemeColors = {
-  // Backgrounds
+  // Backgrounds — warm marble whites and pale stone
+  bgPrimary: '#eae6df',
+  bgSecondary: '#f2efe8',
+  bgTertiary: '#f8f6f1',
+  bgHover: '#dfd9cf',
+  bgActive: '#d4cdc0',
+
+  // Text — deep charcoal & warm grays on light marble
+  textPrimary: '#1e1c18',
+  textSecondary: '#4a4640',
+  textMuted: '#74706a',
+
+  // Borders — faint stone veins
+  borderColor: '#c8c0b4',
+  borderSubtle: '#ddd8ce',
+
+  // Accents — sky blue, vine green, golden light, wisteria, sunbeam
+  accentBlue: '#5a9ec4',
+  accentGreen: '#4a8a52',
+  accentOrange: '#c49050',
+  accentPurple: '#8a6aaa',
+  accentYellow: '#b8a040',
+
+  // Log levels — soft pastels
+  levelTrace: '#d8d4cc',
+  levelDebug: '#b8d4b8',
+  levelInfo: '#b0cce0',
+  levelWarn: '#e0c888',
+  levelError: '#d4948a',
+
+  // Particles — angelic glow: golden-white beams, soft sparkles
+  particleSparkCore: '#fff8e0',
+  particleSparkEmber: '#d4aa50',
+  particleSparkSteel: '#c8c0b8',
+  particleEmberHot: '#f0d888',
+  particleEmberBase: '#c89840',
+  particleBeamCenter: '#ffffff',
+  particleBeamEdge: '#ffe8b0',
+  particleGlitterWarm: '#fff0c8',
+  particleGlitterCool: '#d8e8ff',
+
+  // Cinder palette — vine greens and marble golds
+  cinderEmber: '#c8a040',
+  cinderGold: '#e0c870',
+  cinderAsh: '#b8b0a0',
+  cinderVine: '#5a9a58',
+
+  // Background smoke — clear blue sky with white cloud haze
+  smokeCool: '#a8cce8',
+  smokeWarm: '#c8ddf0',
+  smokeMoss: '#e8f0fa',
+};
+
+/** The original Cinder (Dark Souls) palette, used by the Cinder preset. */
+const CINDER_THEME: ThemeColors = {
   bgPrimary: '#0d0c0b',
   bgSecondary: '#141311',
   bgTertiary: '#1a1816',
   bgHover: '#24201c',
   bgActive: '#2a2218',
-
-  // Text
   textPrimary: '#c8c0b4',
   textSecondary: '#8a8478',
   textMuted: '#524e46',
-
-  // Borders
   borderColor: '#2e2a24',
   borderSubtle: '#1e1c18',
-
-  // Accents
   accentBlue: '#3a6a80',
   accentGreen: '#2a5a28',
   accentOrange: '#c85a18',
   accentPurple: '#5a3a6a',
   accentYellow: '#a08018',
-
-  // Log levels
   levelTrace: '#3a3830',
   levelDebug: '#4a5a3a',
   levelInfo: '#3a5a6a',
   levelWarn: '#a07020',
   levelError: '#8a2a18',
-
-  // Particle: Metal Spark
-  particleSparkCore: '#ffe699',     // vec3(1.4, 1.1, 0.6) → approx
-  particleSparkEmber: '#d94d14',    // cinder_rgb warm
-  particleSparkSteel: '#9999b3',    // vec3(0.6, 0.6, 0.7)
-
-  // Particle: Ember / Ash
-  particleEmberHot: '#e6b366',      // vec3(1.2, 0.9, 0.4) → clamped
+  particleSparkCore: '#ffe699',
+  particleSparkEmber: '#d94d14',
+  particleSparkSteel: '#9999b3',
+  particleEmberHot: '#e6b366',
   particleEmberBase: '#d94d14',
-
-  // Particle: Angelic Beam
-  particleBeamCenter: '#ffedcc',    // vec3(1.6, 1.5, 1.3) → bright gold-white
-  particleBeamEdge: '#cc9933',      // vec3(1.1, 0.85, 0.4) → warm gold
-
-  // Particle: Glitter
-  particleGlitterWarm: '#ffdfad',   // vec3(1.3, 1.15, 0.85)
-  particleGlitterCool: '#b3bfff',   // vec3(0.85, 0.90, 1.25)
-
-  // Cinder palette
-  cinderEmber: '#d94d14',           // vec3(0.85, 0.30, 0.08)
-  cinderGold: '#cc8c1f',            // vec3(0.80, 0.55, 0.12)
-  cinderAsh: '#595247',             // vec3(0.35, 0.32, 0.28)
-  cinderVine: '#2e7326',            // vec3(0.18, 0.45, 0.15)
-
-  // Background smoke
-  smokeCool: '#080914',             // vec3(0.03, 0.035, 0.05)
-  smokeWarm: '#0e0906',             // vec3(0.055, 0.035, 0.025)
-  smokeMoss: '#090a09',             // vec3(0.035, 0.04, 0.035)
+  particleBeamCenter: '#ffedcc',
+  particleBeamEdge: '#cc9933',
+  particleGlitterWarm: '#ffdfad',
+  particleGlitterCool: '#b3bfff',
+  cinderEmber: '#d94d14',
+  cinderGold: '#cc8c1f',
+  cinderAsh: '#595247',
+  cinderVine: '#2e7326',
+  smokeCool: '#080914',
+  smokeWarm: '#0e0906',
+  smokeMoss: '#090a09',
 };
 
 // ── Preset themes ────────────────────────────────────────────────────────────
@@ -142,15 +176,15 @@ export interface ThemePreset {
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
-    name: 'Cinder (Default)',
+    name: 'Cinder',
     description: 'Dark Souls gothic stone — ember & vine',
-    colors: { ...DEFAULT_THEME },
+    colors: { ...CINDER_THEME },
   },
   {
     name: 'Frost',
     description: 'Icy blue — cold steel & aurora',
     colors: {
-      ...DEFAULT_THEME,
+      ...CINDER_THEME,
         bgPrimary: '#060a12',
         bgSecondary: '#0a1020',
         bgTertiary: '#0e1628',
@@ -193,7 +227,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'Blood Moon',
     description: 'Crimson darkness — blood & shadow',
     colors: {
-      ...DEFAULT_THEME,
+      ...CINDER_THEME,
         bgPrimary: '#100606',
         bgSecondary: '#1a0a0a',
         bgTertiary: '#221010',
@@ -236,7 +270,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'Verdant',
     description: 'Forest depths — moss & ancient growth',
     colors: {
-      ...DEFAULT_THEME,
+      ...CINDER_THEME,
         bgPrimary: '#060c06',
         bgSecondary: '#0a140a',
         bgTertiary: '#101c10',
@@ -279,7 +313,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         name: 'Void',
         description: 'Cosmic abyss — deep purple & starlight',
         colors: {
-            ...DEFAULT_THEME,
+            ...CINDER_THEME,
             bgPrimary: '#06040e',
             bgSecondary: '#0c081a',
             bgTertiary: '#120e24',
@@ -322,7 +356,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         name: 'Amber Terminal',
         description: 'Vintage phosphor — warm amber on black',
         colors: {
-            ...DEFAULT_THEME,
+            ...CINDER_THEME,
             bgPrimary: '#0c0a02',
             bgSecondary: '#141004',
             bgTertiary: '#1c1808',
@@ -365,7 +399,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         name: 'Ocean Abyss',
         description: 'Deep sea darkness — bioluminescent teal',
         colors: {
-            ...DEFAULT_THEME,
+            ...CINDER_THEME,
             bgPrimary: '#04080e',
             bgSecondary: '#061018',
             bgTertiary: '#0a1822',
@@ -405,10 +439,15 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
     },
     {
+        name: 'Elysium (Default)',
+        description: 'Angelic light — marble walls, vine moss & clear sky',
+        colors: { ...DEFAULT_THEME },
+    },
+    {
         name: 'Sakura',
         description: 'Twilight garden — soft pink & mauve',
         colors: {
-            ...DEFAULT_THEME,
+            ...CINDER_THEME,
             bgPrimary: '#0e080e',
             bgSecondary: '#160c16',
             bgTertiary: '#1e1220',
@@ -445,6 +484,351 @@ export const THEME_PRESETS: ThemePreset[] = [
             smokeCool: '#06040a',
             smokeWarm: '#0c060c',
             smokeMoss: '#0a060a',
+        },
+    },
+    // ── Additional presets ────────────────────────────────────────────────
+    {
+        name: 'Solarized Dark',
+        description: 'Ethan Schoonover classic — warm hues on midnight',
+        colors: {
+            ...CINDER_THEME,
+            bgPrimary: '#002b36',
+            bgSecondary: '#073642',
+            bgTertiary: '#0a3d4a',
+            bgHover: '#104654',
+            bgActive: '#164e5e',
+            textPrimary: '#839496',
+            textSecondary: '#657b83',
+            textMuted: '#586e75',
+            borderColor: '#0e404e',
+            borderSubtle: '#073a46',
+            accentBlue: '#268bd2',
+            accentGreen: '#859900',
+            accentOrange: '#cb4b16',
+            accentPurple: '#6c71c4',
+            accentYellow: '#b58900',
+            levelTrace: '#073642',
+            levelDebug: '#2a4a28',
+            levelInfo: '#1a4a6a',
+            levelWarn: '#6a5a18',
+            levelError: '#8a2a18',
+            particleSparkCore: '#fdf6e3',
+            particleSparkEmber: '#cb4b16',
+            particleSparkSteel: '#93a1a1',
+            particleEmberHot: '#dc322f',
+            particleEmberBase: '#cb4b16',
+            particleBeamCenter: '#eee8d5',
+            particleBeamEdge: '#b58900',
+            particleGlitterWarm: '#fdf6e3',
+            particleGlitterCool: '#93a1a1',
+            cinderEmber: '#cb4b16',
+            cinderGold: '#b58900',
+            cinderAsh: '#586e75',
+            cinderVine: '#859900',
+            smokeCool: '#001820',
+            smokeWarm: '#021a14',
+            smokeMoss: '#011c1c',
+        },
+    },
+    {
+        name: 'Solarized Light',
+        description: 'Ethan Schoonover classic — warm light parchment',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#fdf6e3',
+            bgSecondary: '#eee8d5',
+            bgTertiary: '#f5f0e0',
+            bgHover: '#e6dfc8',
+            bgActive: '#ddd6b8',
+            textPrimary: '#586e75',
+            textSecondary: '#657b83',
+            textMuted: '#93a1a1',
+            borderColor: '#d3c9a8',
+            borderSubtle: '#e6dfc8',
+            accentBlue: '#268bd2',
+            accentGreen: '#859900',
+            accentOrange: '#cb4b16',
+            accentPurple: '#6c71c4',
+            accentYellow: '#b58900',
+            levelTrace: '#eee8d5',
+            levelDebug: '#c8d8a8',
+            levelInfo: '#b8d4e8',
+            levelWarn: '#e8d098',
+            levelError: '#e0a8a0',
+            particleSparkCore: '#fdf6e3',
+            particleSparkEmber: '#cb4b16',
+            particleSparkSteel: '#839496',
+            particleEmberHot: '#dc322f',
+            particleEmberBase: '#cb4b16',
+            particleBeamCenter: '#ffffff',
+            particleBeamEdge: '#b58900',
+            particleGlitterWarm: '#fdf6e3',
+            particleGlitterCool: '#93a1a1',
+            cinderEmber: '#cb4b16',
+            cinderGold: '#b58900',
+            cinderAsh: '#93a1a1',
+            cinderVine: '#859900',
+            smokeCool: '#c8d8e8',
+            smokeWarm: '#e8dcc0',
+            smokeMoss: '#d8e0c8',
+        },
+    },
+    {
+        name: 'High Contrast',
+        description: 'Maximum readability — pure black & vivid colors',
+        colors: {
+            ...CINDER_THEME,
+            bgPrimary: '#000000',
+            bgSecondary: '#0a0a0a',
+            bgTertiary: '#141414',
+            bgHover: '#1e1e1e',
+            bgActive: '#282828',
+            textPrimary: '#ffffff',
+            textSecondary: '#cccccc',
+            textMuted: '#888888',
+            borderColor: '#444444',
+            borderSubtle: '#222222',
+            accentBlue: '#44bbff',
+            accentGreen: '#44ff44',
+            accentOrange: '#ff8844',
+            accentPurple: '#cc66ff',
+            accentYellow: '#ffdd00',
+            levelTrace: '#1a1a1a',
+            levelDebug: '#003300',
+            levelInfo: '#002244',
+            levelWarn: '#443300',
+            levelError: '#440000',
+            particleSparkCore: '#ffffff',
+            particleSparkEmber: '#ff6600',
+            particleSparkSteel: '#aaaaaa',
+            particleEmberHot: '#ff4400',
+            particleEmberBase: '#cc3300',
+            particleBeamCenter: '#ffffff',
+            particleBeamEdge: '#ffdd00',
+            particleGlitterWarm: '#ffee88',
+            particleGlitterCool: '#88ddff',
+            cinderEmber: '#ff6600',
+            cinderGold: '#ffcc00',
+            cinderAsh: '#666666',
+            cinderVine: '#44ff44',
+            smokeCool: '#000408',
+            smokeWarm: '#080400',
+            smokeMoss: '#040804',
+        },
+    },
+    {
+        name: 'Copper Dusk',
+        description: 'Warm desert sunset — terracotta & bronze',
+        colors: {
+            ...CINDER_THEME,
+            bgPrimary: '#12090a',
+            bgSecondary: '#1a0e0c',
+            bgTertiary: '#221412',
+            bgHover: '#2c1c18',
+            bgActive: '#36241e',
+            textPrimary: '#d4bcaa',
+            textSecondary: '#9a8474',
+            textMuted: '#5e4e42',
+            borderColor: '#382a22',
+            borderSubtle: '#241a14',
+            accentBlue: '#6a8a8a',
+            accentGreen: '#7a8a4a',
+            accentOrange: '#cc7a40',
+            accentPurple: '#8a5a6a',
+            accentYellow: '#bba040',
+            levelTrace: '#2a2018',
+            levelDebug: '#3a3820',
+            levelInfo: '#3a4a4a',
+            levelWarn: '#8a6a28',
+            levelError: '#8a3828',
+            particleSparkCore: '#ffe0b8',
+            particleSparkEmber: '#cc6a30',
+            particleSparkSteel: '#aa9888',
+            particleEmberHot: '#ee8844',
+            particleEmberBase: '#bb5520',
+            particleBeamCenter: '#fff0d8',
+            particleBeamEdge: '#cc8840',
+            particleGlitterWarm: '#ffddaa',
+            particleGlitterCool: '#ccaa88',
+            cinderEmber: '#cc6a30',
+            cinderGold: '#bba040',
+            cinderAsh: '#544a40',
+            cinderVine: '#6a7a3a',
+            smokeCool: '#060406',
+            smokeWarm: '#0c0604',
+            smokeMoss: '#080604',
+        },
+    },
+    {
+        name: 'Arctic',
+        description: 'Bright ice — clean whites & glacier blue',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#f0f4f8',
+            bgSecondary: '#e4eaf0',
+            bgTertiary: '#f5f8fb',
+            bgHover: '#d4dce6',
+            bgActive: '#c4d0dc',
+            textPrimary: '#1a2a3a',
+            textSecondary: '#3a5060',
+            textMuted: '#6a8090',
+            borderColor: '#c0d0dc',
+            borderSubtle: '#dce4ec',
+            accentBlue: '#2a7acc',
+            accentGreen: '#2a8a5a',
+            accentOrange: '#cc6a2a',
+            accentPurple: '#6a4aaa',
+            accentYellow: '#aa8a20',
+            levelTrace: '#e0e6ec',
+            levelDebug: '#c0dcc8',
+            levelInfo: '#b8d4ec',
+            levelWarn: '#e8d8a8',
+            levelError: '#e0a8a0',
+            particleSparkCore: '#e8f4ff',
+            particleSparkEmber: '#4a9add',
+            particleSparkSteel: '#a0b8cc',
+            particleEmberHot: '#88ccee',
+            particleEmberBase: '#3a88cc',
+            particleBeamCenter: '#ffffff',
+            particleBeamEdge: '#88bbee',
+            particleGlitterWarm: '#e0f0ff',
+            particleGlitterCool: '#a0c8ee',
+            cinderEmber: '#4a8acc',
+            cinderGold: '#6aaacc',
+            cinderAsh: '#a0b4c0',
+            cinderVine: '#2a8a5a',
+            smokeCool: '#b0c8e0',
+            smokeWarm: '#c8d8ec',
+            smokeMoss: '#d8e4f0',
+        },
+    },
+    {
+        name: 'Neon Noir',
+        description: 'Cyberpunk glow — neon pink & electric blue on black',
+        colors: {
+            ...CINDER_THEME,
+            bgPrimary: '#08060c',
+            bgSecondary: '#0e0a14',
+            bgTertiary: '#14101c',
+            bgHover: '#1c162a',
+            bgActive: '#241c34',
+            textPrimary: '#d0c8e0',
+            textSecondary: '#8878a0',
+            textMuted: '#504668',
+            borderColor: '#2a2040',
+            borderSubtle: '#1a1428',
+            accentBlue: '#00ccff',
+            accentGreen: '#00ff88',
+            accentOrange: '#ff6644',
+            accentPurple: '#cc44ff',
+            accentYellow: '#ffee00',
+            levelTrace: '#1a1828',
+            levelDebug: '#1a2a4a',
+            levelInfo: '#1a3a5a',
+            levelWarn: '#5a4a18',
+            levelError: '#6a1a2a',
+            particleSparkCore: '#ff88cc',
+            particleSparkEmber: '#cc22ff',
+            particleSparkSteel: '#8888cc',
+            particleEmberHot: '#ff44aa',
+            particleEmberBase: '#aa00ee',
+            particleBeamCenter: '#eeccff',
+            particleBeamEdge: '#8844ff',
+            particleGlitterWarm: '#ff88ff',
+            particleGlitterCool: '#44ccff',
+            cinderEmber: '#cc22ff',
+            cinderGold: '#ff44aa',
+            cinderAsh: '#3a3050',
+            cinderVine: '#00cc88',
+            smokeCool: '#040210',
+            smokeWarm: '#0a0408',
+            smokeMoss: '#06020c',
+        },
+    },
+    {
+        name: 'Parchment',
+        description: 'Old paper — warm sepia & ink on aged vellum',
+        colors: {
+            ...DEFAULT_THEME,
+            bgPrimary: '#f4ece0',
+            bgSecondary: '#ebe2d4',
+            bgTertiary: '#f8f2e6',
+            bgHover: '#e0d4c4',
+            bgActive: '#d4c8b4',
+            textPrimary: '#2a2218',
+            textSecondary: '#5a4e40',
+            textMuted: '#8a806e',
+            borderColor: '#c8bca8',
+            borderSubtle: '#ddd4c4',
+            accentBlue: '#4a6a88',
+            accentGreen: '#4a7a44',
+            accentOrange: '#aa6a30',
+            accentPurple: '#6a5080',
+            accentYellow: '#9a8428',
+            levelTrace: '#e8e0d4',
+            levelDebug: '#c8d4b8',
+            levelInfo: '#b8c8d8',
+            levelWarn: '#dcc898',
+            levelError: '#cc9a88',
+            particleSparkCore: '#fff8e0',
+            particleSparkEmber: '#aa7030',
+            particleSparkSteel: '#b0a898',
+            particleEmberHot: '#cc9040',
+            particleEmberBase: '#996828',
+            particleBeamCenter: '#fffaea',
+            particleBeamEdge: '#ccaa60',
+            particleGlitterWarm: '#ffe8c0',
+            particleGlitterCool: '#d0ccc0',
+            cinderEmber: '#aa7030',
+            cinderGold: '#bba050',
+            cinderAsh: '#a09888',
+            cinderVine: '#5a8a48',
+            smokeCool: '#c0b8a8',
+            smokeWarm: '#d0c4a8',
+            smokeMoss: '#c8c0a8',
+        },
+    },
+    {
+        name: 'Emerald Night',
+        description: 'Matrix terminal — green phosphor on deep black',
+        colors: {
+            ...CINDER_THEME,
+            bgPrimary: '#040a04',
+            bgSecondary: '#081208',
+            bgTertiary: '#0c1a0c',
+            bgHover: '#142214',
+            bgActive: '#1a2c1a',
+            textPrimary: '#40cc40',
+            textSecondary: '#288828',
+            textMuted: '#1a5a1a',
+            borderColor: '#143014',
+            borderSubtle: '#0c200c',
+            accentBlue: '#44aa66',
+            accentGreen: '#44dd44',
+            accentOrange: '#88aa44',
+            accentPurple: '#44aa88',
+            accentYellow: '#88cc44',
+            levelTrace: '#0c1a0c',
+            levelDebug: '#1a3a1a',
+            levelInfo: '#1a4a2a',
+            levelWarn: '#4a4a18',
+            levelError: '#4a1a18',
+            particleSparkCore: '#88ff88',
+            particleSparkEmber: '#22aa22',
+            particleSparkSteel: '#44aa66',
+            particleEmberHot: '#66ee66',
+            particleEmberBase: '#1a8818',
+            particleBeamCenter: '#ccffcc',
+            particleBeamEdge: '#44cc44',
+            particleGlitterWarm: '#88ff88',
+            particleGlitterCool: '#44cc88',
+            cinderEmber: '#22aa22',
+            cinderGold: '#44cc44',
+            cinderAsh: '#1a3a1a',
+            cinderVine: '#22aa22',
+            smokeCool: '#020804',
+            smokeWarm: '#040a02',
+            smokeMoss: '#030a04',
         },
     },
 ];
@@ -641,6 +1025,14 @@ function hexLuminance(hex: string): number {
   return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
 }
 
+/** Convert a hex color to an rgba() string with the given alpha. */
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 effect(() => {
   const c = themeColors.value;
   if (!themeStyleEl) {
@@ -651,6 +1043,14 @@ effect(() => {
   // Detect dark vs light theme based on background luminance for native form controls
   const bgLum = hexLuminance(c.bgPrimary);
   const colorScheme = bgLum < 0.2 ? 'dark' : 'light';
+  // Generate gpu-active overrides from theme colors (semi-transparent versions)
+  const gpuBgSecondary = hexToRgba(c.bgSecondary, 0.25);
+  const gpuBgTertiary = hexToRgba(c.bgTertiary, 0.25);
+  const gpuBgHover = hexToRgba(c.bgHover, 0.35);
+  const gpuBgActive = hexToRgba(c.bgActive, 0.35);
+  const gpuBorderColor = hexToRgba(c.borderColor, 0.35);
+  const gpuBorderSubtle = hexToRgba(c.borderSubtle, 0.25);
+
   themeStyleEl.textContent = `:root {
   color-scheme: ${colorScheme};
   --bg-primary: ${c.bgPrimary};
@@ -673,6 +1073,15 @@ effect(() => {
   --level-info: ${c.levelInfo};
   --level-warn: ${c.levelWarn};
   --level-error: ${c.levelError};
+}
+:root.gpu-active {
+  --bg-primary: transparent;
+  --bg-secondary: ${gpuBgSecondary};
+  --bg-tertiary: ${gpuBgTertiary};
+  --bg-hover: ${gpuBgHover};
+  --bg-active: ${gpuBgActive};
+  --border-color: ${gpuBorderColor};
+  --border-subtle: ${gpuBorderSubtle};
 }`;
 });
 
@@ -841,6 +1250,98 @@ export function renameSavedTheme(id: string, newName: string) {
   );
   savedThemes.value = updated;
   persistSavedThemes(updated);
+}
+
+// ── Theme file import / export ──────────────────────────────────────────────
+
+/** Theme file format — superset of ThemeColors with optional metadata. */
+export interface ThemeFile {
+  name?: string;
+  description?: string;
+  colors: ThemeColors;
+}
+
+/** Export the current theme as a JSON file download. */
+export function exportTheme(name?: string) {
+  const preset = THEME_PRESETS.find(p =>
+    Object.keys(themeColors.value).every(
+      k => themeColors.value[k as keyof ThemeColors] === p.colors[k as keyof ThemeColors]
+    )
+  );
+  const data: ThemeFile = {
+    name: name || preset?.name || 'Custom Theme',
+    description: preset?.description,
+    colors: { ...themeColors.value },
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${(data.name || 'theme').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Validate that an object has all required ThemeColors keys with hex strings. */
+function isValidThemeColors(obj: unknown): obj is ThemeColors {
+  if (!obj || typeof obj !== 'object') return false;
+  const keys = Object.keys(DEFAULT_THEME) as (keyof ThemeColors)[];
+  return keys.every(k => {
+    const v = (obj as Record<string, unknown>)[k];
+    return typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
+  });
+}
+
+/**
+ * Import a theme from a JSON file.
+ * Returns the parsed theme on success, or an error string on failure.
+ */
+export function importThemeFromFile(file: File): Promise<{ ok: true; theme: ThemeFile } | { ok: false; error: string }> {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = reader.result as string;
+        const json = JSON.parse(text);
+
+        // Support both { colors: {...} } and flat color objects
+        let colors: unknown;
+        if (json.colors && typeof json.colors === 'object') {
+          colors = { ...DEFAULT_THEME, ...json.colors };
+        } else if (json.bgPrimary) {
+          // Flat format — treat entire object as colors
+          colors = { ...DEFAULT_THEME, ...json };
+        } else {
+          resolve({ ok: false, error: 'No valid color data found in file.' });
+          return;
+        }
+
+        if (!isValidThemeColors(colors)) {
+          resolve({ ok: false, error: 'Theme file contains invalid color values. Expected #rrggbb hex strings.' });
+          return;
+        }
+
+        const theme: ThemeFile = {
+          name: json.name || file.name.replace(/\.json$/i, ''),
+          description: json.description,
+          colors: colors as ThemeColors,
+        };
+        resolve({ ok: true, theme });
+      } catch {
+        resolve({ ok: false, error: 'Failed to parse JSON file.' });
+      }
+    };
+    reader.onerror = () => resolve({ ok: false, error: 'Failed to read file.' });
+    reader.readAsText(file);
+  });
+}
+
+/** Import and immediately apply a theme file. Returns error string or null on success. */
+export async function importAndApplyTheme(file: File): Promise<string | null> {
+  const result = await importThemeFromFile(file);
+  if (!result.ok) return result.error;
+  themeColors.value = { ...result.theme.colors };
+  return null;
 }
 
 // ── Helpers for converting hex to shader-compatible vec3 ────────────────────
