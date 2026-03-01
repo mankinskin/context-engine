@@ -4,9 +4,86 @@
  * Integrates VizPathGraph for precise search path edge highlighting.
  */
 import { useMemo } from 'preact/hooks';
-import type { GraphOpEvent, LocationInfo, Transition, VizPathGraph } from '../../../types/generated';
+import type { GraphOpEvent, LocationInfo, SnapshotEdge, Transition, VizPathGraph } from '../../../types/generated';
 import { edgePairKey } from '../utils/math';
 import { allNodeIndices } from '../../../search-path/reconstruction';
+
+// ---------------------------------------------------------------------------
+// Graph topology helpers for intermediate edge computation
+// ---------------------------------------------------------------------------
+
+/** Build a child-adjacency map from snapshot edges. */
+function buildChildMap(edges: SnapshotEdge[]): Map<number, number[]> {
+    const childMap = new Map<number, number[]>();
+    for (const e of edges) {
+        let children = childMap.get(e.from);
+        if (!children) {
+            children = [];
+            childMap.set(e.from, children);
+        }
+        children.push(e.to);
+    }
+    return childMap;
+}
+
+/**
+ * BFS from ancestor to descendant through parent→child edges.
+ * Returns the path as [ancestor, ..., descendant] or null if unreachable.
+ */
+function findDescendantPath(
+    ancestor: number,
+    descendant: number,
+    childMap: Map<number, number[]>,
+): number[] | null {
+    if (ancestor === descendant) return [ancestor];
+
+    const visited = new Set<number>();
+    const parentOf = new Map<number, number>();
+    const queue = [ancestor];
+    visited.add(ancestor);
+
+    while (queue.length > 0) {
+        const node = queue.shift()!;
+        const children = childMap.get(node);
+        if (!children) continue;
+
+        for (const child of children) {
+            if (visited.has(child)) continue;
+            visited.add(child);
+            parentOf.set(child, node);
+
+            if (child === descendant) {
+                // Reconstruct path
+                const path: number[] = [];
+                let curr = child;
+                while (curr !== ancestor) {
+                    path.unshift(curr);
+                    curr = parentOf.get(curr)!;
+                }
+                path.unshift(ancestor);
+                return path;
+            }
+
+            queue.push(child);
+        }
+    }
+
+    return null; // unreachable
+}
+
+/**
+ * Determine the end-path target node from the current transition.
+ * For visit_child, child_match, child_mismatch the target is clear.
+ */
+function endPathTargetFromTransition(trans: Transition | null): number | null {
+    if (!trans) return null;
+    switch (trans.kind) {
+        case 'visit_child':    return trans.to;
+        case 'child_match':    return trans.node;
+        case 'child_mismatch': return trans.node;
+        default:               return null;
+    }
+}
 
 export interface VisualizationState {
     /** Primary node being operated on */
@@ -103,10 +180,14 @@ export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | nul
 /**
  * Hook to derive visualization state from an active graph operation event
  * and optional search path graph.
+ *
+ * @param snapshotEdges - Snapshot edges for computing intermediate
+ *   graph edges when the VizPathGraph end_edges skip intermediate nodes.
  */
 export function useVisualizationState(
     event: GraphOpEvent | null,
     searchPath?: VizPathGraph | null,
+    snapshotEdges?: SnapshotEdge[] | null,
 ): VisualizationState {
     return useMemo(() => {
         const loc = event?.location ?? null;
@@ -139,23 +220,91 @@ export function useVisualizationState(
         const searchEndEdgeKeys = new Set<number>();
         let searchRootEdgeKey: number | null = null;
 
+        // Build child-adjacency map once when we have both a search path
+        // and snapshot topology.  Used to find intermediate graph edges
+        // that the VizPathGraph may skip (e.g. root → leaf shortcuts).
+        const childMap = (sp && snapshotEdges) ? buildChildMap(snapshotEdges) : null;
+
         if (sp) {
+            // ── Start path edges ──
             // Start edges point UP (from=child, to=parent), but layout edges
             // always go parent→child. Swap from/to to match layout direction.
-            for (const e of sp.start_edges) {
-                searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
+            if (childMap) {
+                // Use graph topology to find intermediate edges for each
+                // link in the start path chain:
+                //   start_node → start_path[0] → … → start_path[n]
+                // Each link is child→parent; layout edges are parent→child.
+                const startChain: number[] = [];
+                if (sp.start_node) startChain.push(sp.start_node.index);
+                for (const n of sp.start_path) startChain.push(n.index);
+
+                for (let i = 0; i < startChain.length - 1; i++) {
+                    // parent is upper node (chain[i+1]), child is lower (chain[i])
+                    const path = findDescendantPath(startChain[i + 1]!, startChain[i]!, childMap);
+                    if (path) {
+                        for (let j = 0; j < path.length - 1; j++) {
+                            searchStartEdgeKeys.add(edgePairKey(path[j]!, path[j + 1]!));
+                        }
+                    }
+                }
+            } else {
+                for (const e of sp.start_edges) {
+                    searchStartEdgeKeys.add(edgePairKey(e.to, e.from));
+                }
             }
+
+            // ── Root edge ──
             if (sp.root_edge) {
-                // Root edge connects top of start_path to root — give it
-                // the distinct gold highlight via searchRootEdgeKey.
-                searchRootEdgeKey = edgePairKey(
-                    sp.root_edge.to,
-                    sp.root_edge.from,
-                );
+                if (childMap && sp.root) {
+                    // Root edge connects top-of-start-path → root.
+                    // root is the parent; start_path top is the child.
+                    const startTop = sp.start_path.length > 0
+                        ? sp.start_path[sp.start_path.length - 1]!.index
+                        : sp.start_node?.index ?? -1;
+                    if (startTop >= 0) {
+                        const path = findDescendantPath(sp.root.index, startTop, childMap);
+                        if (path && path.length >= 2) {
+                            searchRootEdgeKey = edgePairKey(path[0]!, path[1]!);
+                        } else {
+                            searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
+                        }
+                    } else {
+                        searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
+                    }
+                } else {
+                    searchRootEdgeKey = edgePairKey(sp.root_edge.to, sp.root_edge.from);
+                }
             }
-            // End edges already point DOWN (from=parent, to=child) — no swap needed
-            for (const e of sp.end_edges) {
-                searchEndEdgeKeys.add(edgePairKey(e.from, e.to));
+
+            // ── End path edges ──
+            // Compute the actual graph path from root to the target child,
+            // filling in intermediate edges that end_edges may skip.
+            if (childMap && sp.root) {
+                // Determine the deepest target node: prefer the transition's
+                // target (visit_child/child_match/child_mismatch) so the
+                // arrows update during child comparison, then fall back to
+                // the last end_path node.
+                let target = endPathTargetFromTransition(trans);
+                if (target == null && sp.end_path.length > 0) {
+                    target = sp.end_path[sp.end_path.length - 1]!.index;
+                }
+
+                if (target != null && target !== sp.root.index) {
+                    const path = findDescendantPath(sp.root.index, target, childMap);
+                    if (path) {
+                        for (let j = 0; j < path.length - 1; j++) {
+                            searchEndEdgeKeys.add(edgePairKey(path[j]!, path[j + 1]!));
+                        }
+                        // Also add all intermediate nodes to involvedNodes
+                        // (computed later, but captured in `endPathIntermediates`
+                        // so they aren't dimmed).
+                    }
+                }
+            } else {
+                // Fallback: use end_edges directly (no snapshot topology).
+                for (const e of sp.end_edges) {
+                    searchEndEdgeKeys.add(edgePairKey(e.from, e.to));
+                }
             }
         }
 
@@ -186,6 +335,21 @@ export function useVisualizationState(
             }
         }
 
+        // Include intermediate nodes discovered via edge key computation.
+        // The edgePairKey encodes (from << 16 | to), so decode both indices.
+        for (const key of searchStartEdgeKeys) {
+            involvedNodes.add(key >>> 16);
+            involvedNodes.add(key & 0xFFFF);
+        }
+        for (const key of searchEndEdgeKeys) {
+            involvedNodes.add(key >>> 16);
+            involvedNodes.add(key & 0xFFFF);
+        }
+        if (searchRootEdgeKey != null) {
+            involvedNodes.add(searchRootEdgeKey >>> 16);
+            involvedNodes.add(searchRootEdgeKey & 0xFFFF);
+        }
+
         const hasVizState = involvedNodes.size > 0;
 
         return {
@@ -209,7 +373,7 @@ export function useVisualizationState(
             searchRootEdgeKey,
             searchEndEdgeKeys,
         };
-    }, [event, searchPath]);
+    }, [event, searchPath, snapshotEdges]);
 }
 
 /**

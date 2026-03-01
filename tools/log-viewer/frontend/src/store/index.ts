@@ -2,8 +2,7 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph, PathTransition } from '../types';
-import { applyTransition, emptyPathGraph } from '../search-path/reconstruction';
+import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph } from '../types';
 import * as api from '../api';
 
 // Per-file state interface
@@ -274,26 +273,23 @@ export function setActivePathStep(step: number) {
 // ── Search Path Visualization (unified in GraphOpEvent) ──
 
 /**
- * Reconstruct VizPathGraph by replaying all path_transition events
- * in the active path group up to and including the activePathStep.
+ * Get the accumulated VizPathGraph from the current path step event.
+ * Each GraphOpEvent already carries the full path_graph snapshot
+ * (accumulated on the Rust side via apply_transition), so we just
+ * read it directly from the active event.
  */
 export const activeSearchPath = computed((): VizPathGraph | null => {
   const group = activePathGroup.value;
   const step = activePathStep.value;
   if (!group || step < 0) return null;
 
-  const graph = emptyPathGraph();
-  const limit = Math.min(step, group.events.length - 1);
-  for (let i = 0; i <= limit; i++) {
-    const pt = group.events[i]?.path_transition;
-    if (!pt) continue; // Skip informational events (no path change)
-    try {
-      applyTransition(graph, pt);
-    } catch {
-    // Skip invalid transitions gracefully
-    }
-  }
-  return graph;
+  const event = group.events[Math.min(step, group.events.length - 1)];
+  if (!event) return null;
+
+  // path_graph is the accumulated snapshot after all transitions up to this step
+  const pg = event.path_graph;
+  if (!pg || (!pg.start_node && !pg.root)) return null;
+  return pg;
 });
 
 export const logStats = computed((): LogStats => {

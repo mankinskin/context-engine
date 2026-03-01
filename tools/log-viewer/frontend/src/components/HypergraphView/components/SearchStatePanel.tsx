@@ -143,7 +143,7 @@ function EventItem({
                     {getTransitionName(ev)}
                 </div>
                 <div class="ssp-path-trans">
-                    ↳ {pathTransitionName(ev.path_transition)}
+                    ↳ {pathTransitionName(ev.transition)}
                 </div>
                 <div class="ssp-desc">{ev.description}</div>
             </div>

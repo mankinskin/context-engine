@@ -54,7 +54,7 @@ export function HypergraphView() {
     // Visualization state from search events + search path
     // Prefer path-group event when a path is selected, fall back to global step
     const currentEvent = activePathEvent.value ?? activeSearchState.value;
-    const vizState = useVisualizationState(currentEvent, activeSearchPath.value);
+    const vizState = useVisualizationState(currentEvent, activeSearchPath.value, snapshot?.edges ?? null);
 
     // Mouse interaction
     const { selectedIdx, setSelectedIdx, hoverIdx, tooltip, interRef } = useMouseInteraction(

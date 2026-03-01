@@ -123,7 +123,7 @@
     gap: 16px;
     align-items: center;
     pointer-events: none;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-secondary);
     font-size: 11px;
     font-family: var(--font-mono, monospace);
     white-space: nowrap;
@@ -348,14 +348,14 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-secondary);
     font-size: 14px;
     font-family: var(--font-mono, monospace);
 }
 
 .hypergraph-empty .hg-hint {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--text-muted);
     max-width: 420px;
     text-align: center;
     line-height: 1.6;
