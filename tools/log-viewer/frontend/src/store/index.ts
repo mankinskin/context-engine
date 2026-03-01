@@ -150,7 +150,7 @@ const _graphOpEventsIndexed = computed((): IndexedGraphOp[] => {
   const events: IndexedGraphOp[] = [];
   for (let i = 0; i < allEntries.length; i++) {
     const entry = allEntries[i]!;
-    // New format: graph_op events
+    // graph_op events (the only format emitted since the visualization rewrite)
     if (entry.message === 'graph_op' && entry.fields?.graph_op) {
       try {
         const data = typeof entry.fields.graph_op === 'string'
@@ -163,25 +163,11 @@ const _graphOpEventsIndexed = computed((): IndexedGraphOp[] => {
         // skip invalid JSON
       }
     }
-    // Legacy format: search_state events (for old log files)
-    else if (entry.message === 'search_state' && entry.fields?.search_state) {
-      try {
-        const data = typeof entry.fields.search_state === 'string'
-          ? JSON.parse(entry.fields.search_state)
-          : entry.fields.search_state;
-        if (data && typeof data.step === 'number') {
-          events.push({ entryIdx: i, event: data as SearchStateEvent });
-        }
-      } catch {
-        // skip invalid JSON
-      }
-    }
   }
   return events.sort((a, b) => a.event.step - b.event.step);
 });
 
 // Computed: extract all graph_op events from log entries (sorted by step)
-// Also supports legacy search_state events for backwards compatibility
 export const graphOpEvents = computed((): SearchStateEvent[] => {
   return _graphOpEventsIndexed.value.map(e => e.event);
 });

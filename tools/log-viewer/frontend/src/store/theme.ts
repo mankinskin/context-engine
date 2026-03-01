@@ -1,130 +1,38 @@
 // Theme store — reactive color palette management with localStorage persistence
 //
-// Organizes all configurable colors into categories:
-//   - Backgrounds (primary, secondary, tertiary, hover, active)
-//   - Text / Fonts (primary, secondary, muted)
-//   - Borders (default, subtle)
-//   - Accents (blue, green, orange, purple, yellow)
-//   - Log Levels (trace, debug, info, warn, error)
-//   - Particle Effects (metal spark, ember, angelic beam, glitter, cinder palette)
+// Core types (ThemeColors, DEFAULT_THEME, ThemePreset, color utilities) are
+// imported from @context-engine/viewer-api-frontend. This file adds:
+//   - Theme presets (Cinder, Moonlight Ash, etc.)
+//   - Effect settings (WebGPU particle effects, CRT, cursor)
+//   - Saved themes management (localStorage persistence)
+//   - Log-viewer-specific theme initialization
 
 import { signal, effect } from '@preact/signals';
 
+// Re-export shared types so existing consumers don't need to change imports
+export {
+  type ThemeColors,
+  type ThemePreset,
+  type ThemeStore,
+  DEFAULT_THEME,
+  hexToVec3,
+  hexLuminance,
+  hexToRgba,
+} from '@context-engine/viewer-api-frontend';
+
+// Import for local use (re-export + local use requires separate import)
+import {
+  type ThemeColors,
+  type ThemePreset,
+  DEFAULT_THEME,
+  createThemeStore,
+  vec3ToHex,
+} from '@context-engine/viewer-api-frontend';
+
+// Re-export vec3ToHex separately (used locally and by consumers)
+export { vec3ToHex } from '@context-engine/viewer-api-frontend';
+
 // ── Default theme (Dark Souls "Cinder" theme from variables.css) ─────────────
-
-export interface ThemeColors {
-  // Backgrounds
-  bgPrimary: string;
-  bgSecondary: string;
-  bgTertiary: string;
-  bgHover: string;
-  bgActive: string;
-
-  // Text
-  textPrimary: string;
-  textSecondary: string;
-  textMuted: string;
-
-  // Borders
-  borderColor: string;
-  borderSubtle: string;
-
-  // Accents
-  accentBlue: string;
-  accentGreen: string;
-  accentOrange: string;
-  accentPurple: string;
-  accentYellow: string;
-
-  // Log levels
-  levelTrace: string;
-  levelDebug: string;
-  levelInfo: string;
-  levelWarn: string;
-  levelError: string;
-
-  // Particle: Metal Spark
-  particleSparkCore: string;
-  particleSparkEmber: string;
-  particleSparkSteel: string;
-
-  // Particle: Ember / Ash
-  particleEmberHot: string;
-  particleEmberBase: string;
-
-  // Particle: Angelic Beam
-  particleBeamCenter: string;
-  particleBeamEdge: string;
-
-  // Particle: Glitter
-  particleGlitterWarm: string;
-  particleGlitterCool: string;
-
-  // Cinder palette cycle (used in borders/glows)
-  cinderEmber: string;
-  cinderGold: string;
-  cinderAsh: string;
-  cinderVine: string;
-
-  // Background smoke tones
-  smokeCool: string;
-  smokeWarm: string;
-  smokeMoss: string;
-}
-
-export const DEFAULT_THEME: ThemeColors = {
-  // Backgrounds — warm marble whites and pale stone
-  bgPrimary: '#eae6df',
-  bgSecondary: '#f2efe8',
-  bgTertiary: '#f8f6f1',
-  bgHover: '#dfd9cf',
-  bgActive: '#d4cdc0',
-
-  // Text — deep charcoal & warm grays on light marble
-  textPrimary: '#1e1c18',
-  textSecondary: '#4a4640',
-  textMuted: '#74706a',
-
-  // Borders — faint stone veins
-  borderColor: '#c8c0b4',
-  borderSubtle: '#ddd8ce',
-
-  // Accents — sky blue, vine green, golden light, wisteria, sunbeam
-  accentBlue: '#5a9ec4',
-  accentGreen: '#4a8a52',
-  accentOrange: '#c49050',
-  accentPurple: '#8a6aaa',
-  accentYellow: '#b8a040',
-
-  // Log levels — soft pastels
-  levelTrace: '#d8d4cc',
-  levelDebug: '#b8d4b8',
-  levelInfo: '#b0cce0',
-  levelWarn: '#e0c888',
-  levelError: '#d4948a',
-
-  // Particles — angelic glow: golden-white beams, soft sparkles
-  particleSparkCore: '#fff8e0',
-  particleSparkEmber: '#d4aa50',
-  particleSparkSteel: '#c8c0b8',
-  particleEmberHot: '#f0d888',
-  particleEmberBase: '#c89840',
-  particleBeamCenter: '#ffffff',
-  particleBeamEdge: '#ffe8b0',
-  particleGlitterWarm: '#fff0c8',
-  particleGlitterCool: '#d8e8ff',
-
-  // Cinder palette — vine greens and marble golds
-  cinderEmber: '#c8a040',
-  cinderGold: '#e0c870',
-  cinderAsh: '#b8b0a0',
-  cinderVine: '#5a9a58',
-
-  // Background smoke — clear blue sky with white cloud haze
-  smokeCool: '#a8cce8',
-  smokeWarm: '#c8ddf0',
-  smokeMoss: '#e8f0fa',
-};
 
 /** The original Cinder (Dark Souls) palette, used by the Cinder preset. */
 const CINDER_THEME: ThemeColors = {
@@ -167,12 +75,6 @@ const CINDER_THEME: ThemeColors = {
 };
 
 // ── Preset themes ────────────────────────────────────────────────────────────
-
-export interface ThemePreset {
-  name: string;
-  description: string;
-  colors: ThemeColors;
-}
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
@@ -983,120 +885,25 @@ export function updateEffectSetting<K extends keyof EffectSettings>(key: K, valu
   effectSettings.value = { ...effectSettings.value, [key]: value };
 }
 
-function loadSavedTheme(): ThemeColors {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // Merge with defaults to handle new keys added in updates
-      return { ...DEFAULT_THEME, ...parsed };
-    }
-  } catch {
-    // ignore corrupt storage
-  }
-  return { ...DEFAULT_THEME };
-}
+// ── Theme store (backed by shared factory from viewer-api) ──────────────────
 
-export const themeColors = signal<ThemeColors>(loadSavedTheme());
+const _themeStore = createThemeStore(STORAGE_KEY, DEFAULT_THEME, /* enableGpuOverrides */ true);
 
-// Persist to localStorage on every change
-effect(() => {
-  const colors = themeColors.value;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(colors));
-  } catch {
-    // storage full or unavailable
-  }
-});
-
-// Apply CSS custom properties on every change via a <style> element
-// (Using a <style> tag instead of inline styles so that :root.gpu-active
-//  rules in variables.css can still override background/border variables
-//  with higher specificity.)
-let themeStyleEl: HTMLStyleElement | null = null;
-
-/** Calculate relative luminance of a hex color (0 = black, 1 = white). */
-function hexLuminance(hex: string): number {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  // sRGB to linear
-  const toLinear = (c: number) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
-}
-
-/** Convert a hex color to an rgba() string with the given alpha. */
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-effect(() => {
-  const c = themeColors.value;
-  if (!themeStyleEl) {
-    themeStyleEl = document.createElement('style');
-    themeStyleEl.id = 'theme-overrides';
-    document.head.appendChild(themeStyleEl);
-  }
-  // Detect dark vs light theme based on background luminance for native form controls
-  const bgLum = hexLuminance(c.bgPrimary);
-  const colorScheme = bgLum < 0.2 ? 'dark' : 'light';
-  // Generate gpu-active overrides from theme colors (semi-transparent versions)
-  const gpuBgSecondary = hexToRgba(c.bgSecondary, 0.25);
-  const gpuBgTertiary = hexToRgba(c.bgTertiary, 0.25);
-  const gpuBgHover = hexToRgba(c.bgHover, 0.35);
-  const gpuBgActive = hexToRgba(c.bgActive, 0.35);
-  const gpuBorderColor = hexToRgba(c.borderColor, 0.35);
-  const gpuBorderSubtle = hexToRgba(c.borderSubtle, 0.25);
-
-  themeStyleEl.textContent = `:root {
-  color-scheme: ${colorScheme};
-  --bg-primary: ${c.bgPrimary};
-  --bg-secondary: ${c.bgSecondary};
-  --bg-tertiary: ${c.bgTertiary};
-  --bg-hover: ${c.bgHover};
-  --bg-active: ${c.bgActive};
-  --text-primary: ${c.textPrimary};
-  --text-secondary: ${c.textSecondary};
-  --text-muted: ${c.textMuted};
-  --border-color: ${c.borderColor};
-  --border-subtle: ${c.borderSubtle};
-  --accent-blue: ${c.accentBlue};
-  --accent-green: ${c.accentGreen};
-  --accent-orange: ${c.accentOrange};
-  --accent-purple: ${c.accentPurple};
-  --accent-yellow: ${c.accentYellow};
-  --level-trace: ${c.levelTrace};
-  --level-debug: ${c.levelDebug};
-  --level-info: ${c.levelInfo};
-  --level-warn: ${c.levelWarn};
-  --level-error: ${c.levelError};
-}
-:root.gpu-active {
-  --bg-primary: transparent;
-  --bg-secondary: ${gpuBgSecondary};
-  --bg-tertiary: ${gpuBgTertiary};
-  --bg-hover: ${gpuBgHover};
-  --bg-active: ${gpuBgActive};
-  --border-color: ${gpuBorderColor};
-  --border-subtle: ${gpuBorderSubtle};
-}`;
-});
+/** Reactive signal holding the current theme colors. */
+export const themeColors = _themeStore.colors;
 
 // ── Actions ─────────────────────────────────────────────────────────────────
 
 export function updateThemeColor<K extends keyof ThemeColors>(key: K, value: string) {
-  themeColors.value = { ...themeColors.value, [key]: value };
+  _themeStore.updateColor(key, value);
 }
 
 export function applyPreset(preset: ThemeColors) {
-  themeColors.value = { ...preset };
+  _themeStore.applyPreset(preset);
 }
 
 export function resetTheme() {
-  themeColors.value = { ...DEFAULT_THEME };
+  _themeStore.reset();
 }
 
 /** Generate a random hex colour, optionally clamping lightness to a range. */
@@ -1344,19 +1151,4 @@ export async function importAndApplyTheme(file: File): Promise<string | null> {
   return null;
 }
 
-// ── Helpers for converting hex to shader-compatible vec3 ────────────────────
-
-/** Convert "#rrggbb" to [r, g, b] in 0..1 range */
-export function hexToVec3(hex: string): [number, number, number] {
-  const h = hex.replace('#', '');
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  return [r, g, b];
-}
-
-/** Convert [r, g, b] (0..1) to "#rrggbb" */
-export function vec3ToHex(r: number, g: number, b: number): string {
-  const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v * 255)));
-  return '#' + [r, g, b].map(v => clamp(v).toString(16).padStart(2, '0')).join('');
-}
+// hexToVec3 and vec3ToHex are re-exported from @context-engine/viewer-api-frontend above

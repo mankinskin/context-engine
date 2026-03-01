@@ -50,6 +50,32 @@ function opTypeBadge(opType: string): string {
 }
 
 /**
+ * Parse a namespaced path_id into display components.
+ *
+ * New format: `<op_type>/<module>/<semantic_id>`
+ * Legacy format: raw string (e.g. `search-42-...`)
+ */
+function parsePathId(pathId: string): { opType: string | null; module: string | null; semanticId: string } {
+    const parts = pathId.split('/');
+    if (parts.length >= 3) {
+        return { opType: parts[0]!, module: parts[1]!, semanticId: parts.slice(2).join('/') };
+    }
+    return { opType: null, module: null, semanticId: pathId };
+}
+
+/**
+ * Format path_id for short display in the panel header.
+ * Uses the semantic_id portion for brevity, prefixed with an op badge.
+ */
+function formatPathIdShort(pathId: string): string {
+    const { opType, semanticId } = parsePathId(pathId);
+    const badge = opType ? opTypeBadge(opType) : '';
+    // Truncate the semantic portion if too long
+    const label = semanticId.length > 20 ? semanticId.slice(0, 18) + '…' : semanticId;
+    return badge ? `${badge} ${label}` : label;
+}
+
+/**
  * Get path transition display name (for the path-specific column).
  */
 function pathTransitionName(pt: { kind?: string } | null | undefined): string {
@@ -284,7 +310,7 @@ function PathGroupSection({ group }: { group: PathGroup }) {
                     {isActive ? (collapsed ? '▶' : '▼') : '▷'}
                 </span>
                 <span class="ssp-group-id" title={group.pathId}>
-                    {group.pathId.length > 20 ? group.pathId.slice(0, 18) + '…' : group.pathId}
+                    {formatPathIdShort(group.pathId)}
                 </span>
                 <span class="ssp-group-count">{group.events.length}</span>
             </div>

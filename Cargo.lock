@@ -1071,10 +1071,6 @@ name = "doc-viewer"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "jaq-core",
- "jaq-interpret",
- "jaq-std",
- "jaq-syn",
  "markdown",
  "regex",
  "rmcp",
@@ -1961,10 +1957,6 @@ version = "0.1.0"
 dependencies = [
  "axum-test 16.4.1",
  "chrono",
- "jaq-core",
- "jaq-interpret",
- "jaq-std",
- "jaq-syn",
  "once_cell",
  "regex",
  "rmcp",
@@ -3618,6 +3610,10 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-test 14.10.0",
+ "jaq-core",
+ "jaq-interpret",
+ "jaq-std",
+ "jaq-syn",
  "rmcp",
  "serde",
  "serde_json",

@@ -17,3 +17,6 @@ export * from './components/CodeViewer';
 
 // Re-export session utilities
 export * from './session';
+
+// Re-export shared theme system
+export * from './store/theme';

@@ -60,7 +60,9 @@ use tracing_subscriber::{
 };
 
 // Session management module
+pub mod query;
 pub mod session;
+pub mod source;
 
 // Re-export commonly used types
 pub use axum;

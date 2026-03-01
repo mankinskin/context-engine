@@ -1,6 +1,5 @@
 //! Source file viewing and resolution.
 
-use std::path::PathBuf;
 use tracing::{
     debug,
     error,
@@ -8,18 +7,26 @@ use tracing::{
     instrument,
     warn,
 };
-use viewer_api::axum::{
-    extract::{
-        Path,
-        Query,
-        State,
+use viewer_api::{
+    axum::{
+        extract::{
+            Path,
+            Query,
+            State,
+        },
+        http::{
+            HeaderMap,
+            StatusCode,
+        },
+        response::Json,
     },
-    http::{
-        HeaderMap,
-        StatusCode,
+    source::{
+        extract_snippet,
     },
-    response::Json,
 };
+
+// Re-export shared utilities so crate-level code can access them
+pub use viewer_api::source::{detect_language, resolve_source_path};
 
 use crate::{
     handlers::to_unix_path,
@@ -33,50 +40,6 @@ use crate::{
         SourceQuery,
     },
 };
-
-/// Detect language from file extension
-pub fn detect_language(path: &str) -> String {
-    let ext = path.rsplit('.').next().unwrap_or("");
-    match ext {
-        "rs" => "rust",
-        "ts" | "tsx" => "typescript",
-        "js" | "jsx" => "javascript",
-        "json" => "json",
-        "toml" => "toml",
-        "yaml" | "yml" => "yaml",
-        "md" => "markdown",
-        "html" => "html",
-        "css" => "css",
-        _ => "plaintext",
-    }
-    .to_string()
-}
-
-/// Sanitize and resolve source path
-pub fn resolve_source_path(
-    workspace_root: &PathBuf,
-    path: &str,
-) -> Result<PathBuf, String> {
-    // Normalize path separators
-    let normalized = path.replace('\\', "/");
-
-    // Remove leading slashes
-    let clean_path = normalized.trim_start_matches('/');
-
-    // Check for path traversal
-    if clean_path.contains("..") {
-        return Err("Path traversal not allowed".to_string());
-    }
-
-    let full_path = workspace_root.join(clean_path);
-
-    // Verify the path is within workspace
-    if !full_path.starts_with(workspace_root) {
-        return Err("Path outside workspace".to_string());
-    }
-
-    Ok(full_path)
-}
 
 /// Get full source file content or snippet around a line
 #[instrument(skip(state, headers), fields(workspace_root = %to_unix_path(&state.workspace_root)))]
@@ -119,16 +82,9 @@ pub async fn get_source(
 
     // If line is specified, return a snippet
     if let Some(line) = query.line {
-        let lines: Vec<&str> = content.lines().collect();
-        let total_lines = lines.len();
-
-        let line = line.min(total_lines).max(1);
-        let start_line = line.saturating_sub(query.context).max(1);
-        let end_line = (line + query.context).min(total_lines);
-
-        let snippet_lines: Vec<&str> =
-            lines[(start_line - 1)..end_line].to_vec();
-        let snippet_content = snippet_lines.join("\n");
+        let (snippet_content, start_line, end_line) =
+            extract_snippet(&content, line, query.context);
+        let line = line.min(content.lines().count()).max(1);
 
         // Only log if verbose or first request in session
         if verbose || request_count == Some(1) {
