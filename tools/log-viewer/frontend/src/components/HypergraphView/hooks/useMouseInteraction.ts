@@ -8,6 +8,7 @@ import { mat4Inverse, screenToRay, rayPlaneIntersectGeneral, vec3Sub, vec3Normal
 import { raySphere } from '../utils/math';
 import type { GraphLayout, LayoutNode } from '../layout';
 import type { CameraController } from './useCamera';
+import { selectHighlightMode } from '../../../store';
 
 export interface InteractionState {
     dragIdx: number;
@@ -110,14 +111,22 @@ export function useMouseInteraction(
                     if (bestIdx >= 0) {
                         const node = layout.nodeMap.get(bestIdx);
                         if (node) {
-                            inter.dragIdx = bestIdx;
-                            // Drag plane perpendicular to view direction through the node
-                            const nodePos: Vec3 = [node.x, node.y, node.z];
-                            const camPos = camera.getCamPos();
-                            inter.dragPlaneNormal = vec3Normalize(vec3Sub(camPos, nodePos));
-                            inter.dragPlanePoint = nodePos;
-                            const pt = rayPlaneIntersectGeneral(ray, nodePos, inter.dragPlaneNormal);
-                            if (pt) inter.dragOffset = [node.x - pt[0], node.y - pt[1], node.z - pt[2]];
+                            if (selectHighlightMode.value) {
+                                // In layout mode, nodes are positioned by the
+                                // focused-layout algorithm — dragging would fight
+                                // the layout projection. Just select immediately.
+                                inter.selectedIdx = bestIdx;
+                                setSelectedIdx(bestIdx);
+                            } else {
+                                inter.dragIdx = bestIdx;
+                                // Drag plane perpendicular to view direction through the node
+                                const nodePos: Vec3 = [node.x, node.y, node.z];
+                                const camPos = camera.getCamPos();
+                                inter.dragPlaneNormal = vec3Normalize(vec3Sub(camPos, nodePos));
+                                inter.dragPlanePoint = nodePos;
+                                const pt = rayPlaneIntersectGeneral(ray, nodePos, inter.dragPlaneNormal);
+                                if (pt) inter.dragOffset = [node.x - pt[0], node.y - pt[1], node.z - pt[2]];
+                            }
                         }
                         e.preventDefault();
                     } else {
