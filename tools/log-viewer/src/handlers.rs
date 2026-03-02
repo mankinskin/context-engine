@@ -16,8 +16,9 @@ use viewer_api::axum::{
     http::{
         HeaderMap,
         StatusCode,
+        header,
     },
-    response::Json,
+    response::{Json, IntoResponse},
 };
 
 use crate::{
@@ -426,4 +427,60 @@ pub async fn query_log(
         matches,
         total_matches,
     }))
+}
+
+/// Get function signatures for a log file
+///
+/// Returns a JSON object mapping function names to their parsed fn_sig objects.
+/// The signatures are generated alongside log files in `target/debug_signatures/`.
+/// Response is cached with a long max-age since signatures don't change for a given log file.
+#[instrument(skip(state), fields(signatures_dir = %to_unix_path(&state.signatures_dir)))]
+pub async fn get_signatures(
+    State(state): State<AppState>,
+    Path(name): Path<String>,
+) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+    debug!(file = %name, "Getting signatures for log file");
+
+    // Validate filename (prevent path traversal)
+    if name.contains("..") || name.contains('/') || name.contains('\\') {
+        warn!(file = %name, "Invalid filename - path traversal attempt");
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: "Invalid filename".to_string(),
+            }),
+        ));
+    }
+
+    // Replace .log extension with .json for the signatures file
+    let sig_name = if name.ends_with(".log") {
+        format!("{}.json", &name[..name.len() - 4])
+    } else {
+        format!("{}.json", name)
+    };
+
+    let path = state.signatures_dir.join(&sig_name);
+    debug!(path = %to_unix_path(&path), "Reading signatures file");
+
+    let content = std::fs::read_to_string(&path).map_err(|e| {
+        // Return empty object if no signatures file exists (not an error)
+        debug!(error = %e, path = %to_unix_path(&path), "No signatures file found, returning empty");
+        (
+            StatusCode::NOT_FOUND,
+            Json(ErrorResponse {
+                error: format!("No signatures file found for: {}", name),
+            }),
+        )
+    })?;
+
+    info!(file = %sig_name, bytes = content.len(), "Served signatures file");
+
+    // Return with cache headers - signatures don't change for a given log file
+    Ok((
+        [
+            (header::CONTENT_TYPE, "application/json"),
+            (header::CACHE_CONTROL, "public, max-age=86400, immutable"),
+        ],
+        content,
+    ))
 }

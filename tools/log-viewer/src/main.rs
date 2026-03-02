@@ -165,6 +165,7 @@ mod tests {
 
         let state = AppState {
             log_dir: log_dir.path().to_path_buf(),
+            signatures_dir: log_dir.path().parent().unwrap_or(log_dir.path()).join("debug_signatures"),
             workspace_root: workspace_dir.path().to_path_buf(),
             parser: Arc::new(LogParser::new()),
             sessions: Arc::new(RwLock::new(HashMap::new())),

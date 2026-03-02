@@ -53,6 +53,7 @@ pub type SessionStore = Arc<RwLock<HashMap<String, SessionConfig>>>;
 #[derive(Clone)]
 pub struct AppState {
     pub log_dir: PathBuf,
+    pub signatures_dir: PathBuf,
     pub workspace_root: PathBuf,
     pub parser: Arc<LogParser>,
     /// Session store for per-client configuration
@@ -61,8 +62,15 @@ pub struct AppState {
 
 /// Create the application state from config
 pub fn create_app_state_from_config(config: &Config) -> AppState {
+    let log_dir = config.resolve_log_dir();
+    // Signatures directory is sibling to log directory (target/debug_signatures/)
+    let signatures_dir = log_dir
+        .parent()
+        .unwrap_or(&log_dir)
+        .join("debug_signatures");
     AppState {
-        log_dir: config.resolve_log_dir(),
+        log_dir,
+        signatures_dir,
         workspace_root: config.resolve_workspace_root(),
         parser: Arc::new(LogParser::new()),
         sessions: Arc::new(RwLock::new(HashMap::new())),
@@ -98,8 +106,15 @@ pub fn create_app_state(
             path
         });
 
+    // Signatures directory is sibling to log directory (target/debug_signatures/)
+    let signatures_dir = log_dir
+        .parent()
+        .unwrap_or(&log_dir)
+        .join("debug_signatures");
+
     AppState {
         log_dir,
+        signatures_dir,
         workspace_root,
         parser: Arc::new(LogParser::new()),
         sessions: Arc::new(RwLock::new(HashMap::new())),

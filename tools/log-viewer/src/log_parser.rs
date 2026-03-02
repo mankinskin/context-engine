@@ -126,8 +126,8 @@ struct TracingJson {
     level: Option<String>,
     fields: Option<serde_json::Value>,
     target: Option<String>,
-    span: Option<SpanInfo>,
-    spans: Option<Vec<SpanInfo>>,
+    span: Option<SpanEntry>,
+    spans: Option<Vec<SpanEntry>>,
     #[serde(rename = "filename")]
     file: Option<String>,
     #[serde(rename = "line_number")]
@@ -139,6 +139,41 @@ struct SpanInfo {
     name: Option<String>,
     #[serde(flatten)]
     fields: HashMap<String, serde_json::Value>,
+}
+
+/// Wrapper that deserializes from either a string or a SpanInfo object.
+/// New format: `"function_name"` → SpanInfo { name: Some("function_name"), fields: {} }
+/// Old format: `{"name": "function_name", ...}` → SpanInfo as-is
+#[derive(Debug)]
+struct SpanEntry(SpanInfo);
+
+impl<'de> serde::Deserialize<'de> for SpanEntry {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = serde_json::Value::deserialize(deserializer)?;
+        match value {
+            serde_json::Value::String(name) => Ok(SpanEntry(SpanInfo {
+                name: Some(name),
+                fields: HashMap::new(),
+            })),
+            serde_json::Value::Object(_) => {
+                let info: SpanInfo =
+                    serde_json::from_value(serde_json::Value::Object(
+                        value
+                            .as_object()
+                            .cloned()
+                            .unwrap_or_default(),
+                    ))
+                    .map_err(serde::de::Error::custom)?;
+                Ok(SpanEntry(info))
+            },
+            _ => Err(serde::de::Error::custom(
+                "span must be a string or object",
+            )),
+        }
+    }
 }
 
 /// Parser for log files
@@ -211,12 +246,15 @@ impl LogParser {
             self.extract_message_and_type(&json);
 
         // Extract span name
-        let span_name =
-            json.span.as_ref().and_then(|s| s.name.clone()).or_else(|| {
+        let span_name = json
+            .span
+            .as_ref()
+            .and_then(|s| s.0.name.clone())
+            .or_else(|| {
                 json.spans
                     .as_ref()
                     .and_then(|spans| spans.last())
-                    .and_then(|s| s.name.clone())
+                    .and_then(|s| s.0.name.clone())
             });
 
         // Calculate depth from spans array
@@ -242,7 +280,7 @@ impl LogParser {
 
         // Also extract fields from current span
         if let Some(span) = &json.span {
-            for (key, value) in &span.fields {
+            for (key, value) in &span.0.fields {
                 if key != "name" {
                     fields.insert(key.clone(), value.clone());
                 }
@@ -336,7 +374,7 @@ impl LogParser {
         if message.contains("new") || message.contains("enter") {
             // Check if this is a span enter/new event
             if let Some(span) = &json.span {
-                if span.name.is_some() {
+                if span.0.name.is_some() {
                     if message.contains("new") {
                         event_type = "span_new".to_string();
                     } else {
@@ -357,7 +395,7 @@ impl LogParser {
         // If message is empty, use target or generate a description
         if message.is_empty() {
             if let Some(span) = &json.span {
-                if let Some(name) = &span.name {
+                if let Some(name) = &span.0.name {
                     message = format!("Span: {}", name);
                     event_type = "span_enter".to_string();
                 }

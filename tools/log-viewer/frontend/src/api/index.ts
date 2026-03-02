@@ -36,4 +36,5 @@ export const searchLogs = impl.searchLogs;
 export const queryLogs = impl.queryLogs;
 export const fetchSourceFile = impl.fetchSourceFile;
 export const fetchSourceSnippet = impl.fetchSourceSnippet;
+export const fetchSignatures = impl.fetchSignatures;
 

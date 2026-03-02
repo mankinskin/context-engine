@@ -12,7 +12,8 @@ import {
   parseBacktrace, 
   getRelevantFrames,
   spanNameToColor,
-  depthToColor
+  depthToColor,
+  formatSignature
 } from './utils';
 
 interface Props {
@@ -30,9 +31,10 @@ interface Props {
   onHeaderWheel?: (e: WheelEvent) => void; // Wheel scroll handler for header column
   hoveredSpanName?: string | null; // Currently hovered span name for highlighting
   onSpanHover?: (spanName: string | null) => void; // Callback when span is hovered
+  signatures?: Record<string, unknown>; // Function signatures indexed by function name
 }
 
-export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth = 500, onHeaderWheel, hoveredSpanName, onSpanHover }: Props) {
+export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect, expandAll, isExpanded, onToggleExpand, headerCellRef, headerScrollLeft = 0, headerColWidth = 500, onHeaderWheel, hoveredSpanName, onSpanHover, signatures }: Props) {
   // Local state for legacy mode
   const [localExpanded, setLocalExpanded] = useState(false);
   
@@ -119,6 +121,12 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
     }
   };
 
+  // Look up fn_sig from the signatures map for the current span name
+  const fnSig = entry.span_name && signatures ? signatures[entry.span_name] as { name?: string; self_type?: string; params?: Array<Record<string, string>>; return_type?: string } | undefined : undefined;
+  
+  // Format signature as a compact string for tooltip
+  const sigTooltip = fnSig ? formatSignature(fnSig) : undefined;
+
   // Render as flex row with both columns
   return (
     <div 
@@ -170,7 +178,7 @@ export function LogEntryRow({ entry, showRaw, searchQuery, isSelected, onSelect,
                 {isPanic && <span class="panic-badge"><Flame size={8} /></span>}
                 <span class="entry-meta">#{entry.line_number}</span>
                 {entry.timestamp && <span class="entry-meta">{formatTimestamp(entry.timestamp)}</span>}
-                {entry.span_name && <span class="span-name">{entry.span_name}</span>}
+                {entry.span_name && <span class="span-name" title={sigTooltip}>{entry.span_name}{fnSig?.return_type && <span class="sig-return-type"> → {fnSig.return_type}</span>}</span>}
                 {isPanic ? (
                   <span class="entry-message panic-msg" dangerouslySetInnerHTML={{ __html: highlightMatch(entry.message, searchQuery) }} />
                 ) : (

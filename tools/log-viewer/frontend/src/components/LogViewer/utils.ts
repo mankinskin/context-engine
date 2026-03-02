@@ -130,3 +130,20 @@ export function depthToColor(depth: number, saturation = 40, lightness = 50): st
   const hue = (depth * 50 + 180) % 360;
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
+
+/**
+ * Format a fn_sig object into a readable function signature string for tooltips.
+ * Input: { name: "foo", params: [{self: "&self"}, {name: "x", type: "Type"}], return_type: "Result" }
+ * Output: "fn foo(&self, x: Type) -> Result"
+ */
+export function formatSignature(sig: { name?: string; self_type?: string; params?: Array<Record<string, string>>; return_type?: string }): string {
+  if (!sig.name) return '';
+  const params = (sig.params || []).map(p => {
+    if (p.self) return p.self;
+    if (p.name && p.type) return `${p.name}: ${p.type}`;
+    return '';
+  }).filter(Boolean).join(', ');
+  const ret = sig.return_type ? ` -> ${sig.return_type}` : '';
+  const selfType = sig.self_type ? `<${sig.self_type.split('::').pop()}>` : '';
+  return `fn ${sig.name}${selfType}(${params})${ret}`;
+}

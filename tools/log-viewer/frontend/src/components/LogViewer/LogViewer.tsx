@@ -6,7 +6,8 @@ import {
   selectedEntry, 
   selectEntry,
   isLoading,
-  currentFile 
+  currentFile,
+  signatures 
 } from '../../store';
 import { LogEntryRow } from './LogEntryRow';
 import { ChevronDown, ChevronRight } from '../Icons';
@@ -233,6 +234,7 @@ export function LogViewer() {
               onHeaderWheel={handleHeaderWheel}
               hoveredSpanName={hoveredSpanName}
               onSpanHover={setHoveredSpanName}
+              signatures={signatures.value}
             />
           ))}
         </div>

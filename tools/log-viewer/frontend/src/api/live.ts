@@ -90,3 +90,20 @@ export async function fetchSourceSnippet(
   if (!response.ok) throw new Error('Failed to fetch source snippet');
   return response.json();
 }
+
+// Cache for signatures (they are immutable for a given log file)
+const signaturesCache = new Map<string, Record<string, unknown>>();
+
+export async function fetchSignatures(name: string): Promise<Record<string, unknown>> {
+  const cached = signaturesCache.get(name);
+  if (cached) return cached;
+
+  const response = await fetch(`${API_BASE}/signatures/${encodeURIComponent(name)}`, withSession());
+  if (!response.ok) {
+    // Return empty object if no signatures file exists
+    return {};
+  }
+  const data = await response.json();
+  signaturesCache.set(name, data);
+  return data;
+}

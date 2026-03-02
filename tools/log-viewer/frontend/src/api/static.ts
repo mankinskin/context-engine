@@ -94,3 +94,8 @@ export async function fetchSourceSnippet(
 ): Promise<SourceSnippet> {
   throw new Error('Source snippets are not available in static demo mode');
 }
+
+export async function fetchSignatures(_name: string): Promise<Record<string, unknown>> {
+  // Signatures are not available in static demo mode
+  return {};
+}

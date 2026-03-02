@@ -19,6 +19,7 @@ use crate::{
     handlers::{
         get_log,
         get_session,
+        get_signatures,
         list_logs,
         query_log,
         search_log,
@@ -36,6 +37,7 @@ pub fn create_router(
     let mut router = Router::new()
         .route("/api/logs", get(list_logs))
         .route("/api/logs/:name", get(get_log))
+        .route("/api/signatures/:name", get(get_signatures))
         .route("/api/search/:name", get(search_log))
         .route("/api/query/:name", get(query_log))
         .route("/api/source/*path", get(get_source))

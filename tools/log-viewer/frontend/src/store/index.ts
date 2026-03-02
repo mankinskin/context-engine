@@ -22,6 +22,8 @@ interface FileState {
   activePathId: string | null;
   /** Step index within the active path group */
   activePathStep: number;
+  /** Function signatures indexed by function name (loaded from debug_signatures/) */
+  signatures: Record<string, unknown>;
 }
 
 // Create default file state
@@ -40,6 +42,7 @@ function createFileState(): FileState {
       activeSearchStep: -1,
       activePathId: null,
       activePathStep: -1,
+      signatures: {},
     };
 }
 
@@ -98,6 +101,9 @@ export const selectedEntry = computed(() => currentFileState.value.selectedEntry
 export const codeViewerFile = computed(() => currentFileState.value.codeViewerFile);
 export const codeViewerContent = computed(() => currentFileState.value.codeViewerContent);
 export const codeViewerLine = computed(() => currentFileState.value.codeViewerLine);
+
+/** Function signatures indexed by function name, for the current file */
+export const signatures = computed(() => currentFileState.value.signatures);
 
 // Computed values
 export const filteredEntries = computed(() => {
@@ -379,12 +385,16 @@ export async function loadLogFile(name: string) {
   try {
     const data = await api.fetchLogContent(name);
 
+    // Fetch signatures in parallel (non-blocking — empty object on failure)
+    const sigs = await api.fetchSignatures(name).catch(() => ({}));
+
     // Create state for this file, inheriting the currently active tab
       const states = new Map(fileStates.value);
       states.set(name, {
           ...createFileState(),
           entries: data.entries,
         activeTab: activeTab.value,
+        signatures: sigs,
       });
       fileStates.value = states;
 
