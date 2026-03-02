@@ -494,10 +494,9 @@
 }
 
 .search-state-panel .ssp-phase.phase-init { color: #60d8ff; }
-.search-state-panel .ssp-phase.phase-dequeue { color: #ffa860; }
+.search-state-panel .ssp-phase.phase-candidatemismatch { color: #ffa860; }
 .search-state-panel .ssp-phase.phase-compare { color: #ffdc60; }
-.search-state-panel .ssp-phase.phase-rootexplore { color: #c090ff; }
-.search-state-panel .ssp-phase.phase-matchadvance { color: #70e080; }
+.search-state-panel .ssp-phase.phase-candidatematch { color: #c090ff; }
 .search-state-panel .ssp-phase.phase-parentexplore { color: #ff9070; }
 .search-state-panel .ssp-phase.phase-done { color: #80ff80; }
 
@@ -1052,9 +1051,13 @@
 .ssp-phase.phase-childmatch { color: #70e080; }
 .ssp-phase.phase-child_mismatch,
 .ssp-phase.phase-childmismatch { color: #ff7060; }
-.ssp-phase.phase-dequeue { color: #ffa860; }
+.ssp-phase.phase-dequeue,
+.ssp-phase.phase-candidate_mismatch,
+.ssp-phase.phase-candidatemismatch { color: #ffa860; }
 .ssp-phase.phase-root_explore,
-.ssp-phase.phase-rootexplore { color: #c090ff; }
+.ssp-phase.phase-rootexplore,
+.ssp-phase.phase-candidate_match,
+.ssp-phase.phase-candidatematch { color: #c090ff; }
 .ssp-phase.phase-match_advance,
 .ssp-phase.phase-matchadvance { color: #70e080; }
 .ssp-phase.phase-parent_explore,

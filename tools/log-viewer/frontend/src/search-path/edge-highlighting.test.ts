@@ -309,9 +309,9 @@ describe('computeSearchEdgeKeys: end path', () => {
             end_edges: [er(100, 50), er(50, 30)],
         });
 
-        // root_explore is considered child-exploration, so end_path fallback is used
+        // candidate_match is considered child-exploration, so end_path fallback is used
         const trans: Transition = {
-            kind: 'root_explore', root: 100, width: 2, edge: er(5, 100),
+            kind: 'candidate_match', root: 100, width: 2, edge: er(5, 100),
         };
 
         const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);

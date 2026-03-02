@@ -114,8 +114,7 @@ function isChildExplorationTransition(trans: Transition | null): boolean {
         case 'visit_child':
         case 'child_match':
         case 'child_mismatch':
-        case 'root_explore':
-        case 'match_advance':
+        case 'candidate_match':
             return true;
         default:
             return false;

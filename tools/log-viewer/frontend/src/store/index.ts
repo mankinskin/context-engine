@@ -150,8 +150,9 @@ const _graphOpEventsIndexed = computed((): IndexedGraphOp[] => {
   const events: IndexedGraphOp[] = [];
   for (let i = 0; i < allEntries.length; i++) {
     const entry = allEntries[i]!;
-    // graph_op events (the only format emitted since the visualization rewrite)
-    if (entry.message === 'graph_op' && entry.fields?.graph_op) {
+    // graph_op events: detected by presence of the graph_op field
+    // (the message now contains a human-readable description)
+    if (entry.fields?.graph_op) {
       try {
         const data = typeof entry.fields.graph_op === 'string'
           ? JSON.parse(entry.fields.graph_op)

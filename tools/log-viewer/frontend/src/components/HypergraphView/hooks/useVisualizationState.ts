@@ -96,11 +96,9 @@ export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | nul
                 return trans.node;
             case 'done':
                 return trans.final_node;
-            case 'dequeue':
+            case 'candidate_mismatch':
                 return trans.node;
-            case 'root_explore':
-                return trans.root;
-            case 'match_advance':
+            case 'candidate_match':
                 return trans.root;
             case 'parent_explore':
                 return trans.current_root;

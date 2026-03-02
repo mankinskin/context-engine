@@ -56,7 +56,9 @@ expected: number,
 /**
  * Actual token index found
  */
-actual: number, } | { "kind": "done", final_node: number | null, success: boolean, } | { "kind": "dequeue", node: number, 
+    actual: number,
+} | { "kind": "done", final_node: number | null, success: boolean, } | {
+    "kind": "candidate_mismatch", node: number, 
 /**
  * Number of items remaining in queue
  */
@@ -64,7 +66,9 @@ queue_remaining: number,
 /**
  * Whether this is a parent or child candidate
  */
-is_parent: boolean, } | { "kind": "root_explore", root: number, 
+    is_parent: boolean,
+} | {
+    "kind": "candidate_match", root: number, 
 /**
  * Width of the root node for path visualization
  */
@@ -72,15 +76,9 @@ width: number,
 /**
  * Edge connecting start_path top → root
  */
-edge: EdgeRef, } | { "kind": "match_advance", root: number, 
-/**
- * Previous atom position
- */
-prev_pos: number, 
-/**
- * New atom position
- */
-new_pos: number, } | { "kind": "parent_explore", current_root: number, 
+    edge: EdgeRef,
+} | {
+    "kind": "parent_explore", current_root: number, 
 /**
  * Parent candidates added to queue
  */

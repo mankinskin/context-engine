@@ -347,15 +347,14 @@ export function useOverlayRenderer(
             // Insert edge keys (from insert-specific state: create_pattern, join, delta)
             const insertKeys = curVizState.insertEdgeKeys;
             // Track parent candidates across steps: parent_explore sets them,
-            // they persist through visit_parent / root_explore / match_advance,
+            // they persist through visit_parent / candidate_match,
             // and reset on any other transition (new phase).
             const trans = curVizState.transition;
             if (trans?.kind === 'parent_explore') {
                 lastParentCandidates = trans.parent_candidates;
             } else if (
                 trans?.kind !== 'visit_parent' &&
-                trans?.kind !== 'root_explore' &&
-                trans?.kind !== 'match_advance'
+                trans?.kind !== 'candidate_match'
             ) {
                 lastParentCandidates = [];
             }

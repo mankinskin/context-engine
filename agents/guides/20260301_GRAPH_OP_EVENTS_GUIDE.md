@@ -1,6 +1,6 @@
 # Graph Operation Events Guide
 
-**Date:** 2026-03-01
+**Date:** 2026-03-01 (updated 2026-03-02)
 **Tags:** visualization, events, transitions, CSS, search, insert, read
 
 Complete reference for `GraphOpEvent` transitions, the data they carry, when they fire, and how the frontend maps them to visual styles.
@@ -12,12 +12,11 @@ Complete reference for `GraphOpEvent` transitions, the data they carry, when the
 1. [Architecture Overview](#architecture-overview)
 2. [Event Structure](#event-structure)
 3. [Transition Reference](#transition-reference)
-   - [Common Transitions](#common-transitions)
    - [Search-Specific Transitions](#search-specific-transitions)
    - [Insert-Specific Transitions](#insert-specific-transitions)
 4. [LocationInfo Mapping](#locationinfo-mapping)
 5. [QueryInfo Fields](#queryinfo-fields)
-6. [GraphDelta & DeltaOp](#graphdelta--deltaop)
+6. [GraphMutation & DeltaOp](#graphmutation--deltaop)
 7. [CSS Class Mapping](#css-class-mapping)
    - [Node Classes](#node-classes)
    - [Search Path Classes](#search-path-classes)
@@ -37,9 +36,9 @@ Complete reference for `GraphOpEvent` transitions, the data they carry, when the
 └──────────────────┘                       └───────────┘                   └──────────────────┘
 ```
 
-1. **Rust crates** construct `GraphOpEvent` with a `Transition` variant, `LocationInfo`, `QueryInfo`, optional `GraphDelta`, and a `VizPathGraph` snapshot.
-2. `GraphOpEvent::emit()` serializes to JSON and writes a `tracing::info!` entry with `message == "graph_op"`.
-3. **log-viewer frontend** parses the `graph_op` field, feeds it into `useVisualizationState` to derive node/edge roles, which drive CSS classes and WebGPU overlay edge colors.
+1. **Rust crates** construct `GraphOpEvent` with a `Transition` variant, `LocationInfo`, `QueryInfo`, optional `GraphMutation`, and a `VizPathGraph` snapshot.
+2. `GraphOpEvent::emit()` serializes to JSON and writes a `tracing::info!` entry. The **message** is the human-readable `description` field; the `graph_op` field contains the serialized event payload.
+3. **log-viewer frontend** detects events by the **presence of the `graph_op` field** (not by message text), parses it, and feeds it into `useVisualizationState` to derive node/edge roles, which drive CSS classes and WebGPU overlay edge colors.
 
 ### Path ID Format
 
@@ -52,8 +51,6 @@ Events are scoped by `path_id` — a namespaced identifier:
 Examples:
 - `search/context-search/token-42-1234567890`
 - `insert/context-insert/seq-7-1234567890`
-
-Legacy IDs (no slashes) are detected by prefix heuristic (`search-…` / `insert-…`).
 
 Use `parse_path_id()` to decompose, `OperationType::from_path_id()` to infer the operation type.
 
@@ -68,10 +65,10 @@ pub struct GraphOpEvent {
     pub transition: Transition,   // What happened (see below)
     pub location: LocationInfo,   // Styling hints for the frontend
     pub query: QueryInfo,         // Search pattern context
-    pub description: String,      // Human-readable summary
+    pub description: String,      // Human-readable summary (also the log message)
     pub path_id: String,          // Operation scope identifier
     pub path_graph: VizPathGraph, // Full path snapshot after this step
-    pub graph_delta: Option<GraphDelta>, // Graph mutations (insert only)
+    pub graph_mutation: Option<GraphMutation>, // Graph mutations (insert only)
 }
 ```
 
@@ -87,9 +84,11 @@ GraphOpEvent::search(step, path_id, transition, path_graph, description)
 
 ## Transition Reference
 
-### Common Transitions
+All transitions are categorized by the crate that emits them.
 
-These transitions are used by search, insert, and (future) read operations.
+### Search-Specific Transitions
+
+These transitions are only emitted by `context-search`.
 
 #### `StartNode`
 
@@ -98,11 +97,9 @@ These transitions are used by search, insert, and (future) read operations.
 | `node` | `usize` | Token index the operation starts at |
 | `width` | `usize` | Atom count of the start token |
 
-**When fired:** First event of any operation. Marks the entry point for upward/downward traversal.
+**When fired:** First event of a search operation. Marks the entry point for upward/downward traversal.
 
-**Emitted by:**
-- `context-search` — when search begins at the initial candidate token
-- `context-insert` — (via shared path; inherited from search's start)
+**Emitted by:** `context-search` — when search begins at the initial candidate token.
 
 **Frontend effect:** Node gets `viz-start` class (bright cyan, pulsing glow). Sets `startNode` in viz state.
 
@@ -120,10 +117,9 @@ These transitions are used by search, insert, and (future) read operations.
 
 **When fired:** During bottom-up traversal when exploring a parent candidate. The search walks upward from the start token to find the longest matching prefix.
 
-**Emitted by:**
-- `context-search` — when dequeuing and visiting a parent candidate
+**Emitted by:** `context-search` — when visiting a parent candidate from the BFS queue.
 
-**Frontend effect:** `to` node gets `viz-candidate-parent` class (orange with pulse). Edge from→to colored as candidate edge (muted violet, 30% alpha). `from` added to `involvedNodes`.
+**Frontend effect:** `to` node gets `viz-candidate-parent` class (orange with pulse). Edge from→to colored as candidate edge (muted violet, 30% alpha). The parent is pushed onto `start_path`.
 
 ---
 
@@ -140,10 +136,9 @@ These transitions are used by search, insert, and (future) read operations.
 
 **When fired:** During top-down comparison when walking down children to verify the query matches.
 
-**Emitted by:**
-- `context-search` — when comparing children of a root node against the query pattern
+**Emitted by:** `context-search` — when comparing children of a root node against the query pattern.
 
-**Frontend effect:** `to` node gets `viz-candidate-child` class (purple with pulse). Edge from→to colored as candidate edge. `from` added to `involvedNodes`.
+**Frontend effect:** `to` node gets `viz-candidate-child` class (purple with pulse). Edge from→to colored as candidate edge. Child pushed onto (or replaces tail of) `end_path`.
 
 ---
 
@@ -156,8 +151,7 @@ These transitions are used by search, insert, and (future) read operations.
 
 **When fired:** When a child token's content matches the expected query token at `cursor_pos`.
 
-**Emitted by:**
-- `context-search` — during child comparison in `process_child_comparison`
+**Emitted by:** `context-search` — during child comparison in `process_child_comparison`.
 
 **Frontend effect:** Node gets `viz-matched` class (green). `query.active_token` set to the compared node. `query.matched_positions` updated to include `cursor_pos`.
 
@@ -174,8 +168,7 @@ These transitions are used by search, insert, and (future) read operations.
 
 **When fired:** When a child token's content does not match the expected query token.
 
-**Emitted by:**
-- `context-search` — during child comparison when tokens diverge
+**Emitted by:** `context-search` — during child comparison when tokens diverge.
 
 **Frontend effect:** Node gets `viz-mismatched` class (red). `query.active_token` set to the compared node. Query panel shows mismatch indicator at `cursor_pos`.
 
@@ -190,32 +183,27 @@ These transitions are used by search, insert, and (future) read operations.
 
 **When fired:** Terminal event. Operation completed (either found a match or exhausted all candidates).
 
-**Emitted by:**
-- `context-search` — when search completes (match found or queue empty)
+**Emitted by:** `context-search` — when search completes (match found or queue empty).
 
 **Frontend effect:** If `success`, `final_node` gets `viz-completed`. No pulsing animations.
 
 ---
 
-### Search-Specific Transitions
-
-These are only emitted by `context-search`.
-
-#### `Dequeue`
+#### `CandidateMismatch`
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `node` | `usize` | Node popped from the BFS queue |
-| `queue_remaining` | `usize` | Items left in queue after pop |
-| `is_parent` | `bool` | Whether this is a parent (true) or child (false) candidate |
+| `node` | `usize` | Node that was rejected |
+| `queue_remaining` | `usize` | Items left in queue after rejection |
+| `is_parent` | `bool` | Whether this was a parent (true) or child (false) candidate |
 
-**When fired:** Each time a candidate is popped from the BFS priority queue for exploration. Occurs before `VisitParent` or `RootExplore`.
+**When fired:** When a candidate is rejected after processing — `ProcessResult::Skipped` was returned, meaning the candidate did not produce a root match.
 
-**Frontend effect:** Node gets `viz-selected` class. `pendingParents` / `pendingChildren` from `LocationInfo` show remaining queue.
+**Frontend effect:** Node gets `viz-selected` class. `pendingParents`/`pendingChildren` from `LocationInfo` show remaining queue. The rejected parent is popped from `start_path` (undoing the prior `VisitParent`).
 
 ---
 
-#### `RootExplore`
+#### `CandidateMatch`
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -223,23 +211,9 @@ These are only emitted by `context-search`.
 | `width` | `usize` | Width of the root node |
 | `edge` | `EdgeRef` | Edge from start_path top → root |
 
-**When fired:** When a parent candidate becomes the new root for downward comparison — the highest point in the upward path from which we now explore children.
+**When fired:** When a parent candidate becomes the new root — confirmed match. The search will now explore children downward from this root.
 
-**Frontend effect:** `root` gets `viz-root` class (gold ring via `::before` pseudo-element). Edge colored gold (`SP_ROOT_EDGE_COLOR`).
-
----
-
-#### `MatchAdvance`
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `root` | `usize` | Current root node |
-| `prev_pos` | `usize` | Previous atom cursor position |
-| `new_pos` | `usize` | New atom cursor position after advance |
-
-**When fired:** When the match cursor advances within the current root's span — the root's self-token matched and the cursor moved forward.
-
-**Frontend effect:** `QueryInfo.cursor_position` updated to `new_pos`. `query.matched_positions` extended. QueryPathPanel shows progress bar advancing.
+**Frontend effect:** `root` gets `viz-root` class (gold ring via `::before` pseudo-element). Edge colored gold (`SP_ROOT_EDGE_COLOR`). The root is "graduated" from `start_path` — popped off the top and set as the `root` node.
 
 ---
 
@@ -294,7 +268,7 @@ These are only emitted by `context-insert`.
 - Insert edge keys added: `original_node → left_fragment`, `original_node → right_fragment`
 - Edges colored warm orange (`INSERT_EDGE_COLOR`)
 
-**GraphDelta:** Typically carries `AddNode` for fragments and `RemoveNode` or `UpdateNode` for the original.
+**GraphMutation:** Typically carries `AddNode` for fragments and `RemoveNode` or `UpdateNode` for the original.
 
 ---
 
@@ -433,9 +407,9 @@ These are only emitted by `context-insert`.
 
 ---
 
-## GraphDelta & DeltaOp
+## GraphMutation & DeltaOp
 
-`GraphDelta` is populated only for insert operations. Contains an ordered list of `DeltaOp` mutations:
+`GraphMutation` is populated only for insert operations. Contains an ordered list of `DeltaOp` mutations:
 
 | DeltaOp Variant | Fields | Description |
 |-----------------|--------|-------------|
@@ -445,7 +419,7 @@ These are only emitted by `context-insert`.
 | `RemoveEdge` | `from`, `to`, `pattern_id` | Edge removed |
 | `UpdateNode` | `index`, `detail` | Node data changed (detail is human-readable) |
 
-**Frontend:** `InsertStatePanel` shows before/after diffs. Node indices in deltas are cross-referenced with viz state to highlight affected nodes.
+**Frontend:** `InsertStatePanel` shows before/after diffs. Node indices in mutations are cross-referenced with viz state to highlight affected nodes.
 
 ---
 
@@ -505,19 +479,32 @@ Applied based on transition-specific fields.
 
 Edge colors are set in the WebGPU overlay renderer (`useOverlayRenderer.ts`). Priority order (first match wins):
 
-| Priority | Condition | Color Constant | RGB | Alpha | Description |
-|----------|-----------|----------------|-----|-------|-------------|
-| 1 | `searchRootEdgeKeys.has(pairKey)` | `SP_ROOT_EDGE_COLOR` | (1.0, 0.85, 0.3) | 0.95 | Gold — root edge |
-| 2 | `searchStartEdgeKeys.has(pairKey)` | `SP_PATH_EDGE_COLOR` | (0.25, 0.75, 1.0) | 0.90 | Teal — upward start path |
-| 3 | `searchEndEdgeKeys.has(pairKey)` | `SP_PATH_EDGE_COLOR` | (0.25, 0.75, 1.0) | 0.90 | Teal — downward end path |
-| 4 | Legacy `pathEdgeKeys.has(pairKey)` | `PATH_EDGE_COLOR` | (0.1, 0.75, 0.95) | 0.90 | Cyan — trace_path fallback |
-| 5 | Candidate edge (endpoint in candidates) | `CANDIDATE_EDGE_COLOR` | (0.55, 0.4, 0.8) | 0.30 | Muted violet — pending |
-| 6a | Insert edge + join result | `INSERT_JOIN_EDGE_COLOR` | (0.5, 0.85, 0.5) | 0.85 | Green — join result edge |
-| 6b | Insert edge (non-join) | `INSERT_EDGE_COLOR` | (1.0, 0.55, 0.2) | 0.85 | Warm orange — insert edge |
-| 7 | Selected node parent edge | `PARENT_EDGE_COLOR` | (0.95, 0.65, 0.2) | — | Amber — parent of selected |
-| 8 | Selected node child edge | `CHILD_EDGE_COLOR` | (0.3, 0.7, 0.9) | — | Teal — child of selected |
+| Priority | Condition | Color Constant | RGB | Alpha | edgeType | Description |
+|----------|-----------|----------------|-----|-------|----------|-------------|
+| 1 | `searchRootEdgeKeys.has(pairKey)` | `SP_ROOT_EDGE_COLOR` | (1.0, 0.85, 0.3) | 0.95 | 3 | Gold — root edge (bidirectional radiance) |
+| 2 | `searchStartEdgeKeys.has(pairKey)` | `SP_PATH_EDGE_COLOR` | (0.25, 0.75, 1.0) | 0.90 | 2 | Teal — upward start path (arrow toward parent/A) |
+| 3 | `searchEndEdgeKeys.has(pairKey)` | `SP_PATH_EDGE_COLOR` | (0.25, 0.75, 1.0) | 0.90 | 4 | Teal — downward end path (arrow toward child/B) |
+| 4 | Legacy `pathEdgeKeys.has(pairKey)` | `PATH_EDGE_COLOR` | (0.1, 0.75, 0.95) | 0.90 | 5 | Cyan — trace_path fallback |
+| 5 | Candidate edge (endpoint in candidates) | `CANDIDATE_EDGE_COLOR` | (0.55, 0.4, 0.8) | 0.30 | 6 | Muted violet — pending |
+| 6a | Insert edge + join result | `INSERT_JOIN_EDGE_COLOR` | (0.5, 0.85, 0.5) | 0.85 | 7 | Green — join result edge |
+| 6b | Insert edge (non-join) | `INSERT_EDGE_COLOR` | (1.0, 0.55, 0.2) | 0.85 | 7 | Warm orange — insert edge |
+| 7 | Selected node parent edge | `PARENT_EDGE_COLOR` | (0.95, 0.65, 0.2) | — | 1 | Amber — parent of selected |
+| 8 | Selected node child edge | `CHILD_EDGE_COLOR` | (0.3, 0.7, 0.9) | — | 1 | Teal — child of selected |
 
 Edge pair keys are computed as `(from << 16) | to` via `edgePairKey()`.
+
+### Edge Type Encoding (WGSL shader)
+
+| edgeType | Description | Arrow |
+|----------|-------------|-------|
+| 0 | Grid/simple | None |
+| 1 | Normal edge | None (subtle energy flow) |
+| 2 | Search path start | Arrow toward A (parent) |
+| 3 | Search path root | Bidirectional golden radiance |
+| 4 | Search path end | Arrow toward B (child) |
+| 5 | Trace path | Gentle flow |
+| 6 | Candidate edge | Muted violet pulse |
+| 7 | Insert edge | Warm orange/green beam |
 
 ---
 
@@ -532,9 +519,8 @@ Transition kind → timeline badge color in `SearchStatePanel` / `InsertStatePan
 | `visit_child` | Purple | `#c090ff` |
 | `child_match` | Green | `#70e080` |
 | `child_mismatch` | Red | `#ff7060` |
-| `dequeue` | Orange | `#ffa860` |
-| `root_explore` | Purple | `#c090ff` |
-| `match_advance` | Green | `#70e080` |
+| `candidate_mismatch` | Orange | `#ffa860` |
+| `candidate_match` | Purple | `#c090ff` |
 | `parent_explore` | Red-orange | `#ff9070` |
 | `split_start` | Red-orange | `#ff9070` |
 | `split_complete` | Green | `#70e080` |
@@ -638,11 +624,21 @@ read/context-read/<semantic-id>
 
 | File | Role |
 |------|------|
-| `crates/context-trace/src/graph/visualization.rs` | Transition enum, GraphOpEvent, LocationInfo, QueryInfo, GraphDelta |
+| `crates/context-trace/src/graph/visualization.rs` | Transition enum, GraphOpEvent, LocationInfo, QueryInfo, GraphMutation |
+| `crates/context-trace/src/graph/search_path.rs` | VizPathGraph and apply_transition (start_path/end_path management) |
 | `crates/context-search/src/search/mod.rs` | Search event emission (~10 call sites) |
 | `crates/context-insert/src/insert/context.rs` | Insert event emission (split, join start/complete) |
 | `crates/context-insert/src/join/context/frontier.rs` | JoinStep emission |
 | `crates/context-insert/src/join/context/node/merge/iter.rs` | CreatePattern emission |
 | `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useVisualizationState.ts` | Transition → viz state derivation |
 | `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useOverlayRenderer.ts` | Edge color logic |
+| `tools/log-viewer/frontend/src/search-path/edge-highlighting.ts` | Search path edge key computation |
 | `tools/log-viewer/frontend/src/components/HypergraphView/hypergraph.css` | Node CSS classes |
+| `tools/log-viewer/frontend/src/components/HypergraphView/hypergraph.wgsl` | WebGPU shader (arrow rendering) |
+
+---
+
+## Changelog
+
+- **2026-03-02:** Renamed `Dequeue` → `CandidateMismatch`, `RootExplore` → `CandidateMatch`, removed `MatchAdvance`. Renamed `GraphDelta` → `GraphMutation`. Removed legacy path_id handling. Fixed emit message to use description. Moved StartNode, VisitParent, VisitChild, ChildMatch, ChildMismatch, Done from common to search-specific. Fixed start_path cleanup on CandidateMismatch. Added edgeType encoding table.
+- **2026-03-01:** Initial guide created (Phase 8).

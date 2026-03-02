@@ -11,7 +11,7 @@
  */
 import { useMemo } from 'preact/hooks';
 import { activePathEvent, activeSearchState } from '../../../store';
-import type { GraphOpEvent, GraphDelta, DeltaOp } from '../../../types/generated';
+import type { GraphOpEvent, GraphMutation, DeltaOp } from '../../../types/generated';
 
 // ── Phase identification ──
 
@@ -123,7 +123,7 @@ interface DeltaSummary {
     updatedNodes: number;
 }
 
-function computeDeltaSummary(delta: GraphDelta | null | undefined): DeltaSummary {
+function computeDeltaSummary(delta: GraphMutation | null | undefined): DeltaSummary {
     const summary: DeltaSummary = {
         addedNodes: 0,
         removedNodes: 0,
@@ -155,7 +155,7 @@ function DeltaOpRow({ op }: { op: DeltaOp }) {
     );
 }
 
-function DeltaSection({ delta }: { delta: GraphDelta }) {
+function DeltaSection({ delta }: { delta: GraphMutation }) {
     const summary = useMemo(() => computeDeltaSummary(delta), [delta]);
     const hasOps = delta.ops.length > 0;
 
@@ -191,7 +191,7 @@ export function InsertStatePanel() {
 
     const phase = getInsertPhase(event);
     const detail = getTransitionDetail(event);
-    const delta = event.graph_delta;
+    const delta = event.graph_mutation;
 
     return (
         <div class="insert-state-panel">
