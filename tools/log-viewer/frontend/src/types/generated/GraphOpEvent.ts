@@ -65,5 +65,4 @@ path_graph: VizPathGraph,
  * Populated for insert operations that modify the graph structure
  * (split, join, create pattern, etc.).
  */
-    graph_mutation: GraphMutation | null,
-};
+graph_mutation: GraphMutation | null, };

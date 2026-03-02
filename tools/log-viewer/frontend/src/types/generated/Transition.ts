@@ -8,122 +8,196 @@ import type { EdgeRef } from "./EdgeRef";
  * animation frame. The frontend uses these to update node styling and
  * draw trace paths.
  */
-export type Transition = { "kind": "start_node", node: number, 
+export type Transition = { "kind": "start_node", 
 /**
- * Token width (atom count) for path visualization
+ * Token index the operation starts at.
  */
-width: number, } | { "kind": "visit_parent", from: number, to: number, 
+node: number, 
 /**
- * Position in parent where we entered
+ * Atom count of the start token (for path width calculation).
+ */
+width: number, } | { "kind": "visit_parent", 
+/**
+ * Node we are ascending from.
+ */
+from: number, 
+/**
+ * Parent node being explored.
+ */
+to: number, 
+/**
+ * Position within parent where `from` appears.
  */
 entry_pos: number, 
 /**
- * Width of the parent node for path visualization
+ * Width (atom count) of the parent node.
  */
 width: number, 
 /**
- * Edge connecting from → to in the snapshot
+ * Edge connecting `from → to` in the snapshot.
  */
-edge: EdgeRef, } | { "kind": "visit_child", from: number, to: number, 
+edge: EdgeRef, } | { "kind": "visit_child", 
 /**
- * Child index within parent's pattern
+ * Parent node we are descending from.
+ */
+from: number, 
+/**
+ * Child node being explored.
+ */
+to: number, 
+/**
+ * Index within parent's pattern.
  */
 child_index: number, 
 /**
- * Width of the child node for path visualization
+ * Width (atom count) of the child node.
  */
 width: number, 
 /**
- * Edge connecting from → to in the snapshot
+ * Edge connecting `from → to` in the snapshot.
  */
 edge: EdgeRef, 
 /**
- * Whether this replaces the current end_path tail (vs. push)
+ * `true` if this replaces the current `end_path` tail (vs. push).
  */
-replace: boolean, } | { "kind": "child_match", node: number, 
+replace: boolean, } | { "kind": "child_match", 
 /**
- * Atom position in the query where match occurred
+ * The child node that matched.
  */
-cursor_pos: number, } | { "kind": "child_mismatch", node: number, 
+node: number, 
 /**
- * Atom position where mismatch was detected
+ * Atom position in the query where match occurred.
+ */
+cursor_pos: number, } | { "kind": "child_mismatch", 
+/**
+ * The child node that mismatched.
+ */
+node: number, 
+/**
+ * Atom position where mismatch was detected.
  */
 cursor_pos: number, 
 /**
- * Expected token index
+ * Token index that was expected.
  */
 expected: number, 
 /**
- * Actual token index found
+ * Token index that was found in the graph.
  */
-    actual: number,
-} | { "kind": "done", final_node: number | null, success: boolean, } | {
-    "kind": "candidate_mismatch", node: number, 
+actual: number, } | { "kind": "done", 
 /**
- * Number of items remaining in queue
+ * Result node if successful, `None` otherwise.
+ */
+final_node: number | null, 
+/**
+ * Whether the operation found a match.
+ */
+success: boolean, } | { "kind": "candidate_mismatch", 
+/**
+ * Node that was rejected.
+ */
+node: number, 
+/**
+ * Items left in queue after this rejection.
  */
 queue_remaining: number, 
 /**
- * Whether this is a parent or child candidate
+ * `true` if this was a parent candidate, `false` for child.
  */
-    is_parent: boolean,
-} | {
-    "kind": "candidate_match", root: number, 
+is_parent: boolean, } | { "kind": "candidate_match", 
 /**
- * Width of the root node for path visualization
+ * Root node being explored.
+ */
+root: number, 
+/**
+ * Width of the root node.
  */
 width: number, 
 /**
- * Edge connecting start_path top → root
+ * Edge from start_path top → root.
  */
-    edge: EdgeRef,
-} | {
-    "kind": "parent_explore", current_root: number, 
+edge: EdgeRef, } | { "kind": "parent_explore", 
 /**
- * Parent candidates added to queue
+ * Current root whose boundary was reached.
  */
-parent_candidates: Array<number>, } | { "kind": "split_start", node: number, 
+current_root: number, 
 /**
- * Position where split occurs
+ * Parent nodes added to the queue for further exploration.
  */
-split_position: number, } | { "kind": "split_complete", original_node: number, 
+parent_candidates: Array<number>, } | { "kind": "split_start", 
 /**
- * Left fragment (before split point)
+ * Token being split.
+ */
+node: number, 
+/**
+ * Atom position where the split occurs.
+ */
+split_position: number, } | { "kind": "split_complete", 
+/**
+ * The original node that was split.
+ */
+original_node: number, 
+/**
+ * Left fragment (atoms before split point), if created.
  */
 left_fragment: number | null, 
 /**
- * Right fragment (after split point)
+ * Right fragment (atoms after split point), if created.
  */
 right_fragment: number | null, } | { "kind": "join_start", 
 /**
- * Nodes being joined
+ * Nodes being joined.
  */
-nodes: Array<number>, } | { "kind": "join_step", left: number, right: number, 
+nodes: Array<number>, } | { "kind": "join_step", 
 /**
- * Result of joining (new or existing node)
+ * Left input node.
  */
-result: number, } | { "kind": "join_complete", result_node: number, } | { "kind": "create_pattern", 
+left: number, 
 /**
- * Parent token that owns this pattern
+ * Right input node.
+ */
+right: number, 
+/**
+ * Result node (new or reused).
+ */
+result: number, } | { "kind": "join_complete", 
+/**
+ * Final result of the join.
+ */
+result_node: number, } | { "kind": "create_pattern", 
+/**
+ * Token that owns the new pattern.
  */
 parent: number, 
 /**
- * Pattern ID within the parent
+ * Pattern index within the parent.
  */
 pattern_id: number, 
 /**
- * Child token indices
+ * Child token indices in the pattern.
  */
-children: Array<number>, } | { "kind": "create_root", node: number, 
+children: Array<number>, } | { "kind": "create_root", 
 /**
- * Width of the new token
+ * Newly created root token.
  */
-width: number, } | { "kind": "update_pattern", parent: number, pattern_id: number, 
+node: number, 
 /**
- * Old children
+ * Width (atom count) of the new root.
+ */
+width: number, } | { "kind": "update_pattern", 
+/**
+ * Token whose pattern is being updated.
+ */
+parent: number, 
+/**
+ * Index of the updated pattern.
+ */
+pattern_id: number, 
+/**
+ * Previous child sequence.
  */
 old_children: Array<number>, 
 /**
- * New children
+ * Updated child sequence.
  */
 new_children: Array<number>, };
