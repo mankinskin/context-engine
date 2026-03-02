@@ -175,7 +175,10 @@ export function HypergraphView() {
             }
             const selNode = curLayout.nodeMap.get(selectedIdx);
             if (selNode) {
-                camera.focusOn([selNode.x, selNode.y, selNode.z]);
+                // Use stable target position (tx/ty/tz) instead of animated
+                // x/y/z to avoid targeting an intermediate lerp position that
+                // shifts slightly between consecutive step changes.
+                camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
             }
         } else {
             // Deselected — animate back to original positions

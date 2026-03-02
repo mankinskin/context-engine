@@ -85,7 +85,16 @@ export function useCamera(): CameraController {
     );
 
     const focusOn = useCallback((target: Vec3) => {
-        stateRef.current.focusTarget = target;
+        const c = stateRef.current;
+        // Skip if already targeting (or at) essentially the same position.
+        // This prevents unnecessary animation restarts when the same node
+        // is re-focused across consecutive search steps.
+        const ref = c.focusTarget ?? c.target;
+        const dx = target[0] - ref[0];
+        const dy = target[1] - ref[1];
+        const dz = target[2] - ref[2];
+        if (dx * dx + dy * dy + dz * dz < 0.001) return;
+        c.focusTarget = target;
     }, []);
 
     const cancelFocus = useCallback(() => {
