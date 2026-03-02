@@ -23,6 +23,11 @@ export interface InteractionState {
     mouseY: number;
     selectedIdx: number;
     hoverIdx: number;
+    /** Node index hit on mouseDown in layout mode; selection deferred to mouseUp. -1 = none. */
+    clickedNode: number;
+    /** Screen-space mouse position at mouseDown (for click vs drag threshold). */
+    downMX: number;
+    downMY: number;
 }
 
 export interface TooltipData {
@@ -64,6 +69,9 @@ export function useMouseInteraction(
         mouseY: 0,
         selectedIdx: -1,
         hoverIdx: -1,
+        clickedNode: -1,
+        downMX: 0,
+        downMY: 0,
     });
 
     // Sync external selection changes to internal state
@@ -79,12 +87,18 @@ export function useMouseInteraction(
 
         const inter = interRef.current;
 
+        // Minimum screen-space distance (px) before a mousedown+move is
+        // considered a real drag rather than a sloppy click.
+        const DRAG_THRESHOLD = 5;
+
         const onMouseDown = (e: MouseEvent) => {
             const rect = container.getBoundingClientRect();
             inter.mouseX = e.clientX - rect.left;
             inter.mouseY = e.clientY - rect.top;
             inter.lastMX = e.clientX;
             inter.lastMY = e.clientY;
+            inter.downMX = e.clientX;
+            inter.downMY = e.clientY;
 
             const cw = container.clientWidth;
             const ch = container.clientHeight;
@@ -114,9 +128,8 @@ export function useMouseInteraction(
                             if (selectHighlightMode.value) {
                                 // In layout mode, nodes are positioned by the
                                 // focused-layout algorithm — dragging would fight
-                                // the layout projection. Just select immediately.
-                                inter.selectedIdx = bestIdx;
-                                setSelectedIdx(bestIdx);
+                                // the layout projection. Record the hit; select on mouseUp.
+                                inter.clickedNode = bestIdx;
                             } else {
                                 inter.dragIdx = bestIdx;
                                 // Drag plane perpendicular to view direction through the node
@@ -233,14 +246,40 @@ export function useMouseInteraction(
         };
 
         const onMouseUp = (e: MouseEvent) => {
-            if (inter.dragIdx >= 0 && e.button === 0) {
-                inter.selectedIdx = inter.dragIdx;
-                setSelectedIdx(inter.dragIdx);
-                // Camera focus is handled by the focused layout effect in HypergraphView,
-                // which accounts for layout-mode positions. Don't focus here to avoid
-                // briefly sending the camera toward the pre-layout position.
-            }
-            if (!inter.orbiting && !inter.panning && inter.dragIdx < 0 && e.button === 0) {
+            if (inter.clickedNode >= 0 && e.button === 0) {
+                // Layout-mode deferred selection: only select if the mouse is
+                // still over the same node that was hit on mouseDown.
+                const cw = container.clientWidth;
+                const ch = container.clientHeight;
+                const { viewProj } = camera.getViewProj(cw, ch);
+                const invVP = mat4Inverse(viewProj);
+                if (invVP) {
+                    const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
+                    let bestT = Infinity;
+                    let bestIdx = -1;
+                    for (const n of layout.nodes) {
+                        const t = raySphere(ray.origin, ray.direction, [n.x, n.y, n.z], n.radius * 1.5);
+                        if (t !== null && t < bestT) {
+                            bestT = t;
+                            bestIdx = n.index;
+                        }
+                    }
+                    if (bestIdx === inter.clickedNode) {
+                        inter.selectedIdx = inter.clickedNode;
+                        setSelectedIdx(inter.clickedNode);
+                    }
+                }
+            } else if (inter.dragIdx >= 0 && e.button === 0) {
+                // Only select if the mouse barely moved (click, not a real drag).
+                const dx = e.clientX - inter.downMX;
+                const dy = e.clientY - inter.downMY;
+                if (dx * dx + dy * dy > DRAG_THRESHOLD * DRAG_THRESHOLD) {
+                    // Real drag — don't change selection.
+                } else {
+                    inter.selectedIdx = inter.dragIdx;
+                    setSelectedIdx(inter.dragIdx);
+                }
+            } else if (!inter.orbiting && !inter.panning && inter.dragIdx < 0 && e.button === 0) {
                 inter.selectedIdx = -1;
                 setSelectedIdx(-1);
                 setTooltip(null);
@@ -248,6 +287,7 @@ export function useMouseInteraction(
             inter.dragIdx = -1;
             inter.orbiting = false;
             inter.panning = false;
+            inter.clickedNode = -1;
         };
 
         const onWheel = (e: WheelEvent) => {
