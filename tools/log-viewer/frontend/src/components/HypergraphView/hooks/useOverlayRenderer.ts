@@ -519,8 +519,16 @@ export function useOverlayRenderer(
                     && !connectedSet.has(n.index)
                     && !curVizInvolved.has(n.index);
                 el.style.opacity = dimmed ? '0.15' : '1';
+
+                // Imperative class management for selected/hover —
+                // avoids Preact re-renders that would strip reparented children.
+                el.classList.toggle('selected', n.index === inter.selectedIdx);
+                el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
+
                 const zIdx = Math.round((1 - screen.z) * 1000);
-                el.style.zIndex = String(zIdx);
+                // Selected node (especially expanded) should always be on top
+                // of its parents/siblings to prevent overlap.
+                el.style.zIndex = (n.index === inter.selectedIdx) ? '10000' : String(zIdx);
                 el.style.transform = `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
 
                 // Expanded parent: anchor at top-center so decomposition rows

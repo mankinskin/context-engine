@@ -254,8 +254,6 @@ export function HypergraphView() {
                     <NodeLayer
                         nodes={layout.nodes}
                         maxWidth={maxWidth}
-                        selectedIdx={selectedIdx}
-                        hoverIdx={hoverIdx}
                         vizState={vizState}
                     />
                 )}

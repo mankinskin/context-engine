@@ -132,6 +132,8 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
 // ── Layout constants ──
 const SPACING_X = 0.6;
 const SPACING_Y = 0.5;
+/** Extra vertical gap between the selected node and the first parent row. */
+const PARENT_PAD_Y = 0.9;
 
 /**
  * Camera-relative axes for screen-oriented layout.
@@ -185,29 +187,39 @@ export function computeFocusedLayout(
     // Anchor node has zero offset
     offsets.set(selectedIdx, { dRight: 0, dUp: 0 });
 
-    // ── Parents above ──
+    // ── Parents above in a multi-level fan, ordered by width ──
     const parents = selected.parentIndices
         .map(idx => layout.nodeMap.get(idx))
         .filter((n): n is LayoutNode => n != null);
 
-    // Group parents by width, sort ascending (smaller width = closer to selected)
+    // Group parents by width, sort groups ascending (smallest width = closest ring)
     const parentsByWidth = new Map<number, LayoutNode[]>();
     for (const p of parents) {
         if (!parentsByWidth.has(p.width)) parentsByWidth.set(p.width, []);
         parentsByWidth.get(p.width)!.push(p);
     }
-
     const sortedWidths = [...parentsByWidth.keys()].sort((a, b) => a - b);
-    for (let rowIdx = 0; rowIdx < sortedWidths.length; rowIdx++) {
-        const group = parentsByWidth.get(sortedWidths[rowIdx]!)!;
-        const rowUp = (rowIdx + 1) * SPACING_Y;
-        const totalW = (group.length - 1) * SPACING_X;
-        const halfW = totalW / 2;
-        for (let i = 0; i < group.length; i++) {
-            offsets.set(group[i]!.index, {
-                dRight: i * SPACING_X - halfW,
-                dUp: rowUp,
-            });
+
+    for (let ring = 0; ring < sortedWidths.length; ring++) {
+        const group = parentsByWidth.get(sortedWidths[ring]!)!;
+        const radius = PARENT_PAD_Y + (ring + 1) * SPACING_Y;
+        const count = group.length;
+
+        if (count === 1) {
+            // Single node in this ring: directly above
+            offsets.set(group[0]!.index, { dRight: 0, dUp: radius });
+        } else {
+            // Fan: spread nodes in an arc, wider for more nodes
+            const fanAngleRange = Math.min(Math.PI * 0.7, (count - 1) * 0.35);
+            const startAngle = (Math.PI - fanAngleRange) / 2;
+            for (let i = 0; i < count; i++) {
+                const t = i / (count - 1);
+                const angle = startAngle + t * fanAngleRange;
+                offsets.set(group[i]!.index, {
+                    dRight: -Math.cos(angle) * radius * 1.2,
+                    dUp: Math.sin(angle) * radius,
+                });
+            }
         }
     }
 
