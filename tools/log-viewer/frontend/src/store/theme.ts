@@ -74,6 +74,221 @@ const CINDER_THEME: ThemeColors = {
   smokeMoss: '#090a09',
 };
 
+// ── Extended preset type (adds optional effects to shared ThemePreset) ───────
+
+/** Log-viewer preset that extends the shared ThemePreset with optional effect overrides. */
+export interface LogViewerPreset extends ThemePreset {
+  effects?: Partial<EffectSettings>;
+}
+
+// ── Per-preset effect profiles ──────────────────────────────────────────────
+// Tuned to be subtle and low-resource. Only overrides vs DEFAULT_EFFECT_SETTINGS.
+
+const CINDER_EFFECTS: Partial<EffectSettings> = {
+  // Dark Souls: embers & sparks are signature; skip beams/glitter
+  sparksEnabled: true, sparkCount: 50, sparkSize: 80, sparkSpeed: 80,
+  embersEnabled: true, emberCount: 50, emberSize: 80, emberSpeed: 65,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 80,
+  smokeEnabled: true, smokeIntensity: 45, smokeSpeed: 45,
+  crtEnabled: true, crtScanlinesH: 20, crtScanlinesV: 10, crtEdgeShadow: 35, crtFlicker: 15,
+  grainIntensity: 25, vignetteStrength: 50, underglowStrength: 35,
+};
+
+const FROST_EFFECTS: Partial<EffectSettings> = {
+  // Icy: glitter (snowfall), subtle aurora beams; no fire
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: true, beamCount: 24, beamHeight: 40, beamSpeed: 30, beamDrift: 60,
+  glitterEnabled: true, glitterCount: 55, glitterSize: 55, glitterSpeed: 35,
+  cinderEnabled: true, cinderSize: 60,
+  smokeEnabled: true, smokeIntensity: 30, smokeSpeed: 35,
+  crtEnabled: true, crtScanlinesH: 12, crtScanlinesV: 8, crtEdgeShadow: 25, crtFlicker: 8,
+  grainIntensity: 12, vignetteStrength: 35, underglowStrength: 18,
+};
+
+const BLOOD_MOON_EFFECTS: Partial<EffectSettings> = {
+  // Crimson: heavy embers, some sparks, deep vignette
+  sparksEnabled: true, sparkCount: 30, sparkSize: 85, sparkSpeed: 55,
+  embersEnabled: true, emberCount: 55, emberSize: 85, emberSpeed: 50,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 85,
+  smokeEnabled: true, smokeIntensity: 50, smokeSpeed: 35,
+  crtEnabled: true, crtScanlinesH: 18, crtScanlinesV: 12, crtEdgeShadow: 45, crtFlicker: 18,
+  grainIntensity: 28, vignetteStrength: 55, underglowStrength: 35,
+};
+
+const VERDANT_EFFECTS: Partial<EffectSettings> = {
+  // Forest: gentle glitter (fireflies), misty smoke; no fire
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: true, glitterCount: 30, glitterSize: 45, glitterSpeed: 25,
+  cinderEnabled: true, cinderSize: 55,
+  smokeEnabled: true, smokeIntensity: 40, smokeSpeed: 25,
+  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 5, crtEdgeShadow: 25, crtFlicker: 8,
+  grainIntensity: 18, vignetteStrength: 40, underglowStrength: 22,
+};
+
+const VOID_EFFECTS: Partial<EffectSettings> = {
+  // Cosmic: starlight beams, star glitter, deep vignette
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: true, beamCount: 20, beamHeight: 50, beamSpeed: 22, beamDrift: 120,
+  glitterEnabled: true, glitterCount: 45, glitterSize: 45, glitterSpeed: 25,
+  cinderEnabled: true, cinderSize: 55,
+  smokeEnabled: true, smokeIntensity: 35, smokeSpeed: 25,
+  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 6, crtEdgeShadow: 35, crtFlicker: 6,
+  grainIntensity: 18, vignetteStrength: 50, underglowStrength: 18,
+};
+
+const AMBER_TERMINAL_EFFECTS: Partial<EffectSettings> = {
+  // Vintage CRT: strong scanlines, no particles
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 45,
+  smokeEnabled: true, smokeIntensity: 20, smokeSpeed: 35,
+  crtEnabled: true, crtScanlinesH: 55, crtScanlinesV: 35, crtEdgeShadow: 50, crtFlicker: 30,
+  grainIntensity: 30, vignetteStrength: 55, underglowStrength: 25,
+};
+
+const OCEAN_ABYSS_EFFECTS: Partial<EffectSettings> = {
+  // Deep sea: light-shaft beams, bioluminescent glitter, murky smoke
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: true, beamCount: 16, beamHeight: 55, beamSpeed: 18, beamDrift: 45,
+  glitterEnabled: true, glitterCount: 35, glitterSize: 40, glitterSpeed: 22,
+  cinderEnabled: true, cinderSize: 55,
+  smokeEnabled: true, smokeIntensity: 45, smokeSpeed: 22,
+  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 5, crtEdgeShadow: 30, crtFlicker: 6,
+  grainIntensity: 12, vignetteStrength: 45, underglowStrength: 18,
+};
+
+const ELYSIUM_EFFECTS: Partial<EffectSettings> = {
+  // Angelic light: beams dominant, gentle glitter
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: true, beamCount: 32, beamHeight: 40, beamSpeed: 30, beamDrift: 85,
+  glitterEnabled: true, glitterCount: 30, glitterSize: 50, glitterSpeed: 30,
+  cinderEnabled: true, cinderSize: 65,
+  smokeEnabled: true, smokeIntensity: 25, smokeSpeed: 30,
+  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 6, crtEdgeShadow: 22, crtFlicker: 6,
+  grainIntensity: 12, vignetteStrength: 30, underglowStrength: 20,
+};
+
+const SAKURA_EFFECTS: Partial<EffectSettings> = {
+  // Soft twilight: gentle glitter (petals), very subtle
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: true, glitterCount: 40, glitterSize: 55, glitterSpeed: 25,
+  cinderEnabled: true, cinderSize: 55,
+  smokeEnabled: true, smokeIntensity: 25, smokeSpeed: 25,
+  crtEnabled: true, crtScanlinesH: 6, crtScanlinesV: 4, crtEdgeShadow: 22, crtFlicker: 4,
+  grainIntensity: 10, vignetteStrength: 30, underglowStrength: 18,
+};
+
+const SOLARIZED_DARK_EFFECTS: Partial<EffectSettings> = {
+  // Clean professional: minimal effects
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 45,
+  smokeEnabled: true, smokeIntensity: 18, smokeSpeed: 25,
+  crtEnabled: true, crtScanlinesH: 6, crtScanlinesV: 4, crtEdgeShadow: 18, crtFlicker: 4,
+  grainIntensity: 8, vignetteStrength: 22, underglowStrength: 12,
+};
+
+const SOLARIZED_LIGHT_EFFECTS: Partial<EffectSettings> = {
+  // Light theme: very minimal
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 35,
+  smokeEnabled: false,
+  crtEnabled: false,
+  grainIntensity: 6, vignetteStrength: 12, underglowStrength: 8,
+};
+
+const HIGH_CONTRAST_EFFECTS: Partial<EffectSettings> = {
+  // Accessibility: no distractions
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 35,
+  smokeEnabled: false,
+  crtEnabled: false,
+  grainIntensity: 0, vignetteStrength: 8, underglowStrength: 8,
+};
+
+const COPPER_DUSK_EFFECTS: Partial<EffectSettings> = {
+  // Warm desert: subtle embers & sparks
+  sparksEnabled: true, sparkCount: 25, sparkSize: 70, sparkSpeed: 50,
+  embersEnabled: true, emberCount: 35, emberSize: 75, emberSpeed: 45,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 70,
+  smokeEnabled: true, smokeIntensity: 35, smokeSpeed: 30,
+  crtEnabled: true, crtScanlinesH: 14, crtScanlinesV: 8, crtEdgeShadow: 30, crtFlicker: 10,
+  grainIntensity: 22, vignetteStrength: 40, underglowStrength: 30,
+};
+
+const ARCTIC_EFFECTS: Partial<EffectSettings> = {
+  // Bright ice: clean, sparse glitter (snowflakes)
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: true, glitterCount: 22, glitterSize: 38, glitterSpeed: 22,
+  cinderEnabled: true, cinderSize: 35,
+  smokeEnabled: false,
+  crtEnabled: false,
+  grainIntensity: 4, vignetteStrength: 12, underglowStrength: 8,
+};
+
+const NEON_NOIR_EFFECTS: Partial<EffectSettings> = {
+  // Cyberpunk: neon beams & glitter, no fire
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: true, beamCount: 24, beamHeight: 35, beamSpeed: 35, beamDrift: 65,
+  glitterEnabled: true, glitterCount: 40, glitterSize: 50, glitterSpeed: 45,
+  cinderEnabled: true, cinderSize: 75,
+  smokeEnabled: true, smokeIntensity: 30, smokeSpeed: 35,
+  crtEnabled: true, crtScanlinesH: 22, crtScanlinesV: 14, crtEdgeShadow: 35, crtFlicker: 12,
+  grainIntensity: 18, vignetteStrength: 45, underglowStrength: 25,
+};
+
+const PARCHMENT_EFFECTS: Partial<EffectSettings> = {
+  // Old paper: film grain only, no particles
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: false,
+  cinderEnabled: true, cinderSize: 35,
+  smokeEnabled: false,
+  crtEnabled: false,
+  grainIntensity: 28, grainCoarseness: 55, grainSize: 40,
+  vignetteStrength: 35, underglowStrength: 12,
+};
+
+const EMERALD_NIGHT_EFFECTS: Partial<EffectSettings> = {
+  // Matrix terminal: CRT scanlines, subtle data-rain glitter
+  sparksEnabled: false,
+  embersEnabled: false,
+  beamsEnabled: false,
+  glitterEnabled: true, glitterCount: 30, glitterSize: 38, glitterSpeed: 55,
+  cinderEnabled: true, cinderSize: 45,
+  smokeEnabled: true, smokeIntensity: 22, smokeSpeed: 30,
+  crtEnabled: true, crtScanlinesH: 40, crtScanlinesV: 25, crtEdgeShadow: 40, crtFlicker: 18,
+  grainIntensity: 18, vignetteStrength: 40, underglowStrength: 18,
+};
+
 // ── Preset themes ────────────────────────────────────────────────────────────
 
 export const THEME_PRESETS: LogViewerPreset[] = [
@@ -751,221 +966,6 @@ export const THEME_PRESETS: LogViewerPreset[] = [
       effects: EMERALD_NIGHT_EFFECTS,
     },
 ];
-
-// ── Extended preset type (adds optional effects to shared ThemePreset) ───────
-
-/** Log-viewer preset that extends the shared ThemePreset with optional effect overrides. */
-export interface LogViewerPreset extends ThemePreset {
-  effects?: Partial<EffectSettings>;
-}
-
-// ── Per-preset effect profiles ──────────────────────────────────────────────
-// Tuned to be subtle and low-resource. Only overrides vs DEFAULT_EFFECT_SETTINGS.
-
-const CINDER_EFFECTS: Partial<EffectSettings> = {
-  // Dark Souls: embers & sparks are signature; skip beams/glitter
-  sparksEnabled: true, sparkCount: 50, sparkSize: 80, sparkSpeed: 80,
-  embersEnabled: true, emberCount: 50, emberSize: 80, emberSpeed: 65,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 80,
-  smokeEnabled: true, smokeIntensity: 45, smokeSpeed: 45,
-  crtEnabled: true, crtScanlinesH: 20, crtScanlinesV: 10, crtEdgeShadow: 35, crtFlicker: 15,
-  grainIntensity: 25, vignetteStrength: 50, underglowStrength: 35,
-};
-
-const FROST_EFFECTS: Partial<EffectSettings> = {
-  // Icy: glitter (snowfall), subtle aurora beams; no fire
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: true, beamCount: 24, beamHeight: 40, beamSpeed: 30, beamDrift: 60,
-  glitterEnabled: true, glitterCount: 55, glitterSize: 55, glitterSpeed: 35,
-  cinderEnabled: true, cinderSize: 60,
-  smokeEnabled: true, smokeIntensity: 30, smokeSpeed: 35,
-  crtEnabled: true, crtScanlinesH: 12, crtScanlinesV: 8, crtEdgeShadow: 25, crtFlicker: 8,
-  grainIntensity: 12, vignetteStrength: 35, underglowStrength: 18,
-};
-
-const BLOOD_MOON_EFFECTS: Partial<EffectSettings> = {
-  // Crimson: heavy embers, some sparks, deep vignette
-  sparksEnabled: true, sparkCount: 30, sparkSize: 85, sparkSpeed: 55,
-  embersEnabled: true, emberCount: 55, emberSize: 85, emberSpeed: 50,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 85,
-  smokeEnabled: true, smokeIntensity: 50, smokeSpeed: 35,
-  crtEnabled: true, crtScanlinesH: 18, crtScanlinesV: 12, crtEdgeShadow: 45, crtFlicker: 18,
-  grainIntensity: 28, vignetteStrength: 55, underglowStrength: 35,
-};
-
-const VERDANT_EFFECTS: Partial<EffectSettings> = {
-  // Forest: gentle glitter (fireflies), misty smoke; no fire
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: true, glitterCount: 30, glitterSize: 45, glitterSpeed: 25,
-  cinderEnabled: true, cinderSize: 55,
-  smokeEnabled: true, smokeIntensity: 40, smokeSpeed: 25,
-  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 5, crtEdgeShadow: 25, crtFlicker: 8,
-  grainIntensity: 18, vignetteStrength: 40, underglowStrength: 22,
-};
-
-const VOID_EFFECTS: Partial<EffectSettings> = {
-  // Cosmic: starlight beams, star glitter, deep vignette
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: true, beamCount: 20, beamHeight: 50, beamSpeed: 22, beamDrift: 120,
-  glitterEnabled: true, glitterCount: 45, glitterSize: 45, glitterSpeed: 25,
-  cinderEnabled: true, cinderSize: 55,
-  smokeEnabled: true, smokeIntensity: 35, smokeSpeed: 25,
-  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 6, crtEdgeShadow: 35, crtFlicker: 6,
-  grainIntensity: 18, vignetteStrength: 50, underglowStrength: 18,
-};
-
-const AMBER_TERMINAL_EFFECTS: Partial<EffectSettings> = {
-  // Vintage CRT: strong scanlines, no particles
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 45,
-  smokeEnabled: true, smokeIntensity: 20, smokeSpeed: 35,
-  crtEnabled: true, crtScanlinesH: 55, crtScanlinesV: 35, crtEdgeShadow: 50, crtFlicker: 30,
-  grainIntensity: 30, vignetteStrength: 55, underglowStrength: 25,
-};
-
-const OCEAN_ABYSS_EFFECTS: Partial<EffectSettings> = {
-  // Deep sea: light-shaft beams, bioluminescent glitter, murky smoke
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: true, beamCount: 16, beamHeight: 55, beamSpeed: 18, beamDrift: 45,
-  glitterEnabled: true, glitterCount: 35, glitterSize: 40, glitterSpeed: 22,
-  cinderEnabled: true, cinderSize: 55,
-  smokeEnabled: true, smokeIntensity: 45, smokeSpeed: 22,
-  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 5, crtEdgeShadow: 30, crtFlicker: 6,
-  grainIntensity: 12, vignetteStrength: 45, underglowStrength: 18,
-};
-
-const ELYSIUM_EFFECTS: Partial<EffectSettings> = {
-  // Angelic light: beams dominant, gentle glitter
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: true, beamCount: 32, beamHeight: 40, beamSpeed: 30, beamDrift: 85,
-  glitterEnabled: true, glitterCount: 30, glitterSize: 50, glitterSpeed: 30,
-  cinderEnabled: true, cinderSize: 65,
-  smokeEnabled: true, smokeIntensity: 25, smokeSpeed: 30,
-  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 6, crtEdgeShadow: 22, crtFlicker: 6,
-  grainIntensity: 12, vignetteStrength: 30, underglowStrength: 20,
-};
-
-const SAKURA_EFFECTS: Partial<EffectSettings> = {
-  // Soft twilight: gentle glitter (petals), very subtle
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: true, glitterCount: 40, glitterSize: 55, glitterSpeed: 25,
-  cinderEnabled: true, cinderSize: 55,
-  smokeEnabled: true, smokeIntensity: 25, smokeSpeed: 25,
-  crtEnabled: true, crtScanlinesH: 6, crtScanlinesV: 4, crtEdgeShadow: 22, crtFlicker: 4,
-  grainIntensity: 10, vignetteStrength: 30, underglowStrength: 18,
-};
-
-const SOLARIZED_DARK_EFFECTS: Partial<EffectSettings> = {
-  // Clean professional: minimal effects
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 45,
-  smokeEnabled: true, smokeIntensity: 18, smokeSpeed: 25,
-  crtEnabled: true, crtScanlinesH: 6, crtScanlinesV: 4, crtEdgeShadow: 18, crtFlicker: 4,
-  grainIntensity: 8, vignetteStrength: 22, underglowStrength: 12,
-};
-
-const SOLARIZED_LIGHT_EFFECTS: Partial<EffectSettings> = {
-  // Light theme: very minimal
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 35,
-  smokeEnabled: false,
-  crtEnabled: false,
-  grainIntensity: 6, vignetteStrength: 12, underglowStrength: 8,
-};
-
-const HIGH_CONTRAST_EFFECTS: Partial<EffectSettings> = {
-  // Accessibility: no distractions
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 35,
-  smokeEnabled: false,
-  crtEnabled: false,
-  grainIntensity: 0, vignetteStrength: 8, underglowStrength: 8,
-};
-
-const COPPER_DUSK_EFFECTS: Partial<EffectSettings> = {
-  // Warm desert: subtle embers & sparks
-  sparksEnabled: true, sparkCount: 25, sparkSize: 70, sparkSpeed: 50,
-  embersEnabled: true, emberCount: 35, emberSize: 75, emberSpeed: 45,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 70,
-  smokeEnabled: true, smokeIntensity: 35, smokeSpeed: 30,
-  crtEnabled: true, crtScanlinesH: 14, crtScanlinesV: 8, crtEdgeShadow: 30, crtFlicker: 10,
-  grainIntensity: 22, vignetteStrength: 40, underglowStrength: 30,
-};
-
-const ARCTIC_EFFECTS: Partial<EffectSettings> = {
-  // Bright ice: clean, sparse glitter (snowflakes)
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: true, glitterCount: 22, glitterSize: 38, glitterSpeed: 22,
-  cinderEnabled: true, cinderSize: 35,
-  smokeEnabled: false,
-  crtEnabled: false,
-  grainIntensity: 4, vignetteStrength: 12, underglowStrength: 8,
-};
-
-const NEON_NOIR_EFFECTS: Partial<EffectSettings> = {
-  // Cyberpunk: neon beams & glitter, no fire
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: true, beamCount: 24, beamHeight: 35, beamSpeed: 35, beamDrift: 65,
-  glitterEnabled: true, glitterCount: 40, glitterSize: 50, glitterSpeed: 45,
-  cinderEnabled: true, cinderSize: 75,
-  smokeEnabled: true, smokeIntensity: 30, smokeSpeed: 35,
-  crtEnabled: true, crtScanlinesH: 22, crtScanlinesV: 14, crtEdgeShadow: 35, crtFlicker: 12,
-  grainIntensity: 18, vignetteStrength: 45, underglowStrength: 25,
-};
-
-const PARCHMENT_EFFECTS: Partial<EffectSettings> = {
-  // Old paper: film grain only, no particles
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: false,
-  cinderEnabled: true, cinderSize: 35,
-  smokeEnabled: false,
-  crtEnabled: false,
-  grainIntensity: 28, grainCoarseness: 55, grainSize: 40,
-  vignetteStrength: 35, underglowStrength: 12,
-};
-
-const EMERALD_NIGHT_EFFECTS: Partial<EffectSettings> = {
-  // Matrix terminal: CRT scanlines, subtle data-rain glitter
-  sparksEnabled: false,
-  embersEnabled: false,
-  beamsEnabled: false,
-  glitterEnabled: true, glitterCount: 30, glitterSize: 38, glitterSpeed: 55,
-  cinderEnabled: true, cinderSize: 45,
-  smokeEnabled: true, smokeIntensity: 22, smokeSpeed: 30,
-  crtEnabled: true, crtScanlinesH: 40, crtScanlinesV: 25, crtEdgeShadow: 40, crtFlicker: 18,
-  grainIntensity: 18, vignetteStrength: 40, underglowStrength: 18,
-};
 
 // ── Reactive state ──────────────────────────────────────────────────────────
 
