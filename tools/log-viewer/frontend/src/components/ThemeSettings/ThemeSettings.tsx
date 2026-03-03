@@ -16,7 +16,7 @@ import { useState, useRef } from 'preact/hooks';
 import {
   themeColors,
   updateThemeColor,
-  applyPreset,
+  applyFullPreset,
   resetTheme,
   randomizeTheme,
   THEME_PRESETS,
@@ -354,7 +354,7 @@ export function ThemeSettings() {
             <button
               key={preset.name}
               class="theme-preset-card"
-              onClick={() => applyPreset(preset.colors)}
+              onClick={() => applyFullPreset(preset)}
             >
               <div class="theme-preset-swatches">
                 <span class="theme-preset-swatch" style={{ background: preset.colors.bgPrimary }} />
