@@ -1,25 +1,26 @@
 /// <reference types="@webgpu/types" />
 /**
- * WebGPU overlay renderer hook for hypergraph edges and grid.
- * Registers a render callback with the shared WgpuOverlay system.
+ * WebGPU overlay renderer hook — thin orchestrator.
+ *
+ * Delegates to:
+ *   - gpu/pipeline      — one-time GPU resource creation
+ *   - gpu/edgeBuilder    — per-frame edge instance buffer filling
+ *   - animation/         — node lerp + DOM positioning
+ *   - decomposition/     — expand/collapse DOM reparenting
  */
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useMemo } from 'preact/hooks';
 import { mat4Multiply, mat4Inverse } from '../../Scene3D/math3d';
-import { worldToScreen, worldScaleAtDepth, edgePairKey, edgeTripleKey } from '../utils/math';
 import type { GraphLayout } from '../layout';
-import { getDecompositionPatterns } from '../layout';
 import type { CameraController } from './useCamera';
 import type { InteractionState } from './useMouseInteraction';
 import type { VisualizationState } from './useVisualizationState';
-import paletteWgsl from '../../../effects/palette.wgsl?raw';
-import shaderSource from '../hypergraph.wgsl?raw';
-import { buildPaletteBuffer, PALETTE_BYTE_SIZE } from '../../../effects/palette';
+import { buildPaletteBuffer } from '../../../effects/palette';
 import { themeColors } from '../../../store/theme';
+import { edgeTripleKey } from '../utils/math';
 import {
     overlayGpu,
     registerOverlayRenderer,
     unregisterOverlayRenderer,
-    markOverlayScanDirty,
     setOverlayParticleVP,
     setOverlayParticleViewport,
     setOverlayRefDepth,
@@ -28,37 +29,11 @@ import {
     type OverlayRenderCallback,
 } from '../../WgpuOverlay/WgpuOverlay';
 
-// ── Constants ──
-
-const QUAD_VERTS = new Float32Array([-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1]);
-
-const EDGE_INSTANCE_FLOATS = 12;
-const GRID_LINE_FLOATS = 12;
-
-const PATTERN_COLORS: [number, number, number][] = [
-    [0.45, 0.55, 0.7],
-    [0.7, 0.45, 0.55],
-    [0.5, 0.7, 0.45],
-    [0.65, 0.55, 0.7],
-    [0.7, 0.65, 0.4],
-    [0.4, 0.7, 0.65],
-];
-
-const PATH_EDGE_COLOR: [number, number, number] = [0.1, 0.75, 0.95];
-
-// Search path edge colors (VizPathGraph-based, more precise than trace_path pairs)
-// Start & end paths share a uniform teal – arrows in the shader distinguish direction
-const SP_PATH_EDGE_COLOR: [number, number, number] = [0.25, 0.75, 1.0];  // uniform teal for start & end paths
-const SP_ROOT_EDGE_COLOR: [number, number, number] = [1.0, 0.85, 0.3];   // gold for root edge
-const CANDIDATE_EDGE_COLOR: [number, number, number] = [0.55, 0.4, 0.8]; // muted violet for candidate edges
-
-// Parent/child edge colors for selection-mode highlighting
-const PARENT_EDGE_COLOR: [number, number, number] = [0.95, 0.65, 0.2];  // warm amber for parent edges
-const CHILD_EDGE_COLOR: [number, number, number] = [0.3, 0.7, 0.9];    // cool teal for child edges
-
-// Insert-specific edge colors
-const INSERT_EDGE_COLOR: [number, number, number] = [1.0, 0.55, 0.2];   // warm orange for insert pattern edges
-const INSERT_JOIN_EDGE_COLOR: [number, number, number] = [0.5, 0.85, 0.5]; // green for join result edges
+import { createGpuResources, destroyGpuResources } from '../gpu/pipeline';
+import { buildEdgeInstances, type EdgeBuildContext } from '../gpu/edgeBuilder';
+import { animateNodes } from '../animation/nodeAnimator';
+import { positionDOMNodes } from '../animation/nodePositioner';
+import { DecompositionManager } from '../decomposition/manager';
 
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
@@ -76,9 +51,33 @@ export function useOverlayRenderer(
     const curLayout = layoutRef.current;
 
     // Keep vizState in a ref so the render callback always reads the latest
-    // without requiring GPU resource teardown/rebuild on every search step change.
     const vizStateRef = useRef(vizState);
     vizStateRef.current = vizState;
+
+    // ── P2: Connected-set caching ──
+    const selectedIdx = interRef.current.selectedIdx;
+    const connectedCache = useMemo(() => {
+        const connectedSet = new Set<number>();
+        const connectedEdgeKeys = new Set<number>();
+        if (selectedIdx >= 0 && curLayout) {
+            connectedSet.add(selectedIdx);
+            const sel = curLayout.nodeMap.get(selectedIdx);
+            if (sel) {
+                for (const ci of sel.childIndices) connectedSet.add(ci);
+                for (const pi of sel.parentIndices) connectedSet.add(pi);
+            }
+            for (const e of curLayout.edges) {
+                if (e.from === selectedIdx || e.to === selectedIdx) {
+                    connectedEdgeKeys.add(edgeTripleKey(e.from, e.to, e.patternIdx));
+                }
+            }
+        }
+        return { connectedSet, connectedEdgeKeys };
+    }, [selectedIdx, curLayout]);
+
+    // Ref to make the cached values available inside the render callback
+    const connectedCacheRef = useRef(connectedCache);
+    connectedCacheRef.current = connectedCache;
 
     useEffect(() => {
         const container = containerRef.current;
@@ -87,404 +86,88 @@ export function useOverlayRenderer(
 
         const { device, format } = gpu;
 
-        // ── Create pipelines & buffers using the shared overlay device ──
-        const fullShader = paletteWgsl + '\n' + shaderSource;
-        const shader = device.createShaderModule({ code: fullShader });
+        // ── One-time GPU resource creation ──
+        const res = createGpuResources(device, format, curLayout.edges.length);
 
-        const quadVB = device.createBuffer({
-            size: QUAD_VERTS.byteLength,
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-        });
-        device.queue.writeBuffer(quadVB, 0, QUAD_VERTS);
+        // ── Decomposition manager ──
+        const decomposition = new DecompositionManager(curLayout, nodeLayer, onSelectNode);
 
-        const camUB = device.createBuffer({
-            size: 128,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-        const paletteUB = device.createBuffer({
-            size: PALETTE_BYTE_SIZE,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        const camBGL = device.createBindGroupLayout({
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                },
-                { binding: 1, visibility: GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } },
-            ],
-        });
-        const camBG = device.createBindGroup({
-            layout: camBGL,
-            entries: [
-                { binding: 0, resource: { buffer: camUB } },
-                { binding: 1, resource: { buffer: paletteUB } },
-            ],
-        });
-        const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [camBGL] });
-
-        const edgeVertexBuffers: GPUVertexBufferLayout[] = [
-            {
-                arrayStride: 8,
-                stepMode: 'vertex',
-                attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x2' as GPUVertexFormat }],
-            },
-            {
-                arrayStride: EDGE_INSTANCE_FLOATS * 4,
-                stepMode: 'instance',
-                attributes: [
-                    { shaderLocation: 6, offset: 0, format: 'float32x3' as GPUVertexFormat },
-                    { shaderLocation: 7, offset: 12, format: 'float32x3' as GPUVertexFormat },
-                    { shaderLocation: 8, offset: 24, format: 'float32x4' as GPUVertexFormat },
-                    { shaderLocation: 9, offset: 40, format: 'float32' as GPUVertexFormat },
-                    { shaderLocation: 10, offset: 44, format: 'float32' as GPUVertexFormat },
-                ],
-            },
-        ];
-        const edgeBlend: GPUBlendState = {
-            color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-        };
-
-        const edgePipeline = device.createRenderPipeline({
-            layout: pipelineLayout,
-            vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
-            fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
-            primitive: { topology: 'triangle-list' },
-            depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
-        });
-
-        const gridPipeline = device.createRenderPipeline({
-            layout: pipelineLayout,
-            vertex: { module: shader, entryPoint: 'vs_edge', buffers: edgeVertexBuffers },
-            fragment: { module: shader, entryPoint: 'fs_edge', targets: [{ format, blend: edgeBlend }] },
-            primitive: { topology: 'triangle-list' },
-            depthStencil: { format: 'depth24plus', depthWriteEnabled: false, depthCompare: 'always' },
-        });
-
-        // ── Instance buffers ──
-        const maxEdges = curLayout.edges.length;
-        const edgeIB = device.createBuffer({
-            size: Math.max(maxEdges * EDGE_INSTANCE_FLOATS * 4, 48),
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-        });
-
-        // ── Grid lines at y=0 plane ──
-        const GRID_EXTENT = 20;
-        const GRID_STEP = 2;
-        const gridLines: number[] = [];
-        for (let i = -GRID_EXTENT; i <= GRID_EXTENT; i += GRID_STEP) {
-            gridLines.push(i, 0, -GRID_EXTENT, i, 0, GRID_EXTENT, 0.25, 0.22, 0.18, 0.06, 0, 0);
-            gridLines.push(-GRID_EXTENT, 0, i, GRID_EXTENT, 0, i, 0.25, 0.22, 0.18, 0.06, 0, 0);
-        }
-        gridLines.push(-GRID_EXTENT, 0, 0, GRID_EXTENT, 0, 0, 0.55, 0.25, 0.15, 0.12, 0, 0); // X red
-        gridLines.push(0, 0, -GRID_EXTENT, 0, 0, GRID_EXTENT, 0.15, 0.25, 0.55, 0.12, 0, 0); // Z blue
-        const gridData = new Float32Array(gridLines);
-        const gridCount = gridLines.length / GRID_LINE_FLOATS;
-        const gridIB = device.createBuffer({
-            size: gridData.byteLength,
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-        });
-        device.queue.writeBuffer(gridIB, 0, gridData);
-
-        // ── Render state (captured by callback closure) ──
-        const edgeDataBuf = new Float32Array(maxEdges * EDGE_INSTANCE_FLOATS);
-
-        // Pre-allocated per-frame buffers (avoids GC pressure at 60fps)
+        // ── Pre-allocated per-frame scratch buffers ──
         const postMatrix = new Float32Array(16);
         const invPostMatrix = new Float32Array(16);
         const camBuf = new Float32Array(32);
-        const connectedSet = new Set<number>();
-        const connectedEdgeKeys = new Set<number>();
-        const pathEdgeKeys = new Set<number>();
-        // Persistent parent candidates — carried forward from parent_explore
-        // so that visit_parent and root_explore still show candidate edges.
-        let lastParentCandidates: number[] = [];
         let cachedPaletteColors: unknown = null;
         let cachedPaletteBuf: Float32Array | null = null;
 
-        // ── Decomposition reparenting state ──
-        // Build node-index → DOM element map using data-node-idx attributes
-        // (NOT positional index) so it stays correct after DOM reordering.
-        const nodeElMap = new Map<number, HTMLDivElement>();
-        const updateNodeElMap = () => {
-            nodeElMap.clear();
-            // Scan nodeLayer children
-            const divs = nodeLayer.children;
-            for (let i = 0; i < divs.length; i++) {
-                const el = divs[i] as HTMLDivElement;
-                const idx = el.getAttribute('data-node-idx');
-                if (idx != null) nodeElMap.set(Number(idx), el);
-            }
-            // Also include elements currently inside any expanded decomp container
-            for (const state of expandedNodes.values()) {
-                const nested = state.container.querySelectorAll<HTMLDivElement>('[data-node-idx]');
-                for (const el of nested) {
-                    const idx = el.getAttribute('data-node-idx');
-                    if (idx != null) nodeElMap.set(Number(idx), el);
-                }
-            }
+        // ── Edge build context (reused each frame) ──
+        const edgeBuildCtx: EdgeBuildContext = {
+            layout: curLayout,
+            vizState: vizState,
+            inter: interRef.current,
+            connectedEdgeKeys: connectedCache.connectedEdgeKeys,
+            hiddenDecompEdgeKeys: new Set(),
+            lastParentCandidates: [],
         };
-
-        // Track which nodes are currently expanded (supports multiple simultaneous expansions)
-        interface ExpandedNodeState {
-            parentEl: HTMLDivElement;
-            container: HTMLDivElement;
-            children: { el: HTMLDivElement }[];
-        }
-        const expandedNodes = new Map<number, ExpandedNodeState>();
-
-        updateNodeElMap();
-        const reorderNodeLayer = () => {
-            const elByIdx = new Map<number, HTMLDivElement>();
-            const divs = nodeLayer.children;
-            for (let i = 0; i < divs.length; i++) {
-                const el = divs[i] as HTMLDivElement;
-                const idx = el.getAttribute('data-node-idx');
-                if (idx != null) elByIdx.set(Number(idx), el);
-            }
-            // Re-append in layout order (appendChild moves existing children)
-            for (const n of curLayout.nodes) {
-                const el = elByIdx.get(n.index);
-                if (el) nodeLayer.appendChild(el);
-            }
-        };
-
-        updateNodeElMap();
-
-        const ROW_COLORS = [
-            'rgba(80, 140, 200, 0.12)',
-            'rgba(200, 120, 80, 0.12)',
-            'rgba(100, 180, 100, 0.12)',
-            'rgba(160, 120, 200, 0.12)',
-            'rgba(200, 180, 80, 0.12)',
-            'rgba(80, 200, 180, 0.12)',
-        ];
-
-        /** Collapse a single expanded node — move its children back to nodeLayer. */
-        const collapseNode = (idx: number) => {
-            const state = expandedNodes.get(idx);
-            if (!state) return;
-
-            for (const { el } of state.children) {
-                el.classList.remove('hg-decomp-child');
-                el.style.flex = '';
-                nodeLayer.appendChild(el);
-            }
-            state.container.remove();
-
-            const ep = state.parentEl as any;
-            if (ep.__parentDown) state.parentEl.removeEventListener('mousedown', ep.__parentDown);
-            if (ep.__parentUp) state.parentEl.removeEventListener('mouseup', ep.__parentUp);
-            state.parentEl.classList.remove('hg-expanded');
-
-            expandedNodes.delete(idx);
-        };
-
-        /** Collapse all expanded nodes and restore DOM order. */
-        const collapseAll = () => {
-            const hadExpanded = expandedNodes.size > 0;
-            for (const idx of [...expandedNodes.keys()]) {
-                collapseNode(idx);
-            }
-            if (hadExpanded) reorderNodeLayer();
-        };
-
-        /** Expand a single node — build decomposition rows and reparent child DOM elements. */
-        const expandNode = (idx: number) => {
-            if (expandedNodes.has(idx)) return; // Already expanded
-
-            const node = curLayout.nodeMap.get(idx);
-            if (!node || node.isAtom) return;
-
-            const patterns = getDecompositionPatterns(curLayout, idx);
-            if (patterns.length === 0) return;
-
-            // Refresh map in case Preact re-rendered
-            updateNodeElMap();
-
-            const parentEl = nodeElMap.get(idx);
-            if (!parentEl) return;
-
-            // Mark parent as expanded
-            parentEl.classList.add('hg-expanded');
-
-            // Create decomposition container
-            const container = document.createElement('div');
-            container.className = 'decomp-patterns';
-
-            const children: { el: HTMLDivElement }[] = [];
-
-            for (let pi = 0; pi < patterns.length; pi++) {
-                const pat = patterns[pi]!;
-                const row = document.createElement('div');
-                row.className = 'decomp-row';
-                row.style.background = ROW_COLORS[pi % ROW_COLORS.length]!;
-
-                const label = document.createElement('span');
-                label.className = 'decomp-row-label';
-                label.textContent = `P${pat.patternIdx}`;
-                row.appendChild(label);
-
-                const tokens = document.createElement('div');
-                tokens.className = 'decomp-tokens';
-
-                for (const child of pat.children) {
-                    const childEl = nodeElMap.get(child.index);
-                    if (!childEl) continue;
-
-                    children.push({ el: childEl });
-
-                    // Move into decomposition row
-                    childEl.classList.add('hg-decomp-child');
-                    childEl.style.flex = `${child.fraction}`;
-                    tokens.appendChild(childEl);
-                }
-
-                row.appendChild(tokens);
-                container.appendChild(row);
-            }
-
-            // ── DOM event handlers on parentEl ──
-            const onParentMouseDown = (e: MouseEvent) => {
-                if (e.button !== 0) return;
-                const childTarget = (e.target as HTMLElement).closest('.hg-decomp-child');
-                if (childTarget) {
-                    const cIdx = childTarget.getAttribute('data-node-idx');
-                    if (cIdx != null && onSelectNode) {
-                        onSelectNode(Number(cIdx));
-                    }
-                }
-                e.stopPropagation();
-            };
-            const onParentMouseUp = (e: MouseEvent) => {
-                e.stopPropagation();
-            };
-            parentEl.addEventListener('mousedown', onParentMouseDown);
-            parentEl.addEventListener('mouseup', onParentMouseUp);
-            (parentEl as any).__parentDown = onParentMouseDown;
-            (parentEl as any).__parentUp = onParentMouseUp;
-
-            parentEl.appendChild(container);
-            expandedNodes.set(idx, { parentEl, container, children });
-        };
-
-        let lastExpandedKeyStr = '';
 
         // ── Overlay render callback ──
         const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
-            // Get container bounds in viewport coords
             const rect = container.getBoundingClientRect();
             const vx = Math.max(0, Math.round(rect.left));
             const vy = Math.max(0, Math.round(rect.top));
             const vw = Math.min(Math.round(rect.width), canvasW - vx);
             const vh = Math.min(Math.round(rect.height), canvasH - vy);
-
             if (vw <= 0 || vh <= 0) return;
 
-            // Restrict rendering to the container's region of the overlay canvas
             pass.setViewport(vx, vy, vw, vh, 0, 1);
             pass.setScissorRect(vx, vy, vw, vh);
 
             const { viewProj, camPos } = camera.getViewProj(vw, vh, dt);
             const inter = interRef.current;
 
-            // ── Pass viewProj to particle system for world-space projection ──
-            const W = canvasW,
-                H = canvasH;
-            const sx = vw / W,
-                sy = vh / H;
+            // ── Particle system VP setup ──
+            const W = canvasW, H = canvasH;
+            const sx = vw / W, sy = vh / H;
             const tx = (2 * vx + vw) / W - 1;
             const ty = 1 - (2 * vy + vh) / H;
-            // Reuse pre-allocated matrix
             postMatrix.fill(0);
-            postMatrix[0] = sx;
-            postMatrix[5] = sy;
-            postMatrix[10] = 1;
-            postMatrix[15] = 1;
-            postMatrix[12] = tx;
-            postMatrix[13] = ty;
+            postMatrix[0] = sx; postMatrix[5] = sy; postMatrix[10] = 1; postMatrix[15] = 1;
+            postMatrix[12] = tx; postMatrix[13] = ty;
             const fullVP = mat4Multiply(postMatrix, viewProj);
             const invSubVP = mat4Inverse(viewProj);
             if (invSubVP) {
                 invPostMatrix.fill(0);
-                invPostMatrix[0] = 1 / sx;
-                invPostMatrix[5] = 1 / sy;
-                invPostMatrix[10] = 1;
-                invPostMatrix[15] = 1;
-                invPostMatrix[12] = -tx / sx;
-                invPostMatrix[13] = -ty / sy;
+                invPostMatrix[0] = 1 / sx; invPostMatrix[5] = 1 / sy;
+                invPostMatrix[10] = 1; invPostMatrix[15] = 1;
+                invPostMatrix[12] = -tx / sx; invPostMatrix[13] = -ty / sy;
                 const fullInvVP = mat4Multiply(invSubVP, invPostMatrix);
                 setOverlayParticleVP(fullVP, fullInvVP);
                 setOverlayCameraPos(camPos[0], camPos[1], camPos[2]);
             }
             setOverlayParticleViewport(vx, vy, vw, vh);
 
-            // Compute reference NDC depth
+            // Reference depth + world scale
             const camState = camera.stateRef.current;
-            const ttx = camState.target[0],
-                tty = camState.target[1],
-                ttz = camState.target[2];
+            const ttx = camState.target[0], tty = camState.target[1], ttz = camState.target[2];
             const vp = viewProj;
             const tw = vp[3]! * ttx + vp[7]! * tty + vp[11]! * ttz + vp[15]!;
             const refZ = tw > 0.001 ? (vp[2]! * ttx + vp[6]! * tty + vp[10]! * ttz + vp[14]!) / tw : 0;
             setOverlayRefDepth(refZ);
-
-            // Compute world scale
-            const dist = Math.sqrt(
-                (camPos[0] - ttx) ** 2 + (camPos[1] - tty) ** 2 + (camPos[2] - ttz) ** 2
-            );
+            const dist = Math.sqrt((camPos[0] - ttx) ** 2 + (camPos[1] - tty) ** 2 + (camPos[2] - ttz) ** 2);
             const fov = Math.PI / 4;
-            const worldScale = (2 * dist * Math.tan(fov / 2)) / vh;
-            setOverlayWorldScale(worldScale);
+            setOverlayWorldScale((2 * dist * Math.tan(fov / 2)) / vh);
 
-            // ── Connected set for selection highlighting (reuse sets) ──
-            // Always compute — edge highlights and node dimming are always active.
-            connectedSet.clear();
-            connectedEdgeKeys.clear();
-            if (inter.selectedIdx >= 0) {
-                connectedSet.add(inter.selectedIdx);
-                const sel = curLayout.nodeMap.get(inter.selectedIdx);
-                if (sel) {
-                    for (const ci of sel.childIndices) connectedSet.add(ci);
-                    for (const pi of sel.parentIndices) connectedSet.add(pi);
-                }
-                for (const e of curLayout.edges) {
-                    if (e.from === inter.selectedIdx || e.to === inter.selectedIdx) {
-                        connectedEdgeKeys.add(edgeTripleKey(e.from, e.to, e.patternIdx));
-                    }
-                }
-            }
+            // ── Animate nodes ──
+            animateNodes(curLayout.nodes, dt);
 
-            // ── Animate nodes toward targets ──
-            const lerpSpeed = 12; // exponential decay rate (higher = snappier)
-            const lerpFactor = 1 - Math.exp(-lerpSpeed * dt);
-            for (const n of curLayout.nodes) {
-                n.x += (n.tx - n.x) * lerpFactor;
-                n.y += (n.ty - n.y) * lerpFactor;
-                n.z += (n.tz - n.z) * lerpFactor;
-            }
-
-            // ── Position DOM nodes ──
-            const nodeDivs = nodeLayer.children;
-            const curVizInvolved = vizStateRef.current.involvedNodes;
-
-            // ── Decomposition reparenting management ──
-            // Compute the desired set of expanded nodes:
-            // 1. The selected node (if compound)
-            // 2. The search path root (always, if a search path is active)
+            // ── Decomposition management ──
+            const curVizState = vizStateRef.current;
             const desiredExpanded = new Set<number>();
             if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
-            const spRootIdx = vizStateRef.current.rootNode;
-            if (spRootIdx != null && spRootIdx >= 0 && vizStateRef.current.searchPath != null) {
+            const spRootIdx = curVizState.rootNode;
+            if (spRootIdx != null && spRootIdx >= 0 && curVizState.searchPath != null) {
                 desiredExpanded.add(spRootIdx);
             }
-
-            // Prune: don't expand a node that is a child of another expanded node.
-            // If both parent P and child C are desired, C would be reparented inside
-            // P's decomposition, so expanding C too creates conflicting DOM reparenting.
+            // Prune: don't expand child of another expanded node
             for (const idx of [...desiredExpanded]) {
                 const node = curLayout.nodeMap.get(idx);
                 if (!node) continue;
@@ -497,335 +180,58 @@ export function useOverlayRenderer(
                     }
                 }
             }
+            decomposition.update(desiredExpanded);
 
-            // Check if the desired set changed (compare sorted key strings)
-            const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',');
-            if (desiredKeyStr !== lastExpandedKeyStr) {
-                // Collapse nodes no longer desired
-                for (const idx of [...expandedNodes.keys()]) {
-                    if (!desiredExpanded.has(idx)) collapseNode(idx);
-                }
-                // Expand desired nodes that aren't already expanded
-                for (const idx of desiredExpanded) {
-                    if (!expandedNodes.has(idx)) expandNode(idx);
-                }
-                reorderNodeLayer();
-                lastExpandedKeyStr = desiredKeyStr;
-            }
+            // ── Position DOM nodes ──
+            const cached = connectedCacheRef.current;
+            positionDOMNodes({
+                layout: curLayout,
+                nodeElMap: decomposition.getNodeElMap(),
+                viewProj,
+                invSubVP,
+                camPos,
+                vw, vh,
+                containerRect: rect,
+                inter,
+                vizInvolvedNodes: curVizState.involvedNodes,
+                connectedSet: cached.connectedSet,
+                decomposition,
+            });
 
-            // Build set of currently reparented child indices for skipping 3D positioning,
-            // a child→parent mapping, and a set of edge keys to hide (parent↔child inside decomp).
-            const reparentedSet = new Set<number>();
-            const childParentMap = new Map<number, number>();
-            const hiddenDecompEdgeKeys = new Set<number>();
-            for (const [expIdx, state] of expandedNodes) {
-                for (const { el } of state.children) {
-                    const idx = el.getAttribute('data-node-idx');
-                    if (idx != null) {
-                        const ci = Number(idx);
-                        reparentedSet.add(ci);
-                        childParentMap.set(ci, expIdx);
-                        hiddenDecompEdgeKeys.add(edgePairKey(expIdx, ci));
-                        hiddenDecompEdgeKeys.add(edgePairKey(ci, expIdx));
-                    }
-                }
-            }
+            // ── Build and upload edge instances ──
+            edgeBuildCtx.vizState = curVizState;
+            edgeBuildCtx.inter = inter;
+            edgeBuildCtx.connectedEdgeKeys = cached.connectedEdgeKeys;
+            edgeBuildCtx.hiddenDecompEdgeKeys = decomposition.getHiddenDecompEdgeKeys();
+            buildEdgeInstances(res.edgeDataBuf, edgeBuildCtx);
+            dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf);
 
-            for (let i = 0; i < curLayout.nodes.length; i++) {
-                const n = curLayout.nodes[i]!;
-                // Reparented children are positioned by CSS flow inside the parent —
-                // skip 3D transform positioning for them.
-                // We need to find their DOM element from the map, not by index
-                // (since reparented elements are no longer at their index position).
-                const el = nodeElMap.get(n.index);
-                if (!el) continue;
-
-                if (reparentedSet.has(n.index)) {
-                    // Child is inside decomposition row — don't apply 3D transforms.
-                    el.style.display = '';
-                    el.style.opacity = '1';
-                    el.style.transform = '';
-                    el.style.zIndex = '';
-
-                    // Back-project DOM screen position to world coords so edges track correctly.
-                    if (invSubVP) {
-                        const childRect = el.getBoundingClientRect();
-                        const csx = (childRect.left + childRect.width / 2) - rect.left;
-                        const csy = (childRect.top + childRect.height / 2) - rect.top;
-
-                        // Use expanded parent's depth as reference
-                        const parentIdx = childParentMap.get(n.index)!;
-                        const pn = curLayout.nodeMap.get(parentIdx);
-                        const pz = pn ? pn.z : n.z;
-                        const pcz = vp[2]! * (pn?.x ?? 0) + vp[6]! * (pn?.y ?? 0) + vp[10]! * pz + vp[14]!;
-                        const pcw = vp[3]! * (pn?.x ?? 0) + vp[7]! * (pn?.y ?? 0) + vp[11]! * pz + vp[15]!;
-                        const pndcZ = pcw > 0.001 ? pcz / pcw : 0;
-
-                        const ndcX = (csx / vw) * 2 - 1;
-                        const ndcY = 1 - (csy / vh) * 2;
-                        const inv = invSubVP;
-                        const ux = inv[0]! * ndcX + inv[4]! * ndcY + inv[8]! * pndcZ + inv[12]!;
-                        const uy = inv[1]! * ndcX + inv[5]! * ndcY + inv[9]! * pndcZ + inv[13]!;
-                        const uz = inv[2]! * ndcX + inv[6]! * ndcY + inv[10]! * pndcZ + inv[14]!;
-                        const uw = inv[3]! * ndcX + inv[7]! * ndcY + inv[11]! * pndcZ + inv[15]!;
-                        if (Math.abs(uw) > 0.001) {
-                            n.x = ux / uw;
-                            n.y = uy / uw;
-                            n.z = uz / uw;
-                            // Also snap targets so lerp doesn't pull them back
-                            n.tx = n.x;
-                            n.ty = n.y;
-                            n.tz = n.z;
-                        }
-                    }
-                    continue;
-                }
-
-                const screen = worldToScreen([n.x, n.y, n.z], viewProj, vw, vh);
-                const scale = worldScaleAtDepth(camPos, [n.x, n.y, n.z], vh);
-                const pixelScale = Math.max(0.1, (scale * n.radius * 2.5) / 80);
-
-                if (!screen.visible || pixelScale < 0.02) {
-                    el.style.display = 'none';
-                    continue;
-                }
-                el.style.display = '';
-
-                // Dim nodes not connected to mouse-selected node, but never dim
-                // nodes that are part of the active visualization (search path etc.)
-                const dimmed = inter.selectedIdx >= 0
-                    && !connectedSet.has(n.index)
-                    && !curVizInvolved.has(n.index);
-                el.style.opacity = dimmed ? '0.15' : '1';
-
-                // Imperative class management for selected/hover —
-                // avoids Preact re-renders that would strip reparented children.
-                el.classList.toggle('selected', n.index === inter.selectedIdx);
-                el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
-
-                const zIdx = Math.round((1 - screen.z) * 1000);
-                // Selected/expanded nodes should always be on top.
-                const isExpanded = expandedNodes.has(n.index);
-                el.style.zIndex = (n.index === inter.selectedIdx) ? '10000'
-                    : isExpanded ? '9999'
-                        : String(zIdx);
-
-                // Expanded parent: anchor at top-center so decomposition rows
-                // hang below the label instead of overlapping it.
-                if (isExpanded) {
-                    el.style.transform = `translate(-50%, 0%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
-                } else {
-                    el.style.transform = `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
-                }
-
-                el.setAttribute('data-depth', screen.z.toFixed(4));
-            }
-
-            markOverlayScanDirty();
-
-            // ── Fill edge instances (read vizState from ref for latest value) ──
-            const curVizState = vizStateRef.current;
-            const vizTracePath = curVizState.location?.trace_path ?? [];
-            pathEdgeKeys.clear();
-            for (let p = 0; p < vizTracePath.length - 1; p++) {
-                const from = vizTracePath[p]!,
-                    to = vizTracePath[p + 1]!;
-                pathEdgeKeys.add(edgePairKey(from, to));
-                pathEdgeKeys.add(edgePairKey(to, from));
-            }
-
-            // Search path edge keys (from VizPathGraph — precise triple keys)
-            const spStartKeys = curVizState.searchStartEdgeKeys;
-            const spRootEntryKeys = curVizState.searchRootEntryEdgeKeys;
-            const spRootExitKeys = curVizState.searchRootExitEdgeKeys;
-            const spEndKeys = curVizState.searchEndEdgeKeys;
-            const hasSearchPath = spStartKeys.size > 0 || spRootEntryKeys.size > 0 || spRootExitKeys.size > 0 || spEndKeys.size > 0;
-            const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
-            // Insert edge keys (from insert-specific state: create_pattern, join, delta)
-            const insertKeys = curVizState.insertEdgeKeys;
-            // Track parent candidates across steps: parent_explore sets them,
-            // they persist through visit_parent / candidate_match,
-            // and reset on any other transition (new phase).
-            const trans = curVizState.transition;
-            if (trans?.kind === 'parent_explore') {
-                lastParentCandidates = trans.parent_candidates;
-            } else if (
-                trans?.kind !== 'visit_parent' &&
-                trans?.kind !== 'candidate_match'
-            ) {
-                lastParentCandidates = [];
-            }
-
-            // Candidate node set (pending + current candidates + carried-forward)
-            const candidateNodes = new Set<number>();
-            if (curVizState.candidateParent != null) candidateNodes.add(curVizState.candidateParent);
-            if (curVizState.candidateChild != null) candidateNodes.add(curVizState.candidateChild);
-            for (const n of curVizState.pendingParents) candidateNodes.add(n);
-            for (const n of curVizState.pendingChildren) candidateNodes.add(n);
-            // Include carried-forward parent candidates from last parent_explore.
-            for (const n of lastParentCandidates) candidateNodes.add(n);
-
-            for (let i = 0; i < curLayout.edges.length; i++) {
-                const e = curLayout.edges[i]!;
-                const a = curLayout.nodeMap.get(e.from);
-                const b = curLayout.nodeMap.get(e.to);
-                if (!a || !b) continue;
-                const off = i * EDGE_INSTANCE_FLOATS;
-
-                // Hide edges between expanded parents and their inline children
-                if (hiddenDecompEdgeKeys.has(edgePairKey(e.from, e.to))) {
-                    for (let j = 0; j < EDGE_INSTANCE_FLOATS; j++) edgeDataBuf[off + j] = 0;
-                    continue;
-                }
-
-                edgeDataBuf[off] = a.x;
-                edgeDataBuf[off + 1] = a.y;
-                edgeDataBuf[off + 2] = a.z;
-                edgeDataBuf[off + 3] = b.x;
-                edgeDataBuf[off + 4] = b.y;
-                edgeDataBuf[off + 5] = b.z;
-
-                // Search path edge identification (pair keys — pattern_idx independent)
-                const pairKey = edgePairKey(e.from, e.to);
-                const isSpStartEdge = spStartKeys.has(pairKey);
-                const isSpRootEntryEdge = spRootEntryKeys.has(pairKey);
-                const isSpRootExitEdge = spRootExitKeys.has(pairKey);
-                const isSpRootEdge = isSpRootEntryEdge || isSpRootExitEdge;
-                const isSpEndEdge = spEndKeys.has(pairKey);
-                const isSearchPathEdge = isSpStartEdge || isSpRootEdge || isSpEndEdge;
-
-                // Legacy trace_path-based detection (pair keys, fallback)
-                const isPathEdge = !isSearchPathEdge && pathEdgeKeys.has(edgePairKey(e.from, e.to));
-                const highlighted = connectedEdgeKeys.has(edgeTripleKey(e.from, e.to, e.patternIdx));
-
-                // Detect candidate edges: one endpoint is a pending/candidate node,
-                // and the edge is not already part of the confirmed search path.
-                const isCandidateEdge = !isSearchPathEdge && !isPathEdge &&
-                    candidateNodes.size > 0 &&
-                    (candidateNodes.has(e.from) || candidateNodes.has(e.to));
-
-                // Detect insert edges: edges that were created/modified by insert operations.
-                const isInsertEdge = !isSearchPathEdge && !isPathEdge && !isCandidateEdge &&
-                    insertKeys.size > 0 &&
-                    insertKeys.has(edgePairKey(e.from, e.to));
-
-                // Choose between join-result color vs general insert color
-                const isJoinEdge = isInsertEdge && curVizState.joinResult != null &&
-                    (e.from === curVizState.joinResult || e.to === curVizState.joinResult);
-
-                let r: number, g: number, b2: number, alpha: number, hlFlag: number;
-                if (isSpRootEdge) {
-                    // Gold for root edge
-                    r = SP_ROOT_EDGE_COLOR[0]; g = SP_ROOT_EDGE_COLOR[1]; b2 = SP_ROOT_EDGE_COLOR[2];
-                    alpha = 0.95; hlFlag = 1;
-                } else if (isSpStartEdge) {
-                    // Uniform teal for upward path (arrows in shader show direction)
-                    r = SP_PATH_EDGE_COLOR[0]; g = SP_PATH_EDGE_COLOR[1]; b2 = SP_PATH_EDGE_COLOR[2];
-                    alpha = 0.9; hlFlag = 1;
-                } else if (isSpEndEdge) {
-                    // Uniform teal for downward path (arrows in shader show direction)
-                    r = SP_PATH_EDGE_COLOR[0]; g = SP_PATH_EDGE_COLOR[1]; b2 = SP_PATH_EDGE_COLOR[2];
-                    alpha = 0.9; hlFlag = 1;
-                } else if (isPathEdge) {
-                    r = PATH_EDGE_COLOR[0];
-                    g = PATH_EDGE_COLOR[1];
-                    b2 = PATH_EDGE_COLOR[2];
-                    alpha = 0.9;
-                    hlFlag = 1;
-                } else if (isCandidateEdge) {
-                    // Muted violet for candidate/pending edges – more transparent
-                    r = CANDIDATE_EDGE_COLOR[0];
-                    g = CANDIDATE_EDGE_COLOR[1];
-                    b2 = CANDIDATE_EDGE_COLOR[2];
-                    alpha = 0.30;
-                    hlFlag = 0;
-                } else if (isInsertEdge) {
-                    // Insert edges — green for join results, warm orange for others
-                    if (isJoinEdge) {
-                        r = INSERT_JOIN_EDGE_COLOR[0]; g = INSERT_JOIN_EDGE_COLOR[1]; b2 = INSERT_JOIN_EDGE_COLOR[2];
-                    } else {
-                        r = INSERT_EDGE_COLOR[0]; g = INSERT_EDGE_COLOR[1]; b2 = INSERT_EDGE_COLOR[2];
-                    }
-                    alpha = 0.85;
-                    hlFlag = 1;
-                } else if (inter.selectedIdx >= 0) {
-                    if (highlighted) {
-                        // Differentiate parent vs child edges of selected node
-                        const isParentEdge = e.to === inter.selectedIdx;
-                        if (isParentEdge) {
-                            r = PARENT_EDGE_COLOR[0]; g = PARENT_EDGE_COLOR[1]; b2 = PARENT_EDGE_COLOR[2];
-                        } else {
-                            r = CHILD_EDGE_COLOR[0]; g = CHILD_EDGE_COLOR[1]; b2 = CHILD_EDGE_COLOR[2];
-                        }
-                        alpha = 0.85;
-                        hlFlag = 1;
-                    } else {
-                        const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
-                        r = pc[0]; g = pc[1]; b2 = pc[2];
-                        alpha = 0.12;
-                        hlFlag = 0;
-                    }
-                } else if (hasViz) {
-                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
-                    r = pc[0];
-                    g = pc[1];
-                    b2 = pc[2];
-                    alpha = 0.12;
-                    hlFlag = 0;
-                } else {
-                    const pc = PATTERN_COLORS[e.patternIdx % PATTERN_COLORS.length]!;
-                    r = pc[0];
-                    g = pc[1];
-                    b2 = pc[2];
-                    alpha = 0.4;
-                    hlFlag = 0;
-                }
-
-                edgeDataBuf[off + 6] = r;
-                edgeDataBuf[off + 7] = g;
-                edgeDataBuf[off + 8] = b2;
-                edgeDataBuf[off + 9] = alpha;
-                edgeDataBuf[off + 10] = hlFlag;
-                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root(unused), 4=SP-end, 5=trace-path, 6=candidate, 7=insert, 8=SP-root-entry, 9=SP-root-exit
-                edgeDataBuf[off + 11] = isSpStartEdge ? 2
-                    : isSpRootEntryEdge ? 8
-                        : isSpRootExitEdge ? 9
-                            : isSpEndEdge ? 4
-                                : isPathEdge ? 5
-                                    : isCandidateEdge ? 6
-                                        : isInsertEdge ? 7
-                                            : 1;  // normal edge (energy beam)
-            }
-            dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
-
-            // ── Camera + palette uniforms (reuse pre-allocated buffer) ──
+            // ── Camera + palette uniforms ──
             camBuf.set(viewProj, 0);
             camBuf.set([camPos[0], camPos[1], camPos[2], 0], 16);
             camBuf.set([time, 0, 0, 0], 20);
-            dev.queue.writeBuffer(camUB, 0, camBuf);
+            dev.queue.writeBuffer(res.camUB, 0, camBuf);
 
-            // Only rebuild palette buffer when theme colors object changes
             const currentColors = themeColors.value;
             if (currentColors !== cachedPaletteColors) {
                 cachedPaletteColors = currentColors;
                 cachedPaletteBuf = buildPaletteBuffer(currentColors);
             }
-            dev.queue.writeBuffer(paletteUB, 0, cachedPaletteBuf!);
+            dev.queue.writeBuffer(res.paletteUB, 0, cachedPaletteBuf!);
 
             // ── Draw grid, edges ──
-            pass.setPipeline(gridPipeline);
-            pass.setVertexBuffer(0, quadVB);
-            pass.setVertexBuffer(1, gridIB);
-            pass.setBindGroup(0, camBG);
-            pass.draw(6, gridCount);
+            pass.setPipeline(res.gridPipeline);
+            pass.setVertexBuffer(0, res.quadVB);
+            pass.setVertexBuffer(1, res.gridIB);
+            pass.setBindGroup(0, res.camBG);
+            pass.draw(6, res.gridCount);
 
-            pass.setPipeline(edgePipeline);
-            pass.setVertexBuffer(0, quadVB);
-            pass.setVertexBuffer(1, edgeIB);
-            pass.setBindGroup(0, camBG);
+            pass.setPipeline(res.edgePipeline);
+            pass.setVertexBuffer(0, res.quadVB);
+            pass.setVertexBuffer(1, res.edgeIB);
+            pass.setBindGroup(0, res.camBG);
             pass.draw(6, curLayout.edges.length);
 
-            // Restore viewport/scissor to full canvas
             pass.setViewport(0, 0, canvasW, canvasH, 0, 1);
             pass.setScissorRect(0, 0, canvasW, canvasH);
         };
@@ -833,13 +239,9 @@ export function useOverlayRenderer(
         registerOverlayRenderer(renderCallback);
 
         return () => {
-            collapseAll();
+            decomposition.collapseAll();
             unregisterOverlayRenderer(renderCallback);
-            quadVB.destroy();
-            camUB.destroy();
-            paletteUB.destroy();
-            edgeIB.destroy();
-            gridIB.destroy();
+            destroyGpuResources(res);
         };
     }, [gpu, curLayout, camera]);
 }
