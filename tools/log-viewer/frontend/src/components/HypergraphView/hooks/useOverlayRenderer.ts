@@ -482,6 +482,22 @@ export function useOverlayRenderer(
                 desiredExpanded.add(spRootIdx);
             }
 
+            // Prune: don't expand a node that is a child of another expanded node.
+            // If both parent P and child C are desired, C would be reparented inside
+            // P's decomposition, so expanding C too creates conflicting DOM reparenting.
+            for (const idx of [...desiredExpanded]) {
+                const node = curLayout.nodeMap.get(idx);
+                if (!node) continue;
+                for (const otherIdx of desiredExpanded) {
+                    if (otherIdx === idx) continue;
+                    const other = curLayout.nodeMap.get(otherIdx);
+                    if (other && other.childIndices.includes(idx)) {
+                        desiredExpanded.delete(idx);
+                        break;
+                    }
+                }
+            }
+
             // Check if the desired set changed (compare sorted key strings)
             const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',');
             if (desiredKeyStr !== lastExpandedKeyStr) {
@@ -489,12 +505,7 @@ export function useOverlayRenderer(
                 for (const idx of [...expandedNodes.keys()]) {
                     if (!desiredExpanded.has(idx)) collapseNode(idx);
                 }
-                const hadCollapsed = expandedNodes.size < [...expandedNodes.keys()].length;
-                // Expand root first (so children are available for reparenting),
-                // then expand other desired nodes.
-                if (spRootIdx != null && desiredExpanded.has(spRootIdx) && !expandedNodes.has(spRootIdx)) {
-                    expandNode(spRootIdx);
-                }
+                // Expand desired nodes that aren't already expanded
                 for (const idx of desiredExpanded) {
                     if (!expandedNodes.has(idx)) expandNode(idx);
                 }
@@ -502,12 +513,21 @@ export function useOverlayRenderer(
                 lastExpandedKeyStr = desiredKeyStr;
             }
 
-            // Build set of currently reparented child indices for skipping 3D positioning
+            // Build set of currently reparented child indices for skipping 3D positioning,
+            // a child→parent mapping, and a set of edge keys to hide (parent↔child inside decomp).
             const reparentedSet = new Set<number>();
-            for (const state of expandedNodes.values()) {
+            const childParentMap = new Map<number, number>();
+            const hiddenDecompEdgeKeys = new Set<number>();
+            for (const [expIdx, state] of expandedNodes) {
                 for (const { el } of state.children) {
                     const idx = el.getAttribute('data-node-idx');
-                    if (idx != null) reparentedSet.add(Number(idx));
+                    if (idx != null) {
+                        const ci = Number(idx);
+                        reparentedSet.add(ci);
+                        childParentMap.set(ci, expIdx);
+                        hiddenDecompEdgeKeys.add(edgePairKey(expIdx, ci));
+                        hiddenDecompEdgeKeys.add(edgePairKey(ci, expIdx));
+                    }
                 }
             }
 
@@ -522,11 +542,42 @@ export function useOverlayRenderer(
 
                 if (reparentedSet.has(n.index)) {
                     // Child is inside decomposition row — don't apply 3D transforms.
-                    // Ensure it's visible and not dimmed.
                     el.style.display = '';
                     el.style.opacity = '1';
                     el.style.transform = '';
                     el.style.zIndex = '';
+
+                    // Back-project DOM screen position to world coords so edges track correctly.
+                    if (invSubVP) {
+                        const childRect = el.getBoundingClientRect();
+                        const csx = (childRect.left + childRect.width / 2) - rect.left;
+                        const csy = (childRect.top + childRect.height / 2) - rect.top;
+
+                        // Use expanded parent's depth as reference
+                        const parentIdx = childParentMap.get(n.index)!;
+                        const pn = curLayout.nodeMap.get(parentIdx);
+                        const pz = pn ? pn.z : n.z;
+                        const pcz = vp[2]! * (pn?.x ?? 0) + vp[6]! * (pn?.y ?? 0) + vp[10]! * pz + vp[14]!;
+                        const pcw = vp[3]! * (pn?.x ?? 0) + vp[7]! * (pn?.y ?? 0) + vp[11]! * pz + vp[15]!;
+                        const pndcZ = pcw > 0.001 ? pcz / pcw : 0;
+
+                        const ndcX = (csx / vw) * 2 - 1;
+                        const ndcY = 1 - (csy / vh) * 2;
+                        const inv = invSubVP;
+                        const ux = inv[0]! * ndcX + inv[4]! * ndcY + inv[8]! * pndcZ + inv[12]!;
+                        const uy = inv[1]! * ndcX + inv[5]! * ndcY + inv[9]! * pndcZ + inv[13]!;
+                        const uz = inv[2]! * ndcX + inv[6]! * ndcY + inv[10]! * pndcZ + inv[14]!;
+                        const uw = inv[3]! * ndcX + inv[7]! * ndcY + inv[11]! * pndcZ + inv[15]!;
+                        if (Math.abs(uw) > 0.001) {
+                            n.x = ux / uw;
+                            n.y = uy / uw;
+                            n.z = uz / uw;
+                            // Also snap targets so lerp doesn't pull them back
+                            n.tx = n.x;
+                            n.ty = n.y;
+                            n.tz = n.z;
+                        }
+                    }
                     continue;
                 }
 
@@ -620,6 +671,13 @@ export function useOverlayRenderer(
                 const b = curLayout.nodeMap.get(e.to);
                 if (!a || !b) continue;
                 const off = i * EDGE_INSTANCE_FLOATS;
+
+                // Hide edges between expanded parents and their inline children
+                if (hiddenDecompEdgeKeys.has(edgePairKey(e.from, e.to))) {
+                    for (let j = 0; j < EDGE_INSTANCE_FLOATS; j++) edgeDataBuf[off + j] = 0;
+                    continue;
+                }
+
                 edgeDataBuf[off] = a.x;
                 edgeDataBuf[off + 1] = a.y;
                 edgeDataBuf[off + 2] = a.z;
