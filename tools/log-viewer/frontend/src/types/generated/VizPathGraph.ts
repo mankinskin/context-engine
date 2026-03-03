@@ -27,9 +27,15 @@ start_edges: Array<EdgeRef>,
  */
 root: PathNode | null, 
 /**
- * Edge connecting the top of start_path to the root (from=start_path_top, to=root).
+ * Edge connecting the top of start_path to the root (bottom-up: from=child, to=root).
+ * This is the "root entry" edge — the last upward step before root.
  */
-root_edge: EdgeRef | null, 
+root_entry_edge: EdgeRef | null, 
+/**
+ * Edge connecting the root to the first end_path child (top-down: from=root, to=child).
+ * This is the "root exit" edge — the first downward step from root.
+ */
+root_exit_edge: EdgeRef | null, 
 /**
  * Nodes in the end_path (top-down, from root toward leaf).
  * Does NOT include the root itself.

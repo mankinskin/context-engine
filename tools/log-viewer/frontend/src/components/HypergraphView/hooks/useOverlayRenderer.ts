@@ -340,9 +340,10 @@ export function useOverlayRenderer(
 
             // Search path edge keys (from VizPathGraph — precise triple keys)
             const spStartKeys = curVizState.searchStartEdgeKeys;
-            const spRootKeys = curVizState.searchRootEdgeKeys;
+            const spRootEntryKeys = curVizState.searchRootEntryEdgeKeys;
+            const spRootExitKeys = curVizState.searchRootExitEdgeKeys;
             const spEndKeys = curVizState.searchEndEdgeKeys;
-            const hasSearchPath = spStartKeys.size > 0 || spRootKeys.size > 0 || spEndKeys.size > 0;
+            const hasSearchPath = spStartKeys.size > 0 || spRootEntryKeys.size > 0 || spRootExitKeys.size > 0 || spEndKeys.size > 0;
             const hasViz = vizTracePath.length > 0 || curVizState.selectedNode != null || hasSearchPath;
             // Insert edge keys (from insert-specific state: create_pattern, join, delta)
             const insertKeys = curVizState.insertEdgeKeys;
@@ -384,7 +385,9 @@ export function useOverlayRenderer(
                 // Search path edge identification (pair keys — pattern_idx independent)
                 const pairKey = edgePairKey(e.from, e.to);
                 const isSpStartEdge = spStartKeys.has(pairKey);
-                const isSpRootEdge = spRootKeys.has(pairKey);
+                const isSpRootEntryEdge = spRootEntryKeys.has(pairKey);
+                const isSpRootExitEdge = spRootExitKeys.has(pairKey);
+                const isSpRootEdge = isSpRootEntryEdge || isSpRootExitEdge;
                 const isSpEndEdge = spEndKeys.has(pairKey);
                 const isSearchPathEdge = isSpStartEdge || isSpRootEdge || isSpEndEdge;
 
@@ -480,14 +483,15 @@ export function useOverlayRenderer(
                 edgeDataBuf[off + 8] = b2;
                 edgeDataBuf[off + 9] = alpha;
                 edgeDataBuf[off + 10] = hlFlag;
-                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root, 4=SP-end, 5=trace-path, 6=candidate, 7=insert
+                // edgeType: 0=grid, 1=normal, 2=SP-start, 3=SP-root(unused), 4=SP-end, 5=trace-path, 6=candidate, 7=insert, 8=SP-root-entry, 9=SP-root-exit
                 edgeDataBuf[off + 11] = isSpStartEdge ? 2
-                    : isSpRootEdge ? 3
-                        : isSpEndEdge ? 4
-                            : isPathEdge ? 5
-                                : isCandidateEdge ? 6
-                                    : isInsertEdge ? 7
-                                        : 1;  // normal edge (energy beam)
+                    : isSpRootEntryEdge ? 8
+                        : isSpRootExitEdge ? 9
+                            : isSpEndEdge ? 4
+                                : isPathEdge ? 5
+                                    : isCandidateEdge ? 6
+                                        : isInsertEdge ? 7
+                                            : 1;  // normal edge (energy beam)
             }
             dev.queue.writeBuffer(edgeIB, 0, edgeDataBuf);
 

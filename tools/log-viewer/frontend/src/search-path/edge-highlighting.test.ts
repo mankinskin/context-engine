@@ -3,14 +3,14 @@
  *
  * Tests the pure functions extracted from useVisualizationState that
  * compute edge pair key sets for start-path, root, and end-path highlighting.
+ *
+ * The new implementation uses explicit edge refs from VizPathGraph directly
+ * (no BFS/topology search needed).
  */
 
 import { describe, it, expect } from 'vitest';
-import type { SnapshotEdge, VizPathGraph, Transition, PathNode, EdgeRef } from '../types/generated';
+import type { VizPathGraph, PathNode, EdgeRef } from '../types/generated';
 import {
-    buildChildMap,
-    findDescendantPath,
-    endPathTargetFromTransition,
     edgePairKey,
     computeSearchEdgeKeys,
 } from './edge-highlighting';
@@ -28,107 +28,22 @@ function er(from: number, to: number, pattern_idx = 0, sub_index = 0): EdgeRef {
     return { from, to, pattern_idx, sub_index };
 }
 
-function se(from: number, to: number, pattern_idx = 0, sub_index = 0): SnapshotEdge {
-    return { from, to, pattern_idx, sub_index };
-}
-
 /** Build a minimal VizPathGraph for testing. */
 function makePath(overrides: Partial<VizPathGraph> = {}): VizPathGraph {
     return { ...emptyPathGraph(), ...overrides };
 }
 
 // ---------------------------------------------------------------------------
-// buildChildMap
+// edgePairKey
 // ---------------------------------------------------------------------------
 
-describe('buildChildMap', () => {
-    it('builds adjacency list from snapshot edges', () => {
-        const edges: SnapshotEdge[] = [se(10, 5), se(10, 6), se(20, 10)];
-        const map = buildChildMap(edges);
-
-        expect(map.get(10)).toEqual([5, 6]);
-        expect(map.get(20)).toEqual([10]);
-        expect(map.get(5)).toBeUndefined();
+describe('edgePairKey', () => {
+    it('encodes two indices into a single number', () => {
+        expect(edgePairKey(10, 5)).toBe((10 << 16) | 5);
     });
 
-    it('handles multiple patterns for same parent', () => {
-        const edges: SnapshotEdge[] = [se(10, 5, 0), se(10, 6, 1), se(10, 7, 0, 1)];
-        const map = buildChildMap(edges);
-
-        expect(map.get(10)).toEqual([5, 6, 7]);
-    });
-
-    it('returns empty map for empty edges', () => {
-        const map = buildChildMap([]);
-        expect(map.size).toBe(0);
-    });
-});
-
-// ---------------------------------------------------------------------------
-// findDescendantPath
-// ---------------------------------------------------------------------------
-
-describe('findDescendantPath', () => {
-    const edges: SnapshotEdge[] = [se(100, 50), se(50, 20), se(50, 30), se(20, 5)];
-    const childMap = buildChildMap(edges);
-
-    it('finds direct parent→child path', () => {
-        const path = findDescendantPath(100, 50, childMap);
-        expect(path).toEqual([100, 50]);
-    });
-
-    it('finds multi-hop path', () => {
-        const path = findDescendantPath(100, 5, childMap);
-        expect(path).toEqual([100, 50, 20, 5]);
-    });
-
-    it('returns single-element for ancestor === descendant', () => {
-        const path = findDescendantPath(50, 50, childMap);
-        expect(path).toEqual([50]);
-    });
-
-    it('returns null when descendant is unreachable', () => {
-        const path = findDescendantPath(20, 100, childMap);
-        expect(path).toBeNull();
-    });
-
-    it('returns null for disconnected nodes', () => {
-        const extra = buildChildMap([se(1, 2), se(10, 20)]);
-        expect(findDescendantPath(1, 20, extra)).toBeNull();
-    });
-});
-
-// ---------------------------------------------------------------------------
-// endPathTargetFromTransition
-// ---------------------------------------------------------------------------
-
-describe('endPathTargetFromTransition', () => {
-    it('returns to for visit_child', () => {
-        const trans: Transition = {
-            kind: 'visit_child', from: 1, to: 5, child_index: 0, width: 1,
-            edge: er(1, 5), replace: false,
-        };
-        expect(endPathTargetFromTransition(trans)).toBe(5);
-    });
-
-    it('returns node for child_match', () => {
-        const trans: Transition = { kind: 'child_match', node: 7, cursor_pos: 3 };
-        expect(endPathTargetFromTransition(trans)).toBe(7);
-    });
-
-    it('returns node for child_mismatch', () => {
-        const trans: Transition = {
-            kind: 'child_mismatch', node: 7, cursor_pos: 3, expected: 10, actual: 11,
-        };
-        expect(endPathTargetFromTransition(trans)).toBe(7);
-    });
-
-    it('returns null for non-child transitions', () => {
-        expect(endPathTargetFromTransition({ kind: 'start_node', node: 1, width: 1 })).toBeNull();
-        expect(endPathTargetFromTransition({
-            kind: 'visit_parent', from: 1, to: 10, entry_pos: 0, width: 2, edge: er(1, 10),
-        })).toBeNull();
-        expect(endPathTargetFromTransition(null)).toBeNull();
+    it('different orderings produce different keys', () => {
+        expect(edgePairKey(10, 5)).not.toBe(edgePairKey(5, 10));
     });
 });
 
@@ -137,134 +52,126 @@ describe('endPathTargetFromTransition', () => {
 // ---------------------------------------------------------------------------
 
 describe('computeSearchEdgeKeys: start path', () => {
-    // Topology: 100 → 50 → 20 → 5
-    const snapshotEdges: SnapshotEdge[] = [se(100, 50), se(50, 20), se(20, 5)];
-
-    it('computes start edges via BFS through intermediate nodes', () => {
+    it('converts bottom-up start edges to parent→child pair keys', () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20), pn(50)],
+            // bottom-up: from=child, to=parent
             start_edges: [er(5, 20), er(20, 50)],
         });
 
-        const { startEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
+        const { startEdgeKeys } = computeSearchEdgeKeys(sp);
 
-        // Expected edges (parent→child for layout): 50→20, 20→5
-        expect(startEdgeKeys.has(edgePairKey(50, 20))).toBe(true);
+        // Layout direction (parent→child): 20→5, 50→20
         expect(startEdgeKeys.has(edgePairKey(20, 5))).toBe(true);
+        expect(startEdgeKeys.has(edgePairKey(50, 20))).toBe(true);
         expect(startEdgeKeys.size).toBe(2);
     });
 
-    it('fills intermediate edges when BFS finds multi-hop path', () => {
-        // start_path skips node 50: claims edge from 5 directly to 100
-        // but in the graph 100→50→20→5
-        const sp = makePath({
-            start_node: pn(5),
-            start_path: [pn(100)],
-            start_edges: [er(5, 100)],
-        });
-
-        const { startEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
-
-        // BFS from 100 to 5 finds 100→50→20→5, so 3 edges
-        expect(startEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
-        expect(startEdgeKeys.has(edgePairKey(50, 20))).toBe(true);
-        expect(startEdgeKeys.has(edgePairKey(20, 5))).toBe(true);
-        expect(startEdgeKeys.size).toBe(3);
+    it('returns empty set when no start edges', () => {
+        const sp = makePath({ start_node: pn(5) });
+        const { startEdgeKeys } = computeSearchEdgeKeys(sp);
+        expect(startEdgeKeys.size).toBe(0);
     });
 
-    it('falls back to direct edge when BFS fails', () => {
-        // Node 99 is not in the graph topology
-        const sp = makePath({
-            start_node: pn(5),
-            start_path: [pn(99)],
-            start_edges: [er(5, 99)],
-        });
-
-        const { startEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
-
-        // BFS from 99 to 5 fails → falls back to direct key (99, 5)
-        expect(startEdgeKeys.has(edgePairKey(99, 5))).toBe(true);
-        expect(startEdgeKeys.size).toBe(1);
-    });
-
-    it('falls back to edge refs when no snapshot edges', () => {
+    it('handles single start edge', () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20)],
             start_edges: [er(5, 20)],
         });
 
-        const { startEdgeKeys } = computeSearchEdgeKeys(sp, null, null);
+        const { startEdgeKeys } = computeSearchEdgeKeys(sp);
 
-        // No childMap → swaps from/to: edgePairKey(to=20, from=5)
         expect(startEdgeKeys.has(edgePairKey(20, 5))).toBe(true);
         expect(startEdgeKeys.size).toBe(1);
     });
 });
 
 // ---------------------------------------------------------------------------
-// computeSearchEdgeKeys — root edge
+// computeSearchEdgeKeys — root edges
 // ---------------------------------------------------------------------------
 
-describe('computeSearchEdgeKeys: root edge', () => {
-    // Topology: 200 → 100 → 50 → 20 → 5
-    const snapshotEdges: SnapshotEdge[] = [
-        se(200, 100), se(100, 50), se(50, 20), se(20, 5),
-    ];
-
-    it('highlights all intermediate root edge hops', () => {
-        // Root at 200, start_path top is 50 (skipping 100)
-        const sp = makePath({
-            start_node: pn(5),
-            start_path: [pn(20), pn(50)],
-            start_edges: [er(5, 20), er(20, 50)],
-            root: pn(200),
-            root_edge: er(50, 200),
-        });
-
-        const { rootEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
-
-        // BFS from 200 to 50: 200→100→50, gives 2 edges
-        expect(rootEdgeKeys.has(edgePairKey(200, 100))).toBe(true);
-        expect(rootEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
-        expect(rootEdgeKeys.size).toBe(2);
-    });
-
-    it('highlights single root edge when direct', () => {
+describe('computeSearchEdgeKeys: root edges', () => {
+    it('computes root entry edge (flipped to parent→child)', () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20), pn(50)],
             start_edges: [er(5, 20), er(20, 50)],
             root: pn(100),
-            root_edge: er(50, 100),
+            // bottom-up: from=child(50), to=root(100)
+            root_entry_edge: er(50, 100),
         });
 
-        const { rootEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
+        const { rootEntryEdgeKeys } = computeSearchEdgeKeys(sp);
 
-        expect(rootEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
-        expect(rootEdgeKeys.size).toBe(1);
+        // Layout direction: parent(100)→child(50)
+        expect(rootEntryEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
+        expect(rootEntryEdgeKeys.size).toBe(1);
     });
 
-    it('falls back to direct edge when BFS fails', () => {
-        // Root 999 not in graph
+    it('computes root exit edge (already parent→child)', () => {
         const sp = makePath({
             start_node: pn(5),
-            root: pn(999),
-            root_edge: er(5, 999),
+            root: pn(100),
+            root_entry_edge: er(5, 100),
+            // top-down: from=root(100), to=child(50)
+            root_exit_edge: er(100, 50),
+            end_path: [pn(50)],
+            end_edges: [er(100, 50)],
         });
 
-        const { rootEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
 
-        // Falls back to edgePairKey(root_edge.to=999, root_edge.from=5)
-        expect(rootEdgeKeys.has(edgePairKey(999, 5))).toBe(true);
-        expect(rootEdgeKeys.size).toBe(1);
+        // Entry: layout 100→5
+        expect(rootEntryEdgeKeys.has(edgePairKey(100, 5))).toBe(true);
+        expect(rootEntryEdgeKeys.size).toBe(1);
+        // Exit: layout 100→50
+        expect(rootExitEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
+        expect(rootExitEdgeKeys.size).toBe(1);
     });
 
-    it('empty when no root_edge', () => {
+    it('includes both entry and exit when both present', () => {
+        const sp = makePath({
+            start_node: pn(5),
+            start_path: [pn(20)],
+            start_edges: [er(5, 20)],
+            root: pn(100),
+            root_entry_edge: er(20, 100),
+            root_exit_edge: er(100, 50),
+            end_path: [pn(50)],
+            end_edges: [er(100, 50)],
+        });
+
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+
+        // Entry: layout 100→20
+        expect(rootEntryEdgeKeys.has(edgePairKey(100, 20))).toBe(true);
+        expect(rootEntryEdgeKeys.size).toBe(1);
+        // Exit: layout 100→50
+        expect(rootExitEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
+        expect(rootExitEdgeKeys.size).toBe(1);
+    });
+
+    it('empty when no root edges', () => {
         const sp = makePath({ start_node: pn(5) });
-        const { rootEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
-        expect(rootEdgeKeys.size).toBe(0);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+        expect(rootEntryEdgeKeys.size).toBe(0);
+        expect(rootExitEdgeKeys.size).toBe(0);
+    });
+
+    it('entry only when no exit edge', () => {
+        const sp = makePath({
+            start_node: pn(5),
+            root: pn(100),
+            root_entry_edge: er(5, 100),
+        });
+
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+
+        expect(rootEntryEdgeKeys.has(edgePairKey(100, 5))).toBe(true);
+        expect(rootEntryEdgeKeys.size).toBe(1);
+        expect(rootExitEdgeKeys.size).toBe(0);
     });
 });
 
@@ -273,149 +180,103 @@ describe('computeSearchEdgeKeys: root edge', () => {
 // ---------------------------------------------------------------------------
 
 describe('computeSearchEdgeKeys: end path', () => {
-    // Topology: 100 → 50 → 20 → 5, also 100 → 50 → 30
-    const snapshotEdges: SnapshotEdge[] = [
-        se(100, 50), se(50, 20), se(50, 30), se(20, 5),
-    ];
-
-    it('computes end edges from root to transition target', () => {
+    it('uses end_edges directly (already parent→child)', () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
-            root_edge: er(5, 100),
+            root_entry_edge: er(5, 100),
+            root_exit_edge: er(100, 50),
             end_path: [pn(50), pn(20)],
             end_edges: [er(100, 50), er(50, 20)],
         });
 
-        const trans: Transition = {
-            kind: 'visit_child', from: 50, to: 20, child_index: 0, width: 1,
-            edge: er(50, 20), replace: false,
-        };
+        const { endEdgeKeys } = computeSearchEdgeKeys(sp);
 
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);
-
-        // BFS from 100 to 20: 100→50→20
         expect(endEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
         expect(endEdgeKeys.has(edgePairKey(50, 20))).toBe(true);
         expect(endEdgeKeys.size).toBe(2);
     });
 
-    it('falls back to last end_path node when no child transition', () => {
+    it('returns empty set when no end edges', () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
-            root_edge: er(5, 100),
-            end_path: [pn(50), pn(30)],
-            end_edges: [er(100, 50), er(50, 30)],
+            root_entry_edge: er(5, 100),
         });
 
-        // candidate_match is considered child-exploration, so end_path fallback is used
-        const trans: Transition = {
-            kind: 'candidate_match', root: 100, width: 2, edge: er(5, 100),
-        };
-
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);
-
-        // Falls back to end_path[last] = 30; BFS from 100 to 30: 100→50→30
-        expect(endEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
-        expect(endEdgeKeys.has(edgePairKey(50, 30))).toBe(true);
-        expect(endEdgeKeys.size).toBe(2);
-    });
-
-    it('clears end edges when transition is not child-related', () => {
-        const sp = makePath({
-            start_node: pn(5),
-            root: pn(100),
-            root_edge: er(5, 100),
-            end_path: [pn(50), pn(30)],
-            end_edges: [er(100, 50), er(50, 30)],
-        });
-
-        // parent_explore is NOT child-exploration → end edges should be cleared
-        const trans: Transition = {
-            kind: 'parent_explore', current_root: 100, parent_candidates: [200],
-        };
-
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);
-
+        const { endEdgeKeys } = computeSearchEdgeKeys(sp);
         expect(endEdgeKeys.size).toBe(0);
     });
 
-    it('clears end edges for visit_parent transition', () => {
+    it('handles single end edge', () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
-            root_edge: er(5, 100),
+            root_entry_edge: er(5, 100),
+            root_exit_edge: er(100, 50),
             end_path: [pn(50)],
             end_edges: [er(100, 50)],
         });
 
-        const trans: Transition = {
-            kind: 'visit_parent', from: 100, to: 200, entry_pos: 0, width: 3,
-            edge: er(100, 200),
-        };
-
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);
-
-        expect(endEdgeKeys.size).toBe(0);
-    });
-
-    it('uses end_path fallback when transition is null', () => {
-        const sp = makePath({
-            start_node: pn(5),
-            root: pn(100),
-            root_edge: er(5, 100),
-            end_path: [pn(50)],
-            end_edges: [er(100, 50)],
-        });
-
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, null);
+        const { endEdgeKeys } = computeSearchEdgeKeys(sp);
 
         expect(endEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
-        expect(endEdgeKeys.size).toBe(1);
-    });
-
-    it('falls back to direct end_edges when BFS fails', () => {
-        // Root 100 exists, but target 999 doesn't
-        const sp = makePath({
-            start_node: pn(5),
-            root: pn(100),
-            root_edge: er(5, 100),
-            end_path: [pn(999)],
-            end_edges: [er(100, 999)],
-        });
-
-        const trans: Transition = {
-            kind: 'visit_child', from: 100, to: 999, child_index: 0, width: 1,
-            edge: er(100, 999), replace: false,
-        };
-
-        const { endEdgeKeys } = computeSearchEdgeKeys(sp, snapshotEdges, trans);
-
-        // BFS fails → fallback to direct end_edges
-        expect(endEdgeKeys.has(edgePairKey(100, 999))).toBe(true);
         expect(endEdgeKeys.size).toBe(1);
     });
 });
 
 // ---------------------------------------------------------------------------
-// computeSearchEdgeKeys — empty / null inputs
+// computeSearchEdgeKeys — empty / edge cases
 // ---------------------------------------------------------------------------
 
 describe('computeSearchEdgeKeys: edge cases', () => {
     it('returns empty sets for empty path graph', () => {
         const sp = emptyPathGraph();
-        const { startEdgeKeys, rootEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp, null, null);
+        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
         expect(startEdgeKeys.size).toBe(0);
-        expect(rootEdgeKeys.size).toBe(0);
+        expect(rootEntryEdgeKeys.size).toBe(0);
+        expect(rootExitEdgeKeys.size).toBe(0);
         expect(endEdgeKeys.size).toBe(0);
     });
 
     it('handles start_node only (no start_path, no root)', () => {
         const sp = makePath({ start_node: pn(5) });
-        const { startEdgeKeys, rootEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp, [], null);
+        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
         expect(startEdgeKeys.size).toBe(0);
-        expect(rootEdgeKeys.size).toBe(0);
+        expect(rootEntryEdgeKeys.size).toBe(0);
+        expect(rootExitEdgeKeys.size).toBe(0);
         expect(endEdgeKeys.size).toBe(0);
+    });
+
+    it('full path: all sections populated', () => {
+        const sp = makePath({
+            start_node: pn(5),
+            start_path: [pn(20), pn(50)],
+            start_edges: [er(5, 20), er(20, 50)],
+            root: pn(100),
+            root_entry_edge: er(50, 100),
+            root_exit_edge: er(100, 30),
+            end_path: [pn(30), pn(10)],
+            end_edges: [er(100, 30), er(30, 10)],
+        });
+
+        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
+
+        // Start: 20→5, 50→20
+        expect(startEdgeKeys.size).toBe(2);
+        expect(startEdgeKeys.has(edgePairKey(20, 5))).toBe(true);
+        expect(startEdgeKeys.has(edgePairKey(50, 20))).toBe(true);
+
+        // Root entry: 100→50
+        expect(rootEntryEdgeKeys.size).toBe(1);
+        expect(rootEntryEdgeKeys.has(edgePairKey(100, 50))).toBe(true);
+        // Root exit: 100→30
+        expect(rootExitEdgeKeys.size).toBe(1);
+        expect(rootExitEdgeKeys.has(edgePairKey(100, 30))).toBe(true);
+
+        // End: 100→30, 30→10
+        expect(endEdgeKeys.size).toBe(2);
+        expect(endEdgeKeys.has(edgePairKey(100, 30))).toBe(true);
+        expect(endEdgeKeys.has(edgePairKey(30, 10))).toBe(true);
     });
 });

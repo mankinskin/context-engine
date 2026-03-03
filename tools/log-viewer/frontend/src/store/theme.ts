@@ -175,8 +175,8 @@ const ELYSIUM_EFFECTS: Partial<EffectSettings> = {
   beamsEnabled: true, beamCount: 32, beamHeight: 40, beamSpeed: 30, beamDrift: 85,
   glitterEnabled: true, glitterCount: 30, glitterSize: 50, glitterSpeed: 30,
   cinderEnabled: true, cinderSize: 65,
-  smokeEnabled: true, smokeIntensity: 25, smokeSpeed: 30,
-  crtEnabled: true, crtScanlinesH: 8, crtScanlinesV: 6, crtEdgeShadow: 22, crtFlicker: 6,
+  smokeEnabled: true, smokeIntensity: 0, smokeSpeed: 30,
+  crtEnabled: true, crtScanlinesH: 30, crtScanlinesV: 30, crtEdgeShadow: 0, crtFlicker: 6,
   grainIntensity: 12, vignetteStrength: 30, underglowStrength: 20,
 };
 

@@ -155,10 +155,13 @@ struct EdgeVsOut {
 //   0 = grid / simple (no animation)
 //   1 = normal edge (subtle energy flow)
 //   2 = search-path start (uniform teal, arrow toward A / parent)
-//   3 = search-path root (gold, radiant bidirectional)
+//   3 = search-path root (gold, radiant bidirectional) [legacy]
 //   4 = search-path end (uniform teal, arrow toward B / child)
 //   5 = trace path (gentle flow)
 //   6 = candidate edge (muted violet, transparent)
+//   7 = insert edge
+//   8 = search-path root entry (gold, arrow toward A / root)
+//   9 = search-path root exit (gold, arrow toward B / child)
 
 @vertex
 fn vs_edge(
@@ -186,11 +189,11 @@ fn vs_edge(
     } else if (edgeType < 1.5) {
         // Normal edge: subtle beam
         halfWidth = select(0.03, 0.05, flags > 0.5);
-    } else if (edgeType > 5.5) {
+    } else if (edgeType > 5.5 && edgeType < 6.5) {
         // Candidate edge (type 6): medium-thin
         halfWidth = 0.035;
-    } else if (edgeType > 1.5 && edgeType < 4.5) {
-        // Search path edges with arrows (types 2,3,4): extra wide for arrowhead room
+    } else if ((edgeType > 1.5 && edgeType < 4.5) || (edgeType > 7.5 && edgeType < 9.5)) {
+        // Search path edges with arrows (types 2,3,4,8,9): extra wide for arrowhead room
         halfWidth = select(0.10, 0.12, flags > 0.5);
     } else {
         // Trace path (type 5): moderate beam
@@ -257,7 +260,7 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
     }
 
     // ── Candidate edges (edgeType 6): muted, transparent, gentle pulse ──
-    if (in.edgeType > 5.5) {
+    if (in.edgeType > 5.5 && in.edgeType < 6.5) {
         let core_c = exp(-across * across * 12.0);
         let glow_c = exp(-across * across * 3.5);
         let gentlePulse = 0.5 + 0.5 * sin(t * 8.0 - time * 1.0);
@@ -271,9 +274,9 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
 
     // ── Energy beam rendering (edgeType 1-5) ──
 
-    // For path edges (2,3,4), narrow the beam core relative to the wide quad
+    // For path edges (2,3,4,8,9), narrow the beam core relative to the wide quad
     // so the arrowhead can spread wider than the beam body.
-    let isArrowType = (in.edgeType > 1.5 && in.edgeType < 4.5);
+    let isArrowType = (in.edgeType > 1.5 && in.edgeType < 4.5) || (in.edgeType > 7.5 && in.edgeType < 9.5);
     // Beam occupies the central ~40% of quad width for arrow types
     let beamScale = select(1.0, 2.2, isArrowType);
     let beamAcross = across * beamScale;  // stretched so core stays narrow
@@ -323,7 +326,7 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         hotCenter = vec3(0.85, 1.0, 1.0);
 
     } else if (in.edgeType > 2.5 && in.edgeType < 3.5) {
-        // ═══ SP ROOT (type 3): golden radiance, bidirectional ═══
+        // ═══ SP ROOT legacy (type 3): golden radiance, bidirectional ═══
         let centerDist = abs(t - 0.5);
         let biPulse = pow(0.5 + 0.5 * sin(centerDist * 20.0 - time * 5.0), 3.0);
         intensity += core * biPulse * 0.4;
@@ -353,6 +356,42 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
         intensity += targetGlow * outerGlow * 0.2;
         hotCenter = vec3(0.85, 1.0, 1.0);
 
+    } else if (in.edgeType > 7.5 && in.edgeType < 8.5) {
+        // ═══ SP ROOT ENTRY (type 8): golden radiance, arrow at A (toward root) ═══
+        // Search arrived upward at the root node from the start path.
+        let centerDist_re = abs(t - 0.5);
+        let center_glow_re = exp(-centerDist_re * centerDist_re * 12.0);
+        let shimmer_re = noise2d(vec2(t * 15.0, time * 3.0));
+        intensity += center_glow_re * innerGlow * 0.35;
+        intensity += core * shimmer_re * 0.12;
+        // Flow travels B→A (child→parent / upward toward root)
+        let flowPulse_re = pow(0.5 + 0.5 * sin(t * 20.0 + time * 5.0), 3.0);
+        intensity += core * flowPulse_re * 0.25;
+        intensity += sourceGlow * innerGlow * 0.3;
+        // Arrowhead at A end (toward root/parent, arrowDir = 0.0)
+        let arrow_re = arrowHead(t, across, 0.0, in.edgeLen);
+        intensity += arrow_re * 0.8;
+        hotCenter = vec3(1.0, 0.95, 0.75);
+        col = mix(col, vec3(1.0, 0.9, 0.5), center_glow_re * 0.2);
+
+    } else if (in.edgeType > 8.5 && in.edgeType < 9.5) {
+        // ═══ SP ROOT EXIT (type 9): golden radiance, arrow at B (toward child) ═══
+        // Search continues downward from root into the end path.
+        let centerDist_rx = abs(t - 0.5);
+        let center_glow_rx = exp(-centerDist_rx * centerDist_rx * 12.0);
+        let shimmer_rx = noise2d(vec2(t * 15.0, time * 3.0));
+        intensity += center_glow_rx * innerGlow * 0.35;
+        intensity += core * shimmer_rx * 0.12;
+        // Flow travels A→B (parent→child / downward from root)
+        let flowPulse_rx = pow(0.5 + 0.5 * sin(t * 20.0 - time * 5.0), 3.0);
+        intensity += core * flowPulse_rx * 0.25;
+        intensity += targetGlow * innerGlow * 0.3;
+        // Arrowhead at B end (toward child, arrowDir = 1.0)
+        let arrow_rx = arrowHead(t, across, 1.0, in.edgeLen);
+        intensity += arrow_rx * 0.8;
+        hotCenter = vec3(1.0, 0.95, 0.75);
+        col = mix(col, vec3(1.0, 0.9, 0.5), center_glow_rx * 0.2);
+
     } else {
         // ═══ NORMAL edge (type 1): subtle energy ═══
         intensity *= 0.8;
@@ -374,10 +413,16 @@ fn fs_edge(in: EdgeVsOut) -> @location(0) vec4<f32> {
     var endFadeB = smoothstep(0.0, 0.06, 1.0 - t);
     // Don't fade the arrow tip — let the arrowhead geometry define the end
     if (in.edgeType > 1.5 && in.edgeType < 2.5) {
-        endFadeA = 1.0;  // arrow at A end, don't fade there
+        endFadeA = 1.0;  // type 2: arrow at A end, don't fade there
+    }
+    if (in.edgeType > 7.5 && in.edgeType < 8.5) {
+        endFadeA = 1.0;  // type 8: root entry arrow at A end, don't fade there
     }
     if (in.edgeType > 3.5 && in.edgeType < 4.5) {
-        endFadeB = 1.0;  // arrow at B end, don't fade there
+        endFadeB = 1.0;  // type 4: arrow at B end, don't fade there
+    }
+    if (in.edgeType > 8.5 && in.edgeType < 9.5) {
+        endFadeB = 1.0;  // type 9: root exit arrow at B end, don't fade there
     }
     intensity *= min(endFadeA, endFadeB);
 

@@ -43,8 +43,10 @@ export interface VisualizationState {
     searchPath: VizPathGraph | null;
     /** Edge pair keys for start_path edges (upward exploration) */
     searchStartEdgeKeys: Set<number>;
-    /** Edge pair keys for root edge(s) — may include intermediate hops */
-    searchRootEdgeKeys: Set<number>;
+    /** Edge pair keys for root entry edge (start→root, arrow toward parent/A) */
+    searchRootEntryEdgeKeys: Set<number>;
+    /** Edge pair keys for root exit edge (root→end, arrow toward child/B) */
+    searchRootExitEdgeKeys: Set<number>;
     /** Edge pair keys for end_path edges (downward comparison) */
     searchEndEdgeKeys: Set<number>;
     /** Query token indices (nodes in the input pattern) */
@@ -167,10 +169,11 @@ export function useVisualizationState(
 
         // ── Search path edge key sets (pair keys — pattern_idx independent) ──
         const edgeKeys = sp
-            ? computeSearchEdgeKeys(sp, snapshotEdges ?? null, trans)
+            ? computeSearchEdgeKeys(sp)
             : null;
         const searchStartEdgeKeys = edgeKeys?.startEdgeKeys ?? new Set<number>();
-        const searchRootEdgeKeys = edgeKeys?.rootEdgeKeys ?? new Set<number>();
+        const searchRootEntryEdgeKeys = edgeKeys?.rootEntryEdgeKeys ?? new Set<number>();
+        const searchRootExitEdgeKeys = edgeKeys?.rootExitEdgeKeys ?? new Set<number>();
         const searchEndEdgeKeys = edgeKeys?.endEdgeKeys ?? new Set<number>();
 
         // Build the set of all "involved" nodes for dimming non-involved ones
@@ -210,7 +213,11 @@ export function useVisualizationState(
             involvedNodes.add(key >>> 16);
             involvedNodes.add(key & 0xFFFF);
         }
-        for (const key of searchRootEdgeKeys) {
+        for (const key of searchRootEntryEdgeKeys) {
+            involvedNodes.add(key >>> 16);
+            involvedNodes.add(key & 0xFFFF);
+        }
+        for (const key of searchRootExitEdgeKeys) {
             involvedNodes.add(key >>> 16);
             involvedNodes.add(key & 0xFFFF);
         }
@@ -308,7 +315,8 @@ export function useVisualizationState(
             location: loc,
             searchPath: sp,
             searchStartEdgeKeys,
-            searchRootEdgeKeys,
+            searchRootEntryEdgeKeys,
+            searchRootExitEdgeKeys,
             searchEndEdgeKeys,
             queryTokens,
             activeQueryToken,

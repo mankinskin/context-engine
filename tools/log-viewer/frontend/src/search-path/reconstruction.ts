@@ -27,7 +27,8 @@ export function emptyPathGraph(): VizPathGraph {
     start_path: [],
     start_edges: [],
     root: null,
-    root_edge: null,
+    root_entry_edge: null,
+    root_exit_edge: null,
     end_path: [],
     end_edges: [],
     cursor_pos: 0,
@@ -62,9 +63,13 @@ export function applyTransition(
         // Root already set — extend start path upward past the old root.
         // Demote old root + its edge into start_path, then push the new parent.
         graph.start_path.push(graph.root);
-        graph.start_edges.push(graph.root_edge!);
+        graph.start_edges.push(graph.root_entry_edge!);
         graph.root = null;
-        graph.root_edge = null;
+        graph.root_entry_edge = null;
+        // Clear end_path — previous root's children are no longer relevant
+        graph.end_path.length = 0;
+        graph.end_edges.length = 0;
+        graph.root_exit_edge = null;
       }
       graph.start_path.push(transition.parent);
       graph.start_edges.push(transition.edge);
@@ -79,17 +84,17 @@ export function applyTransition(
       }
       // If root matches the last start_path entry, pop it
       // (the node is "graduating" from candidate to confirmed root).
-      // Use the popped edge as root_edge since it correctly connects
+      // Use the popped edge as root_entry_edge since it correctly connects
       // the prior start_path node to this root.
       if (graph.start_path.length > 0 &&
         graph.start_path[graph.start_path.length - 1].index === transition.root.index) {
         graph.start_path.pop();
         const poppedEdge = graph.start_edges.pop();
         graph.root = transition.root;
-        graph.root_edge = poppedEdge ?? transition.edge;
+        graph.root_entry_edge = poppedEdge ?? transition.edge;
       } else {
         graph.root = transition.root;
-        graph.root_edge = transition.edge;
+        graph.root_entry_edge = transition.edge;
       }
       break;
 
@@ -99,6 +104,10 @@ export function applyTransition(
       }
       graph.end_path.push(transition.child);
       graph.end_edges.push(transition.edge);
+      // Set root_exit_edge on the first child pushed
+      if (graph.end_path.length === 1) {
+        graph.root_exit_edge = transition.edge;
+      }
       break;
 
     case 'pop_child':
@@ -107,6 +116,10 @@ export function applyTransition(
       }
       graph.end_path.pop();
       graph.end_edges.pop();
+      // Clear root_exit_edge if end_path is now empty
+      if (graph.end_path.length === 0) {
+        graph.root_exit_edge = null;
+      }
       break;
 
     case 'replace_child':
@@ -115,6 +128,10 @@ export function applyTransition(
       }
       graph.end_path[graph.end_path.length - 1] = transition.child;
       graph.end_edges[graph.end_edges.length - 1] = transition.edge;
+      // Update root_exit_edge if replacing the first child
+      if (graph.end_path.length === 1) {
+        graph.root_exit_edge = transition.edge;
+      }
       break;
 
     case 'child_match':
@@ -177,7 +194,8 @@ export function allNodeIndices(graph: VizPathGraph): number[] {
 export function allEdges(graph: VizPathGraph): EdgeRef[] {
   const edges: EdgeRef[] = [];
   edges.push(...graph.start_edges);
-  if (graph.root_edge) edges.push(graph.root_edge);
+  if (graph.root_entry_edge) edges.push(graph.root_entry_edge);
+  if (graph.root_exit_edge) edges.push(graph.root_exit_edge);
   edges.push(...graph.end_edges);
   return edges;
 }

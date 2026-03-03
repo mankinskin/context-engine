@@ -18,7 +18,8 @@
       "start_path": [],
       "start_edges": [],
       "root": null,
-      "root_edge": null,
+      "root_entry_edge": null,
+      "root_exit_edge": null,
       "end_path": [],
       "end_edges": [],
       "cursor_pos": 0,
@@ -93,7 +94,8 @@
         }
       ],
       "root": null,
-      "root_edge": null,
+      "root_entry_edge": null,
+      "root_exit_edge": null,
       "end_path": [],
       "end_edges": [],
       "cursor_pos": 0,
@@ -182,11 +184,17 @@
         "index": 20,
         "width": 4
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 10,
         "to": 20,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 20,
+        "to": 5,
+        "pattern_idx": 0,
+        "sub_index": 1
       },
       "end_path": [
         {
@@ -263,11 +271,17 @@
         "index": 10,
         "width": 2
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 1,
         "to": 10,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 10,
+        "to": 3,
+        "pattern_idx": 0,
+        "sub_index": 1
       },
       "end_path": [
         {
@@ -364,11 +378,17 @@
         "index": 10,
         "width": 3
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 1,
         "to": 10,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 10,
+        "to": 4,
+        "pattern_idx": 0,
+        "sub_index": 2
       },
       "end_path": [
         {
@@ -458,11 +478,17 @@
         "index": 10,
         "width": 3
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 1,
         "to": 10,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 10,
+        "to": 4,
+        "pattern_idx": 0,
+        "sub_index": 2
       },
       "end_path": [
         {
@@ -613,11 +639,17 @@
         "index": 20,
         "width": 6
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 10,
         "to": 20,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 20,
+        "to": 15,
+        "pattern_idx": 0,
+        "sub_index": 1
       },
       "end_path": [
         {
@@ -752,11 +784,17 @@
         "index": 20,
         "width": 6
       },
-      "root_edge": {
+      "root_entry_edge": {
         "from": 10,
         "to": 20,
         "pattern_idx": 0,
         "sub_index": 0
+      },
+      "root_exit_edge": {
+        "from": 20,
+        "to": 5,
+        "pattern_idx": 0,
+        "sub_index": 1
       },
       "end_path": [
         {
