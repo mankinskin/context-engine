@@ -75,18 +75,18 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
     // Initial positions: circular in XZ, Y by width
     const nodes: LayoutNode[] = snapshot.nodes.map((n, i) => {
         const angle = (i / snapshot.nodes.length) * Math.PI * 2;
-        const r = 1 + snapshot.nodes.length * 0.15;
+        const r = 0.45 + snapshot.nodes.length * 0.5;
         return {
             index: n.index,
             label: n.label,
             width: n.width,
             isAtom: n.width === 1,
-            x: Math.cos(angle) * r * (0.5 + Math.random() * 0.5),
-            y: (n.width - 1) * 0.8,
-            z: Math.sin(angle) * r * (0.5 + Math.random() * 0.5),
+            x: Math.cos(angle) * r * (0.1 + Math.random() * 1.5),
+            y: (n.width - 1) * 0.47,
+            z: Math.sin(angle) * r * (0.1 + Math.random() * 1.5),
             tx: 0, ty: 0, tz: 0, // set after simulate
             vx: 0, vy: 0, vz: 0,
-            radius: 0.15 + Math.min(n.width * 0.06, 0.3),
+            radius: 0.15 + Math.min(n.width * 0.5, 0.3),
             color: widthColor(n.width, maxWidth),
             parentIndices: [...(parentMap.get(n.index) || [])],
             childIndices: [...(childMap.get(n.index) || [])],
@@ -130,8 +130,8 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
 }
 
 // ── Layout constants ──
-const SPACING_X = 1.8;
-const SPACING_Y = 1.5;
+const SPACING_X = 0.6;
+const SPACING_Y = 0.5;
 
 /**
  * Camera-relative axes for screen-oriented layout.
@@ -165,53 +165,9 @@ export interface FocusedLayoutOffsets {
 }
 
 /**
- * Position children of a node below it, grouped by pattern.
- * Each pattern is one valid decomposition of the node's string into smaller
- * substrings. Each decomposition becomes a horizontal row ordered by sub_index.
- * Offsets are in abstract 2D (dRight, dUp) relative to the anchor position.
- * Mutates the `offsets` map. Returns the number of pattern rows placed.
- */
-function layoutChildrenBelow(
-    layout: GraphLayout,
-    parentIdx: number,
-    offsets: Map<number, FocusedOffset>,
-    anchorRight: number,
-    anchorUp: number,
-): number {
-    const childEdgesByPattern = new Map<number, { to: number; subIndex: number }[]>();
-    for (const e of layout.edges) {
-        if (e.from === parentIdx) {
-            if (!childEdgesByPattern.has(e.patternIdx)) {
-                childEdgesByPattern.set(e.patternIdx, []);
-            }
-            childEdgesByPattern.get(e.patternIdx)!.push({ to: e.to, subIndex: e.subIndex });
-        }
-    }
-
-    const sortedPatterns = [...childEdgesByPattern.entries()].sort((a, b) => a[0] - b[0]);
-
-    for (let pi = 0; pi < sortedPatterns.length; pi++) {
-        const [, children] = sortedPatterns[pi]!;
-        children.sort((a, b) => a.subIndex - b.subIndex);
-        const rowUp = anchorUp - (pi + 1) * SPACING_Y;
-        const totalW = (children.length - 1) * SPACING_X;
-        const halfW = totalW / 2;
-        for (let ci = 0; ci < children.length; ci++) {
-            const childIdx = children[ci]!.to;
-            offsets.set(childIdx, {
-                dRight: anchorRight + ci * SPACING_X - halfW,
-                dUp: rowUp,
-            });
-        }
-    }
-
-    return sortedPatterns.length;
-}
-
-/**
  * Compute focused-layout offsets for a selected node.
  * - Parents arranged above the selected node, grouped by width (smallest closest)
- * - Children arranged below, each pattern_id on its own horizontal line
+ * - Children are rendered inside the parent DOM (not positioned in 3D)
  *
  * Returns abstract 2D offsets (dRight, dUp) from the anchor node.
  * The caller projects these onto camera axes to get world positions:
@@ -255,8 +211,8 @@ export function computeFocusedLayout(
         }
     }
 
-    // ── Children below, grouped by patternIdx ──
-    layoutChildrenBelow(layout, selectedIdx, offsets, 0, 0);
+    // Children are rendered inside the parent's DOM element —
+    // no 3D offsets needed for them.
 
     return { anchorIdx: selectedIdx, offsets };
 }
@@ -287,33 +243,76 @@ export function computeSearchPathLayout(
     if (!result) return null;
     const { offsets } = result;
 
-    // Expand children for each node along the end_path chain.
-    for (const endNode of searchPath.end_path) {
-        const parentOff = offsets.get(endNode.index);
-        if (!parentOff) continue;
-
-        layoutChildrenBelow(
-            layout, endNode.index, offsets,
-            parentOff.dRight, parentOff.dUp,
-        );
-    }
+    // Collapse children for each node along the end_path chain
+    // into parent DOM — no 3D offsets needed.
 
     // If the selected node is not root and not in end_path,
-    // also expand its children (e.g. manual selection within the view)
-    if (selectedIdx !== root.index) {
-        const endPathIndices = new Set(searchPath.end_path.map(n => n.index));
-        if (!endPathIndices.has(selectedIdx)) {
-            const selOff = offsets.get(selectedIdx);
-            if (selOff) {
-                layoutChildrenBelow(
-                    layout, selectedIdx, offsets,
-                    selOff.dRight, selOff.dUp,
-                );
-            }
+    // its children are also rendered inside its DOM.
+
+    return { anchorIdx: root.index, offsets };
+}
+
+// ── Decomposition patterns ──
+
+/**
+ * A single child token within a decomposition pattern row.
+ */
+export interface DecompositionChild {
+    index: number;
+    label: string;
+    width: number;
+    /** Fraction of the parent's width that this child occupies (0..1). */
+    fraction: number;
+    subIndex: number;
+}
+
+/**
+ * One decomposition pattern (one way to split the parent into children).
+ * All children's widths sum to the parent's width.
+ */
+export interface DecompositionPattern {
+    patternIdx: number;
+    children: DecompositionChild[];
+}
+
+/**
+ * Get all decomposition patterns for a parent node.
+ * Each pattern represents a different way the parent's string can be split
+ * into smaller substrings. Within each pattern, children are ordered by
+ * sub_index and their widths sum to the parent width.
+ */
+export function getDecompositionPatterns(
+    layout: GraphLayout,
+    parentIdx: number,
+): DecompositionPattern[] {
+    const parent = layout.nodeMap.get(parentIdx);
+    if (!parent || parent.isAtom) return [];
+
+    const byPattern = new Map<number, { to: number; subIndex: number }[]>();
+    for (const e of layout.edges) {
+        if (e.from === parentIdx) {
+            if (!byPattern.has(e.patternIdx)) byPattern.set(e.patternIdx, []);
+            byPattern.get(e.patternIdx)!.push({ to: e.to, subIndex: e.subIndex });
         }
     }
 
-    return { anchorIdx: root.index, offsets };
+    const patterns: DecompositionPattern[] = [];
+    for (const [patternIdx, edgeList] of [...byPattern.entries()].sort((a, b) => a[0] - b[0])) {
+        edgeList.sort((a, b) => a.subIndex - b.subIndex);
+        const children: DecompositionChild[] = edgeList.map(e => {
+            const child = layout.nodeMap.get(e.to);
+            return {
+                index: e.to,
+                label: child?.label ?? `#${e.to}`,
+                width: child?.width ?? 1,
+                fraction: (child?.width ?? 1) / parent.width,
+                subIndex: e.subIndex,
+            };
+        });
+        patterns.push({ patternIdx, children });
+    }
+
+    return patterns;
 }
 
 function simulate(
@@ -322,16 +321,16 @@ function simulate(
     nodeMap: Map<number, LayoutNode>,
     iterations: number,
 ) {
-    const repulsion = 1.5;
-    const springK = 0.15;
-    const springLen = 0.9;
+    const repulsion = 0.01;
+    const springK = 0.0;
+    const springLen = 0.3;
     const damping = 0.85;
     const ySpringK = 0.1;
-    const gravity = 0.05;
+    const gravity = 0.04;
     const dt = 0.4;
     // Minimum repulsion distance (prevents near-zero denominators from
     // producing enormous forces that fling nodes to extreme positions).
-    const minRepulsionDist = 0.3;
+    const minRepulsionDist = 0.1;
     // Maximum velocity per axis per iteration — prevents a single unlucky
     // close encounter from launching a node far away from the cluster.
     const maxVelocity = 3.0;
@@ -376,7 +375,7 @@ function simulate(
 
         // Y-axis spring to target level
         for (const n of nodes) {
-            const targetY = (n.width - 1) * 0.8;
+            const targetY = (n.width - 1) * 0.27;
             n.vy += (targetY - n.y) * ySpringK;
         }
 

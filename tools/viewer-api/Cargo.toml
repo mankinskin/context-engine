@@ -25,6 +25,11 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 
+# Dev proxy (reverse proxy to Vite dev server)
+hyper = "1"
+hyper-util = { version = "0.1", features = ["client-legacy", "http1", "tokio"] }
+http-body-util = "0.1"
+
 # MCP protocol
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 

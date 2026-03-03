@@ -6,6 +6,7 @@ use viewer_api::{
         routing::get,
         Router,
     },
+    dev_proxy,
     tower_http::{
         cors::{
             Any,
@@ -29,10 +30,18 @@ use crate::{
     state::AppState,
 };
 
+/// How the frontend is served.
+pub enum FrontendMode {
+    /// Serve pre-built static files from a directory.
+    Static(PathBuf),
+    /// Reverse-proxy to a Vite dev server on the given port.
+    DevProxy(u16),
+}
+
 /// Create the router with all routes
 pub fn create_router(
     state: AppState,
-    static_dir: Option<PathBuf>,
+    frontend: FrontendMode,
 ) -> Router {
     let mut router = Router::new()
         .route("/api/logs", get(list_logs))
@@ -45,10 +54,14 @@ pub fn create_router(
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
         .with_state(state);
 
-    // Only add static file serving if directory exists
-    if let Some(dir) = static_dir {
-        if dir.exists() {
-            router = router.nest_service("/", ServeDir::new(&dir));
+    match frontend {
+        FrontendMode::Static(dir) => {
+            if dir.exists() {
+                router = router.nest_service("/", ServeDir::new(&dir));
+            }
+        }
+        FrontendMode::DevProxy(port) => {
+            router = router.merge(dev_proxy::dev_proxy_fallback(port));
         }
     }
 

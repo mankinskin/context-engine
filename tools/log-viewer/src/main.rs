@@ -90,9 +90,10 @@ fn init_tracing(config: &Config) {
 
 #[tokio::main]
 async fn main() {
-    // Check for --mcp flag to run in MCP server mode
+    // Check for --mcp and --dev flags
     let args: Vec<String> = env::args().collect();
     let mcp_mode = args.iter().any(|arg| arg == "--mcp");
+    let dev_mode = args.iter().any(|arg| arg == "--dev");
 
     // Load configuration from file and environment
     let config = Config::load();
@@ -116,12 +117,41 @@ async fn main() {
         info!(log_dir = %to_unix_path(&state.log_dir), exists = state.log_dir.exists(), "Log directory");
         info!(workspace_root = %to_unix_path(&state.workspace_root), "Workspace root");
 
-        // Static file serving for the frontend
-        let static_dir =
-            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
-        info!(static_dir = %to_unix_path(&static_dir), "Static directory");
+        // Frontend serving: dev proxy or static files
+        let vite_port = 5173u16;
+        let _dev_server; // held alive for the lifetime of the server
+        let frontend_mode;
 
-        let app = create_router(state, Some(static_dir));
+        if dev_mode {
+            let frontend_dir =
+                PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("frontend");
+            info!(frontend_dir = %to_unix_path(&frontend_dir), port = vite_port, "Starting Vite dev server");
+
+            match viewer_api::dev_proxy::DevServer::start(
+                &frontend_dir,
+                vite_port,
+            )
+            .await
+            {
+                Ok(server) => {
+                    _dev_server = Some(server);
+                    frontend_mode =
+                        router::FrontendMode::DevProxy(vite_port);
+                }
+                Err(e) => {
+                    eprintln!("Failed to start Vite dev server: {}", e);
+                    std::process::exit(1);
+                }
+            }
+        } else {
+            _dev_server = None;
+            let static_dir =
+                PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
+            info!(static_dir = %to_unix_path(&static_dir), "Static directory");
+            frontend_mode = router::FrontendMode::Static(static_dir);
+        }
+
+        let app = create_router(state, frontend_mode);
 
         // Bind to address from config
         let addr: SocketAddr =
@@ -171,7 +201,10 @@ mod tests {
             sessions: Arc::new(RwLock::new(HashMap::new())),
         };
 
-        let router = create_router(state, None);
+        let router = create_router(
+            state,
+            router::FrontendMode::Static(PathBuf::from("/nonexistent")),
+        );
         let server = TestServer::new(router).unwrap();
 
         (server, log_dir, workspace_dir)

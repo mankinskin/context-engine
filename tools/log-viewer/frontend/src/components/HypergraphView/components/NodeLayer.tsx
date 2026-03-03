@@ -1,5 +1,9 @@
 /**
  * NodeLayer - DOM node rendering with visualization state classes.
+ *
+ * All nodes are rendered as flat siblings. The overlay renderer handles
+ * imperatively reparenting child DOM elements into the expanded parent
+ * when a compound node is selected, so that edges stay connected.
  */
 import type { LayoutNode } from '../layout';
 import { nodeWidthClass } from '../utils/nodeStyles';

@@ -214,7 +214,7 @@ export function HypergraphView() {
     }, [activeSearchStep.value, activePathStep.value, camera, setSelectedIdx]);
 
     // Register WebGPU overlay renderer
-    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState);
+    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx);
 
     // Handle focus from NodeInfoPanel links
     const handleFocusNode = useCallback((nodeIndex: number) => {

@@ -9,6 +9,7 @@
 //! - MCP server support via rmcp
 //! - Command-line flag parsing (--http, --mcp)
 //! - Tracing/logging initialization (console and file)
+//! - Dev proxy to Vite dev server (--dev mode)
 //! - Common utilities
 //!
 //! # Example
@@ -33,6 +34,8 @@
 //!     run_server(config, state, create_routes, None::<McpServerFactory<MyState>>).await.unwrap();
 //! }
 //! ```
+
+pub mod dev_proxy;
 
 use axum::Router;
 use std::{

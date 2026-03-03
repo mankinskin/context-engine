@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import { mat4Multiply, mat4Inverse } from '../../Scene3D/math3d';
 import { worldToScreen, worldScaleAtDepth, edgePairKey, edgeTripleKey } from '../utils/math';
 import type { GraphLayout } from '../layout';
+import { getDecompositionPatterns } from '../layout';
 import type { CameraController } from './useCamera';
 import type { InteractionState } from './useMouseInteraction';
 import type { VisualizationState } from './useVisualizationState';
@@ -68,7 +69,8 @@ export function useOverlayRenderer(
     layoutRef: { current: GraphLayout | null },
     camera: CameraController,
     interRef: { current: InteractionState },
-    vizState: VisualizationState
+    vizState: VisualizationState,
+    onSelectNode?: (idx: number) => void,
 ): void {
     const gpu = overlayGpu.value;
     const curLayout = layoutRef.current;
@@ -203,6 +205,170 @@ export function useOverlayRenderer(
         let cachedPaletteColors: unknown = null;
         let cachedPaletteBuf: Float32Array | null = null;
 
+        // ── Decomposition reparenting state ──
+        // Build node-index → DOM element map using data-node-idx attributes
+        // (NOT positional index) so it stays correct after DOM reordering.
+        const nodeElMap = new Map<number, HTMLDivElement>();
+        const updateNodeElMap = () => {
+            nodeElMap.clear();
+            // Scan nodeLayer children
+            const divs = nodeLayer.children;
+            for (let i = 0; i < divs.length; i++) {
+                const el = divs[i] as HTMLDivElement;
+                const idx = el.getAttribute('data-node-idx');
+                if (idx != null) nodeElMap.set(Number(idx), el);
+            }
+            // Also include elements currently inside a decomp container
+            if (decompContainer) {
+                const nested = decompContainer.querySelectorAll<HTMLDivElement>('[data-node-idx]');
+                for (const el of nested) {
+                    const idx = el.getAttribute('data-node-idx');
+                    if (idx != null) nodeElMap.set(Number(idx), el);
+                }
+            }
+        };
+
+        // Track which children are currently reparented so we can undo it
+        let reparentedChildren: { el: HTMLDivElement }[] = [];
+        let decompContainer: HTMLDivElement | null = null;
+        let expandedParentEl: HTMLDivElement | null = null;
+
+        updateNodeElMap();
+        const reorderNodeLayer = () => {
+            const elByIdx = new Map<number, HTMLDivElement>();
+            const divs = nodeLayer.children;
+            for (let i = 0; i < divs.length; i++) {
+                const el = divs[i] as HTMLDivElement;
+                const idx = el.getAttribute('data-node-idx');
+                if (idx != null) elByIdx.set(Number(idx), el);
+            }
+            // Re-append in layout order (appendChild moves existing children)
+            for (const n of curLayout.nodes) {
+                const el = elByIdx.get(n.index);
+                if (el) nodeLayer.appendChild(el);
+            }
+        };
+
+        updateNodeElMap();
+
+        const ROW_COLORS = [
+            'rgba(80, 140, 200, 0.12)',
+            'rgba(200, 120, 80, 0.12)',
+            'rgba(100, 180, 100, 0.12)',
+            'rgba(160, 120, 200, 0.12)',
+            'rgba(200, 180, 80, 0.12)',
+            'rgba(80, 200, 180, 0.12)',
+        ];
+
+        /** Undo any current reparenting — move children back to nodeLayer. */
+        const undoReparenting = () => {
+            // Move reparented children back (just append — we reorder after)
+            for (const { el } of reparentedChildren) {
+                el.classList.remove('hg-decomp-child');
+                el.style.flex = '';
+                nodeLayer.appendChild(el);
+            }
+            const hadReparented = reparentedChildren.length > 0;
+            reparentedChildren = [];
+            if (decompContainer) {
+                decompContainer.remove();
+                decompContainer = null;
+            }
+            if (expandedParentEl) {
+                const ep = expandedParentEl as any;
+                if (ep.__parentDown) expandedParentEl.removeEventListener('mousedown', ep.__parentDown);
+                if (ep.__parentUp) expandedParentEl.removeEventListener('mouseup', ep.__parentUp);
+                expandedParentEl.classList.remove('hg-expanded');
+                expandedParentEl = null;
+            }
+            // Restore correct DOM order so positional assumptions elsewhere
+            // (e.g. Preact reconciliation) remain valid.
+            if (hadReparented) reorderNodeLayer();
+        };
+
+        /** Build decomposition rows inside the selected node, reparenting child DOM elements. */
+        const applyReparenting = (selectedIdx: number) => {
+            const selNode = curLayout.nodeMap.get(selectedIdx);
+            if (!selNode || selNode.isAtom) return;
+
+            const patterns = getDecompositionPatterns(curLayout, selectedIdx);
+            if (patterns.length === 0) return;
+
+            // Refresh map in case Preact re-rendered
+            updateNodeElMap();
+
+            const parentEl = nodeElMap.get(selectedIdx);
+            if (!parentEl) return;
+
+            // Mark parent as expanded
+            parentEl.classList.add('hg-expanded');
+            expandedParentEl = parentEl;
+
+            // Create decomposition container
+            const container = document.createElement('div');
+            container.className = 'decomp-patterns';
+
+            for (let pi = 0; pi < patterns.length; pi++) {
+                const pat = patterns[pi]!;
+                const row = document.createElement('div');
+                row.className = 'decomp-row';
+                row.style.background = ROW_COLORS[pi % ROW_COLORS.length]!;
+
+                const label = document.createElement('span');
+                label.className = 'decomp-row-label';
+                label.textContent = `P${pat.patternIdx}`;
+                row.appendChild(label);
+
+                const tokens = document.createElement('div');
+                tokens.className = 'decomp-tokens';
+
+                for (const child of pat.children) {
+                    const childEl = nodeElMap.get(child.index);
+                    if (!childEl) continue;
+
+                    // Record for undo
+                    reparentedChildren.push({ el: childEl });
+
+                    // Move into decomposition row
+                    childEl.classList.add('hg-decomp-child');
+                    childEl.style.flex = `${child.fraction}`;
+                    tokens.appendChild(childEl);
+                }
+
+                row.appendChild(tokens);
+                container.appendChild(row);
+            }
+
+            // ── DOM event handlers on parentEl ──
+            // Clicks on the expanded parent (header, background, border) should
+            // NOT trigger the container's 3D raycast.  Clicks on decomp children
+            // select the child node.  All clicks stop propagation.
+            const onParentMouseDown = (e: MouseEvent) => {
+                if (e.button !== 0) return;
+                const childTarget = (e.target as HTMLElement).closest('.hg-decomp-child');
+                if (childTarget) {
+                    const idx = childTarget.getAttribute('data-node-idx');
+                    if (idx != null && onSelectNode) {
+                        onSelectNode(Number(idx));
+                    }
+                }
+                e.stopPropagation();
+            };
+            const onParentMouseUp = (e: MouseEvent) => {
+                // Prevent window-level mouseUp from deselecting
+                e.stopPropagation();
+            };
+            parentEl.addEventListener('mousedown', onParentMouseDown);
+            parentEl.addEventListener('mouseup', onParentMouseUp);
+            (parentEl as any).__parentDown = onParentMouseDown;
+            (parentEl as any).__parentUp = onParentMouseUp;
+
+            parentEl.appendChild(container);
+            decompContainer = container;
+        };
+
+        let lastDecompSelectedIdx = -1;
+
         // ── Overlay render callback ──
         const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
             // Get container bounds in viewport coords
@@ -300,9 +466,43 @@ export function useOverlayRenderer(
             // ── Position DOM nodes ──
             const nodeDivs = nodeLayer.children;
             const curVizInvolved = vizStateRef.current.involvedNodes;
-            for (let i = 0; i < curLayout.nodes.length && i < nodeDivs.length; i++) {
+
+            // ── Decomposition reparenting management ──
+            // If selection changed, undo old reparenting and apply new
+            if (inter.selectedIdx !== lastDecompSelectedIdx) {
+                undoReparenting();
+                lastDecompSelectedIdx = inter.selectedIdx;
+                if (inter.selectedIdx >= 0) {
+                    applyReparenting(inter.selectedIdx);
+                }
+            }
+
+            // Build set of currently reparented child indices for skipping 3D positioning
+            const reparentedSet = new Set<number>();
+            for (const { el } of reparentedChildren) {
+                const idx = el.getAttribute('data-node-idx');
+                if (idx != null) reparentedSet.add(Number(idx));
+            }
+
+            for (let i = 0; i < curLayout.nodes.length; i++) {
                 const n = curLayout.nodes[i]!;
-                const el = nodeDivs[i] as HTMLDivElement;
+                // Reparented children are positioned by CSS flow inside the parent —
+                // skip 3D transform positioning for them.
+                // We need to find their DOM element from the map, not by index
+                // (since reparented elements are no longer at their index position).
+                const el = nodeElMap.get(n.index);
+                if (!el) continue;
+
+                if (reparentedSet.has(n.index)) {
+                    // Child is inside decomposition row — don't apply 3D transforms.
+                    // Ensure it's visible and not dimmed.
+                    el.style.display = '';
+                    el.style.opacity = '1';
+                    el.style.transform = '';
+                    el.style.zIndex = '';
+                    continue;
+                }
+
                 const screen = worldToScreen([n.x, n.y, n.z], viewProj, vw, vh);
                 const scale = worldScaleAtDepth(camPos, [n.x, n.y, n.z], vh);
                 const pixelScale = Math.max(0.1, (scale * n.radius * 2.5) / 80);
@@ -322,6 +522,13 @@ export function useOverlayRenderer(
                 const zIdx = Math.round((1 - screen.z) * 1000);
                 el.style.zIndex = String(zIdx);
                 el.style.transform = `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+
+                // Expanded parent: anchor at top-center so decomposition rows
+                // hang below the label instead of overlapping it.
+                if (el === expandedParentEl) {
+                    el.style.transform = `translate(-50%, 0%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+                }
+
                 el.setAttribute('data-depth', screen.z.toFixed(4));
             }
 
@@ -530,6 +737,7 @@ export function useOverlayRenderer(
         registerOverlayRenderer(renderCallback);
 
         return () => {
+            undoReparenting();
             unregisterOverlayRenderer(renderCallback);
             quadVB.destroy();
             camUB.destroy();

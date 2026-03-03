@@ -279,10 +279,17 @@ export function useMouseInteraction(
                     inter.selectedIdx = inter.dragIdx;
                     setSelectedIdx(inter.dragIdx);
                 }
-            } else if (!inter.orbiting && !inter.panning && inter.dragIdx < 0 && e.button === 0) {
-                inter.selectedIdx = -1;
-                setSelectedIdx(-1);
-                setTooltip(null);
+            } else if (e.button === 0 && inter.clickedNode < 0 && inter.dragIdx < 0) {
+                // Clicked empty space — deselect if it was just a click, not a real orbit/pan
+                const dx = e.clientX - inter.downMX;
+                const dy = e.clientY - inter.downMY;
+                const wasClick = (!inter.orbiting && !inter.panning)
+                    || (dx * dx + dy * dy <= DRAG_THRESHOLD * DRAG_THRESHOLD);
+                if (wasClick) {
+                    inter.selectedIdx = -1;
+                    setSelectedIdx(-1);
+                    setTooltip(null);
+                }
             }
             inter.dragIdx = -1;
             inter.orbiting = false;

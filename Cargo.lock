@@ -3610,6 +3610,9 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-test 14.10.0",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
  "jaq-core",
  "jaq-interpret",
  "jaq-std",
