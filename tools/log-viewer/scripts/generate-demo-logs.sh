@@ -72,7 +72,7 @@ for crate in $(echo "${!REGULAR_TESTS[@]}" | tr ' ' '\n' | sort -u); do
   tests="${REGULAR_TESTS[$crate]}"
   echo "  cargo test -p $crate [$(echo $tests | wc -w | tr -d ' ') regular tests]..."
   for t in $tests; do
-    cargo test -p "$crate" "$t" -- --nocapture 2>/dev/null || {
+    cargo test -p "$crate" "$t" -- --nocapture || {
       echo "    WARNING: test '$t' in $crate failed" >&2
     }
   done
@@ -82,7 +82,7 @@ for crate in $(echo "${!IGNORED_TESTS_MAP[@]}" | tr ' ' '\n' | sort -u); do
   tests="${IGNORED_TESTS_MAP[$crate]}"
   echo "  cargo test -p $crate [$(echo $tests | wc -w | tr -d ' ') ignored tests]..."
   for t in $tests; do
-    cargo test -p "$crate" "$t" -- --ignored --nocapture 2>/dev/null || {
+    cargo test -p "$crate" "$t" -- --ignored --nocapture || {
       echo "    WARNING: ignored test '$t' in $crate failed" >&2
     }
   done
