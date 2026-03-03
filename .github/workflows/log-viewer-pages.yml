@@ -48,6 +48,7 @@ jobs:
 
       - name: Generate demo logs from tests
         run: bash tools/log-viewer/scripts/generate-demo-logs.sh
+        continue-on-error: true
 
       - name: Install viewer-api frontend dependencies
         working-directory: tools/viewer-api/frontend
