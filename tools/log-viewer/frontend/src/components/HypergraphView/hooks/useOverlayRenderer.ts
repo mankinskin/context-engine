@@ -218,9 +218,9 @@ export function useOverlayRenderer(
                 const idx = el.getAttribute('data-node-idx');
                 if (idx != null) nodeElMap.set(Number(idx), el);
             }
-            // Also include elements currently inside a decomp container
-            if (decompContainer) {
-                const nested = decompContainer.querySelectorAll<HTMLDivElement>('[data-node-idx]');
+            // Also include elements currently inside any expanded decomp container
+            for (const state of expandedNodes.values()) {
+                const nested = state.container.querySelectorAll<HTMLDivElement>('[data-node-idx]');
                 for (const el of nested) {
                     const idx = el.getAttribute('data-node-idx');
                     if (idx != null) nodeElMap.set(Number(idx), el);
@@ -228,10 +228,13 @@ export function useOverlayRenderer(
             }
         };
 
-        // Track which children are currently reparented so we can undo it
-        let reparentedChildren: { el: HTMLDivElement }[] = [];
-        let decompContainer: HTMLDivElement | null = null;
-        let expandedParentEl: HTMLDivElement | null = null;
+        // Track which nodes are currently expanded (supports multiple simultaneous expansions)
+        interface ExpandedNodeState {
+            parentEl: HTMLDivElement;
+            container: HTMLDivElement;
+            children: { el: HTMLDivElement }[];
+        }
+        const expandedNodes = new Map<number, ExpandedNodeState>();
 
         updateNodeElMap();
         const reorderNodeLayer = () => {
@@ -260,53 +263,59 @@ export function useOverlayRenderer(
             'rgba(80, 200, 180, 0.12)',
         ];
 
-        /** Undo any current reparenting — move children back to nodeLayer. */
-        const undoReparenting = () => {
-            // Move reparented children back (just append — we reorder after)
-            for (const { el } of reparentedChildren) {
+        /** Collapse a single expanded node — move its children back to nodeLayer. */
+        const collapseNode = (idx: number) => {
+            const state = expandedNodes.get(idx);
+            if (!state) return;
+
+            for (const { el } of state.children) {
                 el.classList.remove('hg-decomp-child');
                 el.style.flex = '';
                 nodeLayer.appendChild(el);
             }
-            const hadReparented = reparentedChildren.length > 0;
-            reparentedChildren = [];
-            if (decompContainer) {
-                decompContainer.remove();
-                decompContainer = null;
-            }
-            if (expandedParentEl) {
-                const ep = expandedParentEl as any;
-                if (ep.__parentDown) expandedParentEl.removeEventListener('mousedown', ep.__parentDown);
-                if (ep.__parentUp) expandedParentEl.removeEventListener('mouseup', ep.__parentUp);
-                expandedParentEl.classList.remove('hg-expanded');
-                expandedParentEl = null;
-            }
-            // Restore correct DOM order so positional assumptions elsewhere
-            // (e.g. Preact reconciliation) remain valid.
-            if (hadReparented) reorderNodeLayer();
+            state.container.remove();
+
+            const ep = state.parentEl as any;
+            if (ep.__parentDown) state.parentEl.removeEventListener('mousedown', ep.__parentDown);
+            if (ep.__parentUp) state.parentEl.removeEventListener('mouseup', ep.__parentUp);
+            state.parentEl.classList.remove('hg-expanded');
+
+            expandedNodes.delete(idx);
         };
 
-        /** Build decomposition rows inside the selected node, reparenting child DOM elements. */
-        const applyReparenting = (selectedIdx: number) => {
-            const selNode = curLayout.nodeMap.get(selectedIdx);
-            if (!selNode || selNode.isAtom) return;
+        /** Collapse all expanded nodes and restore DOM order. */
+        const collapseAll = () => {
+            const hadExpanded = expandedNodes.size > 0;
+            for (const idx of [...expandedNodes.keys()]) {
+                collapseNode(idx);
+            }
+            if (hadExpanded) reorderNodeLayer();
+        };
 
-            const patterns = getDecompositionPatterns(curLayout, selectedIdx);
+        /** Expand a single node — build decomposition rows and reparent child DOM elements. */
+        const expandNode = (idx: number) => {
+            if (expandedNodes.has(idx)) return; // Already expanded
+
+            const node = curLayout.nodeMap.get(idx);
+            if (!node || node.isAtom) return;
+
+            const patterns = getDecompositionPatterns(curLayout, idx);
             if (patterns.length === 0) return;
 
             // Refresh map in case Preact re-rendered
             updateNodeElMap();
 
-            const parentEl = nodeElMap.get(selectedIdx);
+            const parentEl = nodeElMap.get(idx);
             if (!parentEl) return;
 
             // Mark parent as expanded
             parentEl.classList.add('hg-expanded');
-            expandedParentEl = parentEl;
 
             // Create decomposition container
             const container = document.createElement('div');
             container.className = 'decomp-patterns';
+
+            const children: { el: HTMLDivElement }[] = [];
 
             for (let pi = 0; pi < patterns.length; pi++) {
                 const pat = patterns[pi]!;
@@ -326,8 +335,7 @@ export function useOverlayRenderer(
                     const childEl = nodeElMap.get(child.index);
                     if (!childEl) continue;
 
-                    // Record for undo
-                    reparentedChildren.push({ el: childEl });
+                    children.push({ el: childEl });
 
                     // Move into decomposition row
                     childEl.classList.add('hg-decomp-child');
@@ -340,22 +348,18 @@ export function useOverlayRenderer(
             }
 
             // ── DOM event handlers on parentEl ──
-            // Clicks on the expanded parent (header, background, border) should
-            // NOT trigger the container's 3D raycast.  Clicks on decomp children
-            // select the child node.  All clicks stop propagation.
             const onParentMouseDown = (e: MouseEvent) => {
                 if (e.button !== 0) return;
                 const childTarget = (e.target as HTMLElement).closest('.hg-decomp-child');
                 if (childTarget) {
-                    const idx = childTarget.getAttribute('data-node-idx');
-                    if (idx != null && onSelectNode) {
-                        onSelectNode(Number(idx));
+                    const cIdx = childTarget.getAttribute('data-node-idx');
+                    if (cIdx != null && onSelectNode) {
+                        onSelectNode(Number(cIdx));
                     }
                 }
                 e.stopPropagation();
             };
             const onParentMouseUp = (e: MouseEvent) => {
-                // Prevent window-level mouseUp from deselecting
                 e.stopPropagation();
             };
             parentEl.addEventListener('mousedown', onParentMouseDown);
@@ -364,10 +368,10 @@ export function useOverlayRenderer(
             (parentEl as any).__parentUp = onParentMouseUp;
 
             parentEl.appendChild(container);
-            decompContainer = container;
+            expandedNodes.set(idx, { parentEl, container, children });
         };
 
-        let lastDecompSelectedIdx = -1;
+        let lastExpandedKeyStr = '';
 
         // ── Overlay render callback ──
         const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
@@ -468,20 +472,43 @@ export function useOverlayRenderer(
             const curVizInvolved = vizStateRef.current.involvedNodes;
 
             // ── Decomposition reparenting management ──
-            // If selection changed, undo old reparenting and apply new
-            if (inter.selectedIdx !== lastDecompSelectedIdx) {
-                undoReparenting();
-                lastDecompSelectedIdx = inter.selectedIdx;
-                if (inter.selectedIdx >= 0) {
-                    applyReparenting(inter.selectedIdx);
+            // Compute the desired set of expanded nodes:
+            // 1. The selected node (if compound)
+            // 2. The search path root (always, if a search path is active)
+            const desiredExpanded = new Set<number>();
+            if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
+            const spRootIdx = vizStateRef.current.rootNode;
+            if (spRootIdx != null && spRootIdx >= 0 && vizStateRef.current.searchPath != null) {
+                desiredExpanded.add(spRootIdx);
+            }
+
+            // Check if the desired set changed (compare sorted key strings)
+            const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',');
+            if (desiredKeyStr !== lastExpandedKeyStr) {
+                // Collapse nodes no longer desired
+                for (const idx of [...expandedNodes.keys()]) {
+                    if (!desiredExpanded.has(idx)) collapseNode(idx);
                 }
+                const hadCollapsed = expandedNodes.size < [...expandedNodes.keys()].length;
+                // Expand root first (so children are available for reparenting),
+                // then expand other desired nodes.
+                if (spRootIdx != null && desiredExpanded.has(spRootIdx) && !expandedNodes.has(spRootIdx)) {
+                    expandNode(spRootIdx);
+                }
+                for (const idx of desiredExpanded) {
+                    if (!expandedNodes.has(idx)) expandNode(idx);
+                }
+                reorderNodeLayer();
+                lastExpandedKeyStr = desiredKeyStr;
             }
 
             // Build set of currently reparented child indices for skipping 3D positioning
             const reparentedSet = new Set<number>();
-            for (const { el } of reparentedChildren) {
-                const idx = el.getAttribute('data-node-idx');
-                if (idx != null) reparentedSet.add(Number(idx));
+            for (const state of expandedNodes.values()) {
+                for (const { el } of state.children) {
+                    const idx = el.getAttribute('data-node-idx');
+                    if (idx != null) reparentedSet.add(Number(idx));
+                }
             }
 
             for (let i = 0; i < curLayout.nodes.length; i++) {
@@ -526,15 +553,18 @@ export function useOverlayRenderer(
                 el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
 
                 const zIdx = Math.round((1 - screen.z) * 1000);
-                // Selected node (especially expanded) should always be on top
-                // of its parents/siblings to prevent overlap.
-                el.style.zIndex = (n.index === inter.selectedIdx) ? '10000' : String(zIdx);
-                el.style.transform = `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+                // Selected/expanded nodes should always be on top.
+                const isExpanded = expandedNodes.has(n.index);
+                el.style.zIndex = (n.index === inter.selectedIdx) ? '10000'
+                    : isExpanded ? '9999'
+                        : String(zIdx);
 
                 // Expanded parent: anchor at top-center so decomposition rows
                 // hang below the label instead of overlapping it.
-                if (el === expandedParentEl) {
+                if (isExpanded) {
                     el.style.transform = `translate(-50%, 0%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
+                } else {
+                    el.style.transform = `translate(-50%, -50%) translate(${screen.x.toFixed(1)}px, ${screen.y.toFixed(1)}px) scale(${pixelScale.toFixed(3)})`;
                 }
 
                 el.setAttribute('data-depth', screen.z.toFixed(4));
@@ -745,7 +775,7 @@ export function useOverlayRenderer(
         registerOverlayRenderer(renderCallback);
 
         return () => {
-            undoReparenting();
+            collapseAll();
             unregisterOverlayRenderer(renderCallback);
             quadVB.destroy();
             camUB.destroy();

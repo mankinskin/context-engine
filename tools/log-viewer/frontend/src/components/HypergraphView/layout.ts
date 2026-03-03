@@ -81,12 +81,12 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
             label: n.label,
             width: n.width,
             isAtom: n.width === 1,
-            x: Math.cos(angle) * r * (0.1 + Math.random() * 1.5),
-            y: (n.width - 1) * 0.47,
-            z: Math.sin(angle) * r * (0.1 + Math.random() * 1.5),
+            x: Math.cos(angle) * r * (0.5 + Math.random() * 0.5),
+            y: (n.width - 1) * 1.67,
+            z: Math.sin(angle) * r * (0.5 + Math.random() * 0.5),
             tx: 0, ty: 0, tz: 0, // set after simulate
             vx: 0, vy: 0, vz: 0,
-            radius: 0.15 + Math.min(n.width * 0.5, 0.3),
+            radius: 0.45 + Math.min(n.width * 0.5, 0.3),
             color: widthColor(n.width, maxWidth),
             parentIndices: [...(parentMap.get(n.index) || [])],
             childIndices: [...(childMap.get(n.index) || [])],
@@ -333,16 +333,16 @@ function simulate(
     nodeMap: Map<number, LayoutNode>,
     iterations: number,
 ) {
-    const repulsion = 0.01;
-    const springK = 0.0;
-    const springLen = 0.3;
+    const repulsion = 0.6;
+    const springK = 20 / 1000.0;
+    const ySpringK = 5 / 1000.0;
+    const springLen = 0.1;
     const damping = 0.85;
-    const ySpringK = 0.1;
     const gravity = 0.04;
     const dt = 0.4;
     // Minimum repulsion distance (prevents near-zero denominators from
     // producing enormous forces that fling nodes to extreme positions).
-    const minRepulsionDist = 0.1;
+    const minRepulsionDist = 1.0;
     // Maximum velocity per axis per iteration — prevents a single unlucky
     // close encounter from launching a node far away from the cluster.
     const maxVelocity = 3.0;
