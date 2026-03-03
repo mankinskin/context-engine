@@ -6,6 +6,7 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-03-04 | [PLAN_VIEWER_REFACTORING_AND_MOBILE](20260304_PLAN_VIEWER_REFACTORING_AND_MOBILE.md) | ready | HypergraphView refactoring + extraction, file tree sync, mobile support |
 | 2026-03-03 | [PLAN_SEARCH_EVENT_REFACTORING](20260303_PLAN_SEARCH_EVENT_REFACTORING.md) | ready | Search event emission refactoring — PathNode, IntoTransition, tentative root, query stream |
 | 2026-02-21 | [VIEWER_API_REFACTORING](20260221_VIEWER_API_REFACTORING.md) | design | Extract shared server infrastructure from viewer-api |
 | 2026-02-18 | [PLAN_CONTEXT_READ_COMPLETION](20260218_PLAN_CONTEXT_READ_COMPLETION.md) | design | Complete context-read crate for text indexing |
