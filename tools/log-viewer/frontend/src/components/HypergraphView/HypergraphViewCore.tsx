@@ -59,7 +59,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     // Layout state
     const [layout, setLayout] = useState<GraphLayout | null>(null);
     const layoutRef = useRef<GraphLayout | null>(null);
-    const originalPositionsRef = useRef<Map<number, { x: number; y: number; z: number }> | null>(null);
+    const basePositionsRef = useRef<Map<number, { x: number; y: number; z: number }> | null>(null);
 
     // Camera controller
     const camera = useCamera();
@@ -90,7 +90,14 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         const newLayout = buildLayout(snapshot);
         layoutRef.current = newLayout;
         setLayout(newLayout);
-        originalPositionsRef.current = null;
+        // Eagerly capture force-directed equilibrium as immutable base positions.
+        // These serve as the ground truth that active transforms (focused layout)
+        // are layered on top of each frame.
+        const base = new Map<number, { x: number; y: number; z: number }>();
+        for (const n of newLayout.nodes) {
+            base.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
+        }
+        basePositionsRef.current = base;
         camera.resetForLayout(newLayout.nodes.length, newLayout.center);
         interRef.current.selectedIdx = -1;
         interRef.current.hoverIdx = -1;
@@ -104,14 +111,6 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         if (!curLayout) return;
 
         if (selectedIdx >= 0 && autoLayout) {
-            if (!originalPositionsRef.current) {
-                const saved = new Map<number, { x: number; y: number; z: number }>();
-                for (const n of curLayout.nodes) {
-                    saved.set(n.index, { x: n.tx, y: n.ty, z: n.tz });
-                }
-                originalPositionsRef.current = saved;
-            }
-
             let layoutResult: FocusedLayoutOffsets | null;
             if (currentSearchPath?.root) {
                 layoutResult = computeSearchPathLayout(curLayout, currentSearchPath, selectedIdx);
@@ -126,26 +125,12 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
             }
         } else if (selectedIdx >= 0) {
             focusedOffsetsRef.current = null;
-            if (originalPositionsRef.current && curLayout) {
-                for (const n of curLayout.nodes) {
-                    const orig = originalPositionsRef.current.get(n.index);
-                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
-                }
-                originalPositionsRef.current = null;
-            }
             const selNode = curLayout.nodeMap.get(selectedIdx);
             if (selNode) {
                 camera.focusOn([selNode.tx, selNode.ty, selNode.tz]);
             }
         } else {
             focusedOffsetsRef.current = null;
-            if (originalPositionsRef.current && curLayout) {
-                for (const n of curLayout.nodes) {
-                    const orig = originalPositionsRef.current.get(n.index);
-                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
-                }
-                originalPositionsRef.current = null;
-            }
         }
     }, [selectedIdx, camera, currentSearchPath, autoLayout]);
 
@@ -165,7 +150,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     }, [stepKey, camera, setSelectedIdx]);
 
     // Register WebGPU overlay renderer
-    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx, focusedOffsetsRef, originalPositionsRef);
+    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx, focusedOffsetsRef, basePositionsRef);
 
     // Handle focus from NodeInfoPanel links
     const handleFocusNode = useCallback((nodeIndex: number) => {

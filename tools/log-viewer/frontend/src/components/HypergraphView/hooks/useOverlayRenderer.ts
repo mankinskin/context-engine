@@ -47,7 +47,7 @@ export function useOverlayRenderer(
     vizState: VisualizationState,
     onSelectNode?: (idx: number) => void,
     focusedOffsetsRef?: { current: FocusedLayoutOffsets | null },
-    originalPositionsRef?: { current: Map<number, { x: number; y: number; z: number }> | null },
+    basePositionsRef?: { current: Map<number, { x: number; y: number; z: number }> | null },
 ): void {
     const gpu = overlayGpu.value;
     const curLayout = layoutRef.current;
@@ -93,9 +93,6 @@ export function useOverlayRenderer(
 
         // ── Decomposition manager ──
         const decomposition = new DecompositionManager(curLayout, nodeLayer, onSelectNode);
-        if (originalPositionsRef) {
-            decomposition.setOriginalPositionsRef(originalPositionsRef);
-        }
 
         // ── Pre-allocated per-frame scratch buffers ──
         const postMatrix = new Float32Array(16);
@@ -121,6 +118,8 @@ export function useOverlayRenderer(
         let prevExpandedSize = -1;
         let prevConnectedRef: Set<number> | null = null;
         let nodesMoving = true; // assume nodes are animating initially
+        let prevReparented = new Set<number>(); // track reparented set for just-released detection
+        let prevFocusedActive = false; // track whether focused layout was active last frame
 
         // ── Overlay render callback ──
         const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
@@ -169,48 +168,7 @@ export function useOverlayRenderer(
             const fov = Math.PI / 4;
             setOverlayWorldScale((2 * dist * Math.tan(fov / 2)) / vh);
 
-            // ── Focused layout: project abstract offsets onto camera axes ──
-            const focusedOffsets = focusedOffsetsRef?.current;
-            if (inter.selectedIdx >= 0 && focusedOffsets && originalPositionsRef?.current) {
-                const origPositions = originalPositionsRef.current;
-                // Reset all targets to originals first
-                for (const n of curLayout.nodes) {
-                    const orig = origPositions.get(n.index);
-                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
-                }
-                // Project each offset using current camera orientation
-                const { anchorIdx, offsets } = focusedOffsets;
-                const anchorOrig = origPositions.get(anchorIdx);
-                if (anchorOrig) {
-                    const axes = camera.getAxes();
-                    const [rx, ry, rz] = axes.right;
-                    const [ux, uy, uz] = axes.up;
-                    for (const [idx, off] of offsets) {
-                        const node = curLayout.nodeMap.get(idx);
-                        if (node) {
-                            node.tx = anchorOrig.x + off.dRight * rx + off.dUp * ux;
-                            node.ty = anchorOrig.y + off.dRight * ry + off.dUp * uy;
-                            node.tz = anchorOrig.z + off.dRight * rz + off.dUp * uz;
-                        }
-                    }
-                }
-            } else if (inter.selectedIdx < 0 && originalPositionsRef?.current) {
-                // Selection cleared — synchronously restore all targets to their
-                // pre-auto-layout originals so that stale offsets never leak into
-                // frames between deselection and the React effect cleanup.
-                const origPositions = originalPositionsRef.current;
-                for (const n of curLayout.nodes) {
-                    const orig = origPositions.get(n.index);
-                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
-                }
-                if (focusedOffsetsRef) focusedOffsetsRef.current = null;
-                originalPositionsRef.current = null;
-            }
-
-            // ── Animate nodes ──
-            nodesMoving = animateNodes(curLayout.nodes, dt);
-
-            // ── Decomposition management ──
+            // ── Decomposition management (pure DOM reparenting) ──
             const curVizState = vizStateRef.current;
             const desiredExpanded = new Set<number>();
             if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
@@ -231,8 +189,68 @@ export function useOverlayRenderer(
                     }
                 }
             }
-            decomposition.setViewContext({ viewProj, invSubVP, vw, vh, containerRect: rect });
             decomposition.update(desiredExpanded);
+
+            // ── Active-transform target management ──
+            // Base positions are the force-directed equilibrium (ground truth).
+            // Focused layout offsets are active transforms applied each frame.
+            // When transforms stop being applied, nodes return to base.
+            const basePositions = basePositionsRef?.current;
+            const reparented = decomposition.getReparentedSet();
+
+            // Detect children just released from decomposition rows.
+            // Reset their targets to base so they animate home.
+            if (basePositions) {
+                for (const idx of prevReparented) {
+                    if (!reparented.has(idx)) {
+                        const base = basePositions.get(idx);
+                        const node = curLayout.nodeMap.get(idx);
+                        if (base && node) {
+                            node.tx = base.x; node.ty = base.y; node.tz = base.z;
+                        }
+                    }
+                }
+            }
+            prevReparented = new Set(reparented);
+
+            // Apply focused layout as an active transform (offsets on top of base).
+            const focusedOffsets = focusedOffsetsRef?.current;
+            const focusedActive = inter.selectedIdx >= 0 && !!focusedOffsets && !!basePositions;
+
+            if (focusedActive) {
+                // Reset ALL targets to base, then layer on offsets
+                for (const n of curLayout.nodes) {
+                    const base = basePositions!.get(n.index);
+                    if (base) { n.tx = base.x; n.ty = base.y; n.tz = base.z; }
+                }
+                const { anchorIdx, offsets } = focusedOffsets!;
+                const anchorBase = basePositions!.get(anchorIdx);
+                if (anchorBase) {
+                    const axes = camera.getAxes();
+                    const [rx, ry, rz] = axes.right;
+                    const [ux, uy, uz] = axes.up;
+                    for (const [idx, off] of offsets) {
+                        const node = curLayout.nodeMap.get(idx);
+                        if (node) {
+                            node.tx = anchorBase.x + off.dRight * rx + off.dUp * ux;
+                            node.ty = anchorBase.y + off.dRight * ry + off.dUp * uy;
+                            node.tz = anchorBase.z + off.dRight * rz + off.dUp * uz;
+                        }
+                    }
+                }
+            } else if (prevFocusedActive && basePositions) {
+                // Focused layout just deactivated — reset ALL to base once
+                // so nodes that had offsets smoothly return home.
+                for (const n of curLayout.nodes) {
+                    const base = basePositions.get(n.index);
+                    if (base) { n.tx = base.x; n.ty = base.y; n.tz = base.z; }
+                }
+                if (focusedOffsetsRef) focusedOffsetsRef.current = null;
+            }
+            prevFocusedActive = focusedActive;
+
+            // ── Animate nodes ──
+            nodesMoving = animateNodes(curLayout.nodes, dt);
 
             // ── Position DOM nodes ──
             const cached = connectedCacheRef.current;
