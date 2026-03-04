@@ -191,7 +191,12 @@ const manifest = [];
 for (const file of logFiles) {
   const content = readFileSync(join(inputDir, file), 'utf-8');
   const entries = parseLogContent(content);
-  const hasGraphSnapshot = entries.some(e => e.message === 'graph_snapshot');
+  
+  // Scan content for markers (matching Rust backend logic in handlers.rs)
+  const hasGraphSnapshot = content.includes('graph_snapshot');
+  const hasSearchOps = content.includes('"op_type":"search"') || content.includes('"op_type": "search"');
+  const hasInsertOps = content.includes('"op_type":"insert"') || content.includes('"op_type": "insert"');
+  const hasSearchPaths = content.includes('path_transition');
 
   const name = file;
   const response = { name, entries, total_lines: content.split('\n').length };
@@ -204,9 +209,18 @@ for (const file of logFiles) {
     size: content.length,
     modified: null,
     has_graph_snapshot: hasGraphSnapshot,
+    has_search_ops: hasSearchOps,
+    has_insert_ops: hasInsertOps,
+    has_search_paths: hasSearchPaths,
   });
 
-  console.log(`  ${file} → ${outFile}  (${entries.length} entries, graph: ${hasGraphSnapshot})`);
+  const tags = [
+    hasGraphSnapshot && 'graph',
+    hasSearchOps && 'search',
+    hasInsertOps && 'insert',
+    hasSearchPaths && 'paths',
+  ].filter(Boolean).join(', ') || 'none';
+  console.log(`  ${file} → ${outFile}  (${entries.length} entries, tags: ${tags})`);
 }
 
 writeFileSync(join(outputDir, 'manifest.json'), JSON.stringify(manifest, null, 2));

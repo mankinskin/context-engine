@@ -14,18 +14,6 @@ interface Category {
 
 const CATEGORIES: Category[] = [
   {
-    id: 'cat-graph',
-    label: 'Graph',
-    filter: (f) => f.has_graph_snapshot,
-    icon: h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' },
-      h('circle', { cx: 6, cy: 6, r: 3 }), h('circle', { cx: 18, cy: 6, r: 3 }),
-      h('circle', { cx: 6, cy: 18, r: 3 }), h('circle', { cx: 18, cy: 18, r: 3 }),
-      h('line', { x1: 9, y1: 6, x2: 15, y2: 6 }), h('line', { x1: 6, y1: 9, x2: 6, y2: 15 }),
-      h('line', { x1: 18, y1: 9, x2: 18, y2: 15 }), h('line', { x1: 9, y1: 18, x2: 15, y2: 18 }),
-    ),
-    color: 'var(--accent-purple)',
-  },
-  {
     id: 'cat-search',
     label: 'Search',
     filter: (f) => f.has_search_ops,
@@ -42,6 +30,18 @@ const CATEGORIES: Category[] = [
       h('path', { d: 'M12 5v14M5 12h14' }),
     ),
     color: 'var(--accent-green)',
+  },
+  {
+    id: 'cat-graph',
+    label: 'Graph',
+    filter: (f) => f.has_graph_snapshot,
+    icon: h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' },
+      h('circle', { cx: 6, cy: 6, r: 3 }), h('circle', { cx: 18, cy: 6, r: 3 }),
+      h('circle', { cx: 6, cy: 18, r: 3 }), h('circle', { cx: 18, cy: 18, r: 3 }),
+      h('line', { x1: 9, y1: 6, x2: 15, y2: 6 }), h('line', { x1: 6, y1: 9, x2: 6, y2: 15 }),
+      h('line', { x1: 18, y1: 9, x2: 18, y2: 15 }), h('line', { x1: 9, y1: 18, x2: 15, y2: 18 }),
+    ),
+    color: 'var(--accent-purple)',
   },
   {
     id: 'cat-paths',
