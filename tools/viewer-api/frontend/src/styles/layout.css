@@ -229,22 +229,8 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
-.sidebar.sidebar-mobile-open {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 1000;
-  width: var(--sidebar-width) !important;
-  min-width: var(--sidebar-width) !important;
-  transform: translateX(0);
-  transition: transform 0.25s ease;
-  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.3);
-}
-
-.sidebar.sidebar-mobile-closed {
-  transform: translateX(-100%);
-}
+/* Mobile sidebar overlay styles — only active at mobile breakpoint */
+/* (At desktop, these classes have no visual effect) */
 
 /* Hamburger toggle button (hidden on desktop, shown on mobile) */
 .sidebar-hamburger {
@@ -298,6 +284,28 @@
   .sidebar {
     width: 220px !important;
     min-width: 180px !important;
+  }
+
+  /* Mobile overlay: sidebar slides in/out */
+  .sidebar.sidebar-mobile-open {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    width: var(--sidebar-width) !important;
+    min-width: var(--sidebar-width) !important;
+    transform: translateX(0);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.3);
+    /* Ensure opaque background for mobile overlay (overrides glass/transparent themes) */
+    background-color: var(--sidebar-mobile-bg, var(--bg-secondary));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .sidebar.sidebar-mobile-closed {
+    transform: translateX(-100%);
   }
 
   /* Show hamburger toggle in header */
