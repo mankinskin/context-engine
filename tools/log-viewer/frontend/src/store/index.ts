@@ -57,9 +57,9 @@ export const statusMessage = signal('Ready');
 export const activeTab = signal<ViewTab>('logs');
 export const showRaw = signal(false);
 
-/** When true, clicking a node triggers neighborhood layout + edge/node highlighting.
- *  When false (default), clicking only focuses the camera on the node. */
-export const selectHighlightMode = signal(true);
+/** When true, selecting a node triggers automatic layout around it.
+ *  When false, nodes can be freely dragged and clicking only pans the camera. */
+export const autoLayoutEnabled = signal(true);
 
 // Per-file state storage
 const fileStates = signal<Map<string, FileState>>(new Map());

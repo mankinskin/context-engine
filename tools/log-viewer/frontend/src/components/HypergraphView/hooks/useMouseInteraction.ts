@@ -50,7 +50,7 @@ export function useMouseInteraction(
     containerRef: { current: HTMLDivElement | null },
     layoutRef: { current: GraphLayout | null },
     camera: CameraController,
-    highlightModeRef?: { current: boolean },
+    autoLayoutRef?: { current: boolean },
 ): MouseInteractionResult {
     const [selectedIdx, setSelectedIdx] = useState(-1);
     const [hoverIdx, setHoverIdx] = useState(-1);
@@ -113,6 +113,35 @@ export function useMouseInteraction(
                 const invVP = mat4Inverse(viewProj);
                 if (invVP) {
                     const ray = screenToRay(inter.mouseX, inter.mouseY, cw, ch, invVP);
+
+                    // Check if the click landed on an expanded decomposition
+                    // node (but NOT on a decomp child — those are handled by the
+                    // DecompositionManager and never bubble here).  When it does,
+                    // start a drag on the parent directly instead of relying on
+                    // the ray-sphere hit test which has a tiny 3D radius.
+                    const expandedEl = (e.target as HTMLElement).closest?.('.hg-expanded');
+                    let expandedHit = false;
+                    if (expandedEl) {
+                        const nodeIdx = Number(expandedEl.getAttribute('data-node-idx'));
+                        const node = layout.nodeMap.get(nodeIdx);
+                        if (node) {
+                            if (autoLayoutRef?.current) {
+                                inter.clickedNode = nodeIdx;
+                            } else {
+                                inter.dragIdx = nodeIdx;
+                                const nodePos: Vec3 = [node.x, node.y, node.z];
+                                const camPos = camera.getCamPos();
+                                inter.dragPlaneNormal = vec3Normalize(vec3Sub(camPos, nodePos));
+                                inter.dragPlanePoint = nodePos;
+                                const pt = rayPlaneIntersectGeneral(ray, nodePos, inter.dragPlaneNormal);
+                                if (pt) inter.dragOffset = [node.x - pt[0], node.y - pt[1], node.z - pt[2]];
+                            }
+                            expandedHit = true;
+                            e.preventDefault();
+                        }
+                    }
+
+                    if (!expandedHit) {
                     let bestT = Infinity;
                     let bestIdx = -1;
                     for (const n of layout.nodes) {
@@ -125,8 +154,8 @@ export function useMouseInteraction(
                     if (bestIdx >= 0) {
                         const node = layout.nodeMap.get(bestIdx);
                         if (node) {
-                            if (highlightModeRef?.current) {
-                                // In layout mode, nodes are positioned by the
+                            if (autoLayoutRef?.current) {
+                                // In auto-layout mode, nodes are positioned by the
                                 // focused-layout algorithm — dragging would fight
                                 // the layout projection. Record the hit; select on mouseUp.
                                 inter.clickedNode = bestIdx;
@@ -144,6 +173,7 @@ export function useMouseInteraction(
                         e.preventDefault();
                     } else {
                         inter.orbiting = true;
+                    }
                     }
                 }
             } else if (e.button === 2) {

@@ -18,8 +18,8 @@ export interface HypergraphViewProps {
     currentEvent: GraphOpEvent | null;
     /** Active search path graph for edge highlighting */
     searchPath: VizPathGraph | null;
-    /** Whether highlight-mode layout is active (expand/contract around selected) */
-    highlightMode: boolean;
+    /** Whether auto-layout is active (expand/contract around selected) */
+    autoLayout: boolean;
     /** Snapshot edges for edge key computation */
     snapshotEdges: SnapshotEdge[] | null;
     /**

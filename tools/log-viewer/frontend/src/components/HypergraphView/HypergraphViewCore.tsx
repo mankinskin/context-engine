@@ -47,7 +47,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         snapshot,
         currentEvent,
         searchPath: currentSearchPath,
-        highlightMode,
+        autoLayout,
         snapshotEdges,
         stepKey,
         renderChildren,
@@ -67,14 +67,14 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     // Visualization state from search events + search path
     const vizState = useVisualizationState(currentEvent, currentSearchPath, snapshotEdges);
 
-    // Mouse interaction (highlightMode passed via ref so it's always current)
-    const highlightModeRef = useRef(highlightMode);
-    highlightModeRef.current = highlightMode;
+    // Mouse interaction (autoLayout passed via ref so it's always current)
+    const autoLayoutRef = useRef(autoLayout);
+    autoLayoutRef.current = autoLayout;
     const { selectedIdx, setSelectedIdx, tooltip, interRef } = useMouseInteraction(
         containerRef,
         layoutRef,
         camera,
-        highlightModeRef,
+        autoLayoutRef,
     );
 
     // Touch interaction (shares selection state via interRef)
@@ -103,7 +103,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         const curLayout = layoutRef.current;
         if (!curLayout) return;
 
-        if (selectedIdx >= 0 && highlightMode) {
+        if (selectedIdx >= 0 && autoLayout) {
             if (!originalPositionsRef.current) {
                 const saved = new Map<number, { x: number; y: number; z: number }>();
                 for (const n of curLayout.nodes) {
@@ -147,7 +147,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
                 originalPositionsRef.current = null;
             }
         }
-    }, [selectedIdx, camera, currentSearchPath, highlightMode]);
+    }, [selectedIdx, camera, currentSearchPath, autoLayout]);
 
     // Focus camera on primary node when search step changes
     useEffect(() => {

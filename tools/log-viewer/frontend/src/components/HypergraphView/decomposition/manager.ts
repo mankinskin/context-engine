@@ -17,6 +17,17 @@ export interface ExpandedNodeState {
     parentEl: HTMLDivElement;
     container: HTMLDivElement;
     children: { el: HTMLDivElement }[];
+    /** Saved world positions of reparented children so they can be restored on collapse. */
+    savedPositions: Map<number, { x: number; y: number; z: number; tx: number; ty: number; tz: number }>;
+}
+
+/** Current camera/viewport context needed for accurate back-projection on collapse. */
+export interface ViewContext {
+    viewProj: Float32Array;
+    invSubVP: Float32Array | null;
+    vw: number;
+    vh: number;
+    containerRect: DOMRect;
 }
 
 // ── Manager ──
@@ -25,6 +36,10 @@ export class DecompositionManager {
     private expandedNodes = new Map<number, ExpandedNodeState>();
     private nodeElMap = new Map<number, HTMLDivElement>();
     private lastExpandedKeyStr = '';
+    /** External ref to pre-layout original positions (set by auto-layout system). */
+    private originalPositionsRef?: { current: Map<number, { x: number; y: number; z: number }> | null };
+    /** Current view context, updated each frame before update(). */
+    private viewCtx: ViewContext | null = null;
 
     constructor(
         private layout: GraphLayout,
@@ -32,6 +47,16 @@ export class DecompositionManager {
         private onSelectNode?: (idx: number) => void,
     ) {
         this.refreshNodeElMap();
+    }
+
+    /** Provide the auto-layout original positions ref for accurate restore on collapse. */
+    setOriginalPositionsRef(ref: { current: Map<number, { x: number; y: number; z: number }> | null }): void {
+        this.originalPositionsRef = ref;
+    }
+
+    /** Update the current view context (call each frame before update()). */
+    setViewContext(ctx: ViewContext): void {
+        this.viewCtx = ctx;
     }
 
     // ── Public API ──
@@ -140,6 +165,51 @@ export class DecompositionManager {
         const state = this.expandedNodes.get(idx);
         if (!state) return;
 
+        // Capture each child's exact screen position while still inside the
+        // decomposition row, then back-project to world coords so the
+        // collapse animation starts precisely where the child was visible.
+        if (this.viewCtx?.invSubVP) {
+            const { viewProj: vp, invSubVP: inv, vw, vh, containerRect } = this.viewCtx;
+            const parentNode = this.layout.nodeMap.get(idx);
+            // Parent depth in NDC for back-projection reference
+            const px = parentNode?.x ?? 0, py = parentNode?.y ?? 0, pz = parentNode?.z ?? 0;
+            const pcz = vp[2]! * px + vp[6]! * py + vp[10]! * pz + vp[14]!;
+            const pcw = vp[3]! * px + vp[7]! * py + vp[11]! * pz + vp[15]!;
+            const pndcZ = pcw > 0.001 ? pcz / pcw : 0;
+
+            for (const { el } of state.children) {
+                const cIdx = el.getAttribute('data-node-idx');
+                if (cIdx == null) continue;
+                const node = this.layout.nodeMap.get(Number(cIdx));
+                if (!node) continue;
+
+                const rect = el.getBoundingClientRect();
+                const csx = (rect.left + rect.width / 2) - containerRect.left;
+                const csy = (rect.top + rect.height / 2) - containerRect.top;
+                const ndcX = (csx / vw) * 2 - 1;
+                const ndcY = 1 - (csy / vh) * 2;
+
+                const ux = inv[0]! * ndcX + inv[4]! * ndcY + inv[8]! * pndcZ + inv[12]!;
+                const uy = inv[1]! * ndcX + inv[5]! * ndcY + inv[9]! * pndcZ + inv[13]!;
+                const uz = inv[2]! * ndcX + inv[6]! * ndcY + inv[10]! * pndcZ + inv[14]!;
+                const uw = inv[3]! * ndcX + inv[7]! * ndcY + inv[11]! * pndcZ + inv[15]!;
+                if (Math.abs(uw) > 0.001) {
+                    node.x = ux / uw;
+                    node.y = uy / uw;
+                    node.z = uz / uw;
+                }
+            }
+        }
+
+        // Set targets to saved originals — the lerp in animateNodes will
+        // smoothly close the gap from the current (back-projected) position.
+        for (const [childIdx, pos] of state.savedPositions) {
+            const node = this.layout.nodeMap.get(childIdx);
+            if (node) {
+                node.tx = pos.tx; node.ty = pos.ty; node.tz = pos.tz;
+            }
+        }
+
         for (const { el } of state.children) {
             el.classList.remove('hg-decomp-child');
             el.style.flex = '';
@@ -207,6 +277,9 @@ export class DecompositionManager {
         }
 
         // DOM event handlers on parentEl
+        // Only intercept clicks on decomp children (to select them).
+        // Other clicks (header, row labels) bubble up to the container so
+        // the normal ray-sphere drag logic can pick up the parent node.
         const onSelectNode = this.onSelectNode;
         const onParentMouseDown = (e: MouseEvent) => {
             if (e.button !== 0) return;
@@ -216,11 +289,15 @@ export class DecompositionManager {
                 if (cIdx != null && onSelectNode) {
                     onSelectNode(Number(cIdx));
                 }
+                e.stopPropagation();
             }
-            e.stopPropagation();
+            // Non-child clicks bubble → enables parent dragging
         };
         const onParentMouseUp = (e: MouseEvent) => {
-            e.stopPropagation();
+            const childTarget = (e.target as HTMLElement).closest('.hg-decomp-child');
+            if (childTarget) {
+                e.stopPropagation();
+            }
         };
         parentEl.addEventListener('mousedown', onParentMouseDown);
         parentEl.addEventListener('mouseup', onParentMouseUp);
@@ -228,7 +305,37 @@ export class DecompositionManager {
         (parentEl as any).__parentUp = onParentMouseUp;
 
         parentEl.appendChild(container);
-        this.expandedNodes.set(idx, { parentEl, container, children });
+
+        // Save original world positions of reparented children before
+        // back-projection starts overwriting them each frame.
+        // Prefer the auto-layout's original positions (pre-layout) when available,
+        // falling back to current positions for non-auto-layout mode.
+        const origPositions = this.originalPositionsRef?.current;
+        const savedPositions = new Map<number, { x: number; y: number; z: number; tx: number; ty: number; tz: number }>();
+        for (const { el } of children) {
+            const cIdx = el.getAttribute('data-node-idx');
+            if (cIdx != null) {
+                const childIdx = Number(cIdx);
+                const node = this.layout.nodeMap.get(childIdx);
+                if (node) {
+                    const orig = origPositions?.get(childIdx);
+                    if (orig) {
+                        // Use pre-layout positions (before auto-layout moved them)
+                        savedPositions.set(childIdx, {
+                            x: orig.x, y: orig.y, z: orig.z,
+                            tx: orig.x, ty: orig.y, tz: orig.z,
+                        });
+                    } else {
+                        savedPositions.set(childIdx, {
+                            x: node.x, y: node.y, z: node.z,
+                            tx: node.tx, ty: node.ty, tz: node.tz,
+                        });
+                    }
+                }
+            }
+        }
+
+        this.expandedNodes.set(idx, { parentEl, container, children, savedPositions });
     }
 
     private reorderNodeLayer(): void {

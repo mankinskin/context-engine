@@ -93,6 +93,9 @@ export function useOverlayRenderer(
 
         // ── Decomposition manager ──
         const decomposition = new DecompositionManager(curLayout, nodeLayer, onSelectNode);
+        if (originalPositionsRef) {
+            decomposition.setOriginalPositionsRef(originalPositionsRef);
+        }
 
         // ── Pre-allocated per-frame scratch buffers ──
         const postMatrix = new Float32Array(16);
@@ -168,7 +171,7 @@ export function useOverlayRenderer(
 
             // ── Focused layout: project abstract offsets onto camera axes ──
             const focusedOffsets = focusedOffsetsRef?.current;
-            if (focusedOffsets && originalPositionsRef?.current) {
+            if (inter.selectedIdx >= 0 && focusedOffsets && originalPositionsRef?.current) {
                 const origPositions = originalPositionsRef.current;
                 // Reset all targets to originals first
                 for (const n of curLayout.nodes) {
@@ -191,6 +194,17 @@ export function useOverlayRenderer(
                         }
                     }
                 }
+            } else if (inter.selectedIdx < 0 && originalPositionsRef?.current) {
+                // Selection cleared — synchronously restore all targets to their
+                // pre-auto-layout originals so that stale offsets never leak into
+                // frames between deselection and the React effect cleanup.
+                const origPositions = originalPositionsRef.current;
+                for (const n of curLayout.nodes) {
+                    const orig = origPositions.get(n.index);
+                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
+                }
+                if (focusedOffsetsRef) focusedOffsetsRef.current = null;
+                originalPositionsRef.current = null;
             }
 
             // ── Animate nodes ──
@@ -217,6 +231,7 @@ export function useOverlayRenderer(
                     }
                 }
             }
+            decomposition.setViewContext({ viewProj, invSubVP, vw, vh, containerRect: rect });
             decomposition.update(desiredExpanded);
 
             // ── Position DOM nodes ──

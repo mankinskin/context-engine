@@ -5,7 +5,7 @@
  * Log-viewer-specific UI panels (SearchStatePanel, InsertStatePanel, etc.)
  * are rendered here as children of the core component.
  */
-import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep, selectHighlightMode } from '../../store';
+import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep, autoLayoutEnabled } from '../../store';
 import { HypergraphViewCore } from './HypergraphViewCore';
 
 // Log-viewer-specific panels
@@ -24,7 +24,7 @@ export function HypergraphView() {
     const snapshot = hypergraphSnapshot.value;
     const currentEvent = activePathEvent.value ?? activeSearchState.value;
     const searchPath = activeSearchPath.value;
-    const highlightMode = selectHighlightMode.value;
+    const autoLayout = autoLayoutEnabled.value;
     const snapshotEdges = snapshot?.edges ?? null;
     const stepKey = `${activeSearchStep.value}/${activePathStep.value}`;
 
@@ -38,7 +38,7 @@ export function HypergraphView() {
             snapshot={snapshot}
             currentEvent={currentEvent}
             searchPath={searchPath}
-            highlightMode={highlightMode}
+            autoLayout={autoLayout}
             snapshotEdges={snapshotEdges}
             stepKey={stepKey}
             renderChildren={(handleFocusNode) => (

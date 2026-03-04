@@ -1564,7 +1564,6 @@
 .decomp-tokens {
     display: flex;
     flex: 1;
-    min-width: 0;
 }
 
 /* Reparented child nodes inside decomposition rows */
@@ -1573,9 +1572,8 @@
     transform: none !important;
     display: flex !important;
     align-items: center;
-    justify-content: center;
     padding: 3px 3px;
-    min-width: 0;
+    min-width: min-content;
     overflow: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.03);
@@ -1587,6 +1585,18 @@
     left: auto !important;
     top: auto !important;
     z-index: auto !important;
+}
+
+.hg-decomp-child.hg-node > .hg-node-content {
+    flex: 1;
+    min-width: min-content;
+    overflow: visible;
+}
+
+/* Let labels inside decomp children show their full text for min-content sizing */
+.hg-decomp-child.hg-node .hg-node-label {
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .hg-decomp-child.hg-node:last-child {

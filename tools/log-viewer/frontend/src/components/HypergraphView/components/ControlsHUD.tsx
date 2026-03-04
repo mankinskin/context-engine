@@ -1,10 +1,10 @@
 /**
  * ControlsHUD - Mouse/keyboard controls hint overlay.
  */
-import { selectHighlightMode } from '../../../store';
+import { autoLayoutEnabled } from '../../../store';
 
 export function ControlsHUD() {
-    const active = selectHighlightMode.value;
+    const active = autoLayoutEnabled.value;
     return (
         <div class="hypergraph-hud">
             <span>Left drag: Move nodes</span>
@@ -14,8 +14,8 @@ export function ControlsHUD() {
             <span>Click node: Select &amp; Focus</span>
             <button
                 class={`hg-btn hg-toggle ${active ? 'hg-toggle-on' : ''}`}
-                onClick={() => { selectHighlightMode.value = !active; }}
-                title="When enabled, clicking a node reflows the layout around it. When disabled, clicking only pans the camera."
+                onClick={() => { autoLayoutEnabled.value = !active; }}
+                title="When enabled, clicking a node reflows the layout around it. When disabled, nodes can be freely dragged."
             >
                 {active ? '📐 Layout ON' : '📐 Layout OFF'}
             </button>
