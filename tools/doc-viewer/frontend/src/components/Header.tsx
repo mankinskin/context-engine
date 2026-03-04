@@ -14,7 +14,11 @@ import {
   openCategoryPage 
 } from '../store';
 
-export function Header() {
+interface DocHeaderProps {
+  onMenuToggle?: () => void;
+}
+
+export function Header({ onMenuToggle }: DocHeaderProps) {
   const handleFilterToggle = () => {
     showFilterPanel.value = !showFilterPanel.value;
   };
@@ -63,6 +67,7 @@ export function Header() {
       icon={<DocumentIcon size={20} />}
       subtitle="context-engine documentation"
       rightContent={rightContent}
+      onMenuToggle={onMenuToggle}
     />
   );
 }

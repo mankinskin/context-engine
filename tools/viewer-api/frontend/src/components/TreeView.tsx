@@ -1,35 +1,50 @@
-import { JSX } from 'preact';
-import { useState, useCallback } from 'preact/hooks';
+import { JSX, ComponentChildren } from 'preact';
+import { useState, useCallback, useRef, useEffect } from 'preact/hooks';
 
-export interface TreeNode {
+export interface TreeNode<T = unknown> {
   id: string;
   label: string;
-  icon?: 'folder' | 'file' | 'doc';
-  children?: TreeNode[];
-  data?: unknown;
+  icon?: ComponentChildren | 'folder' | 'file' | 'doc';
+  children?: TreeNode<T>[];
+  data?: T;
+  /** Optional tooltip content shown on hover */
+  tooltip?: ComponentChildren;
+  /** Optional badge text/count shown on the right side */
+  badge?: string | number;
 }
 
-export interface TreeViewProps {
-  nodes: TreeNode[];
+export interface TreeViewProps<T = unknown> {
+  nodes: TreeNode<T>[];
   selectedId?: string;
-  onSelect?: (node: TreeNode) => void;
+  onSelect?: (node: TreeNode<T>) => void;
+  onContextMenu?: (node: TreeNode<T>, event: MouseEvent) => void;
   defaultExpanded?: string[];
+  /** Controlled expanded state — if provided, TreeView won't manage its own expanded set */
+  expanded?: Set<string>;
+  /** Callback for controlled expansion toggle */
+  onToggle?: (id: string) => void;
 }
 
-export function TreeView({ nodes, selectedId, onSelect, defaultExpanded = [] }: TreeViewProps): JSX.Element {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(defaultExpanded));
+export function TreeView<T = unknown>({ nodes, selectedId, onSelect, onContextMenu, defaultExpanded = [], expanded: controlledExpanded, onToggle: controlledOnToggle }: TreeViewProps<T>): JSX.Element {
+  const [internalExpanded, setInternalExpanded] = useState<Set<string>>(new Set(defaultExpanded));
+
+  const expanded = controlledExpanded ?? internalExpanded;
 
   const toggleExpanded = useCallback((id: string) => {
-    setExpanded(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }, []);
+    if (controlledOnToggle) {
+      controlledOnToggle(id);
+    } else {
+      setInternalExpanded(prev => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      });
+    }
+  }, [controlledOnToggle]);
 
   return (
     <div class="tree-view">
@@ -41,6 +56,7 @@ export function TreeView({ nodes, selectedId, onSelect, defaultExpanded = [] }: 
           expanded={expanded}
           onToggle={toggleExpanded}
           onSelect={onSelect}
+          onContextMenu={onContextMenu}
           depth={0}
         />
       ))}
@@ -48,19 +64,24 @@ export function TreeView({ nodes, selectedId, onSelect, defaultExpanded = [] }: 
   );
 }
 
-interface TreeItemProps {
-  node: TreeNode;
+interface TreeItemProps<T = unknown> {
+  node: TreeNode<T>;
   selectedId?: string;
   expanded: Set<string>;
   onToggle: (id: string) => void;
-  onSelect?: (node: TreeNode) => void;
+  onSelect?: (node: TreeNode<T>) => void;
+  onContextMenu?: (node: TreeNode<T>, event: MouseEvent) => void;
   depth: number;
 }
 
-function TreeItem({ node, selectedId, expanded, onToggle, onSelect, depth }: TreeItemProps): JSX.Element {
+function TreeItem<T = unknown>({ node, selectedId, expanded, onToggle, onSelect, onContextMenu, depth }: TreeItemProps<T>): JSX.Element {
   const hasChildren = node.children && node.children.length > 0;
   const isExpanded = expanded.has(node.id);
   const isSelected = node.id === selectedId;
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleClick = () => {
     if (hasChildren) {
@@ -69,29 +90,78 @@ function TreeItem({ node, selectedId, expanded, onToggle, onSelect, depth }: Tre
     onSelect?.(node);
   };
 
+  const handleContextMenu = (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
+    if (onContextMenu) {
+      e.preventDefault();
+      onContextMenu(node, e as unknown as MouseEvent);
+    }
+  };
+
   const handleToggle = (e: Event) => {
     e.stopPropagation();
     onToggle(node.id);
   };
 
+  // Tooltip hover handlers
+  const handleMouseEnter = (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
+    if (!node.tooltip) return;
+    tooltipTimer.current = setTimeout(() => {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setTooltipPos({ x: rect.right + 8, y: rect.top });
+      setTooltipVisible(true);
+    }, 400);
+  };
+
+  const handleMouseLeave = () => {
+    if (tooltipTimer.current) {
+      clearTimeout(tooltipTimer.current);
+      tooltipTimer.current = null;
+    }
+    setTooltipVisible(false);
+  };
+
+  // Resolve icon: string shorthand or custom ComponentChildren
+  const iconContent = (() => {
+    const icon = node.icon;
+    if (!icon) {
+      return hasChildren ? <FolderIcon /> : <FileIcon />;
+    }
+    if (icon === 'doc') return <DocIcon />;
+    if (icon === 'folder') return <FolderIcon />;
+    if (icon === 'file') return <FileIcon />;
+    return icon; // ComponentChildren
+  })();
+
+  const iconClass = typeof node.icon === 'string' ? node.icon : (hasChildren ? 'folder' : 'file');
+
   return (
     <div class="tree-item" style={{ paddingLeft: `${depth * 8}px` }}>
-      <div 
+      <div
+        ref={rowRef}
         class={`tree-item-row ${isSelected ? 'selected' : ''}`}
         onClick={handleClick}
+        onContextMenu={handleContextMenu}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <span 
+        <span
           class={`tree-toggle ${isExpanded ? 'expanded' : ''} ${!hasChildren ? 'empty' : ''}`}
           onClick={hasChildren ? handleToggle : undefined}
         >
           <ChevronIcon />
         </span>
-        <span class={`tree-icon ${node.icon || (hasChildren ? 'folder' : 'file')}`}>
-          {node.icon === 'doc' ? <DocIcon /> : (hasChildren ? <FolderIcon /> : <FileIcon />)}
+        <span class={`tree-icon ${iconClass}`}>
+          {iconContent}
         </span>
         <span class="tree-label">{node.label}</span>
-        {hasChildren && <span class="tree-badge">{node.children!.length}</span>}
+        {node.badge != null && <span class="tree-badge">{node.badge}</span>}
+        {!node.badge && hasChildren && <span class="tree-badge">{node.children!.length}</span>}
       </div>
+      {tooltipVisible && node.tooltip && (
+        <TreeTooltip x={tooltipPos.x} y={tooltipPos.y}>
+          {node.tooltip}
+        </TreeTooltip>
+      )}
       {hasChildren && isExpanded && (
         <div class="tree-children">
           {node.children!.map(child => (
@@ -102,11 +172,47 @@ function TreeItem({ node, selectedId, expanded, onToggle, onSelect, depth }: Tre
               expanded={expanded}
               onToggle={onToggle}
               onSelect={onSelect}
+              onContextMenu={onContextMenu}
               depth={depth + 1}
             />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Tooltip ──
+
+interface TreeTooltipProps {
+  x: number;
+  y: number;
+  children: ComponentChildren;
+}
+
+function TreeTooltip({ x, y, children }: TreeTooltipProps): JSX.Element {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Clamp tooltip to viewport
+    const rect = el.getBoundingClientRect();
+    if (rect.right > window.innerWidth) {
+      el.style.left = `${x - rect.width - 16}px`;
+    }
+    if (rect.bottom > window.innerHeight) {
+      el.style.top = `${window.innerHeight - rect.height - 8}px`;
+    }
+  }, [x, y]);
+
+  return (
+    <div
+      ref={ref}
+      class="tree-tooltip"
+      style={{ position: 'fixed', left: `${x}px`, top: `${y}px` }}
+    >
+      {children}
     </div>
   );
 }

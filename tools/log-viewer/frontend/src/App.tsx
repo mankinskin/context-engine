@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect, useState, useCallback } from 'preact/hooks';
 import { Header } from './components/Header/Header';
 import { FilterPanel } from './components/FilterPanel/FilterPanel';
 import { Sidebar } from './components/Sidebar/Sidebar';
@@ -18,9 +18,18 @@ import './store/theme';  // initialize theme effects on startup
 export function App() {
   useGlobalKeyboard();
   const contentRef = usePanelFocus('content');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     loadLogFiles();
+  }, []);
+
+  const toggleMobileSidebar = useCallback(() => {
+    setMobileOpen(prev => !prev);
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setMobileOpen(false);
   }, []);
 
   const renderContent = () => {
@@ -47,10 +56,11 @@ export function App() {
   return (
     <div class="app">
       <WgpuOverlay />
-      <Header />
+      <Header onMenuToggle={toggleMobileSidebar} />
       <FilterPanel />
       <div class="main-layout">
-        <Sidebar />
+        {mobileOpen && <div class="sidebar-overlay visible" onClick={closeMobileSidebar} />}
+        <Sidebar mobileOpen={mobileOpen} onMobileClose={closeMobileSidebar} />
         <main class="content">
           <TabBar />
           <div

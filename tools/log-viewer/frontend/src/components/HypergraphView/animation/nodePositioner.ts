@@ -37,6 +37,9 @@ export interface PositionContext {
  * Decomposition-reparented children are skipped for 3D transforms but get
  * their world coords back-projected from screen position so edges still
  * connect to the right place.
+ *
+ * Nodes whose screen position falls outside a margin around the viewport
+ * are culled (display: none) to save layout/paint cost.
  */
 export function positionDOMNodes(ctx: PositionContext): void {
     const {
@@ -48,6 +51,9 @@ export function positionDOMNodes(ctx: PositionContext): void {
     const childParentMap = decomposition.getChildParentMap();
     const expandedNodes = decomposition.getExpandedNodes();
     const vp = viewProj;
+
+    // Frustum culling margin (pixels outside viewport before culling)
+    const CULL_MARGIN = 200;
 
     for (let i = 0; i < layout.nodes.length; i++) {
         const n = layout.nodes[i]!;
@@ -70,7 +76,10 @@ export function positionDOMNodes(ctx: PositionContext): void {
         const scale = worldScaleAtDepth(camPos, [n.x, n.y, n.z], vh);
         const pixelScale = Math.max(0.1, (scale * n.radius * 2.5) / 80);
 
-        if (!screen.visible || pixelScale < 0.02) {
+        // Frustum culling: hide nodes well outside the viewport
+        if (!screen.visible || pixelScale < 0.02
+            || screen.x < -CULL_MARGIN || screen.x > vw + CULL_MARGIN
+            || screen.y < -CULL_MARGIN || screen.y > vh + CULL_MARGIN) {
             el.style.display = 'none';
             continue;
         }

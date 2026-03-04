@@ -8,7 +8,6 @@ import { mat4Inverse, screenToRay, rayPlaneIntersectGeneral, vec3Sub, vec3Normal
 import { raySphere } from '../utils/math';
 import type { GraphLayout, LayoutNode } from '../layout';
 import type { CameraController } from './useCamera';
-import { selectHighlightMode } from '../../../store';
 
 export interface InteractionState {
     dragIdx: number;
@@ -50,7 +49,8 @@ export interface MouseInteractionResult {
 export function useMouseInteraction(
     containerRef: { current: HTMLDivElement | null },
     layoutRef: { current: GraphLayout | null },
-    camera: CameraController
+    camera: CameraController,
+    highlightModeRef?: { current: boolean },
 ): MouseInteractionResult {
     const [selectedIdx, setSelectedIdx] = useState(-1);
     const [hoverIdx, setHoverIdx] = useState(-1);
@@ -125,7 +125,7 @@ export function useMouseInteraction(
                     if (bestIdx >= 0) {
                         const node = layout.nodeMap.get(bestIdx);
                         if (node) {
-                            if (selectHighlightMode.value) {
+                            if (highlightModeRef?.current) {
                                 // In layout mode, nodes are positioned by the
                                 // focused-layout algorithm — dragging would fight
                                 // the layout projection. Record the hit; select on mouseUp.

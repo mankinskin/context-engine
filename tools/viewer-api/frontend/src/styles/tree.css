@@ -100,3 +100,20 @@
   color: var(--text-muted);
   margin-left: 8px;
 }
+
+/* Tooltip */
+
+.tree-tooltip {
+  z-index: 10000;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: var(--bg-secondary, #252526);
+  border: 1px solid var(--border-color, #3c3c3c);
+  color: var(--text-primary, #ccc);
+  font-size: 12px;
+  line-height: 1.4;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  white-space: pre-wrap;
+}

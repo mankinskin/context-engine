@@ -7,6 +7,7 @@
     background: transparent;
     cursor: default;
     user-select: none;
+    touch-action: none; /* Prevent browser gestures; handled by useTouchInteraction */
 }
 
 /* ── Node layer: absolutely positioned, stacks above canvas ── */

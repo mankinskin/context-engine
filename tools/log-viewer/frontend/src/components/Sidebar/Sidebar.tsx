@@ -1,72 +1,110 @@
 import { logFiles, currentFile, loadLogFile, isLoading } from '../../store';
 import { signal } from '@preact/signals';
-import { useListKeyboard, useScrollIntoView, usePanelFocus, focusedPanel } from '../../hooks';
+import { usePanelFocus, focusedPanel } from '../../hooks';
+import { TreeView, type TreeNode } from '@context-engine/viewer-api-frontend';
+import { buildFileTree, getCategoryIdForFilter } from '../../store/fileTree';
+import type { LogFile } from '../../types';
+import { useState, useMemo, useCallback } from 'preact/hooks';
 
 // Filter state: 'all' | 'graph' | 'search' | 'insert' | 'paths'
 const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('all');
 
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-export function Sidebar() {
+export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const filter = activeFilter.value;
-  const files = filter === 'all' 
-    ? logFiles.value
-    : filter === 'graph'
-    ? logFiles.value.filter(f => f.has_graph_snapshot)
-    : filter === 'search'
-    ? logFiles.value.filter(f => f.has_search_ops)
-    : filter === 'paths'
-    ? logFiles.value.filter(f => f.has_search_paths)
-    : logFiles.value.filter(f => f.has_insert_ops);
-  
-  const graphCount = logFiles.value.filter(f => f.has_graph_snapshot).length;
-  const searchCount = logFiles.value.filter(f => f.has_search_ops).length;
-  const insertCount = logFiles.value.filter(f => f.has_insert_ops).length;
-  const pathsCount = logFiles.value.filter(f => f.has_search_paths).length;
+  const allFiles = logFiles.value;
+
+  // Compute counts for filter buttons
+  const graphCount = allFiles.filter(f => f.has_graph_snapshot).length;
+  const searchCount = allFiles.filter(f => f.has_search_ops).length;
+  const insertCount = allFiles.filter(f => f.has_insert_ops).length;
+  const pathsCount = allFiles.filter(f => f.has_search_paths).length;
+  const totalCount = allFiles.length;
 
   const toggleFilter = (newFilter: 'all' | 'graph' | 'search' | 'insert' | 'paths') => {
     activeFilter.value = activeFilter.value === newFilter ? 'all' : newFilter;
   };
 
-  // Keyboard navigation for the file list
-  const selectedIndex = files.findIndex(f => f.name === currentFile.value);
+  // Build tree from file list
+  const treeNodes = useMemo(() => buildFileTree(allFiles), [allFiles]);
+
+  // Controlled expansion: when filter is active, auto-expand that category
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set<string>());
+
+  // When filter changes, auto-expand the matching category
+  const effectiveExpanded = useMemo(() => {
+    if (filter === 'all') return expandedSet;
+    const catId = getCategoryIdForFilter(filter);
+    if (!catId) return expandedSet;
+    const next = new Set(expandedSet);
+    next.add(catId);
+    return next;
+  }, [filter, expandedSet]);
+
+  const handleToggle = useCallback((id: string) => {
+    setExpandedSet(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  // Filter tree nodes when a filter is active
+  const filteredNodes = useMemo(() => {
+    if (filter === 'all') return treeNodes;
+    const catId = getCategoryIdForFilter(filter);
+    if (!catId) return treeNodes;
+    // Show only the matching category folder
+    return treeNodes.filter(n => n.id === catId);
+  }, [treeNodes, filter]);
+
+  // Determine selected node ID based on currentFile + active filter
+  const selectedIds = useMemo(() => {
+    if (!currentFile.value) return undefined;
+    // Check if any category folder reference matches
+    const catId = getCategoryIdForFilter(filter);
+    if (catId) return `${catId}/${currentFile.value}`;
+    return `file-${currentFile.value}`;
+  }, [currentFile.value, filter]);
+
+  const handleSelect = useCallback((node: TreeNode<LogFile>) => {
+    if (node.data) {
+      loadLogFile(node.data.name);
+    }
+  }, []);
+
   const panelRef = usePanelFocus('sidebar');
-
-  const { containerRef: listRef, onKeyDown } = useListKeyboard({
-    items: files,
-    selectedIndex,
-    onSelect: (i) => {
-      const file = files[i];
-      if (file) loadLogFile(file.name);
-    },
-    onActivate: (i) => {
-      const file = files[i];
-      if (file) loadLogFile(file.name);
-    },
-  });
-
-  useScrollIntoView(listRef, selectedIndex, '.file-item');
-
-  // Merge the two refs onto the file-list div
-  const setListRef = (el: HTMLDivElement | null) => {
-    listRef.current = el;
-    panelRef.current = el;
-  };
 
   const handleMouseEnter = () => {
     focusedPanel.value = 'sidebar';
-    listRef.current?.focus({ preventScroll: true });
+    panelRef.current?.focus({ preventScroll: true });
   };
 
+  const mobileClass = mobileOpen !== undefined
+    ? (mobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed')
+    : '';
+
   return (
-    <aside class="sidebar">
+    <aside class={`sidebar ${mobileClass}`}>
       <div class="sidebar-header">
         <h2>Log Files</h2>
-        <span class="file-count">{files.length} files</span>
+        <span class="file-count">{totalCount} files</span>
+        {onMobileClose && (
+          <button class="sidebar-close-btn" onClick={onMobileClose} title="Close sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <div class="sidebar-filters">
@@ -126,35 +164,22 @@ export function Sidebar() {
       
       <div
         class={`file-list ${focusedPanel.value === 'sidebar' ? 'focused' : ''}`}
-        ref={setListRef}
+        ref={panelRef as any}
         tabIndex={0}
-        onKeyDown={onKeyDown}
         onMouseEnter={handleMouseEnter}
       >
-        {isLoading.value && logFiles.value.length === 0 ? (
+        {isLoading.value && allFiles.length === 0 ? (
           <p class="loading">Loading...</p>
-        ) : files.length === 0 ? (
+        ) : filteredNodes.length === 0 ? (
           <p class="placeholder">{filter !== 'all' ? `No logs with ${filter} data` : 'No log files found'}</p>
         ) : (
-          files.map((file, i) => (
-            <div 
-              key={file.name}
-              class={`file-item ${file.name === currentFile.value ? 'active' : ''}`}
-              data-index={i}
-              onClick={() => loadLogFile(file.name)}
-            >
-              <div class="file-name" title={file.name}>
-                {file.has_graph_snapshot && <span class="graph-badge" title="Contains graph snapshot">⬡</span>}
-                {file.has_search_ops && <span class="search-badge" title="Contains search ops">🔍</span>}
-                {file.has_insert_ops && <span class="insert-badge" title="Contains insert ops">+</span>}
-                {file.has_search_paths && <span class="paths-badge" title="Contains search paths">⤴</span>}
-                {file.name}
-              </div>
-              <div class="file-meta">
-                {formatSize(file.size)} • {file.modified || 'Unknown'}
-              </div>
-            </div>
-          ))
+          <TreeView<LogFile>
+            nodes={filteredNodes}
+            selectedId={selectedIds}
+            onSelect={handleSelect}
+            expanded={effectiveExpanded}
+            onToggle={handleToggle}
+          />
         )}
       </div>
     </aside>

@@ -5,6 +5,7 @@
     overflow: hidden;
     /* Transparent so the shared WgpuOverlay canvas shows through */
     background: transparent;
+    touch-action: none; /* Prevent browser gestures; handled by touch handlers */
 }
 
 .scene3d-canvas {

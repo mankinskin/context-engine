@@ -1,19 +1,16 @@
 import { useEffect, useState, useCallback } from '@context-engine/viewer-api-frontend';
+import { Sidebar as SharedSidebar } from '@context-engine/viewer-api-frontend';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocViewer } from './components/DocViewer';
 import { FilterPanel } from './components/FilterPanel';
-import { ResizeHandle } from './components/ResizeHandle';
 import { FileViewer } from './components/FileViewer';
-import { loadDocs, initUrlListener, codeViewerFile, closeCodeViewer } from './store';
+import { loadDocs, initUrlListener, codeViewerFile, closeCodeViewer, totalDocs, isLoading, docTree } from './store';
 import '@context-engine/viewer-api-frontend/styles/code-viewer.css';
 
-const MIN_SIDEBAR_WIDTH = 180;
-const MAX_SIDEBAR_WIDTH = 500;
-
 export function App() {
-  const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     loadDocs();
@@ -22,19 +19,33 @@ export function App() {
 
   const showCodeViewer = codeViewerFile.value !== null;
 
-  const handleSidebarResize = useCallback((delta: number) => {
-    setSidebarWidth(w => Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, w + delta)));
+  const toggleMobileSidebar = useCallback(() => {
+    setMobileOpen(prev => !prev);
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setMobileOpen(false);
   }, []);
 
   return (
     <div class="app">
-      <Header />
+      <Header onMenuToggle={toggleMobileSidebar} />
       <FilterPanel />
       <div class="main-layout">
-        <aside class="sidebar" style={{ width: `${sidebarWidth}px` }}>
+        <SharedSidebar
+          title="Documentation"
+          badge={totalDocs.value}
+          collapsible
+          resizable
+          initialWidth={280}
+          loading={isLoading.value && docTree.value.length === 0}
+          isEmpty={!isLoading.value && docTree.value.length === 0}
+          emptyMessage="No documents found"
+          mobileOpen={mobileOpen}
+          onMobileClose={closeMobileSidebar}
+        >
           <Sidebar />
-        </aside>
-        <ResizeHandle direction="horizontal" onResize={handleSidebarResize} />
+        </SharedSidebar>
         <main class="content">
           <Breadcrumbs />
           <div class="content-panels">

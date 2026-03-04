@@ -18,7 +18,11 @@ import {
 import { showFilterPanel, resetFilterPanel } from '../FilterPanel/FilterPanel';
 import { fxEnabled } from '../WgpuOverlay/WgpuOverlay';
 
-export function Header() {
+interface HeaderProps {
+  onMenuToggle?: () => void;
+}
+
+export function Header({ onMenuToggle }: HeaderProps) {
   const handleSearch = (e: Event) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -36,6 +40,15 @@ export function Header() {
   return (
     <header class="header">
       <div class="header-left">
+        {onMenuToggle && (
+          <button class="sidebar-hamburger" onClick={onMenuToggle} title="Toggle sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        )}
         <LogIcon size={14} color="#8b9dc3" />
         <h1 class="header-title">Log Viewer</h1>
       </div>

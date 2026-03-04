@@ -37,11 +37,16 @@
   
   /* Layout */
   --sidebar-width: 280px;
+  --sidebar-collapsed-width: 0px;
   --header-height: 40px;
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
+  
+  /* Responsive breakpoints (used as documentation — media queries use literal values) */
+  --mobile-breakpoint: 768px;
+  --phone-breakpoint: 480px;
   
   /* Border radius */
   --radius-sm: 4px;

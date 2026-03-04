@@ -10,7 +10,7 @@
  */
 import { useEffect, useRef, useMemo } from 'preact/hooks';
 import { mat4Multiply, mat4Inverse } from '../../Scene3D/math3d';
-import type { GraphLayout } from '../layout';
+import type { GraphLayout, FocusedLayoutOffsets } from '../layout';
 import type { CameraController } from './useCamera';
 import type { InteractionState } from './useMouseInteraction';
 import type { VisualizationState } from './useVisualizationState';
@@ -46,6 +46,8 @@ export function useOverlayRenderer(
     interRef: { current: InteractionState },
     vizState: VisualizationState,
     onSelectNode?: (idx: number) => void,
+    focusedOffsetsRef?: { current: FocusedLayoutOffsets | null },
+    originalPositionsRef?: { current: Map<number, { x: number; y: number; z: number }> | null },
 ): void {
     const gpu = overlayGpu.value;
     const curLayout = layoutRef.current;
@@ -109,6 +111,14 @@ export function useOverlayRenderer(
             lastParentCandidates: [],
         };
 
+        // ── Dirty-flag state for edge buffer (P1 optimization) ──
+        let prevVizState: VisualizationState | null = null;
+        let prevSelectedIdx = -2; // sentinel
+        let prevHoverIdx = -2;
+        let prevExpandedSize = -1;
+        let prevConnectedRef: Set<number> | null = null;
+        let nodesMoving = true; // assume nodes are animating initially
+
         // ── Overlay render callback ──
         const renderCallback: OverlayRenderCallback = (pass, dev, time, dt, canvasW, canvasH, _depthView) => {
             const rect = container.getBoundingClientRect();
@@ -156,8 +166,35 @@ export function useOverlayRenderer(
             const fov = Math.PI / 4;
             setOverlayWorldScale((2 * dist * Math.tan(fov / 2)) / vh);
 
+            // ── Focused layout: project abstract offsets onto camera axes ──
+            const focusedOffsets = focusedOffsetsRef?.current;
+            if (focusedOffsets && originalPositionsRef?.current) {
+                const origPositions = originalPositionsRef.current;
+                // Reset all targets to originals first
+                for (const n of curLayout.nodes) {
+                    const orig = origPositions.get(n.index);
+                    if (orig) { n.tx = orig.x; n.ty = orig.y; n.tz = orig.z; }
+                }
+                // Project each offset using current camera orientation
+                const { anchorIdx, offsets } = focusedOffsets;
+                const anchorOrig = origPositions.get(anchorIdx);
+                if (anchorOrig) {
+                    const axes = camera.getAxes();
+                    const [rx, ry, rz] = axes.right;
+                    const [ux, uy, uz] = axes.up;
+                    for (const [idx, off] of offsets) {
+                        const node = curLayout.nodeMap.get(idx);
+                        if (node) {
+                            node.tx = anchorOrig.x + off.dRight * rx + off.dUp * ux;
+                            node.ty = anchorOrig.y + off.dRight * ry + off.dUp * uy;
+                            node.tz = anchorOrig.z + off.dRight * rz + off.dUp * uz;
+                        }
+                    }
+                }
+            }
+
             // ── Animate nodes ──
-            animateNodes(curLayout.nodes, dt);
+            nodesMoving = animateNodes(curLayout.nodes, dt);
 
             // ── Decomposition management ──
             const curVizState = vizStateRef.current;
@@ -198,13 +235,29 @@ export function useOverlayRenderer(
                 decomposition,
             });
 
-            // ── Build and upload edge instances ──
-            edgeBuildCtx.vizState = curVizState;
-            edgeBuildCtx.inter = inter;
-            edgeBuildCtx.connectedEdgeKeys = cached.connectedEdgeKeys;
-            edgeBuildCtx.hiddenDecompEdgeKeys = decomposition.getHiddenDecompEdgeKeys();
-            buildEdgeInstances(res.edgeDataBuf, edgeBuildCtx);
-            dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf);
+            // ── Build and upload edge instances (with dirty-flag optimization) ──
+            const curHiddenDecomp = decomposition.getHiddenDecompEdgeKeys();
+            const expandedSize = decomposition.getExpandedNodes().size;
+            const edgeDirty = nodesMoving
+                || curVizState !== prevVizState
+                || inter.selectedIdx !== prevSelectedIdx
+                || inter.hoverIdx !== prevHoverIdx
+                || expandedSize !== prevExpandedSize
+                || cached.connectedEdgeKeys !== prevConnectedRef;
+
+            if (edgeDirty) {
+                edgeBuildCtx.vizState = curVizState;
+                edgeBuildCtx.inter = inter;
+                edgeBuildCtx.connectedEdgeKeys = cached.connectedEdgeKeys;
+                edgeBuildCtx.hiddenDecompEdgeKeys = curHiddenDecomp;
+                buildEdgeInstances(res.edgeDataBuf, edgeBuildCtx);
+                dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf);
+                prevVizState = curVizState;
+                prevSelectedIdx = inter.selectedIdx;
+                prevHoverIdx = inter.hoverIdx;
+                prevExpandedSize = expandedSize;
+                prevConnectedRef = cached.connectedEdgeKeys;
+            }
 
             // ── Camera + palette uniforms ──
             camBuf.set(viewProj, 0);

@@ -12,4 +12,5 @@ export {
     type TooltipData,
     type MouseInteractionResult,
 } from './useMouseInteraction';
+export { useTouchInteraction } from './useTouchInteraction';
 export { useOverlayRenderer } from './useOverlayRenderer';

@@ -95,6 +95,43 @@
   border-radius: 8px;
 }
 
+/* Doc tree tooltip styles */
+.doc-tooltip {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.doc-tooltip-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.doc-tooltip-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.doc-tooltip-summary {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.doc-tooltip-tags {
+  font-size: 10px;
+  color: var(--accent-purple);
+  margin-top: 4px;
+}
+
+.doc-tooltip-status {
+  font-size: 10px;
+  color: var(--accent-blue);
+  margin-top: 2px;
+}
+
 /* Content area */
 .content {
   flex: 1;

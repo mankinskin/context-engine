@@ -14,6 +14,7 @@ export * from './components/Header';
 export * from './components/Sidebar';
 export * from './components/Layout';
 export * from './components/CodeViewer';
+export * from './components/FileContentViewer';
 
 // Re-export session utilities
 export * from './session';

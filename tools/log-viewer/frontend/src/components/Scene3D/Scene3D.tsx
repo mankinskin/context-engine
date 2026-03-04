@@ -544,11 +544,81 @@ export function Scene3D() {
 
         const onCtx = (e: Event) => e.preventDefault();
 
+        // ── Touch handlers ──
+        let touchFingers = 0;
+        let touchLastX = 0, touchLastY = 0;
+        let touchLastDist = 0;
+        let touchLastMidX = 0, touchLastMidY = 0;
+
+        const touchDist2 = (t1: Touch, t2: Touch): number => {
+            const dx = t1.clientX - t2.clientX;
+            const dy = t1.clientY - t2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        };
+
+        const onTouchStart = (e: TouchEvent) => {
+            e.preventDefault();
+            touchFingers = e.touches.length;
+            if (e.touches.length === 1) {
+                touchLastX = e.touches[0].clientX;
+                touchLastY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                touchLastDist = touchDist2(e.touches[0], e.touches[1]);
+                touchLastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                touchLastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            }
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            if (e.touches.length === 1 && touchFingers === 1) {
+                // Single finger: orbit
+                const dx = e.touches[0].clientX - touchLastX;
+                const dy = e.touches[0].clientY - touchLastY;
+                touchLastX = e.touches[0].clientX;
+                touchLastY = e.touches[0].clientY;
+                s.camYaw += dx * 0.005;
+                s.camPitch = Math.max(-1.4, Math.min(1.4, s.camPitch + dy * 0.005));
+            } else if (e.touches.length === 2) {
+                const dist = touchDist2(e.touches[0], e.touches[1]);
+                const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                // Pinch → zoom
+                if (touchLastDist > 0) {
+                    const scale = touchLastDist / dist;
+                    s.camDist = Math.max(3, Math.min(30, s.camDist * scale));
+                }
+                touchLastDist = dist;
+
+                // Two-finger pan
+                const panDx = mx - touchLastMidX;
+                const panDy = my - touchLastMidY;
+                const speed = s.camDist * 0.002;
+                const cosY = Math.cos(s.camYaw);
+                const sinY = Math.sin(s.camYaw);
+                s.camTarget = [
+                    s.camTarget[0] - panDx * speed * cosY,
+                    s.camTarget[1] + panDy * speed,
+                    s.camTarget[2] + panDx * speed * sinY,
+                ];
+                touchLastMidX = mx;
+                touchLastMidY = my;
+            }
+        };
+
+        const onTouchEnd = (e: TouchEvent) => {
+            touchFingers = e.touches.length;
+        };
+
         container.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
         container.addEventListener('wheel', onWheel, { passive: false });
         container.addEventListener('contextmenu', onCtx);
+        container.addEventListener('touchstart', onTouchStart, { passive: false });
+        container.addEventListener('touchmove', onTouchMove, { passive: false });
+        container.addEventListener('touchend', onTouchEnd);
 
         // ── Reset function ──
         resetRef.current = () => {
@@ -568,6 +638,9 @@ export function Scene3D() {
             window.removeEventListener('mouseup', onMouseUp);
             container.removeEventListener('wheel', onWheel);
             container.removeEventListener('contextmenu', onCtx);
+            container.removeEventListener('touchstart', onTouchStart);
+            container.removeEventListener('touchmove', onTouchMove);
+            container.removeEventListener('touchend', onTouchEnd);
             vb.destroy();
             ub.destroy();
         };

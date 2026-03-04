@@ -1,5 +1,7 @@
-import { useState, useEffect } from '@context-engine/viewer-api-frontend';
-import { docTree, totalDocs, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded, openSourceFile, codeViewerFile } from '../store';
+import { useEffect, useMemo, useCallback } from '@context-engine/viewer-api-frontend';
+import { TreeView, type TreeNode as SharedTreeNode } from '@context-engine/viewer-api-frontend';
+import { h, type ComponentChildren } from 'preact';
+import { docTree, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded, openSourceFile, codeViewerFile } from '../store';
 import type { TreeNode } from '../types';
 
 export function Sidebar() {
@@ -17,169 +19,134 @@ export function Sidebar() {
     }
   }, [docTree.value]);
 
-  return (
-    <>
-      <div class="sidebar-header">
-        <h2>Documentation</h2>
-        <span class="doc-count">{totalDocs.value}</span>
-      </div>
-      
-      <div class="sidebar-content">
-        {isLoading.value && docTree.value.length === 0 ? (
-          <div class="loading">Loading...</div>
-        ) : docTree.value.length === 0 ? (
-          <div class="empty-state">No documents found</div>
-        ) : (
-          <div class="tree-view">
-            {docTree.value.map(node => (
-              <TreeItem key={node.id} node={node} level={0} />
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+  // Convert doc tree nodes → shared TreeView nodes
+  const sharedNodes = useMemo(
+    () => docTree.value.map(convertNode),
+    [docTree.value]
   );
-}
 
-interface TreeItemProps {
-  node: TreeNode;
-  level: number;
-}
+  // Determine selected ID
+  const selectedId = useMemo(() => {
+    // Check if a file is open in code viewer
+    if (codeViewerFile.value) {
+      return `file:${codeViewerFile.value}`;
+    }
+    return selectedFilename.value ?? undefined;
+  }, [selectedFilename.value, codeViewerFile.value]);
 
-function TreeItem({ node, level }: TreeItemProps) {
-  const [loading, setLoading] = useState(false);
-  
-  // Use global expanded state
-  const expanded = expandedNodes.value.has(node.id);
-  
-  const hasChildren = node.children && node.children.length > 0;
-  const canExpand = hasChildren || node.type === 'crate'; // Crates can always expand
-  const isSelected = (node.type === 'doc' || node.type === 'module' || node.type === 'crate') 
-    && selectedFilename.value === node.id;
-  const isFileSelected = node.type === 'file' && node.sourceFile 
-    && codeViewerFile.value === node.sourceFile.rel_path;
-  
-  const handleClick = async () => {
-    if (node.type === 'doc') {
-      // Open agent doc
-      selectDoc(node.id);
-    } else if (node.type === 'file' && node.sourceFile) {
-      // Open source file in code viewer
-      openSourceFile(node.sourceFile);
-    } else if (node.type === 'root') {
-      // Open category page for root nodes
-      if (node.id === 'agents') {
+  // Use controlled expanded from store
+  const expanded = expandedNodes.value;
+
+  const handleToggle = useCallback((id: string) => {
+    toggleNodeExpanded(id);
+  }, []);
+
+  const handleSelect = useCallback(async (node: SharedTreeNode<TreeNode>) => {
+    const docNode = node.data;
+    if (!docNode) return;
+
+    if (docNode.type === 'doc') {
+      selectDoc(docNode.id);
+    } else if (docNode.type === 'file' && docNode.sourceFile) {
+      openSourceFile(docNode.sourceFile);
+    } else if (docNode.type === 'root') {
+      if (docNode.id === 'agents') {
         openCategoryPage('page:agent-docs');
-      } else if (node.id === 'crates') {
+      } else if (docNode.id === 'crates') {
         openCategoryPage('page:crate-docs');
       }
-      toggleNodeExpanded(node.id);
-    } else if (node.type === 'crate') {
-      // Load crate modules if not loaded, and open crate doc
-      if (!node.children || node.children.length === 0) {
-        setLoading(true);
-        try {
-          await loadCrateModules(node.crateName!);
-        } finally {
-          setLoading(false);
-        }
+      toggleNodeExpanded(docNode.id);
+    } else if (docNode.type === 'crate') {
+      if (!docNode.children || docNode.children.length === 0) {
+        await loadCrateModules(docNode.crateName!);
       }
-      toggleNodeExpanded(node.id);
-      // Open crate root doc
-      openCrateDoc(node.crateName!);
-    } else if (node.type === 'module') {
-      // Open module doc
-      openCrateDoc(node.crateName!, node.modulePath);
+      toggleNodeExpanded(docNode.id);
+      openCrateDoc(docNode.crateName!);
+    } else if (docNode.type === 'module') {
+      openCrateDoc(docNode.crateName!, docNode.modulePath);
+      const hasChildren = docNode.children && docNode.children.length > 0;
       if (hasChildren) {
-        toggleNodeExpanded(node.id);
+        toggleNodeExpanded(docNode.id);
       }
-    } else if (canExpand) {
-      // Toggle expand for category nodes
-      toggleNodeExpanded(node.id);
+    } else if (docNode.children && docNode.children.length > 0) {
+      toggleNodeExpanded(docNode.id);
     }
-  };
-  
-  // Get appropriate icon based on node type
-  const getIcon = () => {
-    switch (node.type) {
-      case 'root':
-        return <FolderIcon />;
-      case 'category':
-        return <FolderIcon />;
-      case 'crate':
-        return <CrateIcon />;
-      case 'module':
-        return hasChildren ? <FolderIcon /> : <ModuleIcon />;
-      case 'file':
-        return <SourceFileIcon />;
-      case 'doc':
-        return <FileIcon />;
-      default:
-        return <FileIcon />;
-    }
-  };
-  
-  // Get icon class based on node type
-  const iconClass = () => {
-    switch (node.type) {
-      case 'root':
-        return 'folder';
-      case 'category':
-        return 'folder';
-      case 'crate':
-        return 'crate';
-      case 'module':
-        return 'module';
-      case 'file':
-        return 'source-file';
-      case 'doc':
-        return 'file';
-      default:
-        return 'file';
-    }
-  };
-  
+  }, []);
+
+  if (isLoading.value && docTree.value.length === 0) {
+    return <div class="loading">Loading...</div>;
+  }
+
+  if (docTree.value.length === 0) {
+    return <div class="empty-state">No documents found</div>;
+  }
+
   return (
-    <div class="tree-item">
-      <div 
-        class={`tree-row ${isSelected || isFileSelected ? 'selected' : ''}`}
-        onClick={handleClick}
-      >
-        <span class={`tree-toggle ${expanded ? 'expanded' : ''} ${!canExpand ? 'empty' : ''}`}>
-          {loading ? <SpinnerIcon /> : <ChevronIcon />}
-        </span>
-        <span class={`tree-icon ${iconClass()}`}>
-          {getIcon()}
-        </span>
-        <span class="tree-label">{node.label}</span>
-        {hasChildren && <span class="tree-badge">{node.children!.length}</span>}
-      </div>
-      {canExpand && expanded && (
-        <div class="tree-children">
-          {node.children?.map(child => (
-            <TreeItem key={child.id} node={child} level={level + 1} />
-          ))}
-        </div>
-      )}
+    <div class="sidebar-content">
+      <TreeView<TreeNode>
+        nodes={sharedNodes}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+        expanded={expanded}
+        onToggle={handleToggle}
+      />
     </div>
   );
 }
 
-function ChevronIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
+// ── Node conversion ──
+
+function convertNode(node: TreeNode): SharedTreeNode<TreeNode> {
+  const hasChildren = node.children && node.children.length > 0;
+  const canExpand = hasChildren || node.type === 'crate';
+
+  const shared: SharedTreeNode<TreeNode> = {
+    id: node.type === 'file' && node.sourceFile ? `file:${node.sourceFile.rel_path}` : node.id,
+    label: node.label,
+    icon: getNodeIcon(node),
+    data: node,
+    tooltip: node.data ? buildDocTooltip(node.data) : undefined,
+  };
+
+  if (hasChildren) {
+    shared.children = node.children!.map(convertNode);
+    shared.badge = node.children!.length;
+  } else if (canExpand) {
+    // Crate nodes that can expand but haven't loaded yet
+    shared.children = [];
+  }
+
+  return shared;
+}
+
+function buildDocTooltip(doc: { title: string; date?: string; summary?: string; tags?: string[]; status?: string | null }): ComponentChildren {
+  return h('div', { class: 'doc-tooltip' },
+    h('div', { class: 'doc-tooltip-title' }, doc.title),
+    doc.date && h('div', { class: 'doc-tooltip-date' }, doc.date),
+    doc.summary && h('div', { class: 'doc-tooltip-summary' }, doc.summary),
+    doc.tags && doc.tags.length > 0 && h('div', { class: 'doc-tooltip-tags' }, doc.tags.join(', ')),
+    doc.status && h('div', { class: 'doc-tooltip-status' }, `Status: ${doc.status}`),
   );
 }
 
-function SpinnerIcon() {
-  return (
-    <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="16" />
-    </svg>
-  );
+function getNodeIcon(node: TreeNode): ComponentChildren {
+  switch (node.type) {
+    case 'root':
+    case 'category':
+      return h(FolderIcon, null);
+    case 'crate':
+      return h(CrateIcon, null);
+    case 'module':
+      return (node.children && node.children.length > 0) ? h(FolderIcon, null) : h(ModuleIcon, null);
+    case 'file':
+      return h(SourceFileIcon, null);
+    case 'doc':
+    default:
+      return h(FileIcon, null);
+  }
 }
+
+// ── Icons ──
 
 function FolderIcon() {
   return (
