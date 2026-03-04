@@ -298,6 +298,9 @@ export function useMouseInteraction(
         };
 
         const onWheel = (e: WheelEvent) => {
+            // Don't intercept scroll for UI panels overlaying the canvas
+            const target = e.target as HTMLElement;
+            if (target.closest('.search-state-panel, .hypergraph-info-panel, .decomposition-panel')) return;
             const camState = camera.stateRef.current;
             camState.dist = Math.max(2, Math.min(80, camState.dist + e.deltaY * 0.02));
             e.preventDefault();
