@@ -21,9 +21,9 @@ const ZERO_PARTICLES = new Float32Array(NUM_PARTICLES * PARTICLE_FLOATS);
 export class GpuBufferManager {
     readonly device: GPUDevice;
 
-    // Uniform buffer (fixed 336 bytes = 48 scalars + 4 camera floats + 2 × mat4x4, 16-byte aligned)
+    // Uniform buffer (fixed 352 bytes = 52 scalars + 4 camera floats + 2 × mat4x4, 16-byte aligned)
     readonly uniformBuffer: GPUBuffer;
-    readonly uniformF32 = new Float32Array(84);
+    readonly uniformF32 = new Float32Array(88);
 
     // Element buffer (dynamically resizable)
     private _elemBuffer: GPUBuffer;
@@ -46,7 +46,7 @@ export class GpuBufferManager {
         this.device = device;
 
         this.uniformBuffer = device.createBuffer({
-            size: 336,
+            size: 352,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 

@@ -28,7 +28,7 @@ const EMBER_END   : u32 = 288u;
 const RAY_END     : u32 = 544u;
 const GLITTER_END : u32 = 640u;
 
-// ---- uniforms (336 bytes = 48 scalars + 4 camera floats + 2 × mat4x4<f32>) ---------------------
+// ---- uniforms (352 bytes = 52 scalars + 4 camera floats + 2 × mat4x4<f32>) ---------------------
 struct Uniforms {
     time             : f32,
     width            : f32,
@@ -44,7 +44,7 @@ struct Uniforms {
     crt_scanlines_v  : f32,    // vertical scanlines (+grid) intensity 0.0–1.0
     crt_edge_shadow  : f32,    // edge/border shadow intensity 0.0–1.0
     crt_flicker      : f32,    // torch flicker intensity 0.0–1.0
-    cursor_style     : f32,    // 0 = default, 1 = metal, 2 = glass
+    crt_line_width   : f32,    // CRT scanline width/thickness 0.0–1.0 (0 = thin, 1 = wide)
     smoke_intensity  : f32,    // background smoke brightness 0.0–1.0
     smoke_speed      : f32,    // smoke animation speed multiplier 0.0–5.0
     smoke_warm_scale : f32,    // UV scale for warm smoke layers 0.0–2.0
@@ -78,6 +78,11 @@ struct Uniforms {
     vp_w             : f32,    // particle viewport width (pixels)
     vp_h             : f32,    // particle viewport height (pixels)
     current_view     : f32,    // active view/tab ID (0=logs,1=stats,2=code,3=debug,4=scene3d,5=hypergraph,6=settings)
+    // ---- CRT scanline color (4 floats for alignment) ----
+    crt_color_r      : f32,    // CRT scanline tint red 0.0–1.0
+    crt_color_g      : f32,    // CRT scanline tint green 0.0–1.0
+    crt_color_b      : f32,    // CRT scanline tint blue 0.0–1.0
+    _crt_pad         : f32,    // padding for mat4 alignment
     // ---- camera position for 3D skybox (4 floats for mat4 alignment) ----
     camera_pos_x     : f32,    // camera world-space X position
     camera_pos_y     : f32,    // camera world-space Y position

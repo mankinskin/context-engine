@@ -12,7 +12,7 @@
  * Reads element data from the ElementScanner, uploads via GpuBufferManager,
  * and rebuilds bind groups when the buffer generation changes.
  *
- * Uniform packing: 84 × f32 (336 bytes) = 48 scalars + 4 camera floats + 2 × mat4x4.
+ * Uniform packing: 88 × f32 (352 bytes) = 52 scalars + 4 camera floats + 2 × mat4x4.
  * See types.wgsl Uniforms struct for the field layout.
  */
 
@@ -30,7 +30,7 @@ import {
 } from './element-types';
 import { getOverlayCallbacks, consumeCaptureRequest, hasCaptureRequest, getOverlayParticleVP, getOverlayParticleInvVP, consumeParticleVPDirty, getOverlayParticleViewport, getOverlayRefDepth, getOverlayWorldScale, getOverlayCameraPos, fxEnabled } from './overlay-api';
 import { captureFrame } from './thumbnail-capture';
-import { effectSettings, themeColors, CURSOR_STYLE_VALUE } from '../../store/theme';
+import { effectSettings, themeColors } from '../../store/theme';
 import { activeTab } from '../../store';
 
 export class RenderLoop {
@@ -249,7 +249,6 @@ export class RenderLoop {
         const anyAnimated = fx && (
             (eff.smokeEnabled && eff.smokeIntensity > 0)
             || (eff.crtEnabled && eff.crtFlicker > 0)
-            || eff.cursorStyle !== 'default'
             || (hoverIdx >= 0 && (eff.cinderEnabled || particlesEnabled))
             || (selectedIdx >= 0 && eff.beamsEnabled));
 
@@ -278,7 +277,7 @@ export class RenderLoop {
         const particlesOnlyAnimated = anyAnimated && minimalBackground
             && !(eff.smokeEnabled && eff.smokeIntensity > 0)
             && !(eff.crtEnabled && eff.crtFlicker > 0)
-            && eff.cursorStyle === 'default';
+            && true;  // cursor removed
         if (particlesOnlyAnimated && !inputDirty) {
             this.frameSkipCounter = (this.frameSkipCounter + 1) % 2;
             if (this.frameSkipCounter !== 0) {
@@ -333,7 +332,7 @@ export class RenderLoop {
         u[11] = crtOn ? eff.crtScanlinesV / 100 : 0.0;
         u[12] = crtOn ? eff.crtEdgeShadow / 100 : 0.0;
         u[13] = crtOn ? eff.crtFlicker / 100 : 0.0;
-        u[14] = (fx && eff.cursorStyle !== 'default') ? (CURSOR_STYLE_VALUE[eff.cursorStyle] ?? 0) : 0;
+        u[14] = crtOn ? eff.crtLineWidth / 100 : 0.0;  // scanline width/thickness
         u[15] = (fx && eff.smokeEnabled) ? eff.smokeIntensity / 100 : 0.0;
         u[16] = (fx && eff.smokeEnabled) ? eff.smokeSpeed / 100 : 0.0;
         u[17] = (fx && eff.smokeEnabled) ? eff.smokeWarmScale / 100 : 0.0;
@@ -362,6 +361,13 @@ export class RenderLoop {
         u[39] = (fx && eff.glitterEnabled) ? eff.glitterSize / 100 : 0.0;
         u[40] = (fx && eff.cinderEnabled) ? eff.cinderSize / 100 : 0.0;
 
+        // CRT scanline color (u[48-50]) + padding (u[51])
+        const crtCol = eff.crtColor ?? [100, 80, 60];
+        u[48] = crtOn ? crtCol[0] / 255 : 0.0;
+        u[49] = crtOn ? crtCol[1] / 255 : 0.0;
+        u[50] = crtOn ? crtCol[2] / 255 : 0.0;
+        u[51] = 0;  // padding
+
         // Particle projection — 3D views set these each frame in their
         // overlay callbacks (1-frame latency, imperceptible).
         const is3DView = activeTab.value === 'scene3d' || activeTab.value === 'hypergraph';
@@ -378,13 +384,13 @@ export class RenderLoop {
             u[46] = vp3d[3];  // vp_h
             // Camera position for skybox rendering
             const camPos = getOverlayCameraPos();
-            u[48] = camPos[0];  // camera_pos_x
-            u[49] = camPos[1];  // camera_pos_y
-            u[50] = camPos[2];  // camera_pos_z
-            u[51] = 0;          // padding
-            // Copy particle_vp and particle_inv_vp (mat4 × 2, 32 floats), shifted by 4
-            u.set(getOverlayParticleVP(), 52);
-            u.set(getOverlayParticleInvVP(), 68);
+            u[52] = camPos[0];  // camera_pos_x
+            u[53] = camPos[1];  // camera_pos_y
+            u[54] = camPos[2];  // camera_pos_z
+            u[55] = 0;          // padding
+            // Copy particle_vp and particle_inv_vp (mat4 × 2, 32 floats)
+            u.set(getOverlayParticleVP(), 56);
+            u.set(getOverlayParticleInvVP(), 72);
         } else if (!is3DView) {
             // 2D views: orthographic screen→clip matrices
             u[41] = 0;     // ref_depth = 0 (particles at z=0)
@@ -394,19 +400,19 @@ export class RenderLoop {
             u[45] = W;     // vp_w
             u[46] = H;     // vp_h
             // Camera position (not used in 2D, set to 0)
-            u[48] = 0; u[49] = 0; u[50] = 0; u[51] = 0;
+            u[52] = 0; u[53] = 0; u[54] = 0; u[55] = 0;
             // Ortho viewProj: screen pixels → clip [-1,1]
             // ndc_x = x * 2/W - 1,  ndc_y = -y * 2/H + 1,  ndc_z = z
-            // Column-major mat4 (shifted by 4 for camera padding):
-            u[52] = 2 / W; u[53] = 0; u[54] = 0; u[55] = 0;   // col 0
-            u[56] = 0; u[57] = -2 / H; u[58] = 0; u[59] = 0;   // col 1
-            u[60] = 0; u[61] = 0; u[62] = 1; u[63] = 0;   // col 2
-            u[64] = -1; u[65] = 1; u[66] = 0; u[67] = 1;   // col 3
+            // Column-major mat4:
+            u[56] = 2 / W; u[57] = 0; u[58] = 0; u[59] = 0;   // col 0
+            u[60] = 0; u[61] = -2 / H; u[62] = 0; u[63] = 0;   // col 1
+            u[64] = 0; u[65] = 0; u[66] = 1; u[67] = 0;   // col 2
+            u[68] = -1; u[69] = 1; u[70] = 0; u[71] = 1;   // col 3
             // Inverse ortho: clip → screen pixels
-            u[68] = W / 2; u[69] = 0; u[70] = 0; u[71] = 0;  // col 0
-            u[72] = 0; u[73] = -H / 2; u[74] = 0; u[75] = 0;  // col 1
-            u[76] = 0; u[77] = 0; u[78] = 1; u[79] = 0;  // col 2
-            u[80] = W / 2; u[81] = H / 2; u[82] = 0; u[83] = 1;  // col 3
+            u[72] = W / 2; u[73] = 0; u[74] = 0; u[75] = 0;  // col 0
+            u[76] = 0; u[77] = -H / 2; u[78] = 0; u[79] = 0;  // col 1
+            u[80] = 0; u[81] = 0; u[82] = 1; u[83] = 0;  // col 2
+            u[84] = W / 2; u[85] = H / 2; u[86] = 0; u[87] = 1;  // col 3
         }
         // else: is3DView but no dirty update this frame — keep previous values
 

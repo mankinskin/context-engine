@@ -974,9 +974,12 @@ const SETTINGS_KEY = 'log-viewer-effect-settings';
 
 // ── Effect settings (non-color toggles) ──────────────────────────────────────
 
-export type CursorStyle = 'default' | 'metal' | 'glass';
 
 export interface EffectSettings {
+  /** Glass panel background opacity 0–100 (maps to 0.0–0.4 alpha). */
+  glassOpacity: number;
+  /** Glass panel backdrop blur 0–100 (maps to 0–16px). */
+  glassBlur: number;
   crtEnabled: boolean;
   /** Horizontal scanlines (+ pixel grid) intensity 0–100. */
   crtScanlinesH: number;
@@ -986,8 +989,10 @@ export interface EffectSettings {
   crtEdgeShadow: number;
   /** Torch flicker intensity 0–100. */
   crtFlicker: number;
-    /** Custom GPU cursor style. */
-    cursorStyle: CursorStyle;
+  /** Scanline width/thickness 0–100. */
+  crtLineWidth: number;
+  /** Scanline tint color [R, G, B] 0–255. */
+  crtColor: [number, number, number];
     /** Enable/disable background smoke. */
     smokeEnabled: boolean;
     /** Overall smoke layer brightness/amount 0–100. */
@@ -1051,12 +1056,15 @@ export interface EffectSettings {
 }
 
 export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
+  glassOpacity: 35,
+  glassBlur: 25,
   crtEnabled: true,
   crtScanlinesH: 20,
   crtScanlinesV: 12,
   crtEdgeShadow: 35,
   crtFlicker: 12,
-  cursorStyle: 'default',
+  crtLineWidth: 50,
+  crtColor: [100, 80, 60] as [number, number, number],
   smokeEnabled: true,
   smokeIntensity: 40,
   smokeSpeed: 50,
@@ -1089,11 +1097,6 @@ export const DEFAULT_EFFECT_SETTINGS: EffectSettings = {
   cinderEnabled: true,
 };
 
-export const CURSOR_STYLE_VALUE: Record<CursorStyle, number> = {
-    default: 0,
-    metal: 1,
-    glass: 2,
-};
 
 function loadEffectSettings(): EffectSettings {
   try {
@@ -1111,6 +1114,18 @@ effect(() => {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(effectSettings.value));
   } catch { /* storage full */ }
+});
+
+// Sync glass opacity/blur settings to CSS custom properties
+effect(() => {
+  const eff = effectSettings.value;
+  const root = document.documentElement;
+  if (!root.classList.contains('gpu-active')) return;
+  const alpha = (eff.glassOpacity / 100) * 0.4;   // 0–100 → 0.0–0.4
+  const blur = Math.round((eff.glassBlur / 100) * 16); // 0–100 → 0–16px
+  root.style.setProperty('--bg-secondary', `rgba(20, 19, 17, ${alpha.toFixed(3)})`);
+  root.style.setProperty('--bg-tertiary', `rgba(26, 24, 22, ${alpha.toFixed(3)})`);
+  root.style.setProperty('--gpu-blur', `blur(${blur}px)`);
 });
 
 export function updateEffectSetting<K extends keyof EffectSettings>(key: K, value: EffectSettings[K]) {

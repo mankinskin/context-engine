@@ -529,12 +529,17 @@ fn gpu_cursor(px: vec2f, mouse: vec2f, style: f32, t: f32) -> vec4f {
 
 // ---- CRT post-processing ---------------------------------------------------
 
-fn crt_scanlines(py: f32) -> f32 {
-    return 0.82 + 0.18 * sin(py * 3.14159);
+fn crt_scanlines(py: f32, width: f32) -> f32 {
+    // width 0.0 = thin crisp lines (freq ~pi), 1.0 = wide soft bands (freq ~0.3*pi)
+    let freq = mix(3.14159, 0.9, width);
+    let depth = mix(0.18, 0.35, width);  // wider lines = deeper modulation
+    return (1.0 - depth) + depth * sin(py * freq);
 }
 
-fn crt_vertical_lines(px_x: f32) -> f32 {
-    return 0.88 + 0.12 * sin(px_x * 3.14159 * 0.6667);
+fn crt_vertical_lines(px_x: f32, width: f32) -> f32 {
+    let freq = mix(3.14159 * 0.6667, 0.6, width);
+    let depth = mix(0.12, 0.25, width);
+    return (1.0 - depth) + depth * sin(px_x * freq);
 }
 
 // Pixel-grid opacity effect — screen-door pattern (no colour shift)
@@ -982,10 +987,12 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
 
     let any_crt = max(max(sh_i, sv_i), max(es_i, fl_i));
     if (any_crt > 0.001) {
+        let lw = u.crt_line_width;  // 0 = thin, 1 = wide
+
         // Horizontal scanlines + horizontal component of pixel grid
-        let scanline = mix(1.0, crt_scanlines(raw_px.y), sh_i);
+        let scanline = mix(1.0, crt_scanlines(raw_px.y, lw), sh_i);
         // Vertical scanlines + vertical component of pixel grid
-        let vline    = mix(1.0, crt_vertical_lines(raw_px.x), sv_i);
+        let vline    = mix(1.0, crt_vertical_lines(raw_px.x, lw), sv_i);
         // Pixel grid: blend of both axes — only visible where both have intensity
         let grid_i = min(sh_i, sv_i);
         let pgrid  = mix(1.0, crt_pixel_grid(raw_px), grid_i);
@@ -993,12 +1000,19 @@ fn fs_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
         let edge     = mix(1.0, crt_edge_shadow(raw_uv), es_i);
         let torch_flicker = 1.0 - fl_i * (0.03 - 0.03 * sin(t * 3.0 + raw_uv.x * 2.0));
 
-        color = color * scanline * vline * pgrid * edge * torch_flicker;
-    }
+        // Apply multiplicative CRT darkening
+        let crt_mult = scanline * vline * pgrid * edge * torch_flicker;
+        color = color * crt_mult;
 
-    // --- Custom GPU cursor (after CRT, drawn last) --------------------------
-    let cursor_col = gpu_cursor(raw_px, vec2f(u.mouse_x, u.mouse_y), u.cursor_style, u.time);
-    color = mix(color, cursor_col.rgb, cursor_col.a);
+        // CRT color tint — blend toward scanline color in dark CRT bands
+        let crt_tint = vec3f(u.crt_color_r, u.crt_color_g, u.crt_color_b);
+        let tint_len = length(crt_tint);
+        if (tint_len > 0.01) {
+            // Tint strength based on how dark the CRT made this pixel
+            let darkness = 1.0 - crt_mult;
+            color = color + crt_tint * darkness * 0.3;
+        }
+    }
 
     return vec4f(clamp(color, vec3f(0.0), vec3f(1.0)), 1.0);
 }

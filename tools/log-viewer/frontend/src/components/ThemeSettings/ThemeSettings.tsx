@@ -787,26 +787,34 @@ export function ThemeSettings() {
         </>)}
       </Section>
 
-      {/* ── Cursor Style ── */}
-      <Section title="Cursor" icon="⇱" defaultOpen={true}>
+      {/* ── Glass Panel ── */}
+      <Section title="Glass Panels" icon="◻" defaultOpen={true}>
         <p class="theme-section-hint">
-          Custom GPU-rendered cursor with shading and lighting effects.
+          Sidebar, header, and tab-bar glass panel opacity and blur.
         </p>
-        <div class="theme-toggle-row">
-          <div class="theme-color-info">
-            <span class="theme-color-label">Cursor Style</span>
-            <span class="theme-color-desc">Choose a GPU-rendered cursor or use the default</span>
+        {[
+          { key: 'glassOpacity' as const, label: 'Opacity', desc: 'Background panel transparency' },
+          { key: 'glassBlur' as const, label: 'Blur', desc: 'Backdrop blur intensity' },
+        ].map(({ key, label, desc }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}%</span>
+            </div>
           </div>
-          <select
-            class="theme-cursor-select"
-            value={effectSettings.value.cursorStyle}
-            onChange={(e) => updateEffectSetting('cursorStyle', (e.target as HTMLSelectElement).value as any)}
-          >
-            <option value="default">Default</option>
-            <option value="metal">Metal</option>
-            <option value="glass">Glass</option>
-          </select>
-        </div>
+        ))}
       </Section>
 
       {/* ── CRT Effect ── */}
@@ -833,6 +841,7 @@ export function ThemeSettings() {
           { key: 'crtScanlinesV' as const, label: 'V Scanlines', desc: 'Vertical lines and grid columns' },
           { key: 'crtEdgeShadow' as const, label: 'Edge Shadow', desc: 'Border/vignette darkening' },
           { key: 'crtFlicker' as const, label: 'Flicker', desc: 'Torch-like brightness variation' },
+          { key: 'crtLineWidth' as const, label: 'Line Width', desc: 'Scanline thickness (thin → wide)' },
         ].map(({ key, label, desc }) => (
           <div class="theme-slider-row" key={key}>
             <div class="theme-color-info">
@@ -853,6 +862,26 @@ export function ThemeSettings() {
             </div>
           </div>
         ))}
+        {effectSettings.value.crtEnabled && (
+          <div class="theme-slider-row">
+            <div class="theme-color-info">
+              <span class="theme-color-label">Scanline Color</span>
+              <span class="theme-color-desc">Tint color for CRT scanline bands</span>
+            </div>
+            <input
+              type="color"
+              value={`#${(effectSettings.value.crtColor ?? [100, 80, 60]).map((c: number) => c.toString(16).padStart(2, '0')).join('')}`}
+              onInput={(e) => {
+                const hex = (e.target as HTMLInputElement).value;
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                updateEffectSetting('crtColor', [r, g, b]);
+              }}
+              class="theme-color-picker"
+            />
+          </div>
+        )}
       </Section>
     </div>
     <SavedThemesPanel />

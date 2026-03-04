@@ -46,10 +46,10 @@
    and ember effects show through. */
 :root.gpu-active {
   --bg-primary:    transparent;
-  --bg-secondary:  rgba(20, 19, 17, 0.25);
-  --bg-tertiary:   rgba(26, 24, 22, 0.25);
-  --bg-hover:      rgba(36, 32, 28, 0.35);
-  --bg-active:     rgba(42, 34, 24, 0.35);
+  --bg-secondary:  rgba(20, 19, 17, 0.14);
+  --bg-tertiary:   rgba(26, 24, 22, 0.14);
+  --bg-hover:      rgba(36, 32, 28, 0.25);
+  --bg-active:     rgba(42, 34, 24, 0.25);
   --border-color:  rgba(46, 42, 36, 0.35);
   --border-subtle: rgba(30, 28, 24, 0.25);
   /* Mobile overlay needs opaque sidebar even in glass/GPU mode */
@@ -91,7 +91,7 @@
 
   /* Icon shadow — light single pass */
   --gpu-icon-shadow: drop-shadow(0 0 1px rgba(10, 6, 2, 0.7));
-  --gpu-blur:        blur(8px);
+  --gpu-blur:        blur(4px);
 
   /* ── GPU text color overrides ──
      Brighter / more saturated versions for glass readability.
@@ -185,11 +185,20 @@
   background: transparent !important;
 }
 
-/* Hide native cursor when GPU cursor is active */
-:root.gpu-custom-cursor,
-:root.gpu-custom-cursor * {
-  cursor: none !important;
+/* Theme settings: stroke + glow on labels and titles */
+:root.gpu-active .theme-settings .theme-color-label,
+:root.gpu-active .theme-settings .theme-section-title,
+:root.gpu-active .theme-settings .theme-settings-title,
+:root.gpu-active .theme-settings .theme-settings-subtitle {
+  -webkit-text-stroke: var(--gpu-stroke);
+  text-shadow: var(--gpu-glow);
 }
+
+:root.gpu-active .theme-settings .theme-color-desc,
+:root.gpu-active .theme-settings .theme-section-hint {
+  -webkit-text-stroke: var(--gpu-stroke-thin);
+}
+
 
 :root.gpu-active #app {
   isolation: isolate;

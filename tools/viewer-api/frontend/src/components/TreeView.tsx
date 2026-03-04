@@ -105,8 +105,9 @@ function TreeItem<T = unknown>({ node, selectedId, expanded, onToggle, onSelect,
   // Tooltip hover handlers
   const handleMouseEnter = (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
     if (!node.tooltip) return;
+    const target = e.currentTarget as HTMLElement;
     tooltipTimer.current = setTimeout(() => {
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const rect = target.getBoundingClientRect();
       setTooltipPos({ x: rect.right + 8, y: rect.top });
       setTooltipVisible(true);
     }, 400);

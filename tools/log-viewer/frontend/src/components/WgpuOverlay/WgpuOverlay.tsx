@@ -100,16 +100,6 @@ export function WgpuOverlay() {
         return () => document.documentElement.classList.remove('fx-active');
     }, [gpuOverlayEnabled.value, fxEnabled.value]);
 
-    // --- toggle custom-cursor class when GPU cursor is active ---------------
-    useEffect(() => {
-        const style = effectSettings.value.cursorStyle;
-        if (gpuOverlayEnabled.value && fxEnabled.value && style !== 'default') {
-            document.documentElement.classList.add('gpu-custom-cursor');
-        } else {
-            document.documentElement.classList.remove('gpu-custom-cursor');
-        }
-        return () => document.documentElement.classList.remove('gpu-custom-cursor');
-    }, [gpuOverlayEnabled.value, fxEnabled.value, effectSettings.value.cursorStyle]);
 
     // --- keep canvas sized to the viewport --------------------------------
     useEffect(() => {
