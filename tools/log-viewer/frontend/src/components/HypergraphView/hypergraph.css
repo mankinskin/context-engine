@@ -31,7 +31,7 @@
     cursor: pointer;
     transform-origin: center center;
     white-space: nowrap;
-    transition: opacity 0.15s ease, background 0.15s ease;
+    transition: opacity 0.15s ease, background 0.15s ease, padding 0.3s linear, max-width 0.3s linear;
     /* Remove the default log-entry block layout – make it inline-like */
     display: inline-flex !important;
     padding: 3px 10px !important;
@@ -64,6 +64,8 @@
     font-size: 11px;
     font-family: var(--font-mono, monospace);
     overflow: hidden;
+    transition: padding 0.3s ease, border-bottom-color 0.3s ease;
+    border-bottom: 1px solid transparent;
 }
 
 .hg-node .hg-node-label {
@@ -1497,28 +1499,53 @@
 
 /* When a compound node is selected, it expands to show decomposition rows.
    pointer-events:none on the parent prevents its :hover from firing when
-   hovering inline children; children re-enable pointer-events individually. */
+   hovering inline children; children re-enable pointer-events individually.
+
+   On collapse, hg-collapsing keeps the parent in column layout while the
+   empty container shrinks via CSS transition, then gets removed. */
+
+/* Expanded state — full content visible */
 .hg-node.hg-expanded {
     display: flex !important;
     flex-direction: column;
     white-space: normal;
     max-width: 400px !important;
-    min-width: 140px;
     padding: 0 !important;
     gap: 0;
     pointer-events: auto;
     overflow: visible;
 }
 
+/* Collapsing state — same layout as expanded while empty container shrinks */
+.hg-node.hg-collapsing {
+    display: flex !important;
+    flex-direction: column;
+    white-space: normal;
+    max-width: 400px !important;
+    padding: 0 !important;
+    gap: 0;
+    pointer-events: auto;
+    overflow: visible;
+}
+.hg-node.hg-collapsing .decomp-patterns {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    gap: 0;
+}
+
 /* Subtle selected state for expanded parent — don't overwhelm children */
-.hg-node.hg-expanded.selected {
+.hg-node.hg-expanded.selected,
+.hg-node.hg-collapsing.selected {
     background: rgba(30, 26, 20, 0.85) !important;
     border-color: rgba(200, 150, 80, 0.25);
     box-shadow: 0 0 8px rgba(200, 90, 24, 0.12);
 }
 
 /* Header row: the node's own label serves as a section title */
-.hg-node.hg-expanded > .hg-node-content {
+.hg-node.hg-expanded > .hg-node-content,
+.hg-node.hg-collapsing > .hg-node-content {
     display: flex;
     width: 100%;
     padding: 5px 8px;
@@ -1536,6 +1563,8 @@
     gap: 2px;
     width: 100%;
     padding: 3px;
+    /* Smooth height + opacity transition for expand/collapse */
+    transition: max-height 0.3s linear, opacity 0.2s linear, padding 0.3s linear, gap 0.3s linear;
 }
 
 .decomp-row {

@@ -25,6 +25,12 @@ export class DecompositionManager {
     private expandedNodes = new Map<number, ExpandedNodeState>();
     private nodeElMap = new Map<number, HTMLDivElement>();
     private lastExpandedKeyStr = '';
+    /** Pending collapse animations (parentIdx → cleanup timer). */
+    private collapseTimers = new Map<number, number>();
+    /** Nodes mid-collapse — empty container still animating CSS shrink. */
+    private collapsingContainers = new Map<number, { parentEl: HTMLDivElement; container: HTMLDivElement }>;
+    /** Duration for expand/collapse CSS transitions (ms). */
+    private static readonly TRANSITION_MS = 300;
 
     constructor(
         private layout: GraphLayout,
@@ -106,11 +112,26 @@ export class DecompositionManager {
         this.lastExpandedKeyStr = desiredKeyStr;
     }
 
-    /** Collapse everything and restore DOM order. */
+    /** Collapse everything immediately (no animation). Used on cleanup/unmount. */
     collapseAll(): void {
+        // Force-cancel pending collapse container animations
+        for (const [idx, timer] of this.collapseTimers) {
+            clearTimeout(timer);
+            const entry = this.collapsingContainers.get(idx);
+            if (entry) {
+                entry.parentEl.classList.remove('hg-collapsing');
+                entry.container.remove();
+                const ep = entry.parentEl as any;
+                if (ep.__parentDown) entry.parentEl.removeEventListener('mousedown', ep.__parentDown);
+                if (ep.__parentUp) entry.parentEl.removeEventListener('mouseup', ep.__parentUp);
+            }
+        }
+        this.collapseTimers.clear();
+        this.collapsingContainers.clear();
+
         const hadExpanded = this.expandedNodes.size > 0;
         for (const idx of [...this.expandedNodes.keys()]) {
-            this.collapseNode(idx);
+            this.forceCollapseNode(idx);
         }
         if (hadExpanded) this.reorderNodeLayer();
     }
@@ -140,25 +161,94 @@ export class DecompositionManager {
         const state = this.expandedNodes.get(idx);
         if (!state) return;
 
-        // Pure DOM cleanup — position management is handled by the render
-        // callback via basePositionsRef (active-transform approach).
+        // Cancel any pending collapse timer for this node
+        const existingTimer = this.collapseTimers.get(idx);
+        if (existingTimer != null) {
+            clearTimeout(existingTimer);
+            this.collapseTimers.delete(idx);
+            // Also clean up old collapsing container
+            const old = this.collapsingContainers.get(idx);
+            if (old) { old.container.remove(); this.collapsingContainers.delete(idx); }
+        }
+
+        // Measure actual container height before any DOM changes so we can
+        // pin max-height for a precise CSS transition (no invisible 400→real gap).
+        const actualHeight = state.container.scrollHeight;
+
+        // Immediately move children back to nodeLayer so position system takes over
+        for (const { el } of state.children) {
+            el.classList.remove('hg-decomp-child');
+            el.style.flex = '';
+            this.nodeLayer.appendChild(el);
+        }
+
+        // Clear container content so only an empty box shrinks (no visible rows/labels)
+        state.container.innerHTML = '';
+
+        // Pin max-height to the measured value and swap to collapsing class
+        state.container.style.maxHeight = actualHeight + 'px';
+        state.parentEl.classList.remove('hg-expanded');
+        state.parentEl.classList.add('hg-collapsing');
+
+        // Force layout read so browser registers the starting max-height,
+        // then release to let the hg-collapsing CSS rule (max-height:0) take over.
+        void state.container.offsetHeight;
+        state.container.style.maxHeight = '';
+
+        // After CSS transition, remove empty container + listeners
+        const { parentEl, container } = state;
+        const cleanup = () => {
+            this.collapseTimers.delete(idx);
+            parentEl.classList.remove('hg-collapsing');
+            container.remove();
+            const ep = parentEl as any;
+            if (ep.__parentDown) parentEl.removeEventListener('mousedown', ep.__parentDown);
+            if (ep.__parentUp) parentEl.removeEventListener('mouseup', ep.__parentUp);
+            this.collapsingContainers.delete(idx);
+        };
+
+        const timer = window.setTimeout(cleanup, DecompositionManager.TRANSITION_MS);
+        this.collapseTimers.set(idx, timer);
+        this.collapsingContainers.set(idx, { parentEl, container });
+
+        this.expandedNodes.delete(idx);
+    }
+
+    /** Immediately collapse without animation (used by collapseAll). */
+    private forceCollapseNode(idx: number): void {
+        const state = this.expandedNodes.get(idx);
+        if (!state) return;
+        state.parentEl.classList.remove('hg-expanded');
         for (const { el } of state.children) {
             el.classList.remove('hg-decomp-child');
             el.style.flex = '';
             this.nodeLayer.appendChild(el);
         }
         state.container.remove();
-
         const ep = state.parentEl as any;
         if (ep.__parentDown) state.parentEl.removeEventListener('mousedown', ep.__parentDown);
         if (ep.__parentUp) state.parentEl.removeEventListener('mouseup', ep.__parentUp);
-        state.parentEl.classList.remove('hg-expanded');
-
         this.expandedNodes.delete(idx);
     }
 
     private expandNode(idx: number): void {
         if (this.expandedNodes.has(idx)) return;
+
+        // If mid-collapse, cancel the container animation
+        const collapseTimer = this.collapseTimers.get(idx);
+        if (collapseTimer != null) {
+            clearTimeout(collapseTimer);
+            this.collapseTimers.delete(idx);
+            const entry = this.collapsingContainers.get(idx);
+            if (entry) {
+                entry.parentEl.classList.remove('hg-collapsing');
+                entry.container.remove();
+                const ep = entry.parentEl as any;
+                if (ep.__parentDown) entry.parentEl.removeEventListener('mousedown', ep.__parentDown);
+                if (ep.__parentUp) entry.parentEl.removeEventListener('mouseup', ep.__parentUp);
+                this.collapsingContainers.delete(idx);
+            }
+        }
 
         const node = this.layout.nodeMap.get(idx);
         if (!node || node.isAtom) return;
@@ -171,8 +261,6 @@ export class DecompositionManager {
 
         const parentEl = this.nodeElMap.get(idx);
         if (!parentEl) return;
-
-        parentEl.classList.add('hg-expanded');
 
         // Create decomposition container
         const container = document.createElement('div');
@@ -239,6 +327,9 @@ export class DecompositionManager {
         parentEl.appendChild(container);
 
         this.expandedNodes.set(idx, { parentEl, container, children });
+
+        // Apply expanded class immediately — full content visible right away
+        parentEl.classList.add('hg-expanded');
     }
 
     private reorderNodeLayer(): void {
