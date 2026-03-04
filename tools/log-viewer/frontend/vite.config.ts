@@ -13,6 +13,9 @@ export default defineConfig({
     outDir: isStatic ? 'dist' : '../static',
     emptyOutDir: true,
   },
+  resolve: {
+    dedupe: ['preact', '@preact/signals', '@preact/signals-core'],
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3000'

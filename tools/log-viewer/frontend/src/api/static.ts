@@ -21,7 +21,15 @@ export async function updateSessionConfig(_update: SessionConfigUpdate): Promise
 export async function fetchLogFiles(): Promise<LogFile[]> {
   const resp = await fetch(`${DATA_BASE}/manifest.json`);
   if (!resp.ok) throw new Error('Failed to load manifest.json');
-  return resp.json();
+  const files = await resp.json();
+  // Ensure all boolean fields have defaults (for backward compatibility with older manifests)
+  return files.map((f: Partial<LogFile>) => ({
+    ...f,
+    has_graph_snapshot: f.has_graph_snapshot ?? false,
+    has_search_ops: f.has_search_ops ?? false,
+    has_insert_ops: f.has_insert_ops ?? false,
+    has_search_paths: f.has_search_paths ?? false,
+  }));
 }
 
 // ── Log content ──
