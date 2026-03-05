@@ -272,6 +272,7 @@ export function useOverlayRenderer(
             const curHiddenDecomp = decomposition.getHiddenDecompEdgeKeys();
             const expandedSize = decomposition.getExpandedNodes().size;
             const edgeDirty = nodesMoving
+                || inter.dragIdx >= 0  // Always rebuild when dragging (node positions change each frame)
                 || curVizState !== prevVizState
                 || inter.selectedIdx !== prevSelectedIdx
                 || inter.hoverIdx !== prevHoverIdx

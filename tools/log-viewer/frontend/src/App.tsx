@@ -10,7 +10,7 @@ import { EffectsDebug } from './components/EffectsDebug/EffectsDebug';
 import { Scene3D } from './components/Scene3D/Scene3D';
 import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
-import { activeTab, loadLogFiles } from './store';
+import { activeTab, loadLogFiles, initUrlListener, getStateFromUrl, loadLogFile, setTab } from './store';
 import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
 import { useGlobalKeyboard, usePanelFocus, focusedPanel } from './hooks';
 import './store/theme';  // initialize theme effects on startup
@@ -21,7 +21,16 @@ export function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    loadLogFiles();
+    (async () => {
+      await loadLogFiles();
+      // Restore state from URL after file list is loaded
+      const urlState = getStateFromUrl();
+      if (urlState) {
+        await loadLogFile(urlState.file);
+        setTab(urlState.tab);
+      }
+      initUrlListener();
+    })();
   }, []);
 
   const toggleMobileSidebar = useCallback(() => {

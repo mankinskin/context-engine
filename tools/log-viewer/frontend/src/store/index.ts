@@ -2,6 +2,7 @@
 // Supports per-file state for tabs, code viewer, etc.
 
 import { signal, computed } from '@preact/signals';
+import { createUrlStateManager } from '@context-engine/viewer-api-frontend';
 import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph } from '../types';
 import * as api from '../api';
 
@@ -374,6 +375,7 @@ export async function loadLogFile(name: string) {
     if (existingState && existingState.entries.length > 0) {
       // Just switch to the file, keep the currently active tab
       currentFile.value = name;
+        updateUrlHash();
         statusMessage.value = `Loaded ${name} (${existingState.entries.length} entries)`;
         return;
     }
@@ -399,6 +401,7 @@ export async function loadLogFile(name: string) {
       fileStates.value = states;
 
       currentFile.value = name;
+    updateUrlHash();
     // Keep the currently active tab type when opening a new file
     statusMessage.value = `Loaded ${name} (${data.entries.length} entries)`;
   } catch (e) {
@@ -484,9 +487,73 @@ export function selectEntry(entry: LogEntry | null) {
     updateCurrentFileState({ selectedEntry: entry });
 }
 
+// ── URL Hash Routing ──
+
+interface LogViewerUrlState {
+  file: string;
+  tab: ViewTab;
+}
+
+const VALID_TABS: Set<string> = new Set(['logs', 'stats', 'code', 'debug', 'scene3d', 'hypergraph', 'settings']);
+
+const urlState = createUrlStateManager<LogViewerUrlState>({
+  stateToHash(state) {
+    // /file/<name> for default tab, /file/<name>/<tab> for non-default
+    const base = '/file/' + encodeURIComponent(state.file);
+    return state.tab === 'logs' ? base : base + '/' + state.tab;
+  },
+  hashToState(hash) {
+    // Expected: /file/<name> or /file/<name>/<tab>
+    const path = hash.startsWith('/') ? hash.slice(1) : hash;
+    if (!path.startsWith('file/')) return null;
+    const rest = path.slice(5); // after "file/"
+    if (!rest) return null;
+
+    // Find the last segment that could be a tab name
+    const lastSlash = rest.lastIndexOf('/');
+    if (lastSlash >= 0) {
+      const possibleTab = rest.slice(lastSlash + 1);
+      if (VALID_TABS.has(possibleTab)) {
+        const file = decodeURIComponent(rest.slice(0, lastSlash));
+        return file ? { file, tab: possibleTab as ViewTab } : null;
+      }
+    }
+    // No tab segment — default to logs
+    const file = decodeURIComponent(rest);
+    return file ? { file, tab: 'logs' } : null;
+  },
+  async onNavigate(state) {
+    await loadLogFile(state.file);
+    setTab(state.tab);
+  },
+  getCurrentState() {
+    const file = currentFile.value;
+    if (!file) return null;
+    return { file, tab: activeTab.value };
+  },
+  statesEqual(a, b) {
+    return a.file === b.file && a.tab === b.tab;
+  },
+});
+
+function updateUrlHash(): void {
+  const file = currentFile.value;
+  if (!file) return;
+  urlState.updateHash({ file, tab: activeTab.value });
+}
+
+export function getStateFromUrl() {
+  return urlState.getStateFromUrl();
+}
+
+export function initUrlListener(): void {
+  urlState.initListener();
+}
+
 export function setTab(tab: ViewTab) {
   activeTab.value = tab;
   updateCurrentFileState({ activeTab: tab });
+  updateUrlHash();
 }
 
 export function setLevelFilter(level: LogLevel | '') {

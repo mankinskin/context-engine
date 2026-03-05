@@ -3,4 +3,4 @@
 /**
  * Operation type for categorizing events.
  */
-export type OperationType = "search" | "insert" | "read";
+export type OperationType = "search" | "insert" | "read" | "query";

@@ -19,5 +19,8 @@ export * from './components/FileContentViewer';
 // Re-export session utilities
 export * from './session';
 
+// Re-export URL state management
+export * from './url-state';
+
 // Re-export shared theme system
 export * from './store/theme';

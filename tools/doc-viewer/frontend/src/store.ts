@@ -1,4 +1,4 @@
-import { signal, computed } from '@context-engine/viewer-api-frontend';
+import { signal, computed, createUrlStateManager } from '@context-engine/viewer-api-frontend';
 import type { Category, TreeNode, OpenTab, DocContent, JqQueryResult, SourceFileLink } from './types';
 import { fetchDocs, fetchCrates, queryDocs, fetchSourceFile, type ModuleNode, type CrateDocResponse } from './api';
 import {
@@ -92,21 +92,16 @@ export function toggleNodeExpanded(nodeId: string): void {
 
 // URL routing - sync active document with URL hash
 // Uses human-readable paths like #/crate/context-insert/module/path
-let isNavigatingFromUrl = false; // Prevent loops with hashchange
 
 // Convert internal filename to readable URL path
 function filenameToUrlPath(filename: string): string {
   if (filename.startsWith('page:')) {
-    // page:home -> /home
     return '/' + filename.slice(5);
   }
   if (filename.startsWith('crate:')) {
-    // crate:name -> /crate/name
-    // crate:name:module/path -> /crate/name/module/path
     const parts = filename.slice(6).split(':');
     return '/crate/' + parts.join('/');
   }
-  // Agent docs: filename.md -> /doc/filename.md
   return '/doc/' + filename;
 }
 
@@ -114,115 +109,66 @@ function filenameToUrlPath(filename: string): string {
 function urlPathToFilename(urlPath: string): string | null {
   if (!urlPath || urlPath === '/') return null;
   
-  // Remove leading slash
   const path = urlPath.startsWith('/') ? urlPath.slice(1) : urlPath;
   
-  // /home -> page:home
   if (path === 'home' || path === 'agent-docs' || path === 'crate-docs') {
     return 'page:' + path;
   }
-  
-  // /crate/name/module/path -> crate:name:module/path
   if (path.startsWith('crate/')) {
     const parts = path.slice(6).split('/');
-    if (parts.length === 1) {
-      return 'crate:' + parts[0];
-    }
-    // First part is crate name, rest is module path
-    const crateName = parts[0];
-    const modulePath = parts.slice(1).join('/');
-    return `crate:${crateName}:${modulePath}`;
+    if (parts.length === 1) return 'crate:' + parts[0];
+    return `crate:${parts[0]}:${parts.slice(1).join('/')}`;
   }
-  
-  // /doc/path/to/file.md -> path/to/file.md
   if (path.startsWith('doc/')) {
     return path.slice(4);
   }
-  
-  // Fallback: try as-is (for backwards compatibility with old URLs)
   return path;
 }
 
-function updateUrlHash(filename: string | null): void {
-  if (isNavigatingFromUrl) return; // Don't update URL during URL-triggered navigation
-  
-  if (filename) {
-    const urlPath = filenameToUrlPath(filename);
-    const newUrl = `#${urlPath}`;
-    // Use pushState for new navigations so back/forward work
-    if (window.location.hash !== newUrl) {
-      window.history.pushState(null, '', newUrl);
+const urlState = createUrlStateManager<string>({
+  stateToHash(filename) {
+    return filenameToUrlPath(filename);
+  },
+  hashToState(hash) {
+    // Backwards compatibility: decode URL-encoded hashes and old format
+    let path = hash;
+    try {
+      const decoded = decodeURIComponent(hash);
+      if (decoded.startsWith('/') || decoded.startsWith('page:') || decoded.startsWith('crate:')) {
+        path = decoded;
+      }
+    } catch { /* keep original */ }
+
+    if (path.startsWith('/')) return urlPathToFilename(path);
+    // Old format: crate:name:path
+    return path || null;
+  },
+  async onNavigate(filename) {
+    const existingTab = openTabs.value.find(t => t.filename === filename);
+    if (existingTab) {
+      activeTabId.value = filename;
+      expandPathToNode(filename);
+    } else {
+      await openDocFromPath(filename);
     }
-  } else {
-    window.history.pushState(null, '', window.location.pathname);
+  },
+  getCurrentState() {
+    return activeTabId.value;
+  },
+});
+
+function updateUrlHash(filename: string | null): void {
+  if (filename) {
+    urlState.updateHash(filename);
   }
 }
 
 export function getDocFromUrl(): string | null {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return null;
-  
-  // Try to decode if it's URL-encoded (backwards compatibility)
-  let path = hash;
-  try {
-    const decoded = decodeURIComponent(hash);
-    // If the decoded version starts with our path prefixes, use decoded
-    // Otherwise it might be old format like "crate:name:path"
-    if (decoded.startsWith('/') || decoded.startsWith('page:') || decoded.startsWith('crate:')) {
-      path = decoded;
-    }
-  } catch {
-    // Keep original
-  }
-  
-  // New format: /crate/name/path
-  if (path.startsWith('/')) {
-    return urlPathToFilename(path);
-  }
-  
-  // Old format: crate:name:path (for backwards compatibility)
-  return path;
+  return urlState.getStateFromUrl();
 }
 
-// Handle browser back/forward navigation
 export function initUrlListener(): void {
-  window.addEventListener('hashchange', async () => {
-    const path = getDocFromUrl();
-    if (path && path !== activeTabId.value) {
-      isNavigatingFromUrl = true;
-      try {
-        const existingTab = openTabs.value.find(t => t.filename === path);
-        if (existingTab) {
-          activeTabId.value = path;
-          expandPathToNode(path);
-        } else {
-          // Need to open the doc
-          await openDocFromPath(path);
-        }
-      } finally {
-        isNavigatingFromUrl = false;
-      }
-    }
-  });
-
-  // Also listen for popstate (back button with same hash)
-  window.addEventListener('popstate', async () => {
-    const path = getDocFromUrl();
-    if (path && path !== activeTabId.value) {
-      isNavigatingFromUrl = true;
-      try {
-        const existingTab = openTabs.value.find(t => t.filename === path);
-        if (existingTab) {
-          activeTabId.value = path;
-          expandPathToNode(path);
-        } else {
-          await openDocFromPath(path);
-        }
-      } finally {
-        isNavigatingFromUrl = false;
-      }
-    }
-  });
+  urlState.initListener();
 }
 
 // Computed: currently active document

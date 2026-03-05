@@ -41,6 +41,8 @@ export interface VisualizationState {
     location: LocationInfo | null;
     /** Active search path graph (null when no search path data) */
     searchPath: VizPathGraph | null;
+    /** Whether the current root is tentative (set by VisitParent, awaiting confirmation) */
+    rootTentative: boolean;
     /** Edge pair keys for start_path edges (upward exploration) */
     searchStartEdgeKeys: Set<number>;
     /** Edge pair keys for root entry edge (start→root, arrow toward parent/A) */
@@ -87,25 +89,25 @@ export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | nul
     if (trans) {
         switch (trans.kind) {
             case 'start_node':
-                return trans.node;
+                return trans.node.index;
             case 'visit_parent':
-                return trans.to;
+                return trans.to.index;
             case 'visit_child':
-                return trans.to;
+                return trans.to.index;
             case 'child_match':
-                return trans.node;
+                return trans.node.index;
             case 'child_mismatch':
-                return trans.node;
+                return trans.node.index;
             case 'done':
                 return trans.final_node;
             case 'candidate_mismatch':
-                return trans.node;
+                return trans.node.index;
             case 'candidate_match':
-                return trans.root;
+                return trans.root.index;
             case 'parent_explore':
                 return trans.current_root;
             case 'split_start':
-                return trans.node;
+                return trans.node.index;
             case 'split_complete':
                 return trans.original_node;
             case 'join_start':
@@ -117,7 +119,7 @@ export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | nul
             case 'create_pattern':
                 return trans.parent;
             case 'create_root':
-                return trans.node;
+                return trans.node.index;
             case 'update_pattern':
                 return trans.parent;
         }
@@ -154,11 +156,11 @@ export function useVisualizationState(
         const pendingChildren = new Set(loc?.pending_children ?? []);
 
         // Derive transition-specific node roles
-        const startNode: number | null = trans?.kind === 'start_node' ? trans.node : null;
-        const candidateParent: number | null = trans?.kind === 'visit_parent' ? trans.to : null;
-        const candidateChild: number | null = trans?.kind === 'visit_child' ? trans.to : null;
-        const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node : null;
-        const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node : null;
+        const startNode: number | null = trans?.kind === 'start_node' ? trans.node.index : null;
+        const candidateParent: number | null = trans?.kind === 'visit_parent' ? trans.to.index : null;
+        const candidateChild: number | null = trans?.kind === 'visit_child' ? trans.to.index : null;
+        const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node.index : null;
+        const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node.index : null;
 
         // Include parent_candidates from parent_explore transitions in pendingParents.
         // LocationInfo.pending_parents comes from the queue, but the queue may be empty
@@ -193,7 +195,7 @@ export function useVisualizationState(
         if (mismatchedNode != null) involvedNodes.add(mismatchedNode);
         // Also include transition 'from' nodes
         if (trans?.kind === 'visit_parent' || trans?.kind === 'visit_child') {
-            involvedNodes.add(trans.from);
+            involvedNodes.add(trans.from.index);
         }
 
         // Include search path nodes in the involved set
@@ -244,7 +246,7 @@ export function useVisualizationState(
         if (trans) {
             switch (trans.kind) {
                 case 'split_start':
-                    splitSource = trans.node;
+                    splitSource = trans.node.index;
                     break;
                 case 'split_complete':
                     splitSource = trans.original_node;
@@ -275,7 +277,7 @@ export function useVisualizationState(
                     }
                     break;
                 case 'create_root':
-                    newRoot = trans.node;
+                    newRoot = trans.node.index;
                     break;
                 case 'update_pattern':
                     newPatternParent = trans.parent;
@@ -314,6 +316,7 @@ export function useVisualizationState(
             transition: trans,
             location: loc,
             searchPath: sp,
+            rootTentative: sp?.root_tentative ?? false,
             searchStartEdgeKeys,
             searchRootEntryEdgeKeys,
             searchRootExitEdgeKeys,
@@ -395,7 +398,8 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     return [
         isStart && 'viz-start',
         isSelected && 'viz-selected',
-        isRoot && 'viz-root',
+        isRoot && !viz.rootTentative && 'viz-root',
+        isRoot && viz.rootTentative && 'viz-root-tentative',
         isCandidateParent && 'viz-candidate-parent',
         isCandidateChild && 'viz-candidate-child',
         isMatched && 'viz-matched',

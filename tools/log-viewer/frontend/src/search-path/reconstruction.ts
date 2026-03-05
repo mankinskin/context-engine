@@ -34,6 +34,7 @@ export function emptyPathGraph(): VizPathGraph {
     cursor_pos: 0,
     done: false,
     success: false,
+    root_tentative: false,
   };
 }
 

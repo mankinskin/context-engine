@@ -113,7 +113,7 @@ function selectedNode(ev: GraphOpEvent): number | null {
     switch (t.kind) {
         case 'visit_parent':
         case 'visit_child':
-            return t.to;
+            return t.to.index;
         default:
             return ev.location?.selected_node ?? null;
     }

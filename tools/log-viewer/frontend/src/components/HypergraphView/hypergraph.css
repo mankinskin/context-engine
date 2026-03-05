@@ -785,6 +785,39 @@
     pointer-events: none;
 }
 
+/* -- Tentative root — dimmed gold with pulse (awaiting confirmation) -- */
+.hg-node.viz-root-tentative {
+    border-color: rgba(255, 200, 80, 0.5) !important;
+    box-shadow:
+        0 0 8px rgba(255, 200, 80, 0.3),
+        inset 0 0 6px rgba(255, 200, 80, 0.05);
+    animation: viz-root-tentative-pulse 1.5s ease-in-out infinite;
+}
+
+.hg-node.viz-root-tentative::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px dashed rgba(255, 200, 80, 0.4);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+@keyframes viz-root-tentative-pulse {
+    0%, 100% {
+        opacity: 0.7;
+        box-shadow:
+            0 0 8px rgba(255, 200, 80, 0.3),
+            inset 0 0 6px rgba(255, 200, 80, 0.05);
+    }
+    50% {
+        opacity: 1;
+        box-shadow:
+            0 0 12px rgba(255, 200, 80, 0.4),
+            inset 0 0 8px rgba(255, 200, 80, 0.1);
+    }
+}
+
 /* -- Candidate parent — prominent orange with pulse -- */
 .hg-node.viz-candidate-parent {
     background: rgba(255, 140, 50, 0.35) !important;

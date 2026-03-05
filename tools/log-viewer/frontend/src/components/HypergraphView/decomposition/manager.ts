@@ -175,11 +175,15 @@ export class DecompositionManager {
         // pin max-height for a precise CSS transition (no invisible 400→real gap).
         const actualHeight = state.container.scrollHeight;
 
-        // Immediately move children back to nodeLayer so position system takes over
+        // Immediately move children back to nodeLayer so position system takes over.
+        // Only reparent if the element is still in the document (Preact may have
+        // re-rendered new DOM elements when the snapshot changed).
         for (const { el } of state.children) {
             el.classList.remove('hg-decomp-child');
             el.style.flex = '';
-            this.nodeLayer.appendChild(el);
+            if (el.isConnected && this.nodeLayer.isConnected) {
+                this.nodeLayer.appendChild(el);
+            }
         }
 
         // Clear container content so only an empty box shrinks (no visible rows/labels)
@@ -219,10 +223,16 @@ export class DecompositionManager {
         const state = this.expandedNodes.get(idx);
         if (!state) return;
         state.parentEl.classList.remove('hg-expanded');
+        // Only reparent if both elements are still connected to the document.
+        // When switching hypergraphs, Preact re-renders new DOM elements and
+        // the old ones become detached — trying to appendChild detached nodes
+        // to also-detached nodeLayer would create orphans.
         for (const { el } of state.children) {
             el.classList.remove('hg-decomp-child');
             el.style.flex = '';
-            this.nodeLayer.appendChild(el);
+            if (el.isConnected && this.nodeLayer.isConnected) {
+                this.nodeLayer.appendChild(el);
+            }
         }
         state.container.remove();
         const ep = state.parentEl as any;

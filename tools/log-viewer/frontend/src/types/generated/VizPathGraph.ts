@@ -56,4 +56,13 @@ done: boolean,
 /**
  * Whether this path resulted in a match (only meaningful when `done`).
  */
-success: boolean, };
+success: boolean, 
+/**
+ * Whether the current root is tentative (set by VisitParent, awaiting confirmation).
+ *
+ * - `true`: Root was set by `VisitParent` but not yet confirmed by `CandidateMatch`.
+ * - `false`: Root is confirmed (after `CandidateMatch`) or no root is set.
+ *
+ * The frontend can use this for tentative styling (dimmed gold / pulsing).
+ */
+root_tentative: boolean, };

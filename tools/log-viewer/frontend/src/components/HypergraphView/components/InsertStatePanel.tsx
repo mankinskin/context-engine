@@ -89,7 +89,7 @@ function getTransitionDetail(event: GraphOpEvent): string | null {
     if (!t) return null;
     switch (t.kind) {
         case 'split_start':
-            return `Splitting node ${t.node} at position ${t.split_position}`;
+            return `Splitting node ${t.node.index} at position ${t.split_position}`;
         case 'split_complete': {
             const parts: string[] = [`Original: ${t.original_node}`];
             if (t.left_fragment != null) parts.push(`Left: ${t.left_fragment}`);
@@ -105,7 +105,7 @@ function getTransitionDetail(event: GraphOpEvent): string | null {
         case 'create_pattern':
             return `Parent ${t.parent}, pattern #${t.pattern_id}: [${t.children.join(', ')}]`;
         case 'create_root':
-            return `New root node ${t.node} (width ${t.width})`;
+            return `New root node ${t.node.index} (width ${t.node.width})`;
         case 'update_pattern':
             return `Parent ${t.parent}: [${t.old_children.join(',')}] → [${t.new_children.join(',')}]`;
         default:
