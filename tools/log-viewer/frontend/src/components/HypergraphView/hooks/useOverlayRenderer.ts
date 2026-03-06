@@ -172,9 +172,12 @@ export function useOverlayRenderer(
             const curVizState = vizStateRef.current;
             const desiredExpanded = new Set<number>();
             if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
-            const spRootIdx = curVizState.rootNode;
-            if (spRootIdx != null && spRootIdx >= 0 && curVizState.searchPath != null) {
-                desiredExpanded.add(spRootIdx);
+            // Use searchPath.root (the current/tentative root) rather than rootNode
+            // (from LocationInfo, which may be the old confirmed root).
+            // This ensures we expand the correct root during VisitParent transitions.
+            const sp = curVizState.searchPath;
+            if (sp?.root != null) {
+                desiredExpanded.add(sp.root.index);
             }
             // Prune: don't expand child of another expanded node
             for (const idx of [...desiredExpanded]) {

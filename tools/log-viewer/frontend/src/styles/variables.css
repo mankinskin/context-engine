@@ -93,16 +93,9 @@
   --gpu-icon-shadow: drop-shadow(0 0 1px rgba(10, 6, 2, 0.7));
   --gpu-blur:        blur(4px);
 
-  /* ── GPU text color overrides ──
-     Brighter / more saturated versions for glass readability.
-     Balanced: warm bone text, cool steel accents, ember highlights. */
-  --text-primary:   #d8d0c4;       /* brighter bone       */
-  --text-secondary: #a49a8c;       /* warmer ash           */
-  --text-muted:     #70685c;       /* lifted muted         */
-  --accent-blue:    #4a8aa8;       /* brighter steel blue  */
-  --accent-purple:  #8a6aa0;       /* brighter soul purple */
-  --accent-yellow:  #c8a030;       /* brighter gold        */
-  --accent-green:   #3a7a3a;       /* brighter vine green  */
+  /* Note: GPU text/accent color overrides are now applied dynamically
+     via the theme store to match the user's selected theme.
+     See tools/log-viewer/frontend/src/store/theme.ts */
 }
 
 /* ── GPU glass contrast — applied to components ── */

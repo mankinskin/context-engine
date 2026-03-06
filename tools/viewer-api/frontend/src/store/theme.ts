@@ -151,6 +151,32 @@ export function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/**
+ * Brighten a hex color by a factor (0..1 = 0%..100% brighter towards white).
+ * Used to improve text readability on transparent/glass GPU backgrounds.
+ */
+export function brightenHex(hex: string, factor: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  // Lerp towards white
+  const brighten = (c: number) => Math.min(255, Math.round(c + (255 - c) * factor));
+  return vec3ToHex(brighten(r) / 255, brighten(g) / 255, brighten(b) / 255);
+}
+
+/**
+ * Saturate/boost a hex color by a factor (0..1).
+ * Increases saturation while preserving luminance.
+ */
+export function saturateHex(hex: string, factor: number): string {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
+  const saturate = (c: number) => Math.min(1, Math.max(0, gray + (c - gray) * (1 + factor)));
+  return vec3ToHex(saturate(r), saturate(g), saturate(b));
+}
+
 // ── Theme store factory ──────────────────────────────────────────────────────
 
 export interface ThemeStore {
@@ -241,6 +267,15 @@ export function createThemeStore(
       const gpuBgActive = hexToRgba(c.bgActive, 0.35);
       const gpuBorderColor = hexToRgba(c.borderColor, 0.35);
       const gpuBorderSubtle = hexToRgba(c.borderSubtle, 0.25);
+      // Brighten text colors for glass/transparent background readability
+      const gpuTextPrimary = brightenHex(c.textPrimary, 0.12);
+      const gpuTextSecondary = brightenHex(c.textSecondary, 0.15);
+      const gpuTextMuted = brightenHex(c.textMuted, 0.20);
+      // Boost accent colors for visibility on transparent backgrounds
+      const gpuAccentBlue = saturateHex(brightenHex(c.accentBlue, 0.15), 0.1);
+      const gpuAccentGreen = saturateHex(brightenHex(c.accentGreen, 0.15), 0.1);
+      const gpuAccentPurple = saturateHex(brightenHex(c.accentPurple, 0.15), 0.1);
+      const gpuAccentYellow = saturateHex(brightenHex(c.accentYellow, 0.12), 0.1);
       css += `\n:root.gpu-active {
   --bg-primary: transparent;
   --bg-secondary: ${gpuBgSecondary};
@@ -249,6 +284,13 @@ export function createThemeStore(
   --bg-active: ${gpuBgActive};
   --border-color: ${gpuBorderColor};
   --border-subtle: ${gpuBorderSubtle};
+  --text-primary: ${gpuTextPrimary};
+  --text-secondary: ${gpuTextSecondary};
+  --text-muted: ${gpuTextMuted};
+  --accent-blue: ${gpuAccentBlue};
+  --accent-green: ${gpuAccentGreen};
+  --accent-purple: ${gpuAccentPurple};
+  --accent-yellow: ${gpuAccentYellow};
 }`;
     }
 
