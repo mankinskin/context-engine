@@ -106,8 +106,15 @@ export function useTouchInteraction(
             (t1.clientY + t2.clientY) / 2,
         ];
 
+        // Selector for floating UI panels that handle their own interaction
+        const UI_PANEL_SELECTOR = '.search-state-panel, .insert-state-panel, .path-chain-panel, .qp-panel, .node-info-panel, .hypergraph-hud';
+
         // ── Touch Start ──
         const onTouchStart = (e: TouchEvent) => {
+            // Don't intercept touches on floating UI panels
+            const target = e.target as HTMLElement;
+            if (target.closest(UI_PANEL_SELECTOR)) return;
+
             e.preventDefault();
             const touches = e.touches;
             state.fingers = touches.length;
@@ -144,6 +151,10 @@ export function useTouchInteraction(
 
         // ── Touch Move ──
         const onTouchMove = (e: TouchEvent) => {
+            // Don't intercept touches on floating UI panels
+            const target = e.target as HTMLElement;
+            if (target.closest(UI_PANEL_SELECTOR)) return;
+
             e.preventDefault();
             const touches = e.touches;
 

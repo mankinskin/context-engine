@@ -110,10 +110,21 @@ export function WgpuOverlay() {
         const sync = () => {
             canvas.width  = window.innerWidth;
             canvas.height = window.innerHeight;
+            // Explicitly sync CSS dimensions to buffer size.
+            // On mobile Safari `100vh` includes the address bar area and
+            // can be taller than `window.innerHeight`, causing a canvas
+            // stretch that misaligns GPU edges from DOM nodes.
+            canvas.style.width  = `${window.innerWidth}px`;
+            canvas.style.height = `${window.innerHeight}px`;
         };
         sync();
         window.addEventListener('resize', sync);
-        return () => window.removeEventListener('resize', sync);
+        // Also listen to visualViewport resize for mobile browser chrome changes
+        window.visualViewport?.addEventListener('resize', sync);
+        return () => {
+            window.removeEventListener('resize', sync);
+            window.visualViewport?.removeEventListener('resize', sync);
+        };
     }, [gpuOverlayEnabled.value]);
 
     // --- WebGPU init & render loop ----------------------------------------
@@ -177,7 +188,7 @@ export function WgpuOverlay() {
                 top:           0,
                 left:          0,
                 width:         '100vw',
-                height:        '100vh',
+                height:        '100dvh',  /* dvh tracks actual viewport, fallback overridden by resize handler */
                 pointerEvents: 'none',
                 zIndex:        -1,
             }}

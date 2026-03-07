@@ -320,3 +320,34 @@
 .search-state-panel .ssp-item.ssp-item-indented {
     padding-left: 20px;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Mobile responsive — search state panel
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .search-state-panel {
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        max-width: none;
+        max-height: 40vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-state-panel {
+        top: 4px;
+        left: 4px;
+        right: 4px;
+        max-height: 35vh;
+    }
+
+    .search-state-panel .ssp-group-header {
+        padding: 6px 8px;
+    }
+
+    .search-state-panel .ssp-item {
+        padding: 6px 8px;
+    }
+}

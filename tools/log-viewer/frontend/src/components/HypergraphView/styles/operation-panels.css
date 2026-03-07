@@ -400,3 +400,54 @@
     75% { transform: translateX(1px); }
     100% { transform: translateX(0); }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Mobile responsive — path chain, insert state, query path panels
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .path-chain-panel {
+        bottom: 50px;
+        max-width: calc(100% - 24px);
+        padding: 4px 8px;
+    }
+
+    .insert-state-panel {
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        max-width: none;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
+    .qp-panel {
+        width: calc(100% - 24px);
+        bottom: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .path-chain-panel {
+        bottom: 44px;
+        max-width: calc(100% - 16px);
+        font-size: 10px;
+    }
+
+    .pc-node {
+        padding: 1px 5px;
+        font-size: 10px;
+    }
+
+    .insert-state-panel {
+        top: 4px;
+        left: 4px;
+        right: 4px;
+        max-height: 35vh;
+    }
+
+    .qp-panel {
+        width: calc(100% - 16px);
+        bottom: 44px;
+    }
+}

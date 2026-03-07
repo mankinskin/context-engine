@@ -78,8 +78,9 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const handleSelect = useCallback((node: TreeNode<LogFile>) => {
     if (node.data) {
       loadLogFile(node.data.name);
+      onMobileClose?.();
     }
-  }, []);
+  }, [onMobileClose]);
 
   const panelRef = usePanelFocus('sidebar');
 

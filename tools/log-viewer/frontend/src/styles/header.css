@@ -98,6 +98,67 @@
   flex-shrink: 0;
 }
 
+/* ── Mobile responsive header ── */
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--header-height);
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .header-left {
+    order: 1;
+  }
+
+  .header-right {
+    order: 2;
+    gap: 4px;
+  }
+
+  .search-form {
+    order: 3;
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  /* Hide status text on tablet */
+  .status-text {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 3px 6px;
+    gap: 3px;
+  }
+
+  .header-title {
+    font-size: 12px;
+  }
+
+  /* Hide filter/clear buttons inline — use the panel toggle */
+  .header-filters {
+    display: none;
+  }
+
+  .header-right .btn-gpu {
+    display: none;
+  }
+
+  .search-form .btn {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  .search-input {
+    font-size: 11px;
+  }
+}
+
 .status-text {
   color: var(--text-muted);
   font-size: 10px;

@@ -315,3 +315,69 @@
     font-size: 10px;
     margin-top: 2px;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Mobile responsive — HUD, info overlays, node panel
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .hypergraph-hud {
+        gap: 6px;
+        font-size: 10px;
+        bottom: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: calc(100% - 24px);
+        padding: 4px 8px;
+        background: rgba(10, 10, 14, 0.85);
+        border-radius: 6px;
+    }
+
+    /* Hide verbose control hints on mobile — keep only buttons */
+    .hypergraph-hud > span {
+        display: none;
+    }
+
+    .hypergraph-info {
+        bottom: 6px;
+        left: 6px;
+        padding: 6px 10px;
+        font-size: 11px;
+        min-width: 100px;
+    }
+
+    .node-info-panel {
+        top: 6px;
+        right: 6px;
+        max-width: 200px;
+        min-width: 160px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .hypergraph-tooltip {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .hypergraph-hud {
+        bottom: 4px;
+        gap: 4px;
+        max-width: calc(100% - 16px);
+    }
+
+    .hypergraph-info {
+        display: none;
+    }
+
+    .node-info-panel {
+        top: auto;
+        bottom: 50px;
+        right: 4px;
+        left: 4px;
+        max-width: none;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+}
