@@ -17,6 +17,8 @@ export interface ExpandedNodeState {
     parentEl: HTMLDivElement;
     container: HTMLDivElement;
     children: { el: HTMLDivElement }[];
+    /** Clone elements created for repeated children or clone mode. */
+    clones: HTMLDivElement[];
 }
 
 // ── Manager ──
@@ -95,18 +97,27 @@ export class DecompositionManager {
     /**
      * Synchronise the set of expanded nodes with the desired set.
      * Collapses removed, expands added, reorders if changed.
+     *
+     * @param cloneChildren When true, ALL child elements in decomposition
+     *   rows use clones instead of reparenting the real DOM elements.
+     *   This keeps originals at their 3D positions (for duplicateMode).
      */
-    update(desiredExpanded: Set<number>): void {
-        const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',');
+    update(desiredExpanded: Set<number>, cloneChildren = false): void {
+        const modeKey = cloneChildren ? ':c' : ':r';
+        const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',') + modeKey;
         if (desiredKeyStr === this.lastExpandedKeyStr) return;
 
-        // Collapse nodes no longer desired
+        // Check if clone mode changed (requires full re-expand)
+        const prevModeIsClone = this.lastExpandedKeyStr.endsWith(':c');
+        const modeChanged = cloneChildren !== prevModeIsClone;
+
+        // Collapse nodes no longer desired (or all if mode changed)
         for (const idx of [...this.expandedNodes.keys()]) {
-            if (!desiredExpanded.has(idx)) this.collapseNode(idx);
+            if (modeChanged || !desiredExpanded.has(idx)) this.collapseNode(idx);
         }
         // Expand desired nodes that aren't already expanded
         for (const idx of desiredExpanded) {
-            if (!this.expandedNodes.has(idx)) this.expandNode(idx);
+            if (!this.expandedNodes.has(idx)) this.expandNode(idx, cloneChildren);
         }
         this.reorderNodeLayer();
         this.lastExpandedKeyStr = desiredKeyStr;
@@ -146,9 +157,11 @@ export class DecompositionManager {
             if (idx != null) this.nodeElMap.set(Number(idx), el);
         }
         // Also include elements inside any expanded decomp container
+        // (skip clones — they share data-node-idx but must not overwrite originals)
         for (const state of this.expandedNodes.values()) {
             const nested = state.container.querySelectorAll<HTMLDivElement>('[data-node-idx]');
             for (const el of nested) {
+                if (el.hasAttribute('data-clone')) continue;
                 const idx = el.getAttribute('data-node-idx');
                 if (idx != null) this.nodeElMap.set(Number(idx), el);
             }
@@ -241,7 +254,7 @@ export class DecompositionManager {
         this.expandedNodes.delete(idx);
     }
 
-    private expandNode(idx: number): void {
+    private expandNode(idx: number, cloneChildren = false): void {
         if (this.expandedNodes.has(idx)) return;
 
         // If mid-collapse, cancel the container animation
@@ -277,6 +290,8 @@ export class DecompositionManager {
         container.className = 'decomp-patterns';
 
         const children: { el: HTMLDivElement }[] = [];
+        const clones: HTMLDivElement[] = [];
+        const usedChildIndices = new Set<number>();
 
         for (let pi = 0; pi < patterns.length; pi++) {
             const pat = patterns[pi]!;
@@ -293,13 +308,27 @@ export class DecompositionManager {
             tokens.className = 'decomp-tokens';
 
             for (const child of pat.children) {
-                const childEl = this.nodeElMap.get(child.index);
-                if (!childEl) continue;
+                const realEl = this.nodeElMap.get(child.index);
+                if (!realEl) continue;
 
-                children.push({ el: childEl });
-                childEl.classList.add('hg-decomp-child');
-                childEl.style.flex = `${child.fraction}`;
-                tokens.appendChild(childEl);
+                let el: HTMLDivElement;
+
+                if (cloneChildren || usedChildIndices.has(child.index)) {
+                    // Clone mode (all children) or repeated occurrence
+                    const clone = realEl.cloneNode(true) as HTMLDivElement;
+                    clone.setAttribute('data-clone', 'true');
+                    clones.push(clone);
+                    el = clone;
+                } else {
+                    // First occurrence in reparent mode: use real element
+                    usedChildIndices.add(child.index);
+                    children.push({ el: realEl });
+                    el = realEl;
+                }
+
+                el.classList.add('hg-decomp-child');
+                el.style.flex = `${child.fraction}`;
+                tokens.appendChild(el);
             }
 
             row.appendChild(tokens);
@@ -336,7 +365,7 @@ export class DecompositionManager {
 
         parentEl.appendChild(container);
 
-        this.expandedNodes.set(idx, { parentEl, container, children });
+        this.expandedNodes.set(idx, { parentEl, container, children, clones });
 
         // Apply expanded class immediately — full content visible right away
         parentEl.classList.add('hg-expanded');

@@ -36,7 +36,6 @@ import { positionDOMNodes } from '../animation/nodePositioner';
 import { DecompositionManager } from '../decomposition/manager';
 import type { NestingSettings, ShellNode, DuplicateNode, EdgeHighlight } from '../types';
 import { computeShellLayout } from '../nesting/shellLayout';
-import { buildDuplicates } from '../nesting/duplicateManager';
 import { computeNestingEdgeHighlights } from '../nesting/edgeHighlights';
 
 /**
@@ -203,7 +202,7 @@ export function useOverlayRenderer(
                     }
                 }
             }
-            decomposition.update(desiredExpanded);
+            decomposition.update(desiredExpanded, ns?.duplicateMode ?? false);
 
             // ── Active-transform target management ──
             // Base positions are the force-directed equilibrium (ground truth).
@@ -279,13 +278,16 @@ export function useOverlayRenderer(
                 nestShells = computeShellLayout(curLayout, inter.selectedIdx, ns.parentDepth, selW, selH);
 
                 if (ns.duplicateMode) {
-                    nestDuplicates = buildDuplicates(curLayout, inter.selectedIdx, ns.childDepth);
+                    // In clone mode, originals stay at 3D positions;
+                    // hide parent↔child GPU edges (replaced by SVG connectors).
+                    const selectedNode = curLayout.nodeMap.get(inter.selectedIdx);
+                    const childIndices = selectedNode?.childIndices ?? [];
+                    const hlResult = computeNestingEdgeHighlights(curLayout, inter.selectedIdx, childIndices);
+                    nestHighlights = hlResult.highlights;
+                    edgeBuildCtx.hiddenNestingEdgeKeys = hlResult.hiddenEdgeKeys;
+                } else {
+                    edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
                 }
-
-                const nestedChildIndices = nestDuplicates.map(d => d.originalIdx);
-                const hlResult = computeNestingEdgeHighlights(curLayout, inter.selectedIdx, nestedChildIndices);
-                nestHighlights = hlResult.highlights;
-                edgeBuildCtx.hiddenNestingEdgeKeys = hlResult.hiddenEdgeKeys;
             } else {
                 edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
             }
@@ -307,6 +309,8 @@ export function useOverlayRenderer(
                 shells: nestShells,
                 duplicates: nestDuplicates,
                 nestingHighlights: nestHighlights,
+                containerEl: container,
+                cloneMode: ns?.duplicateMode ?? false,
             });
 
             // ── Build and upload edge instances (with dirty-flag optimization) ──

@@ -17,7 +17,7 @@ import './styles/operation-panels.css';
 import './styles/decomposition.css';
 import './styles/nesting.css';
 import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout, type FocusedLayoutOffsets } from './layout';
-import type { HypergraphViewProps, NestingSettings } from './types';
+import type { HypergraphViewProps, NestingSettings, DuplicateNode } from './types';
 
 // Hooks
 import {
@@ -32,7 +32,6 @@ import {
 
 // Nesting modules
 import { computeShellLayout } from './nesting/shellLayout';
-import { buildDuplicates } from './nesting/duplicateManager';
 
 // Components
 import {
@@ -104,15 +103,13 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     // Nesting requires autoLayout to be on (layout=on → nesting → duplication cascade)
     const { nestShells, nestDuplicates, nestDuplicatedOriginals } = useMemo(() => {
         if (!layout || selectedIdx < 0 || !autoLayout || !nestingSettings.enabled) {
-            return { nestShells: [], nestDuplicates: [], nestDuplicatedOriginals: new Set<number>() };
+            return { nestShells: [], nestDuplicates: [] as DuplicateNode[], nestDuplicatedOriginals: new Set<number>() };
         }
         const shells = computeShellLayout(layout, selectedIdx, nestingSettings.parentDepth, 80, 30);
-        const duplicates = nestingSettings.duplicateMode
-            ? buildDuplicates(layout, selectedIdx, nestingSettings.childDepth)
-            : [];
-        const originals = new Set(duplicates.map(d => d.originalIdx));
-        return { nestShells: shells, nestDuplicates: duplicates, nestDuplicatedOriginals: originals };
-    }, [layout, selectedIdx, autoLayout, nestingSettings.enabled, nestingSettings.parentDepth, nestingSettings.childDepth, nestingSettings.duplicateMode]);
+        // Duplicates are now handled by decomposition clones inside patterns;
+        // NodeLayer no longer renders separate duplicate elements.
+        return { nestShells: shells, nestDuplicates: [] as DuplicateNode[], nestDuplicatedOriginals: new Set<number>() };
+    }, [layout, selectedIdx, autoLayout, nestingSettings.enabled, nestingSettings.parentDepth]);
 
     // Build layout when snapshot changes
     useEffect(() => {

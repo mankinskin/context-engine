@@ -38,6 +38,10 @@ export interface PositionContext {
     duplicates?: DuplicateNode[];
     /** Nesting edge highlights (for glow styling). */
     nestingHighlights?: EdgeHighlight[];
+    /** Container element for SVG connector overlay. */
+    containerEl?: HTMLElement;
+    /** Whether decomposition used clone mode (duplicateMode on). */
+    cloneMode?: boolean;
 }
 
 /**
@@ -54,7 +58,7 @@ export function positionDOMNodes(ctx: PositionContext): void {
     const {
         layout, nodeElMap, viewProj, invSubVP, camPos, vw, vh,
         containerRect, inter, vizInvolvedNodes, connectedSet, decomposition,
-        shells, duplicates, nestingHighlights,
+        shells, duplicates, nestingHighlights, containerEl, cloneMode,
     } = ctx;
 
     const reparentedSet = decomposition.getReparentedSet();
@@ -64,6 +68,9 @@ export function positionDOMNodes(ctx: PositionContext): void {
 
     // Frustum culling margin (pixels outside viewport before culling)
     const CULL_MARGIN = 200;
+
+    // Collect screen positions for SVG connector drawing
+    const nodeScreenPos = new Map<number, { x: number; y: number }>();
 
     for (let i = 0; i < layout.nodes.length; i++) {
         const n = layout.nodes[i]!;
@@ -83,6 +90,7 @@ export function positionDOMNodes(ctx: PositionContext): void {
         }
 
         const screen = worldToScreen([n.x, n.y, n.z], viewProj, vw, vh);
+        nodeScreenPos.set(n.index, { x: screen.x, y: screen.y });
         const scale = worldScaleAtDepth(camPos, [n.x, n.y, n.z], vh);
         const pixelScale = Math.max(0.1, (scale * n.radius * 2.5) / 80);
 
@@ -192,6 +200,14 @@ export function positionDOMNodes(ctx: PositionContext): void {
         }
     }
 
+    // ── Nesting: SVG connector edges from originals to clones ──
+    if (cloneMode && containerEl) {
+        updateNestingConnectors(containerEl, containerRect, nodeScreenPos, nodeElMap);
+    } else if (containerEl) {
+        const svg = containerEl.querySelector<SVGSVGElement>(':scope > .hg-nesting-connectors');
+        if (svg) svg.style.display = 'none';
+    }
+
     markOverlayScanDirty();
 }
 
@@ -247,5 +263,111 @@ function backProjectReparentedChild(
         n.tx = n.x;
         n.ty = n.y;
         n.tz = n.z;
+    }
+}
+
+// ── Nesting connector helpers ──
+
+/**
+ * Intersection of a ray from (cx,cy) toward (tx,ty) with an axis-aligned rect.
+ */
+function rectBorderPoint(
+    cx: number, cy: number, hw: number, hh: number,
+    tx: number, ty: number,
+): [number, number] {
+    const dx = tx - cx;
+    const dy = ty - cy;
+    if (dx === 0 && dy === 0) return [cx, cy];
+    const sx = Math.abs(dx) > 0 ? hw / Math.abs(dx) : Infinity;
+    const sy = Math.abs(dy) > 0 ? hh / Math.abs(dy) : Infinity;
+    const s = Math.min(sx, sy);
+    return [cx + dx * s, cy + dy * s];
+}
+
+function getOrCreateConnectorSvg(container: HTMLElement): SVGSVGElement {
+    let svg = container.querySelector<SVGSVGElement>(':scope > .hg-nesting-connectors');
+    if (!svg) {
+        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'hg-nesting-connectors');
+        container.appendChild(svg);
+    }
+    return svg;
+}
+
+/**
+ * Draw SVG connector lines from original nodes to their clones inside
+ * the expanded parent's decomposition patterns.
+ */
+function updateNestingConnectors(
+    containerEl: HTMLElement,
+    containerRect: DOMRect,
+    nodeScreenPos: Map<number, { x: number; y: number }>,
+    nodeElMap: Map<number, HTMLDivElement>,
+): void {
+    const cloneEls = containerEl.querySelectorAll<HTMLDivElement>('.hg-decomp-child[data-clone]');
+    if (cloneEls.length === 0) {
+        const svg = containerEl.querySelector<SVGSVGElement>(':scope > .hg-nesting-connectors');
+        if (svg) svg.style.display = 'none';
+        return;
+    }
+
+    const svg = getOrCreateConnectorSvg(containerEl);
+    svg.style.display = '';
+    // Clear previous frame
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    for (const cloneEl of cloneEls) {
+        const origIdx = Number(cloneEl.getAttribute('data-node-idx'));
+        if (isNaN(origIdx)) continue;
+
+        const origPos = nodeScreenPos.get(origIdx);
+        if (!origPos) continue;
+
+        const origEl = nodeElMap.get(origIdx);
+        if (!origEl || origEl.style.display === 'none') continue;
+
+        const cloneRect = cloneEl.getBoundingClientRect();
+        if (cloneRect.width === 0) continue;
+
+        const cloneCx = cloneRect.left + cloneRect.width / 2 - containerRect.left;
+        const cloneCy = cloneRect.top + cloneRect.height / 2 - containerRect.top;
+
+        // Compute border intersection points
+        const origRect = origEl.getBoundingClientRect();
+        const [origBx, origBy] = rectBorderPoint(
+            origPos.x, origPos.y,
+            origRect.width / 2, origRect.height / 2,
+            cloneCx, cloneCy,
+        );
+        const [cloneBx, cloneBy] = rectBorderPoint(
+            cloneCx, cloneCy,
+            cloneRect.width / 2, cloneRect.height / 2,
+            origPos.x, origPos.y,
+        );
+
+        // Line
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', origBx.toFixed(1));
+        line.setAttribute('y1', origBy.toFixed(1));
+        line.setAttribute('x2', cloneBx.toFixed(1));
+        line.setAttribute('y2', cloneBy.toFixed(1));
+        line.setAttribute('class', 'hg-connector-line');
+        svg.appendChild(line);
+
+        // Circle at original border
+        const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c1.setAttribute('cx', origBx.toFixed(1));
+        c1.setAttribute('cy', origBy.toFixed(1));
+        c1.setAttribute('r', '3.5');
+        c1.setAttribute('class', 'hg-connector-dot');
+        svg.appendChild(c1);
+
+        // Circle at clone border
+        const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c2.setAttribute('cx', cloneBx.toFixed(1));
+        c2.setAttribute('cy', cloneBy.toFixed(1));
+        c2.setAttribute('r', '3.5');
+        c2.setAttribute('class', 'hg-connector-dot');
+        svg.appendChild(c2);
     }
 }
