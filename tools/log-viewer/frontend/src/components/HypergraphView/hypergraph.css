@@ -32,15 +32,12 @@
     transform-origin: center center;
     white-space: nowrap;
     transition: opacity 0.15s ease, background 0.15s ease, padding 0.3s linear, max-width 0.3s linear;
-    /* Remove the default log-entry block layout – make it inline-like */
     display: inline-flex !important;
     padding: 3px 10px !important;
     border-radius: 4px;
     min-width: 50px;
     max-width: 200px;
-    /* Explicit background so nodes are visible without hovering (gpu-active
-       makes all log-entry backgrounds transparent by default). */
-    background: rgba(18, 16, 14, 0.75) !important;
+    background: rgba(18, 16, 14, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 }
@@ -1760,5 +1757,89 @@
     color: rgba(255, 255, 255, 0.25);
     font-size: 7px;
     flex-shrink: 0;
+}
+
+/* ── Nesting View ── */
+
+/* Shell containers (parent nesting) */
+.hg-nesting-shell {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    display: none; /* shown via JS when positioned */
+}
+
+.hg-nesting-shell .hg-shell-label {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+/* Dimmed originals (have a duplicate visible) */
+.hg-has-duplicate {
+    opacity: 0.35 !important;
+}
+
+/* Duplicate badge */
+.hg-duplicate {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none; /* shown via JS when positioned */
+}
+
+.hg-duplicate::after {
+    content: '⤴';
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(100, 180, 255, 0.7);
+    color: #fff;
+    font-size: 9px;
+    line-height: 14px;
+    text-align: center;
+    pointer-events: none;
+}
+
+/* Nesting highlight glow on nodes with hidden edges */
+.hg-nesting-highlight {
+    box-shadow: 0 0 6px 2px rgba(100, 180, 255, 0.25);
+}
+
+.hg-nesting-highlight-parent {
+    box-shadow: 0 0 8px 3px rgba(255, 200, 100, 0.3);
+}
+
+.hg-nesting-highlight-child {
+    box-shadow: 0 0 6px 2px rgba(100, 220, 160, 0.25);
+}
+
+/* HUD slider controls */
+.hg-slider-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.hg-slider {
+    width: 50px;
+    height: 4px;
+    accent-color: rgba(100, 180, 255, 0.8);
+    cursor: pointer;
 }
 

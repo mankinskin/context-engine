@@ -4,11 +4,14 @@
  *
  * Also handles back-projection of decomposition-reparented children so
  * that edges track their on-screen positions correctly.
+ *
+ * Nesting view adds shell containers and duplicate node positioning.
  */
 import type { GraphLayout, LayoutNode } from '../layout';
 import type { InteractionState } from '../hooks/useMouseInteraction';
 import { worldToScreen, worldScaleAtDepth } from '../utils/math';
 import type { DecompositionManager } from '../decomposition/manager';
+import type { ShellNode, DuplicateNode, EdgeHighlight } from '../types';
 
 import {
     markOverlayScanDirty,
@@ -29,6 +32,12 @@ export interface PositionContext {
     vizInvolvedNodes: Set<number>;
     connectedSet: Set<number>;
     decomposition: DecompositionManager;
+    /** Nesting shell nodes to position. */
+    shells?: ShellNode[];
+    /** Duplicate nodes to position. */
+    duplicates?: DuplicateNode[];
+    /** Nesting edge highlights (for glow styling). */
+    nestingHighlights?: EdgeHighlight[];
 }
 
 /**
@@ -45,6 +54,7 @@ export function positionDOMNodes(ctx: PositionContext): void {
     const {
         layout, nodeElMap, viewProj, invSubVP, camPos, vw, vh,
         containerRect, inter, vizInvolvedNodes, connectedSet, decomposition,
+        shells, duplicates, nestingHighlights,
     } = ctx;
 
     const reparentedSet = decomposition.getReparentedSet();
@@ -111,7 +121,88 @@ export function positionDOMNodes(ctx: PositionContext): void {
         el.setAttribute('data-depth', screen.z.toFixed(4));
     }
 
+    // ── Nesting: position shell containers ──
+    if (shells && shells.length > 0 && inter.selectedIdx >= 0) {
+        const selNode = layout.nodeMap.get(inter.selectedIdx);
+        if (selNode) {
+            const selScreen = worldToScreen([selNode.x, selNode.y, selNode.z], viewProj, vw, vh);
+            const selScale = worldScaleAtDepth(camPos, [selNode.x, selNode.y, selNode.z], vh);
+
+            for (const shell of shells) {
+                const shellEl = containerRef(nodeElMap, `shell-${shell.nodeIdx}`);
+                if (!shellEl) continue;
+
+                const pixelWidth = shell.width * selScale * 0.015;
+                const pixelHeight = shell.height * selScale * 0.015;
+                const cx = selScreen.x + shell.centerX * selScale * 0.015;
+                const cy = selScreen.y + shell.centerY * selScale * 0.015;
+
+                shellEl.style.display = '';
+                shellEl.style.width = `${pixelWidth.toFixed(1)}px`;
+                shellEl.style.height = `${pixelHeight.toFixed(1)}px`;
+                shellEl.style.transform = `translate(-50%, -50%) translate(${cx.toFixed(1)}px, ${cy.toFixed(1)}px)`;
+                shellEl.style.zIndex = String(Math.max(0, 9000 - shell.shellLevel * 10));
+            }
+        }
+    }
+
+    // ── Nesting: position duplicate nodes ──
+    if (duplicates && duplicates.length > 0 && inter.selectedIdx >= 0) {
+        const selNode = layout.nodeMap.get(inter.selectedIdx);
+        if (selNode) {
+            const selScreen = worldToScreen([selNode.x, selNode.y, selNode.z], viewProj, vw, vh);
+            const selScale = worldScaleAtDepth(camPos, [selNode.x, selNode.y, selNode.z], vh);
+            const pixelScale = Math.max(0.1, (selScale * selNode.radius * 2.5) / 80);
+
+            for (const dup of duplicates) {
+                const dupEl = containerRef(nodeElMap, dup.duplicateId);
+                if (!dupEl) continue;
+
+                // Position duplicates in a row below the selected node's center
+                const spacing = 90 * pixelScale;
+                const totalWidth = duplicates.length * spacing;
+                const startX = selScreen.x - totalWidth / 2 + spacing / 2;
+                const dx = startX + dup.slotIndex * spacing;
+                const dy = selScreen.y + 30 * pixelScale;
+
+                dupEl.style.display = '';
+                dupEl.style.opacity = '1';
+                dupEl.style.transform = `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${(pixelScale * 0.85).toFixed(3)})`;
+                dupEl.style.zIndex = '9500';
+            }
+        }
+    }
+
+    // ── Nesting: clean up stale highlight classes from all nodes ──
+    // This runs every frame to ensure highlight classes from a previous
+    // nesting configuration don't linger when nesting is toggled off.
+    for (const [, el] of nodeElMap) {
+        el.classList.remove('hg-nesting-highlight', 'hg-nesting-highlight-parent', 'hg-nesting-highlight-child');
+    }
+
+    // ── Nesting: apply highlight glow to nodes involved in hidden edges ──
+    if (nestingHighlights && nestingHighlights.length > 0) {
+        for (const hl of nestingHighlights) {
+            const el = nodeElMap.get(hl.nodeIdx);
+            if (el) {
+                el.classList.add('hg-nesting-highlight');
+                el.classList.toggle('hg-nesting-highlight-parent', hl.role === 'parent');
+                el.classList.toggle('hg-nesting-highlight-child', hl.role === 'child');
+            }
+        }
+    }
+
     markOverlayScanDirty();
+}
+
+/**
+ * Look up a DOM element by data-shell-idx or data-duplicate-id from the
+ * node layer. Falls back to querySelector if not in the nodeElMap.
+ */
+function containerRef(_nodeElMap: Map<number, HTMLDivElement>, key: string): HTMLDivElement | null {
+    // Shell elements use data-shell-idx, duplicates use data-duplicate-id
+    const el = document.querySelector<HTMLDivElement>(`[data-shell-idx="${key.replace('shell-', '')}"], [data-duplicate-id="${key}"]`);
+    return el;
 }
 
 // ── Internal helper ──

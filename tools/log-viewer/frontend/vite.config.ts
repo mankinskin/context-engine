@@ -16,6 +16,13 @@ export default defineConfig({
   resolve: {
     preserveSymlinks: true,
     dedupe: ['preact', '@preact/signals', '@preact/signals-core'],
+    alias: {
+      'react': 'preact/compat',
+      'react-dom': 'preact/compat',
+    },
+  },
+  optimizeDeps: {
+    exclude: ['@context-engine/viewer-api-frontend'],
   },
   server: {
     proxy: {

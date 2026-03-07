@@ -34,6 +34,10 @@ import { buildEdgeInstances, type EdgeBuildContext } from '../gpu/edgeBuilder';
 import { animateNodes } from '../animation/nodeAnimator';
 import { positionDOMNodes } from '../animation/nodePositioner';
 import { DecompositionManager } from '../decomposition/manager';
+import type { NestingSettings, ShellNode, DuplicateNode, EdgeHighlight } from '../types';
+import { computeShellLayout } from '../nesting/shellLayout';
+import { buildDuplicates } from '../nesting/duplicateManager';
+import { computeNestingEdgeHighlights } from '../nesting/edgeHighlights';
 
 /**
  * Hook to set up and manage the WebGPU overlay renderer for hypergraph visualization.
@@ -48,6 +52,8 @@ export function useOverlayRenderer(
     onSelectNode?: (idx: number) => void,
     focusedOffsetsRef?: { current: FocusedLayoutOffsets | null },
     basePositionsRef?: { current: Map<number, { x: number; y: number; z: number }> | null },
+    nestingSettingsRef?: { current: NestingSettings },
+    autoLayoutRef?: { current: boolean },
 ): void {
     const gpu = overlayGpu.value;
     const curLayout = layoutRef.current;
@@ -108,6 +114,7 @@ export function useOverlayRenderer(
             inter: interRef.current,
             connectedEdgeKeys: connectedCache.connectedEdgeKeys,
             hiddenDecompEdgeKeys: new Set(),
+            hiddenNestingEdgeKeys: new Set(),
             lastParentCandidates: [],
         };
 
@@ -169,26 +176,30 @@ export function useOverlayRenderer(
             setOverlayWorldScale((2 * dist * Math.tan(fov / 2)) / vh);
 
             // ── Decomposition management (pure DOM reparenting) ──
+            // Only expand nodes when nesting is enabled.
             const curVizState = vizStateRef.current;
+            const ns = nestingSettingsRef?.current;
             const desiredExpanded = new Set<number>();
-            if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
-            // Use searchPath.root (the current/tentative root) rather than rootNode
-            // (from LocationInfo, which may be the old confirmed root).
-            // This ensures we expand the correct root during VisitParent transitions.
-            const sp = curVizState.searchPath;
-            if (sp?.root != null) {
-                desiredExpanded.add(sp.root.index);
-            }
-            // Prune: don't expand child of another expanded node
-            for (const idx of [...desiredExpanded]) {
-                const node = curLayout.nodeMap.get(idx);
-                if (!node) continue;
-                for (const otherIdx of desiredExpanded) {
-                    if (otherIdx === idx) continue;
-                    const other = curLayout.nodeMap.get(otherIdx);
-                    if (other && other.childIndices.includes(idx)) {
-                        desiredExpanded.delete(idx);
-                        break;
+            if (ns?.enabled && autoLayoutRef?.current) {
+                if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
+                // Use searchPath.root (the current/tentative root) rather than rootNode
+                // (from LocationInfo, which may be the old confirmed root).
+                // This ensures we expand the correct root during VisitParent transitions.
+                const sp = curVizState.searchPath;
+                if (sp?.root != null) {
+                    desiredExpanded.add(sp.root.index);
+                }
+                // Prune: don't expand child of another expanded node
+                for (const idx of [...desiredExpanded]) {
+                    const node = curLayout.nodeMap.get(idx);
+                    if (!node) continue;
+                    for (const otherIdx of desiredExpanded) {
+                        if (otherIdx === idx) continue;
+                        const other = curLayout.nodeMap.get(otherIdx);
+                        if (other && other.childIndices.includes(idx)) {
+                            desiredExpanded.delete(idx);
+                            break;
+                        }
                     }
                 }
             }
@@ -255,6 +266,30 @@ export function useOverlayRenderer(
             // ── Animate nodes ──
             nodesMoving = animateNodes(curLayout.nodes, dt);
 
+            // ── Nesting: compute shells, duplicates, highlights ──
+            let nestShells: ShellNode[] = [];
+            let nestDuplicates: DuplicateNode[] = [];
+            let nestHighlights: EdgeHighlight[] = [];
+
+            if (ns?.enabled && inter.selectedIdx >= 0) {
+                const selEl = decomposition.getNodeElMap().get(inter.selectedIdx);
+                const selW = selEl?.offsetWidth ?? 80;
+                const selH = selEl?.offsetHeight ?? 30;
+
+                nestShells = computeShellLayout(curLayout, inter.selectedIdx, ns.parentDepth, selW, selH);
+
+                if (ns.duplicateMode) {
+                    nestDuplicates = buildDuplicates(curLayout, inter.selectedIdx, ns.childDepth);
+                }
+
+                const nestedChildIndices = nestDuplicates.map(d => d.originalIdx);
+                const hlResult = computeNestingEdgeHighlights(curLayout, inter.selectedIdx, nestedChildIndices);
+                nestHighlights = hlResult.highlights;
+                edgeBuildCtx.hiddenNestingEdgeKeys = hlResult.hiddenEdgeKeys;
+            } else {
+                edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
+            }
+
             // ── Position DOM nodes ──
             const cached = connectedCacheRef.current;
             positionDOMNodes({
@@ -269,6 +304,9 @@ export function useOverlayRenderer(
                 vizInvolvedNodes: curVizState.involvedNodes,
                 connectedSet: cached.connectedSet,
                 decomposition,
+                shells: nestShells,
+                duplicates: nestDuplicates,
+                nestingHighlights: nestHighlights,
             });
 
             // ── Build and upload edge instances (with dirty-flag optimization) ──

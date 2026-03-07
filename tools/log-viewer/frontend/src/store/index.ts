@@ -60,7 +60,7 @@ export const showRaw = signal(false);
 
 /** When true, selecting a node triggers automatic layout around it.
  *  When false, nodes can be freely dragged and clicking only pans the camera. */
-export const autoLayoutEnabled = signal(true);
+export const autoLayoutEnabled = signal(false);
 
 // Per-file state storage
 const fileStates = signal<Map<string, FileState>>(new Map());

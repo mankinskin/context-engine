@@ -34,6 +34,8 @@ export interface EdgeBuildContext {
     inter: InteractionState;
     connectedEdgeKeys: Set<number>;
     hiddenDecompEdgeKeys: Set<number>;
+    /** Edge keys hidden by nesting view (parent↔nested child). */
+    hiddenNestingEdgeKeys: Set<number>;
     lastParentCandidates: number[];
 }
 
@@ -60,7 +62,7 @@ export function buildEdgeInstances(
     edgeDataBuf: Float32Array,
     ctx: EdgeBuildContext,
 ): number {
-    const { layout, vizState, inter, connectedEdgeKeys, hiddenDecompEdgeKeys } = ctx;
+    const { layout, vizState, inter, connectedEdgeKeys, hiddenDecompEdgeKeys, hiddenNestingEdgeKeys } = ctx;
 
     // ── Trace path edge keys (pair-based) ──
     const vizTracePath = vizState.location?.trace_path ?? [];
@@ -107,7 +109,8 @@ export function buildEdgeInstances(
         const off = i * EDGE_INSTANCE_FLOATS;
 
         // Hide edges between expanded parents and their inline children
-        if (hiddenDecompEdgeKeys.has(edgePairKey(e.from, e.to))) {
+        if (hiddenDecompEdgeKeys.has(edgePairKey(e.from, e.to))
+            || hiddenNestingEdgeKeys.has(edgePairKey(e.from, e.to))) {
             for (let j = 0; j < EDGE_INSTANCE_FLOATS; j++) edgeDataBuf[off + j] = 0;
             continue;
         }

@@ -7,11 +7,17 @@
  * UI chrome panels (SearchStatePanel, InsertStatePanel, etc.) are rendered
  * by the parent wrapper, not by this component.
  */
-import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
-import './hypergraph.css';
+import './styles/base.css';
+import './styles/panels.css';
+import './styles/search-panel.css';
+import './styles/viz-states.css';
+import './styles/operation-panels.css';
+import './styles/decomposition.css';
+import './styles/nesting.css';
 import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout, type FocusedLayoutOffsets } from './layout';
-import type { HypergraphViewProps } from './types';
+import type { HypergraphViewProps, NestingSettings } from './types';
 
 // Hooks
 import {
@@ -20,8 +26,13 @@ import {
     useMouseInteraction,
     useTouchInteraction,
     useOverlayRenderer,
+    useNestingState,
     getPrimaryNode,
 } from './hooks';
+
+// Nesting modules
+import { computeShellLayout } from './nesting/shellLayout';
+import { buildDuplicates } from './nesting/duplicateManager';
 
 // Components
 import {
@@ -34,9 +45,13 @@ import {
 export interface HypergraphViewCoreProps extends HypergraphViewProps {
     /**
      * Render-prop for additional children.
-     * Receives `handleFocusNode` callback to allow panels to trigger node focus.
+     * Receives `handleFocusNode` callback plus nesting state for panels.
      */
-    renderChildren?: (handleFocusNode: (nodeIndex: number) => void) => ComponentChildren;
+    renderChildren?: (ctx: {
+        handleFocusNode: (nodeIndex: number) => void;
+        nestingSettings: NestingSettings;
+        setNestingSettings: (update: Partial<NestingSettings>) => void;
+    }) => ComponentChildren;
 }
 
 /**
@@ -79,6 +94,25 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
 
     // Touch interaction (shares selection state via interRef)
     useTouchInteraction(containerRef, layoutRef, camera, interRef, setSelectedIdx);
+
+    // Nesting state (persisted to localStorage)
+    const { nestingSettings, setNestingSettings } = useNestingState();
+    const nestingSettingsRef = useRef(nestingSettings);
+    nestingSettingsRef.current = nestingSettings;
+
+    // Compute nesting data for NodeLayer DOM elements
+    // Nesting requires autoLayout to be on (layout=on → nesting → duplication cascade)
+    const { nestShells, nestDuplicates, nestDuplicatedOriginals } = useMemo(() => {
+        if (!layout || selectedIdx < 0 || !autoLayout || !nestingSettings.enabled) {
+            return { nestShells: [], nestDuplicates: [], nestDuplicatedOriginals: new Set<number>() };
+        }
+        const shells = computeShellLayout(layout, selectedIdx, nestingSettings.parentDepth, 80, 30);
+        const duplicates = nestingSettings.duplicateMode
+            ? buildDuplicates(layout, selectedIdx, nestingSettings.childDepth)
+            : [];
+        const originals = new Set(duplicates.map(d => d.originalIdx));
+        return { nestShells: shells, nestDuplicates: duplicates, nestDuplicatedOriginals: originals };
+    }, [layout, selectedIdx, autoLayout, nestingSettings.enabled, nestingSettings.parentDepth, nestingSettings.childDepth, nestingSettings.duplicateMode]);
 
     // Build layout when snapshot changes
     useEffect(() => {
@@ -150,7 +184,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     }, [stepKey, camera, setSelectedIdx]);
 
     // Register WebGPU overlay renderer
-    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx, focusedOffsetsRef, basePositionsRef);
+    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx, focusedOffsetsRef, basePositionsRef, nestingSettingsRef, autoLayoutRef);
 
     // Handle focus from NodeInfoPanel links
     const handleFocusNode = useCallback((nodeIndex: number) => {
@@ -190,6 +224,9 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
                         nodes={layout.nodes}
                         maxWidth={maxWidth}
                         vizState={vizState}
+                        shells={nestShells}
+                        duplicates={nestDuplicates}
+                        duplicatedOriginals={nestDuplicatedOriginals}
                     />
                 )}
             </div>
@@ -211,7 +248,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
             <NodeTooltip tooltip={tooltip} />
 
             {/* Log-viewer-specific panels injected via render-prop */}
-            {renderChildren?.(handleFocusNode)}
+            {renderChildren?.({ handleFocusNode, nestingSettings, setNestingSettings })}
         </div>
     );
 }

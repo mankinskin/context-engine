@@ -9,7 +9,7 @@
 
 Implement a hierarchical nesting view for the hypergraph visualization that:
 1. Shows selected node expanded with children inside (row layout)
-2. Shows parent nodes as concentric layered shells around the selected node
+2. Shows parent nodes as increasingly larger overlapping containers **around and behind** the selected node — the selected node sits physically inside its parents, which sit inside their parents (Russian-doll nesting)
 3. Supports duplicate mode (default) where child nodes appear both in their original position AND inside the expanded parent
 
 ## Interview Summary
@@ -17,8 +17,8 @@ Implement a hierarchical nesting view for the hypergraph visualization that:
 | Feature | Decision |
 |---------|----------|
 | Expansion style | Row layout (horizontal row below label) |
-| Parent positioning | Layered shells (concentric, deeper = larger) |
-| Parent visual | Dimmed + larger (semi-transparent, scaled up) |
+| Parent positioning | Nesting shells (selected node sits **inside** parents; parents sit inside grandparents) |
+| Parent visual | Dimmed + larger container backgrounds (semi-transparent, drawn behind) |
 | Duplicate appearance | Identical with badge + special edge endpoint indicator |
 | Click duplicate | Navigate to original node |
 | Original when duplicated | Stays visible but dimmed |
@@ -60,185 +60,116 @@ Implement a hierarchical nesting view for the hypergraph visualization that:
 
 ### 1. Nesting State & Settings
 
-**New types** in `types.ts`:
-```typescript
-interface NestingSettings {
-    enabled: boolean;              // Master toggle
-    duplicateMode: boolean;        // true = show duplicates, false = reparent/move
-    parentDepth: number;           // How many parent shell levels (1-5, default 2)
-    childDepth: number;            // How many child levels to show (1-3, default 1)
-}
+Add the following shapes to `types.ts`:
 
-interface NestingState {
-    settings: NestingSettings;
-    selectedIdx: number;           // Current center node
-    expandedShells: ShellNode[];   // Parent nodes arranged in shells
-    duplicates: DuplicateNode[];   // Child duplicates inside expanded parent
-}
+- **`NestingSettings`** — user-configurable options: master enabled toggle, duplicate mode toggle, parent depth (1–5), child depth (1–3).
+- **`NestingState`** — runtime state: the current selected node index, the computed list of `ShellNode`s (one per parent in the hierarchy), and the list of active `DuplicateNode`s.
+- **`ShellNode`** — describes one parent node rendered as a nesting shell: its graph index, its shell level (1 = direct parent), its rendered container size (width × height), and its center offset from the selected node's position (to handle multi-parent horizontal spread).
+- **`DuplicateNode`** — describes one child rendered inside an expanded parent: the original node index, a stable unique ID for DOM keying, which parent contains it, and its slot index in the row layout.
 
-interface ShellNode {
-    nodeIdx: number;
-    shellLevel: number;            // 1 = direct parent, 2 = grandparent, etc.
-    angle: number;                 // Position on shell arc (radians)
-    scale: number;                 // Visual scale (larger for deeper shells)
-}
-
-interface DuplicateNode {
-    originalIdx: number;
-    duplicateId: string;           // Unique ID for DOM key
-    parentIdx: number;             // Which expanded parent contains this
-    slotIndex: number;             // Position in row layout
-}
-```
+`hooks/useNestingState.ts` manages the settings half of this state with `localStorage` persistence (key `hg-nesting-settings`). It exposes the current settings and a setter. The rest of `NestingState` (shells, duplicates) is derived/computed, not persisted.
 
 ### 2. Shell Layout Algorithm
 
-Parents arranged in concentric shells around selected node:
-- **Shell 1** (direct parents): Small arc above, scale 1.2x
-- **Shell 2** (grandparents): Larger arc, scale 1.5x  
-- **Shell N**: Progressively larger arcs, max scale ~2.5x
+The selected node is nested **inside** increasingly larger parent containers — like Russian nesting dolls. The selected node is the innermost element. Its direct parent(s) form shell level 1, rendered as a larger background rect behind the selected node. Grandparents form shell level 2, rendered even larger behind level 1. Each shell visually contains everything inside it.
 
-```typescript
-function computeShellLayout(
-    layout: GraphLayout,
-    centerIdx: number,
-    parentDepth: number
-): ShellNode[] {
-    const shells: ShellNode[] = [];
-    const visited = new Set<number>([centerIdx]);
-    
-    let currentLevel = [centerIdx];
-    for (let level = 1; level <= parentDepth; level++) {
-        const nextLevel: number[] = [];
-        for (const idx of currentLevel) {
-            const node = layout.nodeMap.get(idx);
-            if (!node) continue;
-            for (const parentIdx of node.parentIndices) {
-                if (visited.has(parentIdx)) continue;
-                visited.add(parentIdx);
-                nextLevel.push(parentIdx);
-            }
-        }
-        
-        // Distribute parents on arc
-        const arcSpan = Math.PI * 0.6;  // 108 degrees
-        const startAngle = Math.PI / 2 - arcSpan / 2;
-        nextLevel.forEach((parentIdx, i) => {
-            const t = nextLevel.length > 1 ? i / (nextLevel.length - 1) : 0.5;
-            shells.push({
-                nodeIdx: parentIdx,
-                shellLevel: level,
-                angle: startAngle + t * arcSpan,
-                scale: 1 + level * 0.4,  // 1.4, 1.8, 2.2, ...
-            });
-        });
-        
-        currentLevel = nextLevel;
-    }
-    return shells;
-}
+**Size computation** (`nesting/shellLayout.ts`):
+
+Start with the selected node's bounding box as the baseline content size. For each level outward, add padding on all sides:
+
+```
+padding(level) = BASE_PADDING + level × LEVEL_PADDING
+
+shellSize(level) = contentSize(level - 1) + padding(level) × 2
+```
+
+When a level has multiple parents, they are arranged side-by-side. The combined width at that level becomes the content width for the next level outward:
+
+```
+combinedWidth(level) = shellWidth(level) × parentCount(level)
+```
+
+**Position computation:**
+
+All shells share the same center as the selected node. They are drawn behind it (lower z-index), expanding outward symmetrically. When multiple parents exist at the same level, they are offset horizontally from center so each visually contains the shared child region:
+
+```
+for each parent[i] of count N at level L:
+    centerX = (i - (N-1)/2) × shellWidth(L)
+    centerY = 0   // same vertical center as selected node
+```
+
+**Traversal algorithm:**
+
+```
+visited = {selectedIdx}
+contentSize = selectedNodeSize
+currentLevel = [selectedIdx]
+
+for level = 1 to parentDepth:
+    nextLevel = []
+    for each idx in currentLevel:
+        for each parentIdx of node(idx):
+            if parentIdx not in visited:
+                add to nextLevel, mark visited
+
+    if nextLevel is empty: break
+
+    compute shellSize from contentSize + padding(level)
+    compute centerX offsets for each parent in nextLevel
+    emit ShellNode for each parent
+
+    contentSize = combinedSize of all siblings at this level
+    currentLevel = nextLevel
 ```
 
 ### 3. Duplicate Node Rendering
 
-In `NodeLayer.tsx`, render duplicates as additional DOM elements:
+`NodeLayer.tsx` currently renders one `NodeElement` per graph node. Extend it to also accept a list of `DuplicateNode`s and a map of their computed positions.
 
-```typescript
-interface NodeLayerProps {
-    nodes: LayoutNode[];
-    maxWidth: number;
-    vizState: VisualizationState;
-    duplicates?: DuplicateNode[];           // NEW
-    duplicatePositions?: Map<string, Position>; // NEW
-}
+For each duplicate, render an additional `NodeElement` using the original node's data but with:
+- A unique DOM key (the `duplicateId`)
+- An `isDuplicate` flag that triggers badge rendering
+- The duplicate's computed position (inside the expanded parent's row layout)
 
-// Render regular nodes
-{nodes.map(node => <NodeElement key={node.index} ... />)}
+`NodeElement.tsx` gains an `isDuplicate` prop. When set, a small overlay badge is shown (e.g., a "return to original" icon, top-right corner) using an `::after` pseudo-element in `hypergraph.css`. The badge makes it visually clear the node is a copy; clicking it navigates to the original.
 
-// Render duplicates with badge
-{duplicates?.map(dup => (
-    <NodeElement 
-        key={dup.duplicateId}
-        node={nodes.find(n => n.index === dup.originalIdx)!}
-        isDuplicate={true}
-        duplicateId={dup.duplicateId}
-        ...
-    />
-))}
-```
-
-Duplicate badge CSS:
-```css
-.hg-node.hg-duplicate::after {
-    content: '⤴';  /* or custom icon */
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    font-size: 10px;
-    background: var(--hg-accent);
-    border-radius: 50%;
-    padding: 2px;
-}
-```
+Original nodes that have an active duplicate are rendered with reduced opacity (dimmed) to signal they are "also shown elsewhere".
 
 ### 4. Edge → Node Highlight Conversion
 
-When a node is inside an expanded parent, its parent↔child edges become node highlights instead:
+`nesting/edgeHighlights.ts` encapsulates the rule: **edges between a node and its children are not drawn when those children are rendered inside the parent as nested content.** Instead, containment is visually implied by the nesting shell itself.
 
-```typescript
-interface EdgeHighlight {
-    nodeIdx: number;
-    side: 'parent' | 'child';  // Which end of the edge
-    color: [number, number, number, number];
-}
+The conversion produces an `EdgeHighlight` list — one entry per involved node — which `edgeBuilder.ts` consumes. `edgeBuilder.ts` is modified to:
+1. Skip any edge whose both endpoints are in the current nesting view (parent + its rendered children).
+2. Pass the highlight list to the GPU buffer so nodes receive a subtle glow indicating the relationship.
 
-function convertEdgesToHighlights(
-    layout: GraphLayout,
-    expandedIdx: number,
-    childIndices: number[]
-): EdgeHighlight[] {
-    const highlights: EdgeHighlight[] = [];
-    // The parent node gets highlighted for each child relationship
-    highlights.push({
-        nodeIdx: expandedIdx,
-        side: 'parent',
-        color: [0.3, 0.8, 0.4, 0.6],  // Subtle green glow
-    });
-    // Each child inside gets highlighted
-    for (const childIdx of childIndices) {
-        highlights.push({
-            nodeIdx: childIdx,
-            side: 'child', 
-            color: [0.3, 0.8, 0.4, 0.6],
-        });
-    }
-    return highlights;
-}
+Pseudo code for highlight generation:
+
+```
+highlights = []
+add highlight for expandedNode  (role: parent)
+for each child rendered inside expandedNode:
+    add highlight for child  (role: child)
+return highlights
 ```
 
 ### 5. Smart Culling for Performance
 
-Off-screen duplicates are hidden via CSS `display: none`:
+`nesting/duplicateManager.ts` maintains the active duplicate set. Before each render, it filters out duplicates whose computed position falls outside the current viewport (plus a small margin). Off-screen duplicates are excluded from the render list entirely — not just hidden via CSS — so they do not consume DOM nodes or layout budget.
 
-```typescript
-function cullDuplicates(
-    duplicates: DuplicateNode[],
-    positions: Map<string, Position>,
-    viewport: DOMRect
-): Set<string> {
-    const MARGIN = 100;
-    const visible = new Set<string>();
-    for (const dup of duplicates) {
-        const pos = positions.get(dup.duplicateId);
-        if (!pos) continue;
-        if (pos.x >= -MARGIN && pos.x <= viewport.width + MARGIN &&
-            pos.y >= -MARGIN && pos.y <= viewport.height + MARGIN) {
-            visible.add(dup.duplicateId);
-        }
-    }
-    return visible;
-}
 ```
+visibleDuplicates = []
+for each duplicate:
+    pos = computedPosition(duplicate)
+    if pos is within (viewport + MARGIN):
+        add to visibleDuplicates
+return visibleDuplicates
+```
+
+The margin (≈100px) prevents pop-in during panning. This keeps DOM node count proportional to what is actually visible rather than total graph size.
+
+
 
 ## File Changes
 

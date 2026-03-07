@@ -178,7 +178,6 @@ export function useMouseInteraction(
                 }
             } else if (e.button === 2) {
                 inter.orbiting = true;
-                e.preventDefault();
             }
         };
 
@@ -336,20 +335,16 @@ export function useMouseInteraction(
             e.preventDefault();
         };
 
-        const onCtx = (e: Event) => e.preventDefault();
-
         container.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
         container.addEventListener('wheel', onWheel, { passive: false });
-        container.addEventListener('contextmenu', onCtx);
 
         return () => {
             container.removeEventListener('mousedown', onMouseDown);
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseup', onMouseUp);
             container.removeEventListener('wheel', onWheel);
-            container.removeEventListener('contextmenu', onCtx);
             // Reset interaction state to prevent stale orbiting/panning after effect re-runs
             inter.orbiting = false;
             inter.panning = false;

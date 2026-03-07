@@ -41,7 +41,7 @@ export function HypergraphView() {
             autoLayout={autoLayout}
             snapshotEdges={snapshotEdges}
             stepKey={stepKey}
-            renderChildren={(handleFocusNode) => (
+            renderChildren={({ handleFocusNode, nestingSettings, setNestingSettings }) => (
                 <>
                     {/* Search State Panel - floating list of algorithm steps */}
                     <SearchStatePanel />
@@ -56,7 +56,7 @@ export function HypergraphView() {
                     <QueryPathPanel />
 
                     {/* HUD */}
-                    <ControlsHUD />
+                    <ControlsHUD nestingSettings={nestingSettings} onNestingChange={setNestingSettings} />
                 </>
             )}
         />
