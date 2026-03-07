@@ -13,13 +13,20 @@
 //! Run with `--mcp` flag to start the MCP server on stdio for agent integration.
 //! The MCP server provides tools for querying logs using JQ syntax.
 //!
+//! # Frontend Modes
+//! - **Auto (default):** Uses Vite dev server with hot reload if no pre-built
+//!   `static/index.html` exists; otherwise serves static files.
+//! - `--dev` — Force Vite dev server (hot reload).
+//! - `--static` — Force serving pre-built static files.
+//!
 //! # Configuration
 //!
 //! Config file search order:
 //! 1. Path in `LOG_VIEWER_CONFIG` environment variable
 //! 2. `./log-viewer.toml` (current directory)
 //! 3. `./config/log-viewer.toml` (config subdirectory)
-//! 4. `~/.config/log-viewer/config.toml` (user config directory)
+//! 4. `<CARGO_MANIFEST_DIR>/log-viewer.toml`
+//! 5. `~/.config/log-viewer/config.toml` (user config directory)
 //!
 //! # Environment Variables (override config file values)
 //! - `LOG_DIR` - Directory containing log files (default: target/test-logs)
@@ -89,10 +96,11 @@ fn init_tracing(config: &Config) {
 
 #[tokio::main]
 async fn main() {
-    // Check for --mcp and --dev flags
+    // Check for --mcp, --dev, and --static flags
     let args: Vec<String> = env::args().collect();
     let mcp_mode = args.iter().any(|arg| arg == "--mcp");
-    let dev_mode = args.iter().any(|arg| arg == "--dev");
+    let force_dev = args.iter().any(|arg| arg == "--dev");
+    let force_static = args.iter().any(|arg| arg == "--static");
 
     // Load configuration from file and environment
     let config = Config::load();
@@ -116,6 +124,14 @@ async fn main() {
         info!(log_dir = %to_unix_path(&state.log_dir), exists = state.log_dir.exists(), "Log directory");
         info!(workspace_root = %to_unix_path(&state.workspace_root), "Workspace root");
 
+        // Determine frontend mode:
+        //   --dev          → always use Vite dev server
+        //   --static       → always use pre-built static files
+        //   (default)      → auto: use static if built, otherwise dev
+        let static_dir = config.resolve_static_dir();
+        let static_available = static_dir.join("index.html").exists();
+        let dev_mode = force_dev || (!force_static && !static_available);
+
         // Frontend serving: dev proxy or static files
         let vite_port = config.server.vite_port;
         let _dev_server; // held alive for the lifetime of the server
@@ -123,7 +139,7 @@ async fn main() {
 
         if dev_mode {
             let frontend_dir = config.resolve_frontend_dir();
-            info!(frontend_dir = %to_unix_path(&frontend_dir), port = vite_port, "Starting Vite dev server");
+            info!(frontend_dir = %to_unix_path(&frontend_dir), port = vite_port, "Starting Vite dev server (hot reload enabled)");
 
             match viewer_api::dev_proxy::DevServer::start(
                 &frontend_dir,
@@ -143,8 +159,7 @@ async fn main() {
             }
         } else {
             _dev_server = None;
-            let static_dir = config.resolve_static_dir();
-            info!(static_dir = %to_unix_path(&static_dir), "Static directory");
+            info!(static_dir = %to_unix_path(&static_dir), "Serving pre-built frontend");
             frontend_mode = router::FrontendMode::Static(static_dir);
         }
 
