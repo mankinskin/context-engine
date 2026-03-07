@@ -19,19 +19,19 @@
   text-transform: uppercase;
 }
 
-.level-badge.trace { background: var(--level-trace); color: #c0c0c8; }
-.level-badge.debug { background: var(--level-debug); color: #d8c8f0; }
-.level-badge.info { background: var(--level-info); color: #b8d8f8; }
-.level-badge.warn { background: var(--level-warn); color: #f8e8b8; }
-.level-badge.error { background: var(--level-error); color: #f8c8c8; }
+.level-badge.trace { background: var(--level-trace); color: var(--level-trace-text); }
+.level-badge.debug { background: var(--level-debug); color: var(--level-debug-text); }
+.level-badge.info { background: var(--level-info); color: var(--level-info-text); }
+.level-badge.warn { background: var(--level-warn); color: var(--level-warn-text); }
+.level-badge.error { background: var(--level-error); color: var(--level-error-text); }
 
 .type-badge {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
 }
 
-.type-badge.span-enter { color: #90d8a8; }
-.type-badge.span-exit { color: #f0b080; }
+.type-badge.span-enter { color: var(--span-enter-text); }
+.type-badge.span-exit { color: var(--span-exit-text); }
 
 .span-name {
   font-family: var(--font-mono);

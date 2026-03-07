@@ -412,6 +412,24 @@ export function ThemeSettings() {
         <ColorRow label="ERROR" description="Errors" colorKey="levelError" />
       </Section>
 
+      {/* ── Log Level Badge Text ── */}
+      <Section title="Log Level Text Colors" icon="T">
+        <p class="theme-section-hint">
+          Text colors for log level badges. Should contrast with level background colors above.
+        </p>
+        <ColorRow label="TRACE Text" description="Text on trace badges" colorKey="levelTraceText" />
+        <ColorRow label="DEBUG Text" description="Text on debug badges" colorKey="levelDebugText" />
+        <ColorRow label="INFO Text" description="Text on info badges" colorKey="levelInfoText" />
+        <ColorRow label="WARN Text" description="Text on warn badges" colorKey="levelWarnText" />
+        <ColorRow label="ERROR Text" description="Text on error badges" colorKey="levelErrorText" />
+      </Section>
+
+      {/* ── Span Badge Colors ── */}
+      <Section title="Span Badge Colors" icon="→">
+        <ColorRow label="Enter Span" description="Span entry markers" colorKey="spanEnterText" />
+        <ColorRow label="Exit Span" description="Span exit markers" colorKey="spanExitText" />
+      </Section>
+
       {/* ── GPU Rendering ── */}
       <Section title="GPU Rendering" icon="⬢">
         <p class="theme-section-hint">

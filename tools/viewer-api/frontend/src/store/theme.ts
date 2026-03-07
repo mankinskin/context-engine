@@ -32,12 +32,23 @@ export interface ThemeColors {
   accentPurple: string;
   accentYellow: string;
 
-  // Log levels
+  // Log levels (background colors)
   levelTrace: string;
   levelDebug: string;
   levelInfo: string;
   levelWarn: string;
   levelError: string;
+
+  // Log level badge text colors (readable on level backgrounds)
+  levelTraceText: string;
+  levelDebugText: string;
+  levelInfoText: string;
+  levelWarnText: string;
+  levelErrorText: string;
+
+  // Span type badge colors
+  spanEnterText: string;
+  spanExitText: string;
 
   // Particle: Metal Spark
   particleSparkCore: string;
@@ -91,6 +102,13 @@ export const DEFAULT_THEME: ThemeColors = {
   levelInfo: '#b0cce0',
   levelWarn: '#e0c888',
   levelError: '#d4948a',
+  levelTraceText: '#4a4848',
+  levelDebugText: '#2a4a30',
+  levelInfoText: '#2a4060',
+  levelWarnText: '#5a4020',
+  levelErrorText: '#5a2020',
+  spanEnterText: '#2a6a40',
+  spanExitText: '#6a4020',
   particleSparkCore: '#fff8e0',
   particleSparkEmber: '#d4aa50',
   particleSparkSteel: '#c8c0b8',
@@ -258,6 +276,13 @@ export function createThemeStore(
   --level-info: ${c.levelInfo};
   --level-warn: ${c.levelWarn};
   --level-error: ${c.levelError};
+  --level-trace-text: ${c.levelTraceText};
+  --level-debug-text: ${c.levelDebugText};
+  --level-info-text: ${c.levelInfoText};
+  --level-warn-text: ${c.levelWarnText};
+  --level-error-text: ${c.levelErrorText};
+  --span-enter-text: ${c.spanEnterText};
+  --span-exit-text: ${c.spanExitText};
 }`;
 
     if (enableGpuOverrides) {
