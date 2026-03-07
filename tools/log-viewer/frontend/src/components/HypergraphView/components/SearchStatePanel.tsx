@@ -307,6 +307,11 @@ function PathGroupSection({ group }: { group: PathGroup }) {
         }
     };
 
+    const handleClose = (e: Event) => {
+        e.stopPropagation();
+        setActivePathId(null);
+    };
+
     return (
         <div class={`ssp-path-group ${isActive ? 'active-group' : ''} ${opClass}`}>
             <div class="ssp-group-header" onClick={handleGroupClick}>
@@ -317,6 +322,11 @@ function PathGroupSection({ group }: { group: PathGroup }) {
                     {formatPathIdShort(group.pathId)}
                 </span>
                 <span class="ssp-group-count">{group.events.length}</span>
+                {isActive && (
+                    <button class="ssp-group-close" onClick={handleClose} title="Close this search path">
+                        ✕
+                    </button>
+                )}
             </div>
 
             {isActive && !collapsed && (
