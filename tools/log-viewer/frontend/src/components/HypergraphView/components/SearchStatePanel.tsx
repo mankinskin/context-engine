@@ -434,7 +434,16 @@ export function SearchStatePanel() {
             const target = e.target as HTMLElement;
             if (target.closest('.file-list, .log-entries')) return;
 
-            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Escape') return;
+
+            if (e.key === 'Escape') {
+                if (hasGroups && activePathId.value) {
+                    e.preventDefault();
+                    setActivePathId(null);
+                }
+                return;
+            }
+
             e.preventDefault();
 
             const delta = e.key === 'ArrowDown' ? 1 : -1;
