@@ -14,3 +14,16 @@ export {
 } from './useMouseInteraction';
 export { useTouchInteraction } from './useTouchInteraction';
 export { useOverlayRenderer } from './useOverlayRenderer';
+export {
+    useNestingState,
+    nestingSettings,
+    nestingEnabled,
+    duplicateModeEnabled,
+    parentDepth,
+    childDepth,
+    setNestingEnabled,
+    setDuplicateMode,
+    setParentDepth,
+    setChildDepth,
+    type UseNestingStateResult,
+} from './useNestingState';

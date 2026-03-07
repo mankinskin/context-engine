@@ -170,6 +170,63 @@
     color: rgba(40, 180, 255, 1.0);
 }
 
+.hypergraph-hud .hg-hud-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.hypergraph-hud .hg-depth-control {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.hypergraph-hud .hg-depth-control label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+}
+
+.hypergraph-hud .hg-depth-control input[type="range"] {
+    width: 50px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.hypergraph-hud .hg-depth-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    background: rgba(40, 180, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.hypergraph-hud .hg-depth-control input[type="range"]::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    background: rgba(40, 180, 255, 0.8);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
+
+.hypergraph-hud .hg-depth-value {
+    min-width: 12px;
+    text-align: center;
+    color: rgba(40, 180, 255, 0.8);
+}
+
 .hypergraph-info {
     position: absolute;
     bottom: 12px;

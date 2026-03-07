@@ -168,31 +168,32 @@ export function useOverlayRenderer(
             const fov = Math.PI / 4;
             setOverlayWorldScale((2 * dist * Math.tan(fov / 2)) / vh);
 
-            // ── Decomposition management (pure DOM reparenting) ──
             const curVizState = vizStateRef.current;
-            const desiredExpanded = new Set<number>();
-            if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
-            // Use searchPath.root (the current/tentative root) rather than rootNode
-            // (from LocationInfo, which may be the old confirmed root).
-            // This ensures we expand the correct root during VisitParent transitions.
-            const sp = curVizState.searchPath;
-            if (sp?.root != null) {
-                desiredExpanded.add(sp.root.index);
-            }
-            // Prune: don't expand child of another expanded node
-            for (const idx of [...desiredExpanded]) {
-                const node = curLayout.nodeMap.get(idx);
-                if (!node) continue;
-                for (const otherIdx of desiredExpanded) {
-                    if (otherIdx === idx) continue;
-                    const other = curLayout.nodeMap.get(otherIdx);
-                    if (other && other.childIndices.includes(idx)) {
-                        desiredExpanded.delete(idx);
-                        break;
-                    }
-                }
-            }
-            decomposition.update(desiredExpanded);
+
+            //// ── Decomposition management (pure DOM reparenting) ──
+            //const desiredExpanded = new Set<number>();
+            //if (inter.selectedIdx >= 0) desiredExpanded.add(inter.selectedIdx);
+            //// Use searchPath.root (the current/tentative root) rather than rootNode
+            //// (from LocationInfo, which may be the old confirmed root).
+            //// This ensures we expand the correct root during VisitParent transitions.
+            //const sp = curVizState.searchPath;
+            //if (sp?.root != null) {
+            //    desiredExpanded.add(sp.root.index);
+            //}
+            //// Prune: don't expand child of another expanded node
+            //for (const idx of [...desiredExpanded]) {
+            //    const node = curLayout.nodeMap.get(idx);
+            //    if (!node) continue;
+            //    for (const otherIdx of desiredExpanded) {
+            //        if (otherIdx === idx) continue;
+            //        const other = curLayout.nodeMap.get(otherIdx);
+            //        if (other && other.childIndices.includes(idx)) {
+            //            desiredExpanded.delete(idx);
+            //            break;
+            //        }
+            //    }
+            //}
+            //decomposition.update(desiredExpanded);
 
             // ── Active-transform target management ──
             // Base positions are the force-directed equilibrium (ground truth).
@@ -288,7 +289,7 @@ export function useOverlayRenderer(
                 edgeBuildCtx.connectedEdgeKeys = cached.connectedEdgeKeys;
                 edgeBuildCtx.hiddenDecompEdgeKeys = curHiddenDecomp;
                 buildEdgeInstances(res.edgeDataBuf, edgeBuildCtx);
-                dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf);
+                dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf.buffer as ArrayBuffer);
                 prevVizState = curVizState;
                 prevSelectedIdx = inter.selectedIdx;
                 prevHoverIdx = inter.hoverIdx;
@@ -307,7 +308,7 @@ export function useOverlayRenderer(
                 cachedPaletteColors = currentColors;
                 cachedPaletteBuf = buildPaletteBuffer(currentColors);
             }
-            dev.queue.writeBuffer(res.paletteUB, 0, cachedPaletteBuf!);
+            dev.queue.writeBuffer(res.paletteUB, 0, cachedPaletteBuf!.buffer as ArrayBuffer);
 
             // ── Draw grid, edges ──
             pass.setPipeline(res.gridPipeline);
