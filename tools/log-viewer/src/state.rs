@@ -63,11 +63,7 @@ pub struct AppState {
 /// Create the application state from config
 pub fn create_app_state_from_config(config: &Config) -> AppState {
     let log_dir = config.resolve_log_dir();
-    // Signatures directory is sibling to log directory (target/debug_signatures/)
-    let signatures_dir = log_dir
-        .parent()
-        .unwrap_or(&log_dir)
-        .join("debug_signatures");
+    let signatures_dir = config.resolve_signatures_dir();
     AppState {
         log_dir,
         signatures_dir,

@@ -14,6 +14,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   resolve: {
+    preserveSymlinks: true,
     dedupe: ['preact', '@preact/signals', '@preact/signals-core'],
   },
   server: {

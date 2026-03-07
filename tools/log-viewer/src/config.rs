@@ -36,10 +36,26 @@ pub struct Config {
     pub log_dir: Option<PathBuf>,
     /// Workspace root for source file resolution
     pub workspace_root: Option<PathBuf>,
+    /// Directory containing debug signature JSON files.
+    /// Defaults to sibling of log_dir's parent: `<log_dir>/../debug_signatures`
+    pub signatures_dir: Option<PathBuf>,
+    /// Directory for pre-built static frontend files (production mode).
+    /// Defaults to `<CARGO_MANIFEST_DIR>/static`
+    pub static_dir: Option<PathBuf>,
+    /// Directory containing the Vite frontend project (dev mode).
+    /// Defaults to `<CARGO_MANIFEST_DIR>/frontend`
+    pub frontend_dir: Option<PathBuf>,
+    /// Directory for the server's own log files.
+    /// Defaults to `<CARGO_MANIFEST_DIR>/logs`
+    pub server_log_dir: Option<PathBuf>,
     /// Server configuration
     pub server: ServerConfig,
     /// Logging configuration
     pub logging: LoggingConfig,
+    /// Base directory relative to which paths in the config file are resolved.
+    /// Set automatically when loading from a file; not deserialized.
+    #[serde(skip)]
+    config_dir: Option<PathBuf>,
 }
 
 /// Server configuration
@@ -50,6 +66,8 @@ pub struct ServerConfig {
     pub host: String,
     /// Port to listen on
     pub port: u16,
+    /// Vite dev server port (dev mode only)
+    pub vite_port: u16,
 }
 
 impl Default for ServerConfig {
@@ -57,6 +75,7 @@ impl Default for ServerConfig {
         Self {
             host: "127.0.0.1".to_string(),
             port: 3000,
+            vite_port: 5173,
         }
     }
 }
@@ -95,12 +114,14 @@ impl Config {
         for path in config_paths {
             if path.exists() {
                 match fs::read_to_string(&path) {
-                    Ok(content) => match toml::from_str(&content) {
-                        Ok(config) => {
+                    Ok(content) => match toml::from_str::<Config>(&content) {
+                        Ok(mut config) => {
                             info!(
                                 "Loaded config from: {}",
                                 to_unix_path(&path)
                             );
+                            // Remember config file directory for resolving relative paths
+                            config.config_dir = path.parent().map(|p| p.to_path_buf());
                             return Some(config);
                         },
                         Err(e) => {
@@ -141,7 +162,11 @@ impl Config {
             paths.push(cwd.join("config").join("log-viewer.toml"));
         }
 
-        // 3. User config directory
+        // 3. Crate manifest directory (where the binary's Cargo.toml lives)
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        paths.push(manifest_dir.join("log-viewer.toml"));
+
+        // 4. User config directory
         if let Some(home) = dirs_path() {
             paths.push(
                 home.join(".config").join("log-viewer").join("config.toml"),
@@ -174,30 +199,78 @@ impl Config {
         }
     }
 
+    /// Resolve a path that may be relative to the config file's directory.
+    fn resolve_path(&self, p: &PathBuf) -> PathBuf {
+        if p.is_relative() {
+            if let Some(base) = &self.config_dir {
+                return base.join(p);
+            }
+        }
+        p.clone()
+    }
+
     /// Resolve log_dir with fallback logic
     pub fn resolve_log_dir(&self) -> PathBuf {
-        self.log_dir.clone().unwrap_or_else(|| {
-            // Default to target/test-logs in workspace root
-            let mut path =
-                env::current_dir().expect("Failed to get current directory");
-            // Try to find workspace root by looking for Cargo.toml
-            while !path.join("Cargo.toml").exists() && path.parent().is_some() {
-                path = path.parent().unwrap().to_path_buf();
-            }
-            path.join("target").join("test-logs")
-        })
+        if let Some(p) = &self.log_dir {
+            return self.resolve_path(p);
+        }
+        // Default to target/test-logs in workspace root
+        let mut path =
+            env::current_dir().expect("Failed to get current directory");
+        while !path.join("Cargo.toml").exists() && path.parent().is_some() {
+            path = path.parent().unwrap().to_path_buf();
+        }
+        path.join("target").join("test-logs")
     }
 
     /// Resolve workspace_root with fallback logic
     pub fn resolve_workspace_root(&self) -> PathBuf {
-        self.workspace_root.clone().unwrap_or_else(|| {
-            let mut path =
-                env::current_dir().expect("Failed to get current directory");
-            while !path.join("Cargo.toml").exists() && path.parent().is_some() {
-                path = path.parent().unwrap().to_path_buf();
-            }
-            path
-        })
+        if let Some(p) = &self.workspace_root {
+            return self.resolve_path(p);
+        }
+        let mut path =
+            env::current_dir().expect("Failed to get current directory");
+        while !path.join("Cargo.toml").exists() && path.parent().is_some() {
+            path = path.parent().unwrap().to_path_buf();
+        }
+        path
+    }
+
+    /// Resolve signatures_dir.
+    /// Defaults to `<log_dir>/../debug_signatures`.
+    pub fn resolve_signatures_dir(&self) -> PathBuf {
+        if let Some(p) = &self.signatures_dir {
+            return self.resolve_path(p);
+        }
+        let log_dir = self.resolve_log_dir();
+        log_dir.parent().unwrap_or(&log_dir).join("debug_signatures")
+    }
+
+    /// Resolve static_dir (pre-built frontend assets for production).
+    /// Defaults to `<CARGO_MANIFEST_DIR>/static`.
+    pub fn resolve_static_dir(&self) -> PathBuf {
+        if let Some(p) = &self.static_dir {
+            return self.resolve_path(p);
+        }
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static")
+    }
+
+    /// Resolve frontend_dir (Vite project root for dev mode).
+    /// Defaults to `<CARGO_MANIFEST_DIR>/frontend`.
+    pub fn resolve_frontend_dir(&self) -> PathBuf {
+        if let Some(p) = &self.frontend_dir {
+            return self.resolve_path(p);
+        }
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("frontend")
+    }
+
+    /// Resolve server_log_dir (where the server writes its own logs).
+    /// Defaults to `<CARGO_MANIFEST_DIR>/logs`.
+    pub fn resolve_server_log_dir(&self) -> PathBuf {
+        if let Some(p) = &self.server_log_dir {
+            return self.resolve_path(p);
+        }
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs")
     }
 }
 

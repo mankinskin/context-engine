@@ -41,7 +41,6 @@ use config::Config;
 use std::{
     env,
     net::SocketAddr,
-    path::PathBuf,
 };
 use viewer_api::{
     display_host,
@@ -78,7 +77,7 @@ pub use types::{
 
 /// Initialize tracing with optional file output
 fn init_tracing(config: &Config) {
-    let log_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs");
+    let log_dir = config.resolve_server_log_dir();
     let tracing_config = TracingConfig {
         level: config.logging.level.clone(),
         file_logging: config.logging.file_logging,
@@ -118,13 +117,12 @@ async fn main() {
         info!(workspace_root = %to_unix_path(&state.workspace_root), "Workspace root");
 
         // Frontend serving: dev proxy or static files
-        let vite_port = 5173u16;
+        let vite_port = config.server.vite_port;
         let _dev_server; // held alive for the lifetime of the server
         let frontend_mode;
 
         if dev_mode {
-            let frontend_dir =
-                PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("frontend");
+            let frontend_dir = config.resolve_frontend_dir();
             info!(frontend_dir = %to_unix_path(&frontend_dir), port = vite_port, "Starting Vite dev server");
 
             match viewer_api::dev_proxy::DevServer::start(
@@ -145,8 +143,7 @@ async fn main() {
             }
         } else {
             _dev_server = None;
-            let static_dir =
-                PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static");
+            let static_dir = config.resolve_static_dir();
             info!(static_dir = %to_unix_path(&static_dir), "Static directory");
             frontend_mode = router::FrontendMode::Static(static_dir);
         }
@@ -181,6 +178,7 @@ mod tests {
     use std::{
         collections::HashMap,
         fs,
+        path::PathBuf,
         sync::{
             Arc,
             RwLock,
