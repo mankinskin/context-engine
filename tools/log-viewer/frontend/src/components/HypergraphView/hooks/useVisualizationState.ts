@@ -363,6 +363,11 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isSelected = nodeIndex === selectedNode && !isStart;
     const isRoot = nodeIndex === rootNode;
 
+    // When a child_match transition is active, suppress parent-related
+    // highlights — only the matched child node (and its inbound edge)
+    // should draw attention.
+    const suppressParentHighlight = matchedNode != null && nodeIndex !== matchedNode;
+
     // Search path node roles — all nodes in the search path get the same
     // start-path or end-path highlight; sp-start/sp-root are additive badges.
     const spStartNode = searchPath?.start_node?.index ?? -1;
@@ -396,17 +401,17 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isDimmed = hasVizState && !involvedNodes.has(nodeIndex) && !isInSearchPath && !isQueryToken;
 
     return [
-        isStart && 'viz-start',
-        isSelected && 'viz-selected',
-        isRoot && !viz.rootTentative && 'viz-root',
-        isRoot && viz.rootTentative && 'viz-root-tentative',
-        isCandidateParent && 'viz-candidate-parent',
+        isStart && !suppressParentHighlight && 'viz-start',
+        isSelected && !suppressParentHighlight && 'viz-selected',
+        isRoot && !viz.rootTentative && !suppressParentHighlight && 'viz-root',
+        isRoot && viz.rootTentative && !suppressParentHighlight && 'viz-root-tentative',
+        isCandidateParent && !suppressParentHighlight && 'viz-candidate-parent',
         isCandidateChild && 'viz-candidate-child',
         isMatched && 'viz-matched',
         isMismatched && 'viz-mismatched',
-        isPath && 'viz-path',
+        isPath && !suppressParentHighlight && 'viz-path',
         isCompleted && 'viz-completed',
-        isPendingParent && 'viz-pending-parent',
+        isPendingParent && !suppressParentHighlight && 'viz-pending-parent',
         isPendingChild && 'viz-pending-child',
         isSpStart && 'viz-sp-start',
         isSpRoot && 'viz-sp-root',
