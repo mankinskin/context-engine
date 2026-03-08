@@ -23,21 +23,39 @@
 use axum::{
     body::Body,
     extract::Request,
-    response::{IntoResponse, Response},
+    response::{
+        IntoResponse,
+        Response,
+    },
     Router,
 };
 use hyper::StatusCode;
 use hyper_util::{
     client::legacy::Client,
-    rt::{TokioExecutor, TokioIo},
+    rt::{
+        TokioExecutor,
+        TokioIo,
+    },
 };
 use std::{
-    path::Path,
-    process::{Child, Command, Stdio},
+    path::{
+        Path,
+        PathBuf,
+    },
+    process::{
+        Child,
+        Command,
+        Stdio,
+    },
     time::Duration,
 };
 use tokio::time::sleep;
-use tracing::{debug, error, info, warn};
+use tracing::{
+    debug,
+    error,
+    info,
+    warn,
+};
 
 /// A running Vite dev server process.
 ///
@@ -62,24 +80,51 @@ impl DevServer {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         info!(dir = %frontend_dir.display(), port, "Starting Vite dev server");
 
-        // On Windows, npx is a .cmd file — must invoke through cmd.exe
+        // Ensure npm dependencies are installed before starting Vite
+        ensure_npm_installed(frontend_dir)?;
+
+        // Try spawning vite. On Windows (or WSL bash.exe), npx is a .cmd
+        // file that must be invoked through cmd.exe. We try the native
+        // approach first and fall back to cmd.exe if it fails.
         let child = if cfg!(windows) {
             Command::new("cmd")
                 .args([
-                    "/c", "npx", "vite", "--port",
-                    &port.to_string(), "--strictPort",
+                    "/c",
+                    "npx",
+                    "vite",
+                    "--port",
+                    &port.to_string(),
+                    "--strictPort",
                 ])
                 .current_dir(frontend_dir)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .spawn()
         } else {
+            // On Linux / WSL: try npx directly first, fall back to cmd.exe
+            // (covers WSL bash.exe running on Windows where npx may be a .cmd)
             Command::new("npx")
                 .args(["vite", "--port", &port.to_string(), "--strictPort"])
                 .current_dir(frontend_dir)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .spawn()
+                .or_else(|_| {
+                    debug!("npx not found directly, trying via cmd.exe (WSL/bash.exe)");
+                    Command::new("cmd.exe")
+                        .args([
+                            "/c",
+                            "npx",
+                            "vite",
+                            "--port",
+                            &port.to_string(),
+                            "--strictPort",
+                        ])
+                        .current_dir(frontend_dir)
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .spawn()
+                })
         }
         .map_err(|e| {
             format!(
@@ -103,7 +148,7 @@ impl DevServer {
 
     /// Poll until the Vite server responds to HTTP requests.
     async fn wait_until_ready(
-        &mut self,
+        &mut self
     ) -> Result<(), Box<dyn std::error::Error>> {
         let url = format!("http://localhost:{}", self.port);
         let max_attempts = 50; // 50 * 200ms = 10 seconds max
@@ -112,11 +157,48 @@ impl DevServer {
         for attempt in 1..=max_attempts {
             // Check if the process has already exited (crashed)
             if let Some(status) = self.child.try_wait()? {
-                return Err(format!(
+                // Capture stderr so the user can see why Vite failed
+                let stderr_output = self
+                    .child
+                    .stderr
+                    .take()
+                    .and_then(|mut err| {
+                        let mut buf = String::new();
+                        std::io::Read::read_to_string(&mut err, &mut buf)
+                            .ok()?;
+                        Some(buf)
+                    })
+                    .unwrap_or_default();
+
+                let stdout_output = self
+                    .child
+                    .stdout
+                    .take()
+                    .and_then(|mut out| {
+                        let mut buf = String::new();
+                        std::io::Read::read_to_string(&mut out, &mut buf)
+                            .ok()?;
+                        Some(buf)
+                    })
+                    .unwrap_or_default();
+
+                let mut msg = format!(
                     "Vite process exited early with status: {}",
                     status
-                )
-                .into());
+                );
+                if !stdout_output.trim().is_empty() {
+                    msg.push_str(&format!(
+                        "\n\n--- stdout ---\n{}",
+                        stdout_output.trim()
+                    ));
+                }
+                if !stderr_output.trim().is_empty() {
+                    msg.push_str(&format!(
+                        "\n\n--- stderr ---\n{}",
+                        stderr_output.trim()
+                    ));
+                }
+                return Err(msg.into());
             }
 
             // Try connecting
@@ -129,13 +211,13 @@ impl DevServer {
                 Ok(_) => {
                     debug!(attempt, url, "Vite dev server responded");
                     return Ok(());
-                }
+                },
                 Err(_) => {
                     if attempt % 10 == 0 {
                         debug!(attempt, "Waiting for Vite dev server...");
                     }
                     sleep(delay).await;
-                }
+                },
             }
         }
 
@@ -164,6 +246,125 @@ impl Drop for DevServer {
     }
 }
 
+/// Ensure npm dependencies are installed in the given directory.
+///
+/// Checks for the `vite` binary inside `node_modules/.bin/`; if missing,
+/// runs `npm install`. This catches both a completely missing `node_modules`
+/// and a partial/stale install where vite was never fetched.
+/// Also resolves any `file:` dependencies in `package.json` and installs
+/// those first (e.g. shared workspace packages like `viewer-api/frontend`).
+fn ensure_npm_installed(
+    frontend_dir: &Path
+) -> Result<(), Box<dyn std::error::Error>> {
+    // Check for the vite binary — look for both Unix and Windows variants
+    // regardless of compile target, because we may be running under WSL
+    // bash.exe where cfg!(windows) is false but npm installed .cmd shims.
+    let bin_dir = frontend_dir.join("node_modules/.bin");
+    let has_vite =
+        bin_dir.join("vite").exists() || bin_dir.join("vite.cmd").exists();
+
+    if has_vite {
+        debug!(dir = %frontend_dir.display(), "vite binary found, skipping npm install");
+        return Ok(());
+    }
+
+    info!(dir = %frontend_dir.display(), "vite not found — running npm install");
+
+    // Resolve local file: dependencies from package.json so they are
+    // installed first (they may have their own node_modules).
+    if let Ok(pkg_contents) =
+        std::fs::read_to_string(frontend_dir.join("package.json"))
+    {
+        for dep_dir in resolve_file_deps(&pkg_contents, frontend_dir) {
+            if !dep_dir.join("node_modules").exists() {
+                info!(dep = %dep_dir.display(), "Installing local file: dependency");
+                run_npm_install(&dep_dir)?;
+            }
+        }
+    }
+
+    run_npm_install(frontend_dir)
+}
+
+/// Run `npm install` in the given directory, returning an error on failure.
+fn run_npm_install(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    let status = if cfg!(windows) {
+        Command::new("cmd")
+            .args(["/c", "npm", "install"])
+            .current_dir(dir)
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+    } else {
+        // Try npm directly first, fall back to cmd.exe for WSL bash.exe
+        Command::new("npm")
+            .arg("install")
+            .current_dir(dir)
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+            .or_else(|_| {
+                debug!(
+                    "npm not found directly, trying via cmd.exe (WSL/bash.exe)"
+                );
+                Command::new("cmd.exe")
+                    .args(["/c", "npm", "install"])
+                    .current_dir(dir)
+                    .stdout(Stdio::inherit())
+                    .stderr(Stdio::inherit())
+                    .status()
+            })
+    }
+    .map_err(|e| {
+        format!(
+            "Failed to run npm install in {} (is Node.js installed?): {}",
+            dir.display(),
+            e
+        )
+    })?;
+
+    if !status.success() {
+        return Err(format!(
+            "npm install failed in {} with status: {}",
+            dir.display(),
+            status
+        )
+        .into());
+    }
+
+    info!(dir = %dir.display(), "npm install completed successfully");
+    Ok(())
+}
+
+/// Parse `package.json` content and return resolved paths for any `file:`
+/// dependencies so they can be installed before the main project.
+fn resolve_file_deps(
+    pkg_json: &str,
+    base_dir: &Path,
+) -> Vec<PathBuf> {
+    let mut dirs = Vec::new();
+
+    // Simple JSON value parsing — look for "file:..." strings in
+    // dependencies / devDependencies without pulling in a full JSON parser
+    // (serde_json is not a dependency of this crate).
+    for line in pkg_json.lines() {
+        let trimmed = line.trim();
+        // Match patterns like:  "some-pkg": "file:../../viewer-api/frontend"
+        if let Some(pos) = trimmed.find("\"file:") {
+            let after = &trimmed[pos + 6..]; // skip `"file:`
+            if let Some(end) = after.find('"') {
+                let rel_path = &after[..end];
+                let resolved = base_dir.join(rel_path);
+                if resolved.join("package.json").exists() {
+                    dirs.push(resolved);
+                }
+            }
+        }
+    }
+
+    dirs
+}
+
 /// Create a fallback router that proxies all requests to a Vite dev server.
 ///
 /// Handles both regular HTTP requests and WebSocket upgrades (for HMR).
@@ -176,21 +377,20 @@ pub fn dev_proxy_fallback(vite_port: u16) -> Router {
 /// Proxy a single request to the Vite dev server.
 ///
 /// Dispatches to either HTTP or WebSocket proxy based on the request headers.
-async fn proxy_request(req: Request, vite_port: u16) -> Response {
+async fn proxy_request(
+    req: Request,
+    vite_port: u16,
+) -> Response {
     let is_upgrade = is_websocket_upgrade(&req);
 
     // Build the proxied URI
     let uri = req.uri();
-    let path_and_query = uri
-        .path_and_query()
-        .map(|pq| pq.as_str())
-        .unwrap_or("/");
-    let upstream_uri: hyper::Uri = format!(
-        "http://localhost:{}{}",
-        vite_port, path_and_query
-    )
-    .parse()
-    .unwrap();
+    let path_and_query =
+        uri.path_and_query().map(|pq| pq.as_str()).unwrap_or("/");
+    let upstream_uri: hyper::Uri =
+        format!("http://localhost:{}{}", vite_port, path_and_query)
+            .parse()
+            .unwrap();
 
     debug!(
         upstream = %upstream_uri,
@@ -216,9 +416,11 @@ fn is_websocket_upgrade(req: &Request) -> bool {
 }
 
 /// Proxy a regular HTTP request.
-async fn proxy_http(req: Request, upstream_uri: hyper::Uri) -> Response {
-    let client = Client::builder(TokioExecutor::new())
-        .build_http::<Body>();
+async fn proxy_http(
+    req: Request,
+    upstream_uri: hyper::Uri,
+) -> Response {
+    let client = Client::builder(TokioExecutor::new()).build_http::<Body>();
 
     // Rebuild the request with the upstream URI
     let (mut parts, body) = req.into_parts();
@@ -233,12 +435,9 @@ async fn proxy_http(req: Request, upstream_uri: hyper::Uri) -> Response {
         Ok(resp) => resp.into_response(),
         Err(e) => {
             error!(error = %e, "Failed to proxy request to Vite");
-            (
-                StatusCode::BAD_GATEWAY,
-                format!("Dev proxy error: {}", e),
-            )
+            (StatusCode::BAD_GATEWAY, format!("Dev proxy error: {}", e))
                 .into_response()
-        }
+        },
     }
 }
 
@@ -255,24 +454,18 @@ async fn proxy_websocket(
 ) -> Response {
     // Extract the browser's upgrade handle BEFORE consuming the request.
     // Axum/hyper stores this in request extensions.
-    let browser_upgrade = match req
-        .extensions_mut()
-        .remove::<hyper::upgrade::OnUpgrade>()
-    {
-        Some(u) => u,
-        None => {
-            error!("WebSocket request missing OnUpgrade extension");
-            return (
-                StatusCode::BAD_REQUEST,
-                "Missing upgrade extension",
-            )
-                .into_response();
-        }
-    };
+    let browser_upgrade =
+        match req.extensions_mut().remove::<hyper::upgrade::OnUpgrade>() {
+            Some(u) => u,
+            None => {
+                error!("WebSocket request missing OnUpgrade extension");
+                return (StatusCode::BAD_REQUEST, "Missing upgrade extension")
+                    .into_response();
+            },
+        };
 
     // Build and send the upgrade request to Vite
-    let client = Client::builder(TokioExecutor::new())
-        .build_http::<Body>();
+    let client = Client::builder(TokioExecutor::new()).build_http::<Body>();
 
     let (mut parts, body) = req.into_parts();
     parts.uri = upstream_uri;
@@ -289,7 +482,7 @@ async fn proxy_websocket(
                 format!("Dev proxy WebSocket error: {}", e),
             )
                 .into_response();
-        }
+        },
     };
 
     if vite_resp.status() != StatusCode::SWITCHING_PROTOCOLS {
@@ -319,7 +512,7 @@ async fn proxy_websocket(
             Err(e) => {
                 error!(error = %e, "Vite WebSocket upgrade IO failed");
                 return;
-            }
+            },
         };
 
         let browser_upgraded = match browser_upgrade.await {
@@ -327,26 +520,24 @@ async fn proxy_websocket(
             Err(e) => {
                 error!(error = %e, "Browser WebSocket upgrade IO failed");
                 return;
-            }
+            },
         };
 
         let mut vite_io = TokioIo::new(vite_upgraded);
         let mut browser_io = TokioIo::new(browser_upgraded);
 
-        match tokio::io::copy_bidirectional(&mut browser_io, &mut vite_io)
-            .await
+        match tokio::io::copy_bidirectional(&mut browser_io, &mut vite_io).await
         {
             Ok((browser_to_vite, vite_to_browser)) => {
                 debug!(
                     browser_to_vite,
-                    vite_to_browser,
-                    "WebSocket proxy connection closed"
+                    vite_to_browser, "WebSocket proxy connection closed"
                 );
-            }
+            },
             Err(e) => {
                 // Connection reset is normal when a side closes
                 debug!(error = %e, "WebSocket proxy pipe ended");
-            }
+            },
         }
     });
 
@@ -360,6 +551,6 @@ async fn proxy_websocket(
                 "Failed to build upgrade response",
             )
                 .into_response()
-        }
+        },
     }
 }
