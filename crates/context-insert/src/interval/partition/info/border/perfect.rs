@@ -11,7 +11,7 @@ use derive_more::{
 
 use context_trace::*;
 
-pub trait BoolPerfect: Default + Debug + Clone {
+pub(crate) trait BoolPerfect: Default + Debug + Clone {
     type Result: BorderPerfect<Boolean = Self>;
     fn then_some(
         self,
@@ -46,7 +46,9 @@ impl BoolPerfect for (bool, bool) {
     }
 }
 
-pub trait BorderPerfect: Default + Debug + Clone + Extend<Self> {
+pub(crate) trait BorderPerfect:
+    Default + Debug + Clone + Extend<Self>
+{
     type Boolean: BoolPerfect<Result = Self>;
     fn new(
         boolean: Self::Boolean,
@@ -54,13 +56,17 @@ pub trait BorderPerfect: Default + Debug + Clone + Extend<Self> {
     ) -> Self;
     fn complete(&self) -> SinglePerfect;
     fn to_bool(self) -> Self::Boolean;
+    fn all_perfect_pattern(self) -> SinglePerfect;
 }
 
 #[derive(Debug, Default, Clone, Copy, From, Into, Deref)]
-pub struct SinglePerfect(pub Option<PatternId>);
+pub(crate) struct SinglePerfect(pub(crate) Option<PatternId>);
 
 #[derive(Debug, Default, Clone, Copy, From, Into)]
-pub struct DoublePerfect(pub Option<PatternId>, pub Option<PatternId>);
+pub(crate) struct DoublePerfect(
+    pub(crate) Option<PatternId>,
+    pub(crate) Option<PatternId>,
+);
 
 impl std::ops::Add for SinglePerfect {
     type Output = Self;
@@ -155,6 +161,9 @@ impl BorderPerfect for SinglePerfect {
     fn to_bool(self) -> Self::Boolean {
         self.0.is_some()
     }
+    fn all_perfect_pattern(self) -> SinglePerfect {
+        self
+    }
 }
 
 impl BorderPerfect for DoublePerfect {
@@ -180,5 +189,8 @@ impl BorderPerfect for DoublePerfect {
     }
     fn to_bool(self) -> Self::Boolean {
         (self.0.is_some(), self.1.is_some())
+    }
+    fn all_perfect_pattern(self) -> SinglePerfect {
+        SinglePerfect(self.0.and_then(|pid| self.1.filter(|i| *i == pid)))
     }
 }

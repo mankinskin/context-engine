@@ -1,6 +1,6 @@
 use crate::{
     interval::partition::info::{
-        border::visit::VisitBorders,
+        border::info::InfoBorder,
         range::{
             InnerRangeInfo,
             role::{
@@ -12,20 +12,20 @@ use crate::{
     split::vertex::pattern::HasPatternTraceCtx,
 };
 
-pub trait TraceBorders<R: RangeRole>: VisitBorders<R> {
+pub(crate) trait TraceBorders<R: RangeRole>: InfoBorder<R> {
     fn inner_info(
         &self,
-        ctx: &ModePatternCtxOf<'_, R>,
+        ctx: &ModePatternCtxOf<R>,
     ) -> Option<InnerRangeInfo<R>>;
 }
 
 impl<R: RangeRole> TraceBorders<R> for R::Borders {
     fn inner_info(
         &self,
-        ctx: &ModePatternCtxOf<'_, R>,
+        ctx: &ModePatternCtxOf<R>,
     ) -> Option<InnerRangeInfo<R>> {
         let pctx = ctx.pattern_trace_context();
-        self.inner_range_offsets(pctx.pattern).map(move |offsets| {
+        self.inner_range_offsets(&pctx.pattern).map(move |offsets| {
             InnerRangeInfo {
                 range: self.inner_range(),
                 offsets,

@@ -17,7 +17,7 @@ use crate::{
     interval::partition::{
         ToPartition,
         info::{
-            border::visit::VisitBorders,
+            border::info::InfoBorder,
             range::role::ModeNodeCtxOf,
         },
     },
@@ -32,22 +32,26 @@ use crate::{
 };
 use context_trace::*;
 
-pub mod border;
-pub mod borders;
-pub mod range;
+pub(crate) mod border;
+pub(crate) mod borders;
+pub(crate) mod range;
 
 #[derive(Debug, Default)]
-pub struct PartitionInfo<R: RangeRole> {
-    pub patterns: HashMap<PatternId, PatternInfoOf<R>>,
-    pub perfect: R::Perfect,
+pub(crate) struct PartitionInfo<R: RangeRole> {
+    pub(crate) patterns: HashMap<PatternId, PatternInfoOf<R>>,
+    pub(crate) perfect: R::Perfect,
 }
 
-pub type PatternCtxs<'t, R> = HashMap<PatternId, ModePatternCtxOf<'t, R>>;
+/// Type alias for pattern contexts by pattern ID.
+/// With interior mutability, pattern contexts own their data.
+pub(crate) type PatternCtxs<R> = HashMap<PatternId, ModePatternCtxOf<R>>;
 
-pub trait PartitionBorderKey: Hash + Eq {}
+pub(crate) trait PartitionBorderKey: Hash + Eq {}
 
 impl<T: Hash + Eq> PartitionBorderKey for T {}
-pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
+pub(crate) trait InfoPartition<R: RangeRole>:
+    Sized + Clone + ToPartition<R>
+{
     fn info_borders(
         &self,
         ctx: &PatternTraceCtx,
@@ -56,14 +60,17 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
         // todo detect if prev offset is in same index (to use inner partition as result)
         let pctx = ctx.pattern_trace_context();
         let splits = part.offsets.get(&pctx.loc.pattern_id).unwrap();
+        // Get atom position for recalculating sub_index from current pattern
+        // The AtomPos type is generic: NonZeroUsize for Pre/Post, (NonZeroUsize, NonZeroUsize) for In
+        let atom_pos = part.offsets.atom_pos();
 
-        R::Borders::info_border(pctx.pattern, &splits)
+        R::Borders::info_border(&pctx.pattern, &splits, atom_pos)
     }
 
-    fn pattern_ctxs<'a: 'b, 'b>(
-        &'b self,
-        ctx: &'b ModeNodeCtxOf<'a, 'b, R>,
-    ) -> PatternCtxs<'b, R> {
+    fn pattern_ctxs<'a>(
+        &self,
+        ctx: &ModeNodeCtxOf<'a, R>,
+    ) -> PatternCtxs<R> {
         let part = self.clone().to_partition();
         part.offsets
             .ids()
@@ -73,13 +80,9 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
 
     /// bundle pattern range infos of each pattern
     /// or extract complete token for range
-    fn partition_borders<
-        'a: 'b,
-        'b,
-        C: PartitionBorderKey + From<ModePatternCtxOf<'b, R>>,
-    >(
-        &'b self,
-        ctx: &'b ModeNodeCtxOf<'a, 'b, R>,
+    fn partition_borders<C: PartitionBorderKey + From<ModePatternCtxOf<R>>>(
+        &self,
+        ctx: &ModeNodeCtxOf<'_, R>,
     ) -> PartitionBorders<R, C> {
         let ctxs = self.pattern_ctxs(ctx);
         let (perfect, borders): (R::Perfect, HashMap<_, _>) = ctxs
@@ -95,9 +98,9 @@ pub trait InfoPartition<R: RangeRole>: Sized + Clone + ToPartition<R> {
             .unzip();
         PartitionBorders { borders, perfect }
     }
-    fn info_partition<'a: 'b, 'b>(
-        &'b self,
-        ctx: &'b ModeNodeCtxOf<'a, 'b, R>,
+    fn info_partition<'a>(
+        &self,
+        ctx: &ModeNodeCtxOf<'a, R>,
     ) -> Result<PartitionInfo<R>, Token> {
         self.partition_borders(ctx).into_partition_info()
     }

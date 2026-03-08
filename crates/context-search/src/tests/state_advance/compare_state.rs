@@ -18,13 +18,14 @@ use {
 #[test]
 fn test_compare_state_candidate_advance() {
     // Create a graph with pattern: [a, b, c]
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
         (_abc, _abc_id) => [ab, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create a CompareState<Candidate, Candidate>
     let root = IndexRoot::from(
@@ -107,13 +108,14 @@ fn test_compare_state_candidate_advance() {
 #[test]
 fn test_compare_state_matched_advance() {
     // Create a graph
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (ab, _ab_id) => [a, b],
         (abc, abc_id) => [ab, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create a CompareState<Matched, Matched>
     let root = IndexRoot::from(

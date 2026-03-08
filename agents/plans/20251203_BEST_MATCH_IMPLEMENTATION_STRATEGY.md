@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-search` `#algorithm` `#debugging` `#testing` `#performance`
+summary: Implement proper best match tracking and trace cache commitment according to the desired algorithm:
+status: 📋
+---
+
 # Best Match Checkpointing & Trace Cache Implementation Strategy
 
 ## Goal

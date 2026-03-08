@@ -90,7 +90,7 @@ impl<EndNode: PathNode> CompareState<Matched, Matched, EndNode> {
         mut self,
         trav: &G,
     ) -> QueryAdvanceResult<EndNode> {
-        debug!(
+        trace!(
             cursor = %self.query.candidate(),
             "advancing query cursor only"
         );
@@ -177,7 +177,7 @@ impl CompareState<Candidate, Matched, PositionAnnotated<ChildLocation>> {
                         );
                         let inner_width = trav
                             .graph()
-                            .expect_vertex(pattern_location.parent)
+                            .expect_vertex_data(pattern_location.parent)
                             .expect_child_range_offset(&full_sub_range);
                         debug_assert_eq!(
                             child_state.exit_pos.0,

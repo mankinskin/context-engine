@@ -66,6 +66,7 @@ fn prefix1() {
         ..
     } = &*Env1::get();
     let _tracing = init_test_tracing!(graph);
+    graph.emit_graph_snapshot();
 
     let query = vec![*a, *bc, *d, *e];
     let res: Response = graph.find_ancestor(query).unwrap();
@@ -142,6 +143,7 @@ fn prefix1() {
                     ),
                 ]),
             },
+            events: vec![],
         }
     );
 }
@@ -173,6 +175,7 @@ fn postfix1() {
         ..
     } = &*Env1::get();
     let _tracing = init_test_tracing!(graph);
+    graph.emit_graph_snapshot();
 
     let query = vec![*c, *d, *ef, *ghi];
     let res: Response = graph.find_ancestor(query).unwrap();
@@ -238,6 +241,7 @@ fn postfix1() {
                     ),
                 ]),
             },
+            events: vec![],
         }
     );
 }
@@ -273,6 +277,7 @@ fn range1() {
         ..
     } = &*Env1::get();
     let _tracing = init_test_tracing!(graph);
+    graph.emit_graph_snapshot();
 
     let query = vec![*bc, *d, *e];
     let res: Response = graph.find_ancestor(query).unwrap();
@@ -374,7 +379,8 @@ fn range1() {
                         },
                     ),
                 ]),
-            }
+            },
+            events: vec![],
         }
     );
 }

@@ -13,29 +13,30 @@ use crate::split::{
 };
 use context_trace::*;
 
-pub mod borders;
+pub(crate) mod borders;
 
-#[derive(Debug, Deref, DerefMut, Derivative)]
+/// Pattern join context that owns its data.
+///
+/// With interior mutability, we can't hold references across lock boundaries,
+/// so this struct owns the pattern and split map data.
+#[derive(Debug, Clone, Deref, DerefMut, Derivative)]
 #[derivative(Hash, PartialEq, Eq)]
-pub struct PatternJoinCtx<'p> {
+pub(crate) struct PatternJoinCtx {
     #[deref]
     #[deref_mut]
-    pub ctx: PatternTraceCtx<'p>,
+    pub(crate) ctx: PatternTraceCtx,
     #[derivative(Hash = "ignore", PartialEq = "ignore")]
-    pub splits: &'p SplitMap,
+    pub(crate) splits: SplitMap,
 }
 
-impl HasPatternTraceCtx for PatternJoinCtx<'_> {
-    fn pattern_trace_context<'b>(&'b self) -> PatternTraceCtx<'b>
-    where
-        Self: 'b,
-    {
+impl HasPatternTraceCtx for PatternJoinCtx {
+    fn pattern_trace_context(&self) -> PatternTraceCtx {
         self.ctx.clone()
     }
 }
 
-impl<'p> From<PatternJoinCtx<'p>> for PatternId {
-    fn from(value: PatternJoinCtx<'p>) -> Self {
+impl From<PatternJoinCtx> for PatternId {
+    fn from(value: PatternJoinCtx) -> Self {
         Self::from(value.ctx)
     }
 }

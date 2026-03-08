@@ -14,9 +14,7 @@ use crate::{
             },
         },
         structs::rooted::{
-            role_path::{
-                HasRootChildIndex,
-            },
+            role_path::HasRootChildIndex,
             root::RootedPath,
         },
     },
@@ -47,7 +45,7 @@ pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
         &self,
         trav: &G,
     ) -> Token {
-        *trav.graph().expect_child_at(
+        trav.graph().expect_child_at(
             <_ as GraphRootChild<R>>::graph_root_child_location(self),
         )
     }
@@ -58,7 +56,7 @@ pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
         let i = self.graph_root_child_location().sub_index;
         let g = trav.graph();
         let p = self.graph_root_pattern::<G>(&g);
-        TokenWidth(R::outer_ctx_width(p, i))
+        TokenWidth(R::outer_ctx_width(&p, i))
     }
     fn get_inner_width<G: HasGraph>(
         &self,
@@ -67,7 +65,7 @@ pub trait GraphRootChild<R: PathRole>: RootedPath + GraphRootPattern {
         let i = self.graph_root_child_location().sub_index;
         let g = trav.graph();
         let p = self.graph_root_pattern::<G>(&g);
-        TokenWidth(R::inner_width(p, i))
+        TokenWidth(R::inner_width(&p, i))
     }
 }
 impl<R: PathRole> GraphRootChild<R> for ChildLocation {
@@ -75,7 +73,9 @@ impl<R: PathRole> GraphRootChild<R> for ChildLocation {
         *self
     }
 }
-impl<R: PathRole, T: GraphRootChild<R>> GraphRootChild<R> for PositionAnnotated<T> {
+impl<R: PathRole, T: GraphRootChild<R>> GraphRootChild<R>
+    for PositionAnnotated<T>
+{
     fn graph_root_child_location(&self) -> ChildLocation {
         self.node.graph_root_child_location()
     }

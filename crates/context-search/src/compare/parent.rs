@@ -17,7 +17,7 @@ use std::{
     fmt::Debug,
     marker::PhantomData,
 };
-use tracing::debug;
+use tracing::trace;
 
 use crate::compare::state::PathPairMode::GraphMajor;
 use context_trace::trace::cache::key::directed::down::{
@@ -52,7 +52,7 @@ impl StateAdvance for ParentCompareState {
         match self.parent_state.advance_state(trav) {
             Ok(next) => {
                 // Keep the cursor as a range path to properly track start/end positions
-                debug!(
+                trace!(
                     child_cursor=%next.child_state,
                     "Created child_cursor from parent_state"
                 );
@@ -64,8 +64,12 @@ impl StateAdvance for ParentCompareState {
 
                 // Clone and simplify the path, then convert to position-annotated
                 let mut simplified_path = next.child_state.path.clone();
-                simplified_path.child_path_mut::<Start, _>().simplify(trav);
-                simplified_path.child_path_mut::<End, _>().simplify(trav);
+                simplified_path
+                    .role_path_mut_with::<Start, _>()
+                    .simplify(trav);
+                simplified_path
+                    .role_path_mut_with::<End, _>()
+                    .simplify(trav);
 
                 // Convert to position-annotated path for both working cursor and checkpoint
                 let annotated_path = simplified_path

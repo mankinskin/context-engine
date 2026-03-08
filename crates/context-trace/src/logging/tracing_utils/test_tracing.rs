@@ -18,71 +18,24 @@ use tracing_subscriber::{
 
 use super::{
     config::TracingConfig,
+    debug_to_json::{
+        self,
+        SignatureStore,
+    },
     formatter::CompactFieldsFormatter,
     panic::install_panic_hook,
+    special_fields::SpecialFieldExtractor,
     timer::CompactTimer,
+    writers::{
+        FlushingWriter,
+        PrettyJsonWriter,
+    },
 };
 
+#[cfg(any(test, feature = "test-api"))]
+use super::graph_ref::AsGraphRef;
+
 static GLOBAL_INIT: Once = Once::new();
-
-/// Trait for types that can provide access to a Hypergraph for test graph registration
-#[cfg(any(test, feature = "test-api"))]
-pub trait AsGraphRef<G: crate::graph::kind::GraphKind> {
-    fn register_test_graph(self)
-    where
-        G: Send + Sync + 'static,
-        G::Atom: std::fmt::Display;
-}
-
-#[cfg(any(test, feature = "test-api"))]
-impl<G: crate::graph::kind::GraphKind> AsGraphRef<G> for &crate::Hypergraph<G> {
-    fn register_test_graph(self)
-    where
-        G: Send + Sync + 'static,
-        G::Atom: std::fmt::Display,
-    {
-        crate::graph::test_graph::register_test_graph(self);
-    }
-}
-
-#[cfg(any(test, feature = "test-api"))]
-impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
-    for &crate::HypergraphRef<G>
-{
-    fn register_test_graph(self)
-    where
-        G: Send + Sync + 'static,
-        G::Atom: std::fmt::Display,
-    {
-        // Use the new register_test_graph_ref to avoid cloning
-        crate::graph::test_graph::register_test_graph_ref(self);
-    }
-}
-
-#[cfg(any(test, feature = "test-api"))]
-impl<G: crate::graph::kind::GraphKind> AsGraphRef<G> for crate::Hypergraph<G> {
-    fn register_test_graph(self)
-    where
-        G: Send + Sync + 'static,
-        G::Atom: std::fmt::Display,
-    {
-        crate::graph::test_graph::register_test_graph(&self);
-    }
-}
-
-#[cfg(any(test, feature = "test-api"))]
-impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
-    for crate::HypergraphRef<G>
-{
-    fn register_test_graph(self)
-    where
-        G: Send + Sync + 'static,
-        G::Atom: std::fmt::Display,
-    {
-        // Use the new register_test_graph_ref to avoid cloning
-        crate::graph::test_graph::register_test_graph_ref(&self);
-    }
-}
 
 /// Guard that handles test logging lifecycle
 ///
@@ -91,6 +44,9 @@ impl<G: crate::graph::kind::GraphKind> AsGraphRef<G>
 /// The guard holds a tracing dispatcher that's active for the lifetime of the test.
 pub struct TestTracing {
     log_file_path: Option<PathBuf>,
+    signatures_path: Option<PathBuf>,
+    signatures: Option<SignatureStore>,
+    keep_success_logs: bool,
     clear_test_graph_on_drop: bool,
     _dispatcher: Dispatch,
     _guard: tracing::dispatcher::DefaultGuard,
@@ -224,18 +180,36 @@ impl TestTracing {
         let span_events = config.span_events;
         let log_to_stdout = config.log_to_stdout;
         let format_config = config.format.clone();
-        let mut format_config_file = format_config.clone();
-        format_config_file.enable_ansi = false; // File output should not have ANSI
+
+        // Create signature store for collecting fn_sig entries
+        let signatures = debug_to_json::new_signature_store();
+
+        // Determine signature file path (sibling directory to log_dir)
+        let signatures_path = if config.log_to_file {
+            let sig_dir = config
+                .log_dir
+                .parent()
+                .unwrap_or(&config.log_dir)
+                .join("debug_signatures");
+            fs::create_dir_all(&sig_dir).ok();
+            Some(sig_dir.join(format!("{}.json", test_name)))
+        } else {
+            None
+        };
 
         // Build layers based on configuration
         // Timestamp display is controlled by the formatter's show_timestamp config,
         // so we always use CompactTimer and let the formatter decide whether to call format_time.
+        // For file output, we use JSON format for easy parsing by the log viewer
         // Create dispatcher based on configuration
         let dispatcher = match (log_to_stdout, log_file_path.as_ref()) {
             (true, Some(path)) => {
                 // Both stdout and file
                 let file =
                     fs::File::create(path).expect("Failed to create log file");
+                let flushing_writer = FlushingWriter::new(file);
+                let pretty_writer =
+                    PrettyJsonWriter::new(flushing_writer, signatures.clone());
 
                 let stdout_layer = tracing_subscriber::fmt::layer()
                     .with_writer(std::io::stdout)
@@ -252,24 +226,24 @@ impl TestTracing {
                     .fmt_fields(super::SpanFieldFormatter)
                     .with_filter(stdout_filter);
 
+                // File layer uses pretty-printed JSON format for human readability
                 let file_layer = tracing_subscriber::fmt::layer()
-                    .with_writer(move || {
-                        file.try_clone().expect("Failed to clone file")
-                    })
+                    .with_writer(move || pretty_writer.clone())
                     .with_span_events(span_events)
-                    .with_target(false)
-                    .with_file(false)
-                    .with_line_number(false)
-                    .with_level(false)
+                    .with_target(true)
+                    .with_file(true)
+                    .with_line_number(true)
+                    .with_level(true)
                     .with_ansi(false)
-                    .with_timer(CompactTimer::new())
-                    .event_format(CompactFieldsFormatter::new(
-                        format_config_file.clone(),
-                    ))
-                    .fmt_fields(super::SpanFieldFormatter)
+                    .json()
                     .with_filter(file_filter);
 
-                Dispatch::new(registry.with(stdout_layer).with(file_layer))
+                Dispatch::new(
+                    registry
+                        .with(SpecialFieldExtractor)
+                        .with(stdout_layer)
+                        .with(file_layer),
+                )
             },
             (true, None) => {
                 // Only stdout
@@ -286,31 +260,32 @@ impl TestTracing {
                     .fmt_fields(super::SpanFieldFormatter)
                     .with_filter(stdout_filter);
 
-                Dispatch::new(registry.with(stdout_layer))
+                Dispatch::new(
+                    registry.with(SpecialFieldExtractor).with(stdout_layer),
+                )
             },
             (false, Some(path)) => {
-                // Only file
+                // Only file - use pretty-printed JSON format for human readability
                 let file =
                     fs::File::create(path).expect("Failed to create log file");
+                let flushing_writer = FlushingWriter::new(file);
+                let pretty_writer =
+                    PrettyJsonWriter::new(flushing_writer, signatures.clone());
 
                 let file_layer = tracing_subscriber::fmt::layer()
-                    .with_writer(move || {
-                        file.try_clone().expect("Failed to clone file")
-                    })
+                    .with_writer(move || pretty_writer.clone())
                     .with_span_events(span_events)
-                    .with_target(false)
-                    .with_file(false)
-                    .with_line_number(false)
-                    .with_level(false)
+                    .with_target(true)
+                    .with_file(true)
+                    .with_line_number(true)
+                    .with_level(true)
                     .with_ansi(false)
-                    .with_timer(CompactTimer::new())
-                    .event_format(CompactFieldsFormatter::new(
-                        format_config_file,
-                    ))
-                    .fmt_fields(super::SpanFieldFormatter)
+                    .json()
                     .with_filter(file_filter);
 
-                Dispatch::new(registry.with(file_layer))
+                Dispatch::new(
+                    registry.with(SpecialFieldExtractor).with(file_layer),
+                )
             },
             (false, None) => {
                 // No output - minimal subscriber
@@ -329,6 +304,9 @@ impl TestTracing {
 
         Self {
             log_file_path,
+            signatures_path,
+            signatures: Some(signatures),
+            keep_success_logs: config.keep_success_logs,
             clear_test_graph_on_drop,
             _dispatcher: dispatcher,
             _guard: guard,
@@ -344,7 +322,7 @@ impl TestTracing {
     ///
     /// Useful if you want to preserve logs even for passing tests
     pub fn keep_log(mut self) -> Self {
-        self.log_file_path = None;
+        self.keep_success_logs = true;
         self
     }
 
@@ -362,18 +340,21 @@ impl Drop for TestTracing {
         // Check if we're unwinding (test panicked/failed)
         let is_panicking = std::thread::panicking();
 
-        // Check if KEEP_LOGS is enabled
-        let keep_logs = std::env::var("KEEP_LOGS")
-            .ok()
-            .map(|v| {
-                v == "1"
-                    || v.eq_ignore_ascii_case("true")
-                    || v.eq_ignore_ascii_case("yes")
-            })
-            .unwrap_or(false);
+        // Write collected signatures to JSON file
+        if let (Some(sig_path), Some(signatures)) =
+            (&self.signatures_path, &self.signatures)
+        {
+            if let Ok(sigs) = signatures.lock() {
+                if !sigs.is_empty() {
+                    let json = serde_json::to_string_pretty(&*sigs)
+                        .unwrap_or_else(|_| "{}".to_string());
+                    fs::write(sig_path, json).ok();
+                }
+            }
+        }
 
-        if !is_panicking && !keep_logs {
-            // Test passed and KEEP_LOGS not set - clean up log file
+        if !is_panicking && !self.keep_success_logs {
+            // Test passed and keep_success_logs disabled - clean up log file
             if let Some(ref path) = self.log_file_path {
                 tracing::info!(
                     log_file = %path.display(),
@@ -381,15 +362,19 @@ impl Drop for TestTracing {
                 );
                 fs::remove_file(path).ok();
             }
+            // Also clean up signatures file on success
+            if let Some(ref sig_path) = self.signatures_path {
+                fs::remove_file(sig_path).ok();
+            }
         } else {
-            // Test failed or KEEP_LOGS enabled - keep log file
+            // Test failed or keep_success_logs enabled - keep log file
             if let Some(ref path) = self.log_file_path {
                 if is_panicking {
                     eprintln!(
                         "\n❌ Test failed! Log file preserved at: {}",
                         path.display()
                     );
-                } else if keep_logs {
+                } else if self.keep_success_logs {
                     eprintln!(
                         "\n📝 Test passed! Log file kept at: {}",
                         path.display()

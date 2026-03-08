@@ -1,4 +1,4 @@
-pub mod info;
+pub(crate) mod info;
 
 use crate::{
     interval::partition::info::{
@@ -31,7 +31,8 @@ use info::{
 
 use crate::join::context::pattern::PatternJoinCtx;
 
-pub trait JoinPartition<R: RangeRole<Mode = Join>>: InfoPartition<R>
+pub(crate) trait JoinPartition<R: RangeRole<Mode = Join>>:
+    InfoPartition<R>
 where
     R::Borders: JoinBorders<R>,
 {
@@ -57,11 +58,11 @@ impl<R: RangeRole<Mode = Join>, P: InfoPartition<R>> JoinPartition<R> for P wher
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Join;
+pub(crate) struct Join;
 
 impl ModeCtx for Join {
-    type NodeCtx<'a: 'b, 'b> = NodeJoinCtx<'a>;
-    type PatternResult<'a> = PatternJoinCtx<'a>;
+    type NodeCtx<'a> = NodeJoinCtx<'a>;
+    type PatternResult = PatternJoinCtx;
 }
 
 impl<R: RangeRole<Mode = Join>> ModeChildren<R> for Join {

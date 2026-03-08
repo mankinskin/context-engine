@@ -19,13 +19,27 @@ use tracing_subscriber::fmt::format::FmtSpan;
 impl FormatConfig {
     /// Load configuration from a TOML file
     ///
+    /// Note: In TOML, top-level keys MUST appear before any [section] headers.
+    /// Keys after a [section] header are part of that section, not top-level.
+    ///
     /// Example file format:
     /// ```toml
+    /// # Top-level options (must be before any [section])
+    /// enable_indentation = true
+    /// show_file_location = true
+    /// enable_ansi = true
+    /// show_timestamp = true
+    ///
+    /// # Optional: fallback values when environment variables are not set
+    /// log_to_stdout = true
+    /// log_filter = "debug"           # Applies to both stdout and file (fallback)
+    /// stdout_log_filter = "info"     # Specific filter for stdout output
+    /// file_log_filter = "trace"      # Specific filter for file output
+    ///
     /// [span_enter]
     /// show = true
     /// show_fn_signature = true
     /// show_fields = true
-    /// show_trait_context = true
     ///
     /// [span_close]
     /// show = true
@@ -38,15 +52,6 @@ impl FormatConfig {
     /// blank_line_after_span_enter = false
     /// blank_line_before_span_close = false
     /// blank_line_after_span_close = false
-    ///
-    /// enable_indentation = true
-    /// show_file_location = true
-    /// enable_ansi = true
-    /// show_timestamp = true
-    ///
-    /// # Optional: override environment variables
-    /// log_to_stdout = true
-    /// log_filter = "debug"
     /// ```
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self, String> {
         let contents = fs::read_to_string(path.as_ref())
@@ -264,7 +269,7 @@ pub struct TracingConfig {
     /// Formatting configuration
     pub format: FormatConfig,
     /// Keep log files even when tests pass
-    pub keep_logs: bool,
+    pub keep_success_logs: bool,
 }
 
 impl Default for TracingConfig {
@@ -285,20 +290,30 @@ impl Default for TracingConfig {
             .or(format.log_to_stdout)
             .unwrap_or(false);
 
-        // Check for log filter: env var takes precedence over config file
-        let filter_directives = env::var("LOG_FILTER")
+        // Check for log filter: env vars always take precedence over config file values
+        // Priority for stdout: LOG_STDOUT_FILTER > LOG_FILTER > config.stdout_log_filter > config.log_filter
+        let stdout_filter_directives = env::var("LOG_STDOUT_FILTER")
             .ok()
+            .or_else(|| env::var("LOG_FILTER").ok())
+            .or_else(|| format.stdout_log_filter.clone())
+            .or_else(|| format.log_filter.clone());
+
+        // Priority for file: LOG_FILE_FILTER > LOG_FILTER > config.file_log_filter > config.log_filter
+        let file_filter_directives = env::var("LOG_FILE_FILTER")
+            .ok()
+            .or_else(|| env::var("LOG_FILTER").ok())
+            .or_else(|| format.file_log_filter.clone())
             .or_else(|| format.log_filter.clone());
 
         // Check for keep logs: env var takes precedence over config file
-        let keep_logs = env::var("KEEP_LOGS")
+        let keep_success_logs = env::var("KEEP_SUCCESS_LOGS")
             .ok()
             .map(|v| {
                 v == "1"
                     || v.eq_ignore_ascii_case("true")
                     || v.eq_ignore_ascii_case("yes")
             })
-            .or(format.keep_logs)
+            .or(format.keep_success_logs)
             .unwrap_or(false);
 
         Self {
@@ -307,11 +322,11 @@ impl Default for TracingConfig {
             file_level: Level::TRACE,
             log_to_stdout,
             log_to_file: true,
-            stdout_filter_directives: filter_directives.clone(),
-            file_filter_directives: filter_directives,
+            stdout_filter_directives,
+            file_filter_directives,
             span_events: FmtSpan::ENTER | FmtSpan::CLOSE,
             format,
-            keep_logs,
+            keep_success_logs,
         }
     }
 }

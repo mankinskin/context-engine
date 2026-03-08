@@ -1,3 +1,8 @@
+---
+tags: `#bug-report` `#context-trace` `#context-read` `#debugging` `#refactoring` `#api`
+summary: The context-read crate has 28 compilation errors indicating it's significantly out of sync with the current context-trace API. Errors span missing ...
+---
+
 # Bug Report: context-read API Mismatches (28 Compilation Errors)
 
 **Date:** 2025-12-06  

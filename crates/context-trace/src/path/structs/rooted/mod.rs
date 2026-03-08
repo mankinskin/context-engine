@@ -6,8 +6,8 @@ pub(crate) mod root;
 use crate::{
     ChildLocation,
     EndPath,
+    HasChildPath,
     HasEndPath,
-    HasPath,
     HasStartPath,
     IntoRootedRolePath,
     StartPath,
@@ -193,7 +193,7 @@ impl<R: PathRoot, EndNode> From<RootedStartPath<R>>
 impl<Root: PathRoot, EndNode> HasStartPath
     for RootedRangePath<Root, ChildLocation, EndNode>
 where
-    RootedRangePath<Root, ChildLocation, EndNode>: HasPath<Start>,
+    RootedRangePath<Root, ChildLocation, EndNode>: HasChildPath<Start>,
 {
     fn start_path(&self) -> &StartPath {
         &self.start
@@ -205,7 +205,7 @@ where
 impl<Root: PathRoot, StartNode> HasEndPath
     for RootedRangePath<Root, StartNode, ChildLocation>
 where
-    RootedRangePath<Root, StartNode, ChildLocation>: HasPath<End>,
+    RootedRangePath<Root, StartNode, ChildLocation>: HasChildPath<End>,
 {
     fn end_path(&self) -> &EndPath {
         &self.end
@@ -307,7 +307,7 @@ impl<EndNode> RootPattern
     fn root_pattern<'a: 'g, 'b: 'g, 'g, G: HasGraph + 'a>(
         &'b self,
         trav: &'g G::Guard<'a>,
-    ) -> &'g Pattern {
+    ) -> Pattern {
         self.root.root_pattern::<G>(trav)
     }
 }

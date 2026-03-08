@@ -2,9 +2,9 @@ use crate::{
     interval::partition::info::{
         border::{
             PartitionBorder,
+            info::InfoBorder,
             perfect::BoolPerfect,
             trace::TraceBorders,
-            visit::VisitBorders,
         },
         range::{
             InnerRangeInfo,
@@ -34,19 +34,19 @@ use crate::{
 use context_trace::*;
 
 #[derive(Debug, Clone)]
-pub struct JoinPatternInfo<R: RangeRole<Mode = Join>> {
-    pub inner_range: Option<InnerRangeInfo<R>>,
-    pub range: R::Range,
-    pub children: Option<ModeChildrenOf<R>>,
-    pub offsets: R::Offsets,
-    pub delta: usize,
+pub(crate) struct JoinPatternInfo<R: RangeRole<Mode = Join>> {
+    pub(crate) inner_range: Option<InnerRangeInfo<R>>,
+    pub(crate) range: R::PatternRange,
+    pub(crate) children: Option<ModeChildrenOf<R>>,
+    //pub(crate) offsets: R::Offsets,
+    pub(crate) delta: usize,
 }
 
 impl<R: RangeRole<Mode = Join>> JoinPatternInfo<R>
 where
     R::Borders: JoinBorders<R>,
 {
-    pub fn join_pattern<'a: 'b, 'b: 'c, 'c>(
+    pub(crate) fn join_pattern<'a: 'b, 'b: 'c, 'c>(
         self,
         ctx: &'c mut NodeJoinCtx<'a>,
         pattern_id: &PatternId,
@@ -83,26 +83,31 @@ where
     ) -> Result<PatternRangeInfo<R>, Token> {
         let perfect = borders.perfect();
         let range = borders.outer_range();
-        let offsets = borders.offsets();
+        //let offsets = borders.offsets();
         let inner = borders.inner_info(ctx);
-        let (delta, pat, pid) = {
-            let ctx = ctx.pattern_trace_context();
-            let delta = inner
-                .as_ref()
-                .and_then(|inner| {
-                    let inner_pat =
-                        ctx.pattern.get(inner.range.clone()).unwrap();
-                    (inner_pat.len() != 1)
-                        .then(|| inner_pat.len().saturating_sub(1))
-                })
-                .unwrap_or(0);
-            let pat = ctx.pattern.get(range.clone()).unwrap();
-            (delta, pat, ctx.loc.pattern_id)
-        };
+        let pctx = ctx.pattern_trace_context();
+        let delta = inner
+            .as_ref()
+            .and_then(|inner| {
+                let inner_range = inner.range.clone();
+                (inner_range.len() != 1)
+                    .then(|| inner_range.len().saturating_sub(1))
+            })
+            .unwrap_or(0);
+        let pat = pctx.pattern.get(range.clone().into()).unwrap().to_vec();
+        let pid = pctx.loc.pattern_id;
         let children = (!perfect.all_perfect())
             .then(|| borders.get_child_splits(ctx).unwrap());
         match (pat.len(), children) {
-            (0, _) => panic!("Empty range"),
+            // Empty range: This can happen when a partition range has been absorbed
+            // by a previous merge. Return the token at the boundary position.
+            (0, Some(children)) => Err(children.to_token().unwrap()),
+            (0, None) => {
+                // No children info and empty range - use the token at the start position
+                // The start position's sub_index points to the token that absorbed this range
+                let sub_index = borders.start_sub_index();
+                Err(pctx.pattern[sub_index])
+            },
             (1, Some(children)) => Err(children.to_token().unwrap()),
             (1, None) => Err(pat[0]),
             (_, children) => Ok(PatternRangeInfo {
@@ -110,7 +115,7 @@ where
                 info: JoinPatternInfo {
                     inner_range: inner,
                     delta,
-                    offsets,
+                    //offsets,
                     range,
                     children,
                 },

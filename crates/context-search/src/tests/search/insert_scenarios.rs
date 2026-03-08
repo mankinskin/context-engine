@@ -37,13 +37,14 @@ use {
 
 #[test]
 fn prefix1() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {h, e, l, d});
     insert_patterns!(graph,
         (ld, ld_id) => [l, d],
         (heldld, heldld_id) => [h, e, ld, ld]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
     let res = Searchable::<AncestorSearchTraversal<_>>::search(
         vec![h, e, l, l],
         graph.into(),
@@ -97,29 +98,27 @@ fn prefix1() {
                     TD { 2 },
                 ),
             ),
+            events: vec![],
         })
     );
 }
 #[test]
 fn search_pattern1_by_z() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         ab => [[a, b]],
         by => [[b, y]],
         yz => [[y, z]],
         xa => [[x, a]],
-    );
-    insert_patterns!(graph,
         xab => [[x, ab], [xa, b]],
     );
     insert_patterns!(graph,
         (xaby, xaby_ids) => [[xab, y], [xa, by]],
-    );
-    insert_patterns!(graph,
         (xabyz, xabyz_ids) => [[xaby, z], [xab, yz]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xa_by_id = xaby_ids[1]; // [xa, by] pattern
     let xaby_z_id = xabyz_ids[0]; // [xaby, z] pattern
@@ -201,13 +200,14 @@ fn search_pattern1_by_z() {
                     ),
                 ]),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_pattern1_ab_y() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         ab => [[a, b]],
@@ -225,6 +225,7 @@ fn search_pattern1_ab_y() {
         _xabyz => [[xaby, z], [xab, yz]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xab_y_id = xaby_ids[0]; // [xab, y]
 
@@ -305,13 +306,14 @@ fn search_pattern1_ab_y() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_pattern2_a_b_y() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         (yz, yz_ids) => [[y, z]],
@@ -325,6 +327,7 @@ fn search_pattern2_a_b_y() {
         (xabyz, xabyz_ids) => [[xab, yz]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xab_yz_id = xabyz_ids[0]; // [xab, yz]
     let xab_pat_id = xab_ids[0];
@@ -456,13 +459,14 @@ fn search_pattern2_a_b_y() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_pattern2_a_b() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, x, y, z});
     insert_patterns!(graph,
         yz => [[y, z]],
@@ -476,6 +480,7 @@ fn search_pattern2_a_b() {
         _xabyz => [[xab, yz]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xab_pat_id = xab_ids[0];
 
@@ -535,19 +540,21 @@ fn search_pattern2_a_b() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_infix1_a_b_y() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, w, x, y, z});
     insert_patterns!(graph,
         (yz, yz_ids) => [[y, z]],
         (xxabyzw, xxabyzw_ids) => [[x, x, a, b, yz, w]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xxabyzw_pat_id = xxabyzw_ids[0];
     let yz_pat_id = yz_ids[0];
@@ -655,13 +662,14 @@ fn search_infix1_a_b_y() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_infix1_a_b() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, w, x, y, z});
     insert_patterns!(graph,
         yz => [[y, z]],
@@ -670,6 +678,7 @@ fn search_infix1_a_b() {
         (xxabyzw, xxabyzw_ids) => [[x, x, a, b, yz, w]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let xxabyzw_pat_id = xxabyzw_ids[0];
 
@@ -759,13 +768,14 @@ fn search_infix1_a_b() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_infix2_a_b_c_d() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d, x, y});
     insert_patterns!(graph,
         yy => [y, y],
@@ -784,6 +794,7 @@ fn search_infix2_a_b_c_d() {
         _xxyyabcdxxyy => [[xx, yy, abcdxx, yy], [xxy, yabcdx, xy, y]]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let abcdx_pat_id = abcdx_ids;
 
@@ -862,19 +873,21 @@ fn search_infix2_a_b_c_d() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_postfix1_b_c_d_d() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         (ab, ab_ids) => [a, b],
         (ababcd, ababcd_ids) => [ab, ab, c, d]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let ab_pat_id = ab_ids;
     let ababcd_pat_id = ababcd_ids;
@@ -967,13 +980,14 @@ fn search_postfix1_b_c_d_d() {
                     _state: std::marker::PhantomData,
                 }),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_complete_token_b_c() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (bc, bc_ids) => [b, c],
@@ -982,6 +996,7 @@ fn search_complete_token_b_c() {
         _abc => [a, bc]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let bc_pat_id = bc_ids;
 
@@ -1020,13 +1035,14 @@ fn search_complete_token_b_c() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
 
 #[test]
 fn search_complete_token_a_bc() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         bc => [b, c],
@@ -1035,6 +1051,7 @@ fn search_complete_token_a_bc() {
         (abc, abc_ids) => [a, bc]
     );
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let abc_pat_id = abc_ids;
 
@@ -1073,6 +1090,7 @@ fn search_complete_token_a_bc() {
                     }
                 )),
             },
+            events: vec![],
         }
     );
 }
@@ -1086,19 +1104,20 @@ fn test_index_prefix1_hell() {
 
     let EnvInsertPrefix1 {
         graph,
-        h,
-        e,
-        l,
+        a,
+        b,
+        c,
         d: _d,
-        ld,
-        ld_id,
-        heldld,
-        heldld_id,
+        cd,
+        cd_id,
+        abcdcd,
+        abcdcd_id,
     } = EnvInsertPrefix1::initialize();
 
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
-    let query = vec![h, e, l, l];
+    let query = vec![a, b, c, c];
     let res = Searchable::<AncestorSearchTraversal<_>>::search(
         query.clone(),
         graph.into(),
@@ -1119,11 +1138,11 @@ fn test_index_prefix1_hell() {
             )),
             path: PathCoverage::Prefix(PrefixEnd {
                 path: RootedRolePath::new(
-                    PatternLocation::new(heldld, heldld_id),
-                    RolePath::new(2, vec![ChildLocation::new(ld, ld_id, 0)]),
+                    PatternLocation::new(abcdcd, abcdcd_id),
+                    RolePath::new(2, vec![ChildLocation::new(cd, cd_id, 0)]),
                 ),
                 target: DownKey {
-                    index: l,
+                    index: c,
                     pos: 2.into(),
                 },
                 exit_pos: 2.into(),
@@ -1131,23 +1150,24 @@ fn test_index_prefix1_hell() {
             }),
         },
         cache: build_trace_cache!(
-            heldld => (
+            abcdcd => (
                 BU {},
-                TD { 2 => ld -> (heldld_id, 2) },
+                TD { 2 => cd -> (abcdcd_id, 2) },
             ),
-            ld => (
+            cd => (
                 BU {},
-                TD { 2 => l -> (ld_id, 0) },
+                TD { 2 => c -> (cd_id, 0) },
             ),
-            h => (
+            a => (
                 BU {},
                 TD {},
             ),
-            l => (
+            c => (
                 BU {},
                 TD { 2 },
             ),
         ),
+        events: vec![],
     };
 
     assert_eq!(res, Ok(expected));
@@ -1171,6 +1191,7 @@ fn test_index_postfix1_bcdd() {
     } = EnvInsertPostfix1::initialize();
 
     let _tracing = context_trace::init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let query = vec![b, c, d, d];
     let res = Searchable::<AncestorSearchTraversal<_>>::search(
@@ -1224,6 +1245,7 @@ fn test_index_postfix1_bcdd() {
                 TD {},
             ),
         ),
+        events: vec![],
     };
 
     assert_eq!(res, Ok(expected));

@@ -87,8 +87,11 @@ where
     ) -> RoleTraceKey<Role> {
         let graph = ctx.trav.graph();
         let path_len = self.raw_child_path().len();
-        tracing::debug!("trace_role_sub_path - starting with prev={:?}, path_len={}",
-                       prev_key, path_len);
+        tracing::debug!(
+            "trace_role_sub_path - starting with prev={:?}, path_len={}",
+            prev_key,
+            path_len
+        );
 
         let result = self.raw_child_path()
             .iter()
@@ -140,7 +143,7 @@ impl TraceDirection for TopDown {
         location: &ChildLocation,
     ) -> Self::Key {
         let graph = trav.graph();
-        let index = *graph.expect_child_at(location);
+        let index = graph.expect_child_at(location);
         let delta = graph.expect_child_offset(location);
         DownKey {
             index,

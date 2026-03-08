@@ -225,7 +225,7 @@ where
             QueryAdvanceResult::Advanced(query_advanced) => {
                 let query_pos_after =
                     *query_advanced.query.current().atom_position.as_ref();
-                debug!(
+                trace!(
                     root = %root_parent,
                     query_pos_before = query_pos_before,
                     query_pos_after = query_pos_after,
@@ -321,7 +321,7 @@ impl<K: SearchKind> RootCursor<K, Candidate, Matched> {
         // Try to advance index cursor
         match state.advance_index_cursor(&trav) {
             IndexAdvanceResult::Advanced(both_advanced) => {
-                debug!(
+                trace!(
                     root = %root_parent,
                     "    → advance_child: SUCCESS - child cursor advanced"
                 );
@@ -332,7 +332,7 @@ impl<K: SearchKind> RootCursor<K, Candidate, Matched> {
                 })
             },
             IndexAdvanceResult::Exhausted(query_only_advanced) => {
-                debug!(
+                trace!(
                     root = %root_parent,
                     "    → advance_child: CHILD ENDED - need parent exploration"
                 );
@@ -362,8 +362,8 @@ impl<K: SearchKind> RootCursor<K, Candidate, Matched> {
         let exit_pos = checkpoint_child.child_state.exit_pos;
 
         // Simplify path to remove redundant segments
-        path.child_path_mut::<Start, _>().simplify(&self.trav);
-        path.child_path_mut::<End, _>().simplify(&self.trav);
+        path.role_path_mut_with::<Start, _>().simplify(&self.trav);
+        path.role_path_mut_with::<End, _>().simplify(&self.trav);
 
         let target_index = path.role_rooted_leaf_token::<End, _>(&self.trav);
 

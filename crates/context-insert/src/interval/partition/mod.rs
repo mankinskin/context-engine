@@ -1,7 +1,5 @@
 use std::num::NonZeroUsize;
 
-use derive_new::new;
-
 use crate::{
     interval::partition::info::range::{
         mode::{
@@ -22,19 +20,19 @@ use crate::{
     },
 };
 
-pub mod delta;
-pub mod info;
+pub(crate) mod delta;
+pub(crate) mod info;
 
 #[derive(Debug, Clone)]
-pub struct Partition<R: RangeRole> {
-    pub offsets: R::Splits,
+pub(crate) struct Partition<R: RangeRole> {
+    pub(crate) offsets: R::Splits,
 }
 impl<R: RangeRole> Partition<R> {
-    pub fn new(offsets: impl ToPartition<R>) -> Self {
+    pub(crate) fn new(offsets: impl ToPartition<R>) -> Self {
         offsets.to_partition()
     }
 }
-pub trait ToPartition<R: RangeRole>: Clone {
+pub(crate) trait ToPartition<R: RangeRole>: Clone {
     fn to_partition(self) -> Partition<R>;
 }
 
@@ -76,57 +74,8 @@ impl<M: PostVisitMode, A: ToVertexSplits> ToPartition<Post<M>> for A {
     }
 }
 
-//
-//
-
-#[derive(new, Clone)]
-pub struct Infix<A: ToVertexSplits, B: ToVertexSplits> {
-    pub left: A,
-    pub right: B,
-}
-impl<A: ToVertexSplits, B: ToVertexSplits> Infix<A, B> {}
-impl<M: InVisitMode, A: ToVertexSplits, B: ToVertexSplits> ToPartition<In<M>>
-    for Infix<A, B>
-{
-    fn to_partition(self) -> Partition<In<M>> {
-        Partition {
-            offsets: (
-                self.left.to_vertex_splits(),
-                self.right.to_vertex_splits(),
-            ),
-        }
-    }
-}
-
-#[derive(new, Clone)]
-pub struct Prefix<A: ToVertexSplits> {
-    pub split: A,
-}
-
-impl<A: ToVertexSplits> Prefix<A> {}
-impl<M: PreVisitMode, B: ToVertexSplits> ToPartition<Pre<M>> for Prefix<B> {
-    fn to_partition(self) -> Partition<Pre<M>> {
-        Partition {
-            offsets: self.split.to_vertex_splits(),
-        }
-    }
-}
-
-#[derive(new, Clone)]
-pub struct Postfix<O: ToVertexSplits> {
-    pub split: O,
-}
-impl<A: ToVertexSplits> Postfix<A> {}
-impl<M: PostVisitMode, A: ToVertexSplits> ToPartition<Post<M>> for Postfix<A> {
-    fn to_partition(self) -> Partition<Post<M>> {
-        Partition {
-            offsets: self.split.to_vertex_splits(),
-        }
-    }
-}
-
 #[allow(dead_code)]
-pub fn to_non_zero_range(
+pub(crate) fn to_non_zero_range(
     l: usize,
     r: usize,
 ) -> (NonZeroUsize, NonZeroUsize) {

@@ -17,7 +17,7 @@ tracing-subscriber = { version = "0.3", features = [
     "ansi",
     "json",
 ] }
-uuid = { version = "^1.10", features = ["v4", "fast-rng", "serde"] }
+uuid = { version = "^1.10", features = ["v4", "fast-rng", "serde", "js"] }
 derive_builder = "^0.20"
 lazy_static = "^1.4"
 either = "^1.6"
@@ -33,6 +33,7 @@ one-of = "0.2"
 maplit = "1.0"
 
 context-trace = { path = "../context-trace", features = ["test-api"] }
+strum = {version="0.27.2", features=["derive"]}
 
 [dependencies.pretty_assertions]
 features = ["unstable"]

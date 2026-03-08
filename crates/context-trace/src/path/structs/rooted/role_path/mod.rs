@@ -46,16 +46,16 @@ impl<Root: PathRoot, R: PathRole, N> From<Root> for RootedRolePath<R, Root, N> {
     }
 }
 
-impl<R: PathRole, Root: PathRoot> HasPath<R>
+impl<R: PathRole, Root: PathRoot> HasChildPath<R>
     for RootedRolePath<R, Root, ChildLocation>
 where
     Self: HasRolePath<R, Node = ChildLocation>,
 {
     type Node = ChildLocation;
-    fn path(&self) -> &Vec<ChildLocation> {
+    fn child_path(&self) -> &Vec<ChildLocation> {
         self.role_path().path()
     }
-    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+    fn child_path_mut(&mut self) -> &mut Vec<ChildLocation> {
         self.role_path_mut().path_mut()
     }
 }
@@ -145,12 +145,12 @@ impl<R: PathRole> IndexRolePath<R> {
 }
 impl<R: PathRole> HasLeafToken<R> for IndexRolePath<R>
 where
-    Self:
-        HasRolePath<R, Node = ChildLocation> + HasPath<R, Node = ChildLocation>,
+    Self: HasRolePath<R, Node = ChildLocation>
+        + HasChildPath<R, Node = ChildLocation>,
 {
     fn leaf_token_location(&self) -> Option<ChildLocation> {
         Some(
-            R::bottom_up_iter(HasPath::<R>::path(self).iter())
+            R::bottom_up_iter(HasChildPath::<R>::child_path(self).iter())
                 .next()
                 .cloned()
                 .unwrap_or(
@@ -276,7 +276,7 @@ impl<R: PathRole> HasLeafToken<R> for RolePath<R> {}
 
 impl_root_child_token! {
     RootChildToken for IndexRolePath<R>, self,
-    trav => *trav.graph().expect_child_at(
+    trav => trav.graph().expect_child_at(
             self.path_root().location.to_child_location(
                 HasRootChildIndex::<R>::root_child_index(&self.role_path)
             )
@@ -321,7 +321,7 @@ impl<Role: PathRole, Root: PathRoot> RootPattern
     fn root_pattern<'a: 'g, 'b: 'g, 'g, G: HasGraph + 'a>(
         &'b self,
         trav: &'g G::Guard<'a>,
-    ) -> &'g Pattern {
+    ) -> Pattern {
         self.root.root_pattern::<G>(trav)
     }
 }
@@ -334,7 +334,7 @@ impl<Role: PathRole, Root: PathRoot> RootPattern
 //    }
 //}
 //impl<R: PathRole> LeafToken<R> for PatternRolePath<R> where
-//    Self: HasPath<R> + PatternRootChild<R>
+//    Self: HasChildPath<R> + PatternRootChild<R>
 //{
 //}
 //

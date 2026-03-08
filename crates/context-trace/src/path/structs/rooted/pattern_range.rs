@@ -68,7 +68,7 @@ impl<P: IntoPattern> From<P>
         }
     }
 }
-impl_root! { RootPattern for PatternRangePath<ChildLocation, ChildLocation>, self, _trav => PatternRoot::pattern_root_pattern(self) }
+impl_root! { RootPattern for PatternRangePath<ChildLocation, ChildLocation>, self, _trav => PatternRoot::pattern_root_pattern(self).clone() }
 impl_root! { PatternRoot for PatternRangePath<ChildLocation, ChildLocation>, self => self.root.borrow() }
 impl_root! { <Role: PathRole> PatternRoot for PatternRolePath<Role>, self => self.root.borrow() }
 
@@ -99,7 +99,7 @@ impl MoveRootIndex<Right, End>
             TravDir::<G>::pattern_index_next(&self.root, current_index)
         {
             let old_end = *self.root_child_index_mut();
-            tracing::debug!(
+            tracing::trace!(
                 "PatternRangePath::move_root_index - advancing from {} to {}, old end.root_entry={}",
                 current_index,
                 next,
@@ -108,7 +108,7 @@ impl MoveRootIndex<Right, End>
             *self.root_child_index_mut() = next;
             ControlFlow::Continue(())
         } else {
-            tracing::debug!(
+            tracing::trace!(
                 "PatternRangePath::move_root_index - reached end of pattern, returning Break"
             );
             ControlFlow::Break(())
@@ -117,25 +117,25 @@ impl MoveRootIndex<Right, End>
 }
 
 impl<R: PathRole> HasLeafToken<R> for PatternRolePath<R> where
-    Self: HasPath<R, Node = ChildLocation> + PatternRootChild<R>
+    Self: HasChildPath<R, Node = ChildLocation> + PatternRootChild<R>
 {
 }
 impl<R: PathRole> HasLeafToken<R>
     for PatternRangePath<ChildLocation, ChildLocation>
 where
-    Self: HasPath<R, Node = ChildLocation> + PatternRootChild<R>,
+    Self: HasChildPath<R, Node = ChildLocation> + PatternRootChild<R>,
 {
 }
 
-impl<R: PathRole> HasPath<R> for PatternRangePath
+impl<R: PathRole> HasChildPath<R> for PatternRangePath
 where
     Self: HasRolePath<R, Node = ChildLocation>,
 {
     type Node = ChildLocation;
-    fn path(&self) -> &Vec<ChildLocation> {
+    fn child_path(&self) -> &Vec<ChildLocation> {
         self.role_path().path()
     }
-    fn path_mut(&mut self) -> &mut Vec<ChildLocation> {
+    fn child_path_mut(&mut self) -> &mut Vec<ChildLocation> {
         self.role_path_mut().path_mut()
     }
 }

@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-trace` `#context-search` `#debugging` `#testing` `#api`
+summary: When running tests, tokens in log output appear as cryptic identifiers like `T0w1`, `T1w1`, `T3w1` instead of meaningful string representations lik...
+---
+
 # Token Test Labeling Guide
 
 ## Problem Description
@@ -245,7 +250,7 @@ After fixing a test, verify the output:
 
 ```bash
 # Run with trace logging to see token representations
-LOG_STDOUT=1 LOG_FILTER=trace cargo test -p context-search find_pattern1 -- --nocapture ; focus_chat
+LOG_STDOUT=1 LOG_FILTER=trace cargo test -p context-search find_pattern1 -- --nocapture
 ```
 
 **Check the log file:**

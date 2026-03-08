@@ -5,10 +5,7 @@
 
 use crate::*;
 use itertools::Itertools;
-use std::{
-    num::NonZeroUsize,
-    slice::SliceIndex,
-};
+use std::num::NonZeroUsize;
 
 /// Helper function to clone child patterns into iterator
 pub(crate) fn clone_child_patterns(
@@ -22,7 +19,7 @@ pub(crate) fn localized_children_iter_for_index(
     parent: impl ToToken,
     tokens: &ChildPatterns,
 ) -> impl IntoIterator<Item = (ChildLocation, &Token)> {
-    let parent = parent.to_child();
+    let parent = parent.to_token();
     tokens.iter().flat_map(move |(&pid, pat)| {
         pat.iter()
             .enumerate()
@@ -89,7 +86,7 @@ impl VertexData {
         &self,
         id: &PatternId,
         range: R,
-    ) -> Result<&<R as SliceIndex<[Token]>>::Output, ErrorReason> {
+    ) -> Result<&[Token], ErrorReason> {
         self.get_child_pattern(id)
             .and_then(|p| get_child_pattern_range(id, p, range.clone()))
     }
@@ -100,7 +97,7 @@ impl VertexData {
         &self,
         id: &PatternId,
         range: R,
-    ) -> &<R as SliceIndex<[Token]>>::Output {
+    ) -> &[Token] {
         let p = self.expect_child_pattern(id);
         get_child_pattern_range(id, p, range.clone()).expect("Range in pattern")
     }
@@ -162,8 +159,6 @@ impl VertexData {
             assert!(pat.len() > 1);
         }
         self.children.insert(id, pat.into_pattern());
-        #[cfg(any(test, feature = "test-api"))]
-        self.invalidate_string_cache();
         self.validate();
     }
 
@@ -311,8 +306,6 @@ impl VertexData {
             }
             self.children.insert(id, pat.into_pattern());
         }
-        #[cfg(any(test, feature = "test-api"))]
-        self.invalidate_string_cache();
         self.validate();
     }
     /// Get vector of all child patterns
@@ -350,6 +343,6 @@ impl VertexData {
     pub fn all_localized_children_iter(
         &self
     ) -> impl IntoIterator<Item = (ChildLocation, &Token)> {
-        localized_children_iter_for_index(self.to_child(), &self.children)
+        localized_children_iter_for_index(self.to_token(), &self.children)
     }
 }

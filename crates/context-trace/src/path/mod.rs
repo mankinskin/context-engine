@@ -19,13 +19,11 @@ use crate::{
         location::child::ChildLocation,
         token::Token,
     },
-    path::{
-        structs::{
-            role_path::RolePath,
-            rooted::role_path::{
-                HasRootChildIndex,
-                HasRootChildToken,
-            },
+    path::structs::{
+        role_path::RolePath,
+        rooted::role_path::{
+            HasRootChildIndex,
+            HasRootChildToken,
         },
     },
     trace::has_graph::HasGraph,
@@ -137,12 +135,12 @@ pub trait RolePathUtils {
         let location = self.role_root_child_location::<R>();
         let pattern = graph.expect_pattern_at(location);
         <R::BorderDirection as PatternDirection>::pattern_index_next(
-            pattern,
+            &pattern,
             location.sub_index,
         )
         .is_none()
     }
-    fn child_path_mut<R: PathRole, Node: PathNode>(
+    fn role_path_mut_with<R: PathRole, Node: PathNode>(
         &mut self
     ) -> &mut RolePath<R, Node>
     where

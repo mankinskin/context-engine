@@ -9,17 +9,12 @@
 #![feature(associated_type_defaults)]
 //#![feature(return_position_impl_trait_in_trait)]
 
-extern crate test;
-
-//pub mod bundle;
-pub mod bands;
-pub mod complement;
+pub(crate) mod bands;
+pub(crate) mod complement;
 pub mod context;
-pub mod expansion;
-//pub mod overlap;
-pub mod sequence;
-//#[cfg(test)]
-//mod tests;
+pub(crate) mod expansion;
+pub(crate) mod request;
+pub(crate) mod segment;
 
-#[cfg(test)]
-mod tests;
+#[cfg(any(test, feature = "test-api"))]
+pub mod tests;

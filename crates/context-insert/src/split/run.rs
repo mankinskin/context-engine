@@ -1,27 +1,37 @@
 use std::collections::BTreeSet;
+use tracing::debug;
 
 use crate::{
     interval::IntervalGraph,
-    split::context::SplitCacheCtx,
+    join::context::node::merge::{
+        PartitionRange,
+        RequiredPartitions,
+    },
+    split::{
+        context::SplitCacheCtx,
+        trace::SplitTraceState,
+    },
 };
 use context_trace::*;
 
 #[derive(Debug)]
-pub struct SplitRunStep;
+pub(crate) struct SplitRunStep;
 
 #[derive(Debug)]
-pub struct SplitRun<G: HasGraph> {
+pub(crate) struct SplitRun<G: HasGraph> {
     ctx: SplitCacheCtx<G>,
     incomplete: BTreeSet<Token>,
 }
 impl<G: HasGraph> SplitRun<G> {
-    pub fn init(&mut self) {
+    pub(crate) fn init(
+        &mut self
+    ) -> (Vec<SplitTraceState>, PartitionRange, RequiredPartitions) {
         self.ctx.cache.augment_root(
             &self.ctx.states_ctx.trav,
             self.ctx.states_ctx.ctx.root,
-        );
+        )
     }
-    pub fn finish(mut self) -> SplitCacheCtx<G> {
+    pub(crate) fn finish(mut self) -> SplitCacheCtx<G> {
         self.ctx
             .cache
             .augment_nodes(&mut self.ctx.states_ctx, self.incomplete);
@@ -59,13 +69,20 @@ impl<G: HasGraph> From<SplitCacheCtx<G>> for IntervalGraph {
 }
 impl<G: HasGraph> From<SplitRun<G>> for IntervalGraph {
     fn from(mut run: SplitRun<G>) -> Self {
-        run.init();
+        debug!("IntervalGraph::from - init");
+        let (next, target_range, required) = run.init();
+        run.ctx.states.queue.extend(next);
+        debug!("IntervalGraph::from - run iterator to end");
         run.all(|_| true); // run iterator to end
+        debug!("SplitRun::from - calling finish");
         let cache = run.finish();
+        debug!("SplitRun::from - finish done, creating IntervalGraph");
         Self {
             root: cache.states_ctx.ctx.root,
             states: cache.states_ctx.states,
             cache: cache.cache,
+            target_range,
+            required,
         }
     }
 }

@@ -1,6 +1,14 @@
 target/
-.vscode/
 agents/tmp/
+node_modules/
+
+# Built frontend assets
+tools/doc-viewer/static/
+tools/log-viewer/static/
+
+# Generated demo logs (produced by tools/log-viewer/scripts/generate-demo-logs.sh)
+tools/log-viewer/demo-logs/
+
 # Direnv configuration for personal environment overrides
 .envrc
 
@@ -10,11 +18,4 @@ agents/tmp/
 # Note: Cargo doesn't support config.local.toml - use .envrc or ~/.cargo/config.toml instead
 # Keeping this in gitignore in case someone creates it by mistake
 .cargo/config.local.toml
-
-# Local tracing configuration (use config/tracing.toml.example as template)
-config/tracing.toml
-config/tracing.*.toml
-config/test-config.toml
-# Legacy locations (still supported)
-.tracing.toml
-tracing.toml
+.playwright-mcp/

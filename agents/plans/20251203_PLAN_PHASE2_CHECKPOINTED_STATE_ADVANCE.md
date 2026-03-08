@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#algorithm` `#debugging` `#testing` `#performance`
+summary: Implement `StateAdvance` trait for `Checkpointed<PathCursor<P, Matched>>` and `Checkpointed<ChildCursor<Matched, EndNode>>` to enable advancing cur...
+status: 📋
+---
+
 # Phase 2: Checkpointed StateAdvance Implementation Plan
 
 ## Objective

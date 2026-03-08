@@ -1,31 +1,18 @@
 # Agent Rules & Code Requirements
 
-> **⚠️ MANDATORY: READ THIS FILE FIRST** before any code changes in this workspace.
-
 Code requirements and development rules for the context-engine project.
 
-> **AGENT RESPONSIBILITY:** Keep this file current. Update immediately when requirements change.
->
-> **Update triggers:** Project structure changes, new test patterns, modified debugging workflows, requirement changes.
+## Environment Guidelines
 
-> **🔍 CONFUSED? CHECK `agents/guides/INDEX.md` FIRST** - Search by tags before asking questions or researching.
+- **Prefer bash commands** over PowerShell or cmd when running terminal commands
+- **Always use Unix-style paths** (forward slashes `/`) in commands, documentation, and code comments
+- **Read test logs instead of test command output for debugging** Test logs are located in `target/test-logs/` and contain the full trace output, while test command output may be truncated.
 
-## 📚 Documentation Maintenance
-
-**⚠️ CRITICAL: Update docs when changing code!**
-
-### Before Work:
-1. `CHEAT_SHEET.md` - API patterns
-2. `<crate>/HIGH_LEVEL_GUIDE.md` - concepts
-3. `QUESTIONS_FOR_AUTHOR.md` - known issues
-
-### After Changes:
-| Change Type | Update File |
-|------------|-------------|
-| API/types/patterns/macros | `CHEAT_SHEET.md` |
-| Concepts/architecture/modules | `<crate>/HIGH_LEVEL_GUIDE.md` |
-| Unclear behavior/gaps | `QUESTIONS_FOR_AUTHOR.md` |
-| Test structure/workflows/commands | `AGENTS.md` (this file) |
+### Documentation Validation (MCP Server)
+**Search Docs:** `mcp_docs-server_search_docs <query>`- Search agent docs by keyword or tag
+**After code changes**, run validation:
+- `mcp_docs-server_validate_docs` - Check agent docs
+- `mcp_docs-server_check_stale_docs` - Detect stale crate docs
 
 ## Problem-Solving Approach
 
@@ -96,11 +83,18 @@ Code requirements and development rules for the context-engine project.
 
 ## Project Structure
 
-Multi-crate workspace for context analysis and graph traversal (all crates in `crates/` directory):
+Multi-crate workspace for context analysis and graph traversal:
+
+**Core crates** (in `crates/` directory):
 - `crates/context-trace/` - Foundation: graph structures, paths, bidirectional tracing (see HIGH_LEVEL_GUIDE.md)
 - `crates/context-search/` - Pattern matching and search with unified Response API (see HIGH_LEVEL_GUIDE.md)
 - `crates/context-insert/` - Insertion via split-join architecture (see HIGH_LEVEL_GUIDE.md)
 - `crates/context-read/` - Context reading and expansion
+
+**Tools** (in `tools/` directory):
+- `tools/doc-viewer/` - Documentation viewer with HTTP API and MCP support (has its own `agents/docs/`)
+- `tools/log-viewer/` - Log viewer for tracing logs with JQ query support
+- `tools/viewer-api/` - Shared server infrastructure for viewer tools
 
 **Architecture:** trace → search → insert → read (each layer builds on previous)
 
@@ -111,33 +105,24 @@ Multi-crate workspace for context analysis and graph traversal (all crates in `c
 **Priority order:**
 1. **`CHEAT_SHEET.md`** - Types, patterns, gotchas (START HERE)
 2. **`agents/guides/INDEX.md`** - How-to guides by topic
-3. `crates/<crate>/HIGH_LEVEL_GUIDE.md` - Concepts, design
-4. `crates/<crate>/README.md` - Purpose, API overview
-5. `crates/<crate>/src/tests/` - Usage examples
-6. `agents/bug-reports/INDEX.md` - Known issues
-7. `QUESTIONS_FOR_AUTHOR.md` - Unclear topics
-8. `cargo doc --package <crate>` - Generated docs
+3. **`crates/<crate>/agents/docs/`** - API documentation (via MCP tools)
+4. `crates/<crate>/HIGH_LEVEL_GUIDE.md` - Concepts, design
+5. `crates/<crate>/README.md` - Purpose, API overview
+6. `crates/<crate>/src/tests/` - Usage examples
+7. `agents/bug-reports/INDEX.md` - Known issues
+8. `QUESTIONS_FOR_AUTHOR.md` - Unclear topics
+9. `cargo doc --package <crate>` - Generated docs
 
 ## Testing & Debugging
 
-### API Changes (Important!)
-- ❌ `CompleteState`/`IncompleteState` → ✅ `Response` (unified)
-- `search()` returns `Result<Response, ErrorState>`
-- Check `response.is_complete()` before unwrap
-- `Searchable` trait in `context_search::`
-- Use `init_test_tracing!()` not `init_tracing()`
-
+### Tracing Setup (IMPORTANT) Enable test log files in target/test-logs/:
+```rust
+let _tracing = init_test_tracing!(&graph);  // Pass graph for readable tokens in output!
+```
 ### Test Commands
 ```bash
 cargo test -p <crate> [test_name] -- --nocapture
 LOG_STDOUT=1 LOG_FILTER=trace cargo test -p <crate> -- --nocapture
-```
-
-**Always append `; focus_chat`** to return focus (except background/interactive commands)
-
-### Tracing Setup (REQUIRED)
-```rust
-let _tracing = init_test_tracing!(&graph);  // Pass graph for readable tokens!
 ```
 
 ### Debug Workflow
@@ -169,7 +154,7 @@ Check `agents/bug-reports/INDEX.md` before investigating.
 
 **File naming convention (CRITICAL):**
 All agent-generated files MUST include a timestamp prefix for chronological ordering:
-- Format: `YYYYMMDD_<FILENAME>.md` (e.g., `20251203_FEATURE_NAME.md`)
+- Format: `YYYYMMDD_<FILENAME>.md` (e.g., `20260216_FEATURE_NAME.md`)
 - Lists newest files first when sorted alphabetically
 - Makes file age immediately visible
 - Enables easy tracking of document history

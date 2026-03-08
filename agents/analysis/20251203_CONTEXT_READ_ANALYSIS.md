@@ -1,3 +1,8 @@
+---
+tags: `#analysis` `#context-trace` `#context-search` `#context-read` `#algorithm` `#performance`
+summary: ```rust
+---
+
 # Context-Read Analysis
 
 **High-level graph reading and pattern expansion system**

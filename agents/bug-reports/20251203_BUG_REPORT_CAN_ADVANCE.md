@@ -1,3 +1,8 @@
+---
+tags: `#bug-report` `#context-trace` `#context-search` `#debugging` `#testing`
+summary: The `range1` test in `context-search` fails with the error:
+---
+
 # Bug Report: can_advance/advance Inconsistency in context-search
 
 ## Summary

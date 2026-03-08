@@ -1,0 +1,908 @@
+/**
+ * ThemeSettings — Color theme settings page.
+ *
+ * Organized into collapsible sections:
+ *   - Presets (one-click theme switching)
+ *   - Backgrounds
+ *   - Text / Fonts
+ *   - Borders
+ *   - Accents
+ *   - Log Levels
+ *   - Particle Effects (Metal Sparks, Embers, Angelic Beams, Glitter)
+ *   - Cinder Palette
+ *   - Background Smoke
+ */
+import { useState, useRef } from 'preact/hooks';
+import {
+  themeColors,
+  updateThemeColor,
+  applyFullPreset,
+  resetTheme,
+  randomizeTheme,
+  THEME_PRESETS,
+  DEFAULT_THEME,
+  savedThemes,
+  saveCurrentTheme,
+  deleteSavedTheme,
+  applySavedTheme,
+  updateSavedTheme,
+  renameSavedTheme,
+  effectSettings,
+  updateEffectSetting,
+  exportTheme,
+  importAndApplyTheme,
+  type ThemeColors,
+  type SavedTheme,
+} from '../../store/theme';
+import { captureOverlayThumbnail, gpuOverlayEnabled } from '../WgpuOverlay/WgpuOverlay';
+import './theme-settings.css';
+
+// ── Color picker row ─────────────────────────────────────────────────────────
+
+interface ColorRowProps {
+  label: string;
+  description?: string;
+  colorKey: keyof ThemeColors;
+}
+
+function ColorRow({ label, description, colorKey }: ColorRowProps) {
+  const value = themeColors.value[colorKey];
+  return (
+    <div class="theme-color-row">
+      <div class="theme-color-info">
+        <span class="theme-color-label">{label}</span>
+        {description && <span class="theme-color-desc">{description}</span>}
+      </div>
+      <div class="theme-color-controls">
+        <input
+          type="color"
+          class="theme-color-picker"
+          value={value}
+          onInput={(e) => updateThemeColor(colorKey, (e.target as HTMLInputElement).value)}
+        />
+        <input
+          type="text"
+          class="theme-color-hex"
+          value={value}
+          maxLength={7}
+          onInput={(e) => {
+            const v = (e.target as HTMLInputElement).value;
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+              updateThemeColor(colorKey, v);
+            }
+          }}
+        />
+        <button
+          class="theme-color-reset"
+          title="Reset to default"
+          onClick={() => updateThemeColor(colorKey, DEFAULT_THEME[colorKey])}
+        >
+          ↺
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Collapsible section ──────────────────────────────────────────────────────
+
+interface SectionProps {
+  title: string;
+  icon: string;
+  children: preact.ComponentChildren;
+  defaultOpen?: boolean;
+  className?: string;
+}
+
+function Section({ title, icon, children, defaultOpen = false, className }: SectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section class={`theme-section ${open ? 'open' : ''}${className ? ' ' + className : ''}`}>
+      <button class="theme-section-header" onClick={() => setOpen(!open)}>
+        <span class="theme-section-icon">{icon}</span>
+        <span class="theme-section-title">{title}</span>
+        <span class="theme-section-chevron">{open ? '▾' : '▸'}</span>
+      </button>
+      {open && <div class="theme-section-body">{children}</div>}
+    </section>
+  );
+}
+
+// ── Save theme dialog ────────────────────────────────────────────────────────
+
+function SaveThemeButton() {
+  const [showInput, setShowInput] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [name, setName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleSave() {
+    const trimmed = name.trim();
+    if (!trimmed || saving) return;
+    setSaving(true);
+    try {
+      // Capture a low-res thumbnail of the current frame
+      const thumbnail = await captureOverlayThumbnail();
+      saveCurrentTheme(trimmed, thumbnail);
+    } catch {
+      saveCurrentTheme(trimmed);
+    }
+    setName('');
+    setShowInput(false);
+    setSaving(false);
+  }
+
+  if (!showInput) {
+    return (
+      <button class="btn btn-primary" onClick={() => { setShowInput(true); setTimeout(() => inputRef.current?.focus(), 0); }}>
+        💾 Save Theme
+      </button>
+    );
+  }
+
+  return (
+    <div class="save-theme-inline">
+      <input
+        ref={inputRef}
+        type="text"
+        class="save-theme-input"
+        placeholder="Theme name…"
+        value={name}
+        maxLength={40}
+        onInput={(e) => setName((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSave();
+          if (e.key === 'Escape') { setShowInput(false); setName(''); }
+        }}
+      />
+      <button class="btn btn-primary" onClick={handleSave} disabled={!name.trim() || saving}>
+        {saving ? '…' : 'Save'}
+      </button>
+      <button class="btn btn-secondary" onClick={() => { setShowInput(false); setName(''); }}>✕</button>
+    </div>
+  );
+}
+
+// ── Saved theme card ─────────────────────────────────────────────────────────
+
+function SavedThemeCard({ theme }: { theme: SavedTheme }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmUpdate, setConfirmUpdate] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(theme.name);
+
+  async function handleUpdate() {
+    setUpdating(true);
+    try {
+      const thumbnail = await captureOverlayThumbnail();
+      updateSavedTheme(theme.id, thumbnail);
+    } catch {
+      updateSavedTheme(theme.id);
+    }
+    setUpdating(false);
+    setConfirmUpdate(false);
+  }
+
+  function handleRename() {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== theme.name) {
+      renameSavedTheme(theme.id, trimmed);
+    }
+    setEditing(false);
+  }
+
+  const date = new Date(theme.createdAt);
+  const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+  return (
+    <div class="saved-theme-card">
+      {theme.thumbnail ? (
+        <img class="saved-theme-thumbnail" src={theme.thumbnail} alt={theme.name} />
+      ) : (
+        <div class="saved-theme-swatches">
+          <span class="theme-preset-swatch" style={{ background: theme.colors.bgPrimary }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.accentOrange }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.accentBlue }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.levelError }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.cinderEmber }} />
+          <span class="theme-preset-swatch" style={{ background: theme.colors.textPrimary }} />
+        </div>
+      )}
+      <div class="saved-theme-info">
+        {editing ? (
+          <input
+            type="text"
+            class="save-theme-input saved-theme-rename"
+            value={editName}
+            maxLength={40}
+            onInput={(e) => setEditName((e.target as HTMLInputElement).value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRename();
+              if (e.key === 'Escape') { setEditing(false); setEditName(theme.name); }
+            }}
+            onBlur={handleRename}
+            autoFocus
+          />
+        ) : (
+          <strong class="saved-theme-name" onDblClick={() => setEditing(true)} title="Double-click to rename">
+            {theme.name}
+          </strong>
+        )}
+        <span class="saved-theme-date">{dateStr}</span>
+      </div>
+      <div class="saved-theme-actions">
+        <button class="btn btn-primary btn-sm" onClick={() => applySavedTheme(theme)} title="Apply this theme">
+          Apply
+        </button>
+        {confirmUpdate ? (
+          <button class="btn btn-warn btn-sm" onClick={handleUpdate} disabled={updating}>
+            {updating ? '…' : 'Confirm'}
+          </button>
+        ) : (
+          <button class="btn btn-secondary btn-sm" onClick={() => setConfirmUpdate(true)} title="Overwrite with current colors">
+            ✏️
+          </button>
+        )}
+        {confirmDelete ? (
+          <button class="btn btn-danger btn-sm" onClick={() => { deleteSavedTheme(theme.id); setConfirmDelete(false); }}>
+            Confirm
+          </button>
+        ) : (
+          <button class="btn btn-secondary btn-sm" onClick={() => setConfirmDelete(true)} title="Delete this theme">
+            🗑
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Saved themes panel ───────────────────────────────────────────────────────
+
+function SavedThemesPanel() {
+  const themes = savedThemes.value;
+
+  return (
+    <div class="saved-themes-panel">
+      <h3 class="saved-themes-title">Saved Themes</h3>
+      <p class="saved-themes-subtitle">
+        Your custom themes, stored in the browser.
+      </p>
+      {themes.length === 0 ? (
+        <div class="saved-themes-empty">
+          <span class="saved-themes-empty-icon">◇</span>
+          <p>No saved themes yet.</p>
+          <p class="saved-themes-empty-hint">Use the "💾 Save Theme" button to save your current color configuration.</p>
+        </div>
+      ) : (
+        <div class="saved-themes-list">
+          {themes.map(t => <SavedThemeCard key={t.id} theme={t} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Import theme button ──────────────────────────────────────────────────────
+
+function ImportThemeButton() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleFile(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const err = await importAndApplyTheme(file);
+    if (err) setError(err);
+    else setError(null);
+    input.value = '';  // allow re-selecting same file
+  }
+
+  return (
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json,application/json"
+        style={{ display: 'none' }}
+        onChange={handleFile}
+      />
+      <button
+        class="btn btn-secondary"
+        onClick={() => fileRef.current?.click()}
+        title="Load a theme from a .json file"
+      >
+        📂 Import
+      </button>
+      {error && <span class="theme-import-error">{error}</span>}
+    </>
+  );
+}
+
+// ── Main component ──────────────────────────────────────────────────────────
+
+export function ThemeSettings() {
+  return (
+    <div class="theme-settings-layout">
+    <div class="theme-settings">
+      <div class="theme-settings-header">
+        <h2 class="theme-settings-title">Color Theme Settings</h2>
+        <p class="theme-settings-subtitle">
+          Customize every color in the palette. Changes are applied instantly and saved to your browser.
+        </p>
+        <div class="theme-settings-actions">
+          <button class="btn btn-primary" onClick={resetTheme}>
+            Reset to Default
+          </button>
+          <button class="btn btn-primary" onClick={randomizeTheme}>
+            🎲 Randomize
+          </button>
+          <SaveThemeButton />
+          <button class="btn btn-secondary" onClick={() => exportTheme()} title="Export current theme as .json">
+            📤 Export
+          </button>
+          <ImportThemeButton />
+        </div>
+      </div>
+
+      {/* ── Presets ── */}
+      <Section title="Theme Presets" icon="◆" defaultOpen={true}>
+        <div class="theme-presets-grid">
+          {THEME_PRESETS.map((preset) => (
+            <button
+              key={preset.name}
+              class="theme-preset-card"
+              onClick={() => applyFullPreset(preset)}
+            >
+              <div class="theme-preset-swatches">
+                <span class="theme-preset-swatch" style={{ background: preset.colors.bgPrimary }} />
+                <span class="theme-preset-swatch" style={{ background: preset.colors.accentOrange }} />
+                <span class="theme-preset-swatch" style={{ background: preset.colors.accentBlue }} />
+                <span class="theme-preset-swatch" style={{ background: preset.colors.levelError }} />
+                <span class="theme-preset-swatch" style={{ background: preset.colors.cinderEmber }} />
+              </div>
+              <div class="theme-preset-info">
+                <strong>{preset.name}</strong>
+                <span>{preset.description}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── Backgrounds ── */}
+      <Section title="Backgrounds" icon="▧">
+        <ColorRow label="Primary" description="Main app background" colorKey="bgPrimary" />
+        <ColorRow label="Secondary" description="Header, panels" colorKey="bgSecondary" />
+        <ColorRow label="Tertiary" description="Inputs, nested areas" colorKey="bgTertiary" />
+        <ColorRow label="Hover" description="Hovered elements" colorKey="bgHover" />
+        <ColorRow label="Active" description="Active/pressed state" colorKey="bgActive" />
+      </Section>
+
+      {/* ── Text / Fonts ── */}
+      <Section title="Text & Fonts" icon="A">
+        <ColorRow label="Primary Text" description="Main content text" colorKey="textPrimary" />
+        <ColorRow label="Secondary Text" description="Labels, metadata" colorKey="textSecondary" />
+        <ColorRow label="Muted Text" description="Disabled, hints" colorKey="textMuted" />
+      </Section>
+
+      {/* ── Borders ── */}
+      <Section title="Borders" icon="□">
+        <ColorRow label="Border" description="Panel and input borders" colorKey="borderColor" />
+        <ColorRow label="Subtle Border" description="Very faint separators" colorKey="borderSubtle" />
+      </Section>
+
+      {/* ── Accents ── */}
+      <Section title="Accent Colors" icon="◈">
+        <ColorRow label="Blue" description="Links, focus rings" colorKey="accentBlue" />
+        <ColorRow label="Green" description="Success, vine" colorKey="accentGreen" />
+        <ColorRow label="Orange" description="Primary accent, bonfire" colorKey="accentOrange" />
+        <ColorRow label="Purple" description="Special highlights" colorKey="accentPurple" />
+        <ColorRow label="Yellow" description="Tarnished gold" colorKey="accentYellow" />
+      </Section>
+
+      {/* ── Log Levels ── */}
+      <Section title="Log Level Colors" icon="▤">
+        <ColorRow label="TRACE" description="Faintest level" colorKey="levelTrace" />
+        <ColorRow label="DEBUG" description="Debug output" colorKey="levelDebug" />
+        <ColorRow label="INFO" description="Informational" colorKey="levelInfo" />
+        <ColorRow label="WARN" description="Warnings" colorKey="levelWarn" />
+        <ColorRow label="ERROR" description="Errors" colorKey="levelError" />
+      </Section>
+
+      {/* ── Log Level Badge Text ── */}
+      <Section title="Log Level Text Colors" icon="T">
+        <p class="theme-section-hint">
+          Text colors for log level badges. Should contrast with level background colors above.
+        </p>
+        <ColorRow label="TRACE Text" description="Text on trace badges" colorKey="levelTraceText" />
+        <ColorRow label="DEBUG Text" description="Text on debug badges" colorKey="levelDebugText" />
+        <ColorRow label="INFO Text" description="Text on info badges" colorKey="levelInfoText" />
+        <ColorRow label="WARN Text" description="Text on warn badges" colorKey="levelWarnText" />
+        <ColorRow label="ERROR Text" description="Text on error badges" colorKey="levelErrorText" />
+      </Section>
+
+      {/* ── Span Badge Colors ── */}
+      <Section title="Span Badge Colors" icon="→">
+        <ColorRow label="Enter Span" description="Span entry markers" colorKey="spanEnterText" />
+        <ColorRow label="Exit Span" description="Span exit markers" colorKey="spanExitText" />
+      </Section>
+
+      {/* ── GPU Rendering ── */}
+      <Section title="GPU Rendering" icon="⬢">
+        <p class="theme-section-hint">
+          Controls the WebGPU rendering pipeline. When disabled, all GPU-accelerated
+          features are turned off including visual effects and 3D graph rendering.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable GPU</span>
+            <span class="theme-color-desc">Master switch for WebGPU rendering</span>
+          </div>
+          <label class="theme-toggle">
+            <input
+              type="checkbox"
+              checked={gpuOverlayEnabled.value}
+              onChange={(e) => gpuOverlayEnabled.value = (e.target as HTMLInputElement).checked}
+            />
+            <span class="theme-toggle-slider" />
+          </label>
+        </div>
+      </Section>
+
+      {/* ── Particle: Metal Sparks ── */}
+      <Section title="Particles: Metal Sparks" icon="✦" className="effect-preview-sparks">
+        <p class="theme-section-hint">
+          Sparks spawn at the mouse cursor when hovering over elements.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Sparks</span>
+            <span class="theme-color-desc">Toggle metal spark particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.sparksEnabled}
+              onChange={(e) => updateEffectSetting('sparksEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.sparksEnabled && (<>
+        <ColorRow label="Hot Core" description="White-yellow center" colorKey="particleSparkCore" />
+        <ColorRow label="Ember" description="Outer ember glow" colorKey="particleSparkEmber" />
+        <ColorRow label="Steel" description="Metallic highlight" colorKey="particleSparkSteel" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.sparkSpeed}
+              onInput={(e) => updateEffectSetting('sparkSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active sparks (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.sparkCount}
+              onInput={(e) => updateEffectSetting('sparkCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Spark size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.sparkSize}
+              onInput={(e) => updateEffectSetting('sparkSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.sparkSize}%</span>
+          </div>
+        </div>
+        </>)}
+      </Section>
+
+      {/* ── Particle: Embers ── */}
+      <Section title="Particles: Embers / Ash" icon="🔥" className="effect-preview-embers">
+        <p class="theme-section-hint">
+          Rising embers/ash from hovered element borders.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Embers</span>
+            <span class="theme-color-desc">Toggle ember/ash particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.embersEnabled}
+              onChange={(e) => updateEffectSetting('embersEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.embersEnabled && (<>
+        <ColorRow label="Hot" description="Bright center glow" colorKey="particleEmberHot" />
+        <ColorRow label="Base" description="Outer ember color" colorKey="particleEmberBase" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.emberSpeed}
+              onInput={(e) => updateEffectSetting('emberSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active embers (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.emberCount}
+              onInput={(e) => updateEffectSetting('emberCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Ember size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.emberSize}
+              onInput={(e) => updateEffectSetting('emberSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.emberSize}%</span>
+          </div>
+        </div>
+        </>)}
+      </Section>
+
+      {/* ── Particle: Angelic Beams ── */}
+      <Section title="Particles: Angelic Beams" icon="✧" className="effect-preview-beams">
+        <p class="theme-section-hint">
+          Pixel-thin vertical rays rising from the selected element.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Beams</span>
+            <span class="theme-color-desc">Toggle angelic beam particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.beamsEnabled}
+              onChange={(e) => updateEffectSetting('beamsEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.beamsEnabled && (<>
+        <ColorRow label="Center" description="Bright core color" colorKey="particleBeamCenter" />
+        <ColorRow label="Edge" description="Warm outer glow" colorKey="particleBeamEdge" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.beamSpeed}
+              onInput={(e) => updateEffectSetting('beamSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Height</span>
+            <span class="theme-color-desc">Beam length multiplier (10–100)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="10" max="100" step="1" value={effectSettings.value.beamHeight}
+              onInput={(e) => updateEffectSetting('beamHeight', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamHeight}</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Maximum active beams (0 = unlimited)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="1024" step="1" value={effectSettings.value.beamCount}
+              onInput={(e) => updateEffectSetting('beamCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamCount || 'All'}</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Drift</span>
+            <span class="theme-color-desc">Upward drift distance (0–300%)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.beamDrift}
+              onInput={(e) => updateEffectSetting('beamDrift', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.beamDrift}%</span>
+          </div>
+        </div>
+        </>)}
+      </Section>
+
+      {/* ── Particle: Glitter ── */}
+      <Section title="Particles: Glitter" icon="✨" className="effect-preview-glitter">
+        <p class="theme-section-hint">
+          Twinkling sparkles drifting along hovered element borders.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Glitter</span>
+            <span class="theme-color-desc">Toggle glitter sparkle particles</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.glitterEnabled}
+              onChange={(e) => updateEffectSetting('glitterEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.glitterEnabled && (<>
+        <ColorRow label="Warm" description="Golden-white base" colorKey="particleGlitterWarm" />
+        <ColorRow label="Cool" description="Blue-white variation" colorKey="particleGlitterCool" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Speed</span>
+            <span class="theme-color-desc">Animation speed multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.glitterSpeed}
+              onInput={(e) => updateEffectSetting('glitterSpeed', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterSpeed}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Count</span>
+            <span class="theme-color-desc">Active glitter (0–200% of slots)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="200" step="1" value={effectSettings.value.glitterCount}
+              onInput={(e) => updateEffectSetting('glitterCount', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterCount}%</span>
+          </div>
+        </div>
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Glitter size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.glitterSize}
+              onInput={(e) => updateEffectSetting('glitterSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.glitterSize}%</span>
+          </div>
+        </div>
+        </>)}
+      </Section>
+
+      {/* ── Cinder Palette ── */}
+      <Section title="Cinder Palette" icon="◎">
+        <p class="theme-section-hint">
+          The four-color cycle used for border glows and hover effects.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Cinder</span>
+            <span class="theme-color-desc">Toggle cinder border glows</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.cinderEnabled}
+              onChange={(e) => updateEffectSetting('cinderEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.cinderEnabled && (<>
+        <ColorRow label="Ember" description="Deep orange-red" colorKey="cinderEmber" />
+        <ColorRow label="Gold" description="Tarnished gold" colorKey="cinderGold" />
+        <ColorRow label="Ash" description="Cool grey" colorKey="cinderAsh" />
+        <ColorRow label="Vine" description="Deep green" colorKey="cinderVine" />
+        <div class="theme-slider-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Size</span>
+            <span class="theme-color-desc">Border glow size multiplier (up to 3×)</span>
+          </div>
+          <div class="theme-slider-controls">
+            <input type="range" min="0" max="300" step="1" value={effectSettings.value.cinderSize}
+              onInput={(e) => updateEffectSetting('cinderSize', parseInt((e.target as HTMLInputElement).value, 10))}
+              class="theme-range-slider" />
+            <span class="theme-slider-value">{effectSettings.value.cinderSize}%</span>
+          </div>
+        </div>
+        </>)}
+      </Section>
+
+      {/* ── Background Smoke ── */}
+      <Section title="Background Smoke" icon="☁">
+        <p class="theme-section-hint">
+          Base tones and noise parameters for the animated smoky background layers.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable Smoke</span>
+            <span class="theme-color-desc">Toggle background smoke layers</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.smokeEnabled}
+              onChange={(e) => updateEffectSetting('smokeEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.smokeEnabled && (<>
+        <ColorRow label="Cool Tone" description="Blue-grey base" colorKey="smokeCool" />
+        <ColorRow label="Warm Tone" description="Brown-amber base" colorKey="smokeWarm" />
+        <ColorRow label="Moss Tone" description="Mossy mid-tone" colorKey="smokeMoss" />
+        {[
+          { key: 'smokeIntensity' as const, label: 'Intensity', desc: 'Overall smoke brightness/amount', max: 100 },
+          { key: 'smokeSpeed' as const, label: 'Speed', desc: 'Smoke drift and animation speed (up to 5×)', max: 500 },
+          { key: 'smokeWarmScale' as const, label: 'Warm Scale', desc: 'UV scale for warm base smoke layers', max: 200 },
+          { key: 'smokeCoolScale' as const, label: 'Cool Scale', desc: 'UV scale for cool blue-tinted wisps', max: 200 },
+          { key: 'smokeMossScale' as const, label: 'Moss Scale', desc: 'UV scale for moss-tone blending and wisps', max: 200 },
+          { key: 'grainIntensity' as const, label: 'Grain Intensity', desc: 'Grain brightness / amplitude', max: 100 },
+          { key: 'grainCoarseness' as const, label: 'Grain Coarseness', desc: 'Lower = finer detail, higher = chunkier', max: 100 },
+          { key: 'grainSize' as const, label: 'Grain Size', desc: 'Pixel block size for grain pattern', max: 100 },
+          { key: 'vignetteStrength' as const, label: 'Vignette', desc: 'Edge darkening intensity', max: 100 },
+          { key: 'underglowStrength' as const, label: 'Underglow', desc: 'Warm glow from bottom edge', max: 100 },
+        ].map(({ key, label, desc, max }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max={String(max)}
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}{max === 100 ? '%' : ''}</span>
+            </div>
+          </div>
+        ))}
+        </>)}
+      </Section>
+
+      {/* ── Glass Panel ── */}
+      <Section title="Glass Panels" icon="◻" defaultOpen={true}>
+        <p class="theme-section-hint">
+          Sidebar, header, and tab-bar glass panel opacity and blur.
+        </p>
+        {[
+          { key: 'glassOpacity' as const, label: 'Opacity', desc: 'Background panel transparency' },
+          { key: 'glassBlur' as const, label: 'Blur', desc: 'Backdrop blur intensity' },
+        ].map(({ key, label, desc }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}%</span>
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      {/* ── CRT Effect ── */}
+      <Section title="CRT Effect" icon="▤" defaultOpen={true}>
+        <p class="theme-section-hint">
+          Retro CRT post-processing — scanlines, pixel grid, edge shadow, torch flicker.
+        </p>
+        <div class="theme-toggle-row">
+          <div class="theme-color-info">
+            <span class="theme-color-label">Enable CRT</span>
+            <span class="theme-color-desc">Toggle the CRT overlay effect</span>
+          </div>
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              checked={effectSettings.value.crtEnabled}
+              onChange={(e) => updateEffectSetting('crtEnabled', (e.target as HTMLInputElement).checked)}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        {effectSettings.value.crtEnabled && [
+          { key: 'crtScanlinesH' as const, label: 'H Scanlines', desc: 'Horizontal lines and grid rows' },
+          { key: 'crtScanlinesV' as const, label: 'V Scanlines', desc: 'Vertical lines and grid columns' },
+          { key: 'crtEdgeShadow' as const, label: 'Edge Shadow', desc: 'Border/vignette darkening' },
+          { key: 'crtFlicker' as const, label: 'Flicker', desc: 'Torch-like brightness variation' },
+          { key: 'crtLineWidth' as const, label: 'Line Width', desc: 'Scanline thickness (thin → wide)' },
+        ].map(({ key, label, desc }) => (
+          <div class="theme-slider-row" key={key}>
+            <div class="theme-color-info">
+              <span class="theme-color-label">{label}</span>
+              <span class="theme-color-desc">{desc}</span>
+            </div>
+            <div class="theme-slider-controls">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={effectSettings.value[key]}
+                onInput={(e) => updateEffectSetting(key, parseInt((e.target as HTMLInputElement).value, 10))}
+                class="theme-range-slider"
+              />
+              <span class="theme-slider-value">{effectSettings.value[key]}%</span>
+            </div>
+          </div>
+        ))}
+        {effectSettings.value.crtEnabled && (
+          <div class="theme-slider-row">
+            <div class="theme-color-info">
+              <span class="theme-color-label">Scanline Color</span>
+              <span class="theme-color-desc">Tint color for CRT scanline bands</span>
+            </div>
+            <input
+              type="color"
+              value={`#${(effectSettings.value.crtColor ?? [100, 80, 60]).map((c: number) => c.toString(16).padStart(2, '0')).join('')}`}
+              onInput={(e) => {
+                const hex = (e.target as HTMLInputElement).value;
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                updateEffectSetting('crtColor', [r, g, b]);
+              }}
+              class="theme-color-picker"
+            />
+          </div>
+        )}
+      </Section>
+    </div>
+    <SavedThemesPanel />
+    </div>
+  );
+}

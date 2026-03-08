@@ -4,34 +4,40 @@ use derive_new::new;
 
 use crate::expansion::link::ExpansionLink;
 
-use crate::context::ReadCtx;
-
 #[derive(Debug, new)]
-pub struct ComplementBuilder {
+pub(crate) struct ComplementBuilder {
     link: ExpansionLink,
 }
 
 impl ComplementBuilder {
-    pub fn build(
+    pub(crate) fn build(
         self,
-        trav: &mut ReadCtx,
+        graph: &HypergraphRef,
     ) -> Token {
+        use tracing::debug;
         // Get the root index from the postfix path
         use context_trace::GraphRootChild;
-        let root = self.link.root_postfix.graph_root_child(trav);
+        let root = self.link.root_postfix.graph_root_child(graph);
 
         // Calculate the complement end bound from the postfix path
         use context_trace::HasRootChildIndex;
         let intersection_start = self.link.root_postfix.root_child_index();
 
+        debug!(
+            root = ?root,
+            intersection_start = ?intersection_start,
+            "ComplementBuilder::build"
+        );
+
         if intersection_start == 0 {
             // If intersection is at the beginning, no complement exists
+            debug!("No complement needed (intersection at start)");
             return root;
         }
 
         // Build the trace cache for the complement path
         let complement_cache =
-            self.build_complement_trace_cache(trav, root, intersection_start);
+            self.build_complement_trace_cache(root, intersection_start);
 
         // Create InitInterval for the complement range
         let init_interval = InitInterval {
@@ -39,12 +45,16 @@ impl ComplementBuilder {
             cache: complement_cache,
             end_bound: intersection_start.into(),
         };
-        trav.insert_init((), init_interval)
+        // Safe to expect since we checked intersection_start != 0 above
+        let complement = graph.insert_init((), init_interval).expect(
+            "complement insert_init should succeed with non-zero end_bound",
+        );
+        debug!(complement = ?complement, "Complement built");
+        complement
     }
 
     fn build_complement_trace_cache(
         &self,
-        _trav: &ReadCtx,
         root: Token,
         _end_bound: usize,
     ) -> TraceCache {

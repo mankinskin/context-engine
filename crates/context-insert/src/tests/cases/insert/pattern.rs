@@ -17,13 +17,11 @@ use context_trace::{
     GraphRoot,
     HasGraph,
     HashSet,
-    PatternId,
     Token,
     VertexSet,
     Wide,
     graph::vertex::{
         VertexIndex,
-        data::VertexData,
         pattern::Pattern,
     },
     tests::{
@@ -39,7 +37,7 @@ use context_trace::{
 };
 use pretty_assertions::assert_matches;
 /// Test case: Insert "byz" into pattern1 environment
-pub struct Pattern1Byz;
+pub(crate) struct Pattern1Byz;
 
 impl TestCase for Pattern1Byz {
     type Env = EnvInsertPattern1;
@@ -64,22 +62,22 @@ impl InsertTestCase for Pattern1Byz {
         "byz"
     }
 
-    fn expected_vertex_data(&self) -> VertexData {
-        let env = Self::Env::get();
-        let token = self.expected_token();
-        let mut vertex = VertexData::new(token);
+    //fn expected_vertex_data(&self) -> VertexData {
+    //    let env = Self::Env::get();
+    //    let token = self.expected_token();
+    //    let mut vertex = VertexData::new(token);
 
-        // Add expected child pattern
-        let pattern = Pattern::from(vec![env.by, env.z]);
-        let pattern_id = PatternId::default();
-        vertex.child_patterns_mut().insert(pattern_id, pattern);
+    //    // Add expected child pattern
+    //    let pattern = Pattern::from(vec![env.by, env.z]);
+    //    let pattern_id = PatternId::default();
+    //    vertex.child_patterns_mut().insert(pattern_id, pattern);
 
-        vertex
-    }
+    //    vertex
+    //}
 }
 
 /// Test case: Insert "aby" into pattern1 environment
-pub struct Pattern1Aby;
+pub(crate) struct Pattern1Aby;
 
 impl TestCase for Pattern1Aby {
     type Env = EnvInsertPattern1;
@@ -102,18 +100,18 @@ impl InsertTestCase for Pattern1Aby {
         "aby"
     }
 
-    fn expected_vertex_data(&self) -> VertexData {
-        let env = Self::Env::get();
-        let token = self.expected_token();
-        let mut vertex = VertexData::new(token);
+    //fn expected_vertex_data(&self) -> VertexData {
+    //    let env = Self::Env::get();
+    //    let token = self.expected_token();
+    //    let mut vertex = VertexData::new(token);
 
-        // Add expected child pattern
-        let pattern = Pattern::from(vec![env.ab, env.y]);
-        let pattern_id = PatternId::default();
-        vertex.child_patterns_mut().insert(pattern_id, pattern);
+    //    // Add expected child pattern
+    //    let pattern = Pattern::from(vec![env.ab, env.y]);
+    //    let pattern_id = PatternId::default();
+    //    vertex.child_patterns_mut().insert(pattern_id, pattern);
 
-        vertex
-    }
+    //    vertex
+    //}
 }
 
 #[test]
@@ -123,12 +121,6 @@ fn insert_pattern1() {
     let env = case.environment();
     let _tracing = context_trace::init_test_tracing!(env.graph());
 
-    // Verify all vertices have unique string representations before insertion
-    {
-        let g = env.graph.graph();
-        assert_all_vertices_unique(&*g);
-    }
-
     let query = case.input_tokens();
     let result_token: Token =
         env.graph.insert(query.clone()).expect("Indexing failed");
@@ -136,8 +128,8 @@ fn insert_pattern1() {
     // Assert the token has the expected string representation
     {
         let g = env.graph.graph();
-        assert_token_string_repr(&*g, result_token, case.expected_string());
-        assert_all_vertices_unique(&*g);
+        assert_token_string_repr(g, result_token, case.expected_string());
+        assert_all_vertices_unique(g);
     }
     assert_eq!(
         result_token.width(),
@@ -148,7 +140,7 @@ fn insert_pattern1() {
     let found = env.graph.find_ancestor(&query);
     assert_matches!(
         found,
-        Ok(ref response) if response.query_exhausted() && response.is_full_token() && response.root_token() == result_token,
+        Ok(ref response) if response.query_exhausted() && response.is_entire_root() && response.root_token() == result_token,
         "byz"
     );
 
@@ -161,14 +153,14 @@ fn insert_pattern1() {
     // Assert aby has the expected string representation
     {
         let g = env.graph.graph();
-        assert_token_string_repr(&*g, result_token2, case2.expected_string());
-        assert_all_vertices_unique(&*g);
+        assert_token_string_repr(g, result_token2, case2.expected_string());
+        assert_all_vertices_unique(g);
     }
 
     let found2 = env.graph.find_parent(&query2);
     assert_matches!(
         found2,
-        Ok(ref response) if response.query_exhausted() && response.is_full_token() && response.root_token() == result_token2,
+        Ok(ref response) if response.query_exhausted() && response.is_entire_root() && response.root_token() == result_token2,
         "aby"
     );
 }
@@ -185,7 +177,7 @@ fn insert_pattern2() {
     // Verify all vertices have unique string representations before insertion
     {
         let g = graph.graph();
-        assert_all_vertices_unique(&*g);
+        assert_all_vertices_unique(g);
     }
 
     let query = vec![a, b, y, x];
@@ -194,8 +186,8 @@ fn insert_pattern2() {
     // Assert the token has the expected string representation and width
     {
         let g = graph.graph();
-        assert_token_string_repr(&*g, aby, "aby");
-        assert_all_vertices_unique(&*g);
+        assert_token_string_repr(g, aby, "aby");
+        assert_all_vertices_unique(g);
     }
     assert_eq!(aby.width(), 3);
 
@@ -205,7 +197,7 @@ fn insert_pattern2() {
         .expect_complete("ab")
         .root_parent();
     let g = graph.graph();
-    let aby_vertex = g.expect_vertex(aby);
+    let aby_vertex = g.expect_vertex_data(aby);
     assert_eq!(aby_vertex.parents().len(), 1, "aby");
     assert_eq!(
         aby_vertex
@@ -214,12 +206,11 @@ fn insert_pattern2() {
             .collect::<HashSet<_>>(),
         HashSet::from_iter([Pattern::from(vec![ab, y]),])
     );
-    drop(g);
     let query = vec![a, b, y];
     let aby_found = graph.find_ancestor(&query);
     assert_matches!(
         aby_found,
-        Ok(ref response) if response.query_exhausted() && response.is_full_token() && response.root_token() == aby,
+        Ok(ref response) if response.query_exhausted() && response.is_entire_root() && response.root_token() == aby,
         "aby"
     );
 }

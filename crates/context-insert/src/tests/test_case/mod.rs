@@ -2,7 +2,6 @@
 
 use context_trace::{
     Token,
-    graph::vertex::data::VertexData,
     tests::test_case::{
         TestCase,
         TestEnv,
@@ -14,7 +13,7 @@ use context_trace::{
 /// Validates that insertion produces correct token structure,
 /// pattern relationships, and graph state.
 ///
-pub trait InsertTestCase: TestCase {
+pub(crate) trait InsertTestCase: TestCase {
     /// Get a fresh environment instance
     fn environment(&self) -> Self::Env {
         Self::Env::initialize()
@@ -29,6 +28,6 @@ pub trait InsertTestCase: TestCase {
     /// Expected string representation of the token
     fn expected_string(&self) -> &str;
 
-    /// Expected vertex data after insertion
-    fn expected_vertex_data(&self) -> VertexData;
+    ///// Expected vertex data after insertion
+    //fn expected_vertex_data(&self) -> VertexData;
 }

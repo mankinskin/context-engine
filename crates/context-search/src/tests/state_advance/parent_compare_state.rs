@@ -20,12 +20,13 @@ use {
 #[test]
 fn test_parent_compare_state_advance_success() {
     // Create a graph with pattern: [a, b, c]
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create a ParentState at index 0
     let root = IndexRoot::from(
@@ -107,12 +108,13 @@ fn test_parent_compare_state_advance_success() {
 #[test]
 fn test_parent_compare_state_advance_at_last_index() {
     // Create a graph with pattern: [a, b, c]
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create a ParentState at the last index (2)
     let root = IndexRoot::from(
@@ -167,13 +169,14 @@ fn test_parent_compare_state_advance_at_last_index() {
 #[test]
 fn test_parent_compare_state_advance_with_nested_pattern() {
     // Create a graph with nested patterns: [a, b] and [ab, c]
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (ab, _ab_id) => [a, b],
         (abc, abc_id) => [ab, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create a ParentState at index 0 of 'abc' pattern
     let root = IndexRoot::from(
@@ -239,12 +242,13 @@ fn test_parent_compare_state_advance_with_nested_pattern() {
 #[test]
 fn test_parent_compare_state_cursor_conversion() {
     // Test cursor type conversions during advancement
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let root = IndexRoot::from(
         ChildLocation::new(abc, abc_id, 0).into_pattern_location(),
@@ -313,12 +317,13 @@ fn test_parent_compare_state_cursor_conversion() {
 #[test]
 fn test_state_advance_error_propagation() {
     // Test that errors from underlying ParentState are properly propagated
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, { a, b });
     insert_patterns!(graph,
         (ab, ab_id) => [a, b]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Create ParentState that cannot advance (at last index)
     let root = IndexRoot::from(

@@ -6,7 +6,14 @@ use crate::container::{
     StateContainer,
 };
 use context_trace::{
-    graph::vertex::parent::HasPatternId,
+    graph::vertex::{
+        parent::{
+            HasPatternId,
+            Parent,
+            PatternIndex,
+        },
+        VertexIndex,
+    },
     path::mutators::raise::PathRaise,
     *,
 };
@@ -54,17 +61,22 @@ pub trait DirectedTraversalPolicy: Sized + Debug {
         index: Token,
         build_parent: B,
     ) -> ParentBatch {
+        let vertex_data = trav.graph().expect_vertex_data(index);
         ParentBatch {
-            parents: trav
-                .graph()
-                .expect_vertex(index)
+            parents: vertex_data
                 .parents()
                 .iter()
-                .flat_map(|(i, parent)| {
-                    let p = Token::new(i, parent.width());
-                    parent.pattern_indices().iter().map(move |pi| {
-                        ChildLocation::new(p, pi.pattern_id(), pi.sub_index())
-                    })
+                .flat_map(|(i, parent): (&VertexIndex, &Parent)| {
+                    let p = Token::new(*i, parent.width());
+                    parent.pattern_indices().iter().map(
+                        move |pi: &PatternIndex| {
+                            ChildLocation::new(
+                                p,
+                                pi.pattern_id(),
+                                pi.sub_index(),
+                            )
+                        },
+                    )
                 })
                 .sorted_by(|a, b| TraversalOrder::cmp(a, b))
                 .map(|p| build_parent(trav, p))

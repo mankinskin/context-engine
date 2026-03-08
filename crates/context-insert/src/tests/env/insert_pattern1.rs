@@ -4,6 +4,7 @@
 //! Tests complex pattern matching with overlapping structures
 
 use context_trace::{
+    HasGraph,
     graph::{
         Hypergraph,
         HypergraphRef,
@@ -12,7 +13,10 @@ use context_trace::{
             token::Token,
         },
     },
-    tests::test_case::TestEnv,
+    tests::{
+        macros::string_repr::assert_all_vertices_unique,
+        test_case::TestEnv,
+    },
 };
 use std::sync::{
     Arc,
@@ -24,25 +28,25 @@ use std::sync::{
 
 #[derive(Debug)]
 #[allow(dead_code)]
-pub struct EnvInsertPattern1 {
-    pub graph: HypergraphRef,
-    pub a: Token,
-    pub b: Token,
-    pub x: Token,
-    pub y: Token,
-    pub z: Token,
-    pub ab: Token,
-    pub by: Token,
-    pub yz: Token,
-    pub xa: Token,
-    pub xab: Token,
-    pub xaby: Token,
-    pub xabyz: Token,
+pub(crate) struct EnvInsertPattern1 {
+    pub(crate) graph: HypergraphRef,
+    pub(crate) a: Token,
+    pub(crate) b: Token,
+    pub(crate) x: Token,
+    pub(crate) y: Token,
+    pub(crate) z: Token,
+    pub(crate) ab: Token,
+    pub(crate) by: Token,
+    pub(crate) yz: Token,
+    pub(crate) xa: Token,
+    pub(crate) xab: Token,
+    pub(crate) xaby: Token,
+    pub(crate) xabyz: Token,
 }
 
 impl TestEnv for EnvInsertPattern1 {
     fn initialize() -> Self {
-        let mut graph = Hypergraph::default();
+        let graph = Hypergraph::default();
         let [a, b, x, y, z] = graph.insert_atoms([
             Atom::Element('a'),
             Atom::Element('b'),
@@ -64,8 +68,16 @@ impl TestEnv for EnvInsertPattern1 {
         #[cfg(any(test, feature = "test-api"))]
         context_trace::graph::test_graph::register_test_graph(&graph);
 
+        graph.emit_graph_snapshot();
+
+        let graph = HypergraphRef::from(graph);
+        // Verify all vertices have unique string representations before insertion
+        {
+            let g = graph.graph();
+            assert_all_vertices_unique(g);
+        }
         Self {
-            graph: HypergraphRef::from(graph),
+            graph,
             a,
             b,
             x,

@@ -15,11 +15,11 @@ use crate::split::{
     },
 };
 use context_trace::*;
-pub mod context;
+pub(crate) mod context;
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SplitStates {
-    pub leaves: Leaves,
-    pub queue: VecDeque<SplitTraceState>,
+    pub(crate) leaves: Leaves,
+    pub(crate) queue: VecDeque<SplitTraceState>,
 }
 impl Iterator for SplitStates {
     type Item = SplitTraceState;
@@ -29,7 +29,7 @@ impl Iterator for SplitStates {
 }
 impl SplitStates {
     /// kind of like filter_leaves but from subsplits to trace states
-    pub fn filter_trace_states<G: HasGraph>(
+    pub(crate) fn filter_trace_states<G: HasGraph>(
         &mut self,
         trav: G,
         index: &Token,
@@ -37,7 +37,8 @@ impl SplitStates {
     ) {
         let (perfect, next) = {
             let graph = trav.graph();
-            let node = graph.expect_vertex(index);
+            let node = graph.expect_vertex_data(index);
+            let node = &node; // Take reference for use in closures
             pos_splits
                 .into_iter()
                 .flat_map(|(parent_offset, locs)| {

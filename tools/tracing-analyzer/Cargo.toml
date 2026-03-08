@@ -1,0 +1,18 @@
+[package]
+name = "tracing-analyzer"
+version = "0.1.0"
+edition = "2021"
+description = "Analyze debug/trace/info statement coverage in Rust source files"
+
+[[bin]]
+name = "tracing-analyzer"
+path = "src/main.rs"
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "parsing", "visit"] }
+quote = "1.0"
+proc-macro2 = { version = "1.0", features = ["span-locations"] }
+walkdir = "2.4"
+clap = { version = "4.4", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

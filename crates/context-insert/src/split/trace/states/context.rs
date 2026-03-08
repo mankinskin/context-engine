@@ -5,18 +5,27 @@ use derive_more::derive::{
     DerefMut,
 };
 
-use crate::*;
+use crate::{
+    split::cache::{
+        position::{
+            PosKey,
+            SplitPositionCache,
+        },
+        vertex::SplitVertexCache,
+    },
+    *,
+};
 use context_trace::*;
 
 #[derive(Debug, Deref, DerefMut)]
-pub struct SplitTraceStatesCtx<G: HasGraph> {
+pub(crate) struct SplitTraceStatesCtx<G: HasGraph> {
     #[deref]
     #[deref_mut]
-    pub ctx: SplitTraceCtx<G>,
-    pub states: SplitStates,
+    pub(crate) ctx: SplitTraceCtx<G>,
+    pub(crate) states: SplitStates,
 }
 impl<G: HasGraph> SplitTraceStatesCtx<G> {
-    pub fn new(
+    pub(crate) fn new(
         ctx: TraceCtx<G>,
         root: Token,
         end_bound: AtomPosition,
@@ -30,7 +39,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
             states: SplitStates::default(),
         }
     }
-    pub fn new_split_vertex(
+    pub(crate) fn new_split_vertex(
         &mut self,
         index: Token,
         offset: NonZeroUsize,
@@ -39,7 +48,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
         let mut subs = self.completed_splits::<InnerNode>(&index);
         subs.entry(offset).or_insert_with(|| {
             let graph = self.ctx.trav.graph();
-            let node = graph.expect_vertex(index);
+            let node = graph.expect_vertex_data(index);
             //let entry = self.cache.entries.get(&index.index).unwrap();
             cleaned_position_splits(node.child_patterns().iter(), offset)
         });
@@ -64,7 +73,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
                 .collect(),
         }
     }
-    pub fn new_split_position(
+    pub(crate) fn new_split_position(
         &mut self,
         index: Token,
         offset: NonZeroUsize,
@@ -72,7 +81,7 @@ impl<G: HasGraph> SplitTraceStatesCtx<G> {
     ) -> SplitPositionCache {
         let splits = {
             let graph = self.ctx.trav.graph();
-            let node = graph.expect_vertex(index);
+            let node = graph.expect_vertex_data(index);
             cleaned_position_splits(node.child_patterns().iter(), offset)
         };
 

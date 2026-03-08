@@ -1,12 +1,15 @@
-pub(crate) mod insert;
-pub(crate) mod interval;
+#![feature(slice_index_methods)]
+
+pub mod insert;
+pub mod interval;
 pub(crate) mod join;
-pub(crate) mod split;
+pub mod split;
+pub(crate) mod visualization;
 
 #[cfg(test)]
 pub(crate) mod tests;
 
-// Auto-generated pub use statements
+// Auto-generated pub(crate) use statements
 pub use crate::{
     insert::{
         ToInsertCtx,

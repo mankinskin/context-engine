@@ -1,123 +1,112 @@
-pub mod has_read_context;
-pub mod root;
-use std::sync::RwLockWriteGuard;
+pub(crate) mod has_read_context;
+pub(crate) mod root;
 
 use context_insert::*;
 use context_trace::*;
-use derive_more::{
-    Deref,
-    DerefMut,
-};
 use tracing::debug;
 
 use crate::{
     context::root::RootManager,
-    sequence::{
-        block_iter::{
-            BlockIter,
-            NextBlock,
-        },
+    expansion::block::BlockExpansionCtx,
+    segment::{
+        NextSegment,
+        SegmentIter,
         ToNewAtomIndices,
     },
 };
-#[derive(Debug, Clone, Deref, DerefMut)]
+
+/// Context for reading sequences and building the hypergraph.
+#[derive(Debug)]
 pub struct ReadCtx {
-    #[deref]
-    #[deref_mut]
-    pub root: RootManager,
-    pub blocks: BlockIter,
+    /// The root manager (Option to allow taking it for BlockExpansionCtx)
+    root: Option<RootManager>,
+    /// Iterator over segments of unknown/known atoms
+    pub(crate) segments: SegmentIter,
 }
-pub enum ReadState {
-    Continue(Token, PatternEndPath),
-    Stop(PatternEndPath),
-}
+
+//pub(crate) enum ReadState {
+//    Continue(Token, PatternEndPath),
+//    Stop(PatternEndPath),
+//}
+
 impl Iterator for ReadCtx {
     type Item = ();
     fn next(&mut self) -> Option<Self::Item> {
-        self.blocks.next().map(|block| self.read_block(block))
+        self.segments.next().map(|block| self.read_segment(block))
     }
 }
+
 impl ReadCtx {
     pub fn new(
-        mut graph: HypergraphRef,
+        graph: HypergraphRef,
         seq: impl ToNewAtomIndices,
     ) -> Self {
         debug!("New ReadCtx");
-        let new_indices = seq.to_new_Atom_indices(&mut graph.graph_mut());
+        let new_indices = seq.to_new_atom_indices(&graph);
         Self {
-            blocks: BlockIter::new(new_indices),
-            root: RootManager::new(graph),
+            segments: SegmentIter::new(new_indices),
+            root: Some(RootManager::new(graph)),
         }
     }
-    pub fn read_sequence(&mut self) -> Option<Token> {
+
+    /// Get the graph reference.
+    pub(crate) fn graph(&self) -> &HypergraphRef {
+        &self.root.as_ref().expect("RootManager taken").graph
+    }
+
+    /// Get the current root token.
+    pub(crate) fn root_token(&self) -> Option<Token> {
+        self.root.as_ref().and_then(|r| r.root)
+    }
+
+    pub(crate) fn read_sequence(&mut self) -> Option<Token> {
         self.find_map(|_| None as Option<()>);
-        self.root.root
+        self.root.as_ref().and_then(|r| r.root)
     }
-    pub fn read_known(
+
+    fn read_segment(
         &mut self,
-        known: Pattern,
+        segment: NextSegment,
     ) {
-        // TODO: This needs to be reimplemented with the current path construction API
-        // The old new_directed API no longer exists
-        // For now, just append the pattern directly
-        let minified = known;
-        self.append_pattern(minified);
+        let NextSegment { unknown, known } = segment;
+        debug!(
+            unknown_len = unknown.len(),
+            known_len = known.len(),
+            unknown = ?unknown,
+            known = ?known,
+            "read_segment"
+        );
+
+        // Take RootManager to pass to BlockExpansionCtx
+        let mut root = self.root.take().expect("RootManager was taken");
+
+        // Append unknown pattern first
+        root.append_pattern(unknown);
+
+        if !known.is_empty() {
+            // Process known pattern through BlockExpansionCtx
+            // process() commits the chain to the root manager internally
+            let mut block_ctx = BlockExpansionCtx::new(root, known);
+            block_ctx.process();
+            root = block_ctx.finish();
+        }
+
+        // Put RootManager back
+        self.root = Some(root);
     }
-    fn read_block(
-        &mut self,
-        block: NextBlock,
-    ) {
-        let NextBlock { unknown, known } = block;
-        self.append_pattern(unknown);
-        self.read_known(known);
-    }
-    //pub fn read_next(&mut self) -> Option<Token> {
-    //    match ToInsertCtx::<IndexWithPath>::insert_or_get_complete(
-    //        &self.graph,
-    //        self.sequence.clone(),
-    //    ) {
-    //        Ok(IndexWithPath {
-    //            index,
-    //            path: advanced,
-    //        }) => {
-    //            self.sequence = advanced;
-    //            Some(index)
-    //        },
-    //        Err(ErrorReason::SingleIndex(index)) => {
-    //            self.sequence.advance(&self.graph);
-    //            Some(index)
-    //        },
-    //        Err(_) => {
-    //            self.sequence.advance(&self.graph);
-    //            None
-    //        },
-    //    }
-    //}
-    //pub fn read_pattern(
-    //    &mut self,
-    //    known: impl IntoPattern,
-    //) -> Option<Token> {
-    //    self.read_known(known.into_pattern());
-    //    self.root
-    //}
-    //fn append_next(&mut self, end_bound: usize, index: Token) -> usize {
-    //    self.append_index(index);
-    //    0
-    //}
 }
 
+// ReadCtx provides graph access through the root manager
 impl_has_graph! {
     impl for ReadCtx,
-    self => self.graph.write().unwrap();
-    <'a> RwLockWriteGuard<'a, Hypergraph>
+    self => self.root.as_ref().expect("RootManager taken").graph.as_ref();
+    <'a> &'a Hypergraph
 }
+
 impl<R: InsertResult> ToInsertCtx<R> for ReadCtx {
     fn insert_context(&self) -> InsertCtx<R> {
-        InsertCtx::from(self.graph.clone())
+        InsertCtx::from(
+            self.root.as_ref().expect("RootManager taken").graph.clone(),
+        )
     }
-}
-impl_has_graph_mut! {
-    impl for ReadCtx,
-    self => self.graph.write().unwrap();
-    <'a> RwLockWriteGuard<'a, Hypergraph>
 }

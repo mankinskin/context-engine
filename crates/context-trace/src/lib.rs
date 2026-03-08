@@ -19,8 +19,13 @@ pub mod trace;
 // Logging utilities (tracing and formatting)
 pub mod logging;
 
+// Hidden re-export for use in macros only (not part of public API)
+#[doc(hidden)]
+pub use tracing as __tracing;
+
 // Re-export proc macros
 pub use context_trace_macros::{
+    TypedDebug,
     instrument_sig,
     instrument_trait_impl,
 };
@@ -134,7 +139,10 @@ pub use crate::{
                 IntoPattern,
                 Pattern,
                 id::PatternId,
-                pattern_range::PatternRangeIndex,
+                pattern_range::{
+                    PatternRangeIndex,
+                    RangeIndex,
+                },
                 pattern_width,
             },
             token::{
@@ -164,7 +172,7 @@ pub use crate::{
                 root::GraphRootChild,
             },
             has_path::{
-                HasPath,
+                HasChildPath,
                 IntoRolePath,
                 IntoRootedPath,
                 IntoRootedRolePath,

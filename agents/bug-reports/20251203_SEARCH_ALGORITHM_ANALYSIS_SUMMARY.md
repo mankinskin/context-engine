@@ -1,3 +1,8 @@
+---
+tags: `#bug-report` `#context-search` `#algorithm` `#debugging` `#testing` `#performance`
+summary: This directory contains comprehensive analysis of the context-search algorithm and implementation strategy.
+---
+
 # Documentation Summary: Search Algorithm Analysis
 
 This directory contains comprehensive analysis of the context-search algorithm and implementation strategy.

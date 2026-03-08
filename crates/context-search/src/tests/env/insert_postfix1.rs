@@ -1,4 +1,4 @@
-//! Test environment for index_postfix1 test
+//! Test environment for insert_postfix1 test
 //!
 //! Graph: ababcd with patterns ab and ababcd
 //! Tests postfix matching behavior
@@ -38,7 +38,7 @@ pub struct EnvInsertPostfix1 {
 
 impl TestEnv for EnvInsertPostfix1 {
     fn initialize() -> Self {
-        let mut graph = Hypergraph::default();
+        let graph = Hypergraph::default();
         let [a, b, c, d] = graph.insert_atoms([
             Atom::Element('a'),
             Atom::Element('b'),
@@ -54,6 +54,8 @@ impl TestEnv for EnvInsertPostfix1 {
 
         #[cfg(any(test, feature = "test-api"))]
         context_trace::graph::test_graph::register_test_graph(&graph);
+
+        graph.emit_graph_snapshot();
 
         Self {
             graph: HypergraphRef::from(graph),

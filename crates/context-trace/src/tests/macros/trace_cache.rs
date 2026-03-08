@@ -3,7 +3,10 @@
 //! Provides macro for building TraceCache structures with a declarative syntax.
 
 #[cfg(test)]
-use crate::*;
+use crate::{
+    init_test_tracing,
+    *,
+};
 
 /// Build a TraceCache with declarative syntax
 ///
@@ -111,12 +114,13 @@ macro_rules! build_trace_cache {
 
 #[test]
 fn test_build_trace_cache1() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::<BaseGraphKind>::default();
     insert_atoms!(graph, {h, e, l, d});
     insert_patterns!(graph,
         (ld, ld_id) => [l, d],
         (heldld, heldld_id) => [h, e, ld, ld]
     );
+    let _tracing = init_test_tracing!(&graph);
     let cache = build_trace_cache!(
         heldld => (
             BU {},
@@ -209,13 +213,14 @@ fn test_build_trace_cache1() {
 
 #[test]
 fn test_build_trace_cache2() {
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::<BaseGraphKind>::default();
     insert_atoms!(graph, {a, b, c, d});
 
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
         (ababcd, ababcd_id) => [ab, ab, c, d]
     );
+    let _tracing = init_test_tracing!(&graph);
     let cache = build_trace_cache!(
         ababcd => (
             BU { 1 => ab -> (ababcd_id, 1) },

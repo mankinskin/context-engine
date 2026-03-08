@@ -11,20 +11,23 @@ use std::{
 use linked_hash_set::LinkedHashSet;
 use pretty_assertions::assert_eq;
 
-use crate::*;
+use crate::{
+    join::context::node::merge::{
+        PartitionRange,
+        RequiredPartitions,
+    },
+    *,
+};
 use context_search::{
     tests::search::trace_cache::CdefghiTraceCase,
     *,
 };
-use context_trace::{
-    tests::{
-        env::{
-            Env1,
-            Env2,
-        },
-        test_case::TestEnv,
+use context_trace::tests::{
+    env::{
+        Env1,
+        Env2,
     },
-    *,
+    test_case::TestEnv,
 };
 fn build_split_cache1(env: &Env1) -> SplitCache {
     let Env1 {
@@ -243,7 +246,14 @@ fn interval_graph1() {
     let res = graph.find_ancestor(query).unwrap();
     assert!(res.query_exhausted());
     let init = InitInterval::from(res);
-    let interval = IntervalGraph::from((&mut *graph, init));
+    let interval = IntervalGraph::from((&*graph, init));
+
+    // Build expected required partitions
+    // For prefix mode with a single target position, we get target_range 0..=0
+    // (one partition from start up to the single offset)
+    let mut expected_required = RequiredPartitions::new();
+    expected_required.add(PartitionRange::from(0..=0));
+
     assert_eq!(
         interval.clone(),
         IntervalGraph {
@@ -252,7 +262,9 @@ fn interval_graph1() {
                 leaves: LinkedHashSet::from_iter([PosKey::new(*ef, 1)]).into(),
                 queue: VecDeque::default(),
             },
-            cache: build_split_cache1(env)
+            cache: build_split_cache1(env),
+            target_range: PartitionRange::from(0..=0),
+            required: expected_required,
         }
     );
 }
@@ -260,7 +272,7 @@ fn interval_graph1() {
 #[test]
 fn interval_graph2() {
     // Use test environment and trace cache test case from context-search
-    let mut trace_test = CdefghiTraceCase::default();
+    let trace_test = CdefghiTraceCase::default();
     let _tracing = context_trace::init_test_tracing!(&trace_test.env.graph);
 
     // Build InitInterval directly from test case expected values (no search needed)
@@ -293,8 +305,8 @@ fn interval_graph2() {
     let cdefg_hi_id = cdefghi_ids[0];
     let cd_efghi_id = cdefghi_ids[1];
 
-    let interval =
-        IntervalGraph::from((&mut *trace_test.env.graph.graph_mut(), init));
+    // With interior mutability, we only need &graph for IntervalGraph creation
+    let interval = IntervalGraph::from((&*trace_test.env.graph, init));
 
     // Check root and states
     assert_eq!(interval.root, cdefghi);
@@ -345,6 +357,20 @@ fn interval_graph2() {
                     cdefg_hi_id => (0, Some(nz!(1))),
                 ]
             },
+            2 => {
+                top: [],
+                splits: [
+                    cdefg_hi_id => (0, Some(nz!(2))),
+                    cd_efghi_id => (1, None),
+                ]
+            },
+            5 => {
+                top: [],
+                splits: [
+                    cdefg_hi_id => (1, None),
+                    cd_efghi_id => (1, Some(nz!(3))),
+                ]
+            },
             6 => {
                 top: [],
                 splits: [
@@ -390,5 +416,193 @@ fn interval_graph2() {
         interval.cache.entries.get(&cdefghi.index).unwrap(),
         expected_cache.entries.get(&cdefghi.index).unwrap(),
         "cdefghi entry mismatch"
+    );
+}
+
+/// Test that perfect splits (inner_offset = None) don't generate wrapper offsets.
+///
+/// When a split position aligns exactly with child token boundaries (perfect split),
+/// no wrapper offset should be added. Wrapper offsets are only needed when the split
+/// cuts through the middle of a child token (unperfect split with inner_offset).
+///
+/// This test creates a SplitVertexCache with:
+/// - Position 3: perfect split (inner_offset = None) at child boundary
+/// - Position 5: unperfect split (inner_offset = Some) inside a child
+///
+/// Then verifies that:
+/// - `is_split_perfect_at_index` correctly identifies perfect vs unperfect splits
+/// - Wrapper offsets are only generated for unperfect splits
+#[test]
+fn test_perfect_split_no_wrapper_offset() {
+    use crate::{
+        SplitVertexCache,
+        split::{
+            TokenTracePos,
+            cache::position::SplitPositionCache,
+        },
+    };
+    use context_trace::graph::vertex::pattern::id::PatternId;
+
+    // Create a pattern ID for testing
+    let pattern_id = PatternId::default();
+
+    // Create a SplitVertexCache with a perfect split at position 3
+    // Perfect split means inner_offset = None (split aligns with child boundary)
+    let cache_with_perfect_split = SplitVertexCache {
+        positions: BTreeMap::from_iter([(
+            nz!(3),
+            SplitPositionCache {
+                top: Default::default(),
+                pattern_splits: context_trace::HashMap::from_iter([(
+                    pattern_id,
+                    TokenTracePos {
+                        inner_offset: None, // Perfect split - no inner offset
+                        sub_index: 3,
+                    },
+                )]),
+            },
+        )]),
+    };
+
+    // Verify that the split at index 0 (position 3) is detected as perfect
+    assert!(
+        cache_with_perfect_split.is_split_perfect_at_index(0),
+        "Split with inner_offset=None should be detected as perfect"
+    );
+
+    // Create a SplitVertexCache with an unperfect split at position 5
+    // Unperfect split means inner_offset = Some (split inside a child token)
+    let cache_with_unperfect_split = SplitVertexCache {
+        positions: BTreeMap::from_iter([(
+            nz!(5),
+            SplitPositionCache {
+                top: Default::default(),
+                pattern_splits: context_trace::HashMap::from_iter([(
+                    pattern_id,
+                    TokenTracePos {
+                        inner_offset: Some(nz!(2)), // Unperfect - 2 chars into child
+                        sub_index: 1,
+                    },
+                )]),
+            },
+        )]),
+    };
+
+    // Verify that the split at index 0 (position 5) is detected as unperfect
+    assert!(
+        !cache_with_unperfect_split.is_split_perfect_at_index(0),
+        "Split with inner_offset=Some should be detected as unperfect"
+    );
+
+    // Test with mixed splits: one perfect, one unperfect
+    let cache_with_mixed_splits = SplitVertexCache {
+        positions: BTreeMap::from_iter([
+            (
+                nz!(3),
+                SplitPositionCache {
+                    top: Default::default(),
+                    pattern_splits: context_trace::HashMap::from_iter([(
+                        pattern_id,
+                        TokenTracePos {
+                            inner_offset: None, // Perfect
+                            sub_index: 3,
+                        },
+                    )]),
+                },
+            ),
+            (
+                nz!(5),
+                SplitPositionCache {
+                    top: Default::default(),
+                    pattern_splits: context_trace::HashMap::from_iter([(
+                        pattern_id,
+                        TokenTracePos {
+                            inner_offset: Some(nz!(2)), // Unperfect
+                            sub_index: 1,
+                        },
+                    )]),
+                },
+            ),
+        ]),
+    };
+
+    // Index 0 corresponds to position 3 (perfect)
+    assert!(
+        cache_with_mixed_splits.is_split_perfect_at_index(0),
+        "First split (position 3) should be perfect"
+    );
+    // Index 1 corresponds to position 5 (unperfect)
+    assert!(
+        !cache_with_mixed_splits.is_split_perfect_at_index(1),
+        "Second split (position 5) should be unperfect"
+    );
+}
+
+/// Test that RequiredPartitions only includes wrapper when there's an unperfect split.
+///
+/// For prefix mode:
+/// - Target range is always required
+/// - Wrapper range is only required if the boundary split is unperfect
+#[test]
+fn test_required_partitions_perfect_vs_unperfect() {
+    use crate::{
+        SplitVertexCache,
+        split::{
+            TokenTracePos,
+            cache::position::SplitPositionCache,
+        },
+    };
+    use context_trace::graph::vertex::pattern::id::PatternId;
+
+    let pattern_id = PatternId::default();
+
+    // Case 1: Perfect split - wrapper should NOT be required
+    let cache_perfect = SplitVertexCache {
+        positions: BTreeMap::from_iter([(
+            nz!(3),
+            SplitPositionCache {
+                top: Default::default(),
+                pattern_splits: context_trace::HashMap::from_iter([(
+                    pattern_id,
+                    TokenTracePos {
+                        inner_offset: None, // Perfect split
+                        sub_index: 3,
+                    },
+                )]),
+            },
+        )]),
+    };
+
+    let _target_range = PartitionRange::from(0..=0);
+    let _wrapper_range = PartitionRange::from(0..=1); // Would include one more partition
+
+    // With perfect split, only target should be required (no wrapper)
+    // The boundary is at target_end (0), which corresponds to split index 0
+    // Since that split is perfect, wrapper shouldn't be added
+    assert!(
+        cache_perfect.is_split_perfect_at_index(0),
+        "Boundary split should be perfect"
+    );
+
+    // Case 2: Unperfect split - wrapper SHOULD be required
+    let cache_unperfect = SplitVertexCache {
+        positions: BTreeMap::from_iter([(
+            nz!(3),
+            SplitPositionCache {
+                top: Default::default(),
+                pattern_splits: context_trace::HashMap::from_iter([(
+                    pattern_id,
+                    TokenTracePos {
+                        inner_offset: Some(nz!(1)), // Unperfect split
+                        sub_index: 2,
+                    },
+                )]),
+            },
+        )]),
+    };
+
+    assert!(
+        !cache_unperfect.is_split_perfect_at_index(0),
+        "Boundary split should be unperfect"
     );
 }

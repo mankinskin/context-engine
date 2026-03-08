@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-search` `#algorithm` `#testing` `#refactoring` `#api`
+summary: The current `Checkpointed<C>` type uses `CheckpointedRef` enum to provide unified access to either the checkpoint or candidate cursor. However, thi...
+status: 📋
+---
+
 # Plan: Candidate State Control Refactoring
 
 ## Problem Statement

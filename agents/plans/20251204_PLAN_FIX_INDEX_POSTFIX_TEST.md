@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#debugging` `#testing` `#api`
+summary: Fix `index_postfix1` test which is failing with a path type assertion.
+status: 📋
+---
+
 # Plan: Fix index_postfix1 Test Path Assertion
 
 **Date:** 2025-12-04  

@@ -22,12 +22,13 @@ use {
 #[test]
 fn test_advancement_chain_through_multiple_states() {
     // Test advancing through a sequence of states
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         (abcd, abcd_id) => [a, b, c, d]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     tracing::info!("Testing advancement chain through multiple indices");
 
@@ -90,12 +91,13 @@ fn test_advancement_chain_through_multiple_states() {
 #[test]
 fn test_advancement_preserves_atom_positions() {
     // Verify that advancement preserves atom positions correctly
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let test_positions = vec![0, 5, 10, 100];
 
@@ -176,7 +178,7 @@ fn test_advancement_preserves_atom_positions() {
 #[test]
 fn test_advancement_with_different_pattern_sizes() {
     // Test advancement with patterns of various sizes
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d, e, f});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b],
@@ -184,6 +186,7 @@ fn test_advancement_with_different_pattern_sizes() {
         (abcdef, abcdef_id) => [a, b, c, d, e, f]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let test_cases = vec![
         (ab, ab_id, vec![a, b], "two-element pattern"),
@@ -239,12 +242,13 @@ fn test_advancement_with_different_pattern_sizes() {
 #[test]
 fn test_advancement_fails_at_boundaries() {
     // Test that advancement properly fails at pattern boundaries
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c});
     insert_patterns!(graph,
         (abc, abc_id) => [a, b, c]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     // Test at the last index
     let root = IndexRoot::from(
@@ -299,7 +303,7 @@ fn test_advancement_fails_at_boundaries() {
 #[test]
 fn test_advancement_with_nested_patterns() {
     // Test advancement through nested pattern structures
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b, c, d});
     insert_patterns!(graph,
         ab => [a, b],
@@ -309,6 +313,7 @@ fn test_advancement_with_nested_patterns() {
         (abcd, abcd_id) => [ab, cd]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     tracing::info!("Testing nested pattern advancement");
 
@@ -367,12 +372,13 @@ fn test_advancement_with_nested_patterns() {
 #[test]
 fn test_state_advance_idempotency_on_error() {
     // Test that failed advances don't modify state
-    let mut graph = HypergraphRef::default();
+    let graph = HypergraphRef::default();
     insert_atoms!(graph, {a, b});
     insert_patterns!(graph,
         (ab, ab_id) => [a, b]
     );
     let _tracing = init_test_tracing!(&graph);
+    graph.emit_graph_snapshot();
 
     let root = IndexRoot::from(
         ChildLocation::new(ab, ab_id, 1).into_pattern_location(),

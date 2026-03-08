@@ -4,27 +4,53 @@ use perfect::*;
 
 use crate::*;
 use context_trace::*;
-pub mod perfect;
+pub(crate) mod perfect;
 
-pub mod trace;
+pub(crate) mod trace;
 
-pub mod visit;
+pub(crate) mod info;
 
-pub struct BorderInfo {
-    pub sub_index: usize,
-    pub inner_offset: Option<NonZeroUsize>,
+pub(crate) struct BorderInfo {
+    pub(crate) sub_index: usize,
+    pub(crate) pattern_len: usize,
+    pub(crate) inner_offset: Option<NonZeroUsize>,
     /// start offset of index with border
-    pub start_offset: Option<NonZeroUsize>,
+    pub(crate) start_offset: Option<NonZeroUsize>,
 }
 impl BorderInfo {
-    fn new(
+    /// Create a BorderInfo by recalculating sub_index AND inner_offset from atom position.
+    /// This is more robust when the pattern may have been modified after the
+    /// original trace was recorded.
+    ///
+    /// IMPORTANT: After pattern replacement (e.g., merging tokens), the original
+    /// inner_offset from the cache no longer applies to the new token at sub_index.
+    /// We must use the inner_offset calculated from trace_child_pos to get the
+    /// correct position within the current pattern structure.
+    pub(crate) fn new_from_atom_pos(
         pattern: &Pattern,
-        pos: &TokenTracePos,
+        atom_pos: NonZeroUsize,
     ) -> Self {
-        let offset = End::inner_ctx_width(pattern, pos.sub_index());
+        use crate::TraceBack;
+        // Recalculate BOTH sub_index and inner_offset from atom position using current pattern
+        let trace_pos = TraceBack::trace_child_pos(pattern, atom_pos)
+            .expect("atom_pos should be valid within pattern");
+        Self::new_from_trace_pos(pattern, &trace_pos)
+    }
+
+    /// Create a BorderInfo from a pre-computed TokenTracePos.
+    /// Use this when you have delta-adjusted split positions, to avoid
+    /// re-tracing from atom positions (which may be invalid after pattern
+    /// modifications).
+    pub(crate) fn new_from_trace_pos(
+        pattern: &Pattern,
+        trace_pos: &crate::TokenTracePos,
+    ) -> Self {
+        let sub_index = trace_pos.sub_index();
+        let offset = End::inner_ctx_width(pattern, sub_index);
         BorderInfo {
-            sub_index: pos.sub_index(),
-            inner_offset: pos.inner_offset(),
+            sub_index,
+            pattern_len: pattern.len(),
+            inner_offset: trace_pos.inner_offset(),
             start_offset: NonZeroUsize::new(offset),
         }
     }
@@ -35,7 +61,7 @@ impl HasInnerOffset for BorderInfo {
     }
 }
 
-pub trait PartitionBorder<R: RangeRole>: Sized {
+pub(crate) trait PartitionBorder<R: RangeRole>: Sized {
     fn perfect(&self) -> BooleanPerfectOf<R>;
     fn offsets(&self) -> OffsetsOf<R>;
 }

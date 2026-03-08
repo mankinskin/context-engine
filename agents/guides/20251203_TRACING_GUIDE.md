@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#context-search` `#debugging` `#testing`
+summary: This guide explains how to use the tracing infrastructure in the `context-search` crate for debugging and analyzing test execution.
+---
+
 # Tracing and Logging Guide
 
 This guide explains how to use the tracing infrastructure in the `context-search` crate for debugging and analyzing test execution.

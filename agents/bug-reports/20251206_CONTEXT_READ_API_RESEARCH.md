@@ -1,3 +1,8 @@
+---
+tags: `#bug-report` `#context-trace` `#context-read` `#debugging` `#testing` `#api`
+summary: Research findings for fixing the 28 compilation errors in context-read. The crate is out of sync with context-trace API changes from trait consolid...
+---
+
 # Context-Read API Research - Migration Guide
 
 **Date:** 2025-12-06  

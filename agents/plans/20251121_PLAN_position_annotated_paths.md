@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-trace` `#context-search` `#debugging` `#testing` `#performance`
+summary: 1. **Generic Path Structures** - Made `SubPath`, `RolePath`, `RootedRolePath`, and `RootedRangePath` generic over node type `N`
+status: 📋
+---
+
 # Plan: Position-Annotated Paths for Cache Tracing
 
 **Created:** 2025-11-21  

@@ -4,53 +4,21 @@
 //! Logs are written to `<target-dir>/test-logs/<test_name>.log` and deleted if the test passes.
 //! The target directory is automatically detected from the Cargo build environment.
 //!
-//! # Log Format Features
-//!
-//! The logging system provides:
-//! - **Compact format** with timestamps and file locations
-//! - **Span tracking** showing NEW, ENTER, EXIT, and CLOSE events for spans
-//! - **Visual indentation** in the compact format for nested spans
-//! - **Color coding** in stdout (when terminal supports it)
-//!
-//! # Enabling stdout logging
-//!
-//! By default, logs are only written to files. To enable stdout logging for debugging,
-//! set the `LOG_STDOUT` environment variable:
-//!
-//! ```bash
-//! # Enable stdout logging
-//! LOG_STDOUT=1 cargo test
-//!
-//! # Or with true/yes
-//! LOG_STDOUT=true cargo test
-//! LOG_STDOUT=yes cargo test
-//!
-//! # Run specific test with stdout logging
-//! LOG_STDOUT=1 cargo test my_test_name -- --nocapture
-//! ```
-//!
-//! You can also combine with `RUST_LOG` or `LOG_FILTER` to control log levels:
-//!
-//! ```bash
-//! # Using LOG_FILTER (recommended)
-//! LOG_STDOUT=1 LOG_FILTER=debug cargo test
-//! LOG_STDOUT=1 LOG_FILTER=context_search::search=trace cargo test
-//!
-//! # Using RUST_LOG (fallback)
-//! LOG_STDOUT=1 RUST_LOG=debug cargo test
-//! ```
 
 // Internal modules
 mod config;
+mod debug_to_json;
 mod field_visitor;
 mod formatter;
+mod graph_ref;
 mod panic;
 mod path;
 mod span_fields;
-mod string_utils;
+mod special_fields;
 mod syntax;
 mod test_tracing;
 mod timer;
+mod writers;
 
 // Re-export public API
 pub use config::TracingConfig;
@@ -84,31 +52,6 @@ pub use test_tracing::TestTracing;
 ///     // Tokens will now show string representations
 /// }
 /// ```
-///
-/// With custom configuration:
-/// ```no_run
-/// use context_trace::{init_test_tracing, logging::tracing_utils::TracingConfig};
-///
-/// #[test]
-/// fn my_test() {
-///     let config = TracingConfig::default().with_stdout_level("debug");
-///     let _tracing = init_test_tracing!(config);
-///     // Your test code
-/// }
-/// ```
-///
-/// With both graph and config:
-/// ```no_run
-/// use context_trace::{init_test_tracing, Hypergraph, logging::tracing_utils::TracingConfig};
-///
-/// #[test]
-/// fn my_test() {
-///     let graph = Hypergraph::default();
-///     let config = TracingConfig::default().with_stdout_level("debug");
-///     let _tracing = init_test_tracing!(graph, config);
-///     // Your test code
-/// }
-/// ```
 #[macro_export]
 macro_rules! init_test_tracing {
     // No arguments - basic initialization
@@ -125,7 +68,12 @@ macro_rules! init_test_tracing {
                 .and_then(|s| s.split("::").last())
                 .unwrap_or("unknown")
         };
-        $crate::logging::tracing_utils::TestTracing::init(test_name)
+        let _tracing = $crate::logging::tracing_utils::TestTracing::init(test_name);
+        // Emit an event at the macro call site to record the test file and line.
+        // Because this tracing::info! call is inside a macro_rules! body, it
+        // expands at the call site, so file!() and line!() capture the test location.
+        $crate::__tracing::info!(test_name = %test_name, "test started");
+        _tracing
     }};
 
     // With graph only
@@ -158,37 +106,42 @@ macro_rules! init_test_tracing {
                 .unwrap_or("unknown")
         };
         #[cfg(any(test, feature = "test-api"))]
-        {
+        let _tracing = {
             $crate::logging::tracing_utils::TestTracing::init_with_config_and_graph(
                 test_name, $config, $graph
             )
-        }
+        };
         #[cfg(not(any(test, feature = "test-api")))]
-        {
+        let _tracing = {
             // Fallback - just use config if test_graph is not available
             $crate::logging::tracing_utils::TestTracing::init_with_config(
                 test_name, $config
             )
-        }
+        };
+        $crate::__tracing::info!(test_name = %test_name, "test started");
+        _tracing
     }};
 
     // Internal rule to detect graph vs config
     (@detect $test_name:expr, $arg:expr) => {{
         // This is a bit of a hack, but we try to call init_with_graph
         // and if that fails to compile, the user should use the two-arg form
+        let test_name = $test_name;
         #[cfg(any(test, feature = "test-api"))]
-        {
+        let _tracing = {
             $crate::logging::tracing_utils::TestTracing::init_with_graph(
-                $test_name, $arg
+                test_name, $arg
             )
-        }
+        };
         #[cfg(not(any(test, feature = "test-api")))]
-        {
+        let _tracing = {
             // Fallback to config-based init if test_graph is not available
             $crate::logging::tracing_utils::TestTracing::init_with_config(
-                $test_name, $arg
+                test_name, $arg
             )
-        }
+        };
+        $crate::__tracing::info!(test_name = %test_name, "test started");
+        _tracing
     }};
 }
 

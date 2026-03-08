@@ -3,15 +3,27 @@ use linked_hash_set::LinkedHashSet;
 
 use crate::{
     interval::IntervalGraph,
-    join::context::node::context::NodeJoinCtx,
+    join::context::node::{
+        context::NodeJoinCtx,
+        merge::context::{
+            MergeCtx,
+            MergeMode,
+        },
+    },
     split::{
         SplitMap,
         cache::position::PosKey,
     },
+    visualization::{emit_insert_node, emit_insert_node_with_delta},
 };
-use context_trace::*;
+use context_trace::{
+    graph::{
+        visualization::{DeltaOp, GraphMutation, Transition},
+    },
+    *,
+};
 
-pub struct FrontierIterator {
+pub(crate) struct FrontierIterator {
     pub(crate) frontier: LinkedHashSet<PosKey>,
     pub(crate) interval: IntervalGraph,
 }
@@ -40,7 +52,7 @@ impl Iterator for FrontierIterator {
         }
     }
 }
-pub struct FrontierSplitIterator {
+pub(crate) struct FrontierSplitIterator {
     pub(crate) frontier: FrontierIterator,
     pub(crate) splits: SplitMap,
     pub(crate) trav: HypergraphRef,
@@ -60,9 +72,31 @@ impl Iterator for FrontierSplitIterator {
         Some(match self.frontier.next() {
             Some(Some(key)) => {
                 if !self.splits.contains_key(&key) {
-                    // TODO: cache partitions as they do not depend on key.pos
-                    // or change key structure to not include pos
-                    let partitions = self.node(key.index).join_partitions();
+                    let node_idx = key.index.index.0;
+
+                    // Emit event for processing this node
+                    emit_insert_node_with_delta(
+                        Transition::JoinStep {
+                            left: node_idx,
+                            right: node_idx,
+                            result: node_idx,
+                        },
+                        format!(
+                            "Processing node {} at position {}",
+                            node_idx,
+                            key.pos.get()
+                        ),
+                        node_idx,
+                        GraphMutation::single(DeltaOp::UpdateNode {
+                            index: node_idx,
+                            detail: format!("Processing at pos {}", key.pos.get()),
+                        }),
+                    );
+
+                    let ctx = self.node(key.index);
+                    // Use shared initial partition creation
+                    let partitions =
+                        MergeCtx::new(ctx, MergeMode::Full).merge_node();
 
                     for (key, split) in partitions {
                         self.splits.insert(key, split);
@@ -71,10 +105,28 @@ impl Iterator for FrontierSplitIterator {
                 None
             },
             Some(None) => None,
-            None => Some(
-                self.node(self.frontier.interval.root)
-                    .join_root_partitions(),
-            ),
+            None => Some({
+                let root_idx = self.frontier.interval.root.index.0;
+
+                // Emit event for root merge
+                emit_insert_node_with_delta(
+                    Transition::JoinStep {
+                        left: root_idx,
+                        right: root_idx,
+                        result: root_idx,
+                    },
+                    format!("Merging root node {}", root_idx),
+                    root_idx,
+                    GraphMutation::single(DeltaOp::UpdateNode {
+                        index: root_idx,
+                        detail: "Root merge".to_string(),
+                    }),
+                );
+
+                let ctx = self.node(self.frontier.interval.root);
+                let root_mode = ctx.interval.cache.root_mode;
+                MergeCtx::new(ctx, MergeMode::Root(root_mode)).merge_root()
+            }),
         })
     }
 }

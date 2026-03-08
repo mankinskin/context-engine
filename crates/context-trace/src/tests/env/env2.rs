@@ -66,7 +66,7 @@ pub struct Env2 {
 
 impl TestEnv for Env2 {
     fn initialize() -> Self {
-        let mut graph = Hypergraph::default();
+        let graph = Hypergraph::default();
         let atoms = graph.insert_atoms([
             Atom::Element('a'),
             Atom::Element('b'),
@@ -97,6 +97,8 @@ impl TestEnv for Env2 {
 
         let (abcdefghijk, abcdefghijk_id) =
             graph.insert_pattern_with_id([a, b, cdefghi, j, k]);
+
+        graph.emit_graph_snapshot();
 
         let graph = graph.to_ref();
 

@@ -8,10 +8,7 @@ use crate::{
     },
     join::{
         context::pattern::borders::JoinBorders,
-        joined::{
-            partition::JoinedPartition,
-            patterns::JoinedPatterns,
-        },
+        joined::partition::JoinedPartition,
         partition::Join,
     },
 };
@@ -23,29 +20,27 @@ use derive_more::derive::{
 };
 use derive_new::new;
 
-pub mod inner_range;
-pub mod pattern_info;
+pub(crate) mod inner_range;
+pub(crate) mod pattern_info;
 
 #[derive(Debug, Deref, DerefMut, Into, From, new)]
-pub struct JoinPartitionInfo<R: RangeRole<Mode = Join>>(PartitionInfo<R>)
+pub(crate) struct JoinPartitionInfo<R: RangeRole<Mode = Join>>(
+    PartitionInfo<R>,
+)
 where
     R::Borders: JoinBorders<R>;
 
-impl<'a: 'b, 'b: 'c, 'c, R: RangeRole<Mode = Join>> JoinPartitionInfo<R>
+impl<R: RangeRole<Mode = Join>> JoinPartitionInfo<R>
 where
     R::Borders: JoinBorders<R>,
-    Self: 'a,
 {
-    pub fn into_joined_patterns(
+    pub(crate) fn into_joined_partition<'a>(
         self,
-        ctx: &'c mut ModeNodeCtxOf<'a, 'b, R>,
-    ) -> JoinedPatterns<R> {
-        JoinedPatterns::from_partition_info(self, ctx)
-    }
-    pub fn into_joined_partition(
-        self,
-        ctx: &'c mut ModeNodeCtxOf<'a, 'b, R>,
-    ) -> JoinedPartition<R> {
+        ctx: &mut ModeNodeCtxOf<'a, R>,
+    ) -> JoinedPartition<R>
+    where
+        R: 'a,
+    {
         JoinedPartition::from_partition_info(self, ctx)
     }
 }

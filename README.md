@@ -47,6 +47,40 @@ upon the previous ones:
 3. **context-insert** enables complex graph modifications
 4. **context-read** provides high-level reading and expansion operations
 
+```
+┌─────────────────────────────────────────────────────────┐
+│                    context-read                         │
+│         (Builds largest token decompositions)           │
+├─────────────────────────────────────────────────────────┤
+│                   context-insert                        │
+│      (Inserts new nodes maintaining invariants)         │
+├─────────────────────────────────────────────────────────┤
+│                   context-search                        │
+│         (Traverses hierarchy to find matches)           │
+├─────────────────────────────────────────────────────────┤
+│                   context-trace                         │
+│    (Foundational types, graph structure, tracing)       │
+└─────────────────────────────────────────────────────────┘
+```
+
+### The Reachability Invariant
+
+A crucial property maintained throughout the framework:
+
+> Two nodes have a path between them **if and only if** one is a substring of the other.
+
+This creates a **containment hierarchy** where larger patterns contain smaller 
+ones. The graph stores only edges to closest neighbors (transitive reduction), 
+yet all substring relationships remain reachable through traversal.
+
+This invariant enables:
+- **context-search** to traverse upward from small to large patterns
+- **context-insert** to find correct insertion points
+- **context-read** to build optimal token decompositions
+
+See [Crate Architecture](../doc/hypergraph-context-model/crate-architecture.md) 
+for detailed documentation.
+
 ## Key Features
 
 - **Hypergraph Data Structures**: Advanced graph representation with 

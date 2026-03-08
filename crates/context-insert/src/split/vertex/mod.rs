@@ -1,14 +1,17 @@
-pub mod node;
-pub mod output;
-pub mod pattern;
-pub mod position;
+pub(crate) mod node;
+pub(crate) mod output;
+pub(crate) mod pattern;
+pub(crate) mod position;
 
 use std::{
     borrow::Borrow,
     num::NonZeroUsize,
 };
 
-use crate::*;
+use crate::{
+    split::cache::position::SplitPositionCache,
+    *,
+};
 
 use crate::split::{
     position_splits,
@@ -30,9 +33,9 @@ use derive_new::new;
 use itertools::Itertools;
 
 #[derive(Debug, Clone, Copy)]
-pub struct PosSplitCtx<'a> {
-    pub pos: &'a NonZeroUsize,
-    pub split: &'a SplitPositionCache,
+pub(crate) struct PosSplitCtx<'a> {
+    pub(crate) pos: &'a NonZeroUsize,
+    pub(crate) split: &'a SplitPositionCache,
 }
 
 impl ToVertexSplits for PosSplitCtx<'_> {
@@ -53,14 +56,14 @@ impl<'a, N: Borrow<(&'a NonZeroUsize, &'a SplitPositionCache)>> From<N>
     }
 }
 #[derive(Debug, Clone)]
-pub struct VertexSplits {
-    pub pos: NonZeroUsize,
-    pub splits: TokenTracePositions,
+pub(crate) struct VertexSplits {
+    pub(crate) pos: NonZeroUsize,
+    pub(crate) splits: TokenTracePositions,
 }
 
-pub type TokenTracePositions = HashMap<PatternId, TokenTracePos>;
+pub(crate) type TokenTracePositions = HashMap<PatternId, TokenTracePos>;
 
-pub trait ToVertexSplits: Clone {
+pub(crate) trait ToVertexSplits: Clone {
     fn to_vertex_splits(self) -> VertexSplits;
 }
 
@@ -94,7 +97,7 @@ impl<N: Borrow<NonZeroUsize>, S: Borrow<SplitPositionCache>> From<(N, S)>
     }
 }
 
-pub trait ToVertexSplitPos {
+pub(crate) trait ToVertexSplitPos {
     fn to_vertex_split_pos(self) -> TokenTracePositions;
 }
 
@@ -127,11 +130,11 @@ impl ToVertexSplitPos for VertexSplits {
 }
 
 #[derive(Debug, Copy, Clone, Deref, new)]
-pub struct VertexSplitCtx<'a> {
-    pub cache: &'a VertexCache,
+pub(crate) struct VertexSplitCtx<'a> {
+    pub(crate) cache: &'a VertexCache,
 }
 impl VertexSplitCtx<'_> {
-    pub fn bottom_up_splits<N: NodeType>(
+    pub(crate) fn bottom_up_splits<N: NodeType>(
         &self,
         node: &VertexData,
         output: &mut N::GlobalSplitOutput,
@@ -165,7 +168,7 @@ impl VertexSplitCtx<'_> {
         }
         front
     }
-    pub fn top_down_splits<N: NodeType>(
+    pub(crate) fn top_down_splits<N: NodeType>(
         &self,
         end_pos: AtomPosition,
         node: &VertexData,
@@ -204,7 +207,7 @@ impl VertexSplitCtx<'_> {
         }
         back
     }
-    pub fn global_splits<N: NodeType>(
+    pub(crate) fn global_splits<N: NodeType>(
         &self,
         end_pos: AtomPosition,
         node: &VertexData,
@@ -216,20 +219,20 @@ impl VertexSplitCtx<'_> {
             (true, true) => output.set_root_mode(RootMode::Infix),
             (false, true) => output.set_root_mode(RootMode::Prefix),
             (true, false) => output.set_root_mode(RootMode::Postfix),
-            (false, false) => unreachable!(),
+            (false, false) => { /* No splits found, return default output */ },
         }
         output
     }
-    pub fn complete_splits<G: HasGraph, N: NodeType>(
+    pub(crate) fn complete_splits<G: HasGraph, N: NodeType>(
         &self,
         trav: &G,
         end_pos: AtomPosition,
     ) -> N::CompleteSplitOutput {
         let graph = trav.graph();
 
-        let node = graph.expect_vertex(self.index);
+        let node = graph.expect_vertex_data(self.index);
 
-        let output = self.global_splits::<N>(end_pos, node);
+        let output = self.global_splits::<N>(end_pos, &node);
 
         N::map(output, |global_splits| {
             global_splits

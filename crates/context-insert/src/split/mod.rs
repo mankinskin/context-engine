@@ -1,9 +1,9 @@
 pub mod cache;
-pub mod context;
-pub mod pattern;
-pub mod run;
-pub mod trace;
-pub mod vertex;
+pub(crate) mod context;
+pub(crate) mod pattern;
+pub(crate) mod run;
+pub(crate) mod trace;
+pub(crate) mod vertex;
 
 use std::{
     cmp::Ordering,
@@ -36,6 +36,12 @@ impl HasSubIndex for TokenTracePos {
 impl HasSubIndexMut for TokenTracePos {
     fn sub_index_mut(&mut self) -> &mut usize {
         &mut self.sub_index
+    }
+}
+impl TokenTracePos {
+    /// Get mutable reference to inner_offset
+    pub(crate) fn inner_offset_mut(&mut self) -> &mut Option<NonZeroUsize> {
+        &mut self.inner_offset
     }
 }
 impl From<(usize, Option<NonZeroUsize>)> for TokenTracePos {
@@ -118,7 +124,7 @@ impl TraceSide for TraceFront {
     }
 }
 
-pub fn position_splits<'a>(
+pub(crate) fn position_splits<'a>(
     patterns: impl IntoIterator<Item = (&'a PatternId, &'a Pattern)>,
     pos: NonZeroUsize,
 ) -> VertexSplits {
@@ -176,18 +182,20 @@ pub(crate) fn cleaned_position_splits<'a>(
         .collect()
 }
 
-pub trait SplitInner: Debug + Clone {}
+pub(crate) trait SplitInner: Debug + Clone {}
 
 impl<T: Debug + Clone> SplitInner for T {}
 
+pub(crate) type SplitMap = HashMap<PosKey, Split>;
+
 #[derive(Debug, Clone)]
-pub struct Split<T: SplitInner = Token> {
-    pub left: T,
-    pub right: T,
+pub(crate) struct Split<T: SplitInner = Token> {
+    pub(crate) left: T,
+    pub(crate) right: T,
 }
 
 impl<T: SplitInner> Split<T> {
-    pub fn new(
+    pub(crate) fn new(
         left: T,
         right: T,
     ) -> Self {
@@ -195,19 +203,18 @@ impl<T: SplitInner> Split<T> {
     }
 }
 
-impl<I, T: SplitInner + Extend<I> + IntoIterator<Item = I>> Split<T> {
-    pub fn infix(
-        &mut self,
-        mut inner: Split<T>,
-    ) {
-        self.left.extend(inner.left);
-        inner.right.extend(self.right.clone());
-        self.right = inner.right;
-    }
-}
+//impl<I, T: SplitInner + Extend<I> + IntoIterator<Item = I>> Split<T> {
+//    pub(crate) fn infix(
+//        &mut self,
+//        mut inner: Split<T>,
+//    ) {
+//        self.left.extend(inner.left);
+//        inner.right.extend(self.right.clone());
+//        self.right = inner.right;
+//    }
+//}
 
-pub type SplitMap = HashMap<PosKey, Split>;
-//pub trait HasSplitMap {
+//pub(crate) trait HasSplitMap {
 //    fn split_map(&self) -> &SplitMap;
 //}
 //

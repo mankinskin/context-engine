@@ -1,3 +1,8 @@
+---
+tags: `#guide` `#algorithm`
+summary: Find the largest match at the beginning of an input vector of tokens given a search graph.
+---
+
 # Desired Search Algorithm
 
 ## Goal

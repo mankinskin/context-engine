@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-insert` `#debugging` `#testing`
+summary: Fix `index_prefix1` test which is failing with a pattern width mismatch assertion.
+status: 📋
+---
+
 # Plan: Fix index_prefix1 Test Pattern Width Mismatch
 
 **Date:** 2025-12-04  

@@ -3,14 +3,27 @@ use derive_more::{
     Deref,
     DerefMut,
 };
-use derive_new::new;
+use tracing::debug;
 
-use crate::context::ReadCtx;
-
-#[derive(Debug, Deref, DerefMut, new)]
-pub struct CursorCtx<'a> {
+#[derive(Debug, Deref, DerefMut)]
+pub(crate) struct CursorCtx {
     #[deref]
     #[deref_mut]
-    pub ctx: ReadCtx,
-    pub cursor: &'a mut PatternRangePath,
+    pub(crate) graph: HypergraphRef,
+    pub(crate) cursor: PatternRangePath,
+}
+
+impl CursorCtx {
+    pub(crate) fn new(
+        graph: HypergraphRef,
+        cursor: PatternRangePath,
+    ) -> Self {
+        debug!(
+            cursor_root = ?cursor.path_root(),
+            start_path = ?cursor.start_path(),
+            end_path = ?cursor.end_path(),
+            "New CursorCtx"
+        );
+        Self { graph, cursor }
+    }
 }

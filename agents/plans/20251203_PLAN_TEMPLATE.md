@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#testing` `#api` `#performance`
+summary: <!-- One clear sentence: What are we building/fixing/changing? -->
+status: 📋
+---
+
 # Task Plan Template
 
 **Copy this template to `agents/plans/PLAN_<task_name>.md` for complex tasks (>5 files, >100 lines, unclear scope)**

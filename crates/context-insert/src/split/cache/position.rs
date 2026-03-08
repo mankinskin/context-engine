@@ -13,12 +13,12 @@ use context_trace::*;
 
 #[derive(Clone, Debug, Copy, Hash, Eq, PartialEq)]
 pub struct PosKey {
-    pub index: Token,
-    pub pos: NonZeroUsize,
+    pub(crate) index: Token,
+    pub(crate) pos: NonZeroUsize,
 }
 
 impl PosKey {
-    pub fn new<P: TryInto<NonZeroUsize>>(
+    pub(crate) fn new<P: TryInto<NonZeroUsize>>(
         index: Token,
         pos: P,
     ) -> Self
@@ -43,8 +43,8 @@ impl From<Token> for PosKey {
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SplitPositionCache {
-    pub top: HashSet<PosKey>,
-    pub pattern_splits: TokenTracePositions,
+    pub(crate) top: HashSet<PosKey>,
+    pub(crate) pattern_splits: TokenTracePositions,
 }
 
 impl std::ops::Sub<PatternSubDeltas> for SplitPositionCache {
@@ -53,10 +53,38 @@ impl std::ops::Sub<PatternSubDeltas> for SplitPositionCache {
         mut self,
         rhs: PatternSubDeltas,
     ) -> Self::Output {
+        self -= &rhs;
+        self
+    }
+}
+
+impl std::ops::SubAssign<&PatternSubDeltas> for SplitPositionCache {
+    fn sub_assign(
+        &mut self,
+        rhs: &PatternSubDeltas,
+    ) {
         self.pattern_splits
             .iter_mut()
-            .for_each(|(pid, pos)| *pos.sub_index_mut() -= rhs[pid]);
-        self
+            .for_each(|(pid, pos)| {
+                if let Some(&delta) = rhs.get(pid) {
+                    let sub_index = pos.sub_index();
+                    tracing::debug!(
+                        ?pid,
+                        sub_index,
+                        delta,
+                        inner_offset = ?pos.inner_offset(),
+                        "SubAssign: about to subtract delta from sub_index"
+                    );
+                    assert!(
+                        sub_index >= delta,
+                        "Cannot subtract delta {} from sub_index {} for pattern {:?}. \
+                         This likely means the offset is BEFORE the merged range \
+                         and shouldn't have delta applied.",
+                        delta, sub_index, pid
+                    );
+                    *pos.sub_index_mut() -= delta;
+                }
+            });
     }
 }
 
@@ -79,13 +107,13 @@ impl BorrowMut<TokenTracePositions> for SplitPositionCache {
 }
 
 impl SplitPositionCache {
-    pub fn root(subs: impl ToVertexSplitPos) -> Self {
+    pub(crate) fn root(subs: impl ToVertexSplitPos) -> Self {
         Self {
             top: HashSet::default(),
             pattern_splits: subs.to_vertex_split_pos(),
         }
     }
-    pub fn new(
+    pub(crate) fn new(
         prev: PosKey,
         subs: Vec<SubSplitLocation>,
     ) -> Self {
@@ -94,17 +122,44 @@ impl SplitPositionCache {
             pattern_splits: subs.into_iter().map(Into::into).collect(),
         }
     }
-    pub fn find_clean_split(&self) -> Option<SubLocation> {
-        self.pattern_splits.iter().find_map(|(pid, s)| {
-            s.inner_offset
-                .is_none()
-                .then_some(SubLocation::new(*pid, s.sub_index))
-        })
+
+    /// Apply delta adjustment with inner_offset for positions inside a merged region.
+    ///
+    /// This is called for positions that fall INSIDE a merged token (not at its boundary).
+    /// In addition to adjusting sub_index, this also sets the inner_offset to indicate
+    /// the position within the merged token.
+    pub(crate) fn apply_delta_with_inner_offset(
+        &mut self,
+        deltas: &PatternSubDeltas,
+        inner_offset: NonZeroUsize,
+    ) {
+        self.pattern_splits
+            .iter_mut()
+            .for_each(|(pid, pos)| {
+                if let Some(&delta) = deltas.get(pid) {
+                    let sub_index = pos.sub_index();
+                    tracing::debug!(
+                        ?pid,
+                        sub_index,
+                        delta,
+                        ?inner_offset,
+                        "apply_delta_with_inner_offset: adjusting position inside merged region"
+                    );
+                    assert!(
+                        sub_index >= delta,
+                        "Cannot subtract delta {} from sub_index {} for pattern {:?}.",
+                        delta, sub_index, pid
+                    );
+                    *pos.sub_index_mut() -= delta;
+                    // Set inner_offset to indicate this position is inside the merged token
+                    *pos.inner_offset_mut() = Some(inner_offset);
+                }
+            });
     }
-    //pub fn add_location_split(&mut self, location: SubLocation, split: Split) {
+    //pub(crate) fn add_location_split(&mut self, location: SubLocation, split: Split) {
     //    self.pattern_splits.insert(location, split);
     //}
-    //pub fn join_splits(&mut self, indexer: &mut Indexer, key: &PosKey) -> Split {
+    //pub(crate) fn join_splits(&mut self, indexer: &mut Indexer, key: &PosKey) -> Split {
     //    let (l, r): (Vec<_>, Vec<_>) = self.pattern_splits
     //        .drain()
     //        .map(|(_, s)| (s.left, s.right))

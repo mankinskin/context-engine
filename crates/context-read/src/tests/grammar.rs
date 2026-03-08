@@ -46,10 +46,10 @@ struct BuilderNode {
 }
 
 impl BuilderNode {
-    pub fn prefix_rule(&self) -> [BuildKey; 2] {
+    pub(crate) fn prefix_rule(&self) -> [BuildKey; 2] {
         [*self.start()..=self.end() - 1, *self.end()..=*self.end()]
     }
-    pub fn postfix_rule(&self) -> [BuildKey; 2] {
+    pub(crate) fn postfix_rule(&self) -> [BuildKey; 2] {
         [
             *self.start()..=*self.start(),
             *self.start() + 1..=*self.end(),
@@ -65,7 +65,7 @@ struct GraphBuilder {
 }
 
 impl GraphBuilder {
-    pub fn new(N: usize) -> Self {
+    pub(crate) fn new(N: usize) -> Self {
         Self {
             N,
             range_map: Default::default(),
@@ -73,7 +73,7 @@ impl GraphBuilder {
             queue: Default::default(),
         }
     }
-    pub fn queue_node(
+    pub(crate) fn queue_node(
         &mut self,
         node: BuilderNode,
     ) {
@@ -84,7 +84,7 @@ impl GraphBuilder {
         self.queue.push_back(node);
     }
 
-    pub fn add_rules(
+    pub(crate) fn add_rules(
         &mut self,
         node: BuilderNode,
     ) {
@@ -100,7 +100,8 @@ impl GraphBuilder {
                 .map(|(sub_index, key)| {
                     let loc = ChildLocation::new(node.index, pid, sub_index);
                     if let Some(&v) = self.range_map.get(key) {
-                        self.graph.expect_vertex_mut(v).add_parent(loc);
+                        self.graph
+                            .with_vertex_mut(v, |node| node.add_parent(loc));
                         Token::new(v, TokenWidth(key.clone().count()))
                     } else {
                         let vid = self.graph.next_vertex_index();
@@ -112,12 +113,12 @@ impl GraphBuilder {
                     }
                 })
                 .collect();
-            self.graph
-                .expect_vertex_mut(node.index)
-                .add_pattern_no_update(pid, pattern);
+            self.graph.with_vertex_mut(node.index, |v| {
+                v.add_pattern_no_update(pid, pattern)
+            });
         }
     }
-    pub fn fill_grammar(&mut self) {
+    pub(crate) fn fill_grammar(&mut self) {
         let vid = self.graph.next_vertex_index();
         self.queue_node(BuilderNode::new(
             Token::new(vid, TokenWidth(self.N)),
@@ -137,7 +138,7 @@ impl GraphBuilder {
     //        .get_parents_with_index_at(0)
     //        .len()
     //}
-    pub fn saturated_grammar(
+    pub(crate) fn saturated_grammar(
         mut self,
         k: usize,
     ) -> Hypergraph {
@@ -195,7 +196,7 @@ struct RewireCtx {
 }
 
 impl RewireCtx {
-    pub fn new(
+    pub(crate) fn new(
         k: usize,
         builder: GraphBuilder,
     ) -> Self {
@@ -222,7 +223,7 @@ impl RewireCtx {
     //        .map(|p| {
     //        })
     //}
-    pub fn rewire_grammar(&mut self) {
+    pub(crate) fn rewire_grammar(&mut self) {
         // - fix first atom
         // - store number of prefix uses for each index
         // - implement function selecting the next atom given the previous n-grams

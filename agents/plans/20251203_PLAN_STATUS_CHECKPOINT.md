@@ -1,3 +1,9 @@
+---
+tags: `#plan` `#context-search` `#debugging` `#testing` `#api`
+summary: Began implementing the plan to add support for advanced query cursors in `MatchResult` by making `Checkpointed<C>` space-efficient.
+status: 📋
+---
+
 # Implementation Status Checkpoint
 
 ## Session Summary

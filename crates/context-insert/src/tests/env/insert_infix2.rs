@@ -23,27 +23,27 @@ use std::sync::{
 };
 
 #[derive(Debug)]
-pub struct EnvInsertInfix2 {
-    pub graph: HypergraphRef,
-    pub a: Token,
-    pub b: Token,
-    pub c: Token,
-    pub d: Token,
-    pub x: Token,
-    pub y: Token,
-    pub yy: Token,
-    pub xx: Token,
-    pub xy: Token,
-    pub abcdx: Token,
-    pub yabcdx: Token,
-    pub abcdxx: Token,
-    pub xxy: Token,
-    pub xxyyabcdxxyy: Token,
+pub(crate) struct EnvInsertInfix2 {
+    pub(crate) graph: HypergraphRef,
+    pub(crate) a: Token,
+    pub(crate) b: Token,
+    pub(crate) c: Token,
+    pub(crate) d: Token,
+    pub(crate) x: Token,
+    pub(crate) y: Token,
+    pub(crate) yy: Token,
+    pub(crate) xx: Token,
+    pub(crate) xy: Token,
+    pub(crate) abcdx: Token,
+    pub(crate) yabcdx: Token,
+    pub(crate) abcdxx: Token,
+    pub(crate) xxy: Token,
+    pub(crate) xxyyabcdxxyy: Token,
 }
 
 impl TestEnv for EnvInsertInfix2 {
     fn initialize() -> Self {
-        let mut graph = Hypergraph::default();
+        let graph = Hypergraph::default();
         let [a, b, c, d, x, y] = graph.insert_atoms([
             Atom::Element('a'),
             Atom::Element('b'),
@@ -69,6 +69,8 @@ impl TestEnv for EnvInsertInfix2 {
 
         #[cfg(any(test, feature = "test-api"))]
         context_trace::graph::test_graph::register_test_graph(&graph);
+
+        graph.emit_graph_snapshot();
 
         Self {
             graph: HypergraphRef::from(graph),
