@@ -54,24 +54,24 @@ export class DecompositionManager {
         return this.expandedNodes;
     }
 
-    /** Get indices of nodes currently inside a decomposition row. */
-    getReparentedSet(): Set<number> {
+    /** Get indices of child nodes cloned inside a decomposition row. */
+    getClonedChildIndices(): Set<number> {
         const set = new Set<number>();
         for (const [, state] of this.expandedNodes) {
-            for (const { el } of state.children) {
-                const idx = el.getAttribute('data-node-idx');
+            for (const clone of state.clones) {
+                const idx = clone.getAttribute('data-node-idx');
                 if (idx != null) set.add(Number(idx));
             }
         }
         return set;
     }
 
-    /** Get mapping: reparented child → expanded parent */
+    /** Get mapping: cloned child index → expanded parent index */
     getChildParentMap(): Map<number, number> {
         const map = new Map<number, number>();
         for (const [expIdx, state] of this.expandedNodes) {
-            for (const { el } of state.children) {
-                const idx = el.getAttribute('data-node-idx');
+            for (const clone of state.clones) {
+                const idx = clone.getAttribute('data-node-idx');
                 if (idx != null) map.set(Number(idx), expIdx);
             }
         }
@@ -82,8 +82,8 @@ export class DecompositionManager {
     getHiddenDecompEdgeKeys(): Set<number> {
         const keys = new Set<number>();
         for (const [expIdx, state] of this.expandedNodes) {
-            for (const { el } of state.children) {
-                const idx = el.getAttribute('data-node-idx');
+            for (const clone of state.clones) {
+                const idx = clone.getAttribute('data-node-idx');
                 if (idx != null) {
                     const ci = Number(idx);
                     keys.add(edgePairKey(expIdx, ci));
@@ -98,26 +98,18 @@ export class DecompositionManager {
      * Synchronise the set of expanded nodes with the desired set.
      * Collapses removed, expands added, reorders if changed.
      *
-     * @param cloneChildren When true, ALL child elements in decomposition
-     *   rows use clones instead of reparenting the real DOM elements.
-     *   This keeps originals at their 3D positions (for duplicateMode).
      */
-    update(desiredExpanded: Set<number>, cloneChildren = false): void {
-        const modeKey = cloneChildren ? ':c' : ':r';
-        const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',') + modeKey;
+    update(desiredExpanded: Set<number>): void {
+        const desiredKeyStr = [...desiredExpanded].sort((a, b) => a - b).join(',');
         if (desiredKeyStr === this.lastExpandedKeyStr) return;
 
-        // Check if clone mode changed (requires full re-expand)
-        const prevModeIsClone = this.lastExpandedKeyStr.endsWith(':c');
-        const modeChanged = cloneChildren !== prevModeIsClone;
-
-        // Collapse nodes no longer desired (or all if mode changed)
+        // Collapse nodes no longer desired
         for (const idx of [...this.expandedNodes.keys()]) {
-            if (modeChanged || !desiredExpanded.has(idx)) this.collapseNode(idx);
+            if (!desiredExpanded.has(idx)) this.collapseNode(idx);
         }
         // Expand desired nodes that aren't already expanded
         for (const idx of desiredExpanded) {
-            if (!this.expandedNodes.has(idx)) this.expandNode(idx, cloneChildren);
+            if (!this.expandedNodes.has(idx)) this.expandNode(idx);
         }
         this.reorderNodeLayer();
         this.lastExpandedKeyStr = desiredKeyStr;
@@ -188,17 +180,6 @@ export class DecompositionManager {
         // pin max-height for a precise CSS transition (no invisible 400→real gap).
         const actualHeight = state.container.scrollHeight;
 
-        // Immediately move children back to nodeLayer so position system takes over.
-        // Only reparent if the element is still in the document (Preact may have
-        // re-rendered new DOM elements when the snapshot changed).
-        for (const { el } of state.children) {
-            el.classList.remove('hg-decomp-child');
-            el.style.flex = '';
-            if (el.isConnected && this.nodeLayer.isConnected) {
-                this.nodeLayer.appendChild(el);
-            }
-        }
-
         // Clear container content so only an empty box shrinks (no visible rows/labels)
         state.container.innerHTML = '';
 
@@ -236,17 +217,6 @@ export class DecompositionManager {
         const state = this.expandedNodes.get(idx);
         if (!state) return;
         state.parentEl.classList.remove('hg-expanded');
-        // Only reparent if both elements are still connected to the document.
-        // When switching hypergraphs, Preact re-renders new DOM elements and
-        // the old ones become detached — trying to appendChild detached nodes
-        // to also-detached nodeLayer would create orphans.
-        for (const { el } of state.children) {
-            el.classList.remove('hg-decomp-child');
-            el.style.flex = '';
-            if (el.isConnected && this.nodeLayer.isConnected) {
-                this.nodeLayer.appendChild(el);
-            }
-        }
         state.container.remove();
         const ep = state.parentEl as any;
         if (ep.__parentDown) state.parentEl.removeEventListener('mousedown', ep.__parentDown);
@@ -254,7 +224,7 @@ export class DecompositionManager {
         this.expandedNodes.delete(idx);
     }
 
-    private expandNode(idx: number, cloneChildren = false): void {
+    private expandNode(idx: number): void {
         if (this.expandedNodes.has(idx)) return;
 
         // If mid-collapse, cancel the container animation
@@ -289,9 +259,7 @@ export class DecompositionManager {
         const container = document.createElement('div');
         container.className = 'decomp-patterns';
 
-        const children: { el: HTMLDivElement }[] = [];
         const clones: HTMLDivElement[] = [];
-        const usedChildIndices = new Set<number>();
 
         for (let pi = 0; pi < patterns.length; pi++) {
             const pat = patterns[pi]!;
@@ -311,24 +279,14 @@ export class DecompositionManager {
                 const realEl = this.nodeElMap.get(child.index);
                 if (!realEl) continue;
 
-                let el: HTMLDivElement;
+                // Always clone — never reparent real Preact-managed elements
+                const clone = realEl.cloneNode(true) as HTMLDivElement;
+                clone.setAttribute('data-clone', 'true');
+                clones.push(clone);
 
-                if (cloneChildren || usedChildIndices.has(child.index)) {
-                    // Clone mode (all children) or repeated occurrence
-                    const clone = realEl.cloneNode(true) as HTMLDivElement;
-                    clone.setAttribute('data-clone', 'true');
-                    clones.push(clone);
-                    el = clone;
-                } else {
-                    // First occurrence in reparent mode: use real element
-                    usedChildIndices.add(child.index);
-                    children.push({ el: realEl });
-                    el = realEl;
-                }
-
-                el.classList.add('hg-decomp-child');
-                el.style.flex = `${child.width} 0 0%`;
-                tokens.appendChild(el);
+                clone.classList.add('hg-decomp-child');
+                clone.style.flex = `${child.width} 0 0%`;
+                tokens.appendChild(clone);
             }
 
             row.appendChild(tokens);
@@ -365,7 +323,7 @@ export class DecompositionManager {
 
         parentEl.appendChild(container);
 
-        this.expandedNodes.set(idx, { parentEl, container, children, clones });
+        this.expandedNodes.set(idx, { parentEl, container, children: [], clones });
 
         // Apply expanded class immediately — full content visible right away
         parentEl.classList.add('hg-expanded');

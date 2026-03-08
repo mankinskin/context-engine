@@ -40,8 +40,10 @@ export interface PositionContext {
     nestingHighlights?: EdgeHighlight[];
     /** Container element for SVG connector overlay. */
     containerEl?: HTMLElement;
-    /** Whether decomposition used clone mode (duplicateMode on). */
-    cloneMode?: boolean;
+    /** Whether nesting is enabled (always uses clones). */
+    nestingEnabled?: boolean;
+    /** Whether duplicate mode is on (show originals at 3D positions). */
+    duplicateMode?: boolean;
 }
 
 /**
@@ -58,10 +60,10 @@ export function positionDOMNodes(ctx: PositionContext): void {
     const {
         layout, nodeElMap, viewProj, invSubVP, camPos, vw, vh,
         containerRect, inter, vizInvolvedNodes, connectedSet, decomposition,
-        shells, duplicates, nestingHighlights, containerEl, cloneMode,
+        shells, duplicates, nestingHighlights, containerEl, nestingEnabled, duplicateMode,
     } = ctx;
 
-    const reparentedSet = decomposition.getReparentedSet();
+    const clonedChildSet = decomposition.getClonedChildIndices();
     const childParentMap = decomposition.getChildParentMap();
     const expandedNodes = decomposition.getExpandedNodes();
     const vp = viewProj;
@@ -77,19 +79,9 @@ export function positionDOMNodes(ctx: PositionContext): void {
         const el = nodeElMap.get(n.index);
         if (!el) continue;
 
-        if (reparentedSet.has(n.index)) {
-            // Child is inside decomposition row — no 3D transforms.
-            el.style.display = '';
-            el.style.opacity = '1';
-            el.style.transform = '';
-            el.style.zIndex = '';
-
-            // Selection/hover classes for reparented children
-            el.classList.toggle('selected', n.index === inter.selectedIdx);
-            el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
-
-            // Back-project DOM screen position to world coords
-            backProjectReparentedChild(n, el, containerRect, vw, vh, invSubVP, vp, layout, childParentMap);
+        if (clonedChildSet.has(n.index) && !duplicateMode) {
+            // Dup=off: child is shown inside parent clone — hide the original.
+            el.style.display = 'none';
             continue;
         }
 
@@ -107,18 +99,23 @@ export function positionDOMNodes(ctx: PositionContext): void {
         }
         el.style.display = '';
 
-        // Dim nodes not connected to selected node (but never dim viz-involved nodes)
+        const isExpanded = expandedNodes.has(n.index);
+
+        // Dim nodes not connected to selected node (but never dim viz-involved
+        // or expanded nodes — expanded parents must always look active).
         const dimmed = inter.selectedIdx >= 0
+            && !isExpanded
             && !connectedSet.has(n.index)
             && !vizInvolvedNodes.has(n.index);
         el.style.opacity = dimmed ? '0.15' : '1';
 
         // Imperative class toggling for selected/hover
-        el.classList.toggle('selected', n.index === inter.selectedIdx);
+        // Expanded parents always appear selected so they stay visually active
+        // (e.g. the search-path root during visit_child transitions).
+        el.classList.toggle('selected', n.index === inter.selectedIdx || isExpanded);
         el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
 
         const zIdx = Math.round((1 - screen.z) * 1000);
-        const isExpanded = expandedNodes.has(n.index);
         el.style.zIndex = (n.index === inter.selectedIdx) ? '10000'
             : isExpanded ? '9999'
                 : String(zIdx);
@@ -204,19 +201,37 @@ export function positionDOMNodes(ctx: PositionContext): void {
         }
     }
 
-    // ── Nesting: update clone element classes (selection / hover) ──
-    if (cloneMode && containerEl) {
+    // ── Nesting: update clone element classes (selection / hover / viz) ──
+    if (nestingEnabled && containerEl) {
         const cloneEls = containerEl.querySelectorAll<HTMLDivElement>('.hg-decomp-child[data-clone]');
         for (const cloneEl of cloneEls) {
             const origIdx = Number(cloneEl.getAttribute('data-node-idx'));
             if (isNaN(origIdx)) continue;
             cloneEl.classList.toggle('selected', origIdx === inter.selectedIdx);
             cloneEl.classList.toggle('span-highlighted', origIdx === inter.hoverIdx);
+
+            // Sync viz-* classes from the original node element so that
+            // clone highlights stay in sync with the visualization state.
+            const origEl = nodeElMap.get(origIdx);
+            if (origEl) {
+                // Remove stale viz classes from clone
+                for (const cls of Array.from(cloneEl.classList)) {
+                    if (cls.startsWith('viz-') && !origEl.classList.contains(cls)) {
+                        cloneEl.classList.remove(cls);
+                    }
+                }
+                // Add current viz classes from original
+                for (const cls of Array.from(origEl.classList)) {
+                    if (cls.startsWith('viz-') && !cloneEl.classList.contains(cls)) {
+                        cloneEl.classList.add(cls);
+                    }
+                }
+            }
         }
     }
 
     // ── Nesting: SVG connector edges from originals to clones ──
-    if (cloneMode && containerEl) {
+    if (nestingEnabled && duplicateMode && containerEl) {
         updateNestingConnectors(containerEl, containerRect, nodeScreenPos, nodeElMap, inter.selectedIdx);
     } else if (containerEl) {
         const svg = containerEl.querySelector<SVGSVGElement>(':scope > .hg-nesting-connectors');

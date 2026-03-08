@@ -124,7 +124,7 @@ export function useOverlayRenderer(
         let prevExpandedSize = -1;
         let prevConnectedRef: Set<number> | null = null;
         let nodesMoving = true; // assume nodes are animating initially
-        let prevReparented = new Set<number>(); // track reparented set for just-released detection
+        let prevClonedChildren = new Set<number>(); // track cloned child set for just-released detection
         let prevFocusedActive = false; // track whether focused layout was active last frame
 
         // ── Overlay render callback ──
@@ -189,7 +189,10 @@ export function useOverlayRenderer(
                     desiredExpanded.add(sp.root.index);
                 }
                 // Prune: don't expand child of another expanded node
+                // (but never prune the search path root — it must always stay expanded)
+                const spRootIdx = sp?.root?.index;
                 for (const idx of [...desiredExpanded]) {
+                    if (idx === spRootIdx) continue;
                     const node = curLayout.nodeMap.get(idx);
                     if (!node) continue;
                     for (const otherIdx of desiredExpanded) {
@@ -202,20 +205,20 @@ export function useOverlayRenderer(
                     }
                 }
             }
-            decomposition.update(desiredExpanded, ns?.duplicateMode ?? false);
+            decomposition.update(desiredExpanded);
 
             // ── Active-transform target management ──
             // Base positions are the force-directed equilibrium (ground truth).
             // Focused layout offsets are active transforms applied each frame.
             // When transforms stop being applied, nodes return to base.
             const basePositions = basePositionsRef?.current;
-            const reparented = decomposition.getReparentedSet();
+            const clonedChildren = decomposition.getClonedChildIndices();
 
             // Detect children just released from decomposition rows.
             // Reset their targets to base so they animate home.
             if (basePositions) {
-                for (const idx of prevReparented) {
-                    if (!reparented.has(idx)) {
+                for (const idx of prevClonedChildren) {
+                    if (!clonedChildren.has(idx)) {
                         const base = basePositions.get(idx);
                         const node = curLayout.nodeMap.get(idx);
                         if (base && node) {
@@ -224,7 +227,7 @@ export function useOverlayRenderer(
                     }
                 }
             }
-            prevReparented = new Set(reparented);
+            prevClonedChildren = new Set(clonedChildren);
 
             // Apply focused layout as an active transform (offsets on top of base).
             const focusedOffsets = focusedOffsetsRef?.current;
@@ -277,24 +280,20 @@ export function useOverlayRenderer(
 
                 nestShells = computeShellLayout(curLayout, inter.selectedIdx, ns.parentDepth, selW, selH);
 
-                if (ns.duplicateMode) {
-                    // In clone mode, hide GPU edges for ALL expanded nodes' children
-                    // (replaced by SVG connectors). This correctly handles the case
-                    // where the root is expanded but a child is selected.
-                    const allHidden = new Set<number>();
-                    const allHighlights: EdgeHighlight[] = [];
-                    for (const expIdx of desiredExpanded) {
-                        const expNode = curLayout.nodeMap.get(expIdx);
-                        if (!expNode) continue;
-                        const hlResult = computeNestingEdgeHighlights(curLayout, expIdx, expNode.childIndices);
-                        for (const k of hlResult.hiddenEdgeKeys) allHidden.add(k);
-                        allHighlights.push(...hlResult.highlights);
-                    }
-                    nestHighlights = allHighlights;
-                    edgeBuildCtx.hiddenNestingEdgeKeys = allHidden;
-                } else {
-                    edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
+                // Hide GPU edges for ALL expanded nodes' children
+                // (children are always shown inside the expanded parent as clones).
+                const allHidden = new Set<number>();
+                const allHighlights: EdgeHighlight[] = [];
+                for (const expIdx of desiredExpanded) {
+                    const expNode = curLayout.nodeMap.get(expIdx);
+                    if (!expNode) continue;
+                    const hlResult = computeNestingEdgeHighlights(curLayout, expIdx, expNode.childIndices);
+                    for (const k of hlResult.hiddenEdgeKeys) allHidden.add(k);
+                    allHighlights.push(...hlResult.highlights);
                 }
+                // Only show nesting highlights (glow on connected originals) in dup mode
+                nestHighlights = ns.duplicateMode ? allHighlights : [];
+                edgeBuildCtx.hiddenNestingEdgeKeys = allHidden;
             } else {
                 edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
             }
@@ -317,7 +316,8 @@ export function useOverlayRenderer(
                 duplicates: nestDuplicates,
                 nestingHighlights: nestHighlights,
                 containerEl: container,
-                cloneMode: ns?.duplicateMode ?? false,
+                nestingEnabled: ns?.enabled ?? false,
+                duplicateMode: ns?.duplicateMode ?? false,
             });
 
             // ── Build and upload edge instances (with dirty-flag optimization) ──
