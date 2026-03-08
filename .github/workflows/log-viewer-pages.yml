@@ -9,6 +9,11 @@ on:
       - 'tools/viewer-api/frontend/**'
       - '.github/workflows/log-viewer-pages.yml'
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag, or commit SHA to deploy (defaults to the branch selected above)'
+        required: false
+        default: ''
 
 # Allow only one concurrent deployment
 concurrency:
@@ -26,6 +31,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
