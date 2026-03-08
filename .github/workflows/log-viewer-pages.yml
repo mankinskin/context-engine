@@ -73,6 +73,8 @@ jobs:
         env:
           VITE_STATIC_MODE: "true"
           VITE_BASE_URL: /${{ github.event.repository.name }}/
+          VITE_GITHUB_REPO: ${{ github.repository }}
+          VITE_GITHUB_SHA: ${{ github.sha }}
         run: npx vite build
 
       - name: Upload artifact
