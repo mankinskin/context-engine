@@ -23,7 +23,7 @@
 
 .code-snippet {
   margin-top: 0;
-  background: var(--bg-primary);
+  background: transparent;
   border: 1px solid var(--border-color);
   border-radius: 2px;
   max-height: 400px;
@@ -47,7 +47,7 @@
   align-items: center;
   gap: 8px;
   padding: 4px 8px;
-  background: var(--bg-secondary);
+  background: transparent;
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
@@ -57,7 +57,7 @@
 .full-file-path {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text-secondary);
+  color: #57606a;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -66,22 +66,22 @@
 
 .full-file-lines {
   font-size: 10px;
-  color: var(--text-muted);
+  color: #6e7781;
 }
 
 .full-file-collapse {
-  background: var(--bg-tertiary);
+  background: transparent;
   border: 1px solid var(--border-color);
   border-radius: 2px;
-  color: var(--text-secondary);
+  color: #57606a;
   font-size: 10px;
   padding: 1px 6px;
   cursor: pointer;
 }
 
 .full-file-collapse:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.06);
+  color: #24292e;
 }
 
 .snippet-loading {
@@ -102,6 +102,7 @@
   padding: 0;
   font-family: var(--font-mono);
   font-size: 12px;
+  color: #24292e;
 }
 
 .snippet-line {
@@ -114,7 +115,7 @@
 }
 
 .snippet-line.clickable:hover {
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .snippet-line.highlight {
@@ -130,7 +131,7 @@
   min-width: 36px;
   text-align: right;
   padding-right: 4px;
-  color: var(--text-muted);
+  color: #8c959f;
   user-select: none;
 }
 

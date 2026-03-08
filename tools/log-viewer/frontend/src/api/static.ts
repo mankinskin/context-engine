@@ -89,18 +89,103 @@ export async function queryLogs(
   throw new Error('JQ queries are not available in static demo mode');
 }
 
-// ── Source files (not available in static mode) ──
+// ── Source files ──
+// In static/GitHub Pages mode, files are fetched directly from the raw GitHub
+// content API using the repository and commit SHA injected at build time.
 
-export async function fetchSourceFile(_path: string): Promise<SourceFileResponse> {
-  throw new Error('Source file viewing is not available in static demo mode');
+/** Base URL for raw GitHub file content, e.g.
+ *  `https://raw.githubusercontent.com/owner/repo/sha` */
+function rawGitHubBase(): string | null {
+  const repo = import.meta.env.VITE_GITHUB_REPO;
+  const sha  = import.meta.env.VITE_GITHUB_SHA;
+  if (repo && sha) {
+    return `https://raw.githubusercontent.com/${repo}/${sha}`;
+  }
+  return null;
+}
+
+/** Normalise a source path: convert backslashes and strip leading slashes. */
+function normalizePath(path: string): string {
+  return path.replace(/\\/g, '/').replace(/^\/+/, '');
+}
+
+/** Simple client-side language detection from file extension. */
+function detectLanguage(path: string): string {
+  const dotIdx = path.lastIndexOf('.');
+  const ext = dotIdx >= 0 ? path.slice(dotIdx + 1) : '';
+  switch (ext) {
+    case 'rs': return 'rust';
+    case 'ts': case 'tsx': return 'typescript';
+    case 'js': case 'jsx': return 'javascript';
+    case 'json': return 'json';
+    case 'toml': return 'toml';
+    case 'yaml': case 'yml': return 'yaml';
+    case 'md': return 'markdown';
+    case 'html': return 'html';
+    case 'css': return 'css';
+    default: return 'plaintext';
+  }
+}
+
+/** Extract a snippet of lines from content (1-based, inclusive). */
+function extractSnippet(
+  lines: string[],
+  line: number,
+  context: number,
+): { snippet: string; startLine: number; endLine: number; highlightLine: number } {
+  const total = lines.length;
+  const clampedLine = Math.min(Math.max(1, line), total);
+  const startLine = Math.max(1, clampedLine - context);
+  const endLine = Math.min(total, clampedLine + context);
+  const snippet = lines.slice(startLine - 1, endLine).join('\n');
+  return { snippet, startLine, endLine, highlightLine: clampedLine };
+}
+
+export async function fetchSourceFile(path: string): Promise<SourceFileResponse> {
+  const base = rawGitHubBase();
+  if (!base) {
+    throw new Error('Source file viewing is not available in static mode (VITE_GITHUB_REPO / VITE_GITHUB_SHA not set)');
+  }
+  const url = `${base}/${normalizePath(path)}`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`Failed to fetch source file ${path}: HTTP ${resp.status}`);
+  }
+  const content = await resp.text();
+  const lines = content.split('\n');
+  return {
+    path,
+    content,
+    language: detectLanguage(path),
+    total_lines: lines.length,
+  };
 }
 
 export async function fetchSourceSnippet(
-  _path: string,
-  _line: number,
-  _context?: number,
+  path: string,
+  line: number,
+  context: number = 5,
 ): Promise<SourceSnippet> {
-  throw new Error('Source snippets are not available in static demo mode');
+  const base = rawGitHubBase();
+  if (!base) {
+    throw new Error('Source snippets are not available in static mode (VITE_GITHUB_REPO / VITE_GITHUB_SHA not set)');
+  }
+  const url = `${base}/${normalizePath(path)}`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`Failed to fetch source file ${path}: HTTP ${resp.status}`);
+  }
+  const content = await resp.text();
+  const lines = content.split('\n');
+  const { snippet, startLine, endLine, highlightLine } = extractSnippet(lines, line, context);
+  return {
+    path,
+    content: snippet,
+    start_line: startLine,
+    end_line: endLine,
+    highlight_line: highlightLine,
+    language: detectLanguage(path),
+  };
 }
 
 export async function fetchSignatures(_name: string): Promise<Record<string, unknown>> {

@@ -70,6 +70,7 @@ pub use state::{
     AppState,
     SessionConfig,
     SessionStore,
+    SourceBackend,
     SESSION_HEADER,
 };
 pub use types::{
@@ -188,8 +189,8 @@ mod tests {
     use axum_test::TestServer;
     use source::{
         detect_language,
-        resolve_source_path,
     };
+    use viewer_api::source::resolve_source_path;
     use std::{
         collections::HashMap,
         fs,
@@ -211,6 +212,7 @@ mod tests {
             signatures_dir: log_dir.path().parent().unwrap_or(log_dir.path()).join("debug_signatures"),
             workspace_root: workspace_dir.path().to_path_buf(),
             parser: Arc::new(LogParser::new()),
+            source_backend: SourceBackend::Local { workspace_root: workspace_dir.path().to_path_buf() },
             sessions: Arc::new(RwLock::new(HashMap::new())),
         };
 

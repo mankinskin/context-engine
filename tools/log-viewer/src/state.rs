@@ -20,6 +20,9 @@ use crate::{
     log_parser::LogParser,
 };
 
+// Re-export source backend for use in handlers
+pub use viewer_api::source::SourceBackend;
+
 // Re-export session header from shared module
 pub use viewer_api::session::SESSION_HEADER;
 
@@ -56,6 +59,8 @@ pub struct AppState {
     pub signatures_dir: PathBuf,
     pub workspace_root: PathBuf,
     pub parser: Arc<LogParser>,
+    /// Strategy for serving source files (local disk or remote repository).
+    pub source_backend: SourceBackend,
     /// Session store for per-client configuration
     pub sessions: SessionStore,
 }
@@ -64,13 +69,62 @@ pub struct AppState {
 pub fn create_app_state_from_config(config: &Config) -> AppState {
     let log_dir = config.resolve_log_dir();
     let signatures_dir = config.resolve_signatures_dir();
+    let workspace_root = config.resolve_workspace_root();
+    let source_backend = resolve_source_backend(config, workspace_root.clone());
     AppState {
         log_dir,
         signatures_dir,
-        workspace_root: config.resolve_workspace_root(),
+        workspace_root,
         parser: Arc::new(LogParser::new()),
+        source_backend,
         sessions: Arc::new(RwLock::new(HashMap::new())),
     }
+}
+
+/// Determine the source backend from configuration and environment.
+///
+/// Priority:
+/// 1. Explicit `[repository]` section in config file.
+/// 2. Auto-detection via `GITHUB_ACTIONS` / `GITHUB_REPOSITORY` / `GITHUB_SHA`.
+/// 3. Local filesystem (default).
+fn resolve_source_backend(
+    config: &Config,
+    workspace_root: PathBuf,
+) -> SourceBackend {
+    let repo_cfg = &config.repository;
+
+    // Build a remote backend if repo_url AND a commit are configured/detectable.
+    let explicit_commit = repo_cfg
+        .commit_hash
+        .clone()
+        .or_else(|| env::var("GITHUB_SHA").ok());
+
+    if let (Some(repo_url), Some(commit)) =
+        (repo_cfg.repo_url.as_ref(), explicit_commit)
+    {
+        // Parse "https://github.com/owner/repo" -> owner/repo
+        if let Some(path) = repo_url.trim_end_matches('/').strip_prefix("https://github.com/") {
+            let parts: Vec<&str> = path.splitn(2, '/').collect();
+            if parts.len() == 2 {
+                return SourceBackend::github(
+                    parts[0],
+                    parts[1],
+                    &commit,
+                    repo_cfg.source_tree_path.clone(),
+                );
+            }
+        }
+        // repo_url was set but couldn't be parsed as a GitHub URL
+        eprintln!(
+            "WARNING: log-viewer [repository] repo_url '{}' could not be parsed as a \
+             GitHub URL (expected format: https://github.com/owner/repo). \
+             Falling back to auto-detection or local source serving.",
+            repo_url
+        );
+    }
+
+    // Fall back to environment-based auto-detection (e.g. GitHub Actions CI).
+    SourceBackend::detect(workspace_root)
 }
 
 /// Create the application state (for backward compatibility and tests)
@@ -108,11 +162,14 @@ pub fn create_app_state(
         .unwrap_or(&log_dir)
         .join("debug_signatures");
 
+    let source_backend = SourceBackend::detect(workspace_root.clone());
+
     AppState {
         log_dir,
         signatures_dir,
         workspace_root,
         parser: Arc::new(LogParser::new()),
+        source_backend,
         sessions: Arc::new(RwLock::new(HashMap::new())),
     }
 }
