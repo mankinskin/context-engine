@@ -278,13 +278,20 @@ export function useOverlayRenderer(
                 nestShells = computeShellLayout(curLayout, inter.selectedIdx, ns.parentDepth, selW, selH);
 
                 if (ns.duplicateMode) {
-                    // In clone mode, originals stay at 3D positions;
-                    // hide parent↔child GPU edges (replaced by SVG connectors).
-                    const selectedNode = curLayout.nodeMap.get(inter.selectedIdx);
-                    const childIndices = selectedNode?.childIndices ?? [];
-                    const hlResult = computeNestingEdgeHighlights(curLayout, inter.selectedIdx, childIndices);
-                    nestHighlights = hlResult.highlights;
-                    edgeBuildCtx.hiddenNestingEdgeKeys = hlResult.hiddenEdgeKeys;
+                    // In clone mode, hide GPU edges for ALL expanded nodes' children
+                    // (replaced by SVG connectors). This correctly handles the case
+                    // where the root is expanded but a child is selected.
+                    const allHidden = new Set<number>();
+                    const allHighlights: EdgeHighlight[] = [];
+                    for (const expIdx of desiredExpanded) {
+                        const expNode = curLayout.nodeMap.get(expIdx);
+                        if (!expNode) continue;
+                        const hlResult = computeNestingEdgeHighlights(curLayout, expIdx, expNode.childIndices);
+                        for (const k of hlResult.hiddenEdgeKeys) allHidden.add(k);
+                        allHighlights.push(...hlResult.highlights);
+                    }
+                    nestHighlights = allHighlights;
+                    edgeBuildCtx.hiddenNestingEdgeKeys = allHidden;
                 } else {
                     edgeBuildCtx.hiddenNestingEdgeKeys = new Set();
                 }

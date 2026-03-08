@@ -52,8 +52,18 @@
     stroke-dasharray: 4 3;
 }
 
+.hg-connector-line.hg-connector-highlighted {
+    stroke: rgba(100, 200, 255, 0.8);
+    stroke-width: 2;
+    stroke-dasharray: none;
+}
+
 .hg-connector-dot {
     fill: rgba(100, 180, 255, 0.6);
+}
+
+.hg-connector-dot.hg-connector-highlighted {
+    fill: rgba(100, 200, 255, 0.95);
 }
 
 /* Nesting highlight glow on nodes with hidden edges */

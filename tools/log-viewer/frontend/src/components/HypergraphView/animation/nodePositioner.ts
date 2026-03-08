@@ -84,6 +84,10 @@ export function positionDOMNodes(ctx: PositionContext): void {
             el.style.transform = '';
             el.style.zIndex = '';
 
+            // Selection/hover classes for reparented children
+            el.classList.toggle('selected', n.index === inter.selectedIdx);
+            el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
+
             // Back-project DOM screen position to world coords
             backProjectReparentedChild(n, el, containerRect, vw, vh, invSubVP, vp, layout, childParentMap);
             continue;
@@ -200,9 +204,20 @@ export function positionDOMNodes(ctx: PositionContext): void {
         }
     }
 
+    // ── Nesting: update clone element classes (selection / hover) ──
+    if (cloneMode && containerEl) {
+        const cloneEls = containerEl.querySelectorAll<HTMLDivElement>('.hg-decomp-child[data-clone]');
+        for (const cloneEl of cloneEls) {
+            const origIdx = Number(cloneEl.getAttribute('data-node-idx'));
+            if (isNaN(origIdx)) continue;
+            cloneEl.classList.toggle('selected', origIdx === inter.selectedIdx);
+            cloneEl.classList.toggle('span-highlighted', origIdx === inter.hoverIdx);
+        }
+    }
+
     // ── Nesting: SVG connector edges from originals to clones ──
     if (cloneMode && containerEl) {
-        updateNestingConnectors(containerEl, containerRect, nodeScreenPos, nodeElMap);
+        updateNestingConnectors(containerEl, containerRect, nodeScreenPos, nodeElMap, inter.selectedIdx);
     } else if (containerEl) {
         const svg = containerEl.querySelector<SVGSVGElement>(':scope > .hg-nesting-connectors');
         if (svg) svg.style.display = 'none';
@@ -303,6 +318,7 @@ function updateNestingConnectors(
     containerRect: DOMRect,
     nodeScreenPos: Map<number, { x: number; y: number }>,
     nodeElMap: Map<number, HTMLDivElement>,
+    selectedIdx: number,
 ): void {
     const cloneEls = containerEl.querySelectorAll<HTMLDivElement>('.hg-decomp-child[data-clone]');
     if (cloneEls.length === 0) {
@@ -345,29 +361,32 @@ function updateNestingConnectors(
             origPos.x, origPos.y,
         );
 
+        const isHighlighted = origIdx === selectedIdx;
+        const hlClass = isHighlighted ? ' hg-connector-highlighted' : '';
+
         // Line
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.setAttribute('x1', origBx.toFixed(1));
         line.setAttribute('y1', origBy.toFixed(1));
         line.setAttribute('x2', cloneBx.toFixed(1));
         line.setAttribute('y2', cloneBy.toFixed(1));
-        line.setAttribute('class', 'hg-connector-line');
+        line.setAttribute('class', 'hg-connector-line' + hlClass);
         svg.appendChild(line);
 
         // Circle at original border
         const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         c1.setAttribute('cx', origBx.toFixed(1));
         c1.setAttribute('cy', origBy.toFixed(1));
-        c1.setAttribute('r', '3.5');
-        c1.setAttribute('class', 'hg-connector-dot');
+        c1.setAttribute('r', isHighlighted ? '4.5' : '3.5');
+        c1.setAttribute('class', 'hg-connector-dot' + hlClass);
         svg.appendChild(c1);
 
         // Circle at clone border
         const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         c2.setAttribute('cx', cloneBx.toFixed(1));
         c2.setAttribute('cy', cloneBy.toFixed(1));
-        c2.setAttribute('r', '3.5');
-        c2.setAttribute('class', 'hg-connector-dot');
+        c2.setAttribute('r', isHighlighted ? '4.5' : '3.5');
+        c2.setAttribute('class', 'hg-connector-dot' + hlClass);
         svg.appendChild(c2);
     }
 }
