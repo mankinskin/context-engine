@@ -390,17 +390,42 @@ export async function loadLogFile(name: string) {
     // Fetch signatures in parallel (non-blocking — empty object on failure)
     const sigs = await api.fetchSignatures(name).catch(() => ({}));
 
-    // Create state for this file, inheriting the currently active tab
-      const states = new Map(fileStates.value);
-      states.set(name, {
-          ...createFileState(),
-          entries: data.entries,
-        activeTab: activeTab.value,
-        signatures: sigs,
-      });
-      fileStates.value = states;
+    // Find the best source location to pre-load in the code viewer:
+    // Prefer the outermost span (depth=0 span_enter) as it's typically the test function.
+    // Fall back to the first entry with any file reference.
+    const testEntry =
+      data.entries.find(e => e.event_type === 'span_enter' && e.depth === 0 && e.file !== null) ??
+      data.entries.find(e => e.file !== null);
 
-      currentFile.value = name;
+    // Fetch source file in parallel if a location was found (non-blocking)
+    let initialCodeFile: string | null = null;
+    let initialCodeContent = '';
+    let initialCodeLine: number | null = null;
+    if (testEntry?.file) {
+      try {
+        const src = await api.fetchSourceFile(testEntry.file);
+        initialCodeFile = testEntry.file;
+        initialCodeContent = src.content;
+        initialCodeLine = testEntry.source_line ?? null;
+      } catch {
+        // Source file unavailable — leave code viewer empty
+      }
+    }
+
+    // Create state for this file, inheriting the currently active tab
+    const states = new Map(fileStates.value);
+    states.set(name, {
+      ...createFileState(),
+      entries: data.entries,
+      activeTab: activeTab.value,
+      signatures: sigs,
+      codeViewerFile: initialCodeFile,
+      codeViewerContent: initialCodeContent,
+      codeViewerLine: initialCodeLine,
+    });
+    fileStates.value = states;
+
+    currentFile.value = name;
     updateUrlHash();
     // Keep the currently active tab type when opening a new file
     statusMessage.value = `Loaded ${name} (${data.entries.length} entries)`;

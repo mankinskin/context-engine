@@ -13,7 +13,9 @@ import {
   searchQuery as searchQuerySignal,
   jqFilter as jqFilterSignal,
   performSearch,
-  clearSearch
+  clearSearch,
+  activeTab,
+  setTab,
 } from '../../store';
 import { showFilterPanel, resetFilterPanel } from '../FilterPanel/FilterPanel';
 import { fxEnabled } from '../WgpuOverlay/WgpuOverlay';
@@ -85,6 +87,19 @@ export function Header({ onMenuToggle }: HeaderProps) {
           onClick={() => fxEnabled.value = !fxEnabled.value}
         >
           {fxEnabled.value ? '✦' : '✧'} FX
+        </button>
+        <button
+          class={`btn ${activeTab.value === 'settings' ? 'btn-active' : ''}`}
+          title="Theme Settings"
+          onClick={() => setTab(activeTab.value === 'settings' ? 'logs' : 'settings')}
+        >
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1C3.7 1 1 3.7 1 7s2.7 6 6 6c.6 0 1-.4 1-1 0-.3-.1-.5-.2-.7-.1-.2-.2-.4-.2-.7 0-.6.4-1 1-1h1.2c2.2 0 4-1.8 4-4 0-2.8-2.7-4.6-6.8-4.6z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+            <circle cx="4.5" cy="5.5" r="1" fill="currentColor"/>
+            <circle cx="7" cy="4" r="1" fill="currentColor"/>
+            <circle cx="9.5" cy="5.5" r="1" fill="currentColor"/>
+          </svg>
+          {' '}Theme
         </button>
         <button class="btn" onClick={handleRefresh}><RefreshIcon size={12} /> Refresh</button>
       </div>

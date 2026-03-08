@@ -316,6 +316,8 @@ export function createThemeStore(
   --accent-green: ${gpuAccentGreen};
   --accent-purple: ${gpuAccentPurple};
   --accent-yellow: ${gpuAccentYellow};
+  /* Mobile sidebar needs opaque background even in glass/GPU mode */
+  --sidebar-mobile-bg: ${c.bgSecondary};
 }`;
     }
 
