@@ -1,8 +1,6 @@
 {
-  "servers": {
+  "context_servers": {
     "doc-viewer-mcp": {
-      "type": "stdio",
-      "autoStart": true,
       "command": "bash",
       "args": [
         "${workspaceFolder}/tools/viewer-api/scripts/run-mcp.sh",
@@ -14,8 +12,6 @@
       },
     },
     "log-viewer-mcp": {
-      "type": "stdio",
-      "autoStart": true,
       "command": "bash",
       "args": [
         "${workspaceFolder}/tools/viewer-api/scripts/run-mcp.sh",
