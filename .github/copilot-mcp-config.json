@@ -9,6 +9,17 @@
       "env": {
         "WORKSPACE_ROOT": "."
       }
+    },
+    "log-viewer-mcp": {
+      "type": "stdio",
+      "command": "target/release/log-viewer.exe",
+      "args": [
+        "--mcp"
+      ],
+      "env": {
+        "LOG_DIR": "target/test-logs",
+        "WORKSPACE_ROOT": "."
+      }
     }
   }
 }

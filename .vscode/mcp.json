@@ -10,6 +10,18 @@
       "env": {
         "WORKSPACE_ROOT": "${workspaceFolder}"
       }
+    },
+    "log-viewer-mcp": {
+      "type": "stdio",
+      "autoStart": true,
+      "command": "${workspaceFolder}/target/release/log-viewer.exe",
+      "args": [
+        "--mcp"
+      ],
+      "env": {
+        "LOG_DIR": "${workspaceFolder}/target/test-logs",
+        "WORKSPACE_ROOT": "${workspaceFolder}"
+      }
     }
   }
 }
