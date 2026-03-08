@@ -64,9 +64,11 @@ export function positionDOMNodes(ctx: PositionContext): void {
     } = ctx;
 
     const clonedChildSet = decomposition.getClonedChildIndices();
-    const childParentMap = decomposition.getChildParentMap();
     const expandedNodes = decomposition.getExpandedNodes();
-    const vp = viewProj;
+
+    // Dup=off focus mode: when selected node is inside an expanded parent,
+    // dim everything outside so only the expanded parent + clones are prominent.
+    const dupOffFocus = nestingEnabled && !duplicateMode && clonedChildSet.has(inter.selectedIdx);
 
     // Frustum culling margin (pixels outside viewport before culling)
     const CULL_MARGIN = 200;
@@ -103,16 +105,24 @@ export function positionDOMNodes(ctx: PositionContext): void {
 
         // Dim nodes not connected to selected node (but never dim viz-involved
         // or expanded nodes — expanded parents must always look active).
-        const dimmed = inter.selectedIdx >= 0
-            && !isExpanded
-            && !connectedSet.has(n.index)
-            && !vizInvolvedNodes.has(n.index);
+        // In dup=off focus mode, dim ALL outside nodes — only the expanded
+        // parent and its nested clones should be visually prominent.
+        const dimmed = dupOffFocus
+            ? !isExpanded
+            : (inter.selectedIdx >= 0
+                && !isExpanded
+                && !connectedSet.has(n.index)
+                && !vizInvolvedNodes.has(n.index));
         el.style.opacity = dimmed ? '0.15' : '1';
 
         // Imperative class toggling for selected/hover
         // Expanded parents always appear selected so they stay visually active
         // (e.g. the search-path root during visit_child transitions).
-        el.classList.toggle('selected', n.index === inter.selectedIdx || isExpanded);
+        // In dup=off focus mode, outside nodes never get selected — only clones do.
+        const showSelected = dupOffFocus
+            ? isExpanded
+            : (n.index === inter.selectedIdx || isExpanded);
+        el.classList.toggle('selected', showSelected);
         el.classList.toggle('span-highlighted', n.index === inter.hoverIdx);
 
         const zIdx = Math.round((1 - screen.z) * 1000);
