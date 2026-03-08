@@ -327,7 +327,7 @@ export class DecompositionManager {
                 }
 
                 el.classList.add('hg-decomp-child');
-                el.style.flex = `${child.fraction}`;
+                el.style.flex = `${child.width} 0 0%`;
                 tokens.appendChild(el);
             }
 

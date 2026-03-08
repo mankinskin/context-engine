@@ -94,6 +94,12 @@
     flex: 1;
 }
 
+/* Hide width badges and index labels on reparented children */
+.hg-decomp-child.hg-node .level-badge,
+.hg-decomp-child.hg-node .hg-node-idx {
+    display: none;
+}
+
 /* Reparented child nodes inside decomposition rows */
 .hg-decomp-child.hg-node {
     position: relative !important;
@@ -101,7 +107,8 @@
     display: flex !important;
     align-items: center;
     padding: 3px 3px;
-    min-width: min-content;
+    min-width: 0;
+    max-width: none;
     overflow: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.03);
@@ -117,14 +124,14 @@
 
 .hg-decomp-child.hg-node > .hg-node-content {
     flex: 1;
-    min-width: min-content;
-    overflow: visible;
+    min-width: 0;
+    overflow: hidden;
 }
 
-/* Let labels inside decomp children show their full text for min-content sizing */
+/* Truncate labels that exceed the quantized width budget */
 .hg-decomp-child.hg-node .hg-node-label {
-    overflow: visible;
-    text-overflow: clip;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hg-decomp-child.hg-node:last-child {
