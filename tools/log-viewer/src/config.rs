@@ -48,6 +48,8 @@ pub struct Config {
     /// Directory for the server's own log files.
     /// Defaults to `<CARGO_MANIFEST_DIR>/logs`
     pub server_log_dir: Option<PathBuf>,
+    /// Repository configuration for remote source file access.
+    pub repository: RepositoryConfig,
     /// Server configuration
     pub server: ServerConfig,
     /// Logging configuration
@@ -78,6 +80,25 @@ impl Default for ServerConfig {
             vite_port: 5173,
         }
     }
+}
+
+/// Repository configuration for remote source file access.
+///
+/// When the log-viewer runs in a deployed environment (e.g. GitHub Actions) it
+/// cannot read source files from disk.  These settings allow it to fetch files
+/// from the public repository using the raw GitHub content API instead.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(default)]
+pub struct RepositoryConfig {
+    /// Public repository URL, e.g. `https://github.com/owner/repo`.
+    /// Used to build raw content URLs when `commit_hash` is also set.
+    pub repo_url: Option<String>,
+    /// Git commit hash (full or short) to pin the raw file requests to.
+    /// Defaults to the `GITHUB_SHA` environment variable when unset.
+    pub commit_hash: Option<String>,
+    /// Optional sub-directory within the repository that corresponds to the
+    /// workspace root.  Set this when the code lives in a monorepo sub-folder.
+    pub source_tree_path: Option<String>,
 }
 
 /// Logging configuration
@@ -297,6 +318,8 @@ mod tests {
         assert_eq!(config.server.host, "127.0.0.1");
         assert_eq!(config.logging.level, "info");
         assert!(!config.logging.file_logging);
+        assert!(config.repository.repo_url.is_none());
+        assert!(config.repository.commit_hash.is_none());
     }
 
     #[test]
@@ -318,5 +341,26 @@ mod tests {
         assert_eq!(config.log_dir, Some(PathBuf::from("/path/to/logs")));
         assert_eq!(config.server.port, 8080);
         assert_eq!(config.logging.level, "debug");
+    }
+
+    #[test]
+    fn test_parse_repository_config() {
+        let toml_content = r#"
+            [repository]
+            repo_url = "https://github.com/myorg/myrepo"
+            commit_hash = "abc1234"
+            source_tree_path = "crates/my-crate"
+        "#;
+
+        let config: Config = toml::from_str(toml_content).unwrap();
+        assert_eq!(
+            config.repository.repo_url.as_deref(),
+            Some("https://github.com/myorg/myrepo")
+        );
+        assert_eq!(config.repository.commit_hash.as_deref(), Some("abc1234"));
+        assert_eq!(
+            config.repository.source_tree_path.as_deref(),
+            Some("crates/my-crate")
+        );
     }
 }

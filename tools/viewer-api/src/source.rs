@@ -5,6 +5,119 @@
 
 use std::path::PathBuf;
 
+/// Strategy for resolving and fetching source files.
+///
+/// In a local development environment, source files are served directly from the
+/// workspace on disk.  When deployed (e.g. in GitHub Actions / GitHub Pages), the
+/// workspace is not available so files are fetched from the public repository using
+/// the raw GitHub content API.
+#[derive(Debug, Clone)]
+pub enum SourceBackend {
+    /// Read source files from the local filesystem.
+    Local {
+        workspace_root: PathBuf,
+    },
+    /// Fetch source files from a remote repository via raw HTTP.
+    ///
+    /// `raw_base_url` is the prefix that, when joined with a relative source path,
+    /// produces a directly-downloadable URL.  For GitHub this looks like:
+    /// `https://raw.githubusercontent.com/{owner}/{repo}/{commit}`.
+    ///
+    /// `source_tree_path` is an optional sub-directory within the repository that
+    /// corresponds to the workspace root (e.g. when the workspace lives in a
+    /// sub-folder of the repository).
+    Remote {
+        raw_base_url: String,
+        source_tree_path: Option<String>,
+    },
+}
+
+impl SourceBackend {
+    /// Create a `Remote` backend pointing at a GitHub repository.
+    pub fn github(
+        owner: &str,
+        repo: &str,
+        commit: &str,
+        source_tree_path: Option<String>,
+    ) -> Self {
+        let raw_base_url = format!(
+            "https://raw.githubusercontent.com/{}/{}/{}",
+            owner, repo, commit
+        );
+        Self::Remote {
+            raw_base_url,
+            source_tree_path,
+        }
+    }
+
+    /// Automatically select the backend based on the runtime environment.
+    ///
+    /// When `GITHUB_ACTIONS=true`, `GITHUB_REPOSITORY`, and `GITHUB_SHA` are set
+    /// (as they are in every GitHub Actions workflow), a `Remote` backend is
+    /// returned so the server fetches files from the public repository.
+    ///
+    /// Otherwise (local development) the `Local` backend is used.
+    pub fn detect(workspace_root: PathBuf) -> Self {
+        if std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true") {
+            if let (Ok(repo), Ok(sha)) = (
+                std::env::var("GITHUB_REPOSITORY"),
+                std::env::var("GITHUB_SHA"),
+            ) {
+                let raw_base_url = format!(
+                    "https://raw.githubusercontent.com/{}/{}",
+                    repo, sha
+                );
+                return Self::Remote {
+                    raw_base_url,
+                    source_tree_path: None,
+                };
+            }
+        }
+        Self::Local { workspace_root }
+    }
+
+    /// Build the URL (remote) or absolute path (local) for a given relative source path.
+    ///
+    /// Returns `Err` if the path is invalid (traversal attempt, etc.).
+    pub fn resolve_url_or_path(&self, path: &str) -> Result<SourceLocation, String> {
+        match self {
+            Self::Local { workspace_root } => {
+                let full_path = resolve_source_path(workspace_root, path)?;
+                Ok(SourceLocation::Path(full_path))
+            }
+            Self::Remote {
+                raw_base_url,
+                source_tree_path,
+            } => {
+                // Sanitize: reject traversal attempts
+                let normalized = path.replace('\\', "/");
+                let clean = normalized.trim_start_matches('/');
+                if clean.contains("..") {
+                    return Err("Path traversal not allowed".to_string());
+                }
+                let url = if let Some(tree) = source_tree_path {
+                    format!(
+                        "{}/{}/{}",
+                        raw_base_url,
+                        tree.trim_end_matches('/'),
+                        clean
+                    )
+                } else {
+                    format!("{}/{}", raw_base_url, clean)
+                };
+                Ok(SourceLocation::Url(url))
+            }
+        }
+    }
+}
+
+/// Resolved location for a source file – either a local path or a remote URL.
+#[derive(Debug, Clone)]
+pub enum SourceLocation {
+    Path(PathBuf),
+    Url(String),
+}
+
 /// Detect programming language from file extension.
 ///
 /// Returns a language identifier string suitable for syntax highlighting.
@@ -151,5 +264,75 @@ mod tests {
         assert_eq!(start, 3);
         assert_eq!(end, 5);
         assert_eq!(snippet, "line3\nline4\nline5");
+    }
+
+    #[test]
+    fn test_source_backend_local_resolves_path() {
+        let root = PathBuf::from("/workspace");
+        let backend = SourceBackend::Local { workspace_root: root };
+        match backend.resolve_url_or_path("src/main.rs").unwrap() {
+            SourceLocation::Path(p) => assert_eq!(p, Path::new("/workspace/src/main.rs")),
+            SourceLocation::Url(_) => panic!("expected local path"),
+        }
+    }
+
+    #[test]
+    fn test_source_backend_local_rejects_traversal() {
+        let root = PathBuf::from("/workspace");
+        let backend = SourceBackend::Local { workspace_root: root };
+        assert!(backend.resolve_url_or_path("../etc/passwd").is_err());
+    }
+
+    #[test]
+    fn test_source_backend_remote_builds_url() {
+        let backend = SourceBackend::Remote {
+            raw_base_url: "https://raw.githubusercontent.com/owner/repo/abc123".to_string(),
+            source_tree_path: None,
+        };
+        match backend.resolve_url_or_path("src/main.rs").unwrap() {
+            SourceLocation::Url(url) => {
+                assert_eq!(url, "https://raw.githubusercontent.com/owner/repo/abc123/src/main.rs");
+            }
+            SourceLocation::Path(_) => panic!("expected URL"),
+        }
+    }
+
+    #[test]
+    fn test_source_backend_remote_with_tree_path() {
+        let backend = SourceBackend::Remote {
+            raw_base_url: "https://raw.githubusercontent.com/owner/repo/abc123".to_string(),
+            source_tree_path: Some("crates/my-crate".to_string()),
+        };
+        match backend.resolve_url_or_path("src/lib.rs").unwrap() {
+            SourceLocation::Url(url) => {
+                assert_eq!(url, "https://raw.githubusercontent.com/owner/repo/abc123/crates/my-crate/src/lib.rs");
+            }
+            SourceLocation::Path(_) => panic!("expected URL"),
+        }
+    }
+
+    #[test]
+    fn test_source_backend_remote_rejects_traversal() {
+        let backend = SourceBackend::Remote {
+            raw_base_url: "https://raw.githubusercontent.com/owner/repo/abc123".to_string(),
+            source_tree_path: None,
+        };
+        assert!(backend.resolve_url_or_path("../etc/passwd").is_err());
+    }
+
+    #[test]
+    fn test_source_backend_github_helper() {
+        let backend = SourceBackend::github(
+            "myowner",
+            "myrepo",
+            "deadbeef",
+            Some("subdir".to_string()),
+        );
+        match backend.resolve_url_or_path("src/main.rs").unwrap() {
+            SourceLocation::Url(url) => {
+                assert_eq!(url, "https://raw.githubusercontent.com/myowner/myrepo/deadbeef/subdir/src/main.rs");
+            }
+            SourceLocation::Path(_) => panic!("expected URL"),
+        }
     }
 }

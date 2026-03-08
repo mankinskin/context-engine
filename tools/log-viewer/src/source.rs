@@ -22,11 +22,12 @@ use viewer_api::{
     },
     source::{
         extract_snippet,
+        SourceLocation,
     },
 };
 
 // Re-export shared utilities so crate-level code can access them
-pub use viewer_api::source::{detect_language, resolve_source_path};
+pub use viewer_api::source::detect_language;
 
 use crate::{
     handlers::to_unix_path,
@@ -40,6 +41,75 @@ use crate::{
         SourceQuery,
     },
 };
+
+/// Fetch the content of a source file using the configured backend.
+///
+/// In local mode the file is read from disk.
+/// In remote mode it is fetched via HTTP from the raw repository URL.
+async fn fetch_content(
+    state: &AppState,
+    path: &str,
+) -> Result<String, (StatusCode, Json<ErrorResponse>)> {
+    let location = state
+        .source_backend
+        .resolve_url_or_path(path)
+        .map_err(|e| {
+            warn!(error = %e, path = %path, "Invalid source path");
+            (StatusCode::BAD_REQUEST, Json(ErrorResponse { error: e }))
+        })?;
+
+    match location {
+        SourceLocation::Path(full_path) => {
+            debug!(full_path = %to_unix_path(&full_path), "Reading local source file");
+            std::fs::read_to_string(&full_path).map_err(|e| {
+                error!(
+                    error = %e,
+                    path = %to_unix_path(&full_path),
+                    "Failed to read source file"
+                );
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(ErrorResponse {
+                        error: format!("Failed to read source file: {}", e),
+                    }),
+                )
+            })
+        }
+        SourceLocation::Url(url) => {
+            debug!(url = %url, "Fetching remote source file");
+            let response = reqwest::get(&url).await.map_err(|e| {
+                error!(error = %e, url = %url, "Failed to fetch remote source file");
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(ErrorResponse {
+                        error: format!("Failed to fetch remote source file: {}", e),
+                    }),
+                )
+            })?;
+
+            if !response.status().is_success() {
+                let status = response.status();
+                warn!(url = %url, http_status = %status, "Remote source file not found");
+                return Err((
+                    StatusCode::NOT_FOUND,
+                    Json(ErrorResponse {
+                        error: format!("Remote source file not found: {} (HTTP {})", path, status),
+                    }),
+                ));
+            }
+
+            response.text().await.map_err(|e| {
+                error!(error = %e, url = %url, "Failed to read remote source response");
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(ErrorResponse {
+                        error: format!("Failed to read remote source response: {}", e),
+                    }),
+                )
+            })
+        }
+    }
+}
 
 /// Get full source file content or snippet around a line
 #[instrument(skip(state, headers), fields(workspace_root = %to_unix_path(&state.workspace_root)))]
@@ -60,23 +130,7 @@ pub async fn get_source(
 
     debug!(path = %path, line = ?query.line, context = query.context, "Getting source file");
 
-    let full_path =
-        resolve_source_path(&state.workspace_root, &path).map_err(|e| {
-            warn!(error = %e, path = %path, "Invalid source path");
-            (StatusCode::BAD_REQUEST, Json(ErrorResponse { error: e }))
-        })?;
-
-    debug!(full_path = %to_unix_path(&full_path), "Resolved source path");
-
-    let content = std::fs::read_to_string(&full_path).map_err(|e| {
-        error!(error = %e, path = %to_unix_path(&full_path), "Failed to read source file");
-        (
-            StatusCode::NOT_FOUND,
-            Json(ErrorResponse {
-                error: format!("Failed to read source file: {}", e),
-            }),
-        )
-    })?;
+    let content = fetch_content(&state, &path).await?;
 
     let language = detect_language(&path);
 

@@ -63,7 +63,7 @@ Access the app at `http://localhost:3000`.
 - `GET /api/logs/:name` - Get log file content
 - `GET /api/search/:name?q=query` - Search within a log file
 - `GET /api/query/:name?jq=filter` - Query with JQ syntax
-- `GET /api/source/*path` - Get source file content
+- `GET /api/source/*path` - Get source file content (local disk or remote repository)
 
 ## Configuration
 
@@ -78,6 +78,38 @@ Config file search order:
 - `LOG_DIR` - Directory containing log files (default: target/test-logs)
 - `WORKSPACE_ROOT` - Workspace root for source file resolution
 - `LOG_LEVEL` - Logging level (default: info)
+
+### Remote Source File Serving
+
+When deployed (e.g. in GitHub Actions or GitHub Pages), the server cannot read
+source files from the local disk.  Instead it fetches them from the public
+GitHub repository using the raw content API.
+
+**Automatic detection (GitHub Actions):**
+
+The remote backend is activated automatically when all three environment
+variables are present:
+- `GITHUB_ACTIONS=true`
+- `GITHUB_REPOSITORY=owner/repo`
+- `GITHUB_SHA=<commit hash>`
+
+**Manual configuration (`log-viewer.toml`):**
+
+```toml
+[repository]
+repo_url = "https://github.com/mankinskin/context-engine"
+# commit_hash defaults to $GITHUB_SHA; pin it here for reproducibility
+# commit_hash = "abc1234"
+# Optional: sub-directory in the repo that is the workspace root
+# source_tree_path = ""
+```
+
+### Code Tab: Test File Display
+
+Test logs created with `init_test_tracing!()` automatically contain a
+`"test started"` event that records the test file and line number.  The log
+viewer uses this to pre-load the correct source file in the **Code** tab
+without any additional configuration.
 
 ## MCP Server
 

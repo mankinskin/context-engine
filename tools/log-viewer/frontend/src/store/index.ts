@@ -391,10 +391,14 @@ export async function loadLogFile(name: string) {
     const sigs = await api.fetchSignatures(name).catch(() => ({}));
 
     // Find the best source location to pre-load in the code viewer:
-    // Prefer the outermost span (depth=0 span_enter) as it's typically the test function.
-    // Fall back to the first entry with any file reference.
+    // Priority:
+    //   1. The outermost span (depth=0 span_enter) – typically the test function wrapper.
+    //   2. The "test started" event emitted by init_test_tracing! at the call site –
+    //      this reliably captures the test file and line.
+    //   3. Any other entry with a file reference.
     const testEntry =
       data.entries.find(e => e.event_type === 'span_enter' && e.depth === 0 && e.file !== null) ??
+      data.entries.find(e => e.message === 'test started' && e.file !== null) ??
       data.entries.find(e => e.file !== null);
 
     // Fetch source file in parallel if a location was found (non-blocking)
