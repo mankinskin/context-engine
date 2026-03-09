@@ -86,52 +86,36 @@ impl DevServer {
         // Try spawning vite. On Windows (or WSL bash.exe), npx is a .cmd
         // file that must be invoked through cmd.exe. We try the native
         // approach first and fall back to cmd.exe if it fails.
-        let child = if cfg!(windows) {
-            Command::new("cmd")
-                .args([
-                    "/c",
-                    "npx",
-                    "vite",
-                    "--port",
-                    &port.to_string(),
-                    "--strictPort",
-                ])
-                .current_dir(frontend_dir)
-                .stdout(Stdio::piped())
-                .stderr(Stdio::piped())
-                .spawn()
-        } else {
-            // On Linux / WSL: try npx directly first, fall back to cmd.exe
-            // (covers WSL bash.exe running on Windows where npx may be a .cmd)
-            Command::new("npx")
-                .args(["vite", "--port", &port.to_string(), "--strictPort"])
-                .current_dir(frontend_dir)
-                .stdout(Stdio::piped())
-                .stderr(Stdio::piped())
-                .spawn()
-                .or_else(|_| {
-                    debug!("npx not found directly, trying via cmd.exe (WSL/bash.exe)");
-                    Command::new("cmd.exe")
-                        .args([
-                            "/c",
-                            "npx",
-                            "vite",
-                            "--port",
-                            &port.to_string(),
-                            "--strictPort",
-                        ])
-                        .current_dir(frontend_dir)
-                        .stdout(Stdio::piped())
-                        .stderr(Stdio::piped())
-                        .spawn()
-                })
-        }
-        .map_err(|e| {
-            format!(
+        let child = Command::new("npx")
+            .args(["vite", "--port", &port.to_string(), "--strictPort"])
+            .current_dir(frontend_dir)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .or_else(|_| {
+                debug!(
+                    "npx not found directly, trying via cmd.exe (WSL/bash.exe)"
+                );
+                Command::new("cmd.exe")
+                    .args([
+                        "/c",
+                        "npx",
+                        "vite",
+                        "--port",
+                        &port.to_string(),
+                        "--strictPort",
+                    ])
+                    .current_dir(frontend_dir)
+                    .stdout(Stdio::piped())
+                    .stderr(Stdio::piped())
+                    .spawn()
+            })
+            .map_err(|e| {
+                format!(
                 "Failed to spawn Vite dev server (is Node.js installed?): {}",
                 e
             )
-        })?;
+            })?;
 
         let mut server = Self { child, port };
 
