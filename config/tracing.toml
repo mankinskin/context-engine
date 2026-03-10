@@ -1,6 +1,6 @@
 # Tracing Configuration Example
 # Copy this to config/tracing.toml to use
-# 
+#
 # Config file search order:
 # 1. Path in TRACING_CONFIG environment variable
 # 2. {workspace_root}/config/tracing.toml
@@ -57,7 +57,7 @@ show_trait_name = true         # Show trait name (e.g., [trait: StateAdvance])
 show_self_type = true          # Show implementing type (e.g., <ParentState>)
 show_associated_types = true   # Show associated types (e.g., [Next=RootChildState])
 
-# Configuration for span close events  
+# Configuration for span close events
 [span_close]
 show = true                # Show span close messages
 show_timing = true         # Show timing information (time.busy, time.idle)
@@ -66,7 +66,8 @@ show_timing = true         # Show timing information (time.busy, time.idle)
 [panic]
 show = true                # Show panic log events
 show_message = true        # Include panic message in logs
-show_stderr = true         # Print 🔥 PANIC: message to stderr
+show_stderr = false         # Print 🔥 PANIC: message to stderr
+show_backtrace = false     # Print backtrace to stderr
 show_default_hook = true   # Call default panic hook (prints to stderr)
                            # Set to false to only log to file without stderr output
 
