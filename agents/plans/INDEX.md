@@ -6,6 +6,12 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-03-10 | [PLAN_CONTEXT_API_OVERVIEW](20260310_PLAN_CONTEXT_API_OVERVIEW.md) | 📋 | context-api master plan — unified API for context-* crates with CLI, MCP, HTTP, TypeScript adapters |
+| 2026-03-10 | [PLAN_CONTEXT_API_PHASE1](20260310_PLAN_CONTEXT_API_PHASE1.md) | 📋 | Phase 1 — Foundation + CLI: crate skeleton, workspace management, persistence, basic commands, REPL |
+| 2026-03-10 | [PLAN_CONTEXT_API_PHASE2](20260310_PLAN_CONTEXT_API_PHASE2.md) | 📋 | Phase 2 — Algorithm commands: search, insert, read, debug commands, token resolution |
+| 2026-03-10 | [PLAN_CONTEXT_API_PHASE3](20260310_PLAN_CONTEXT_API_PHASE3.md) | 📋 | Phase 3 — MCP adapter: single `execute` tool over stdio using rmcp |
+| 2026-03-10 | [PLAN_CONTEXT_API_PHASE4](20260310_PLAN_CONTEXT_API_PHASE4.md) | 📋 | Phase 4 — HTTP + GraphQL adapter: RPC endpoint, REST convenience routes, optional GraphQL |
+| 2026-03-10 | [PLAN_CONTEXT_API_PHASE5](20260310_PLAN_CONTEXT_API_PHASE5.md) | 📋 | Phase 5 — TypeScript types package, centralized ts-rs generation, export/import, instruction language design |
 | 2026-03-04 | [PLAN_VIEWER_REFACTORING_AND_MOBILE](20260304_PLAN_VIEWER_REFACTORING_AND_MOBILE.md) | ready | HypergraphView refactoring + extraction, file tree sync, mobile support |
 | 2026-03-03 | [PLAN_SEARCH_EVENT_REFACTORING](20260303_PLAN_SEARCH_EVENT_REFACTORING.md) | ready | Search event emission refactoring — PathNode, IntoTransition, tentative root, query stream |
 | 2026-02-21 | [VIEWER_API_REFACTORING](20260221_VIEWER_API_REFACTORING.md) | design | Extract shared server infrastructure from viewer-api |
