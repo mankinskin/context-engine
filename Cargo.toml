@@ -6,12 +6,14 @@ members = [
   "crates/context-read",
   "crates/context-trace",
   "crates/context-trace-macros",
+  "crates/context-api",
   "crates/ngrams",
   "tools/doc-viewer",
   "tools/log-viewer",
   "tools/viewer-api",
   "tools/tracing-analyzer",
   "tools/dungeon-crawler",
+  "tools/context-cli",
 ]
 exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
 
