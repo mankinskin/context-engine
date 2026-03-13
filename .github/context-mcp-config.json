@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "context-engine": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": ["run", "-p", "context-mcp"],
+      "description": "Context Engine hypergraph workspace server"
+    }
+  }
+}

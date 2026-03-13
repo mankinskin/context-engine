@@ -653,6 +653,7 @@ dependencies = [
  "context-trace",
  "fs2",
  "pretty_assertions",
+ "schemars",
  "serde",
  "serde_json",
  "tempfile",
@@ -687,6 +688,20 @@ dependencies = [
  "linked_hash_set",
  "maplit",
  "pretty_assertions",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "context-mcp"
+version = "0.1.0"
+dependencies = [
+ "context-api",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
  "tracing",
  "tracing-subscriber",
 ]
