@@ -4,6 +4,8 @@ How-to guides and troubleshooting patterns.
 
 | Date | File | Summary |
 |------|------|----------|
+| 2026-03-14 | [20260314_CLI_PRINTF_SCRIPTING_GUIDE.md](20260314_CLI_PRINTF_SCRIPTING_GUIDE.md) | How to script the context-cli using printf and piped stdin — covers REPL piping, subcommand chaining, batch workflows, and common pitfalls |
+| 2026-03-14 | [20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md](20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md) | Context-API insertion semantics, the duplicate vertex bug caused by edge partition merging, and the boundary-alignment fix in the split-join pipeline |
 | 2026-03-01 | [20260301_GRAPH_OP_EVENTS_GUIDE.md](20260301_GRAPH_OP_EVENTS_GUIDE.md) | Complete reference for all Transition variants, CSS class mappings, edge colors, and context-read schema design |
 | 2026-02-25 | [20260225_SEARCH_PATH_CROSS_LANGUAGE_TESTS.md](20260225_SEARCH_PATH_CROSS_LANGUAGE_TESTS.md) | How the search path visualization types are tested across Rust and TypeScript using shared JSON fixtures |
 | 2026-02-11 | [20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md](20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md) |  |
