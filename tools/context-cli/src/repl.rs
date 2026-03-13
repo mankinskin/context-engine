@@ -225,13 +225,12 @@ fn execute_repl_line(
                         .ok();
                     } else {
                         // Multiple atoms
-                        let char_set: HashSet<char> =
-                            chars_str.chars().collect();
+                        let char_vec: Vec<char> = chars_str.chars().collect();
                         execute_and_print(
                             manager,
                             Command::AddAtoms {
                                 workspace: ws,
-                                chars: char_set,
+                                chars: char_vec,
                             },
                         )
                         .ok();
@@ -465,6 +464,37 @@ fn execute_repl_line(
                 .ok();
             },
 
+        // -- Show commands --------------------------------------------------
+        "show" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if let Some(arg) = parts.get(1) {
+                    match arg.parse::<usize>() {
+                        Ok(index) => {
+                            execute_and_print(
+                                manager,
+                                Command::ShowVertex {
+                                    workspace: ws,
+                                    index,
+                                },
+                            )
+                            .ok();
+                        },
+                        Err(_) => {
+                            eprintln!(
+                                "Error: '{}' is not a valid vertex index",
+                                arg
+                            );
+                        },
+                    }
+                } else {
+                    execute_and_print(
+                        manager,
+                        Command::ShowGraph { workspace: ws },
+                    )
+                    .ok();
+                }
+            },
+
         // -- Debug / introspection ------------------------------------------
         "snapshot" =>
             if let Some(ws) = require_workspace(current_ws) {
@@ -607,6 +637,12 @@ fn print_help() {
     println!("  validate             Validate graph integrity");
     println!("  snapshot             Print graph snapshot as JSON");
     println!("  stats                Print graph statistics");
+    println!(
+        "  show                 Show the entire graph (all vertices with children & parents)"
+    );
+    println!(
+        "  show <index>         Show a single vertex with its children and parents"
+    );
     println!();
     println!("General:");
     println!("  help / ?             Show this help");

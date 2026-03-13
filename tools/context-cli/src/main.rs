@@ -192,6 +192,20 @@ enum CliCommand {
         workspace: String,
     },
 
+    /// Show the entire graph visualization for a workspace.
+    Show {
+        /// Name of the open workspace.
+        workspace: String,
+    },
+
+    /// Show a single vertex with its children and parents.
+    ShowVertex {
+        /// Name of the open workspace.
+        workspace: String,
+        /// Vertex index to show.
+        index: usize,
+    },
+
     /// Start the interactive REPL.
     Repl,
 }
@@ -250,12 +264,9 @@ fn execute_subcommand(
         CliCommand::Delete { name } => Command::DeleteWorkspace { name },
         CliCommand::AddAtom { workspace, ch } =>
             Command::AddAtom { workspace, ch },
-        CliCommand::AddAtoms { workspace, chars } => {
-            let char_set: HashSet<char> = chars.chars().collect();
-            Command::AddAtoms {
-                workspace,
-                chars: char_set,
-            }
+        CliCommand::AddAtoms { workspace, chars } => Command::AddAtoms {
+            workspace,
+            chars: chars.chars().collect(),
         },
         CliCommand::AddPattern { workspace, atoms } => {
             let atom_chars: Vec<char> = atoms.chars().collect();
@@ -299,6 +310,9 @@ fn execute_subcommand(
         CliCommand::Snapshot { workspace } =>
             Command::GetSnapshot { workspace },
         CliCommand::Stats { workspace } => Command::GetStatistics { workspace },
+        CliCommand::Show { workspace } => Command::ShowGraph { workspace },
+        CliCommand::ShowVertex { workspace, index } =>
+            Command::ShowVertex { workspace, index },
         CliCommand::Repl => {
             repl::run(manager);
             return;

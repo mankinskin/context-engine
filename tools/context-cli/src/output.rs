@@ -59,6 +59,7 @@ pub fn print_command_result(result: &CommandResult) {
         CommandResult::ValidationReport(report) => {
             print_validation_report(report);
         },
+        CommandResult::GraphDisplay { display } => println!("{display}"),
         CommandResult::Ok => println!("Ok."),
     }
 }
