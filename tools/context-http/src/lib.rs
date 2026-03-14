@@ -7,6 +7,7 @@
 //! The binary entry point is in `main.rs` and simply calls into these modules.
 
 pub mod error;
+pub mod log_rest;
 pub mod rest;
 pub mod router;
 pub mod rpc;
@@ -14,4 +15,3 @@ pub mod state;
 
 #[cfg(feature = "graphql")]
 pub mod graphql;
-

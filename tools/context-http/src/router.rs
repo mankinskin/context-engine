@@ -19,6 +19,7 @@ use viewer_api::{
 };
 
 use crate::{
+    log_rest,
     rest,
     rpc,
     state::AppState,
@@ -66,6 +67,27 @@ pub fn create_router(
         .route(
             "/api/workspaces/:name/statistics",
             get(rest::get_statistics),
+        )
+        // ── Log REST endpoints ───────────────────────────────────
+        .route(
+            "/api/workspaces/:name/logs",
+            get(log_rest::list_logs).delete(log_rest::delete_logs),
+        )
+        .route(
+            "/api/workspaces/:name/logs/search",
+            get(log_rest::search_logs),
+        )
+        .route(
+            "/api/workspaces/:name/logs/:filename",
+            get(log_rest::get_log).delete(log_rest::delete_log),
+        )
+        .route(
+            "/api/workspaces/:name/logs/:filename/query",
+            get(log_rest::query_log),
+        )
+        .route(
+            "/api/workspaces/:name/logs/:filename/analysis",
+            get(log_rest::analyze_log),
         )
         .layer(default_cors());
 

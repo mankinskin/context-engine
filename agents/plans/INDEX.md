@@ -6,6 +6,7 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-03-14 | [PLAN_CONTEXT_API_PHASE4_1](20260314_PLAN_CONTEXT_API_PHASE4_1.md) | 📋 | Phase 4.1 — Refactor viewer-api and log-viewer into thin frontend-server layers that depend on context-http for all context-engine and log backend APIs |
 | 2026-03-14 | [PLAN_CONTEXT_API_PHASE3_1](20260314_PLAN_CONTEXT_API_PHASE3_1.md) | design | Phase 3.1 — Per-command tracing log capture in context-cli and context-mcp, plus log query/analysis tools (JQ, analyze, search) |
 | 2026-03-10 | [PLAN_CONTEXT_API_OVERVIEW](20260310_PLAN_CONTEXT_API_OVERVIEW.md) | 📋 | context-api master plan — unified API for context-* crates with CLI, MCP, HTTP, TypeScript adapters |
 | 2026-03-10 | [PLAN_CONTEXT_API_PHASE1](20260310_PLAN_CONTEXT_API_PHASE1.md) | 📋 | Phase 1 — Foundation + CLI: crate skeleton, workspace management, persistence, basic commands, REPL |
