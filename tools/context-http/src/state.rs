@@ -47,6 +47,8 @@ fn workspace_name_of(cmd: &Command) -> Option<&str> {
         | Command::InsertSequences { workspace, .. }
         | Command::ReadPattern { workspace, .. }
         | Command::ReadAsText { workspace, .. }
+        | Command::ReadSequence { workspace, .. }
+        | Command::ReadFile { workspace, .. }
         | Command::GetSnapshot { workspace }
         | Command::GetStatistics { workspace }
         | Command::ValidateGraph { workspace }

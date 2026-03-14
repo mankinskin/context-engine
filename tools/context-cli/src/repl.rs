@@ -450,29 +450,55 @@ fn execute_repl_line(
         // -- Read commands (Phase 2) ----------------------------------------
         "read" =>
             if let Some(ws) = require_workspace(current_ws) {
-                if let Some(index_str) = parts.get(1) {
-                    match index_str.parse::<usize>() {
-                        Ok(index) => {
-                            execute_and_print(
-                                manager,
-                                Command::ReadPattern {
-                                    workspace: ws,
-                                    index,
-                                },
-                                *tracing_enabled,
-                                current_ws.as_deref(),
-                            )
-                            .ok();
-                        },
-                        Err(_) => {
-                            eprintln!(
-                                "Error: '{}' is not a valid index",
-                                index_str
-                            );
-                        },
+                if parts.len() < 2 {
+                    eprintln!(
+                        "Usage: read <index>    Read vertex by index\n\
+                         \x20      read <text>     Read text sequence through graph\n\
+                         \x20      read --file <path>  Read file contents through graph"
+                    );
+                } else if parts[1] == "--file" {
+                    // File input mode
+                    if let Some(path) = parts.get(2) {
+                        execute_and_print(
+                            manager,
+                            Command::ReadFile {
+                                workspace: ws,
+                                path: path.to_string(),
+                            },
+                            *tracing_enabled,
+                            current_ws.as_deref(),
+                        )
+                        .ok();
+                    } else {
+                        eprintln!("Usage: read --file <path>");
                     }
+                } else if parts.len() == 2 && parts[1].parse::<usize>().is_ok()
+                {
+                    // Single numeric argument → ReadPattern (backwards compatible)
+                    let index = parts[1].parse::<usize>().unwrap();
+                    execute_and_print(
+                        manager,
+                        Command::ReadPattern {
+                            workspace: ws,
+                            index,
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
                 } else {
-                    eprintln!("Usage: read <index>");
+                    // Non-numeric or multi-word → ReadSequence
+                    let text = parts[1..].join(" ");
+                    execute_and_print(
+                        manager,
+                        Command::ReadSequence {
+                            workspace: ws,
+                            text,
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
                 }
             },
 
@@ -885,6 +911,8 @@ fn print_help() {
     println!();
     println!("Read commands:");
     println!("  read <index>         Read a vertex as a decomposition tree");
+    println!("  read <text>          Read a text sequence through the graph");
+    println!("  read --file <path>   Read a file's contents through the graph");
     println!("  text <index>         Read a vertex as concatenated leaf text");
     println!();
     println!("Debug commands:");

@@ -181,6 +181,24 @@ enum CliCommand {
         index: usize,
     },
 
+    /// Read a text sequence through the graph (auto-creates atoms, builds decomposition).
+    #[command(name = "read-sequence")]
+    ReadSequence {
+        /// Name of the open workspace.
+        workspace: String,
+        /// The text to read through the graph.
+        text: String,
+    },
+
+    /// Read a file's contents through the graph.
+    #[command(name = "read-file")]
+    ReadFile {
+        /// Name of the open workspace.
+        workspace: String,
+        /// Path to the file to read.
+        path: String,
+    },
+
     /// Validate graph integrity.
     Validate {
         /// Name of the open workspace.
@@ -344,6 +362,8 @@ fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
         | CliCommand::InsertSequences { workspace, .. }
         | CliCommand::ReadPattern { workspace, .. }
         | CliCommand::ReadAsText { workspace, .. }
+        | CliCommand::ReadSequence { workspace, .. }
+        | CliCommand::ReadFile { workspace, .. }
         | CliCommand::Validate { workspace, .. }
         | CliCommand::Snapshot { workspace, .. }
         | CliCommand::Stats { workspace, .. }
@@ -450,6 +470,10 @@ fn execute_subcommand(
             Command::ReadPattern { workspace, index },
         CliCommand::ReadAsText { workspace, index } =>
             Command::ReadAsText { workspace, index },
+        CliCommand::ReadSequence { workspace, text } =>
+            Command::ReadSequence { workspace, text },
+        CliCommand::ReadFile { workspace, path } =>
+            Command::ReadFile { workspace, path },
         CliCommand::Validate { workspace } =>
             Command::ValidateGraph { workspace },
         CliCommand::Snapshot { workspace } =>

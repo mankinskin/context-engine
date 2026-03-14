@@ -1,12 +1,13 @@
 ---
 tags: `#plan` `#context-api` `#context-cli` `#ux` `#read` `#cli` `#repl`
 summary: CLI and API layer changes for Context-Read UX Improvement — new Command variants (ReadSequence, ReadFile), REPL smart parsing, file input support, and summary output format.
-status: 📋
-phase: 2-design
+status: ✅ complete
+phase: 3-implement
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
 depends_on:
   - PLAN_INSERT_NEXT_MATCH (ReadSequence implementation will eventually use insert_next_match)
 decisions: D11, D12, D13
+completed: 2026-03-14
 ---
 
 # Plan: CLI Read UX — Commands, REPL Smart Parsing & File Input

@@ -104,6 +104,9 @@ fn status_for_api_error(err: &ApiError) -> StatusCode {
             ReadError::WorkspaceNotOpen { .. } => StatusCode::BAD_REQUEST,
             ReadError::VertexNotFound { .. } => StatusCode::NOT_FOUND,
             ReadError::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ReadError::SequenceTooShort { .. } =>
+                StatusCode::UNPROCESSABLE_ENTITY,
+            ReadError::FileReadError { .. } => StatusCode::BAD_REQUEST,
         },
         ApiError::Log(e) => match e {
             LogError::FileNotFound { .. } => StatusCode::NOT_FOUND,

@@ -1,9 +1,11 @@
 ---
 tags: `#plan` `#testing` `#integration` `#context-api` `#context-cli` `#context-read`
 summary: Comprehensive integration test suite for the Context-Read UX Improvement project — 38+ tests across 6 categories, API-level and CLI-level, with known-failure tracking.
-status: 📋
+status: 🚧 implementing
+phase: 3-implement
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
 design_decisions: D14, D16
+progress: "Phases 1-4 complete (harness + 5 categories + FAILING_TESTS.md). Phase 5 (REPL tests) deferred. 32 tests: 23 pass, 9 known failures."
 ---
 
 # Plan: Integration Test Suite for Context-Read UX Improvement

@@ -236,6 +236,8 @@ fn extract_workspace_name(cmd: &Command) -> Option<&str> {
         | Command::InsertSequences { workspace, .. }
         | Command::ReadPattern { workspace, .. }
         | Command::ReadAsText { workspace, .. }
+        | Command::ReadSequence { workspace, .. }
+        | Command::ReadFile { workspace, .. }
         | Command::GetSnapshot { workspace }
         | Command::GetStatistics { workspace }
         | Command::ValidateGraph { workspace }
@@ -632,6 +634,50 @@ fn all_commands() -> Vec<CommandHelp> {
             example: r#"{"command": "read_as_text", "workspace": "demo", "index": 5}"#,
             result_type: "Text { text: string }",
             notes: "The simplest way to see what text a vertex represents.",
+        },
+        CommandHelp {
+            name: "read_sequence",
+            category: "read",
+            summary: "Read a text sequence through the graph (auto-creates atoms, builds decomposition).",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "text",
+                    param_type: "string",
+                    required: true,
+                    description: "The text to read through the graph.",
+                },
+            ],
+            example: r#"{"command": "read_sequence", "workspace": "demo", "text": "hello world"}"#,
+            result_type: "ReadResult { root: TokenInfo, text: string, tree: ReadNode }",
+            notes: "Auto-creates atoms for unknown characters. Returns the largest-match decomposition of the text.",
+        },
+        CommandHelp {
+            name: "read_file",
+            category: "read",
+            summary: "Read a file's contents through the graph.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "path",
+                    param_type: "string",
+                    required: true,
+                    description: "Path to the file to read.",
+                },
+            ],
+            example: r#"{"command": "read_file", "workspace": "demo", "path": "/tmp/data.txt"}"#,
+            result_type: "ReadResult { root: TokenInfo, text: string, tree: ReadNode }",
+            notes: "Reads the file to a string, then processes it like read_sequence.",
         },
         // -- Debug --
         CommandHelp {
@@ -1415,7 +1461,7 @@ impl ContextServer {
     ///
     /// **Insert:** insert_first_match, insert_sequence, insert_sequences
     ///
-    /// **Read:** read_pattern, read_as_text
+    /// **Read:** read_pattern, read_as_text, read_sequence, read_file
     ///
     /// **Debug:** get_snapshot, get_statistics, validate_graph, show_graph, show_vertex
     ///
@@ -2303,6 +2349,8 @@ mod tests {
             "insert_sequences",
             "read_pattern",
             "read_as_text",
+            "read_sequence",
+            "read_file",
             "get_snapshot",
             "get_statistics",
             "validate_graph",
