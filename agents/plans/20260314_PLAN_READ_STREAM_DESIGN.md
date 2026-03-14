@@ -1,7 +1,7 @@
 ---
 tags: `#plan` `#context-read` `#stream` `#iterator` `#lazy` `#async` `#design`
 summary: Stream/iterator design for the read pipeline — lazy atom resolution, `from_reader` adapter, `ReadSequenceIter`, future async Stream pattern, and multi-band debug_assert.
-status: design
+status: ✅ complete
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
 depends_on: PLAN_INSERT_NEXT_MATCH
 date: 2026-03-14

@@ -1146,21 +1146,37 @@ PLAN_INTEGRATION_TESTS ──────┘ (depends on CLI_READ_UX for test ta
   - ✅ Migrated all test call sites: `context-insert` tests (11 sites across `context_read_scenarios.rs` + `expanded_overlap.rs`), `context-read` cursor tests (12 sites in `cursor.rs`). All use fully-qualified syntax.
   - ✅ Deprecated `insert_or_get_complete` on both trait and impl with `#[deprecated(since = "0.2.0")]`. Zero deprecation warnings remain.
   - ✅ Verified: no new test failures introduced. Pre-existing failures unchanged (context-api: 15, context-read: 29).
-  - ⬜ Clean up unused async dependencies in `context-read` (deferred — not blocking)
-- **3b: CLI & API layer**
-  - Add `Command::ReadSequence { workspace, text }` to `context-api`
-  - Add `Command::ReadFile { workspace, path }` to `context-api`
-  - Update `context-cli` with text input, file input, REPL smart parsing
-  - Summary output format for read results
+- **3b: CLI & API layer** ✅ COMPLETE (2026-03-14)
+  - ✅ Added `Command::ReadSequence { workspace, text }` and `Command::ReadFile { workspace, path }` to `context-api`
+  - ✅ Added `ReadError::SequenceTooShort`/`FileReadError`, `WorkspaceApi` trait methods, execute dispatch
+  - ✅ Added CLI subcommands (`read-sequence`, `read-file`), REPL smart parsing (`read <text>`, `read --file <path>`)
+  - ✅ Updated MCP + HTTP adapters for new command variants
+  - ✅ 5 new tests pass, 0 regressions
+- **3e: Stream/Iterator Design** ✅ COMPLETE (2026-03-14)
+  - ✅ Implemented `LazyAtomIter<C>` — resolves each character to `NewAtomIndex` on demand (lazy atom resolution, design decision D10)
+  - ✅ Made `SegmentIter<I>` generic with default type parameter (`= std::vec::IntoIter<NewAtomIndex>`) for backward compatibility
+  - ✅ Added `ErasedSegmentIter` type alias (`SegmentIter<Box<dyn Iterator<Item = NewAtomIndex>>>`) for type erasure at `ReadCtx` boundary
+  - ✅ Implemented `Utf8CharIter<R: Read>` — streaming UTF-8 character decoder handling multi-byte sequences with U+FFFD replacement for invalid bytes
+  - ✅ Added `ReadCtx::from_chars()` — lazy character-iterator constructor
+  - ✅ Added `ReadCtx::from_reader()` — streaming `impl Read` constructor (files, stdin, sockets)
+  - ✅ Added `ReadSequenceIter` — public iterator wrapper yielding `SegmentResult` per segment (Unknown/Known/Mixed) with root token tracking
+  - ✅ Added `SegmentResult` enum — structured output from read pipeline with `.root()` accessor
+  - ✅ Added `ReadCtx::read_next_segment()` — returns structured `SegmentResult` per segment call
+  - ✅ Added `debug_assert!` for multi-band invariant (D8) in `ExpansionCtx::next()` — enforces overlap commit before continuation
+  - ✅ Cleaned up `Cargo.toml`: removed 5 unused async deps (`async-std`, `async-trait`, `async-recursion`, `futures`, `pin-project-lite`), feature-gated `tokio`/`tokio-stream` behind `async` feature flag
+  - ✅ Re-exported `ReadSequenceIter` and `SegmentResult` from `context-read` crate root
+  - ✅ 13 new tests pass (LazyAtomIter, SegmentIter generic, from_reader, erased iter), 0 regressions
+  - ✅ Full workspace compiles cleanly, all downstream crates (context-api, context-cli, context-mcp, context-http) unaffected
 - **3c: Documentation**
   - Write 4 dungeon crawler skill documents in `docs/skills/`
   - Update `CHEAT_SHEET.md` with new `InsertOutcome` patterns
   - Update `agents/guides/INDEX.md`
-- **3d: Test suite**
-  - Create Rust integration test harness in `tools/context-cli/tests/`
-  - Write tests for all 6 categories (38+ test cases)
-  - Create `FAILING_TESTS.md` mapping each failure to root cause
-  - Review and annotate existing failing tests
+- **3d: Test suite** 🚧 IN PROGRESS
+  - ✅ Created Rust integration test harness in `tools/context-cli/tests/`
+  - ✅ Written tests for 5 categories (32 tests: 23 pass, 9 known failures)
+  - ✅ Created `FAILING_TESTS.md` mapping each failure to root cause (RC-1, RC-2, RC-3)
+  - ⬜ REPL integration tests (Category 5) — deferred until algorithm fixes land
+  - ⬜ Review and annotate existing failing tests
 
 ### Phase 4: Validate
 - Run all existing tests (context-read, context-api, context-insert, context-search)
