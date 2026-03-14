@@ -17,7 +17,9 @@ use context_api::{
     commands::{
         Command,
         execute,
+        execute_traced,
     },
+    tracing_capture::CaptureConfig,
     types::TokenRef,
     workspace::manager::WorkspaceManager,
 };
@@ -42,6 +44,7 @@ pub fn run(manager: &mut WorkspaceManager) {
     };
 
     let mut current_workspace: Option<String> = None;
+    let mut tracing_enabled = false;
 
     loop {
         let prompt = match &current_workspace {
@@ -64,6 +67,7 @@ pub fn run(manager: &mut WorkspaceManager) {
                         execute_repl_line(
                             manager,
                             &mut current_workspace,
+                            &mut tracing_enabled,
                             line,
                         );
                     },
@@ -102,6 +106,7 @@ fn parse_token_ref(s: &str) -> TokenRef {
 fn execute_repl_line(
     manager: &mut WorkspaceManager,
     current_ws: &mut Option<String>,
+    tracing_enabled: &mut bool,
     line: &str,
 ) {
     let parts: Vec<&str> = line.split_whitespace().collect();
@@ -118,6 +123,8 @@ fn execute_repl_line(
                     Command::CreateWorkspace {
                         name: name.to_string(),
                     },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 ) {
                     Ok(_) => {
                         // Automatically set as current workspace
@@ -138,6 +145,8 @@ fn execute_repl_line(
                     Command::OpenWorkspace {
                         name: name.to_string(),
                     },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 ) {
                     Ok(_) => {
                         *current_ws = Some(name.to_string());
@@ -159,6 +168,8 @@ fn execute_repl_line(
                 match execute_and_print(
                     manager,
                     Command::CloseWorkspace { name: name.clone() },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 ) {
                     Ok(_) =>
                         if current_ws.as_deref() == Some(&name) {
@@ -180,8 +191,13 @@ fn execute_repl_line(
                 .or_else(|| current_ws.clone());
 
             if let Some(name) = name {
-                execute_and_print(manager, Command::SaveWorkspace { name })
-                    .ok();
+                execute_and_print(
+                    manager,
+                    Command::SaveWorkspace { name },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
             } else {
                 eprintln!(
                     "Usage: save [<name>]  (defaults to current workspace)"
@@ -190,7 +206,13 @@ fn execute_repl_line(
         },
 
         "list" => {
-            execute_and_print(manager, Command::ListWorkspaces).ok();
+            execute_and_print(
+                manager,
+                Command::ListWorkspaces,
+                *tracing_enabled,
+                current_ws.as_deref(),
+            )
+            .ok();
         },
 
         "delete" =>
@@ -200,6 +222,8 @@ fn execute_repl_line(
                     Command::DeleteWorkspace {
                         name: name.to_string(),
                     },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 ) {
                     Ok(_) =>
                         if current_ws.as_deref() == Some(*name) {
@@ -221,6 +245,8 @@ fn execute_repl_line(
                         execute_and_print(
                             manager,
                             Command::AddAtom { workspace: ws, ch },
+                            *tracing_enabled,
+                            current_ws.as_deref(),
                         )
                         .ok();
                     } else {
@@ -232,6 +258,8 @@ fn execute_repl_line(
                                 workspace: ws,
                                 chars: char_vec,
                             },
+                            *tracing_enabled,
+                            current_ws.as_deref(),
                         )
                         .ok();
                     }
@@ -253,6 +281,8 @@ fn execute_repl_line(
                             workspace: ws,
                             atoms: atom_chars,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 } else {
@@ -273,6 +303,8 @@ fn execute_repl_line(
                                     workspace: ws,
                                     index,
                                 },
+                                *tracing_enabled,
+                                current_ws.as_deref(),
                             )
                             .ok();
                         },
@@ -293,6 +325,8 @@ fn execute_repl_line(
                 execute_and_print(
                     manager,
                     Command::ListVertices { workspace: ws },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 )
                 .ok();
             },
@@ -302,6 +336,8 @@ fn execute_repl_line(
                 execute_and_print(
                     manager,
                     Command::ListAtoms { workspace: ws },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 )
                 .ok();
             },
@@ -323,6 +359,8 @@ fn execute_repl_line(
                             workspace: ws,
                             text,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 } else {
@@ -335,6 +373,8 @@ fn execute_repl_line(
                             workspace: ws,
                             query,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 }
@@ -356,6 +396,8 @@ fn execute_repl_line(
                             workspace: ws,
                             text,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 }
@@ -376,6 +418,8 @@ fn execute_repl_line(
                             workspace: ws,
                             query,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 }
@@ -396,6 +440,8 @@ fn execute_repl_line(
                             workspace: ws,
                             texts,
                         },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 }
@@ -413,6 +459,8 @@ fn execute_repl_line(
                                     workspace: ws,
                                     index,
                                 },
+                                *tracing_enabled,
+                                current_ws.as_deref(),
                             )
                             .ok();
                         },
@@ -439,6 +487,8 @@ fn execute_repl_line(
                                     workspace: ws,
                                     index,
                                 },
+                                *tracing_enabled,
+                                current_ws.as_deref(),
                             )
                             .ok();
                         },
@@ -460,6 +510,8 @@ fn execute_repl_line(
                 execute_and_print(
                     manager,
                     Command::ValidateGraph { workspace: ws },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 )
                 .ok();
             },
@@ -476,6 +528,8 @@ fn execute_repl_line(
                                     workspace: ws,
                                     index,
                                 },
+                                *tracing_enabled,
+                                current_ws.as_deref(),
                             )
                             .ok();
                         },
@@ -490,6 +544,8 @@ fn execute_repl_line(
                     execute_and_print(
                         manager,
                         Command::ShowGraph { workspace: ws },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
                     )
                     .ok();
                 }
@@ -501,6 +557,8 @@ fn execute_repl_line(
                 execute_and_print(
                     manager,
                     Command::GetSnapshot { workspace: ws },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 )
                 .ok();
             },
@@ -510,6 +568,8 @@ fn execute_repl_line(
                 execute_and_print(
                     manager,
                     Command::GetStatistics { workspace: ws },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
                 )
                 .ok();
             },
@@ -539,6 +599,162 @@ fn execute_repl_line(
                 );
             },
 
+        // -- Tracing toggle -------------------------------------------------
+        "trace" => match parts.get(1).map(|s| *s) {
+            Some("on") => {
+                *tracing_enabled = true;
+                println!(
+                    "Tracing enabled. Graph commands will write .log files."
+                );
+            },
+            Some("off") => {
+                *tracing_enabled = false;
+                println!("Tracing disabled.");
+            },
+            Some("status") | None => {
+                let status = if *tracing_enabled { "on" } else { "off" };
+                println!("Tracing is {status}.");
+            },
+            Some(other) => {
+                eprintln!(
+                    "Unknown trace option: '{other}'. Use: trace on|off|status"
+                );
+            },
+        },
+
+        // -- Log commands ---------------------------------------------------
+        "logs" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                let pattern = parts.get(1).map(|s| s.to_string());
+                execute_and_print(
+                    manager,
+                    Command::ListLogs {
+                        workspace: ws,
+                        pattern,
+                        limit: 100,
+                    },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
+            },
+
+        "log" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if let Some(filename) = parts.get(1) {
+                    let filter = parts.get(2).map(|s| s.to_string());
+                    execute_and_print(
+                        manager,
+                        Command::GetLog {
+                            workspace: ws,
+                            filename: filename.to_string(),
+                            filter,
+                            limit: 100,
+                            offset: 0,
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
+                } else {
+                    eprintln!("Usage: log <filename> [filter]");
+                }
+            },
+
+        "query" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if parts.len() >= 3 {
+                    let filename = parts[1].to_string();
+                    let query = parts[2..].join(" ");
+                    execute_and_print(
+                        manager,
+                        Command::QueryLog {
+                            workspace: ws,
+                            filename,
+                            query,
+                            limit: 100,
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
+                } else {
+                    eprintln!("Usage: query <filename> <jq-expression>");
+                }
+            },
+
+        "analyze" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if let Some(filename) = parts.get(1) {
+                    execute_and_print(
+                        manager,
+                        Command::AnalyzeLog {
+                            workspace: ws,
+                            filename: filename.to_string(),
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
+                } else {
+                    eprintln!("Usage: analyze <filename>");
+                }
+            },
+
+        "search-logs" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if parts.len() >= 2 {
+                    let query = parts[1..].join(" ");
+                    execute_and_print(
+                        manager,
+                        Command::SearchLogs {
+                            workspace: ws,
+                            query,
+                            limit_per_file: 10,
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
+                } else {
+                    eprintln!("Usage: search-logs <jq-expression>");
+                }
+            },
+
+        "delete-log" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                if let Some(filename) = parts.get(1) {
+                    execute_and_print(
+                        manager,
+                        Command::DeleteLog {
+                            workspace: ws,
+                            filename: filename.to_string(),
+                        },
+                        *tracing_enabled,
+                        current_ws.as_deref(),
+                    )
+                    .ok();
+                } else {
+                    eprintln!("Usage: delete-log <filename>");
+                }
+            },
+
+        "clean-logs" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                let older_than_days =
+                    parts.get(1).and_then(|s| s.parse::<u32>().ok());
+                execute_and_print(
+                    manager,
+                    Command::DeleteLogs {
+                        workspace: ws,
+                        older_than_days,
+                    },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
+            },
+
         _ => {
             eprintln!(
                 "Unknown command: '{}'. Type 'help' for available commands.",
@@ -548,12 +764,50 @@ fn execute_repl_line(
     }
 }
 
-/// Execute a command and print the result. Returns `Ok(())` on success,
-/// `Err(())` if the command returned an error (which is printed to stderr).
+/// Execute a command, optionally with tracing, and print the result.
+///
+/// When `tracing_enabled` is `true` and a workspace name is available, the
+/// command is executed inside a tracing capture span that writes structured
+/// JSON events to a log file. A short summary line is printed to stderr
+/// after the normal output so the user knows a trace was recorded.
+///
+/// Returns `Ok(())` on success, `Err(())` if the command returned an error
+/// (which is printed to stderr).
 fn execute_and_print(
     manager: &mut WorkspaceManager,
     cmd: Command,
+    tracing_enabled: bool,
+    workspace_name: Option<&str>,
 ) -> Result<(), ()> {
+    if tracing_enabled {
+        if let Some(ws_name) = workspace_name {
+            if let Ok(log_dir) = manager.log_dir(ws_name) {
+                let config = CaptureConfig {
+                    enabled: true,
+                    log_dir,
+                    level: "TRACE".to_string(),
+                };
+                match execute_traced(manager, cmd, Some(&config)) {
+                    Ok((result, trace_summary)) => {
+                        output::print_command_result(&result);
+                        if let Some(summary) = trace_summary {
+                            eprintln!(
+                                "📝 Trace: {} ({} events, {}ms)",
+                                summary.log_file,
+                                summary.entry_count,
+                                summary.duration_ms,
+                            );
+                        }
+                        return Ok(());
+                    },
+                    Err(e) => {
+                        eprintln!("Error: {e}");
+                        return Err(());
+                    },
+                }
+            }
+        }
+    }
     match execute(manager, cmd) {
         Ok(result) => {
             output::print_command_result(&result);
@@ -642,6 +896,22 @@ fn print_help() {
     );
     println!(
         "  show <index>         Show a single vertex with its children and parents"
+    );
+    println!();
+    println!("Tracing commands:");
+    println!("  trace on|off|status  Toggle or check per-command tracing");
+    println!();
+    println!("Log commands (require an active workspace):");
+    println!("  logs [pattern]       List log files (optionally filtered)");
+    println!(
+        "  log <file> [filter]  Read a log file (optionally filter by level/message)"
+    );
+    println!("  query <file> <jq>    Query a log file with a JQ expression");
+    println!("  analyze <file>       Show log analysis (stats, spans, errors)");
+    println!("  search-logs <jq>     Search across all log files");
+    println!("  delete-log <file>    Delete a specific log file");
+    println!(
+        "  clean-logs [days]    Delete all logs (or only those older than N days)"
     );
     println!();
     println!("General:");

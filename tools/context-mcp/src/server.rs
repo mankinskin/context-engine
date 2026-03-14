@@ -46,7 +46,10 @@ use context_api::{
         Command,
         CommandResult,
         execute,
+        execute_traced,
     },
+    tracing_capture::CaptureConfig,
+    types::TraceSummary,
     workspace::manager::WorkspaceManager,
 };
 
@@ -105,6 +108,14 @@ pub struct ExecuteInput {
     /// - `{"command": "save_workspace", "name": "my-graph"}`
     #[serde(flatten)]
     pub command: Command,
+
+    /// Enable tracing for this command execution.
+    /// When true, engine internal events (search transitions,
+    /// insert split/join phases, etc.) are captured to a log file.
+    /// The response will include a `trace` field with the log filename
+    /// and event count.
+    #[serde(default)]
+    pub trace: bool,
 }
 
 /// Output wrapper for the `execute` tool.
@@ -121,6 +132,9 @@ pub struct ExecuteOutput {
     /// Error message (present when `success` is `false`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+    /// Trace summary (present when trace: true was requested and a workspace-scoped command was run).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trace: Option<TraceSummary>,
 }
 
 /// Input schema for the `help` tool.
@@ -154,6 +168,7 @@ pub struct WorkflowInput {
     /// - "search_and_read" — Search for patterns and read results
     /// - "inspect" — Debug and inspect graph state
     /// - "persistence" — Save, close, reopen workflow
+    /// - "trace_and_debug" — Execute with tracing, then analyze the trace log
     #[serde(default = "default_workflow_name")]
     pub name: String,
 
@@ -195,6 +210,44 @@ struct ParamHelp {
     param_type: &'static str,
     required: bool,
     description: &'static str,
+}
+
+/// Extract the workspace name from a command, if it has one.
+fn extract_workspace_name(cmd: &Command) -> Option<&str> {
+    match cmd {
+        Command::CreateWorkspace { name }
+        | Command::OpenWorkspace { name }
+        | Command::CloseWorkspace { name }
+        | Command::SaveWorkspace { name }
+        | Command::DeleteWorkspace { name } => Some(name.as_str()),
+        Command::ListWorkspaces => None,
+        Command::AddAtom { workspace, .. }
+        | Command::AddAtoms { workspace, .. }
+        | Command::GetAtom { workspace, .. }
+        | Command::ListAtoms { workspace }
+        | Command::AddSimplePattern { workspace, .. }
+        | Command::GetVertex { workspace, .. }
+        | Command::ListVertices { workspace }
+        | Command::SearchPattern { workspace, .. }
+        | Command::SearchSequence { workspace, .. }
+        | Command::InsertFirstMatch { workspace, .. }
+        | Command::InsertSequence { workspace, .. }
+        | Command::InsertSequences { workspace, .. }
+        | Command::ReadPattern { workspace, .. }
+        | Command::ReadAsText { workspace, .. }
+        | Command::GetSnapshot { workspace }
+        | Command::GetStatistics { workspace }
+        | Command::ValidateGraph { workspace }
+        | Command::ShowGraph { workspace }
+        | Command::ShowVertex { workspace, .. }
+        | Command::ListLogs { workspace, .. }
+        | Command::GetLog { workspace, .. }
+        | Command::QueryLog { workspace, .. }
+        | Command::AnalyzeLog { workspace, .. }
+        | Command::SearchLogs { workspace, .. }
+        | Command::DeleteLog { workspace, .. }
+        | Command::DeleteLogs { workspace, .. } => Some(workspace.as_str()),
+    }
 }
 
 /// All command help entries, in category order.
@@ -656,6 +709,203 @@ fn all_commands() -> Vec<CommandHelp> {
             result_type: "GraphDisplay { display: string }",
             notes: "More focused than show_graph — shows one vertex with its parents and children.",
         },
+        // -- Trace Logs --
+        CommandHelp {
+            name: "list_logs",
+            category: "logs",
+            summary: "List trace log files in a workspace.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "pattern",
+                    param_type: "string",
+                    required: false,
+                    description: "Optional filename pattern to filter results.",
+                },
+                ParamHelp {
+                    name: "limit",
+                    param_type: "integer",
+                    required: false,
+                    description: "Max number of files to return (default: 100).",
+                },
+            ],
+            example: r#"{"command": "list_logs", "workspace": "demo"}"#,
+            result_type: "LogList { logs: [LogFileInfo] }",
+            notes: "Log files are created when commands are run with trace:true. Files are stored in <workspace>/logs/.",
+        },
+        CommandHelp {
+            name: "get_log",
+            category: "logs",
+            summary: "Read entries from a trace log file.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "filename",
+                    param_type: "string",
+                    required: true,
+                    description: "Log filename (from list_logs).",
+                },
+                ParamHelp {
+                    name: "filter",
+                    param_type: "string",
+                    required: false,
+                    description: "Filter entries by level or message substring.",
+                },
+                ParamHelp {
+                    name: "limit",
+                    param_type: "integer",
+                    required: false,
+                    description: "Max entries to return (default: 100).",
+                },
+                ParamHelp {
+                    name: "offset",
+                    param_type: "integer",
+                    required: false,
+                    description: "Skip this many entries (default: 0).",
+                },
+            ],
+            example: r#"{"command": "get_log", "workspace": "demo", "filename": "20260315T120000000_insert_sequence.log"}"#,
+            result_type: "LogEntries { filename, total, offset, limit, returned, entries: [LogEntryInfo] }",
+            notes: "Use filter to narrow results by level (e.g. 'ERROR') or message content.",
+        },
+        CommandHelp {
+            name: "query_log",
+            category: "logs",
+            summary: "Query a trace log file with a JQ expression.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "filename",
+                    param_type: "string",
+                    required: true,
+                    description: "Log filename.",
+                },
+                ParamHelp {
+                    name: "query",
+                    param_type: "string",
+                    required: true,
+                    description: "JQ expression to filter/transform entries.",
+                },
+                ParamHelp {
+                    name: "limit",
+                    param_type: "integer",
+                    required: false,
+                    description: "Max results (default: 100).",
+                },
+            ],
+            example: r#"{"command": "query_log", "workspace": "demo", "filename": "20260315T120000000_insert_sequence.log", "query": "select(.level == \"INFO\")"}"#,
+            result_type: "LogQueryResult { query, matches, entries: [LogEntryInfo] }",
+            notes: "Uses the jaq engine — most standard jq syntax works. Query runs against each log entry as a JSON object.",
+        },
+        CommandHelp {
+            name: "analyze_log",
+            category: "logs",
+            summary: "Get statistical analysis of a trace log file.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "filename",
+                    param_type: "string",
+                    required: true,
+                    description: "Log filename.",
+                },
+            ],
+            example: r#"{"command": "analyze_log", "workspace": "demo", "filename": "20260315T120000000_insert_sequence.log"}"#,
+            result_type: "LogAnalysis { total_entries, by_level, by_event_type, spans, errors }",
+            notes: "Provides a quick overview of the log: entry counts by level, event types, span summaries, and any errors.",
+        },
+        CommandHelp {
+            name: "search_logs",
+            category: "logs",
+            summary: "Search across all trace log files with a JQ expression.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "query",
+                    param_type: "string",
+                    required: true,
+                    description: "JQ expression to search with.",
+                },
+                ParamHelp {
+                    name: "limit_per_file",
+                    param_type: "integer",
+                    required: false,
+                    description: "Max matches per file (default: 10).",
+                },
+            ],
+            example: r#"{"command": "search_logs", "workspace": "demo", "query": "select(.level == \"ERROR\")"}"#,
+            result_type: "LogSearchResult { query, files_with_matches, results: [LogFileSearchResult] }",
+            notes: "Searches all .log files in the workspace's log directory. Results are grouped by file.",
+        },
+        CommandHelp {
+            name: "delete_log",
+            category: "logs",
+            summary: "Delete a specific trace log file.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "filename",
+                    param_type: "string",
+                    required: true,
+                    description: "Log filename to delete.",
+                },
+            ],
+            example: r#"{"command": "delete_log", "workspace": "demo", "filename": "20260315T120000000_insert_sequence.log"}"#,
+            result_type: "Ok",
+            notes: "Permanently deletes the log file. Use list_logs first to find the filename.",
+        },
+        CommandHelp {
+            name: "delete_logs",
+            category: "logs",
+            summary: "Delete trace log files, optionally by age.",
+            parameters: &[
+                ParamHelp {
+                    name: "workspace",
+                    param_type: "string",
+                    required: true,
+                    description: "Target workspace name.",
+                },
+                ParamHelp {
+                    name: "older_than_days",
+                    param_type: "integer",
+                    required: false,
+                    description: "Only delete logs older than this many days. Omit to delete all.",
+                },
+            ],
+            example: r#"{"command": "delete_logs", "workspace": "demo", "older_than_days": 7}"#,
+            result_type: "LogDeleteResult { deleted_count, freed_bytes }",
+            notes: "Use with older_than_days for periodic cleanup. Omit to delete all log files.",
+        },
     ]
 }
 
@@ -702,6 +952,11 @@ fn all_categories() -> Vec<CategoryInfo> {
             name: "debug",
             display: "Debug & Inspection",
             description: "Snapshots, statistics, validation, and visual display.",
+        },
+        CategoryInfo {
+            name: "logs",
+            display: "Trace Logs",
+            description: "Access and query per-command tracing logs. Enable tracing via trace:true in execute.",
         },
     ]
 }
@@ -762,6 +1017,11 @@ fn available_workflows() -> Vec<WorkflowSummary> {
             name: "persistence",
             title: "Save & Reopen",
             description: "Save a workspace to disk, close it, and reopen it later.",
+        },
+        WorkflowSummary {
+            name: "trace_and_debug",
+            title: "Trace & Debug",
+            description: "Execute a command with tracing enabled, then analyze the resulting trace log.",
         },
     ]
 }
@@ -1053,6 +1313,68 @@ fn build_workflow(
             ],
         }),
 
+        "trace_and_debug" => Some(WorkflowTemplate {
+            name: "trace_and_debug",
+            title: "Trace & Debug Workflow",
+            description: "Execute a command with tracing enabled, then analyze the trace log to understand engine internals.",
+            steps: vec![
+                WorkflowStep {
+                    step: 1,
+                    description: "Execute a command with tracing enabled (note: set trace:true at the top level of the execute input)",
+                    command: serde_json::json!({
+                        "command": "insert_sequence",
+                        "workspace": ws_val,
+                        "text": "hello world",
+                        "trace": true,
+                    }),
+                },
+                WorkflowStep {
+                    step: 2,
+                    description: "List log files to find the trace that was just created",
+                    command: serde_json::json!({
+                        "command": "list_logs",
+                        "workspace": ws_val,
+                    }),
+                },
+                WorkflowStep {
+                    step: 3,
+                    description: "Analyze the log for a quick overview (replace filename with the actual one from step 2)",
+                    command: serde_json::json!({
+                        "command": "analyze_log",
+                        "workspace": ws_val,
+                        "filename": "<use filename from list_logs>",
+                    }),
+                },
+                WorkflowStep {
+                    step: 4,
+                    description: "Query for specific event types like graph operations",
+                    command: serde_json::json!({
+                        "command": "query_log",
+                        "workspace": ws_val,
+                        "filename": "<use filename from list_logs>",
+                        "query": "select(.fields.graph_op != null)",
+                    }),
+                },
+                WorkflowStep {
+                    step: 5,
+                    description: "Search for errors or warnings",
+                    command: serde_json::json!({
+                        "command": "query_log",
+                        "workspace": ws_val,
+                        "filename": "<use filename from list_logs>",
+                        "query": "select(.level == \"WARN\" or .level == \"ERROR\")",
+                    }),
+                },
+            ],
+            tips: vec![
+                "The trace flag only affects the command it's attached to.",
+                "Log files persist across sessions in the workspace directory.",
+                "JQ queries use the jaq engine — most standard jq syntax works.",
+                "Use analyze_log first for a quick overview before deep-querying.",
+                "graph_op fields contain rich structured data about algorithm steps.",
+            ],
+        }),
+
         _ => None,
     }
 }
@@ -1093,6 +1415,8 @@ impl ContextServer {
     /// **Read:** read_pattern, read_as_text
     ///
     /// **Debug:** get_snapshot, get_statistics, validate_graph, show_graph, show_vertex
+    ///
+    /// **Logs:** list_logs, get_log, query_log, analyze_log, search_logs, delete_log, delete_logs
     #[tool(
         name = "execute",
         description = "Execute a context-engine hypergraph command. Send any Command JSON object and receive the corresponding CommandResult. Call the 'help' tool first to discover available commands, or the 'workflow' tool for ready-to-use command sequences."
@@ -1101,21 +1425,56 @@ impl ContextServer {
         &self,
         Parameters(input): Parameters<ExecuteInput>,
     ) -> Result<CallToolResult, McpError> {
-        tracing::debug!(command = ?input.command, "Executing command");
+        tracing::debug!(command = ?input.command, trace = input.trace, "Executing command");
 
         let result = {
             let mut manager = self.manager.lock().map_err(|e| {
                 McpError::internal_error(format!("Lock poisoned: {e}"), None)
             })?;
-            execute(&mut manager, input.command)
+
+            if input.trace {
+                // Try to extract workspace name for log directory
+                let ws_name = extract_workspace_name(&input.command);
+                if let Some(ws_name) = ws_name {
+                    match manager.log_dir(ws_name) {
+                        Ok(log_dir) => {
+                            let config = CaptureConfig {
+                                enabled: true,
+                                log_dir,
+                                level: "TRACE".to_string(),
+                            };
+                            match execute_traced(
+                                &mut manager,
+                                input.command,
+                                Some(&config),
+                            ) {
+                                Ok((cmd_result, trace_summary)) =>
+                                    Ok((cmd_result, trace_summary)),
+                                Err(e) => Err(e),
+                            }
+                        },
+                        Err(_) => {
+                            // Can't get log dir, fall back to non-traced
+                            execute(&mut manager, input.command)
+                                .map(|r| (r, None))
+                        },
+                    }
+                } else {
+                    // No workspace in this command (e.g. list_workspaces), run without trace
+                    execute(&mut manager, input.command).map(|r| (r, None))
+                }
+            } else {
+                execute(&mut manager, input.command).map(|r| (r, None))
+            }
         };
 
         match result {
-            Ok(cmd_result) => {
+            Ok((cmd_result, trace_summary)) => {
                 let output = ExecuteOutput {
                     success: true,
                     result: Some(cmd_result),
                     error: None,
+                    trace: trace_summary,
                 };
                 let json =
                     serde_json::to_string_pretty(&output).map_err(|e| {
@@ -1132,6 +1491,7 @@ impl ContextServer {
                     success: false,
                     result: None,
                     error: Some(format!("{api_error}")),
+                    trace: None,
                 };
                 let json =
                     serde_json::to_string_pretty(&output).map_err(|e| {
@@ -1153,7 +1513,7 @@ impl ContextServer {
     /// category for detailed information.
     #[tool(
         name = "help",
-        description = "Discover available context-engine commands. Call with no arguments for an overview of all commands grouped by category. Set 'command' to get detailed help for one command (parameters, example, result type, notes). Set 'category' to list only commands in that group (workspace, atoms, patterns, search, insert, read, debug)."
+        description = "Discover available context-engine commands. Call with no arguments for an overview of all commands grouped by category. Set 'command' to get detailed help for one command (parameters, example, result type, notes). Set 'category' to list only commands in that group (workspace, atoms, patterns, search, insert, read, debug, logs)."
     )]
     async fn help_command(
         &self,
@@ -1299,7 +1659,7 @@ impl ContextServer {
     /// step-by-step.
     #[tool(
         name = "workflow",
-        description = "Get ready-to-use command sequences for common tasks. Call with name='list' (or no arguments) to see available workflows. Set name to 'basic', 'bulk_insert', 'search_and_read', 'inspect', or 'persistence' to get a step-by-step template with example commands you can pass directly to the 'execute' tool. Set 'workspace' to customize the workspace name in the template (default: 'demo')."
+        description = "Get ready-to-use command sequences for common tasks. Call with name='list' (or no arguments) to see available workflows. Set name to 'basic', 'bulk_insert', 'search_and_read', 'inspect', 'persistence', or 'trace_and_debug' to get a step-by-step template with example commands you can pass directly to the 'execute' tool. Set 'workspace' to customize the workspace name in the template (default: 'demo')."
     )]
     async fn workflow_command(
         &self,
@@ -1451,7 +1811,10 @@ mod tests {
         server: &ContextServer,
         command: Command,
     ) -> ExecuteOutput {
-        let input = Parameters(ExecuteInput { command });
+        let input = Parameters(ExecuteInput {
+            command,
+            trace: false,
+        });
         let result = server
             .execute_command(input)
             .await
@@ -1942,6 +2305,13 @@ mod tests {
             "validate_graph",
             "show_graph",
             "show_vertex",
+            "list_logs",
+            "get_log",
+            "query_log",
+            "analyze_log",
+            "search_logs",
+            "delete_log",
+            "delete_logs",
         ];
 
         for exp in &expected {
@@ -1982,6 +2352,10 @@ mod tests {
         );
         assert!(text.contains("inspect"), "should list inspect");
         assert!(text.contains("persistence"), "should list persistence");
+        assert!(
+            text.contains("trace_and_debug"),
+            "should list trace_and_debug"
+        );
     }
 
     #[tokio::test]

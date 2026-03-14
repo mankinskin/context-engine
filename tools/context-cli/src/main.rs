@@ -17,7 +17,9 @@ use context_api::{
     commands::{
         Command,
         execute,
+        execute_traced,
     },
+    tracing_capture::CaptureConfig,
     types::TokenRef,
     workspace::manager::WorkspaceManager,
 };
@@ -30,6 +32,10 @@ use context_api::{
     version
 )]
 struct Cli {
+    /// Enable per-command tracing capture (writes .log files to workspace)
+    #[arg(long, global = true)]
+    trace: bool,
+
     /// Subcommand to execute. If omitted, starts the interactive REPL.
     #[command(subcommand)]
     command: Option<CliCommand>,
@@ -208,6 +214,72 @@ enum CliCommand {
 
     /// Start the interactive REPL.
     Repl,
+
+    /// List trace log files for a workspace.
+    ListLogs {
+        /// Name of the workspace.
+        workspace: String,
+        /// Optional filename pattern to filter.
+        #[arg(long)]
+        pattern: Option<String>,
+    },
+
+    /// Read a trace log file.
+    GetLog {
+        /// Name of the workspace.
+        workspace: String,
+        /// Log filename.
+        filename: String,
+        /// Optional level/message filter.
+        #[arg(long)]
+        filter: Option<String>,
+        /// Max entries to return.
+        #[arg(long, default_value = "100")]
+        limit: usize,
+    },
+
+    /// Query a trace log with a JQ expression.
+    QueryLog {
+        /// Name of the workspace.
+        workspace: String,
+        /// Log filename.
+        filename: String,
+        /// JQ query expression.
+        query: String,
+    },
+
+    /// Analyze a trace log file.
+    AnalyzeLog {
+        /// Name of the workspace.
+        workspace: String,
+        /// Log filename.
+        filename: String,
+    },
+
+    /// Search across all trace logs.
+    SearchLogs {
+        /// Name of the workspace.
+        workspace: String,
+        /// Search query (JQ expression).
+        query: String,
+    },
+
+    /// Delete a trace log file.
+    DeleteLog {
+        /// Name of the workspace.
+        workspace: String,
+        /// Log filename to delete.
+        filename: String,
+    },
+
+    /// Delete trace log files, optionally only those older than N days.
+    DeleteLogs {
+        /// Name of the workspace.
+        workspace: String,
+        /// Only delete logs older than this many days (omit to delete all).
+        #[arg(long)]
+        older_than_days: Option<u32>,
+    },
 }
 
 /// Parse a string as a `TokenRef`.
@@ -226,6 +298,44 @@ fn parse_token_refs(strings: &[String]) -> Vec<TokenRef> {
     strings.iter().map(|s| parse_token_ref(s)).collect()
 }
 
+/// Extract the workspace name from a CLI command, if the command is
+/// workspace-scoped.
+fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
+    match cmd {
+        CliCommand::Create { name }
+        | CliCommand::Open { name }
+        | CliCommand::Close { name }
+        | CliCommand::Save { name }
+        | CliCommand::Delete { name } => Some(name.as_str()),
+        CliCommand::AddAtom { workspace, .. }
+        | CliCommand::AddAtoms { workspace, .. }
+        | CliCommand::AddPattern { workspace, .. }
+        | CliCommand::GetVertex { workspace, .. }
+        | CliCommand::ListVertices { workspace, .. }
+        | CliCommand::ListAtoms { workspace, .. }
+        | CliCommand::SearchSequence { workspace, .. }
+        | CliCommand::SearchPattern { workspace, .. }
+        | CliCommand::InsertSequence { workspace, .. }
+        | CliCommand::InsertFirstMatch { workspace, .. }
+        | CliCommand::InsertSequences { workspace, .. }
+        | CliCommand::ReadPattern { workspace, .. }
+        | CliCommand::ReadAsText { workspace, .. }
+        | CliCommand::Validate { workspace, .. }
+        | CliCommand::Snapshot { workspace, .. }
+        | CliCommand::Stats { workspace, .. }
+        | CliCommand::Show { workspace, .. }
+        | CliCommand::ShowVertex { workspace, .. }
+        | CliCommand::ListLogs { workspace, .. }
+        | CliCommand::GetLog { workspace, .. }
+        | CliCommand::QueryLog { workspace, .. }
+        | CliCommand::AnalyzeLog { workspace, .. }
+        | CliCommand::SearchLogs { workspace, .. }
+        | CliCommand::DeleteLog { workspace, .. }
+        | CliCommand::DeleteLogs { workspace, .. } => Some(workspace.as_str()),
+        CliCommand::List | CliCommand::Repl => None,
+    }
+}
+
 fn main() {
     // Initialize tracing (respects RUST_LOG env var).
     tracing_subscriber::fmt()
@@ -242,7 +352,7 @@ fn main() {
     };
 
     match cli.command {
-        Some(cmd) => execute_subcommand(&mut manager, cmd),
+        Some(cmd) => execute_subcommand(&mut manager, cmd, cli.trace),
         None => {
             // No subcommand → start REPL
             repl::run(&mut manager);
@@ -254,7 +364,15 @@ fn main() {
 fn execute_subcommand(
     manager: &mut WorkspaceManager,
     cmd: CliCommand,
+    trace: bool,
 ) {
+    // Extract workspace name before we move `cmd` into the match.
+    let ws_name_owned: Option<String> = if trace {
+        workspace_name_from_cli_cmd(&cmd).map(String::from)
+    } else {
+        None
+    };
+
     let api_cmd = match cmd {
         CliCommand::Create { name } => Command::CreateWorkspace { name },
         CliCommand::Open { name } => Command::OpenWorkspace { name },
@@ -317,8 +435,101 @@ fn execute_subcommand(
             repl::run(manager);
             return;
         },
+        CliCommand::ListLogs { workspace, pattern } => Command::ListLogs {
+            workspace,
+            pattern,
+            limit: 100,
+        },
+        CliCommand::GetLog {
+            workspace,
+            filename,
+            filter,
+            limit,
+        } => Command::GetLog {
+            workspace,
+            filename,
+            filter,
+            limit,
+            offset: 0,
+        },
+        CliCommand::QueryLog {
+            workspace,
+            filename,
+            query,
+        } => Command::QueryLog {
+            workspace,
+            filename,
+            query,
+            limit: 100,
+        },
+        CliCommand::AnalyzeLog {
+            workspace,
+            filename,
+        } => Command::AnalyzeLog {
+            workspace,
+            filename,
+        },
+        CliCommand::SearchLogs { workspace, query } => Command::SearchLogs {
+            workspace,
+            query,
+            limit_per_file: 10,
+        },
+        CliCommand::DeleteLog {
+            workspace,
+            filename,
+        } => Command::DeleteLog {
+            workspace,
+            filename,
+        },
+        CliCommand::DeleteLogs {
+            workspace,
+            older_than_days,
+        } => Command::DeleteLogs {
+            workspace,
+            older_than_days,
+        },
     };
 
+    // Traced execution path
+    if trace {
+        if let Some(ws_name) = ws_name_owned {
+            match manager.log_dir(&ws_name) {
+                Ok(log_dir) => {
+                    let config = CaptureConfig {
+                        enabled: true,
+                        log_dir,
+                        level: "TRACE".to_string(),
+                    };
+                    match execute_traced(manager, api_cmd, Some(&config)) {
+                        Ok((result, trace_summary)) => {
+                            output::print_command_result(&result);
+                            if let Some(summary) = trace_summary {
+                                eprintln!(
+                                    "\u{1f4dd} Trace: {} ({} events, {}ms)",
+                                    summary.log_file,
+                                    summary.entry_count,
+                                    summary.duration_ms,
+                                );
+                            }
+                        },
+                        Err(e) => {
+                            eprintln!("Error: {e}");
+                            std::process::exit(1);
+                        },
+                    }
+                    return;
+                },
+                Err(e) => {
+                    eprintln!("Warning: could not enable tracing: {e}");
+                    // Fall through to normal execution
+                },
+            }
+        } else {
+            eprintln!("Warning: --trace requires a workspace-scoped command");
+        }
+    }
+
+    // Normal (non-traced) execution
     match execute(manager, api_cmd) {
         Ok(result) => output::print_command_result(&result),
         Err(e) => {

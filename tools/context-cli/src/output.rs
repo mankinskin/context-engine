@@ -10,6 +10,11 @@ use context_api::{
         AtomInfo,
         GraphStatistics,
         InsertResult,
+        LogAnalysis,
+        LogDeleteResult,
+        LogEntryInfo,
+        LogFileInfo,
+        LogFileSearchResult,
         PatternInfo,
         PatternReadResult,
         ReadNode,
@@ -61,6 +66,35 @@ pub fn print_command_result(result: &CommandResult) {
         },
         CommandResult::GraphDisplay { display } => println!("{display}"),
         CommandResult::Ok => println!("Ok."),
+        CommandResult::LogList { logs } => print_log_list(logs),
+        CommandResult::LogEntries {
+            filename,
+            total,
+            offset,
+            limit: _,
+            returned: _,
+            entries,
+        } => {
+            print_log_entries(filename, entries, *total, *offset);
+        },
+        CommandResult::LogQueryResult {
+            query,
+            matches,
+            entries,
+        } => {
+            print_log_query_result(query, *matches, entries);
+        },
+        CommandResult::LogAnalysis(analysis) => print_log_analysis(analysis),
+        CommandResult::LogSearchResult {
+            query,
+            files_with_matches,
+            results,
+        } => {
+            print_log_search_result(query, *files_with_matches, results);
+        },
+        CommandResult::LogDeleteResult(result) => {
+            print_log_delete_result(result);
+        },
     }
 }
 
@@ -298,6 +332,109 @@ pub fn print_statistics(stats: &GraphStatistics) {
     println!("  Patterns:  {}", stats.pattern_count);
     println!("  Edges:     {}", stats.edge_count);
     println!("  Max width: {}", stats.max_width);
+}
+
+// ---------------------------------------------------------------------------
+// Log formatting helpers
+// ---------------------------------------------------------------------------
+
+fn print_log_list(logs: &[LogFileInfo]) {
+    if logs.is_empty() {
+        println!("No log files found.");
+        return;
+    }
+    println!("Log files ({}):", logs.len());
+    for log in logs {
+        println!(
+            "  {} ({} bytes, cmd: {})",
+            log.filename, log.size, log.command,
+        );
+    }
+}
+
+fn print_log_entries(
+    filename: &str,
+    entries: &[LogEntryInfo],
+    total: usize,
+    offset: usize,
+) {
+    println!(
+        "Log: {} ({} entries total, showing from offset {})",
+        filename, total, offset,
+    );
+    for entry in entries {
+        let ts = entry.timestamp.as_deref().unwrap_or("");
+        let span = entry.span_name.as_deref().unwrap_or("");
+        let msg = &entry.message;
+        if span.is_empty() {
+            println!("  [{}] {} {}", entry.level, ts, msg);
+        } else {
+            println!("  [{}] {} [{}] {}", entry.level, ts, span, msg);
+        }
+    }
+}
+
+fn print_log_analysis(analysis: &LogAnalysis) {
+    println!("Log Analysis:");
+    println!("  Total entries: {}", analysis.total_entries);
+    println!("  By level:");
+    for (level, count) in &analysis.by_level {
+        println!("    {}: {}", level, count);
+    }
+    if !analysis.by_event_type.is_empty() {
+        println!("  By event type:");
+        for (evt, count) in &analysis.by_event_type {
+            println!("    {}: {}", evt, count);
+        }
+    }
+    if !analysis.spans.is_empty() {
+        println!("  Spans:");
+        for span in &analysis.spans {
+            let err_marker = if span.has_errors { " ⚠" } else { "" };
+            println!("    {} ({}x){}", span.name, span.count, err_marker);
+        }
+    }
+    if !analysis.errors.is_empty() {
+        println!("  Errors:");
+        for err in &analysis.errors {
+            println!("    - {}", err.message);
+        }
+    }
+}
+
+fn print_log_query_result(
+    query: &str,
+    matches: usize,
+    entries: &[LogEntryInfo],
+) {
+    println!("Query: {} ({} matches)", query, matches);
+    for entry in entries {
+        println!("  [{}] {}", entry.level, entry.message);
+    }
+}
+
+fn print_log_search_result(
+    query: &str,
+    files_with_matches: usize,
+    results: &[LogFileSearchResult],
+) {
+    println!(
+        "Search: {} ({} files with matches)",
+        query, files_with_matches,
+    );
+    for result in results {
+        println!("  {} ({} matches)", result.filename, result.matches);
+        for entry in &result.entries {
+            println!("    [{}] {}", entry.level, entry.message);
+        }
+    }
+}
+
+fn print_log_delete_result(result: &LogDeleteResult) {
+    println!(
+        "Deleted {} log file(s) ({} bytes freed)",
+        result.deleted_count, result.freed_bytes,
+    );
 }
 
 /// Print a validation report.
