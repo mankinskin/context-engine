@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 description = "Shared HTTP/MCP server API library for viewer tools"
 
+[features]
+default = []
+ts-gen = ["context-api/ts-gen"]
+
 [lib]
 name = "viewer_api"
 path = "src/lib.rs"
@@ -19,6 +23,9 @@ jaq-core = "1"
 jaq-std = "1"
 jaq-interpret = "1"
 jaq-syn = "1"
+
+# Domain types and log parser from context-api
+context-api = { path = "../../crates/context-api" }
 
 tower-http = { version = "0.5", features = ["fs", "cors"] }
 tracing = "0.1"

@@ -30,7 +30,7 @@
 //! async fn main() {
 //!     let config = ServerConfig::new("my-viewer", 3000);
 //!     let state = MyState;
-//!     
+//!
 //!     run_server(config, state, create_routes, None::<McpServerFactory<MyState>>).await.unwrap();
 //! }
 //! ```
@@ -74,6 +74,22 @@ pub use tokio;
 pub use tower_http;
 pub use tracing;
 pub use tracing_appender;
+
+// Re-export domain types from context-api for downstream consumers
+// (log-viewer, doc-viewer, etc.)
+pub use context_api::{
+    jq,
+    log_parser,
+    types::{
+        LogAnalysis,
+        LogDeleteResult,
+        LogEntryInfo,
+        LogFileInfo,
+        LogFileSearchResult,
+        SpanSummary,
+        TraceSummary,
+    },
+};
 
 /// Convert a path to Unix-style string (forward slashes)
 pub fn to_unix_path(path: &std::path::Path) -> String {
