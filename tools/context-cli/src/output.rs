@@ -5,7 +5,10 @@
 //! function dispatches to the appropriate formatter.
 
 use context_api::{
-    commands::CommandResult,
+    commands::{
+        CommandResult,
+        export_import::ExportFormat,
+    },
     types::{
         AtomInfo,
         GraphStatistics,
@@ -94,6 +97,21 @@ pub fn print_command_result(result: &CommandResult) {
         },
         CommandResult::LogDeleteResult(result) => {
             print_log_delete_result(result);
+        },
+        CommandResult::ExportData { data, format } => {
+            println!("Exported {} bytes (format: {format:?})", data.len());
+            if matches!(format, ExportFormat::Json) {
+                // For JSON exports, write the data to stdout as text
+                if let Ok(text) = std::str::from_utf8(data) {
+                    println!("{text}");
+                } else {
+                    use std::io::Write;
+                    let _ = std::io::stdout().write_all(data);
+                }
+            } else {
+                use std::io::Write;
+                let _ = std::io::stdout().write_all(data);
+            }
         },
     }
 }

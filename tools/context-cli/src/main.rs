@@ -18,6 +18,7 @@ use context_api::{
         Command,
         execute,
         execute_traced,
+        export_import::ExportFormat,
     },
     tracing_capture::CaptureConfig,
     types::TokenRef,
@@ -280,6 +281,29 @@ enum CliCommand {
         #[arg(long)]
         older_than_days: Option<u32>,
     },
+
+    /// Export a workspace to JSON or bincode format.
+    ExportWorkspace {
+        /// Name of the workspace to export.
+        workspace: String,
+        /// Export format: "json" or "bincode".
+        #[arg(long, default_value = "json")]
+        format: String,
+        /// Optional output file path. If omitted, data is written to stdout.
+        #[arg(long)]
+        path: Option<String>,
+    },
+
+    /// Import a workspace from a previously exported file.
+    ImportWorkspace {
+        /// Name to assign to the imported workspace.
+        name: String,
+        /// Path to the exported file.
+        path: String,
+        /// Overwrite if a workspace with the same name already exists.
+        #[arg(long)]
+        overwrite: bool,
+    },
 }
 
 /// Parse a string as a `TokenRef`.
@@ -331,7 +355,10 @@ fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
         | CliCommand::AnalyzeLog { workspace, .. }
         | CliCommand::SearchLogs { workspace, .. }
         | CliCommand::DeleteLog { workspace, .. }
-        | CliCommand::DeleteLogs { workspace, .. } => Some(workspace.as_str()),
+        | CliCommand::DeleteLogs { workspace, .. }
+        | CliCommand::ExportWorkspace { workspace, .. } =>
+            Some(workspace.as_str()),
+        CliCommand::ImportWorkspace { name, .. } => Some(name.as_str()),
         CliCommand::List | CliCommand::Repl => None,
     }
 }
@@ -487,6 +514,30 @@ fn execute_subcommand(
         } => Command::DeleteLogs {
             workspace,
             older_than_days,
+        },
+        CliCommand::ExportWorkspace {
+            workspace,
+            format,
+            path,
+        } => {
+            let export_format = match format.to_lowercase().as_str() {
+                "bincode" => ExportFormat::Bincode,
+                _ => ExportFormat::Json,
+            };
+            Command::ExportWorkspace {
+                workspace,
+                format: export_format,
+                path,
+            }
+        },
+        CliCommand::ImportWorkspace {
+            name,
+            path,
+            overwrite,
+        } => Command::ImportWorkspace {
+            name,
+            path,
+            overwrite,
         },
     };
 

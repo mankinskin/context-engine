@@ -219,7 +219,8 @@ fn extract_workspace_name(cmd: &Command) -> Option<&str> {
         | Command::OpenWorkspace { name }
         | Command::CloseWorkspace { name }
         | Command::SaveWorkspace { name }
-        | Command::DeleteWorkspace { name } => Some(name.as_str()),
+        | Command::DeleteWorkspace { name }
+        | Command::ImportWorkspace { name, .. } => Some(name.as_str()),
         Command::ListWorkspaces => None,
         Command::AddAtom { workspace, .. }
         | Command::AddAtoms { workspace, .. }
@@ -246,7 +247,9 @@ fn extract_workspace_name(cmd: &Command) -> Option<&str> {
         | Command::AnalyzeLog { workspace, .. }
         | Command::SearchLogs { workspace, .. }
         | Command::DeleteLog { workspace, .. }
-        | Command::DeleteLogs { workspace, .. } => Some(workspace.as_str()),
+        | Command::DeleteLogs { workspace, .. }
+        | Command::ExportWorkspace { workspace, .. } =>
+            Some(workspace.as_str()),
     }
 }
 

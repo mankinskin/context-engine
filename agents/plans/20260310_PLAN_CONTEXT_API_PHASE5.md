@@ -531,15 +531,22 @@ ExportData(WorkspaceExport),  // when no path specified — inline result
 - `export_workspace`: serialize the in-memory `Hypergraph` to the requested format, bundle with metadata, write to file or return inline.
 - `import_workspace`: read file, detect format (by extension or magic bytes), deserialize graph, create workspace directory, save.
 
-- [ ] Create `crates/context-api/src/commands/export_import.rs`
-- [ ] Add `ExportWorkspace` and `ImportWorkspace` to `Command` enum
-- [ ] Add `ExportFormat` to types with ts-rs derive
-- [ ] Implement export logic in `WorkspaceManager`
-- [ ] Implement import logic in `WorkspaceManager`
-- [ ] Add CLI subcommands: `context-cli export <workspace> --format json --output graph.json`
-- [ ] Add CLI subcommands: `context-cli import <name> --from graph.json [--overwrite]`
-- [ ] Add tests: export → import round-trip preserves all graph data
-- [ ] Verification: `cargo test -p context-api` — export/import tests pass
+- [x] Create `crates/context-api/src/commands/export_import.rs`
+- [x] Add `ExportWorkspace` and `ImportWorkspace` to `Command` enum
+- [x] Add `ExportFormat` to types with ts-rs derive
+- [x] Implement export logic in `WorkspaceManager`
+- [x] Implement import logic in `WorkspaceManager`
+- [x] Add CLI subcommands: `context-cli export <workspace> --format json --output graph.json`
+- [x] Add CLI subcommands: `context-cli import <name> --from graph.json [--overwrite]`
+- [x] Add tests: export → import round-trip preserves all graph data
+- [x] Verification: `cargo test -p context-api` — export/import tests pass (22 tests)
+
+**Implementation notes (deviations from plan):**
+- `WorkspaceExport` struct was **not** created as a public type. Instead, the JSON envelope (`JsonExport`) and bincode envelope use internal formats because `Hypergraph`'s serde uses non-string map keys incompatible with `serde_json`. The JSON format embeds the graph as **base64-encoded bincode bytes** (`graph_b64` field) while keeping metadata human-readable. The bincode format uses a custom length-prefixed framing with a magic header (`CXEI`) to avoid bincode misreading serde-tagged enums.
+- `CommandResult::ExportData { data: Vec<u8>, format: ExportFormat }` is returned for inline exports (when no output path is given).
+- Format auto-detection on import uses JSON parse attempt first, then checks for the `CXEI` magic header for bincode — no reliance on file extension.
+- `WorkspaceApi` trait extended with `export_workspace` and `import_workspace` methods.
+- Exhaustive match arms added to `context-cli`, `context-mcp`, and `context-http` for the new `Command` and `CommandResult` variants.
 
 ---
 

@@ -26,7 +26,8 @@ fn workspace_name_of(cmd: &Command) -> Option<&str> {
         | Command::OpenWorkspace { name }
         | Command::CloseWorkspace { name }
         | Command::SaveWorkspace { name }
-        | Command::DeleteWorkspace { name } => Some(name),
+        | Command::DeleteWorkspace { name }
+        | Command::ImportWorkspace { name, .. } => Some(name),
 
         // No workspace
         Command::ListWorkspaces => None,
@@ -57,7 +58,8 @@ fn workspace_name_of(cmd: &Command) -> Option<&str> {
         | Command::AnalyzeLog { workspace, .. }
         | Command::SearchLogs { workspace, .. }
         | Command::DeleteLog { workspace, .. }
-        | Command::DeleteLogs { workspace, .. } => Some(workspace),
+        | Command::DeleteLogs { workspace, .. }
+        | Command::ExportWorkspace { workspace, .. } => Some(workspace),
     }
 }
 
