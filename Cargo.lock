@@ -120,6 +120,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "ascii-dag"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d37b2934628a0825620f3c186bc64b282ee209ada8f5292539a2a853f26da706"
+
+[[package]]
 name = "ascii_utils"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -706,6 +712,7 @@ dependencies = [
 name = "context-api"
 version = "0.1.0"
 dependencies = [
+ "ascii-dag",
  "bincode",
  "chrono",
  "context-insert",
@@ -717,6 +724,7 @@ dependencies = [
  "jaq-interpret",
  "jaq-std",
  "jaq-syn",
+ "ngrams",
  "once_cell",
  "pretty_assertions",
  "regex",
@@ -1271,6 +1279,7 @@ dependencies = [
 name = "dungeon-crawler"
 version = "0.1.0"
 dependencies = [
+ "context-api",
  "rand 0.8.5",
 ]
 

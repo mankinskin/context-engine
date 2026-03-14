@@ -51,6 +51,18 @@ enum CliCommand {
         name: String,
     },
 
+    /// Create a workspace by parsing text with the slow canonical ngrams algorithm.
+    #[command(name = "create-ngrams")]
+    CreateNgrams {
+        /// Name of the workspace to create.
+        name: String,
+        /// Input text used to build the graph.
+        text: String,
+        /// Timeout in seconds (default: 60).
+        #[arg(long = "timeout-secs", default_value_t = 60)]
+        timeout_secs: u64,
+    },
+
     /// Open an existing workspace.
     Open {
         /// Name of the workspace to open.
@@ -231,6 +243,15 @@ enum CliCommand {
         index: usize,
     },
 
+    /// Render an ASCII layered graph for the workspace (top = longest labels).
+    RenderGraph {
+        /// Name of the open workspace.
+        workspace: String,
+        /// Use ascii-dag renderer instead of the default aligned grammar layout.
+        #[arg(long = "ascii-dag")]
+        ascii_dag: bool,
+    },
+
     /// Start the interactive REPL.
     Repl,
 
@@ -345,6 +366,7 @@ fn parse_token_refs(strings: &[String]) -> Vec<TokenRef> {
 fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
     match cmd {
         CliCommand::Create { name }
+        | CliCommand::CreateNgrams { name, .. }
         | CliCommand::Open { name }
         | CliCommand::Close { name }
         | CliCommand::Save { name }
@@ -369,6 +391,7 @@ fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
         | CliCommand::Stats { workspace, .. }
         | CliCommand::Show { workspace, .. }
         | CliCommand::ShowVertex { workspace, .. }
+        | CliCommand::RenderGraph { workspace, .. }
         | CliCommand::ListLogs { workspace, .. }
         | CliCommand::GetLog { workspace, .. }
         | CliCommand::QueryLog { workspace, .. }
@@ -422,6 +445,15 @@ fn execute_subcommand(
 
     let api_cmd = match cmd {
         CliCommand::Create { name } => Command::CreateWorkspace { name },
+        CliCommand::CreateNgrams {
+            name,
+            text,
+            timeout_secs,
+        } => Command::CreateWorkspaceFromNgrams {
+            name,
+            text,
+            timeout_secs,
+        },
         CliCommand::Open { name } => Command::OpenWorkspace { name },
         CliCommand::Close { name } => Command::CloseWorkspace { name },
         CliCommand::Save { name } => Command::SaveWorkspace { name },
@@ -482,6 +514,13 @@ fn execute_subcommand(
         CliCommand::Show { workspace } => Command::ShowGraph { workspace },
         CliCommand::ShowVertex { workspace, index } =>
             Command::ShowVertex { workspace, index },
+        CliCommand::RenderGraph {
+            workspace,
+            ascii_dag,
+        } => Command::RenderAsciiGraph {
+            workspace,
+            ascii_dag,
+        },
         CliCommand::Repl => {
             repl::run(manager);
             return;

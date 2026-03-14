@@ -207,7 +207,7 @@ context-cli create dungeon-demo
 - **Vertex**: a node in the hypergraph. Has a unique numeric index. Every token is a vertex.
 - **Token**: the content associated with a vertex. Defined by its **child patterns** — sequences of other tokens that decompose it.
 - **Atom**: a leaf token with no children. Represents a single indivisible character (e.g., `'a'`, `'b'`, `' '`).
-- **Pattern**: an ordered sequence of token references stored as a child of some parent token. `"abc"` might have child pattern `[a, b, c]` (three atoms).
+- **Pattern**: an ordered sequence of token references stored as a child of some parent token. For `"abc"`, prefer `[ab, c]` and `[a, bc]` when they preserve the same border offsets with fewer tokens; the fully split `[a, b, c]` form can be redundant.
 - **Width**: the total number of atoms reachable by fully expanding all patterns. `"abc"` has width 3. A compound token `["abc", "def"]` has width 6. **Width = total atom count, NOT direct children count.**
 - **Parent references**: every token tracks which larger tokens contain it as part of a pattern. `"abc"` is a parent of `"a"`, `"b"`, and `"c"`.
 - **The containment invariant**: a path exists between two vertices if and only if one is a substring of the other.
@@ -219,8 +219,8 @@ Build a graph representing a simple dungeon with these rooms/items:
 1. Start with atoms: `a`, `b`, `c`
 2. Create token `"ab"` = `[a, b]`
 3. Create token `"bc"` = `[b, c]`
-4. Create token `"abc"` = `[a, b, c]` — but also `[ab, c]` and `[a, bc]`
-5. Show that `"abc"` has **three** child patterns (three ways to decompose it)
+4. Create token `"abc"` with patterns `[ab, c]` and `[a, bc]`
+5. Explain that both patterns encode border offsets `[1, 2]`; omit `[a, b, c]` here because it is over-specific and does not add coverage
 6. Show width calculations: `"ab"` → width 2, `"abc"` → width 3
 
 #### Visual Diagram: ASCII Hypergraph
@@ -230,7 +230,6 @@ Build a graph representing a simple dungeon with these rooms/items:
                     │  "abc"  (vertex 5, w=3)   │
                     │                           │
                     │  patterns:                │
-                    │    [a, b, c]              │
                     │    [ab, c]                │
                     │    [a, bc]                │
                     └─────┬──────────┬──────────┘
@@ -250,7 +249,7 @@ Build a graph representing a simple dungeon with these rooms/items:
 ```
 
 - Note `b` (vertex 1) is shared between `"ab"` and `"bc"` — deduplication!
-- Note `"abc"` has three decomposition paths — overlapping decompositions!
+- Note `"abc"` keeps the two decomposition paths that preserve border offsets `[1, 2]`; the fully split `[a, b, c]` path is intentionally omitted as redundant.
 
 #### Key Takeaways
 
@@ -258,6 +257,7 @@ Build a graph representing a simple dungeon with these rooms/items:
 - Width = total atom count, not direct children count
 - The same atom/token can appear in many parent patterns (shared structure)
 - Multiple child patterns = multiple valid decompositions of the same token
+- Prefer decompositions that cover the same border offsets with fewer tokens; avoid over-specific patterns when they add no new structure
 - The graph stores ALL valid decompositions, not just one
 
 #### Try It Yourself
@@ -312,7 +312,7 @@ The key operation is `insert_next_match` — it searches for the biggest match, 
 
 #### Worked Example 1: Reading "abcabc" When "abc" Is Known
 
-Starting state: graph contains atoms `a`, `b`, `c` and token `"abc"` = `[a, b, c]`.
+Starting state: graph contains atoms `a`, `b`, `c` and token `"abc"` (represented by `[ab, c]` and/or `[a, bc]`).
 
 ```
 Input: a b c a b c
@@ -582,25 +582,37 @@ This arises naturally from **overlapping matches** during the read algorithm:
 - The overlap means the combined token "AB" can be decomposed in multiple ways depending on where you "cut" through the overlap region
 - The `BandState` mechanism detects these overlaps and creates all valid decomposition patterns
 
-#### Worked Example: "abcabc" with Multiple Decompositions
+#### Worked Example: Correct Baseline and Overlap Cases
 
-Starting state: atoms `a`, `b`, `c` and token `"abc"` = `[a, b, c]`.
+Starting state: atoms `a`, `b`, `c` and token `"abc"` with one pattern `[a, b, c]`.
 
 ```
+Baseline (no additional overlap variants implied):
+
 Read "abcabc":
+  (abcabc) -> [abc, abc]
+  (abc)    -> [a, b, c]
 
-Primary decomposition (from greedy largest-match):
-  "abcabc" = ["abc", "abc"]
+This case documents the direct greedy decomposition only.
+```
 
-But the graph also discovers overlap-derived decompositions:
+#### Worked Example: Simple Repetition + Overlap ("aaa")
 
-  "abcabc" = [a, bcabc]     ← if "bcabc" is built as [bc, abc]
-  "abcabc" = [ab, cabc]     ← if "cabc" is built as [c, abc]  
-  "abcabc" = [abca, bc]     ← if "abca" is built as [abc, a]
-  "abcabc" = [abcab, c]     ← if "abcab" is built as [abc, ab]
+```
+Read "aaa":
 
-Each decomposition is a valid child pattern of the vertex "abcabc".
-The graph stores ALL of them.
+  (aaa) -> { [aa, a], [a, aa] }
+  (aa)  -> [a, a]
+```
+
+#### Worked Example: Longer Repetition + Overlap ("abcabcabc")
+
+```
+Read "abcabcabc":
+
+  (abcabcabc) -> { [abcabc, abc], [abc, abcabc] }
+  (abcabc)    -> [abc, abc]
+  (abc)       -> [a, b, c]
 ```
 
 #### The BandState Mechanism
@@ -629,38 +641,146 @@ The BandState tracks:
 4. **The complement**: the non-overlapping portions on each side
 
 When an overlap is detected, the system creates:
-- The primary decomposition (greedy: `["abc", "abc"]`)
+- The primary decomposition (greedy)
 - Alternative decompositions based on different cuts through the overlap
 
-#### Visual Diagram: One Token, Multiple Patterns
+#### Visual Diagram: Overlap Examples
 
 ```
-                 ┌─────────────────────────────────────┐
-                 │     "abcabc"  (vertex N, width=6)   │
-                 │                                     │
-                 │  Child Patterns:                    │
-                 │    Pattern 0: [abc, abc]     ← greedy decomposition
-                 │    Pattern 1: [a, bcabc]     ← overlap variant
-                 │    Pattern 2: [abcab, c]     ← overlap variant
-                 │    ...                              │
-                 └──────┬────────────┬─────────────────┘
-                        │            │
-            ┌───────────┘            └──────────┐
-            ▼                                   ▼
-   ┌─────────────────┐                ┌─────────────────┐
-   │ "abc" (w=3)     │                │ "bcabc" (w=5)   │
-   │ [a, b, c]       │                │ [bc, abc]       │
-   └─────────────────┘                └─────────────────┘
-            ▲                                   │
-            │                          ┌────────┘
-            │                          ▼
-            │                 ┌─────────────────┐
-            └─────────────────│ "bc" (w=2)      │
-              (shared child)  │ [b, c]          │
-                              └─────────────────┘
+Simple overlap case:
+
+      ┌────────────────────────┐
+      │   "aaa" (w=3)          │
+      │   [aa, a]              │
+      │   [a, aa]              │
+      └───────────┬────────────┘
+        │
+        ▼
+       ┌────────────┐
+       │ "aa" (w=2) │
+       │ [a, a]     │
+       └────────────┘
+
+
+Longer overlap case:
+
+      ┌────────────────────────────────────┐
+      │ "abcabcabc" (w=9)                 │
+      │ [abcabc, abc]                      │
+      │ [abc, abcabc]                      │
+      └───────────────┬────────────────────┘
+       │
+       ▼
+     ┌──────────────┐
+     │ "abcabc"     │
+     │ [abc, abc]   │
+     └──────┬───────┘
+       │
+       ▼
+     ┌──────────────┐
+     │ "abc"        │
+     │ [a, b, c]    │
+     └──────────────┘
 ```
 
-Note: `"abc"` appears as a child in BOTH Pattern 0 of `"abcabc"` AND Pattern 1's `"bcabc"`. The shared structure means the graph captures the relationship between all these decompositions efficiently.
+Note: `"abcabc"` in the baseline case is represented as one pattern `[abc, abc]`; overlap alternatives are illustrated with `"aaa"` and `"abcabcabc"`.
+
+#### Worked Example: Complex Mixed Overlaps ("abcabababcaba") — ngrams-verified
+
+The string `"abcabababcaba"` (length 13) was run through the ngrams reference
+algorithm and produced the following structure (verified 2026-03-14 via
+`crates/context-read/tests/overlapping.rs::complex_abcabababcaba`):
+
+```
+Atoms: a, b, c
+
+(ab)            -> [a, b]
+(aba)           -> [ab, a]
+(abab)          -> { [ab, ab],      [aba, b]      }
+(ababa)         -> { [ab, aba],     [abab, a]     }
+(ababab)        -> { [ab, abab],    [ababa, b]    }
+(caba)          -> [c, aba]
+(abc)           -> [ab, c]
+(abcaba)        -> { [ab, caba],    [abc, aba]    }
+(abcabab)       -> { [abc, abab],   [abcaba, b]   }
+(abcababa)      -> { [abc, ababa],  [abcabab, a]  }
+(abcababab)     -> { [abc, ababab], [abcababa, b] }
+(ababcaba)      -> { [ab, abcaba],  [abab, caba]  }
+(abababcaba)    -> { [ab, ababcaba],[ababab, caba] }
+(abcabababcaba) -> { [abc, abababcaba], [abcababab, caba] }
+```
+
+```
+Layered layout (generated by context-api/ascii_graph via tools/dungeon-crawler/src/bin/layout_validated_grammar.rs)
+Top layer = longest token (largest width)
+
+      ┌────────────────────────────────────────┐
+      │ "abcabababcaba" (w=13)               │
+      │ [abc, abababcaba]                     │
+      │ [abcababab, caba]                     │
+      └────────────────────────────────────────┘
+
+      ┌────────────────────────┐  ┌────────────────────────┐
+      │ "abababcaba" (w=10)   │  │ "abcababab" (w=9)     │
+      └────────────────────────┘  └────────────────────────┘
+
+      ┌────────────────────────┐  ┌────────────────────────┐
+      │ "ababcaba" (w=8)      │  │ "abcababa" (w=8)      │
+      └────────────────────────┘  └────────────────────────┘
+
+      ┌────────────────────────┐
+      │ "abcabab" (w=7)       │
+      └────────────────────────┘
+
+      ┌────────────────────────┐  ┌────────────────────────┐
+      │ "ababab" (w=6)        │  │ "abcaba" (w=6)        │
+      └────────────────────────┘  └────────────────────────┘
+
+      ┌────────────────────────┐
+      │ "ababa" (w=5)         │
+      └────────────────────────┘
+
+      ┌────────────────────────┐  ┌────────────────────────┐
+      │ "abab" (w=4)          │  │ "caba" (w=4)          │
+      └────────────────────────┘  └────────────────────────┘
+
+      ┌────────────────────────┐  ┌────────────────────────┐
+      │ "aba" (w=3)           │  │ "abc" (w=3)           │
+      └────────────────────────┘  └────────────────────────┘
+
+               ┌────────────────────────┐
+               │ "ab" (w=2)            │
+               └────────────────────────┘
+
+                      a (w=1)  b (w=1)  c (w=1)
+```
+
+```
+Edge audit (generated, complete):
+
+abcabababcaba -> abc, abababcaba, abcababab, caba
+abababcaba    -> ab, ababab, ababcaba, caba
+abcababab     -> abc, ababab, abcababa, b
+ababcaba      -> ab, abab, abcaba, caba
+abcababa      -> abc, ababa, abcabab, a
+abcabab       -> abc, abab, abcaba, b
+ababab        -> ab, abab, ababa, b
+abcaba        -> ab, caba, abc, aba
+ababa         -> ab, aba, abab, a
+abab          -> ab, ab, aba, b
+caba          -> c, aba
+aba           -> ab, a
+abc           -> ab, c
+ab            -> a, b
+```
+
+Key observations:
+- The dominant repeat unit is `ab` (not `abc`), so all overlap chains grow via `ab`
+- `abc` acts as the leading anchor; the tail `caba` = `[c, aba]` is the suffix anchor
+- Tokens like `ba`, `bc`, `bcaba`, `abababc` do **NOT** appear — the overlap
+  structure follows the `ab`-repetition axis, not the `abc`-repetition axis
+- `aba` = `[ab, a]` only (not `[a, ba]`); `abc` = `[ab, c]` only (not `[a, bc]`)
+  because `ba` and `bc` are never independently established as tokens
 
 #### Worked Example: Dungeon Screen Boundaries
 
@@ -687,6 +807,45 @@ Now read the combined log: "Room: Cave\nYou see a goblin\nHP: 100/100"
     
   Both are valid child patterns of the combined log token!
   The overlap at "You see a goblin" creates the alternative decompositions.
+```
+
+#### Worked Example: Long Session Log with Repeated Prefixes and Suffixes
+
+```
+Session chunk A:
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: look\n"
+
+Session chunk B:
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: attack\n"
+
+Session chunk C:
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: loot\n"
+
+After reading A, B, C independently:
+  rootA = ["Room: Cave\nYou see a goblin\nHP: 100/100\n", "Command: look\n"]
+  rootB = ["Room: Cave\nYou see a goblin\nHP: 100/100\n", "Command: attack\n"]
+  rootC = ["Room: Cave\nYou see a goblin\nHP: 100/100\n", "Command: loot\n"]
+
+Now read the concatenated combat log:
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: look\n"
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: attack\n"
+  "Room: Cave\nYou see a goblin\nHP: 100/100\nCommand: loot\n"
+
+Expected structural behavior:
+  1) The long shared prefix token
+     "Room: Cave\nYou see a goblin\nHP: 100/100\n"
+     is reused three times (high-value deduplication unit).
+
+  2) Multiple valid decompositions coexist for the combined log token:
+     - By command boundaries:
+       [prefix, "Command: look\n", prefix, "Command: attack\n", prefix, "Command: loot\n"]
+     - By larger repeated chunks:
+       ["Room...look\nRoom...attack\n", "Room...loot\n"]
+     - By overlap-aware regrouping around repeated "Room: Cave\nYou see a goblin\n":
+       ["Room: Cave\nYou see a goblin\n", "HP: 100/100\nCommand: look\nRoom: Cave\nYou see a goblin\n", ...]
+
+  3) The graph keeps these alternatives because each decomposition exposes
+     different reusable sub-structure for future reads and search traversals.
 ```
 
 #### Why Store All Decompositions?
@@ -777,9 +936,9 @@ context-cli inspect dungeon-demo "You see a "
 - [ ] **Step 5: Write Skill 4 — Overlapping Decompositions**
   - Follow the template structure
   - Focus on: multiple child patterns, BandState mechanism, overlap detection
-  - Two worked examples: character-level overlap, dungeon screen boundaries
+  - Three worked examples: character-level overlap, dungeon screen boundaries, long repetition-heavy session log
   - Multiple-pattern vertex diagram
-  - **Verification:** Overlap examples are consistent with BandState logic in `context-read`
+  - **Verification:** Overlap examples (including long-context repetition) are consistent with BandState logic in `context-read`
 
 ### Phase 3: Verification
 
@@ -818,6 +977,7 @@ context-cli inspect dungeon-demo "You see a "
 | ASCII art renders correctly | View each doc in a terminal at 80 columns |
 | CLI examples are runnable | Execute all `context-cli` commands in "Try It Yourself" sections |
 | CLI examples produce expected output | Compare actual vs documented output |
+| Repetition/long-context example is included | Skill 4 contains one worked example with repeated multi-line prefixes across 3+ segments |
 | Terminology consistency | Grep for key terms across skill docs and HIGH_LEVEL_GUIDE.md files |
 | Cross-references work | All `[links](targets)` resolve to existing files |
 | No internal jargon leaks | Skill docs should not reference agent guides, plans, or internal implementation details |

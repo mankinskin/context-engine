@@ -138,6 +138,63 @@ fn execute_repl_line(
             }
         },
 
+        "create-ngrams" => {
+            if parts.len() < 3 {
+                eprintln!(
+                    "Usage: create-ngrams <name> [--timeout <seconds>] <text>"
+                );
+                return;
+            }
+
+            let name = parts[1];
+            let mut timeout_secs: u64 = 60;
+            let mut text_start = 2usize;
+
+            if parts.get(2) == Some(&"--timeout") {
+                let Some(timeout_str) = parts.get(3) else {
+                    eprintln!(
+                        "Usage: create-ngrams <name> [--timeout <seconds>] <text>"
+                    );
+                    return;
+                };
+                match timeout_str.parse::<u64>() {
+                    Ok(v) if v > 0 => timeout_secs = v,
+                    _ => {
+                        eprintln!(
+                            "Error: timeout must be a positive integer seconds"
+                        );
+                        return;
+                    },
+                }
+                text_start = 4;
+            }
+
+            if text_start >= parts.len() {
+                eprintln!(
+                    "Usage: create-ngrams <name> [--timeout <seconds>] <text>"
+                );
+                return;
+            }
+
+            let text = parts[text_start..].join(" ");
+            match execute_and_print(
+                manager,
+                Command::CreateWorkspaceFromNgrams {
+                    name: name.to_string(),
+                    text,
+                    timeout_secs,
+                },
+                *tracing_enabled,
+                current_ws.as_deref(),
+            ) {
+                Ok(_) => {
+                    *current_ws = Some(name.to_string());
+                    println!("(workspace '{}' is now active)", name);
+                },
+                Err(()) => {},
+            }
+        },
+
         "open" =>
             if let Some(name) = parts.get(1) {
                 match execute_and_print(
@@ -577,6 +634,24 @@ fn execute_repl_line(
                 }
             },
 
+        "render" | "render-graph" =>
+            if let Some(ws) = require_workspace(current_ws) {
+                let ascii_dag = parts
+                    .iter()
+                    .skip(1)
+                    .any(|arg| *arg == "--ascii-dag");
+                execute_and_print(
+                    manager,
+                    Command::RenderAsciiGraph {
+                        workspace: ws,
+                        ascii_dag,
+                    },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
+            },
+
         // -- Debug / introspection ------------------------------------------
         "snapshot" =>
             if let Some(ws) = require_workspace(current_ws) {
@@ -868,6 +943,9 @@ fn print_help() {
         "  create <name>        Create a new workspace and set it as active"
     );
     println!(
+        "  create-ngrams <name> [--timeout <sec>] <text>  Create workspace from ngrams text (default timeout: 60s)"
+    );
+    println!(
         "  open <name>          Open a workspace from disk and set it as active"
     );
     println!("  close [<name>]       Close the current (or named) workspace");
@@ -924,6 +1002,9 @@ fn print_help() {
     );
     println!(
         "  show <index>         Show a single vertex with its children and parents"
+    );
+    println!(
+        "  render [--ascii-dag]  Render graph (default aligned grammar layout)"
     );
     println!();
     println!("Tracing commands:");
