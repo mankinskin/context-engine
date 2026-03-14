@@ -1103,7 +1103,7 @@ The old `append_to_pattern` is deprecated. All 3 call sites in `RootManager` swi
 - [x] Get answers from user (Round 2)
 - [x] Finalize all design decisions
 
-### Phase 2: Design (🚧 IN PROGRESS)
+### Phase 2: Design ✅ COMPLETE
 - ✅ Created detailed implementation plan files:
   - ✅ [`PLAN_INSERT_NEXT_MATCH.md`](20260314_PLAN_INSERT_NEXT_MATCH.md) — Rename `insert_or_get_complete` → `insert_next_match`, add `InsertOutcome` enum (flat, non-generic, with Response), update all 8 production + ~9 test call sites. Includes Response extraction design, migration guide, and 10 atomic execution steps.
   - ✅ [`PLAN_APPEND_TO_PATTERN_FIX.md`](20260314_PLAN_APPEND_TO_PATTERN_FIX.md) — Split into `extend_root_pattern` (safe) + `append_to_owned_pattern` (in-place), update 3 RootManager call sites, deprecate old function. Includes concrete corruption example and 7 execution steps.
@@ -1138,11 +1138,15 @@ PLAN_INTEGRATION_TESTS ──────┘ (depends on CLI_READ_UX for test ta
 2. `PLAN_CLI_READ_UX` + `PLAN_READ_STREAM_DESIGN` (parallel — depend on step 1)
 3. `PLAN_DUNGEON_CRAWLER_SKILLS` + `PLAN_INTEGRATION_TESTS` (parallel — depend on step 2)
 
-### Phase 3: Implement
-- **3a: Foundation fixes** (can be parallel)
-  - Split `append_to_pattern` into `extend_root_pattern` + `append_to_owned_pattern` in `context-trace`
-  - Rename `insert_or_get_complete` → `insert_next_match` + add `InsertOutcome` enum (non-generic, with Response)
-  - Clean up unused async dependencies in `context-read`
+### Phase 3: Implement (🚧 IN PROGRESS)
+- **3a: Foundation fixes** ✅ COMPLETE (2026-03-14)
+  - ✅ Split `append_to_pattern` into `extend_root_pattern` (safe, creates new vertex) + `append_to_owned_pattern` (in-place with debug_assert guards) in `context-trace` (`parents.rs`). Original `append_to_pattern` deprecated.
+  - ✅ Added `InsertOutcome` enum (`Created`/`Complete`/`NoExpansion`, each carrying `IndexWithPath` + `Response`) in new `context-insert/src/insert/outcome.rs`. Added `insert_next_match` method on `InsertCtx` and `ToInsertCtx` trait. Re-exported `InsertOutcome` from crate root.
+  - ✅ Migrated all production call sites: `context-api` `insert_first_match` + `insert_sequence` (2 sites), `context-read` `ExpansionCtx::new` (1 site). All use fully-qualified `ToInsertCtx::<IndexWithPath>::insert_next_match(...)` syntax for type disambiguation.
+  - ✅ Migrated all test call sites: `context-insert` tests (11 sites across `context_read_scenarios.rs` + `expanded_overlap.rs`), `context-read` cursor tests (12 sites in `cursor.rs`). All use fully-qualified syntax.
+  - ✅ Deprecated `insert_or_get_complete` on both trait and impl with `#[deprecated(since = "0.2.0")]`. Zero deprecation warnings remain.
+  - ✅ Verified: no new test failures introduced. Pre-existing failures unchanged (context-api: 15, context-read: 29).
+  - ⬜ Clean up unused async dependencies in `context-read` (deferred — not blocking)
 - **3b: CLI & API layer**
   - Add `Command::ReadSequence { workspace, text }` to `context-api`
   - Add `Command::ReadFile { workspace, path }` to `context-api`
