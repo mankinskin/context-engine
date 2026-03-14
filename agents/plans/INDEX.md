@@ -6,6 +6,13 @@ Plans for major refactorings and features before execution.
 
 | Date | File | Status | Summary |
 |------|------|--------|---------|
+| 2026-03-14 | [PLAN_CONTEXT_READ_UX_IMPROVEMENT](20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md) | 📋 design | **Parent plan** — Multi-phase plan to improve context-read UX, tie up loose ends between context-insert and context-read, create dungeon-crawler skill docs, and build CLI integration test suite |
+| 2026-03-14 | [PLAN_INSERT_NEXT_MATCH](20260314_PLAN_INSERT_NEXT_MATCH.md) | 📋 | Rename `insert_or_get_complete` → `insert_next_match`, replace nested `Result` with flat `InsertOutcome` enum, update 2 production + ~12 test call sites |
+| 2026-03-14 | [PLAN_APPEND_TO_PATTERN_FIX](20260314_PLAN_APPEND_TO_PATTERN_FIX.md) | 📋 | Split `append_to_pattern` into `extend_root_pattern` (safe, new vertex) + `append_to_owned_pattern` (in-place, debug-asserted), deprecate original, update 3 RootManager call sites |
+| 2026-03-14 | [PLAN_CLI_READ_UX](20260314_PLAN_CLI_READ_UX.md) | 📋 | CLI/API changes: `Command::ReadSequence`, `Command::ReadFile`, REPL smart parsing, file input flags, summary output format |
+| 2026-03-14 | [PLAN_READ_STREAM_DESIGN](20260314_PLAN_READ_STREAM_DESIGN.md) | design | Stream/iterator design for the read pipeline — lazy atom resolution, `from_reader` adapter, `ReadSequenceIter`, future async Stream pattern, and multi-band debug_assert |
+| 2026-03-14 | [PLAN_DUNGEON_CRAWLER_SKILLS](20260314_PLAN_DUNGEON_CRAWLER_SKILLS.md) | 📋 | 4 educational skill documents in `docs/skills/` explaining hypergraph model and algorithms using dungeon-crawler game examples |
+| 2026-03-14 | [PLAN_INTEGRATION_TESTS](20260314_PLAN_INTEGRATION_TESTS.md) | 📋 | Rust integration test harness in `tools/context-cli/tests/`, 6 categories, 38+ tests, API-level + CLI-level, `FAILING_TESTS.md` tracker |
 | 2026-03-14 | [PLAN_CONTEXT_API_PHASE4_1](20260314_PLAN_CONTEXT_API_PHASE4_1.md) | 📋 | Phase 4.1 — Refactor viewer-api and log-viewer into thin frontend-server layers that depend on context-http for all context-engine and log backend APIs |
 | 2026-03-14 | [PLAN_CONTEXT_API_PHASE3_1](20260314_PLAN_CONTEXT_API_PHASE3_1.md) | design | Phase 3.1 — Per-command tracing log capture in context-cli and context-mcp, plus log query/analysis tools (JQ, analyze, search) |
 | 2026-03-10 | [PLAN_CONTEXT_API_OVERVIEW](20260310_PLAN_CONTEXT_API_OVERVIEW.md) | 📋 | context-api master plan — unified API for context-* crates with CLI, MCP, HTTP, TypeScript adapters |
