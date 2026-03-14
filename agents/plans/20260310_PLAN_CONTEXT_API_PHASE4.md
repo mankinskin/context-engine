@@ -1,7 +1,7 @@
 ---
 tags: `#context-api` `#phase4` `#http` `#graphql` `#adapter` `#axum`
 summary: Phase 4 — Create HTTP adapter with RPC endpoint and optional GraphQL schema, reusing viewer-api server infrastructure
-status: 📋
+status: 🚧
 ---
 
 # Plan: context-api Phase 4 — HTTP + GraphQL Adapter
@@ -133,7 +133,7 @@ GraphQL adds significant compile-time dependencies (`async-graphql` + proc macro
 
 ## Execution Steps
 
-### Step 1: Add to Workspace
+### Step 1: Add to Workspace ✅
 
 Add `tools/context-http` to the root `Cargo.toml`:
 
@@ -150,7 +150,7 @@ members = [
 
 ---
 
-### Step 2: Create Cargo.toml
+### Step 2: Create Cargo.toml ✅
 
 ```toml
 [package]
@@ -188,7 +188,7 @@ async-graphql-axum = { version = "7", optional = true }
 
 ---
 
-### Step 3: Application State
+### Step 3: Application State ✅
 
 Create `src/state.rs`:
 
@@ -216,7 +216,7 @@ impl AppState {
 
 ---
 
-### Step 4: HTTP Error Response Mapping
+### Step 4: HTTP Error Response Mapping ✅
 
 Create `src/error.rs`:
 
@@ -297,7 +297,7 @@ impl IntoResponse for ApiError {
 
 ---
 
-### Step 5: RPC Endpoint
+### Step 5: RPC Endpoint ✅
 
 Create `src/rpc.rs` — the primary command dispatch endpoint:
 
@@ -358,7 +358,7 @@ pub async fn execute(
 
 ---
 
-### Step 6: Convenience REST Endpoints
+### Step 6: Convenience REST Endpoints ✅
 
 Create `src/rest.rs` — lightweight REST endpoints for common operations that don't need the full Command enum:
 
@@ -458,7 +458,7 @@ pub async fn get_statistics(
 
 ---
 
-### Step 7: Router Construction
+### Step 7: Router Construction ✅
 
 Create `src/router.rs` — assemble all routes into an axum `Router`:
 
@@ -499,7 +499,7 @@ pub fn create_router(state: AppState) -> Router {
 
 ---
 
-### Step 8: GraphQL Schema (Feature-Gated)
+### Step 8: GraphQL Schema (Feature-Gated) ⏳
 
 Create `src/graphql.rs` — optional GraphQL endpoint:
 
@@ -665,7 +665,7 @@ pub fn add_graphql_routes(router: Router<AppState>, state: AppState) -> Router<A
 
 ---
 
-### Step 9: Main Entry Point
+### Step 9: Main Entry Point ✅
 
 Create `src/main.rs`:
 
@@ -743,7 +743,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ---
 
-### Step 10: Integration Tests
+### Step 10: Integration Tests ✅
 
 Create tests that exercise the HTTP endpoints using `axum::test`:
 
@@ -883,7 +883,7 @@ async fn graphql_workspaces_query() {
 
 ---
 
-### Step 11: Documentation
+### Step 11: Documentation ✅
 
 Create a brief README for the crate:
 
@@ -1044,7 +1044,33 @@ If in the future we want a single `context-server` binary that does both HTTP + 
 - **Batch endpoint** — `POST /api/batch` accepting an array of Commands for transactional multi-step operations.
 
 ### Deviations from Plan
-*(To be filled during execution)*
+
+1. **`axum` version kept at 0.7** (not 0.8 as the plan specified) — `viewer-api` depends on axum 0.7 and tower-http 0.5, so `context-http` uses the same versions for compatibility. The plan's dependency table listed 0.8 / 0.6 but the workspace hadn't upgraded yet.
+
+2. **`AppState` uses `Arc<Mutex<WorkspaceManager>>`** instead of `Arc<WorkspaceManager>` — `WorkspaceManager::execute()` (via the free function `commands::execute`) requires `&mut self`, so a `Mutex` is needed. The plan assumed internal locking, but the actual API surface requires exclusive access.
+
+3. **`GraphSnapshot` imported from `context-trace`** — The plan listed `GraphSnapshot` as a `context-api` type, but it's actually defined in `context_trace::graph::snapshot` and re-exported in `context_api::types` as `Snapshot`. The REST `/snapshot` endpoint serializes it to `serde_json::Value` to avoid coupling to the `context-trace` crate.
+
+4. **`Command` JSON format is internally tagged** (`#[serde(tag = "command")]`) — The plan's pseudocode showed externally-tagged enum variants (e.g. `{"CreateWorkspace": {"name": "…"}}`). The actual format is `{"command": "create_workspace", "name": "…"}`. The `trace` field is handled by extracting it from the raw `serde_json::Value` before deserializing the `Command`, since both `Command`'s tag and the envelope used the `"command"` key.
+
+5. **No `#[serde(untagged)]` envelope** — The plan proposed an `ExecuteInput` with `Envelope` and `Bare` variants. This doesn't work with internally-tagged `Command` (key collision on `"command"`). Instead, the handler parses raw JSON, extracts the optional `"trace"` boolean, removes it, and then deserializes the remainder as `Command`.
+
+6. **Added `lib.rs`** — The plan only specified a `[[bin]]` target, but integration tests need access to `AppState`, `create_router`, etc. A `[lib]` target was added alongside the binary to enable `tests/http_integration.rs`.
+
+7. **Added `HttpError::BadRequest` variant** — The plan's error mapping only covered `ApiError` domain errors. A `BadRequest` variant was added for JSON parse failures at the HTTP layer (before reaching the domain).
+
+8. **`vertices` REST endpoint added** — The plan listed snapshot, atoms, and statistics as REST convenience endpoints. A `/api/workspaces/:name/vertices` endpoint was also added for listing vertices/tokens, matching the `ListVertices` command.
+
+9. **Step 8 (GraphQL) deferred** — The `graphql` module placeholder and feature gate are wired up in `lib.rs`, `Cargo.toml`, `router.rs`, and `main.rs`, but the actual `async-graphql` schema implementation is not yet written. All other steps (1–7, 9–11) are complete.
 
 ### Lessons Learned
-*(To be filled after execution)*
+
+1. **Internally-tagged enums and envelope wrappers don't mix** — When a serde enum uses `#[serde(tag = "command")]`, you cannot wrap it in another struct that also has a `command` field (or use `#[serde(untagged)]` cleanly). Parsing raw JSON first and stripping extra fields is a practical workaround.
+
+2. **Check concrete API signatures early** — The plan assumed `WorkspaceManager` had internal locking (`Arc<WorkspaceManager>` suffices), but the `execute()` free function requires `&mut WorkspaceManager`. Discovering this during implementation required switching to `Arc<Mutex<_>>`.
+
+3. **Re-export paths matter** — `GraphSnapshot` lives in `context-trace` but is used everywhere via `context-api`. The type isn't in `context-api`'s prelude, and its re-export is aliased (`Snapshot`). Checking `lib.rs` exports before writing import paths saves iteration.
+
+4. **Binary crates need a lib target for integration tests** — Rust integration tests (`tests/`) can only import library crates, not binary crates. Adding a small `lib.rs` that re-exports modules is the standard pattern.
+
+5. **48 tests (30 unit + 18 integration) provide solid coverage** — Error mapping (17 tests), deserialization (7 tests), router construction (2 tests), state management (3 tests), and full HTTP round-trips (18 integration tests) together catch most regressions.

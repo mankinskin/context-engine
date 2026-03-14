@@ -15,6 +15,7 @@ members = [
   "tools/dungeon-crawler",
   "tools/context-cli",
   "tools/context-mcp",
+  "tools/context-http",
 ]
 exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
 
