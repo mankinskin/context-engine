@@ -7,7 +7,7 @@
  * Selecting a step reconstructs the path graph up to that point.
  * Falls back to a flat list for events without path_id.
  */
-import { useState, useMemo, useEffect } from 'preact/hooks';
+import { useState, useMemo, useEffect } from "preact/hooks";
 import {
     searchStates,
     activeSearchStep,
@@ -18,35 +18,35 @@ import {
     setActivePathId,
     setActivePathStep,
     type PathGroup,
-} from '../../../store';
-import type { GraphOpEvent } from '../../../types/generated/GraphOpEvent';
+} from "../../../store";
+import type { GraphOpEvent } from "@context-engine/types";
 
 /**
  * Convert transition kind to display name.
  */
 function getTransitionName(state: { transition?: { kind?: string } }): string {
-    const kind = state.transition?.kind ?? 'unknown';
+    const kind = state.transition?.kind ?? "unknown";
     return kind
-        .split('_')
+        .split("_")
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
+        .join(" ");
 }
 
 /**
  * Get CSS class for transition phase.
  */
 function phaseClass(state: { transition?: { kind?: string } }): string {
-    const kind = state.transition?.kind ?? 'unknown';
-    return `phase-${kind.toLowerCase().replace(/_/g, '')}`;
+    const kind = state.transition?.kind ?? "unknown";
+    return `phase-${kind.toLowerCase().replace(/_/g, "")}`;
 }
 
 /**
  * Get operation type badge emoji.
  */
 function opTypeBadge(opType: string): string {
-    if (opType === 'search') return '🔍';
-    if (opType === 'insert') return '+';
-    return '📖';
+    if (opType === "search") return "🔍";
+    if (opType === "insert") return "+";
+    return "📖";
 }
 
 /**
@@ -55,10 +55,18 @@ function opTypeBadge(opType: string): string {
  * New format: `<op_type>/<module>/<semantic_id>`
  * Legacy format: raw string (e.g. `search-42-...`)
  */
-function parsePathId(pathId: string): { opType: string | null; module: string | null; semanticId: string } {
-    const parts = pathId.split('/');
+function parsePathId(pathId: string): {
+    opType: string | null;
+    module: string | null;
+    semanticId: string;
+} {
+    const parts = pathId.split("/");
     if (parts.length >= 3) {
-        return { opType: parts[0]!, module: parts[1]!, semanticId: parts.slice(2).join('/') };
+        return {
+            opType: parts[0]!,
+            module: parts[1]!,
+            semanticId: parts.slice(2).join("/"),
+        };
     }
     return { opType: null, module: null, semanticId: pathId };
 }
@@ -69,9 +77,10 @@ function parsePathId(pathId: string): { opType: string | null; module: string | 
  */
 function formatPathIdShort(pathId: string): string {
     const { opType, semanticId } = parsePathId(pathId);
-    const badge = opType ? opTypeBadge(opType) : '';
+    const badge = opType ? opTypeBadge(opType) : "";
     // Truncate the semantic portion if too long
-    const label = semanticId.length > 20 ? semanticId.slice(0, 18) + '…' : semanticId;
+    const label =
+        semanticId.length > 20 ? semanticId.slice(0, 18) + "…" : semanticId;
     return badge ? `${badge} ${label}` : label;
 }
 
@@ -79,11 +88,11 @@ function formatPathIdShort(pathId: string): string {
  * Get path transition display name (for the path-specific column).
  */
 function pathTransitionName(pt: { kind?: string } | null | undefined): string {
-    if (!pt?.kind) return '';
+    if (!pt?.kind) return "";
     return pt.kind
-        .split('_')
+        .split("_")
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
+        .join(" ");
 }
 
 // ── Node grouping ──────────────────────────────────────────────────────
@@ -111,8 +120,8 @@ function selectedNode(ev: GraphOpEvent): number | null {
     const t = ev.transition;
     if (!t) return ev.location?.selected_node ?? null;
     switch (t.kind) {
-        case 'visit_parent':
-        case 'visit_child':
+        case "visit_parent":
+        case "visit_child":
             return t.to.index;
         default:
             return ev.location?.selected_node ?? null;
@@ -126,7 +135,11 @@ function groupByNode(events: GraphOpEvent[]): NodeGroup[] {
     if (events.length === 0) return [];
     const groups: NodeGroup[] = [];
     const first = events[0]!;
-    let cur: NodeGroup = { nodeIndex: selectedNode(first), events: [first], stepIndices: [0] };
+    let cur: NodeGroup = {
+        nodeIndex: selectedNode(first),
+        events: [first],
+        stepIndices: [0],
+    };
     for (let i = 1; i < events.length; i++) {
         const ev = events[i]!;
         const node = selectedNode(ev);
@@ -157,7 +170,7 @@ function EventItem({
 }) {
     return (
         <div
-            class={`ssp-item ${isActive ? 'active' : ''} ${indented ? 'ssp-item-indented' : ''}`}
+            class={`ssp-item ${isActive ? "active" : ""} ${indented ? "ssp-item-indented" : ""}`}
             onClick={onClick}
         >
             <span class="ssp-step">
@@ -211,14 +224,18 @@ function NodeGroupRow({
     const lastEv = group.events[group.events.length - 1]!;
 
     return (
-        <div class={`ssp-node-group ${containsActive ? 'active-node-group' : ''}`}>
+        <div
+            class={`ssp-node-group ${containsActive ? "active-node-group" : ""}`}
+        >
             <div
                 class="ssp-node-group-header"
                 onClick={() => onToggle(firstIdx)}
             >
-                <span class="ssp-node-group-chevron">{isExpanded ? '▾' : '▸'}</span>
+                <span class="ssp-node-group-chevron">
+                    {isExpanded ? "▾" : "▸"}
+                </span>
                 <span class="ssp-node-group-label">
-                    node {group.nodeIndex ?? '?'}
+                    node {group.nodeIndex ?? "?"}
                 </span>
                 <span class="ssp-node-group-range">
                     {firstEv.step}–{lastEv.step}
@@ -260,7 +277,7 @@ function PathGroupSection({ group }: { group: PathGroup }) {
 
     // Determine operation type for visual styling (insert groups get orange accent)
     const { opType } = parsePathId(group.pathId);
-    const opClass = opType ? `ssp-op-${opType}` : '';
+    const opClass = opType ? `ssp-op-${opType}` : "";
 
     const handleGroupClick = () => {
         if (isActive) {
@@ -284,7 +301,7 @@ function PathGroupSection({ group }: { group: PathGroup }) {
     };
 
     const handleToggleNodeGroup = (firstIdx: number) => {
-        setExpandedNodes(prev => {
+        setExpandedNodes((prev) => {
             const next = new Set(prev);
             if (next.has(firstIdx)) {
                 next.delete(firstIdx);
@@ -313,17 +330,25 @@ function PathGroupSection({ group }: { group: PathGroup }) {
     };
 
     return (
-        <div class={`ssp-path-group ${isActive ? 'active-group' : ''} ${opClass}`}>
+        <div
+            class={`ssp-path-group ${isActive ? "active-group" : ""} ${opClass}`}
+        >
             <div class="ssp-group-header" onClick={handleGroupClick}>
-                <span class={`ssp-group-chevron ${collapsed && isActive ? 'collapsed' : ''}`}>
-                    {isActive ? (collapsed ? '▶' : '▼') : '▷'}
+                <span
+                    class={`ssp-group-chevron ${collapsed && isActive ? "collapsed" : ""}`}
+                >
+                    {isActive ? (collapsed ? "▶" : "▼") : "▷"}
                 </span>
                 <span class="ssp-group-id" title={group.pathId}>
                     {formatPathIdShort(group.pathId)}
                 </span>
                 <span class="ssp-group-count">{group.events.length}</span>
                 {isActive && (
-                    <button class="ssp-group-close" onClick={handleClose} title="Close this search path">
+                    <button
+                        class="ssp-group-close"
+                        onClick={handleClose}
+                        title="Close this search path"
+                    >
                         ✕
                     </button>
                 )}
@@ -331,9 +356,7 @@ function PathGroupSection({ group }: { group: PathGroup }) {
 
             {isActive && !collapsed && (
                 <>
-                    <div
-                        class="ssp-group-list"
-                    >
+                    <div class="ssp-group-list">
                         {nodeGroups.map((ng, gi) => (
                             <NodeGroupRow
                                 key={gi}
@@ -346,13 +369,22 @@ function PathGroupSection({ group }: { group: PathGroup }) {
                         ))}
                     </div>
                     <div class="ssp-controls">
-                        <button class="ssp-btn" onClick={handlePrev} disabled={currentStep <= 0}>
+                        <button
+                            class="ssp-btn"
+                            onClick={handlePrev}
+                            disabled={currentStep <= 0}
+                        >
                             ← Prev
                         </button>
                         <span class="ssp-position">
-                            {currentStep >= 0 ? currentStep + 1 : '—'} / {group.events.length}
+                            {currentStep >= 0 ? currentStep + 1 : "—"} /{" "}
+                            {group.events.length}
                         </span>
-                        <button class="ssp-btn" onClick={handleNext} disabled={currentStep >= group.events.length - 1}>
+                        <button
+                            class="ssp-btn"
+                            onClick={handleNext}
+                            disabled={currentStep >= group.events.length - 1}
+                        >
                             Next →
                         </button>
                     </div>
@@ -374,18 +406,17 @@ function FlatStepList() {
     };
 
     const handleNext = () => {
-        if (currentStep < states.length - 1) setActiveSearchStep(currentStep + 1);
+        if (currentStep < states.length - 1)
+            setActiveSearchStep(currentStep + 1);
     };
 
     return (
         <>
-            <div
-                class="ssp-list"
-            >
+            <div class="ssp-list">
                 {states.map((state, idx) => (
                     <div
                         key={state.step}
-                        class={`ssp-item ${currentStep === idx ? 'active' : ''}`}
+                        class={`ssp-item ${currentStep === idx ? "active" : ""}`}
                         onClick={() => setActiveSearchStep(idx)}
                     >
                         <span class="ssp-step">
@@ -393,20 +424,30 @@ function FlatStepList() {
                             {state.step}
                         </span>
                         <div class="ssp-content">
-                            <div class={`ssp-phase ${phaseClass(state)}`}>{getTransitionName(state)}</div>
+                            <div class={`ssp-phase ${phaseClass(state)}`}>
+                                {getTransitionName(state)}
+                            </div>
                             <div class="ssp-desc">{state.description}</div>
                         </div>
                     </div>
                 ))}
             </div>
             <div class="ssp-controls">
-                <button class="ssp-btn" onClick={handlePrev} disabled={currentStep <= 0}>
+                <button
+                    class="ssp-btn"
+                    onClick={handlePrev}
+                    disabled={currentStep <= 0}
+                >
                     ← Prev
                 </button>
                 <span class="ssp-position">
-                    {currentStep >= 0 ? currentStep + 1 : '—'} / {states.length}
+                    {currentStep >= 0 ? currentStep + 1 : "—"} / {states.length}
                 </span>
-                <button class="ssp-btn" onClick={handleNext} disabled={currentStep >= states.length - 1}>
+                <button
+                    class="ssp-btn"
+                    onClick={handleNext}
+                    disabled={currentStep >= states.length - 1}
+                >
                     Next →
                 </button>
             </div>
@@ -429,14 +470,20 @@ export function SearchStatePanel() {
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
             const tag = (e.target as HTMLElement)?.tagName;
-            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT")
+                return;
             // Don't intercept if focus is on a list that handles its own arrows
             const target = e.target as HTMLElement;
-            if (target.closest('.file-list, .log-entries')) return;
+            if (target.closest(".file-list, .log-entries")) return;
 
-            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Escape') return;
+            if (
+                e.key !== "ArrowUp" &&
+                e.key !== "ArrowDown" &&
+                e.key !== "Escape"
+            )
+                return;
 
-            if (e.key === 'Escape') {
+            if (e.key === "Escape") {
                 if (hasGroups && activePathId.value) {
                     e.preventDefault();
                     setActivePathId(null);
@@ -446,11 +493,13 @@ export function SearchStatePanel() {
 
             e.preventDefault();
 
-            const delta = e.key === 'ArrowDown' ? 1 : -1;
+            const delta = e.key === "ArrowDown" ? 1 : -1;
 
             if (hasGroups) {
                 // Navigate within the active path group
-                const activeGroup = groups.find(g => g.pathId === activePathId.value);
+                const activeGroup = groups.find(
+                    (g) => g.pathId === activePathId.value,
+                );
                 if (!activeGroup) {
                     // No active group yet — activate the first one
                     if (groups.length > 0) {
@@ -462,7 +511,10 @@ export function SearchStatePanel() {
                     return;
                 }
                 const cur = activePathStep.value;
-                const next = Math.max(0, Math.min(activeGroup.events.length - 1, cur + delta));
+                const next = Math.max(
+                    0,
+                    Math.min(activeGroup.events.length - 1, cur + delta),
+                );
                 if (next !== cur) {
                     setActivePathStep(next);
                     const gi = activeGroup.globalIndices[next];
@@ -471,24 +523,27 @@ export function SearchStatePanel() {
             } else {
                 // Flat list navigation
                 const cur = activeSearchStep.value;
-                const next = Math.max(0, Math.min(states.length - 1, cur + delta));
+                const next = Math.max(
+                    0,
+                    Math.min(states.length - 1, cur + delta),
+                );
                 if (next !== cur) {
                     setActiveSearchStep(next);
                 }
             }
         }
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [states, groups, hasGroups]);
 
     // Auto-scroll the active item into view
     useEffect(() => {
-        const panel = document.querySelector('.search-state-panel');
+        const panel = document.querySelector(".search-state-panel");
         if (!panel) return;
-        const activeEl = panel.querySelector('.ssp-item.active');
+        const activeEl = panel.querySelector(".ssp-item.active");
         if (activeEl) {
-            activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            activeEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
     }, [activeSearchStep.value, activePathStep.value]);
 
@@ -496,19 +551,18 @@ export function SearchStatePanel() {
         <div class="search-state-panel">
             <div class="ssp-header">
                 <span class="ssp-title">
-                    {hasGroups ? 'Search Paths' : 'Operation Steps'}
+                    {hasGroups ? "Search Paths" : "Operation Steps"}
                 </span>
                 <span class="ssp-count">
                     {hasGroups
-                        ? `${groupCount} path${groupCount !== 1 ? 's' : ''} · ${totalSteps} steps`
-                        : `${totalSteps} steps`
-                    }
+                        ? `${groupCount} path${groupCount !== 1 ? "s" : ""} · ${totalSteps} steps`
+                        : `${totalSteps} steps`}
                 </span>
             </div>
 
             {hasGroups ? (
                 <div class="ssp-groups-container">
-                    {groups.map(group => (
+                    {groups.map((group) => (
                         <PathGroupSection key={group.pathId} group={group} />
                     ))}
                 </div>

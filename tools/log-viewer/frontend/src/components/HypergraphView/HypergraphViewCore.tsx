@@ -7,18 +7,34 @@
  * UI chrome panels (SearchStatePanel, InsertStatePanel, etc.) are rendered
  * by the parent wrapper, not by this component.
  */
-import { useRef, useEffect, useState, useCallback, useMemo } from 'preact/hooks';
-import type { ComponentChildren } from 'preact';
-import './styles/base.css';
-import './styles/panels.css';
-import './styles/search-panel.css';
-import './styles/viz-states.css';
-import './styles/operation-panels.css';
-import './styles/decomposition.css';
-import './styles/nesting.css';
-import { buildLayout, computeFocusedLayout, computeSearchPathLayout, type GraphLayout, type FocusedLayoutOffsets } from './layout';
-import type { HypergraphViewProps, NestingSettings, DuplicateNode } from './types';
-import type { VizPathGraph } from '../../types/generated';
+import {
+    useRef,
+    useEffect,
+    useState,
+    useCallback,
+    useMemo,
+} from "preact/hooks";
+import type { ComponentChildren } from "preact";
+import "./styles/base.css";
+import "./styles/panels.css";
+import "./styles/search-panel.css";
+import "./styles/viz-states.css";
+import "./styles/operation-panels.css";
+import "./styles/decomposition.css";
+import "./styles/nesting.css";
+import {
+    buildLayout,
+    computeFocusedLayout,
+    computeSearchPathLayout,
+    type GraphLayout,
+    type FocusedLayoutOffsets,
+} from "./layout";
+import type {
+    HypergraphViewProps,
+    NestingSettings,
+    DuplicateNode,
+} from "./types";
+import type { VizPathGraph } from "@context-engine/types";
 
 // Hooks
 import {
@@ -29,10 +45,10 @@ import {
     useOverlayRenderer,
     useNestingState,
     getPrimaryNode,
-} from './hooks';
+} from "./hooks";
 
 // Nesting modules
-import { computeShellLayout } from './nesting/shellLayout';
+import { computeShellLayout } from "./nesting/shellLayout";
 
 // Components
 import {
@@ -40,7 +56,7 @@ import {
     GraphInfoOverlay,
     NodeTooltip,
     NodeLayer,
-} from './components';
+} from "./components";
 
 export interface HypergraphViewCoreProps extends HypergraphViewProps {
     /**
@@ -130,26 +146,35 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     // Layout state
     const [layout, setLayout] = useState<GraphLayout | null>(null);
     const layoutRef = useRef<GraphLayout | null>(null);
-    const basePositionsRef = useRef<Map<number, { x: number; y: number; z: number }> | null>(null);
+    const basePositionsRef = useRef<Map<
+        number,
+        { x: number; y: number; z: number }
+    > | null>(null);
 
     // Camera controller
     const camera = useCamera();
 
     // Visualization state from search events + search path
-    const vizState = useVisualizationState(currentEvent, currentSearchPath, snapshotEdges);
+    const vizState = useVisualizationState(
+        currentEvent,
+        currentSearchPath,
+        snapshotEdges,
+    );
 
     // Mouse interaction (autoLayout passed via ref so it's always current)
     const autoLayoutRef = useRef(autoLayout);
     autoLayoutRef.current = autoLayout;
-    const { selectedIdx, setSelectedIdx, tooltip, interRef } = useMouseInteraction(
+    const { selectedIdx, setSelectedIdx, tooltip, interRef } =
+        useMouseInteraction(containerRef, layoutRef, camera, autoLayoutRef);
+
+    // Touch interaction (shares selection state via interRef)
+    useTouchInteraction(
         containerRef,
         layoutRef,
         camera,
-        autoLayoutRef,
+        interRef,
+        setSelectedIdx,
     );
-
-    // Touch interaction (shares selection state via interRef)
-    useTouchInteraction(containerRef, layoutRef, camera, interRef, setSelectedIdx);
 
     // Nesting state (persisted to localStorage)
     const { nestingSettings, setNestingSettings } = useNestingState();
@@ -158,15 +183,41 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
 
     // Compute nesting data for NodeLayer DOM elements
     // Nesting requires autoLayout to be on (layout=on → nesting → duplication cascade)
-    const { nestShells, nestDuplicates, nestDuplicatedOriginals } = useMemo(() => {
-        if (!layout || selectedIdx < 0 || !autoLayout || !nestingSettings.enabled) {
-            return { nestShells: [], nestDuplicates: [] as DuplicateNode[], nestDuplicatedOriginals: new Set<number>() };
-        }
-        const shells = computeShellLayout(layout, selectedIdx, nestingSettings.parentDepth, 80, 30);
-        // Duplicates are now handled by decomposition clones inside patterns;
-        // NodeLayer no longer renders separate duplicate elements.
-        return { nestShells: shells, nestDuplicates: [] as DuplicateNode[], nestDuplicatedOriginals: new Set<number>() };
-    }, [layout, selectedIdx, autoLayout, nestingSettings.enabled, nestingSettings.parentDepth]);
+    const { nestShells, nestDuplicates, nestDuplicatedOriginals } =
+        useMemo(() => {
+            if (
+                !layout ||
+                selectedIdx < 0 ||
+                !autoLayout ||
+                !nestingSettings.enabled
+            ) {
+                return {
+                    nestShells: [],
+                    nestDuplicates: [] as DuplicateNode[],
+                    nestDuplicatedOriginals: new Set<number>(),
+                };
+            }
+            const shells = computeShellLayout(
+                layout,
+                selectedIdx,
+                nestingSettings.parentDepth,
+                80,
+                30,
+            );
+            // Duplicates are now handled by decomposition clones inside patterns;
+            // NodeLayer no longer renders separate duplicate elements.
+            return {
+                nestShells: shells,
+                nestDuplicates: [] as DuplicateNode[],
+                nestDuplicatedOriginals: new Set<number>(),
+            };
+        }, [
+            layout,
+            selectedIdx,
+            autoLayout,
+            nestingSettings.enabled,
+            nestingSettings.parentDepth,
+        ]);
 
     // Build layout when snapshot changes
     useEffect(() => {
@@ -201,7 +252,11 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         if (selectedIdx >= 0 && autoLayout) {
             let layoutResult: FocusedLayoutOffsets | null;
             if (currentSearchPath?.root) {
-                layoutResult = computeSearchPathLayout(curLayout, currentSearchPath, selectedIdx);
+                layoutResult = computeSearchPathLayout(
+                    curLayout,
+                    currentSearchPath,
+                    selectedIdx,
+                );
             } else {
                 layoutResult = computeFocusedLayout(curLayout, selectedIdx);
             }
@@ -209,14 +264,24 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
 
             // In dup=off nesting, children are shown inside their expanded parent,
             // so the camera should target the parent's position instead.
-            const focusIdx = getCameraFocusIdx(curLayout, selectedIdx, nestingSettings, currentSearchPath);
+            const focusIdx = getCameraFocusIdx(
+                curLayout,
+                selectedIdx,
+                nestingSettings,
+                currentSearchPath,
+            );
             const focusNode = curLayout.nodeMap.get(focusIdx);
             if (focusNode) {
                 camera.focusOn([focusNode.tx, focusNode.ty, focusNode.tz]);
             }
         } else if (selectedIdx >= 0) {
             focusedOffsetsRef.current = null;
-            const focusIdx = getCameraFocusIdx(curLayout, selectedIdx, nestingSettings, currentSearchPath);
+            const focusIdx = getCameraFocusIdx(
+                curLayout,
+                selectedIdx,
+                nestingSettings,
+                currentSearchPath,
+            );
             const focusNode = curLayout.nodeMap.get(focusIdx);
             if (focusNode) {
                 camera.focusOn([focusNode.tx, focusNode.ty, focusNode.tz]);
@@ -224,14 +289,24 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
         } else {
             focusedOffsetsRef.current = null;
         }
-    }, [selectedIdx, camera, currentSearchPath, autoLayout, nestingSettings.enabled, nestingSettings.duplicateMode]);
+    }, [
+        selectedIdx,
+        camera,
+        currentSearchPath,
+        autoLayout,
+        nestingSettings.enabled,
+        nestingSettings.duplicateMode,
+    ]);
 
     // Focus camera on primary node when search step changes
     useEffect(() => {
         const curLayout = layoutRef.current;
         if (!curLayout || !currentEvent) return;
 
-        const primaryNode = getPrimaryNode(currentEvent.transition, currentEvent.location);
+        const primaryNode = getPrimaryNode(
+            currentEvent.transition,
+            currentEvent.location,
+        );
         if (primaryNode != null) {
             const node = curLayout.nodeMap.get(primaryNode);
             if (node) {
@@ -242,17 +317,32 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     }, [stepKey, camera, setSelectedIdx]);
 
     // Register WebGPU overlay renderer
-    useOverlayRenderer(containerRef, nodeLayerRef, layoutRef, camera, interRef, vizState, setSelectedIdx, focusedOffsetsRef, basePositionsRef, nestingSettingsRef, autoLayoutRef);
+    useOverlayRenderer(
+        containerRef,
+        nodeLayerRef,
+        layoutRef,
+        camera,
+        interRef,
+        vizState,
+        setSelectedIdx,
+        focusedOffsetsRef,
+        basePositionsRef,
+        nestingSettingsRef,
+        autoLayoutRef,
+    );
 
     // Handle focus from NodeInfoPanel links
-    const handleFocusNode = useCallback((nodeIndex: number) => {
-        const curLayout = layoutRef.current;
-        if (!curLayout) return;
-        const target = curLayout.nodeMap.get(nodeIndex);
-        if (target) {
-            setSelectedIdx(nodeIndex);
-        }
-    }, [setSelectedIdx]);
+    const handleFocusNode = useCallback(
+        (nodeIndex: number) => {
+            const curLayout = layoutRef.current;
+            if (!curLayout) return;
+            const target = curLayout.nodeMap.get(nodeIndex);
+            if (target) {
+                setSelectedIdx(nodeIndex);
+            }
+        },
+        [setSelectedIdx],
+    );
 
     // Empty state
     if (!snapshot) {
@@ -261,9 +351,10 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
                 <div class="hypergraph-empty">
                     <span>No hypergraph data found in current log</span>
                     <div class="hg-hint">
-                        To visualize the graph, call <code>graph.emit_graph_snapshot()</code> in
-                        your Rust test after building the graph. This emits a structured tracing
-                        event that the log viewer can render.
+                        To visualize the graph, call{" "}
+                        <code>graph.emit_graph_snapshot()</code> in your Rust
+                        test after building the graph. This emits a structured
+                        tracing event that the log viewer can render.
                     </div>
                 </div>
             </div>
@@ -271,7 +362,8 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     }
 
     const maxWidth = layout?.maxWidth ?? 1;
-    const selectedNode = selectedIdx >= 0 ? layout?.nodeMap.get(selectedIdx) : null;
+    const selectedNode =
+        selectedIdx >= 0 ? layout?.nodeMap.get(selectedIdx) : null;
 
     return (
         <div ref={containerRef} class="hypergraph-container hg-dom-mode">
@@ -306,7 +398,11 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
             <NodeTooltip tooltip={tooltip} />
 
             {/* Log-viewer-specific panels injected via render-prop */}
-            {renderChildren?.({ handleFocusNode, nestingSettings, setNestingSettings })}
+            {renderChildren?.({
+                handleFocusNode,
+                nestingSettings,
+                setNestingSettings,
+            })}
         </div>
     );
 }

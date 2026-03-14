@@ -3,10 +3,19 @@
  * Extracts node roles and styling information from search/insert/read states.
  * Integrates VizPathGraph for precise search path edge highlighting.
  */
-import { useMemo } from 'preact/hooks';
-import type { GraphOpEvent, LocationInfo, SnapshotEdge, Transition, VizPathGraph } from '../../../types/generated';
-import { allNodeIndices } from '../../../search-path/reconstruction';
-import { computeSearchEdgeKeys, edgePairKey } from '../../../search-path/edge-highlighting';
+import { useMemo } from "preact/hooks";
+import type {
+    GraphOpEvent,
+    LocationInfo,
+    SnapshotEdge,
+    Transition,
+    VizPathGraph,
+} from "@context-engine/types";
+import { allNodeIndices } from "../../../search-path/reconstruction";
+import {
+    computeSearchEdgeKeys,
+    edgePairKey,
+} from "../../../search-path/edge-highlighting";
 
 export interface VisualizationState {
     /** Primary node being operated on */
@@ -85,42 +94,45 @@ export interface VisualizationState {
 /**
  * Derive the primary node to focus on from a transition.
  */
-export function getPrimaryNode(trans: Transition | null, loc: LocationInfo | null): number | null {
+export function getPrimaryNode(
+    trans: Transition | null,
+    loc: LocationInfo | null,
+): number | null {
     if (trans) {
         switch (trans.kind) {
-            case 'start_node':
+            case "start_node":
                 return trans.node.index;
-            case 'visit_parent':
+            case "visit_parent":
                 return trans.to.index;
-            case 'visit_child':
+            case "visit_child":
                 return trans.to.index;
-            case 'child_match':
+            case "child_match":
                 return trans.node.index;
-            case 'child_mismatch':
+            case "child_mismatch":
                 return trans.node.index;
-            case 'done':
+            case "done":
                 return trans.final_node;
-            case 'candidate_mismatch':
+            case "candidate_mismatch":
                 return trans.node.index;
-            case 'candidate_match':
+            case "candidate_match":
                 return trans.root.index;
-            case 'parent_explore':
+            case "parent_explore":
                 return trans.current_root;
-            case 'split_start':
+            case "split_start":
                 return trans.node.index;
-            case 'split_complete':
+            case "split_complete":
                 return trans.original_node;
-            case 'join_start':
+            case "join_start":
                 return trans.nodes[0] ?? null;
-            case 'join_step':
+            case "join_step":
                 return trans.result;
-            case 'join_complete':
+            case "join_complete":
                 return trans.result_node;
-            case 'create_pattern':
+            case "create_pattern":
                 return trans.parent;
-            case 'create_root':
+            case "create_root":
                 return trans.node.index;
-            case 'update_pattern':
+            case "update_pattern":
                 return trans.parent;
         }
     }
@@ -156,26 +168,32 @@ export function useVisualizationState(
         const pendingChildren = new Set(loc?.pending_children ?? []);
 
         // Derive transition-specific node roles
-        const startNode: number | null = trans?.kind === 'start_node' ? trans.node.index : null;
-        const candidateParent: number | null = trans?.kind === 'visit_parent' ? trans.to.index : null;
-        const candidateChild: number | null = trans?.kind === 'visit_child' ? trans.to.index : null;
-        const matchedNode: number | null = trans?.kind === 'child_match' ? trans.node.index : null;
-        const mismatchedNode: number | null = trans?.kind === 'child_mismatch' ? trans.node.index : null;
+        const startNode: number | null =
+            trans?.kind === "start_node" ? trans.node.index : null;
+        const candidateParent: number | null =
+            trans?.kind === "visit_parent" ? trans.to.index : null;
+        const candidateChild: number | null =
+            trans?.kind === "visit_child" ? trans.to.index : null;
+        const matchedNode: number | null =
+            trans?.kind === "child_match" ? trans.node.index : null;
+        const mismatchedNode: number | null =
+            trans?.kind === "child_mismatch" ? trans.node.index : null;
 
         // Include parent_candidates from parent_explore transitions in pendingParents.
         // LocationInfo.pending_parents comes from the queue, but the queue may be empty
         // by the time the event is emitted; the transition itself carries the canonical list.
-        if (trans?.kind === 'parent_explore') {
+        if (trans?.kind === "parent_explore") {
             for (const n of trans.parent_candidates) pendingParents.add(n);
         }
 
         // ── Search path edge key sets (pair keys — pattern_idx independent) ──
-        const edgeKeys = sp
-            ? computeSearchEdgeKeys(sp)
-            : null;
-        const searchStartEdgeKeys = edgeKeys?.startEdgeKeys ?? new Set<number>();
-        const searchRootEntryEdgeKeys = edgeKeys?.rootEntryEdgeKeys ?? new Set<number>();
-        const searchRootExitEdgeKeys = edgeKeys?.rootExitEdgeKeys ?? new Set<number>();
+        const edgeKeys = sp ? computeSearchEdgeKeys(sp) : null;
+        const searchStartEdgeKeys =
+            edgeKeys?.startEdgeKeys ?? new Set<number>();
+        const searchRootEntryEdgeKeys =
+            edgeKeys?.rootEntryEdgeKeys ?? new Set<number>();
+        const searchRootExitEdgeKeys =
+            edgeKeys?.rootExitEdgeKeys ?? new Set<number>();
         const searchEndEdgeKeys = edgeKeys?.endEdgeKeys ?? new Set<number>();
 
         // Build the set of all "involved" nodes for dimming non-involved ones
@@ -194,7 +212,7 @@ export function useVisualizationState(
         if (matchedNode != null) involvedNodes.add(matchedNode);
         if (mismatchedNode != null) involvedNodes.add(mismatchedNode);
         // Also include transition 'from' nodes
-        if (trans?.kind === 'visit_parent' || trans?.kind === 'visit_child') {
+        if (trans?.kind === "visit_parent" || trans?.kind === "visit_child") {
             involvedNodes.add(trans.from.index);
         }
 
@@ -209,19 +227,19 @@ export function useVisualizationState(
         // The edgePairKey encodes (from << 16 | to), so decode both indices.
         for (const key of searchStartEdgeKeys) {
             involvedNodes.add(key >>> 16);
-            involvedNodes.add(key & 0xFFFF);
+            involvedNodes.add(key & 0xffff);
         }
         for (const key of searchEndEdgeKeys) {
             involvedNodes.add(key >>> 16);
-            involvedNodes.add(key & 0xFFFF);
+            involvedNodes.add(key & 0xffff);
         }
         for (const key of searchRootEntryEdgeKeys) {
             involvedNodes.add(key >>> 16);
-            involvedNodes.add(key & 0xFFFF);
+            involvedNodes.add(key & 0xffff);
         }
         for (const key of searchRootExitEdgeKeys) {
             involvedNodes.add(key >>> 16);
-            involvedNodes.add(key & 0xFFFF);
+            involvedNodes.add(key & 0xffff);
         }
 
         const hasVizState = involvedNodes.size > 0;
@@ -231,7 +249,7 @@ export function useVisualizationState(
         const activeQueryToken = event?.query?.active_token ?? null;
 
         // ── Insert-specific node roles + edge keys ──
-        const isInsertOp = event?.op_type === 'insert';
+        const isInsertOp = event?.op_type === "insert";
         const insertEdgeKeys = new Set<number>();
         let joinResult: number | null = null;
         let splitSource: number | null = null;
@@ -245,41 +263,45 @@ export function useVisualizationState(
 
         if (trans) {
             switch (trans.kind) {
-                case 'split_start':
+                case "split_start":
                     splitSource = trans.node.index;
                     break;
-                case 'split_complete':
+                case "split_complete":
                     splitSource = trans.original_node;
                     splitLeft = trans.left_fragment;
                     splitRight = trans.right_fragment ?? null;
                     if (splitLeft != null) {
-                        insertEdgeKeys.add(edgePairKey(trans.original_node, splitLeft));
+                        insertEdgeKeys.add(
+                            edgePairKey(trans.original_node, splitLeft),
+                        );
                     }
                     if (splitRight != null) {
-                        insertEdgeKeys.add(edgePairKey(trans.original_node, splitRight));
+                        insertEdgeKeys.add(
+                            edgePairKey(trans.original_node, splitRight),
+                        );
                     }
                     break;
-                case 'join_step':
+                case "join_step":
                     joinLeft = trans.left;
                     joinRight = trans.right;
                     joinResult = trans.result;
                     insertEdgeKeys.add(edgePairKey(trans.result, trans.left));
                     insertEdgeKeys.add(edgePairKey(trans.result, trans.right));
                     break;
-                case 'join_complete':
+                case "join_complete":
                     joinResult = trans.result_node;
                     break;
-                case 'create_pattern':
+                case "create_pattern":
                     newPatternParent = trans.parent;
                     for (const child of trans.children) {
                         newPatternChildren.add(child);
                         insertEdgeKeys.add(edgePairKey(trans.parent, child));
                     }
                     break;
-                case 'create_root':
+                case "create_root":
                     newRoot = trans.node.index;
                     break;
-                case 'update_pattern':
+                case "update_pattern":
                     newPatternParent = trans.parent;
                     for (const child of trans.new_children) {
                         insertEdgeKeys.add(edgePairKey(trans.parent, child));
@@ -341,7 +363,10 @@ export function useVisualizationState(
 /**
  * Compute the CSS visualization classes for a node based on viz state.
  */
-export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): string {
+export function getNodeVizClasses(
+    nodeIndex: number,
+    viz: VisualizationState,
+): string {
     const {
         startNode,
         selectedNode,
@@ -366,7 +391,8 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     // When a child_match transition is active, suppress parent-related
     // highlights — only the matched child node (and its inbound edge)
     // should draw attention.
-    const suppressParentHighlight = matchedNode != null && nodeIndex !== matchedNode;
+    const suppressParentHighlight =
+        matchedNode != null && nodeIndex !== matchedNode;
 
     // Search path node roles — all nodes in the search path get the same
     // start-path or end-path highlight; sp-start/sp-root are additive badges.
@@ -374,10 +400,12 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const spRootNode = searchPath?.root?.index ?? -1;
     const isSpStart = nodeIndex === spStartNode;
     const isSpRoot = nodeIndex === spRootNode;
-    const isInStartPath = isSpStart || isSpRoot ||
-        (searchPath?.start_path.some(n => n.index === nodeIndex) ?? false);
+    const isInStartPath =
+        isSpStart ||
+        isSpRoot ||
+        (searchPath?.start_path.some((n) => n.index === nodeIndex) ?? false);
     const isSpEndPath =
-        (searchPath?.end_path.some(n => n.index === nodeIndex) ?? false);
+        searchPath?.end_path.some((n) => n.index === nodeIndex) ?? false;
     const isCandidateParent = nodeIndex === candidateParent;
     const isCandidateChild = nodeIndex === candidateChild;
     const isMatched = nodeIndex === matchedNode;
@@ -390,7 +418,11 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
         !isCandidateChild &&
         !isMatched &&
         !isMismatched;
-    const isCompleted = completedNodes.has(nodeIndex) && !isStart && !isMatched && !isMismatched;
+    const isCompleted =
+        completedNodes.has(nodeIndex) &&
+        !isStart &&
+        !isMatched &&
+        !isMismatched;
     const isPendingParent = pendingParents.has(nodeIndex) && !isCandidateParent;
     const isPendingChild = pendingChildren.has(nodeIndex) && !isCandidateChild;
     // Query token roles — nodes that are part of the input pattern
@@ -398,76 +430,89 @@ export function getNodeVizClasses(nodeIndex: number, viz: VisualizationState): s
     const isActiveQueryToken = nodeIndex === viz.activeQueryToken;
     // Search path nodes and query tokens are never dimmed — they are always "involved"
     const isInSearchPath = isInStartPath || isSpEndPath;
-    const isDimmed = hasVizState && !involvedNodes.has(nodeIndex) && !isInSearchPath && !isQueryToken;
+    const isDimmed =
+        hasVizState &&
+        !involvedNodes.has(nodeIndex) &&
+        !isInSearchPath &&
+        !isQueryToken;
 
     return [
-        isStart && !suppressParentHighlight && 'viz-start',
-        isSelected && !suppressParentHighlight && 'viz-selected',
-        isRoot && !viz.rootTentative && !suppressParentHighlight && 'viz-root',
-        isRoot && viz.rootTentative && !suppressParentHighlight && 'viz-root-tentative',
-        isCandidateParent && !suppressParentHighlight && 'viz-candidate-parent',
-        isCandidateChild && 'viz-candidate-child',
-        isMatched && 'viz-matched',
-        isMismatched && 'viz-mismatched',
-        isPath && !suppressParentHighlight && 'viz-path',
-        isCompleted && 'viz-completed',
-        isPendingParent && !suppressParentHighlight && 'viz-pending-parent',
-        isPendingChild && 'viz-pending-child',
-        isSpStart && 'viz-sp-start',
-        isSpRoot && 'viz-sp-root',
-        isInStartPath && 'viz-sp-start-path',
-        isSpEndPath && 'viz-sp-end-path',
-        isQueryToken && 'viz-query-token',
-        isActiveQueryToken && 'viz-query-active',
+        isStart && !suppressParentHighlight && "viz-start",
+        isSelected && !suppressParentHighlight && "viz-selected",
+        isRoot && !viz.rootTentative && !suppressParentHighlight && "viz-root",
+        isRoot &&
+            viz.rootTentative &&
+            !suppressParentHighlight &&
+            "viz-root-tentative",
+        isCandidateParent && !suppressParentHighlight && "viz-candidate-parent",
+        isCandidateChild && "viz-candidate-child",
+        isMatched && "viz-matched",
+        isMismatched && "viz-mismatched",
+        isPath && !suppressParentHighlight && "viz-path",
+        isCompleted && "viz-completed",
+        isPendingParent && !suppressParentHighlight && "viz-pending-parent",
+        isPendingChild && "viz-pending-child",
+        isSpStart && "viz-sp-start",
+        isSpRoot && "viz-sp-root",
+        isInStartPath && "viz-sp-start-path",
+        isSpEndPath && "viz-sp-end-path",
+        isQueryToken && "viz-query-token",
+        isActiveQueryToken && "viz-query-active",
         // Insert-specific classes
-        nodeIndex === viz.splitSource && 'viz-split-source',
-        nodeIndex === viz.splitLeft && 'viz-split-left',
-        nodeIndex === viz.splitRight && 'viz-split-right',
-        nodeIndex === viz.joinLeft && 'viz-join-left',
-        nodeIndex === viz.joinRight && 'viz-join-right',
-        nodeIndex === viz.joinResult && 'viz-join-result',
-        nodeIndex === viz.newPatternParent && 'viz-new-pattern',
-        viz.newPatternChildren.has(nodeIndex) && 'viz-new-pattern-child',
-        nodeIndex === viz.newRoot && 'viz-new-root',
-        isDimmed && 'viz-dimmed',
+        nodeIndex === viz.splitSource && "viz-split-source",
+        nodeIndex === viz.splitLeft && "viz-split-left",
+        nodeIndex === viz.splitRight && "viz-split-right",
+        nodeIndex === viz.joinLeft && "viz-join-left",
+        nodeIndex === viz.joinRight && "viz-join-right",
+        nodeIndex === viz.joinResult && "viz-join-result",
+        nodeIndex === viz.newPatternParent && "viz-new-pattern",
+        viz.newPatternChildren.has(nodeIndex) && "viz-new-pattern-child",
+        nodeIndex === viz.newRoot && "viz-new-root",
+        isDimmed && "viz-dimmed",
     ]
         .filter(Boolean)
-        .join(' ');
+        .join(" ");
 }
 
 /**
  * Get the active visualization states for a specific node (for info panel display).
  */
-export function getNodeVizStates(nodeIndex: number, viz: VisualizationState): string[] {
+export function getNodeVizStates(
+    nodeIndex: number,
+    viz: VisualizationState,
+): string[] {
     const states: string[] = [];
-    if (nodeIndex === viz.startNode) states.push('start');
-    if (nodeIndex === viz.selectedNode) states.push('selected');
-    if (nodeIndex === viz.rootNode) states.push('root');
-    if (nodeIndex === viz.candidateParent) states.push('candidate-parent');
-    if (nodeIndex === viz.candidateChild) states.push('candidate-child');
-    if (nodeIndex === viz.matchedNode) states.push('matched');
-    if (nodeIndex === viz.mismatchedNode) states.push('mismatched');
-    if (viz.tracePath.has(nodeIndex)) states.push('path');
-    if (viz.completedNodes.has(nodeIndex)) states.push('completed');
-    if (viz.pendingParents.has(nodeIndex)) states.push('pending-parent');
-    if (viz.pendingChildren.has(nodeIndex)) states.push('pending-child');
+    if (nodeIndex === viz.startNode) states.push("start");
+    if (nodeIndex === viz.selectedNode) states.push("selected");
+    if (nodeIndex === viz.rootNode) states.push("root");
+    if (nodeIndex === viz.candidateParent) states.push("candidate-parent");
+    if (nodeIndex === viz.candidateChild) states.push("candidate-child");
+    if (nodeIndex === viz.matchedNode) states.push("matched");
+    if (nodeIndex === viz.mismatchedNode) states.push("mismatched");
+    if (viz.tracePath.has(nodeIndex)) states.push("path");
+    if (viz.completedNodes.has(nodeIndex)) states.push("completed");
+    if (viz.pendingParents.has(nodeIndex)) states.push("pending-parent");
+    if (viz.pendingChildren.has(nodeIndex)) states.push("pending-child");
     if (viz.searchPath) {
-        if (viz.searchPath.start_node?.index === nodeIndex) states.push('sp-start');
-        if (viz.searchPath.root?.index === nodeIndex) states.push('sp-root');
-        if (viz.searchPath.start_path.some(n => n.index === nodeIndex)) states.push('sp-start-path');
-        if (viz.searchPath.end_path.some(n => n.index === nodeIndex)) states.push('sp-end-path');
+        if (viz.searchPath.start_node?.index === nodeIndex)
+            states.push("sp-start");
+        if (viz.searchPath.root?.index === nodeIndex) states.push("sp-root");
+        if (viz.searchPath.start_path.some((n) => n.index === nodeIndex))
+            states.push("sp-start-path");
+        if (viz.searchPath.end_path.some((n) => n.index === nodeIndex))
+            states.push("sp-end-path");
     }
-    if (viz.queryTokens.has(nodeIndex)) states.push('query-token');
-    if (nodeIndex === viz.activeQueryToken) states.push('query-active');
+    if (viz.queryTokens.has(nodeIndex)) states.push("query-token");
+    if (nodeIndex === viz.activeQueryToken) states.push("query-active");
     // Insert-specific states
-    if (nodeIndex === viz.splitSource) states.push('split-source');
-    if (nodeIndex === viz.splitLeft) states.push('split-left');
-    if (nodeIndex === viz.splitRight) states.push('split-right');
-    if (nodeIndex === viz.joinLeft) states.push('join-left');
-    if (nodeIndex === viz.joinRight) states.push('join-right');
-    if (nodeIndex === viz.joinResult) states.push('join-result');
-    if (nodeIndex === viz.newPatternParent) states.push('new-pattern');
-    if (viz.newPatternChildren.has(nodeIndex)) states.push('new-pattern-child');
-    if (nodeIndex === viz.newRoot) states.push('new-root');
+    if (nodeIndex === viz.splitSource) states.push("split-source");
+    if (nodeIndex === viz.splitLeft) states.push("split-left");
+    if (nodeIndex === viz.splitRight) states.push("split-right");
+    if (nodeIndex === viz.joinLeft) states.push("join-left");
+    if (nodeIndex === viz.joinRight) states.push("join-right");
+    if (nodeIndex === viz.joinResult) states.push("join-result");
+    if (nodeIndex === viz.newPatternParent) states.push("new-pattern");
+    if (viz.newPatternChildren.has(nodeIndex)) states.push("new-pattern-child");
+    if (nodeIndex === viz.newRoot) states.push("new-root");
     return states;
 }

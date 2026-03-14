@@ -13,7 +13,7 @@
  * testable without React/Preact hooks.
  */
 
-import type { VizPathGraph } from '../types/generated';
+import type { VizPathGraph } from "@context-engine/types";
 
 // ---------------------------------------------------------------------------
 // Edge pair key (duplicated from HypergraphView/utils/math to avoid
@@ -48,9 +48,7 @@ export interface SearchEdgeKeys {
  * to parent→child for pair keys.  End edges and root_exit_edge are already
  * top-down.  root_entry_edge is bottom-up and also flipped.
  */
-export function computeSearchEdgeKeys(
-    sp: VizPathGraph,
-): SearchEdgeKeys {
+export function computeSearchEdgeKeys(sp: VizPathGraph): SearchEdgeKeys {
     const startEdgeKeys = new Set<number>();
     const rootEntryEdgeKeys = new Set<number>();
     const rootExitEdgeKeys = new Set<number>();
@@ -65,12 +63,16 @@ export function computeSearchEdgeKeys(
 
     // ── Root entry edge (bottom-up: from=child, to=root) ──
     if (sp.root_entry_edge) {
-        rootEntryEdgeKeys.add(edgePairKey(sp.root_entry_edge.to, sp.root_entry_edge.from));
+        rootEntryEdgeKeys.add(
+            edgePairKey(sp.root_entry_edge.to, sp.root_entry_edge.from),
+        );
     }
 
     // ── Root exit edge (top-down: from=root, to=child) ──
     if (sp.root_exit_edge) {
-        rootExitEdgeKeys.add(edgePairKey(sp.root_exit_edge.from, sp.root_exit_edge.to));
+        rootExitEdgeKeys.add(
+            edgePairKey(sp.root_exit_edge.from, sp.root_exit_edge.to),
+        );
     }
 
     // ── End path edges (top-down: from=parent, to=child) ──

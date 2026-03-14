@@ -4,8 +4,12 @@
  * Decouples the rendering engine from log-viewer-specific signal dependencies
  * so that the core can eventually be extracted to viewer-api.
  */
-import type { GraphOpEvent, VizPathGraph, SnapshotEdge } from '../../types/generated';
-import type { HypergraphSnapshot } from '../../types';
+import type {
+    GraphOpEvent,
+    VizPathGraph,
+    SnapshotEdge,
+} from "@context-engine/types";
+import type { HypergraphSnapshot } from "../../types";
 
 /**
  * Data props accepted by HypergraphViewCore.
@@ -86,5 +90,5 @@ export interface NestingState {
 /** Highlight applied to a node when its parent↔child edge is hidden due to nesting. */
 export interface EdgeHighlight {
     nodeIdx: number;
-    role: 'parent' | 'child';
+    role: "parent" | "child";
 }

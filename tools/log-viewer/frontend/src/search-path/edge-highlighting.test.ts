@@ -8,13 +8,10 @@
  * (no BFS/topology search needed).
  */
 
-import { describe, it, expect } from 'vitest';
-import type { VizPathGraph, PathNode, EdgeRef } from '../types/generated';
-import {
-    edgePairKey,
-    computeSearchEdgeKeys,
-} from './edge-highlighting';
-import { emptyPathGraph } from './reconstruction';
+import { describe, it, expect } from "vitest";
+import type { VizPathGraph, PathNode, EdgeRef } from "@context-engine/types";
+import { edgePairKey, computeSearchEdgeKeys } from "./edge-highlighting";
+import { emptyPathGraph } from "./reconstruction";
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -37,12 +34,12 @@ function makePath(overrides: Partial<VizPathGraph> = {}): VizPathGraph {
 // edgePairKey
 // ---------------------------------------------------------------------------
 
-describe('edgePairKey', () => {
-    it('encodes two indices into a single number', () => {
+describe("edgePairKey", () => {
+    it("encodes two indices into a single number", () => {
         expect(edgePairKey(10, 5)).toBe((10 << 16) | 5);
     });
 
-    it('different orderings produce different keys', () => {
+    it("different orderings produce different keys", () => {
         expect(edgePairKey(10, 5)).not.toBe(edgePairKey(5, 10));
     });
 });
@@ -51,8 +48,8 @@ describe('edgePairKey', () => {
 // computeSearchEdgeKeys — start path
 // ---------------------------------------------------------------------------
 
-describe('computeSearchEdgeKeys: start path', () => {
-    it('converts bottom-up start edges to parent→child pair keys', () => {
+describe("computeSearchEdgeKeys: start path", () => {
+    it("converts bottom-up start edges to parent→child pair keys", () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20), pn(50)],
@@ -68,13 +65,13 @@ describe('computeSearchEdgeKeys: start path', () => {
         expect(startEdgeKeys.size).toBe(2);
     });
 
-    it('returns empty set when no start edges', () => {
+    it("returns empty set when no start edges", () => {
         const sp = makePath({ start_node: pn(5) });
         const { startEdgeKeys } = computeSearchEdgeKeys(sp);
         expect(startEdgeKeys.size).toBe(0);
     });
 
-    it('handles single start edge', () => {
+    it("handles single start edge", () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20)],
@@ -92,8 +89,8 @@ describe('computeSearchEdgeKeys: start path', () => {
 // computeSearchEdgeKeys — root edges
 // ---------------------------------------------------------------------------
 
-describe('computeSearchEdgeKeys: root edges', () => {
-    it('computes root entry edge (flipped to parent→child)', () => {
+describe("computeSearchEdgeKeys: root edges", () => {
+    it("computes root entry edge (flipped to parent→child)", () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20), pn(50)],
@@ -110,7 +107,7 @@ describe('computeSearchEdgeKeys: root edges', () => {
         expect(rootEntryEdgeKeys.size).toBe(1);
     });
 
-    it('computes root exit edge (already parent→child)', () => {
+    it("computes root exit edge (already parent→child)", () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
@@ -121,7 +118,8 @@ describe('computeSearchEdgeKeys: root edges', () => {
             end_edges: [er(100, 50)],
         });
 
-        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } =
+            computeSearchEdgeKeys(sp);
 
         // Entry: layout 100→5
         expect(rootEntryEdgeKeys.has(edgePairKey(100, 5))).toBe(true);
@@ -131,7 +129,7 @@ describe('computeSearchEdgeKeys: root edges', () => {
         expect(rootExitEdgeKeys.size).toBe(1);
     });
 
-    it('includes both entry and exit when both present', () => {
+    it("includes both entry and exit when both present", () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20)],
@@ -143,7 +141,8 @@ describe('computeSearchEdgeKeys: root edges', () => {
             end_edges: [er(100, 50)],
         });
 
-        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } =
+            computeSearchEdgeKeys(sp);
 
         // Entry: layout 100→20
         expect(rootEntryEdgeKeys.has(edgePairKey(100, 20))).toBe(true);
@@ -153,21 +152,23 @@ describe('computeSearchEdgeKeys: root edges', () => {
         expect(rootExitEdgeKeys.size).toBe(1);
     });
 
-    it('empty when no root edges', () => {
+    it("empty when no root edges", () => {
         const sp = makePath({ start_node: pn(5) });
-        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } =
+            computeSearchEdgeKeys(sp);
         expect(rootEntryEdgeKeys.size).toBe(0);
         expect(rootExitEdgeKeys.size).toBe(0);
     });
 
-    it('entry only when no exit edge', () => {
+    it("entry only when no exit edge", () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
             root_entry_edge: er(5, 100),
         });
 
-        const { rootEntryEdgeKeys, rootExitEdgeKeys } = computeSearchEdgeKeys(sp);
+        const { rootEntryEdgeKeys, rootExitEdgeKeys } =
+            computeSearchEdgeKeys(sp);
 
         expect(rootEntryEdgeKeys.has(edgePairKey(100, 5))).toBe(true);
         expect(rootEntryEdgeKeys.size).toBe(1);
@@ -179,8 +180,8 @@ describe('computeSearchEdgeKeys: root edges', () => {
 // computeSearchEdgeKeys — end path
 // ---------------------------------------------------------------------------
 
-describe('computeSearchEdgeKeys: end path', () => {
-    it('uses end_edges directly (already parent→child)', () => {
+describe("computeSearchEdgeKeys: end path", () => {
+    it("uses end_edges directly (already parent→child)", () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
@@ -197,7 +198,7 @@ describe('computeSearchEdgeKeys: end path', () => {
         expect(endEdgeKeys.size).toBe(2);
     });
 
-    it('returns empty set when no end edges', () => {
+    it("returns empty set when no end edges", () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
@@ -208,7 +209,7 @@ describe('computeSearchEdgeKeys: end path', () => {
         expect(endEdgeKeys.size).toBe(0);
     });
 
-    it('handles single end edge', () => {
+    it("handles single end edge", () => {
         const sp = makePath({
             start_node: pn(5),
             root: pn(100),
@@ -229,26 +230,36 @@ describe('computeSearchEdgeKeys: end path', () => {
 // computeSearchEdgeKeys — empty / edge cases
 // ---------------------------------------------------------------------------
 
-describe('computeSearchEdgeKeys: edge cases', () => {
-    it('returns empty sets for empty path graph', () => {
+describe("computeSearchEdgeKeys: edge cases", () => {
+    it("returns empty sets for empty path graph", () => {
         const sp = emptyPathGraph();
-        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
+        const {
+            startEdgeKeys,
+            rootEntryEdgeKeys,
+            rootExitEdgeKeys,
+            endEdgeKeys,
+        } = computeSearchEdgeKeys(sp);
         expect(startEdgeKeys.size).toBe(0);
         expect(rootEntryEdgeKeys.size).toBe(0);
         expect(rootExitEdgeKeys.size).toBe(0);
         expect(endEdgeKeys.size).toBe(0);
     });
 
-    it('handles start_node only (no start_path, no root)', () => {
+    it("handles start_node only (no start_path, no root)", () => {
         const sp = makePath({ start_node: pn(5) });
-        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
+        const {
+            startEdgeKeys,
+            rootEntryEdgeKeys,
+            rootExitEdgeKeys,
+            endEdgeKeys,
+        } = computeSearchEdgeKeys(sp);
         expect(startEdgeKeys.size).toBe(0);
         expect(rootEntryEdgeKeys.size).toBe(0);
         expect(rootExitEdgeKeys.size).toBe(0);
         expect(endEdgeKeys.size).toBe(0);
     });
 
-    it('full path: all sections populated', () => {
+    it("full path: all sections populated", () => {
         const sp = makePath({
             start_node: pn(5),
             start_path: [pn(20), pn(50)],
@@ -260,7 +271,12 @@ describe('computeSearchEdgeKeys: edge cases', () => {
             end_edges: [er(100, 30), er(30, 10)],
         });
 
-        const { startEdgeKeys, rootEntryEdgeKeys, rootExitEdgeKeys, endEdgeKeys } = computeSearchEdgeKeys(sp);
+        const {
+            startEdgeKeys,
+            rootEntryEdgeKeys,
+            rootExitEdgeKeys,
+            endEdgeKeys,
+        } = computeSearchEdgeKeys(sp);
 
         // Start: 20→5, 50→20
         expect(startEdgeKeys.size).toBe(2);

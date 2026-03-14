@@ -5,8 +5,8 @@
  * Each node is clickable to focus the camera.
  * Edges between nodes show direction (↑ for start path, ↓ for end path).
  */
-import { activeSearchPath } from '../../../store';
-import type { VizPathGraph, PathNode } from '../../../types/generated';
+import { activeSearchPath } from "../../../store";
+import type { VizPathGraph, PathNode } from "@context-engine/types";
 
 interface PathChainPanelProps {
     onFocusNode: (nodeIndex: number) => void;
@@ -19,12 +19,16 @@ function ChainNode({
     onClick,
 }: {
     node: PathNode;
-    role: 'start' | 'start-path' | 'root' | 'end-path';
+    role: "start" | "start-path" | "root" | "end-path";
     onClick: () => void;
 }) {
     const roleClass = `pc-node-${role}`;
     return (
-        <button class={`pc-node ${roleClass}`} onClick={onClick} title={`Node #${node.index} (width ${node.width})`}>
+        <button
+            class={`pc-node ${roleClass}`}
+            onClick={onClick}
+            title={`Node #${node.index} (width ${node.width})`}
+        >
             <span class="pc-node-idx">#{node.index}</span>
             {node.width > 1 && <span class="pc-node-width">w{node.width}</span>}
         </button>
@@ -32,8 +36,8 @@ function ChainNode({
 }
 
 /** Arrow between chain nodes showing traversal direction. */
-function ChainArrow({ direction }: { direction: 'up' | 'down' | 'root' }) {
-    const symbol = direction === 'up' ? '↑' : direction === 'down' ? '↓' : '◆';
+function ChainArrow({ direction }: { direction: "up" | "down" | "root" }) {
+    const symbol = direction === "up" ? "↑" : direction === "down" ? "↓" : "◆";
     const cls = `pc-arrow pc-arrow-${direction}`;
     return <span class={cls}>{symbol}</span>;
 }
@@ -41,11 +45,17 @@ function ChainArrow({ direction }: { direction: 'up' | 'down' | 'root' }) {
 /** Format cursor position and match status. */
 function StatusBadge({ graph }: { graph: VizPathGraph }) {
     if (!graph.done) {
-        return <span class="pc-status pc-status-active">pos {graph.cursor_pos}</span>;
+        return (
+            <span class="pc-status pc-status-active">
+                pos {graph.cursor_pos}
+            </span>
+        );
     }
     return (
-        <span class={`pc-status ${graph.success ? 'pc-status-match' : 'pc-status-mismatch'}`}>
-            {graph.success ? '✓ match' : '✗ mismatch'} @ {graph.cursor_pos}
+        <span
+            class={`pc-status ${graph.success ? "pc-status-match" : "pc-status-mismatch"}`}
+        >
+            {graph.success ? "✓ match" : "✗ mismatch"} @ {graph.cursor_pos}
         </span>
     );
 }

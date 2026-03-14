@@ -8,9 +8,11 @@ use ts_rs::TS;
 
 use crate::log_parser::LogEntry;
 
+// ts-rs export_to path: see context_api::TS_EXPORT_DIR for the convention.
+
 /// Response for listing log files
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to = "../frontend/src/types/generated/")]
+#[ts(export, export_to = "../../../packages/context-types/src/generated/")]
 pub struct LogFileInfo {
     pub name: String,
     pub size: u64,
@@ -27,7 +29,7 @@ pub struct LogFileInfo {
 
 /// Response for log content
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to = "../frontend/src/types/generated/")]
+#[ts(export, export_to = "../../../packages/context-types/src/generated/")]
 pub struct LogContentResponse {
     pub name: String,
     pub entries: Vec<LogEntry>,
@@ -59,7 +61,7 @@ pub struct SearchQuery {
 
 /// Search result response
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to = "../frontend/src/types/generated/")]
+#[ts(export, export_to = "../../../packages/context-types/src/generated/")]
 pub struct SearchResponse {
     pub query: String,
     pub matches: Vec<LogEntry>,
@@ -77,7 +79,7 @@ pub struct JqQuery {
 
 /// JQ query result response
 #[derive(Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to = "../frontend/src/types/generated/")]
+#[ts(export, export_to = "../../../packages/context-types/src/generated/")]
 pub struct JqQueryResponse {
     pub query: String,
     pub matches: Vec<LogEntry>,

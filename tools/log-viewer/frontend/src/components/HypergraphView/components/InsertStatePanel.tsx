@@ -9,41 +9,65 @@
  *
  * Sits alongside the SearchStatePanel (which handles step navigation).
  */
-import { useMemo } from 'preact/hooks';
-import { activePathEvent, activeSearchState } from '../../../store';
-import type { GraphOpEvent, GraphMutation, DeltaOp } from '../../../types/generated';
+import { useMemo } from "preact/hooks";
+import { activePathEvent, activeSearchState } from "../../../store";
+import type {
+    GraphOpEvent,
+    GraphMutation,
+    DeltaOp,
+} from "@context-engine/types";
 
 // ── Phase identification ──
 
-type InsertPhase = 'split' | 'join' | 'create' | 'done' | 'other';
+type InsertPhase = "split" | "join" | "create" | "done" | "other";
 
 function getInsertPhase(event: GraphOpEvent): InsertPhase {
     const kind = event.transition?.kind;
-    if (!kind) return 'other';
-    if (kind === 'split_start' || kind === 'split_complete') return 'split';
-    if (kind === 'join_start' || kind === 'join_step' || kind === 'join_complete') return 'join';
-    if (kind === 'create_pattern' || kind === 'create_root' || kind === 'update_pattern') return 'create';
-    if (kind === 'done') return 'done';
-    return 'other';
+    if (!kind) return "other";
+    if (kind === "split_start" || kind === "split_complete") return "split";
+    if (
+        kind === "join_start" ||
+        kind === "join_step" ||
+        kind === "join_complete"
+    )
+        return "join";
+    if (
+        kind === "create_pattern" ||
+        kind === "create_root" ||
+        kind === "update_pattern"
+    )
+        return "create";
+    if (kind === "done") return "done";
+    return "other";
 }
 
 function phaseLabel(phase: InsertPhase): string {
     switch (phase) {
-        case 'split': return 'Split Phase';
-        case 'join': return 'Join Phase';
-        case 'create': return 'Create Phase';
-        case 'done': return 'Complete';
-        default: return 'Insert';
+        case "split":
+            return "Split Phase";
+        case "join":
+            return "Join Phase";
+        case "create":
+            return "Create Phase";
+        case "done":
+            return "Complete";
+        default:
+            return "Insert";
     }
 }
 
 function phaseColor(phase: InsertPhase): string {
     switch (phase) {
-        case 'split': return '#ff8040';
-        case 'join': return '#a0c0ff';
-        case 'create': return '#ffdc60';
-        case 'done': return '#60e080';
-        default: return '#c0c0c0';
+        case "split":
+            return "#ff8040";
+        case "join":
+            return "#a0c0ff";
+        case "create":
+            return "#ffdc60";
+        case "done":
+            return "#60e080";
+        default:
+            return "#c0c0c0";
     }
 }
 
@@ -51,34 +75,44 @@ function phaseColor(phase: InsertPhase): string {
 
 function deltaOpIcon(op: DeltaOp): string {
     switch (op.op) {
-        case 'add_node': return '+🔵';
-        case 'remove_node': return '-🔵';
-        case 'add_edge': return '+🔗';
-        case 'remove_edge': return '-🔗';
-        case 'update_node': return '✏️';
+        case "add_node":
+            return "+🔵";
+        case "remove_node":
+            return "-🔵";
+        case "add_edge":
+            return "+🔗";
+        case "remove_edge":
+            return "-🔗";
+        case "update_node":
+            return "✏️";
     }
 }
 
 function deltaOpLabel(op: DeltaOp): string {
     switch (op.op) {
-        case 'add_node': return `Add node ${op.index} (w=${op.width})`;
-        case 'remove_node': return `Remove node ${op.index}`;
-        case 'add_edge': return `Add edge ${op.from}→${op.to} [p${op.pattern_id}]`;
-        case 'remove_edge': return `Remove edge ${op.from}→${op.to} [p${op.pattern_id}]`;
-        case 'update_node': return `Update node ${op.index}: ${op.detail}`;
+        case "add_node":
+            return `Add node ${op.index} (w=${op.width})`;
+        case "remove_node":
+            return `Remove node ${op.index}`;
+        case "add_edge":
+            return `Add edge ${op.from}→${op.to} [p${op.pattern_id}]`;
+        case "remove_edge":
+            return `Remove edge ${op.from}→${op.to} [p${op.pattern_id}]`;
+        case "update_node":
+            return `Update node ${op.index}: ${op.detail}`;
     }
 }
 
 function deltaOpClass(op: DeltaOp): string {
     switch (op.op) {
-        case 'add_node':
-        case 'add_edge':
-            return 'isp-delta-add';
-        case 'remove_node':
-        case 'remove_edge':
-            return 'isp-delta-remove';
-        case 'update_node':
-            return 'isp-delta-update';
+        case "add_node":
+        case "add_edge":
+            return "isp-delta-add";
+        case "remove_node":
+        case "remove_edge":
+            return "isp-delta-remove";
+        case "update_node":
+            return "isp-delta-update";
     }
 }
 
@@ -88,26 +122,27 @@ function getTransitionDetail(event: GraphOpEvent): string | null {
     const t = event.transition;
     if (!t) return null;
     switch (t.kind) {
-        case 'split_start':
+        case "split_start":
             return `Splitting node ${t.node.index} at position ${t.split_position}`;
-        case 'split_complete': {
+        case "split_complete": {
             const parts: string[] = [`Original: ${t.original_node}`];
             if (t.left_fragment != null) parts.push(`Left: ${t.left_fragment}`);
-            if (t.right_fragment != null) parts.push(`Right: ${t.right_fragment}`);
-            return parts.join(' · ');
+            if (t.right_fragment != null)
+                parts.push(`Right: ${t.right_fragment}`);
+            return parts.join(" · ");
         }
-        case 'join_start':
-            return `Joining ${t.nodes.length} nodes: [${t.nodes.join(', ')}]`;
-        case 'join_step':
+        case "join_start":
+            return `Joining ${t.nodes.length} nodes: [${t.nodes.join(", ")}]`;
+        case "join_step":
             return `${t.left} ⊕ ${t.right} → ${t.result}`;
-        case 'join_complete':
+        case "join_complete":
             return `Result: node ${t.result_node}`;
-        case 'create_pattern':
-            return `Parent ${t.parent}, pattern #${t.pattern_id}: [${t.children.join(', ')}]`;
-        case 'create_root':
+        case "create_pattern":
+            return `Parent ${t.parent}, pattern #${t.pattern_id}: [${t.children.join(", ")}]`;
+        case "create_root":
             return `New root node ${t.node.index} (width ${t.node.width})`;
-        case 'update_pattern':
-            return `Parent ${t.parent}: [${t.old_children.join(',')}] → [${t.new_children.join(',')}]`;
+        case "update_pattern":
+            return `Parent ${t.parent}: [${t.old_children.join(",")}] → [${t.new_children.join(",")}]`;
         default:
             return null;
     }
@@ -123,7 +158,9 @@ interface DeltaSummary {
     updatedNodes: number;
 }
 
-function computeDeltaSummary(delta: GraphMutation | null | undefined): DeltaSummary {
+function computeDeltaSummary(
+    delta: GraphMutation | null | undefined,
+): DeltaSummary {
     const summary: DeltaSummary = {
         addedNodes: 0,
         removedNodes: 0,
@@ -134,11 +171,21 @@ function computeDeltaSummary(delta: GraphMutation | null | undefined): DeltaSumm
     if (!delta?.ops) return summary;
     for (const op of delta.ops) {
         switch (op.op) {
-            case 'add_node': summary.addedNodes++; break;
-            case 'remove_node': summary.removedNodes++; break;
-            case 'add_edge': summary.addedEdges++; break;
-            case 'remove_edge': summary.removedEdges++; break;
-            case 'update_node': summary.updatedNodes++; break;
+            case "add_node":
+                summary.addedNodes++;
+                break;
+            case "remove_node":
+                summary.removedNodes++;
+                break;
+            case "add_edge":
+                summary.addedEdges++;
+                break;
+            case "remove_edge":
+                summary.removedEdges++;
+                break;
+            case "update_node":
+                summary.updatedNodes++;
+                break;
         }
     }
     return summary;
@@ -166,11 +213,31 @@ function DeltaSection({ delta }: { delta: GraphMutation }) {
             <div class="isp-delta-header">
                 <span class="isp-delta-title">Graph Changes</span>
                 <span class="isp-delta-summary">
-                    {summary.addedNodes > 0 && <span class="isp-delta-badge isp-badge-add">+{summary.addedNodes} nodes</span>}
-                    {summary.removedNodes > 0 && <span class="isp-delta-badge isp-badge-remove">-{summary.removedNodes} nodes</span>}
-                    {summary.addedEdges > 0 && <span class="isp-delta-badge isp-badge-add">+{summary.addedEdges} edges</span>}
-                    {summary.removedEdges > 0 && <span class="isp-delta-badge isp-badge-remove">-{summary.removedEdges} edges</span>}
-                    {summary.updatedNodes > 0 && <span class="isp-delta-badge isp-badge-update">{summary.updatedNodes} updated</span>}
+                    {summary.addedNodes > 0 && (
+                        <span class="isp-delta-badge isp-badge-add">
+                            +{summary.addedNodes} nodes
+                        </span>
+                    )}
+                    {summary.removedNodes > 0 && (
+                        <span class="isp-delta-badge isp-badge-remove">
+                            -{summary.removedNodes} nodes
+                        </span>
+                    )}
+                    {summary.addedEdges > 0 && (
+                        <span class="isp-delta-badge isp-badge-add">
+                            +{summary.addedEdges} edges
+                        </span>
+                    )}
+                    {summary.removedEdges > 0 && (
+                        <span class="isp-delta-badge isp-badge-remove">
+                            -{summary.removedEdges} edges
+                        </span>
+                    )}
+                    {summary.updatedNodes > 0 && (
+                        <span class="isp-delta-badge isp-badge-update">
+                            {summary.updatedNodes} updated
+                        </span>
+                    )}
                 </span>
             </div>
             <div class="isp-delta-ops">
@@ -187,7 +254,7 @@ export function InsertStatePanel() {
     const event = activePathEvent.value ?? activeSearchState.value;
 
     // Only show for insert operations
-    if (!event || event.op_type !== 'insert') return null;
+    if (!event || event.op_type !== "insert") return null;
 
     const phase = getInsertPhase(event);
     const detail = getTransitionDetail(event);
@@ -202,15 +269,9 @@ export function InsertStatePanel() {
                 <span class="isp-step">Step {event.step}</span>
             </div>
 
-            {detail && (
-                <div class="isp-detail">
-                    {detail}
-                </div>
-            )}
+            {detail && <div class="isp-detail">{detail}</div>}
 
-            <div class="isp-description">
-                {event.description}
-            </div>
+            <div class="isp-description">{event.description}</div>
 
             {delta && <DeltaSection delta={delta} />}
         </div>

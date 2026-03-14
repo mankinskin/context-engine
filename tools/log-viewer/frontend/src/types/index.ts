@@ -1,78 +1,86 @@
 // Types for the Log Viewer application
 //
-// Generated types (from Rust via ts-rs): import from './generated'
-// Regenerate with: cargo test -p context-trace -p log-viewer export_bindings
+// Generated types (from Rust via ts-rs) are now consumed from the shared
+// @context-engine/types package.  Regenerate with:
+//   cargo test --features ts-gen -p context-api -p context-trace -p log-viewer export_bindings
 
-// ── Re-export generated types ──
+// ── Re-export generated types from the shared package ──
 export type {
-  AssertionDiff,
-  EdgeRef,
-  GraphOpEvent,
-  GraphSnapshot,
-  JqQueryResponse,
-  LocationInfo,
-  LogContentResponse,
-  LogEntry,
-  LogFileInfo,
-  OperationType,
-  PathNode,
-  PathTransition,
-  QueryInfo,
-  SearchResponse,
-  SnapshotEdge,
-  SnapshotNode,
-  Transition,
-  VizPathGraph,
-} from './generated';
+    AssertionDiff,
+    EdgeRef,
+    GraphOpEvent,
+    GraphSnapshot,
+    JqQueryResponse,
+    LocationInfo,
+    LogContentResponse,
+    LogEntry,
+    LogFileInfo,
+    OperationType,
+    PathNode,
+    PathTransition,
+    QueryInfo,
+    SearchResponse,
+    SnapshotEdge,
+    SnapshotNode,
+    Transition,
+    VizPathGraph,
+} from "@context-engine/types";
 
 // ── Frontend-only types (not generated from Rust) ──
 
 // Alias: LogFileInfo was previously called LogFile in the frontend
-export type { LogFileInfo as LogFile } from './generated';
+export type { LogFileInfo as LogFile } from "@context-engine/types";
 
-export type LogLevel = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
-export type EventType = 'event' | 'span_enter' | 'span_exit' | 'unknown';
+export type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR";
+export type EventType = "event" | "span_enter" | "span_exit" | "unknown";
 
 export interface SourceFileResponse {
-  path: string;
-  content: string;
-  language: string;
-  total_lines: number;
+    path: string;
+    content: string;
+    language: string;
+    total_lines: number;
 }
 
 export interface SourceSnippet {
-  path: string;
-  content: string;
-  start_line: number;
-  end_line: number;
-  highlight_line: number;
-  language: string;
+    path: string;
+    content: string;
+    start_line: number;
+    end_line: number;
+    highlight_line: number;
+    language: string;
 }
 
-export type ViewTab = 'logs' | 'stats' | 'code' | 'debug' | 'scene3d' | 'hypergraph' | 'settings';
+export type ViewTab =
+    | "logs"
+    | "stats"
+    | "code"
+    | "debug"
+    | "scene3d"
+    | "hypergraph"
+    | "settings";
 
 // Snapshot aliases (match the old naming convention used across the frontend)
-export type { GraphSnapshot as HypergraphSnapshot } from './generated';
-export type { SnapshotNode as HypergraphNode } from './generated';
-export type { SnapshotEdge as HypergraphEdge } from './generated';
+export type { GraphSnapshot as HypergraphSnapshot } from "@context-engine/types";
+export type { SnapshotNode as HypergraphNode } from "@context-engine/types";
+export type { SnapshotEdge as HypergraphEdge } from "@context-engine/types";
 
 export interface FlowNode {
-  id: string;
-  entry: import('./generated').LogEntry;
-  type: 'event' | 'span';
+    id: string;
+    entry: import("@context-engine/types").LogEntry;
+    type: "event" | "span";
 }
 
 export interface FlowEdge {
-  source: string;
-  target: string;
+    source: string;
+    target: string;
 }
 
 // Legacy alias for backwards compatibility
-export type SearchStateEvent = import('./generated').GraphOpEvent;
+export type SearchStateEvent = import("@context-engine/types").GraphOpEvent;
 
 export interface LogStats {
-  levelCounts: Record<LogLevel, number>;
-  typeCounts: Record<EventType, number>;
-  timelineData: { timestamp: number; count: number }[];
-  topSpans: { name: string; count: number; avgDuration: number }[];
+    levelCounts: Record<LogLevel, number>;
+    typeCounts: Record<EventType, number>;
+    timelineData: { timestamp: number; count: number }[];
+    topSpans: { name: string; count: number; avgDuration: number }[];
 }

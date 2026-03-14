@@ -14,10 +14,10 @@
  * - Atom-width indicator
  * - Color state: idle / active / matched / mismatched
  */
-import { useMemo } from 'preact/hooks';
-import { activePathEvent, activeSearchState } from '../../../store';
-import type { QueryInfo } from '../../../types/generated';
-import { hypergraphSnapshot } from '../../../store';
+import { useMemo } from "preact/hooks";
+import { activePathEvent, activeSearchState } from "../../../store";
+import type { QueryInfo } from "@context-engine/types";
+import { hypergraphSnapshot } from "../../../store";
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -28,7 +28,7 @@ import { hypergraphSnapshot } from '../../../store';
 function tokenLabel(idx: number): string {
     const snap = hypergraphSnapshot.value;
     if (!snap) return `#${idx}`;
-    const node = snap.nodes.find(n => n.index === idx);
+    const node = snap.nodes.find((n) => n.index === idx);
     return node?.label ?? `#${idx}`;
 }
 
@@ -45,7 +45,12 @@ function computeTokenOffsets(_query: QueryInfo, widths: number[]): number[] {
     return offsets;
 }
 
-type TokenState = 'idle' | 'matched' | 'active-match' | 'active-mismatch' | 'cursor';
+type TokenState =
+    | "idle"
+    | "matched"
+    | "active-match"
+    | "active-mismatch"
+    | "cursor";
 
 /**
  * Determine the visual state of each query token.
@@ -56,7 +61,7 @@ function computeTokenStates(
     transitionKind: string | undefined,
 ): TokenState[] {
     const n = query.query_tokens.length;
-    const states: TokenState[] = new Array(n).fill('idle');
+    const states: TokenState[] = new Array(n).fill("idle");
     const matched = new Set(query.matched_positions ?? []);
     const cursor = query.cursor_position;
 
@@ -76,14 +81,14 @@ function computeTokenStates(
         // Check if cursor falls within this token's atom range
         const cursorInToken = cursor >= start && cursor < end;
 
-        if (cursorInToken && transitionKind === 'child_mismatch') {
-            states[i] = 'active-mismatch';
-        } else if (cursorInToken && transitionKind === 'child_match') {
-            states[i] = 'active-match';
+        if (cursorInToken && transitionKind === "child_mismatch") {
+            states[i] = "active-mismatch";
+        } else if (cursorInToken && transitionKind === "child_match") {
+            states[i] = "active-match";
         } else if (isMatched) {
-            states[i] = 'matched';
+            states[i] = "matched";
         } else if (cursorInToken) {
-            states[i] = 'cursor';
+            states[i] = "cursor";
         }
     }
 
@@ -104,8 +109,8 @@ export function QueryPathPanel() {
     // Compute token widths from the snapshot
     const widths = useMemo(() => {
         if (!snap) return query.query_tokens.map(() => 1);
-        return query.query_tokens.map(idx => {
-            const node = snap.nodes.find(n => n.index === idx);
+        return query.query_tokens.map((idx) => {
+            const node = snap.nodes.find((n) => n.index === idx);
             return node?.width ?? 1;
         });
     }, [query.query_tokens, snap]);
@@ -122,9 +127,10 @@ export function QueryPathPanel() {
     );
 
     // Progress bar: fraction of query matched
-    const progress = query.query_width > 0
-        ? Math.min(query.cursor_position / query.query_width, 1)
-        : 0;
+    const progress =
+        query.query_width > 0
+            ? Math.min(query.cursor_position / query.query_width, 1)
+            : 0;
 
     return (
         <div class="qp-panel">
@@ -146,7 +152,7 @@ export function QueryPathPanel() {
             {/* Token strip */}
             <div class="qp-tokens">
                 {query.query_tokens.map((tokenIdx, i) => {
-                    const state = tokenStates[i] ?? 'idle';
+                    const state = tokenStates[i] ?? "idle";
                     const width = widths[i] ?? 1;
                     const label = tokenLabel(tokenIdx);
                     const isActive = query.active_token === tokenIdx;
@@ -154,7 +160,7 @@ export function QueryPathPanel() {
                     return (
                         <div
                             key={i}
-                            class={`qp-token qp-token-${state} ${isActive ? 'qp-token-compared' : ''}`}
+                            class={`qp-token qp-token-${state} ${isActive ? "qp-token-compared" : ""}`}
                             title={`Token #${tokenIdx} (width ${width}, atoms ${offsets[i]}–${(offsets[i + 1] ?? 0) - 1})`}
                         >
                             <span class="qp-token-label">{label}</span>
