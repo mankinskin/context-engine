@@ -655,7 +655,7 @@ This phase requires adding `schemars = "0.8"` to `crates/context-api/Cargo.toml`
 - **Resource exposure** — Expose open workspaces as MCP resources so agents can browse them
 - **Prompt templates** — Provide MCP prompts for common workflows ("create and populate a graph", "search and explain results")
 - **Notifications** — Emit MCP notifications on graph mutations (if streaming becomes relevant per Q24)
-- **Multiple tool mode** — If the single `execute` tool proves unwieldy for agents, split into grouped tools (workspace, graph, algorithm) — this is a backward-compatible addition
+- ~~**Multiple tool mode**~~ — ✅ Done. Added `help` and `workflow` tools alongside `execute` for agent discoverability and guided onboarding (see deviation #6).
 
 ### Deviations from Plan
 
@@ -664,6 +664,7 @@ This phase requires adding `schemars = "0.8"` to `crates/context-api/Cargo.toml`
 3. **`GraphSnapshot` schema handling** — Used `#[schemars(with = "serde_json::Value")]` on the `CommandResult::Snapshot` variant rather than adding schemars to `context-trace`. This is minimally invasive and describes the snapshot as "any JSON value" in the schema.
 4. **`ServerCapabilities` builder API** — The plan used a struct literal with `tools: Some(ToolsCapability { ... })`. The actual rmcp 0.14 API provides `ServerCapabilities::builder().enable_tools().build()`, matching the doc-viewer pattern.
 5. **Test adjustments** — Two tests (`test_insert_and_search_workflow`, `test_save_close_reopen_persistence`) were adjusted to avoid asserting on exact insert/search algorithmic semantics, which have known pre-existing failures in `context-api` due to the thin-forwarding API simplification. Tests verify the MCP layer works correctly without depending on specific engine outcomes.
+6. **Three tools instead of one** — The plan specified a single `execute` tool. Two additional read-only tools were added: `help` (command discovery with category/fuzzy lookup) and `workflow` (ready-to-use command sequence templates). These improve agent ergonomics by providing discoverability and guided onboarding without touching the workspace manager. The `execute` tool remains the primary workhorse; `help` and `workflow` are pure reference tools. This follows the multi-tool pattern established by `tools/doc-viewer` (6 CRUD tools) rather than the monolithic single-tool approach. Test count increased from 10 to 22.
 
 ### Lessons Learned
 
