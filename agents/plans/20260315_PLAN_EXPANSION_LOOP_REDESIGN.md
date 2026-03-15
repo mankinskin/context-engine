@@ -242,7 +242,10 @@ impl Iterator for ExpansionCtx {
                         // Cursor advances into T2's overlap region, NOT past T1.
                         // next_cursor = T2.start + (T2.width - largest_postfix_of_T2.width)
                         self.cursor = next_cursor;
-                        self.anchor = Some(token);
+                        // Anchor = expansion (T2), NOT token (T1).
+                        // T2 is the next largest leftmost match; its postfixes are
+                        // the candidates for the next overlap check. (Batch 5, Q23)
+                        self.anchor = Some(expansion);
                         Some(BandState::with_overlap(token, postfix, expansion))
                     }
                     None => {
@@ -372,6 +375,58 @@ Impact** sections in each batch file.
 
 ### Plan Impacts from Interview
 
+#### From Batch 6 (insert_sequence Outer Loop in context-api)
+
+- **PI-16** — **RC-1 fix is subsumed by RC-2/RC-3.** `insert_sequence` delegates
+  entirely to `ReadCtx::read_sequence`. `ReadCtx::read_sequence` is the single
+  canonical entry point for consuming a sequence and creating all necessary tokens.
+  The change to `context-api/src/commands/insert.rs` is a one-line replacement of
+  the `insert_next_match` call with a `ReadCtx::read_sequence` call.
+- **PI-17** — **No segment token list / wrapping step.** Segments are committed
+  into the root incrementally as `BandState` values are yielded. There is no
+  final `insert_pattern(segments)` call. The root is fully built when the loop
+  terminates.
+- **PI-18** — **Remove `< 2` input guard from `insert_sequence`.** A single-token
+  input returns that token directly with `already_existed = true` and no graph
+  writes. The loop handles this naturally without a pre-check.
+- **PI-19** — **`already_existed` and `has_expanded` are per-outcome signals, not
+  aggregate.** `already_existed` = `outcome != Created`. `has_expanded` =
+  `outcome != NoExpansion`. These are orthogonal; do not conflate them into a
+  single sequence-level flag.
+- **PI-20** — **Root wrapping always produces a new token.** The "already existed
+  root wrap" scenario is impossible: `insert_next_match` always finds the largest
+  existing token (which therefore has no parents matching the broader query), so
+  any composed root is always new. The workspace is always marked dirty when a
+  multi-segment sequence is produced.
+
+#### From Batch 5 (RootManager and Commit Contract)
+
+- **PI-21** — **Delete `append_collapsed` overlap logic entirely.** The two
+  overlap-detection branches in `append_collapsed` are architecturally invalid.
+  After deletion, `append_collapsed` is a pure structural append: (1) `root==None`
+  → create fresh root; (2) `can_extend` → extend in-place; (3) `!can_extend` →
+  wrap. No overlap awareness. Add a `// REMOVED: overlap detection — handled by
+  ExpansionCtx` comment at the deletion site.
+- **PI-22** — **Fix anchor update: set `self.anchor = Some(expansion)` not
+  `Some(token)` in the `WithOverlap` arm.** The anchor after an overlap commit is
+  `T2` (the expansion result), not `T1` (the token that triggered the postfix
+  descent). `T2` is the largest leftmost match found and has the shortest path to
+  the next overlap candidate. The pseudo-code has been corrected above.
+- **PI-23** — **`can_extend` is volatile; check it per-commit, never cache it.**
+  An overlap commit adds a second pattern to the root, invalidating `can_extend`.
+  Subsequent commits in the same loop must use the wrap path. Re-evaluate
+  `can_extend` at every `commit_state` call.
+- **PI-24** — **Root update design session is a hard prerequisite.** The exact
+  root mutation sequence for every combination of root state × `BandState` variant
+  has been captured in
+  [`20260315_DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md).
+  Implementation of RC-2/RC-3 must not begin without reviewing that document and
+  resolving its five open questions (OQ-1 through OQ-5).
+- **PI-25** — **`root=None` + first `WithOverlap` commit behaviour is TBD.** The
+  Q25 case (root starts `None`, first committed state is a bundled overlap token)
+  must be explicitly validated in the root update design session. The existing
+  `None` branch in `append_collapsed` may not handle this correctly.
+
 #### From Batch 4 (Cursor Advancement and NoExpansion Handling)
 
 - **PI-12** — **Unify RC-1 and RC-2/RC-3 into a single loop.** `insert_sequence`
@@ -454,9 +509,9 @@ Impact** sections in each batch file.
 | 2 — ExpansionCtx Loop Contract | ✅ answered | [BATCH_2](20260315_INTERVIEW_BATCH_2.md) |
 | 3 — Overlap Collection and Decomposition Output | ✅ answered | [BATCH_3](20260315_INTERVIEW_BATCH_3.md) |
 | 4 — Cursor Advancement and NoExpansion Handling | ✅ answered | [BATCH_4](20260315_INTERVIEW_BATCH_4.md) |
-| 5 — RootManager and Commit Contract | 🟡 awaiting-answers | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |
-| 6 — insert_sequence Outer Loop in context-api | 🟡 awaiting-answers | [BATCH_6](20260315_INTERVIEW_BATCH_6.md) |
-| 7 — Performance and Streaming | 🔴 blocked-by-batch-6 | [BATCH_7](20260315_INTERVIEW_BATCH_7.md) |
+| 5 — RootManager and Commit Contract | ✅ answered | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |
+| 6 — insert_sequence Outer Loop in context-api | ✅ answered | [BATCH_6](20260315_INTERVIEW_BATCH_6.md) |
+| 7 — Performance and Streaming | 🟡 awaiting-answers | [BATCH_7](20260315_INTERVIEW_BATCH_7.md) |
 
 ### Lessons Learned
 <!-- Post-execution -->

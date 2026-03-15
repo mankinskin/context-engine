@@ -3,7 +3,7 @@ tags: `#interview` `#expansion-loop` `#performance` `#streaming`
 plan: 20260315_PLAN_EXPANSION_LOOP_REDESIGN.md
 batch: 7
 topic: Performance and Streaming
-status: 🔴 blocked-by-batch-6
+status: 🟡 awaiting-answers
 ---
 
 # Interview — Batch 7: Performance and Streaming
