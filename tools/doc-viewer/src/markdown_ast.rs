@@ -250,6 +250,7 @@ fn node_to_json(node: &markdown::mdast::Node) -> Value {
 }
 
 /// Extract text content from a markdown AST node (flattens all text).
+#[allow(dead_code)]
 pub fn extract_text(content: &str) -> Result<String, String> {
     let ast = to_mdast(content, &ParseOptions::gfm())
         .map_err(|e| format!("Markdown parse error: {}", e))?;
@@ -257,6 +258,7 @@ pub fn extract_text(content: &str) -> Result<String, String> {
     Ok(collect_text(&ast))
 }
 
+#[allow(dead_code)]
 fn collect_text(node: &markdown::mdast::Node) -> String {
     use markdown::mdast::Node;
 

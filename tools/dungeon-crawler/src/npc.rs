@@ -1,6 +1,11 @@
-use crate::items::{self, Item};
-use rand::Rng;
-use rand::seq::SliceRandom;
+use crate::items::{
+    self,
+    Item,
+};
+use rand::{
+    seq::SliceRandom,
+    Rng,
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum NpcKind {
@@ -22,11 +27,15 @@ pub struct Npc {
 }
 
 impl Npc {
+    #[allow(dead_code)]
     pub fn greeting(&self) -> &str {
         if self.talked {
             self.dialogue.last().map(|s| s.as_str()).unwrap_or("...")
         } else {
-            self.dialogue.first().map(|s| s.as_str()).unwrap_or("Hello, traveler.")
+            self.dialogue
+                .first()
+                .map(|s| s.as_str())
+                .unwrap_or("Hello, traveler.")
         }
     }
 }
@@ -34,8 +43,10 @@ impl Npc {
 const MERCHANT_NAMES: &[&str] = &["Gorbin", "Thessa", "Brunk", "Mira"];
 const SAGE_NAMES: &[&str] = &["Eldrin", "Sybil", "Thalor", "Lunara"];
 const HEALER_NAMES: &[&str] = &["Sister Maren", "Brother Aldric", "Sage Liora"];
-const SMITH_NAMES: &[&str] = &["Forge-Master Kael", "Ironhide Durga", "Smithy Bren"];
-const HERMIT_NAMES: &[&str] = &["Old Bones", "The Whisperer", "Moss-Beard", "Pale Elara"];
+const SMITH_NAMES: &[&str] =
+    &["Forge-Master Kael", "Ironhide Durga", "Smithy Bren"];
+const HERMIT_NAMES: &[&str] =
+    &["Old Bones", "The Whisperer", "Moss-Beard", "Pale Elara"];
 
 pub fn make_merchant(rng: &mut impl Rng) -> Npc {
     let name = MERCHANT_NAMES.choose(rng).unwrap().to_string();
@@ -89,7 +100,8 @@ pub fn make_healer(rng: &mut impl Rng) -> Npc {
         dialogue: vec![
             format!("{} smiles gently. 'Let me tend your wounds.'", name),
             "5 coins for a quick heal, 15 for full restoration.".into(),
-            "Be careful out there. The deeper rooms hold terrible things.".into(),
+            "Be careful out there. The deeper rooms hold terrible things."
+                .into(),
         ],
         shop: Vec::new(),
         talked: false,
@@ -103,7 +115,10 @@ pub fn make_blacksmith(rng: &mut impl Rng) -> Npc {
         name: name.clone(),
         kind: NpcKind::Blacksmith,
         dialogue: vec![
-            format!("{} pounds metal on an anvil. 'Need a weapon sharpened?'", name),
+            format!(
+                "{} pounds metal on an anvil. 'Need a weapon sharpened?'",
+                name
+            ),
             "Bring me your weapon and some coin. I'll make it stronger.".into(),
             "A good blade is worth more than a heavy one.".into(),
         ],

@@ -216,6 +216,7 @@ struct ParamHelp {
 fn extract_workspace_name(cmd: &Command) -> Option<&str> {
     match cmd {
         Command::CreateWorkspace { name }
+        | Command::CreateWorkspaceFromNgrams { name, .. }
         | Command::OpenWorkspace { name }
         | Command::CloseWorkspace { name }
         | Command::SaveWorkspace { name }
@@ -250,8 +251,16 @@ fn extract_workspace_name(cmd: &Command) -> Option<&str> {
         | Command::SearchLogs { workspace, .. }
         | Command::DeleteLog { workspace, .. }
         | Command::DeleteLogs { workspace, .. }
-        | Command::ExportWorkspace { workspace, .. } =>
-            Some(workspace.as_str()),
+        | Command::ExportWorkspace { workspace, .. }
+        | Command::RenderAsciiGraph { workspace, .. }
+        | Command::CompareWorkspaces {
+            workspace_a: workspace,
+            ..
+        }
+        | Command::CompareVertices {
+            workspace_a: workspace,
+            ..
+        } => Some(workspace.as_str()),
     }
 }
 
