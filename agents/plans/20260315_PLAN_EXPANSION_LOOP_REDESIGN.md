@@ -1,8 +1,8 @@
 ---
 tags: `#plan` `#context-read` `#context-insert` `#algorithm` `#expansion` `#overlap` `#refactoring`
 summary: Redesign the ExpansionCtx inner loop so it drives insert_next_match in a cursor-advancing loop over known-atom segments, correctly handles the new/known classification boundary, and collects a tight set of decomposition patterns from all detected overlaps.
-status: 📋 interview
-phase: 1-interview
+status: 📋 implementation-ready
+phase: 2-implementation
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
 related: 20260315_PLAN_INTEGRATION_TEST_REMEDIATION.md, 20260314_PLAN_INSERT_NEXT_MATCH.md, 20260314_PLAN_APPEND_TO_PATTERN_FIX.md
 priority: top — this is the core algorithm fix that unblocks RC-1, RC-2, RC-3 and all 20 ignored integration tests
@@ -375,6 +375,23 @@ Impact** sections in each batch file.
 
 ### Plan Impacts from Interview
 
+#### From Batch 7 (Performance and Streaming)
+
+- **PI-26** — **`ExpansionCtx` uses a lazy-buffered source, not a pre-materialised
+  slice.** Replace `atoms: Pattern` with `buffer: Vec<Token>` (atoms materialised
+  so far) + `source: impl Iterator<Item = NewAtomIndex>` (lazy remainder). Add a
+  private `ensure_materialised(n)` helper. This preserves stream plumbing for the
+  lazy path without requiring an eager pre-pass.
+- **PI-27** — **No width-comparison guard in `find_overlap`.** Postfixes are
+  structurally bounded by the query (they are subtokens of a previously expanded
+  token). The only valid early exit is `remaining.is_empty()`. No
+  `postfix.width > remaining.len()` check is needed.
+- **PI-28** — **No atom pre-pass; interleaved writes are correct and optimal.**
+  New atoms are inert for overlap detection (no parents yet). Separating them into
+  a pre-pass would require full eager materialisation, conflicting with the lazy
+  streaming model. Interleaving is intentional.
+- **PI-29** — **Definitive implementation task order** (see below).
+
 #### From Batch 6 (insert_sequence Outer Loop in context-api)
 
 - **PI-16** — **RC-1 fix is subsumed by RC-2/RC-3.** `insert_sequence` delegates
@@ -511,7 +528,23 @@ Impact** sections in each batch file.
 | 4 — Cursor Advancement and NoExpansion Handling | ✅ answered | [BATCH_4](20260315_INTERVIEW_BATCH_4.md) |
 | 5 — RootManager and Commit Contract | ✅ answered | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |
 | 6 — insert_sequence Outer Loop in context-api | ✅ answered | [BATCH_6](20260315_INTERVIEW_BATCH_6.md) |
-| 7 — Performance and Streaming | 🟡 awaiting-answers | [BATCH_7](20260315_INTERVIEW_BATCH_7.md) |
+| 7 — Performance and Streaming | ✅ answered | [BATCH_7](20260315_INTERVIEW_BATCH_7.md) |
+
+### Implementation Task Order
+
+Derived from all seven interview batches. This is the definitive sequence for
+the implementation phase:
+
+| # | Task | Key PIs | Prerequisite |
+|---|------|---------|--------------|
+| T0 | Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts. | PI-29 | — |
+| T1 | Review and resolve OQ-1 through OQ-5 in [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). | PI-24, PI-25 | T0 |
+| T2 | Review `BandState::collapse()`. Rewrite only if it cannot accommodate one-token-per-yield bands with externally-resolved complements. | PI-11 | T1 |
+| T3 | Delete `append_collapsed` overlap logic. Add comment at deletion site. Confirm no regressions against T0 baseline. | PI-21 | T2 |
+| T4 | Implement `ExpansionCtx` cursor loop: lazy-buffered source (PI-26), atom fast-path (PI-14), correct overlap predicate `result.width > postfix.width` (PI-8), dynamic cursor advance from `find_overlap` return value (PI-10), `T2` anchor update `self.anchor = Some(expansion)` (PI-22), complement resolution inside `find_overlap` before `collapse()` (PI-9), `debug_assert!(cursor advanced)` (PI-15), no width guard in `find_overlap` (PI-27). | many | T3 |
+| T5 | Wire `insert_sequence` → `ReadCtx::read_sequence` (PI-16). Remove `< 2` guard (PI-18). One-line change in `commands/insert.rs`. | PI-16, PI-18 | T4 |
+| T6 | Retire `obs1`/`obs2` tests. Run full suite. Record new pass/fail counts against T0 baseline. | PI-29 | T5 |
+| T7 | Schedule test review session for any still-failing `skill3_exp_*` tests. | PI-29 | T6 |
 
 ### Lessons Learned
 <!-- Post-execution -->
