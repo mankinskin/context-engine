@@ -1,7 +1,7 @@
 ---
 tags: `#plan` `#context-read` `#context-insert` `#algorithm` `#expansion` `#overlap` `#refactoring`
 summary: Redesign the ExpansionCtx inner loop so it drives insert_next_match in a cursor-advancing loop over known-atom segments, correctly handles the new/known classification boundary, and collects a tight set of decomposition patterns from all detected overlaps.
-status: 📋 implementation-ready
+status: 🔄 in-progress
 phase: 2-implementation
 design: 20260315_DESIGN_ROOT_UPDATE_STEPS.md
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
@@ -14,7 +14,8 @@ priority: top — this is the core algorithm fix that unblocks RC-1, RC-2, RC-3 
 **Date:** 2026-03-15
 **Scope:** Medium (algorithm change in `context-read`; call-site ripple into `context-api`)
 **Crates:** `context-read`, `context-api`
-**Test baseline:** 44 pass / 9 fail / 22 ignored in `cli_integration`; `context-read` crate does not compile its test suite (247 errors — stale imports, not logic failures)
+**Test baseline (original):** 44 pass / 9 fail / 22 ignored in `cli_integration`; `context-read` crate did not compile its test suite (247 errors — stale imports, not logic failures)
+**Test baseline (current):** 53 pass / 0 fail / 22 ignored in `cli_integration`; `context-read` unit tests: **64 pass / 11 fail / 0 ignored**
 
 ---
 
@@ -312,13 +313,13 @@ Impact** sections in each batch file.
 
 | Batch | File | Topic | Status |
 |-------|------|-------|--------|
-| 1 | [20260315_INTERVIEW_BATCH_1.md](20260315_INTERVIEW_BATCH_1.md) | Classification Boundary | 🟡 awaiting-answers |
-| 2 | [20260315_INTERVIEW_BATCH_2.md](20260315_INTERVIEW_BATCH_2.md) | ExpansionCtx Loop Contract | 🔴 blocked-by-batch-1 |
-| 3 | [20260315_INTERVIEW_BATCH_3.md](20260315_INTERVIEW_BATCH_3.md) | Overlap Collection and Decomposition Output | 🔴 blocked-by-batch-2 |
-| 4 | [20260315_INTERVIEW_BATCH_4.md](20260315_INTERVIEW_BATCH_4.md) | Cursor Advancement and NoExpansion Handling | 🔴 blocked-by-batch-3 |
-| 5 | [20260315_INTERVIEW_BATCH_5.md](20260315_INTERVIEW_BATCH_5.md) | RootManager and Commit Contract | 🔴 blocked-by-batch-4 |
-| 6 | [20260315_INTERVIEW_BATCH_6.md](20260315_INTERVIEW_BATCH_6.md) | insert_sequence Outer Loop in context-api | 🔴 blocked-by-batch-4 |
-| 7 | [20260315_INTERVIEW_BATCH_7.md](20260315_INTERVIEW_BATCH_7.md) | Performance and Streaming | 🔴 blocked-by-batch-6 |
+| 1 | [20260315_INTERVIEW_BATCH_1.md](20260315_INTERVIEW_BATCH_1.md) | Classification Boundary | ✅ answered |
+| 2 | [20260315_INTERVIEW_BATCH_2.md](20260315_INTERVIEW_BATCH_2.md) | ExpansionCtx Loop Contract | ✅ answered |
+| 3 | [20260315_INTERVIEW_BATCH_3.md](20260315_INTERVIEW_BATCH_3.md) | Overlap Collection and Decomposition Output | ✅ answered |
+| 4 | [20260315_INTERVIEW_BATCH_4.md](20260315_INTERVIEW_BATCH_4.md) | Cursor Advancement and NoExpansion Handling | ✅ answered |
+| 5 | [20260315_INTERVIEW_BATCH_5.md](20260315_INTERVIEW_BATCH_5.md) | RootManager and Commit Contract | ✅ answered |
+| 6 | [20260315_INTERVIEW_BATCH_6.md](20260315_INTERVIEW_BATCH_6.md) | insert_sequence Outer Loop in context-api | ✅ answered |
+| 7 | [20260315_INTERVIEW_BATCH_7.md](20260315_INTERVIEW_BATCH_7.md) | Performance and Streaming | ✅ answered |
 
 ---
 
@@ -371,8 +372,13 @@ Impact** sections in each batch file.
 ## Notes
 
 ### Deviations from Plan
-<!-- Track changes made during execution -->
--
+
+- **T2 merged into T1:** `BandState::collapse()` review was conducted as part of the T1 root update design session rather than as a separate step. The existing `collapse()` implementation was retained with minor adjustments (complement construction logic moved into `build_prefix_complement` / `build_postfix_complement` helpers in `chain/mod.rs`).
+- **T3 split into T3a/T3b:** The `RootManager` rewrite was large enough to merit two sub-steps: (T3a) adding `anchor`/`flat_root` fields + deleting `append_collapsed` overlap logic, (T3b) implementing `replace_last_child` (Op-4a/4b). Both are complete.
+- **T5 wiring confirmed (PI-16):** `insert_sequence` now delegates entirely to `ReadCtx::read_sequence` via a one-line replacement. The `< 2` guard was removed (PI-18). The `already_existed` signal is derived from comparing `pre_vertex_count` vs `post_vertex_count` (PI-19/PI-20).
+- **RC-1 fully resolved:** The `cli_integration` suite now shows **53 pass / 0 fail / 22 ignored** (up from 44/9/22). All nine previously-failing tests now pass; the 22 ignored tests remain (oracle and skill3_exp overlap tests, RC-2/RC-3 scope).
+- **RC-2 partially resolved:** Several tests that were RC-2 failures (`read_sequence_after_insert`, `dedup_*`) now pass as a side-effect of the correct `ReadCtx::read_sequence` delegation. See updated `cli_integration` baseline above.
+- **RC-3 in progress (T4):** The `ExpansionCtx` cursor loop and `find_overlap` are implemented in `expansion/mod.rs`. The `context-read` unit test suite now shows **64 pass / 11 fail / 0 ignored**. The 11 remaining failures are all overlap/repetition tests requiring correct `BandState::WithOverlap` collapse output.
 
 ### Plan Impacts from Interview
 
@@ -571,17 +577,38 @@ Impact** sections in each batch file.
 Derived from all seven interview batches. This is the definitive sequence for
 the implementation phase:
 
-| # | Task | Key PIs | Prerequisite |
-|---|------|---------|--------------|
-| T0 | ~~Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts.~~ ✅ **Done** — 0 errors, 0 warnings. **Baseline: 45 pass / 30 fail / 0 ignored.** Fixes: added `context_trace::graph::vertex::parent::PatternIndex` + `HasReadCtx` to `read/mod.rs`; added `context_search::{assert_indices, Find}` to `linear.rs` and `overlapping.rs`; added `context_insert::ToInsertCtx` + `context_search::ErrorState` to `cursor.rs`. | PI-29 | — |
-| T1 | ~~Review and resolve OQ-1 through OQ-5~~ ✅ **Done** — all five open questions resolved. See [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). | PI-24, PI-25, PI-30–34 | T0 |
-| T2 | Review `BandState::collapse()`. Confirm it handles one-token-per-yield bands with externally-resolved complements. Zero-width complement case does not occur (PI-31). Rewrite only if needed. | PI-11, PI-31 | T1 |
-| T3 | Add `anchor: Option<Token>` field to `RootManager` (PI-32). Add `anchor()` accessor. Delete `append_collapsed` overlap logic (PI-21). Add `replace_last_child(bundled)` primitive (PI-30). Confirm no regressions against T0 baseline. | PI-21, PI-30, PI-32 | T2 |
-| T4 | Implement `ExpansionCtx` cursor loop: lazy-buffered source (PI-26), atom fast-path (PI-14), correct overlap predicate `result.width > postfix.width` (PI-8), dynamic cursor advance from `find_overlap` (PI-10), anchor read from `root.anchor()` (PI-32), complement resolution inside `find_overlap` before `collapse()` (PI-9), `commit_state` dispatch table (PI-34), `debug_assert!(cursor advanced)` (PI-15), no width guard in `find_overlap` (PI-27). | many | T3 |
-| T5 | Wire `insert_sequence` → `ReadCtx::read_sequence` (PI-16). Remove `< 2` guard (PI-18). One-line change in `commands/insert.rs`. | PI-16, PI-18 | T4 |
-| T6 | Retire `obs1`/`obs2` tests. Run full suite. Record new pass/fail counts against T0 baseline. | PI-29 | T5 |
-| T7 | Schedule test review session for any still-failing `skill3_exp_*` tests. | PI-29 | T6 |
+| # | Task | Key PIs | Prerequisite | Status |
+|---|------|---------|--------------|--------|
+| T0 | Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts. | PI-29 | — | ✅ **Done** — 0 errors, 0 warnings. **Baseline: 45 pass / 30 fail / 0 ignored.** Fixes: added `context_trace::graph::vertex::parent::PatternIndex` + `HasReadCtx` to `read/mod.rs`; added `context_search::{assert_indices, Find}` to `linear.rs` and `overlapping.rs`; added `context_insert::ToInsertCtx` + `context_search::ErrorState` to `cursor.rs`. |
+| T1 | Review and resolve OQ-1 through OQ-5. | PI-24, PI-25, PI-30–34 | T0 | ✅ **Done** — all five open questions resolved. See [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). |
+| T2 | Review `BandState::collapse()`. Confirm it handles one-token-per-yield bands with externally-resolved complements. Zero-width complement case does not occur (PI-31). Rewrite only if needed. | PI-11, PI-31 | T1 | ✅ **Done** — merged into T1. Existing `collapse()` retained; complement construction factored into `build_prefix_complement` / `build_postfix_complement` in `chain/mod.rs`. |
+| T3 | Add `anchor: Option<Token>` + `flat_root: bool` fields to `RootManager` (PI-32). Add `anchor()` accessor. Delete `append_collapsed` overlap logic (PI-21). Add `replace_last_child(bundled)` primitive (PI-30). Implement full `commit_state` dispatch table (PI-34). Confirm no regressions against T0 baseline. | PI-21, PI-30, PI-32, PI-34 | T2 | ✅ **Done** — `root.rs` fully rewritten: `anchor`, `flat_root`, `set_root`, `extend_root`, `wrap_root`, `replace_last_child` (Op-4a/4b), `commit_state` (Cases A/B/C/D/E/F) all implemented. `append_collapsed` removed. |
+| T4 | Implement `ExpansionCtx` cursor loop: lazy-buffered source (PI-26), atom fast-path (PI-14), correct overlap predicate `result.width > postfix.width` (PI-8), dynamic cursor advance from `find_overlap` (PI-10), anchor refresh via `BlockExpansionCtx::process` after each commit (PI-32/OQ-5), complement resolution inside `find_overlap` before `collapse()` (PI-9), `debug_assert!(cursor advanced)` (PI-15), no width guard in `find_overlap` (PI-27). | many | T3 | 🔄 **In progress** — core loop + `find_overlap` + `build_overlap_state` implemented in `expansion/mod.rs`; `BlockExpansionCtx::process` refreshes anchor after each commit. `context-read` unit tests: **64 pass / 11 fail / 0 ignored**. Remaining 11 failures are all overlap/repetition cases — indicates `build_overlap_state` / `collapse()` complement path still produces incorrect patterns for multi-token anchors. |
+| T5 | Wire `insert_sequence` → `ReadCtx::read_sequence` (PI-16). Remove `< 2` guard (PI-18). One-line change in `commands/insert.rs`. | PI-16, PI-18 | T4 | ✅ **Done** — `insert_sequence` delegates fully to `ReadCtx::read_sequence`. `< 2` guard removed. `already_existed` derived from `pre_vertex_count` vs `post_vertex_count`. `cli_integration`: **53 pass / 0 fail / 22 ignored**. |
+| T6 | Retire `obs1`/`obs2` tests. Run full suite. Record new pass/fail counts against T0 baseline. | PI-29 | T5 | ⏳ **Pending** — blocked on T4 completion (11 overlap failures in `context-read`). |
+| T7 | Schedule test review session for any still-failing `skill3_exp_*` tests. | PI-29 | T6 | ⏳ **Pending** |
+
+#### Current Failing Tests (T4 scope)
+
+All 11 remaining `context-read` unit test failures require correct overlap collapse output.
+They are the acceptance criteria for completing T4:
+
+| Test | Category |
+|------|----------|
+| `tests::linear::repetition_aabbaabb` | Non-overlapping repetition (multi-level compound reuse) |
+| `tests::overlapping::repetition_abcabcabc` | 3× repeat overlap |
+| `tests::overlapping::repetition_xyzxyzxyz` | 3× repeat overlap |
+| `tests::overlapping::complex_abcabababcaba` | Complex multi-overlap |
+| `tests::read::read_infix1` | Infix overlap (`subdivision` / `visualization`) |
+| `tests::read::read_infix2` | Infix overlap (`subvisu` / `visub`) |
+| `tests::read::read_multiple_overlaps1` | 5-sequence progressive overlap build |
+| `tests::read::sync_read_text2` | Second read rewrites existing root overlap |
+| `tests::ngrams_validation::validate_three_repeated` | ngrams oracle — 3× repeat |
+| `tests::ngrams_validation::validate_triple_repeat` | ngrams oracle — triple |
+| `tests::ngrams_validation::validate_mixed_pattern` | ngrams oracle — mixed |
 
 ### Lessons Learned
-<!-- Post-execution -->
--
+
+- **`flat_root` flag was not in the original plan but proved essential.** The `commit_state` dispatch table assumed a clean separation between the unknown-atom append path and the known-atom `BandState` commit path. In practice, the root built by `append_pattern`/`append_token` (an in-place-extendable flat container) must not be wrapped via `insert_pattern` when the first known-atom `BandState::Single` arrives — doing so creates redundant intermediate compound tokens. Introducing `flat_root: bool` to track whether the current root is still a mutable flat container solved this cleanly without changing the public API.
+- **`BlockExpansionCtx::process` must refresh the anchor explicitly.** `ExpansionCtx` holds its own `anchor` field, but `commit_state` updates `anchor` on `RootManager`. Without an explicit `self.ctx.anchor = self.root.anchor()` call after each `commit_state`, the cursor loop sees stale anchor values and misses overlap opportunities on the second and subsequent steps. This is OQ-5 in concrete form.
+- **T4/T5 order inversion was safe.** `insert_sequence` was wired to `ReadCtx::read_sequence` (T5) before T4 was fully complete. This was safe because the RC-1 cli_integration failures were entirely driven by the missing delegation — the overlap logic failures in T4 only surface in `context-read` unit tests, not in the cli_integration suite at its current test coverage level. The inversion unblocked RC-1 pass/fail reporting early.

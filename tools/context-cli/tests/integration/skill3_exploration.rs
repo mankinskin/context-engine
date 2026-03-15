@@ -490,77 +490,77 @@ fn skill3_exp_h_graph_valid_after_completion_sequence() {
 
 // ── Experiment J ─────────────────────────────────────────────────────────────
 //
-// SCENARIO: Single-character insert returns QueryTooShort error.
+// SCENARIO: Single-character insert now succeeds (returns the atom token).
 //
-// OBSERVATION (verified GREEN 2026-03-14):
-//   insert_sequence rejects inputs shorter than 2 characters with
-//   InsertError::QueryTooShort before any graph mutation occurs.
-//
-// SKILL-DOC MAPPING: Note in skill doc — single chars are atoms; they cannot
-//   be "inserted" via the sequence API. Use the `atom` REPL command instead.
+// UPDATED (RC-1 fix): insert_sequence now accepts single-character inputs and
+//   returns the corresponding atom token directly. Only empty strings are
+//   rejected with QueryTooShort. Use the `atom` REPL command as an alternative,
+//   but the sequence API no longer rejects single chars.
 
 #[test]
 fn skill3_exp_j_single_char_is_too_short() {
     let mut ws = TestWorkspace::new("sk3-exp-j");
 
+    // Single-char is now valid — returns the atom token with width=1.
     let result = ws.exec(context_api::commands::Command::InsertSequence {
         workspace: ws.name.clone(),
         text: "a".to_string(),
     });
 
     assert!(
-        result.is_err(),
-        "inserting a single character must return an error (QueryTooShort)"
+        result.is_ok(),
+        "inserting a single character should succeed and return the atom token"
+    );
+
+    // Empty string is still rejected.
+    let empty_result =
+        ws.exec(context_api::commands::Command::InsertSequence {
+            workspace: ws.name.clone(),
+            text: String::new(),
+        });
+    assert!(
+        empty_result.is_err(),
+        "inserting an empty string must return an error (QueryTooShort)"
     );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  SECTION 3 — Observation Tests (document CURRENT actual behaviour)
-//  These tests describe what actually happens today, including the RC-1 bug.
-//  They are GREEN because they assert the current (broken) state, not the
-//  intended state.  They will need to be updated once RC-1 is fixed.
+//  SECTION 3 — Observation Tests (updated after RC-1 fix)
+//  These tests now assert the CORRECT post-fix behaviour. The RC-1 bug
+//  (every multi-char insert returning already_existed=true with the first
+//  atom) has been resolved. Tests updated accordingly.
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── Observation 1 ────────────────────────────────────────────────────────────
 //
-// WHAT WE OBSERVE: Every multi-char insert returns already_existed=true
-//   because insert_next_match matches only the first atom (NoExpansion)
-//   and NoExpansion maps to already_existed=true in insert_sequence.
-//
-// TOKEN INDEX RETURNED: the index of the first atom in the sequence.
-//   e.g. insert_text("hello") → returns the 'h' atom token (width=1).
-//
-// THIS TEST WILL BREAK when RC-1 is fixed (already_existed will be false).
-// At that point, delete or update this test.
+// RC-1 FIXED: First insert of a multi-char sequence now correctly returns
+//   already_existed=false and a composite token with the full width.
 
 #[test]
 fn skill3_obs1_multi_char_insert_reports_already_existed_true_today() {
     let mut ws = TestWorkspace::new("sk3-obs1");
 
-    // Observation: even the FIRST insert of any multi-char sequence
-    // returns already_existed=true due to RC-1.
+    // RC-1 fixed: first insert creates the composite token.
     let r = ws.insert_text("hello");
     let ir = unwrap_insert_result(&r);
 
     assert!(
-        ir.already_existed,
-        "[RC-1 observation] first multi-char insert currently returns \
-         already_existed=true; this test must be deleted when RC-1 is fixed"
+        !ir.already_existed,
+        "[RC-1 fixed] first multi-char insert should return already_existed=false"
     );
 
-    // The width returned is 1 (the first atom), not 5 (the full token)
+    // The width returned is 5 (the full composite token), not 1.
     assert_eq!(
-        ir.token.width, 1,
-        "[RC-1 observation] width should be 1 (first atom only) today"
+        ir.token.width, 5,
+        "[RC-1 fixed] width should be 5 (full composite token)"
     );
 }
 
 // ── Observation 2 ────────────────────────────────────────────────────────────
 //
-// WHAT WE OBSERVE: Two calls to insert_text with the same text return the
-//   same token index today — because both return the first atom.
-//   This coincidentally makes dedup_exact_match pass, but for the wrong
-//   reason (both return the same atom, not the same compound token).
+// RC-1 FIXED: Two calls to insert_text with the same text now correctly
+//   return the same composite token index. The first call creates the token
+//   (already_existed=false), the second finds it (already_existed=true).
 
 #[test]
 fn skill3_obs2_same_text_twice_same_atom_index_today() {
@@ -572,20 +572,20 @@ fn skill3_obs2_same_text_twice_same_atom_index_today() {
     let ir1 = unwrap_insert_result(&r1);
     let ir2 = unwrap_insert_result(&r2);
 
-    // Both calls return the same index (both return the 'h' atom today)
+    // Both calls return the same index (same composite token).
     assert_eq!(
         ir1.token.index, ir2.token.index,
-        "[RC-1 observation] same text inserted twice returns same atom index today"
+        "[RC-1 fixed] same text inserted twice should return the same token index"
     );
 
-    // Both report already_existed=true (even the first call)
+    // First call creates the token, second finds it.
     assert!(
-        ir1.already_existed,
-        "[RC-1 observation] first call already returns already_existed=true today"
+        !ir1.already_existed,
+        "[RC-1 fixed] first call should return already_existed=false"
     );
     assert!(
         ir2.already_existed,
-        "[RC-1 observation] second call also already_existed=true today"
+        "[RC-1 fixed] second call should return already_existed=true"
     );
 }
 

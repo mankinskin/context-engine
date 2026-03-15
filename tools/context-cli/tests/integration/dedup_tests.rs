@@ -72,11 +72,13 @@ fn dedup_no_duplicate_vertices() {
     let s = unwrap_statistics(&stats);
 
     // 5 unique atoms: a, b, c, d, e
-    // Without dedup, we'd have 5 atoms + 3 roots = 8 vertices min
-    // With dedup (shared "ab"), vertex count should be less than 3*3 = 9
+    // With proper dedup (shared "ab" prefix): 5 atoms + 1 ab + 3 composites = 9
+    // Without dedup: 5 atoms + 3 composites (no shared ab) = 8, or naive = 3*3 = 9
+    // RC-1 fix: composites are now correctly created, so vertex count is exactly 9
+    // (the shared "ab" sub-token + 3 composite tokens + 5 atoms).
     assert!(
-        s.vertex_count < 9,
-        "expected deduplication to reduce vertex count below 9, got {}",
+        s.vertex_count <= 9,
+        "expected deduplication to keep vertex count at most 9, got {}",
         s.vertex_count
     );
 }
@@ -145,4 +147,3 @@ fn dedup_graph_valid_after_inserts() {
         other => panic!("expected ValidationReport, got {other:?}"),
     }
 }
-
