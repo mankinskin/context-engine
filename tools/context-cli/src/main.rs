@@ -21,7 +21,10 @@ use context_api::{
         export_import::ExportFormat,
     },
     tracing_capture::CaptureConfig,
-    types::TokenRef,
+    types::{
+        CompareMode,
+        TokenRef,
+    },
     workspace::manager::WorkspaceManager,
 };
 
@@ -343,6 +346,43 @@ enum CliCommand {
         #[arg(long)]
         overwrite: bool,
     },
+
+    // -- Compare (Phase 3.2) -----------------------------------------------
+    /// Compare two workspace graphs and print a structured diff.
+    ///
+    /// Example:
+    ///   context-cli compare ngrams-abc read-abc
+    ///   context-cli compare ngrams-abc read-abc --mode subset
+    ///   context-cli compare ngrams-abc read-abc --format json
+    Compare {
+        /// The reference workspace (A).
+        workspace_a: String,
+        /// The candidate workspace (B).
+        workspace_b: String,
+        /// Comparison mode: "full" (default) or "subset".
+        #[arg(long, default_value = "full")]
+        mode: String,
+        /// Output format: "human" (default) or "json".
+        #[arg(long, default_value = "human")]
+        format: String,
+    },
+
+    /// Compare two individual vertices from (potentially different) workspaces.
+    ///
+    /// Example:
+    ///   context-cli compare-vertex ws-a --vertex-a 5 ws-b --vertex-b 3
+    CompareVertex {
+        /// The reference workspace (A).
+        workspace_a: String,
+        /// Index of the vertex in workspace A.
+        #[arg(long = "vertex-a")]
+        index_a: usize,
+        /// The candidate workspace (B).
+        workspace_b: String,
+        /// Index of the vertex in workspace B.
+        #[arg(long = "vertex-b")]
+        index_b: usize,
+    },
 }
 
 /// Parse a string as a `TokenRef`.
@@ -363,6 +403,13 @@ fn parse_token_refs(strings: &[String]) -> Vec<TokenRef> {
 
 /// Extract the workspace name from a CLI command, if the command is
 /// workspace-scoped.
+fn parse_compare_mode(s: &str) -> CompareMode {
+    s.parse::<CompareMode>().unwrap_or_else(|e| {
+        eprintln!("Warning: {e}. Defaulting to 'full'.");
+        CompareMode::Full
+    })
+}
+
 fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
     match cmd {
         CliCommand::Create { name }
@@ -402,7 +449,10 @@ fn workspace_name_from_cli_cmd(cmd: &CliCommand) -> Option<&str> {
         | CliCommand::ExportWorkspace { workspace, .. } =>
             Some(workspace.as_str()),
         CliCommand::ImportWorkspace { name, .. } => Some(name.as_str()),
-        CliCommand::List | CliCommand::Repl => None,
+        CliCommand::List
+        | CliCommand::Repl
+        | CliCommand::Compare { .. }
+        | CliCommand::CompareVertex { .. } => None,
     }
 }
 
@@ -524,6 +574,85 @@ fn execute_subcommand(
         CliCommand::Repl => {
             repl::run(manager);
             return;
+        },
+        CliCommand::Compare {
+            workspace_a,
+            workspace_b,
+            mode,
+            format,
+        } => {
+            let compare_mode = parse_compare_mode(&mode);
+            // Attempt to open both workspaces if not already open
+            let _ = execute(
+                manager,
+                Command::OpenWorkspace {
+                    name: workspace_a.clone(),
+                },
+            );
+            let _ = execute(
+                manager,
+                Command::OpenWorkspace {
+                    name: workspace_b.clone(),
+                },
+            );
+            let cmd = Command::CompareWorkspaces {
+                workspace_a,
+                workspace_b,
+                mode: compare_mode,
+            };
+            match execute(manager, cmd) {
+                Ok(result) => {
+                    if format.to_lowercase() == "json" {
+                        match serde_json::to_string_pretty(&result) {
+                            Ok(json) => println!("{json}"),
+                            Err(e) =>
+                                eprintln!("Error serializing result: {e}"),
+                        }
+                    } else {
+                        output::print_command_result(&result);
+                    }
+                    use context_api::{
+                        commands::CommandResult,
+                        types::DiffVerdict,
+                    };
+                    if let CommandResult::GraphDiff(ref diff) = result {
+                        if diff.summary.verdict == DiffVerdict::Divergent {
+                            std::process::exit(1);
+                        }
+                    }
+                },
+                Err(e) => {
+                    eprintln!("Error: {e}");
+                    std::process::exit(2);
+                },
+            }
+            return;
+        },
+        CliCommand::CompareVertex {
+            workspace_a,
+            index_a,
+            workspace_b,
+            index_b,
+        } => {
+            // Attempt to open both workspaces if not already open
+            let _ = execute(
+                manager,
+                Command::OpenWorkspace {
+                    name: workspace_a.clone(),
+                },
+            );
+            let _ = execute(
+                manager,
+                Command::OpenWorkspace {
+                    name: workspace_b.clone(),
+                },
+            );
+            Command::CompareVertices {
+                workspace_a,
+                workspace_b,
+                index_a,
+                index_b,
+            }
         },
         CliCommand::ListLogs { workspace, pattern } => Command::ListLogs {
             workspace,

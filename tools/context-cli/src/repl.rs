@@ -636,10 +636,8 @@ fn execute_repl_line(
 
         "render" | "render-graph" =>
             if let Some(ws) = require_workspace(current_ws) {
-                let ascii_dag = parts
-                    .iter()
-                    .skip(1)
-                    .any(|arg| *arg == "--ascii-dag");
+                let ascii_dag =
+                    parts.iter().skip(1).any(|arg| *arg == "--ascii-dag");
                 execute_and_print(
                     manager,
                     Command::RenderAsciiGraph {
@@ -856,6 +854,116 @@ fn execute_repl_line(
                 .ok();
             },
 
+        // -- Compare (Phase 3.2) -------------------------------------------
+        "compare" => {
+            if parts.len() < 3 {
+                eprintln!(
+                    "Usage: compare <workspace-a> <workspace-b> [--mode full|subset]"
+                );
+            } else {
+                let ws_a = parts[1].to_string();
+                let ws_b = parts[2].to_string();
+
+                // Parse optional --mode flag
+                let mode = {
+                    let mut m = context_api::types::CompareMode::Full;
+                    let mut i = 3usize;
+                    while i < parts.len() {
+                        if parts[i] == "--mode" {
+                            if let Some(mode_str) = parts.get(i + 1) {
+                                m = mode_str
+                                    .parse::<context_api::types::CompareMode>()
+                                    .unwrap_or_else(|e| {
+                                        eprintln!("Warning: {e}. Defaulting to 'full'.");
+                                        context_api::types::CompareMode::Full
+                                    });
+                                i += 2;
+                                continue;
+                            }
+                        }
+                        i += 1;
+                    }
+                    m
+                };
+
+                // Auto-open workspaces if not already open
+                let _ = execute(
+                    manager,
+                    Command::OpenWorkspace { name: ws_a.clone() },
+                );
+                let _ = execute(
+                    manager,
+                    Command::OpenWorkspace { name: ws_b.clone() },
+                );
+
+                execute_and_print(
+                    manager,
+                    Command::CompareWorkspaces {
+                        workspace_a: ws_a,
+                        workspace_b: ws_b,
+                        mode,
+                    },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
+            }
+        },
+
+        "compare-vertex" => {
+            if parts.len() < 5 {
+                eprintln!(
+                    "Usage: compare-vertex <ws-a> <index-a> <ws-b> <index-b>"
+                );
+            } else {
+                let ws_a = parts[1].to_string();
+                let index_a = match parts[2].parse::<usize>() {
+                    Ok(n) => n,
+                    Err(_) => {
+                        eprintln!(
+                            "Error: '{}' is not a valid vertex index",
+                            parts[2]
+                        );
+                        return;
+                    },
+                };
+                let ws_b = parts[3].to_string();
+                let index_b = match parts[4].parse::<usize>() {
+                    Ok(n) => n,
+                    Err(_) => {
+                        eprintln!(
+                            "Error: '{}' is not a valid vertex index",
+                            parts[4]
+                        );
+                        return;
+                    },
+                };
+
+                // Auto-open workspaces if not already open
+                let _ = execute(
+                    manager,
+                    Command::OpenWorkspace { name: ws_a.clone() },
+                );
+                let _ = execute(
+                    manager,
+                    Command::OpenWorkspace { name: ws_b.clone() },
+                );
+
+                execute_and_print(
+                    manager,
+                    Command::CompareVertices {
+                        workspace_a: ws_a,
+                        index_a,
+                        workspace_b: ws_b,
+                        index_b,
+                    },
+                    *tracing_enabled,
+                    current_ws.as_deref(),
+                )
+                .ok();
+            }
+        },
+
         _ => {
             eprintln!(
                 "Unknown command: '{}'. Type 'help' for available commands.",
@@ -1021,6 +1129,16 @@ fn print_help() {
     println!("  delete-log <file>    Delete a specific log file");
     println!(
         "  clean-logs [days]    Delete all logs (or only those older than N days)"
+    );
+    println!();
+    println!("Compare commands:");
+    println!("  compare <ws-a> <ws-b> [--mode full|subset]");
+    println!(
+        "                       Compare two workspace graphs (diff or subset check)"
+    );
+    println!("  compare-vertex <ws-a> <idx-a> <ws-b> <idx-b>");
+    println!(
+        "                       Compare two individual vertices across workspaces"
     );
     println!();
     println!("General:");

@@ -46,6 +46,7 @@ use crate::{
 /// - `GET  /api/workspaces/:name/snapshot`     — graph snapshot
 /// - `GET  /api/workspaces/:name/atoms`        — list atoms
 /// - `GET  /api/workspaces/:name/statistics`   — graph statistics
+/// - `GET  /api/workspaces/:name_a/diff/:name_b[?mode=full|subset]` — graph diff
 ///
 /// ## GraphQL (optional, feature-gated)
 ///
@@ -67,6 +68,10 @@ pub fn create_router(
         .route(
             "/api/workspaces/:name/statistics",
             get(rest::get_statistics),
+        )
+        .route(
+            "/api/workspaces/:name_a/diff/:name_b",
+            get(rest::diff_workspaces),
         )
         // ── Log REST endpoints ───────────────────────────────────
         .route(

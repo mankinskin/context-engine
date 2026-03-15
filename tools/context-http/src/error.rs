@@ -74,6 +74,9 @@ fn status_for_api_error(err: &ApiError) -> StatusCode {
             WorkspaceError::IoError(_)
             | WorkspaceError::SerializationError(_) =>
                 StatusCode::INTERNAL_SERVER_ERROR,
+            WorkspaceError::NgramsTimeout { .. } => StatusCode::GATEWAY_TIMEOUT,
+            WorkspaceError::NgramsFailed { .. } =>
+                StatusCode::INTERNAL_SERVER_ERROR,
         },
         ApiError::Atom(e) => match e {
             AtomError::WorkspaceNotOpen { .. } => StatusCode::BAD_REQUEST,
@@ -113,6 +116,12 @@ fn status_for_api_error(err: &ApiError) -> StatusCode {
             LogError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             LogError::QueryError(_) => StatusCode::BAD_REQUEST,
             LogError::DirectoryError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        },
+        ApiError::Compare(e) => match e {
+            context_api::error::CompareError::WorkspaceNotOpen { .. } =>
+                StatusCode::BAD_REQUEST,
+            context_api::error::CompareError::VertexNotFound { .. } =>
+                StatusCode::NOT_FOUND,
         },
     }
 }

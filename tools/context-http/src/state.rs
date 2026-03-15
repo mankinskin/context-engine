@@ -62,6 +62,15 @@ fn workspace_name_of(cmd: &Command) -> Option<&str> {
         | Command::DeleteLog { workspace, .. }
         | Command::DeleteLogs { workspace, .. }
         | Command::ExportWorkspace { workspace, .. } => Some(workspace),
+
+        // Compare commands — span two workspaces; return workspace_a as the
+        // primary for tracing purposes (or None to skip tracing).
+        Command::CompareWorkspaces { workspace_a, .. }
+        | Command::CompareVertices { workspace_a, .. } => Some(workspace_a),
+
+        // Commands that don't fit a single workspace
+        Command::CreateWorkspaceFromNgrams { name, .. } => Some(name),
+        Command::RenderAsciiGraph { workspace, .. } => Some(workspace),
     }
 }
 

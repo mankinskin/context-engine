@@ -13,6 +13,8 @@ use context_api::{
     },
     types::{
         AtomInfo,
+        CompareMode,
+        GraphDiffResult,
         GraphStatistics,
         TokenInfo,
         WorkspaceInfo,
@@ -255,6 +257,105 @@ pub async fn get_statistics(
 
     match result {
         CommandResult::Statistics(stats) => Ok(Json(stats)),
+        other => Err(HttpError::internal(format!(
+            "Unexpected result variant: {:?}",
+            std::mem::discriminant(&other)
+        ))),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/workspaces/:name_a/diff/:name_b
+// ---------------------------------------------------------------------------
+
+/// Query parameters for the diff endpoint.
+#[derive(Debug, serde::Deserialize)]
+pub struct DiffQuery {
+    /// Comparison mode: `"full"` (default) or `"subset"`.
+    #[serde(default)]
+    pub mode: Option<String>,
+}
+
+/// `GET /api/workspaces/:name_a/diff/:name_b[?mode=full|subset]`
+///
+/// Compare two workspace graphs and return a [`GraphDiffResult`] as JSON.
+///
+/// Both workspaces are opened automatically if they are not already open.
+///
+/// # Query Parameters
+///
+/// | Parameter | Values | Default |
+/// |-----------|--------|---------|
+/// | `mode` | `full` \| `subset` | `full` |
+///
+/// # Response
+///
+/// Returns a `GraphDiffResult` JSON object.  The `summary.verdict` field
+/// encodes the comparison outcome:
+///
+/// | Verdict | Meaning |
+/// |---------|---------|
+/// | `equivalent` | Both graphs are structurally identical |
+/// | `subset` | B is a valid structural subset of A (subset mode only) |
+/// | `divergent` | Graphs differ — inspect `shared`, `only_in_a`, `only_in_b` |
+#[instrument(name = "diff_workspaces", skip(state))]
+pub async fn diff_workspaces(
+    State(state): State<AppState>,
+    Path((name_a, name_b)): Path<(String, String)>,
+    viewer_api::axum::extract::Query(query): viewer_api::axum::extract::Query<
+        DiffQuery,
+    >,
+) -> Result<Json<GraphDiffResult>, HttpError> {
+    info!(
+        workspace_a = %name_a,
+        workspace_b = %name_b,
+        "Comparing workspace graphs via REST"
+    );
+
+    let mode = query
+        .mode
+        .as_deref()
+        .and_then(|s| s.parse::<CompareMode>().ok())
+        .unwrap_or_default();
+
+    let manager = state.manager.clone();
+    let result = tokio::task::spawn_blocking(
+        move || -> Result<CommandResult, HttpError> {
+            let mut mgr = manager
+                .lock()
+                .map_err(|e| HttpError::internal(e.to_string()))?;
+
+            // Auto-open both workspaces (ignore errors — they may already be
+            // open, or the comparison itself will surface a clean error).
+            let _ = context_api::commands::execute(
+                &mut mgr,
+                Command::OpenWorkspace {
+                    name: name_a.clone(),
+                },
+            );
+            let _ = context_api::commands::execute(
+                &mut mgr,
+                Command::OpenWorkspace {
+                    name: name_b.clone(),
+                },
+            );
+
+            context_api::commands::execute(
+                &mut mgr,
+                Command::CompareWorkspaces {
+                    workspace_a: name_a,
+                    workspace_b: name_b,
+                    mode,
+                },
+            )
+            .map_err(HttpError::from)
+        },
+    )
+    .await
+    .map_err(|e| HttpError::internal(format!("Task join error: {e}")))??;
+
+    match result {
+        CommandResult::GraphDiff(diff) => Ok(Json(diff)),
         other => Err(HttpError::internal(format!(
             "Unexpected result variant: {:?}",
             std::mem::discriminant(&other)

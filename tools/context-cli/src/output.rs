@@ -11,6 +11,8 @@ use context_api::{
     },
     types::{
         AtomInfo,
+        DiffVerdict,
+        GraphDiffResult,
         GraphStatistics,
         InsertResult,
         LogAnalysis,
@@ -18,6 +20,7 @@ use context_api::{
         LogEntryInfo,
         LogFileInfo,
         LogFileSearchResult,
+        PatternDiff,
         PatternInfo,
         PatternReadResult,
         ReadNode,
@@ -25,6 +28,7 @@ use context_api::{
         TokenInfo,
         ValidationReport,
         VertexInfo,
+        VertexMatchKind,
         WorkspaceInfo,
     },
 };
@@ -98,6 +102,7 @@ pub fn print_command_result(result: &CommandResult) {
         CommandResult::LogDeleteResult(result) => {
             print_log_delete_result(result);
         },
+        CommandResult::GraphDiff(result) => print_graph_diff(result),
         CommandResult::ExportData { data, format } => {
             println!("Exported {} bytes (format: {format:?})", data.len());
             if matches!(format, ExportFormat::Json) {
@@ -115,6 +120,153 @@ pub fn print_command_result(result: &CommandResult) {
         },
     }
 }
+
+// ---------------------------------------------------------------------------
+// Graph diff formatter
+// ---------------------------------------------------------------------------
+
+/// Print a human-readable graph diff result.
+pub fn print_graph_diff(result: &GraphDiffResult) {
+    let sep = "─".repeat(56);
+    println!(
+        "Graph diff: '{}' (A) vs '{}' (B)  [mode: {}]",
+        result.workspace_a, result.workspace_b, result.mode
+    );
+    println!("{sep}");
+
+    // -- Shared vertices ---------------------------------------------------
+    if !result.shared.is_empty() {
+        println!("Shared: {} vertex/vertices", result.shared.len());
+        for sv in &result.shared {
+            match &sv.match_kind {
+                VertexMatchKind::Identical => {
+                    println!("  ✓  {:?}  (w={})", sv.label, sv.width);
+                },
+                VertexMatchKind::ExtraPatterns => {
+                    println!(
+                        "  ~  {:?}  (w={})  extra patterns in B",
+                        sv.label, sv.width
+                    );
+                    if let Some(diff) = &sv.pattern_diff {
+                        print_pattern_diff(diff, 5);
+                    }
+                },
+                VertexMatchKind::PatternMismatch => {
+                    println!(
+                        "  ~  {:?}  (w={})  PATTERN MISMATCH",
+                        sv.label, sv.width
+                    );
+                    if let Some(diff) = &sv.pattern_diff {
+                        print_pattern_diff(diff, 5);
+                    }
+                },
+                VertexMatchKind::WidthMismatch { width_a, width_b } => {
+                    println!(
+                        "  !  {:?}  WIDTH MISMATCH  A={}  B={}",
+                        sv.label, width_a, width_b
+                    );
+                },
+            }
+        }
+        println!();
+    }
+
+    // -- Only in A ---------------------------------------------------------
+    if !result.only_in_a.is_empty() {
+        println!(
+            "Only in '{}' (A): {}",
+            result.workspace_a,
+            result.only_in_a.len()
+        );
+        for v in &result.only_in_a {
+            println!("  -  {:?}  (w={})", v.label, v.width);
+        }
+        println!();
+    }
+
+    // -- Only in B ---------------------------------------------------------
+    if !result.only_in_b.is_empty() {
+        println!(
+            "Only in '{}' (B): {}",
+            result.workspace_b,
+            result.only_in_b.len()
+        );
+        for v in &result.only_in_b {
+            let note = if v.is_atom {
+                ""
+            } else {
+                "  [unverified by oracle]"
+            };
+            println!("  +  {:?}  (w={}){}", v.label, v.width, note);
+        }
+        println!();
+    }
+
+    // -- Summary -----------------------------------------------------------
+    println!(
+        "Shared: {}  Only-A: {}  Only-B: {}",
+        result.summary.shared_count,
+        result.summary.only_in_a_count,
+        result.summary.only_in_b_count,
+    );
+    if result.summary.pattern_mismatch_count > 0 {
+        println!(
+            "Pattern mismatches: {}",
+            result.summary.pattern_mismatch_count
+        );
+    }
+    if result.summary.width_mismatch_count > 0 {
+        println!("Width mismatches: {}", result.summary.width_mismatch_count);
+    }
+    println!();
+    match result.summary.verdict {
+        DiffVerdict::Equivalent => println!("Result: EQUIVALENT ✓"),
+        DiffVerdict::Subset => println!("Result: B IS A VALID SUBSET OF A ✓"),
+        DiffVerdict::Divergent => {
+            println!("Result: DIVERGENT ✗");
+            if result.summary.width_mismatch_count > 0 {
+                println!(
+                    "  {} width mismatch(es) — likely a correctness bug.",
+                    result.summary.width_mismatch_count
+                );
+            }
+            if result.summary.pattern_mismatch_count > 0 {
+                println!(
+                    "  {} vertex/vertices with no common pattern.",
+                    result.summary.pattern_mismatch_count
+                );
+            }
+        },
+    }
+}
+
+fn print_pattern_diff(
+    diff: &PatternDiff,
+    indent: usize,
+) {
+    let pad = " ".repeat(indent);
+    for p in &diff.common {
+        println!("{}= [{}]", pad, fmt_pattern(p));
+    }
+    for p in &diff.only_in_a {
+        println!("{}- [{}]  (only in A)", pad, fmt_pattern(p));
+    }
+    for p in &diff.only_in_b {
+        println!("{}+ [{}]  (only in B)", pad, fmt_pattern(p));
+    }
+}
+
+fn fmt_pattern(pattern: &[String]) -> String {
+    pattern
+        .iter()
+        .map(|s| format!("{:?}", s))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+// ---------------------------------------------------------------------------
+// Workspace info formatters
+// ---------------------------------------------------------------------------
 
 /// Print workspace summary information.
 pub fn print_workspace_info(info: &WorkspaceInfo) {
