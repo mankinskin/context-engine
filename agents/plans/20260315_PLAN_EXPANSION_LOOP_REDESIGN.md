@@ -3,6 +3,7 @@ tags: `#plan` `#context-read` `#context-insert` `#algorithm` `#expansion` `#over
 summary: Redesign the ExpansionCtx inner loop so it drives insert_next_match in a cursor-advancing loop over known-atom segments, correctly handles the new/known classification boundary, and collects a tight set of decomposition patterns from all detected overlaps.
 status: 📋 implementation-ready
 phase: 2-implementation
+design: 20260315_DESIGN_ROOT_UPDATE_STEPS.md
 parent: 20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md
 related: 20260315_PLAN_INTEGRATION_TEST_REMEDIATION.md, 20260314_PLAN_INSERT_NEXT_MATCH.md, 20260314_PLAN_APPEND_TO_PATTERN_FIX.md
 priority: top — this is the core algorithm fix that unblocks RC-1, RC-2, RC-3 and all 20 ignored integration tests
@@ -375,6 +376,41 @@ Impact** sections in each batch file.
 
 ### Plan Impacts from Interview
 
+#### From Root Update Design Session (OQ-1 through OQ-5)
+
+- **PI-30** — **`replace_last_child(bundled)` is a new required primitive on
+  `RootManager`.** Op-4 dispatches internally on `can_extend`: when `can_extend`
+  is true (Op-4a) it mutates the root's single pattern `Vec` in-place — no new
+  graph token created; when `!can_extend` (Op-4b) it rebuilds the first child
+  pattern with `B` as the last element and calls `graph.insert_pattern` to create
+  a new root token. Callers never check `can_extend` before calling
+  `replace_last_child` — the dispatch is encapsulated inside the primitive.
+- **PI-31** — **Zero-width prefix complement case is structurally impossible.**
+  Atoms have no true postfixes; the atom fast-path in `ExpansionCtx::next` (PI-14)
+  prevents `find_overlap` from ever being called with an atom anchor. Therefore
+  `BandState::collapse()` never receives a zero-width complement slot and does not
+  need to handle that case.
+- **PI-32** — **`anchor: Option<Token>` is a new field on `RootManager`.**
+  Updated by `commit_state` at the end of every call:
+  `BandState::Single` → `anchor = Some(token)`;
+  `BandState::WithOverlap` → `anchor = Some(T2)` (expansion result, never `B`).
+  Read by `ExpansionCtx::next` at the start of each step via `root.anchor()`.
+  The existing `last_child_token()` method is a different concept and must not be
+  used as the anchor.
+- **PI-33** — **Reachability invariant is self-maintaining across Case D/E
+  replacements.** The old last-child token `T1` is not deleted from the graph.
+  Bundled token `B` wraps `T1` in its own child patterns. The path
+  `root → B → T1 → ...` is always valid. No back-reference surgery is needed on
+  the old token; the graph's reference-by-index model is self-consistent.
+- **PI-34** — **`commit_state` dispatch table** (all cases now fully resolved):
+  - `BandState::Single`, `root == None` → Case A: `set_root(token)`
+  - `BandState::Single`, `root.is_some() && can_extend` → Case B: `extend_root(token)`
+  - `BandState::Single`, `root.is_some() && !can_extend` → Case F: `wrap_root(token)`
+  - `BandState::WithOverlap`, `root == None || root == T1` → Case C: `set_root(B)`
+  - `BandState::WithOverlap`, `root.is_some() && root != T1 && can_extend` → Case D: `replace_last_child(B)` Op-4a
+  - `BandState::WithOverlap`, `root.is_some() && root != T1 && !can_extend` → Case E: `replace_last_child(B)` Op-4b
+  After every branch: update `anchor` as per PI-32.
+
 #### From Batch 7 (Performance and Streaming)
 
 - **PI-26** — **`ExpansionCtx` uses a lazy-buffered source, not a pre-materialised
@@ -538,10 +574,10 @@ the implementation phase:
 | # | Task | Key PIs | Prerequisite |
 |---|------|---------|--------------|
 | T0 | Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts. | PI-29 | — |
-| T1 | Review and resolve OQ-1 through OQ-5 in [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). | PI-24, PI-25 | T0 |
-| T2 | Review `BandState::collapse()`. Rewrite only if it cannot accommodate one-token-per-yield bands with externally-resolved complements. | PI-11 | T1 |
-| T3 | Delete `append_collapsed` overlap logic. Add comment at deletion site. Confirm no regressions against T0 baseline. | PI-21 | T2 |
-| T4 | Implement `ExpansionCtx` cursor loop: lazy-buffered source (PI-26), atom fast-path (PI-14), correct overlap predicate `result.width > postfix.width` (PI-8), dynamic cursor advance from `find_overlap` return value (PI-10), `T2` anchor update `self.anchor = Some(expansion)` (PI-22), complement resolution inside `find_overlap` before `collapse()` (PI-9), `debug_assert!(cursor advanced)` (PI-15), no width guard in `find_overlap` (PI-27). | many | T3 |
+| T1 | ~~Review and resolve OQ-1 through OQ-5~~ ✅ **Done** — all five open questions resolved. See [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). | PI-24, PI-25, PI-30–34 | T0 |
+| T2 | Review `BandState::collapse()`. Confirm it handles one-token-per-yield bands with externally-resolved complements. Zero-width complement case does not occur (PI-31). Rewrite only if needed. | PI-11, PI-31 | T1 |
+| T3 | Add `anchor: Option<Token>` field to `RootManager` (PI-32). Add `anchor()` accessor. Delete `append_collapsed` overlap logic (PI-21). Add `replace_last_child(bundled)` primitive (PI-30). Confirm no regressions against T0 baseline. | PI-21, PI-30, PI-32 | T2 |
+| T4 | Implement `ExpansionCtx` cursor loop: lazy-buffered source (PI-26), atom fast-path (PI-14), correct overlap predicate `result.width > postfix.width` (PI-8), dynamic cursor advance from `find_overlap` (PI-10), anchor read from `root.anchor()` (PI-32), complement resolution inside `find_overlap` before `collapse()` (PI-9), `commit_state` dispatch table (PI-34), `debug_assert!(cursor advanced)` (PI-15), no width guard in `find_overlap` (PI-27). | many | T3 |
 | T5 | Wire `insert_sequence` → `ReadCtx::read_sequence` (PI-16). Remove `< 2` guard (PI-18). One-line change in `commands/insert.rs`. | PI-16, PI-18 | T4 |
 | T6 | Retire `obs1`/`obs2` tests. Run full suite. Record new pass/fail counts against T0 baseline. | PI-29 | T5 |
 | T7 | Schedule test review session for any still-failing `skill3_exp_*` tests. | PI-29 | T6 |
