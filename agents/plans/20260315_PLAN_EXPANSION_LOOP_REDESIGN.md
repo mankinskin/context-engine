@@ -573,7 +573,7 @@ the implementation phase:
 
 | # | Task | Key PIs | Prerequisite |
 |---|------|---------|--------------|
-| T0 | Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts. | PI-29 | — |
+| T0 | ~~Fix `context-read` test compilation (247 stale import errors). No logic changes. Record baseline pass/fail counts.~~ ✅ **Done** — 0 errors, 0 warnings. **Baseline: 45 pass / 30 fail / 0 ignored.** Fixes: added `context_trace::graph::vertex::parent::PatternIndex` + `HasReadCtx` to `read/mod.rs`; added `context_search::{assert_indices, Find}` to `linear.rs` and `overlapping.rs`; added `context_insert::ToInsertCtx` + `context_search::ErrorState` to `cursor.rs`. | PI-29 | — |
 | T1 | ~~Review and resolve OQ-1 through OQ-5~~ ✅ **Done** — all five open questions resolved. See [`DESIGN_ROOT_UPDATE_STEPS.md`](../designs/20260315_DESIGN_ROOT_UPDATE_STEPS.md). | PI-24, PI-25, PI-30–34 | T0 |
 | T2 | Review `BandState::collapse()`. Confirm it handles one-token-per-yield bands with externally-resolved complements. Zero-width complement case does not occur (PI-31). Rewrite only if needed. | PI-11, PI-31 | T1 |
 | T3 | Add `anchor: Option<Token>` field to `RootManager` (PI-32). Add `anchor()` accessor. Delete `append_collapsed` overlap logic (PI-21). Add `replace_last_child(bundled)` primitive (PI-30). Confirm no regressions against T0 baseline. | PI-21, PI-30, PI-32 | T2 |
