@@ -353,12 +353,28 @@ Impact** sections in each batch file.
 <!-- Track changes made during execution -->
 -
 
+### Plan Impacts from Interview
+
+#### From Batch 1 (Classification Boundary)
+
+- **PI-1** — No cross-boundary overlap guard needed. A `New` atom cannot be part
+  of any pre-existing compound token, so the unknown→known boundary is always a
+  clean cut. Add a safety comment at that boundary in the implementation.
+- **PI-2** — Confirm the `read_sequence` segment loop is unbounded (handles
+  arbitrary many `NextSegment` values). Add `"abac"` as a required test case.
+- **PI-3** — `SegmentIter` may be redundant in the lazy path (per-atom dispatch
+  could replace it). Defer to a post-fix-round cleanup plan; no action during
+  this redesign.
+- **PI-4** — Tight-packing rule (Q3) means complement tokens in overlap
+  decompositions must be resolved via `insert_next_match` (best existing match),
+  not constructed from raw atom slices. This feeds into Batch 3 (Q12/Q13).
+
 ### Interview Progress
 
 | Batch | Status | Answer file |
 |-------|--------|-------------|
-| 1 — Classification Boundary | 🟡 awaiting-answers | [BATCH_1](20260315_INTERVIEW_BATCH_1.md) |
-| 2 — ExpansionCtx Loop Contract | 🔴 blocked-by-batch-1 | [BATCH_2](20260315_INTERVIEW_BATCH_2.md) |
+| 1 — Classification Boundary | ✅ answered | [BATCH_1](20260315_INTERVIEW_BATCH_1.md) |
+| 2 — ExpansionCtx Loop Contract | 🟡 awaiting-answers | [BATCH_2](20260315_INTERVIEW_BATCH_2.md) |
 | 3 — Overlap Collection and Decomposition Output | 🔴 blocked-by-batch-2 | [BATCH_3](20260315_INTERVIEW_BATCH_3.md) |
 | 4 — Cursor Advancement and NoExpansion Handling | 🔴 blocked-by-batch-3 | [BATCH_4](20260315_INTERVIEW_BATCH_4.md) |
 | 5 — RootManager and Commit Contract | 🔴 blocked-by-batch-4 | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |

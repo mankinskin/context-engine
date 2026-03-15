@@ -3,7 +3,7 @@ tags: `#interview` `#expansion-loop` `#ExpansionCtx`
 plan: 20260315_PLAN_EXPANSION_LOOP_REDESIGN.md
 batch: 2
 topic: ExpansionCtx Loop Contract
-status: 🔴 blocked-by-batch-1
+status: 🟡 awaiting-answers
 ---
 
 # Interview — Batch 2: ExpansionCtx Loop Contract
