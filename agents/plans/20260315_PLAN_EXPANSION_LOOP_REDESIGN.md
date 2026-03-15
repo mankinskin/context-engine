@@ -188,10 +188,12 @@ ReadCtx::read_sequence()
   for each NextSegment { unknown, known } from SegmentIter:
     root.append_pattern(unknown)          ← unchanged: direct concat
     if !known.is_empty():
-      expansion_states = ExpansionCtx::new(graph, known, root.last_token())
-                           .collect::<Vec<BandState>>()
-      for state in expansion_states:
-        root.commit_state(state)
+      // IMPORTANT: commit each state before computing the next —
+      // step N+1 may depend on graph state produced by committing step N.
+      let mut ctx = ExpansionCtx::new(graph, known, root.last_token());
+      while let Some(state) = ctx.next() {
+        root.commit_state(state);
+      }
 ```
 
 ### ExpansionCtx (to-be)
@@ -233,14 +235,21 @@ impl Iterator for ExpansionCtx {
             NoExpansion { token } => {
                 // token is the best match starting at cursor (width = token.width)
                 // Check postfixes of token for overlap with remaining[token.width..]
-                let overlap = self.find_overlap(token, &remaining[token.width..]);
-                self.cursor += token.width;  // always advance past token
-                self.anchor = Some(token);
-                match overlap {
-                    Some((postfix, expansion)) =>
-                        Some(BandState::with_overlap(token, postfix, expansion)),
-                    None =>
+                // Complement tokens (prefix/suffix) are resolved inside find_overlap
+                // via recursive insert_next_match before collapse() is ever called.
+                match self.find_overlap(token, &remaining[token.width..]) {
+                    Some((postfix, expansion, next_cursor)) => {
+                        // Cursor advances into T2's overlap region, NOT past T1.
+                        // next_cursor = T2.start + (T2.width - largest_postfix_of_T2.width)
+                        self.cursor = next_cursor;
+                        self.anchor = Some(token);
+                        Some(BandState::with_overlap(token, postfix, expansion))
+                    }
+                    None => {
+                        self.cursor += token.width;
+                        self.anchor = Some(token);
                         Some(BandState::new(token))
+                    }
                 }
             }
         }
@@ -250,9 +259,17 @@ impl Iterator for ExpansionCtx {
 
 `find_overlap(anchor, next_remaining)`:
 - Iterates postfixes of `anchor`, largest first.
-- For each postfix `P`, calls `insert_next_match(next_remaining)` — if the result
-  token's width equals `P.width`, the overlap region is `P`.
-- Returns `Some((postfix, expansion_token))` on first match, `None` if exhausted.
+- For each postfix `P`, calls `insert_next_match(next_remaining)`.
+  - **Overlap condition:** result.width > P.width (the postfix was genuinely
+    expanded by the following atoms into a larger token).
+  - If result.width == P.width the postfix was found verbatim — not an overlap;
+    skip and try the next smaller postfix.
+- On first qualifying match: resolve complement tokens (`prefix_complement`,
+  `suffix_complement`) via recursive `insert_next_match` on their atom sub-slices.
+  Complements may be multi-token patterns requiring a new compound token.
+  All complement tokens must exist in the graph **before** `collapse()` is called.
+- Returns `Some((postfix, expansion_token, next_cursor))` on first match,
+  `None` if all postfixes exhausted without a qualifying expansion.
 
 ### insert_sequence outer loop (context-api, to-be)
 
@@ -355,6 +372,66 @@ Impact** sections in each batch file.
 
 ### Plan Impacts from Interview
 
+#### From Batch 4 (Cursor Advancement and NoExpansion Handling)
+
+- **PI-12** — **Unify RC-1 and RC-2/RC-3 into a single loop.** `insert_sequence`
+  may be a duplicated read endpoint. A single shared loop mechanism drives
+  `insert_next_match` + `ExpansionCtx` postfix descent. `insert_sequence` in
+  `context-api` becomes a thin wrapper; `ReadCtx::read_segment` calls the same
+  shared helper. The RC-1 and RC-2/RC-3 fixes are one change, not two independent
+  ones. Update Files Affected table accordingly.
+- **PI-13** — **`Complete` treated same as `NoExpansion` for cursor advancement.**
+  `Complete { token }` does not guarantee full query consumption. Both `Complete`
+  and `NoExpansion` advance the cursor by `token.width` and then check for overlap.
+  The distinction matters only for `already_existed` bookkeeping (Batch 6).
+- **PI-14** — **Add atom fast-path inside `ExpansionCtx::next`.** Atoms have no
+  true postfixes — skip `find_overlap` entirely when the current token is an atom.
+  The guard `token.is_atom()` is stronger and clearer than `remaining.len() == 1`.
+- **PI-15** — **Assert strict cursor advance every step.** Add
+  `debug_assert!(self.cursor > cursor_before)` inside `ExpansionCtx::next` to
+  catch any regression where a step fails to advance the cursor.
+
+#### From Batch 3 (Overlap Collection and Decomposition Output)
+
+- **PI-8** — **Overlap detection predicate corrected.** The original plan stated
+  "result.width == P.width is the overlap." This is wrong. The correct condition
+  is `result.width > P.width` — the postfix must have been genuinely expanded by
+  the following atoms. A verbatim match (result == postfix, no expansion) is not
+  an overlap; skip to the next smaller postfix.
+- **PI-9** — Complement tokens (`prefix_complement`, `suffix_complement`,
+  `prefix_of_T1`, `suffix_of_T2`) are **not guaranteed to exist** and may be
+  multi-token patterns requiring a new compound token. They must be resolved via
+  recursive `insert_next_match` **inside `find_overlap`**, before `collapse()` is
+  called. Invariant: by the time `BandState::collapse()` runs, all child tokens in
+  both bands must already exist as valid graph indices.
+- **PI-10** — **Cursor advance is dynamic, not `+= token.width`.** After an
+  overlap, the cursor advances to the start of `T2`'s largest postfix (inside
+  `T2`'s range), keeping that postfix in view for the next iteration's overlap
+  check. The `find_overlap` return value now carries the computed `next_cursor`
+  position. The `cursor += token.width` formula in the `NoExpansion` branch is
+  replaced with `cursor = next_cursor` from the overlap result.
+- **PI-11** — `BandState::collapse()` review is a **prerequisite sub-task** before
+  RC-2/RC-3 implementation begins. Review whether the existing logic handles
+  one-token-per-yield bands with externally-resolved padding. Rewrite only if it
+  cannot accommodate the new band shape.
+
+#### From Batch 2 (ExpansionCtx Loop Contract)
+
+- **PI-5** — `.collect()` anti-pattern removed from proposed pseudo-code. Each
+  `BandState` must be committed to the root **before** `ctx.next()` is called
+  again. Step N+1 may depend on graph state produced by committing step N
+  (e.g. a `Created` token from step N must be visible to step N+1's postfix
+  search). The interleaved `while let Some(state) = ctx.next() { root.commit_state(state); }`
+  loop is mandatory.
+- **PI-6** — Padding token resolution is part of `BandState::collapse()` / band
+  construction. Every overlap-derived pattern must be padded at both ends so all
+  patterns on a bundled token span the same atom range. Padding tokens are
+  resolved via `insert_next_match` on the relevant atom sub-slice (same mechanism
+  as PI-4 complement tokens — the two concepts converge).
+- **PI-7** — Single-element guard (`remaining.len() == 1`) applies to any token
+  type (atom or compound). No special-casing needed. A single token cannot expand
+  further; append it directly as `BandState::new(token)`.
+
 #### From Batch 1 (Classification Boundary)
 
 - **PI-1** — No cross-boundary overlap guard needed. A `New` atom cannot be part
@@ -374,11 +451,11 @@ Impact** sections in each batch file.
 | Batch | Status | Answer file |
 |-------|--------|-------------|
 | 1 — Classification Boundary | ✅ answered | [BATCH_1](20260315_INTERVIEW_BATCH_1.md) |
-| 2 — ExpansionCtx Loop Contract | 🟡 awaiting-answers | [BATCH_2](20260315_INTERVIEW_BATCH_2.md) |
-| 3 — Overlap Collection and Decomposition Output | 🔴 blocked-by-batch-2 | [BATCH_3](20260315_INTERVIEW_BATCH_3.md) |
-| 4 — Cursor Advancement and NoExpansion Handling | 🔴 blocked-by-batch-3 | [BATCH_4](20260315_INTERVIEW_BATCH_4.md) |
-| 5 — RootManager and Commit Contract | 🔴 blocked-by-batch-4 | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |
-| 6 — insert_sequence Outer Loop in context-api | 🔴 blocked-by-batch-4 | [BATCH_6](20260315_INTERVIEW_BATCH_6.md) |
+| 2 — ExpansionCtx Loop Contract | ✅ answered | [BATCH_2](20260315_INTERVIEW_BATCH_2.md) |
+| 3 — Overlap Collection and Decomposition Output | ✅ answered | [BATCH_3](20260315_INTERVIEW_BATCH_3.md) |
+| 4 — Cursor Advancement and NoExpansion Handling | ✅ answered | [BATCH_4](20260315_INTERVIEW_BATCH_4.md) |
+| 5 — RootManager and Commit Contract | 🟡 awaiting-answers | [BATCH_5](20260315_INTERVIEW_BATCH_5.md) |
+| 6 — insert_sequence Outer Loop in context-api | 🟡 awaiting-answers | [BATCH_6](20260315_INTERVIEW_BATCH_6.md) |
 | 7 — Performance and Streaming | 🔴 blocked-by-batch-6 | [BATCH_7](20260315_INTERVIEW_BATCH_7.md) |
 
 ### Lessons Learned

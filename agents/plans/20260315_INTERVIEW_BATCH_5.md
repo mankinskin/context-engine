@@ -3,7 +3,7 @@ tags: `#interview` `#expansion-loop` `#RootManager` `#commit`
 plan: 20260315_PLAN_EXPANSION_LOOP_REDESIGN.md
 batch: 5
 topic: RootManager and Commit Contract
-status: 🔴 blocked-by-batch-4
+status: 🟡 awaiting-answers
 ---
 
 # Interview — Batch 5: RootManager and Commit Contract

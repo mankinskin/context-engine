@@ -3,7 +3,7 @@ tags: `#interview` `#expansion-loop` `#insert_sequence` `#context-api`
 plan: 20260315_PLAN_EXPANSION_LOOP_REDESIGN.md
 batch: 6
 topic: insert_sequence Outer Loop in context-api
-status: 🔴 blocked-by-batch-4
+status: 🟡 awaiting-answers
 ---
 
 # Interview — Batch 6: insert_sequence Outer Loop in context-api
