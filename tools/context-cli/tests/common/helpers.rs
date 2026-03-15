@@ -206,6 +206,24 @@ impl TestWorkspace {
             .unwrap_or_else(|e| panic!("get_statistics failed: {e}"))
     }
 
+    /// Shorthand: get a full graph snapshot for this workspace.
+    pub fn get_snapshot(&mut self) -> context_api::types::Snapshot {
+        use context_api::commands::{
+            Command,
+            CommandResult,
+        };
+        let cmd = Command::GetSnapshot {
+            workspace: self.name.clone(),
+        };
+        match self
+            .exec(cmd)
+            .unwrap_or_else(|e| panic!("get_snapshot failed: {e}"))
+        {
+            CommandResult::Snapshot(snap) => snap,
+            other => panic!("expected CommandResult::Snapshot, got {other:?}"),
+        }
+    }
+
     /// Return the base directory for this workspace.
     pub fn base_dir(&self) -> PathBuf {
         self._temp_dir.path().to_path_buf()
