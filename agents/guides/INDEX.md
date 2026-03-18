@@ -4,6 +4,7 @@ How-to guides and troubleshooting patterns.
 
 | Date | File | Summary |
 |------|------|----------|
+| 2026-03-18 | [20260318_CONTEXT_CLI_USAGE_GUIDE.md](20260318_CONTEXT_CLI_USAGE_GUIDE.md) | How to use the context-cli REPL — workspace lifecycle, read/show commands, output format reference, and worked examples including the aaa decomposition |
 | 2026-03-14 | [20260314_CLI_PRINTF_SCRIPTING_GUIDE.md](20260314_CLI_PRINTF_SCRIPTING_GUIDE.md) | How to script the context-cli using printf and piped stdin — covers REPL piping, subcommand chaining, batch workflows, and common pitfalls |
 | 2026-03-14 | [20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md](20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md) | Context-API insertion semantics, the duplicate vertex bug caused by edge partition merging, and the boundary-alignment fix in the split-join pipeline |
 | 2026-03-01 | [20260301_GRAPH_OP_EVENTS_GUIDE.md](20260301_GRAPH_OP_EVENTS_GUIDE.md) | Complete reference for all Transition variants, CSS class mappings, edge colors, and context-read schema design |
