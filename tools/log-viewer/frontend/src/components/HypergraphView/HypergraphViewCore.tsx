@@ -380,10 +380,8 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
                     />
                 )}
             </div>
-
             {/* Info overlay */}
             <GraphInfoOverlay snapshot={snapshot} />
-
             {/* Selected Node Info Panel */}
             {selectedNode && layout && (
                 <NodeInfoPanel
@@ -393,10 +391,8 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
                     onFocusNode={handleFocusNode}
                 />
             )}
-
             {/* Tooltip */}
-            <NodeTooltip tooltip={tooltip} />
-
+            {/*<NodeTooltip tooltip={tooltip} />*/}
             {/* Log-viewer-specific panels injected via render-prop */}
             {renderChildren?.({
                 handleFocusNode,
