@@ -2,6 +2,9 @@
 
 **Status:** BLOCKED (requires Phases 1 + 1.5 + 2 complete)
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope deliverable gates.
+
 ## Objective
 
 Expose the dependency graph as a first-class query surface. Add cross-ticket

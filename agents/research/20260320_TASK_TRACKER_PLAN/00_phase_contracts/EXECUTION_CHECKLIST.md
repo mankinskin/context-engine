@@ -121,28 +121,25 @@ Acceptance criteria:
 
 ### Step 0.7: Freeze Command Contracts
 
+Note: Phase 0 is formally closed. Remaining transport/protocol rollout items are tracked in
+`../EXECUTION_CHECKLIST.md` (Topic A and Topic B), not in this archived phase checklist.
+
 - [x] Define machine-readable contract for CLI adapter + agent protocol parity.
 - [x] Include `ticket` command set baseline:
   - `create`, `get`, `update`, `list`, `delete`
   - `scan`, `claim`, `unclaim`
   - `search`, `query`
   - `history`, `diff`, `revert`, `finalize-merge`
-- [ ] Define machine protocol transport variants:
-  - `ticket exec` stdin JSON
-  - `ticket exec --batch` transactional JSON batch
-  - `ticket serve --stdio` JSONL request/response envelope
-- [ ] Define machine protocol self-containment requirements:
-  - explicit `index_root`
-  - full UUIDs
-  - structured patch objects
-- [ ] Define optional response `fields` projection contract.
+- Moved to global execution tracking: machine protocol transport variants (`ticket exec`, `ticket exec --batch`, `ticket serve --stdio`).
+- Moved to global execution tracking: machine protocol self-containment requirements (`index_root`, full UUID, structured patch).
+- Moved to global execution tracking: optional response `fields` projection contract.
 - [x] Define structured error model with stable error codes.
 
 Acceptance criteria:
 - [x] Command schemas exported in JSON for tooling.
 - [x] All contract tests verify response shape stability.
-- [ ] Request envelope shape is stable across `exec`, `serve`, HTTP, and MCP adapters.
-- [ ] Transactional batch failure reports deterministic failing command index.
+- Moved to global execution tracking: request envelope stability across `exec`, `serve`, HTTP, and MCP adapters.
+- Moved to global execution tracking: transactional batch deterministic failure index.
 
 ## Mandatory Test Gates (Phase 0 Exit) — SCOPED TO context-tasks
 
@@ -168,8 +165,8 @@ Note: Workspace-wide fmt/clippy gates are out of scope for Phase 0 exit. Tracked
 - [x] Query grammar version: 1
 - [x] Known deferred items: full runtime schema engine, executor abstraction
 - [x] Phase 1 command set: create, get, update, list, delete, scan, search
-- [ ] Phase 1 agent transport: `ticket exec`
-- [ ] Phase 1.5 agent transport: `ticket serve --stdio`
+- Tracked in global execution checklist Topic A: Phase 1 agent transport `ticket exec`.
+- Tracked in global execution checklist Topic B: Phase 1.5 agent transport `ticket serve --stdio`.
 - [x] Phase 1.5 command set: claim, unclaim
 - [x] Phase 2 command set: history, diff, revert, finalize-merge
 - [x] Phase 3 command set: search, query (also wired in Phase 1 for FTS)

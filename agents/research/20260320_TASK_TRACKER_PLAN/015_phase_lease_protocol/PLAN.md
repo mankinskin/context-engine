@@ -2,6 +2,9 @@
 
 **Status:** BLOCKED (requires Phase 1 CRUD stable)
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope deliverable gates.
+
 ## Objective
 
 Specify and implement the lease-based ownership protocol for agent coordination.
@@ -86,6 +89,13 @@ by different workers.
 - If a conflict-domain collision is found, claim is rejected with `ConflictDomainCollision`
   error listing the conflicting ticket and holder
 
+## Validation Assignment Constraints
+
+- Coordinator assigns validator agents when ticket enters `validating`.
+- Separation of duties: worker and validator must not be the same identity.
+- Validator claims use normal lease protocol (`task_claim`) and are visible in lease views.
+- Validation rejection returns ticket to `review` with evidence references and optional linked bug IDs.
+
 ## Deliverables
 
 - [ ] `ticket claim <id> [--intent <text>]` — acquire lease
@@ -96,6 +106,7 @@ by different workers.
 - [ ] Session-bound automatic lease renewal for claims owned by a live stdio session
 - [ ] Stale lease watchdog in `ticket watch` background process
 - [ ] Conflict domain check on claim path
+- [ ] Policy check: reject `validating` assignment when validator identity equals worker identity
 - [ ] Lease state visible in `ticket get <id>` output
 
 ## Protocol Examples

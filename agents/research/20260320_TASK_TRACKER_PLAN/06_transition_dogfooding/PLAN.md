@@ -2,6 +2,9 @@
 
 Status: PLANNED
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope rollout and governance gates.
+
 ## Objective
 
 Define a safe transition from planning-only usage to using the task tracker itself to manage ongoing tracker improvements.
@@ -78,6 +81,14 @@ Gate F: Lease stability
 Gate G: Operator trust
 - One week of internal trial with no critical data-loss or deadlock incidents.
 
+Gate H: Validation throughput and quality
+- Validation queue remains below SLA threshold under swarm load.
+- High-risk tickets receive dual validation passes.
+
+Gate I: Stable release readiness
+- No open `sev0`/`sev1` bugs in release scope.
+- Release smoke suite and rollback checks pass for release candidates.
+
 ## Transition Rollout
 
 ### Stage 1 — Mirror mode
@@ -111,6 +122,9 @@ Exit criteria:
 - State transitions must be machine-validated; no manual state drift.
 - Any critical tracker defect that blocks workflow creates a high-priority bootstrap ticket.
 - Bootstrap tickets may temporarily be managed in docs until blocker is resolved.
+- Validation must be independent: worker and validator identities are different.
+- Tickets can enter release scope only after `validation_status=passed`.
+- `sev0`/`sev1` linked bugs block promotion to release-candidate.
 
 ## Bootstrap Ticket Template
 
@@ -123,6 +137,10 @@ Use this template for tracker-improving-tracker work:
   - component: cli | storage | history | search | graph | watcher | lease
   - risk_level: low | medium | high
   - acceptance_criteria: explicit checklist
+  - validation_plan: explicit check list for validator agents
+  - validation_status: pending | in-progress | passed | failed
+  - validator_id: assigned validation agent identity
+  - release_target: train/milestone identifier
   - bootstrap_blocker: true | false
   - rollout_stage: mirror | hybrid | tracker-first
 

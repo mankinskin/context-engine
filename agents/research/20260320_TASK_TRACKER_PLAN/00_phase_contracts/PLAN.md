@@ -2,6 +2,9 @@
 
 **Status:** DONE (formally closed — see EXECUTION_CHECKLIST.md for handoff)
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope contract gates.
+
 ## Objective
 
 Produce the canonical schemas and contracts that every later phase compiles against.

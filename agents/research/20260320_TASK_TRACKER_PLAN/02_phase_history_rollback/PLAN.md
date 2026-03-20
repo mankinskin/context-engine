@@ -2,6 +2,9 @@
 
 **Status:** BLOCKED (requires Phase 1 complete)
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope deliverable gates.
+
 ## Objective
 
 Provide full diff history with apply/revert per ticket using `git2` as the versioning

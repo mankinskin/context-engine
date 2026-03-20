@@ -2,6 +2,9 @@
 
 **Status:** READY (Phase 0 formally closed)
 
+Global progress tracking: `../EXECUTION_CHECKLIST.md`.
+Checkboxes in this file are phase-scope deliverable gates.
+
 ## Objective
 
 Implement a working distributed ticket store with integrated full-text search:
@@ -132,10 +135,17 @@ Fields:
 - `created_at` (ISO 8601, required, universal)
 - `title` (string, required)
 - `type` (string, required — always "tracker-improvement" for now)
-- `state` (enum: open, in-progress, review, blocked, done, cancelled)
+- `state` (enum: open, in-progress, review, validating, validated, release-candidate, released, monitoring, done, blocked, cancelled)
 - `component` (string, optional)
 - `risk_level` (enum: low, medium, high)
 - `acceptance_criteria` (string, optional)
+- `validation_plan` (string, optional)
+- `validation_status` (enum: pending, in-progress, passed, failed)
+- `validator_id` (string, optional)
+- `evidence_refs` (list of strings, optional)
+- `release_target` (string, optional)
+- `release_version` (string, optional)
+- `bug_links` (list of UUIDs, optional)
 - `bootstrap_blocker` (bool, optional)
 - `rollout_stage` (enum: mirror, hybrid, tracker-first)
 - `blocked_by` (list of UUIDs, optional — field hint until edge commands are wired)
@@ -143,13 +153,20 @@ Fields:
 State transitions (default):
 - open → in-progress, blocked, cancelled
 - in-progress → review, blocked, cancelled
-- review → done, in-progress, blocked
-- blocked → open, in-progress, cancelled
+- review → validating, in-progress, blocked
+- validating → validated, review, blocked
+- validated → release-candidate, review, blocked
+- release-candidate → released, review, blocked
+- released → monitoring, blocked
+- monitoring → done, blocked
+- blocked → open, in-progress, review, cancelled
 - done → (terminal, reopenable via explicit command)
 - cancelled → (terminal, reopenable via explicit command)
 
 Extension: additional fields passed as key-value pairs are stored in `extra` map
 and indexed by Tantivy as `x_<field_name>` text fields.
+
+Validation and release semantics are defined centrally in `VALIDATION_RELEASE_GOVERNANCE.md`.
 
 ## Unified Query Language
 
