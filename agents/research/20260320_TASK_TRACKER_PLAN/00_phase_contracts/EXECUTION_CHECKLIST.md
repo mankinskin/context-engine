@@ -58,24 +58,24 @@ Acceptance criteria:
 - [x] Add edge constraint metadata in type/workflow schema:
   - directed vs undirected
   - acyclic-enforced kinds
-- [ ] Specify uniqueness key `(from, to, kind)`.
+- [x] Specify uniqueness key `(from, to, kind)`.
 
 Acceptance criteria:
-- [ ] Duplicate edge insert attempts are idempotent.
+- [x] Duplicate edge insert attempts are idempotent.
 - [x] Invalid edge kind rejected by schema validation.
 
 ### Step 0.3: Freeze Filesystem Contract
 
-- [ ] Define ticket folder minimum contract:
+- [x] Define ticket folder minimum contract:
   - `ticket.toml`
   - optional `assets/`
   - `.ticket-lock`
-- [ ] Define scan root registry format.
-- [ ] Define orphan integration contract and parse diagnostics shape.
+- [x] Define scan root registry format.
+- [x] Define orphan integration contract and parse diagnostics shape.
 
 Acceptance criteria:
-- [ ] A valid ticket folder can be discovered and normalized.
-- [ ] Broken `ticket.toml` produces parse diagnostic with path + reason.
+- [x] A valid ticket folder can be discovered and normalized.
+- [x] Broken `ticket.toml` produces parse diagnostic with path + reason.
 
 ### Step 0.4: Freeze Global Index Contract
 
@@ -99,11 +99,11 @@ Acceptance criteria:
   - ranges
   - logical composition
 - [x] Define parser behavior and errors.
-- [ ] Define field-namespace policy for dynamic type fields.
+- [x] Define field-namespace policy for dynamic type fields.
 
 Acceptance criteria:
 - [x] Parsing succeeds for mixed FTS + metadata queries.
-- [ ] Unknown field emits deterministic parse error and hint.
+- [x] Unknown field emits deterministic parse error and hint.
 
 ### Step 0.6: Freeze History Contract
 
