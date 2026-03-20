@@ -88,8 +88,8 @@ Acceptance criteria:
 - [x] Define schema versioning policy in `META`.
 
 Acceptance criteria:
-- [ ] Table definitions compile and are version-gated.
-- [ ] Schema version mismatch returns actionable migration error.
+- [x] Table definitions compile and are version-gated.
+- [x] Schema version mismatch returns actionable migration error.
 
 ### Step 0.5: Freeze Query Language Contract
 
@@ -107,17 +107,17 @@ Acceptance criteria:
 
 ### Step 0.6: Freeze History Contract
 
-- [ ] Define branch-aware history fields:
+- [x] Define branch-aware history fields:
   - `created_on_branch`
   - `closed_on_branch`
   - `merge_commit`
-- [ ] Decide git backing mode default:
+- [x] Decide git backing mode default:
   - embedded bare repo
   - optional workspace-git mode
 
 Acceptance criteria:
-- [ ] Decision documented and reflected in contract types.
-- [ ] Merge-boundary closure path represented in schema.
+- [x] Decision documented and reflected in contract types.
+- [x] Merge-boundary closure path represented in schema.
 
 ### Step 0.7: Freeze Command Contracts
 
@@ -130,8 +130,8 @@ Acceptance criteria:
 - [x] Define structured error model with stable error codes.
 
 Acceptance criteria:
-- [ ] Command schemas exported in JSON for tooling.
-- [ ] All contract tests verify response shape stability.
+- [x] Command schemas exported in JSON for tooling.
+- [x] All contract tests verify response shape stability.
 
 ## Mandatory Test Gates (Phase 0 Exit)
 
@@ -140,7 +140,11 @@ Acceptance criteria:
 - [x] `cargo test -p context-tasks contracts_manifest_roundtrip`
 - [x] `cargo test -p context-tasks contracts_query_parser`
 - [x] `cargo test -p context-tasks contracts_schema_validation`
-- [ ] `cargo test -p context-tasks -- --nocapture`
+- [x] `cargo test -p context-tasks -- --nocapture`
+
+Current status note:
+- Workspace-wide fmt/clippy currently fail in existing, unrelated crates/files outside `context-tasks`.
+- `context-tasks` gates are green (`cargo clippy -p context-tasks ...` and `cargo test -p context-tasks ...`).
 
 ## Exit Criteria
 
@@ -149,8 +153,9 @@ Phase 0 is complete only if:
 - [ ] All contract files exist and compile.
 - [ ] All mandatory test gates pass.
 - [ ] No unresolved contract TODO remains for Phase 1 blockers.
-- [ ] Branch/history strategy decision is explicit.
-- [ ] Query grammar and parse error behavior are frozen.
+- [x] All contract files exist and compile.
+- [x] Branch/history strategy decision is explicit.
+- [x] Query grammar and parse error behavior are frozen.
 
 ## Handoff To Phase 1
 

@@ -44,5 +44,5 @@ pub fn parse_ticket_manifest_toml(path: PathBuf, content: &str) -> Result<Ticket
 }
 
 pub fn has_minimum_ticket_contract(entries: &[&str]) -> bool {
-    entries.iter().any(|e| *e == TICKET_MANIFEST_FILE)
+    entries.contains(&TICKET_MANIFEST_FILE)
 }

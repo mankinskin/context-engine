@@ -15,3 +15,11 @@ pub enum QueryParseError {
     #[error("invalid query expression: {0}")]
     InvalidExpression(String),
 }
+
+#[derive(Debug, Error)]
+pub enum StorageSchemaError {
+    #[error(
+        "schema version mismatch: found '{found}', expected '{expected}'. Action: run 'ticket scan --reindex' after migration or apply schema upgrade before writing"
+    )]
+    VersionMismatch { found: String, expected: String },
+}
