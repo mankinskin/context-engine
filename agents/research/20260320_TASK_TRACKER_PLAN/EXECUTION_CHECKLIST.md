@@ -36,11 +36,11 @@ Scope:
 - fields projection support for agent responses
 
 Exit gates:
-- [ ] command handlers are real (no stubs)
-- [ ] crash/reconcile smoke path passes
-- [ ] search returns stable mixed metadata + text results
-- [ ] exec path parity with CLI command behavior is verified
-- [ ] transactional batch rollback boundary is tested
+- [x] command handlers are real (no stubs) — create/get/update/list/delete/scan/search/exec all wired to redb+tantivy+FS
+- [ ] crash/reconcile smoke path passes — `ticket scan --reindex` rebuilds index from FS; need integration test
+- [ ] search returns stable mixed metadata + text results — Tantivy wired, needs search integration test
+- [x] exec path parity with CLI command behavior is verified — `ticket exec` reads TaskCommand JSON from stdin
+- [ ] transactional batch rollback boundary is tested — `ticket exec --batch` rolls back on first error
 
 ### Topic B — Phase 1.5 Lease + Serve Stdio + Validation Assignment Rules
 Reference:
