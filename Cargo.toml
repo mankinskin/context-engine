@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "crates/context-tasks",
   "crates/context-search",
   "crates/context-insert",
   "crates/context-read",

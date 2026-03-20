@@ -21,48 +21,48 @@ Reference: both projects.
 
 ## Deliverable Files
 
-- [ ] `crates/context-tasks/src/model/ticket.rs`
-- [ ] `crates/context-tasks/src/model/schema.rs`
-- [ ] `crates/context-tasks/src/model/edge.rs`
-- [ ] `crates/context-tasks/src/model/event.rs`
-- [ ] `crates/context-tasks/src/model/query.rs`
-- [ ] `crates/context-tasks/src/storage/schema.rs`
-- [ ] `crates/context-tasks/src/watcher/events.rs`
-- [ ] `crates/context-tasks/src/contracts/command_schema.rs`
-- [ ] `crates/context-tasks/tests/contracts_manifest_roundtrip.rs`
-- [ ] `crates/context-tasks/tests/contracts_query_parser.rs`
-- [ ] `crates/context-tasks/tests/contracts_schema_validation.rs`
+- [x] `crates/context-tasks/src/model/ticket.rs`
+- [x] `crates/context-tasks/src/model/schema.rs`
+- [x] `crates/context-tasks/src/model/edge.rs`
+- [x] `crates/context-tasks/src/model/event.rs`
+- [x] `crates/context-tasks/src/model/query.rs`
+- [x] `crates/context-tasks/src/storage/schema.rs`
+- [x] `crates/context-tasks/src/watcher/events.rs`
+- [x] `crates/context-tasks/src/contracts/command_schema.rs`
+- [x] `crates/context-tasks/tests/contracts_manifest_roundtrip.rs`
+- [x] `crates/context-tasks/tests/contracts_query_parser.rs`
+- [x] `crates/context-tasks/tests/contracts_schema_validation.rs`
 
 ## Step-by-Step Execution
 
 ### Step 0.1: Freeze Domain Types
 
-- [ ] Define `TicketId` as UUID v4.
-- [ ] Define `TicketManifest` with only required universal fields:
+- [x] Define `TicketId` as UUID v4.
+- [x] Define `TicketManifest` with only required universal fields:
   - `id`
   - `created_at`
-- [ ] Represent workflow-defined fields as extension map (`extra`).
-- [ ] Define `TicketTypeSchema` for:
+- [x] Represent workflow-defined fields as extension map (`extra`).
+- [x] Define `TicketTypeSchema` for:
   - dynamic fields
   - configurable states
   - transition constraints
 
 Acceptance criteria:
-- [ ] Manifest parses with only universal fields.
-- [ ] Unknown extra fields are preserved through roundtrip serialization.
-- [ ] Invalid UUID or timestamp fails with structured error.
+- [x] Manifest parses with only universal fields.
+- [x] Unknown extra fields are preserved through roundtrip serialization.
+- [x] Invalid UUID or timestamp fails with structured error.
 
 ### Step 0.2: Freeze Relationship Model
 
-- [ ] Define `EdgeRecord` with open string `kind`.
-- [ ] Add edge constraint metadata in type/workflow schema:
+- [x] Define `EdgeRecord` with open string `kind`.
+- [x] Add edge constraint metadata in type/workflow schema:
   - directed vs undirected
   - acyclic-enforced kinds
 - [ ] Specify uniqueness key `(from, to, kind)`.
 
 Acceptance criteria:
 - [ ] Duplicate edge insert attempts are idempotent.
-- [ ] Invalid edge kind rejected by schema validation.
+- [x] Invalid edge kind rejected by schema validation.
 
 ### Step 0.3: Freeze Filesystem Contract
 
@@ -79,13 +79,13 @@ Acceptance criteria:
 
 ### Step 0.4: Freeze Global Index Contract
 
-- [ ] Define redb table constants and key/value encoding contracts:
+- [x] Define redb table constants and key/value encoding contracts:
   - `TICKETS`
   - `EDGES`
   - `SCAN_ROOTS`
   - `LEASES`
   - `META`
-- [ ] Define schema versioning policy in `META`.
+- [x] Define schema versioning policy in `META`.
 
 Acceptance criteria:
 - [ ] Table definitions compile and are version-gated.
@@ -93,16 +93,16 @@ Acceptance criteria:
 
 ### Step 0.5: Freeze Query Language Contract
 
-- [ ] Define query AST supporting:
+- [x] Define query AST supporting:
   - free-text terms
   - field predicates
   - ranges
   - logical composition
-- [ ] Define parser behavior and errors.
+- [x] Define parser behavior and errors.
 - [ ] Define field-namespace policy for dynamic type fields.
 
 Acceptance criteria:
-- [ ] Parsing succeeds for mixed FTS + metadata queries.
+- [x] Parsing succeeds for mixed FTS + metadata queries.
 - [ ] Unknown field emits deterministic parse error and hint.
 
 ### Step 0.6: Freeze History Contract
@@ -121,13 +121,13 @@ Acceptance criteria:
 
 ### Step 0.7: Freeze Command Contracts
 
-- [ ] Define machine-readable contract for CLI + HTTP command parity.
-- [ ] Include `ticket` command set baseline:
+- [x] Define machine-readable contract for CLI + HTTP command parity.
+- [x] Include `ticket` command set baseline:
   - `create`, `get`, `update`, `list`, `delete`
   - `scan`, `claim`, `unclaim`
   - `search`, `query`
   - `history`, `diff`, `revert`, `finalize-merge`
-- [ ] Define structured error model with stable error codes.
+- [x] Define structured error model with stable error codes.
 
 Acceptance criteria:
 - [ ] Command schemas exported in JSON for tooling.
@@ -137,9 +137,9 @@ Acceptance criteria:
 
 - [ ] `cargo fmt --all --check`
 - [ ] `cargo clippy --workspace --all-targets --all-features -- -D warnings`
-- [ ] `cargo test -p context-tasks contracts_manifest_roundtrip`
-- [ ] `cargo test -p context-tasks contracts_query_parser`
-- [ ] `cargo test -p context-tasks contracts_schema_validation`
+- [x] `cargo test -p context-tasks contracts_manifest_roundtrip`
+- [x] `cargo test -p context-tasks contracts_query_parser`
+- [x] `cargo test -p context-tasks contracts_schema_validation`
 - [ ] `cargo test -p context-tasks -- --nocapture`
 
 ## Exit Criteria
