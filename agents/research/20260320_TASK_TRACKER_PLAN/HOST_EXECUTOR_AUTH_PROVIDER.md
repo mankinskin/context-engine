@@ -174,3 +174,153 @@ Never log raw provider secrets or full prompts containing sensitive data.
 - exact token format (`JWT` vs compact HMAC envelope)
 - whether inference scope is split from ticket-mutation scope
 - default provider for local dev in this repository
+
+## Agent Lifecycle (End-to-End)
+
+### 1) Agent start and assignment
+
+1. Coordinator creates assignment packet (worker or validator).
+2. Worker receives packet with:
+  - assignment id
+  - ticket id
+  - protocol mode and index root
+  - branch/workdir context
+  - acceptance and validation requirements
+3. Coordinator mints short-lived executor token scoped to assignment.
+4. Worker starts session against host executor and acknowledges assignment.
+
+### 2) Branch and working directory policy
+
+Default policy:
+
+- Working directory: repository root of current workspace checkout.
+- Branch source: assignment packet execution.branch.feature.
+- Merge target: assignment packet execution.branch.merge_target.
+
+Rules:
+
+- Worker must report current branch + cwd at session start.
+- If branch does not exist, worker creates it from merge target head.
+- Worker must not switch to unrelated branches during assignment.
+- Any branch mismatch is a recoverable assignment error and must be reported.
+
+### 3) Validation flow
+
+Worker phase:
+
+1. claim ticket
+2. implement + run required checks
+3. attach evidence refs
+4. transition to review/validating
+
+Validator phase:
+
+1. coordinator dispatches validator assignment
+2. validator claims ticket under validating state
+3. runs required validation profile checks
+4. marks validation passed or failed with evidence
+
+Separation-of-duties is mandatory: validator identity must differ from worker identity.
+
+### 4) Completion and merge flow
+
+Ticket completion path:
+
+1. validation passed
+2. ticket moves to release-candidate
+3. release gates checked (bugs, smoke, rollback)
+4. branch merged to merge target
+5. ticket updated to released/monitoring/done according to governance
+
+Merge responsibility can be coordinator or release agent, but merge event must include:
+
+- assignment id chain (worker + validator)
+- merge commit
+- release target/version
+
+### 5) Session close protocol
+
+Normal close:
+
+1. worker sends final handoff payload
+2. worker unclaims ticket
+3. host executor marks session closed
+4. coordinator marks assignment closed
+
+Session close event must include reason:
+
+- completed
+- handed_off
+- blocked
+- superseded
+- aborted
+
+## Early Stop and Error Handling
+
+### Early-stop detection
+
+Detected via one or more:
+
+- stdio disconnect
+- heartbeat/session-liveness timeout
+- repeated auth failures
+- worker explicit abort
+
+### Required handling steps
+
+1. mark session closed with failure reason code
+2. stop token refresh and invalidate active token
+3. release or expire lease according to policy
+4. emit structured incident event with assignment id + ticket id + worker id
+5. move ticket state to blocked or back to review with blocker metadata
+6. coordinator decides requeue vs reassignment
+
+### Error classes
+
+- `session.disconnect`
+- `session.timeout`
+- `session.auth_failure`
+- `execution.branch_mismatch`
+- `execution.cwd_mismatch`
+- `execution.validation_failed`
+- `execution.unexpected_exit`
+
+## Minimal Early Integration Test Plan
+
+These tests should run in Phase 1.5 before broad rollout.
+
+### T1 Startup and auth bootstrap
+
+- start host executor in stdio mode with test provider adapter
+- mint scoped token and authenticate worker
+- verify unauthorized request is rejected with structured auth error
+
+### T2 Assignment start context
+
+- dispatch assignment with explicit branch and cwd constraints
+- verify worker reports matching branch + cwd before claim
+- verify mismatch yields recoverable structured error
+
+### T3 Ticket lifecycle happy path
+
+- claim -> update -> evidence attach -> unclaim
+- verify assignment id appears on all emitted events
+
+### T4 Validation handoff
+
+- worker completes implementation and moves ticket to validating
+- validator (different identity) claims and validates
+- verify same-identity validator assignment is rejected
+
+### T5 Early-stop recovery
+
+- terminate worker session mid-assignment
+- verify token invalidation, lease expiry/release behavior, incident event emission
+- verify ticket transitions to blocked/review with blocker metadata
+
+### T6 Merge and completion linkage
+
+- simulate validation passed -> release-candidate -> merge
+- verify merge record includes assignment chain and release target
+
+Required CI signal for Topic B exit: T1-T6 all green.

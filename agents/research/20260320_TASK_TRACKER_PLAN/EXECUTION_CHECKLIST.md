@@ -55,11 +55,20 @@ Scope:
 - validator/worker separation-of-duties check on validating assignments
 - host executor auth skeleton (ephemeral worker tokens, assignment-scoped authorization)
 
+Tracked tickets (T1-T6):
+- T1 `a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61` startup/auth bootstrap
+- T2 `b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72` assignment start branch/cwd checks
+- T3 `c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83` lifecycle happy path
+- T4 `d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94` validator handoff + separation-of-duties
+- T5 `e4c6d8f1-9a2b-4c3d-8e4f-5a6b7c8d9ea5` early-stop recovery and reassignment
+- T6 `f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16` merge/completion linkage
+
 Exit gates:
 - [ ] claim collision and stale reclaim tests pass
 - [ ] serve session can process multi-command workflow with request IDs
 - [ ] session drop stops auto-renewal and TTL expiry works
 - [ ] validator cannot equal worker for validating assignment
+- [ ] early integration tests T1-T6 for host executor lifecycle are green
 
 ## Queued Topics (Do Not Start Until a Slot Opens)
 
