@@ -190,6 +190,121 @@ Swarm operation uses a dispatch model with independent workers.
 
 This avoids coordinator context overload while preserving distributed execution.
 
+## Assignment Packet Contract
+
+Coordinator-to-agent dispatch uses a single structured assignment packet.
+This packet is transport-agnostic and can be delivered through CLI prompt injection,
+MCP tool payloads, HTTP callbacks, or message queues.
+
+### Worker Assignment Packet
+
+```json
+{
+  "packet_version": "1",
+  "assignment_id": "a-20260320-000123",
+  "role": "worker",
+  "agent_id": "worker/refiner-03",
+  "ticket": {
+    "id": "a3f2c7b1-4e9d-4f0a-8c3b-1d2e5f6a7b8c",
+    "state": "open",
+    "title": "wire create/get/update/list/delete to storage backend",
+    "risk_level": "high",
+    "acceptance_criteria": "...",
+    "validation_plan": "...",
+    "release_target": "2026.03-train-A"
+  },
+  "execution": {
+    "intent": "implement",
+    "constraints": [
+      "no API break",
+      "touch only context-tasks crate"
+    ],
+    "branch": {
+      "feature": "feature/task-backend-core",
+      "merge_target": "main"
+    }
+  },
+  "protocol": {
+    "mode": "serve-stdio",
+    "index_root": "/absolute/path/to/ticket-index",
+    "session_id": "sess-42",
+    "required_commands": [
+      "task_claim",
+      "task_update",
+      "task_unclaim"
+    ]
+  },
+  "graph_context": {
+    "blocked_by": ["..."],
+    "blocking": ["..."],
+    "conflict_domain": "storage-index"
+  },
+  "evidence_requirements": {
+    "must_attach": [
+      "commands_run",
+      "test_results",
+      "changed_files"
+    ],
+    "handoff_format": "swarm-worker-v1"
+  }
+}
+```
+
+### Validator Assignment Packet
+
+```json
+{
+  "packet_version": "1",
+  "assignment_id": "a-20260320-000124",
+  "role": "validator",
+  "agent_id": "validator/reliability-01",
+  "ticket": {
+    "id": "a3f2c7b1-4e9d-4f0a-8c3b-1d2e5f6a7b8c",
+    "state": "validating",
+    "risk_level": "high",
+    "validation_status": "in-progress",
+    "worker_id": "worker/refiner-03"
+  },
+  "validation": {
+    "profile": "reliability",
+    "required_checks": [
+      "targeted-tests",
+      "regression-suite",
+      "crash-recovery-scenario"
+    ],
+    "pass_criteria": "all required checks green",
+    "on_fail": "set review + attach evidence + open bug if defect"
+  },
+  "protocol": {
+    "mode": "exec",
+    "index_root": "/absolute/path/to/ticket-index",
+    "required_commands": [
+      "task_claim",
+      "task_update",
+      "task_unclaim"
+    ]
+  }
+}
+```
+
+### Assignment Invariants
+
+- `assignment_id` is unique and immutable.
+- `ticket.id` must be full UUID.
+- `protocol.index_root` is mandatory.
+- `role=validator` requires `ticket.worker_id` and must not equal `agent_id`.
+- packet must include explicit evidence requirements.
+
+### Coordinator Dispatch Algorithm (minimal)
+
+1. Select ready ticket from search/graph queue.
+2. Build worker assignment packet with current ticket snapshot and constraints.
+3. Dispatch to worker; worker claims ticket directly.
+4. Track progress from ticket events (not from hidden coordinator state).
+5. On transition to `validating`, build validator packet and dispatch.
+6. Enforce separation-of-duties at packet creation and claim time.
+7. Promote to release-candidate only after validation pass and bug gates.
+
 ## Rollout
 
 ### Phase 1

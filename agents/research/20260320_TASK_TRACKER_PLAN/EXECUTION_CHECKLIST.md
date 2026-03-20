@@ -46,12 +46,14 @@ Exit gates:
 Reference:
 - 015_phase_lease_protocol/PLAN.md
 - VALIDATION_RELEASE_GOVERNANCE.md
+- HOST_EXECUTOR_AUTH_PROVIDER.md
 
 Scope:
 - claim/unclaim/heartbeat/leases
 - ticket serve --stdio request/response session
 - session-liveness auto-renewal
 - validator/worker separation-of-duties check on validating assignments
+- host executor auth skeleton (ephemeral worker tokens, assignment-scoped authorization)
 
 Exit gates:
 - [ ] claim collision and stale reclaim tests pass

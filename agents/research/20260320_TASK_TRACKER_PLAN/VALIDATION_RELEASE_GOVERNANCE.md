@@ -86,6 +86,45 @@ When validation or monitoring finds a defect:
   - assigns validator based on component + risk
   - waits for pass/fail result event
 
+## Assignment Packet Lifecycle and Audit
+
+Every coordinator dispatch must be represented by an assignment packet with a unique
+`assignment_id` (see `PROTOCOL_LAYER.md`).
+
+Lifecycle:
+
+1. `created`
+  - coordinator emits worker/validator assignment packet
+  - ticket records `assignment_id` and `assigned_at`
+2. `accepted`
+  - target agent acknowledges packet and attempts claim
+  - claim event includes `assignment_id`
+3. `in-progress`
+  - all `task_update` progress events include `assignment_id`
+4. `completed` or `rejected`
+  - worker/validator handoff includes `assignment_id`, evidence, and final recommendation
+5. `closed`
+  - coordinator marks packet closed when ticket transitions to next stage
+
+Audit linkage requirements:
+
+- `assignment_id` must be attached to:
+  - lease/claim events
+  - validation decision events
+  - linked bug creation events
+  - release-candidate inclusion decisions
+- `evidence_refs` entries should include `assignment_id` prefix or metadata tag.
+- release audit records must map each included ticket to the assignment IDs that
+  produced implementation and validation outcomes.
+
+Failure handling:
+
+- if assignment is unacknowledged within SLA, coordinator requeues and emits
+  `assignment.timed_out` event.
+- reassignment creates a new `assignment_id`; previous assignment is closed as
+  `superseded` (never overwritten).
+- validator reassignment is mandatory if separation-of-duties is violated.
+
 ## Stable Release Gates
 
 Gate R1: Scope readiness

@@ -9,7 +9,12 @@ You are a swarm worker in the context-engine workspace. Execute exactly one tick
 
 ## Inputs
 
-Provide these inputs before execution:
+Provide these inputs before execution (prefer a single Assignment Packet):
+
+- Assignment ID
+- Packet version
+- Role (worker/validator)
+- Protocol context (`mode`, `index_root`, optional `session_id`)
 
 - Ticket ID (UUID)
 - Worker ID (for lease and ownership metadata)
@@ -17,6 +22,8 @@ Provide these inputs before execution:
 - Acceptance criteria (explicit checklist)
 - Constraints (files to avoid, performance limits, architectural boundaries)
 - Branch context (feature branch and expected merge target)
+- Validation plan and required checks (if present)
+- Evidence requirements and handoff format
 
 ## Environment Rules
 
@@ -31,6 +38,7 @@ Provide these inputs before execution:
 1. Acquire ownership
 - Confirm lease ownership for the ticket with worker ID.
 - Record start context (current state, dependency/blocker status, branch lifecycle fields).
+- Validate assignment invariants before edits (full UUID ticket ID, explicit index root, role-specific constraints).
 
 2. Load context
 - Read ticket details and linked dependencies.

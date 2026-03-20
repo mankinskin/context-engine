@@ -54,6 +54,7 @@ Reference: both projects.
   README.md                     ← this file
   EXECUTION_CHECKLIST.md        ← global WIP-limited execution board (active topics)
   PROTOCOL_LAYER.md             ← canonical human-vs-agent protocol split
+  HOST_EXECUTOR_AUTH_PROVIDER.md ← host executor startup + online API key/auth model
   VALIDATION_RELEASE_GOVERNANCE.md  ← coordinator, validator agents, bug + release gates
   DEFERRED_EXECUTOR.md          ← parked: executor abstraction + Zeroboot (post-dogfooding)
   00_phase_contracts/
@@ -108,4 +109,5 @@ Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance 
 ```
 
 Protocol details for all phases are centralized in `PROTOCOL_LAYER.md`.
+Host executor auth/provider details are in `HOST_EXECUTOR_AUTH_PROVIDER.md`.
 Validation and release policy is centralized in `VALIDATION_RELEASE_GOVERNANCE.md`.
