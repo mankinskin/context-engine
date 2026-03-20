@@ -47,20 +47,22 @@ Reference: transition governance model in Phase 4.
 
 - No unrestricted remote control of ticket state from messenger free-text.
 - No dependency on a single messenger provider.
-- No replacement of CLI/HTTP as primary control surface.
+- No new domain model separate from the existing `TaskCommand` protocol.
 
 ## Hosting Strategy Phasing
 
-Ticket tracker commands are exposed through three successive hosting layers:
+Ticket tracker commands are exposed through one shared `TaskCommand` contract with multiple adapters:
 
 | Phase | Layer | Surface |
 |-------|-------|---------|
-| A (Phase 1) | CLI | `ticket` binary, JSON envelope |
-| B (Phase 5) | HTTP | `context-http` routes under `/api/tickets/` |
-| C (Phase 5+) | MCP | `context-mcp` tools wrapping HTTP endpoints |
+| A (Phase 1) | Human adapter | `ticket` CLI subcommands |
+| A (Phase 1) | Stateless agent adapter | `ticket exec` stdin JSON |
+| B (Phase 1.5) | Persistent agent adapter | `ticket serve --stdio` JSONL |
+| C (Phase 5) | HTTP adapter | `context-http` routes under `/api/tickets/` |
+| D (Phase 5+) | MCP adapter | `context-mcp` tools wrapping the same command contract |
 
-Visualization and messenger endpoints land in Phase B/C.
-CLI remains authoritative for all commands; HTTP/MCP are adapters.
+Visualization and messenger endpoints land in Phase C/D.
+The command contract is authoritative; transports are adapters.
 
 ## Maturity Gates to Start This Phase
 

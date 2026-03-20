@@ -26,9 +26,8 @@ Reference: branch-aware field conventions in both beads projects.
 - [ ] `GitHistory::apply_diff(id, diff_patch)` — apply a patch to current working state
 - [ ] `GitHistory::revert(id, sha)` — restore ticket folder to state at that commit,
       creating a new forward commit (no destructive rewrite of history)
-- [ ] `ticket history <id>` CLI command with `--format diff|log|show` flags
-- [ ] `ticket revert <id> --to <sha>` CLI + HTTP command
-- [ ] `ticket diff <id> --from <sha> --to <sha>` CLI + HTTP command
+- [ ] Human CLI: `ticket history <id> --format diff|log|show`
+- [ ] Machine protocol: `task_history`, `task_revert`, `task_diff` over `ticket exec`, `ticket serve --stdio`, HTTP, and MCP adapters
 - [ ] `ticket finalize-merge <id> --merge-commit <sha>` to close at merge boundary
 
 ## Git Repository Strategy — DECIDED

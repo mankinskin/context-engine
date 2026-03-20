@@ -45,8 +45,8 @@ This folder captures concrete operational scenarios for a distributed filesystem
 Solution: deterministic reconciliation and lease-aware scheduling patterns in our own architecture.
 Reference: concepts borrowed from `delightful-ai/beads-rs`.
 
-2. Problem: operator and agent usability across CLI workflows.
-Solution: JSON-first, automation-friendly command ergonomics and explicit workflows.
+2. Problem: operator and agent usability across human CLI and machine protocol workflows.
+Solution: ergonomic CLI for humans, explicit JSON command protocol for agents, and shared workflow semantics across both.
 Reference: patterns borrowed from `Dicklesworthstone/beads_rust`.
 
 3. Problem: neither upstream model is a direct fit for distributed ticket folders with workflow-defined schemas.

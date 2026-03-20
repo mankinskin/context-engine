@@ -16,7 +16,7 @@ Solution: define deterministic conflict semantics and validation invariants in o
 Reference: `delightful-ai/beads-rs` specification patterns.
 
 2. Problem: brittle agent integrations from unstable command/output shape.
-Solution: enforce explicit, machine-readable command contracts and schema-first output.
+Solution: enforce explicit, machine-readable command contracts where `TaskCommand` JSON is canonical and CLI is only a human adapter.
 Reference: `Dicklesworthstone/beads_rust` CLI ergonomics.
 
 3. Problem: upstream architectures do not match distributed-folder + configurable-schema requirements.
@@ -41,7 +41,10 @@ Reference: both projects.
 - [ ] Query language grammar spec: unified FTS + metadata predicate syntax
       (e.g. `status:open assigned:alice "login page"`)
 - [ ] FS watcher event taxonomy: CREATED, MODIFIED, MOVED, DELETED, PARSE_ERROR
-- [ ] Command contract schema for `ticket` CLI + HTTP surfaces (`--json` stability)
+- [ ] Command contract schema for human CLI adapter + agent protocol surfaces (`ticket exec`, `ticket serve --stdio`, HTTP, MCP)
+- [ ] Self-containment rule for machine protocol commands: explicit `index_root`, full UUIDs, structured patch payloads
+- [ ] Response projection contract: optional `fields` selector for agent responses
+- [ ] Request envelope contract for persistent stdio transport: request ID, command payload, structured result/error envelope
 
 ## Key Interview Answers Consumed Here
 
@@ -56,6 +59,18 @@ Reference: both projects.
 | Q7 — Git diff history | git2 integration design: embedded bare repo or workspace repo |
 | Q9 — Unified query | Query AST design: `Expr::Fts(str)` \| `Expr::Field(key, op, val)` \| `Expr::And(...)` |
 | Q10 — FS tracking | Orphan integration protocol + parse error reporting contract |
+
+## Command Surface Contract
+
+The command model is layered:
+
+- `TaskCommand` is the canonical machine contract.
+- Human CLI parses flags and positional args into `TaskCommand`.
+- `ticket exec` deserializes stdin JSON directly into `TaskCommand`.
+- `ticket serve --stdio` deserializes JSONL requests directly into `TaskCommand`.
+- HTTP and MCP adapters forward the same contract.
+
+Machine protocol modes must not depend on cwd inference, shell quoting, or short UUID matching.
 
 ## Expected crate layout
 
@@ -115,4 +130,5 @@ crates/context-tasks/
 - ~~TODO: Define scan root registry format.~~ DONE
 - ~~TODO: Decide git repo strategy.~~ DECIDED: embedded bare repo default
 - ~~TODO: Design query grammar and write parser tests.~~ DONE
+- TODO: Extend command schema export to document `ticket exec` request envelopes, transactional batch semantics, and stdio request IDs.
 - ~~TODO: Track progress via EXECUTION_CHECKLIST.md.~~ DONE

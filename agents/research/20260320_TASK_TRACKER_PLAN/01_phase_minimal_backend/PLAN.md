@@ -18,8 +18,8 @@ Solution: strict per-ticket locks + serialized index mutations + idempotent reco
 Reference: concurrency goals inspired by `delightful-ai/beads-rs`.
 
 2. Problem: operators and agents need predictable machine output for orchestration.
-Solution: `ticket` CLI/HTTP contracts are JSON-first and schema-stable.
-Reference: agent-first CLI posture in `Dicklesworthstone/beads_rust`.
+Solution: human CLI remains ergonomic, but agents talk directly in `TaskCommand` JSON through `ticket exec` from day one.
+Reference: JSON-first command patterns in `Dicklesworthstone/beads_rust`, adapted to separate human UX from machine protocol.
 
 3. Problem: swarm agents need one query surface for both planning text and operational filters.
 Solution: unified query language combining FTS + structured predicates, wired into the write path.
@@ -56,6 +56,14 @@ Reference: machine-oriented list/ready/search workflow patterns in both beads pr
 ### CLI Commands (MVP)
 - [ ] `ticket create`, `ticket get`, `ticket update`, `ticket list`,
       `ticket delete`, `ticket scan`, `ticket search`
+
+### Agent Protocol (MVP)
+- [ ] `ticket exec` — read one `TaskCommand` JSON request from stdin and return one structured result envelope
+- [ ] `ticket exec --batch` — read multiple commands from stdin and execute as one transaction
+- [ ] Explicit `index_root` required for `ticket exec` requests
+- [ ] Full UUIDs required for agent protocol requests (no prefix matching)
+- [ ] Structured `patch` objects for updates (no `--field k=v` parsing in machine mode)
+- [ ] Optional `fields` selector on read/search/update responses to reduce token output
 
 ## Atomic Write Protocol
 
@@ -212,10 +220,12 @@ schema_builder.add_text_field("attachments", TEXT | STORED);  // extracted text 
 ## Staged Command Rollout
 
 ### MVP (this phase)
-create, get, update, list, delete, scan, search
+Human: create, get, update, list, delete, scan, search
+
+Agent: `ticket exec` for the same `TaskCommand` set, plus transactional batch mode
 
 ### Phase 1.5
-claim, unclaim (lease protocol)
+claim, unclaim, heartbeat, leases, `ticket serve --stdio`
 
 ### Phase 2
 history, diff, revert, finalize-merge
@@ -225,18 +235,40 @@ deps, blocked-by, blocking, critical-path, validate-graph, export-graph, board, 
 
 ## Hosting Strategy
 
-Phase A (this phase): `ticket` CLI binary as the primary runtime surface. All commands
-are available as CLI subcommands with `--json` flag for machine output.
+The command contract is transport-first, not CLI-first.
 
-Phase B (post-dogfooding): expose the same command contracts through `context-http`
-routes, reusing the existing Command dispatch pattern.
+### Human surface
 
-Phase C (post-Phase B): add MCP tool surface on top of the HTTP/contract layer via
-`context-mcp`.
+Phase 1 ships `ticket` CLI subcommands for operators:
 
-No standalone daemon is required for Phase A. The CLI opens and closes the redb database
-and Tantivy index per invocation. The FS watcher runs as a background `ticket watch`
-command when continuous monitoring is needed.
+- cwd-based `index_root` inference is allowed
+- short UUID prefixes are allowed where unambiguous
+- short flags and terminal formatting are allowed
+
+### Agent surface
+
+Phase 1 ships `ticket exec` as the primary machine interface:
+
+- request body is `TaskCommand` JSON from stdin
+- every request must include explicit `index_root`
+- full UUIDs only
+- responses are structured JSON envelopes with optional field projection
+
+### Persistent machine surface
+
+Phase 1.5 adds `ticket serve --stdio`:
+
+- JSONL request/response over one long-lived process
+- redb and Tantivy stay open for session lifetime
+- lease renewal may be tied to session liveness
+
+### Adapters
+
+Phase 5 exposes the same `TaskCommand` contract through `context-http` and `context-mcp`.
+CLI, stdio, HTTP, and MCP are all adapters over one command model.
+
+No daemon is required in Phase 1. `ticket exec` remains stateless. `ticket serve --stdio`
+is introduced only when persistent lease-heavy workflows justify it.
 
 ## Risks
 
@@ -258,3 +290,5 @@ command when continuous monitoring is needed.
 - TODO: Decide index storage path: `.context-engine/ticket-index/search/` alongside redb.
 - TODO: Write query language grammar as a formal PEG/pest grammar before implementation.
 - TODO: Benchmark index rebuild time for 10 000 tickets with mixed binary attachments.
+- TODO: Define `ticket exec --batch` transactional envelope and rollback boundary.
+- TODO: Define exact `fields` projection semantics for search result snippets vs full ticket payloads.

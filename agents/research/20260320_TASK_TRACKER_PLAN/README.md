@@ -10,6 +10,8 @@
 - Concurrency: per-ticket locks plus short-lived global index write lock.
 - History: git-backed diff history via `git2` (embedded bare repo by default).
 - Search: full-text + metadata in a unified query language, integrated into the core backend phase.
+- Protocol split: `TaskCommand` JSON is the canonical agent protocol; human CLI subcommands are an adapter on top.
+- Agent transport rollout: Phase 1 `ticket exec`, Phase 1.5 `ticket serve --stdio`, Phase 5 HTTP + MCP adapters.
 - Reconciliation: watcher + full scan supports orphan integration and parse diagnostics.
 - Schema compatibility: version-pinned at creation, additive-only in-place, breaking changes require explicit migration.
 
@@ -50,6 +52,7 @@ Reference: both projects.
 20260320_TASK_TRACKER_PLAN/
   INTERVIEW.md                  ← design questions + your answers (start here)
   README.md                     ← this file
+  PROTOCOL_LAYER.md             ← canonical human-vs-agent protocol split
   DEFERRED_EXECUTOR.md          ← parked: executor abstraction + Zeroboot (post-dogfooding)
   00_phase_contracts/
     PLAN.md                     ← Phase 0: contracts (DONE)
@@ -101,6 +104,8 @@ Phase 1: Core Backend + Search
 
 Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance narratives.
 ```
+
+Protocol details for all phases are centralized in `PROTOCOL_LAYER.md`.
 
 ## Status
 

@@ -12,7 +12,7 @@ Solution: finalize deterministic contracts and validation invariants first.
 Reference: convergence and validation patterns from delightful-ai/beads-rs.
 
 2. Problem: orchestration breaks when command/output contracts drift.
-Solution: lock machine-readable command schemas with acceptance tests.
+Solution: lock machine-readable command schemas with `TaskCommand` as canonical machine protocol and CLI as adapter.
 Reference: JSON-first CLI patterns from Dicklesworthstone/beads_rust.
 
 3. Problem: upstream architectures do not natively satisfy distributed ticket folders + schema pluggability.
@@ -121,17 +121,28 @@ Acceptance criteria:
 
 ### Step 0.7: Freeze Command Contracts
 
-- [x] Define machine-readable contract for CLI + HTTP command parity.
+- [x] Define machine-readable contract for CLI adapter + agent protocol parity.
 - [x] Include `ticket` command set baseline:
   - `create`, `get`, `update`, `list`, `delete`
   - `scan`, `claim`, `unclaim`
   - `search`, `query`
   - `history`, `diff`, `revert`, `finalize-merge`
+- [ ] Define machine protocol transport variants:
+  - `ticket exec` stdin JSON
+  - `ticket exec --batch` transactional JSON batch
+  - `ticket serve --stdio` JSONL request/response envelope
+- [ ] Define machine protocol self-containment requirements:
+  - explicit `index_root`
+  - full UUIDs
+  - structured patch objects
+- [ ] Define optional response `fields` projection contract.
 - [x] Define structured error model with stable error codes.
 
 Acceptance criteria:
 - [x] Command schemas exported in JSON for tooling.
 - [x] All contract tests verify response shape stability.
+- [ ] Request envelope shape is stable across `exec`, `serve`, HTTP, and MCP adapters.
+- [ ] Transactional batch failure reports deterministic failing command index.
 
 ## Mandatory Test Gates (Phase 0 Exit) — SCOPED TO context-tasks
 
@@ -156,7 +167,9 @@ Note: Workspace-wide fmt/clippy gates are out of scope for Phase 0 exit. Tracked
 - [x] Table schema version: 1
 - [x] Query grammar version: 1
 - [x] Known deferred items: full runtime schema engine, executor abstraction
-- [x] Phase 1 command set: create, get, update, list, delete, scan
+- [x] Phase 1 command set: create, get, update, list, delete, scan, search
+- [ ] Phase 1 agent transport: `ticket exec`
+- [ ] Phase 1.5 agent transport: `ticket serve --stdio`
 - [x] Phase 1.5 command set: claim, unclaim
 - [x] Phase 2 command set: history, diff, revert, finalize-merge
 - [x] Phase 3 command set: search, query (also wired in Phase 1 for FTS)
