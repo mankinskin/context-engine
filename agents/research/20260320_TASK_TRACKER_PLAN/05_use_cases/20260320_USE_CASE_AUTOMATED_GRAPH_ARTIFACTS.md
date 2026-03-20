@@ -20,7 +20,7 @@ Manual graph generation introduces stale artifacts, inconsistent formats, and op
 ## Reference
 
 - Phase 4 graph export and merge queue workflows.
-- Phase 7 integration plan for endpoint and automation lifecycle.
+- Phase 5 integration plan for endpoint and automation lifecycle.
 
 ## Acceptance Signals
 

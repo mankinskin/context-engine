@@ -20,8 +20,8 @@ Without asynchronous messaging, users miss important completion/failure signals 
 ## Reference
 
 - Phase 1 lease/claim workflows.
-- Phase 6 dogfooding governance rules.
-- Phase 7 messenger integration plan.
+- Phase 4 dogfooding governance rules.
+- Phase 5 messenger integration plan.
 
 ## Acceptance Signals
 

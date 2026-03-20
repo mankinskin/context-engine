@@ -1,4 +1,4 @@
-# Phase 6 — Transition to Dogfooding the Task Tracker
+# Phase 4 — Transition to Dogfooding the Task Tracker
 
 Status: PLANNED
 
@@ -21,24 +21,25 @@ Reference:
 
 The following major work remains from current plans:
 
-1. Phase 0 closure
-- Complete workspace-wide mandatory gates or explicitly narrow gate scope for Phase 0 exit.
-- Publish Phase 0 handoff metadata: contract version, schema version, grammar version, guaranteed command list.
+1. Phase 0 closure — DONE
+- Contract version, schema version, grammar version, guaranteed command list published.
 
-2. Phase 1 backend
+2. Phase 1 core backend + search
 - Wire create/get/update/list/delete to real storage implementations.
 - Complete watcher + reconcile integration.
-- Complete lease semantics and lock behavior in full workflow paths.
+- Wire unified query parser to Tantivy execution path.
+- Implement Tantivy indexing lifecycle and full reindex path.
 
-3. Phase 2 history
+3. Phase 1.5 lease protocol
+- Implement claim/unclaim/heartbeat commands.
+- Complete lease semantics and lock behavior in full workflow paths.
+- Stale lease recovery proven by tests.
+
+4. Phase 2 history
 - Implement history log/diff/revert commands against git-backed store.
 - Finalize and enforce branch-boundary lifecycle behavior.
 
-4. Phase 3 search
-- Wire unified query parser to execution path.
-- Implement Tantivy indexing lifecycle and full reindex path.
-
-5. Phase 4 graph workflows
+5. Phase 3 graph workflows
 - Implement dependency traversal/validation commands.
 - Add merge queue and board views with lease/blocker overlays.
 
@@ -47,7 +48,7 @@ The following major work remains from current plans:
 - Add smoke/integration tests for end-to-end command workflows.
 - Add observability and diagnostics standards for worker failures.
 
-7. Integration readiness
+7. Integration readiness (Phase 5)
 - Implement visualization endpoints and automated artifact generation.
 - Define messenger event routing and digest policies for long-running swarms.
 
@@ -70,7 +71,11 @@ Gate D: Search and retrieval
 Gate E: Graph correctness
 - blocked-by/blocking/validate-graph pass known scenario tests.
 
-Gate F: Operator trust
+Gate F: Lease stability
+- claim/unclaim/heartbeat cycle proven under parallel swarm load.
+- Stale lease recovery and conflict domain collision tested.
+
+Gate G: Operator trust
 - One week of internal trial with no critical data-loss or deadlock incidents.
 
 ## Transition Rollout
@@ -95,7 +100,7 @@ Exit criteria:
 - Task tracker becomes primary source of truth for implementation tickets.
 - Planning docs used for roadmap/design only.
 - Add periodic exports/snapshots for archival and review.
-- Begin Phase 7 integrations: visualization endpoints first, messenger delivery second.
+- Begin Phase 5 integrations: visualization endpoints first, messenger delivery second.
 
 Exit criteria:
 - Full team/agent adoption and successful release cycle completed using tracker-first process.
@@ -123,10 +128,10 @@ Use this template for tracker-improving-tracker work:
 
 ## Immediate Next Actions
 
-1. Finalize Phase 0 exit decision (workspace-wide gates vs scoped gates).
-2. Replace command stubs with backend wiring for create/get/update/list/delete.
+1. ~~Finalize Phase 0 exit decision~~ DONE — scoped to context-tasks crate.
+2. Replace command stubs with backend wiring for create/get/update/list/delete (Phase 1).
 3. Implement one end-to-end bootstrap path:
-- create ticket -> claim -> update -> history -> unclaim -> close
+   create ticket → claim → update → history → unclaim → close
 4. Start Stage 1 mirror mode with 5-10 tracker-improvement tickets.
 
 ## Seed Backlog Artifacts

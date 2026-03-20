@@ -1,6 +1,6 @@
 # Phase 0 — Design Contracts
 
-**Status:** READY (all INTERVIEW.md answers complete)
+**Status:** DONE (formally closed — see EXECUTION_CHECKLIST.md for handoff)
 
 ## Objective
 
@@ -88,16 +88,31 @@ crates/context-tasks/
 
 - Configurable state machines loaded at runtime need a clear schema version story;
   changing a type's state machine after tickets exist requires a migration policy.
+  **Mitigated:** schema compatibility policy added below.
 - Distributed ticket discovery (Q1) means the index can be stale; define staleness
   tolerance (always-consistent via watcher vs. best-effort with manual `scan`).
+  **Mitigated:** read-consistency model defined in Phase 1.
 - Git integration: must decide at Phase 0 whether `git2` operates on the workspace
   git repo or on a separate embedded bare repo to avoid polluting user commit history.
+  **Decided:** embedded bare repo by default; workspace-git as opt-in flag.
+
+## Schema Compatibility Policy
+
+- Schema version is pinned on each ticket at creation time (`schema_version` field in manifest).
+- Additive changes (new optional fields, new states, new edge kinds) are applied in-place
+  without requiring migration. Existing tickets gain the new fields with default/null values.
+- Breaking changes (removed fields, renamed states, changed transition rules) require an
+  explicit `ticket migrate --type <type> --from <v1> --to <v2>` command that:
+  1. Reports affected tickets.
+  2. Applies a deterministic transformation.
+  3. Records the migration in history.
+- Tickets created under an older schema version that has no registered migration path
+  are validated against their pinned schema version, not the current one.
 
 ## TODO
 
-- TODO: Write serde round-trip tests for all schema structs.
-- TODO: Define scan root registry format (how the user registers watched directories).
-- TODO: Decide git repo strategy: workspace repo with a dedicated branch vs. bare repo
-  under the index root.
-- TODO: Design query grammar and write parser tests before Phase 3 search work begins.
-- TODO: Track progress via `EXECUTION_CHECKLIST.md` and gate Phase 1 start on its exit criteria.
+- ~~TODO: Write serde round-trip tests for all schema structs.~~ DONE
+- ~~TODO: Define scan root registry format.~~ DONE
+- ~~TODO: Decide git repo strategy.~~ DECIDED: embedded bare repo default
+- ~~TODO: Design query grammar and write parser tests.~~ DONE
+- ~~TODO: Track progress via EXECUTION_CHECKLIST.md.~~ DONE

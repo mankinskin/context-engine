@@ -6,12 +6,12 @@
 - Global index: canonical runtime index in `redb`, mapping UUID -> filesystem path + derived metadata.
 - Identity: UUID v4 only.
 - Required universal fields: `id`, `created_at`.
-- Workflow model: configurable ticket schemas and configurable state machines per ticket type.
+- Workflow model: hardcoded default schema (`tracker-improvement`) first; trait boundaries for future extensibility. Full runtime schema engine deferred to post-dogfooding.
 - Concurrency: per-ticket locks plus short-lived global index write lock.
-- History: git-backed diff history via `git2`.
-- Search: full-text + metadata in a unified query language from the initial implementation track.
+- History: git-backed diff history via `git2` (embedded bare repo by default).
+- Search: full-text + metadata in a unified query language, integrated into the core backend phase.
 - Reconciliation: watcher + full scan supports orphan integration and parse diagnostics.
-- Execution isolation: pluggable agent executor, with local process as default and Zeroboot as optional Linux/KVM backend.
+- Schema compatibility: version-pinned at creation, additive-only in-place, breaking changes require explicit migration.
 
 ## Stack Decision
 
@@ -24,7 +24,7 @@
 | History / diffs  | `git2` (libgit2 bindings)                | Line-level diffs, apply/revert, version store  |
 | FS watching      | `notify` crate                           | Detect changes, orphan integration, error diag |
 | Full-text search | `tantivy`                                | FTS + metadata filter unified query language   |
-| Agent execution  | Local process + optional Zeroboot        | Isolated parallel agent runs with fallback     |
+| Lease protocol   | redb `LEASES` table + heartbeat           | Agent coordination, claim/unclaim, conflict     |
 | Serialization    | `serde` + TOML/JSON                      | Human-readable manifests; configurable schemas |
 | Compression      | `zstd`                                   | Optional snapshot / export compaction          |
 
@@ -50,36 +50,28 @@ Reference: both projects.
 20260320_TASK_TRACKER_PLAN/
   INTERVIEW.md                  ← design questions + your answers (start here)
   README.md                     ← this file
+  DEFERRED_EXECUTOR.md          ← parked: executor abstraction + Zeroboot (post-dogfooding)
   00_phase_contracts/
-    PLAN.md                     ← Phase 0: schema engine, folder layout, index/query contracts
-    EXECUTION_CHECKLIST.md      ← Phase 0 implementation checklist, gates, and exit criteria
+    PLAN.md                     ← Phase 0: contracts (DONE)
+    EXECUTION_CHECKLIST.md      ← Phase 0 checklist and formal closure
   01_phase_minimal_backend/
-    PLAN.md                     ← Phase 1: CRUD, watcher/reconcile, locks, global index
+    PLAN.md                     ← Phase 1: Core Backend + Search (merged)
+  015_phase_lease_protocol/
+    PLAN.md                     ← Phase 1.5: Lease Protocol
   02_phase_history_rollback/
-    PLAN.md                     ← Phase 2: git-backed diff history, revert/apply, branch policy
-  03_phase_search/
-    PLAN.md                     ← Phase 3: unified query language, FTS + metadata, highlighting
+    PLAN.md                     ← Phase 2: History + Rollback (git strategy locked)
   04_phase_advanced_refs/
-    PLAN.md                     ← Phase 4: dependency graph operations, merge/queue coordination
+    PLAN.md                     ← Phase 3: Advanced Refs + Graph
   05_use_cases/
     INDEX.md                    ← scenario map for concurrent agent workflows
     20260320_USE_CASE_*.md      ← concrete multi-agent and merge/dependency scenarios
   06_transition_dogfooding/
-    PLAN.md                     ← maturity gates and staged rollout to tracker-first operations
+    PLAN.md                     ← Phase 4: Dogfooding Transition
   07_phase_integrations/
-    PLAN.md                     ← visualization endpoints and messenger integrations
+    PLAN.md                     ← Phase 5: Integrations (viz endpoints + messenger)
 ```
 
-## Cross-Cutting Track — Execution Isolation
-
-Execution isolation is integrated as a cross-cutting track rather than a separate phase:
-
-- Phase 1 introduces `Executor` contracts, claim/lease handoff, and capability-aware scheduling.
-- Phase 4 overlays executor/lease conflict visibility into graph scheduling and merge queue helpers.
-- Use-case scenarios validate local-process + Zeroboot mixed operation and fallback semantics.
-
-Zeroboot is optional and should never be a hard runtime dependency for core ticket operations.
-The ticket backend remains filesystem + redb + git2 + Tantivy regardless of executor choice.
+Executor abstraction and Zeroboot integration are deferred to post-dogfooding. See `DEFERRED_EXECUTOR.md`.
 
 ## Prerequisites
 
@@ -90,23 +82,22 @@ every phase — wrong defaults here are expensive to change later.
 ## Dependency Chain
 
 ```
-INTERVIEW answers
-      │
-      ▼
-Phase 0: Contracts (schema engine, folder layout, index model, query grammar)
-      │
-      ▼
-Phase 1: Minimal backend (create/read/update/delete + dependency edges + atomic writes + watcher/reconcile)
-      │
-      ├──► Phase 2: History + rollback (can run after Phase 1 stabilises)
-      │
-  └──► Phase 3: Search (starts as soon as Phase 1 CRUD is stable)
-                    │
-                    ▼
-             Phase 4: Advanced refs + graph viz (depends on 1 + 2 + 3)
-                    │
-                    ▼
-                  Phase 7: Integrations (visualization endpoints + messenger delivery)
+Phase 0 (DONE)
+    │
+    ▼
+Phase 1: Core Backend + Search
+    │
+    ├──► Phase 1.5: Lease Protocol (starts when Phase 1 CRUD stabilizes)
+    │
+    ├──► Phase 2: History + Rollback (starts when Phase 1 CRUD stabilizes)
+    │
+    └──► Phase 3: Advanced Refs + Graph (depends on 1 + 1.5 + 2)
+              │
+              ▼
+         Phase 4: Dogfooding Transition
+              │
+              ▼
+         Phase 5: Integrations (viz endpoints + messenger delivery)
 
 Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance narratives.
 ```
@@ -114,8 +105,10 @@ Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance 
 ## Status
 
 - [x] INTERVIEW answers complete
-- [ ] Phase 0 executed
+- [x] Phase 0 executed (formally closed)
 - [ ] Phase 1 executed
+- [ ] Phase 1.5 executed
 - [ ] Phase 2 executed
 - [ ] Phase 3 executed
 - [ ] Phase 4 executed
+- [ ] Phase 5 executed

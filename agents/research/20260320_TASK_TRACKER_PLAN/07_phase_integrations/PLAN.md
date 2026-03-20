@@ -1,4 +1,4 @@
-# Phase 7 — Visualization and Messenger Integrations
+# Phase 5 — Visualization and Messenger Integrations
 
 Status: PLANNED (post-core maturity)
 
@@ -10,7 +10,7 @@ Add integration surfaces so tracker state can be consumed automatically by exter
 
 1. Problem: graph and board outputs are useful but still require manual command execution.
 Solution: add API endpoints and scheduled/on-change generation for graph/board artifacts.
-Reference: Phase 4 graph export and merge queue workflow requirements.
+Reference: Phase 3 graph export and merge queue workflow requirements.
 
 2. Problem: long-running swarm tasks need asynchronous human interaction loops.
 Solution: add event-driven messenger notifications and command-reply workflow for selected ticket updates.
@@ -18,7 +18,7 @@ Reference: swarm claim/lease workflows and handoff requirements in existing use 
 
 3. Problem: direct messenger posting can leak noisy or sensitive internal activity.
 Solution: policy-controlled routing with channel rules, severity thresholds, and explicit subscription filters.
-Reference: transition governance model in Phase 6.
+Reference: transition governance model in Phase 4.
 
 ## Deliverables
 
@@ -49,11 +49,24 @@ Reference: transition governance model in Phase 6.
 - No dependency on a single messenger provider.
 - No replacement of CLI/HTTP as primary control surface.
 
+## Hosting Strategy Phasing
+
+Ticket tracker commands are exposed through three successive hosting layers:
+
+| Phase | Layer | Surface |
+|-------|-------|---------|
+| A (Phase 1) | CLI | `ticket` binary, JSON envelope |
+| B (Phase 5) | HTTP | `context-http` routes under `/api/tickets/` |
+| C (Phase 5+) | MCP | `context-mcp` tools wrapping HTTP endpoints |
+
+Visualization and messenger endpoints land in Phase B/C.
+CLI remains authoritative for all commands; HTTP/MCP are adapters.
+
 ## Maturity Gates to Start This Phase
 
-- Core command reliability gate from Phase 6 must be green.
-- Graph validation and export commands from Phase 4 must be available.
-- Lease/stale recovery must be stable under parallel swarm load.
+- Core command reliability gate from Phase 4 dogfooding must be green.
+- Graph validation and export commands from Phase 3 must be available.
+- Lease/stale recovery (Phase 1.5) must be stable under parallel swarm load.
 
 ## Risks
 

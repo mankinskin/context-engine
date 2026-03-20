@@ -1,5 +1,9 @@
 # Use Case — COW Sandboxed Swarm Execution (Optional)
 
+> **⚠️ DEFERRED** — Executor and sandbox integration is parked until post-dogfooding.
+> See [DEFERRED_EXECUTOR.md](../DEFERRED_EXECUTOR.md) for rationale and reactivation criteria.
+> The lease protocol (Phase 1.5) covers claim/heartbeat/expiry without executor coupling.
+
 ## Scenario
 
 A coordinator claims 40 ready tickets for refinement and implementation. The workspace runs mixed execution backends:

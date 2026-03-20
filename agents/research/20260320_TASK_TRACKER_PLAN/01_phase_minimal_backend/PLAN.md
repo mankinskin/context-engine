@@ -1,13 +1,15 @@
-# Phase 1 — Minimal Backend
+# Phase 1 — Core Backend + Search
 
-**Status:** BLOCKED (requires Phase 0 complete)
+**Status:** READY (Phase 0 formally closed)
 
 ## Objective
 
-Implement a working distributed ticket store: create, read, update, delete tickets with
-dependency edges, using redb as the metadata index and the filesystem as the artifact
-store. All writes must be crash-safe. The FS watcher must be live so discovered/orphaned
-tickets are integrated automatically.
+Implement a working distributed ticket store with integrated full-text search:
+create, read, update, delete tickets with dependency edges, using redb as the
+metadata index, Tantivy as the search index, and the filesystem as the artifact
+store. All writes must be crash-safe. The FS watcher must be live so
+discovered/orphaned tickets are integrated automatically. Search is wired from
+day one — not deferred.
 
 ## Problem/Solution/Reference Baseline
 
@@ -19,12 +21,13 @@ Reference: concurrency goals inspired by `delightful-ai/beads-rs`.
 Solution: `ticket` CLI/HTTP contracts are JSON-first and schema-stable.
 Reference: agent-first CLI posture in `Dicklesworthstone/beads_rust`.
 
-3. Problem: running many agents in parallel without isolation increases cross-process interference risk.
-Solution: define a pluggable execution backend contract with local-process default and optional Zeroboot isolation.
-Reference: `zerobootdev/zeroboot` for COW sandboxing patterns (adopt as optional executor only).
+3. Problem: swarm agents need one query surface for both planning text and operational filters.
+Solution: unified query language combining FTS + structured predicates, wired into the write path.
+Reference: machine-oriented list/ready/search workflow patterns in both beads projects.
 
 ## Deliverables
 
+### Core CRUD
 - [ ] `TicketFs::create(manifest, type_schema)` — atomic FS folder + redb index write
 - [ ] `TicketFs::get(id)` — read manifest; validate against registered type schema
 - [ ] `TicketFs::update(id, patch)` — validate state transition, atomic write, git commit
@@ -33,13 +36,26 @@ Reference: `zerobootdev/zeroboot` for COW sandboxing patterns (adopt as optional
 - [ ] `RedbIndexStore::list(filter)` — scan index with metadata predicates
 - [ ] Per-ticket lock: `.ticket-lock` acquired before write, released after commit
 - [ ] Short-lived global index lock for index row insertions/removals
+
+### Watcher + Reconcile
 - [ ] `FsWatcher` (notify): watches registered scan roots; on CREATED/MODIFIED triggers
       reconcile; on MOVED updates index path; on DELETED marks orphan
 - [ ] `Reconciler::integrate_orphan(path)` — parse + validate; add to index or emit
       `ParseError` diagnostic
-- [ ] CLI commands: `ticket create`, `ticket get`, `ticket update`, `ticket list`,
-      `ticket delete`, `ticket scan` (full re-index)
-- [ ] HTTP commands: same set via existing `Command` dispatch pattern
+
+### Search (merged from old Phase 3)
+- [ ] `TantivySearchIndex::upsert(id, doc)` — index new/updated ticket
+- [ ] `TantivySearchIndex::remove(id)` — delete from index on ticket deletion
+- [ ] `QueryParser::parse(expr: &str) -> Query` — unified AST from query string
+- [ ] `TantivySearchIndex::search(query, limit, highlight) -> Vec<SearchResult>` —
+      returns ranked results with highlighted snippet text
+- [ ] `ticket scan --reindex` flag — full Tantivy + redb rebuild from FS content
+- [ ] Binary content extractor registry: text → pass-through; PDF → best-effort text
+      extract; unknown binary → filename + metadata only
+
+### CLI Commands (MVP)
+- [ ] `ticket create`, `ticket get`, `ticket update`, `ticket list`,
+      `ticket delete`, `ticket scan`, `ticket search`
 
 ## Atomic Write Protocol
 
@@ -95,14 +111,132 @@ definition declares whether an edge kind is acyclic-enforced.
 
 ## Additional Swarm Deliverables
 
-- [ ] Lease primitives: `ticket claim`, `ticket unclaim`, heartbeat renewal, TTL expiry handling
-- [ ] Conflict visibility fields in index: `working_by`, `lease_expires_at`, `conflict_domain`
-- [ ] Ready queue filter includes lease + blocker semantics
-- [ ] `Executor` contract for agent work units (spawn, cancel, status, capability report)
-- [ ] `LocalExecutor` implementation as default cross-platform backend
-- [ ] `ZerobootExecutor` implementation behind feature/capability gate (Linux + KVM only)
-- [ ] Scheduler fallback policy: if Zeroboot unavailable, route workload to `LocalExecutor`
-- [ ] Persist executor metadata per lease: `executor_backend`, `sandbox_id` (if present), `spawn_started_at`
+Lease primitives are specified and implemented in Phase 1.5 (see `015_phase_lease_protocol/PLAN.md`).
+The `LEASES` redb table is created in this phase but write/read logic is Phase 1.5 scope.
+
+## Default Schema — tracker-improvement
+
+Phase 1 ships one hardcoded ticket type: `tracker-improvement`.
+The schema engine traits exist but only this built-in type is supported initially.
+
+Fields:
+- `id` (UUID, required, universal)
+- `created_at` (ISO 8601, required, universal)
+- `title` (string, required)
+- `type` (string, required — always "tracker-improvement" for now)
+- `state` (enum: open, in-progress, review, blocked, done, cancelled)
+- `component` (string, optional)
+- `risk_level` (enum: low, medium, high)
+- `acceptance_criteria` (string, optional)
+- `bootstrap_blocker` (bool, optional)
+- `rollout_stage` (enum: mirror, hybrid, tracker-first)
+- `blocked_by` (list of UUIDs, optional — field hint until edge commands are wired)
+
+State transitions (default):
+- open → in-progress, blocked, cancelled
+- in-progress → review, blocked, cancelled
+- review → done, in-progress, blocked
+- blocked → open, in-progress, cancelled
+- done → (terminal, reopenable via explicit command)
+- cancelled → (terminal, reopenable via explicit command)
+
+Extension: additional fields passed as key-value pairs are stored in `extra` map
+and indexed by Tantivy as `x_<field_name>` text fields.
+
+## Unified Query Language
+
+Grammar (informal):
+
+```
+query  := expr (WS expr)*
+expr   := field_pred | fts_term | quoted_phrase
+field_pred := IDENT ":" value
+value  := bare_word | quoted_string | range
+range  := "[" value "TO" value "]"
+```
+
+Examples:
+```
+"login page"                                          # free-text phrase
+status:open                                           # exact field match
+assigned:alice "login page"                           # combined
+status:open created:[2026-01-01 TO 2026-03-31]        # date range + status filter
+```
+
+Field names map to Tantivy `FAST`/`STRING` fields; unrecognised field names surface
+as a query parse error with a suggestion.
+
+## Tantivy Field Schema
+
+```rust
+// Universal fields (always present)
+schema_builder.add_text_field("id",          STRING | STORED);
+schema_builder.add_date_field("created_at",  INDEXED | STORED | FAST);
+schema_builder.add_date_field("updated_at",  INDEXED | STORED | FAST);
+schema_builder.add_text_field("ticket_type", STRING | STORED | FAST);
+
+// Well-known optional fields (populated when present in manifest)
+schema_builder.add_text_field("body",        TEXT | STORED);  // description.md content
+schema_builder.add_text_field("attachments", TEXT | STORED);  // extracted text from assets
+
+// Dynamic fields from type schema registered when a type schema is loaded
+// (e.g. status, assignee, priority, labels)
+// Namespace prefix x_ reserved to avoid collision with universal fields
+```
+
+## Index Lifecycle
+
+- **Write path**: `create`/`update` calls `TantivySearchIndex::upsert` before
+  releasing the per-ticket lock.
+- **Crash recovery**: if the process dies after the redb commit but before the Tantivy
+  write, `ticket scan --reindex` rebuilds the full index. Tantivy is always derived;
+  never source-of-truth.
+- **Schema evolution**: index schema version stored in redb `META`; schema change
+  triggers automatic full reindex on next startup.
+
+## Read Consistency Model
+
+- **Write path (strongly consistent):** Every `create`/`update`/`delete` operation
+  commits to both the filesystem and the redb index synchronously within the per-ticket
+  lock. The Tantivy index is also updated before lock release. A successful command
+  return guarantees the ticket is immediately queryable.
+- **External edits (eventually consistent):** Changes made outside the `ticket` CLI
+  (manual file edits, folder moves, copies) are detected by the FS watcher and
+  reconciled asynchronously. SLO target: external changes visible within 10 seconds
+  under normal load.
+- **Correctness repair:** `ticket scan --reindex` performs a full filesystem walk and
+  rebuilds both the redb index and the Tantivy index from scratch. This is the
+  canonical recovery mechanism after crashes, missed watcher events, or suspected
+  index corruption.
+
+## Staged Command Rollout
+
+### MVP (this phase)
+create, get, update, list, delete, scan, search
+
+### Phase 1.5
+claim, unclaim (lease protocol)
+
+### Phase 2
+history, diff, revert, finalize-merge
+
+### Phase 3
+deps, blocked-by, blocking, critical-path, validate-graph, export-graph, board, merge-queue
+
+## Hosting Strategy
+
+Phase A (this phase): `ticket` CLI binary as the primary runtime surface. All commands
+are available as CLI subcommands with `--json` flag for machine output.
+
+Phase B (post-dogfooding): expose the same command contracts through `context-http`
+routes, reusing the existing Command dispatch pattern.
+
+Phase C (post-Phase B): add MCP tool surface on top of the HTTP/contract layer via
+`context-mcp`.
+
+No standalone daemon is required for Phase A. The CLI opens and closes the redb database
+and Tantivy index per invocation. The FS watcher runs as a background `ticket watch`
+command when continuous monitoring is needed.
 
 ## Risks
 
@@ -110,13 +244,17 @@ definition declares whether an edge kind is acyclic-enforced.
 - FS watcher events can fire multiple times for a single user operation (debounce needed).
 - `notify` crate backend varies by OS (inotify / FSEvents / ReadDirectoryChangesW);
   test on all three.
-- Zeroboot is currently Linux/KVM-oriented and prototype-grade; must remain optional and capability-detected.
-- Some workloads need network access or multi-vCPU execution; scheduler must mark such tasks incompatible with Zeroboot and use local backend.
+- Tantivy index directory must be excluded from OS file-sync tools (OneDrive, Dropbox)
+  to avoid corruption; document this prominently.
+- Index schema changes require full re-index; version the schema in `META`.
+- Dynamic type-schema fields may collide with universal field names; enforce namespace
+  prefix `x_<type>_<field>`.
 
 ## TODO
 
 - TODO: Write crash-safety integration test (kill process mid-write, verify `ticket scan` recovers).
 - TODO: Define debounce window for watcher events (suggested: 200 ms).
 - TODO: Confirm list filter set with first workflow definition.
-- TODO: Map new ticket commands into existing `context-http` Command enum.
-- TODO: Define executor capability model (`network`, `multi_vcpu`, `max_runtime_secs`) used by lease scheduler.
+- TODO: Decide index storage path: `.context-engine/ticket-index/search/` alongside redb.
+- TODO: Write query language grammar as a formal PEG/pest grammar before implementation.
+- TODO: Benchmark index rebuild time for 10 000 tickets with mixed binary attachments.

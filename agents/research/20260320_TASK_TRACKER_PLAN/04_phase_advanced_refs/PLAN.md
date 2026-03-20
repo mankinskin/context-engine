@@ -1,6 +1,6 @@
-# Phase 4 — Advanced References and Graph Views
+# Phase 3 — Advanced References and Graph Views
 
-**Status:** BLOCKED (requires Phases 1 + 2 + 3 complete)
+**Status:** BLOCKED (requires Phases 1 + 1.5 + 2 complete)
 
 ## Objective
 
@@ -15,7 +15,7 @@ Reference: dependency/ready semantics from both beads projects.
 
 2. Problem: agents can unknowingly work on conflicting tickets.
 Solution: graph + lease overlays expose active work conflicts and conflict domains.
-Reference: claim/lease semantics from `delightful-ai/beads-rs`.
+Reference: Phase 1.5 lease protocol; claim/lease semantics from `delightful-ai/beads-rs`.
 
 ## Deliverables
 

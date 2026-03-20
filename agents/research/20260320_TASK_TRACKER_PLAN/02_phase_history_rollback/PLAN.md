@@ -31,24 +31,16 @@ Reference: branch-aware field conventions in both beads projects.
 - [ ] `ticket diff <id> --from <sha> --to <sha>` CLI + HTTP command
 - [ ] `ticket finalize-merge <id> --merge-commit <sha>` to close at merge boundary
 
-## Git Repository Strategy (to be decided in Phase 0)
+## Git Repository Strategy — DECIDED
 
-### Option A — Leverage existing workspace git repo
+**Default:** Embedded bare repo at `.context-engine/ticket-index/history.git`.
+Ticket folder snapshots are committed there, invisible to the user's main repo.
 
-- Ticket commits go onto a dedicated branch (`refs/context-tickets`) or as regular
-  commits on the working branch.
-- Pro: users can see ticket history in `git log`; backup via normal git push.
-- Con: pollutes user commit history unless isolated to a separate branch.
+**Opt-in:** `--use-workspace-git` flag redirects commits to the workspace repo
+(dedicated branch `refs/context-tickets`).
 
-### Option B — Embedded bare repo under index root
-
-- Initialise a bare git repo at `.context-engine/ticket-index/history.git`.
-- Ticket folder snapshots are committed there, invisible to the user’s main repo.
-- Pro: clean separation; no branch pollution.
-- Con: user cannot leverage their own git tooling directly.
-
-**Recommendation:** Default to Option B; provide an `--use-workspace-git` flag for
-Option A as an opt-in.
+Rationale: clean separation by default; workspace-git opt-in for users who want
+ticket history visible in their normal `git log`.
 
 ## Commit Message Convention
 
@@ -93,7 +85,7 @@ Examples:
 
 ## TODO
 
-- TODO: Decide Option A vs. B in Phase 0 and update this plan.
+- ~~TODO: Decide Option A vs. B in Phase 0 and update this plan.~~ RESOLVED: embedded bare repo default, workspace-git opt-in.
 - TODO: Write round-trip test: create ticket → update N times → revert to version 1
         → assert manifest equals initial state.
 - TODO: Define binary file policy in history repo (exclude? LFS?).
