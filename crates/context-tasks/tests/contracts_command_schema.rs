@@ -10,9 +10,9 @@ fn command_schema_export_is_stable() {
 
     assert_eq!(schema.version, COMMAND_SCHEMA_VERSION);
     assert_eq!(schema.command_namespace, "ticket");
-    assert_eq!(schema.commands.len(), 14);
+    assert_eq!(schema.commands.len(), 27);
     assert_eq!(schema.commands[0], "create");
-    assert_eq!(schema.commands[13], "finalize_merge");
+    assert_eq!(schema.commands[26], "task_release_promote");
 }
 
 #[test]

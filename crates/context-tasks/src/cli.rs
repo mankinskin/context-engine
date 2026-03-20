@@ -6,6 +6,7 @@ use serde::Serialize;
 use serde_json::{Map, Value, json};
 use uuid::Uuid;
 
+use crate::storage::store::GateStatus;
 use crate::contracts::command_schema::{
     CommandEnvelope, ErrorEnvelope, export_command_schema, export_command_schema_json,
 };
@@ -552,10 +553,13 @@ fn cmd_exec(args: ExecArgs, store: &TicketStore) -> Result<Value, CliRunError> {
 }
 
 fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRunError> {
-    let op = cmd
+    let raw_op = cmd
         .get("command")
         .and_then(|v| v.as_str())
         .ok_or_else(|| CliRunError::InvalidExecPayload("missing 'command' field".to_string()))?;
+
+    // Normalize task_ prefix so both "create" and "task_create" route identically.
+    let op = raw_op.strip_prefix("task_").unwrap_or(raw_op);
 
     match op {
         "create" => {
@@ -620,8 +624,134 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
             })).collect();
             Ok(json!({ "command": "search", "status": "ok", "count": items.len(), "results": items }))
         }
+        "validate_start" => {
+            let ticket_id = parse_uuid_field(cmd, "ticket_id")?;
+            let assignment_id = req_str(cmd, "assignment_id")?;
+            let validator_id = req_str(cmd, "validator_id")?;
+            let profile = cmd.get("validation_profile").and_then(|v| v.as_str()).unwrap_or("default");
+            let checks: Vec<String> = cmd
+                .get("required_checks")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_default();
+            let manifest = store.validate_start(&ticket_id, assignment_id, validator_id, profile, checks)?;
+            Ok(json!({
+                "command": "task_validate_start",
+                "status": "ok",
+                "ticket": {
+                    "id": manifest.id,
+                    "state": manifest.extra.get("state"),
+                    "validation_status": manifest.extra.get("validation_status"),
+                    "validator_id": manifest.extra.get("validator_id"),
+                    "validation_profile": manifest.extra.get("validation_profile"),
+                }
+            }))
+        }
+        "validate_result" => {
+            let ticket_id = parse_uuid_field(cmd, "ticket_id")?;
+            let assignment_id = req_str(cmd, "assignment_id")?;
+            let validator_id = req_str(cmd, "validator_id")?;
+            let result = req_str(cmd, "result")?;
+            let evidence_refs: Vec<String> = cmd
+                .get("evidence_refs")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_default();
+            let summary = cmd.get("summary").and_then(|v| v.as_str());
+            let bug_links: Vec<uuid::Uuid> = cmd
+                .get("bug_links")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str()?.parse().ok()).collect())
+                .unwrap_or_default();
+            let outcome = store.validate_result(
+                &ticket_id,
+                assignment_id,
+                validator_id,
+                result,
+                evidence_refs,
+                summary,
+                bug_links,
+            )?;
+            Ok(json!({
+                "command": "task_validate_result",
+                "status": "ok",
+                "ticket_id": outcome.ticket_id,
+                "state": outcome.state,
+                "validation_status": outcome.validation_status,
+                "passed": outcome.passed,
+            }))
+        }
+        "release_candidate_create" => {
+            let ticket_id = parse_uuid_field(cmd, "ticket_id")?;
+            let release_target = req_str(cmd, "release_target")?;
+            let assignment_chain: Vec<String> = cmd
+                .get("assignment_chain")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_default();
+            let manifest = store.release_candidate_create(&ticket_id, release_target, assignment_chain)?;
+            Ok(json!({
+                "command": "task_release_candidate_create",
+                "status": "ok",
+                "ticket": {
+                    "id": manifest.id,
+                    "state": manifest.extra.get("state"),
+                    "release_target": manifest.extra.get("release_target"),
+                    "assignment_chain": manifest.extra.get("assignment_chain"),
+                }
+            }))
+        }
+        "release_gate_check" => {
+            let release_target = req_str(cmd, "release_target")?;
+            let required_gates: Vec<String> = cmd
+                .get("required_gates")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_else(|| vec!["R1".to_string(), "R2".to_string(), "R3".to_string(), "R4".to_string()]);
+            let outcome = store.release_gate_check(release_target, &required_gates)?;
+            let gates_json: serde_json::Map<String, Value> = outcome
+                .gates
+                .iter()
+                .map(|(k, v)| (k.clone(), json!(matches!(v, GateStatus::Pass))))
+                .collect();
+            let all_pass = outcome.blocking_reasons.is_empty();
+            Ok(json!({
+                "command": "task_release_gate_check",
+                "status": "ok",
+                "release_target": outcome.release_target,
+                "all_gates_pass": all_pass,
+                "gates": gates_json,
+                "blocking_reasons": outcome.blocking_reasons,
+            }))
+        }
+        "release_promote" => {
+            let release_target = req_str(cmd, "release_target")?;
+            let release_version = req_str(cmd, "release_version")?;
+            let merge_commit = req_str(cmd, "merge_commit")?;
+            let required_gates: Vec<String> = cmd
+                .get("required_gates")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_else(|| vec!["R1".to_string(), "R2".to_string(), "R3".to_string(), "R4".to_string()]);
+            let outcome = store.release_promote(release_target, release_version, merge_commit, &required_gates)?;
+            Ok(json!({
+                "command": "task_release_promote",
+                "status": "ok",
+                "release_target": outcome.release_target,
+                "release_version": outcome.release_version,
+                "promoted_ticket_count": outcome.promoted_ticket_count,
+                "monitoring_state": outcome.monitoring_state,
+            }))
+        }
         other => Err(CliRunError::InvalidExecPayload(format!("unknown command: {other}"))),
     }
+}
+
+/// Extract a required string field from a JSON exec command payload.
+fn req_str<'a>(cmd: &'a Value, field: &str) -> Result<&'a str, CliRunError> {
+    cmd.get(field)
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| CliRunError::InvalidExecPayload(format!("missing required field '{field}'")))
 }
 
 // ── utilities ──────────────────────────────────────────────────────────────────

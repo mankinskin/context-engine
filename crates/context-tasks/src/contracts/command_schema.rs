@@ -2,9 +2,16 @@ use serde::{Deserialize, Serialize};
 
 pub const COMMAND_SCHEMA_VERSION: &str = "0";
 
+/// Canonical `TaskCommand` names — used for both the human CLI adapter and the
+/// machine-readable agent protocol.
+///
+/// Agent protocol uses the `task_` prefixed forms (e.g. `task_create`).
+/// Human CLI and short exec use the bare forms (e.g. `create`).
+/// Both are accepted by `ticket exec`; the `task_` prefix is stripped internally.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "command", rename_all = "snake_case")]
 pub enum TicketCommand {
+    // ── human-CLI bare names ──────────────────────────────────────────────────
     Create,
     Get,
     Update,
@@ -19,11 +26,27 @@ pub enum TicketCommand {
     Diff,
     Revert,
     FinalizeMerge,
+    // ── agent-protocol task_ names ────────────────────────────────────────────
+    TaskCreate,
+    TaskGet,
+    TaskUpdate,
+    TaskList,
+    TaskDelete,
+    TaskSearch,
+    TaskClaim,
+    TaskUnclaim,
+    // ── validation & release protocol commands ────────────────────────────────
+    TaskValidateStart,
+    TaskValidateResult,
+    TaskReleaseCandidateCreate,
+    TaskReleaseGateCheck,
+    TaskReleasePromote,
 }
 
 impl TicketCommand {
     pub const fn names() -> &'static [&'static str] {
         &[
+            // bare names (human CLI / short exec)
             "create",
             "get",
             "update",
@@ -38,6 +61,21 @@ impl TicketCommand {
             "diff",
             "revert",
             "finalize_merge",
+            // task_ names (agent protocol canonical forms)
+            "task_create",
+            "task_get",
+            "task_update",
+            "task_list",
+            "task_delete",
+            "task_search",
+            "task_claim",
+            "task_unclaim",
+            // validation & release
+            "task_validate_start",
+            "task_validate_result",
+            "task_release_candidate_create",
+            "task_release_gate_check",
+            "task_release_promote",
         ]
     }
 }
