@@ -12,6 +12,7 @@ This folder captures concrete operational scenarios for a distributed filesystem
 6. [20260320_USE_CASE_PARALLEL_MERGE_QUEUE_SYNCHRONIZATION.md](20260320_USE_CASE_PARALLEL_MERGE_QUEUE_SYNCHRONIZATION.md)
 7. [20260320_USE_CASE_ORPHAN_DISCOVERY_AND_RECOVERY.md](20260320_USE_CASE_ORPHAN_DISCOVERY_AND_RECOVERY.md)
 8. [20260320_USE_CASE_AGENT_HANDOFF_AND_CONTEXT_CONTINUITY.md](20260320_USE_CASE_AGENT_HANDOFF_AND_CONTEXT_CONTINUITY.md)
+9. [20260320_USE_CASE_COW_SANDBOXED_SWARM_EXECUTION.md](20260320_USE_CASE_COW_SANDBOXED_SWARM_EXECUTION.md)
 
 ## Reading Order
 
@@ -23,6 +24,7 @@ This folder captures concrete operational scenarios for a distributed filesystem
 6. Parallel merge queue synchronization
 7. Orphan discovery and recovery
 8. Agent handoff and context continuity
+9. COW sandboxed swarm execution
 
 ## Common Invariants Across All Scenarios
 

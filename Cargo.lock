@@ -896,6 +896,7 @@ name = "context-tasks"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "clap",
  "pretty_assertions",
  "serde",
  "serde_json",

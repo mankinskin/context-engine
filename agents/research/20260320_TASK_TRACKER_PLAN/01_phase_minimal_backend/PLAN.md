@@ -19,6 +19,10 @@ Reference: concurrency goals inspired by `delightful-ai/beads-rs`.
 Solution: `ticket` CLI/HTTP contracts are JSON-first and schema-stable.
 Reference: agent-first CLI posture in `Dicklesworthstone/beads_rust`.
 
+3. Problem: running many agents in parallel without isolation increases cross-process interference risk.
+Solution: define a pluggable execution backend contract with local-process default and optional Zeroboot isolation.
+Reference: `zerobootdev/zeroboot` for COW sandboxing patterns (adopt as optional executor only).
+
 ## Deliverables
 
 - [ ] `TicketFs::create(manifest, type_schema)` — atomic FS folder + redb index write
@@ -94,6 +98,11 @@ definition declares whether an edge kind is acyclic-enforced.
 - [ ] Lease primitives: `ticket claim`, `ticket unclaim`, heartbeat renewal, TTL expiry handling
 - [ ] Conflict visibility fields in index: `working_by`, `lease_expires_at`, `conflict_domain`
 - [ ] Ready queue filter includes lease + blocker semantics
+- [ ] `Executor` contract for agent work units (spawn, cancel, status, capability report)
+- [ ] `LocalExecutor` implementation as default cross-platform backend
+- [ ] `ZerobootExecutor` implementation behind feature/capability gate (Linux + KVM only)
+- [ ] Scheduler fallback policy: if Zeroboot unavailable, route workload to `LocalExecutor`
+- [ ] Persist executor metadata per lease: `executor_backend`, `sandbox_id` (if present), `spawn_started_at`
 
 ## Risks
 
@@ -101,6 +110,8 @@ definition declares whether an edge kind is acyclic-enforced.
 - FS watcher events can fire multiple times for a single user operation (debounce needed).
 - `notify` crate backend varies by OS (inotify / FSEvents / ReadDirectoryChangesW);
   test on all three.
+- Zeroboot is currently Linux/KVM-oriented and prototype-grade; must remain optional and capability-detected.
+- Some workloads need network access or multi-vCPU execution; scheduler must mark such tasks incompatible with Zeroboot and use local backend.
 
 ## TODO
 
@@ -108,3 +119,4 @@ definition declares whether an edge kind is acyclic-enforced.
 - TODO: Define debounce window for watcher events (suggested: 200 ms).
 - TODO: Confirm list filter set with first workflow definition.
 - TODO: Map new ticket commands into existing `context-http` Command enum.
+- TODO: Define executor capability model (`network`, `multi_vcpu`, `max_runtime_secs`) used by lease scheduler.

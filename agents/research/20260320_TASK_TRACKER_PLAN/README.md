@@ -11,6 +11,7 @@
 - History: git-backed diff history via `git2`.
 - Search: full-text + metadata in a unified query language from the initial implementation track.
 - Reconciliation: watcher + full scan supports orphan integration and parse diagnostics.
+- Execution isolation: pluggable agent executor, with local process as default and Zeroboot as optional Linux/KVM backend.
 
 ## Stack Decision
 
@@ -23,6 +24,7 @@
 | History / diffs  | `git2` (libgit2 bindings)                | Line-level diffs, apply/revert, version store  |
 | FS watching      | `notify` crate                           | Detect changes, orphan integration, error diag |
 | Full-text search | `tantivy`                                | FTS + metadata filter unified query language   |
+| Agent execution  | Local process + optional Zeroboot        | Isolated parallel agent runs with fallback     |
 | Serialization    | `serde` + TOML/JSON                      | Human-readable manifests; configurable schemas |
 | Compression      | `zstd`                                   | Optional snapshot / export compaction          |
 
@@ -63,6 +65,17 @@ Reference: both projects.
     INDEX.md                    ← scenario map for concurrent agent workflows
     20260320_USE_CASE_*.md      ← concrete multi-agent and merge/dependency scenarios
 ```
+
+## Cross-Cutting Track — Execution Isolation
+
+Execution isolation is integrated as a cross-cutting track rather than a separate phase:
+
+- Phase 1 introduces `Executor` contracts, claim/lease handoff, and capability-aware scheduling.
+- Phase 4 overlays executor/lease conflict visibility into graph scheduling and merge queue helpers.
+- Use-case scenarios validate local-process + Zeroboot mixed operation and fallback semantics.
+
+Zeroboot is optional and should never be a hard runtime dependency for core ticket operations.
+The ticket backend remains filesystem + redb + git2 + Tantivy regardless of executor choice.
 
 ## Prerequisites
 
