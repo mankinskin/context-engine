@@ -9,6 +9,16 @@ dependency edges, using redb as the metadata index and the filesystem as the art
 store. All writes must be crash-safe. The FS watcher must be live so discovered/orphaned
 tickets are integrated automatically.
 
+## Problem/Solution/Reference Baseline
+
+1. Problem: multiple agents can race and create inconsistent local state.
+Solution: strict per-ticket locks + serialized index mutations + idempotent reconcile.
+Reference: concurrency goals inspired by `delightful-ai/beads-rs`.
+
+2. Problem: operators and agents need predictable machine output for orchestration.
+Solution: `ticket` CLI/HTTP contracts are JSON-first and schema-stable.
+Reference: agent-first CLI posture in `Dicklesworthstone/beads_rust`.
+
 ## Deliverables
 
 - [ ] `TicketFs::create(manifest, type_schema)` — atomic FS folder + redb index write
@@ -57,6 +67,9 @@ const SCAN_ROOTS: TableDefinition<&str, &str> = TableDefinition::new("scan_roots
 
 const META: TableDefinition<&str, &str> = TableDefinition::new("meta");
 // schema_version, index_root, git_repo_path, ...
+
+const LEASES: TableDefinition<&str, &[u8]> = TableDefinition::new("leases");
+// key: uuid string, value: bincode(LeaseInfo { working_by, lease_expires_at, work_intent })
 ```
 
 ## Cycle Detection
@@ -75,6 +88,12 @@ definition declares whether an edge kind is acyclic-enforced.
 | Q6 — Per-ticket lock | `.ticket-lock` per folder; short global lock for index ops |
 | Q8 — Any attachments | `assets/` subdirectory created; index stores file list |
 | Q10 — FS tracking | `FsWatcher` + `Reconciler` are Phase 1 deliverables, not deferred |
+
+## Additional Swarm Deliverables
+
+- [ ] Lease primitives: `ticket claim`, `ticket unclaim`, heartbeat renewal, TTL expiry handling
+- [ ] Conflict visibility fields in index: `working_by`, `lease_expires_at`, `conflict_domain`
+- [ ] Ready queue filter includes lease + blocker semantics
 
 ## Risks
 

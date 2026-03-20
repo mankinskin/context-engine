@@ -1,5 +1,17 @@
 # Task Tracker — All-Rust Filesystem Plan
 
+## Decision Baseline (Locked)
+
+- Distributed filesystem tickets: ticket folders can live anywhere under registered scan roots.
+- Global index: canonical runtime index in `redb`, mapping UUID -> filesystem path + derived metadata.
+- Identity: UUID v4 only.
+- Required universal fields: `id`, `created_at`.
+- Workflow model: configurable ticket schemas and configurable state machines per ticket type.
+- Concurrency: per-ticket locks plus short-lived global index write lock.
+- History: git-backed diff history via `git2`.
+- Search: full-text + metadata in a unified query language from the initial implementation track.
+- Reconciliation: watcher + full scan supports orphan integration and parse diagnostics.
+
 ## Stack Decision
 
 **Filesystem + redb (index) + git2 (history) + Tantivy (search)** — 99% Rust, `libgit2` accepted for diff history
@@ -14,6 +26,22 @@
 | Serialization    | `serde` + TOML/JSON                      | Human-readable manifests; configurable schemas |
 | Compression      | `zstd`                                   | Optional snapshot / export compaction          |
 
+## External Project Pattern Adoption
+
+### Problem/Solution/Reference
+
+1. Problem: deterministic multi-agent convergence is hard under concurrent writes.
+Solution: adopt deterministic conflict-resolution concepts (write ordering, explicit delete semantics, validation invariants) in our own model.
+Reference: `delightful-ai/beads-rs`.
+
+2. Problem: agent/operator UX needs practical command ergonomics and robust machine-readable output.
+Solution: adopt CLI ergonomics and JSON-first command surface patterns.
+Reference: `Dicklesworthstone/beads_rust`.
+
+3. Problem: direct adoption of either upstream architecture would constrain our distributed-folder + workflow-configurable schema design.
+Solution: borrow patterns, do not adopt either codebase wholesale as backend.
+Reference: both projects.
+
 ## Plan Structure
 
 ```
@@ -21,15 +49,16 @@
   INTERVIEW.md                  ← design questions + your answers (start here)
   README.md                     ← this file
   00_phase_contracts/
-    PLAN.md                     ← Phase 0: ticket schema, folder layout, event envelope
+    PLAN.md                     ← Phase 0: schema engine, folder layout, index/query contracts
+    EXECUTION_CHECKLIST.md      ← Phase 0 implementation checklist, gates, and exit criteria
   01_phase_minimal_backend/
-    PLAN.md                     ← Phase 1: CRUD, redb tables, atomic FS writes
+    PLAN.md                     ← Phase 1: CRUD, watcher/reconcile, locks, global index
   02_phase_history_rollback/
-    PLAN.md                     ← Phase 2: event log, snapshots, rollback commands
+    PLAN.md                     ← Phase 2: git-backed diff history, revert/apply, branch policy
   03_phase_search/
-    PLAN.md                     ← Phase 3: Tantivy index, FTS, highlighting
+    PLAN.md                     ← Phase 3: unified query language, FTS + metadata, highlighting
   04_phase_advanced_refs/
-    PLAN.md                     ← Phase 4: cross-ticket graph queries, validation overlay
+    PLAN.md                     ← Phase 4: dependency graph operations, merge/queue coordination
   05_use_cases/
     INDEX.md                    ← scenario map for concurrent agent workflows
     20260320_USE_CASE_*.md      ← concrete multi-agent and merge/dependency scenarios
@@ -50,7 +79,7 @@ INTERVIEW answers
 Phase 0: Contracts (schema engine, folder layout, index model, query grammar)
       │
       ▼
-Phase 1: Minimal backend (create/read/update/delete + dependency edges + atomic writes)
+Phase 1: Minimal backend (create/read/update/delete + dependency edges + atomic writes + watcher/reconcile)
       │
       ├──► Phase 2: History + rollback (can run after Phase 1 stabilises)
       │

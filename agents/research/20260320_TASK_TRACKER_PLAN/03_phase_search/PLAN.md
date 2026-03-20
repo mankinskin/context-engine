@@ -8,6 +8,16 @@ Index every ticket's textual content (and extractable binary content) in Tantivy
 expose a **unified query language** that combines free-text and metadata predicates
 in one expression. Highlighted snippets are required.
 
+## Problem/Solution/Reference Baseline
+
+1. Problem: swarm agents need one query surface for both planning text and operational filters.
+Solution: unified query language combining FTS + structured predicates.
+Reference: machine-oriented list/ready/search workflow patterns in both beads projects.
+
+2. Problem: search index can drift from filesystem/index source of truth.
+Solution: index is strictly derived and fully rebuildable from scan.
+Reference: source-of-truth separation discipline seen in `Dicklesworthstone/beads_rust`.
+
 ## Deliverables
 
 - [ ] `TantivySearchIndex::upsert(id, doc)` — index new/updated ticket
@@ -17,6 +27,7 @@ in one expression. Highlighted snippets are required.
       returns ranked results with highlighted snippet text
 - [ ] `ticket search "<query>"` CLI command
 - [ ] HTTP `POST /api/tickets/search` endpoint
+- [ ] HTTP `POST /api/tickets/query` endpoint (same grammar; structured execution mode)
 - [ ] `ticket scan --reindex` flag — full Tantivy rebuild from FS content
 - [ ] Binary content extractor registry: text → pass-through; PDF → best-effort text
       extract; unknown binary → filename + metadata only

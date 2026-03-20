@@ -7,16 +7,27 @@
 Expose the dependency graph as a first-class query surface. Add cross-ticket
 validation overlays, graph traversal commands, and optional visualisation output.
 
+## Problem/Solution/Reference Baseline
+
+1. Problem: deep dependency structures in parallel execution hide blockers and create merge queue chaos.
+Solution: graph-native operations, blocker overlays, critical-path computation, and merge-aware scheduling.
+Reference: dependency/ready semantics from both beads projects.
+
+2. Problem: agents can unknowingly work on conflicting tickets.
+Solution: graph + lease overlays expose active work conflicts and conflict domains.
+Reference: claim/lease semantics from `delightful-ai/beads-rs`.
+
 ## Deliverables
 
-- [ ] `task deps <id> --depth <n>` — walk the dependency graph to depth N
-- [ ] `task blocked-by <id>` — list all tickets blocking a given ticket
-- [ ] `task blocking <id>` — list all tickets that this ticket blocks
-- [ ] `task critical-path` — compute longest blocking chain (for scheduling)
-- [ ] `task validate-graph` — detect cycles, dangling refs, orphaned edges
-- [ ] `task export-dot` — emit Graphviz DOT for the full dependency graph
-- [ ] `task board` — terminal-renderable board view grouped by status
-- [ ] Validation overlay: surface blocking dependencies inline in `task get` output
+- [ ] `ticket deps <id> --depth <n>` — walk the dependency graph to depth N
+- [ ] `ticket blocked-by <id>` — list all tickets blocking a given ticket
+- [ ] `ticket blocking <id>` — list all tickets that this ticket blocks
+- [ ] `ticket critical-path` — compute longest blocking chain (for scheduling)
+- [ ] `ticket validate-graph` — detect cycles, dangling refs, orphaned edges
+- [ ] `ticket export-graph --format dot|mermaid|json` — export full dependency graph
+- [ ] `ticket board` — terminal-renderable board view grouped by workflow state
+- [ ] Validation overlay: surface blocking dependencies and active leases inline in `ticket get`
+- [ ] Merge queue helper: `ticket merge-queue next` respects dependency + conflict order
 
 ## Graph Traversal (redb-backed)
 
@@ -39,15 +50,18 @@ All operate against in-memory copies of the edge table loaded per-query
 
 ## Validation Overlay
 
-On `task get <id>`:
+On `ticket get <id>`:
 ```
-TCK-00042  Add login page      [in-progress]
+2a7c59cc-9ab6-4ad4-89cc-4ab9ec7d8f55  Add login page  [in-progress]
 
   ⚠ Blocked by:
-    TCK-00038  Design auth flow  [open]       ← not started yet
-    TCK-00039  Write JWT lib     [review]     ← almost done
+    f07fd470-7d84-4f3d-9f2e-0f9df173f8cb  Design auth flow  [open]
+    3181df83-94b7-488d-82aa-616844d83dae  Write JWT lib     [review]
 
-  → Earliest unblocked start: when TCK-00038 AND TCK-00039 reach [done]
+  👷 Active work leases:
+    in-progress by agent/refiner-03 (expires 2026-03-20T18:24:00Z)
+
+  -> Earliest unblocked start: when both blockers reach terminal done state
 ```
 
 ## Export Formats
@@ -65,6 +79,7 @@ TCK-00042  Add login page      [in-progress]
 | Q4 — Dependency edge types | Which edge kinds appear in the graph |
 | Q3 — State machine | What "blocked" means in the graph context |
 | Q5 — Required fields | Whether `estimated_effort` exists for critical path |
+| Q6 — Per-ticket lock | Graph/lease overlays must expose who is actively working |
 
 ## Risks
 
@@ -74,7 +89,7 @@ TCK-00042  Add login page      [in-progress]
 
 ## TODO
 
-- TODO: Decide whether `task export-dot` pipes to stdout or writes a file.
+- TODO: Decide whether `ticket export-graph` defaults to stdout or writes a file.
 - TODO: Evaluate whether `petgraph` is worth adding as a dependency for graph algorithms,
   or whether bespoke BFS/DFS on the redb edge table is sufficient.
-- TODO: Design `task board` terminal layout (kanban columns vs. flat list with colour).
+- TODO: Design `ticket board` terminal layout (kanban columns vs. flat list with colour).

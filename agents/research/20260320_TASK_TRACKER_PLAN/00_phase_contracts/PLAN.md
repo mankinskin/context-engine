@@ -7,6 +7,22 @@
 Produce the canonical schemas and contracts that every later phase compiles against.
 Nothing in Phase 1–4 should hard-code values that belong here.
 
+Execution checklist: `EXECUTION_CHECKLIST.md`
+
+## Problem/Solution/Reference Baseline
+
+1. Problem: state divergence under concurrent agent updates.
+Solution: define deterministic conflict semantics and validation invariants in our contracts.
+Reference: `delightful-ai/beads-rs` specification patterns.
+
+2. Problem: brittle agent integrations from unstable command/output shape.
+Solution: enforce explicit, machine-readable command contracts and schema-first output.
+Reference: `Dicklesworthstone/beads_rust` CLI ergonomics.
+
+3. Problem: upstream architectures do not match distributed-folder + configurable-schema requirements.
+Solution: borrow patterns only; keep our own storage/domain model.
+Reference: both projects.
+
 ## Deliverables
 
 - [ ] Universal ticket manifest — only `id` (UUID v4) + `created_at` (ISO 8601) required;
@@ -25,6 +41,7 @@ Nothing in Phase 1–4 should hard-code values that belong here.
 - [ ] Query language grammar spec: unified FTS + metadata predicate syntax
       (e.g. `status:open assigned:alice "login page"`)
 - [ ] FS watcher event taxonomy: CREATED, MODIFIED, MOVED, DELETED, PARSE_ERROR
+- [ ] Command contract schema for `ticket` CLI + HTTP surfaces (`--json` stability)
 
 ## Key Interview Answers Consumed Here
 
@@ -83,3 +100,4 @@ crates/context-tasks/
 - TODO: Decide git repo strategy: workspace repo with a dedicated branch vs. bare repo
   under the index root.
 - TODO: Design query grammar and write parser tests before Phase 3 search work begins.
+- TODO: Track progress via `EXECUTION_CHECKLIST.md` and gate Phase 1 start on its exit criteria.

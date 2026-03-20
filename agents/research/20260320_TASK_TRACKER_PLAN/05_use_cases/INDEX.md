@@ -32,3 +32,17 @@ This folder captures concrete operational scenarios for a distributed filesystem
 - Per-ticket lock is required for all mutating operations.
 - Git-backed history is append-only (revert creates new commit).
 - Search index is derived and rebuildable via `ticket scan --reindex`.
+
+## Problem/Solution/Reference Summary
+
+1. Problem: multi-agent contention and convergence under heavy parallel work.
+Solution: deterministic reconciliation and lease-aware scheduling patterns in our own architecture.
+Reference: concepts borrowed from `delightful-ai/beads-rs`.
+
+2. Problem: operator and agent usability across CLI workflows.
+Solution: JSON-first, automation-friendly command ergonomics and explicit workflows.
+Reference: patterns borrowed from `Dicklesworthstone/beads_rust`.
+
+3. Problem: neither upstream model is a direct fit for distributed ticket folders with workflow-defined schemas.
+Solution: use upstream as pattern libraries only; implement core storage and contracts natively in this plan.
+Reference: both projects.

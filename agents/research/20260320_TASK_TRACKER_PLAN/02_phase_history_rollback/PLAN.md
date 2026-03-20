@@ -8,6 +8,16 @@ Provide full diff history with apply/revert per ticket using `git2` as the versi
 backend. Every mutation committed by Phase 1 already records a git commit (Phase 1
 step 7); Phase 2 builds the user-facing history and rollback commands on top of that.
 
+## Problem/Solution/Reference Baseline
+
+1. Problem: concurrent ticket edits across branches are hard to reconcile with auditability.
+Solution: deterministic, append-only history (revert is forward commit) with branch-aware metadata.
+Reference: dedicated sync-branch/ref ideas from `delightful-ai/beads-rs`.
+
+2. Problem: implementation often starts on a branch and only completes at merge to main.
+Solution: make merge-boundary lifecycle explicit (`created_on_branch`, `closed_on_branch`, `merge_commit`).
+Reference: branch-aware field conventions in both beads projects.
+
 ## Deliverables
 
 - [ ] `GitHistory::log(id, limit)` — list commits touching a ticket folder, newest first
@@ -19,6 +29,7 @@ step 7); Phase 2 builds the user-facing history and rollback commands on top of 
 - [ ] `ticket history <id>` CLI command with `--format diff|log|show` flags
 - [ ] `ticket revert <id> --to <sha>` CLI + HTTP command
 - [ ] `ticket diff <id> --from <sha> --to <sha>` CLI + HTTP command
+- [ ] `ticket finalize-merge <id> --merge-commit <sha>` to close at merge boundary
 
 ## Git Repository Strategy (to be decided in Phase 0)
 
@@ -57,6 +68,12 @@ Examples:
 - Never force-pushes or rewrites history (preserves auditability).
 - After revert, the watcher fires a MODIFIED event — index is updated through normal
   reconciliation path.
+
+## Branch-Boundary Semantics
+
+- Ticket can move into implementation states on feature branch.
+- Ticket only transitions to terminal completion state when merge commit is recorded.
+- Merge commit SHA is stored in index for traceability and release notes linkage.
 
 ## Key Interview Answers Applied Here
 
