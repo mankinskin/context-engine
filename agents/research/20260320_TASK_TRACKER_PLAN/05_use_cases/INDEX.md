@@ -13,6 +13,8 @@ This folder captures concrete operational scenarios for a distributed filesystem
 7. [20260320_USE_CASE_ORPHAN_DISCOVERY_AND_RECOVERY.md](20260320_USE_CASE_ORPHAN_DISCOVERY_AND_RECOVERY.md)
 8. [20260320_USE_CASE_AGENT_HANDOFF_AND_CONTEXT_CONTINUITY.md](20260320_USE_CASE_AGENT_HANDOFF_AND_CONTEXT_CONTINUITY.md)
 9. [20260320_USE_CASE_COW_SANDBOXED_SWARM_EXECUTION.md](20260320_USE_CASE_COW_SANDBOXED_SWARM_EXECUTION.md)
+10. [20260320_USE_CASE_AUTOMATED_GRAPH_ARTIFACTS.md](20260320_USE_CASE_AUTOMATED_GRAPH_ARTIFACTS.md)
+11. [20260320_USE_CASE_SWARM_MESSENGER_DIGESTS.md](20260320_USE_CASE_SWARM_MESSENGER_DIGESTS.md)
 
 ## Reading Order
 
@@ -25,6 +27,8 @@ This folder captures concrete operational scenarios for a distributed filesystem
 7. Orphan discovery and recovery
 8. Agent handoff and context continuity
 9. COW sandboxed swarm execution
+10. Automated graph and board artifacts
+11. Swarm messenger digests
 
 ## Common Invariants Across All Scenarios
 

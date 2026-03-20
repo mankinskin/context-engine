@@ -64,6 +64,10 @@ Reference: both projects.
   05_use_cases/
     INDEX.md                    ← scenario map for concurrent agent workflows
     20260320_USE_CASE_*.md      ← concrete multi-agent and merge/dependency scenarios
+  06_transition_dogfooding/
+    PLAN.md                     ← maturity gates and staged rollout to tracker-first operations
+  07_phase_integrations/
+    PLAN.md                     ← visualization endpoints and messenger integrations
 ```
 
 ## Cross-Cutting Track — Execution Isolation
@@ -100,6 +104,9 @@ Phase 1: Minimal backend (create/read/update/delete + dependency edges + atomic 
                     │
                     ▼
              Phase 4: Advanced refs + graph viz (depends on 1 + 2 + 3)
+                    │
+                    ▼
+                  Phase 7: Integrations (visualization endpoints + messenger delivery)
 
 Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance narratives.
 ```

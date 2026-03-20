@@ -28,6 +28,9 @@ Reference: claim/lease semantics from `delightful-ai/beads-rs`.
 - [ ] `ticket board` — terminal-renderable board view grouped by workflow state
 - [ ] Validation overlay: surface blocking dependencies and active leases inline in `ticket get`
 - [ ] Merge queue helper: `ticket merge-queue next` respects dependency + conflict order
+- [ ] HTTP visualization endpoints:
+  `GET /api/tickets/graph`, `GET /api/tickets/board`, `GET /api/tickets/critical-path`
+- [ ] Auto-generation hooks: emit updated graph/board artifacts on dependency/state changes
 
 ## Graph Traversal (redb-backed)
 
@@ -93,3 +96,4 @@ On `ticket get <id>`:
 - TODO: Evaluate whether `petgraph` is worth adding as a dependency for graph algorithms,
   or whether bespoke BFS/DFS on the redb edge table is sufficient.
 - TODO: Design `ticket board` terminal layout (kanban columns vs. flat list with colour).
+- TODO: Define endpoint caching and artifact regeneration policy for large graphs.
