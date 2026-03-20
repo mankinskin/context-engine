@@ -30,6 +30,9 @@
     PLAN.md                     ← Phase 3: Tantivy index, FTS, highlighting
   04_phase_advanced_refs/
     PLAN.md                     ← Phase 4: cross-ticket graph queries, validation overlay
+  05_use_cases/
+    INDEX.md                    ← scenario map for concurrent agent workflows
+    20260320_USE_CASE_*.md      ← concrete multi-agent and merge/dependency scenarios
 ```
 
 ## Prerequisites
@@ -44,17 +47,19 @@ every phase — wrong defaults here are expensive to change later.
 INTERVIEW answers
       │
       ▼
-Phase 0: Contracts (ticket.toml schema, folder layout, event envelope, redb table map)
+Phase 0: Contracts (schema engine, folder layout, index model, query grammar)
       │
       ▼
 Phase 1: Minimal backend (create/read/update/delete + dependency edges + atomic writes)
       │
       ├──► Phase 2: History + rollback (can run after Phase 1 stabilises)
       │
-      └──► Phase 3: Search (can run in parallel with Phase 2)
+  └──► Phase 3: Search (starts as soon as Phase 1 CRUD is stable)
                     │
                     ▼
              Phase 4: Advanced refs + graph viz (depends on 1 + 2 + 3)
+
+Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance narratives.
 ```
 
 ## Status
