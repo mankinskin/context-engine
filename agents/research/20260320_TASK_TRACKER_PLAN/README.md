@@ -111,3 +111,10 @@ Use case scenarios in `05_use_cases/` inform all phases and serve as acceptance 
 Protocol details for all phases are centralized in `PROTOCOL_LAYER.md`.
 Host executor auth/provider details are in `HOST_EXECUTOR_AUTH_PROVIDER.md`.
 Validation and release policy is centralized in `VALIDATION_RELEASE_GOVERNANCE.md`.
+
+## Linked Execution Plans (Start-Soon)
+
+- Sandboxed integration program for `context-tasks`:
+  - `../../plans/20260321_PLAN_CONTEXT_TASKS_SANDBOX_INTEGRATION_TESTS.md`
+  - Scope: fully isolated end-to-end workflow tests (multi-ticket CRUD/search/update, lease, validate/release, batch exec).
+  - This plan is integrated as a near-term execution topic in `EXECUTION_CHECKLIST.md`.

@@ -84,6 +84,9 @@ The command contract is authoritative; transports are adapters.
 - Core command reliability gate from Phase 4 dogfooding must be green.
 - Graph validation and export commands from Phase 3 must be available.
 - Lease/stale recovery (Phase 1.5) must be stable under parallel swarm load.
+- Sandboxed integration test program for `context-tasks` must be green for baseline lane:
+  - `../../plans/20260321_PLAN_CONTEXT_TASKS_SANDBOX_INTEGRATION_TESTS.md`
+  - required minimum: multi-ticket workflow + validate-release chain + batch rollback coverage.
 
 ## Risks
 

@@ -2,7 +2,7 @@
 
 Status: ACTIVE
 Owner: Coordinator
-Last updated: 2026-03-20
+Last updated: 2026-03-21
 
 ## Goal
 
@@ -70,12 +70,35 @@ Exit gates:
 - [ ] validator cannot equal worker for validating assignment
 - [ ] early integration tests T1-T6 for host executor lifecycle are green
 
+## Priority Next Topic (Start Soon When a WIP Slot Opens)
+
+### Topic C — Sandboxed Integration Test Program (Context-Tasks)
+Reference:
+- `../../plans/20260321_PLAN_CONTEXT_TASKS_SANDBOX_INTEGRATION_TESTS.md`
+
+Scope:
+- isolated end-to-end integration tests for `context-tasks`
+- multi-ticket workflows: create/get/update/list/delete/search/scan
+- lease/conflict and validate-release protocol chains
+- `ticket exec --batch` rollback/error envelope behavior
+- optional hardened lane via `SANDBOX_BACKEND=zeroboot`
+
+Start trigger:
+- Topic A or Topic B reaches COMPLETE, or one topic is explicitly paused by coordinator.
+
+Exit gates:
+- [ ] baseline sandbox integration lane is green in local + CI
+- [ ] at least one end-to-end multi-ticket workflow test is green
+- [ ] at least one validate-release command-chain test is green
+- [ ] batch rollback behavior is verified by integration tests
+- [ ] zeroboot smoke lane decision recorded (adopted or manual-only)
+
 ## Queued Topics (Do Not Start Until a Slot Opens)
 
-- Topic C — Phase 2 History + Rollback
-- Topic D — Phase 3 Graph + Merge Queue
-- Topic E — Phase 4 Dogfooding rollout and gates
-- Topic F — Phase 5 Integrations (HTTP/MCP dashboards + messenger)
+- Topic D — Phase 2 History + Rollback
+- Topic E — Phase 3 Graph + Merge Queue
+- Topic F — Phase 4 Dogfooding rollout and gates
+- Topic G — Phase 5 Integrations (HTTP/MCP dashboards + messenger)
 
 ## Ticket Flow Checklist (Coordinator)
 
