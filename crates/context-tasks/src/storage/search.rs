@@ -107,7 +107,20 @@ impl TantivySearchIndex {
         writer.delete_term(Term::from_field_text(self.fields.id, &id.to_string()));
         writer
             .commit()
-            .map_err(|e| StorageError::SearchIndex(e.to_string()))?;
+            .map_err(|e: TantivyError| StorageError::SearchIndex(e.to_string()))?;
+        Ok(())
+    }
+
+    /// Delete every document from the Tantivy index. Used by `scan --reindex`
+    /// to purge stale entries before a full rebuild from disk.
+    pub fn clear_all(&self) -> Result<(), StorageError> {
+        let mut writer = self.writer()?;
+        writer
+            .delete_all_documents()
+            .map_err(|e: TantivyError| StorageError::SearchIndex(e.to_string()))?;
+        writer
+            .commit()
+            .map_err(|e: TantivyError| StorageError::SearchIndex(e.to_string()))?;
         Ok(())
     }
 

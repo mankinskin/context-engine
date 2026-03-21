@@ -65,6 +65,7 @@ pub fn tracker_improvement_schema() -> TicketTypeSchema {
         ("validating", "blocked"),
         // validated ->
         ("validated", "release-candidate"),
+        ("validated", "done"),
         ("validated", "review"),
         ("validated", "blocked"),
         // release-candidate ->

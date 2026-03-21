@@ -79,3 +79,89 @@ pub fn classify_event(event: &Event) -> WatchEventKind {
         _ => WatchEventKind::Modified,
     }
 }
+
+/// Run a blocking watch loop that reconciles on filesystem events.
+///
+/// This function blocks the calling thread indefinitely.  It polls the
+/// `WatchHandle` receiver, debounces events into batches, and calls
+/// `integrate_orphan` for specifically identified ticket paths or falls back
+/// to `reconcile_once` for unclassified events.
+///
+/// `debounce_ms` — how long to wait for additional events before triggering a
+/// reconcile pass (default: 200ms is a sensible starting point).
+///
+/// Returns only if the watcher channel closes (which happens when the OS
+/// reports a fatal error).
+pub fn run_watch_loop(handle: &WatchHandle, store: &TicketStore, debounce_ms: u64) {
+    use std::time::{Duration, Instant};
+
+    let debounce = Duration::from_millis(debounce_ms);
+    let mut pending_paths: Vec<std::path::PathBuf> = Vec::new();
+    let mut last_event: Option<Instant> = None;
+
+    loop {
+        // Poll for new events.
+        match handle.try_recv_event() {
+            Some(Ok(event)) => {
+                for path in event.paths {
+                    pending_paths.push(path);
+                }
+                last_event = Some(Instant::now());
+            }
+            Some(Err(_)) => {
+                // Watcher error — fall through to debounce-check.
+            }
+            None => {
+                // No event right now — check if the debounce window has elapsed.
+            }
+        }
+
+        // Check if we have pending events and the debounce window has elapsed.
+        if let Some(ts) = last_event {
+            if ts.elapsed() >= debounce && !pending_paths.is_empty() {
+                // Attempt targeted per-path integration, fall back to full scan.
+                let targeted: Vec<_> = pending_paths
+                    .iter()
+                    .filter_map(|p| {
+                        // Walk up to find the UUID-named directory inside a scan root.
+                        find_ticket_root(p)
+                    })
+                    .collect::<std::collections::HashSet<_>>()
+                    .into_iter()
+                    .collect();
+
+                if targeted.is_empty() {
+                    // No specific ticket paths could be identified — run a full scan.
+                    let _ = reconcile_once(store, false);
+                } else {
+                    for ticket_path in targeted {
+                        let _ = store.integrate_orphan(&ticket_path);
+                    }
+                }
+
+                pending_paths.clear();
+                last_event = None;
+            }
+        }
+
+        // Sleep briefly to avoid busy-looping.
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+/// Given a path reported by the notify watcher, find the ticket root directory.
+///
+/// A ticket root is a UUID-named directory directly under a scan root.
+/// Walk up ancestor directories until we find one whose name parses as a UUID.
+fn find_ticket_root(path: &std::path::Path) -> Option<std::path::PathBuf> {
+    use uuid::Uuid;
+    let mut current = path;
+    loop {
+        if let Some(name) = current.file_name().and_then(|n| n.to_str()) {
+            if name.parse::<Uuid>().is_ok() {
+                return Some(current.to_path_buf());
+            }
+        }
+        current = current.parent()?;
+    }
+}

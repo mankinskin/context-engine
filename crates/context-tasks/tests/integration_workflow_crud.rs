@@ -261,16 +261,17 @@ fn batch_exec_creates_multiple_tickets() {
 }
 
 #[test]
-fn batch_exec_stops_on_first_error_with_partial_results() {
+fn batch_exec_rolls_back_on_error() {
     let s = Sandbox::new();
 
+    // 3-command batch: create succeeds, unknown_invalid_command fails, create never runs.
+    // After rollback the first create should be undone — resulting in an empty list.
     let result = s.ticket_exec_batch(&[
         r#"{"command":"create","title":"Valid first ticket","type":"tracker-improvement"}"#,
         r#"{"command":"unknown_invalid_command"}"#,
         r#"{"command":"create","title":"Should not be created","type":"tracker-improvement"}"#,
     ]);
 
-    // Batch stops at the second (invalid) command and embeds an error in the payload.
     assert_eq!(result["status"], "error", "batch must report error status");
     assert_eq!(
         result["completed"].as_u64().unwrap(),
@@ -284,10 +285,20 @@ fn batch_exec_stops_on_first_error_with_partial_results() {
         "error should reference unknown/invalid command, got: {err_msg}"
     );
 
-    // The first ticket persists; the third was never executed.
+    // Rollback should have soft-deleted the first ticket — list should be empty.
+    assert_eq!(
+        result["rolled_back"].as_bool().unwrap_or(false),
+        true,
+        "batch must report rolled_back=true when rollback succeeded"
+    );
+
+    // After rollback: the first created ticket should be gone from the list.
     let list = s.ticket_json(&["list"]);
-    assert_eq!(list["count"].as_u64().unwrap(), 1);
-    assert_eq!(list["items"][0]["title"], "Valid first ticket");
+    assert_eq!(
+        list["count"].as_u64().unwrap(),
+        0,
+        "all tickets created before the error must be rolled back"
+    );
 }
 
 // ---------------------------------------------------------------------------

@@ -180,7 +180,17 @@ impl TicketFs {
             }
 
             match Self::read(&path) {
-                Ok(manifest) => valid.push(TicketScanEntry { id, path, manifest }),
+                Ok(manifest) => {
+                    // Skip tickets whose manifest has been soft-deleted.
+                    let is_deleted = manifest
+                        .extra
+                        .get("deleted")
+                        .and_then(|v| v.as_bool())
+                        .unwrap_or(false);
+                    if !is_deleted {
+                        valid.push(TicketScanEntry { id, path, manifest });
+                    }
+                }
                 Err(StorageError::ParseError { path: p, reason }) => {
                     diags.push(crate::model::filesystem::ParseDiagnostic {
                         path: p,

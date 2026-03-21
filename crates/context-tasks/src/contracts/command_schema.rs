@@ -47,6 +47,8 @@ pub enum TicketCommand {
     WorkspaceUse,
     WorkspaceCurrent,
     WorkspaceRemove,
+    // ── fs watcher ──────────────────────────────────────────
+    Watch,
 }
 
 impl TicketCommand {
@@ -91,6 +93,8 @@ impl TicketCommand {
             "workspace_use",
             "workspace_current",
             "workspace_remove",
+            // fs watcher
+            "watch",
         ]
     }
 }

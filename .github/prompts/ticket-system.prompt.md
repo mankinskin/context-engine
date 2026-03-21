@@ -255,11 +255,16 @@ ticket link --from <uuid> --to <uuid> --kind <depends_on|blocks|linked> [--reaso
 ticket links --id <uuid>
 
 # Lease
-ticket claim --id <uuid> --worker-id <name>
-ticket unclaim --id <uuid> --worker-id <name>
+ticket claim --id <uuid> --agent <name>
+ticket unclaim --id <uuid> --agent <name>
 ticket leases
 
 # Workspace
 ticket workspace current
 ticket workspace list
+
+# Recovery — rebuild derived indexes after a fresh clone or crash
+# (tickets.redb and search_index/ are NOT tracked in git; only tickets/**/*.toml
+# and tickets/**/*.md are committed. Run this once after cloning.)
+ticket scan --reindex
 ```

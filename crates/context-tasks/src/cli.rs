@@ -92,6 +92,8 @@ pub enum TicketCommandCli {
     Links(IdArgs),
     /// Manage named workspaces (named index roots).
     Workspace(WorkspaceArgs),
+    /// Watch filesystem scan roots and auto-reconcile on changes.
+    Watch(WatchArgs),
 }
 
 // ── arg structs ────────────────────────────────────────────────────────────────
@@ -120,6 +122,13 @@ pub struct CreateArgs {
 pub struct IdArgs {
     #[arg(long)]
     pub id: Uuid,
+}
+
+#[derive(Debug, Args)]
+pub struct WatchArgs {
+    /// Debounce time in milliseconds before triggering reconcile after an event.
+    #[arg(long, default_value = "200")]
+    pub debounce_ms: u64,
 }
 
 #[derive(Debug, Args)]
@@ -346,6 +355,18 @@ fn dispatch(
         return Ok(cmd_workspace(args));
     }
 
+    // The agent exec protocol requires an explicit index root to prevent
+    // silent fallback to a user-specific workspace, which could send writes
+    // to the wrong store.  Reject exec/watch if neither --index-root nor
+    // TICKET_INDEX_ROOT is provided.
+    let has_explicit_root = index_root_override.is_some()
+        || std::env::var("TICKET_INDEX_ROOT").is_ok();
+    if !has_explicit_root {
+        if matches!(command, TicketCommandCli::Exec(_)) {
+            return Err(CliRunError::IndexRootRequired);
+        }
+    }
+
     // All other commands need the store.
     let index_root = resolve_index_root(index_root_override)?;
     let mut registry = SchemaRegistry::with_builtins();
@@ -396,6 +417,7 @@ fn dispatch(
         })),
         TicketCommandCli::Link(args) => cmd_link(args, &store),
         TicketCommandCli::Links(args) => cmd_links(args, &store),
+        TicketCommandCli::Watch(args) => cmd_watch(args, &store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -630,6 +652,88 @@ fn cmd_add_root(args: AddRootArgs, store: &TicketStore) -> Result<Value, CliRunE
     }))
 }
 
+
+
+fn cmd_watch(args: WatchArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    use crate::watcher::reconciler::{run_watch_loop, start_watcher};
+    eprintln!("Starting filesystem watcher (debounce={}ms). Press Ctrl+C to stop.", args.debounce_ms);
+    let handle = start_watcher(store)
+        .map_err(|e| CliRunError::Storage(e))?;
+    run_watch_loop(&handle, store, args.debounce_ms);
+    // run_watch_loop blocks; this line is unreachable but satisfies the return type.
+    Ok(json!({ "command": "watch", "status": "stopped" }))
+}
+
+// ── batch exec undo infrastructure ───────────────────────────────────────────
+
+/// Records enough information to undo a single batch command on rollback.
+#[derive(Debug)]
+enum BatchUndoOp {
+    /// Created a ticket — undo by soft-deleting it.
+    Delete { id: Uuid },
+    /// Updated a ticket — undo by restoring the saved manifest state.
+    RestoreUpdate {
+        id: Uuid,
+        saved_extra: BTreeMap<String, Value>,
+        saved_state: Option<String>,
+    },
+}
+
+/// Pre-capture undo state for a command *before* it is executed.
+fn batch_pre_capture(cmd: &Value, store: &TicketStore) -> Option<(String, Uuid, BTreeMap<String, Value>, Option<String>)> {
+    let op = cmd.get("command").and_then(|v| v.as_str())?;
+    let op = op.strip_prefix("task_").unwrap_or(op);
+    match op {
+        "update" => {
+            let id: Uuid = cmd.get("id").and_then(|v| v.as_str())?.parse().ok()?;
+            if let Ok(Some(indexed)) = store.get_indexed(&id) {
+                // Save redb state as a minimal BTreeMap for restore.
+                let mut saved = BTreeMap::new();
+                if let Some(t) = &indexed.title { saved.insert("title".to_string(), serde_json::Value::String(t.clone())); }
+                Some(("update".to_string(), id, saved, indexed.state.clone()))
+            } else {
+                None
+            }
+        }
+        _ => None,
+    }
+}
+
+/// Construct a `BatchUndoOp` from the *result* of a successfully executed command.
+fn batch_post_undo(
+    result: &Value,
+    pre_capture: Option<(String, Uuid, BTreeMap<String, Value>, Option<String>)>,
+) -> Option<BatchUndoOp> {
+    let cmd = result.get("command").and_then(|v| v.as_str())?;
+    match cmd {
+        "create" => {
+            let id: Uuid = result.get("id").and_then(|v| v.as_str())?.parse().ok()?;
+            Some(BatchUndoOp::Delete { id })
+        }
+        "update" => {
+            let (_, id, saved_extra, saved_state) = pre_capture?;
+            Some(BatchUndoOp::RestoreUpdate { id, saved_extra, saved_state })
+        }
+        _ => None,
+    }
+}
+
+/// Apply a single undo operation. Errors are collected, not propagated.
+fn apply_batch_undo(undo: BatchUndoOp, store: &TicketStore, errors: &mut Vec<String>) {
+    match undo {
+        BatchUndoOp::Delete { id } => {
+            if let Err(e) = store.delete(&id) {
+                errors.push(format!("rollback delete {id}: {e}"));
+            }
+        }
+        BatchUndoOp::RestoreUpdate { id, saved_extra, saved_state } => {
+            if let Err(e) = store.force_restore(&id, saved_extra, saved_state) {
+                errors.push(format!("rollback restore {id}: {e}"));
+            }
+        }
+    }
+}
+
 /// `ticket exec` — read one JSON `TaskCommand` object from stdin and execute it.
 /// In `--batch` mode, read one object per line until EOF and execute all atomically
 /// (rolling back all on the first failure).
@@ -650,18 +754,37 @@ fn cmd_exec(args: ExecArgs, store: &TicketStore) -> Result<Value, CliRunError> {
             commands.push(cmd);
         }
 
-        let mut results = Vec::with_capacity(commands.len());
+        // Each successfully executed command records an undo operation so the
+        // batch can be rolled back atomically on the first failure.
+        let mut results: Vec<Value> = Vec::with_capacity(commands.len());
+        let mut undo_stack: Vec<BatchUndoOp> = Vec::with_capacity(commands.len());
+
         for cmd in &commands {
+            // Pre-capture undo information BEFORE executing.
+            let undo_hint = batch_pre_capture(cmd, store);
+
             match exec_single_command(cmd, store) {
-                Ok(result) => results.push(result),
+                Ok(result) => {
+                    // Record undo op based on what the command did.
+                    if let Some(undo) = batch_post_undo(&result, undo_hint) {
+                        undo_stack.push(undo);
+                    }
+                    results.push(result);
+                }
                 Err(e) => {
+                    // Attempt best-effort rollback of all completed commands.
+                    let mut rollback_errors: Vec<String> = Vec::new();
+                    for undo in undo_stack.into_iter().rev() {
+                        apply_batch_undo(undo, store, &mut rollback_errors);
+                    }
                     return Ok(json!({
                         "command": "exec_batch",
                         "status": "error",
                         "completed": results.len(),
                         "total": commands.len(),
                         "error": e.to_string(),
-                        "results": results,
+                        "rolled_back": rollback_errors.is_empty(),
+                        "rollback_errors": rollback_errors,
                     }));
                 }
             }

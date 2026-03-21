@@ -225,6 +225,38 @@ impl TicketStore {
         Ok(())
     }
 
+    /// Overwrite a ticket's manifest directly, bypassing state-machine validation.
+    /// Used exclusively for rollback of in-flight batch operations.
+    pub fn force_restore(
+        &self,
+        id: &Uuid,
+        saved_extra: std::collections::BTreeMap<String, serde_json::Value>,
+        saved_state: Option<String>,
+    ) -> Result<(), StorageError> {
+        let indexed = match self.index.get_ticket(id)? {
+            Some(t) => t,
+            None => return Ok(()), // ticket may have been hard-deleted; nothing to restore
+        };
+        TicketFs::update(&indexed.path, &saved_extra, saved_state.as_deref())?;
+        // Refresh redb + search index.
+        let mut refreshed = indexed;
+        refreshed.state = saved_state.clone();
+        if let Some(title_val) = saved_extra.get("title").and_then(|v| v.as_str()) {
+            refreshed.title = Some(title_val.to_string());
+        }
+        self.index.insert_ticket(&refreshed)?;
+        let body = TicketFs::read_description(&refreshed.path);
+        self.search.upsert(
+            id,
+            refreshed.title.as_deref(),
+            body.as_deref(),
+            refreshed.state.as_deref(),
+            Some(refreshed.type_id.as_str()),
+        )?;
+        Ok(())
+    }
+
+
     // ── list / search ─────────────────────────────────────────────────────────
 
     pub fn list(
@@ -292,6 +324,12 @@ impl TicketStore {
     /// If `reindex` is `true`, the search index is rebuilt from scratch for all
     /// found tickets (crash recovery path).
     pub fn scan(&self, reindex: bool) -> Result<ScanReport, StorageError> {
+        // When doing a full reindex, purge the search index first so that
+        // entries for deleted tickets don't survive the rebuild.
+        if reindex {
+            self.search.clear_all()?;
+        }
+
         let roots = self.index.list_scan_roots()?;
 
         // Also always include the default tickets dir under index_root.
@@ -320,6 +358,45 @@ impl TicketStore {
         }
 
         Ok(ScanReport { integrated, diagnostics })
+    }
+
+    /// Integrate a single ticket folder discovered on the filesystem into the
+    /// index and search index.
+    ///
+    /// This is used by the watcher daemon when a specific path is signalled by
+    /// a filesystem event.  Falls back gracefully if the path is not a valid
+    /// ticket folder (returns `Ok(false)`).
+    pub fn integrate_orphan(&self, path: &Path) -> Result<bool, StorageError> {
+        // Derive UUID from the directory name.
+        let id: Uuid = match path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .and_then(|s| s.parse().ok())
+        {
+            Some(u) => u,
+            None => return Ok(false),
+        };
+
+        // Use TicketFs to read the manifest from disk.
+        use crate::storage::ticket_fs::TicketScanEntry;
+        let manifest = match crate::storage::ticket_fs::TicketFs::read(path) {
+            Ok(m) => m,
+            Err(_) => return Ok(false),
+        };
+
+        // Skip soft-deleted tickets.
+        let is_deleted = manifest
+            .extra
+            .get("deleted")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        if is_deleted {
+            return Ok(false);
+        }
+
+        let entry = TicketScanEntry { id, path: path.to_path_buf(), manifest };
+        integrate_entry(&self.index, &self.search, entry, true)?;
+        Ok(true)
     }
 
     // ── lease operations (Phase 1.5 pre-wire) ────────────────────────────────

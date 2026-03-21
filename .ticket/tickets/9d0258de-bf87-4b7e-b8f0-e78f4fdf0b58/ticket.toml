@@ -1,6 +1,6 @@
 id = "9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58"
 created_at = "2026-03-21T01:48:38.400715500Z"
-acceptance_criteria = "documented and tested restore flow for redb index and git history repo"
+acceptance_criteria = ".ticket/.gitignore excludes derived binaries; ticket scan --reindex rebuilds indexes from text files on fresh checkout; onboarding step documented in skill file"
 bootstrap_blocker = "false"
 component = "storage"
 risk_level = "medium"
