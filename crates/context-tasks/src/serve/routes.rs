@@ -30,7 +30,7 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/tickets/{id}", get(handlers::tickets::get_ticket))
         .route("/api/edges", get(handlers::edges::list_edges))
         .route("/api/graph/subgraph", get(handlers::graph::subgraph))
-        .route("/api/stream", get(handlers::stream::stream_stub))
+        .route("/api/stream", get(handlers::stream::stream_handler))
         .layer(middleware::from_fn_with_state(
             auth_token_set,
             bearer_auth_mw,

@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
 
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -17,6 +18,10 @@ use crate::storage::indexed::{IndexedTicket, LeaseInfo};
 use crate::storage::search::{SearchResult, TantivySearchIndex};
 use crate::storage::ticket_fs::{TicketFs, TicketScanEntry};
 
+// Import HookEmitter only when the serve feature is compiled in.
+// We use a conditional import to avoid a circular dependency at the type level.
+use crate::serve::stream::HookEmitter;
+
 /// The central ticket store: filesystem source-of-truth + redb metadata index +
 /// Tantivy full-text search index.
 pub struct TicketStore {
@@ -25,9 +30,22 @@ pub struct TicketStore {
     schema_registry: SchemaRegistry,
     /// Root directory for the redb database and Tantivy index files.
     pub index_root: PathBuf,
+    /// Optional SSE hook emitter.  Set by `serve::WorkspaceRegistry` when the
+    /// server mode is active.  Not used in CLI mode.
+    hook: OnceLock<HookEmitter>,
 }
 
 impl TicketStore {
+    /// Attach an SSE hook emitter.  May only be called once; subsequent calls
+    /// are silently ignored (the first emitter wins).
+    pub fn set_hook(&self, emitter: HookEmitter) {
+        let _ = self.hook.set(emitter);
+    }
+
+    /// Return a reference to the hook emitter if one has been set.
+    fn hook(&self) -> Option<&HookEmitter> {
+        self.hook.get()
+    }
     /// Open (or create) a ticket store rooted at `index_root` using built-in schemas.
     pub fn open(index_root: &Path) -> Result<Self, StorageError> {
         Self::open_with(index_root, SchemaRegistry::with_builtins())
@@ -50,6 +68,7 @@ impl TicketStore {
             search,
             schema_registry,
             index_root: index_root.to_path_buf(),
+            hook: OnceLock::new(),
         })
     }
 
@@ -142,6 +161,11 @@ impl TicketStore {
         // Append initial history snapshot (rev 1).
         let _ = TicketFs::append_history(&indexed.path, manifest.extra.clone());
 
+        // Emit SSE hook event.
+        if let Some(h) = self.hook() {
+            h.ticket_upsert(id, Some(state), title.map(str::to_string), indexed.updated_at);
+        }
+
         Ok(id)
     }
 
@@ -213,6 +237,16 @@ impl TicketStore {
         // Append history snapshot after successful write.
         let _ = TicketFs::append_history(&indexed.path, updated_manifest.extra.clone());
 
+        // Emit SSE hook event.
+        if let Some(h) = self.hook() {
+            h.ticket_upsert(
+                *id,
+                indexed.state.clone(),
+                indexed.title.clone(),
+                indexed.updated_at,
+            );
+        }
+
         Ok(updated_manifest)
     }
 
@@ -228,6 +262,12 @@ impl TicketStore {
         TicketFs::mark_deleted(&indexed.path)?;
         self.index.soft_delete_ticket(id)?;
         self.search.remove(id)?;
+
+        // Emit SSE hook event.
+        if let Some(h) = self.hook() {
+            h.ticket_delete(*id);
+        }
+
         Ok(())
     }
 
@@ -387,11 +427,25 @@ impl TicketStore {
             return Err(StorageError::DependencyCycle);
         }
 
-        self.index.insert_edge(&edge)
+        self.index.insert_edge(&edge)?;
+
+        // Emit SSE hook event.
+        if let Some(h) = self.hook() {
+            h.edge_upsert(edge.from, edge.to, edge.kind.clone());
+        }
+
+        Ok(())
     }
 
     pub fn remove_edge(&self, edge: EdgeRecord) -> Result<(), StorageError> {
-        self.index.delete_edge(&edge)
+        self.index.delete_edge(&edge)?;
+
+        // Emit SSE hook event.
+        if let Some(h) = self.hook() {
+            h.edge_delete(edge.from, edge.to, edge.kind.clone());
+        }
+
+        Ok(())
     }
 
     // ── scan / reconcile ──────────────────────────────────────────────────────

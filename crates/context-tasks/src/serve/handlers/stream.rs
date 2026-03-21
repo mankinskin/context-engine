@@ -1,33 +1,94 @@
-//! SSE stream stub — wired by ticket `5e68c2e1`.
+//! Real SSE stream handler — `HookEmitter → StreamBroker → live fan-out`.
 //!
-//! Returns a minimal keep-alive SSE stream. The real implementation
-//! (HookEmitter → StreamBroker → SSE fan-out) is implemented in the SSE
-//! pipeline ticket.
+//! `GET /api/stream?workspace=<name>` subscribes to the per-workspace broadcast
+//! channel and streams events to the client as Server-Sent Events.
 
 use axum::{
-    extract::State,
+    extract::{Query, State},
     response::{
         sse::{Event, KeepAlive, Sse},
         IntoResponse,
     },
 };
-use futures_util::stream;
+use futures_util::stream::{self, BoxStream, StreamExt};
+use serde::Deserialize;
 use std::convert::Infallible;
+use tokio::sync::broadcast::error::RecvError;
 
-use crate::serve::AppState;
+use crate::serve::{
+    stream::{
+        broker::next_event_id,
+        event::{SnapshotReadyPayload, SseEvent},
+    },
+    AppState,
+};
 
-pub async fn stream_stub(
-    State(_state): State<AppState>,
+#[derive(Debug, Deserialize)]
+pub struct StreamQuery {
+    pub workspace: String,
+}
+
+pub async fn stream_handler(
+    State(state): State<AppState>,
+    Query(params): Query<StreamQuery>,
 ) -> impl IntoResponse {
-    // Stub: single snapshot.ready event then keep-alive.
-    // The full implementation is in ticket 5e68c2e1.
-    let events = stream::once(async {
-        Ok::<Event, Infallible>(
-            Event::default()
-                .event("snapshot.ready")
-                .data(r#"{"workspace":"default","node_count":0,"edge_count":0}"#),
-        )
-    });
+    let workspace = params.workspace.clone();
 
-    Sse::new(events).keep_alive(KeepAlive::default())
+    // Collect baseline counts; 0,0 if workspace is unknown.
+    let combined: BoxStream<'static, Result<Event, Infallible>> =
+        if let Some(store) = state.registry.get(&workspace) {
+            let nc = store.list(None, None, None).map(|v| v.len()).unwrap_or(0);
+            let ec = store.list_all_edges().map(|v| v.len()).unwrap_or(0);
+
+            // Subscribe before emitting the snapshot so no events are missed.
+            let rx = state.broker.subscribe(&workspace);
+
+            // Initial `snapshot.ready` burst so the client knows the baseline.
+            let snapshot_event = SseEvent::SnapshotReady(SnapshotReadyPayload {
+                workspace: workspace.clone(),
+                ts: chrono::Utc::now(),
+                snapshot_id: uuid::Uuid::new_v4(),
+                node_count: nc,
+                edge_count: ec,
+            })
+            .into_sse_event(next_event_id());
+
+            let initial =
+                stream::once(async move { Ok::<Event, Infallible>(snapshot_event) });
+
+            // Convert the broadcast receiver into an async stream via unfold.
+            let live = stream::unfold(rx, |mut rx| async move {
+                loop {
+                    match rx.recv().await {
+                        Ok((id, event)) => {
+                            return Some((
+                                Ok::<Event, Infallible>(event.into_sse_event(id)),
+                                rx,
+                            ));
+                        }
+                        Err(RecvError::Lagged(n)) => {
+                            tracing::warn!(dropped = n, "SSE receiver lagged; events dropped");
+                            continue;
+                        }
+                        Err(RecvError::Closed) => return None,
+                    }
+                }
+            });
+
+            initial.chain(live).boxed()
+        } else {
+            // Unknown workspace — emit a single diagnostic then close.
+            stream::once(async move {
+                Ok::<Event, Infallible>(
+                    Event::default()
+                        .event("diagnostic.warning")
+                        .data(format!(
+                            r#"{{"workspace":"{workspace}","code":"UNKNOWN_WORKSPACE","message":"workspace not found"}}"#
+                        )),
+                )
+            })
+            .boxed()
+        };
+
+    Sse::new(combined).keep_alive(KeepAlive::default())
 }
