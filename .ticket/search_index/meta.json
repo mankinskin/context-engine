@@ -1,0 +1,116 @@
+{
+  "index_settings": {
+    "docstore_compression": "lz4",
+    "docstore_blocksize": 16384
+  },
+  "segments": [
+    {
+      "segment_id": "21eafc78-7bc6-405e-94fd-3176b49bffcd",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "680b507f-7b86-4116-8f09-c93632501d17",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "2e5e557d-c15d-4ee3-8f62-211f9b5a3bea",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "f7cbbfb5-e921-4828-b5ee-cb1f9fb86f2c",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "92112883-e733-4696-a9f1-1ce3760e8a8a",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "9531e8dd-21be-460b-9500-aaaea5253410",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "704d63ba-fff8-4316-b21c-87cd66ce6bfe",
+      "max_doc": 1,
+      "deletes": null
+    },
+    {
+      "segment_id": "a59c23ba-e95f-4c10-b28a-cdd5b538b5bf",
+      "max_doc": 1,
+      "deletes": null
+    }
+  ],
+  "schema": [
+    {
+      "name": "id",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "basic",
+          "fieldnorms": true,
+          "tokenizer": "raw"
+        },
+        "stored": true,
+        "fast": false
+      }
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "position",
+          "fieldnorms": true,
+          "tokenizer": "default"
+        },
+        "stored": true,
+        "fast": false
+      }
+    },
+    {
+      "name": "body",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "position",
+          "fieldnorms": true,
+          "tokenizer": "default"
+        },
+        "stored": true,
+        "fast": false
+      }
+    },
+    {
+      "name": "state",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "basic",
+          "fieldnorms": true,
+          "tokenizer": "raw"
+        },
+        "stored": true,
+        "fast": true
+      }
+    },
+    {
+      "name": "ticket_type",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "basic",
+          "fieldnorms": true,
+          "tokenizer": "raw"
+        },
+        "stored": true,
+        "fast": true
+      }
+    }
+  ],
+  "opstamp": 24
+}
