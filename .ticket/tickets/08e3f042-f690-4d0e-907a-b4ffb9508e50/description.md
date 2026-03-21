@@ -34,9 +34,12 @@ Define the baseline UX for tree/file/graph views with workspace switching and st
 - Workspace switching flow
 - Empty/error/loading states
 
+## Draft artifacts
+- Wireframes and interaction notes: `assets/design/wireframes-v0.1.md`
+
 ## Checklist
-- [ ] Wireframe set complete
-- [ ] Interaction spec complete
-- [ ] State styling mapping approved
-- [ ] Accessibility baseline notes added
+- [x] Wireframe set complete
+- [x] Interaction spec complete
+- [x] State styling mapping approved
+- [x] Accessibility baseline notes added
 - [ ] Handoff note posted to shell/graph/style impl tickets

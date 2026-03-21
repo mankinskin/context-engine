@@ -43,9 +43,12 @@ Define the contract for ticket server APIs and live graph updates with required 
 - Hook/fallback semantics are covered by ticket `24aa7e5e-1d62-4f35-a4f7-b056a0b8abce`.
 - Subgraph pagination semantics are covered by ticket `e79fdc1f-2bfb-410f-931c-dbb744cd209e`.
 
+## Draft artifacts
+- API contract draft: `assets/design/api-contract-v0.1.md`
+
 ## Checklist
-- [ ] Endpoint list approved
-- [ ] Auth envelope approved
-- [ ] SSE event names approved
-- [ ] Error/status code mapping approved
+- [x] Endpoint list approved
+- [x] Auth envelope approved
+- [x] SSE event names approved
+- [x] Error/status code mapping approved
 - [ ] Contract handoff note posted to impl tickets

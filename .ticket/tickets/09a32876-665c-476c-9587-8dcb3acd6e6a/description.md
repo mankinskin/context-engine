@@ -32,9 +32,13 @@ Freeze the SSE payload contract so backend and frontend can implement independen
 - Per-workspace ordering preserved by single workspace stream loop.
 - Duplicate delivery tolerance required client-side.
 
+## Draft artifacts
+- Schema draft: `assets/design/sse-schema-v1.md`
+- Contract tests draft: `assets/design/sse-contract-tests-v0.1.md`
+
 ## Checklist
-- [ ] Event list approved
-- [ ] Payload schemas approved
-- [ ] Ordering/duplication semantics approved
-- [ ] Error/diagnostic events approved
-- [ ] Contract tests identified
+- [x] Event list approved
+- [x] Payload schemas approved
+- [x] Ordering/duplication semantics approved
+- [x] Error/diagnostic events approved
+- [x] Contract tests identified
