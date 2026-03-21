@@ -82,6 +82,9 @@ impl TicketCommand {
             "task_release_candidate_create",
             "task_release_gate_check",
             "task_release_promote",
+            // edge management
+            "link",
+            "links",
             // workspace management
             "workspace_list",
             "workspace_new",

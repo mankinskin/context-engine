@@ -10,10 +10,12 @@ fn command_schema_export_is_stable() {
 
     assert_eq!(schema.version, COMMAND_SCHEMA_VERSION);
     assert_eq!(schema.command_namespace, "ticket");
-    assert_eq!(schema.commands.len(), 32);
+    assert_eq!(schema.commands.len(), 34);
     assert_eq!(schema.commands[0], "create");
     assert_eq!(schema.commands[26], "task_release_promote");
-    assert_eq!(schema.commands[31], "workspace_remove");
+    assert_eq!(schema.commands[27], "link");
+    assert_eq!(schema.commands[28], "links");
+    assert_eq!(schema.commands[33], "workspace_remove");
 }
 
 #[test]

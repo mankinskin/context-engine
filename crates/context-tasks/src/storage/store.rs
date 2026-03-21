@@ -265,6 +265,10 @@ impl TicketStore {
 
     // ── edge management ───────────────────────────────────────────────────────
 
+    pub fn edges_from(&self, id: &Uuid) -> Result<Vec<EdgeRecord>, StorageError> {
+        self.index.edges_from(id)
+    }
+
     pub fn add_edge(&self, edge: EdgeRecord) -> Result<(), StorageError> {
         // For acyclic-enforced kinds: check for cycles.
         let is_acyclic = self.schema_registry

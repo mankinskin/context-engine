@@ -1,10 +1,13 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
+use chrono::Utc;
 use clap::{Args, Parser, Subcommand};
 use serde::Serialize;
 use serde_json::{Map, Value, json};
 use uuid::Uuid;
+
+use crate::model::edge::EdgeRecord;
 
 use crate::storage::store::GateStatus;
 use crate::contracts::command_schema::{
@@ -83,6 +86,10 @@ pub enum TicketCommandCli {
     /// Export the command namespace/schema for automation clients.
     #[command(name = "export-command-schema")]
     ExportCommandSchema,
+    /// Add a directed edge (dependency/link) between two tickets.
+    Link(LinkArgs),
+    /// List all edges originating from a ticket.
+    Links(IdArgs),
     /// Manage named workspaces (named index roots).
     Workspace(WorkspaceArgs),
 }
@@ -113,6 +120,22 @@ pub struct CreateArgs {
 pub struct IdArgs {
     #[arg(long)]
     pub id: Uuid,
+}
+
+#[derive(Debug, Args)]
+pub struct LinkArgs {
+    /// UUID of the source ticket.
+    #[arg(long)]
+    pub from: Uuid,
+    /// UUID of the target ticket.
+    #[arg(long)]
+    pub to: Uuid,
+    /// Edge kind (e.g. depends_on, blocks, linked).
+    #[arg(long)]
+    pub kind: String,
+    /// Human-readable reason for this edge (optional, stored in response only).
+    #[arg(long)]
+    pub reason: Option<String>,
 }
 
 #[derive(Debug, Args)]
@@ -371,6 +394,8 @@ fn dispatch(
             "id": args.id,
             "merge_commit": args.merge_commit
         })),
+        TicketCommandCli::Link(args) => cmd_link(args, &store),
+        TicketCommandCli::Links(args) => cmd_links(args, &store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -469,6 +494,39 @@ fn cmd_delete(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
         "command": "delete",
         "status": "ok",
         "id": args.id,
+    }))
+}
+
+fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let edge = EdgeRecord {
+        from: args.from,
+        to: args.to,
+        kind: args.kind.clone(),
+        created_at: Utc::now(),
+    };
+    store.add_edge(edge)?;
+    Ok(json!({
+        "command": "link",
+        "status": "ok",
+        "from": args.from,
+        "to": args.to,
+        "kind": args.kind,
+        "reason": args.reason,
+    }))
+}
+
+fn cmd_links(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let edges = store.edges_from(&args.id)?;
+    let items: Vec<Value> = edges
+        .iter()
+        .map(|e| json!({ "from": e.from, "to": e.to, "kind": e.kind }))
+        .collect();
+    Ok(json!({
+        "command": "links",
+        "status": "ok",
+        "id": args.id,
+        "count": items.len(),
+        "edges": items,
     }))
 }
 
