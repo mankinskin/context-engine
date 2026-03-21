@@ -42,4 +42,4 @@ Define the baseline UX for tree/file/graph views with workspace switching and st
 - [x] Interaction spec complete
 - [x] State styling mapping approved
 - [x] Accessibility baseline notes added
-- [ ] Handoff note posted to shell/graph/style impl tickets
+- [x] Handoff note posted to shell/graph/style impl tickets (ref: 02dea1fa, 2772fe5d, b594864a — Wave 2 kickoff pending)

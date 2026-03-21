@@ -101,6 +101,8 @@ pub enum TicketCommandCli {
     Watch(WatchArgs),
     /// Dashboard: current state summary + ready tickets + parallel opportunities.
     Status(StatusArgs),
+    /// Start the HTTP server exposing the ticket API (REST + SSE).
+    Serve(ServeCliArgs),
 }
 
 // ── arg structs ────────────────────────────────────────────────────────────────
@@ -147,6 +149,25 @@ pub struct WatchArgs {
     /// Debounce time in milliseconds before triggering reconcile after an event.
     #[arg(long, default_value = "200")]
     pub debounce_ms: u64,
+}
+
+#[derive(Debug, Args)]
+pub struct ServeCliArgs {
+    /// TCP port to bind to.
+    #[arg(long, default_value = "8080")]
+    pub port: u16,
+    /// Host address to bind to.
+    #[arg(long, default_value = "127.0.0.1")]
+    pub host: String,
+    /// Bearer token (overrides TICKET_SERVE_TOKEN env var).
+    #[arg(long)]
+    pub token: Option<String>,
+    /// Path to a token file (one token per line).
+    #[arg(long)]
+    pub token_file: Option<std::path::PathBuf>,
+    /// Serve a specific named workspace only (default: all registered).
+    #[arg(long)]
+    pub workspace: Option<String>,
 }
 
 #[derive(Debug, Args)]
@@ -430,6 +451,7 @@ fn dispatch(
         TicketCommandCli::Links(args) => cmd_links(args, &store),
         TicketCommandCli::Watch(args) => cmd_watch(args, &store),
         TicketCommandCli::Status(args) => cmd_status(args, &store),
+        TicketCommandCli::Serve(args) => cmd_serve(args, &index_root),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -665,6 +687,58 @@ fn cmd_add_root(args: AddRootArgs, store: &TicketStore) -> Result<Value, CliRunE
 }
 
 
+
+fn cmd_serve(args: ServeCliArgs, index_root: &std::path::Path) -> Result<Value, CliRunError> {
+    use crate::serve::{AuthState, ServeConfig, WorkspaceRegistry, serve};
+    use crate::serve::auth_state::TokenSource;
+    use crate::workspace::WorkspaceConfig;
+
+    // Build auth state
+    let auth = if let Some(token) = args.token {
+        AuthState::from_literal(token)
+            .map_err(|e| CliRunError::BadRequest(e.to_string()))?
+    } else if let Some(path) = args.token_file {
+        AuthState::from_source(TokenSource::File(path))
+            .map_err(|e| CliRunError::BadRequest(e.to_string()))?
+    } else {
+        AuthState::from_env()
+            .map_err(|e| CliRunError::BadRequest(format!(
+                "No token configured: {}. Use --token, --token-file, or set TICKET_SERVE_TOKEN.",
+                e
+            )))?
+    };
+
+    // Build workspace registry
+    let registry = if args.workspace.is_some() {
+        WorkspaceRegistry::single(index_root.to_path_buf())
+    } else {
+        let config = WorkspaceConfig::load();
+        if config.workspaces.is_empty() {
+            WorkspaceRegistry::single(index_root.to_path_buf())
+        } else {
+            WorkspaceRegistry::from_config(&config)
+        }
+    };
+
+    let config = ServeConfig {
+        host: args.host,
+        port: args.port,
+    };
+
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| CliRunError::BadRequest(format!("failed to start tokio runtime: {e}")))?;
+
+    rt.block_on(async {
+        serve(config, registry, auth)
+            .await
+            .map_err(|e| CliRunError::BadRequest(e.to_string()))
+    })?;
+
+    // serve() only returns on error; this is unreachable in the happy path.
+    Err(CliRunError::BadRequest("server exited unexpectedly".into()))
+}
 
 fn cmd_watch(args: WatchArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     use crate::watcher::reconciler::{run_watch_loop, start_watcher};

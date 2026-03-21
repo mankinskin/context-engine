@@ -37,6 +37,13 @@
 
 pub mod dev_proxy;
 
+// New shared primitives for ticket-viewer and future viewer tools
+pub mod auth;
+pub mod error;
+pub mod middleware;
+pub mod pagination;
+pub mod sse;
+
 use axum::Router;
 use std::{
     env,

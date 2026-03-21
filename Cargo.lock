@@ -329,6 +329,7 @@ checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
 dependencies = [
  "async-trait",
  "axum-core 0.4.5",
+ "axum-macros",
  "bytes",
  "futures-util",
  "http 1.4.0",
@@ -429,6 +430,17 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "axum-macros"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57d123550fa8d071b7255cb0cc04dc302baa6c8c4a79f55701552684d8399bce"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
 ]
 
 [[package]]
@@ -939,10 +951,13 @@ dependencies = [
 name = "context-tasks"
 version = "0.1.0"
 dependencies = [
+ "arc-swap",
+ "axum 0.7.9",
  "bincode",
  "chrono",
  "clap",
  "fs4 0.11.1",
+ "futures-util",
  "notify",
  "pretty_assertions",
  "redb",
@@ -952,9 +967,13 @@ dependencies = [
  "tantivy",
  "tempfile",
  "thiserror 2.0.17",
+ "tokio",
  "toml",
+ "tower 0.4.13",
+ "tracing",
  "url",
  "uuid",
+ "viewer-api",
 ]
 
 [[package]]
@@ -5013,10 +5032,12 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
+ "tower 0.4.13",
  "tower-http 0.5.2",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

@@ -51,4 +51,4 @@ Define the contract for ticket server APIs and live graph updates with required 
 - [x] Auth envelope approved
 - [x] SSE event names approved
 - [x] Error/status code mapping approved
-- [ ] Contract handoff note posted to impl tickets
+- [x] Contract handoff note posted to impl tickets (kickoff descriptions written for 43dedd9b, 5e68c2e1, a1259318, 00ee9f46)

@@ -69,7 +69,14 @@ Required design inputs:
 - All above artifacts finalized
 
 ## Review checklist
-- [ ] Artifact links are valid
-- [ ] Each implementation ticket has explicit required design inputs
-- [ ] No implementation ticket depends on undefined contract details
+- [x] Artifact links are valid
+- [x] Each implementation ticket has explicit required design inputs
+- [x] No implementation ticket depends on undefined contract details
 - [ ] Validation ticket scope covers every contract area
+
+## Wave 1 kickoff (completed 2026-03-21)
+All Wave 1 impl tickets moved to `in-progress` with concrete kickoff descriptions:
+- `43dedd9b` — ticket serve mode: module structure, Axum routes, auth middleware
+- `5e68c2e1` — SSE pipeline: HookEmitter, StreamBroker, ReconcileLoop, event types
+- `a1259318` — viewer-api extraction: request_id, pagination, error envelope, SSE helpers, BearerAuthLayer
+- `00ee9f46` — auth token reload: ArcSwap TokenSet, reload endpoint, SIGHUP, diagnostics
