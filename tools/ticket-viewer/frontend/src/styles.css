@@ -379,3 +379,33 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
 .tree-item:hover { background: var(--tab-hover-bg); }
 .tree-item--selected { background: var(--tab-active-bg); color: var(--accent); }
 .tree-item__badge { margin-left: auto; font-size: 11px; background: var(--bg-panel); color: var(--text-secondary); border-radius: 9px; padding: 1px 6px; }
+
+/* Guard against default intrinsic SVG size (300x150) in tree controls/icons. */
+.tree-toggle {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-toggle svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.tree-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tree-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
