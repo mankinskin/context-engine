@@ -6,9 +6,10 @@ execution_wave = "2"
 interview_file_type = "interview"
 parallel_track = "H"
 risk_level = "medium"
-state = "open"
+state = "done"
 title = "Impl: state styling baseline and per-workspace UI state persistence"
 type = "tracker-improvement"
+validation_summary = "State styling and per-workspace UI persistence are implemented in ticket-viewer; full e2e suite passes (11/11) and type-check passes."
 workflow_stage = "implementation"
 
 [interview_files]

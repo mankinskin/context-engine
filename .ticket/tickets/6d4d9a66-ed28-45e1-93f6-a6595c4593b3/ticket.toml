@@ -6,9 +6,10 @@ execution_wave = "3"
 interview_file_type = "interview"
 parallel_track = "Z"
 risk_level = "high"
-state = "open"
+state = "done"
 title = "Validation: ticket-viewer + ticket-serve E2E, scale envelope, and regression suite"
 type = "tracker-improvement"
+validation_summary = "Ran ticket-viewer frontend validation: TypeScript no-emit check passed and Playwright e2e regression suite passed (11/11), including graph success and failure paths."
 workflow_stage = "validation"
 
 [interview_files]
