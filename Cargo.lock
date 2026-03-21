@@ -4411,6 +4411,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-viewer"
+version = "0.1.0"
+dependencies = [
+ "axum 0.7.9",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "viewer-api",
+]
+
+[[package]]
 name = "time"
 version = "0.3.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"

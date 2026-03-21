@@ -15,14 +15,14 @@ pub struct WorkspaceInfo {
 #[derive(Serialize)]
 pub struct WorkspacesResponse {
     pub request_id: String,
-    pub items: Vec<WorkspaceInfo>,
+    pub workspaces: Vec<WorkspaceInfo>,
 }
 
 pub async fn list_workspaces(
     State(state): State<AppState>,
     Extension(rid): Extension<RequestIdExt>,
 ) -> Json<WorkspacesResponse> {
-    let items = state
+    let workspaces = state
         .registry
         .workspace_names()
         .into_iter()
@@ -31,6 +31,6 @@ pub async fn list_workspaces(
 
     Json(WorkspacesResponse {
         request_id: rid.0,
-        items,
+        workspaces,
     })
 }

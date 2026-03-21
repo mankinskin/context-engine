@@ -48,8 +48,6 @@ pub enum TokenLoadError {
     FileMissing(PathBuf),
     #[error("token file read error: {0}")]
     FileIo(#[from] std::io::Error),
-    #[error("token is too short — minimum 16 characters required")]
-    TooShort,
 }
 
 impl AuthState {
@@ -121,14 +119,10 @@ impl AuthState {
 
 fn load_token_set(source: &TokenSource) -> Result<TokenSet, TokenLoadError> {
     let raw: Vec<String> = match source {
-        TokenSource::Literal(t) => {
-            validate_token_str(t)?;
-            vec![t.clone()]
-        }
+        TokenSource::Literal(t) => vec![t.clone()],
         TokenSource::Env => {
             let t = std::env::var("TICKET_SERVE_TOKEN")
                 .map_err(|_| TokenLoadError::EnvMissing)?;
-            validate_token_str(&t)?;
             vec![t]
         }
         TokenSource::File(path) => {
@@ -142,9 +136,6 @@ fn load_token_set(source: &TokenSource) -> Result<TokenSet, TokenLoadError> {
                 .filter(|l| !l.is_empty() && !l.starts_with('#'))
                 .map(String::from)
                 .collect();
-            for t in &tokens {
-                validate_token_str(t)?;
-            }
             if tokens.is_empty() {
                 return Err(TokenLoadError::NoSource);
             }
@@ -155,41 +146,25 @@ fn load_token_set(source: &TokenSource) -> Result<TokenSet, TokenLoadError> {
     Ok(TokenSet::new(raw))
 }
 
-fn validate_token_str(token: &str) -> Result<(), TokenLoadError> {
-    if token.len() < 16 {
-        return Err(TokenLoadError::TooShort);
-    }
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn validate_accepts_correct_token() {
-        let state = AuthState::from_literal("a-valid-token-here").unwrap();
-        assert!(state.validate("a-valid-token-here"));
+        let state = AuthState::from_literal("mytoken").unwrap();
+        assert!(state.validate("mytoken"));
         assert!(!state.validate("wrong-token"));
     }
 
     #[test]
-    fn short_token_is_rejected() {
-        assert!(matches!(
-            AuthState::from_literal("short"),
-            Err(TokenLoadError::TooShort)
-        ));
-    }
-
-    #[test]
     fn reload_bumps_generation() {
-        let state = AuthState::from_literal("first-valid-token-ok").unwrap();
+        let state = AuthState::from_literal("first-token").unwrap();
         assert_eq!(state.generation(), 1);
-        // Reload with the same literal source
-        let source = TokenSource::Literal("second-valid-token-ok".into());
+        let source = TokenSource::Literal("second-token".into());
         let new_gen = state.reload(&source).unwrap();
         assert_eq!(new_gen, 2);
-        assert!(state.validate("second-valid-token-ok"));
-        assert!(!state.validate("first-valid-token-ok"));
+        assert!(state.validate("second-token"));
+        assert!(!state.validate("first-token"));
     }
 }

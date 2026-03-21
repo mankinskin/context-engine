@@ -159,12 +159,6 @@ pub struct ServeCliArgs {
     /// Host address to bind to.
     #[arg(long, default_value = "127.0.0.1")]
     pub host: String,
-    /// Bearer token (overrides TICKET_SERVE_TOKEN env var).
-    #[arg(long)]
-    pub token: Option<String>,
-    /// Path to a token file (one token per line).
-    #[arg(long)]
-    pub token_file: Option<std::path::PathBuf>,
     /// Serve a specific named workspace only (default: all registered).
     #[arg(long)]
     pub workspace: Option<String>,
@@ -451,7 +445,7 @@ fn dispatch(
         TicketCommandCli::Links(args) => cmd_links(args, &store),
         TicketCommandCli::Watch(args) => cmd_watch(args, &store),
         TicketCommandCli::Status(args) => cmd_status(args, &store),
-        TicketCommandCli::Serve(args) => cmd_serve(args, &index_root),
+        TicketCommandCli::Serve(args) => cmd_serve(args, store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -688,34 +682,27 @@ fn cmd_add_root(args: AddRootArgs, store: &TicketStore) -> Result<Value, CliRunE
 
 
 
-fn cmd_serve(args: ServeCliArgs, index_root: &std::path::Path) -> Result<Value, CliRunError> {
-    use crate::serve::{AuthState, ServeConfig, WorkspaceRegistry, serve};
-    use crate::serve::auth_state::TokenSource;
+fn cmd_serve(args: ServeCliArgs, store: TicketStore) -> Result<Value, CliRunError> {
+    use crate::serve::{ServeConfig, WorkspaceRegistry, serve};
     use crate::workspace::WorkspaceConfig;
 
-    // Build auth state
-    let auth = if let Some(token) = args.token {
-        AuthState::from_literal(token)
-            .map_err(|e| CliRunError::BadRequest(e.to_string()))?
-    } else if let Some(path) = args.token_file {
-        AuthState::from_source(TokenSource::File(path))
-            .map_err(|e| CliRunError::BadRequest(e.to_string()))?
-    } else {
-        AuthState::from_env()
-            .map_err(|e| CliRunError::BadRequest(format!(
-                "No token configured: {}. Use --token, --token-file, or set TICKET_SERVE_TOKEN.",
-                e
-            )))?
-    };
-
-    // Build workspace registry
+    // Build workspace registry.
+    //
+    // IMPORTANT: `store` already holds the redb lock for `index_root`.  We must
+    // pre-populate the registry with this open instance so that the lazy-open
+    // path in `WorkspaceRegistry::get()` is never reached for this workspace.
+    // Attempting a second open of the same redb file would fail (redb does not
+    // allow concurrent opens from the same process).
     let registry = if args.workspace.is_some() {
-        WorkspaceRegistry::single(index_root.to_path_buf())
+        WorkspaceRegistry::single_opened(std::sync::Arc::new(store))
     } else {
         let config = WorkspaceConfig::load();
         if config.workspaces.is_empty() {
-            WorkspaceRegistry::single(index_root.to_path_buf())
+            WorkspaceRegistry::single_opened(std::sync::Arc::new(store))
         } else {
+            // Multi-workspace config: the named workspaces open lazily.
+            // The current `store` (default workspace) is not in this registry;
+            // those workspaces have their own paths.
             WorkspaceRegistry::from_config(&config)
         }
     };
@@ -731,7 +718,7 @@ fn cmd_serve(args: ServeCliArgs, index_root: &std::path::Path) -> Result<Value, 
         .map_err(|e| CliRunError::BadRequest(format!("failed to start tokio runtime: {e}")))?;
 
     rt.block_on(async {
-        serve(config, registry, auth)
+        serve(config, registry)
             .await
             .map_err(|e| CliRunError::BadRequest(e.to_string()))
     })?;

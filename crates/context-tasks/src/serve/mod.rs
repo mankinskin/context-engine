@@ -46,7 +46,6 @@ impl ServeConfig {
 #[derive(Clone)]
 pub struct AppState {
     pub registry: Arc<WorkspaceRegistry>,
-    pub auth: Arc<AuthState>,
     pub broker: Arc<StreamBroker>,
 }
 
@@ -57,7 +56,6 @@ pub struct AppState {
 pub async fn serve(
     config: ServeConfig,
     registry: WorkspaceRegistry,
-    auth: AuthState,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let broker = Arc::new(StreamBroker::new());
 
@@ -78,7 +76,6 @@ pub async fn serve(
 
     let state = AppState {
         registry: Arc::new(registry),
-        auth: Arc::new(auth),
         broker,
     };
 

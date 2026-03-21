@@ -43,6 +43,23 @@ impl WorkspaceRegistry {
         }
     }
 
+    /// Build with a single already-open store named `"default"`.
+    ///
+    /// Use this when the caller already holds an open `TicketStore` to avoid a
+    /// second open attempt on the same redb file (redb does not allow concurrent
+    /// opens from the same process).
+    pub fn single_opened(store: Arc<TicketStore>) -> Self {
+        let path = store.index_root.clone();
+        let mut paths = HashMap::new();
+        paths.insert("default".into(), path);
+        let mut stores = HashMap::new();
+        stores.insert("default".into(), store);
+        Self {
+            paths,
+            stores: Mutex::new(stores),
+        }
+    }
+
     /// List workspace names.
     pub fn workspace_names(&self) -> Vec<String> {
         let mut names: Vec<_> = self.paths.keys().cloned().collect();
