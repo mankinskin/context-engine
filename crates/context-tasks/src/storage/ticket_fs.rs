@@ -11,8 +11,7 @@ use uuid::Uuid;
 
 use crate::error::StorageError;
 use crate::model::filesystem::{
-    TICKET_ASSETS_DIR, TICKET_HISTORY_FILE, TICKET_INTERVIEW_ANSWERS_FILE, TICKET_INTERVIEW_DIR,
-    TICKET_INTERVIEW_QUESTIONS_FILE, TICKET_LOCK_FILE, TICKET_MANIFEST_FILE,
+    TICKET_ASSETS_DIR, TICKET_HISTORY_FILE, TICKET_LOCK_FILE, TICKET_MANIFEST_FILE,
     parse_ticket_manifest_toml,
 };
 use crate::model::ticket::TicketManifest;
@@ -72,7 +71,6 @@ impl TicketFs {
         if let Some(text) = body {
             fs::write(temp_dir.join("description.md"), text)?;
         }
-        Self::ensure_interview_files(&temp_dir)?;
 
         // Rename temp → final.
         fs::rename(&temp_dir, &final_dir).map_err(|e| {
@@ -292,30 +290,6 @@ impl TicketFs {
     pub fn read_description(ticket_path: &Path) -> Option<String> {
         let desc = ticket_path.join("description.md");
         fs::read_to_string(&desc).ok()
-    }
-
-    /// Ensure interview question/answer files exist with starter content.
-    pub fn ensure_interview_files(ticket_path: &Path) -> Result<(), StorageError> {
-        let interview_dir = ticket_path.join(TICKET_INTERVIEW_DIR);
-        fs::create_dir_all(&interview_dir)?;
-
-        let questions = ticket_path.join(TICKET_INTERVIEW_QUESTIONS_FILE);
-        if !questions.exists() {
-            fs::write(
-                &questions,
-                "# Interview Questions\n\n- Q1: \n- Q2: \n- Q3: \n",
-            )?;
-        }
-
-        let answers = ticket_path.join(TICKET_INTERVIEW_ANSWERS_FILE);
-        if !answers.exists() {
-            fs::write(
-                &answers,
-                "# Interview Answers\n\n- A1: \n- A2: \n- A3: \n",
-            )?;
-        }
-
-        Ok(())
     }
 }
 
