@@ -95,6 +95,8 @@ impl TicketCommand {
             "workspace_remove",
             // fs watcher
             "watch",
+            // coordinator dashboard
+            "status",
         ]
     }
 }

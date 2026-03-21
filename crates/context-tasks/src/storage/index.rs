@@ -155,6 +155,20 @@ impl RedbIndexStore {
         Ok(edges)
     }
 
+    /// Returns every edge in the store.
+    pub fn list_all_edges(&self) -> Result<Vec<EdgeRecord>, StorageError> {
+        let read_txn = self.db.begin_read()?;
+        let table = read_txn.open_table(EDGES)?;
+        let mut edges = Vec::new();
+        for result in table.iter()? {
+            let (key, _) = result?;
+            if let Some(edge) = parse_edge_key(key.value()) {
+                edges.push(edge);
+            }
+        }
+        Ok(edges)
+    }
+
     // ── scan root registry ───────────────────────────────────────────────────
 
     pub fn add_scan_root(&self, root: &ScanRoot) -> Result<(), StorageError> {

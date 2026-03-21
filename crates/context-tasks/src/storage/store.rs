@@ -370,6 +370,11 @@ impl TicketStore {
         self.index.edges_from(id)
     }
 
+    /// Returns every edge in the store (used for bulk dependency resolution).
+    pub fn list_all_edges(&self) -> Result<Vec<EdgeRecord>, StorageError> {
+        self.index.list_all_edges()
+    }
+
     pub fn add_edge(&self, edge: EdgeRecord) -> Result<(), StorageError> {
         // For acyclic-enforced kinds: check for cycles.
         let is_acyclic = self.schema_registry

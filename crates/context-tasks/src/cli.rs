@@ -94,6 +94,8 @@ pub enum TicketCommandCli {
     Workspace(WorkspaceArgs),
     /// Watch filesystem scan roots and auto-reconcile on changes.
     Watch(WatchArgs),
+    /// Dashboard: current state summary + ready tickets + parallel opportunities.
+    Status(StatusArgs),
 }
 
 // ── arg structs ────────────────────────────────────────────────────────────────
@@ -122,6 +124,17 @@ pub struct CreateArgs {
 pub struct IdArgs {
     #[arg(long)]
     pub id: Uuid,
+}
+
+#[derive(Debug, Args)]
+pub struct StatusArgs {
+    /// Optional prefix filter — only include tickets whose title starts with this string.
+    /// E.g. "[bootstrap]" to scope the view to the bootstrap track.
+    #[arg(long)]
+    pub filter: Option<String>,
+    /// Include blocked tickets in the output (default: omitted for brevity).
+    #[arg(long, default_value_t = false)]
+    pub show_blocked: bool,
 }
 
 #[derive(Debug, Args)]
@@ -403,6 +416,7 @@ fn dispatch(
         TicketCommandCli::Link(args) => cmd_link(args, &store),
         TicketCommandCli::Links(args) => cmd_links(args, &store),
         TicketCommandCli::Watch(args) => cmd_watch(args, &store),
+        TicketCommandCli::Status(args) => cmd_status(args, &store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -647,6 +661,148 @@ fn cmd_watch(args: WatchArgs, store: &TicketStore) -> Result<Value, CliRunError>
     run_watch_loop(&handle, store, args.debounce_ms);
     // run_watch_loop blocks; this line is unreachable but satisfies the return type.
     Ok(json!({ "command": "watch", "status": "stopped" }))
+}
+
+// ── status dashboard ──────────────────────────────────────────────────────────
+
+/// The "done" bucket: states that count as work completed.
+const DONE_STATES: &[&str] = &["done", "cancelled"];
+/// States that represent active in-flight work.
+const ACTIVE_STATES: &[&str] = &["in-progress", "review", "validating", "validated",
+                                   "release-candidate", "monitoring"];
+
+fn cmd_status(args: StatusArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    use std::collections::{HashMap, HashSet};
+
+    // 1. Load all non-deleted tickets.
+    let all = store.list(None, None, None)?;
+
+    // 2. Apply optional title-prefix filter.
+    let tickets: Vec<_> = if let Some(ref prefix) = args.filter {
+        all.into_iter()
+            .filter(|t| t.title.as_deref().unwrap_or("").starts_with(prefix.as_str()))
+            .collect()
+    } else {
+        all
+    };
+
+    // 3. Build a set of done ticket IDs (quick lookup for dep resolution).
+    let done_ids: HashSet<Uuid> = tickets
+        .iter()
+        .filter(|t| {
+            t.state.as_deref().map(|s| DONE_STATES.contains(&s)).unwrap_or(false)
+        })
+        .map(|t| t.id)
+        .collect();
+
+    // 4. Load all edges and index `depends_on` edges by their `from` ticket.
+    let all_edges = store.list_all_edges()?;
+    let mut blockers: HashMap<Uuid, Vec<Uuid>> = HashMap::new(); // ticket → [unresolved dep ids]
+    for edge in &all_edges {
+        if edge.kind == "depends_on" {
+            // Only count it as a blocker if the dependency is NOT done.
+            if !done_ids.contains(&edge.to) {
+                blockers.entry(edge.from).or_default().push(edge.to);
+            }
+        }
+    }
+
+    // 5. Bucket each ticket.
+    let mut active = Vec::new();
+    let mut ready = Vec::new();
+    let mut blocked_list = Vec::new();
+    let mut done_count = 0usize;
+    let mut total = 0usize;
+
+    for t in &tickets {
+        total += 1;
+        let state = t.state.as_deref().unwrap_or("open");
+
+        if DONE_STATES.contains(&state) {
+            done_count += 1;
+            continue;
+        }
+
+        let is_active = ACTIVE_STATES.contains(&state);
+        let unresolved = blockers.get(&t.id).cloned().unwrap_or_default();
+        let is_blocked = !unresolved.is_empty();
+
+        let entry = json!({
+            "id": t.id,
+            "title": t.title,
+            "state": state,
+            "component": t.type_id,  // or pull from extra
+        });
+
+        if is_active {
+            active.push(entry);
+        } else if is_blocked {
+            if args.show_blocked {
+                let dep_entries: Vec<Value> = unresolved
+                    .iter()
+                    .map(|dep_id| {
+                        // Try to find the blocker title.
+                        let title = tickets.iter()
+                            .find(|t| t.id == *dep_id)
+                            .and_then(|t| t.title.clone())
+                            .unwrap_or_else(|| dep_id.to_string());
+                        let dep_state = tickets.iter()
+                            .find(|t| t.id == *dep_id)
+                            .and_then(|t| t.state.clone())
+                            .unwrap_or_else(|| "unknown".to_string());
+                        json!({ "id": dep_id, "title": title, "state": dep_state })
+                    })
+                    .collect();
+                blocked_list.push(json!({
+                    "id": t.id,
+                    "title": t.title,
+                    "state": state,
+                    "waiting_on": dep_entries
+                }));
+            }
+        } else {
+            // open with no unresolved deps → ready
+            ready.push(entry);
+        }
+    }
+
+    // 6. Build parallel opportunity groups: ready tickets that share no
+    //    dependency edges between each other are safe to execute in parallel.
+    //    We group by component (if available in extra fields) as a hint to
+    //    coordinators; tickets in different groups can all start at once.
+    //
+    //    Simple strategy: group by type_id (component) first, then note that
+    //    tickets in *different* groups are independent by definition.
+    let mut by_component: HashMap<String, Vec<&Value>> = HashMap::new();
+    for entry in &ready {
+        let comp = entry["component"].as_str().unwrap_or("unknown").to_string();
+        by_component.entry(comp).or_default().push(entry);
+    }
+
+    let parallel_groups: Vec<Value> = by_component
+        .into_iter()
+        .map(|(component, entries)| json!({
+            "component": component,
+            "count": entries.len(),
+            "tickets": entries
+        }))
+        .collect();
+
+    Ok(json!({
+        "command": "status",
+        "status": "ok",
+        "summary": {
+            "total": total,
+            "done": done_count,
+            "active": active.len(),
+            "ready": ready.len(),
+            "blocked": if args.show_blocked { blocked_list.len() } else { total - done_count - active.len() - ready.len() }
+        },
+        "active": active,
+        "ready": ready,
+        "blocked": blocked_list,
+        "parallel_groups": parallel_groups
+    }))
 }
 
 // ── batch exec undo infrastructure ───────────────────────────────────────────
