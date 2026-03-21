@@ -209,3 +209,82 @@ pub async fn get_ticket_description(
     })
     .into_response()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{list_tickets, WorkspaceParam};
+    use axum::{
+        body::to_bytes,
+        extract::{Extension, Query, State},
+    };
+    use std::{collections::BTreeMap, sync::Arc};
+    use viewer_api::error::RequestIdExt;
+
+    use crate::{
+        model::filesystem::ScanRoot,
+        serve::{AppState, StreamBroker, WorkspaceRegistry},
+        storage::store::TicketStore,
+    };
+
+    #[tokio::test]
+    async fn search_list_uses_persisted_updated_at() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let store = Arc::new(TicketStore::open(dir.path()).expect("open store"));
+        store
+            .add_scan_root(ScanRoot {
+                path: dir.path().join("tickets"),
+                label: "default".into(),
+            })
+            .expect("add scan root");
+
+        let id = store
+            .create(
+                None,
+                "tracker-improvement",
+                Some("search-updated-at regression"),
+                Some("open"),
+                BTreeMap::new(),
+                None,
+                None,
+            )
+            .expect("create ticket");
+
+        let expected_updated_at = store
+            .get_indexed(&id)
+            .expect("indexed get")
+            .expect("indexed ticket exists")
+            .updated_at;
+
+        let state = AppState::new(
+            Arc::new(WorkspaceRegistry::single_opened(Arc::clone(&store))),
+            Arc::new(StreamBroker::new()),
+        );
+
+        let response = list_tickets(
+            State(state),
+            Extension(RequestIdExt("rid-test".to_string())),
+            Query(WorkspaceParam {
+                workspace: "default".to_string(),
+                state: None,
+                query: Some("search-updated-at".to_string()),
+                limit: Some(10),
+                cursor: None,
+            }),
+        )
+        .await;
+
+        let bytes = to_bytes(response.into_body(), 1024 * 1024)
+            .await
+            .expect("read body");
+        let payload: serde_json::Value = serde_json::from_slice(&bytes).expect("json body");
+
+        let got = payload["items"][0]["updated_at"]
+            .as_str()
+            .expect("updated_at string");
+        let got = chrono::DateTime::parse_from_rfc3339(got)
+            .expect("parse updated_at")
+            .with_timezone(&chrono::Utc);
+
+        assert_eq!(got, expected_updated_at);
+    }
+}

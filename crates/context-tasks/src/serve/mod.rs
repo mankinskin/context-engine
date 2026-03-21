@@ -53,6 +53,17 @@ pub struct AppState {
 }
 
 impl AppState {
+    pub(crate) fn new(
+        registry: Arc<WorkspaceRegistry>,
+        broker: Arc<StreamBroker>,
+    ) -> Self {
+        Self {
+            registry,
+            broker,
+            runtime_ready: Arc::new(Mutex::new(HashSet::new())),
+        }
+    }
+
     /// Get a workspace store and ensure serve-runtime wiring is initialized once.
     ///
     /// This guarantees that even lazily opened workspaces get a broker channel,
@@ -85,11 +96,10 @@ pub async fn serve(
     config: ServeConfig,
     registry: WorkspaceRegistry,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let state = AppState {
-        registry: Arc::new(registry),
-        broker: Arc::new(StreamBroker::new()),
-        runtime_ready: Arc::new(Mutex::new(HashSet::new())),
-    };
+    let state = AppState::new(
+        Arc::new(registry),
+        Arc::new(StreamBroker::new()),
+    );
 
     // Pre-initialize all known workspaces at startup while still keeping
     // on-demand initialization for lazily opened stores.
@@ -105,4 +115,56 @@ pub async fn serve(
     eprintln!("ticket serve listening on http://{}", addr);
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{AppState, StreamBroker, WorkspaceRegistry};
+    use crate::{
+        model::filesystem::ScanRoot,
+        serve::stream::event::SseEvent,
+    };
+    use std::{collections::BTreeMap, sync::Arc};
+
+    #[tokio::test]
+    async fn ensure_workspace_runtime_wires_hook_for_lazy_open_store() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let state = AppState::new(
+            Arc::new(WorkspaceRegistry::single(dir.path().to_path_buf())),
+            Arc::new(StreamBroker::new()),
+        );
+
+        let mut rx = state.broker.subscribe("default");
+        let store = state
+            .ensure_workspace_runtime("default")
+            .expect("workspace should initialize");
+
+        store
+            .add_scan_root(ScanRoot {
+                path: dir.path().join("tickets"),
+                label: "default".to_string(),
+            })
+            .expect("add scan root");
+
+        store
+            .create(
+                None,
+                "tracker-improvement",
+                Some("runtime wiring regression"),
+                Some("open"),
+                BTreeMap::new(),
+                None,
+                None,
+            )
+            .expect("create ticket");
+
+        let (_, event) = rx.recv().await.expect("should receive hook event");
+        match event {
+            SseEvent::TicketUpsert(payload) => {
+                assert_eq!(payload.workspace, "default");
+                assert_eq!(payload.ticket.title.as_deref(), Some("runtime wiring regression"));
+            }
+            other => panic!("expected TicketUpsert, got {other:?}"),
+        }
+    }
 }

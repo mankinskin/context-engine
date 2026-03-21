@@ -55,42 +55,10 @@ async fn forward(
     headers: HeaderMap,
     body: Option<Vec<u8>>,
 ) -> Response {
-    let mut url = match reqwest::Url::parse(&format!("{}/api/", backend_url.trim_end_matches('/'))) {
-        Ok(u) => u,
-        Err(e) => {
-            tracing::error!(error = %e, backend_url, "Invalid backend URL");
-            return (
-                StatusCode::BAD_GATEWAY,
-                format!("{{\"error\":\"invalid backend url: {e}\"}}"),
-            )
-                .into_response();
-        }
+    let url = match build_backend_url(backend_url, path, query) {
+        Ok(url) => url,
+        Err(msg) => return (StatusCode::BAD_GATEWAY, msg).into_response(),
     };
-
-    {
-        let mut segments = match url.path_segments_mut() {
-            Ok(s) => s,
-            Err(_) => {
-                return (
-                    StatusCode::BAD_GATEWAY,
-                    "{\"error\":\"backend url cannot be a base\"}".to_string(),
-                )
-                    .into_response();
-            }
-        };
-        for segment in path.split('/') {
-            if !segment.is_empty() {
-                segments.push(segment);
-            }
-        }
-    }
-
-    {
-        let mut pairs = url.query_pairs_mut();
-        for (k, v) in query {
-            pairs.append_pair(k, v);
-        }
-    }
 
     let client = reqwest::Client::new();
     let mut req = match method {
@@ -132,5 +100,73 @@ async fn forward(
             )
                 .into_response()
         }
+    }
+}
+
+fn build_backend_url(
+    backend_url: &str,
+    path: &str,
+    query: &HashMap<String, String>,
+) -> Result<reqwest::Url, String> {
+    let mut url = reqwest::Url::parse(backend_url.trim_end_matches('/'))
+        .map_err(|e| {
+            tracing::error!(error = %e, backend_url, "Invalid backend URL");
+            format!("{{\"error\":\"invalid backend url: {e}\"}}")
+        })?;
+
+    {
+        let mut segments = url
+            .path_segments_mut()
+            .map_err(|_| "{\"error\":\"backend url cannot be a base\"}".to_string())?;
+        segments.clear();
+        segments.push("api");
+        for segment in path.split('/') {
+            if !segment.is_empty() {
+                segments.push(segment);
+            }
+        }
+    }
+
+    {
+        let mut pairs = url.query_pairs_mut();
+        for (k, v) in query {
+            pairs.append_pair(k, v);
+        }
+    }
+
+    Ok(url)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::build_backend_url;
+    use std::collections::HashMap;
+
+    #[test]
+    fn build_backend_url_encodes_utf8_query_values() {
+        let mut query = HashMap::new();
+        query.insert("workspace".to_string(), "büro default".to_string());
+
+        let url = build_backend_url("http://localhost:4000", "tickets", &query)
+            .expect("url should build");
+
+        assert_eq!(url.host_str(), Some("localhost"));
+        assert_eq!(url.port_or_known_default(), Some(4000));
+        assert!(
+            url.path().ends_with("/api/tickets") || url.path().ends_with("/api/tickets/"),
+            "url path should route to /api/tickets, got {}",
+            url.path()
+        );
+        assert!(
+            url.as_str().contains("workspace=b%C3%BCro+default"),
+            "url should contain UTF-8 percent encoded query value: {}",
+            url
+        );
+        let workspace = url
+            .query_pairs()
+            .find(|(k, _)| k == "workspace")
+            .map(|(_, v)| v.into_owned())
+            .expect("workspace query should exist");
+        assert_eq!(workspace, "büro default");
     }
 }

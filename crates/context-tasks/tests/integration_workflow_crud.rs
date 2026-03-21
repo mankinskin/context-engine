@@ -347,6 +347,61 @@ fn exec_batch_supports_link_commands() {
 }
 
 #[test]
+fn unlink_removes_existing_edge() {
+    let s = Sandbox::new();
+
+    let id_a = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+    let id_b = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+
+    s.ticket_json(&[
+        "create",
+        "--id",
+        id_a,
+        "--title",
+        "A",
+        "--type",
+        "tracker-improvement",
+    ]);
+    s.ticket_json(&[
+        "create",
+        "--id",
+        id_b,
+        "--title",
+        "B",
+        "--type",
+        "tracker-improvement",
+    ]);
+
+    let linked = s.ticket_json(&[
+        "link",
+        "--from",
+        id_a,
+        "--to",
+        id_b,
+        "--kind",
+        "depends_on",
+    ]);
+    assert_eq!(linked["status"], "ok");
+
+    let before = s.ticket_json(&["links", "--id", id_a]);
+    assert_eq!(before["count"].as_u64().unwrap(), 1);
+
+    let unlinked = s.ticket_json(&[
+        "unlink",
+        "--from",
+        id_a,
+        "--to",
+        id_b,
+        "--kind",
+        "depends_on",
+    ]);
+    assert_eq!(unlinked["status"], "ok");
+
+    let after = s.ticket_json(&["links", "--id", id_a]);
+    assert_eq!(after["count"].as_u64().unwrap(), 0);
+}
+
+#[test]
 fn exec_batch_rolls_back_link_on_error() {
     let s = Sandbox::new();
 

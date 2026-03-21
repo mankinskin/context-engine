@@ -1,9 +1,9 @@
 //! Workspace registry: maps workspace names to `TicketStore` instances.
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     path::PathBuf,
-    sync::{Arc, Mutex},
+    sync::{Arc, Condvar, Mutex},
 };
 
 use crate::{
@@ -17,6 +17,51 @@ pub struct WorkspaceRegistry {
     paths: HashMap<String, PathBuf>,
     /// Lazy-opened stores, keyed by name.
     stores: Mutex<HashMap<String, Arc<TicketStore>>>,
+    /// Workspaces currently being opened by another thread.
+    opening: Mutex<HashSet<String>>,
+    /// Notifies waiters when a workspace open attempt completes.
+    opening_cv: Condvar,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::WorkspaceRegistry;
+    use std::sync::{Arc, Barrier};
+    use std::thread;
+
+    #[test]
+    fn concurrent_get_returns_shared_store_instance() {
+        let dir = tempfile::tempdir().expect("create tempdir");
+        let registry = Arc::new(WorkspaceRegistry::single(dir.path().to_path_buf()));
+
+        let workers = 8usize;
+        let barrier = Arc::new(Barrier::new(workers));
+        let mut handles = Vec::with_capacity(workers);
+
+        for _ in 0..workers {
+            let registry = Arc::clone(&registry);
+            let barrier = Arc::clone(&barrier);
+            handles.push(thread::spawn(move || {
+                barrier.wait();
+                registry
+                    .get("default")
+                    .expect("workspace should open")
+            }));
+        }
+
+        let first = handles
+            .remove(0)
+            .join()
+            .expect("thread should join without panic");
+
+        for handle in handles {
+            let store = handle.join().expect("thread should join without panic");
+            assert!(
+                Arc::ptr_eq(&first, &store),
+                "all concurrent gets should return the same cached store instance"
+            );
+        }
+    }
 }
 
 impl WorkspaceRegistry {
@@ -30,6 +75,8 @@ impl WorkspaceRegistry {
         Self {
             paths,
             stores: Mutex::new(HashMap::new()),
+            opening: Mutex::new(HashSet::new()),
+            opening_cv: Condvar::new(),
         }
     }
 
@@ -40,6 +87,8 @@ impl WorkspaceRegistry {
         Self {
             paths,
             stores: Mutex::new(HashMap::new()),
+            opening: Mutex::new(HashSet::new()),
+            opening_cv: Condvar::new(),
         }
     }
 
@@ -57,6 +106,8 @@ impl WorkspaceRegistry {
         Self {
             paths,
             stores: Mutex::new(stores),
+            opening: Mutex::new(HashSet::new()),
+            opening_cv: Condvar::new(),
         }
     }
 
@@ -78,22 +129,60 @@ impl WorkspaceRegistry {
     pub fn get(&self, workspace: &str) -> Option<Arc<TicketStore>> {
         let path = self.paths.get(workspace)?.clone();
 
-        let mut stores = self.stores.lock().unwrap();
-        if let Some(store) = stores.get(workspace) {
-            return Some(Arc::clone(store));
+        {
+            let stores = self.stores.lock().unwrap();
+            if let Some(store) = stores.get(workspace) {
+                return Some(Arc::clone(store));
+            }
         }
 
-        // Lazy open
-        match TicketStore::open(&path) {
-            Ok(store) => {
-                let arc = Arc::new(store);
-                stores.insert(workspace.to_string(), Arc::clone(&arc));
-                Some(arc)
+        // Coordinate concurrent lazy opens: only one thread opens a given
+        // workspace, others wait for the result and use the cached store.
+        {
+            let mut opening = self.opening.lock().unwrap();
+            loop {
+                if !opening.contains(workspace) {
+                    opening.insert(workspace.to_string());
+                    break;
+                }
+                opening = self.opening_cv.wait(opening).unwrap();
+                if let Some(existing) = self.stores.lock().unwrap().get(workspace).cloned() {
+                    return Some(existing);
+                }
             }
+        }
+
+        // Lazy open outside mutexes to avoid blocking unrelated requests.
+        let opened = match TicketStore::open(&path) {
+            Ok(store) => Some(Arc::new(store)),
             Err(e) => {
                 tracing::warn!(workspace, error = %e, "failed to open workspace store");
                 None
             }
+        };
+
+        let result = {
+            let mut stores = self.stores.lock().unwrap();
+            if let Some(existing) = stores.get(workspace) {
+                Some(Arc::clone(existing))
+            } else if let Some(opened) = opened {
+                stores.insert(workspace.to_string(), Arc::clone(&opened));
+                Some(opened)
+            } else {
+                None
+            }
+        };
+
+        let mut opening = self.opening.lock().unwrap();
+        opening.remove(workspace);
+        self.opening_cv.notify_all();
+
+        if result.is_none() {
+            if let Some(existing) = self.stores.lock().unwrap().get(workspace).cloned() {
+                return Some(existing);
+            }
         }
+
+        result
     }
 }

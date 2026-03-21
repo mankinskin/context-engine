@@ -93,6 +93,8 @@ pub enum TicketCommandCli {
     ExportCommandSchema,
     /// Add a directed edge (dependency/link) between two tickets.
     Link(LinkArgs),
+    /// Remove a directed edge between two tickets.
+    Unlink(UnlinkArgs),
     /// List all edges originating from a ticket.
     Links(IdArgs),
     /// Manage named workspaces (named index roots).
@@ -176,6 +178,22 @@ pub struct LinkArgs {
     #[arg(long)]
     pub kind: String,
     /// Human-readable reason for this edge (optional, stored in response only).
+    #[arg(long)]
+    pub reason: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub struct UnlinkArgs {
+    /// UUID of the source ticket.
+    #[arg(long)]
+    pub from: Uuid,
+    /// UUID of the target ticket.
+    #[arg(long)]
+    pub to: Uuid,
+    /// Edge kind (e.g. depends_on, blocks, linked).
+    #[arg(long)]
+    pub kind: String,
+    /// Human-readable reason for this removal (optional, stored in response only).
     #[arg(long)]
     pub reason: Option<String>,
 }
@@ -442,6 +460,7 @@ fn dispatch(
             "merge_commit": args.merge_commit
         })),
         TicketCommandCli::Link(args) => cmd_link(args, &store),
+        TicketCommandCli::Unlink(args) => cmd_unlink(args, &store),
         TicketCommandCli::Links(args) => cmd_links(args, &store),
         TicketCommandCli::Watch(args) => cmd_watch(args, &store),
         TicketCommandCli::Status(args) => cmd_status(args, &store),
@@ -557,6 +576,24 @@ fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     store.add_edge(edge)?;
     Ok(json!({
         "command": "link",
+        "status": "ok",
+        "from": args.from,
+        "to": args.to,
+        "kind": args.kind,
+        "reason": args.reason,
+    }))
+}
+
+fn cmd_unlink(args: UnlinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let edge = EdgeRecord {
+        from: args.from,
+        to: args.to,
+        kind: args.kind.clone(),
+        created_at: Utc::now(),
+    };
+    store.remove_edge(edge)?;
+    Ok(json!({
+        "command": "unlink",
         "status": "ok",
         "from": args.from,
         "to": args.to,
