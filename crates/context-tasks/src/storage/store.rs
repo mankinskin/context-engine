@@ -139,6 +139,9 @@ impl TicketStore {
             Some(type_id),
         )?;
 
+        // Append initial history snapshot (rev 1).
+        let _ = TicketFs::append_history(&indexed.path, manifest.extra.clone());
+
         Ok(id)
     }
 
@@ -207,6 +210,9 @@ impl TicketStore {
             Some(indexed.type_id.as_str()),
         )?;
 
+        // Append history snapshot after successful write.
+        let _ = TicketFs::append_history(&indexed.path, updated_manifest.extra.clone());
+
         Ok(updated_manifest)
     }
 
@@ -254,6 +260,69 @@ impl TicketStore {
             Some(refreshed.type_id.as_str()),
         )?;
         Ok(())
+    }
+
+    // ── history ───────────────────────────────────────────────────────────────
+
+    /// Return all revision snapshots for `id`, oldest first.
+    pub fn get_history(
+        &self,
+        id: &Uuid,
+    ) -> Result<Vec<crate::storage::ticket_fs::HistoryRevision>, StorageError> {
+        let indexed = self
+            .index
+            .get_ticket(id)?
+            .ok_or(StorageError::NotFound(*id))?;
+        if indexed.deleted {
+            return Err(StorageError::NotFound(*id));
+        }
+        TicketFs::read_history(&indexed.path)
+    }
+
+    /// Apply a revert: overwrite the ticket with `fields` from a historical
+    /// snapshot, bypassing state-machine validation, and append a new revision.
+    ///
+    /// This is forward-only: the history log grows by one entry; nothing is
+    /// erased.
+    pub fn apply_revert(
+        &self,
+        id: &Uuid,
+        fields: BTreeMap<String, Value>,
+    ) -> Result<u64, StorageError> {
+        let indexed = self
+            .index
+            .get_ticket(id)?
+            .ok_or(StorageError::NotFound(*id))?;
+        if indexed.deleted {
+            return Err(StorageError::NotFound(*id));
+        }
+
+        let target_state = fields.get("state").and_then(|v| v.as_str()).map(str::to_string);
+        let mut patch = fields.clone();
+        patch.remove("state"); // state is applied via the separate new_state arg
+
+        TicketFs::update(&indexed.path, &patch, target_state.as_deref())?;
+
+        // Refresh indexes.
+        let mut refreshed = indexed;
+        refreshed.state = target_state.clone();
+        if let Some(title_val) = patch.get("title").and_then(|v| v.as_str()) {
+            refreshed.title = Some(title_val.to_string());
+        }
+        self.index.insert_ticket(&refreshed)?;
+        let body = TicketFs::read_description(&refreshed.path);
+        self.search.upsert(
+            id,
+            refreshed.title.as_deref(),
+            body.as_deref(),
+            refreshed.state.as_deref(),
+            Some(refreshed.type_id.as_str()),
+        )?;
+
+        // Append history entry for the reverted state (creates a new rev).
+        let updated_manifest = TicketFs::read(&refreshed.path)?;
+        let new_rev = TicketFs::append_history(&refreshed.path, updated_manifest.extra)?;
+        Ok(new_rev)
     }
 
 

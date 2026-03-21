@@ -310,6 +310,8 @@ pub enum CliRunError {
     IndexRootRequired,
     #[error("invalid exec command payload: {0}")]
     InvalidExecPayload(String),
+    #[error("{0}")]
+    BadRequest(String),
 }
 
 pub enum CliOutput {
@@ -389,26 +391,9 @@ fn dispatch(
         TicketCommandCli::Query(args) => cmd_search(args, &store),
         TicketCommandCli::AddRoot(args) => cmd_add_root(args, &store),
         TicketCommandCli::Exec(args) => cmd_exec(args, &store),
-        TicketCommandCli::History(args) => Ok(json!({
-            "command": "history",
-            "status": "phase2_stub",
-            "id": args.id,
-            "entries": []
-        })),
-        TicketCommandCli::Diff(args) => Ok(json!({
-            "command": "diff",
-            "status": "phase2_stub",
-            "id": args.id,
-            "from": args.from,
-            "to": args.to,
-            "patch": null
-        })),
-        TicketCommandCli::Revert(args) => Ok(json!({
-            "command": "revert",
-            "status": "phase2_stub",
-            "id": args.id,
-            "to": args.to_sha
-        })),
+        TicketCommandCli::History(args) => cmd_history(args, &store),
+        TicketCommandCli::Diff(args) => cmd_diff(args, &store),
+        TicketCommandCli::Revert(args) => cmd_revert(args, &store),
         TicketCommandCli::FinalizeMerge(args) => Ok(json!({
             "command": "finalize_merge",
             "status": "phase2_stub",
@@ -732,6 +717,117 @@ fn apply_batch_undo(undo: BatchUndoOp, store: &TicketStore, errors: &mut Vec<Str
             }
         }
     }
+}
+
+// ── history / diff / revert ───────────────────────────────────────────────────
+
+fn cmd_history(args: HistoryArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let mut revisions = store.get_history(&args.id)?;
+    // Most-recent first; apply limit.
+    revisions.reverse();
+    revisions.truncate(args.limit);
+    let entries: Vec<Value> = revisions
+        .into_iter()
+        .map(|r| json!({ "rev": r.rev, "ts": r.ts, "fields": r.fields }))
+        .collect();
+    Ok(json!({
+        "command": "history",
+        "status": "ok",
+        "id": args.id,
+        "count": entries.len(),
+        "entries": entries
+    }))
+}
+
+/// Parse a revision specifier: an integer string or the keyword "latest".
+/// Returns `None` if the string is not a valid specifier.
+fn parse_rev_spec(spec: &str, max_rev: u64) -> Option<u64> {
+    if spec == "latest" {
+        return Some(max_rev);
+    }
+    spec.parse::<u64>().ok()
+}
+
+fn cmd_diff(args: DiffArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let revisions = store.get_history(&args.id)?;
+    if revisions.is_empty() {
+        return Err(CliRunError::BadRequest("no history available for this ticket".into()));
+    }
+    let max_rev = revisions.last().map(|r| r.rev).unwrap_or(0);
+    let from_rev = parse_rev_spec(&args.from, max_rev)
+        .ok_or_else(|| CliRunError::BadRequest(format!("invalid revision specifier: {}", args.from)))?;
+    let to_rev = parse_rev_spec(&args.to, max_rev)
+        .ok_or_else(|| CliRunError::BadRequest(format!("invalid revision specifier: {}", args.to)))?;
+
+    let find_rev = |n: u64| revisions.iter().find(|r| r.rev == n).cloned();
+    let from = find_rev(from_rev)
+        .ok_or_else(|| CliRunError::BadRequest(format!("revision {} not found", from_rev)))?;
+    let to = find_rev(to_rev)
+        .ok_or_else(|| CliRunError::BadRequest(format!("revision {} not found", to_rev)))?;
+
+    // Build diff: added, removed, changed.
+    let mut added: BTreeMap<&str, &Value> = BTreeMap::new();
+    let mut removed: BTreeMap<&str, &Value> = BTreeMap::new();
+    let mut changed: BTreeMap<&str, (&Value, &Value)> = BTreeMap::new();
+
+    for (k, v) in &to.fields {
+        match from.fields.get(k) {
+            None => { added.insert(k.as_str(), v); }
+            Some(old) if old != v => { changed.insert(k.as_str(), (old, v)); }
+            _ => {}
+        }
+    }
+    for (k, v) in &from.fields {
+        if !to.fields.contains_key(k) {
+            removed.insert(k.as_str(), v);
+        }
+    }
+
+    let changed_json: serde_json::Map<String, Value> = changed
+        .into_iter()
+        .map(|(k, (old, new))| (k.to_string(), json!({ "from": old, "to": new })))
+        .collect();
+
+    Ok(json!({
+        "command": "diff",
+        "status": "ok",
+        "id": args.id,
+        "from_rev": from_rev,
+        "to_rev": to_rev,
+        "added": added,
+        "removed": removed,
+        "changed": changed_json
+    }))
+}
+
+fn cmd_revert(args: RevertArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let revisions = store.get_history(&args.id)?;
+    if revisions.is_empty() {
+        return Err(CliRunError::BadRequest("no history available for this ticket".into()));
+    }
+    let max_rev = revisions.last().map(|r| r.rev).unwrap_or(0);
+    let target_rev = parse_rev_spec(&args.to_sha, max_rev)
+        .ok_or_else(|| CliRunError::BadRequest(format!("invalid revision specifier: {}", args.to_sha)))?;
+    let snapshot = revisions
+        .iter()
+        .find(|r| r.rev == target_rev)
+        .cloned()
+        .ok_or_else(|| CliRunError::BadRequest(format!("revision {} not found", target_rev)))?;
+
+    // Revert = forward-only: apply snapshot fields as a new revision, bypassing
+    // state-machine validation (we're going backwards in state, which would
+    // otherwise be rejected).
+    let new_rev = store.apply_revert(&args.id, snapshot.fields)?;
+    let updated = store.get(&args.id)?;
+
+    Ok(json!({
+        "command": "revert",
+        "status": "ok",
+        "id": args.id,
+        "reverted_to": target_rev,
+        "new_rev": new_rev,
+        "ticket": { "fields": updated.extra }
+    }))
 }
 
 /// `ticket exec` — read one JSON `TaskCommand` object from stdin and execute it.

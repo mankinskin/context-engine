@@ -1,15 +1,33 @@
-use std::fs::{self, File};
+use std::collections::BTreeMap;
+use std::fs::{self, File, OpenOptions};
+use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 
+use chrono::Utc;
 use fs4::fs_std::FileExt;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::Uuid;
 
 use crate::error::StorageError;
 use crate::model::filesystem::{
-    TICKET_ASSETS_DIR, TICKET_LOCK_FILE, TICKET_MANIFEST_FILE, parse_ticket_manifest_toml,
+    TICKET_ASSETS_DIR, TICKET_HISTORY_FILE, TICKET_LOCK_FILE, TICKET_MANIFEST_FILE,
+    parse_ticket_manifest_toml,
 };
 use crate::model::ticket::TicketManifest;
+
+/// A single immutable revision snapshot stored in `history.ndjson`.
+///
+/// Revisions are append-only; `revert` creates a new revision with old state.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HistoryRevision {
+    /// 1-based sequential revision number.
+    pub rev: u64,
+    /// ISO-8601 UTC timestamp of when this revision was written.
+    pub ts: String,
+    /// Complete snapshot of the manifest `extra` fields at this revision.
+    pub fields: BTreeMap<String, Value>,
+}
 
 /// Low-level filesystem operations for ticket folders.
 ///
@@ -207,6 +225,55 @@ impl TicketFs {
         }
 
         Ok((valid, diags))
+    }
+
+    // ── history ───────────────────────────────────────────────────────────────
+
+    /// Read all history revisions for a ticket (oldest first).
+    ///
+    /// Returns an empty vec if no `history.ndjson` exists yet.
+    pub fn read_history(ticket_path: &Path) -> Result<Vec<HistoryRevision>, StorageError> {
+        let path = ticket_path.join(TICKET_HISTORY_FILE);
+        if !path.exists() {
+            return Ok(Vec::new());
+        }
+        let file = File::open(&path)?;
+        let reader = BufReader::new(file);
+        let mut revisions = Vec::new();
+        for line in reader.lines() {
+            let line = line?;
+            let trimmed = line.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+            let rev: HistoryRevision = serde_json::from_str(trimmed)
+                .map_err(|e| StorageError::Serialization(e.to_string()))?;
+            revisions.push(rev);
+        }
+        Ok(revisions)
+    }
+
+    /// Append one revision snapshot to `history.ndjson`.
+    ///
+    /// The revision number is `existing_count + 1`.
+    pub fn append_history(
+        ticket_path: &Path,
+        fields: BTreeMap<String, Value>,
+    ) -> Result<u64, StorageError> {
+        let path = ticket_path.join(TICKET_HISTORY_FILE);
+        // Count existing revisions to assign the next rev number.
+        let existing_count = Self::read_history(ticket_path)?.len() as u64;
+        let rev = existing_count + 1;
+        let entry = HistoryRevision {
+            rev,
+            ts: Utc::now().to_rfc3339(),
+            fields,
+        };
+        let line = serde_json::to_string(&entry)
+            .map_err(|e| StorageError::Serialization(e.to_string()))?;
+        let mut file = OpenOptions::new().create(true).append(true).open(&path)?;
+        writeln!(file, "{}", line)?;
+        Ok(rev)
     }
 
     /// Ensure the `assets/` subdirectory exists inside `ticket_path`.
