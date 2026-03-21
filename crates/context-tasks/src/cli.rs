@@ -11,7 +11,9 @@ use crate::contracts::command_schema::{
     CommandEnvelope, ErrorEnvelope, export_command_schema, export_command_schema_json,
 };
 use crate::error::StorageError;
+use crate::model::schema_registry::SchemaRegistry;
 use crate::storage::TicketStore;
+use crate::workspace::{self, WorkspaceConfig};
 
 // ── CLI root ───────────────────────────────────────────────────────────────────
 
@@ -30,6 +32,11 @@ pub struct TicketCli {
     /// Defaults to $TICKET_INDEX_ROOT env var, then ~/.ticket-index/.
     #[arg(long, global = true)]
     pub index_root: Option<PathBuf>,
+
+    /// Directory containing additional ticket type schema TOML files.
+    /// Each `<type-id>.toml` file overrides or supplements the built-in schemas.
+    #[arg(long, global = true)]
+    pub schema_dir: Option<PathBuf>,
 
     #[command(subcommand)]
     pub command: TicketCommandCli,
@@ -76,6 +83,8 @@ pub enum TicketCommandCli {
     /// Export the command namespace/schema for automation clients.
     #[command(name = "export-command-schema")]
     ExportCommandSchema,
+    /// Manage named workspaces (named index roots).
+    Workspace(WorkspaceArgs),
 }
 
 // ── arg structs ────────────────────────────────────────────────────────────────
@@ -200,6 +209,51 @@ pub struct FinalizeMergeArgs {
 }
 
 #[derive(Debug, Args)]
+pub struct WorkspaceArgs {
+    #[command(subcommand)]
+    pub command: WorkspaceSubCommand,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum WorkspaceSubCommand {
+    /// List all registered workspaces.
+    List,
+    /// Register a new named workspace.
+    New(WorkspaceNewArgs),
+    /// Set the active workspace by name.
+    Use(WorkspaceUseArgs),
+    /// Show the currently active workspace and how it was resolved.
+    Current,
+    /// Unregister a workspace (data on disk is not removed).
+    Remove(WorkspaceRemoveArgs),
+}
+
+#[derive(Debug, Args)]
+pub struct WorkspaceNewArgs {
+    /// Name for the new workspace.
+    pub name: String,
+    /// Index root path (defaults to ~/.ticket-<name>/).
+    #[arg(long)]
+    pub path: Option<PathBuf>,
+}
+
+#[derive(Debug, Args)]
+pub struct WorkspaceUseArgs {
+    /// Name of the workspace to activate.
+    pub name: String,
+    /// Write a .ticket-workspace file in the current directory instead of
+    /// updating the global active pointer.
+    #[arg(long)]
+    pub local: bool,
+}
+
+#[derive(Debug, Args)]
+pub struct WorkspaceRemoveArgs {
+    /// Name of the workspace to unregister.
+    pub name: String,
+}
+
+#[derive(Debug, Args)]
 pub struct ExecArgs {
     /// Execute multiple commands from stdin, one JSON object per line, as a
     /// single transaction. Rolls back all on first failure.
@@ -231,7 +285,7 @@ pub enum CliOutput {
 // ── entry point ────────────────────────────────────────────────────────────────
 
 pub fn run(cli: TicketCli) -> Result<CliOutput, CliRunError> {
-    let payload = dispatch(cli.command, cli.index_root.as_deref(), cli.json)?;
+    let payload = dispatch(cli.command, cli.index_root.as_deref(), cli.schema_dir.as_deref(), cli.json)?;
     if cli.json {
         let request_id = cli.request_id.unwrap_or_else(|| Uuid::new_v4().to_string());
         let envelope = CommandEnvelope { request_id, payload };
@@ -244,6 +298,7 @@ pub fn run(cli: TicketCli) -> Result<CliOutput, CliRunError> {
 fn dispatch(
     command: TicketCommandCli,
     index_root_override: Option<&std::path::Path>,
+    schema_dir_override: Option<&std::path::Path>,
     _as_json: bool,
 ) -> Result<Value, CliRunError> {
     // Commands that don't need storage.
@@ -258,12 +313,20 @@ fn dispatch(
                 "known_commands": export_command_schema().commands,
             }));
         }
+        TicketCommandCli::Workspace(_) => {}
         _ => {}
+    }
+    if let TicketCommandCli::Workspace(args) = command {
+        return Ok(cmd_workspace(args));
     }
 
     // All other commands need the store.
     let index_root = resolve_index_root(index_root_override)?;
-    let store = TicketStore::open(&index_root)?;
+    let mut registry = SchemaRegistry::with_builtins();
+    if let Some(schema_dir) = schema_dir_override {
+        registry.load_dir(schema_dir)?;
+    }
+    let store = TicketStore::open_with(&index_root, registry)?;
 
     match command {
         TicketCommandCli::Create(args) => cmd_create(args, &store),
@@ -306,6 +369,7 @@ fn dispatch(
             "merge_commit": args.merge_commit
         })),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
+        TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
 }
 
@@ -757,34 +821,137 @@ fn req_str<'a>(cmd: &'a Value, field: &str) -> Result<&'a str, CliRunError> {
 // ── utilities ──────────────────────────────────────────────────────────────────
 
 fn resolve_index_root(override_path: Option<&std::path::Path>) -> Result<PathBuf, CliRunError> {
+    // Layer 1: explicit --index-root flag
     if let Some(p) = override_path {
         return Ok(p.to_path_buf());
     }
+    // Layer 1b: TICKET_INDEX_ROOT env var
     if let Ok(env_val) = std::env::var("TICKET_INDEX_ROOT") {
         return Ok(PathBuf::from(env_val));
     }
-    // Default: ~/.ticket-index/
-    let home = dirs_home();
-    Ok(home.join(".ticket-index"))
+    // Layers 2-4: workspace resolution chain (.ticket-workspace → active workspace → default)
+    let (path, _source) = workspace::resolve_workspace();
+    Ok(path)
 }
-
-fn dirs_home() -> PathBuf {
-    #[cfg(windows)]
-    return PathBuf::from(
-        std::env::var("USERPROFILE")
-            .or_else(|_| std::env::var("HOMEDRIVE").and_then(|d| std::env::var("HOMEPATH").map(|p| d + &p)))
-            .unwrap_or_else(|_| ".".to_string()),
-    );
-    #[cfg(not(windows))]
-    return PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| ".".to_string()));
-}
-
 fn parse_uuid_field(cmd: &Value, field: &str) -> Result<Uuid, CliRunError> {
     cmd.get(field)
         .and_then(|v| v.as_str())
         .and_then(|s| s.parse().ok())
         .ok_or_else(|| CliRunError::InvalidExecPayload(format!("missing or invalid '{field}' field")))
 }
+
+// ── workspace command handler ─────────────────────────────────────────────────
+
+fn cmd_workspace(args: WorkspaceArgs) -> Value {
+    match args.command {
+        WorkspaceSubCommand::List => {
+            let config = WorkspaceConfig::load();
+            let active = config.active.as_deref().unwrap_or("");
+            let workspaces: Vec<Value> = config
+                .workspaces
+                .iter()
+                .map(|(name, path)| {
+                    json!({
+                        "name": name,
+                        "path": path,
+                        "active": name == active,
+                    })
+                })
+                .collect();
+            json!({
+                "command": "workspace_list",
+                "status": "ok",
+                "active": if active.is_empty() { Value::Null } else { Value::String(active.to_string()) },
+                "workspaces": workspaces,
+            })
+        }
+        WorkspaceSubCommand::New(args) => {
+            let path = args.path.unwrap_or_else(|| {
+                crate::workspace::WorkspaceConfig::config_path()
+                    .parent()
+                    .unwrap_or(std::path::Path::new("."))
+                    .join(format!(".ticket-{}", args.name))
+            });
+            let mut config = WorkspaceConfig::load();
+            match config.add(&args.name, path.clone()) {
+                Err(e) => json!({ "command": "workspace_new", "status": "error", "message": e }),
+                Ok(()) => {
+                    if let Err(e) = config.save() {
+                        return json!({ "command": "workspace_new", "status": "error", "message": e.to_string() });
+                    }
+                    json!({
+                        "command": "workspace_new",
+                        "status": "ok",
+                        "name": args.name,
+                        "path": path.to_string_lossy(),
+                    })
+                }
+            }
+        }
+        WorkspaceSubCommand::Use(use_args) => {
+            if use_args.local {
+                // Write .ticket-workspace in cwd
+                let local_path = std::env::current_dir()
+                    .unwrap_or_else(|_| PathBuf::from("."))
+                    .join(crate::workspace::LOCAL_WORKSPACE_FILE);
+                match std::fs::write(&local_path, &use_args.name) {
+                    Err(e) => json!({ "command": "workspace_use", "status": "error", "message": e.to_string() }),
+                    Ok(()) => json!({
+                        "command": "workspace_use",
+                        "status": "ok",
+                        "name": use_args.name,
+                        "scope": "local",
+                        "file": local_path.to_string_lossy(),
+                    }),
+                }
+            } else {
+                let mut config = WorkspaceConfig::load();
+                match config.set_active(&use_args.name) {
+                    Err(e) => json!({ "command": "workspace_use", "status": "error", "message": e }),
+                    Ok(()) => {
+                        if let Err(e) = config.save() {
+                            return json!({ "command": "workspace_use", "status": "error", "message": e.to_string() });
+                        }
+                        json!({
+                            "command": "workspace_use",
+                            "status": "ok",
+                            "name": use_args.name,
+                            "scope": "global",
+                        })
+                    }
+                }
+            }
+        }
+        WorkspaceSubCommand::Current => {
+            // Reproduce the full resolution chain with source annotation
+            let (path, source) = workspace::resolve_workspace();
+            json!({
+                "command": "workspace_current",
+                "status": "ok",
+                "path": path.to_string_lossy(),
+                "source": source.description(),
+            })
+        }
+        WorkspaceSubCommand::Remove(args) => {
+            let mut config = WorkspaceConfig::load();
+            match config.remove(&args.name) {
+                Err(e) => json!({ "command": "workspace_remove", "status": "error", "message": e }),
+                Ok(()) => {
+                    if let Err(e) = config.save() {
+                        return json!({ "command": "workspace_remove", "status": "error", "message": e.to_string() });
+                    }
+                    json!({
+                        "command": "workspace_remove",
+                        "status": "ok",
+                        "name": args.name,
+                    })
+                }
+            }
+        }
+    }
+}
+
+
 
 fn render_human(payload: Value) -> String {
     serde_json::to_string_pretty(&payload).unwrap_or_else(|_| payload.to_string())

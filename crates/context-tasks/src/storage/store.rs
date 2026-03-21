@@ -7,8 +7,8 @@ use serde_json::Value;
 use uuid::Uuid;
 
 use crate::error::{ProtocolError, StorageError};
-use crate::model::default_schema::schema_for_type;
 use crate::model::edge::EdgeRecord;
+use crate::model::schema_registry::SchemaRegistry;
 use crate::model::filesystem::ScanRoot;
 use crate::model::query::parse_query;
 use crate::model::ticket::{TicketId, TicketManifest};
@@ -22,13 +22,22 @@ use crate::storage::ticket_fs::{TicketFs, TicketScanEntry};
 pub struct TicketStore {
     index: RedbIndexStore,
     search: TantivySearchIndex,
+    schema_registry: SchemaRegistry,
     /// Root directory for the redb database and Tantivy index files.
     pub index_root: PathBuf,
 }
 
 impl TicketStore {
-    /// Open (or create) a ticket store rooted at `index_root`.
+    /// Open (or create) a ticket store rooted at `index_root` using built-in schemas.
     pub fn open(index_root: &Path) -> Result<Self, StorageError> {
+        Self::open_with(index_root, SchemaRegistry::with_builtins())
+    }
+
+    /// Open (or create) a ticket store with a custom schema registry.
+    ///
+    /// Use this to inject test-specific or project-specific ticket type schemas
+    /// loaded from TOML files via [`SchemaRegistry::load_dir`].
+    pub fn open_with(index_root: &Path, schema_registry: SchemaRegistry) -> Result<Self, StorageError> {
         std::fs::create_dir_all(index_root)?;
         let db_path = index_root.join("tickets.redb");
         let search_dir = index_root.join("search_index");
@@ -39,6 +48,7 @@ impl TicketStore {
         Ok(Self {
             index,
             search,
+            schema_registry,
             index_root: index_root.to_path_buf(),
         })
     }
@@ -97,7 +107,7 @@ impl TicketStore {
         }
 
         // Validate against type schema if known.
-        if let Some(schema) = schema_for_type(type_id) {
+        if let Some(schema) = self.schema_registry.get(type_id) {
             schema.validate_manifest(&manifest)?;
         }
 
@@ -164,7 +174,7 @@ impl TicketStore {
         if let Some(to) = to_state {
             let current_state = indexed.state.as_deref().unwrap_or("open");
             let from = from_state.unwrap_or(current_state);
-            if let Some(schema) = schema_for_type(&indexed.type_id) {
+            if let Some(schema) = self.schema_registry.get(&indexed.type_id) {
                 schema.ensure_transition(from, to)?;
             }
         }
@@ -252,9 +262,8 @@ impl TicketStore {
 
     pub fn add_edge(&self, edge: EdgeRecord) -> Result<(), StorageError> {
         // For acyclic-enforced kinds: check for cycles.
-        let schema = schema_for_type(crate::model::default_schema::TYPE_ID);
-        let is_acyclic = schema
-            .as_ref()
+        let is_acyclic = self.schema_registry
+            .get(crate::model::default_schema::TYPE_ID)
             .and_then(|s| s.edge_rules.get(&edge.kind))
             .map(|r| r.acyclic_enforced)
             .unwrap_or(false);

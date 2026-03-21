@@ -14,7 +14,6 @@ use context_api::{
         AtomInfo,
         InsertResult,
         PatternReadResult,
-        TokenInfo,
     },
     workspace::manager::WorkspaceManager,
 };
@@ -118,6 +117,7 @@ impl TestWorkspace {
             .unwrap_or_else(|e| panic!("read_as_text({index}) failed: {e}"))
     }
 
+    #[allow(dead_code)]
     /// Shorthand: search for a text sequence.
     pub fn search_text(
         &mut self,
@@ -144,6 +144,7 @@ impl TestWorkspace {
             .unwrap_or_else(|e| panic!("add_atom({ch:?}) failed: {e}"))
     }
 
+    #[allow(dead_code)]
     /// Shorthand: add multiple atoms from a string.
     pub fn add_atoms(
         &mut self,
@@ -179,6 +180,7 @@ impl TestWorkspace {
             .unwrap_or_else(|e| panic!("get_vertex({index}) failed: {e}"))
     }
 
+    #[allow(dead_code)]
     /// Shorthand: list all vertices.
     pub fn list_vertices(&mut self) -> CommandResult {
         let cmd = Command::ListVertices {

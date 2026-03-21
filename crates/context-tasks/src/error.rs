@@ -53,6 +53,11 @@ pub enum StorageError {
         path: std::path::PathBuf,
         reason: String,
     },
+    #[error("schema file parse error: {path}: {reason}", path = path.display())]
+    SchemaFileParse {
+        path: std::path::PathBuf,
+        reason: String,
+    },
     #[error("protocol: {0}")]
     Protocol(#[from] ProtocolError),
 }

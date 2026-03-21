@@ -41,6 +41,12 @@ pub enum TicketCommand {
     TaskReleaseCandidateCreate,
     TaskReleaseGateCheck,
     TaskReleasePromote,
+    // ── workspace management ──────────────────────────────────────────────────
+    WorkspaceList,
+    WorkspaceNew,
+    WorkspaceUse,
+    WorkspaceCurrent,
+    WorkspaceRemove,
 }
 
 impl TicketCommand {
@@ -76,6 +82,12 @@ impl TicketCommand {
             "task_release_candidate_create",
             "task_release_gate_check",
             "task_release_promote",
+            // workspace management
+            "workspace_list",
+            "workspace_new",
+            "workspace_use",
+            "workspace_current",
+            "workspace_remove",
         ]
     }
 }

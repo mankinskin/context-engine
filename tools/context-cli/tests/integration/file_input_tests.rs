@@ -4,7 +4,6 @@
 //! `Command::ReadFile` API.
 
 use crate::common::helpers::*;
-use std::io::Write;
 
 #[test]
 fn file_read_basic() {
