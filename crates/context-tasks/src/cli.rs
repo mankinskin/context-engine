@@ -9,6 +9,9 @@ use uuid::Uuid;
 
 use crate::model::edge::EdgeRecord;
 
+use crate::execution::provider::{CopilotApiClient, CopilotApiConfig, ProviderError, StartSubagentResponse, SubagentProvider};
+use crate::execution::runner::{AssignmentRunRequest, AssignmentRunner, GitSandboxProvisioner, RunnerConfig, SandboxProvisioner};
+use crate::execution::sandbox::{SandboxError, SandboxHandle, SandboxSpec};
 use crate::storage::store::GateStatus;
 use crate::contracts::command_schema::{
     CommandEnvelope, ErrorEnvelope, export_command_schema, export_command_schema_json,
@@ -1130,6 +1133,70 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
             })).collect();
             Ok(json!({ "command": "search", "status": "ok", "count": items.len(), "results": items }))
         }
+        "assignment_start" => {
+            let ticket_id = parse_uuid_field(cmd, "ticket_id")?;
+            let assignment_id = req_str(cmd, "assignment_id")?;
+            let prompt = req_str(cmd, "prompt")?;
+            let simulate = cmd.get("simulate").and_then(|v| v.as_bool()).unwrap_or(false);
+
+            let repo_root = cmd
+                .get("repo_root")
+                .and_then(|v| v.as_str())
+                .map(PathBuf::from)
+                .unwrap_or(std::env::current_dir().map_err(StorageError::Io)?);
+            let worktrees_root = cmd
+                .get("worktrees_root")
+                .and_then(|v| v.as_str())
+                .map(PathBuf::from)
+                .unwrap_or_else(|| repo_root.join(".ticket-worktrees"));
+            let base_branch = cmd
+                .get("base_branch")
+                .and_then(|v| v.as_str())
+                .unwrap_or("main")
+                .to_string();
+            let branch_prefix = cmd
+                .get("branch_prefix")
+                .and_then(|v| v.as_str())
+                .unwrap_or("tickets")
+                .to_string();
+
+            let run_request = AssignmentRunRequest {
+                ticket_id: ticket_id.to_string(),
+                assignment_id: assignment_id.to_string(),
+                prompt: prompt.to_string(),
+            };
+            let run_config = RunnerConfig {
+                repo_root,
+                worktrees_root,
+                base_branch,
+                branch_prefix,
+            };
+
+            let receipt = if simulate {
+                let runner = AssignmentRunner::new(SimulatedProvider, SimulatedSandbox, run_config);
+                runner.start_assignment(&run_request)
+            } else {
+                let provider_cfg = CopilotApiConfig::from_env()
+                    .map_err(|e| CliRunError::BadRequest(format!("task_assignment_start config error: {e}")))?;
+                let provider = CopilotApiClient::new(provider_cfg)
+                    .map_err(|e| CliRunError::BadRequest(format!("task_assignment_start client init error: {e}")))?;
+                let runner = AssignmentRunner::new(provider, GitSandboxProvisioner, run_config);
+                runner.start_assignment(&run_request)
+            }
+            .map_err(|e| CliRunError::BadRequest(format!("task_assignment_start failed: {e}")))?;
+
+            Ok(json!({
+                "command": "task_assignment_start",
+                "status": "ok",
+                "ticket_id": ticket_id,
+                "assignment_id": assignment_id,
+                "run_id": receipt.run_id,
+                "run_status": receipt.status,
+                "branch": receipt.branch,
+                "worktree_path": receipt.worktree_path,
+                "simulated": simulate,
+            }))
+        }
         "validate_start" => {
             let ticket_id = parse_uuid_field(cmd, "ticket_id")?;
             let assignment_id = req_str(cmd, "assignment_id")?;
@@ -1250,6 +1317,35 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
             }))
         }
         other => Err(CliRunError::InvalidExecPayload(format!("unknown command: {other}"))),
+    }
+}
+
+struct SimulatedProvider;
+
+impl SubagentProvider for SimulatedProvider {
+    fn start_subagent(
+        &self,
+        request: &crate::execution::provider::StartSubagentRequest,
+    ) -> Result<StartSubagentResponse, ProviderError> {
+        Ok(StartSubagentResponse {
+            run_id: format!("sim-{}", request.assignment_id),
+            status: "started".to_string(),
+        })
+    }
+}
+
+struct SimulatedSandbox;
+
+impl SandboxProvisioner for SimulatedSandbox {
+    fn provision(&self, spec: &SandboxSpec) -> Result<SandboxHandle, SandboxError> {
+        Ok(SandboxHandle {
+            branch_name: spec.branch_name()?,
+            worktree_path: spec.worktree_path()?,
+        })
+    }
+
+    fn cleanup(&self, _spec: &SandboxSpec, _handle: &SandboxHandle) -> Result<(), SandboxError> {
+        Ok(())
     }
 }
 

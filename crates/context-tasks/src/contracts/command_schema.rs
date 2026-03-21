@@ -36,6 +36,7 @@ pub enum TicketCommand {
     TaskClaim,
     TaskUnclaim,
     // ── validation & release protocol commands ────────────────────────────────
+    TaskAssignmentStart,
     TaskValidateStart,
     TaskValidateResult,
     TaskReleaseCandidateCreate,
@@ -97,6 +98,8 @@ impl TicketCommand {
             "watch",
             // coordinator dashboard
             "status",
+            // assignment orchestration
+            "task_assignment_start",
         ]
     }
 }

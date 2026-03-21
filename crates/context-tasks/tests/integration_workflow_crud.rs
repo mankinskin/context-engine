@@ -327,3 +327,25 @@ fn exec_create_and_state_transition_via_json() {
     assert_eq!(got["ticket"]["id"], id);
     let _ = updated; // used above to drive the exec call
 }
+
+#[test]
+fn exec_assignment_start_simulated_returns_run_metadata() {
+    let s = Sandbox::new();
+
+    let created = s.ticket_exec(
+        r#"{"command":"task_create","title":"Runner bootstrap ticket","type":"tracker-improvement"}"#,
+    );
+    let ticket_id = created["id"].as_str().expect("id must be present");
+
+    let result = s.ticket_exec(&format!(
+        r#"{{"command":"task_assignment_start","ticket_id":"{ticket_id}","assignment_id":"asg-001","prompt":"run this assignment","simulate":true}}"#
+    ));
+
+    assert_eq!(result["status"], "ok");
+    assert_eq!(result["command"], "task_assignment_start");
+    assert_eq!(result["simulated"], true);
+    assert_eq!(result["assignment_id"], "asg-001");
+    assert_eq!(result["run_status"], "started");
+    assert_eq!(result["branch"], "tickets/asg-001");
+    assert_eq!(result["run_id"], "sim-asg-001");
+}

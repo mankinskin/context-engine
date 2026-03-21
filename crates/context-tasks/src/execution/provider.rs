@@ -72,6 +72,13 @@ pub struct StartSubagentResponse {
     pub status: String,
 }
 
+pub trait SubagentProvider {
+    fn start_subagent(
+        &self,
+        request: &StartSubagentRequest,
+    ) -> Result<StartSubagentResponse, ProviderError>;
+}
+
 pub struct CopilotApiClient {
     http: Client,
     config: CopilotApiConfig,
@@ -86,7 +93,16 @@ impl CopilotApiClient {
         Ok(Self { http, config })
     }
 
-    pub fn start_subagent(
+    pub fn redacted_api_key_for_logs(&self) -> Result<String, ProviderError> {
+        let value = env::var(&self.config.api_key_env).map_err(|_| ProviderError::MissingApiKey {
+            env_var: self.config.api_key_env.clone(),
+        })?;
+        Ok(redact_secret(&value))
+    }
+}
+
+impl SubagentProvider for CopilotApiClient {
+    fn start_subagent(
         &self,
         request: &StartSubagentRequest,
     ) -> Result<StartSubagentResponse, ProviderError> {
@@ -119,13 +135,6 @@ impl CopilotApiClient {
         }
 
         response.json().map_err(ProviderError::Transport)
-    }
-
-    pub fn redacted_api_key_for_logs(&self) -> Result<String, ProviderError> {
-        let value = env::var(&self.config.api_key_env).map_err(|_| ProviderError::MissingApiKey {
-            env_var: self.config.api_key_env.clone(),
-        })?;
-        Ok(redact_secret(&value))
     }
 }
 
