@@ -36,7 +36,7 @@ pub async fn stream_handler(
 
     // Collect baseline counts; 0,0 if workspace is unknown.
     let combined: BoxStream<'static, Result<Event, Infallible>> =
-        if let Some(store) = state.registry.get(&workspace) {
+        if let Some(store) = state.ensure_workspace_runtime(&workspace) {
             let nc = store.list(None, None, None).map(|v| v.len()).unwrap_or(0);
             let ec = store.list_all_edges().map(|v| v.len()).unwrap_or(0);
 

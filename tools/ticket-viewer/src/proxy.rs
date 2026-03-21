@@ -55,22 +55,47 @@ async fn forward(
     headers: HeaderMap,
     body: Option<Vec<u8>>,
 ) -> Response {
-    let query_str = if query.is_empty() {
-        String::new()
-    } else {
-        let pairs: Vec<String> = query
-            .iter()
-            .map(|(k, v)| format!("{}={}", urlencoding(k), urlencoding(v)))
-            .collect();
-        format!("?{}", pairs.join("&"))
+    let mut url = match reqwest::Url::parse(&format!("{}/api/", backend_url.trim_end_matches('/'))) {
+        Ok(u) => u,
+        Err(e) => {
+            tracing::error!(error = %e, backend_url, "Invalid backend URL");
+            return (
+                StatusCode::BAD_GATEWAY,
+                format!("{{\"error\":\"invalid backend url: {e}\"}}"),
+            )
+                .into_response();
+        }
     };
 
-    let url = format!("{}/api/{}{}", backend_url, path, query_str);
+    {
+        let mut segments = match url.path_segments_mut() {
+            Ok(s) => s,
+            Err(_) => {
+                return (
+                    StatusCode::BAD_GATEWAY,
+                    "{\"error\":\"backend url cannot be a base\"}".to_string(),
+                )
+                    .into_response();
+            }
+        };
+        for segment in path.split('/') {
+            if !segment.is_empty() {
+                segments.push(segment);
+            }
+        }
+    }
+
+    {
+        let mut pairs = url.query_pairs_mut();
+        for (k, v) in query {
+            pairs.append_pair(k, v);
+        }
+    }
 
     let client = reqwest::Client::new();
     let mut req = match method {
-        "GET" => client.get(&url),
-        "POST" => client.post(&url),
+        "GET" => client.get(url.clone()),
+        "POST" => client.post(url.clone()),
         _ => return StatusCode::METHOD_NOT_ALLOWED.into_response(),
     };
 
@@ -100,7 +125,7 @@ async fn forward(
                 .into_response()
         }
         Err(e) => {
-            tracing::error!(error = %e, url, "Proxy request failed");
+            tracing::error!(error = %e, url = %url, "Proxy request failed");
             (
                 StatusCode::BAD_GATEWAY,
                 format!("{{\"error\":\"proxy error: {e}\"}}"),
@@ -108,16 +133,4 @@ async fn forward(
                 .into_response()
         }
     }
-}
-
-fn urlencoding(s: &str) -> String {
-    s.chars()
-        .flat_map(|c| {
-            if c.is_alphanumeric() || "-._~".contains(c) {
-                vec![c]
-            } else {
-                format!("%{:02X}", c as u32).chars().collect()
-            }
-        })
-        .collect()
 }

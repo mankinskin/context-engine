@@ -6,6 +6,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
+use std::time::SystemTime;
 use uuid::Uuid;
 
 use viewer_api::error::RequestIdExt;
@@ -66,7 +67,7 @@ pub async fn list_tickets(
     Extension(rid): Extension<RequestIdExt>,
     Query(params): Query<WorkspaceParam>,
 ) -> Response {
-    let store = match state.registry.get(&params.workspace) {
+    let store = match state.ensure_workspace_runtime(&params.workspace) {
         Some(s) => s,
         None => {
             return viewer_api::error::ApiError::not_found("workspace", &rid.0)
@@ -78,17 +79,26 @@ pub async fn list_tickets(
     let tickets = if let Some(q) = &params.query {
         let limit = params.limit.unwrap_or(100).min(1000);
         match store.search_tickets(q, limit) {
-            Ok(results) => results
-                .into_iter()
-                .map(|r| TicketSummary {
-                    id: r.id.to_string(),
-                    type_id: r.ticket_type.unwrap_or_default(),
-                    title: r.title,
-                    state: r.state,
-                    updated_at: chrono::Utc::now(), // SearchResult has no updated_at
-                    fields: BTreeMap::new(),
-                })
-                .collect(),
+            Ok(results) => {
+                let mut items = Vec::with_capacity(results.len());
+                for r in results {
+                    let updated_at = match store.get_indexed(&r.id) {
+                        Ok(Some(indexed)) => indexed.updated_at,
+                        Ok(None) => chrono::DateTime::<chrono::Utc>::from(SystemTime::UNIX_EPOCH),
+                        Err(e) => return storage_err(e, &rid.0),
+                    };
+
+                    items.push(TicketSummary {
+                        id: r.id.to_string(),
+                        type_id: r.ticket_type.unwrap_or_default(),
+                        title: r.title,
+                        state: r.state,
+                        updated_at,
+                        fields: BTreeMap::new(),
+                    });
+                }
+                items
+            }
             Err(e) => return storage_err(e, &rid.0),
         }
     } else {
@@ -124,7 +134,7 @@ pub async fn get_ticket(
     Path(id): Path<Uuid>,
     Query(params): Query<TicketIdParam>,
 ) -> Response {
-    let store = match state.registry.get(&params.workspace) {
+    let store = match state.ensure_workspace_runtime(&params.workspace) {
         Some(s) => s,
         None => {
             return viewer_api::error::ApiError::not_found("workspace", &rid.0)
@@ -167,7 +177,7 @@ pub async fn get_ticket_description(
     Path(id): Path<Uuid>,
     Query(params): Query<TicketIdParam>,
 ) -> Response {
-    let store = match state.registry.get(&params.workspace) {
+    let store = match state.ensure_workspace_runtime(&params.workspace) {
         Some(s) => s,
         None => {
             return viewer_api::error::ApiError::not_found("workspace", &rid.0)

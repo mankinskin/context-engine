@@ -33,7 +33,7 @@ pub async fn list_edges(
     Extension(rid): Extension<RequestIdExt>,
     Query(params): Query<EdgesQuery>,
 ) -> Response {
-    let store = match state.registry.get(&params.workspace) {
+    let store = match state.ensure_workspace_runtime(&params.workspace) {
         Some(s) => s,
         None => {
             return viewer_api::error::ApiError::not_found("workspace", &rid.0)
