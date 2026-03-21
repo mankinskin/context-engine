@@ -22,6 +22,8 @@ pub fn tracker_improvement_schema() -> TicketTypeSchema {
         ("validator_id", FieldSchema { field_type: FieldType::String, required: false }),
         ("release_target", FieldSchema { field_type: FieldType::String, required: false }),
         ("release_version", FieldSchema { field_type: FieldType::String, required: false }),
+        ("interview_file_type", FieldSchema { field_type: FieldType::String, required: false }),
+        ("interview_files", FieldSchema { field_type: FieldType::Json, required: false }),
         ("bootstrap_blocker", FieldSchema { field_type: FieldType::Boolean, required: false }),
         ("rollout_stage", FieldSchema { field_type: FieldType::String, required: false }),
     ]

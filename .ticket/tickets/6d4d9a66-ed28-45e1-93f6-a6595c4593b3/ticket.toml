@@ -1,0 +1,16 @@
+id = "6d4d9a66-ed28-45e1-93f6-a6595c4593b3"
+created_at = "2026-03-21T04:38:44.575695600Z"
+acceptance_criteria = "E2E validates auth, SSE live updates, workspace switching, and performance envelope near 2k tickets/10k edges"
+component = "viewer-tools"
+execution_wave = "3"
+interview_file_type = "interview"
+parallel_track = "Z"
+risk_level = "high"
+state = "open"
+title = "Validation: ticket-viewer + ticket-serve E2E, scale envelope, and regression suite"
+type = "tracker-improvement"
+workflow_stage = "validation"
+
+[interview_files]
+answers = "assets/interviews/answers.md"
+questions = "assets/interviews/questions.md"

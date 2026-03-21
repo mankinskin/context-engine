@@ -8,6 +8,7 @@
 mod common;
 
 use common::{Sandbox, create_ticket};
+use std::path::Path;
 
 // ---------------------------------------------------------------------------
 // CRUD
@@ -35,6 +36,19 @@ fn create_and_get_roundtrip() {
     assert_eq!(got["ticket"]["fields"]["title"], "Fix login bug");
     assert_eq!(got["ticket"]["fields"]["state"], "open");
     assert_eq!(got["ticket"]["fields"]["type"], "tracker-improvement");
+    assert_eq!(got["ticket"]["fields"]["interview_file_type"], "interview");
+    assert_eq!(
+        got["ticket"]["fields"]["interview_files"]["questions"],
+        "assets/interviews/questions.md"
+    );
+    assert_eq!(
+        got["ticket"]["fields"]["interview_files"]["answers"],
+        "assets/interviews/answers.md"
+    );
+
+    let ticket_dir = s.index_root.join("tickets").join(id);
+    assert!(Path::new(&ticket_dir.join("assets/interviews/questions.md")).exists());
+    assert!(Path::new(&ticket_dir.join("assets/interviews/answers.md")).exists());
 }
 
 #[test]

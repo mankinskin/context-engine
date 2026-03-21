@@ -107,6 +107,27 @@ impl TicketStore {
             manifest.extra.insert(k, v);
         }
 
+        // Interview artifact defaults: visible in metadata and always created on disk.
+        manifest
+            .extra
+            .entry("interview_file_type".to_string())
+            .or_insert(Value::String("interview".to_string()));
+        manifest
+            .extra
+            .entry("interview_files".to_string())
+            .or_insert(Value::Object(
+                serde_json::Map::from_iter([
+                    (
+                        "questions".to_string(),
+                        Value::String("assets/interviews/questions.md".to_string()),
+                    ),
+                    (
+                        "answers".to_string(),
+                        Value::String("assets/interviews/answers.md".to_string()),
+                    ),
+                ]),
+            ));
+
         // Validate against type schema if known.
         if let Some(schema) = self.schema_registry.get(type_id) {
             schema.validate_manifest(&manifest)?;

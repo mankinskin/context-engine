@@ -1,6 +1,7 @@
 use chrono::Utc;
 use context_tasks::model::filesystem::{
-    TICKET_ASSETS_DIR, TICKET_LOCK_FILE, TICKET_MANIFEST_FILE, TicketFolderContract,
+    TICKET_ASSETS_DIR, TICKET_INTERVIEW_ANSWERS_FILE, TICKET_INTERVIEW_QUESTIONS_FILE,
+    TICKET_LOCK_FILE, TICKET_MANIFEST_FILE, TicketFolderContract,
     has_minimum_ticket_contract, parse_ticket_manifest_toml,
 };
 use context_tasks::model::ticket::TicketManifest;
@@ -20,6 +21,12 @@ fn folder_contract_defaults_are_stable() {
 fn minimum_contract_requires_ticket_toml() {
     assert!(has_minimum_ticket_contract(&["ticket.toml", "description.md"]));
     assert!(!has_minimum_ticket_contract(&["description.md", "assets"]));
+}
+
+#[test]
+fn interview_contract_paths_are_stable() {
+    assert_eq!(TICKET_INTERVIEW_QUESTIONS_FILE, "assets/interviews/questions.md");
+    assert_eq!(TICKET_INTERVIEW_ANSWERS_FILE, "assets/interviews/answers.md");
 }
 
 #[test]

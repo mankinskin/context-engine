@@ -7,6 +7,9 @@ pub const TICKET_MANIFEST_FILE: &str = "ticket.toml";
 pub const TICKET_ASSETS_DIR: &str = "assets";
 pub const TICKET_LOCK_FILE: &str = ".ticket-lock";
 pub const TICKET_HISTORY_FILE: &str = "history.ndjson";
+pub const TICKET_INTERVIEW_DIR: &str = "assets/interviews";
+pub const TICKET_INTERVIEW_QUESTIONS_FILE: &str = "assets/interviews/questions.md";
+pub const TICKET_INTERVIEW_ANSWERS_FILE: &str = "assets/interviews/answers.md";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ScanRoot {
