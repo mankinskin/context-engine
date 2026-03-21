@@ -867,10 +867,10 @@ fn cmd_workspace(args: WorkspaceArgs) -> Value {
         }
         WorkspaceSubCommand::New(args) => {
             let path = args.path.unwrap_or_else(|| {
-                crate::workspace::WorkspaceConfig::config_path()
-                    .parent()
-                    .unwrap_or(std::path::Path::new("."))
-                    .join(format!(".ticket-{}", args.name))
+                // Default: .ticket/ inside the current directory (repo-local)
+                std::env::current_dir()
+                    .unwrap_or_else(|_| PathBuf::from("."))
+                    .join(".ticket")
             });
             let mut config = WorkspaceConfig::load();
             match config.add(&args.name, path.clone()) {
@@ -890,17 +890,30 @@ fn cmd_workspace(args: WorkspaceArgs) -> Value {
         }
         WorkspaceSubCommand::Use(use_args) => {
             if use_args.local {
-                // Write .ticket-workspace in cwd
-                let local_path = std::env::current_dir()
-                    .unwrap_or_else(|_| PathBuf::from("."))
-                    .join(crate::workspace::LOCAL_WORKSPACE_FILE);
-                match std::fs::write(&local_path, &use_args.name) {
+                let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+                let local_path = cwd.join(crate::workspace::LOCAL_WORKSPACE_FILE);
+
+                // Resolve the index path: registry lookup first, then treat name as path.
+                let config = WorkspaceConfig::load();
+                let index_path = config
+                    .workspaces
+                    .get(&use_args.name)
+                    .map(PathBuf::from)
+                    .unwrap_or_else(|| PathBuf::from(&use_args.name));
+
+                // Write a repo-relative path so the file is self-contained
+                // (no dependency on the user-level workspace registry).
+                let rel = crate::workspace::make_relative_path(&cwd, &index_path);
+                let content = rel.to_string_lossy().replace('\\', "/");
+
+                match std::fs::write(&local_path, &content) {
                     Err(e) => json!({ "command": "workspace_use", "status": "error", "message": e.to_string() }),
                     Ok(()) => json!({
                         "command": "workspace_use",
                         "status": "ok",
                         "name": use_args.name,
                         "scope": "local",
+                        "path": content,
                         "file": local_path.to_string_lossy(),
                     }),
                 }

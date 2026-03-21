@@ -182,10 +182,24 @@ pub fn resolve_workspace() -> (PathBuf, WorkspaceSource) {
     let config = WorkspaceConfig::load();
 
     // Layer 2: project-local .ticket-workspace file
+    //
+    // The file must contain a path (relative or absolute) — NOT a workspace
+    // name. Relative paths are resolved from the directory that contains the
+    // file, making the repo fully self-contained with no user-specific lookup.
     if let Some(local_file) = find_local_workspace_file() {
         if let Ok(content) = std::fs::read_to_string(&local_file) {
-            if let Some(path) = config.resolve_value(content.trim()) {
-                return (path, WorkspaceSource::LocalFile(local_file));
+            let value = content.trim();
+            if !value.is_empty() {
+                let p = PathBuf::from(value);
+                let resolved = if p.is_absolute() {
+                    p
+                } else {
+                    local_file
+                        .parent()
+                        .unwrap_or_else(|| Path::new("."))
+                        .join(&p)
+                };
+                return (resolved, WorkspaceSource::LocalFile(local_file));
             }
         }
     }
@@ -202,6 +216,58 @@ pub fn resolve_workspace() -> (PathBuf, WorkspaceSource) {
 }
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
+
+/// Compute a relative path from `base_dir` to `target`.
+///
+/// Both may be absolute or relative; `base_dir` is canonicalized when
+/// possible. If the two paths share no common prefix (e.g. different Windows
+/// drive letters), the absolute `target` is returned unchanged.
+///
+/// Forward slashes are used in the output for cross-platform compatibility.
+pub fn make_relative_path(base_dir: &Path, target: &Path) -> PathBuf {
+    use std::path::Component;
+
+    let base_abs = base_dir
+        .canonicalize()
+        .unwrap_or_else(|_| base_dir.to_path_buf());
+
+    // target may not exist yet (lazy creation) so we can't canonicalize it;
+    // instead just join it to base if it is relative.
+    let target_abs = if target.is_absolute() {
+        target.to_path_buf()
+    } else {
+        base_abs.join(target)
+    };
+
+    let base_parts: Vec<Component> = base_abs.components().collect();
+    let target_parts: Vec<Component> = target_abs.components().collect();
+
+    let common = base_parts
+        .iter()
+        .zip(target_parts.iter())
+        .take_while(|(a, b)| a == b)
+        .count();
+
+    if common == 0 {
+        // No shared prefix (different drives on Windows) — return absolute.
+        return target_abs;
+    }
+
+    let up_count = base_parts.len() - common;
+    let mut rel = PathBuf::new();
+    for _ in 0..up_count {
+        rel.push("..");
+    }
+    for part in &target_parts[common..] {
+        rel.push(part);
+    }
+
+    if rel.as_os_str().is_empty() {
+        PathBuf::from(".")
+    } else {
+        rel
+    }
+}
 
 fn dirs_home() -> PathBuf {
     #[cfg(windows)]
