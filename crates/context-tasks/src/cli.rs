@@ -86,6 +86,8 @@ pub enum TicketCommandCli {
     FinalizeMerge(FinalizeMergeArgs),
     /// Execute a single TaskCommand JSON request from stdin (agent protocol).
     Exec(ExecArgs),
+    /// Execute a batch of TaskCommand JSON requests from stdin or file.
+    Batch(BatchArgs),
     /// Export the command namespace/schema for automation clients.
     #[command(name = "export-command-schema")]
     ExportCommandSchema,
@@ -312,6 +314,13 @@ pub struct ExecArgs {
     pub batch: bool,
 }
 
+#[derive(Debug, Args)]
+pub struct BatchArgs {
+    /// Optional NDJSON file path (one JSON object per line). If omitted, read stdin.
+    #[arg(long)]
+    pub file: Option<PathBuf>,
+}
+
 // ── error type ─────────────────────────────────────────────────────────────────
 
 #[derive(Debug, thiserror::Error)]
@@ -380,7 +389,7 @@ fn dispatch(
     let has_explicit_root = index_root_override.is_some()
         || std::env::var("TICKET_INDEX_ROOT").is_ok();
     if !has_explicit_root {
-        if matches!(command, TicketCommandCli::Exec(_)) {
+        if matches!(command, TicketCommandCli::Exec(_) | TicketCommandCli::Batch(_)) {
             return Err(CliRunError::IndexRootRequired);
         }
     }
@@ -407,6 +416,7 @@ fn dispatch(
         TicketCommandCli::Query(args) => cmd_search(args, &store),
         TicketCommandCli::AddRoot(args) => cmd_add_root(args, &store),
         TicketCommandCli::Exec(args) => cmd_exec(args, &store),
+        TicketCommandCli::Batch(args) => cmd_batch(args, &store),
         TicketCommandCli::History(args) => cmd_history(args, &store),
         TicketCommandCli::Diff(args) => cmd_diff(args, &store),
         TicketCommandCli::Revert(args) => cmd_revert(args, &store),
@@ -821,6 +831,12 @@ enum BatchUndoOp {
         saved_extra: BTreeMap<String, Value>,
         saved_state: Option<String>,
     },
+    /// Added a graph edge — undo by removing it.
+    RemoveEdge {
+        from: Uuid,
+        to: Uuid,
+        kind: String,
+    },
 }
 
 /// Pre-capture undo state for a command *before* it is executed.
@@ -858,6 +874,12 @@ fn batch_post_undo(
             let (_, id, saved_extra, saved_state) = pre_capture?;
             Some(BatchUndoOp::RestoreUpdate { id, saved_extra, saved_state })
         }
+        "link" => {
+            let from: Uuid = result.get("from").and_then(|v| v.as_str())?.parse().ok()?;
+            let to: Uuid = result.get("to").and_then(|v| v.as_str())?.parse().ok()?;
+            let kind = result.get("kind").and_then(|v| v.as_str())?.to_string();
+            Some(BatchUndoOp::RemoveEdge { from, to, kind })
+        }
         _ => None,
     }
 }
@@ -873,6 +895,12 @@ fn apply_batch_undo(undo: BatchUndoOp, store: &TicketStore, errors: &mut Vec<Str
         BatchUndoOp::RestoreUpdate { id, saved_extra, saved_state } => {
             if let Err(e) = store.force_restore(&id, saved_extra, saved_state) {
                 errors.push(format!("rollback restore {id}: {e}"));
+            }
+        }
+        BatchUndoOp::RemoveEdge { from, to, kind } => {
+            let edge = EdgeRecord { from, to, kind, created_at: Utc::now() };
+            if let Err(e) = store.remove_edge(edge) {
+                errors.push(format!("rollback remove_edge {from}->{to}: {e}"));
             }
         }
     }
@@ -989,71 +1017,94 @@ fn cmd_revert(args: RevertArgs, store: &TicketStore) -> Result<Value, CliRunErro
     }))
 }
 
+fn read_batch_commands<R: std::io::BufRead>(reader: R) -> Result<Vec<Value>, CliRunError> {
+    let mut commands: Vec<Value> = Vec::new();
+    for line in reader.lines() {
+        let line = line.map_err(StorageError::Io)?;
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let cmd: Value = serde_json::from_str(line)
+            .map_err(|e| CliRunError::InvalidExecPayload(e.to_string()))?;
+        commands.push(cmd);
+    }
+    Ok(commands)
+}
+
+fn execute_batch_commands(commands: &[Value], store: &TicketStore) -> Result<Value, CliRunError> {
+    // Each successfully executed command records an undo operation so the
+    // batch can be rolled back atomically on the first failure.
+    let mut results: Vec<Value> = Vec::with_capacity(commands.len());
+    let mut undo_stack: Vec<BatchUndoOp> = Vec::with_capacity(commands.len());
+
+    for cmd in commands {
+        // Pre-capture undo information BEFORE executing.
+        let undo_hint = batch_pre_capture(cmd, store);
+
+        match exec_single_command(cmd, store) {
+            Ok(result) => {
+                // Record undo op based on what the command did.
+                if let Some(undo) = batch_post_undo(&result, undo_hint) {
+                    undo_stack.push(undo);
+                }
+                results.push(result);
+            }
+            Err(e) => {
+                // Attempt best-effort rollback of all completed commands.
+                let mut rollback_errors: Vec<String> = Vec::new();
+                for undo in undo_stack.into_iter().rev() {
+                    apply_batch_undo(undo, store, &mut rollback_errors);
+                }
+                return Ok(json!({
+                    "command": "exec_batch",
+                    "status": "error",
+                    "completed": results.len(),
+                    "total": commands.len(),
+                    "error": e.to_string(),
+                    "rolled_back": rollback_errors.is_empty(),
+                    "rollback_errors": rollback_errors,
+                }));
+            }
+        }
+    }
+    Ok(json!({
+        "command": "exec_batch",
+        "status": "ok",
+        "count": results.len(),
+        "results": results,
+    }))
+}
+
+fn cmd_batch(args: BatchArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    use std::fs::File;
+    use std::io::{self, BufReader};
+
+    let commands = if let Some(path) = args.file {
+        let file = File::open(&path)
+            .map_err(|e| CliRunError::InvalidExecPayload(format!("cannot open batch file {}: {e}", path.display())))?;
+        read_batch_commands(BufReader::new(file))?
+    } else {
+        let stdin = io::stdin();
+        read_batch_commands(stdin.lock())?
+    };
+
+    execute_batch_commands(&commands, store)
+}
+
 /// `ticket exec` — read one JSON `TaskCommand` object from stdin and execute it.
 /// In `--batch` mode, read one object per line until EOF and execute all atomically
 /// (rolling back all on the first failure).
 fn cmd_exec(args: ExecArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    use std::io::{self, BufRead};
+    use std::io::{self, Read};
 
     if args.batch {
         let stdin = io::stdin();
-        let mut commands: Vec<Value> = Vec::new();
-        for line in stdin.lock().lines() {
-            let line = line.map_err(StorageError::Io)?;
-            let line = line.trim();
-            if line.is_empty() {
-                continue;
-            }
-            let cmd: Value = serde_json::from_str(line)
-                .map_err(|e| CliRunError::InvalidExecPayload(e.to_string()))?;
-            commands.push(cmd);
-        }
-
-        // Each successfully executed command records an undo operation so the
-        // batch can be rolled back atomically on the first failure.
-        let mut results: Vec<Value> = Vec::with_capacity(commands.len());
-        let mut undo_stack: Vec<BatchUndoOp> = Vec::with_capacity(commands.len());
-
-        for cmd in &commands {
-            // Pre-capture undo information BEFORE executing.
-            let undo_hint = batch_pre_capture(cmd, store);
-
-            match exec_single_command(cmd, store) {
-                Ok(result) => {
-                    // Record undo op based on what the command did.
-                    if let Some(undo) = batch_post_undo(&result, undo_hint) {
-                        undo_stack.push(undo);
-                    }
-                    results.push(result);
-                }
-                Err(e) => {
-                    // Attempt best-effort rollback of all completed commands.
-                    let mut rollback_errors: Vec<String> = Vec::new();
-                    for undo in undo_stack.into_iter().rev() {
-                        apply_batch_undo(undo, store, &mut rollback_errors);
-                    }
-                    return Ok(json!({
-                        "command": "exec_batch",
-                        "status": "error",
-                        "completed": results.len(),
-                        "total": commands.len(),
-                        "error": e.to_string(),
-                        "rolled_back": rollback_errors.is_empty(),
-                        "rollback_errors": rollback_errors,
-                    }));
-                }
-            }
-        }
-        Ok(json!({
-            "command": "exec_batch",
-            "status": "ok",
-            "count": results.len(),
-            "results": results,
-        }))
+        let commands = read_batch_commands(stdin.lock())?;
+        execute_batch_commands(&commands, store)
     } else {
         let stdin = io::stdin();
         let mut input = String::new();
-        use std::io::Read;
         stdin.lock().read_to_string(&mut input).map_err(StorageError::Io)?;
         let cmd: Value = serde_json::from_str(input.trim())
             .map_err(|e| CliRunError::InvalidExecPayload(e.to_string()))?;
@@ -1122,6 +1173,44 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
             let id = parse_uuid_field(cmd, "id")?;
             store.delete(&id)?;
             Ok(json!({ "command": "delete", "status": "ok", "id": id }))
+        }
+        "link" => {
+            let from = parse_uuid_field(cmd, "from")?;
+            let to = parse_uuid_field(cmd, "to")?;
+            let kind = req_str(cmd, "kind")?.to_string();
+            let reason = cmd.get("reason").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+            store.add_edge(EdgeRecord {
+                from,
+                to,
+                kind: kind.clone(),
+                created_at: Utc::now(),
+            })?;
+
+            Ok(json!({
+                "command": "link",
+                "status": "ok",
+                "from": from,
+                "to": to,
+                "kind": kind,
+                "reason": reason,
+            }))
+        }
+        "links" => {
+            let id = parse_uuid_field(cmd, "id")?;
+            let edges = store.edges_from(&id)?;
+            let items: Vec<Value> = edges.iter().map(|e| json!({
+                "from": e.from,
+                "to": e.to,
+                "kind": e.kind,
+            })).collect();
+            Ok(json!({
+                "command": "links",
+                "status": "ok",
+                "id": id,
+                "count": items.len(),
+                "edges": items,
+            }))
         }
         "search" => {
             let expr = cmd.get("query").and_then(|v| v.as_str())

@@ -137,6 +137,18 @@ impl RedbIndexStore {
         Ok(())
     }
 
+    /// Delete an edge by composite key. Missing edges are treated as no-op.
+    pub fn delete_edge(&self, edge: &EdgeRecord) -> Result<(), StorageError> {
+        let key = format!("{}|{}|{}", edge.from, edge.to, edge.kind);
+        let write_txn = self.db.begin_write()?;
+        {
+            let mut table = write_txn.open_table(EDGES)?;
+            let _ = table.remove(key.as_str())?;
+        }
+        write_txn.commit()?;
+        Ok(())
+    }
+
     /// Returns all edges originating from `from`.
     pub fn edges_from(&self, from: &Uuid) -> Result<Vec<EdgeRecord>, StorageError> {
         let prefix = from.to_string();

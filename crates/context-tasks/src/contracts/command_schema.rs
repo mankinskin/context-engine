@@ -26,6 +26,7 @@ pub enum TicketCommand {
     Diff,
     Revert,
     FinalizeMerge,
+    Batch,
     // ── agent-protocol task_ names ────────────────────────────────────────────
     TaskCreate,
     TaskGet,
@@ -70,6 +71,7 @@ impl TicketCommand {
             "diff",
             "revert",
             "finalize_merge",
+            "batch",
             // task_ names (agent protocol canonical forms)
             "task_create",
             "task_get",

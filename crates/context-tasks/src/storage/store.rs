@@ -411,6 +411,10 @@ impl TicketStore {
         self.index.insert_edge(&edge)
     }
 
+    pub fn remove_edge(&self, edge: EdgeRecord) -> Result<(), StorageError> {
+        self.index.delete_edge(&edge)
+    }
+
     // ── scan / reconcile ──────────────────────────────────────────────────────
 
     /// Walk all registered scan roots and integrate discovered tickets into the

@@ -315,6 +315,72 @@ fn batch_exec_rolls_back_on_error() {
     );
 }
 
+#[test]
+fn batch_command_reads_ndjson_from_stdin() {
+    let s = Sandbox::new();
+
+    let input = [
+        r#"{"command":"create","title":"Batch stdin A","type":"tracker-improvement"}"#,
+        r#"{"command":"create","title":"Batch stdin B","type":"tracker-improvement"}"#,
+    ]
+    .join("\n");
+
+    let result = s.ticket_json_stdin(&["batch"], &input);
+    assert_eq!(result["status"], "ok");
+    assert_eq!(result["count"].as_u64().unwrap(), 2);
+
+    let list = s.ticket_json(&["list"]);
+    assert_eq!(list["count"].as_u64().unwrap(), 2);
+}
+
+#[test]
+fn exec_batch_supports_link_commands() {
+    let s = Sandbox::new();
+
+    let id_a = "11111111-1111-1111-1111-111111111111";
+    let id_b = "22222222-2222-2222-2222-222222222222";
+
+    let result = s.ticket_exec_batch(&[
+        r#"{"command":"create","id":"11111111-1111-1111-1111-111111111111","title":"A","type":"tracker-improvement"}"#,
+        r#"{"command":"create","id":"22222222-2222-2222-2222-222222222222","title":"B","type":"tracker-improvement"}"#,
+        r#"{"command":"link","from":"11111111-1111-1111-1111-111111111111","to":"22222222-2222-2222-2222-222222222222","kind":"depends_on"}"#,
+    ]);
+    assert_eq!(result["status"], "ok");
+    assert_eq!(result["count"].as_u64().unwrap(), 3);
+
+    let links = s.ticket_json(&["links", "--id", id_a]);
+    assert_eq!(links["status"], "ok");
+    assert_eq!(links["count"].as_u64().unwrap(), 1);
+    assert_eq!(links["edges"][0]["from"], id_a);
+    assert_eq!(links["edges"][0]["to"], id_b);
+    assert_eq!(links["edges"][0]["kind"], "depends_on");
+}
+
+#[test]
+fn exec_batch_rolls_back_link_on_error() {
+    let s = Sandbox::new();
+
+    let id_a = "33333333-3333-3333-3333-333333333333";
+
+    let result = s.ticket_exec_batch(&[
+        r#"{"command":"create","id":"33333333-3333-3333-3333-333333333333","title":"A","type":"tracker-improvement"}"#,
+        r#"{"command":"create","id":"44444444-4444-4444-4444-444444444444","title":"B","type":"tracker-improvement"}"#,
+        r#"{"command":"link","from":"33333333-3333-3333-3333-333333333333","to":"44444444-4444-4444-4444-444444444444","kind":"depends_on"}"#,
+        r#"{"command":"unknown_invalid_command"}"#,
+    ]);
+
+    assert_eq!(result["status"], "error");
+    assert_eq!(result["rolled_back"], true);
+
+    // Rollback should leave no edges and no visible tickets.
+    let links = s.ticket_json(&["links", "--id", id_a]);
+    assert_eq!(links["status"], "ok");
+    assert_eq!(links["count"].as_u64().unwrap(), 0);
+
+    let list = s.ticket_json(&["list"]);
+    assert_eq!(list["count"].as_u64().unwrap(), 0);
+}
+
 // ---------------------------------------------------------------------------
 // Exec — state transitions via the agent protocol
 // ---------------------------------------------------------------------------
