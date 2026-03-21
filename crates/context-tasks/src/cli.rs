@@ -101,6 +101,9 @@ pub struct CreateArgs {
     pub state: Option<String>,
     #[arg(long = "field")]
     pub fields: Vec<String>,
+    /// Copy the contents of this file into the ticket as description.md.
+    #[arg(long = "body-file")]
+    pub body_file: Option<PathBuf>,
     /// Place the ticket in this scan root (defaults to first registered root).
     #[arg(long = "root")]
     pub target_root: Option<PathBuf>,
@@ -380,6 +383,11 @@ fn cmd_create(args: CreateArgs, store: &TicketStore) -> Result<Value, CliRunErro
     let extra = parse_fields_to_json(&args.fields)?;
     let target_root = args.target_root.as_deref();
 
+    let body = args.body_file
+        .map(|p| std::fs::read_to_string(&p)
+            .map_err(|e| CliRunError::InvalidFieldPatch(format!("cannot read body-file: {e}"))))
+        .transpose()?;
+
     let id = store.create(
         args.id,
         type_id,
@@ -387,6 +395,7 @@ fn cmd_create(args: CreateArgs, store: &TicketStore) -> Result<Value, CliRunErro
         args.state.as_deref(),
         extra,
         target_root,
+        body.as_deref(),
     )?;
 
     Ok(json!({
@@ -639,7 +648,7 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
                 .and_then(|v| v.as_object())
                 .map(|m| m.iter().map(|(k, v)| (k.clone(), v.clone())).collect())
                 .unwrap_or_default();
-            let created_id = store.create(id, type_id, title, state, extra, None)?;
+            let created_id = store.create(id, type_id, title, state, extra, None, None)?;
             Ok(json!({ "command": "create", "status": "ok", "id": created_id }))
         }
         "get" => {

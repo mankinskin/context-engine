@@ -77,6 +77,7 @@ impl TicketStore {
         initial_state: Option<&str>,
         extra: BTreeMap<String, Value>,
         target_root: Option<&Path>,
+        body: Option<&str>,
     ) -> Result<TicketId, StorageError> {
         let id = id.unwrap_or_else(Uuid::new_v4);
         let now = Utc::now();
@@ -111,7 +112,7 @@ impl TicketStore {
             schema.validate_manifest(&manifest)?;
         }
 
-        let ticket_path = TicketFs::create(&manifest, &root)?;
+        let ticket_path = TicketFs::create(&manifest, &root, body)?;
 
         let indexed = IndexedTicket {
             id,
@@ -125,11 +126,15 @@ impl TicketStore {
         };
         self.index.insert_ticket(&indexed)?;
 
-        let body = TicketFs::read_description(&indexed.path);
+        // Use the provided body directly (already written to disk); fall back to
+        // reading the file for scan-integrated tickets that may have existing content.
+        let body_for_index = body
+            .map(str::to_string)
+            .or_else(|| TicketFs::read_description(&indexed.path));
         self.search.upsert(
             &id,
             title,
-            body.as_deref(),
+            body_for_index.as_deref(),
             Some(&state),
             Some(type_id),
         )?;

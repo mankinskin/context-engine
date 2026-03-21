@@ -34,6 +34,7 @@ impl TicketFs {
     pub fn create(
         manifest: &TicketManifest,
         target_root: &Path,
+        body: Option<&str>,
     ) -> Result<PathBuf, StorageError> {
         let uuid_str = manifest.id.to_string();
         let final_dir = target_root.join(&uuid_str);
@@ -49,6 +50,9 @@ impl TicketFs {
         // Write to temp dir first.
         fs::create_dir_all(&temp_dir)?;
         write_manifest(&temp_dir, manifest)?;
+        if let Some(text) = body {
+            fs::write(temp_dir.join("description.md"), text)?;
+        }
 
         // Rename temp → final.
         fs::rename(&temp_dir, &final_dir).map_err(|e| {

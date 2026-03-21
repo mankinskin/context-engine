@@ -1,0 +1,9 @@
+id = "aa46add2-f8cd-4130-94bf-04c6ec5f9047"
+created_at = "2026-03-21T01:34:44.108091300Z"
+acceptance_criteria = "Search Response root_token always present in its TraceCache; no insert panics"
+component = "context-search"
+deleted = true
+risk_level = "high"
+state = "open"
+title = "Bug: TraceCache root token mismatch causes insert panics"
+type = "tracker-improvement"
