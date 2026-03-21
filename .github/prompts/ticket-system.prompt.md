@@ -254,6 +254,26 @@ ticket update --id <uuid> --field key=value
 ticket link --from <uuid> --to <uuid> --kind <depends_on|blocks|linked> [--reason <text>]
 ticket links --id <uuid>
 
+# Batch (NDJSON; one JSON object per line)
+# Read from stdin:
+ticket batch <<'EOF'
+{"command":"create","title":"Impl: child A","type":"tracker-improvement"}
+{"command":"create","title":"Impl: child B","type":"tracker-improvement"}
+EOF
+
+# Read from file:
+ticket batch --file ./tmp/bulk-ops.ndjson
+
+# Also supported through exec protocol:
+ticket exec --batch <<'EOF'
+{"command":"create","title":"Bulk create A","type":"tracker-improvement"}
+{"command":"create","title":"Bulk create B","type":"tracker-improvement"}
+{"command":"link","from":"<uuid-a>","to":"<uuid-b>","kind":"depends_on"}
+EOF
+
+# Note: batch execution is atomic. On first error, already-applied ticket and
+# edge operations are rolled back.
+
 # Lease
 ticket claim --id <uuid> --agent <name>
 ticket unclaim --id <uuid> --agent <name>
