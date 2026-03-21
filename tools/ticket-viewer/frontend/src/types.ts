@@ -56,6 +56,35 @@ export interface EdgesResponse {
   edges: EdgeRecord[];
 }
 
+export interface SubgraphNode {
+    id: string;
+    title: string | null;
+    state: string | null;
+    depth: number;
+}
+
+export interface SubgraphEdge {
+    from: string;
+    to: string;
+    kind: string;
+}
+
+export interface SubgraphStats {
+    nodes_returned: number;
+    edges_returned: number;
+    max_depth_reached: number;
+}
+
+export interface SubgraphResponse {
+    request_id: string;
+    workspace: string;
+    nodes: SubgraphNode[];
+    edges: SubgraphEdge[];
+    truncated: boolean;
+    next_cursor: string | null;
+    stats: SubgraphStats;
+}
+
 // ── Tab state ─────────────────────────────────────────────────────────────────
 
 export type TabId = 'description' | 'fields';

@@ -71,6 +71,39 @@ const MOCK_EDGES = {
   edges: [],
 };
 
+const MOCK_SUBGRAPH = {
+    request_id: 'r6',
+    workspace: WORKSPACE,
+    nodes: [
+        {
+            id: TICKET_ID,
+            title: 'First open ticket',
+            state: 'open',
+            depth: 0,
+        },
+        {
+            id: TICKET_ID_2,
+            title: 'A done ticket',
+            state: 'done',
+            depth: 1,
+        },
+    ],
+    edges: [
+        {
+            from: TICKET_ID,
+            to: TICKET_ID_2,
+            kind: 'depends_on',
+        },
+    ],
+    truncated: false,
+    next_cursor: null,
+    stats: {
+        nodes_returned: 2,
+        edges_returned: 1,
+        max_depth_reached: 1,
+    },
+};
+
 // ── Route helpers ─────────────────────────────────────────────────────────────
 
 /** Intercept all ticket-serve API calls with mock responses. */
@@ -95,6 +128,9 @@ async function mockApi(page: Page): Promise<void> {
   await page.route('**/api/edges**', (route: Route) => {
     void route.fulfill({ json: MOCK_EDGES });
   });
+    await page.route('**/api/graph/subgraph**', (route: Route) => {
+        void route.fulfill({ json: MOCK_SUBGRAPH });
+    });
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -233,9 +269,49 @@ test.describe('ticket-viewer app', () => {
     await expect(empty).toContainText('Select a ticket');
   });
 
-  test('graph stub placeholder is visible', async ({ page }) => {
-    const stub = page.locator('.graph-stub');
-    await expect(stub).toBeVisible();
+    test('graph panel prompts selection when no ticket is selected', async ({
+        page,
+    }) => {
+        const graph = page.locator('.graph-view');
+        await expect(graph).toBeVisible();
+        await expect(graph).toContainText('Select a ticket to explore its dependency graph.');
+    });
+
+    test('graph panel renders dependency nodes after selecting a ticket', async ({
+        page,
+    }) => {
+        await page
+            .locator('.tree-item-row')
+            .filter({ has: page.locator('.tree-label', { hasText: 'First open ticket' }) })
+            .click();
+
+        await expect(page.locator('.graph-view__svg')).toBeVisible();
+        await expect(page.locator('.graph-view__node-label')).toContainText([
+            'First open ticket',
+            'A done ticket',
+        ]);
+    });
+
+    test('graph panel shows an error if subgraph request fails', async ({
+        page,
+    }) => {
+        await page.unroute('**/api/graph/subgraph**');
+        await page.route('**/api/graph/subgraph**', (route: Route) => {
+            void route.fulfill({
+                status: 500,
+                contentType: 'text/plain',
+                body: 'subgraph unavailable',
+            });
+        });
+
+        await page
+            .locator('.tree-item-row')
+            .filter({ has: page.locator('.tree-label', { hasText: 'First open ticket' }) })
+            .click();
+
+        const error = page.locator('.graph-view__error');
+        await expect(error).toBeVisible();
+        await expect(error).toContainText('Failed to load graph');
   });
 
   test('token button toggles auth input', async ({ page }) => {

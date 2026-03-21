@@ -3,7 +3,7 @@
 // Implements the tri-pane layout from wireframes-v0.1.md:
 //   Left pane:   Workspace picker + ticket tree
 //   Center pane: Tabbed description.md / ticket.toml viewer
-//   Right pane:  Graph stub (Wave 2 Track G placeholder)
+//   Right pane:  Dependency graph view
 
 import { JSX } from 'preact';
 import { useEffect } from 'preact/hooks';
@@ -11,7 +11,7 @@ import { Layout } from '@context-engine/viewer-api-frontend';
 import { WorkspacePicker } from './components/WorkspacePicker';
 import { TicketTree } from './components/TicketTree';
 import { TicketContent } from './components/TicketContent';
-import { GraphStub } from './components/GraphStub';
+import { GraphView } from './components/GraphView';
 import {
   authToken,
   globalError,
@@ -99,7 +99,7 @@ export function App(): JSX.Element {
             <TicketContent />
           </div>
           <div class="right-pane">
-            <GraphStub />
+            <GraphView />
           </div>
         </div>
       </Layout>

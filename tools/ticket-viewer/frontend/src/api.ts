@@ -4,6 +4,7 @@
 
 import type {
   EdgesResponse,
+    SubgraphResponse,
   TicketDescriptionResponse,
   TicketDetailResponse,
   TicketsResponse,
@@ -67,4 +68,17 @@ export function listEdges(
     `/api/edges?workspace=${encodeURIComponent(workspace)}`,
     token,
   );
+}
+
+export function getSubgraph(
+    workspace: string,
+    root: string,
+    opts: { direction?: 'both' | 'in' | 'out'; edge_kind?: string; depth?: number } = {},
+    token?: string,
+): Promise<SubgraphResponse> {
+    const params = new URLSearchParams({ workspace, root });
+    if (opts.direction) params.set('direction', opts.direction);
+    if (opts.edge_kind) params.set('edge_kind', opts.edge_kind);
+    if (opts.depth !== undefined) params.set('depth', String(opts.depth));
+    return apiFetch<SubgraphResponse>(`/api/graph/subgraph?${params}`, token);
 }
