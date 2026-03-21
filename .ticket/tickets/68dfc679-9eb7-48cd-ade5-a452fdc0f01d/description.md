@@ -28,9 +28,12 @@ Define how ticket serve token auth can rotate safely without process restarts.
 - Audit log for token reload actions.
 - Health endpoint includes auth config generation/version metadata.
 
+## Draft artifacts
+- Lifecycle and runbook draft: `assets/design/auth-lifecycle-v0.1.md`
+
 ## Checklist
-- [ ] Source precedence finalized
-- [ ] Reload trigger mechanism finalized
-- [ ] Grace-window semantics finalized
-- [ ] Failure rollback behavior finalized
-- [ ] Runbook written
+- [x] Source precedence finalized
+- [x] Reload trigger mechanism finalized
+- [x] Grace-window semantics finalized
+- [x] Failure rollback behavior finalized
+- [x] Runbook written

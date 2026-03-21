@@ -31,9 +31,12 @@ Define hook events emitted by ticket mutations and fallback behavior when hooks 
 - Hook emission failure should not fail primary mutation write.
 - Record diagnostics and increment failure counters.
 
+## Draft artifacts
+- Hook contract draft: `assets/design/hook-contract-v0.1.md`
+
 ## Checklist
-- [ ] Trigger matrix approved
-- [ ] Event fields approved
-- [ ] Idempotency strategy approved
-- [ ] Reconcile fallback policy approved
-- [ ] Observability metrics list approved
+- [x] Trigger matrix approved
+- [x] Event fields approved
+- [x] Idempotency strategy approved
+- [x] Reconcile fallback policy approved
+- [x] Observability metrics list approved

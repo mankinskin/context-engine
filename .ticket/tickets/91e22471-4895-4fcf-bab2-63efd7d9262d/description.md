@@ -94,3 +94,6 @@ Create a dedicated ticket-viewer (derived from doc-viewer structure), add HTTP s
 - Workspace switching: preserve per-workspace UI state.
 - API shape: no endpoint versioning in v1.
 - Parent done gate: design + API contract + wireframes + child tickets.
+
+## Review handoff
+- Design-to-implementation mapping checklist: `assets/design/design-review-checklist-v0.1.md`

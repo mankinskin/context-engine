@@ -29,9 +29,12 @@ Define scalable subgraph query semantics for large ticket dependency graphs.
 - Query timeout budget with partial result signaling.
 - Guardrail on traversal fan-out to prevent pathological expansions.
 
+## Draft artifacts
+- Subgraph API draft: `assets/design/subgraph-api-v0.1.md`
+
 ## Checklist
-- [ ] Parameter contract approved
-- [ ] Cursor semantics approved
-- [ ] Truncation and timeout behavior approved
-- [ ] Complexity guardrails approved
-- [ ] Contract tests identified
+- [x] Parameter contract approved
+- [x] Cursor semantics approved
+- [x] Truncation and timeout behavior approved
+- [x] Complexity guardrails approved
+- [x] Contract tests identified
