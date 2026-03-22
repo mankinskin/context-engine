@@ -13,7 +13,7 @@ name = "viewer_api"
 path = "src/lib.rs"
 
 [dependencies]
-axum = { version = "0.7", features = ["macros"] }
+axum = { version = "0.8", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -29,7 +29,7 @@ jaq-syn = "1"
 # Domain types and log parser from context-api
 context-api = { path = "../../crates/context-api" }
 
-tower-http = { version = "0.5", features = ["fs", "cors"] }
+tower-http = { version = "0.6", features = ["fs", "cors"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
@@ -43,5 +43,5 @@ http-body-util = "0.1"
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 
 [dev-dependencies]
-axum-test = "14"
+axum-test = "19"
 tempfile = "3"

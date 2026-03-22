@@ -220,7 +220,7 @@ mod tests {
             state,
             router::FrontendMode::Static(PathBuf::from("/nonexistent")),
         );
-        let server = TestServer::new(router).unwrap();
+        let server = TestServer::new(router);
 
         (server, log_dir, workspace_dir)
     }

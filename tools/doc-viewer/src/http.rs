@@ -228,12 +228,12 @@ pub fn create_router(
     // API routes
     let api_routes = Router::new()
         .route("/docs", get(list_docs))
-        .route("/docs/:filename", get(read_doc))
-        .route("/docs/:filename/ast", get(get_doc_ast))
+        .route("/docs/{filename}", get(read_doc))
+        .route("/docs/{filename}/ast", get(get_doc_ast))
         .route("/crates", get(list_crates))
-        .route("/crates/:name", get(browse_crate))
-        .route("/crates/:name/doc", get(read_crate_doc))
-        .route("/source/*path", get(read_source_file))
+        .route("/crates/{name}", get(browse_crate))
+        .route("/crates/{name}/doc", get(read_crate_doc))
+        .route("/source/{*path}", get(read_source_file))
         .route("/query", post(query_docs))
         .route("/session", get(get_session).post(update_session));
 

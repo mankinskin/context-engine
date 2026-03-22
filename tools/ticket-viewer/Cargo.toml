@@ -16,7 +16,7 @@ viewer-api = { path = "../viewer-api" }
 tokio = { version = "1", features = ["full"] }
 
 # Web framework
-axum = { version = "0.7" }
+axum = { version = "0.8" }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }

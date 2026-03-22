@@ -9,6 +9,9 @@
 //!
 //! # Custom ports
 //! ticket-viewer --port 3002 --backend-url http://localhost:4000
+//!
+//! # Build the ticket backend before starting either service
+//! ticket-viewer --auto-start-backend --build-backend-first
 //! ```
 //!
 //! # Environment variables
@@ -41,6 +44,7 @@ struct CliOptions {
     backend_url: String,
     static_dir: PathBuf,
     auto_start_backend: bool,
+    build_backend_first: bool,
 }
 
 struct BackendProcess {
@@ -68,6 +72,7 @@ fn parse_cli_options() -> CliOptions {
         .unwrap_or_else(|_| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static"));
 
     let mut auto_start_backend = false;
+    let mut build_backend_first = false;
 
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -92,6 +97,9 @@ fn parse_cli_options() -> CliOptions {
             "--auto-start-backend" => {
                 auto_start_backend = true;
             }
+            "--build-backend-first" => {
+                build_backend_first = true;
+            }
             _ => {}
         }
     }
@@ -101,13 +109,30 @@ fn parse_cli_options() -> CliOptions {
         backend_url,
         static_dir,
         auto_start_backend,
+        build_backend_first,
     }
 }
 
-fn start_backend_process() -> Result<BackendProcess, Box<dyn std::error::Error>> {
-    let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+fn workspace_root() -> Result<PathBuf, Box<dyn std::error::Error>> {
+    Ok(PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
-        .canonicalize()?;
+        .canonicalize()?)
+}
+
+fn build_backend_binary(workspace_root: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    let status = Command::new("cargo")
+        .args(["build", "-p", "context-tasks", "--bin", "ticket"])
+        .current_dir(workspace_root)
+        .status()?;
+
+    if !status.success() {
+        return Err("ticket backend build failed".into());
+    }
+
+    Ok(())
+}
+
+fn start_backend_process(workspace_root: &PathBuf) -> Result<BackendProcess, Box<dyn std::error::Error>> {
 
     let child = Command::new("cargo")
         .args([
@@ -141,12 +166,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         backend_url = %options.backend_url,
         static_dir = %options.static_dir.display(),
         auto_start_backend = options.auto_start_backend,
+        build_backend_first = options.build_backend_first,
         "Ticket Viewer starting"
     );
 
+    let workspace_root = workspace_root()?;
+
+    if options.auto_start_backend && options.build_backend_first {
+        info!("Building ticket backend before starting services");
+        build_backend_binary(&workspace_root)?;
+    }
+
     let _backend = if options.auto_start_backend {
         info!("Starting ticket backend on http://localhost:4000");
-        Some(start_backend_process()?)
+        Some(start_backend_process(&workspace_root)?)
     } else {
         None
     };

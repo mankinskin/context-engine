@@ -22,7 +22,7 @@ reqwest = { version = "0.12", default-features = false, features = ["json", "blo
 url = "2"
 
 # HTTP serve mode
-axum = { version = "0.7", features = ["macros"] }
+axum = { version = "0.8", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
 tower = { version = "0.4" }
 arc-swap = "1"

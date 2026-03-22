@@ -28,7 +28,7 @@ fn test_server() -> (TestServer, TempDir) {
     let state = context_http::state::AppState::new(manager);
     let router = context_http::router::create_router(state, None);
 
-    let server = TestServer::new(router).expect("failed to create test server");
+    let server = TestServer::new(router);
     (server, tmp)
 }
 

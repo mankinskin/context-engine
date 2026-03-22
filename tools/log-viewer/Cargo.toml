@@ -34,5 +34,5 @@ ts-rs = { version = "10", features = ["serde-json-impl"] }
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 
 [dev-dependencies]
-axum-test = "16"
+axum-test = "19"
 tempfile = "3"

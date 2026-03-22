@@ -22,6 +22,7 @@ pub async fn proxy_get(
     Query(query): Query<HashMap<String, String>>,
     headers: HeaderMap,
 ) -> Response {
+    tracing::debug!(backend_url = %state.backend_url, path = %path, query = ?query, "Proxying GET request");
     forward(&state.backend_url, "GET", &path, &query, headers, None).await
 }
 
@@ -60,6 +61,8 @@ async fn forward(
         Err(msg) => return (StatusCode::BAD_GATEWAY, msg).into_response(),
     };
 
+    tracing::debug!(method = method, constructed_url = %url, "Forwarding request to backend");
+
     let client = reqwest::Client::new();
     let mut req = match method {
         "GET" => client.get(url.clone()),
@@ -84,6 +87,7 @@ async fn forward(
     match req.send().await {
         Ok(resp) => {
             let status = resp.status();
+            tracing::debug!(response_status = %status, "Backend responded");
             let body_bytes = resp.bytes().await.unwrap_or_default();
             (
                 StatusCode::from_u16(status.as_u16())
@@ -114,6 +118,8 @@ fn build_backend_url(
             format!("{{\"error\":\"invalid backend url: {e}\"}}")
         })?;
 
+    tracing::debug!(base_url = %url, input_path = path, "Building backend URL");
+
     {
         let mut segments = url
             .path_segments_mut()
@@ -134,6 +140,7 @@ fn build_backend_url(
         }
     }
 
+    tracing::debug!(final_url = %url, "Constructed backend URL");
     Ok(url)
 }
 

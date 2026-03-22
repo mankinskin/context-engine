@@ -62,36 +62,36 @@ pub fn create_router(
         // ── Convenience REST endpoints ───────────────────────────
         .route("/api/health", get(rest::health))
         .route("/api/workspaces", get(rest::list_workspaces))
-        .route("/api/workspaces/:name/snapshot", get(rest::get_snapshot))
-        .route("/api/workspaces/:name/atoms", get(rest::list_atoms))
-        .route("/api/workspaces/:name/vertices", get(rest::list_vertices))
+        .route("/api/workspaces/{name}/snapshot", get(rest::get_snapshot))
+        .route("/api/workspaces/{name}/atoms", get(rest::list_atoms))
+        .route("/api/workspaces/{name}/vertices", get(rest::list_vertices))
         .route(
-            "/api/workspaces/:name/statistics",
+            "/api/workspaces/{name}/statistics",
             get(rest::get_statistics),
         )
         .route(
-            "/api/workspaces/:name_a/diff/:name_b",
+            "/api/workspaces/{name_a}/diff/{name_b}",
             get(rest::diff_workspaces),
         )
         // ── Log REST endpoints ───────────────────────────────────
         .route(
-            "/api/workspaces/:name/logs",
+            "/api/workspaces/{name}/logs",
             get(log_rest::list_logs).delete(log_rest::delete_logs),
         )
         .route(
-            "/api/workspaces/:name/logs/search",
+            "/api/workspaces/{name}/logs/search",
             get(log_rest::search_logs),
         )
         .route(
-            "/api/workspaces/:name/logs/:filename",
+            "/api/workspaces/{name}/logs/{filename}",
             get(log_rest::get_log).delete(log_rest::delete_log),
         )
         .route(
-            "/api/workspaces/:name/logs/:filename/query",
+            "/api/workspaces/{name}/logs/{filename}/query",
             get(log_rest::query_log),
         )
         .route(
-            "/api/workspaces/:name/logs/:filename/analysis",
+            "/api/workspaces/{name}/logs/{filename}/analysis",
             get(log_rest::analyze_log),
         )
         .layer(default_cors());

@@ -45,11 +45,11 @@ pub fn create_router(
 ) -> Router {
     let mut router = Router::new()
         .route("/api/logs", get(list_logs))
-        .route("/api/logs/:name", get(get_log))
-        .route("/api/signatures/:name", get(get_signatures))
-        .route("/api/search/:name", get(search_log))
-        .route("/api/query/:name", get(query_log))
-        .route("/api/source/*path", get(get_source))
+        .route("/api/logs/{name}", get(get_log))
+        .route("/api/signatures/{name}", get(get_signatures))
+        .route("/api/search/{name}", get(search_log))
+        .route("/api/query/{name}", get(query_log))
+        .route("/api/source/{*path}", get(get_source))
         .route("/api/session", get(get_session).post(update_session))
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
         .with_state(state);

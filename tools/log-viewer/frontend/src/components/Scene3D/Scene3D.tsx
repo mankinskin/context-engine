@@ -550,6 +550,9 @@ export function Scene3D() {
         let touchLastDist = 0;
         let touchLastMidX = 0, touchLastMidY = 0;
 
+        // Do not consume touches on interactive HUD controls (e.g. reset button).
+        const TOUCH_UI_SELECTOR = '.scene3d-hud button, .scene3d-hud a, .scene3d-hud input';
+
         const touchDist2 = (t1: Touch, t2: Touch): number => {
             const dx = t1.clientX - t2.clientX;
             const dy = t1.clientY - t2.clientY;
@@ -557,32 +560,48 @@ export function Scene3D() {
         };
 
         const onTouchStart = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.closest(TOUCH_UI_SELECTOR)) return;
+
             e.preventDefault();
             touchFingers = e.touches.length;
             if (e.touches.length === 1) {
-                touchLastX = e.touches[0].clientX;
-                touchLastY = e.touches[0].clientY;
+                const t = e.touches[0];
+                if (!t) return;
+                touchLastX = t.clientX;
+                touchLastY = t.clientY;
             } else if (e.touches.length === 2) {
-                touchLastDist = touchDist2(e.touches[0], e.touches[1]);
-                touchLastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                touchLastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                const t1 = e.touches[0];
+                const t2 = e.touches[1];
+                if (!t1 || !t2) return;
+                touchLastDist = touchDist2(t1, t2);
+                touchLastMidX = (t1.clientX + t2.clientX) / 2;
+                touchLastMidY = (t1.clientY + t2.clientY) / 2;
             }
         };
 
         const onTouchMove = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.closest(TOUCH_UI_SELECTOR)) return;
+
             e.preventDefault();
             if (e.touches.length === 1 && touchFingers === 1) {
                 // Single finger: orbit
-                const dx = e.touches[0].clientX - touchLastX;
-                const dy = e.touches[0].clientY - touchLastY;
-                touchLastX = e.touches[0].clientX;
-                touchLastY = e.touches[0].clientY;
+                const t = e.touches[0];
+                if (!t) return;
+                const dx = t.clientX - touchLastX;
+                const dy = t.clientY - touchLastY;
+                touchLastX = t.clientX;
+                touchLastY = t.clientY;
                 s.camYaw += dx * 0.005;
                 s.camPitch = Math.max(-1.4, Math.min(1.4, s.camPitch + dy * 0.005));
             } else if (e.touches.length === 2) {
-                const dist = touchDist2(e.touches[0], e.touches[1]);
-                const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                const t1 = e.touches[0];
+                const t2 = e.touches[1];
+                if (!t1 || !t2) return;
+                const dist = touchDist2(t1, t2);
+                const mx = (t1.clientX + t2.clientX) / 2;
+                const my = (t1.clientY + t2.clientY) / 2;
 
                 // Pinch → zoom
                 if (touchLastDist > 0) {
@@ -611,6 +630,11 @@ export function Scene3D() {
             touchFingers = e.touches.length;
         };
 
+        const onTouchCancel = () => {
+            touchFingers = 0;
+            touchLastDist = 0;
+        };
+
         container.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
@@ -619,6 +643,7 @@ export function Scene3D() {
         container.addEventListener('touchstart', onTouchStart, { passive: false });
         container.addEventListener('touchmove', onTouchMove, { passive: false });
         container.addEventListener('touchend', onTouchEnd);
+        container.addEventListener('touchcancel', onTouchCancel);
 
         // ── Reset function ──
         resetRef.current = () => {
@@ -641,6 +666,7 @@ export function Scene3D() {
             container.removeEventListener('touchstart', onTouchStart);
             container.removeEventListener('touchmove', onTouchMove);
             container.removeEventListener('touchend', onTouchEnd);
+            container.removeEventListener('touchcancel', onTouchCancel);
             vb.destroy();
             ub.destroy();
         };
