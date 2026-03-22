@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use std::process::Command;
 
 use chrono::Utc;
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 use serde::Serialize;
 use serde_json::{Map, Value, json};
 use uuid::Uuid;
@@ -56,6 +57,8 @@ pub enum TicketCommandCli {
     Get(IdArgs),
     /// Update a ticket with field patches and optional state transition.
     Update(UpdateArgs),
+    /// Record a bug reproduction event with commit and timestamp metadata.
+    Repro(ReproArgs),
     /// List tickets with optional state/type filtering.
     List(ListArgs),
     /// Soft-delete a ticket.
@@ -223,6 +226,47 @@ pub struct UpdateArgs {
     pub fields: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy, ValueEnum)]
+pub enum ReproOutcome {
+    Reproduced,
+    NotReproduced,
+    Intermittent,
+    Fixed,
+}
+
+impl ReproOutcome {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Reproduced => "reproduced",
+            Self::NotReproduced => "not_reproduced",
+            Self::Intermittent => "intermittent",
+            Self::Fixed => "fixed",
+        }
+    }
+}
+
+#[derive(Debug, Args)]
+pub struct ReproArgs {
+    /// Ticket UUID.
+    #[arg(long)]
+    pub id: Uuid,
+    /// Reproduction outcome.
+    #[arg(long, value_enum, default_value_t = ReproOutcome::Reproduced)]
+    pub outcome: ReproOutcome,
+    /// Commit SHA where reproduction was attempted (defaults to git HEAD if available).
+    #[arg(long)]
+    pub commit: Option<String>,
+    /// Optional reproduction command used.
+    #[arg(long)]
+    pub command: Option<String>,
+    /// Optional short note.
+    #[arg(long)]
+    pub note: Option<String>,
+    /// Optional RFC3339 timestamp (defaults to now/UTC).
+    #[arg(long)]
+    pub timestamp: Option<String>,
+}
+
 #[derive(Debug, Args)]
 pub struct ListArgs {
     #[arg(long)]
@@ -231,6 +275,9 @@ pub struct ListArgs {
     pub ticket_type: Option<String>,
     #[arg(long)]
     pub limit: Option<usize>,
+    /// Include latest reproduction metadata in each list item.
+    #[arg(long, default_value_t = false)]
+    pub with_repro: bool,
 }
 
 #[derive(Debug, Args)]
@@ -452,6 +499,7 @@ fn dispatch(
         TicketCommandCli::Create(args) => cmd_create(args, &store),
         TicketCommandCli::Get(args) => cmd_get(args, &store),
         TicketCommandCli::Update(args) => cmd_update(args, &store),
+        TicketCommandCli::Repro(args) => cmd_repro(args, &store),
         TicketCommandCli::List(args) => cmd_list(args, &store),
         TicketCommandCli::Delete(args) => cmd_delete(args, &store),
         TicketCommandCli::Scan(args) => cmd_scan(args, &store),
@@ -545,6 +593,64 @@ fn cmd_update(args: UpdateArgs, store: &TicketStore) -> Result<Value, CliRunErro
     }))
 }
 
+fn cmd_repro(args: ReproArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let manifest = store.get(&args.id)?;
+    let mut reproductions = manifest
+        .extra
+        .get("reproductions")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
+
+    let at = normalize_repro_timestamp(args.timestamp.as_deref())?;
+    let commit = args
+        .commit
+        .or_else(current_git_commit)
+        .unwrap_or_else(|| "unknown".to_string());
+    let outcome = args.outcome.as_str().to_string();
+
+    let mut entry = Map::new();
+    entry.insert("at".to_string(), Value::String(at.clone()));
+    entry.insert("commit".to_string(), Value::String(commit.clone()));
+    entry.insert("outcome".to_string(), Value::String(outcome.clone()));
+    if let Some(command) = args.command {
+        entry.insert("command".to_string(), Value::String(command));
+    }
+    if let Some(note) = args.note {
+        entry.insert("note".to_string(), Value::String(note));
+    }
+
+    reproductions.push(Value::Object(entry.clone()));
+
+    let mut patch = BTreeMap::new();
+    patch.insert("reproductions".to_string(), Value::Array(reproductions));
+    patch.insert("last_reproduced_at".to_string(), Value::String(at));
+    patch.insert("last_reproduced_commit".to_string(), Value::String(commit));
+    patch.insert("last_reproduction_outcome".to_string(), Value::String(outcome));
+    if let Some(note) = entry.get("note").cloned() {
+        patch.insert("last_reproduction_note".to_string(), note);
+    }
+    if let Some(command) = entry.get("command").cloned() {
+        patch.insert("last_reproduction_command".to_string(), command);
+    }
+
+    let updated = store.update(&args.id, patch, None, None)?;
+    let reproduction_count = updated
+        .extra
+        .get("reproductions")
+        .and_then(Value::as_array)
+        .map(|items| items.len())
+        .unwrap_or(0);
+
+    Ok(json!({
+        "command": "repro",
+        "status": "ok",
+        "id": updated.id,
+        "reproduction_count": reproduction_count,
+        "entry": Value::Object(entry),
+    }))
+}
+
 fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let items = store.list(
         args.state.as_deref(),
@@ -554,18 +660,30 @@ fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let items_json: Vec<Value> = items
         .iter()
         .map(|t| {
-            json!({
+            let mut item = json!({
                 "id": t.id,
                 "type": t.type_id,
                 "title": t.title,
                 "state": t.state,
                 "updated_at": t.updated_at,
-            })
+            });
+
+            if args.with_repro {
+                let repro = store
+                    .get(&t.id)
+                    .ok()
+                    .map(|manifest| repro_summary_from_fields(&manifest.extra))
+                    .unwrap_or_else(default_repro_summary);
+                item["repro"] = repro;
+            }
+
+            item
         })
         .collect();
     Ok(json!({
         "command": "list",
         "status": "ok",
+        "with_repro": args.with_repro,
         "count": items_json.len(),
         "items": items_json,
     }))
@@ -1776,6 +1894,72 @@ fn parse_fields_to_json(raw_fields: &[String]) -> Result<BTreeMap<String, Value>
     })
 }
 
+fn current_git_commit() -> Option<String> {
+    let output = Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let value = String::from_utf8(output.stdout).ok()?;
+    let commit = value.trim();
+    if commit.is_empty() {
+        None
+    } else {
+        Some(commit.to_string())
+    }
+}
+
+fn normalize_repro_timestamp(timestamp: Option<&str>) -> Result<String, CliRunError> {
+    match timestamp {
+        Some(raw) => chrono::DateTime::parse_from_rfc3339(raw)
+            .map(|dt| dt.with_timezone(&Utc).to_rfc3339())
+            .map_err(|e| {
+                CliRunError::BadRequest(format!(
+                    "invalid --timestamp (expected RFC3339): {e}"
+                ))
+            }),
+        None => Ok(Utc::now().to_rfc3339()),
+    }
+}
+
+fn default_repro_summary() -> Value {
+    json!({
+        "count": 0,
+        "last_outcome": Value::Null,
+        "last_at": Value::Null,
+        "last_commit": Value::Null,
+    })
+}
+
+fn repro_summary_from_fields(fields: &BTreeMap<String, Value>) -> Value {
+    let count = fields
+        .get("reproductions")
+        .and_then(Value::as_array)
+        .map(|items| items.len())
+        .unwrap_or(0);
+    let last_outcome = fields
+        .get("last_reproduction_outcome")
+        .cloned()
+        .unwrap_or(Value::Null);
+    let last_at = fields
+        .get("last_reproduced_at")
+        .cloned()
+        .unwrap_or(Value::Null);
+    let last_commit = fields
+        .get("last_reproduced_commit")
+        .cloned()
+        .unwrap_or(Value::Null);
+
+    json!({
+        "count": count,
+        "last_outcome": last_outcome,
+        "last_at": last_at,
+        "last_commit": last_commit,
+    })
+}
+
 #[derive(Debug, Serialize)]
 struct _MachineError<'a> {
     code: &'a str,
@@ -1798,6 +1982,20 @@ mod tests {
     fn parse_fields_rejects_invalid_format() {
         let err = parse_fields(&["broken".to_string()]).expect_err("must reject missing '='");
         assert!(matches!(err, CliRunError::InvalidFieldPatch(_)));
+    }
+
+    #[test]
+    fn normalize_repro_timestamp_accepts_rfc3339() {
+        let got = normalize_repro_timestamp(Some("2026-03-22T12:34:56Z"))
+            .expect("timestamp should parse");
+        assert!(got.starts_with("2026-03-22T12:34:56"));
+    }
+
+    #[test]
+    fn normalize_repro_timestamp_rejects_invalid_input() {
+        let err = normalize_repro_timestamp(Some("not-a-timestamp"))
+            .expect_err("invalid timestamp should fail");
+        assert!(matches!(err, CliRunError::BadRequest(_)));
     }
 }
 

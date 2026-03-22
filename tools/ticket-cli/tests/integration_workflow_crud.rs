@@ -84,6 +84,37 @@ fn list_filters_by_state() {
 }
 
 #[test]
+fn list_with_repro_includes_reproduction_status() {
+    let s = Sandbox::new();
+    let id = create_ticket(&s, "Repro status ticket");
+
+    let _ = s.ticket_json(&[
+        "repro",
+        "--id",
+        &id,
+        "--outcome",
+        "reproduced",
+        "--command",
+        "cargo test -p context-read validate_triple_repeat -- --nocapture",
+    ]);
+
+    let listed = s.ticket_json(&["list", "--with-repro"]);
+    assert_eq!(listed["status"].as_str().unwrap(), "ok");
+    assert!(listed["with_repro"].as_bool().unwrap());
+
+    let item = listed["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|i| i["id"] == id)
+        .expect("ticket should be present in list output");
+
+    assert_eq!(item["repro"]["count"].as_u64().unwrap(), 1);
+    assert_eq!(item["repro"]["last_outcome"], "reproduced");
+    assert!(item["repro"]["last_commit"].as_str().is_some());
+}
+
+#[test]
 fn update_fields_and_state_transition() {
     let s = Sandbox::new();
     let id = create_ticket(&s, "Needs work");
