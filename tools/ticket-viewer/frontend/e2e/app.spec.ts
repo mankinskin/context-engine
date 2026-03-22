@@ -191,6 +191,54 @@ test.describe('ticket-viewer app', () => {
     ).toBeVisible();
   });
 
+  test('tree toggle and document icons stay compact', async ({ page }) => {
+    const toggleSvg = page.locator('.tree-toggle svg').first();
+    const iconSvg = page.locator('.tree-icon svg').first();
+
+    await expect(toggleSvg).toBeVisible();
+    await expect(iconSvg).toBeVisible();
+
+    const toggleBox = await toggleSvg.boundingBox();
+    const iconBox = await iconSvg.boundingBox();
+
+    expect(toggleBox).not.toBeNull();
+    expect(iconBox).not.toBeNull();
+
+    if (!toggleBox || !iconBox) {
+      return;
+    }
+
+    // Guard against browser fallback intrinsic SVG size (300x150).
+    expect(toggleBox.width).toBeLessThanOrEqual(16);
+    expect(toggleBox.height).toBeLessThanOrEqual(16);
+    expect(iconBox.width).toBeLessThanOrEqual(20);
+    expect(iconBox.height).toBeLessThanOrEqual(20);
+
+    // Re-check after filtering to guard against layout/style regressions in
+    // dynamically re-rendered tree rows.
+    await page.locator('.ticket-tree__search').fill('done ticket');
+
+    const filteredToggleSvg = page.locator('.tree-toggle svg').first();
+    const filteredIconSvg = page.locator('.tree-icon svg').first();
+    await expect(filteredToggleSvg).toBeVisible();
+    await expect(filteredIconSvg).toBeVisible();
+
+    const filteredToggleBox = await filteredToggleSvg.boundingBox();
+    const filteredIconBox = await filteredIconSvg.boundingBox();
+
+    expect(filteredToggleBox).not.toBeNull();
+    expect(filteredIconBox).not.toBeNull();
+
+    if (!filteredToggleBox || !filteredIconBox) {
+      return;
+    }
+
+    expect(filteredToggleBox.width).toBeLessThanOrEqual(16);
+    expect(filteredToggleBox.height).toBeLessThanOrEqual(16);
+    expect(filteredIconBox.width).toBeLessThanOrEqual(20);
+    expect(filteredIconBox.height).toBeLessThanOrEqual(20);
+  });
+
   test('search filter narrows the ticket tree', async ({ page }) => {
     const search = page.locator('.ticket-tree__search');
     await expect(search).toBeVisible();

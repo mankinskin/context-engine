@@ -1221,6 +1221,13 @@ export function randomizeTheme() {
     levelInfo:  randHex(0.40, 0.60),
     levelWarn:  randHex(0.45, 0.65),
     levelError: randHex(0.40, 0.55),
+    levelTraceText: randHex(0.75, 0.95),
+    levelDebugText: randHex(0.75, 0.95),
+    levelInfoText: randHex(0.75, 0.95),
+    levelWarnText: randHex(0.75, 0.95),
+    levelErrorText: randHex(0.75, 0.95),
+    spanEnterText: randHex(0.70, 0.90),
+    spanExitText: randHex(0.70, 0.90),
 
     // Particles — vivid (0.45–0.85)
     particleSparkCore:  randHex(0.70, 0.90),

@@ -12,6 +12,7 @@ export * from './components/TabBar';
 export * from './components/Icons';
 export * from './components/Header';
 export * from './components/Sidebar';
+export * from './components/ResizeHandle';
 export * from './components/Layout';
 export * from './components/CodeViewer';
 export * from './components/FileContentViewer';

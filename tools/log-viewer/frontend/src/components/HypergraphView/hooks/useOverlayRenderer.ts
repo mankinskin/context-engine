@@ -337,7 +337,13 @@ export function useOverlayRenderer(
                 edgeBuildCtx.connectedEdgeKeys = cached.connectedEdgeKeys;
                 edgeBuildCtx.hiddenDecompEdgeKeys = curHiddenDecomp;
                 buildEdgeInstances(res.edgeDataBuf, edgeBuildCtx);
-                dev.queue.writeBuffer(res.edgeIB, 0, res.edgeDataBuf);
+                dev.queue.writeBuffer(
+                    res.edgeIB,
+                    0,
+                    res.edgeDataBuf.buffer,
+                    res.edgeDataBuf.byteOffset,
+                    res.edgeDataBuf.byteLength,
+                );
                 prevVizState = curVizState;
                 prevSelectedIdx = inter.selectedIdx;
                 prevHoverIdx = inter.hoverIdx;
@@ -356,7 +362,13 @@ export function useOverlayRenderer(
                 cachedPaletteColors = currentColors;
                 cachedPaletteBuf = buildPaletteBuffer(currentColors);
             }
-            dev.queue.writeBuffer(res.paletteUB, 0, cachedPaletteBuf!);
+            dev.queue.writeBuffer(
+                res.paletteUB,
+                0,
+                cachedPaletteBuf!.buffer,
+                cachedPaletteBuf!.byteOffset,
+                cachedPaletteBuf!.byteLength,
+            );
 
             // ── Draw grid, edges ──
             pass.setPipeline(res.gridPipeline);

@@ -6,7 +6,7 @@
  * XZ positions computed via spring-electrical force simulation.
  */
 
-import type { HypergraphSnapshot, HypergraphNode, HypergraphEdge, VizPathGraph } from '../../types';
+import type { HypergraphSnapshot, VizPathGraph } from '../../types';
 
 export interface LayoutNode {
     index: number;
@@ -130,7 +130,6 @@ export function buildLayout(snapshot: HypergraphSnapshot): GraphLayout {
 }
 
 // ── Layout constants ──
-const SPACING_X = 0.6;
 const SPACING_Y = 0.5;
 /** Extra vertical gap between the selected node and the first parent row. */
 const PARENT_PAD_Y = 0.9;

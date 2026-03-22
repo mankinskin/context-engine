@@ -121,6 +121,7 @@ export function useTouchInteraction(
 
             if (touches.length === 1) {
                 const t = touches[0];
+                if (!t) return;
                 const rect = container.getBoundingClientRect();
                 state.startX = t.clientX - rect.left;
                 state.startY = t.clientY - rect.top;
@@ -142,8 +143,11 @@ export function useTouchInteraction(
                 }, LONG_PRESS_DURATION);
             } else if (touches.length === 2) {
                 clearLongPress();
-                state.lastDist = touchDist(touches[0], touches[1]);
-                const [mx, my] = touchMid(touches[0], touches[1]);
+                const t1 = touches[0];
+                const t2 = touches[1];
+                if (!t1 || !t2) return;
+                state.lastDist = touchDist(t1, t2);
+                const [mx, my] = touchMid(t1, t2);
                 state.lastMidX = mx;
                 state.lastMidY = my;
             }
@@ -161,6 +165,7 @@ export function useTouchInteraction(
             if (touches.length === 1 && state.fingers === 1) {
                 // Single-finger: orbit
                 const t = touches[0];
+                if (!t) return;
                 const dx = t.clientX - state.lastX;
                 const dy = t.clientY - state.lastY;
                 state.lastX = t.clientX;
@@ -180,9 +185,12 @@ export function useTouchInteraction(
                 state.isOrbiting = true;
             } else if (touches.length === 2) {
                 clearLongPress();
+                const t1 = touches[0];
+                const t2 = touches[1];
+                if (!t1 || !t2) return;
 
-                const dist = touchDist(touches[0], touches[1]);
-                const [mx, my] = touchMid(touches[0], touches[1]);
+                const dist = touchDist(t1, t2);
+                const [mx, my] = touchMid(t1, t2);
 
                 // Pinch → zoom
                 if (state.lastDist > 0) {
@@ -218,8 +226,13 @@ export function useTouchInteraction(
             if (e.touches.length === 0 && state.fingers === 1) {
                 const dt = Date.now() - state.startTime;
                 const rect = container.getBoundingClientRect();
-                const endX = e.changedTouches[0].clientX - rect.left;
-                const endY = e.changedTouches[0].clientY - rect.top;
+                const changedTouch = e.changedTouches[0];
+                if (!changedTouch) {
+                    state.fingers = e.touches.length;
+                    return;
+                }
+                const endX = changedTouch.clientX - rect.left;
+                const endY = changedTouch.clientY - rect.top;
                 const dx = endX - state.startX;
                 const dy = endY - state.startY;
                 const moved = Math.sqrt(dx * dx + dy * dy);

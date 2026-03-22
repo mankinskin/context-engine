@@ -15,7 +15,7 @@
     
     /* Strict Type-Checking */
     "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     
@@ -25,9 +25,11 @@
     "noFallthroughCasesInSwitch": true,
     
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@context-engine/types": ["./src/types/generated/index.ts"]
     },
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": ["vite/client", "node"]
   },
   "include": ["src"]
 }

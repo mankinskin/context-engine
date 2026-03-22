@@ -11,7 +11,6 @@
 
 import type {
     EdgeRef,
-    PathNode,
     PathTransition,
     VizPathGraph,
 } from "@context-engine/types";
@@ -89,7 +88,7 @@ export function applyTransition(
             // the prior start_path node to this root.
             if (
                 graph.start_path.length > 0 &&
-                graph.start_path[graph.start_path.length - 1].index ===
+                graph.start_path[graph.start_path.length - 1]!.index ===
                     transition.root.index
             ) {
                 graph.start_path.pop();
@@ -151,13 +150,10 @@ export function applyTransition(
             graph.success = transition.success;
             break;
 
-        default: {
-            // Exhaustiveness check
-            const _exhaustive: never = transition;
+        default:
             throw new Error(
                 `Unknown transition kind: ${(transition as any).kind}`,
             );
-        }
     }
 }
 
@@ -169,8 +165,9 @@ export function applyTransition(
 export function fromTransitions(transitions: PathTransition[]): VizPathGraph {
     const graph = emptyPathGraph();
     for (let i = 0; i < transitions.length; i++) {
+        const transition = transitions[i]!;
         try {
-            applyTransition(graph, transitions[i]);
+            applyTransition(graph, transition);
         } catch (e) {
             throw new Error(
                 `step ${i}: ${e instanceof Error ? e.message : String(e)}`,

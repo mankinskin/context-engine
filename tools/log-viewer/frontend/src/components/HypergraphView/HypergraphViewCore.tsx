@@ -54,7 +54,6 @@ import { computeShellLayout } from "./nesting/shellLayout";
 import {
     NodeInfoPanel,
     GraphInfoOverlay,
-    NodeTooltip,
     NodeLayer,
 } from "./components";
 
@@ -164,7 +163,7 @@ export function HypergraphViewCore(props: HypergraphViewCoreProps) {
     // Mouse interaction (autoLayout passed via ref so it's always current)
     const autoLayoutRef = useRef(autoLayout);
     autoLayoutRef.current = autoLayout;
-    const { selectedIdx, setSelectedIdx, tooltip, interRef } =
+    const { selectedIdx, setSelectedIdx, interRef } =
         useMouseInteraction(containerRef, layoutRef, camera, autoLayoutRef);
 
     // Touch interaction (shares selection state via interRef)

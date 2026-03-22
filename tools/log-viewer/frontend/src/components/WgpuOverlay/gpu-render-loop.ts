@@ -69,7 +69,6 @@ export class RenderLoop {
     private prevCanvasH = 0;
     private prevSelectedIdx = -1;
     private prevEffects: object | null = null;
-    private prevParticlesEnabled = true;
     private prevSparksEnabled = true;
     private prevEmbersEnabled = true;
     private prevBeamsEnabled = true;
@@ -313,7 +312,6 @@ export class RenderLoop {
         this.prevEmbersEnabled = eff.embersEnabled;
         this.prevBeamsEnabled = eff.beamsEnabled;
         this.prevGlitterEnabled = eff.glitterEnabled;
-        this.prevParticlesEnabled = particlesEnabled;
 
         // --- Pack uniforms -------------------------------------------------
         const u = this.buffers.uniformF32;

@@ -7,7 +7,7 @@
  *
  * Nesting view adds shell containers and duplicate node positioning.
  */
-import type { GraphLayout, LayoutNode } from '../layout';
+import type { GraphLayout } from '../layout';
 import type { InteractionState } from '../hooks/useMouseInteraction';
 import { worldToScreen, worldScaleAtDepth } from '../utils/math';
 import type { DecompositionManager } from '../decomposition/manager';
@@ -58,7 +58,7 @@ export interface PositionContext {
  */
 export function positionDOMNodes(ctx: PositionContext): void {
     const {
-        layout, nodeElMap, viewProj, invSubVP, camPos, vw, vh,
+        layout, nodeElMap, viewProj, camPos, vw, vh,
         containerRect, inter, vizInvolvedNodes, connectedSet, decomposition,
         shells, duplicates, nestingHighlights, containerEl, nestingEnabled, duplicateMode,
     } = ctx;
@@ -259,51 +259,6 @@ function containerRef(_nodeElMap: Map<number, HTMLDivElement>, key: string): HTM
     // Shell elements use data-shell-idx, duplicates use data-duplicate-id
     const el = document.querySelector<HTMLDivElement>(`[data-shell-idx="${key.replace('shell-', '')}"], [data-duplicate-id="${key}"]`);
     return el;
-}
-
-// ── Internal helper ──
-
-function backProjectReparentedChild(
-    n: LayoutNode,
-    el: HTMLDivElement,
-    containerRect: DOMRect,
-    vw: number,
-    vh: number,
-    invSubVP: Float32Array | null,
-    vp: Float32Array,
-    layout: GraphLayout,
-    childParentMap: Map<number, number>,
-): void {
-    if (!invSubVP) return;
-
-    const childRect = el.getBoundingClientRect();
-    const csx = (childRect.left + childRect.width / 2) - containerRect.left;
-    const csy = (childRect.top + childRect.height / 2) - containerRect.top;
-
-    // Use expanded parent's depth as reference
-    const parentIdx = childParentMap.get(n.index)!;
-    const pn = layout.nodeMap.get(parentIdx);
-    const pz = pn ? pn.z : n.z;
-    const pcz = vp[2]! * (pn?.x ?? 0) + vp[6]! * (pn?.y ?? 0) + vp[10]! * pz + vp[14]!;
-    const pcw = vp[3]! * (pn?.x ?? 0) + vp[7]! * (pn?.y ?? 0) + vp[11]! * pz + vp[15]!;
-    const pndcZ = pcw > 0.001 ? pcz / pcw : 0;
-
-    const ndcX = (csx / vw) * 2 - 1;
-    const ndcY = 1 - (csy / vh) * 2;
-    const inv = invSubVP;
-    const ux = inv[0]! * ndcX + inv[4]! * ndcY + inv[8]! * pndcZ + inv[12]!;
-    const uy = inv[1]! * ndcX + inv[5]! * ndcY + inv[9]! * pndcZ + inv[13]!;
-    const uz = inv[2]! * ndcX + inv[6]! * ndcY + inv[10]! * pndcZ + inv[14]!;
-    const uw = inv[3]! * ndcX + inv[7]! * ndcY + inv[11]! * pndcZ + inv[15]!;
-    if (Math.abs(uw) > 0.001) {
-        n.x = ux / uw;
-        n.y = uy / uw;
-        n.z = uz / uw;
-        // Snap targets so lerp doesn't pull them back
-        n.tx = n.x;
-        n.ty = n.y;
-        n.tz = n.z;
-    }
 }
 
 // ── Nesting connector helpers ──

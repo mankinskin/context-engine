@@ -19,7 +19,6 @@
  */
 import { useEffect, useRef } from 'preact/hooks';
 
-import { effectSettings } from '../../store/theme';
 import { initGpu, type GpuPipelines } from './gpu-init';
 import { GpuBufferManager } from './gpu-buffers';
 import { ElementScanner } from './element-scanner';

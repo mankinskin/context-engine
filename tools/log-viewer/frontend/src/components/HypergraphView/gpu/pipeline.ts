@@ -125,7 +125,13 @@ export function createGpuResources(
         size: gridData.byteLength,
         usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
-    device.queue.writeBuffer(gridIB, 0, gridData);
+    device.queue.writeBuffer(
+        gridIB,
+        0,
+        gridData.buffer,
+        gridData.byteOffset,
+        gridData.byteLength,
+    );
 
     // Pre-allocated edge data CPU buffer
     const edgeDataBuf = new Float32Array(maxEdges * EDGE_INSTANCE_FLOATS);

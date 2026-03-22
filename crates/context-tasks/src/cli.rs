@@ -103,7 +103,7 @@ pub enum TicketCommandCli {
     Watch(WatchArgs),
     /// Dashboard: current state summary + ready tickets + parallel opportunities.
     Status(StatusArgs),
-    /// Generate a markdown overview of ready tickets and write it to disk.
+    /// Return a JSON overview of ready tickets.
     #[command(name = "ready-overview")]
     ReadyOverview(ReadyOverviewArgs),
     /// Start the HTTP server exposing the ticket API (REST + SSE).
@@ -154,10 +154,7 @@ pub struct ReadyOverviewArgs {
     /// Optional prefix filter — only include tickets whose title starts with this string.
     #[arg(long)]
     pub filter: Option<String>,
-    /// Output path for the generated markdown report.
-    #[arg(long)]
-    pub output: Option<PathBuf>,
-    /// Optional scope line written near the top of the report.
+    /// Optional scope label included in the JSON response.
     #[arg(long)]
     pub scope: Option<String>,
 }
@@ -933,50 +930,6 @@ fn cmd_status(args: StatusArgs, store: &TicketStore) -> Result<Value, CliRunErro
     }))
 }
 
-fn default_ready_overview_path() -> PathBuf {
-    let viewer_dir = PathBuf::from("tools/ticket-viewer");
-    if viewer_dir.exists() {
-        viewer_dir.join("READY_TICKETS_REVIEW.md")
-    } else {
-        PathBuf::from("READY_TICKETS_REVIEW.md")
-    }
-}
-
-fn render_ready_overview_markdown(status_payload: &Value, scope: &str) -> String {
-    let date = Utc::now().format("%Y-%m-%d");
-    let summary = &status_payload["summary"];
-    let ready = status_payload["ready"].as_array().cloned().unwrap_or_default();
-
-    let mut out = String::new();
-    out.push_str("# Ready Tickets Overview\n\n");
-    out.push_str(&format!("Date: {date}\n"));
-    out.push_str(&format!("Scope: {scope}\n\n"));
-    out.push_str("## Summary\n\n");
-    out.push_str(&format!("- Total tickets: {}\n", summary["total"].as_u64().unwrap_or(0)));
-    out.push_str(&format!("- Done tickets: {}\n", summary["done"].as_u64().unwrap_or(0)));
-    out.push_str(&format!("- Active tickets: {}\n", summary["active"].as_u64().unwrap_or(0)));
-    out.push_str(&format!("- Ready tickets: {}\n", summary["ready"].as_u64().unwrap_or(0)));
-    out.push_str(&format!("- Blocked tickets: {}\n\n", summary["blocked"].as_u64().unwrap_or(0)));
-    out.push_str("## Ready Tickets\n\n");
-
-    if ready.is_empty() {
-        out.push_str("No ready tickets found.\n");
-        return out;
-    }
-
-    out.push_str("| Ticket | Title | State | Type |\n");
-    out.push_str("|---|---|---|---|\n");
-    for ticket in ready {
-        let id = ticket["id"].as_str().unwrap_or("unknown");
-        let title = ticket["title"].as_str().unwrap_or("(untitled)").replace('|', "\\|");
-        let state = ticket["state"].as_str().unwrap_or("unknown");
-        let component = ticket["component"].as_str().unwrap_or("unknown");
-        out.push_str(&format!("| `{id}` | {title} | {state} | {component} |\n"));
-    }
-
-    out
-}
-
 fn cmd_ready_overview(args: ReadyOverviewArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let status_payload = cmd_status(
         StatusArgs {
@@ -986,28 +939,17 @@ fn cmd_ready_overview(args: ReadyOverviewArgs, store: &TicketStore) -> Result<Va
         store,
     )?;
 
-    let output = args.output.unwrap_or_else(default_ready_overview_path);
-    if let Some(parent) = output.parent()
-        && !parent.as_os_str().is_empty()
-    {
-        std::fs::create_dir_all(parent)
-            .map_err(|e| CliRunError::BadRequest(format!("failed to create output directory: {e}")))?;
-    }
-
     let scope = args
         .scope
         .unwrap_or_else(|| "ready tickets currently open in the active index".to_string());
-    let markdown = render_ready_overview_markdown(&status_payload, &scope);
-    std::fs::write(&output, markdown)
-        .map_err(|e| CliRunError::BadRequest(format!("failed to write ready overview: {e}")))?;
-
-    // Normalize path to forward slashes for JSON output (cross-platform consistency)
-    let output_str = output.to_string_lossy().replace("\\", "/");
 
     Ok(json!({
         "command": "ready_overview",
         "status": "ok",
-        "output": output_str,
+        "date": Utc::now().format("%Y-%m-%d").to_string(),
+        "scope": scope,
+        "summary": status_payload["summary"],
+        "ready": status_payload["ready"],
         "ready_count": status_payload["summary"]["ready"],
     }))
 }
