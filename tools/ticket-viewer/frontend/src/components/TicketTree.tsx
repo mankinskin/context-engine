@@ -2,7 +2,7 @@
 // TreeView.  Supports filtering by state and a text search over title/id.
 
 import { JSX } from 'preact';
-import { TreeView, type TreeNode } from '@context-engine/viewer-api-frontend';
+import { FileTree, type TreeNode } from '@context-engine/viewer-api-frontend';
 import {
   activeTab,
   authToken,
@@ -68,7 +68,7 @@ function buildTree(tickets: TicketSummary[]): TreeNode<TicketSummary>[] {
       children: group.map((t) => ({
         id: t.id,
         label: t.title ?? t.id.slice(0, 8),
-        icon: 'doc',
+        icon: 'file',
         badge: stateBadge(t.state),
         data: t,
         tooltip: t.id,
@@ -137,29 +137,24 @@ export function TicketTree(): JSX.Element {
         </select>
       </div>
 
-      {isLoading && <div class="ticket-tree__loading">Loading…</div>}
-
-      {!isLoading && list.length === 0 && (
-        <div class="ticket-tree__empty">
-          {selectedWorkspace.value
+      <FileTree<TicketSummary>
+        class="ticket-tree__tree"
+        nodes={nodes}
+        selectedId={openTicketId.value ?? undefined}
+        defaultExpanded={nodes.map((n) => n.id)}
+        loading={isLoading}
+        emptyMessage={
+          selectedWorkspace.value
             ? 'No tickets match the current filter.'
-            : 'Select a workspace to begin.'}
-        </div>
-      )}
-
-      {!isLoading && list.length > 0 && (
-        <TreeView
-          nodes={nodes}
-          selectedId={openTicketId.value ?? undefined}
-          defaultExpanded={nodes.map((n) => n.id)}
-          onSelect={(node: TreeNode<TicketSummary>) => {
-            // Only leaf nodes (tickets) are selectable; group folders are ignored.
-            if (!node.id.startsWith('group:')) {
-              void openTicket(node.id);
-            }
-          }}
-        />
-      )}
+            : 'Select a workspace to begin.'
+        }
+        onSelect={(node: TreeNode<TicketSummary>) => {
+          // Only leaf nodes (tickets) are selectable; group folders are ignored.
+          if (!node.id.startsWith('group:')) {
+            void openTicket(node.id);
+          }
+        }}
+      />
     </div>
   );
 }

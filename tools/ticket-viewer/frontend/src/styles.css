@@ -1,3 +1,5 @@
+@import '@context-engine/viewer-api-frontend/styles';
+
 /* Ticket Viewer — base styles */
 
 :root {
@@ -17,13 +19,11 @@
   --right-pane-width: 300px;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body, #app { height: 100%; font-family: system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); font-size: 14px; }
+html, body, #app { font-family: system-ui, sans-serif; }
 
 /* ── App shell ─────────────────────────────────────────────────────────────── */
 
-.ticket-viewer-app { display: flex; flex-direction: column; height: 100%; }
+.ticket-viewer-app { height: 100%; }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
 
@@ -32,7 +32,7 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   align-items: center;
   gap: 12px;
   padding: 0 16px;
-  height: 48px;
+  min-height: 48px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 }
@@ -61,12 +61,12 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   line-height: 1;
 }
 
-/* ── Main layout (uses viewer-api Layout) ─────────────────────────────────── */
+/* ── Shared sidebar integration ───────────────────────────────────────────── */
 
-.app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.app__body { flex: 1; display: flex; overflow: hidden; }
-.app__sidebar { width: var(--sidebar-width); flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; background: var(--bg-secondary); }
-.app__main { flex: 1; overflow: hidden; }
+.ticket-sidebar .sidebar-content {
+  padding: 0;
+  overflow: hidden;
+}
 
 /* ── Center + right split ─────────────────────────────────────────────────── */
 
@@ -74,6 +74,8 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   display: flex;
   height: 100%;
   overflow: hidden;
+  min-width: 0;
+  position: relative;
 }
 
 .center-pane {
@@ -81,6 +83,7 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
   border-right: 1px solid var(--border-color);
 }
 
@@ -91,6 +94,7 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   flex-direction: column;
   overflow: hidden;
   background: var(--bg-secondary);
+  position: relative;
 }
 
 /* ── Left pane (workspace picker + tree) ─────────────────────────────────── */
@@ -199,12 +203,6 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   text-align: center;
 }
 
-.ticket-tree .tree-view {
-  flex: 1;
-  overflow-y: auto;
-  padding: 6px 0;
-}
-
 /* ── Ticket content ───────────────────────────────────────────────────────── */
 
 .ticket-content {
@@ -234,6 +232,7 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
   flex-shrink: 0;
+  position: relative;
 }
 
 .ticket-content__tab {
@@ -372,40 +371,3 @@ html, body, #app { height: 100%; font-family: system-ui, sans-serif; background:
   font-size: 9.5px;
 }
 
-/* ── tree-view (inherited from viewer-api, fill in base styles) ───────────── */
-
-.tree-view { font-size: 13px; }
-.tree-item { padding: 3px 8px 3px 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 4px; color: var(--text-primary); user-select: none; }
-.tree-item:hover { background: var(--tab-hover-bg); }
-.tree-item--selected { background: var(--tab-active-bg); color: var(--accent); }
-.tree-item__badge { margin-left: auto; font-size: 11px; background: var(--bg-panel); color: var(--text-secondary); border-radius: 9px; padding: 1px 6px; }
-
-/* Guard against default intrinsic SVG size (300x150) in tree controls/icons. */
-.tree-toggle {
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tree-toggle svg {
-  width: 12px;
-  height: 12px;
-  display: block;
-}
-
-.tree-icon {
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.tree-icon svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}

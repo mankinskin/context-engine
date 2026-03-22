@@ -3,6 +3,7 @@ import { Sidebar as SharedSidebar } from '@context-engine/viewer-api-frontend';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Breadcrumbs } from './components/Breadcrumbs';
+import { DocumentTabs } from './components/DocumentTabs';
 import { DocViewer } from './components/DocViewer';
 import { FilterPanel } from './components/FilterPanel';
 import { FileViewer } from './components/FileViewer';
@@ -48,6 +49,7 @@ export function App() {
         </SharedSidebar>
         <main class="content">
           <Breadcrumbs />
+          <DocumentTabs />
           <div class="content-panels">
             {showCodeViewer ? (
               <div class="code-panel full-width">

@@ -1,4 +1,6 @@
 import { JSX } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
+import { ResizeHandle } from './ResizeHandle';
 
 export interface Tab {
   id: string;
@@ -14,11 +16,35 @@ export interface TabBarProps {
   onSelect: (id: string) => void;
   onClose?: (id: string) => void;
   rightContent?: JSX.Element;
+  /** Enable drag-resize on the bottom edge (default: true). */
+  resizableBottom?: boolean;
+  /** Initial tab bar height in px. */
+  initialHeight?: number;
+  /** Min tab bar height in px. */
+  minHeight?: number;
+  /** Max tab bar height in px. */
+  maxHeight?: number;
 }
 
-export function TabBar({ tabs, activeTabId, onSelect, onClose, rightContent }: TabBarProps): JSX.Element {
+export function TabBar({
+  tabs,
+  activeTabId,
+  onSelect,
+  onClose,
+  rightContent,
+  resizableBottom = true,
+  initialHeight = 32,
+  minHeight = 24,
+  maxHeight = 120,
+}: TabBarProps): JSX.Element {
+  const [height, setHeight] = useState(initialHeight);
+
+  const onResizeBottom = useCallback((delta: number) => {
+    setHeight((prev) => Math.max(minHeight, Math.min(maxHeight, prev + delta)));
+  }, [minHeight, maxHeight]);
+
   return (
-    <div class="tab-bar">
+    <div class="tab-bar" style={{ height: `${height}px` }}>
       <div class="tabs">
         {tabs.map(tab => (
           <button
@@ -45,6 +71,9 @@ export function TabBar({ tabs, activeTabId, onSelect, onClose, rightContent }: T
         ))}
       </div>
       {rightContent && <div class="tab-info">{rightContent}</div>}
+      {resizableBottom && (
+        <ResizeHandle direction="vertical" edge="bottom" onResize={onResizeBottom} />
+      )}
     </div>
   );
 }

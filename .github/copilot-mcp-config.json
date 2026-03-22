@@ -20,6 +20,13 @@
         "LOG_DIR": "target/test-logs",
         "WORKSPACE_ROOT": "."
       }
+    },
+    "ticket-mcp": {
+      "type": "stdio",
+      "command": "target/release/ticket-mcp.exe",
+      "env": {
+        "TICKET_API_URL": "http://127.0.0.1:4000"
+      }
     }
   }
 }

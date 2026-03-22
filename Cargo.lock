@@ -4405,6 +4405,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-mcp"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "urlencoding",
+]
+
+[[package]]
 name = "ticket-viewer"
 version = "0.1.0"
 dependencies = [

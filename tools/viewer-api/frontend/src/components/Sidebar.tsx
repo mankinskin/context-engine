@@ -25,6 +25,11 @@ export interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
   /** Enable drag-to-resize handle on the right edge */
   resizable?: boolean;
+  /** Enable/disable specific resize edges. By default, right edge is enabled. */
+  resizeEdges?: {
+    left?: boolean;
+    right?: boolean;
+  };
   /** Initial width in px (default: 260) */
   initialWidth?: number;
   /** Min width in px (default: 180) */
@@ -57,7 +62,8 @@ export function Sidebar({
   collapsible = false,
   collapsed: controlledCollapsed,
   onCollapsedChange,
-  resizable = false,
+  resizable = true,
+  resizeEdges,
   initialWidth = 260,
   minWidth = 180,
   maxWidth = 500,
@@ -81,6 +87,8 @@ export function Sidebar({
   const handleResize = useCallback((delta: number) => {
     setWidth(prev => Math.max(minWidth, Math.min(maxWidth, prev + delta)));
   }, [minWidth, maxWidth]);
+
+  const resolvedResizeEdges = resizeEdges ?? { right: true };
 
   const sidebarStyle = isCollapsed
     ? { width: '0px', minWidth: '0px', overflow: 'hidden' as const }
@@ -133,7 +141,21 @@ export function Sidebar({
               )}
             </div>
 
-            {resizable && <ResizeHandle direction="horizontal" onResize={handleResize} />}
+            {resizable && resolvedResizeEdges.left && (
+              <ResizeHandle
+                direction="horizontal"
+                edge="left"
+                deltaSign={-1}
+                onResize={handleResize}
+              />
+            )}
+            {resizable && resolvedResizeEdges.right && (
+              <ResizeHandle
+                direction="horizontal"
+                edge="right"
+                onResize={handleResize}
+              />
+            )}
           </>
         )}
         {isCollapsed && collapsible && (

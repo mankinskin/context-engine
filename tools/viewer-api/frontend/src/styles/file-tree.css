@@ -1,0 +1,22 @@
+/* Shared file tree shell styles */
+
+.file-tree {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.file-tree .tree-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.file-tree__loading,
+.file-tree__empty {
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}

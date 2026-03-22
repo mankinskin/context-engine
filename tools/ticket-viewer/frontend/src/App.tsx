@@ -6,8 +6,9 @@
 //   Right pane:  Dependency graph view
 
 import { JSX } from 'preact';
-import { useEffect } from 'preact/hooks';
-import { Layout } from '@context-engine/viewer-api-frontend';
+import { useEffect, useState, useCallback } from 'preact/hooks';
+import { Sidebar as SharedSidebar } from '@context-engine/viewer-api-frontend';
+import { ResizeHandle } from '@context-engine/viewer-api-frontend';
 import { WorkspacePicker } from './components/WorkspacePicker';
 import { TicketTree } from './components/TicketTree';
 import { TicketContent } from './components/TicketContent';
@@ -15,6 +16,7 @@ import { GraphView } from './components/GraphView';
 import {
   authToken,
   globalError,
+  filteredTickets,
   selectedWorkspace,
   workspaces,
   workspacesLoading,
@@ -25,6 +27,9 @@ import {
 import { listWorkspaces, listTickets } from './api';
 
 export function App(): JSX.Element {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [rightPaneWidth, setRightPaneWidth] = useState(300);
+
   // Load workspace list on mount.
   useEffect(() => {
     async function load() {
@@ -60,10 +65,41 @@ export function App(): JSX.Element {
     void load();
   }, []);
 
+  const toggleMobileSidebar = useCallback(() => {
+    setMobileOpen((prev) => !prev);
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
+
+  const resizeRightPane = useCallback((delta: number) => {
+    setRightPaneWidth((prev) => Math.max(220, Math.min(700, prev + delta)));
+  }, []);
+
   const error = globalError.value;
 
   return (
-    <div class="ticket-viewer-app">
+    <div class="app ticket-viewer-app">
+      <header class="header app-header">
+        <button
+          class="sidebar-hamburger"
+          onClick={toggleMobileSidebar}
+          aria-label="Toggle sidebar"
+          title="Toggle sidebar"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <span class="app-header__title">Ticket Viewer</span>
+        <span class="app-header__workspace">
+          {selectedWorkspace.value || ''}
+        </span>
+      </header>
+
       {error && (
         <div class="global-error-banner" role="alert">
           <strong>Error:</strong> {error}
@@ -77,32 +113,41 @@ export function App(): JSX.Element {
         </div>
       )}
 
-      <Layout
-        header={
-          <header class="app-header">
-            <span class="app-header__title">Ticket Viewer</span>
-            <span class="app-header__workspace">
-              {selectedWorkspace.value || ''}
-            </span>
-          </header>
-        }
-        sidebar={
+      <div class="main-layout">
+        <SharedSidebar
+          class="ticket-sidebar"
+          title="Tickets"
+          badge={filteredTickets.value.length}
+          collapsible
+          resizable
+          initialWidth={300}
+          mobileOpen={mobileOpen}
+          onMobileClose={closeMobileSidebar}
+        >
           <div class="left-pane">
             <WorkspacePicker />
             <TicketTree />
           </div>
-        }
-      >
-        {/* Center + right pane inside a split container */}
-        <div class="center-right-split">
-          <div class="center-pane">
-            <TicketContent />
+        </SharedSidebar>
+
+        <main class="content">
+          {/* Center + right pane inside a split container */}
+          <div class="center-right-split">
+            <div class="center-pane">
+              <TicketContent />
+            </div>
+            <div class="right-pane" style={{ width: `${rightPaneWidth}px` }}>
+              <ResizeHandle
+                direction="horizontal"
+                edge="left"
+                deltaSign={-1}
+                onResize={resizeRightPane}
+              />
+              <GraphView />
+            </div>
           </div>
-          <div class="right-pane">
-            <GraphView />
-          </div>
-        </div>
-      </Layout>
+        </main>
+      </div>
     </div>
   );
 }

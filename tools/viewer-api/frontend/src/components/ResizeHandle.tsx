@@ -4,11 +4,23 @@ export interface ResizeHandleProps {
   onResize: (delta: number) => void;
   onResizeStart?: () => void;
   direction: 'horizontal' | 'vertical';
+  /** Which edge this handle controls. Defaults to right/bottom by direction. */
+  edge?: 'left' | 'right' | 'top' | 'bottom';
+  /** Multiply drag delta by this value (use -1 for left/top anchored panes). */
+  deltaSign?: 1 | -1;
 }
 
-export function ResizeHandle({ onResize, onResizeStart, direction }: ResizeHandleProps) {
+export function ResizeHandle({
+  onResize,
+  onResizeStart,
+  direction,
+  edge,
+  deltaSign = 1,
+}: ResizeHandleProps) {
   const isDragging = useRef(false);
   const lastPos = useRef(0);
+
+  const resolvedEdge = edge ?? (direction === 'horizontal' ? 'right' : 'bottom');
 
   const handleMouseDown = useCallback((e: MouseEvent) => {
     e.preventDefault();
@@ -24,7 +36,7 @@ export function ResizeHandle({ onResize, onResizeStart, direction }: ResizeHandl
       const currentPos = direction === 'horizontal' ? e.clientX : e.clientY;
       const delta = currentPos - lastPos.current;
       lastPos.current = currentPos;
-      onResize(delta);
+      onResize(delta * deltaSign);
     };
 
     const handleMouseUp = () => {
@@ -41,7 +53,7 @@ export function ResizeHandle({ onResize, onResizeStart, direction }: ResizeHandl
 
   return (
     <div
-      class={`resize-handle resize-handle-${direction}`}
+      class={`resize-handle resize-handle-${direction} resize-handle-edge-${resolvedEdge}`}
       onMouseDown={handleMouseDown}
     />
   );

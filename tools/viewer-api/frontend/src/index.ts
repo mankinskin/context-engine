@@ -16,6 +16,7 @@ export * from './components/ResizeHandle';
 export * from './components/Layout';
 export * from './components/CodeViewer';
 export * from './components/FileContentViewer';
+export * from './components/FileTree';
 
 // Re-export session utilities
 export * from './session';

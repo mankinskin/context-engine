@@ -1,7 +1,7 @@
 import { logFiles, currentFile, loadLogFile, isLoading } from '../../store';
 import { signal } from '@preact/signals';
 import { usePanelFocus, focusedPanel } from '../../hooks';
-import { TreeView, type TreeNode } from '@context-engine/viewer-api-frontend';
+import { FileTree, ResizeHandle, type TreeNode } from '@context-engine/viewer-api-frontend';
 import { buildFileTree, getCategoryIdForFilter } from '../../store/fileTree';
 import type { LogFile } from '../../types';
 import { useState, useMemo, useCallback } from 'preact/hooks';
@@ -12,11 +12,17 @@ const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('al
 interface SidebarProps {
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  resizeRightEdge?: boolean;
 }
 
-export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+export function Sidebar({
+  mobileOpen,
+  onMobileClose,
+  resizeRightEdge = true,
+}: SidebarProps) {
   const filter = activeFilter.value;
   const allFiles = logFiles.value;
+  const [width, setWidth] = useState(280);
 
   // Compute counts for filter buttons
   const graphCount = allFiles.filter(f => f.has_graph_snapshot).length;
@@ -93,8 +99,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
     ? (mobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed')
     : '';
 
+  const onResizeSidebar = useCallback((delta: number) => {
+    setWidth((prev) => Math.max(180, Math.min(500, prev + delta)));
+  }, []);
+
   return (
-    <aside class={`sidebar ${mobileClass}`}>
+    <aside class={`sidebar ${mobileClass}`} style={{ width: `${width}px` }}>
       <div class="sidebar-header">
         <h2>Log Files</h2>
         <span class="file-count">{totalCount} files</span>
@@ -169,20 +179,23 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         tabIndex={0}
         onMouseEnter={handleMouseEnter}
       >
-        {isLoading.value && allFiles.length === 0 ? (
-          <p class="loading">Loading...</p>
-        ) : filteredNodes.length === 0 ? (
-          <p class="placeholder">{filter !== 'all' ? `No logs with ${filter} data` : 'No log files found'}</p>
-        ) : (
-          <TreeView<LogFile>
-            nodes={filteredNodes}
-            selectedId={selectedIds}
-            onSelect={handleSelect}
-            expanded={effectiveExpanded}
-            onToggle={handleToggle}
-          />
-        )}
+        <FileTree<LogFile>
+          nodes={filteredNodes}
+          selectedId={selectedIds}
+          onSelect={handleSelect}
+          expanded={effectiveExpanded}
+          onToggle={handleToggle}
+          loading={isLoading.value && allFiles.length === 0}
+          emptyMessage={
+            filter !== 'all'
+              ? `No logs with ${filter} data`
+              : 'No log files found'
+          }
+        />
       </div>
+      {resizeRightEdge && (
+        <ResizeHandle direction="horizontal" edge="right" onResize={onResizeSidebar} />
+      )}
     </aside>
   );
 }

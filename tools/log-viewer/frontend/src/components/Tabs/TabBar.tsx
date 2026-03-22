@@ -2,7 +2,9 @@ import { activeTab, setTab, filteredEntries } from '../../store';
 import type { ViewTab } from '../../types';
 import { ListIcon } from '../Icons';
 import type { JSX } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import { useListKeyboard, usePanelFocus, focusedPanel } from '../../hooks';
+import { ResizeHandle } from '@context-engine/viewer-api-frontend';
 
 // SVG icons for tabs
 function StatsIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -43,9 +45,18 @@ const tabs: { id: ViewTab; label: string; icon: () => JSX.Element }[] = [
   { id: 'stats', label: 'Statistics', icon: () => <StatsIcon size={14} /> },
 ];
 
-export function TabBar() {
+interface TabBarProps {
+  resizeBottomEdge?: boolean;
+}
+
+export function TabBar({ resizeBottomEdge = true }: TabBarProps) {
   const selectedIndex = tabs.findIndex(t => t.id === activeTab.value);
   const panelRef = usePanelFocus('tabs');
+  const [height, setHeight] = useState(32);
+
+  const onResizeBottom = useCallback((delta: number) => {
+    setHeight((prev) => Math.max(24, Math.min(120, prev + delta)));
+  }, []);
 
   const { containerRef, onKeyDown } = useListKeyboard({
     items: tabs,
@@ -61,7 +72,7 @@ export function TabBar() {
   };
 
   return (
-    <div class="tab-bar">
+    <div class="tab-bar" style={{ height: `${height}px` }}>
       <div
         class={`tabs ${focusedPanel.value === 'tabs' ? 'focused' : ''}`}
         ref={setRef}
@@ -89,6 +100,9 @@ export function TabBar() {
       <div class="tab-info">
         <span class="entry-count">{filteredEntries.value.length} entries</span>
       </div>
+      {resizeBottomEdge && (
+        <ResizeHandle direction="vertical" edge="bottom" onResize={onResizeBottom} />
+      )}
     </div>
   );
 }
