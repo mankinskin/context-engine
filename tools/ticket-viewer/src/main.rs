@@ -24,7 +24,7 @@ use viewer_api::{display_host, init_tracing, with_static_files};
 
 use ticket_api::workspace::WorkspaceConfig;
 use ticket_api::storage::store::TicketStore;
-use ticket_http::serve::{ServeConfig, WorkspaceRegistry, StreamBroker, AppState};
+use ticket_http::serve::{WorkspaceRegistry, StreamBroker, AppState};
 
 struct CliOptions {
     port: u16,

@@ -153,7 +153,8 @@ fn oracle_assert(input: &str) {
 /// cargo test -p context-cli oracle_ -- --include-ignored
 /// ```
 macro_rules! oracle_test {
-    ($test_name:ident, $string:expr) => {
+    ($(#[$meta:meta])* $test_name:ident, $string:expr) => {
+        $(#[$meta])*
         #[test]
         #[ignore = "RC-1: insert_sequence outer loop not yet implemented"]
         fn $test_name() {
@@ -175,45 +176,72 @@ macro_rules! oracle_test {
 // Expected ngrams labels are documented per test to serve as a contract that
 // the fixed algorithm must satisfy.
 
-/// "ab" — minimum 2-char, all-distinct.
-/// ngrams labels: atoms {a, b} only (no repeated substrings).
-/// context-read should produce: atoms + root "ab".
-oracle_test!(oracle_ab, "ab");
+oracle_test!(
+    /// "ab" — minimum 2-char, all-distinct.
+    /// ngrams labels: atoms {a, b} only (no repeated substrings).
+    /// context-read should produce: atoms + root "ab".
+    oracle_ab,
+    "ab"
+);
 
-/// "abab" — repeated bigram.
-/// ngrams labels: a, b, ab.
-/// context-read should produce: a, b, ab (root).
-oracle_test!(oracle_abab, "abab");
+oracle_test!(
+    /// "abab" — repeated bigram.
+    /// ngrams labels: a, b, ab.
+    /// context-read should produce: a, b, ab (root).
+    oracle_abab,
+    "abab"
+);
 
-/// "abcabc" — repeated trigram.
-/// ngrams labels: a, b, c, ab, bc, abc.
-/// context-read should produce: a, b, c, {ab or bc}, abc (root).
-oracle_test!(oracle_abcabc, "abcabc");
+oracle_test!(
+    /// "abcabc" — repeated trigram.
+    /// ngrams labels: a, b, c, ab, bc, abc.
+    /// context-read should produce: a, b, c, {ab or bc}, abc (root).
+    oracle_abcabc,
+    "abcabc"
+);
 
-/// "abcbcd" — adjacent overlap: "abc" and "bcd" share "bc".
-/// ngrams labels: b, c, bc, abc, bcd.
-/// Tests the wrapper/overlap path in both algorithms.
-oracle_test!(oracle_abcbcd, "abcbcd");
+oracle_test!(
+    /// "abcbcd" — adjacent overlap: "abc" and "bcd" share "bc".
+    /// ngrams labels: b, c, bc, abc, bcd.
+    /// Tests the wrapper/overlap path in both algorithms.
+    oracle_abcbcd,
+    "abcbcd"
+);
 
-/// "aabbaabb" — nested repetition.
-/// ngrams labels: a, b, aa, bb, aabb.
-oracle_test!(oracle_aabbaabb, "aabbaabb");
+oracle_test!(
+    /// "aabbaabb" — nested repetition.
+    /// ngrams labels: a, b, aa, bb, aabb.
+    oracle_aabbaabb,
+    "aabbaabb"
+);
 
-/// "ababab" — longer binary repetition.
-/// ngrams labels: a, b, ab, aba, bab.
-oracle_test!(oracle_ababab, "ababab");
+oracle_test!(
+    /// "ababab" — longer binary repetition.
+    /// ngrams labels: a, b, ab, aba, bab.
+    oracle_ababab,
+    "ababab"
+);
 
-/// "abcab" — partial overlap at end.
-/// ngrams labels: a, b, ab, abc.
-oracle_test!(oracle_abcab, "abcab");
+oracle_test!(
+    /// "abcab" — partial overlap at end.
+    /// ngrams labels: a, b, ab, abc.
+    oracle_abcab,
+    "abcab"
+);
 
-/// "aabaa" — complex repetition pattern.
-/// ngrams labels: a, b, aa, aab, baa.
-oracle_test!(oracle_aabaa, "aabaa");
+oracle_test!(
+    /// "aabaa" — complex repetition pattern.
+    /// ngrams labels: a, b, aa, aab, baa.
+    oracle_aabaa,
+    "aabaa"
+);
 
-/// "abcdabc" — prefix repeat, length 7.
-/// ngrams labels: a, b, c, ab, bc, abc.
-oracle_test!(oracle_abcdabc, "abcdabc");
+oracle_test!(
+    /// "abcdabc" — prefix repeat, length 7.
+    /// ngrams labels: a, b, c, ab, bc, abc.
+    oracle_abcdabc,
+    "abcdabc"
+);
 
 // ---------------------------------------------------------------------------
 // RC-3 gated test — all-same-char repeat/overlap cursor bug

@@ -8,7 +8,6 @@ mod common;
 
 use std::{collections::BTreeMap, sync::Arc};
 
-use chrono::Utc;
 use ticket_api::{
     model::{edge::EdgeRecord, filesystem::ScanRoot},
     storage::store::TicketStore,
