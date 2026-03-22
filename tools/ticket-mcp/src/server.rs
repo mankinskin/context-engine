@@ -1,4 +1,6 @@
-use reqwest::Client;
+use std::collections::{BTreeMap, HashSet, VecDeque};
+use std::sync::Arc;
+
 use rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
     handler::server::{tool::ToolRouter, wrapper::Parameters},
@@ -8,73 +10,65 @@ use rmcp::{
     transport::stdio,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
+use uuid::Uuid;
 
-#[derive(Debug, Clone, Deserialize, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-pub enum TicketOperation {
-    Health,
-    ListWorkspaces,
-    ListTickets,
-    GetTicket,
-    GetTicketDescription,
-    ListEdges,
-    Subgraph,
+use ticket_api::storage::store::TicketStore;
+use ticket_api::storage::ticket_fs::TicketFs;
+
+// ── Output types ─────────────────────────────────────────────────────────────
+
+#[derive(Serialize)]
+struct TicketSummary {
+    id: String,
+    #[serde(rename = "type")]
+    type_id: String,
+    title: Option<String>,
+    state: Option<String>,
+    updated_at: chrono::DateTime<chrono::Utc>,
 }
 
-#[derive(Debug, Deserialize, JsonSchema)]
-pub struct RequestInput {
-    pub operation: TicketOperation,
-    #[serde(default)]
-    pub workspace: Option<String>,
-    #[serde(default)]
-    pub id: Option<String>,
-    #[serde(default)]
-    pub state: Option<String>,
-    #[serde(default)]
-    pub query: Option<String>,
-    #[serde(default)]
-    pub limit: Option<usize>,
-    #[serde(default)]
-    pub kind: Option<String>,
-    #[serde(default)]
-    pub root: Option<String>,
-    #[serde(default)]
-    pub direction: Option<String>,
-    #[serde(default)]
-    pub edge_kind: Option<String>,
-    #[serde(default)]
-    pub depth: Option<usize>,
-    #[serde(default)]
-    pub limit_nodes: Option<usize>,
-    #[serde(default)]
-    pub limit_edges: Option<usize>,
-    #[serde(default)]
-    pub base_url: Option<String>,
+#[derive(Serialize)]
+struct TicketDetail {
+    id: String,
+    created_at: chrono::DateTime<chrono::Utc>,
+    fields: BTreeMap<String, Value>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RequestOutput {
-    pub success: bool,
-    pub url: String,
-    pub status: u16,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub result: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+#[derive(Serialize)]
+struct EdgeItem {
+    from: String,
+    to: String,
+    kind: String,
 }
 
-#[derive(Debug, Deserialize, JsonSchema)]
-pub struct HealthInput {
-    #[serde(default)]
-    pub base_url: Option<String>,
+#[derive(Serialize)]
+struct NodeItem {
+    id: String,
+    title: Option<String>,
+    state: Option<String>,
+    depth: usize,
 }
 
-#[derive(Debug, Deserialize, JsonSchema)]
-pub struct ListWorkspacesInput {
-    #[serde(default)]
-    pub base_url: Option<String>,
+#[derive(Serialize)]
+struct SubgraphResponse {
+    workspace: String,
+    nodes: Vec<NodeItem>,
+    edges: Vec<EdgeItem>,
+    truncated: bool,
+    stats: SubgraphStats,
 }
+
+#[derive(Serialize)]
+struct SubgraphStats {
+    nodes_returned: usize,
+    edges_returned: usize,
+    max_depth_reached: usize,
+}
+
+// ── Input types ──────────────────────────────────────────────────────────────
+
+// ── Input types ──────────────────────────────────────────────────────────────
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ListTicketsInput {
@@ -85,16 +79,12 @@ pub struct ListTicketsInput {
     pub query: Option<String>,
     #[serde(default)]
     pub limit: Option<usize>,
-    #[serde(default)]
-    pub base_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct TicketRefInput {
     pub workspace: String,
     pub id: String,
-    #[serde(default)]
-    pub base_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -102,8 +92,6 @@ pub struct ListEdgesInput {
     pub workspace: String,
     #[serde(default)]
     pub kind: Option<String>,
-    #[serde(default)]
-    pub base_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -120,8 +108,6 @@ pub struct SubgraphInput {
     pub limit_nodes: Option<usize>,
     #[serde(default)]
     pub limit_edges: Option<usize>,
-    #[serde(default)]
-    pub base_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -143,401 +129,315 @@ pub struct WorkflowInput {
     pub id: Option<String>,
     #[serde(default)]
     pub query: Option<String>,
-    #[serde(default)]
-    pub base_url: Option<String>,
 }
 
 fn default_workflow_name() -> WorkflowName {
     WorkflowName::List
 }
 
+// ── Server ───────────────────────────────────────────────────────────────────
+
 #[derive(Clone)]
 pub struct TicketServer {
-    default_base_url: String,
-    client: Client,
+    store: Arc<TicketStore>,
     tool_router: ToolRouter<Self>,
 }
 
 impl TicketServer {
-    pub fn new(default_base_url: String) -> Self {
+    pub fn new(store: Arc<TicketStore>) -> Self {
         Self {
-            default_base_url: default_base_url.trim_end_matches('/').to_string(),
-            client: Client::new(),
+            store,
             tool_router: Self::tool_router(),
         }
     }
 
-    fn resolve_base_url(&self, override_base_url: Option<String>) -> String {
-        override_base_url
-            .map(|v| v.trim_end_matches('/').to_string())
-            .filter(|v| !v.is_empty())
-            .unwrap_or_else(|| self.default_base_url.clone())
-    }
-
-    fn required<'a>(value: &'a Option<String>, name: &str) -> Result<&'a str, String> {
-        value
-            .as_deref()
-            .filter(|v| !v.is_empty())
-            .ok_or_else(|| format!("missing required field: {name}"))
-    }
-
-    fn query_pairs(input: &RequestInput) -> Result<Vec<(String, String)>, String> {
-        let mut pairs = Vec::new();
-
-        match input.operation {
-            TicketOperation::Health | TicketOperation::ListWorkspaces => {}
-            TicketOperation::ListTickets => {
-                pairs.push((
-                    "workspace".to_string(),
-                    Self::required(&input.workspace, "workspace")?.to_string(),
-                ));
-                if let Some(state) = &input.state {
-                    pairs.push(("state".to_string(), state.clone()));
-                }
-                if let Some(query) = &input.query {
-                    pairs.push(("query".to_string(), query.clone()));
-                }
-                if let Some(limit) = input.limit {
-                    pairs.push(("limit".to_string(), limit.to_string()));
-                }
-            }
-            TicketOperation::GetTicket | TicketOperation::GetTicketDescription => {
-                pairs.push((
-                    "workspace".to_string(),
-                    Self::required(&input.workspace, "workspace")?.to_string(),
-                ));
-            }
-            TicketOperation::ListEdges => {
-                pairs.push((
-                    "workspace".to_string(),
-                    Self::required(&input.workspace, "workspace")?.to_string(),
-                ));
-                if let Some(kind) = &input.kind {
-                    pairs.push(("kind".to_string(), kind.clone()));
-                }
-            }
-            TicketOperation::Subgraph => {
-                pairs.push((
-                    "workspace".to_string(),
-                    Self::required(&input.workspace, "workspace")?.to_string(),
-                ));
-                pairs.push((
-                    "root".to_string(),
-                    Self::required(&input.root, "root")?.to_string(),
-                ));
-                if let Some(direction) = &input.direction {
-                    pairs.push(("direction".to_string(), direction.clone()));
-                }
-                if let Some(edge_kind) = &input.edge_kind {
-                    pairs.push(("edge_kind".to_string(), edge_kind.clone()));
-                }
-                if let Some(depth) = input.depth {
-                    pairs.push(("depth".to_string(), depth.to_string()));
-                }
-                if let Some(limit_nodes) = input.limit_nodes {
-                    pairs.push(("limit_nodes".to_string(), limit_nodes.to_string()));
-                }
-                if let Some(limit_edges) = input.limit_edges {
-                    pairs.push(("limit_edges".to_string(), limit_edges.to_string()));
-                }
-            }
-        }
-
-        Ok(pairs)
-    }
-
-    fn path(input: &RequestInput) -> Result<String, String> {
-        match input.operation {
-            TicketOperation::Health => Ok("/healthz".to_string()),
-            TicketOperation::ListWorkspaces => Ok("/api/workspaces".to_string()),
-            TicketOperation::ListTickets => Ok("/api/tickets".to_string()),
-            TicketOperation::GetTicket => {
-                let id = Self::required(&input.id, "id")?;
-                Ok(format!("/api/tickets/{id}"))
-            }
-            TicketOperation::GetTicketDescription => {
-                let id = Self::required(&input.id, "id")?;
-                Ok(format!("/api/tickets/{id}/description"))
-            }
-            TicketOperation::ListEdges => Ok("/api/edges".to_string()),
-            TicketOperation::Subgraph => Ok("/api/graph/subgraph".to_string()),
-        }
-    }
-
-    async fn perform_request(&self, input: RequestInput) -> Result<RequestOutput, String> {
-        let base_url = self.resolve_base_url(input.base_url.clone());
-        let path = Self::path(&input)?;
-        let query = Self::query_pairs(&input)?;
-
-        let mut url = format!("{base_url}{path}");
-        if !query.is_empty() {
-            let query_str = query
-                .iter()
-                .map(|(k, v)| {
-                    format!(
-                        "{}={}",
-                        urlencoding::encode(k),
-                        urlencoding::encode(v)
-                    )
-                })
-                .collect::<Vec<_>>()
-                .join("&");
-            url = format!("{url}?{query_str}");
-        }
-
-        let response = self
-            .client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|err| format!("request failed: {err}"))?;
-
-        let status = response.status().as_u16();
-        let body = response
-            .json::<Value>()
-            .await
-            .map_err(|err| format!("failed to parse JSON response: {err}"))?;
-
-        let success = (200..300).contains(&status);
-        let error = if success {
-            None
-        } else {
-            body.get("error")
-                .and_then(Value::as_str)
-                .map(ToOwned::to_owned)
-                .or_else(|| Some(format!("HTTP status {status}")))
-        };
-
-        Ok(RequestOutput {
-            success,
-            url,
-            status,
-            result: Some(body),
-            error,
-        })
-    }
-
-    fn render_output(output: &RequestOutput) -> Result<CallToolResult, McpError> {
-        let text = serde_json::to_string_pretty(output).map_err(|err| {
-            McpError::internal_error(format!("serialization failed: {err}"), None)
-        })?;
+    fn json_result<T: Serialize>(value: &T) -> Result<CallToolResult, McpError> {
+        let text = serde_json::to_string_pretty(value)
+            .map_err(|e| McpError::internal_error(format!("serialization: {e}"), None))?;
         Ok(CallToolResult::success(vec![Content::text(text)]))
     }
 
-    async fn request_from_input(&self, input: RequestInput) -> Result<CallToolResult, McpError> {
-        match self.perform_request(input).await {
-            Ok(output) => Self::render_output(&output),
-            Err(err) => {
-                let output = RequestOutput {
-                    success: false,
-                    url: String::new(),
-                    status: 0,
-                    result: None,
-                    error: Some(err),
-                };
-                Self::render_output(&output)
-            }
-        }
+    fn store_err(e: ticket_api::error::StorageError) -> McpError {
+        McpError::internal_error(format!("store error: {e}"), None)
+    }
+
+    fn parse_uuid(s: &str) -> Result<Uuid, McpError> {
+        s.parse::<Uuid>()
+            .map_err(|e| McpError::invalid_params(format!("invalid UUID '{s}': {e}"), None))
     }
 }
 
 #[tool_router]
 impl TicketServer {
-    #[tool(
-        name = "request",
-        description = "Execute a thin ticket API request against ticket-http. This maps operation names to GET endpoints and forwards query parameters."
-    )]
-    async fn request(
-        &self,
-        Parameters(input): Parameters<RequestInput>,
-    ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(input).await
-    }
-
-    #[tool(name = "health", description = "Check ticket API health endpoint.")]
-    async fn health(
-        &self,
-        Parameters(input): Parameters<HealthInput>,
-    ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::Health,
-            workspace: None,
-            id: None,
-            state: None,
-            query: None,
-            limit: None,
-            kind: None,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+    #[tool(name = "health", description = "Check that the ticket store is accessible.")]
+    async fn health(&self) -> Result<CallToolResult, McpError> {
+        match self.store.list(None, None, Some(0)) {
+            Ok(_) => Self::json_result(&serde_json::json!({
+                "status": "ok",
+                "service": "ticket-mcp",
+                "mode": "direct",
+            })),
+            Err(e) => Self::json_result(&serde_json::json!({
+                "status": "error",
+                "error": e.to_string(),
+            })),
+        }
     }
 
     #[tool(
         name = "list_workspaces",
-        description = "List available ticket workspaces from the ticket API."
+        description = "List available ticket workspaces."
     )]
-    async fn list_workspaces(
-        &self,
-        Parameters(input): Parameters<ListWorkspacesInput>,
-    ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::ListWorkspaces,
-            workspace: None,
-            id: None,
-            state: None,
-            query: None,
-            limit: None,
-            kind: None,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+    async fn list_workspaces(&self) -> Result<CallToolResult, McpError> {
+        let config = ticket_api::workspace::WorkspaceConfig::load();
+        let names: Vec<String> = if config.workspaces.is_empty() {
+            vec!["default".to_string()]
+        } else {
+            config.workspaces.keys().cloned().collect()
+        };
+        Self::json_result(&serde_json::json!({
+            "workspaces": names,
+            "active": config.active,
+        }))
     }
 
     #[tool(
         name = "list_tickets",
-        description = "List tickets for a workspace with optional state/query/limit filters."
+        description = "List tickets with optional state/query/limit filters."
     )]
     async fn list_tickets(
         &self,
         Parameters(input): Parameters<ListTicketsInput>,
     ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::ListTickets,
-            workspace: Some(input.workspace),
-            id: None,
-            state: input.state,
-            query: input.query,
-            limit: input.limit,
-            kind: None,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+        if let Some(q) = &input.query {
+            let limit = input.limit.unwrap_or(100).min(1000);
+            let results = self.store.search_tickets(q, limit).map_err(Self::store_err)?;
+            let items: Vec<TicketSummary> = results
+                .into_iter()
+                .map(|r| {
+                    let updated_at = self
+                        .store
+                        .get_indexed(&r.id)
+                        .ok()
+                        .flatten()
+                        .map(|t| t.updated_at)
+                        .unwrap_or_else(|| chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::UNIX_EPOCH));
+                    TicketSummary {
+                        id: r.id.to_string(),
+                        type_id: r.ticket_type.unwrap_or_default(),
+                        title: r.title,
+                        state: r.state,
+                        updated_at,
+                    }
+                })
+                .collect();
+            Self::json_result(&serde_json::json!({
+                "workspace": input.workspace,
+                "items": items,
+            }))
+        } else {
+            let limit = input.limit.map(|l| l.min(1000));
+            let items: Vec<TicketSummary> = self
+                .store
+                .list(input.state.as_deref(), None, limit)
+                .map_err(Self::store_err)?
+                .into_iter()
+                .map(|t| TicketSummary {
+                    id: t.id.to_string(),
+                    type_id: t.type_id,
+                    title: t.title,
+                    state: t.state,
+                    updated_at: t.updated_at,
+                })
+                .collect();
+            Self::json_result(&serde_json::json!({
+                "workspace": input.workspace,
+                "items": items,
+            }))
+        }
     }
 
-    #[tool(
-        name = "get_ticket",
-        description = "Get one ticket by id from a workspace."
-    )]
+    #[tool(name = "get_ticket", description = "Get one ticket by id.")]
     async fn get_ticket(
         &self,
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::GetTicket,
-            workspace: Some(input.workspace),
-            id: Some(input.id),
-            state: None,
-            query: None,
-            limit: None,
-            kind: None,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+        let id = Self::parse_uuid(&input.id)?;
+        let manifest = self.store.get(&id).map_err(Self::store_err)?;
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "ticket": TicketDetail {
+                id: manifest.id.to_string(),
+                created_at: manifest.created_at,
+                fields: manifest.extra,
+            },
+        }))
     }
 
     #[tool(
         name = "get_ticket_description",
-        description = "Get ticket markdown description by id from a workspace."
+        description = "Get ticket markdown description by id."
     )]
     async fn get_ticket_description(
         &self,
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::GetTicketDescription,
-            workspace: Some(input.workspace),
-            id: Some(input.id),
-            state: None,
-            query: None,
-            limit: None,
-            kind: None,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+        let id = Self::parse_uuid(&input.id)?;
+        let indexed = self
+            .store
+            .get_indexed(&id)
+            .map_err(Self::store_err)?
+            .ok_or_else(|| McpError::invalid_params(format!("ticket not found: {id}"), None))?;
+
+        if indexed.deleted {
+            return Err(McpError::invalid_params(format!("ticket deleted: {id}"), None));
+        }
+
+        let description = TicketFs::read_description(&indexed.path);
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "id": id.to_string(),
+            "description": description,
+        }))
     }
 
     #[tool(
         name = "list_edges",
-        description = "List ticket graph edges for a workspace, optionally filtered by edge kind."
+        description = "List ticket graph edges, optionally filtered by edge kind."
     )]
     async fn list_edges(
         &self,
         Parameters(input): Parameters<ListEdgesInput>,
     ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::ListEdges,
-            workspace: Some(input.workspace),
-            id: None,
-            state: None,
-            query: None,
-            limit: None,
-            kind: input.kind,
-            root: None,
-            direction: None,
-            edge_kind: None,
-            depth: None,
-            limit_nodes: None,
-            limit_edges: None,
-            base_url: input.base_url,
-        })
-        .await
+        let all = self.store.list_all_edges().map_err(Self::store_err)?;
+        let items: Vec<EdgeItem> = all
+            .into_iter()
+            .filter(|e| match &input.kind {
+                Some(k) => k == "all" || e.kind == *k,
+                None => true,
+            })
+            .map(|e| EdgeItem {
+                from: e.from.to_string(),
+                to: e.to.to_string(),
+                kind: e.kind,
+            })
+            .collect();
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "items": items,
+        }))
     }
 
     #[tool(
         name = "subgraph",
-        description = "Fetch dependency subgraph for a root ticket in a workspace."
+        description = "Fetch dependency subgraph for a root ticket via BFS traversal."
     )]
     async fn subgraph(
         &self,
         Parameters(input): Parameters<SubgraphInput>,
     ) -> Result<CallToolResult, McpError> {
-        self.request_from_input(RequestInput {
-            operation: TicketOperation::Subgraph,
-            workspace: Some(input.workspace),
-            id: None,
-            state: None,
-            query: None,
-            limit: None,
-            kind: None,
-            root: Some(input.root),
-            direction: input.direction,
-            edge_kind: input.edge_kind,
-            depth: input.depth,
-            limit_nodes: input.limit_nodes,
-            limit_edges: input.limit_edges,
-            base_url: input.base_url,
+        let root = Self::parse_uuid(&input.root)?;
+        let depth_limit = input.depth.unwrap_or(2).min(8);
+        let node_limit = input.limit_nodes.unwrap_or(500);
+        let edge_limit = input.limit_edges.unwrap_or(2000);
+        let direction = input.direction.as_deref().unwrap_or("both");
+        let edge_kind_filter = input.edge_kind.as_deref().unwrap_or("all");
+
+        let mut visited: HashSet<Uuid> = HashSet::new();
+        let mut nodes: Vec<NodeItem> = Vec::new();
+        let mut edges: Vec<EdgeItem> = Vec::new();
+        let mut truncated = false;
+        let mut max_depth_reached = 0;
+
+        let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+        queue.push_back((root, 0));
+
+        while let Some((current_id, depth)) = queue.pop_front() {
+            if visited.contains(&current_id) {
+                continue;
+            }
+            if nodes.len() >= node_limit {
+                truncated = true;
+                break;
+            }
+
+            visited.insert(current_id);
+            max_depth_reached = max_depth_reached.max(depth);
+
+            let node = match self.store.get_indexed(&current_id) {
+                Ok(Some(t)) => NodeItem {
+                    id: current_id.to_string(),
+                    title: t.title,
+                    state: t.state,
+                    depth,
+                },
+                Ok(None) => NodeItem {
+                    id: current_id.to_string(),
+                    title: None,
+                    state: None,
+                    depth,
+                },
+                Err(e) => return Err(Self::store_err(e)),
+            };
+            nodes.push(node);
+
+            if depth >= depth_limit {
+                continue;
+            }
+
+            let all_edges = self.store.list_all_edges().map_err(Self::store_err)?;
+
+            for edge in &all_edges {
+                let kind_ok = edge_kind_filter == "all" || edge.kind == edge_kind_filter;
+                if !kind_ok {
+                    continue;
+                }
+
+                let (neighbor, is_outbound) = if edge.from == current_id {
+                    (edge.to, true)
+                } else if edge.to == current_id {
+                    (edge.from, false)
+                } else {
+                    continue;
+                };
+
+                let dir_ok = match direction {
+                    "out" => is_outbound,
+                    "in" => !is_outbound,
+                    _ => true,
+                };
+                if !dir_ok {
+                    continue;
+                }
+
+                if edges.len() < edge_limit {
+                    edges.push(EdgeItem {
+                        from: edge.from.to_string(),
+                        to: edge.to.to_string(),
+                        kind: edge.kind.clone(),
+                    });
+                }
+
+                if !visited.contains(&neighbor) {
+                    queue.push_back((neighbor, depth + 1));
+                }
+            }
+        }
+
+        edges.dedup_by(|a, b| a.from == b.from && a.to == b.to && a.kind == b.kind);
+
+        let stats = SubgraphStats {
+            nodes_returned: nodes.len(),
+            edges_returned: edges.len(),
+            max_depth_reached,
+        };
+        Self::json_result(&SubgraphResponse {
+            workspace: input.workspace,
+            nodes,
+            edges,
+            truncated,
+            stats,
         })
-        .await
     }
 
     #[tool(
@@ -551,7 +451,6 @@ impl TicketServer {
         let workspace = input.workspace.unwrap_or_else(|| "default".to_string());
         let id = input.id.unwrap_or_else(|| "<ticket-id>".to_string());
         let query = input.query.unwrap_or_else(|| "<query>".to_string());
-        let base_url = input.base_url.unwrap_or_else(|| self.default_base_url.clone());
 
         let payload = match input.name {
             WorkflowName::List => serde_json::json!({
@@ -565,99 +464,41 @@ impl TicketServer {
             WorkflowName::TriageOpenTickets => serde_json::json!({
                 "name": "triage_open_tickets",
                 "steps": [
-                    {"tool": "health", "input": {"base_url": base_url}},
-                    {"tool": "list_workspaces", "input": {"base_url": base_url}},
-                    {"tool": "list_tickets", "input": {"workspace": workspace, "state": "open", "limit": 50, "base_url": base_url}},
-                    {"tool": "list_tickets", "input": {"workspace": workspace, "state": "in-progress", "limit": 50, "base_url": base_url}}
+                    {"tool": "health", "input": {}},
+                    {"tool": "list_workspaces", "input": {}},
+                    {"tool": "list_tickets", "input": {"workspace": workspace, "state": "open", "limit": 50}},
+                    {"tool": "list_tickets", "input": {"workspace": workspace, "state": "in-progress", "limit": 50}}
                 ]
             }),
             WorkflowName::FetchTicketContext => serde_json::json!({
                 "name": "fetch_ticket_context",
                 "steps": [
-                    {"tool": "get_ticket", "input": {"workspace": workspace, "id": id, "base_url": base_url}},
-                    {"tool": "get_ticket_description", "input": {"workspace": workspace, "id": id, "base_url": base_url}},
-                    {"tool": "list_edges", "input": {"workspace": workspace, "base_url": base_url}},
-                    {"tool": "subgraph", "input": {"workspace": workspace, "root": id, "depth": 2, "base_url": base_url}}
+                    {"tool": "get_ticket", "input": {"workspace": workspace, "id": id}},
+                    {"tool": "get_ticket_description", "input": {"workspace": workspace, "id": id}},
+                    {"tool": "list_edges", "input": {"workspace": workspace}},
+                    {"tool": "subgraph", "input": {"workspace": workspace, "root": id, "depth": 2}}
                 ]
             }),
             WorkflowName::InspectDependencies => serde_json::json!({
                 "name": "inspect_dependencies",
                 "steps": [
-                    {"tool": "list_tickets", "input": {"workspace": workspace, "query": query, "limit": 20, "base_url": base_url}},
-                    {"tool": "list_edges", "input": {"workspace": workspace, "kind": "depends_on", "base_url": base_url}},
-                    {"tool": "subgraph", "input": {"workspace": workspace, "root": id, "direction": "both", "depth": 3, "base_url": base_url}}
+                    {"tool": "list_tickets", "input": {"workspace": workspace, "query": query, "limit": 20}},
+                    {"tool": "list_edges", "input": {"workspace": workspace, "kind": "depends_on"}},
+                    {"tool": "subgraph", "input": {"workspace": workspace, "root": id, "direction": "both", "depth": 3}}
                 ]
             }),
         };
 
-        let text = serde_json::to_string_pretty(&payload).map_err(|err| {
-            McpError::internal_error(format!("serialization failed: {err}"), None)
-        })?;
-
-        Ok(CallToolResult::success(vec![Content::text(text)]))
+        Self::json_result(&payload)
     }
 
     #[tool(
         name = "help",
-        description = "List ticket-mcp tools, endpoint mapping, and required parameters."
+        description = "List ticket-mcp tools and their parameters."
     )]
     async fn help(&self) -> Result<CallToolResult, McpError> {
-        let mut ops = Map::new();
-        ops.insert(
-            "health".to_string(),
-            serde_json::json!({
-                "path": "/healthz",
-                "required": [],
-            }),
-        );
-        ops.insert(
-            "list_workspaces".to_string(),
-            serde_json::json!({
-                "path": "/api/workspaces",
-                "required": [],
-            }),
-        );
-        ops.insert(
-            "list_tickets".to_string(),
-            serde_json::json!({
-                "path": "/api/tickets",
-                "required": ["workspace"],
-                "optional": ["state", "query", "limit"],
-            }),
-        );
-        ops.insert(
-            "get_ticket".to_string(),
-            serde_json::json!({
-                "path": "/api/tickets/{id}",
-                "required": ["workspace", "id"],
-            }),
-        );
-        ops.insert(
-            "get_ticket_description".to_string(),
-            serde_json::json!({
-                "path": "/api/tickets/{id}/description",
-                "required": ["workspace", "id"],
-            }),
-        );
-        ops.insert(
-            "list_edges".to_string(),
-            serde_json::json!({
-                "path": "/api/edges",
-                "required": ["workspace"],
-                "optional": ["kind"],
-            }),
-        );
-        ops.insert(
-            "subgraph".to_string(),
-            serde_json::json!({
-                "path": "/api/graph/subgraph",
-                "required": ["workspace", "root"],
-                "optional": ["direction", "edge_kind", "depth", "limit_nodes", "limit_edges"],
-            }),
-        );
-
         let payload = serde_json::json!({
-            "default_base_url": self.default_base_url,
+            "mode": "direct (no HTTP backend required)",
             "tools": [
                 "health",
                 "list_workspaces",
@@ -667,21 +508,46 @@ impl TicketServer {
                 "list_edges",
                 "subgraph",
                 "workflow",
-                "request"
             ],
-            "primary_pattern": "Use named tools first. Use request only for generic/fallback operation routing.",
-            "operations": ops,
+            "operations": {
+                "health": {
+                    "description": "Check store is accessible",
+                    "required": [],
+                },
+                "list_workspaces": {
+                    "description": "List available workspaces",
+                    "required": [],
+                },
+                "list_tickets": {
+                    "description": "List/search tickets",
+                    "required": ["workspace"],
+                    "optional": ["state", "query", "limit"],
+                },
+                "get_ticket": {
+                    "description": "Get full ticket manifest",
+                    "required": ["workspace", "id"],
+                },
+                "get_ticket_description": {
+                    "description": "Get ticket markdown description",
+                    "required": ["workspace", "id"],
+                },
+                "list_edges": {
+                    "description": "List graph edges",
+                    "required": ["workspace"],
+                    "optional": ["kind"],
+                },
+                "subgraph": {
+                    "description": "BFS dependency subgraph",
+                    "required": ["workspace", "root"],
+                    "optional": ["direction", "edge_kind", "depth", "limit_nodes", "limit_edges"],
+                },
+            },
             "notes": [
-                "All operations are HTTP GET wrappers around ticket-http endpoints.",
-                "You can override the server per call with base_url.",
-                "Non-2xx responses are returned as success=false with status and raw response body.",
+                "Direct store access — no HTTP backend required.",
+                "Set TICKET_INDEX_ROOT to override workspace resolution.",
             ],
         });
-
-        let text = serde_json::to_string_pretty(&payload).map_err(|err| {
-            McpError::internal_error(format!("serialization failed: {err}"), None)
-        })?;
-        Ok(CallToolResult::success(vec![Content::text(text)]))
+        Self::json_result(&payload)
     }
 }
 
@@ -690,7 +556,7 @@ impl ServerHandler for TicketServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo {
             instructions: Some(
-                "ticket-mcp forwards MCP tool calls to ticket-http endpoints. Prefer named tools and call workflow/help for guided usage."
+                "ticket-mcp provides direct access to the ticket store. No HTTP backend required. Use named tools for ticket operations."
                     .to_string(),
             ),
             capabilities: ServerCapabilities::builder().enable_tools().build(),
@@ -700,11 +566,11 @@ impl ServerHandler for TicketServer {
 }
 
 pub async fn run_mcp_server(
-    default_base_url: String,
+    store: Arc<TicketStore>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let server = TicketServer::new(default_base_url);
+    let server = TicketServer::new(store);
 
-    tracing::info!("Starting ticket-mcp server on stdio");
+    tracing::info!("Starting ticket-mcp server on stdio (direct store access)");
 
     let service = server.serve(stdio()).await.inspect_err(|err| {
         eprintln!("Server error: {err:?}");

@@ -2529,6 +2529,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "mcp-runner"
+version = "0.1.0"
+
+[[package]]
 name = "measure_time"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4408,14 +4412,15 @@ dependencies = [
 name = "ticket-mcp"
 version = "0.1.0"
 dependencies = [
- "reqwest",
+ "chrono",
  "rmcp",
  "serde",
  "serde_json",
+ "ticket-api",
  "tokio",
  "tracing",
  "tracing-subscriber",
- "urlencoding",
+ "uuid",
 ]
 
 [[package]]

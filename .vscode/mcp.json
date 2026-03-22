@@ -1,31 +1,54 @@
 {
   "servers": {
+    "context-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "-p",
+        "mcp-runner",
+        "--release",
+        "--",
+        "context-mcp"
+      ]
+    },
+    "ticket-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "-p",
+        "mcp-runner",
+        "--release",
+        "--",
+        "ticket-mcp"
+      ]
+    },
     "doc-viewer-mcp": {
       "type": "stdio",
-      "autoStart": true,
-      "command": "bash",
+      "command": "cargo",
       "args": [
-        "${workspaceFolder}/tools/viewer-api/scripts/run-mcp.sh",
+        "run",
+        "-p",
+        "mcp-runner",
+        "--release",
+        "--",
         "doc-viewer",
-        "--mcp",
-      ],
-      "env": {
-        "WORKSPACE_ROOT": "${workspaceFolder}",
-      },
+        "--mcp"
+      ]
     },
     "log-viewer-mcp": {
       "type": "stdio",
-      "autoStart": true,
-      "command": "bash",
+      "command": "cargo",
       "args": [
-        "${workspaceFolder}/tools/viewer-api/scripts/run-mcp.sh",
+        "run",
+        "-p",
+        "mcp-runner",
+        "--release",
+        "--",
         "log-viewer",
-        "--mcp",
-      ],
-      "env": {
-        "LOG_DIR": "${workspaceFolder}/target/test-logs",
-        "WORKSPACE_ROOT": "${workspaceFolder}",
-      },
-    },
-  },
+        "--mcp"
+      ]
+    }
+  }
 }

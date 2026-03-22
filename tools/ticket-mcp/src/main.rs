@@ -1,5 +1,11 @@
 mod server;
 
+use std::path::PathBuf;
+use std::sync::Arc;
+
+use ticket_api::storage::store::TicketStore;
+use ticket_api::workspace::WorkspaceConfig;
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
@@ -10,12 +16,32 @@ async fn main() {
         .with_writer(std::io::stderr)
         .init();
 
-    let base_url = std::env::var("TICKET_API_URL")
-        .unwrap_or_else(|_| "http://127.0.0.1:4000".to_string());
+    let index_root = std::env::var("TICKET_INDEX_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            let (path, _source) = ticket_api::workspace::resolve_workspace();
+            path
+        });
 
-    eprintln!("ticket-mcp starting (ticket API: {base_url})");
+    let store = TicketStore::open(&index_root).unwrap_or_else(|e| {
+        eprintln!("Failed to open ticket store at {}: {e}", index_root.display());
+        std::process::exit(1);
+    });
 
-    if let Err(err) = server::run_mcp_server(base_url).await {
+    let config = WorkspaceConfig::load();
+    let workspace_names: Vec<String> = if config.workspaces.is_empty() {
+        vec!["default".to_string()]
+    } else {
+        config.workspaces.keys().cloned().collect()
+    };
+
+    eprintln!(
+        "ticket-mcp starting (store: {}, workspaces: {:?})",
+        index_root.display(),
+        workspace_names,
+    );
+
+    if let Err(err) = server::run_mcp_server(Arc::new(store)).await {
         eprintln!("Fatal error: {err}");
         std::process::exit(1);
     }

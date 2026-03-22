@@ -1,13 +1,14 @@
 # ticket-mcp
 
-MCP server that provides a thin wrapper around the ticket HTTP API (`ticket-http`).
+MCP server with direct access to the ticket store via `ticket-api`.
 
-The server runs on stdio and forwards requests to a running ticket API instance.
+No separate HTTP backend required — the server opens the ticket store directly,
+the same way `ticket-viewer` does.
 
 ## Tools
 
-- `help` - Shows supported ticket API operations and required parameters.
-- `health` - Checks ticket API health.
+- `help` - Shows available tools and their parameters.
+- `health` - Checks that the ticket store is accessible.
 - `list_workspaces` - Lists workspaces.
 - `list_tickets` - Lists tickets in one workspace with optional filters.
 - `get_ticket` - Gets a ticket by id.
@@ -15,44 +16,28 @@ The server runs on stdio and forwards requests to a running ticket API instance.
 - `list_edges` - Lists edge graph rows, optionally filtered by kind.
 - `subgraph` - Returns dependency subgraph rooted at a ticket.
 - `workflow` - Returns ready-to-run tool call sequences for common tasks.
-- `request` - Generic fallback operation router (kept for compatibility and edge cases).
-
-## Supported operations
-
-- `health`
-- `list_workspaces`
-- `list_tickets`
-- `get_ticket`
-- `get_ticket_description`
-- `list_edges`
-- `subgraph`
 
 ## Usage
 
 ```bash
-# Start ticket API first
-cargo run -p ticket-http -- --port 4000
-
-# Then start MCP wrapper (defaults to http://127.0.0.1:4000)
+# Just run it — no backend needed
 cargo run -p ticket-mcp
 
-# Custom API URL
-TICKET_API_URL=http://127.0.0.1:4010 cargo run -p ticket-mcp
+# Custom ticket index root
+TICKET_INDEX_ROOT=/path/to/index cargo run -p ticket-mcp
 ```
 
 ## VS Code MCP configuration
 
-Add `ticket-mcp` to `.github/copilot-mcp-config.json`:
+In `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "ticket-mcp": {
       "type": "stdio",
-      "command": "target/release/ticket-mcp.exe",
-      "env": {
-        "TICKET_API_URL": "http://127.0.0.1:4000"
-      }
+      "command": "cargo",
+      "args": ["run", "-p", "mcp-runner", "--release", "--", "ticket-mcp"]
     }
   }
 }
