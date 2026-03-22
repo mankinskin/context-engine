@@ -1,61 +1,36 @@
-//! Ticket Viewer — HTTP server that serves the SPA frontend and proxies API
-//! calls to a running `ticket serve` instance.
+//! Ticket Viewer — single-process HTTP server that serves the SPA frontend
+//! and the ticket REST/SSE API together.
+//!
+//! The viewer imports `ticket-http` as a library and mounts its router
+//! directly, eliminating the need for a separate backend process or proxy.
 //!
 //! # Usage
 //!
 //! ```bash
-//! # Serve the built SPA (default port 3002, proxies /api to localhost:4000)
+//! # Serve the SPA + API on a single port (default 3002)
 //! ticket-viewer
 //!
-//! # Custom ports
-//! ticket-viewer --port 3002 --backend-url http://localhost:4000
-//!
-//! # Build the ticket backend before starting either service
-//! ticket-viewer --auto-start-backend --build-backend-first
+//! # Custom port and workspace
+//! ticket-viewer --port 3002 --workspace my-project
 //! ```
 //!
 //! # Environment variables
-//! - `PORT`              — HTTP listen port (default: 3002)
-//! - `TICKET_SERVE_URL` — URL of the running `ticket serve` backend (default: http://localhost:4000)
-//! - `STATIC_DIR`       — Path to pre-built SPA static files (default: <manifest>/static)
+//! - `PORT`       — HTTP listen port (default: 3002)
+//! - `STATIC_DIR` — Path to pre-built SPA static files (default: <manifest>/static)
 
-use axum::{
-    Router,
-    routing::get,
-    response::Json,
-};
-use std::{
-    env,
-    path::PathBuf,
-    process::{Child, Command},
-};
+use std::{env, path::PathBuf, sync::Arc};
 use tracing::info;
 use viewer_api::{display_host, init_tracing, with_static_files};
 
-mod proxy;
-
-#[derive(Clone)]
-struct AppState {
-    backend_url: String,
-}
+use ticket_api::workspace::WorkspaceConfig;
+use ticket_api::storage::store::TicketStore;
+use ticket_http::serve::{ServeConfig, WorkspaceRegistry, StreamBroker, AppState};
 
 struct CliOptions {
     port: u16,
-    backend_url: String,
     static_dir: PathBuf,
-    auto_start_backend: bool,
-    build_backend_first: bool,
-}
-
-struct BackendProcess {
-    child: Child,
-}
-
-impl Drop for BackendProcess {
-    fn drop(&mut self) {
-        let _ = self.child.kill();
-        let _ = self.child.wait();
-    }
+    workspace: Option<String>,
+    index_root: Option<PathBuf>,
 }
 
 fn parse_cli_options() -> CliOptions {
@@ -64,15 +39,12 @@ fn parse_cli_options() -> CliOptions {
         .and_then(|p| p.parse().ok())
         .unwrap_or(3002);
 
-    let mut backend_url = env::var("TICKET_SERVE_URL")
-        .unwrap_or_else(|_| "http://localhost:4000".to_string());
-
     let mut static_dir: PathBuf = env::var("STATIC_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|_| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("static"));
 
-    let mut auto_start_backend = false;
-    let mut build_backend_first = false;
+    let mut workspace: Option<String> = None;
+    let mut index_root: Option<PathBuf> = None;
 
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -84,21 +56,16 @@ fn parse_cli_options() -> CliOptions {
                     }
                 }
             }
-            "--backend-url" => {
-                if let Some(value) = args.next() {
-                    backend_url = value;
-                }
-            }
             "--static-dir" => {
                 if let Some(value) = args.next() {
                     static_dir = PathBuf::from(value);
                 }
             }
-            "--auto-start-backend" => {
-                auto_start_backend = true;
+            "--workspace" => {
+                workspace = args.next();
             }
-            "--build-backend-first" => {
-                build_backend_first = true;
+            "--index-root" => {
+                index_root = args.next().map(PathBuf::from);
             }
             _ => {}
         }
@@ -106,50 +73,10 @@ fn parse_cli_options() -> CliOptions {
 
     CliOptions {
         port,
-        backend_url,
         static_dir,
-        auto_start_backend,
-        build_backend_first,
+        workspace,
+        index_root,
     }
-}
-
-fn workspace_root() -> Result<PathBuf, Box<dyn std::error::Error>> {
-    Ok(PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
-        .canonicalize()?)
-}
-
-fn build_backend_binary(workspace_root: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-    let status = Command::new("cargo")
-        .args(["build", "-p", "context-tasks", "--bin", "ticket"])
-        .current_dir(workspace_root)
-        .status()?;
-
-    if !status.success() {
-        return Err("ticket backend build failed".into());
-    }
-
-    Ok(())
-}
-
-fn start_backend_process(workspace_root: &PathBuf) -> Result<BackendProcess, Box<dyn std::error::Error>> {
-
-    let child = Command::new("cargo")
-        .args([
-            "run",
-            "-p",
-            "context-tasks",
-            "--bin",
-            "ticket",
-            "--",
-            "serve",
-            "--port",
-            "4000",
-        ])
-        .current_dir(workspace_root)
-        .spawn()?;
-
-    Ok(BackendProcess { child })
 }
 
 async fn shutdown_signal() {
@@ -163,39 +90,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_tracing("info");
     info!(
         port = options.port,
-        backend_url = %options.backend_url,
         static_dir = %options.static_dir.display(),
-        auto_start_backend = options.auto_start_backend,
-        build_backend_first = options.build_backend_first,
-        "Ticket Viewer starting"
+        workspace = ?options.workspace,
+        "Ticket Viewer starting (single-process mode)"
     );
 
-    let workspace_root = workspace_root()?;
+    // Open the ticket store directly.
+    let index_root = options.index_root.unwrap_or_else(|| {
+        let (path, _source) = ticket_api::workspace::resolve_workspace();
+        path
+    });
+    let store = TicketStore::open(&index_root).expect("failed to open ticket store");
 
-    if options.auto_start_backend && options.build_backend_first {
-        info!("Building ticket backend before starting services");
-        build_backend_binary(&workspace_root)?;
-    }
-
-    let _backend = if options.auto_start_backend {
-        info!("Starting ticket backend on http://localhost:4000");
-        Some(start_backend_process(&workspace_root)?)
+    // Build the workspace registry.
+    let registry = if options.workspace.is_some() {
+        WorkspaceRegistry::single_opened(Arc::new(store))
     } else {
-        None
+        let config = WorkspaceConfig::load();
+        if config.workspaces.is_empty() {
+            WorkspaceRegistry::single_opened(Arc::new(store))
+        } else {
+            WorkspaceRegistry::from_config(&config)
+        }
     };
 
-    let state = AppState { backend_url: options.backend_url.clone() };
+    // Build the ticket-http AppState and wire up streaming.
+    let state = AppState::new(
+        Arc::new(registry),
+        Arc::new(StreamBroker::new()),
+    );
 
-    let api_router = Router::new()
-        .route("/api/*path", get(proxy::proxy_get).post(proxy::proxy_post))
-        .with_state(state);
+    // Pre-initialize all known workspaces at startup.
+    let workspace_names = state.registry.workspace_names();
+    for ws in &workspace_names {
+        let _ = state.ensure_workspace_runtime(ws);
+    }
 
-    let health_router = Router::new()
-        .route("/healthz", get(|| async { Json(serde_json::json!({ "status": "ok", "service": "ticket-viewer" })) }));
-
-    let app = Router::new()
-        .merge(health_router)
-        .merge(api_router);
+    // Build the ticket API router from ticket-http (includes /healthz).
+    let app = ticket_http::build_router(state);
 
     let app = with_static_files(app, Some(options.static_dir).filter(|p| p.exists()));
 

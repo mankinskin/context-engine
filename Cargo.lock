@@ -833,35 +833,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "context-tasks"
-version = "0.1.0"
-dependencies = [
- "arc-swap",
- "axum",
- "bincode",
- "chrono",
- "clap",
- "fs4 0.11.1",
- "futures-util",
- "notify",
- "pretty_assertions",
- "redb",
- "reqwest",
- "serde",
- "serde_json",
- "tantivy",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "toml",
- "tower 0.4.13",
- "tracing",
- "url",
- "uuid",
- "viewer-api",
-]
-
-[[package]]
 name = "context-trace"
 version = "0.1.0"
 dependencies = [
@@ -4372,13 +4343,76 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-api"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "chrono",
+ "fs4 0.11.1",
+ "notify",
+ "pretty_assertions",
+ "redb",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tantivy",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "toml",
+ "tracing",
+ "url",
+ "uuid",
+]
+
+[[package]]
+name = "ticket-cli"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "ticket-api",
+ "ticket-http",
+ "tokio",
+ "toml",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "ticket-http"
+version = "0.1.0"
+dependencies = [
+ "arc-swap",
+ "axum",
+ "chrono",
+ "futures-util",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "ticket-api",
+ "tokio",
+ "tower 0.4.13",
+ "tracing",
+ "uuid",
+ "viewer-api",
+]
+
+[[package]]
 name = "ticket-viewer"
 version = "0.1.0"
 dependencies = [
  "axum",
- "reqwest",
  "serde",
  "serde_json",
+ "ticket-api",
+ "ticket-http",
  "tokio",
  "tracing",
  "viewer-api",

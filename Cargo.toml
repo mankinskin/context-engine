@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-  "crates/context-tasks",
+  "crates/ticket-api",
   "crates/context-search",
   "crates/context-insert",
   "crates/context-read",
@@ -13,6 +13,8 @@ members = [
   "tools/log-viewer",
   "tools/viewer-api",
   "tools/ticket-viewer",
+  "tools/ticket-http",
+  "tools/ticket-cli",
   "tools/tracing-analyzer",
   "tools/dungeon-crawler",
   "tools/context-cli",
