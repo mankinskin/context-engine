@@ -1,5 +1,5 @@
 import { JSX, ComponentChildren } from 'preact';
-import { useState, useCallback } from 'preact/hooks';
+import { useState, useCallback, useRef } from 'preact/hooks';
 import { ResizeHandle } from './ResizeHandle';
 
 export interface SidebarProps {
@@ -32,9 +32,9 @@ export interface SidebarProps {
   };
   /** Initial width in px (default: 260) */
   initialWidth?: number;
-  /** Min width in px (default: 180) */
+  /** Min width in px (default: 0) */
   minWidth?: number;
-  /** Max width in px (default: 500) */
+  /** Max width in px (default: unlimited) */
   maxWidth?: number;
   /** Mobile overlay mode: when true, sidebar is shown as overlay with backdrop */
   mobileOpen?: boolean;
@@ -65,13 +65,15 @@ export function Sidebar({
   resizable = true,
   resizeEdges,
   initialWidth = 260,
-  minWidth = 180,
-  maxWidth = 500,
+  minWidth = 0,
+  maxWidth,
   mobileOpen,
   onMobileClose,
 }: SidebarProps): JSX.Element {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [width, setWidth] = useState(initialWidth);
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  const liveWidthRef = useRef(initialWidth);
 
   const isCollapsed = controlledCollapsed ?? internalCollapsed;
 
@@ -84,16 +86,46 @@ export function Sidebar({
     }
   }, [isCollapsed, onCollapsedChange]);
 
-  const handleResize = useCallback((delta: number) => {
-    setWidth(prev => Math.max(minWidth, Math.min(maxWidth, prev + delta)));
+  const clampWidth = useCallback((value: number) => {
+    let next = value;
+    if (minWidth !== undefined) next = Math.max(minWidth, next);
+    if (maxWidth !== undefined) next = Math.min(maxWidth, next);
+    return next;
   }, [minWidth, maxWidth]);
+
+  const handleResizeStart = useCallback(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    el.classList.add('sidebar-resizing');
+    liveWidthRef.current = clampWidth(el.getBoundingClientRect().width);
+  }, [clampWidth]);
+
+  const handleResize = useCallback((delta: number) => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    const next = clampWidth(liveWidthRef.current + delta);
+    liveWidthRef.current = next;
+    el.style.width = `${next}px`;
+  }, [clampWidth]);
+
+  const handleResizeEnd = useCallback(() => {
+    const el = sidebarRef.current;
+    if (el) {
+      el.classList.remove('sidebar-resizing');
+    }
+    setWidth(liveWidthRef.current);
+  }, []);
 
   const resolvedResizeEdges = resizeEdges ?? { right: true };
 
   const sidebarStyle = isCollapsed
     ? { width: '0px', minWidth: '0px', overflow: 'hidden' as const }
     : resizable
-      ? { width: `${width}px`, minWidth: `${minWidth}px` }
+      ? {
+          width: `${width}px`,
+          ...(minWidth !== undefined ? { minWidth: `${minWidth}px` } : {}),
+          ...(maxWidth !== undefined ? { maxWidth: `${maxWidth}px` } : {}),
+        }
       : {};
 
   // Mobile overlay class
@@ -108,6 +140,7 @@ export function Sidebar({
         <div class="sidebar-overlay visible" onClick={onMobileClose} />
       )}
       <aside
+        ref={sidebarRef as any}
         class={`sidebar ${isCollapsed ? 'sidebar-collapsed' : ''} ${mobileClass} ${className}`}
         style={sidebarStyle}
       >
@@ -146,14 +179,18 @@ export function Sidebar({
                 direction="horizontal"
                 edge="left"
                 deltaSign={-1}
+                onResizeStart={handleResizeStart}
                 onResize={handleResize}
+                onResizeEnd={handleResizeEnd}
               />
             )}
             {resizable && resolvedResizeEdges.right && (
               <ResizeHandle
                 direction="horizontal"
                 edge="right"
+                onResizeStart={handleResizeStart}
                 onResize={handleResize}
+                onResizeEnd={handleResizeEnd}
               />
             )}
           </>

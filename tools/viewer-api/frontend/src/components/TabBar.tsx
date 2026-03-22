@@ -16,7 +16,7 @@ export interface TabBarProps {
   onSelect: (id: string) => void;
   onClose?: (id: string) => void;
   rightContent?: JSX.Element;
-  /** Enable drag-resize on the bottom edge (default: true). */
+  /** Enable drag-resize on the bottom edge (default: false). */
   resizableBottom?: boolean;
   /** Initial tab bar height in px. */
   initialHeight?: number;
@@ -32,7 +32,7 @@ export function TabBar({
   onSelect,
   onClose,
   rightContent,
-  resizableBottom = true,
+  resizableBottom = false,
   initialHeight = 32,
   minHeight = 24,
   maxHeight = 120,

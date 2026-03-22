@@ -2,8 +2,6 @@
 // equivalent) for the currently selected ticket.
 
 import { JSX } from 'preact';
-import { useCallback, useState } from 'preact/hooks';
-import { ResizeHandle } from '@context-engine/viewer-api-frontend';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import { markedHighlight } from 'marked-highlight';
@@ -34,12 +32,7 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 export function TicketContent(): JSX.Element {
-  const [tabsHeight, setTabsHeight] = useState(34);
   const id = openTicketId.value;
-
-  const resizeTabs = useCallback((delta: number) => {
-    setTabsHeight((prev) => Math.max(24, Math.min(120, prev + delta)));
-  }, []);
 
   if (!id) {
     return (
@@ -64,7 +57,7 @@ export function TicketContent(): JSX.Element {
   return (
     <div class="ticket-content">
       {/* Tab bar */}
-      <div class="ticket-content__tabs" role="tablist" style={{ height: `${tabsHeight}px` }}>
+      <div class="ticket-content__tabs" role="tablist">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -79,7 +72,6 @@ export function TicketContent(): JSX.Element {
             {tab.label}
           </button>
         ))}
-        <ResizeHandle direction="vertical" edge="bottom" onResize={resizeTabs} />
       </div>
 
       {/* Tab panels */}

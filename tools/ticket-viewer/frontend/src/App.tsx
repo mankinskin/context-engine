@@ -74,7 +74,7 @@ export function App(): JSX.Element {
   }, []);
 
   const resizeRightPane = useCallback((delta: number) => {
-    setRightPaneWidth((prev) => Math.max(220, Math.min(700, prev + delta)));
+    setRightPaneWidth((prev) => Math.max(0, prev + delta));
   }, []);
 
   const error = globalError.value;

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from '@context-engine/viewer-api-frontend';
-import { TreeView, type TreeNode as SharedTreeNode } from '@context-engine/viewer-api-frontend';
+import { FileTree, type TreeNode as SharedTreeNode } from '@context-engine/viewer-api-frontend';
 import { h, type ComponentChildren } from 'preact';
 import { docTree, isLoading, selectedFilename, selectDoc, loadCrateModules, openCrateDoc, openCategoryPage, preloadVisibleCrateTrees, expandedNodes, toggleNodeExpanded, openSourceFile, codeViewerFile } from '../store';
 import type { TreeNode } from '../types';
@@ -73,22 +73,16 @@ export function Sidebar() {
     }
   }, []);
 
-  if (isLoading.value && docTree.value.length === 0) {
-    return <div class="loading">Loading...</div>;
-  }
-
-  if (docTree.value.length === 0) {
-    return <div class="empty-state">No documents found</div>;
-  }
-
   return (
     <div class="sidebar-content">
-      <TreeView<TreeNode>
+      <FileTree<TreeNode>
         nodes={sharedNodes}
         selectedId={selectedId}
         onSelect={handleSelect}
         expanded={expanded}
         onToggle={handleToggle}
+        loading={isLoading.value && docTree.value.length === 0}
+        emptyMessage="No documents found"
       />
     </div>
   );

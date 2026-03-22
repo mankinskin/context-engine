@@ -20,6 +20,7 @@ export function DocumentTabs() {
       activeTabId={activeId}
       onSelect={setActiveTab}
       onClose={closeTab}
+      resizableBottom={false}
     />
   );
 }

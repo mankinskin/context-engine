@@ -4,7 +4,7 @@ import { usePanelFocus, focusedPanel } from '../../hooks';
 import { FileTree, ResizeHandle, type TreeNode } from '@context-engine/viewer-api-frontend';
 import { buildFileTree, getCategoryIdForFilter } from '../../store/fileTree';
 import type { LogFile } from '../../types';
-import { useState, useMemo, useCallback } from 'preact/hooks';
+import { useState, useMemo, useCallback, useRef } from 'preact/hooks';
 
 // Filter state: 'all' | 'graph' | 'search' | 'insert' | 'paths'
 const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('all');
@@ -23,6 +23,8 @@ export function Sidebar({
   const filter = activeFilter.value;
   const allFiles = logFiles.value;
   const [width, setWidth] = useState(280);
+  const sidebarRef = useRef<HTMLElement | null>(null);
+  const liveWidthRef = useRef(280);
 
   // Compute counts for filter buttons
   const graphCount = allFiles.filter(f => f.has_graph_snapshot).length;
@@ -99,12 +101,26 @@ export function Sidebar({
     ? (mobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed')
     : '';
 
+  const onResizeStart = useCallback(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    liveWidthRef.current = Math.max(0, el.getBoundingClientRect().width);
+  }, []);
+
   const onResizeSidebar = useCallback((delta: number) => {
-    setWidth((prev) => Math.max(180, Math.min(500, prev + delta)));
+    const el = sidebarRef.current;
+    if (!el) return;
+    const next = Math.max(0, liveWidthRef.current + delta);
+    liveWidthRef.current = next;
+    el.style.width = `${next}px`;
+  }, []);
+
+  const onResizeEnd = useCallback(() => {
+    setWidth(liveWidthRef.current);
   }, []);
 
   return (
-    <aside class={`sidebar ${mobileClass}`} style={{ width: `${width}px` }}>
+    <aside ref={sidebarRef as any} class={`sidebar ${mobileClass}`} style={{ width: `${width}px` }}>
       <div class="sidebar-header">
         <h2>Log Files</h2>
         <span class="file-count">{totalCount} files</span>
@@ -194,7 +210,13 @@ export function Sidebar({
         />
       </div>
       {resizeRightEdge && (
-        <ResizeHandle direction="horizontal" edge="right" onResize={onResizeSidebar} />
+        <ResizeHandle
+          direction="horizontal"
+          edge="right"
+          onResizeStart={onResizeStart}
+          onResize={onResizeSidebar}
+          onResizeEnd={onResizeEnd}
+        />
       )}
     </aside>
   );

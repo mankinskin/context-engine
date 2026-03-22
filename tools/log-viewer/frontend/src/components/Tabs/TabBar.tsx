@@ -49,13 +49,13 @@ interface TabBarProps {
   resizeBottomEdge?: boolean;
 }
 
-export function TabBar({ resizeBottomEdge = true }: TabBarProps) {
+export function TabBar({ resizeBottomEdge = false }: TabBarProps) {
   const selectedIndex = tabs.findIndex(t => t.id === activeTab.value);
   const panelRef = usePanelFocus('tabs');
   const [height, setHeight] = useState(32);
 
   const onResizeBottom = useCallback((delta: number) => {
-    setHeight((prev) => Math.max(24, Math.min(120, prev + delta)));
+    setHeight((prev) => Math.max(0, prev + delta));
   }, []);
 
   const { containerRef, onKeyDown } = useListKeyboard({

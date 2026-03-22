@@ -59,8 +59,6 @@
   flex-direction: column;
   flex-shrink: 0;
   overflow: hidden;
-  min-width: 180px;
-  max-width: 500px;
 }
 
 .sidebar-header {
@@ -241,27 +239,6 @@
 .code-panel-close:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
-}
-
-/* Resize handles */
-.resize-handle {
-  flex-shrink: 0;
-  background: var(--border-color);
-  transition: background 0.15s ease;
-}
-
-.resize-handle:hover {
-  background: var(--accent-blue);
-}
-
-.resize-handle-horizontal {
-  width: 3px;
-  cursor: col-resize;
-}
-
-.resize-handle-vertical {
-  height: 3px;
-  cursor: row-resize;
 }
 
 /* File viewer for markdown files */

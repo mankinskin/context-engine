@@ -3,6 +3,7 @@ import { useRef, useCallback } from 'preact/hooks';
 export interface ResizeHandleProps {
   onResize: (delta: number) => void;
   onResizeStart?: () => void;
+  onResizeEnd?: () => void;
   direction: 'horizontal' | 'vertical';
   /** Which edge this handle controls. Defaults to right/bottom by direction. */
   edge?: 'left' | 'right' | 'top' | 'bottom';
@@ -13,12 +14,15 @@ export interface ResizeHandleProps {
 export function ResizeHandle({
   onResize,
   onResizeStart,
+  onResizeEnd,
   direction,
   edge,
   deltaSign = 1,
 }: ResizeHandleProps) {
   const isDragging = useRef(false);
   const lastPos = useRef(0);
+  const pendingDelta = useRef(0);
+  const frameId = useRef<number | null>(null);
 
   const resolvedEdge = edge ?? (direction === 'horizontal' ? 'right' : 'bottom');
 
@@ -36,20 +40,41 @@ export function ResizeHandle({
       const currentPos = direction === 'horizontal' ? e.clientX : e.clientY;
       const delta = currentPos - lastPos.current;
       lastPos.current = currentPos;
-      onResize(delta * deltaSign);
+
+      pendingDelta.current += delta * deltaSign;
+      if (frameId.current === null) {
+        frameId.current = requestAnimationFrame(() => {
+          frameId.current = null;
+          const nextDelta = pendingDelta.current;
+          pendingDelta.current = 0;
+          if (nextDelta !== 0) {
+            onResize(nextDelta);
+          }
+        });
+      }
     };
 
     const handleMouseUp = () => {
       isDragging.current = false;
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
+      if (frameId.current !== null) {
+        cancelAnimationFrame(frameId.current);
+        frameId.current = null;
+      }
+      const nextDelta = pendingDelta.current;
+      pendingDelta.current = 0;
+      if (nextDelta !== 0) {
+        onResize(nextDelta);
+      }
+      onResizeEnd?.();
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [onResize, onResizeStart, direction]);
+  }, [onResize, onResizeStart, onResizeEnd, direction, deltaSign]);
 
   return (
     <div
