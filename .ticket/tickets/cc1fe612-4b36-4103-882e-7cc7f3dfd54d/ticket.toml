@@ -4,6 +4,6 @@ acceptance_criteria = "Background thread polls watcher events and calls integrat
 component = "storage"
 deleted = true
 risk_level = "low"
-state = "open"
+state = "cancelled"
 title = "Impl: FsWatcher background daemon loop — auto-reconcile on FS events"
 type = "tracker-improvement"

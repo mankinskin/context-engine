@@ -4,6 +4,6 @@ acceptance_criteria = "Search Response root_token always present in its TraceCac
 component = "context-search"
 deleted = true
 risk_level = "high"
-state = "open"
+state = "cancelled"
 title = "Bug: TraceCache root token mismatch causes insert panics"
 type = "tracker-improvement"

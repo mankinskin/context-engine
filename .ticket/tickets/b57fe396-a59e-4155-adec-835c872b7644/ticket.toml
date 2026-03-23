@@ -4,6 +4,6 @@ acceptance_criteria = "batch exec reverts all already-applied writes when any co
 component = "storage"
 deleted = true
 risk_level = "medium"
-state = "open"
+state = "cancelled"
 title = "Impl: fix exec --batch — true rollback semantics on first failure"
 type = "tracker-improvement"

@@ -4,6 +4,6 @@ acceptance_criteria = "Full reindex deletes all existing Tantivy docs before re-
 component = "storage"
 deleted = true
 risk_level = "medium"
-state = "open"
+state = "cancelled"
 title = "Impl: fix scan --reindex — clear stale Tantivy entries before rebuild"
 type = "tracker-improvement"

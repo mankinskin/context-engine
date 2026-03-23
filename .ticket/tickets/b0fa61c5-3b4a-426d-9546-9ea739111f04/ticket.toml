@@ -4,6 +4,6 @@ acceptance_criteria = "Public `TicketStore::integrate_orphan(path)` integrates a
 component = "storage"
 deleted = true
 risk_level = "low"
-state = "open"
+state = "cancelled"
 title = "Impl: expose integrate_orphan(path) as public API + wire to reconciler"
 type = "tracker-improvement"
