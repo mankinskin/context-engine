@@ -120,6 +120,37 @@ pub enum WorkflowName {
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
+pub struct UpdateTicketInput {
+    pub workspace: String,
+    pub id: String,
+    /// Optional state to transition to.
+    #[serde(default)]
+    pub to_state: Option<String>,
+    /// Field patches as key=value pairs (e.g. ["priority=high", "owner=alice"]).
+    #[serde(default)]
+    pub fields: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CloseTicketInput {
+    pub workspace: String,
+    pub id: String,
+    /// Target state to fast-forward to (default: "done").
+    #[serde(default = "default_close_state")]
+    pub to_state: String,
+}
+
+fn default_close_state() -> String {
+    "done".to_string()
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CancelTicketInput {
+    pub workspace: String,
+    pub id: String,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct WorkflowInput {
     #[serde(default = "default_workflow_name")]
     pub name: WorkflowName,
@@ -441,6 +472,80 @@ impl TicketServer {
     }
 
     #[tool(
+        name = "update_ticket",
+        description = "Update a ticket: apply field patches and/or transition state."
+    )]
+    async fn update_ticket(
+        &self,
+        Parameters(input): Parameters<UpdateTicketInput>,
+    ) -> Result<CallToolResult, McpError> {
+        let id = Self::parse_uuid(&input.id)?;
+        let mut patch = BTreeMap::new();
+        for raw in &input.fields {
+            let (k, v) = raw.split_once('=').ok_or_else(|| {
+                McpError::invalid_params(format!("invalid field format '{raw}', expected key=value"), None)
+            })?;
+            patch.insert(k.trim().to_string(), Value::String(v.trim().to_string()));
+        }
+        let manifest = self
+            .store
+            .update(&id, patch, None, input.to_state.as_deref())
+            .map_err(Self::store_err)?;
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "status": "ok",
+            "ticket": TicketDetail {
+                id: manifest.id.to_string(),
+                created_at: manifest.created_at,
+                fields: manifest.extra,
+            },
+        }))
+    }
+
+    #[tool(
+        name = "close_ticket",
+        description = "Fast-forward a ticket to a target state by traversing all intermediate transitions (default: done)."
+    )]
+    async fn close_ticket(
+        &self,
+        Parameters(input): Parameters<CloseTicketInput>,
+    ) -> Result<CallToolResult, McpError> {
+        let id = Self::parse_uuid(&input.id)?;
+        let (manifest, path) = self
+            .store
+            .close(&id, &input.to_state)
+            .map_err(Self::store_err)?;
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "status": "ok",
+            "id": manifest.id.to_string(),
+            "target_state": input.to_state,
+            "traversed_states": path,
+        }))
+    }
+
+    #[tool(
+        name = "cancel_ticket",
+        description = "Cancel a ticket (fast-forward to 'cancelled' state)."
+    )]
+    async fn cancel_ticket(
+        &self,
+        Parameters(input): Parameters<CancelTicketInput>,
+    ) -> Result<CallToolResult, McpError> {
+        let id = Self::parse_uuid(&input.id)?;
+        let (manifest, path) = self
+            .store
+            .close(&id, "cancelled")
+            .map_err(Self::store_err)?;
+        Self::json_result(&serde_json::json!({
+            "workspace": input.workspace,
+            "status": "ok",
+            "id": manifest.id.to_string(),
+            "traversed_states": path,
+        }))
+    }
+
+    #[tool(
         name = "workflow",
         description = "Show ready-to-run ticket MCP call sequences for common tasks."
     )]
@@ -507,6 +612,9 @@ impl TicketServer {
                 "get_ticket_description",
                 "list_edges",
                 "subgraph",
+                "update_ticket",
+                "close_ticket",
+                "cancel_ticket",
                 "workflow",
             ],
             "operations": {
@@ -540,6 +648,20 @@ impl TicketServer {
                     "description": "BFS dependency subgraph",
                     "required": ["workspace", "root"],
                     "optional": ["direction", "edge_kind", "depth", "limit_nodes", "limit_edges"],
+                },
+                "update_ticket": {
+                    "description": "Update ticket fields and/or transition state",
+                    "required": ["workspace", "id"],
+                    "optional": ["to_state", "fields"],
+                },
+                "close_ticket": {
+                    "description": "Fast-forward ticket to target state",
+                    "required": ["workspace", "id"],
+                    "optional": ["to_state"],
+                },
+                "cancel_ticket": {
+                    "description": "Cancel a ticket",
+                    "required": ["workspace", "id"],
                 },
             },
             "notes": [

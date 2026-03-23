@@ -111,6 +111,16 @@ pub enum TicketCommandCli {
     ReadyOverview(ReadyOverviewArgs),
     /// Start the HTTP server exposing the ticket API (REST + SSE).
     Serve(ServeCliArgs),
+    /// Fast-forward a ticket to a target state (default: done).
+    Close(CloseArgs),
+    /// Cancel a ticket (shortcut for close --to-state cancelled).
+    Cancel(IdArgs),
+    /// Attach a file as an asset to a ticket.
+    Attach(AttachArgs),
+    /// List assets attached to a ticket.
+    Assets(IdArgs),
+    /// Audit the ticket store: report health, counts, and orphan checks.
+    Audit,
 }
 
 // ── arg structs ────────────────────────────────────────────────────────────────
@@ -180,6 +190,26 @@ pub struct ServeCliArgs {
     /// Serve a specific named workspace only (default: all registered).
     #[arg(long)]
     pub workspace: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub struct CloseArgs {
+    #[arg(long)]
+    pub id: Uuid,
+    /// Target state to fast-forward to (default: done).
+    #[arg(long = "to-state", default_value = "done")]
+    pub to_state: String,
+}
+
+#[derive(Debug, Args)]
+pub struct AttachArgs {
+    #[arg(long)]
+    pub id: Uuid,
+    /// Path to the file to attach.
+    pub path: PathBuf,
+    /// Optional name for the asset (defaults to source filename).
+    #[arg(long = "as")]
+    pub asset_name: Option<String>,
 }
 
 #[derive(Debug, Args)]
@@ -278,6 +308,12 @@ pub struct ListArgs {
     /// Include latest reproduction metadata in each list item.
     #[arg(long, default_value_t = false)]
     pub with_repro: bool,
+    /// Include soft-deleted tickets in the listing.
+    #[arg(long, default_value_t = false)]
+    pub include_deleted: bool,
+    /// Filter by field values (key=value). Can be repeated.
+    #[arg(long = "where")]
+    pub where_clauses: Vec<String>,
 }
 
 #[derive(Debug, Args)]
@@ -527,6 +563,11 @@ fn dispatch(
         TicketCommandCli::Status(args) => cmd_status(args, &store),
         TicketCommandCli::ReadyOverview(args) => cmd_ready_overview(args, &store),
         TicketCommandCli::Serve(args) => cmd_serve(args, store),
+        TicketCommandCli::Close(args) => cmd_close(args, &store),
+        TicketCommandCli::Cancel(args) => cmd_cancel(args, &store),
+        TicketCommandCli::Attach(args) => cmd_attach(args, &store),
+        TicketCommandCli::Assets(args) => cmd_assets(args, &store),
+        TicketCommandCli::Audit => cmd_audit(&store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
     }
@@ -652,10 +693,15 @@ fn cmd_repro(args: ReproArgs, store: &TicketStore) -> Result<Value, CliRunError>
 }
 
 fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let items = store.list(
+    let field_filters: Vec<(String, String)> = parse_fields(&args.where_clauses)?
+        .into_iter()
+        .collect();
+    let items = store.list_extended(
         args.state.as_deref(),
         args.ticket_type.as_deref(),
         args.limit,
+        args.include_deleted,
+        &field_filters,
     )?;
     let items_json: Vec<Value> = items
         .iter()
@@ -667,6 +713,10 @@ fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, CliRunError> {
                 "state": t.state,
                 "updated_at": t.updated_at,
             });
+
+            if t.deleted {
+                item["deleted"] = json!(true);
+            }
 
             if args.with_repro {
                 let repro = store
@@ -746,6 +796,78 @@ fn cmd_links(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
         "id": args.id,
         "count": items.len(),
         "edges": items,
+    }))
+}
+
+fn cmd_close(args: CloseArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let (manifest, path) = store.close(&args.id, &args.to_state)?;
+    Ok(json!({
+        "command": "close",
+        "status": "ok",
+        "id": manifest.id,
+        "target_state": args.to_state,
+        "traversed_states": path,
+    }))
+}
+
+fn cmd_cancel(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let (manifest, path) = store.close(&args.id, "cancelled")?;
+    Ok(json!({
+        "command": "cancel",
+        "status": "ok",
+        "id": manifest.id,
+        "traversed_states": path,
+    }))
+}
+
+fn cmd_attach(args: AttachArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let dest = store.attach(&args.id, &args.path, args.asset_name.as_deref())?;
+    Ok(json!({
+        "command": "attach",
+        "status": "ok",
+        "id": args.id,
+        "asset_path": dest.display().to_string(),
+    }))
+}
+
+fn cmd_assets(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let names = store.list_assets(&args.id)?;
+    Ok(json!({
+        "command": "assets",
+        "status": "ok",
+        "id": args.id,
+        "count": names.len(),
+        "assets": names,
+    }))
+}
+
+fn cmd_audit(store: &TicketStore) -> Result<Value, CliRunError> {
+    let all = store.list(None, None, None)?;
+    let deleted = store.list_extended(None, None, None, true, &[])?
+        .into_iter()
+        .filter(|t| t.deleted)
+        .count();
+    let total = all.len() + deleted;
+
+    let mut state_counts = BTreeMap::new();
+    for t in &all {
+        let state = t.state.as_deref().unwrap_or("unknown");
+        *state_counts.entry(state.to_string()).or_insert(0usize) += 1;
+    }
+
+    let mut type_counts = BTreeMap::new();
+    for t in &all {
+        *type_counts.entry(t.type_id.clone()).or_insert(0usize) += 1;
+    }
+
+    Ok(json!({
+        "command": "audit",
+        "status": "ok",
+        "total": total,
+        "active": all.len(),
+        "deleted": deleted,
+        "by_state": state_counts,
+        "by_type": type_counts,
     }))
 }
 
