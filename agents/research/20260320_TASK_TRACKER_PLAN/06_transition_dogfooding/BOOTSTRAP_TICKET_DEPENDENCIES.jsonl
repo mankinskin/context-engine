@@ -1,0 +1,20 @@
+{"from":"2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"Lease lifecycle depends on concrete backend command wiring."}
+{"from":"de6c3391-27c2-4e27-bde8-1456f0eb3f43","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"Crash recovery testing requires real create/update persistence paths."}
+{"from":"77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"History/diff/revert needs real ticket mutations first."}
+{"from":"ee43f72e-53ef-4937-8216-92e17f185d85","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"Unified query on real indexes depends on production CRUD writes."}
+{"from":"5e4727f9-53a6-4d36-a98f-4c9a6db81216","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"Graph traversal quality depends on stable edge persistence semantics."}
+{"from":"be1a3de7-f44f-496d-b4c6-b4f8a120dc97","to":"5e4727f9-53a6-4d36-a98f-4c9a6db81216","kind":"depends_on","reason":"Merge queue scheduler relies on dependency graph commands."}
+{"from":"9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58","to":"4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1","kind":"depends_on","reason":"Backup/restore runbooks need finalized storage/index layout."}
+{"from":"c91a334e-26cf-4cf2-9212-4288a07bbf09","to":"2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2","kind":"depends_on","reason":"Failure diagnostics should include lease lifecycle events."}
+{"from":"48ea4df8-25f5-46ce-b2cc-ff00d32ddd47","to":"2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2","kind":"depends_on","reason":"Dogfood trial requires stable claim/unclaim reliability."}
+{"from":"48ea4df8-25f5-46ce-b2cc-ff00d32ddd47","to":"de6c3391-27c2-4e27-bde8-1456f0eb3f43","kind":"depends_on","reason":"Dogfood trial requires validated crash/reconcile safety."}
+{"from":"48ea4df8-25f5-46ce-b2cc-ff00d32ddd47","to":"77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4","kind":"depends_on","reason":"Dogfood trial requires working audit and rollback."}
+{"from":"48ea4df8-25f5-46ce-b2cc-ff00d32ddd47","to":"ee43f72e-53ef-4937-8216-92e17f185d85","kind":"depends_on","reason":"Dogfood trial requires usable search/query to run daily operations."}
+{"from":"a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61","to":"2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2","kind":"depends_on","reason":"Executor auth bootstrap builds on lease lifecycle and claim semantics."}
+{"from":"b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72","to":"a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61","kind":"depends_on","reason":"Start-context enforcement depends on executor startup/auth path."}
+{"from":"c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83","to":"a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61","kind":"depends_on","reason":"Lifecycle happy path requires running authenticated executor session."}
+{"from":"d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94","to":"c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83","kind":"depends_on","reason":"Validator handoff builds on working worker lifecycle path."}
+{"from":"e4c6d8f1-9a2b-4c3d-8e4f-5a6b7c8d9ea5","to":"c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83","kind":"depends_on","reason":"Early-stop recovery checks require baseline lifecycle operations."}
+{"from":"f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16","to":"d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94","kind":"depends_on","reason":"Merge/completion linkage depends on validator handoff and validation state."}
+{"from":"f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16","to":"77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4","kind":"depends_on","reason":"Merge linkage uses history metadata and merge-boundary semantics."}
+{"from":"48ea4df8-25f5-46ce-b2cc-ff00d32ddd47","to":"f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16","kind":"depends_on","reason":"Dogfood go/no-go depends on executor lifecycle integration tests through T6."}
