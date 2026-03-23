@@ -1,5 +1,4 @@
 ---
-confidence: 🟢
 tags: `#context-search` `#context-insert` `#TraceCache` `#InitInterval` `#panic` `#critical`
 summary: Search Response returns root_token that isn't present in its TraceCache, causing insert panics
 ---
