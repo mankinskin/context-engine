@@ -66,17 +66,72 @@ pub async fn subgraph(
     Extension(rid): Extension<RequestIdExt>,
     Query(params): Query<SubgraphQuery>,
 ) -> Response {
-    let store = match state.ensure_workspace_runtime(&params.workspace) {
+    bfs_graph(
+        state,
+        &rid.0,
+        params.workspace,
+        params.root,
+        params.direction.as_deref().unwrap_or("both"),
+        params.edge_kind.as_deref(),
+        params.depth,
+        params.limit_nodes,
+        params.limit_edges,
+    )
+}
+
+#[derive(Deserialize)]
+pub struct TopgraphQuery {
+    pub workspace: String,
+    pub root: Uuid,
+    pub direction: Option<String>,
+    pub edge_kind: Option<String>,
+    #[serde(default = "default_depth")]
+    pub depth: usize,
+    #[serde(default = "default_limit_nodes")]
+    pub limit_nodes: usize,
+    #[serde(default = "default_limit_edges")]
+    pub limit_edges: usize,
+}
+
+pub async fn topgraph(
+    State(state): State<AppState>,
+    Extension(rid): Extension<RequestIdExt>,
+    Query(params): Query<TopgraphQuery>,
+) -> Response {
+    bfs_graph(
+        state,
+        &rid.0,
+        params.workspace,
+        params.root,
+        params.direction.as_deref().unwrap_or("in"),
+        params.edge_kind.as_deref(),
+        params.depth,
+        params.limit_nodes,
+        params.limit_edges,
+    )
+}
+
+fn bfs_graph(
+    state: AppState,
+    request_id: &str,
+    workspace: String,
+    root: Uuid,
+    direction: &str,
+    edge_kind: Option<&str>,
+    depth: usize,
+    limit_nodes: usize,
+    limit_edges: usize,
+) -> Response {
+    let store = match state.ensure_workspace_runtime(&workspace) {
         Some(s) => s,
         None => {
-            return viewer_api::error::ApiError::not_found("workspace", &rid.0)
+            return viewer_api::error::ApiError::not_found("workspace", request_id)
                 .into_response_with_status(StatusCode::NOT_FOUND);
         }
     };
 
-    let depth_limit = params.depth.min(8);
-    let direction = params.direction.as_deref().unwrap_or("both");
-    let edge_kind_filter = params.edge_kind.as_deref().unwrap_or("all");
+    let depth_limit = depth.min(8);
+    let edge_kind_filter = edge_kind.unwrap_or("all");
 
     // BFS traversal
     let mut visited_nodes: HashSet<Uuid> = HashSet::new();
@@ -87,13 +142,13 @@ pub async fn subgraph(
 
     // Queue: (id, current_depth)
     let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
-    queue.push_back((params.root, 0));
+    queue.push_back((root, 0));
 
     while let Some((current_id, depth)) = queue.pop_front() {
         if visited_nodes.contains(&current_id) {
             continue;
         }
-        if nodes.len() >= params.limit_nodes {
+        if nodes.len() >= limit_nodes {
             truncated = true;
             break;
         }
@@ -115,7 +170,7 @@ pub async fn subgraph(
                 state: None,
                 depth,
             },
-            Err(e) => return storage_err(e, &rid.0),
+            Err(e) => return storage_err(e, request_id),
         };
         nodes.push(summary);
 
@@ -126,7 +181,7 @@ pub async fn subgraph(
         // Expand edges
         let all_edges = match store.list_all_edges() {
             Ok(e) => e,
-            Err(e) => return storage_err(e, &rid.0),
+            Err(e) => return storage_err(e, request_id),
         };
 
         for edge in &all_edges {
@@ -152,7 +207,7 @@ pub async fn subgraph(
                 continue;
             }
 
-            if edges_set.len() < params.limit_edges {
+            if edges_set.len() < limit_edges {
                 edges_set.push(EdgeItem {
                     from: edge.from.to_string(),
                     to: edge.to.to_string(),
@@ -176,8 +231,8 @@ pub async fn subgraph(
     };
 
     Json(SubgraphResponse {
-        request_id: rid.0,
-        workspace: params.workspace,
+        request_id: request_id.to_string(),
+        workspace,
         nodes,
         edges: edges_set,
         truncated,

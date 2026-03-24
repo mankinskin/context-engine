@@ -20,6 +20,7 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/tickets/{id}/description", get(handlers::tickets::get_ticket_description))
         .route("/api/edges", get(handlers::edges::list_edges))
         .route("/api/graph/subgraph", get(handlers::graph::subgraph))
+        .route("/api/graph/topgraph", get(handlers::graph::topgraph))
         .route("/api/stream", get(handlers::stream::stream_handler))
         .layer(middleware::from_fn(add_request_id))
         .with_state(state)

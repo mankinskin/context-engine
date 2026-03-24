@@ -110,6 +110,22 @@ pub struct SubgraphInput {
     pub limit_edges: Option<usize>,
 }
 
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct TopgraphInput {
+    pub workspace: String,
+    pub root: String,
+    #[serde(default)]
+    pub direction: Option<String>,
+    #[serde(default)]
+    pub edge_kind: Option<String>,
+    #[serde(default)]
+    pub depth: Option<usize>,
+    #[serde(default)]
+    pub limit_nodes: Option<usize>,
+    #[serde(default)]
+    pub limit_edges: Option<usize>,
+}
+
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum WorkflowName {
@@ -238,6 +254,120 @@ impl TicketServer {
     ) -> Result<T, McpError> {
         let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
         f(&store).map_err(Self::store_err)
+    }
+
+    fn bfs_graph(
+        &self,
+        workspace: String,
+        root_str: &str,
+        direction: &str,
+        edge_kind: Option<&str>,
+        depth: Option<usize>,
+        limit_nodes: Option<usize>,
+        limit_edges: Option<usize>,
+    ) -> Result<CallToolResult, McpError> {
+        let root = self.resolve_uuid(root_str)?;
+        let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
+        let depth_limit = depth.unwrap_or(2).min(8);
+        let node_limit = limit_nodes.unwrap_or(500);
+        let edge_limit = limit_edges.unwrap_or(2000);
+        let edge_kind_filter = edge_kind.unwrap_or("all");
+
+        let mut visited: HashSet<Uuid> = HashSet::new();
+        let mut nodes: Vec<NodeItem> = Vec::new();
+        let mut edges: Vec<EdgeItem> = Vec::new();
+        let mut truncated = false;
+        let mut max_depth_reached = 0;
+
+        let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+        queue.push_back((root, 0));
+
+        while let Some((current_id, current_depth)) = queue.pop_front() {
+            if visited.contains(&current_id) {
+                continue;
+            }
+            if nodes.len() >= node_limit {
+                truncated = true;
+                break;
+            }
+
+            visited.insert(current_id);
+            max_depth_reached = max_depth_reached.max(current_depth);
+
+            let node = match store.get_indexed(&current_id) {
+                Ok(Some(t)) => NodeItem {
+                    id: current_id.to_string(),
+                    title: t.title,
+                    state: t.state,
+                    depth: current_depth,
+                },
+                Ok(None) => NodeItem {
+                    id: current_id.to_string(),
+                    title: None,
+                    state: None,
+                    depth: current_depth,
+                },
+                Err(e) => return Err(Self::store_err(e)),
+            };
+            nodes.push(node);
+
+            if current_depth >= depth_limit {
+                continue;
+            }
+
+            let all_edges = store.list_all_edges().map_err(Self::store_err)?;
+
+            for edge in &all_edges {
+                let kind_ok = edge_kind_filter == "all" || edge.kind == edge_kind_filter;
+                if !kind_ok {
+                    continue;
+                }
+
+                let (neighbor, is_outbound) = if edge.from == current_id {
+                    (edge.to, true)
+                } else if edge.to == current_id {
+                    (edge.from, false)
+                } else {
+                    continue;
+                };
+
+                let dir_ok = match direction {
+                    "out" => is_outbound,
+                    "in" => !is_outbound,
+                    _ => true,
+                };
+                if !dir_ok {
+                    continue;
+                }
+
+                if edges.len() < edge_limit {
+                    edges.push(EdgeItem {
+                        from: edge.from.to_string(),
+                        to: edge.to.to_string(),
+                        kind: edge.kind.clone(),
+                    });
+                }
+
+                if !visited.contains(&neighbor) {
+                    queue.push_back((neighbor, current_depth + 1));
+                }
+            }
+        }
+
+        edges.dedup_by(|a, b| a.from == b.from && a.to == b.to && a.kind == b.kind);
+
+        let stats = SubgraphStats {
+            nodes_returned: nodes.len(),
+            edges_returned: edges.len(),
+            max_depth_reached,
+        };
+        Self::json_result(&SubgraphResponse {
+            workspace,
+            nodes,
+            edges,
+            truncated,
+            stats,
+        })
     }
 }
 
@@ -410,109 +540,34 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<SubgraphInput>,
     ) -> Result<CallToolResult, McpError> {
-        let root = self.resolve_uuid(&input.root)?;
-        let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
-        let depth_limit = input.depth.unwrap_or(2).min(8);
-        let node_limit = input.limit_nodes.unwrap_or(500);
-        let edge_limit = input.limit_edges.unwrap_or(2000);
-        let direction = input.direction.as_deref().unwrap_or("both");
-        let edge_kind_filter = input.edge_kind.as_deref().unwrap_or("all");
+        self.bfs_graph(
+            input.workspace,
+            &input.root,
+            input.direction.as_deref().unwrap_or("both"),
+            input.edge_kind.as_deref(),
+            input.depth,
+            input.limit_nodes,
+            input.limit_edges,
+        )
+    }
 
-        let mut visited: HashSet<Uuid> = HashSet::new();
-        let mut nodes: Vec<NodeItem> = Vec::new();
-        let mut edges: Vec<EdgeItem> = Vec::new();
-        let mut truncated = false;
-        let mut max_depth_reached = 0;
-
-        let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
-        queue.push_back((root, 0));
-
-        while let Some((current_id, depth)) = queue.pop_front() {
-            if visited.contains(&current_id) {
-                continue;
-            }
-            if nodes.len() >= node_limit {
-                truncated = true;
-                break;
-            }
-
-            visited.insert(current_id);
-            max_depth_reached = max_depth_reached.max(depth);
-
-            let node = match store.get_indexed(&current_id) {
-                Ok(Some(t)) => NodeItem {
-                    id: current_id.to_string(),
-                    title: t.title,
-                    state: t.state,
-                    depth,
-                },
-                Ok(None) => NodeItem {
-                    id: current_id.to_string(),
-                    title: None,
-                    state: None,
-                    depth,
-                },
-                Err(e) => return Err(Self::store_err(e)),
-            };
-            nodes.push(node);
-
-            if depth >= depth_limit {
-                continue;
-            }
-
-            let all_edges = store.list_all_edges().map_err(Self::store_err)?;
-
-            for edge in &all_edges {
-                let kind_ok = edge_kind_filter == "all" || edge.kind == edge_kind_filter;
-                if !kind_ok {
-                    continue;
-                }
-
-                let (neighbor, is_outbound) = if edge.from == current_id {
-                    (edge.to, true)
-                } else if edge.to == current_id {
-                    (edge.from, false)
-                } else {
-                    continue;
-                };
-
-                let dir_ok = match direction {
-                    "out" => is_outbound,
-                    "in" => !is_outbound,
-                    _ => true,
-                };
-                if !dir_ok {
-                    continue;
-                }
-
-                if edges.len() < edge_limit {
-                    edges.push(EdgeItem {
-                        from: edge.from.to_string(),
-                        to: edge.to.to_string(),
-                        kind: edge.kind.clone(),
-                    });
-                }
-
-                if !visited.contains(&neighbor) {
-                    queue.push_back((neighbor, depth + 1));
-                }
-            }
-        }
-
-        edges.dedup_by(|a, b| a.from == b.from && a.to == b.to && a.kind == b.kind);
-
-        let stats = SubgraphStats {
-            nodes_returned: nodes.len(),
-            edges_returned: edges.len(),
-            max_depth_reached,
-        };
-        Self::json_result(&SubgraphResponse {
-            workspace: input.workspace,
-            nodes,
-            edges,
-            truncated,
-            stats,
-        })
+    #[tool(
+        name = "topgraph",
+        description = "Fetch reverse dependency graph (tickets that depend on the root) via BFS traversal."
+    )]
+    async fn topgraph(
+        &self,
+        Parameters(input): Parameters<TopgraphInput>,
+    ) -> Result<CallToolResult, McpError> {
+        self.bfs_graph(
+            input.workspace,
+            &input.root,
+            input.direction.as_deref().unwrap_or("in"),
+            input.edge_kind.as_deref(),
+            input.depth,
+            input.limit_nodes,
+            input.limit_edges,
+        )
     }
 
     #[tool(
