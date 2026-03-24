@@ -2,7 +2,12 @@
 // TreeView.  Supports filtering by state and a text search over title/id.
 
 import { JSX } from 'preact';
-import { FileTree, type TreeNode } from '@context-engine/viewer-api-frontend';
+import {
+  FileTree,
+  type TreeNode,
+  type SortOption,
+  type SortState,
+} from '@context-engine/viewer-api-frontend';
 import {
   activeTab,
   authToken,
@@ -17,6 +22,7 @@ import {
   ticketsLoading,
   treeFilter,
   treeStateFilter,
+  treeSortState,
 } from '../store';
 import { getTicket, getTicketDescription } from '../api';
 import type { TicketSummary } from '../types';
@@ -32,13 +38,40 @@ const STATE_BADGE_COLORS: Record<string, string> = {
   cancelled: '#a0aec0',
 };
 
+const TICKET_SORT_OPTIONS: SortOption[] = [
+  { key: 'title', label: 'Title', defaultDirection: 'asc' },
+  { key: 'updated_at', label: 'Modified', defaultDirection: 'desc' },
+  { key: 'created_at', label: 'Created', defaultDirection: 'desc' },
+];
+
+const stateOrder = [
+  'open', 'in-progress', 'review', 'validating', 'validated',
+  'done', 'blocked', 'cancelled', 'unknown',
+];
+
 function stateBadge(state: string | null): string | undefined {
   if (!state) return undefined;
   return state;
 }
 
-/** Convert flat ticket list to tree nodes grouped by state. */
-function buildTree(tickets: TicketSummary[]): TreeNode<TicketSummary>[] {
+function sortTickets(tickets: TicketSummary[], sort: SortState): TicketSummary[] {
+  return [...tickets].sort((a, b) => {
+    let cmp = 0;
+    if (sort.key === 'title') {
+      const aTitle = a.title ?? '';
+      const bTitle = b.title ?? '';
+      cmp = aTitle.localeCompare(bTitle);
+    } else if (sort.key === 'updated_at') {
+      cmp = a.updated_at.localeCompare(b.updated_at);
+    } else if (sort.key === 'created_at') {
+      cmp = a.created_at.localeCompare(b.created_at);
+    }
+    return sort.direction === 'asc' ? cmp : -cmp;
+  });
+}
+
+/** Convert flat ticket list to tree nodes grouped by state, sorted within groups. */
+function buildTree(tickets: TicketSummary[], sort: SortState): TreeNode<TicketSummary>[] {
   // Group by state.
   const groups = new Map<string, TicketSummary[]>();
   for (const t of tickets) {
@@ -48,18 +81,13 @@ function buildTree(tickets: TicketSummary[]): TreeNode<TicketSummary>[] {
     groups.set(key, list);
   }
 
-  const stateOrder = [
-    'open', 'in-progress', 'review', 'validating', 'validated',
-    'done', 'blocked', 'cancelled', 'unknown',
-  ];
-
   const orderedKeys = [
     ...stateOrder.filter((s) => groups.has(s)),
     ...[...groups.keys()].filter((k) => !stateOrder.includes(k)),
   ];
 
   return orderedKeys.map((state) => {
-    const group = groups.get(state)!;
+    const group = sortTickets(groups.get(state)!, sort);
     return {
       id: `group:${state}`,
       label: state,
@@ -106,7 +134,8 @@ async function openTicket(id: string) {
 export function TicketTree(): JSX.Element {
   const isLoading = ticketsLoading.value;
   const list = filteredTickets.value;
-  const nodes = buildTree(list);
+  const sort = treeSortState.value;
+  const nodes = buildTree(list, sort);
 
   return (
     <div class="ticket-tree">
@@ -148,6 +177,9 @@ export function TicketTree(): JSX.Element {
             ? 'No tickets match the current filter.'
             : 'Select a workspace to begin.'
         }
+        sortOptions={TICKET_SORT_OPTIONS}
+        sortState={sort}
+        onSortChange={(s: SortState) => { treeSortState.value = s; }}
         onSelect={(node: TreeNode<TicketSummary>) => {
           // Only leaf nodes (tickets) are selectable; group folders are ignored.
           if (!node.id.startsWith('group:')) {
@@ -158,3 +190,4 @@ export function TicketTree(): JSX.Element {
     </div>
   );
 }
+

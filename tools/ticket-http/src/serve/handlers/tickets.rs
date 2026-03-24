@@ -36,6 +36,7 @@ pub struct TicketSummary {
     pub type_id: String,
     pub title: Option<String>,
     pub state: Option<String>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
     pub fields: BTreeMap<String, Value>,
 }
@@ -82,9 +83,12 @@ pub async fn list_tickets(
             Ok(results) => {
                 let mut items = Vec::with_capacity(results.len());
                 for r in results {
-                    let updated_at = match store.get_indexed(&r.id) {
-                        Ok(Some(indexed)) => indexed.updated_at,
-                        Ok(None) => chrono::DateTime::<chrono::Utc>::from(SystemTime::UNIX_EPOCH),
+                    let (created_at, updated_at) = match store.get_indexed(&r.id) {
+                        Ok(Some(indexed)) => (indexed.created_at, indexed.updated_at),
+                        Ok(None) => {
+                            let epoch = chrono::DateTime::<chrono::Utc>::from(SystemTime::UNIX_EPOCH);
+                            (epoch, epoch)
+                        }
                         Err(e) => return storage_err(e, &rid.0),
                     };
 
@@ -93,6 +97,7 @@ pub async fn list_tickets(
                         type_id: r.ticket_type.unwrap_or_default(),
                         title: r.title,
                         state: r.state,
+                        created_at,
                         updated_at,
                         fields: BTreeMap::new(),
                     });
@@ -111,6 +116,7 @@ pub async fn list_tickets(
                     type_id: t.type_id,
                     title: t.title,
                     state: t.state,
+                    created_at: t.created_at,
                     updated_at: t.updated_at,
                     fields: BTreeMap::new(),
                 })

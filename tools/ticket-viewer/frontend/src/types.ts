@@ -21,6 +21,7 @@ export interface TicketSummary {
   type: string;
   title: string | null;
   state: string | null;
+  created_at: string;
   updated_at: string;
   fields: Record<string, unknown>;
 }

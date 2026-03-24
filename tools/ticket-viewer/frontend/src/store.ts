@@ -6,6 +6,7 @@
 //   3. Panel: the open ticket + active tab.
 
 import { signal, computed } from '@preact/signals';
+import type { SortState } from '@context-engine/viewer-api-frontend';
 import type { TicketDetail, TicketSummary, TabId, WorkspaceInfo } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -33,6 +34,9 @@ export const tickets = signal<TicketSummary[]>([]);
 /** Current filter: state or search query. */
 export const treeFilter = signal<string>('');
 export const treeStateFilter = signal<string>('');
+
+/** Current sort state for the ticket tree. */
+export const treeSortState = signal<SortState>({ key: 'updated_at', direction: 'desc' });
 
 export const filteredTickets = computed(() => {
   let list = tickets.value;
@@ -70,6 +74,7 @@ export const ticketsLoading = signal<boolean>(false);
 interface WorkspaceUIState {
   filter: string;
   stateFilter: string;
+  sortState: SortState;
   openTicketId: string | null;
   activeTab: TabId;
 }
@@ -98,6 +103,7 @@ export function restoreWorkspaceState(ws: string) {
   const saved = loadWsState(ws);
   treeFilter.value = saved.filter ?? '';
   treeStateFilter.value = saved.stateFilter ?? '';
+  treeSortState.value = saved.sortState ?? { key: 'updated_at', direction: 'desc' };
   openTicketId.value = saved.openTicketId ?? null;
   openTicketDetail.value = null;
   openTicketDescription.value = null;
@@ -109,6 +115,7 @@ export function persistWorkspaceState(ws: string) {
   saveWsState(ws, {
     filter: treeFilter.value,
     stateFilter: treeStateFilter.value,
+    sortState: treeSortState.value,
     openTicketId: openTicketId.value,
     activeTab: activeTab.value,
   });
