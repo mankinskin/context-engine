@@ -168,6 +168,22 @@ pub struct TopgraphArgs {
 }
 
 #[derive(Debug, Args)]
+pub struct HealthArgs {
+    /// Root ticket UUID or 8+ character hex prefix. Checks the subgraph rooted here.
+    #[arg(required_unless_present = "all")]
+    pub root: Option<String>,
+    /// Check all tickets instead of a subgraph.
+    #[arg(long, default_value_t = false)]
+    pub all: bool,
+    /// Maximum traversal depth when walking the subgraph (default: 6, max: 8).
+    #[arg(long, default_value = "6")]
+    pub depth: usize,
+    /// Edge direction to follow for subgraph: out, in, or both.
+    #[arg(long, default_value = "out")]
+    pub direction: String,
+}
+
+#[derive(Debug, Args)]
 pub struct UpdateArgs {
     /// Ticket UUID or 8+ character hex prefix.
     pub id: String,

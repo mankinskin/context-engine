@@ -9,8 +9,8 @@ use ticket_api::error::StorageError;
 use ticket_api::storage::TicketStore;
 
 use crate::cli::{
-    AddRootArgs, AttachArgs, CliRunError, IdArgs, ReadyOverviewArgs, ScanArgs, ServeCliArgs,
-    StatusArgs, WatchArgs,
+    AddRootArgs, AttachArgs, CliRunError, HealthArgs, IdArgs, ReadyOverviewArgs, ScanArgs,
+    ServeCliArgs, StatusArgs, WatchArgs,
 };
 
 pub(crate) fn cmd_scan(args: ScanArgs, store: &TicketStore) -> Result<Value, CliRunError> {
@@ -311,5 +311,213 @@ pub(crate) fn cmd_ready_overview(
         "summary": status_payload["summary"],
         "ready": status_payload["ready"],
         "ready_count": status_payload["summary"]["ready"],
+    }))
+}
+
+// ── health checks ──────────────────────────────────────────────────────────────
+
+use std::collections::VecDeque;
+use ticket_api::storage::ticket_fs::TicketFs;
+
+pub(crate) fn cmd_health(args: HealthArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let all_edges = store.list_all_edges()?;
+
+    // Collect tickets in scope via BFS subgraph or --all.
+    let tickets: Vec<_> = if args.all {
+        store.list(None, None, None)?
+    } else {
+        let root_str = args.root.as_ref().expect("clap ensures root is present when --all is not set");
+        let root = super::resolve_uuid_prefix(root_str, store)?;
+        let depth_limit = args.depth.min(8);
+
+        let mut visited: HashSet<Uuid> = HashSet::new();
+        let mut collected_ids: Vec<Uuid> = Vec::new();
+        let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+        queue.push_back((root, 0));
+
+        while let Some((current_id, depth)) = queue.pop_front() {
+            if !visited.insert(current_id) {
+                continue;
+            }
+            collected_ids.push(current_id);
+
+            if depth >= depth_limit {
+                continue;
+            }
+
+            for edge in &all_edges {
+                let kind_ok = edge.kind == "depends_on" || edge.kind == "linked";
+                if !kind_ok {
+                    continue;
+                }
+
+                let (neighbor, is_outbound) = if edge.from == current_id {
+                    (edge.to, true)
+                } else if edge.to == current_id {
+                    (edge.from, false)
+                } else {
+                    continue;
+                };
+
+                let dir_ok = match args.direction.as_str() {
+                    "out" => is_outbound,
+                    "in" => !is_outbound,
+                    _ => true,
+                };
+                if dir_ok && !visited.contains(&neighbor) {
+                    queue.push_back((neighbor, depth + 1));
+                }
+            }
+        }
+
+        // Resolve IndexedTickets for collected IDs.
+        collected_ids
+            .iter()
+            .filter_map(|id| store.get_indexed(id).ok().flatten())
+            .filter(|t| !t.deleted)
+            .collect()
+    };
+
+    // Build lookup sets for edge checks.
+    let ticket_ids: HashSet<Uuid> = tickets.iter().map(|t| t.id).collect();
+    let done_states: HashSet<&str> = ["done", "cancelled"].into_iter().collect();
+
+    let done_ids: HashSet<Uuid> = tickets
+        .iter()
+        .filter(|t| {
+            t.state
+                .as_deref()
+                .map(|s| done_states.contains(s))
+                .unwrap_or(false)
+        })
+        .map(|t| t.id)
+        .collect();
+
+    // For each ticket, collect unresolved blockers (outbound depends_on to non-done).
+    let mut unresolved_deps: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+    for edge in &all_edges {
+        if edge.kind == "depends_on" && ticket_ids.contains(&edge.from) {
+            if !done_ids.contains(&edge.to) {
+                unresolved_deps.entry(edge.from).or_default().push(edge.to);
+            }
+        }
+    }
+
+    let mut findings: Vec<Value> = Vec::new();
+    let mut summary = BTreeMap::new();
+
+    for t in &tickets {
+        // Skip done/cancelled — not actionable.
+        if done_ids.contains(&t.id) {
+            continue;
+        }
+
+        let short_id = &t.id.to_string()[..8];
+        let title = t.title.as_deref().unwrap_or("?");
+
+        // 1. Missing description file.
+        let desc = TicketFs::read_description(&t.path);
+        if desc.is_none() {
+            *summary.entry("missing_description").or_insert(0u64) += 1;
+            findings.push(json!({
+                "ticket_id": t.id,
+                "short_id": short_id,
+                "title": title,
+                "check": "missing_description",
+                "severity": "warning",
+                "message": "No description.md file — ticket lacks detailed context.",
+            }));
+        } else if let Some(ref body) = desc {
+            // 2. Empty or very short description.
+            let trimmed_len = body.trim().len();
+            if trimmed_len < 50 {
+                *summary.entry("short_description").or_insert(0u64) += 1;
+                findings.push(json!({
+                    "ticket_id": t.id,
+                    "short_id": short_id,
+                    "title": title,
+                    "check": "short_description",
+                    "severity": "info",
+                    "message": format!("description.md is very short ({trimmed_len} chars) — consider adding more detail."),
+                }));
+            }
+        }
+
+        // 3. Missing title.
+        if t.title.is_none() || t.title.as_deref() == Some("") {
+            *summary.entry("missing_title").or_insert(0u64) += 1;
+            findings.push(json!({
+                "ticket_id": t.id,
+                "short_id": short_id,
+                "title": "(none)",
+                "check": "missing_title",
+                "severity": "error",
+                "message": "Ticket has no title.",
+            }));
+        }
+
+        // 4. Blocked but all dependencies resolved.
+        let state = t.state.as_deref().unwrap_or("");
+        let has_unresolved = unresolved_deps.contains_key(&t.id);
+        if state == "blocked" && !has_unresolved {
+            *summary.entry("blocked_but_resolved").or_insert(0u64) += 1;
+            findings.push(json!({
+                "ticket_id": t.id,
+                "short_id": short_id,
+                "title": title,
+                "check": "blocked_but_resolved",
+                "severity": "warning",
+                "message": "Ticket is blocked but all dependencies are done — may be ready to unblock.",
+            }));
+        }
+
+        // 5. Has unresolved deps but not in blocked state.
+        if has_unresolved && state != "blocked" && state != "open" {
+            let dep_count = unresolved_deps[&t.id].len();
+            *summary.entry("unblocked_with_deps").or_insert(0u64) += 1;
+            findings.push(json!({
+                "ticket_id": t.id,
+                "short_id": short_id,
+                "title": title,
+                "check": "unblocked_with_deps",
+                "severity": "info",
+                "message": format!("Ticket is '{state}' but has {dep_count} unresolved dependency/ies — may need state review."),
+            }));
+        }
+
+        // 6. Dangling dependency edges (points to deleted or missing ticket).
+        for edge in &all_edges {
+            if edge.from == t.id && edge.kind == "depends_on" {
+                let target_exists = store
+                    .get_indexed(&edge.to)
+                    .ok()
+                    .flatten()
+                    .map(|tgt| !tgt.deleted)
+                    .unwrap_or(false);
+                if !target_exists {
+                    let target_short = &edge.to.to_string()[..8];
+                    *summary.entry("dangling_edge").or_insert(0u64) += 1;
+                    findings.push(json!({
+                        "ticket_id": t.id,
+                        "short_id": short_id,
+                        "title": title,
+                        "check": "dangling_edge",
+                        "severity": "error",
+                        "message": format!("depends_on edge points to {target_short} which is deleted or missing."),
+                    }));
+                }
+            }
+        }
+    }
+
+    let total_checked = tickets.iter().filter(|t| !done_ids.contains(&t.id)).count();
+
+    Ok(json!({
+        "command": "health",
+        "status": "ok",
+        "tickets_checked": total_checked,
+        "finding_count": findings.len(),
+        "summary": summary,
+        "findings": findings,
     }))
 }

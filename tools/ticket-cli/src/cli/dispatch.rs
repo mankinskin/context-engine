@@ -110,6 +110,7 @@ pub(super) fn dispatch(
         TicketCommandCli::Cancel(args) => commands::cmd_cancel(args, &store),
         TicketCommandCli::Attach(args) => commands::cmd_attach(args, &store),
         TicketCommandCli::Assets(args) => commands::cmd_assets(args, &store),
+        TicketCommandCli::Health(args) => commands::cmd_health(args, &store),
         TicketCommandCli::Audit => commands::cmd_audit(&store),
         TicketCommandCli::ExportCommandSchema => unreachable!("handled above"),
         TicketCommandCli::Workspace(_) => unreachable!("handled above"),
@@ -156,6 +157,7 @@ fn dry_run_command_payload(command: &TicketCommandCli) -> Option<Value> {
         | TicketCommandCli::Status(_)
         | TicketCommandCli::ReadyOverview(_)
         | TicketCommandCli::Assets(_)
+        | TicketCommandCli::Health(_)
         | TicketCommandCli::Audit
         | TicketCommandCli::ExportCommandSchema => None,
     }
