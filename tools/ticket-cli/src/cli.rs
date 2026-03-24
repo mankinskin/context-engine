@@ -111,6 +111,8 @@ pub enum TicketCommandCli {
     Links(LinksArgs),
     /// Show the dependency subgraph rooted at a ticket.
     Subgraph(SubgraphArgs),
+    /// Show all tickets that depend on a given ticket (reverse dependency tree).
+    Topgraph(TopgraphArgs),
     /// Manage named workspaces (named index roots).
     Workspace(WorkspaceArgs),
     /// Watch filesystem scan roots and auto-reconcile on changes.

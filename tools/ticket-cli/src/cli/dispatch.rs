@@ -98,6 +98,7 @@ pub(super) fn dispatch(
         TicketCommandCli::Unlink(args) => commands::cmd_unlink(args, &store),
         TicketCommandCli::Links(args) => commands::cmd_links(args, &store),
         TicketCommandCli::Subgraph(args) => commands::cmd_subgraph(args, &store),
+        TicketCommandCli::Topgraph(args) => commands::cmd_topgraph(args, &store),
         TicketCommandCli::Watch(args) => commands::cmd_watch(args, &store),
         TicketCommandCli::Status(args) => commands::cmd_status(args, &store),
         TicketCommandCli::ReadyOverview(args) => commands::cmd_ready_overview(args, &store),
@@ -148,6 +149,7 @@ fn dry_run_command_payload(command: &TicketCommandCli) -> Option<Value> {
         | TicketCommandCli::Describe(_)
         | TicketCommandCli::Links(_)
         | TicketCommandCli::Subgraph(_)
+        | TicketCommandCli::Topgraph(_)
         | TicketCommandCli::Status(_)
         | TicketCommandCli::ReadyOverview(_)
         | TicketCommandCli::Assets(_)

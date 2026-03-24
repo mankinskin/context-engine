@@ -16,8 +16,8 @@ pub(crate) fn render_human_readable(payload: &Value) -> String {
         return format_scalar(payload);
     };
 
-    // Special case: subgraph command renders as ASCII tree
-    if obj.get("command").and_then(Value::as_str) == Some("subgraph") {
+    // Special case: subgraph/topgraph command renders as ASCII tree
+    if matches!(obj.get("command").and_then(Value::as_str), Some("subgraph" | "topgraph")) {
         if let Some(tree) = obj.get("tree").and_then(Value::as_str) {
             return tree.to_string();
         }

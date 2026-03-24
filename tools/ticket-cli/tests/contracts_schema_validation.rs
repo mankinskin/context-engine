@@ -19,7 +19,7 @@ fn make_schema() -> TicketTypeSchema {
 
     let mut edge_rules = BTreeMap::new();
     edge_rules.insert(
-        "blocks".to_string(),
+        "depends_on".to_string(),
         EdgeKindRule {
             directed: true,
             acyclic_enforced: true,
@@ -62,7 +62,7 @@ fn transition_and_edge_kind_validation() {
     schema
         .ensure_transition("open", "in_progress")
         .expect("valid transition");
-    schema.ensure_edge_kind("blocks").expect("valid edge kind");
+    schema.ensure_edge_kind("depends_on").expect("valid edge kind");
 
     assert!(schema.ensure_transition("open", "done").is_err());
     assert!(schema.ensure_edge_kind("relates_to").is_err());

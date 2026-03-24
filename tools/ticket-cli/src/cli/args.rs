@@ -113,7 +113,7 @@ pub struct LinkArgs {
     /// UUID of the target ticket.
     #[arg(long)]
     pub to: Uuid,
-    /// Edge kind (e.g. depends_on, blocks, linked).
+    /// Edge kind (e.g. depends_on, linked).
     #[arg(long)]
     pub kind: String,
     /// Human-readable reason for this edge (optional, stored in response only).
@@ -129,7 +129,7 @@ pub struct UnlinkArgs {
     /// UUID of the target ticket.
     #[arg(long)]
     pub to: Uuid,
-    /// Edge kind (e.g. depends_on, blocks, linked).
+    /// Edge kind (e.g. depends_on, linked).
     #[arg(long)]
     pub kind: String,
     /// Human-readable reason for this removal (optional, stored in response only).
@@ -146,6 +146,21 @@ pub struct SubgraphArgs {
     pub depth: usize,
     /// Edge direction to follow: out, in, or both.
     #[arg(long, default_value = "out")]
+    pub direction: String,
+    /// Filter edges by kind (default: all).
+    #[arg(long = "edge-kind", default_value = "all")]
+    pub edge_kind: String,
+}
+
+#[derive(Debug, Args)]
+pub struct TopgraphArgs {
+    /// Root ticket UUID or 8+ character hex prefix.
+    pub root: String,
+    /// Maximum traversal depth (default: 4, max: 8).
+    #[arg(long, default_value = "4")]
+    pub depth: usize,
+    /// Edge direction to follow: out, in, or both.
+    #[arg(long, default_value = "in")]
     pub direction: String,
     /// Filter edges by kind (default: all).
     #[arg(long = "edge-kind", default_value = "all")]

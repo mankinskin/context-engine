@@ -8,7 +8,7 @@ use uuid::Uuid;
 use ticket_api::model::edge::EdgeRecord;
 use ticket_api::storage::TicketStore;
 
-use crate::cli::{CliRunError, LinkArgs, LinksArgs, SubgraphArgs, UnlinkArgs};
+use crate::cli::{CliRunError, LinkArgs, LinksArgs, SubgraphArgs, TopgraphArgs, UnlinkArgs};
 
 pub(crate) fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let from_title = store.get(&args.from).ok()
@@ -88,13 +88,27 @@ pub(crate) fn cmd_links(args: LinksArgs, store: &TicketStore) -> Result<Value, C
     }))
 }
 
-// ── subgraph ───────────────────────────────────────────────────────────────────
+// ── subgraph / topgraph ────────────────────────────────────────────────────────
 
 pub(crate) fn cmd_subgraph(args: SubgraphArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let root = resolve_uuid_prefix(&args.root, store)?;
-    let depth_limit = args.depth.min(8);
-    let direction = args.direction.as_str();
-    let edge_kind_filter = args.edge_kind.as_str();
+    graph_traversal("subgraph", &args.root, args.depth, &args.direction, &args.edge_kind, false, store)
+}
+
+pub(crate) fn cmd_topgraph(args: TopgraphArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    graph_traversal("topgraph", &args.root, args.depth, &args.direction, &args.edge_kind, true, store)
+}
+
+fn graph_traversal(
+    command_name: &str,
+    root_str: &str,
+    depth: usize,
+    direction: &str,
+    edge_kind_filter: &str,
+    reverse_tree: bool,
+    store: &TicketStore,
+) -> Result<Value, CliRunError> {
+    let root = resolve_uuid_prefix(root_str, store)?;
+    let depth_limit = depth.min(8);
 
     let all_edges = store.list_all_edges()?;
 
@@ -177,10 +191,10 @@ pub(crate) fn cmd_subgraph(args: SubgraphArgs, store: &TicketStore) -> Result<Va
         .collect();
 
     // Build ASCII tree for plain output
-    let tree = render_ascii_tree(root, &node_list, &unique_edges);
+    let tree = render_ascii_tree(root, &node_list, &unique_edges, reverse_tree);
 
     Ok(json!({
-        "command": "subgraph",
+        "command": command_name,
         "status": "ok",
         "tree": tree,
         "nodes": json_nodes,
@@ -225,11 +239,22 @@ fn resolve_uuid_prefix(s: &str, store: &TicketStore) -> Result<Uuid, CliRunError
     )))
 }
 
+/// Map an edge kind to its reverse-direction display label.
+/// `depends_on` becomes `blocks`; unknown kinds get a `~` prefix.
+fn reverse_edge_label(kind: &str) -> String {
+    match kind {
+        "depends_on" => "blocks".to_string(),
+        other => format!("~{other}"),
+    }
+}
+
 /// Render an ASCII dependency tree from BFS-collected nodes and edges.
+/// When `reverse_tree` is true, edges are displayed from `to → from` (dependents).
 fn render_ascii_tree(
     root: Uuid,
     nodes: &[(Uuid, Option<String>, Option<String>, usize)],
     edges: &[&EdgeRecord],
+    reverse_tree: bool,
 ) -> String {
     // Build lookup: id -> (title, state)
     let node_info: HashMap<Uuid, (&Option<String>, &Option<String>)> = nodes
@@ -237,10 +262,16 @@ fn render_ascii_tree(
         .map(|(id, title, state, _)| (*id, (title, state)))
         .collect();
 
-    // Build adjacency: parent -> [(kind, child)]
+    // Build adjacency: tree-parent -> [(kind, tree-child)]
+    // For subgraph (reverse_tree=false): from is parent, to is child
+    // For topgraph (reverse_tree=true): to is parent, from is child
     let mut children: HashMap<Uuid, Vec<(&str, Uuid)>> = HashMap::new();
     for edge in edges {
-        children.entry(edge.from).or_default().push((&edge.kind, edge.to));
+        if reverse_tree {
+            children.entry(edge.to).or_default().push((&edge.kind, edge.from));
+        } else {
+            children.entry(edge.from).or_default().push((&edge.kind, edge.to));
+        }
     }
 
     let mut out = String::new();
@@ -255,7 +286,7 @@ fn render_ascii_tree(
     let mut visited = HashSet::new();
     visited.insert(root);
 
-    render_children(&mut out, &mut visited, root, &children, &node_info, "");
+    render_children(&mut out, &mut visited, root, &children, &node_info, "", reverse_tree);
     out
 }
 
@@ -266,6 +297,7 @@ fn render_children(
     children: &HashMap<Uuid, Vec<(&str, Uuid)>>,
     node_info: &HashMap<Uuid, (&Option<String>, &Option<String>)>,
     prefix: &str,
+    reverse_tree: bool,
 ) {
     let Some(kids) = children.get(&parent) else {
         return;
@@ -282,14 +314,20 @@ fn render_children(
             .map(|(t, s)| (t.as_deref().unwrap_or("?"), s.as_deref().unwrap_or("?")))
             .unwrap_or(("?", "?"));
 
+        // In a topgraph the child actually depends on the parent, so flip the arrow.
+        let edge_label = if reverse_tree {
+            format!("{} →", reverse_edge_label(kind))
+        } else {
+            format!("{kind} →")
+        };
+
         let already_visited = !visited.insert(*child_id);
         if already_visited {
-            // Show the node but don't recurse (diamond reference)
-            let _ = writeln!(out, "{prefix}{connector}{kind} → {title} ({short_id}) [{state}] (→ see above)");
+            let _ = writeln!(out, "{prefix}{connector}{edge_label} {title} ({short_id}) [{state}] (→ see above)");
         } else {
-            let _ = writeln!(out, "{prefix}{connector}{kind} → {title} ({short_id}) [{state}]");
+            let _ = writeln!(out, "{prefix}{connector}{edge_label} {title} ({short_id}) [{state}]");
             let next_prefix = format!("{prefix}{child_prefix}");
-            render_children(out, visited, *child_id, children, node_info, &next_prefix);
+            render_children(out, visited, *child_id, children, node_info, &next_prefix, reverse_tree);
         }
     }
 }

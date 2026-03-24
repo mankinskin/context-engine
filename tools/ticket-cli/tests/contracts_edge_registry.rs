@@ -10,7 +10,7 @@ fn edge_registry_is_idempotent_for_same_identity() {
     let edge = EdgeRecord {
         from: a,
         to: b,
-        kind: "blocks".to_string(),
+        kind: "depends_on".to_string(),
         created_at: Utc::now(),
     };
 
@@ -26,10 +26,10 @@ fn edge_registry_treats_kind_as_part_of_uniqueness_key() {
     let a = Uuid::new_v4();
     let b = Uuid::new_v4();
 
-    let edge_blocks = EdgeRecord {
+    let edge_depends = EdgeRecord {
         from: a,
         to: b,
-        kind: "blocks".to_string(),
+        kind: "depends_on".to_string(),
         created_at: Utc::now(),
     };
 
@@ -42,6 +42,6 @@ fn edge_registry_treats_kind_as_part_of_uniqueness_key() {
 
     let mut registry = EdgeRegistry::default();
 
-    assert!(registry.insert(&edge_blocks));
+    assert!(registry.insert(&edge_depends));
     assert!(registry.insert(&edge_related));
 }
