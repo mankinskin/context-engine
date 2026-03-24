@@ -71,7 +71,7 @@ fn validate_release_full_chain_via_exec() {
     assert_eq!(rp["monitoring_state"], "active");
 
     // ── Verify final persisted state via CLI get ──────────────────────────
-    let got = s.ticket_json(&["get", "--id", &id]);
+    let got = s.ticket_json(&["get", &id]);
     assert_eq!(got["ticket"]["fields"]["state"], "released");
     assert_eq!(got["ticket"]["fields"]["release_version"], "2.0.0");
     assert_eq!(got["ticket"]["fields"]["merge_commit"], "deadbeef123");
@@ -106,14 +106,13 @@ fn validate_start_fails_when_validator_equals_worker() {
     // Record working_by = "same-agent-id" on the ticket, then advance to review.
     s.ticket_json(&[
         "update",
-        "--id",
         &id,
         "--field",
         "working_by=same-agent-id",
         "--to-state",
         "in-progress",
     ]);
-    s.ticket_json(&["update", "--id", &id, "--to-state", "review"]);
+    s.ticket_json(&["update", &id, "--to-state", "review"]);
 
     // The validator has the same identity as the worker — must be rejected.
     let stderr = s.ticket_exec_fail(&format!(
@@ -185,7 +184,7 @@ fn validate_result_fail_returns_ticket_to_review() {
     assert_eq!(vr["validation_status"], "failed");
 
     // Persist check: ticket must really be back in 'review'.
-    let got = s.ticket_json(&["get", "--id", &id]);
+    let got = s.ticket_json(&["get", &id]);
     assert_eq!(got["ticket"]["fields"]["state"], "review");
     assert_eq!(got["ticket"]["fields"]["validation_status"], "failed");
 }

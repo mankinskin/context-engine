@@ -88,12 +88,15 @@ pub(super) fn dispatch(
         TicketCommandCli::History(args) => commands::cmd_history(args, &store),
         TicketCommandCli::Diff(args) => commands::cmd_diff(args, &store),
         TicketCommandCli::Revert(args) => commands::cmd_revert(args, &store),
-        TicketCommandCli::FinalizeMerge(args) => Ok(json!({
-            "command": "finalize_merge",
-            "status": "phase2_stub",
-            "id": args.id,
-            "merge_commit": args.merge_commit
-        })),
+        TicketCommandCli::FinalizeMerge(args) => {
+            let id = commands::resolve_uuid_prefix(&args.id, &store)?;
+            Ok(json!({
+                "command": "finalize_merge",
+                "status": "phase2_stub",
+                "id": id,
+                "merge_commit": args.merge_commit
+            }))
+        },
         TicketCommandCli::Link(args) => commands::cmd_link(args, &store),
         TicketCommandCli::Unlink(args) => commands::cmd_unlink(args, &store),
         TicketCommandCli::Links(args) => commands::cmd_links(args, &store),
@@ -190,7 +193,7 @@ mod tests {
     #[test]
     fn dry_run_payload_is_returned_for_mutating_command() {
         let payload = dry_run_command_payload(&TicketCommandCli::Delete(IdArgs {
-            id: Uuid::new_v4(),
+            id: Uuid::new_v4().to_string(),
         }))
         .expect("delete should be dry-runnable");
         assert_eq!(payload["dry_run"], json!(true));

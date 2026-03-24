@@ -51,7 +51,8 @@ pub(crate) fn cmd_create(args: CreateArgs, store: &TicketStore) -> Result<Value,
 }
 
 pub(crate) fn cmd_get(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let manifest = store.get(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let manifest = store.get(&id)?;
     Ok(json!({
         "command": "get",
         "status": "ok",
@@ -64,9 +65,10 @@ pub(crate) fn cmd_get(args: IdArgs, store: &TicketStore) -> Result<Value, CliRun
 }
 
 pub(crate) fn cmd_update(args: UpdateArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
     let patch = parse_fields_to_json(&args.fields)?;
     let manifest = store.update(
-        &args.id,
+        &id,
         patch,
         args.from_state.as_deref(),
         args.to_state.as_deref(),
@@ -87,7 +89,8 @@ pub(crate) fn cmd_update(args: UpdateArgs, store: &TicketStore) -> Result<Value,
 }
 
 pub(crate) fn cmd_repro(args: ReproArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let manifest = store.get(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let manifest = store.get(&id)?;
     let mut reproductions = manifest
         .extra
         .get("reproductions")
@@ -133,7 +136,7 @@ pub(crate) fn cmd_repro(args: ReproArgs, store: &TicketStore) -> Result<Value, C
         patch.insert("last_reproduction_command".to_string(), command);
     }
 
-    let updated = store.update(&args.id, patch, None, None)?;
+    let updated = store.update(&id, patch, None, None)?;
     let reproduction_count = updated
         .extra
         .get("reproductions")
@@ -198,31 +201,33 @@ pub(crate) fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_delete(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let manifest = store.get(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let manifest = store.get(&id)?;
     let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-").to_string();
     let ticket_type = manifest.extra.get("type").and_then(Value::as_str).unwrap_or("-").to_string();
-    store.delete(&args.id)?;
+    store.delete(&id)?;
     Ok(json!({
         "command": "delete",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "title": title,
         "type": ticket_type,
     }))
 }
 
 pub(crate) fn cmd_describe(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
     let indexed = store
-        .get_indexed(&args.id)?
-        .ok_or_else(|| CliRunError::BadRequest(format!("ticket not found: {}", args.id)))?;
+        .get_indexed(&id)?
+        .ok_or_else(|| CliRunError::BadRequest(format!("ticket not found: {}", id)))?;
     if indexed.deleted {
-        return Err(CliRunError::BadRequest(format!("ticket deleted: {}", args.id)));
+        return Err(CliRunError::BadRequest(format!("ticket deleted: {}", id)));
     }
     let description = TicketFs::read_description(&indexed.path);
     Ok(json!({
         "command": "describe",
         "status": "ok",
-        "id": args.id.to_string(),
+        "id": id.to_string(),
         "description": description,
     }))
 }

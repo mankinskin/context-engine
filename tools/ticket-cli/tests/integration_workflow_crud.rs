@@ -29,7 +29,7 @@ fn create_and_get_roundtrip() {
 
     let id = created["id"].as_str().expect("id must be present");
 
-    let got = s.ticket_json(&["get", "--id", id]);
+    let got = s.ticket_json(&["get", id]);
     assert_eq!(got["status"], "ok");
     assert_eq!(got["ticket"]["id"], id);
     assert_eq!(got["ticket"]["fields"]["title"], "Fix login bug");
@@ -72,7 +72,7 @@ fn list_filters_by_state() {
 
     create_ticket(&s, "Stays open");
     let id2 = create_ticket(&s, "Goes in-progress");
-    s.ticket_json(&["update", "--id", &id2, "--to-state", "in-progress"]);
+    s.ticket_json(&["update", &id2, "--to-state", "in-progress"]);
 
     let open = s.ticket_json(&["list", "--state", "open"]);
     assert_eq!(open["count"].as_u64().unwrap(), 1);
@@ -90,7 +90,6 @@ fn list_with_repro_includes_reproduction_status() {
 
     let _ = s.ticket_json(&[
         "repro",
-        "--id",
         &id,
         "--outcome",
         "reproduced",
@@ -121,7 +120,6 @@ fn update_fields_and_state_transition() {
 
     let updated = s.ticket_json(&[
         "update",
-        "--id",
         &id,
         "--field",
         "title=Updated title",
@@ -130,7 +128,7 @@ fn update_fields_and_state_transition() {
     ]);
     assert_eq!(updated["status"], "ok");
 
-    let got = s.ticket_json(&["get", "--id", &id]);
+    let got = s.ticket_json(&["get", &id]);
     assert_eq!(got["ticket"]["fields"]["title"], "Updated title");
     assert_eq!(got["ticket"]["fields"]["state"], "in-progress");
 }
@@ -141,7 +139,7 @@ fn delete_removes_ticket_from_list() {
     let del_id = create_ticket(&s, "Will be deleted");
     let keep_id = create_ticket(&s, "Will survive");
 
-    let del = s.ticket_json(&["delete", "--id", &del_id]);
+    let del = s.ticket_json(&["delete", &del_id]);
     assert_eq!(del["status"], "ok");
 
     let list = s.ticket_json(&["list"]);
@@ -154,9 +152,9 @@ fn delete_removes_ticket_from_list() {
 fn get_after_delete_exits_nonzero() {
     let s = Sandbox::new();
     let id = create_ticket(&s, "Temporary ticket");
-    s.ticket_json(&["delete", "--id", &id]);
+    s.ticket_json(&["delete", &id]);
 
-    let (exit_code, _stderr) = s.ticket_fail(&["get", "--id", &id]);
+    let (exit_code, _stderr) = s.ticket_fail(&["get", &id]);
     assert_eq!(exit_code, 1);
 }
 
@@ -242,7 +240,6 @@ fn claim_conflict_and_unclaim_cycle() {
     // Agent-1 claims the ticket successfully.
     let claim = s.ticket_json(&[
         "claim",
-        "--id",
         &id,
         "--agent",
         "agent-1",
@@ -253,7 +250,7 @@ fn claim_conflict_and_unclaim_cycle() {
     assert_eq!(claim["working_by"], "agent-1");
 
     // Agent-2 attempts to claim the same ticket — must fail (lease conflict).
-    let (_code, stderr) = s.ticket_fail(&["claim", "--id", &id, "--agent", "agent-2"]);
+    let (_code, stderr) = s.ticket_fail(&["claim", &id, "--agent", "agent-2"]);
     assert!(
         stderr.contains("agent-1") || stderr.contains("lease") || stderr.contains("conflict"),
         "expected a lease-conflict error mentioning agent-1, got: {stderr}"
@@ -265,11 +262,11 @@ fn claim_conflict_and_unclaim_cycle() {
     assert_eq!(leases["leases"][0]["working_by"], "agent-1");
 
     // Agent-1 releases the lease.
-    let unclaim = s.ticket_json(&["unclaim", "--id", &id]);
+    let unclaim = s.ticket_json(&["unclaim", &id]);
     assert_eq!(unclaim["status"], "ok");
 
     // Agent-2 can now claim successfully.
-    let reclaim = s.ticket_json(&["claim", "--id", &id, "--agent", "agent-2"]);
+    let reclaim = s.ticket_json(&["claim", &id, "--agent", "agent-2"]);
     assert_eq!(reclaim["status"], "ok");
     assert_eq!(reclaim["working_by"], "agent-2");
 }
@@ -369,7 +366,7 @@ fn exec_batch_supports_link_commands() {
     assert_eq!(result["status"], "ok");
     assert_eq!(result["count"].as_u64().unwrap(), 3);
 
-    let links = s.ticket_json(&["links", "--id", id_a]);
+    let links = s.ticket_json(&["links", id_a]);
     assert_eq!(links["status"], "ok");
     assert_eq!(links["count"].as_u64().unwrap(), 1);
     assert_eq!(links["edges"][0]["from"], id_a);
@@ -414,7 +411,7 @@ fn unlink_removes_existing_edge() {
     ]);
     assert_eq!(linked["status"], "ok");
 
-    let before = s.ticket_json(&["links", "--id", id_a]);
+    let before = s.ticket_json(&["links", id_a]);
     assert_eq!(before["count"].as_u64().unwrap(), 1);
 
     let unlinked = s.ticket_json(&[
@@ -428,7 +425,7 @@ fn unlink_removes_existing_edge() {
     ]);
     assert_eq!(unlinked["status"], "ok");
 
-    let after = s.ticket_json(&["links", "--id", id_a]);
+    let after = s.ticket_json(&["links", id_a]);
     assert_eq!(after["count"].as_u64().unwrap(), 0);
 }
 
@@ -449,7 +446,7 @@ fn exec_batch_rolls_back_link_on_error() {
     assert_eq!(result["rolled_back"], true);
 
     // Rollback should leave no edges and no visible tickets.
-    let links = s.ticket_json(&["links", "--id", id_a]);
+    let links = s.ticket_json(&["links", id_a]);
     assert_eq!(links["status"], "ok");
     assert_eq!(links["count"].as_u64().unwrap(), 0);
 
@@ -477,7 +474,7 @@ fn exec_create_and_state_transition_via_json() {
         r#"{{"command":"update","id":"{id}","patch":{{"state":"in-progress"}},"to_state":"in-progress"}}"#
     ));
     // The update exec path uses from_state/to_state fields; verify via get.
-    let got = s.ticket_json(&["get", "--id", id]);
+    let got = s.ticket_json(&["get", id]);
     // Note: update via exec uses the "update" command handler which reads
     // patch/from_state/to_state fields — the ticket was created successfully.
     assert_eq!(got["ticket"]["id"], id);

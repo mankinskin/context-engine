@@ -301,8 +301,8 @@ pub fn create_ticket(s: &Sandbox, title: &str) -> String {
 /// Advance a ticket from `open` → `in-progress` → `review` via CLI state
 /// transitions.
 pub fn advance_to_review(s: &Sandbox, id: &str) {
-    s.ticket_json(&["update", "--id", id, "--to-state", "in-progress"]);
-    s.ticket_json(&["update", "--id", id, "--to-state", "review"]);
+    s.ticket_json(&["update", id, "--to-state", "in-progress"]);
+    s.ticket_json(&["update", id, "--to-state", "review"]);
 }
 
 /// Run `task_validate_start` via `ticket exec`.

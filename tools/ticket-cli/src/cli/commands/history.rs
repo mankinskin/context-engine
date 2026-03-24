@@ -10,7 +10,8 @@ pub(crate) fn cmd_history(
     args: HistoryArgs,
     store: &TicketStore,
 ) -> Result<Value, CliRunError> {
-    let mut revisions = store.get_history(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let mut revisions = store.get_history(&id)?;
     revisions.reverse();
     revisions.truncate(args.limit);
     let entries: Vec<Value> = revisions
@@ -20,7 +21,7 @@ pub(crate) fn cmd_history(
     Ok(json!({
         "command": "history",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "count": entries.len(),
         "entries": entries
     }))
@@ -34,7 +35,8 @@ fn parse_rev_spec(spec: &str, max_rev: u64) -> Option<u64> {
 }
 
 pub(crate) fn cmd_diff(args: DiffArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let revisions = store.get_history(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let revisions = store.get_history(&id)?;
     if revisions.is_empty() {
         return Err(CliRunError::BadRequest(
             "no history available for this ticket".into(),
@@ -83,7 +85,7 @@ pub(crate) fn cmd_diff(args: DiffArgs, store: &TicketStore) -> Result<Value, Cli
     Ok(json!({
         "command": "diff",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "from_rev": from_rev,
         "to_rev": to_rev,
         "added": added,
@@ -93,7 +95,8 @@ pub(crate) fn cmd_diff(args: DiffArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_revert(args: RevertArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let revisions = store.get_history(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let revisions = store.get_history(&id)?;
     if revisions.is_empty() {
         return Err(CliRunError::BadRequest(
             "no history available for this ticket".into(),
@@ -109,13 +112,13 @@ pub(crate) fn cmd_revert(args: RevertArgs, store: &TicketStore) -> Result<Value,
         .cloned()
         .ok_or_else(|| CliRunError::BadRequest(format!("revision {} not found", target_rev)))?;
 
-    let new_rev = store.apply_revert(&args.id, snapshot.fields)?;
-    let updated = store.get(&args.id)?;
+    let new_rev = store.apply_revert(&id, snapshot.fields)?;
+    let updated = store.get(&id)?;
 
     Ok(json!({
         "command": "revert",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "reverted_to": target_rev,
         "new_rev": new_rev,
         "ticket": { "fields": updated.extra }

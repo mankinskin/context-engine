@@ -11,15 +11,17 @@ use ticket_api::storage::TicketStore;
 use crate::cli::{CliRunError, LinkArgs, LinksArgs, SubgraphArgs, TopgraphArgs, UnlinkArgs};
 
 pub(crate) fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let from_title = store.get(&args.from).ok()
+    let from = resolve_uuid_prefix(&args.from, store)?;
+    let to = resolve_uuid_prefix(&args.to, store)?;
+    let from_title = store.get(&from).ok()
         .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
-        .unwrap_or_else(|| args.from.to_string());
-    let to_title = store.get(&args.to).ok()
+        .unwrap_or_else(|| from.to_string());
+    let to_title = store.get(&to).ok()
         .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
-        .unwrap_or_else(|| args.to.to_string());
+        .unwrap_or_else(|| to.to_string());
     let edge = EdgeRecord {
-        from: args.from,
-        to: args.to,
+        from,
+        to,
         kind: args.kind.clone(),
         created_at: Utc::now(),
     };
@@ -27,9 +29,9 @@ pub(crate) fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, Cli
     Ok(json!({
         "command": "link",
         "status": "ok",
-        "from": args.from,
+        "from": from,
         "from_title": from_title,
-        "to": args.to,
+        "to": to,
         "to_title": to_title,
         "kind": args.kind,
         "reason": args.reason,
@@ -37,15 +39,17 @@ pub(crate) fn cmd_link(args: LinkArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_unlink(args: UnlinkArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let from_title = store.get(&args.from).ok()
+    let from = resolve_uuid_prefix(&args.from, store)?;
+    let to = resolve_uuid_prefix(&args.to, store)?;
+    let from_title = store.get(&from).ok()
         .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
-        .unwrap_or_else(|| args.from.to_string());
-    let to_title = store.get(&args.to).ok()
+        .unwrap_or_else(|| from.to_string());
+    let to_title = store.get(&to).ok()
         .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
-        .unwrap_or_else(|| args.to.to_string());
+        .unwrap_or_else(|| to.to_string());
     let edge = EdgeRecord {
-        from: args.from,
-        to: args.to,
+        from,
+        to,
         kind: args.kind.clone(),
         created_at: Utc::now(),
     };
@@ -53,9 +57,9 @@ pub(crate) fn cmd_unlink(args: UnlinkArgs, store: &TicketStore) -> Result<Value,
     Ok(json!({
         "command": "unlink",
         "status": "ok",
-        "from": args.from,
+        "from": from,
         "from_title": from_title,
-        "to": args.to,
+        "to": to,
         "to_title": to_title,
         "kind": args.kind,
         "reason": args.reason,
@@ -66,7 +70,8 @@ pub(crate) fn cmd_links(args: LinksArgs, store: &TicketStore) -> Result<Value, C
     let raw_edges = if args.all {
         store.list_all_edges()?
     } else {
-        let id = args.id.expect("clap ensures --id is present when --all is not set");
+        let id_str = args.id.as_ref().expect("clap ensures id is present when --all is not set");
+        let id = resolve_uuid_prefix(id_str, store)?;
         store.edges_from(&id)?
     };
 
@@ -207,37 +212,7 @@ fn graph_traversal(
     }))
 }
 
-/// Resolve a UUID string that may be a full UUID or a hex prefix (>= 8 chars).
-fn resolve_uuid_prefix(s: &str, store: &TicketStore) -> Result<Uuid, CliRunError> {
-    if let Ok(id) = s.parse::<Uuid>() {
-        return Ok(id);
-    }
-
-    let trimmed = s.trim();
-    if trimmed.len() >= 8 && trimmed.chars().all(|c| c.is_ascii_hexdigit()) {
-        let tickets = store.list(None, None, None)?;
-        let prefix_lower = trimmed.to_ascii_lowercase();
-        let matches: Vec<Uuid> = tickets
-            .iter()
-            .filter(|t| t.id.simple().to_string().starts_with(&prefix_lower))
-            .map(|t| t.id)
-            .collect();
-
-        return match matches.len() {
-            1 => Ok(matches[0]),
-            0 => Err(CliRunError::BadRequest(format!(
-                "no ticket found matching prefix '{trimmed}'"
-            ))),
-            n => Err(CliRunError::BadRequest(format!(
-                "ambiguous prefix '{trimmed}': matches {n} tickets"
-            ))),
-        };
-    }
-
-    Err(CliRunError::BadRequest(format!(
-        "invalid UUID '{s}': expected full UUID or hex prefix (>= 8 chars)"
-    )))
-}
+use super::resolve_uuid_prefix;
 
 /// Map an edge kind to its reverse-direction display label.
 /// `depends_on` becomes `blocks`; unknown kinds get a `~` prefix.

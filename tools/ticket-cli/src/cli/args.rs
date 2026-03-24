@@ -27,15 +27,15 @@ pub struct CreateArgs {
 
 #[derive(Debug, Args)]
 pub struct IdArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
 }
 
 #[derive(Debug, Args)]
 pub struct LinksArgs {
-    /// UUID of the ticket to show edges for (omit with --all to list all edges globally).
-    #[arg(long, required_unless_present = "all")]
-    pub id: Option<Uuid>,
+    /// Ticket UUID or 8+ character hex prefix (omit with --all to list all edges globally).
+    #[arg(required_unless_present = "all")]
+    pub id: Option<String>,
     /// List all edges in the store instead of filtering by source ticket.
     #[arg(long, default_value_t = false)]
     pub all: bool,
@@ -87,8 +87,8 @@ pub struct ServeCliArgs {
 
 #[derive(Debug, Args)]
 pub struct CloseArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     /// Target state to fast-forward to (default: done).
     #[arg(long = "to-state", default_value = "done")]
     pub to_state: String,
@@ -96,8 +96,8 @@ pub struct CloseArgs {
 
 #[derive(Debug, Args)]
 pub struct AttachArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     /// Path to the file to attach.
     pub path: PathBuf,
     /// Optional name for the asset (defaults to source filename).
@@ -107,12 +107,12 @@ pub struct AttachArgs {
 
 #[derive(Debug, Args)]
 pub struct LinkArgs {
-    /// UUID of the source ticket.
+    /// UUID or 8+ character hex prefix of the source ticket.
     #[arg(long)]
-    pub from: Uuid,
-    /// UUID of the target ticket.
+    pub from: String,
+    /// UUID or 8+ character hex prefix of the target ticket.
     #[arg(long)]
-    pub to: Uuid,
+    pub to: String,
     /// Edge kind (e.g. depends_on, linked).
     #[arg(long)]
     pub kind: String,
@@ -123,12 +123,12 @@ pub struct LinkArgs {
 
 #[derive(Debug, Args)]
 pub struct UnlinkArgs {
-    /// UUID of the source ticket.
+    /// UUID or 8+ character hex prefix of the source ticket.
     #[arg(long)]
-    pub from: Uuid,
-    /// UUID of the target ticket.
+    pub from: String,
+    /// UUID or 8+ character hex prefix of the target ticket.
     #[arg(long)]
-    pub to: Uuid,
+    pub to: String,
     /// Edge kind (e.g. depends_on, linked).
     #[arg(long)]
     pub kind: String,
@@ -169,8 +169,8 @@ pub struct TopgraphArgs {
 
 #[derive(Debug, Args)]
 pub struct UpdateArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long = "from-state")]
     pub from_state: Option<String>,
     #[arg(long = "to-state")]
@@ -200,9 +200,8 @@ impl ReproOutcome {
 
 #[derive(Debug, Args)]
 pub struct ReproArgs {
-    /// Ticket UUID.
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     /// Reproduction outcome.
     #[arg(long, value_enum, default_value_t = ReproOutcome::Reproduced)]
     pub outcome: ReproOutcome,
@@ -247,8 +246,8 @@ pub struct ScanArgs {
 
 #[derive(Debug, Args)]
 pub struct ClaimArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long = "agent")]
     pub agent_id: String,
     #[arg(long = "ttl-secs", default_value_t = 300)]
@@ -259,8 +258,8 @@ pub struct ClaimArgs {
 
 #[derive(Debug, Args)]
 pub struct UnclaimArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long)]
     pub reason: Option<String>,
 }
@@ -281,16 +280,16 @@ pub struct AddRootArgs {
 
 #[derive(Debug, Args)]
 pub struct HistoryArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long, default_value_t = 20)]
     pub limit: usize,
 }
 
 #[derive(Debug, Args)]
 pub struct DiffArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long)]
     pub from: String,
     #[arg(long)]
@@ -299,16 +298,16 @@ pub struct DiffArgs {
 
 #[derive(Debug, Args)]
 pub struct RevertArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long = "to")]
     pub to_sha: String,
 }
 
 #[derive(Debug, Args)]
 pub struct FinalizeMergeArgs {
-    #[arg(long)]
-    pub id: Uuid,
+    /// Ticket UUID or 8+ character hex prefix.
+    pub id: String,
     #[arg(long = "merge-commit")]
     pub merge_commit: String,
 }

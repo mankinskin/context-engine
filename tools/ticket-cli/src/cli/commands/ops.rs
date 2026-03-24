@@ -29,25 +29,27 @@ pub(crate) fn cmd_scan(args: ScanArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_attach(args: AttachArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let dest = store.attach(&args.id, &args.path, args.asset_name.as_deref())?;
-    let title = store.get(&args.id).ok()
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let dest = store.attach(&id, &args.path, args.asset_name.as_deref())?;
+    let title = store.get(&id).ok()
         .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
         .unwrap_or_else(|| "-".to_string());
     Ok(json!({
         "command": "attach",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "title": title,
         "asset_path": dest.display().to_string(),
     }))
 }
 
 pub(crate) fn cmd_assets(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let names = store.list_assets(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let names = store.list_assets(&id)?;
     Ok(json!({
         "command": "assets",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "count": names.len(),
         "assets": names,
     }))

@@ -5,7 +5,8 @@ use ticket_api::storage::TicketStore;
 use crate::cli::{ClaimArgs, CloseArgs, CliRunError, IdArgs, UnclaimArgs};
 
 pub(crate) fn cmd_close(args: CloseArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let (manifest, path) = store.close(&args.id, &args.to_state)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let (manifest, path) = store.close(&id, &args.to_state)?;
     let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-");
     Ok(json!({
         "command": "close",
@@ -18,7 +19,8 @@ pub(crate) fn cmd_close(args: CloseArgs, store: &TicketStore) -> Result<Value, C
 }
 
 pub(crate) fn cmd_cancel(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let (manifest, path) = store.close(&args.id, "cancelled")?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let (manifest, path) = store.close(&id, "cancelled")?;
     let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-");
     Ok(json!({
         "command": "cancel",
@@ -30,8 +32,9 @@ pub(crate) fn cmd_cancel(args: IdArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_claim(args: ClaimArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
     let lease = store.claim(
-        &args.id,
+        &id,
         &args.agent_id,
         args.ttl_secs,
         args.work_intent.as_deref(),
@@ -46,13 +49,14 @@ pub(crate) fn cmd_claim(args: ClaimArgs, store: &TicketStore) -> Result<Value, C
 }
 
 pub(crate) fn cmd_unclaim(args: UnclaimArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    let manifest = store.get(&args.id)?;
+    let id = super::resolve_uuid_prefix(&args.id, store)?;
+    let manifest = store.get(&id)?;
     let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-");
-    store.unclaim(&args.id)?;
+    store.unclaim(&id)?;
     Ok(json!({
         "command": "unclaim",
         "status": "ok",
-        "id": args.id,
+        "id": id,
         "title": title,
         "reason": args.reason,
     }))

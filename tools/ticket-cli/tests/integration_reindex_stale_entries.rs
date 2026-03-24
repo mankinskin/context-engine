@@ -27,7 +27,7 @@ fn scan_reindex_removes_stale_entries_for_deleted_tickets() {
     );
 
     // Delete one ticket through the CLI (removes it from redb + Tantivy).
-    s.ticket_json(&["delete", "--id", &_id_del]);
+    s.ticket_json(&["delete", &_id_del]);
 
     // Confirm deletion: search should now return 1.
     let after_delete = s.ticket_json(&["search", "service worker"]);
