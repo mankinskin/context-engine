@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use chrono::Utc;
@@ -17,7 +18,9 @@ use ticket_api::execution::sandbox::{SandboxError, SandboxHandle, SandboxSpec};
 use ticket_api::model::edge::EdgeRecord;
 use ticket_api::storage::TicketStore;
 use ticket_api::storage::store::GateStatus;
+use ticket_api::storage::ticket_fs::TicketFs;
 
+use super::commands;
 use super::*;
 
 #[derive(Debug)]
@@ -166,21 +169,223 @@ fn execute_batch_commands(commands: &[Value], store: &TicketStore) -> Result<Val
     }))
 }
 
-pub(crate) fn cmd_batch(args: BatchArgs, store: &TicketStore) -> Result<Value, CliRunError> {
-    use std::fs::File;
-    use std::io::{self, BufReader};
+// ── CLI-syntax batch ─────────────────────────────────────────────────────────
 
-    let commands = if let Some(path) = args.file {
-        let file = File::open(&path).map_err(|e| {
+#[derive(clap::Parser)]
+#[command(name = "ticket")]
+struct BatchLineParser {
+    #[command(subcommand)]
+    command: TicketCommandCli,
+}
+
+fn parse_batch_line(line: &str) -> Result<TicketCommandCli, CliRunError> {
+    let mut tokens = shell_words::split(line)
+        .map_err(|e| CliRunError::InvalidExecPayload(format!("cannot parse line: {e}")))?;
+    if tokens.is_empty() {
+        return Err(CliRunError::InvalidExecPayload("empty command line".to_string()));
+    }
+    tokens.insert(0, "ticket".to_string());
+    BatchLineParser::try_parse_from(tokens)
+        .map(|p| p.command)
+        .map_err(|e| CliRunError::InvalidExecPayload(format!("{e}")))
+}
+
+fn read_cli_batch_commands(file: Option<std::path::PathBuf>) -> Result<Vec<TicketCommandCli>, CliRunError> {
+    use std::fs::File;
+    use std::io::{self, BufRead, BufReader};
+
+    let lines: Vec<String> = if let Some(path) = file {
+        let f = File::open(&path).map_err(|e| {
             CliRunError::InvalidExecPayload(format!("cannot open batch file {}: {e}", path.display()))
         })?;
-        read_batch_commands(BufReader::new(file))?
+        BufReader::new(f)
+            .lines()
+            .collect::<io::Result<_>>()
+            .map_err(StorageError::Io)?
     } else {
         let stdin = io::stdin();
-        read_batch_commands(stdin.lock())?
+        stdin
+            .lock()
+            .lines()
+            .collect::<io::Result<_>>()
+            .map_err(StorageError::Io)?
     };
 
-    execute_batch_commands(&commands, store)
+    let mut cmds = Vec::new();
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+        let cmd = parse_batch_line(trimmed)
+            .map_err(|e| CliRunError::InvalidExecPayload(format!("line {}: {e}", i + 1)))?;
+        cmds.push(cmd);
+    }
+    Ok(cmds)
+}
+
+fn execute_cli_batch(cmds: Vec<TicketCommandCli>, store: &TicketStore) -> Result<Value, CliRunError> {
+    let total = cmds.len();
+    let mut results: Vec<Value> = Vec::with_capacity(total);
+    let mut undo_stack: Vec<BatchUndoOp> = Vec::with_capacity(total);
+
+    for cmd in cmds {
+        let is_create = matches!(cmd, TicketCommandCli::Create(_));
+        let is_link = matches!(cmd, TicketCommandCli::Link(_));
+        let update_pre: Option<(Uuid, BTreeMap<String, Value>, Option<String>)> =
+            if let TicketCommandCli::Update(ref args) = cmd {
+                commands::resolve_uuid_prefix(&args.id, store)
+                    .ok()
+                    .and_then(|id| {
+                        store.get_indexed(&id).ok().flatten().map(|indexed| {
+                            let mut saved = BTreeMap::new();
+                            if let Some(t) = &indexed.title {
+                                saved.insert("title".to_string(), Value::String(t.clone()));
+                            }
+                            (id, saved, indexed.state.clone())
+                        })
+                    })
+            } else {
+                None
+            };
+
+        match batch_dispatch(cmd, store) {
+            Ok(result) => {
+                let undo = if is_create {
+                    result
+                        .get("id")
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse().ok())
+                        .map(|id| BatchUndoOp::Delete { id })
+                } else if let Some((id, saved_extra, saved_state)) = update_pre {
+                    Some(BatchUndoOp::RestoreUpdate { id, saved_extra, saved_state })
+                } else if is_link {
+                    let from = result
+                        .get("from")
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse().ok());
+                    let to = result
+                        .get("to")
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse().ok());
+                    let kind = result
+                        .get("kind")
+                        .and_then(|v| v.as_str())
+                        .map(str::to_string);
+                    match (from, to, kind) {
+                        (Some(from), Some(to), Some(kind)) => {
+                            Some(BatchUndoOp::RemoveEdge { from, to, kind })
+                        }
+                        _ => None,
+                    }
+                } else {
+                    None
+                };
+                if let Some(u) = undo {
+                    undo_stack.push(u);
+                }
+                results.push(result);
+            }
+            Err(e) => {
+                let mut rollback_errors: Vec<String> = Vec::new();
+                for undo in undo_stack.into_iter().rev() {
+                    apply_batch_undo(undo, store, &mut rollback_errors);
+                }
+                return Ok(json!({
+                    "command": "batch",
+                    "status": "error",
+                    "completed": results.len(),
+                    "total": total,
+                    "error": e.to_string(),
+                    "rolled_back": rollback_errors.is_empty(),
+                    "rollback_errors": rollback_errors,
+                }));
+            }
+        }
+    }
+
+    Ok(json!({
+        "command": "batch",
+        "status": "ok",
+        "count": results.len(),
+        "results": results,
+    }))
+}
+
+fn batch_dispatch(cmd: TicketCommandCli, store: &TicketStore) -> Result<Value, CliRunError> {
+    match cmd {
+        TicketCommandCli::Create(args) => commands::cmd_create(args, store),
+        TicketCommandCli::Get(args) => commands::cmd_get(args, store),
+        TicketCommandCli::Describe(args) => commands::cmd_describe(args, store),
+        TicketCommandCli::Update(args) => commands::cmd_update(args, store),
+        TicketCommandCli::Repro(args) => commands::cmd_repro(args, store),
+        TicketCommandCli::List(args) => commands::cmd_list(args, store),
+        TicketCommandCli::Delete(args) => commands::cmd_delete(args, store),
+        TicketCommandCli::Link(args) => commands::cmd_link(args, store),
+        TicketCommandCli::Unlink(args) => commands::cmd_unlink(args, store),
+        TicketCommandCli::Links(args) => commands::cmd_links(args, store),
+        TicketCommandCli::Subgraph(args) => commands::cmd_subgraph(args, store),
+        TicketCommandCli::Topgraph(args) => commands::cmd_topgraph(args, store),
+        TicketCommandCli::Search(args) | TicketCommandCli::Query(args) => {
+            commands::cmd_search(args, store)
+        }
+        TicketCommandCli::Health(args) => commands::cmd_health(args, store),
+        TicketCommandCli::Close(args) => commands::cmd_close(args, store),
+        TicketCommandCli::Cancel(args) => commands::cmd_cancel(args, store),
+        TicketCommandCli::Status(args) => commands::cmd_status(args, store),
+        TicketCommandCli::ReadyOverview(args) => commands::cmd_ready_overview(args, store),
+        TicketCommandCli::Attach(args) => commands::cmd_attach(args, store),
+        TicketCommandCli::Assets(args) => commands::cmd_assets(args, store),
+        TicketCommandCli::History(args) => commands::cmd_history(args, store),
+        TicketCommandCli::Diff(args) => commands::cmd_diff(args, store),
+        TicketCommandCli::Revert(args) => commands::cmd_revert(args, store),
+        TicketCommandCli::Audit => commands::cmd_audit(store),
+        TicketCommandCli::Serve(_) => {
+            Err(CliRunError::BadRequest("'serve' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::Watch(_) => {
+            Err(CliRunError::BadRequest("'watch' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::Exec(_) => {
+            Err(CliRunError::BadRequest("'exec' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::Batch(_) => {
+            Err(CliRunError::BadRequest("'batch' cannot be nested".to_string()))
+        }
+        TicketCommandCli::Scan(_) => {
+            Err(CliRunError::BadRequest("'scan' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::Claim(_) | TicketCommandCli::Unclaim(_) | TicketCommandCli::Leases => {
+            Err(CliRunError::BadRequest(
+                "lease commands cannot be used in a batch".to_string(),
+            ))
+        }
+        TicketCommandCli::AddRoot(_) => {
+            Err(CliRunError::BadRequest("'add-root' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::ExportCommandSchema => Err(CliRunError::BadRequest(
+            "'export-command-schema' cannot be used in a batch".to_string(),
+        )),
+        TicketCommandCli::Workspace(_) => {
+            Err(CliRunError::BadRequest("'workspace' cannot be used in a batch".to_string()))
+        }
+        TicketCommandCli::FinalizeMerge(_) => Err(CliRunError::BadRequest(
+            "'finalize-merge' is not supported in a batch".to_string(),
+        )),
+    }
+}
+
+pub(crate) fn cmd_batch(args: BatchArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let cmds = read_cli_batch_commands(args.file)?;
+    if cmds.is_empty() {
+        return Ok(json!({
+            "command": "batch",
+            "status": "ok",
+            "count": 0,
+            "results": [],
+        }));
+    }
+    execute_cli_batch(cmds, store)
 }
 
 pub(crate) fn cmd_exec(args: ExecArgs, store: &TicketStore) -> Result<Value, CliRunError> {
@@ -560,6 +765,198 @@ fn exec_single_command(cmd: &Value, store: &TicketStore) -> Result<Value, CliRun
                 "release_version": outcome.release_version,
                 "promoted_ticket_count": outcome.promoted_ticket_count,
                 "monitoring_state": outcome.monitoring_state,
+            }))
+        }
+        "subgraph" | "topgraph" => {
+            let id = parse_uuid_field(cmd, "root")?;
+            let default_dir = if op == "topgraph" { "in" } else { "out" };
+            let direction = cmd.get("direction").and_then(|v| v.as_str()).unwrap_or(default_dir);
+            let edge_kind = cmd.get("edge_kind").and_then(|v| v.as_str()).unwrap_or("all");
+            let depth_limit = cmd.get("depth").and_then(|v| v.as_u64()).unwrap_or(4).min(8) as usize;
+
+            let all_edges = store.list_all_edges()?;
+            let mut visited: HashSet<Uuid> = HashSet::new();
+            let mut nodes: Vec<Value> = Vec::new();
+            let mut edges_out: Vec<Value> = Vec::new();
+            let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+            queue.push_back((id, 0));
+            let mut max_depth = 0usize;
+
+            while let Some((current, d)) = queue.pop_front() {
+                if !visited.insert(current) { continue; }
+                max_depth = max_depth.max(d);
+                let indexed = store.get_indexed(&current)?;
+                nodes.push(json!({
+                    "id": current,
+                    "title": indexed.as_ref().and_then(|t| t.title.as_deref()),
+                    "state": indexed.as_ref().and_then(|t| t.state.as_deref()),
+                    "depth": d,
+                }));
+                if d >= depth_limit { continue; }
+                for edge in &all_edges {
+                    let kind_ok = edge_kind == "all" || edge.kind == edge_kind;
+                    if !kind_ok { continue; }
+                    let (neighbor, is_out) = if edge.from == current {
+                        (edge.to, true)
+                    } else if edge.to == current {
+                        (edge.from, false)
+                    } else { continue; };
+                    let dir_ok = match direction {
+                        "out" => is_out, "in" => !is_out, _ => true,
+                    };
+                    if dir_ok {
+                        edges_out.push(json!({"from": edge.from, "to": edge.to, "kind": &edge.kind}));
+                        if !visited.contains(&neighbor) {
+                            queue.push_back((neighbor, d + 1));
+                        }
+                    }
+                }
+            }
+            Ok(json!({
+                "command": op,
+                "status": "ok",
+                "nodes": nodes,
+                "edges": edges_out,
+                "stats": { "nodes_returned": nodes.len(), "edges_returned": edges_out.len(), "max_depth_reached": max_depth },
+            }))
+        }
+        "health" => {
+            let all_flag = cmd.get("all").and_then(|v| v.as_bool()).unwrap_or(false);
+            let ids_arr: Vec<String> = cmd.get("ids")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+                .unwrap_or_default();
+            let depth_limit = cmd.get("depth").and_then(|v| v.as_u64()).unwrap_or(6).min(8) as usize;
+            let direction = cmd.get("direction").and_then(|v| v.as_str()).unwrap_or("out");
+
+            let all_edges = store.list_all_edges()?;
+
+            let tickets: Vec<_> = if !ids_arr.is_empty() {
+                let mut result = Vec::new();
+                for id_str in &ids_arr {
+                    let uid: Uuid = id_str.parse().map_err(|_|
+                        CliRunError::InvalidExecPayload(format!("invalid UUID in ids: {id_str}")))?;
+                    if let Some(t) = store.get_indexed(&uid)? {
+                        if !t.deleted { result.push(t); }
+                    }
+                }
+                result
+            } else if all_flag {
+                store.list(None, None, None)?
+            } else {
+                let root = parse_uuid_field(cmd, "root")?;
+                let mut visited: HashSet<Uuid> = HashSet::new();
+                let mut collected: Vec<Uuid> = Vec::new();
+                let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+                queue.push_back((root, 0));
+                while let Some((cur, d)) = queue.pop_front() {
+                    if !visited.insert(cur) { continue; }
+                    collected.push(cur);
+                    if d >= depth_limit { continue; }
+                    for edge in &all_edges {
+                        let kind_ok = edge.kind == "depends_on" || edge.kind == "linked";
+                        if !kind_ok { continue; }
+                        let (neighbor, is_out) = if edge.from == cur {
+                            (edge.to, true)
+                        } else if edge.to == cur {
+                            (edge.from, false)
+                        } else { continue; };
+                        let dir_ok = match direction {
+                            "out" => is_out, "in" => !is_out, _ => true,
+                        };
+                        if dir_ok && !visited.contains(&neighbor) {
+                            queue.push_back((neighbor, d + 1));
+                        }
+                    }
+                }
+                collected.iter()
+                    .filter_map(|id| store.get_indexed(id).ok().flatten())
+                    .filter(|t| !t.deleted)
+                    .collect()
+            };
+
+            let ticket_ids: HashSet<Uuid> = tickets.iter().map(|t| t.id).collect();
+            let done_states: HashSet<&str> = ["done", "cancelled"].into_iter().collect();
+            let done_ids: HashSet<Uuid> = tickets.iter()
+                .filter(|t| t.state.as_deref().map(|s| done_states.contains(s)).unwrap_or(false))
+                .map(|t| t.id).collect();
+
+            let mut unresolved_deps: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+            for edge in &all_edges {
+                if edge.kind == "depends_on" && ticket_ids.contains(&edge.from) && !done_ids.contains(&edge.to) {
+                    unresolved_deps.entry(edge.from).or_default().push(edge.to);
+                }
+            }
+
+            let mut findings: Vec<Value> = Vec::new();
+            let mut summary: BTreeMap<String, u64> = BTreeMap::new();
+
+            for t in &tickets {
+                if done_ids.contains(&t.id) { continue; }
+                let short_id = &t.id.to_string()[..8];
+                let title = t.title.as_deref().unwrap_or("?");
+
+                let desc = TicketFs::read_description(&t.path);
+                if desc.is_none() {
+                    *summary.entry("missing_description".into()).or_insert(0) += 1;
+                    findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": title,
+                        "check": "missing_description", "severity": "warning",
+                        "message": "No description.md file — ticket lacks detailed context."}));
+                } else if let Some(ref body) = desc {
+                    let trimmed_len = body.trim().len();
+                    if trimmed_len < 50 {
+                        *summary.entry("short_description".into()).or_insert(0) += 1;
+                        findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": title,
+                            "check": "short_description", "severity": "info",
+                            "message": format!("description.md is very short ({trimmed_len} chars) — consider adding more detail.")}));
+                    }
+                }
+
+                if t.title.is_none() || t.title.as_deref() == Some("") {
+                    *summary.entry("missing_title".into()).or_insert(0) += 1;
+                    findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": "(none)",
+                        "check": "missing_title", "severity": "error", "message": "Ticket has no title."}));
+                }
+
+                let state = t.state.as_deref().unwrap_or("");
+                let has_unresolved = unresolved_deps.contains_key(&t.id);
+                if state == "blocked" && !has_unresolved {
+                    *summary.entry("blocked_but_resolved".into()).or_insert(0) += 1;
+                    findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": title,
+                        "check": "blocked_but_resolved", "severity": "warning",
+                        "message": "Ticket is blocked but all dependencies are done — may be ready to unblock."}));
+                }
+                if has_unresolved && state != "blocked" && state != "open" {
+                    let dep_count = unresolved_deps[&t.id].len();
+                    *summary.entry("unblocked_with_deps".into()).or_insert(0) += 1;
+                    findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": title,
+                        "check": "unblocked_with_deps", "severity": "info",
+                        "message": format!("Ticket is '{state}' but has {dep_count} unresolved dependency/ies — may need state review.")}));
+                }
+
+                for edge in &all_edges {
+                    if edge.from == t.id && edge.kind == "depends_on" {
+                        let target_exists = store.get_indexed(&edge.to).ok().flatten()
+                            .map(|tgt| !tgt.deleted).unwrap_or(false);
+                        if !target_exists {
+                            let target_short = &edge.to.to_string()[..8];
+                            *summary.entry("dangling_edge".into()).or_insert(0) += 1;
+                            findings.push(json!({"ticket_id": t.id, "short_id": short_id, "title": title,
+                                "check": "dangling_edge", "severity": "error",
+                                "message": format!("depends_on edge points to {target_short} which is deleted or missing.")}));
+                        }
+                    }
+                }
+            }
+
+            let total_checked = tickets.iter().filter(|t| !done_ids.contains(&t.id)).count();
+            Ok(json!({
+                "command": "health",
+                "status": "ok",
+                "tickets_checked": total_checked,
+                "finding_count": findings.len(),
+                "summary": summary,
+                "findings": findings,
             }))
         }
         other => Err(CliRunError::InvalidExecPayload(format!("unknown command: {other}"))),

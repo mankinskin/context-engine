@@ -319,14 +319,38 @@ pub(crate) fn cmd_ready_overview(
 use std::collections::VecDeque;
 use ticket_api::storage::ticket_fs::TicketFs;
 
+use crate::cli::helpers::parse_fields;
+
 pub(crate) fn cmd_health(args: HealthArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let all_edges = store.list_all_edges()?;
 
-    // Collect tickets in scope via BFS subgraph or --all.
-    let tickets: Vec<_> = if args.all {
+    // Parse --where filters up-front.
+    let field_filters: Vec<(String, String)> = parse_fields(&args.where_clauses)?
+        .into_iter()
+        .collect();
+
+    // Collect tickets in scope via --stdin, --all, or BFS subgraph.
+    let tickets: Vec<_> = if args.stdin {
+        // Read newline-delimited UUIDs from stdin.
+        use std::io::BufRead;
+        let stdin = std::io::stdin();
+        let mut ids: Vec<Uuid> = Vec::new();
+        for line in stdin.lock().lines() {
+            let line = line.map_err(ticket_api::error::StorageError::Io)?;
+            let trimmed = line.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+            ids.push(super::resolve_uuid_prefix(trimmed, store)?);
+        }
+        ids.iter()
+            .filter_map(|id| store.get_indexed(id).ok().flatten())
+            .filter(|t| !t.deleted)
+            .collect()
+    } else if args.all {
         store.list(None, None, None)?
     } else {
-        let root_str = args.root.as_ref().expect("clap ensures root is present when --all is not set");
+        let root_str = args.root.as_ref().expect("clap ensures root is present when --all/--stdin is not set");
         let root = super::resolve_uuid_prefix(root_str, store)?;
         let depth_limit = args.depth.min(8);
 
@@ -375,6 +399,27 @@ pub(crate) fn cmd_health(args: HealthArgs, store: &TicketStore) -> Result<Value,
             .iter()
             .filter_map(|id| store.get_indexed(id).ok().flatten())
             .filter(|t| !t.deleted)
+            .collect()
+    };
+
+    // Apply --where field filters if any.
+    let tickets: Vec<_> = if field_filters.is_empty() {
+        tickets
+    } else {
+        tickets
+            .into_iter()
+            .filter(|t| {
+                field_filters.iter().all(|(key, expected)| {
+                    // Check built-in fields first, then indexed extra fields.
+                    let actual = match key.as_str() {
+                        "state" => t.state.as_deref().map(String::from),
+                        "type" => Some(t.type_id.clone()),
+                        "title" => t.title.clone(),
+                        _ => None,
+                    };
+                    actual.as_deref() == Some(expected.as_str())
+                })
+            })
             .collect()
     };
 

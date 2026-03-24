@@ -51,11 +51,11 @@ pub(super) fn dispatch(
 
     // The agent exec protocol requires an explicit index root to prevent
     // silent fallback to a user-specific workspace, which could send writes
-    // to the wrong store. Reject exec/batch if neither --index-root nor
+    // to the wrong store. Reject exec if neither --index-root nor
     // TICKET_INDEX_ROOT is provided.
     let has_explicit_root = index_root_override.is_some() || std::env::var("TICKET_INDEX_ROOT").is_ok();
     if !has_explicit_root {
-        if matches!(command, TicketCommandCli::Exec(_) | TicketCommandCli::Batch(_)) {
+        if matches!(command, TicketCommandCli::Exec(_)) {
             return Err(CliRunError::IndexRootRequired);
         }
     }

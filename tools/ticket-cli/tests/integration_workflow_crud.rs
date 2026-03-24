@@ -334,21 +334,45 @@ fn batch_exec_rolls_back_on_error() {
 }
 
 #[test]
-fn batch_command_reads_ndjson_from_stdin() {
+fn batch_reads_cli_lines_from_stdin() {
     let s = Sandbox::new();
 
-    let input = [
-        r#"{"command":"create","title":"Batch stdin A","type":"tracker-improvement"}"#,
-        r#"{"command":"create","title":"Batch stdin B","type":"tracker-improvement"}"#,
-    ]
-    .join("\n");
-
-    let result = s.ticket_json_stdin(&["batch"], &input);
+    let input = concat!(
+        "create --title \"Batch stdin A\" --type tracker-improvement\n",
+        "create --title \"Batch stdin B\" --type tracker-improvement",
+    );
+    let result = s.ticket_json_stdin(&["batch"], input);
     assert_eq!(result["status"], "ok");
     assert_eq!(result["count"].as_u64().unwrap(), 2);
 
     let list = s.ticket_json(&["list"]);
     assert_eq!(list["count"].as_u64().unwrap(), 2);
+}
+
+#[test]
+fn batch_cli_rolls_back_on_error() {
+    let s = Sandbox::new();
+
+    // First create succeeds; deleting a non-existent UUID fails; create is rolled back.
+    let input = concat!(
+        "create --title \"Should be rolled back\" --type tracker-improvement\n",
+        "delete 00000000-0000-0000-0000-000000000000",
+    );
+    let result = s.ticket_json_stdin(&["batch"], input);
+    assert_eq!(result["status"], "error");
+    assert_eq!(result["completed"].as_u64().unwrap(), 1);
+    assert_eq!(
+        result["rolled_back"].as_bool().unwrap_or(false),
+        true,
+        "batch must report rolled_back=true after successful rollback"
+    );
+
+    let list = s.ticket_json(&["list"]);
+    assert_eq!(
+        list["count"].as_u64().unwrap(),
+        0,
+        "the rolled-back create must not appear in the store"
+    );
 }
 
 #[test]

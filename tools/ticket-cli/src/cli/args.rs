@@ -170,17 +170,23 @@ pub struct TopgraphArgs {
 #[derive(Debug, Args)]
 pub struct HealthArgs {
     /// Root ticket UUID or 8+ character hex prefix. Checks the subgraph rooted here.
-    #[arg(required_unless_present = "all")]
+    #[arg(required_unless_present_any = ["all", "stdin"])]
     pub root: Option<String>,
     /// Check all tickets instead of a subgraph.
     #[arg(long, default_value_t = false)]
     pub all: bool,
+    /// Read newline-delimited ticket UUIDs from stdin instead of traversing a subgraph.
+    #[arg(long, default_value_t = false)]
+    pub stdin: bool,
     /// Maximum traversal depth when walking the subgraph (default: 6, max: 8).
     #[arg(long, default_value = "6")]
     pub depth: usize,
     /// Edge direction to follow for subgraph: out, in, or both.
     #[arg(long, default_value = "out")]
     pub direction: String,
+    /// Filter by field values (key=value). Can be repeated.
+    #[arg(long = "where")]
+    pub where_clauses: Vec<String>,
 }
 
 #[derive(Debug, Args)]
@@ -383,7 +389,9 @@ pub struct ExecArgs {
 
 #[derive(Debug, Args)]
 pub struct BatchArgs {
-    /// Optional NDJSON file path (one JSON object per line). If omitted, read stdin.
+    /// File containing CLI commands, one per line. If omitted, read from stdin.
+    /// Blank lines and lines starting with '#' are ignored.
+    /// Example line: create --title "Fix bug" --type tracker-improvement
     #[arg(long)]
     pub file: Option<PathBuf>,
 }

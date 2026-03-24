@@ -21,6 +21,7 @@ pub fn build_router(state: AppState) -> Router {
         .route("/api/edges", get(handlers::edges::list_edges))
         .route("/api/graph/subgraph", get(handlers::graph::subgraph))
         .route("/api/graph/topgraph", get(handlers::graph::topgraph))
+        .route("/api/graph/health", get(handlers::graph::health_check))
         .route("/api/stream", get(handlers::stream::stream_handler))
         .layer(middleware::from_fn(add_request_id))
         .with_state(state)

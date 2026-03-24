@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use rmcp::{
@@ -124,6 +124,26 @@ pub struct TopgraphInput {
     pub limit_nodes: Option<usize>,
     #[serde(default)]
     pub limit_edges: Option<usize>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct HealthCheckInput {
+    pub workspace: String,
+    /// Root ticket for BFS subgraph scope (optional if `all` or `ids` is set).
+    #[serde(default)]
+    pub root: Option<String>,
+    /// Check all tickets in the workspace.
+    #[serde(default)]
+    pub all: bool,
+    /// Explicit list of ticket IDs/prefixes to check (overrides root/all).
+    #[serde(default)]
+    pub ids: Vec<String>,
+    /// BFS depth limit (default: 6, max: 8).
+    #[serde(default)]
+    pub depth: Option<usize>,
+    /// BFS direction: out, in, or both (default: out).
+    #[serde(default)]
+    pub direction: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -369,6 +389,204 @@ impl TicketServer {
             stats,
         })
     }
+
+    fn run_health_checks(
+        &self,
+        workspace: &str,
+        root: Option<&str>,
+        all: bool,
+        ids: &[String],
+        depth: Option<usize>,
+        direction: Option<&str>,
+    ) -> Result<CallToolResult, McpError> {
+        let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
+        let all_edges = store.list_all_edges().map_err(Self::store_err)?;
+
+        // Collect tickets in scope.
+        let tickets = if !ids.is_empty() {
+            let mut result = Vec::new();
+            for id_str in ids {
+                let id = self.resolve_uuid(id_str)?;
+                if let Some(t) = store.get_indexed(&id).map_err(Self::store_err)? {
+                    if !t.deleted {
+                        result.push(t);
+                    }
+                }
+            }
+            result
+        } else if all {
+            store.list(None, None, None).map_err(Self::store_err)?
+        } else {
+            let root_str = root.ok_or_else(|| {
+                McpError::invalid_params("one of 'root', 'all', or 'ids' is required", None)
+            })?;
+            let root_id = self.resolve_uuid(root_str)?;
+            let depth_limit = depth.unwrap_or(6).min(8);
+            let direction = direction.unwrap_or("out");
+
+            let mut visited: HashSet<Uuid> = HashSet::new();
+            let mut collected_ids: Vec<Uuid> = Vec::new();
+            let mut queue: VecDeque<(Uuid, usize)> = VecDeque::new();
+            queue.push_back((root_id, 0));
+
+            while let Some((current_id, d)) = queue.pop_front() {
+                if !visited.insert(current_id) {
+                    continue;
+                }
+                collected_ids.push(current_id);
+                if d >= depth_limit {
+                    continue;
+                }
+                for edge in &all_edges {
+                    let kind_ok = edge.kind == "depends_on" || edge.kind == "linked";
+                    if !kind_ok {
+                        continue;
+                    }
+                    let (neighbor, is_outbound) = if edge.from == current_id {
+                        (edge.to, true)
+                    } else if edge.to == current_id {
+                        (edge.from, false)
+                    } else {
+                        continue;
+                    };
+                    let dir_ok = match direction {
+                        "out" => is_outbound,
+                        "in" => !is_outbound,
+                        _ => true,
+                    };
+                    if dir_ok && !visited.contains(&neighbor) {
+                        queue.push_back((neighbor, d + 1));
+                    }
+                }
+            }
+
+            collected_ids
+                .iter()
+                .filter_map(|id| store.get_indexed(id).ok().flatten())
+                .filter(|t| !t.deleted)
+                .collect()
+        };
+
+        // Build lookup sets for edge checks.
+        let ticket_ids: HashSet<Uuid> = tickets.iter().map(|t| t.id).collect();
+        let done_states: HashSet<&str> = ["done", "cancelled"].into_iter().collect();
+
+        let done_ids: HashSet<Uuid> = tickets
+            .iter()
+            .filter(|t| {
+                t.state
+                    .as_deref()
+                    .map(|s| done_states.contains(s))
+                    .unwrap_or(false)
+            })
+            .map(|t| t.id)
+            .collect();
+
+        let mut unresolved_deps: HashMap<Uuid, Vec<Uuid>> = HashMap::new();
+        for edge in &all_edges {
+            if edge.kind == "depends_on" && ticket_ids.contains(&edge.from) {
+                if !done_ids.contains(&edge.to) {
+                    unresolved_deps.entry(edge.from).or_default().push(edge.to);
+                }
+            }
+        }
+
+        let mut findings: Vec<Value> = Vec::new();
+        let mut summary: BTreeMap<&str, u64> = BTreeMap::new();
+
+        for t in &tickets {
+            if done_ids.contains(&t.id) {
+                continue;
+            }
+            let short_id = &t.id.to_string()[..8];
+            let title = t.title.as_deref().unwrap_or("?");
+
+            // 1. Missing description file.
+            let desc = TicketFs::read_description(&t.path);
+            if desc.is_none() {
+                *summary.entry("missing_description").or_insert(0) += 1;
+                findings.push(serde_json::json!({
+                    "ticket_id": t.id, "short_id": short_id, "title": title,
+                    "check": "missing_description", "severity": "warning",
+                    "message": "No description.md file — ticket lacks detailed context.",
+                }));
+            } else if let Some(ref body) = desc {
+                let trimmed_len = body.trim().len();
+                if trimmed_len < 50 {
+                    *summary.entry("short_description").or_insert(0) += 1;
+                    findings.push(serde_json::json!({
+                        "ticket_id": t.id, "short_id": short_id, "title": title,
+                        "check": "short_description", "severity": "info",
+                        "message": format!("description.md is very short ({trimmed_len} chars) — consider adding more detail."),
+                    }));
+                }
+            }
+
+            // 3. Missing title.
+            if t.title.is_none() || t.title.as_deref() == Some("") {
+                *summary.entry("missing_title").or_insert(0) += 1;
+                findings.push(serde_json::json!({
+                    "ticket_id": t.id, "short_id": short_id, "title": "(none)",
+                    "check": "missing_title", "severity": "error",
+                    "message": "Ticket has no title.",
+                }));
+            }
+
+            // 4. Blocked but all dependencies resolved.
+            let state = t.state.as_deref().unwrap_or("");
+            let has_unresolved = unresolved_deps.contains_key(&t.id);
+            if state == "blocked" && !has_unresolved {
+                *summary.entry("blocked_but_resolved").or_insert(0) += 1;
+                findings.push(serde_json::json!({
+                    "ticket_id": t.id, "short_id": short_id, "title": title,
+                    "check": "blocked_but_resolved", "severity": "warning",
+                    "message": "Ticket is blocked but all dependencies are done — may be ready to unblock.",
+                }));
+            }
+
+            // 5. Has unresolved deps but not in blocked state.
+            if has_unresolved && state != "blocked" && state != "open" {
+                let dep_count = unresolved_deps[&t.id].len();
+                *summary.entry("unblocked_with_deps").or_insert(0) += 1;
+                findings.push(serde_json::json!({
+                    "ticket_id": t.id, "short_id": short_id, "title": title,
+                    "check": "unblocked_with_deps", "severity": "info",
+                    "message": format!("Ticket is '{state}' but has {dep_count} unresolved dependency/ies — may need state review."),
+                }));
+            }
+
+            // 6. Dangling dependency edges.
+            for edge in &all_edges {
+                if edge.from == t.id && edge.kind == "depends_on" {
+                    let target_exists = store
+                        .get_indexed(&edge.to)
+                        .ok()
+                        .flatten()
+                        .map(|tgt| !tgt.deleted)
+                        .unwrap_or(false);
+                    if !target_exists {
+                        let target_short = &edge.to.to_string()[..8];
+                        *summary.entry("dangling_edge").or_insert(0) += 1;
+                        findings.push(serde_json::json!({
+                            "ticket_id": t.id, "short_id": short_id, "title": title,
+                            "check": "dangling_edge", "severity": "error",
+                            "message": format!("depends_on edge points to {target_short} which is deleted or missing."),
+                        }));
+                    }
+                }
+            }
+        }
+
+        let total_checked = tickets.iter().filter(|t| !done_ids.contains(&t.id)).count();
+
+        Self::json_result(&serde_json::json!({
+            "workspace": workspace,
+            "tickets_checked": total_checked,
+            "finding_count": findings.len(),
+            "summary": summary,
+            "findings": findings,
+        }))
+    }
 }
 
 #[tool_router]
@@ -571,6 +789,24 @@ impl TicketServer {
     }
 
     #[tool(
+        name = "health_check",
+        description = "Run health checks on tickets: validates descriptions, titles, dependency state consistency, and dangling edges. Scope by root (BFS subgraph), explicit IDs, or all tickets."
+    )]
+    async fn health_check(
+        &self,
+        Parameters(input): Parameters<HealthCheckInput>,
+    ) -> Result<CallToolResult, McpError> {
+        self.run_health_checks(
+            &input.workspace,
+            input.root.as_deref(),
+            input.all,
+            &input.ids,
+            input.depth,
+            input.direction.as_deref(),
+        )
+    }
+
+    #[tool(
         name = "update_ticket",
         description = "Update a ticket: apply field patches and/or transition state."
     )]
@@ -702,6 +938,8 @@ impl TicketServer {
                 "get_ticket_description",
                 "list_edges",
                 "subgraph",
+                "topgraph",
+                "health_check",
                 "update_ticket",
                 "close_ticket",
                 "cancel_ticket",
@@ -738,6 +976,16 @@ impl TicketServer {
                     "description": "BFS dependency subgraph",
                     "required": ["workspace", "root"],
                     "optional": ["direction", "edge_kind", "depth", "limit_nodes", "limit_edges"],
+                },
+                "topgraph": {
+                    "description": "BFS reverse dependency graph",
+                    "required": ["workspace", "root"],
+                    "optional": ["direction", "edge_kind", "depth", "limit_nodes", "limit_edges"],
+                },
+                "health_check": {
+                    "description": "Run health checks on tickets (descriptions, titles, deps, edges)",
+                    "required": ["workspace"],
+                    "optional": ["root", "all", "ids", "depth", "direction"],
                 },
                 "update_ticket": {
                     "description": "Update ticket fields and/or transition state",
