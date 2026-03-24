@@ -10,7 +10,7 @@ use ticket_api::model::schema_registry::SchemaRegistry;
 use ticket_api::storage::TicketStore;
 
 use super::{
-    CliRunError, TicketCommandCli, commands, exec_protocol,
+    CliRunError, TicketCommandCli, commands, batch,
     workspace_commands::{cmd_workspace, workspace_command_mutates},
 };
 
@@ -49,17 +49,6 @@ pub(super) fn dispatch(
         }
     }
 
-    // The agent exec protocol requires an explicit index root to prevent
-    // silent fallback to a user-specific workspace, which could send writes
-    // to the wrong store. Reject exec if neither --index-root nor
-    // TICKET_INDEX_ROOT is provided.
-    let has_explicit_root = index_root_override.is_some() || std::env::var("TICKET_INDEX_ROOT").is_ok();
-    if !has_explicit_root {
-        if matches!(command, TicketCommandCli::Exec(_)) {
-            return Err(CliRunError::IndexRootRequired);
-        }
-    }
-
     // All other commands need the store.
     let index_root = resolve_index_root(index_root_override);
     let mut registry = SchemaRegistry::with_builtins();
@@ -83,8 +72,7 @@ pub(super) fn dispatch(
         TicketCommandCli::Search(args) => commands::cmd_search(args, &store),
         TicketCommandCli::Query(args) => commands::cmd_search(args, &store),
         TicketCommandCli::AddRoot(args) => commands::cmd_add_root(args, &store),
-        TicketCommandCli::Exec(args) => exec_protocol::cmd_exec(args, &store),
-        TicketCommandCli::Batch(args) => exec_protocol::cmd_batch(args, &store),
+        TicketCommandCli::Batch(args) => batch::cmd_batch(args, &store),
         TicketCommandCli::History(args) => commands::cmd_history(args, &store),
         TicketCommandCli::Diff(args) => commands::cmd_diff(args, &store),
         TicketCommandCli::Revert(args) => commands::cmd_revert(args, &store),
@@ -127,8 +115,7 @@ fn dry_run_command_payload(command: &TicketCommandCli) -> Option<Value> {
         TicketCommandCli::Claim(_) => Some(dry_run_payload("claim", "claim ticket lease")),
         TicketCommandCli::Unclaim(_) => Some(dry_run_payload("unclaim", "release ticket lease")),
         TicketCommandCli::AddRoot(_) => Some(dry_run_payload("add_root", "register scan root")),
-        TicketCommandCli::Exec(_) => Some(dry_run_payload("exec", "execute stdin task command(s)")),
-        TicketCommandCli::Batch(_) => Some(dry_run_payload("batch", "execute NDJSON task command(s)")),
+        TicketCommandCli::Batch(_) => Some(dry_run_payload("batch", "execute CLI batch commands")),
         TicketCommandCli::Revert(_) => Some(dry_run_payload("revert", "apply historical snapshot")),
         TicketCommandCli::FinalizeMerge(_) => {
             Some(dry_run_payload("finalize_merge", "record merge metadata"))

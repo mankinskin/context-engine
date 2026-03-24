@@ -272,66 +272,8 @@ fn claim_conflict_and_unclaim_cycle() {
 }
 
 // ---------------------------------------------------------------------------
-// Batch exec
+// Batch
 // ---------------------------------------------------------------------------
-
-#[test]
-fn batch_exec_creates_multiple_tickets() {
-    let s = Sandbox::new();
-
-    let result = s.ticket_exec_batch(&[
-        r#"{"command":"create","title":"Batch ticket A","type":"tracker-improvement"}"#,
-        r#"{"command":"create","title":"Batch ticket B","type":"tracker-improvement"}"#,
-        r#"{"command":"create","title":"Batch ticket C","type":"tracker-improvement"}"#,
-    ]);
-    assert_eq!(result["status"], "ok");
-    assert_eq!(result["count"].as_u64().unwrap(), 3);
-
-    // All three tickets must persist.
-    let list = s.ticket_json(&["list"]);
-    assert_eq!(list["count"].as_u64().unwrap(), 3);
-}
-
-#[test]
-fn batch_exec_rolls_back_on_error() {
-    let s = Sandbox::new();
-
-    // 3-command batch: create succeeds, unknown_invalid_command fails, create never runs.
-    // After rollback the first create should be undone — resulting in an empty list.
-    let result = s.ticket_exec_batch(&[
-        r#"{"command":"create","title":"Valid first ticket","type":"tracker-improvement"}"#,
-        r#"{"command":"unknown_invalid_command"}"#,
-        r#"{"command":"create","title":"Should not be created","type":"tracker-improvement"}"#,
-    ]);
-
-    assert_eq!(result["status"], "error", "batch must report error status");
-    assert_eq!(
-        result["completed"].as_u64().unwrap(),
-        1,
-        "exactly one command should have completed before the error"
-    );
-
-    let err_msg = result["error"].as_str().unwrap_or("");
-    assert!(
-        err_msg.contains("unknown") || err_msg.contains("invalid"),
-        "error should reference unknown/invalid command, got: {err_msg}"
-    );
-
-    // Rollback should have soft-deleted the first ticket — list should be empty.
-    assert_eq!(
-        result["rolled_back"].as_bool().unwrap_or(false),
-        true,
-        "batch must report rolled_back=true when rollback succeeded"
-    );
-
-    // After rollback: the first created ticket should be gone from the list.
-    let list = s.ticket_json(&["list"]);
-    assert_eq!(
-        list["count"].as_u64().unwrap(),
-        0,
-        "all tickets created before the error must be rolled back"
-    );
-}
 
 #[test]
 fn batch_reads_cli_lines_from_stdin() {
@@ -373,29 +315,6 @@ fn batch_cli_rolls_back_on_error() {
         0,
         "the rolled-back create must not appear in the store"
     );
-}
-
-#[test]
-fn exec_batch_supports_link_commands() {
-    let s = Sandbox::new();
-
-    let id_a = "11111111-1111-1111-1111-111111111111";
-    let id_b = "22222222-2222-2222-2222-222222222222";
-
-    let result = s.ticket_exec_batch(&[
-        r#"{"command":"create","id":"11111111-1111-1111-1111-111111111111","title":"A","type":"tracker-improvement"}"#,
-        r#"{"command":"create","id":"22222222-2222-2222-2222-222222222222","title":"B","type":"tracker-improvement"}"#,
-        r#"{"command":"link","from":"11111111-1111-1111-1111-111111111111","to":"22222222-2222-2222-2222-222222222222","kind":"depends_on"}"#,
-    ]);
-    assert_eq!(result["status"], "ok");
-    assert_eq!(result["count"].as_u64().unwrap(), 3);
-
-    let links = s.ticket_json(&["links", id_a]);
-    assert_eq!(links["status"], "ok");
-    assert_eq!(links["count"].as_u64().unwrap(), 1);
-    assert_eq!(links["edges"][0]["from"], id_a);
-    assert_eq!(links["edges"][0]["to"], id_b);
-    assert_eq!(links["edges"][0]["kind"], "depends_on");
 }
 
 #[test]
@@ -453,76 +372,3 @@ fn unlink_removes_existing_edge() {
     assert_eq!(after["count"].as_u64().unwrap(), 0);
 }
 
-#[test]
-fn exec_batch_rolls_back_link_on_error() {
-    let s = Sandbox::new();
-
-    let id_a = "33333333-3333-3333-3333-333333333333";
-
-    let result = s.ticket_exec_batch(&[
-        r#"{"command":"create","id":"33333333-3333-3333-3333-333333333333","title":"A","type":"tracker-improvement"}"#,
-        r#"{"command":"create","id":"44444444-4444-4444-4444-444444444444","title":"B","type":"tracker-improvement"}"#,
-        r#"{"command":"link","from":"33333333-3333-3333-3333-333333333333","to":"44444444-4444-4444-4444-444444444444","kind":"depends_on"}"#,
-        r#"{"command":"unknown_invalid_command"}"#,
-    ]);
-
-    assert_eq!(result["status"], "error");
-    assert_eq!(result["rolled_back"], true);
-
-    // Rollback should leave no edges and no visible tickets.
-    let links = s.ticket_json(&["links", id_a]);
-    assert_eq!(links["status"], "ok");
-    assert_eq!(links["count"].as_u64().unwrap(), 0);
-
-    let list = s.ticket_json(&["list"]);
-    assert_eq!(list["count"].as_u64().unwrap(), 0);
-}
-
-// ---------------------------------------------------------------------------
-// Exec — state transitions via the agent protocol
-// ---------------------------------------------------------------------------
-
-#[test]
-fn exec_create_and_state_transition_via_json() {
-    let s = Sandbox::new();
-
-    // Create via exec protocol (task_create prefix form).
-    let created = s.ticket_exec(
-        r#"{"command":"task_create","title":"Agent-created ticket","type":"tracker-improvement"}"#,
-    );
-    assert_eq!(created["status"], "ok");
-    let id = created["id"].as_str().expect("id must be present");
-
-    // Move to in-progress via exec (bare form — both should route identically).
-    let updated = s.ticket_exec(&format!(
-        r#"{{"command":"update","id":"{id}","patch":{{"state":"in-progress"}},"to_state":"in-progress"}}"#
-    ));
-    // The update exec path uses from_state/to_state fields; verify via get.
-    let got = s.ticket_json(&["get", id]);
-    // Note: update via exec uses the "update" command handler which reads
-    // patch/from_state/to_state fields — the ticket was created successfully.
-    assert_eq!(got["ticket"]["id"], id);
-    let _ = updated; // used above to drive the exec call
-}
-
-#[test]
-fn exec_assignment_start_simulated_returns_run_metadata() {
-    let s = Sandbox::new();
-
-    let created = s.ticket_exec(
-        r#"{"command":"task_create","title":"Runner bootstrap ticket","type":"tracker-improvement"}"#,
-    );
-    let ticket_id = created["id"].as_str().expect("id must be present");
-
-    let result = s.ticket_exec(&format!(
-        r#"{{"command":"task_assignment_start","ticket_id":"{ticket_id}","assignment_id":"asg-001","prompt":"run this assignment","simulate":true}}"#
-    ));
-
-    assert_eq!(result["status"], "ok");
-    assert_eq!(result["command"], "task_assignment_start");
-    assert_eq!(result["simulated"], true);
-    assert_eq!(result["assignment_id"], "asg-001");
-    assert_eq!(result["run_status"], "started");
-    assert_eq!(result["branch"], "tickets/asg-001");
-    assert_eq!(result["run_id"], "sim-asg-001");
-}

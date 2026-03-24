@@ -13,8 +13,8 @@ mod args;
 mod commands;
 #[path = "cli/dispatch.rs"]
 mod dispatch;
-#[path = "cli/exec_protocol.rs"]
-mod exec_protocol;
+#[path = "cli/batch.rs"]
+mod batch;
 #[path = "cli/helpers.rs"]
 mod helpers;
 #[path = "cli/human_output.rs"]
@@ -96,9 +96,7 @@ pub enum TicketCommandCli {
     /// Mark merge-boundary completion metadata (Phase 2 — stub).
     #[command(name = "finalize-merge")]
     FinalizeMerge(FinalizeMergeArgs),
-    /// Execute a single TaskCommand JSON request from stdin (agent protocol).
-    Exec(ExecArgs),
-    /// Execute a batch of TaskCommand JSON requests from stdin or file.
+    /// Execute a batch of CLI commands (one per line) from stdin or file, with transactional rollback.
     Batch(BatchArgs),
     /// Export the command namespace/schema for automation clients.
     #[command(name = "export-command-schema")]
@@ -148,8 +146,6 @@ pub enum CliRunError {
     CommandSchema(#[from] serde_json::Error),
     #[error("storage error: {0}")]
     Storage(#[from] StorageError),
-    #[error("index root required: pass --index-root or set TICKET_INDEX_ROOT env var")]
-    IndexRootRequired,
     #[error("invalid exec command payload: {0}")]
     InvalidExecPayload(String),
     #[error("{0}")]

@@ -380,14 +380,6 @@ pub struct WorkspaceRemoveArgs {
 }
 
 #[derive(Debug, Args)]
-pub struct ExecArgs {
-    /// Execute multiple commands from stdin, one JSON object per line, as a
-    /// single transaction. Rolls back all on first failure.
-    #[arg(long)]
-    pub batch: bool,
-}
-
-#[derive(Debug, Args)]
 pub struct BatchArgs {
     /// File containing CLI commands, one per line. If omitted, read from stdin.
     /// Blank lines and lines starting with '#' are ignored.
