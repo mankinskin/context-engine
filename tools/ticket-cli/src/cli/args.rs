@@ -178,8 +178,8 @@ pub struct HealthArgs {
     /// Read newline-delimited ticket UUIDs from stdin instead of traversing a subgraph.
     #[arg(long, default_value_t = false)]
     pub stdin: bool,
-    /// Maximum traversal depth when walking the subgraph (default: 6, max: 8).
-    #[arg(long, default_value = "6")]
+    /// Maximum traversal depth when walking the subgraph (default: 0 = single ticket; max: 8).
+    #[arg(long, default_value = "0")]
     pub depth: usize,
     /// Edge direction to follow for subgraph: out, in, or both.
     #[arg(long, default_value = "out")]

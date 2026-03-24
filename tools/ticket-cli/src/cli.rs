@@ -130,7 +130,7 @@ pub enum TicketCommandCli {
     Attach(AttachArgs),
     /// List assets attached to a ticket.
     Assets(IdArgs),
-    /// Run health checks on a subgraph of tickets (or all with --all).
+    /// Run health checks on a ticket. Use --depth to walk the subgraph.
     Health(HealthArgs),
     /// Audit the ticket store: report health, counts, and orphan checks.
     Audit,
