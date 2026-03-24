@@ -34,11 +34,18 @@ pub(crate) fn cmd_create(args: CreateArgs, store: &TicketStore) -> Result<Value,
         body.as_deref(),
     )?;
 
+    let manifest = store.get(&id)?;
+    let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-");
+    let state = manifest.extra.get("state").and_then(Value::as_str).unwrap_or("open");
+
     Ok(json!({
         "command": "create",
         "status": "ok",
         "id": id,
         "type": type_id,
+        "title": title,
+        "state": state,
+        "created_at": manifest.created_at,
     }))
 }
 

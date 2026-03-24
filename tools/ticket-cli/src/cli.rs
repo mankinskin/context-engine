@@ -17,6 +17,8 @@ mod dispatch;
 mod exec_protocol;
 #[path = "cli/helpers.rs"]
 mod helpers;
+#[path = "cli/human_output.rs"]
+mod human_output;
 #[path = "cli/workspace_commands.rs"]
 mod workspace_commands;
 
@@ -173,7 +175,7 @@ pub fn run(cli: TicketCli) -> Result<CliOutput, CliRunError> {
 // ── output helpers ─────────────────────────────────────────────────────────────
 
 fn render_human(payload: Value) -> String {
-    serde_json::to_string_pretty(&payload).unwrap_or_else(|_| payload.to_string())
+    human_output::render_human_readable(&payload)
 }
 
 pub fn error_output(message: &str, as_json: bool) -> String {
