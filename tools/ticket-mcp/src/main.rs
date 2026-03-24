@@ -1,7 +1,6 @@
 mod server;
 
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use ticket_api::storage::store::TicketStore;
 use ticket_api::workspace::WorkspaceConfig;
@@ -23,7 +22,7 @@ async fn main() {
             path
         });
 
-    let store = TicketStore::open(&index_root).unwrap_or_else(|e| {
+    TicketStore::open(&index_root).unwrap_or_else(|e| {
         eprintln!("Failed to open ticket store at {}: {e}", index_root.display());
         std::process::exit(1);
     });
@@ -41,7 +40,7 @@ async fn main() {
         workspace_names,
     );
 
-    if let Err(err) = server::run_mcp_server(Arc::new(store)).await {
+    if let Err(err) = server::run_mcp_server(index_root).await {
         eprintln!("Fatal error: {err}");
         std::process::exit(1);
     }

@@ -1,5 +1,5 @@
 use std::collections::{BTreeMap, HashSet, VecDeque};
-use std::sync::Arc;
+use std::path::PathBuf;
 
 use rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
@@ -170,14 +170,14 @@ fn default_workflow_name() -> WorkflowName {
 
 #[derive(Clone)]
 pub struct TicketServer {
-    store: Arc<TicketStore>,
+    index_root: PathBuf,
     tool_router: ToolRouter<Self>,
 }
 
 impl TicketServer {
-    pub fn new(store: Arc<TicketStore>) -> Self {
+    pub fn new(index_root: PathBuf) -> Self {
         Self {
-            store,
+            index_root,
             tool_router: Self::tool_router(),
         }
     }
@@ -196,13 +196,21 @@ impl TicketServer {
         s.parse::<Uuid>()
             .map_err(|e| McpError::invalid_params(format!("invalid UUID '{s}': {e}"), None))
     }
+
+    fn with_store<T>(
+        &self,
+        f: impl FnOnce(&TicketStore) -> Result<T, ticket_api::error::StorageError>,
+    ) -> Result<T, McpError> {
+        let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
+        f(&store).map_err(Self::store_err)
+    }
 }
 
 #[tool_router]
 impl TicketServer {
     #[tool(name = "health", description = "Check that the ticket store is accessible.")]
     async fn health(&self) -> Result<CallToolResult, McpError> {
-        match self.store.list(None, None, Some(0)) {
+        match self.with_store(|store| store.list(None, None, Some(0))) {
             Ok(_) => Self::json_result(&serde_json::json!({
                 "status": "ok",
                 "service": "ticket-mcp",
@@ -242,45 +250,48 @@ impl TicketServer {
     ) -> Result<CallToolResult, McpError> {
         if let Some(q) = &input.query {
             let limit = input.limit.unwrap_or(100).min(1000);
-            let results = self.store.search_tickets(q, limit).map_err(Self::store_err)?;
-            let items: Vec<TicketSummary> = results
-                .into_iter()
-                .map(|r| {
-                    let updated_at = self
-                        .store
-                        .get_indexed(&r.id)
-                        .ok()
-                        .flatten()
-                        .map(|t| t.updated_at)
-                        .unwrap_or_else(|| chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::UNIX_EPOCH));
-                    TicketSummary {
-                        id: r.id.to_string(),
-                        type_id: r.ticket_type.unwrap_or_default(),
-                        title: r.title,
-                        state: r.state,
-                        updated_at,
-                    }
-                })
-                .collect();
+            let items: Vec<TicketSummary> = self.with_store(|store| {
+                let results = store.search_tickets(q, limit)?;
+                Ok(results
+                    .into_iter()
+                    .map(|r| {
+                        let updated_at = store
+                            .get_indexed(&r.id)
+                            .ok()
+                            .flatten()
+                            .map(|t| t.updated_at)
+                            .unwrap_or_else(|| {
+                                chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::UNIX_EPOCH)
+                            });
+                        TicketSummary {
+                            id: r.id.to_string(),
+                            type_id: r.ticket_type.unwrap_or_default(),
+                            title: r.title,
+                            state: r.state,
+                            updated_at,
+                        }
+                    })
+                    .collect())
+            })?;
             Self::json_result(&serde_json::json!({
                 "workspace": input.workspace,
                 "items": items,
             }))
         } else {
             let limit = input.limit.map(|l| l.min(1000));
-            let items: Vec<TicketSummary> = self
-                .store
-                .list(input.state.as_deref(), None, limit)
-                .map_err(Self::store_err)?
-                .into_iter()
-                .map(|t| TicketSummary {
-                    id: t.id.to_string(),
-                    type_id: t.type_id,
-                    title: t.title,
-                    state: t.state,
-                    updated_at: t.updated_at,
-                })
-                .collect();
+            let items: Vec<TicketSummary> = self.with_store(|store| {
+                Ok(store
+                    .list(input.state.as_deref(), None, limit)?
+                    .into_iter()
+                    .map(|t| TicketSummary {
+                        id: t.id.to_string(),
+                        type_id: t.type_id,
+                        title: t.title,
+                        state: t.state,
+                        updated_at: t.updated_at,
+                    })
+                    .collect())
+            })?;
             Self::json_result(&serde_json::json!({
                 "workspace": input.workspace,
                 "items": items,
@@ -294,7 +305,7 @@ impl TicketServer {
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
         let id = Self::parse_uuid(&input.id)?;
-        let manifest = self.store.get(&id).map_err(Self::store_err)?;
+        let manifest = self.with_store(|store| store.get(&id))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
             "ticket": TicketDetail {
@@ -314,10 +325,7 @@ impl TicketServer {
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
         let id = Self::parse_uuid(&input.id)?;
-        let indexed = self
-            .store
-            .get_indexed(&id)
-            .map_err(Self::store_err)?
+        let indexed = self.with_store(|store| store.get_indexed(&id))?
             .ok_or_else(|| McpError::invalid_params(format!("ticket not found: {id}"), None))?;
 
         if indexed.deleted {
@@ -340,7 +348,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<ListEdgesInput>,
     ) -> Result<CallToolResult, McpError> {
-        let all = self.store.list_all_edges().map_err(Self::store_err)?;
+        let all = self.with_store(|store| store.list_all_edges())?;
         let items: Vec<EdgeItem> = all
             .into_iter()
             .filter(|e| match &input.kind {
@@ -367,6 +375,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<SubgraphInput>,
     ) -> Result<CallToolResult, McpError> {
+        let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
         let root = Self::parse_uuid(&input.root)?;
         let depth_limit = input.depth.unwrap_or(2).min(8);
         let node_limit = input.limit_nodes.unwrap_or(500);
@@ -395,7 +404,7 @@ impl TicketServer {
             visited.insert(current_id);
             max_depth_reached = max_depth_reached.max(depth);
 
-            let node = match self.store.get_indexed(&current_id) {
+            let node = match store.get_indexed(&current_id) {
                 Ok(Some(t)) => NodeItem {
                     id: current_id.to_string(),
                     title: t.title,
@@ -416,7 +425,7 @@ impl TicketServer {
                 continue;
             }
 
-            let all_edges = self.store.list_all_edges().map_err(Self::store_err)?;
+            let all_edges = store.list_all_edges().map_err(Self::store_err)?;
 
             for edge in &all_edges {
                 let kind_ok = edge_kind_filter == "all" || edge.kind == edge_kind_filter;
@@ -487,10 +496,7 @@ impl TicketServer {
             })?;
             patch.insert(k.trim().to_string(), Value::String(v.trim().to_string()));
         }
-        let manifest = self
-            .store
-            .update(&id, patch, None, input.to_state.as_deref())
-            .map_err(Self::store_err)?;
+        let manifest = self.with_store(|store| store.update(&id, patch, None, input.to_state.as_deref()))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
             "status": "ok",
@@ -511,10 +517,7 @@ impl TicketServer {
         Parameters(input): Parameters<CloseTicketInput>,
     ) -> Result<CallToolResult, McpError> {
         let id = Self::parse_uuid(&input.id)?;
-        let (manifest, path) = self
-            .store
-            .close(&id, &input.to_state)
-            .map_err(Self::store_err)?;
+        let (manifest, path) = self.with_store(|store| store.close(&id, &input.to_state))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
             "status": "ok",
@@ -533,10 +536,7 @@ impl TicketServer {
         Parameters(input): Parameters<CancelTicketInput>,
     ) -> Result<CallToolResult, McpError> {
         let id = Self::parse_uuid(&input.id)?;
-        let (manifest, path) = self
-            .store
-            .close(&id, "cancelled")
-            .map_err(Self::store_err)?;
+        let (manifest, path) = self.with_store(|store| store.close(&id, "cancelled"))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
             "status": "ok",
@@ -688,9 +688,9 @@ impl ServerHandler for TicketServer {
 }
 
 pub async fn run_mcp_server(
-    store: Arc<TicketStore>,
+    index_root: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let server = TicketServer::new(store);
+    let server = TicketServer::new(index_root);
 
     tracing::info!("Starting ticket-mcp server on stdio (direct store access)");
 
