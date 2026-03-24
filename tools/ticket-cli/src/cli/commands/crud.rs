@@ -70,9 +70,14 @@ pub(crate) fn cmd_update(args: UpdateArgs, store: &TicketStore) -> Result<Value,
         args.from_state.as_deref(),
         args.to_state.as_deref(),
     )?;
+    let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-");
+    let state = manifest.extra.get("state").and_then(Value::as_str).unwrap_or("open");
     Ok(json!({
         "command": "update",
         "status": "ok",
+        "id": manifest.id,
+        "title": title,
+        "state": state,
         "ticket": {
             "id": manifest.id,
             "fields": manifest.extra,
@@ -192,10 +197,15 @@ pub(crate) fn cmd_list(args: ListArgs, store: &TicketStore) -> Result<Value, Cli
 }
 
 pub(crate) fn cmd_delete(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let manifest = store.get(&args.id)?;
+    let title = manifest.extra.get("title").and_then(Value::as_str).unwrap_or("-").to_string();
+    let ticket_type = manifest.extra.get("type").and_then(Value::as_str).unwrap_or("-").to_string();
     store.delete(&args.id)?;
     Ok(json!({
         "command": "delete",
         "status": "ok",
         "id": args.id,
+        "title": title,
+        "type": ticket_type,
     }))
 }

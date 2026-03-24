@@ -30,10 +30,14 @@ pub(crate) fn cmd_scan(args: ScanArgs, store: &TicketStore) -> Result<Value, Cli
 
 pub(crate) fn cmd_attach(args: AttachArgs, store: &TicketStore) -> Result<Value, CliRunError> {
     let dest = store.attach(&args.id, &args.path, args.asset_name.as_deref())?;
+    let title = store.get(&args.id).ok()
+        .and_then(|m| m.extra.get("title").and_then(Value::as_str).map(String::from))
+        .unwrap_or_else(|| "-".to_string());
     Ok(json!({
         "command": "attach",
         "status": "ok",
         "id": args.id,
+        "title": title,
         "asset_path": dest.display().to_string(),
     }))
 }
