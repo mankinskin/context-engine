@@ -192,9 +192,44 @@ impl TicketServer {
         McpError::internal_error(format!("store error: {e}"), None)
     }
 
-    fn parse_uuid(s: &str) -> Result<Uuid, McpError> {
-        s.parse::<Uuid>()
-            .map_err(|e| McpError::invalid_params(format!("invalid UUID '{s}': {e}"), None))
+    fn resolve_uuid(&self, s: &str) -> Result<Uuid, McpError> {
+        // Try full UUID parse first.
+        if let Ok(id) = s.parse::<Uuid>() {
+            return Ok(id);
+        }
+
+        // Allow hex prefix of at least 8 characters.
+        let trimmed = s.trim();
+        if trimmed.len() >= 8 && trimmed.chars().all(|c| c.is_ascii_hexdigit()) {
+            let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
+            let tickets = store.list(None, None, None).map_err(Self::store_err)?;
+            let prefix_lower = trimmed.to_ascii_lowercase();
+            let matches: Vec<Uuid> = tickets
+                .iter()
+                .filter(|t| {
+                    // simple-format UUID (no hyphens) for prefix comparison
+                    t.id.simple().to_string().starts_with(&prefix_lower)
+                })
+                .map(|t| t.id)
+                .collect();
+
+            return match matches.len() {
+                1 => Ok(matches[0]),
+                0 => Err(McpError::invalid_params(
+                    format!("no ticket found matching prefix '{trimmed}'"),
+                    None,
+                )),
+                n => Err(McpError::invalid_params(
+                    format!("ambiguous prefix '{trimmed}': matches {n} tickets"),
+                    None,
+                )),
+            };
+        }
+
+        Err(McpError::invalid_params(
+            format!("invalid UUID '{s}': expected full UUID or hex prefix (>= 8 chars)"),
+            None,
+        ))
     }
 
     fn with_store<T>(
@@ -304,7 +339,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
-        let id = Self::parse_uuid(&input.id)?;
+        let id = self.resolve_uuid(&input.id)?;
         let manifest = self.with_store(|store| store.get(&id))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
@@ -324,7 +359,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<TicketRefInput>,
     ) -> Result<CallToolResult, McpError> {
-        let id = Self::parse_uuid(&input.id)?;
+        let id = self.resolve_uuid(&input.id)?;
         let indexed = self.with_store(|store| store.get_indexed(&id))?
             .ok_or_else(|| McpError::invalid_params(format!("ticket not found: {id}"), None))?;
 
@@ -375,8 +410,8 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<SubgraphInput>,
     ) -> Result<CallToolResult, McpError> {
+        let root = self.resolve_uuid(&input.root)?;
         let store = TicketStore::open(&self.index_root).map_err(Self::store_err)?;
-        let root = Self::parse_uuid(&input.root)?;
         let depth_limit = input.depth.unwrap_or(2).min(8);
         let node_limit = input.limit_nodes.unwrap_or(500);
         let edge_limit = input.limit_edges.unwrap_or(2000);
@@ -488,7 +523,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<UpdateTicketInput>,
     ) -> Result<CallToolResult, McpError> {
-        let id = Self::parse_uuid(&input.id)?;
+        let id = self.resolve_uuid(&input.id)?;
         let mut patch = BTreeMap::new();
         for raw in &input.fields {
             let (k, v) = raw.split_once('=').ok_or_else(|| {
@@ -516,7 +551,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<CloseTicketInput>,
     ) -> Result<CallToolResult, McpError> {
-        let id = Self::parse_uuid(&input.id)?;
+        let id = self.resolve_uuid(&input.id)?;
         let (manifest, path) = self.with_store(|store| store.close(&id, &input.to_state))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,
@@ -535,7 +570,7 @@ impl TicketServer {
         &self,
         Parameters(input): Parameters<CancelTicketInput>,
     ) -> Result<CallToolResult, McpError> {
-        let id = Self::parse_uuid(&input.id)?;
+        let id = self.resolve_uuid(&input.id)?;
         let (manifest, path) = self.with_store(|store| store.close(&id, "cancelled"))?;
         Self::json_result(&serde_json::json!({
             "workspace": input.workspace,

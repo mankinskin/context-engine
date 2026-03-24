@@ -71,6 +71,7 @@ pub(super) fn dispatch(
     match command {
         TicketCommandCli::Create(args) => commands::cmd_create(args, &store),
         TicketCommandCli::Get(args) => commands::cmd_get(args, &store),
+        TicketCommandCli::Describe(args) => commands::cmd_describe(args, &store),
         TicketCommandCli::Update(args) => commands::cmd_update(args, &store),
         TicketCommandCli::Repro(args) => commands::cmd_repro(args, &store),
         TicketCommandCli::List(args) => commands::cmd_list(args, &store),
@@ -96,6 +97,7 @@ pub(super) fn dispatch(
         TicketCommandCli::Link(args) => commands::cmd_link(args, &store),
         TicketCommandCli::Unlink(args) => commands::cmd_unlink(args, &store),
         TicketCommandCli::Links(args) => commands::cmd_links(args, &store),
+        TicketCommandCli::Subgraph(args) => commands::cmd_subgraph(args, &store),
         TicketCommandCli::Watch(args) => commands::cmd_watch(args, &store),
         TicketCommandCli::Status(args) => commands::cmd_status(args, &store),
         TicketCommandCli::ReadyOverview(args) => commands::cmd_ready_overview(args, &store),
@@ -143,7 +145,9 @@ fn dry_run_command_payload(command: &TicketCommandCli) -> Option<Value> {
         | TicketCommandCli::Query(_)
         | TicketCommandCli::History(_)
         | TicketCommandCli::Diff(_)
+        | TicketCommandCli::Describe(_)
         | TicketCommandCli::Links(_)
+        | TicketCommandCli::Subgraph(_)
         | TicketCommandCli::Status(_)
         | TicketCommandCli::ReadyOverview(_)
         | TicketCommandCli::Assets(_)

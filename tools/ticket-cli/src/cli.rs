@@ -62,6 +62,8 @@ pub enum TicketCommandCli {
     Create(CreateArgs),
     /// Get a ticket by UUID.
     Get(IdArgs),
+    /// Get the markdown description body of a ticket.
+    Describe(IdArgs),
     /// Update a ticket with field patches and optional state transition.
     Update(UpdateArgs),
     /// Record a bug reproduction event with commit and timestamp metadata.
@@ -105,8 +107,10 @@ pub enum TicketCommandCli {
     Link(LinkArgs),
     /// Remove a directed edge between two tickets.
     Unlink(UnlinkArgs),
-    /// List all edges originating from a ticket.
-    Links(IdArgs),
+    /// List edges originating from a ticket, or all edges with --all.
+    Links(LinksArgs),
+    /// Show the dependency subgraph rooted at a ticket.
+    Subgraph(SubgraphArgs),
     /// Manage named workspaces (named index roots).
     Workspace(WorkspaceArgs),
     /// Watch filesystem scan roots and auto-reconcile on changes.

@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use serde_json::{Map, Value, json};
 
 use ticket_api::storage::TicketStore;
+use ticket_api::storage::ticket_fs::TicketFs;
 
 use crate::cli::{
     CliRunError, CreateArgs, IdArgs, ListArgs, ReproArgs, UpdateArgs,
@@ -207,5 +208,21 @@ pub(crate) fn cmd_delete(args: IdArgs, store: &TicketStore) -> Result<Value, Cli
         "id": args.id,
         "title": title,
         "type": ticket_type,
+    }))
+}
+
+pub(crate) fn cmd_describe(args: IdArgs, store: &TicketStore) -> Result<Value, CliRunError> {
+    let indexed = store
+        .get_indexed(&args.id)?
+        .ok_or_else(|| CliRunError::BadRequest(format!("ticket not found: {}", args.id)))?;
+    if indexed.deleted {
+        return Err(CliRunError::BadRequest(format!("ticket deleted: {}", args.id)));
+    }
+    let description = TicketFs::read_description(&indexed.path);
+    Ok(json!({
+        "command": "describe",
+        "status": "ok",
+        "id": args.id.to_string(),
+        "description": description,
     }))
 }

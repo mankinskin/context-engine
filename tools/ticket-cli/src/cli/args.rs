@@ -32,6 +32,19 @@ pub struct IdArgs {
 }
 
 #[derive(Debug, Args)]
+pub struct LinksArgs {
+    /// UUID of the ticket to show edges for (omit with --all to list all edges globally).
+    #[arg(long, required_unless_present = "all")]
+    pub id: Option<Uuid>,
+    /// List all edges in the store instead of filtering by source ticket.
+    #[arg(long, default_value_t = false)]
+    pub all: bool,
+    /// Filter edges by kind (e.g. depends_on). Omit to show all kinds.
+    #[arg(long)]
+    pub kind: Option<String>,
+}
+
+#[derive(Debug, Args)]
 pub struct StatusArgs {
     /// Optional prefix filter — only include tickets whose title starts with this string.
     /// E.g. "[bootstrap]" to scope the view to the bootstrap track.
@@ -122,6 +135,21 @@ pub struct UnlinkArgs {
     /// Human-readable reason for this removal (optional, stored in response only).
     #[arg(long)]
     pub reason: Option<String>,
+}
+
+#[derive(Debug, Args)]
+pub struct SubgraphArgs {
+    /// Root ticket UUID or 8+ character hex prefix.
+    pub root: String,
+    /// Maximum traversal depth (default: 4, max: 8).
+    #[arg(long, default_value = "4")]
+    pub depth: usize,
+    /// Edge direction to follow: out, in, or both.
+    #[arg(long, default_value = "out")]
+    pub direction: String,
+    /// Filter edges by kind (default: all).
+    #[arg(long = "edge-kind", default_value = "all")]
+    pub edge_kind: String,
 }
 
 #[derive(Debug, Args)]

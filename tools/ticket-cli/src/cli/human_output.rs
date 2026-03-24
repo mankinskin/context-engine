@@ -16,6 +16,22 @@ pub(crate) fn render_human_readable(payload: &Value) -> String {
         return format_scalar(payload);
     };
 
+    // Special case: subgraph command renders as ASCII tree
+    if obj.get("command").and_then(Value::as_str) == Some("subgraph") {
+        if let Some(tree) = obj.get("tree").and_then(Value::as_str) {
+            return tree.to_string();
+        }
+    }
+
+    // Special case: describe command prints the markdown body directly
+    if obj.get("command").and_then(Value::as_str) == Some("describe") {
+        return obj
+            .get("description")
+            .and_then(Value::as_str)
+            .unwrap_or("(no description)")
+            .to_string();
+    }
+
     let mut out = String::new();
 
     // Header: "command status"
