@@ -3,7 +3,7 @@
 # Blocks completion if doc-viewer was modified without doc validation
 
 # Path patterns for matching
-DOC_VIEWER_SRC_PATTERN="tools/doc-viewer/src/"
+DOC_VIEWER_SRC_PATTERN="tools/viewer/doc-viewer/src/"
 
 # Read JSON input from stdin
 INPUT=$(cat)

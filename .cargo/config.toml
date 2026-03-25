@@ -96,8 +96,9 @@
 
 [alias]
 # Start the log-viewer server (http://localhost:3000)
-log-viewer = "run --manifest-path tools/log-viewer/Cargo.toml -- --dev"
-doc-viewer = "run --manifest-path tools/doc-viewer/Cargo.toml"
+log-viewer = "run --manifest-path tools/viewer/log-viewer/Cargo.toml -- --dev"
+doc-viewer = "run --manifest-path tools/viewer/doc-viewer/Cargo.toml"
 # Start the ticket-viewer server after both viewer and backend builds succeed
-ticket-viewer = "run --manifest-path tools/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
-context-cli = "run --manifest-path tools/context-cli/Cargo.toml"
+ticket-viewer = "run --manifest-path tools/viewer/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
+context-cli = "run --manifest-path tools/cli/context-cli/Cargo.toml"
+dungeon = "run --manifest-path tools/dungeon-crawler/Cargo.toml --bin dungeon"

@@ -3,8 +3,8 @@
 # Runs after any tool execution in Copilot CLI or VS Code Copilot Chat
 
 # Path patterns for matching (Unix and Windows style)
-DOC_VIEWER_SRC_UNIX="tools/doc-viewer/src/"
-DOC_VIEWER_SRC_WIN="tools\\\\doc-viewer\\\\src\\\\"
+DOC_VIEWER_SRC_UNIX="tools/viewer/doc-viewer/src/"
+DOC_VIEWER_SRC_WIN="tools\\\\viewer\\\\doc-viewer\\\\src\\\\"
 AGENTS_DIR_UNIX="agents/"
 AGENTS_DIR_WIN="agents\\\\"
 AGENTS_TMP_UNIX="agents/tmp/"
