@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/tools/ticket-vscode"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/tools/ticket-vscode/out/**/*.js"
+      ],
+      "preLaunchTask": "ticket-vscode: compile"
+    }
+  ]
+}

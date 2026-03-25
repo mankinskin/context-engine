@@ -1,0 +1,113 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ──────────────────────────────────────────────────
+    // Ticket Viewer
+    // ──────────────────────────────────────────────────
+
+    // Start the ticket-viewer HTTP server in the background.
+    // The problem matcher signals "ready" when "Listening on http:" appears
+    // in stdout, which lets dependent tasks proceed.
+    {
+      "label": "ticket-viewer: start",
+      "type": "shell",
+      "command": "cargo run -p ticket-viewer",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "ticket-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Ticket Viewer starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "Ticket Viewer"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+
+    // Open http://localhost:3002 in the VS Code Simple Browser.
+    // Uses the tasks "inputs" command hook to invoke simpleBrowser.show
+    // as a side-effect; the echo is a no-op carrier for the substitution.
+    // Requires the "ticket-viewer: start" task to be ready first.
+    {
+      "label": "ticket-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openTicketViewer}",
+      "dependsOn": "ticket-viewer: start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+
+    // Compound task: starts the server then opens the browser tab.
+    // Run this with: Tasks > Run Task > ticket-viewer
+    {
+      "label": "ticket-viewer",
+      "dependsOn": ["ticket-viewer: start", "ticket-viewer: open"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+
+    // ──────────────────────────────────────────────────
+    // VS Code Extension — ticket-vscode
+    // ──────────────────────────────────────────────────
+
+    // Compile the extension TypeScript before launching the Extension Host.
+    {
+      "label": "ticket-vscode: compile",
+      "type": "shell",
+      "command": "npm run compile",
+      "options": {
+        "cwd": "${workspaceFolder}/tools/ticket-vscode"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+
+    // Watch mode for active extension development.
+    {
+      "label": "ticket-vscode: watch",
+      "type": "shell",
+      "command": "npm run watch",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/tools/ticket-vscode"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "ticket-vscode watch"
+      },
+      "problemMatcher": "$tsc-watch"
+    }
+  ],
+
+  "inputs": [
+    {
+      "id": "openTicketViewer",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:3002"
+    }
+  ]
+}
