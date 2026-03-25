@@ -26,3 +26,11 @@ export * from './url-state';
 
 // Re-export shared theme system
 export * from './store/theme';
+
+// Re-export GPU overlay system
+export * from './components/WgpuOverlay/WgpuOverlay';
+export * from './components/WgpuOverlay/schemas';
+export * from './components/WgpuOverlay/element-types';
+export * from './components/Scene3D/Scene3D';
+export * from './utils/math3d';
+export * from './effects/palette';

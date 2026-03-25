@@ -11,7 +11,8 @@ import { Scene3D } from './components/Scene3D/Scene3D';
 import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
 import { activeTab, loadLogFiles, initUrlListener, getStateFromUrl, loadLogFile, setTab } from './store';
-import { WgpuOverlay } from './components/WgpuOverlay/WgpuOverlay';
+import { WgpuOverlay } from '@context-engine/viewer-api-frontend';
+import { LOG_VIEWER_SCHEMA } from './gpu-schema';
 import { useGlobalKeyboard, usePanelFocus, focusedPanel } from './hooks';
 import './store/theme';  // initialize theme effects on startup
 
@@ -64,7 +65,7 @@ export function App() {
 
   return (
     <div class="app">
-      <WgpuOverlay />
+      <WgpuOverlay schema={LOG_VIEWER_SCHEMA} />
       <Header onMenuToggle={toggleMobileSidebar} />
       <FilterPanel />
       <div class="main-layout">
