@@ -12,6 +12,155 @@
         "${workspaceFolder}/tools/ticket-vscode/out/**/*.js"
       ],
       "preLaunchTask": "ticket-vscode: compile"
+    },
+    {
+      "name": "Run: ticket-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=ticket-viewer",
+          "--package=ticket-viewer"
+        ],
+        "filter": {
+          "name": "ticket-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      },
+      "noDebug": true
+    },
+    {
+      "name": "Debug: ticket-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=ticket-viewer",
+          "--package=ticket-viewer"
+        ],
+        "filter": {
+          "name": "ticket-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      }
+    },
+    {
+      "name": "Run: doc-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=doc-viewer",
+          "--package=doc-viewer"
+        ],
+        "filter": {
+          "name": "doc-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      },
+      "noDebug": true
+    },
+    {
+      "name": "Debug: doc-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=doc-viewer",
+          "--package=doc-viewer"
+        ],
+        "filter": {
+          "name": "doc-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      }
+    },
+    {
+      "name": "Run: log-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=log-viewer",
+          "--package=log-viewer"
+        ],
+        "filter": {
+          "name": "log-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      },
+      "noDebug": true
+    },
+    {
+      "name": "Debug: log-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=log-viewer",
+          "--package=log-viewer"
+        ],
+        "filter": {
+          "name": "log-viewer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run: all viewers",
+      "configurations": [
+        "Run: ticket-viewer",
+        "Run: doc-viewer",
+        "Run: log-viewer"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Debug: all viewers",
+      "configurations": [
+        "Debug: ticket-viewer",
+        "Debug: doc-viewer",
+        "Debug: log-viewer"
+      ],
+      "stopAll": true
     }
   ]
 }
