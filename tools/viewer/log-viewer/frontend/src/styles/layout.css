@@ -8,6 +8,34 @@
   min-height: 0;
 }
 
+/* Center + right split */
+
+.center-right-split {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  min-width: 0;
+  position: relative;
+}
+
+.center-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  border-right: 1px solid var(--border-color);
+}
+
+.right-pane {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  position: relative;
+}
+
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
@@ -46,19 +74,7 @@
   border-radius: 8px;
 }
 
-.file-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 4px 0 40px 0;
-}
 
-.file-list::after {
-  content: '';
-  display: block;
-  height: 1px;
-  margin: 16px 8px 0;
-  background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
-}
 
 .file-item {
   padding: 4px 8px;
@@ -79,11 +95,11 @@
 }
 
 /* Keyboard focus styles */
-.file-list:focus {
+.sidebar-file-tree:focus {
   outline: none;
 }
 
-.file-list.focused {
+.sidebar-file-tree.focused {
   outline: 1px solid var(--accent-blue);
   outline-offset: -1px;
 }
@@ -126,56 +142,7 @@
   margin-top: 2px;
 }
 
-/* Sidebar graph filter button */
-.sidebar-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: calc(100% - 12px);
-  margin: 4px 6px 2px;
-  padding: 4px 8px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: all 0.15s;
-}
 
-.sidebar-filter-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.sidebar-filter-btn.active {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: var(--accent-purple);
-  color: var(--accent-purple);
-}
-
-/* Sidebar filters container */
-.sidebar-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 2px 0;
-}
-
-/* Search filter button */
-.sidebar-filter-btn.filter-search.active {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
-}
-
-/* Insert filter button */
-.sidebar-filter-btn.filter-insert.active {
-  background: rgba(52, 211, 153, 0.15);
-  border-color: var(--accent-green);
-  color: var(--accent-green);
-}
 
 /* Graph snapshot badge on file items */
 .graph-badge {
@@ -237,11 +204,11 @@
 }
 
 /* Tree view overrides for sidebar */
-.file-list .tree-view {
+.sidebar-file-tree .tree-view {
   padding: 2px 0;
 }
 
-.file-list .tree-item-row {
+.sidebar-file-tree .tree-item-row {
   font-family: var(--font-mono);
   font-size: 12px;
 }

@@ -505,8 +505,6 @@ export async function openSourceFile(path: string, line?: number) {
           codeViewerContent: data.content,
           codeViewerLine: line ?? null,
       });
-    activeTab.value = 'code';
-    updateCurrentFileState({ activeTab: 'code' });
   } catch (e) {
     error.value = `Failed to load source: ${e}`;
   }

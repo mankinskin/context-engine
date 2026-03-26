@@ -18,7 +18,7 @@ export const focusedPanel = signal<PanelId>('sidebar');
 const PANEL_ORDER: PanelId[] = ['sidebar', 'tabs', 'content'];
 
 /** Tab order used for Left/Right global navigation. */
-const TAB_ORDER: ViewTab[] = ['logs', 'hypergraph', 'stats', 'code', 'debug', 'scene3d', 'settings'];
+const TAB_ORDER: ViewTab[] = ['logs', 'hypergraph', 'code', 'debug', 'scene3d', 'settings'];
 
 /**
  * Top-level hook — call once in `<App>` — that listens for:

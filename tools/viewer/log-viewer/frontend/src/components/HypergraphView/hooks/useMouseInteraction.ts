@@ -142,15 +142,8 @@ export function useMouseInteraction(
                     }
 
                     if (!expandedHit) {
-                    let bestT = Infinity;
-                    let bestIdx = -1;
-                    for (const n of layout.nodes) {
-                        const t = raySphere(ray.origin, ray.direction, [n.x, n.y, n.z], n.radius * 1.5);
-                        if (t !== null && t < bestT) {
-                            bestT = t;
-                            bestIdx = n.index;
-                        }
-                    }
+                        const nodeEl = (e.target as HTMLElement).closest?.('.hg-node');
+                        const bestIdx = nodeEl ? Number(nodeEl.getAttribute('data-node-idx')) : -1;
                     if (bestIdx >= 0) {
                         const node = layout.nodeMap.get(bestIdx);
                         if (node) {

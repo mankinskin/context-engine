@@ -25,7 +25,6 @@ export const ELEMENT_SELECTORS = [
     '.tab-bar',
     '.filter-panel',
     '.view-container',
-    '.stats-view',
     '.log-list',
     '.code-viewer',
     // --- per-level log entries (hue 0.53 – 0.82) ---
@@ -149,10 +148,9 @@ import type { ViewTab } from '../../types';
 /** Map View tab names to numeric IDs for GPU uniforms. */
 export const VIEW_ID: Record<ViewTab, number> = {
     logs: 0,
-    stats: 1,
-    code: 2,
-    debug: 3,
-    scene3d: 4,
-    hypergraph: 5,
-    settings: 6,
+    code: 1,
+    debug: 2,
+    scene3d: 3,
+    hypergraph: 4,
+    settings: 5,
 };

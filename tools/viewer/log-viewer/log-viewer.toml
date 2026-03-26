@@ -3,13 +3,13 @@
 # Relative paths are resolved from this file's directory.
 
 # Directory containing log files (default: auto-detected target/test-logs)
-log_dir = "../../target/test-logs"
+log_dir = "../../../target/test-logs"
 
 # Workspace root for source file resolution (default: auto-detected via Cargo.toml)
-workspace_root = "../.."
+workspace_root = "../../.."
 
 # Directory containing debug signature JSON files (default: <log_dir>/../debug_signatures)
-signatures_dir = "../../target/debug_signatures"
+signatures_dir = "../../../target/debug_signatures"
 
 # Directory for pre-built static frontend files - production mode (default: <CARGO_MANIFEST_DIR>/static)
 # static_dir = "./static"

@@ -57,7 +57,7 @@ pub fn create_router(
     match frontend {
         FrontendMode::Static(dir) => {
             if dir.exists() {
-                router = router.nest_service("/", ServeDir::new(&dir));
+                router = router.fallback_service(ServeDir::new(&dir));
             }
         }
         FrontendMode::DevProxy(port) => {

@@ -1,13 +1,13 @@
 import { logFiles, currentFile, loadLogFile, isLoading } from '../../store';
 import { signal } from '@preact/signals';
 import { usePanelFocus, focusedPanel } from '../../hooks';
-import { FileTree, ResizeHandle, type TreeNode } from '@context-engine/viewer-api-frontend';
-import { buildFileTree, getCategoryIdForFilter } from '../../store/fileTree';
+import { FileTree, ResizeHandle, type TreeNode, type FilterOption } from '@context-engine/viewer-api-frontend';
+import { buildFileTree, CATEGORIES } from '../../store/fileTree';
 import type { LogFile } from '../../types';
 import { useState, useMemo, useCallback, useRef } from 'preact/hooks';
 
 // Filter state: 'all' | 'graph' | 'search' | 'insert' | 'paths'
-const activeFilter = signal<'all' | 'graph' | 'search' | 'insert' | 'paths'>('all');
+const activeFilter = signal<string | null>(null);
 
 interface SidebarProps {
   mobileOpen?: boolean;
@@ -26,16 +26,23 @@ export function Sidebar({
   const sidebarRef = useRef<HTMLElement | null>(null);
   const liveWidthRef = useRef(280);
 
-  // Compute counts for filter buttons
-  const graphCount = allFiles.filter(f => f.has_graph_snapshot).length;
-  const searchCount = allFiles.filter(f => f.has_search_ops).length;
-  const insertCount = allFiles.filter(f => f.has_insert_ops).length;
-  const pathsCount = allFiles.filter(f => f.has_search_paths).length;
   const totalCount = allFiles.length;
 
-  const toggleFilter = (newFilter: 'all' | 'graph' | 'search' | 'insert' | 'paths') => {
-    activeFilter.value = activeFilter.value === newFilter ? 'all' : newFilter;
-  };
+  // Build filter options from CATEGORIES
+  const filterOpts = useMemo<FilterOption[]>(() =>
+    CATEGORIES.map(cat => ({
+      key: cat.id,
+      label: cat.label,
+      icon: cat.icon,
+      count: allFiles.filter(cat.filter).length,
+      activeColor: cat.color,
+    })),
+    [allFiles],
+  );
+
+  const handleFilterChange = useCallback((key: string | null) => {
+    activeFilter.value = key;
+  }, []);
 
   // Build tree from file list
   const treeNodes = useMemo(() => buildFileTree(allFiles), [allFiles]);
@@ -45,11 +52,9 @@ export function Sidebar({
 
   // When filter changes, auto-expand the matching category
   const effectiveExpanded = useMemo(() => {
-    if (filter === 'all') return expandedSet;
-    const catId = getCategoryIdForFilter(filter);
-    if (!catId) return expandedSet;
+    if (!filter) return expandedSet;
     const next = new Set(expandedSet);
-    next.add(catId);
+    next.add(filter);
     return next;
   }, [filter, expandedSet]);
 
@@ -67,19 +72,15 @@ export function Sidebar({
 
   // Filter tree nodes when a filter is active
   const filteredNodes = useMemo(() => {
-    if (filter === 'all') return treeNodes;
-    const catId = getCategoryIdForFilter(filter);
-    if (!catId) return treeNodes;
+    if (!filter) return treeNodes;
     // Show only the matching category folder
-    return treeNodes.filter(n => n.id === catId);
+    return treeNodes.filter(n => n.id === filter);
   }, [treeNodes, filter]);
 
   // Determine selected node ID based on currentFile + active filter
   const selectedIds = useMemo(() => {
     if (!currentFile.value) return undefined;
-    // Check if any category folder reference matches
-    const catId = getCategoryIdForFilter(filter);
-    if (catId) return `${catId}/${currentFile.value}`;
+    if (filter) return `${filter}/${currentFile.value}`;
     return `file-${currentFile.value}`;
   }, [currentFile.value, filter]);
 
@@ -90,12 +91,7 @@ export function Sidebar({
     }
   }, [onMobileClose]);
 
-  const panelRef = usePanelFocus('sidebar');
-
-  const handleMouseEnter = () => {
-    focusedPanel.value = 'sidebar';
-    panelRef.current?.focus({ preventScroll: true });
-  };
+  usePanelFocus('sidebar');
 
   const mobileClass = mobileOpen !== undefined
     ? (mobileOpen ? 'sidebar-mobile-open' : 'sidebar-mobile-closed')
@@ -119,6 +115,11 @@ export function Sidebar({
     setWidth(liveWidthRef.current);
   }, []);
 
+  // Map filter key back to human label for empty message
+  const filterLabel = filter
+    ? CATEGORIES.find(c => c.id === filter)?.label?.toLowerCase() ?? filter
+    : null;
+
   return (
     <aside ref={sidebarRef as any} class={`sidebar ${mobileClass}`} style={{ width: `${width}px` }}>
       <div class="sidebar-header">
@@ -134,81 +135,24 @@ export function Sidebar({
         )}
       </div>
 
-      <div class="sidebar-filters">
-        {graphCount > 0 && (
-          <button
-            class={`sidebar-filter-btn ${filter === 'graph' ? 'active' : ''}`}
-            onClick={() => toggleFilter('graph')}
-            title={filter === 'graph' ? 'Show all logs' : 'Show only logs with graph data'}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/>
-              <circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/>
-              <line x1="9" y1="6" x2="15" y2="6"/><line x1="6" y1="9" x2="6" y2="15"/>
-              <line x1="18" y1="9" x2="18" y2="15"/><line x1="9" y1="18" x2="15" y2="18"/>
-            </svg>
-            <span>Graph ({graphCount})</span>
-          </button>
-        )}
-        {searchCount > 0 && (
-          <button
-            class={`sidebar-filter-btn filter-search ${filter === 'search' ? 'active' : ''}`}
-            onClick={() => toggleFilter('search')}
-            title={filter === 'search' ? 'Show all logs' : 'Show only logs with search ops'}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <span>Search ({searchCount})</span>
-          </button>
-        )}
-        {insertCount > 0 && (
-          <button
-            class={`sidebar-filter-btn filter-insert ${filter === 'insert' ? 'active' : ''}`}
-            onClick={() => toggleFilter('insert')}
-            title={filter === 'insert' ? 'Show all logs' : 'Show only logs with insert ops'}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            <span>Insert ({insertCount})</span>
-          </button>
-        )}
-        {pathsCount > 0 && (
-          <button
-            class={`sidebar-filter-btn filter-paths ${filter === 'paths' ? 'active' : ''}`}
-            onClick={() => toggleFilter('paths')}
-            title={filter === 'paths' ? 'Show all logs' : 'Show only logs with search paths'}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="21" x2="12" y2="8"/>
-              <polyline points="8 12 12 8 16 12"/>
-            </svg>
-            <span>Paths ({pathsCount})</span>
-          </button>
-        )}
-      </div>
-      
-      <div
-        class={`file-list ${focusedPanel.value === 'sidebar' ? 'focused' : ''}`}
-        ref={panelRef as any}
-        tabIndex={0}
-        onMouseEnter={handleMouseEnter}
-      >
-        <FileTree<LogFile>
-          nodes={filteredNodes}
-          selectedId={selectedIds}
-          onSelect={handleSelect}
-          expanded={effectiveExpanded}
-          onToggle={handleToggle}
-          loading={isLoading.value && allFiles.length === 0}
-          emptyMessage={
-            filter !== 'all'
-              ? `No logs with ${filter} data`
-              : 'No log files found'
-          }
-        />
-      </div>
+      <FileTree<LogFile>
+        class={`sidebar-file-tree ${focusedPanel.value === 'sidebar' ? 'focused' : ''}`}
+        nodes={filteredNodes}
+        selectedId={selectedIds}
+        onSelect={handleSelect}
+        expanded={effectiveExpanded}
+        onToggle={handleToggle}
+        loading={isLoading.value && allFiles.length === 0}
+        emptyMessage={
+          filterLabel
+            ? `No logs with ${filterLabel} data`
+            : 'No log files found'
+        }
+        filterOptions={filterOpts}
+        activeFilter={filter}
+        onFilterChange={handleFilterChange}
+      />
+
       {resizeRightEdge && (
         <ResizeHandle
           direction="horizontal"

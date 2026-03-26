@@ -52,7 +52,6 @@ export interface SourceSnippet {
 
 export type ViewTab =
     | "logs"
-    | "stats"
     | "code"
     | "debug"
     | "scene3d"

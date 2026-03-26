@@ -181,17 +181,3 @@ function fileToNode(file: LogFile): TreeNode<LogFile> {
     tooltip: buildTooltip(file),
   };
 }
-
-/**
- * Get category filter IDs relevant to a filter mode.
- * Returns category IDs that should be expanded when a filter is active.
- */
-export function getCategoryIdForFilter(filter: string): string | null {
-  switch (filter) {
-    case 'graph': return 'cat-graph';
-    case 'search': return 'cat-search';
-    case 'insert': return 'cat-insert';
-    case 'paths': return 'cat-paths';
-    default: return null;
-  }
-}
