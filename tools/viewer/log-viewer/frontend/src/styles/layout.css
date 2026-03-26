@@ -1,11 +1,9 @@
-/* Main Layout */
-
-.main-layout {
+/* Override viewer-api sidebar-content so FileTree fills it and scrolls
+   via its own .tree-view, preventing a double-scrollbar in the sidebar. */
+.sidebar-content {
   display: flex;
-  flex: 1;
+  flex-direction: column;
   overflow: hidden;
-  width: 100%;
-  min-height: 0;
 }
 
 /* Center + right split */
@@ -27,52 +25,7 @@
   border-right: 1px solid var(--border-color);
 }
 
-.right-pane {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg-secondary);
-  position: relative;
-}
 
-/* Sidebar */
-.sidebar {
-  width: var(--sidebar-width);
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-tertiary);
-}
-
-.sidebar-header h2 {
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--font-sans);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-purple);
-}
-
-.file-count {
-  font-size: 11px;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-  background: var(--bg-primary);
-  padding: 1px 5px;
-  border-radius: 8px;
-}
 
 
 
@@ -94,16 +47,12 @@
   border-left-color: var(--accent-blue);
 }
 
+.log-sidebar .sidebar-content {
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Keyboard focus styles */
-.sidebar-file-tree:focus {
-  outline: none;
-}
-
-.sidebar-file-tree.focused {
-  outline: 1px solid var(--accent-blue);
-  outline-offset: -1px;
-}
-
 .tabs:focus {
   outline: none;
 }
@@ -201,25 +150,6 @@
   color: var(--accent-purple);
   font-size: 11px;
   margin-top: 4px;
-}
-
-/* Tree view overrides for sidebar */
-.sidebar-file-tree .tree-view {
-  padding: 2px 0;
-}
-
-.sidebar-file-tree .tree-item-row {
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-/* Content Area */
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
 }
 
 /* Tab Bar */

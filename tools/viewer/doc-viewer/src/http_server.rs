@@ -811,7 +811,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
     println!("Listening on http://localhost:{}", port);
-    axum::serve(listener, app).await?;
+    axum::serve(listener, app)
+        .with_graceful_shutdown(viewer_api::shutdown_signal())
+        .await?;
 
     Ok(())
 }

@@ -8,8 +8,12 @@ export default defineConfig({
     emptyOutDir: true,
   },
   resolve: {
+    preserveSymlinks: true,
     // Ensure only one copy of preact is used (prevents hooks issues with shared components)
     dedupe: ['preact', 'preact/hooks', '@preact/signals'],
+  },
+  optimizeDeps: {
+    exclude: ['@context-engine/viewer-api-frontend'],
   },
   server: {
     proxy: {

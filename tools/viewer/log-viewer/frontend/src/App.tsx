@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'preact/hooks';
 import { Header } from './components/Header/Header';
 import { FilterPanel } from './components/FilterPanel/FilterPanel';
-import { Sidebar } from './components/Sidebar/Sidebar';
+import { SidebarContent } from './components/Sidebar/Sidebar';
 import { TabBar } from './components/Tabs/TabBar';
 import { LogViewer } from './components/LogViewer/LogViewer';
 import { CodeViewer } from './components/CodeViewer/CodeViewer';
@@ -9,8 +9,8 @@ import { EffectsDebug } from './components/EffectsDebug/EffectsDebug';
 import { Scene3D } from './components/Scene3D/Scene3D';
 import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
-import { activeTab, loadLogFiles, initUrlListener, getStateFromUrl, loadLogFile, setTab } from './store';
-import { WgpuOverlay, ResizeHandle } from '@context-engine/viewer-api-frontend';
+import { activeTab, logFiles, loadLogFiles, initUrlListener, getStateFromUrl, loadLogFile, setTab } from './store';
+import { Sidebar as SharedSidebar, Panel, WgpuOverlay } from '@context-engine/viewer-api-frontend';
 import { LOG_VIEWER_SCHEMA } from './gpu-schema';
 import { useGlobalKeyboard, usePanelFocus, focusedPanel } from './hooks';
 import './store/theme';  // initialize theme effects on startup
@@ -19,7 +19,6 @@ export function App() {
   useGlobalKeyboard();
   const contentRef = usePanelFocus('content');
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [rightPaneWidth, setRightPaneWidth] = useState(320);
 
   useEffect(() => {
     (async () => {
@@ -40,10 +39,6 @@ export function App() {
 
   const closeMobileSidebar = useCallback(() => {
     setMobileOpen(false);
-  }, []);
-
-  const resizeRightPane = useCallback((delta: number) => {
-    setRightPaneWidth((prev) => Math.max(0, prev + delta));
   }, []);
 
   const renderContent = () => {
@@ -69,8 +64,18 @@ export function App() {
       <Header onMenuToggle={toggleMobileSidebar} />
       <FilterPanel />
       <div class="main-layout">
-        {mobileOpen && <div class="sidebar-overlay visible" onClick={closeMobileSidebar} />}
-        <Sidebar mobileOpen={mobileOpen} onMobileClose={closeMobileSidebar} />
+        <SharedSidebar
+          class="log-sidebar"
+          title="Log Files"
+          badge={logFiles.value.length}
+          collapsible
+          resizable
+          initialWidth={280}
+          mobileOpen={mobileOpen}
+          onMobileClose={closeMobileSidebar}
+        >
+          <SidebarContent onFileSelect={closeMobileSidebar} />
+        </SharedSidebar>
         <main class="content">
           <div class="center-right-split">
             <div class="center-pane">
@@ -83,15 +88,9 @@ export function App() {
                 {renderContent()}
               </div>
             </div>
-            <div class="right-pane" style={{ width: `${rightPaneWidth}px` }}>
-              <ResizeHandle
-                direction="horizontal"
-                edge="left"
-                deltaSign={-1}
-                onResize={resizeRightPane}
-              />
+            <Panel placement="right" initialSize={320}>
               <CodeViewer />
-            </div>
+            </Panel>
           </div>
         </main>
       </div>

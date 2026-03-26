@@ -47,7 +47,9 @@ mod types;
 use config::Config;
 use std::{
     env,
+    fs,
     net::SocketAddr,
+    path::Path,
 };
 use viewer_api::{
     display_host,
@@ -95,6 +97,22 @@ fn init_tracing(config: &Config) {
     init_tracing_full(&tracing_config);
 }
 
+/// Return true only when `dir/index.html` looks like a Vite production build.
+///
+/// A dev index (`/src/main.tsx`) served by the Rust static server causes the
+/// browser to request WGSL files as module scripts, which fails MIME checks.
+fn has_built_static_frontend(dir: &Path) -> bool {
+    let index_path = dir.join("index.html");
+    let Ok(index_html) = fs::read_to_string(index_path) else {
+        return false;
+    };
+
+    // Built Vite output points at hashed /assets bundles.
+    index_html.contains("/assets/index-")
+        // Dev index should never be served in static mode.
+        && !index_html.contains("/src/main.tsx")
+}
+
 #[tokio::main]
 async fn main() {
     // Check for --mcp, --dev, and --static flags
@@ -130,7 +148,17 @@ async fn main() {
         //   --static       → always use pre-built static files
         //   (default)      → auto: use static if built, otherwise dev
         let static_dir = config.resolve_static_dir();
-        let static_available = static_dir.join("index.html").exists();
+        let static_available = has_built_static_frontend(&static_dir);
+
+        if force_static && !static_available {
+            eprintln!(
+                "--static requested but no built frontend was found in {}. \
+Build it with: (cd tools/viewer/log-viewer/frontend && npx vite build)",
+                to_unix_path(&static_dir)
+            );
+            std::process::exit(1);
+        }
+
         let dev_mode = force_dev || (!force_static && !static_available);
 
         // Frontend serving: dev proxy or static files
@@ -179,7 +207,10 @@ async fn main() {
         info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
 
         let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-        viewer_api::axum::serve(listener, app).await.unwrap();
+        viewer_api::axum::serve(listener, app)
+            .with_graceful_shutdown(viewer_api::shutdown_signal())
+            .await
+            .unwrap();
     }
 }
 

@@ -19,8 +19,10 @@
 //! # Environment Variables
 //! - `AGENTS_DIR` - Directory containing agent documentation (default: <workspace>/agents)
 //! - `CRATES_DIRS` - Path-separated list of crate directories (default: <workspace>/crates:<workspace>/tools)
-//! - `STATIC_DIR` - Directory for static frontend files (default: <manifest>/static)
+//! - `STATIC_DIR` - Directory for static frontend files (default: <workspace>/tools/viewer/doc-viewer/static)
 //! - `PORT` - HTTP server port (default: 3001)
+
+const STATIC_DIR_DEFAULT: &str = "tools/viewer/doc-viewer/static";
 
 mod git;
 mod helpers;
@@ -95,7 +97,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Fall back to compile-time manifest directory
             let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
             manifest_dir
-                .parent() // tools/
+                .parent() // viewer/
+                .and_then(|p| p.parent()) // tools/
                 .and_then(|p| p.parent()) // context-engine/
                 .map(|p| p.to_path_buf())
                 .unwrap_or(manifest_dir)
@@ -176,10 +179,10 @@ async fn run_http_server(
     agents_dir: PathBuf,
     crates_dirs: Vec<PathBuf>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Static files directory - use STATIC_DIR env or workspace_root/tools/doc-viewer/static
+    // Static files directory - use STATIC_DIR env or workspace_root/STATIC_DIR_DEFAULT
     let static_dir = std::env::var("STATIC_DIR")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| workspace_root.join("tools/doc-viewer/static"));
+        .unwrap_or_else(|_| workspace_root.join(STATIC_DIR_DEFAULT));
 
     let port: u16 = std::env::var("PORT")
         .ok()
@@ -200,7 +203,9 @@ async fn run_http_server(
     let display_addr = format!("{}:{}", display_host("0.0.0.0"), port);
     info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
     let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
-    viewer_api::axum::serve(listener, app).await?;
+    viewer_api::axum::serve(listener, app)
+        .with_graceful_shutdown(viewer_api::shutdown_signal())
+        .await?;
 
     Ok(())
 }

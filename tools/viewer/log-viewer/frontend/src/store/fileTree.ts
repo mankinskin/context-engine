@@ -84,91 +84,85 @@ function buildTooltip(file: LogFile): ComponentChildren {
 }
 
 /**
- * Build TreeNode array from flat log file list.
- *
- * Structure:
- *   - Virtual category folders (Graph, Search, Insert, Paths) at top — only if files match
- *   - Directory tree of all files below
+ * Build TreeNode array from flat log file list as a properly nested
+ * directory tree (like a real filesystem explorer).  Category filtering
+ * is handled by the filter buttons in FileTree, so no virtual category
+ * folders are created here.
  */
 export function buildFileTree(files: LogFile[]): TreeNode<LogFile>[] {
-  const nodes: TreeNode<LogFile>[] = [];
-
-  // 1. Virtual category folders
-  for (const cat of CATEGORIES) {
-    const matching = files.filter(cat.filter);
-    if (matching.length === 0) continue;
-
-    const children: TreeNode<LogFile>[] = matching.map((f) => ({
-      id: `${cat.id}/${f.name}`,
-      label: f.name,
-      icon: 'file' as const,
-      data: f,
-      tooltip: buildTooltip(f),
-    }));
-
-    nodes.push({
-      id: cat.id,
-      label: cat.label,
-      icon: cat.icon,
-      badge: matching.length,
-      children,
-    });
-  }
-
-  // 2. Directory tree of all files
-  const dirTree = buildDirectoryTree(files);
-  nodes.push(...dirTree);
-
-  return nodes;
+  return buildDirectoryTree(files);
 }
 
-/** Build directory-grouped tree from flat file paths */
-function buildDirectoryTree(files: LogFile[]): TreeNode<LogFile>[] {
-  // Group files by their directory prefix
-  const dirMap = new Map<string, LogFile[]>();
+/**
+ * Recursively build a nested directory tree from flat file paths.
+ *
+ * Given `["a/b/x.json", "a/b/y.json", "a/c.json", "root.json"]` produces:
+ *   a/
+ *     b/
+ *       x.json
+ *       y.json
+ *     c.json
+ *   root.json
+ */
+function buildDirectoryTree(files: LogFile[], prefix = ''): TreeNode<LogFile>[] {
+// Separate files at this level from files in subdirectories
   const rootFiles: LogFile[] = [];
+  // Map from top-level dir segment → files whose name starts with that segment
+  const subdirs = new Map<string, LogFile[]>();
 
   for (const file of files) {
-    const lastSlash = file.name.lastIndexOf('/');
-    if (lastSlash === -1) {
+    // Find the relative portion of the name after the current prefix
+    const rel = prefix ? file.name.slice(prefix.length) : file.name;
+    const slashIdx = rel.indexOf('/');
+    if (slashIdx === -1) {
       rootFiles.push(file);
     } else {
-      const dir = file.name.slice(0, lastSlash);
-      const existing = dirMap.get(dir);
-      if (existing) {
-        existing.push(file);
+      const topDir = rel.slice(0, slashIdx);
+      const list = subdirs.get(topDir);
+      if (list) {
+        list.push(file);
       } else {
-        dirMap.set(dir, [file]);
+        subdirs.set(topDir, [file]);
       }
     }
   }
 
   const result: TreeNode<LogFile>[] = [];
 
-  // If everything is flat (no directories), just return file nodes directly
-  if (dirMap.size === 0) {
-    return rootFiles.map(fileToNode);
-  }
-
-  // Build nested directory structure
-  const sortedDirs = [...dirMap.keys()].sort();
+  // Subdirectories first, sorted alphabetically
+  const sortedDirs = [...subdirs.keys()].sort();
   for (const dir of sortedDirs) {
-    const dirFiles = dirMap.get(dir)!;
+    const childPrefix = prefix ? `${prefix}${dir}/` : `${dir}/`;
+    const children = buildDirectoryTree(subdirs.get(dir)!, childPrefix);
     result.push({
-      id: `dir-${dir}`,
+      id: `dir-${prefix}${dir}`,
       label: dir,
       icon: 'folder' as const,
-      badge: dirFiles.length,
-      children: dirFiles.map(fileToNode),
+      badge: countLeaves(children),
+      children,
     });
   }
 
-  // Root-level files
-  for (const file of rootFiles) {
+  // Then root-level files, sorted by name
+  const sortedFiles = [...rootFiles].sort((a, b) => a.name.localeCompare(b.name));
+  for (const file of sortedFiles) {
     result.push(fileToNode(file));
   }
 
   return result;
+}
+
+/** Count leaf (file) nodes in a tree for badge display */
+function countLeaves(nodes: TreeNode<LogFile>[]): number {
+  let count = 0;
+  for (const n of nodes) {
+    if (n.children) {
+      count += countLeaves(n.children);
+    } else {
+      count++;
+    }
+  }
+  return count;
 }
 
 function fileToNode(file: LogFile): TreeNode<LogFile> {
