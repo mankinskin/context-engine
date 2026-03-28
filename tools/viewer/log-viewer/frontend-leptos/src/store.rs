@@ -68,15 +68,30 @@ impl Store {
         })
     }
 
-    /// Extract a hypergraph snapshot from the current file's log entries.
+/// Extract a hypergraph snapshot from the current file's log entries.
+    ///
+    /// Mirrors the TS store: finds the first entry where `message == "graph_snapshot"`
+    /// and deserialises `fields.graph_data` (which may be a JSON string or an object).
     pub fn hypergraph_snapshot(&self) -> Memo<Option<HypergraphSnapshot>> {
         let entries_memo = self.current_entries();
         Memo::new(move |_| {
             entries_memo.get().into_iter().find_map(|entry| {
-                entry
-                    .fields
-                    .get("graph_snapshot")
-                    .and_then(|v| serde_json::from_value(v.clone()).ok())
+                if entry.message != "graph_snapshot" {
+                    return None;
+                }
+                let graph_data = entry.fields.get("graph_data")?;
+                // graph_data may be a JSON string or an already-parsed object.
+                let value: serde_json::Value = if let Some(s) = graph_data.as_str() {
+                    serde_json::from_str(s).ok()?
+                } else {
+                    graph_data.clone()
+                };
+                if value.get("nodes").and_then(|v| v.as_array()).is_none()
+                    || value.get("edges").and_then(|v| v.as_array()).is_none()
+                {
+                    return None;
+                }
+                serde_json::from_value(value).ok()
             })
         })
     }

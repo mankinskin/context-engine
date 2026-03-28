@@ -102,3 +102,7 @@ doc-viewer = "run --manifest-path tools/viewer/doc-viewer/Cargo.toml"
 ticket-viewer = "run --manifest-path tools/viewer/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
 context-cli = "run --manifest-path tools/cli/context-cli/Cargo.toml"
 dungeon = "run --manifest-path tools/dungeon-crawler/Cargo.toml --bin dungeon"
+
+# Enable web_sys unstable APIs (required for WebGPU) for all WASM builds.
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg=web_sys_unstable_apis"]

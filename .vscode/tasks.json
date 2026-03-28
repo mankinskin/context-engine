@@ -99,6 +99,93 @@
         "label": "ticket-vscode watch"
       },
       "problemMatcher": "$tsc-watch"
+    },
+    // ──────────────────────────────────────────────────
+    // Log Viewer — Leptos frontend (experimental)
+    // ──────────────────────────────────────────────────
+    // Start the log-viewer HTTP backend (API only, no TS frontend needed).
+    {
+      "label": "log-viewer: start (api)",
+      "type": "shell",
+      "command": "cargo run -p log-viewer -- --static",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "log-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting HTTP server",
+          "endsPattern": "Starting HTTP server"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "log-viewer backend"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    // Start the Trunk dev server for the Leptos frontend on port 8081.
+    // Proxies /api/* to the log-viewer backend at localhost:3000.
+    {
+      "label": "log-viewer-leptos: trunk serve",
+      "type": "shell",
+      "command": "trunk serve",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/tools/viewer/log-viewer/frontend-leptos"
+      },
+      "problemMatcher": {
+        "owner": "trunk",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "starting build",
+          "endsPattern": "server listening at"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "trunk (leptos)"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    // Open http://localhost:8081 in the VS Code Simple Browser.
+    {
+      "label": "log-viewer-leptos: open",
+      "type": "shell",
+      "command": "echo ${input:openLeptosViewer}",
+      "dependsOn": "log-viewer-leptos: trunk serve",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    // Compound: backend + Leptos trunk + open browser.
+    {
+      "label": "log-viewer-leptos",
+      "dependsOn": [
+        "log-viewer: start (api)",
+        "log-viewer-leptos: trunk serve",
+        "log-viewer-leptos: open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
     }
   ],
 
@@ -108,6 +195,12 @@
       "type": "command",
       "command": "simpleBrowser.show",
       "args": "http://localhost:3002"
+    },
+    {
+      "id": "openLeptosViewer",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:8081"
     }
   ]
 }

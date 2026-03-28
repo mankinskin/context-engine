@@ -1,0 +1,82 @@
+[package]
+name = "log-viewer-leptos"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+leptos = { version = "0.7", features = ["csr"] }
+leptos_meta = { version = "0.7" }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = [
+    # DOM
+    "Window",
+    "Document",
+    "Element",
+    "NodeList",
+    "HtmlElement",
+    "HtmlInputElement",
+    "HtmlCanvasElement",
+    "Navigator",
+    "EventTarget",
+    "DomRect",
+    "console",
+    # Fetch
+    "Request",
+    "RequestInit",
+    "Response",
+    "Headers",
+    "AbortController",
+    "AbortSignal",
+    # Events
+    "MouseEvent",
+    "WheelEvent",
+    "TouchEvent",
+    "TouchList",
+    "Touch",
+    # Performance
+    "Performance",
+    # WebGPU — interface types + descriptor types needed to enable methods
+    "Gpu",
+    "GpuAdapter",
+    "GpuDevice",
+    "GpuQueue",
+    "GpuCanvasContext",
+    "GpuCanvasConfiguration",
+    "GpuTextureFormat",
+    "GpuTexture",
+    "GpuTextureView",
+    "GpuBuffer",
+    "GpuBufferDescriptor",
+    "GpuShaderModule",
+    "GpuShaderModuleDescriptor",
+    "GpuPipelineLayout",
+    "GpuPipelineLayoutDescriptor",
+    "GpuBindGroupLayout",
+    "GpuBindGroupLayoutDescriptor",
+    "GpuBindGroup",
+    "GpuBindGroupDescriptor",
+    "GpuRenderPipeline",
+    "GpuRenderPipelineDescriptor",
+    "GpuComputePipeline",
+    "GpuComputePipelineDescriptor",
+    "GpuCommandEncoder",
+    "GpuCommandBuffer",
+    "GpuRenderPassEncoder",
+    "GpuRenderPassDescriptor",
+    "GpuComputePassEncoder",
+    "GpuTextureDescriptor",
+] }
+send_wrapper = "0.6"
+js-sys = "0.3"
+gloo-net = { version = "0.6", features = ["http"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+log = "0.4"
+console_log = "1"
+console_error_panic_hook = "0.1"
+urlencoding = "2"

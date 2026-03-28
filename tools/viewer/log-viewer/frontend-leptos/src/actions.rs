@@ -24,8 +24,7 @@ pub fn load_log_files(store: Store) {
 }
 
 /// Select a file and load its log entries.
-pub fn select_file(filename: String) {
-    let store = leptos::prelude::expect_context::<Store>();
+pub fn select_file(store: Store, filename: String) {
     let name = filename.clone();
     store.current_file.set(Some(filename.clone()));
     store.is_loading.set(true);

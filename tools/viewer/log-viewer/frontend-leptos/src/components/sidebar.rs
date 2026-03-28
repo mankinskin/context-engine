@@ -22,10 +22,11 @@ pub fn Sidebar() -> impl IntoView {
                         let name_display = name.clone();
                         let name_for_active = name.clone();
                         let name_for_click = name.clone();
+                        let store_for_click = store;
                         let is_active =
                             move || current_file.get().as_deref() == Some(&name_for_active);
                         let on_click = move |_| {
-                            actions::select_file(name_for_click.clone());
+                            actions::select_file(store_for_click, name_for_click.clone());
                         };
 
                         // Build metadata badges string

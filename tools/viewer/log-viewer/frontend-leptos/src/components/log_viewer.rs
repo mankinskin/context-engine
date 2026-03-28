@@ -55,14 +55,14 @@ fn LogRow(entry: LogEntry) -> impl IntoView {
 
     let level = entry.level.clone();
     let level_class = format!("lv-level-badge lv-level-{}", level.to_lowercase());
-    let target = entry.target.clone().unwrap_or_default();
+    let target = entry.span_name.clone().unwrap_or_else(|| entry.event_type.clone());
     let message = entry.message.clone();
 
     // Build detail text for expanded view.
     let detail = {
         let mut parts = Vec::new();
         if let Some(ref file) = entry.file {
-            let loc = match entry.line {
+            let loc = match entry.source_line {
                 Some(l) => format!("{}:{}", file, l),
                 None => file.clone(),
             };

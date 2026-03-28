@@ -1,0 +1,17 @@
+[build]
+# Trunk serves index.html, injects the compiled WASM module automatically.
+# Run with: trunk serve
+# Build with: trunk build --release
+
+[serve]
+# Use a different port to avoid clashing with the TS Vite dev server (5173).
+port = 8081
+open = false
+
+[watch]
+ignore = []
+
+# Proxy /api/* to the log-viewer backend so both servers can be run together.
+[[proxy]]
+rewrite = "/api/"
+backend = "http://localhost:3000/api/"

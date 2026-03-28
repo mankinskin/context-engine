@@ -148,10 +148,9 @@
       "request": "launch",
       "runtimeExecutable": "trunk",
       "runtimeArgs": [
-        "serve",
-        "--open"
+        "serve"
       ],
-      "cwd": "${workspaceFolder}/tools/viewer/log-viewer-leptos",
+      "cwd": "${workspaceFolder}/tools/viewer/log-viewer/frontend-leptos",
       "presentation": {
         "group": "viewers",
         "order": 4
@@ -159,6 +158,18 @@
     }
   ],
   "compounds": [
+    {
+      "name": "Run: log-viewer + leptos",
+      "configurations": [
+        "Run: log-viewer",
+        "Run: log-viewer-leptos (trunk serve)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "viewers",
+        "order": 5
+      }
+    },
     {
       "name": "Run: all viewers",
       "configurations": [

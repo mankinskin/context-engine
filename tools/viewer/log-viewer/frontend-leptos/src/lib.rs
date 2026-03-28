@@ -3,6 +3,7 @@ mod actions;
 mod api;
 mod app;
 mod components;
+mod gpu;
 mod store;
 mod types;
 
