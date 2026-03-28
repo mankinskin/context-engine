@@ -1,7 +1,7 @@
 /// Root App component.
 use leptos::prelude::*;
 
-use crate::components::{Header, HypergraphView, LogViewer, Sidebar, TabBar};
+use crate::components::{Header, HypergraphView, LogViewer, Sidebar, TabBar, ThemeSelector};
 use crate::store::provide_store;
 use crate::types::ViewTab;
 use crate::actions;
@@ -29,7 +29,7 @@ pub fn App() -> impl IntoView {
                             ViewTab::Logs => view! { <LogViewer /> }.into_any(),
                             ViewTab::Hypergraph => view! { <HypergraphView /> }.into_any(),
                             ViewTab::Settings => {
-                                view! { <p class="lv-placeholder">"Settings — coming soon"</p> }
+                                view! { <ThemeSelector /> }
                                     .into_any()
                             }
                             ViewTab::Debug => {

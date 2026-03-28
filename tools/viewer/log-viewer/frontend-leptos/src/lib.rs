@@ -5,6 +5,7 @@ mod app;
 mod components;
 mod gpu;
 mod store;
+pub mod theme;
 mod types;
 
 use wasm_bindgen::prelude::*;

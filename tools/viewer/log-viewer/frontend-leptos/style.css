@@ -450,68 +450,91 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
 
 /* ── Hypergraph view ───────────────────────────────────────────────────────── */
 
+/* ── Hypergraph view — GPU canvas + DOM node layer ─────────────────────────── */
+
 .lv-hypergraph-view {
     height: 100%;
-    display: flex;
-    flex-direction: column;
+    position: relative;
     overflow: hidden;
-    padding: 8px;
-    gap: 8px;
+    cursor: grab;
+    user-select: none;
+}
+.lv-hypergraph-view:active { cursor: grabbing; }
+
+/* WebGPU canvas: fills the full container, sits behind DOM nodes */
+.hg-gpu-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
 }
 
-.hg-info-bar {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    flex-shrink: 0;
-    padding: 2px 4px;
-    border-bottom: 1px solid var(--border-subtle);
+/* Absolutely-positioned node container (same bounds as canvas) */
+.hg-node-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
 }
 
-.hg-node-list { flex: 1; overflow-y: auto; }
-
-.hg-nodes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 4px 0;
-}
-
+/* Individual node pills — positioned imperatively by JS each frame */
 .hg-node {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 4px 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(12, 10, 8, 0.82);
+    border: 1px solid rgba(200, 180, 140, 0.18);
+    border-radius: 5px;
+    padding: 3px 8px;
     display: flex;
     gap: 6px;
     align-items: center;
     font-size: 11px;
     font-family: var(--font-mono);
-    transition: border-color 0.15s;
+    white-space: nowrap;
+    pointer-events: auto;
+    backdrop-filter: blur(3px);
+    transform-origin: center center;
+    color: var(--text-primary);
+    transition: border-color 0.12s;
+    visibility: hidden; /* shown by render callback once projected */
 }
-.hg-node:hover { border-color: var(--accent-purple); }
+.hg-node:hover { border-color: rgba(200, 100, 50, 0.5); }
 
-.hg-atom { border-color: color-mix(in srgb, var(--accent-blue) 50%, transparent); }
-.hg-atom:hover { border-color: var(--accent-blue); }
+.hg-atom {
+    border-color: rgba(80, 140, 220, 0.3);
+}
+.hg-atom:hover { border-color: rgba(80, 160, 255, 0.65); }
 
 .hg-node-idx {
     color: var(--text-muted);
     font-size: 10px;
-    min-width: 24px;
+    min-width: 22px;
 }
 .hg-node-label { color: var(--text-primary); }
 .hg-atom-tag {
     font-size: 9px;
     color: var(--accent-blue);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.7;
+    opacity: 0.65;
 }
 
-.hg-node-children {
-    font-size: 9px;
-    color: var(--text-muted);
-    margin-left: 2px;
+/* Info bar — bottom-left overlay */
+.hg-info-bar {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 2;
+    pointer-events: none;
+    padding: 3px 10px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
+    color: rgba(195, 205, 215, 0.8);
+    font-size: 11px;
+    font-family: var(--font-mono);
 }
 
 /* ── Misc / utilities ──────────────────────────────────────────────────────── */
@@ -530,3 +553,96 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
 }
 
 .lv-error-text { color: var(--level-error); }
+
+/* ── GPU-active glass mode ─────────────────────────────────────────────────── */
+/* Activated by the GPU overlay via document.documentElement.classList.add("gpu-active") */
+
+:root.gpu-active {
+    --bg-primary:    transparent;
+    --bg-secondary:  rgba(20, 19, 17, 0.14);
+    --bg-tertiary:   rgba(26, 24, 22, 0.14);
+    --bg-hover:      rgba(36, 32, 28, 0.25);
+    --bg-active:     rgba(42, 34, 24, 0.30);
+    --border-color:  rgba(46, 42, 36, 0.35);
+    --border-subtle: rgba(30, 28, 24, 0.25);
+    --gpu-stroke:    0.5px rgba(10, 6, 2, 0.8);
+    --gpu-glow:      0 0 3px rgba(100, 50, 10, 0.18);
+    --gpu-blur:      blur(4px);
+}
+
+/* Glass panels — sidebar, header, tab bar */
+:root.gpu-active .lv-sidebar,
+:root.gpu-active .lv-header,
+:root.gpu-active .lv-tab-bar {
+    backdrop-filter: var(--gpu-blur);
+    -webkit-backdrop-filter: var(--gpu-blur);
+    -webkit-text-stroke: var(--gpu-stroke);
+    text-shadow: var(--gpu-glow);
+}
+
+/* Main area needs transparent bg so GPU canvas shows through */
+:root.gpu-active .lv-main {
+    background: transparent;
+}
+
+:root.gpu-active .lv-body {
+    background: transparent;
+}
+
+:root.gpu-active .lv-app {
+    background: transparent;
+}
+
+/* Log rows need a subtle backdrop for readability */
+:root.gpu-active .lv-log-row {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+:root.gpu-active .lv-view-container {
+    background: transparent;
+}
+
+/* ── Theme selector ────────────────────────────────────────────────────────── */
+
+.lv-theme-selector {
+    padding: 16px;
+}
+
+.lv-theme-heading {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+}
+
+.lv-theme-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.lv-theme-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font-sans);
+    padding: 6px 14px;
+    transition: all 0.15s;
+}
+.lv-theme-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent-orange);
+}
+.lv-theme-btn.lv-theme-active {
+    background: var(--bg-active);
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
+    box-shadow: 0 0 6px rgba(200, 90, 24, 0.25);
+}

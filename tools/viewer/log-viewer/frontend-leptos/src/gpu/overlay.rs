@@ -24,6 +24,8 @@ use web_sys::{
     HtmlCanvasElement,
 };
 
+use crate::theme;
+
 // ── Embedded WGSL shaders ─────────────────────────────────────────────────────
 
 const PALETTE_WGSL: &str =
@@ -74,6 +76,9 @@ type CallbackVec = Vec<RenderCallback>;
 #[derive(Clone, Copy)]
 pub struct OverlayContext {
     pub gpu: StoredValue<Option<SendWrapper<Rc<RefCell<GpuInner>>>>>,
+    /// Set to `true` (once) by `start_overlay` after WebGPU init completes.
+    /// Child components may watch this reactive signal to begin GPU work.
+    pub gpu_ready: RwSignal<bool>,
     pub callbacks: StoredValue<SendWrapper<Rc<RefCell<CallbackVec>>>>,
 }
 
@@ -97,6 +102,64 @@ impl OverlayContext {
     }
 }
 
+// ── Camera VP (for 3D smoke) ─────────────────────────────────────────────────
+
+struct ParticleCam {
+    eye:    [f32; 3],
+    vp:     [f32; 16],
+    inv_vp: [f32; 16],
+}
+
+impl Default for ParticleCam {
+    fn default() -> Self {
+        // Default: perspective-like projection so smoke shader's
+        // screen_to_ray_dir produces sane world-space rays before
+        // HypergraphView starts writing real camera data.
+        //
+        // Place the eye 5 units back on Z, looking at origin.
+        // VP = simple perspective(fov=60°, aspect=1, near=0.1, far=100)
+        let fov_y: f32 = 60.0_f32.to_radians();
+        let f = 1.0 / (fov_y / 2.0).tan(); // ~1.732
+        let near = 0.1_f32;
+        let far  = 100.0_f32;
+        let nf = near - far;
+        #[rustfmt::skip]
+        let vp = [
+            f, 0.0, 0.0, 0.0,
+            0.0, f, 0.0, 0.0,
+            0.0, 0.0, (far + near) / nf, -1.0,
+            0.0, 0.0, 2.0 * far * near / nf, 0.0,
+        ];
+        // Compute a simple inverse for this symmetric perspective matrix.
+        let inv_f = 1.0 / f;
+        let d = 2.0 * far * near / nf; // same as vp[14]
+        let c = (far + near) / nf;     // same as vp[10]
+        #[rustfmt::skip]
+        let inv_vp = [
+            inv_f, 0.0, 0.0, 0.0,
+            0.0, inv_f, 0.0, 0.0,
+            0.0, 0.0, 0.0, 1.0 / d,
+            0.0, 0.0, -1.0, c / d,
+        ];
+        ParticleCam { eye: [0.0, 0.0, 5.0], vp, inv_vp }
+    }
+}
+
+thread_local! {
+    static PARTICLE_CAM: RefCell<ParticleCam> = RefCell::new(ParticleCam::default());
+}
+
+/// Called by the HypergraphView render callback every frame to feed the
+/// camera matrix into the background smoke shader.
+pub fn set_particle_cam(vp: [f32; 16], inv_vp: [f32; 16], eye: [f32; 3]) {
+    PARTICLE_CAM.with(|cam| {
+        let mut c = cam.borrow_mut();
+        c.vp     = vp;
+        c.inv_vp = inv_vp;
+        c.eye    = eye;
+    });
+}
+
 // ── GpuInner ─────────────────────────────────────────────────────────────────
 
 pub(crate) struct GpuInner {
@@ -104,7 +167,7 @@ pub(crate) struct GpuInner {
     pub queue: GpuQueue,
     pub canvas: HtmlCanvasElement,
     ctx: GpuCanvasContext,
-    format: String,
+    pub format: String,
 
     bg_pipeline: JsValue,
     particle_pipeline: JsValue,
@@ -155,7 +218,7 @@ pub async fn init_gpu(canvas: HtmlCanvasElement) -> Option<GpuInner> {
     let cfg = obj();
     jset(&cfg, "device", device.as_ref());
     jset(&cfg, "format", &format_js);
-    jset(&cfg, "alphaMode", &js_str("opaque"));
+    jset(&cfg, "alphaMode", &js_str("premultiplied"));
     ctx.configure(cfg.unchecked_ref());
 
     let uniform_buf = mk_buf(&device, UNIFORMS_BYTES as u64, 0x40 | 0x08)?;
@@ -219,6 +282,11 @@ impl GpuInner {
         let uniforms = build_uniforms(time as f32, dt as f32, w, h, elem_count);
         write_f32(&self.queue, &self.uniform_buf, &uniforms);
 
+        // Upload palette colors from the active theme.
+        theme::with_palette_data(|pal| {
+            write_f32(&self.queue, &self.palette_buf, pal);
+        });
+
         let render_bg  = mk_bind_group(&self.device, &self.render_bgl,  &[(&self.uniform_buf, 0), (&self.elem_buf, 1), (&self.particle_buf, 2), (&self.palette_buf, 3)]);
         let compute_bg = mk_bind_group(&self.device, &self.compute_bgl, &[(&self.uniform_buf, 0), (&self.elem_buf, 1), (&self.particle_buf, 2), (&self.palette_buf, 3)]);
 
@@ -238,7 +306,7 @@ impl GpuInner {
         jset(&ca, "view", color_view.as_ref());
         let cv = obj();
         jset(&cv, "r", &js_f(0.0)); jset(&cv, "g", &js_f(0.0));
-        jset(&cv, "b", &js_f(0.0)); jset(&cv, "a", &js_f(1.0));
+        jset(&cv, "b", &js_f(0.0)); jset(&cv, "a", &js_f(0.0));
         jset(&ca, "clearValue", cv.as_ref());
         jset(&ca, "loadOp", &js_str("clear"));
         jset(&ca, "storeOp", &js_str("store"));
@@ -403,29 +471,86 @@ pub(crate) fn write_f32(queue: &GpuQueue, buf: &GpuBuffer, data: &[f32]) {
 
 fn build_uniforms(time: f32, dt: f32, w: u32, h: u32, elem_count: usize) -> Vec<f32> {
     let mut u = vec![0.0f32; UNIFORMS_BYTES / 4];
+
+    // ── Core ──────────────────────────────────────────────────────────────────
     u[0]  = time;
     u[1]  = w as f32;
     u[2]  = h as f32;
     u[3]  = elem_count as f32;
-    u[4]  = w as f32 / 2.0; // mouse centre default
-    u[5]  = h as f32 / 2.0;
+    u[4]  = w as f32 / 2.0;  // mouse_x (center default)
+    u[5]  = h as f32 / 2.0;  // mouse_y
     u[6]  = dt;
-    u[7]  = -1.0; // hover = none
-    u[9]  = -1.0; // selected = none
-    u[15] = 0.4;  // smoke_intensity
-    u[16] = 1.0; u[17] = 1.0; u[18] = 1.0; u[19] = 1.0; // smoke speeds
-    u[20] = 0.3; u[21] = 0.5; u[22] = 0.5; // grain
-    u[23] = 0.5;  // vignette
-    u[25] = 1.0; u[26] = 1.0; u[27] = 1.0; u[28] = 1.0; // particle speeds
-    u[29] = 35.0; // beam_height
-    u[33] = 1.0; u[34] = 1.0; u[35] = 1.0; u[36] = 1.0; // spark/ember
-    u[37] = 1.0; u[38] = 1.0; u[39] = 1.0; // glitter/cinder
-    u[41] = 1.0;  // world_scale
-    u[44] = w as f32; u[45] = h as f32; // vp dims
-    u[46] = 5.0;  // current_view = hypergraph
-    for off in [56usize, 72] { // identity particle VP matrices
-        u[off] = 1.0; u[off+5] = 1.0; u[off+10] = 1.0; u[off+15] = 1.0;
-    }
+    u[7]  = -1.0;             // hover_elem  (none)
+    u[9]  = -1.0;             // selected_elem (none)
+
+    // ── Effect settings (percentage / 100) ────────────────────────────────────
+    theme::with_effect_settings(|e| {
+        let p = |v: f32| v / 100.0;
+
+        // CRT [10‥14]
+        if e.crt_enabled {
+            u[10] = p(e.crt_scanlines_h);
+            u[11] = p(e.crt_scanlines_v);
+            u[12] = p(e.crt_edge_shadow);
+            u[13] = p(e.crt_flicker);
+            u[14] = p(e.crt_line_width);
+        }
+
+        // Smoke [15‥19]
+        u[15] = if e.smoke_enabled { p(e.smoke_intensity) } else { 0.0 };
+        u[16] = p(e.smoke_speed);
+        u[17] = p(e.smoke_warm_scale);
+        u[18] = p(e.smoke_cool_scale);
+        u[19] = p(e.smoke_moss_scale);
+
+        // Grain / vignette / underglow [20‥24]
+        u[20] = p(e.grain_intensity);
+        u[21] = p(e.grain_coarseness);
+        u[22] = p(e.grain_size);
+        u[23] = p(e.vignette_strength);
+        u[24] = p(e.underglow_strength);
+
+        // Particle speeds [25‥28]
+        u[25] = if e.sparks_enabled  { p(e.spark_speed) }   else { 0.0 };
+        u[26] = if e.embers_enabled  { p(e.ember_speed) }   else { 0.0 };
+        u[27] = if e.beams_enabled   { p(e.beam_speed) }    else { 0.0 };
+        u[28] = if e.glitter_enabled { p(e.glitter_speed) } else { 0.0 };
+
+        // Beam params [29‥31]
+        u[29] = e.beam_height;
+        u[30] = e.beam_count;
+        u[31] = p(e.beam_drift);
+
+        // scroll_dx/dy [32,33] = 0
+
+        // Particle counts/sizes [34‥40]
+        u[34] = if e.sparks_enabled  { p(e.spark_count) }   else { 0.0 };
+        u[35] = if e.sparks_enabled  { p(e.spark_size) }    else { 0.0 };
+        u[36] = if e.embers_enabled  { p(e.ember_count) }   else { 0.0 };
+        u[37] = if e.embers_enabled  { p(e.ember_size) }    else { 0.0 };
+        u[38] = if e.glitter_enabled { p(e.glitter_count) } else { 0.0 };
+        u[39] = if e.glitter_enabled { p(e.glitter_size) }  else { 0.0 };
+        u[40] = if e.cinder_enabled  { p(e.cinder_size) }   else { 0.0 };
+
+        // CRT color [48‥50]
+        u[48] = e.crt_color[0] / 255.0;
+        u[49] = e.crt_color[1] / 255.0;
+        u[50] = e.crt_color[2] / 255.0;
+    });
+
+    // ── Viewport / view ───────────────────────────────────────────────────────
+    u[42] = 1.0;              // world_scale
+    u[45] = w as f32;         // vp_w
+    u[46] = h as f32;         // vp_h
+    u[47] = 5.0;              // current_view = 5 (hypergraph — enables 3D smoke)
+
+    // ── Camera VP for 3D triplanar smoke ──────────────────────────────────────
+    PARTICLE_CAM.with(|cam| {
+        let c = cam.borrow();
+        u[52] = c.eye[0]; u[53] = c.eye[1]; u[54] = c.eye[2];
+        u[56..72].copy_from_slice(&c.vp);
+        u[72..88].copy_from_slice(&c.inv_vp);
+    });
     u
 }
 
@@ -468,7 +593,21 @@ pub fn start_overlay(overlay: OverlayContext, canvas: HtmlCanvasElement) {
             return;
         };
         let gpu_rc = Rc::new(RefCell::new(inner));
-        overlay.gpu.set_value(Some(SendWrapper::new(gpu_rc.clone())));
+        // Guard: if the component was disposed while GPU was initialising, bail out.
+        let stored = overlay.gpu.try_update_value(|v| {
+            *v = Some(SendWrapper::new(gpu_rc.clone()));
+        });
+        if stored.is_none() { return; }
+
+        // Activate glass-mode CSS on the document root.
+        if let Some(doc) = web_sys::window().and_then(|w| w.document()) {
+            let _ = doc.document_element().map(|el| {
+                let _ = el.class_list().add_1("gpu-active");
+            });
+        }
+
+        // Signal to reactive Effects that GPU is now ready.
+        overlay.gpu_ready.set(true);
         run_loop(gpu_rc, overlay.callbacks);
     });
 }
@@ -478,12 +617,17 @@ fn run_loop(gpu: Rc<RefCell<GpuInner>>, cbs: StoredValue<SendWrapper<Rc<RefCell<
     let g = f.clone();
 
     *f.borrow_mut() = Some(Closure::new(move |_ts: f64| {
-        let cbs_sw = cbs.get_value();
-        let cbs_borrow = cbs_sw.borrow();
-        if let Ok(mut gpu_b) = gpu.try_borrow_mut() {
-            gpu_b.render_frame(&cbs_borrow);
+        // try_with_value returns None if the StoredValue has been disposed
+        // (component unmounted). Stop the loop by not rescheduling.
+        let alive = cbs.try_with_value(|cbs_sw| {
+            let cbs_borrow = cbs_sw.borrow();
+            if let Ok(mut gpu_b) = gpu.try_borrow_mut() {
+                gpu_b.render_frame(&cbs_borrow);
+            }
+        });
+        if alive.is_some() {
+            raf(&g);
         }
-        raf(&g);
     }));
 
     raf(&f);

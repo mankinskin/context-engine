@@ -306,3 +306,13 @@ pub fn world_to_screen(world: Vec3, view_proj: Mat4, cw: f32, ch: f32) -> (f32, 
 
     (sx, sy, ndc_z, ndc_z >= 0.0 && ndc_z <= 1.0)
 }
+
+/// Pixels-per-world-unit scale for a point at `world_pos` seen from `eye`.
+/// Uses fov_y = PI/4 (matching the camera in HypergraphView).
+pub fn world_scale_at_depth(eye: Vec3, world_pos: Vec3, canvas_h: f32) -> f32 {
+    // tan(PI/8) = tan(fov_y/2) for fov_y = PI/4
+    const HALF_FOV_TAN: f32 = 0.41421356;
+    let d = vec3_sub(world_pos, eye);
+    let dist = vec3_length(d).max(0.01);
+    canvas_h / (2.0 * dist * HALF_FOV_TAN)
+}

@@ -5,6 +5,7 @@
 use leptos::prelude::*;
 use std::collections::HashMap;
 
+use crate::theme::{self, EffectSettings, PaletteData, all_presets, default_palette};
 use crate::types::{LogEntry, LogFile, HypergraphSnapshot, ViewTab};
 
 // ── Per-file state ────────────────────────────────────────────────────────────
@@ -37,10 +38,17 @@ pub struct Store {
     pub auto_layout_enabled: RwSignal<bool>,
     /// Per-file state, keyed by filename.
     pub file_states: RwSignal<HashMap<String, FileState>>,
+    /// Active theme name.
+    pub active_theme: RwSignal<String>,
+    /// Current effect settings (GPU overlay reads these every frame).
+    pub effect_settings: RwSignal<EffectSettings>,
+    /// Current palette data (GPU overlay reads these every frame).
+    pub palette_data: RwSignal<PaletteData>,
 }
 
 impl Store {
     pub fn new() -> Self {
+        let cinder = theme::preset_cinder();
         Self {
             log_files: RwSignal::new(vec![]),
             current_file: RwSignal::new(None),
@@ -51,6 +59,21 @@ impl Store {
             show_raw: RwSignal::new(false),
             auto_layout_enabled: RwSignal::new(false),
             file_states: RwSignal::new(HashMap::new()),
+            active_theme: RwSignal::new(cinder.name.to_string()),
+            effect_settings: RwSignal::new(cinder.effects),
+            palette_data: RwSignal::new(cinder.palette),
+        }
+    }
+
+    /// Apply a named theme preset. Updates reactive signals and pushes to the
+    /// thread-local for the GPU overlay to read next frame.
+    pub fn apply_theme(&self, name: &str) {
+        if let Some(preset) = all_presets().into_iter().find(|p| p.name == name) {
+            self.active_theme.set(preset.name.to_string());
+            self.effect_settings.set(preset.effects.clone());
+            self.palette_data.set(preset.palette);
+            theme::set_effect_settings(&preset.effects);
+            theme::set_palette_data(&preset.palette);
         }
     }
 
@@ -110,5 +133,8 @@ impl Store {
 pub fn provide_store() -> Store {
     let store = Store::new();
     provide_context(store);
+    // Push initial theme to thread-local so the GPU overlay has values on first frame.
+    theme::set_effect_settings(&store.effect_settings.get_untracked());
+    theme::set_palette_data(&store.palette_data.get_untracked());
     store
 }
