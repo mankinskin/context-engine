@@ -64,10 +64,6 @@ jobs:
         working-directory: tools/log-viewer/frontend
         run: npm install
 
-      - name: Generate demo data from test logs
-        working-directory: tools/log-viewer
-        run: node scripts/generate-demo-data.mjs
-
       - name: Build frontend (static mode)
         working-directory: tools/log-viewer/frontend
         env:

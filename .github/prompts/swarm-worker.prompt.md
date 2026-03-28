@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: "Use when running a swarm worker on one claimed ticket: analyze scope, implement safely, validate with tests, and post a structured handoff report."
 ---
 
@@ -60,7 +60,7 @@ Provide these inputs before execution (prefer a single Assignment Packet):
 
 6. Update ticket state
 - Add progress metadata (what changed, why, evidence).
-- Transition state according to workflow rules (for example: implementation-ready -> in-progress -> review).
+- Transition state according to workflow rules (for example: ready -> in-implementation -> in-review).
 - Record dependency impacts or new blockers.
 
 7. Prepare handoff

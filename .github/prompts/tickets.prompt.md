@@ -27,34 +27,25 @@ Create tickets for issues and research each ticket systematically. Update ticket
 ## State Machine
 
 ```
-                          ┌─────────────────────────────────────────┐
-                          │          ┌──────────────────────────────┤
-                          ▼          ▼                              │
-open ──► in-progress ──► review ──► validating ──► validated ──► release-candidate ──► released ──► monitoring ──► done
- │            │            │          │              │              │                    │             │
- │            │            │          │              │              │                    │             │
- ▼            ▼            ▼          ▼              ▼              ▼                    ▼             ▼
- blocked ◄────┴────────────┴──────────┴──────────────┴──────────────┴────────────────────┴─────────────┘
- │  ▲
- │  └── open, in-progress, review (re-entry from blocked)
+new ──► in-refinement ──► ready ──► in-implementation ──► in-review ──► in-validation ──► done
+ │                                                                        │
+ │                                                                        ▼
+ │                                                                   in-review (validation failed)
  │
  ▼
- cancelled ◄── open, in-progress
+ cancelled ◄── (any non-terminal state)
 ```
 
 **Transitions per state:**
 
 | From | To |
 |---|---|
-| `open` | `in-progress`, `blocked`, `cancelled` |
-| `in-progress` | `review`, `blocked`, `cancelled` |
-| `review` | `validating`, `in-progress`, `blocked` |
-| `validating` | `validated`, `review`, `blocked` |
-| `validated` | `release-candidate`, `review`, `blocked` |
-| `release-candidate` | `released`, `review`, `blocked` |
-| `released` | `monitoring`, `blocked` |
-| `monitoring` | `done`, `blocked` |
-| `blocked` | `open`, `in-progress`, `review`, `cancelled` |
+| `new` | `in-refinement`, `cancelled` |
+| `in-refinement` | `ready`, `cancelled` |
+| `ready` | `in-implementation`, `cancelled` |
+| `in-implementation` | `in-review`, `cancelled` |
+| `in-review` | `in-validation`, `in-implementation`, `cancelled` |
+| `in-validation` | `done`, `in-review`, `cancelled` |
 | `done` | *(terminal)* |
 | `cancelled` | *(terminal)* |
 
@@ -88,7 +79,7 @@ ticket --schema-dir <path> ... # override schema directory
 
 ```bash
 ticket create --title "Bug: parser panics on empty input" \
-  --state open \
+  --state new \
   --field component=context-trace \
   --field risk_level=high \
   --field "acceptance_criteria=Panic fixed; regression test added"
@@ -114,9 +105,9 @@ ticket get --id <uuid>          # full manifest (fields, state, timestamps)
 ### Update
 
 ```bash
-ticket update --id <uuid> --to-state in-progress
+ticket update --id <uuid> --to-state in-implementation
 ticket update --id <uuid> --field "acceptance_criteria=Updated criteria"
-ticket update --id <uuid> --from-state open --to-state in-progress  # guarded transition
+ticket update --id <uuid> --from-state new --to-state in-refinement  # guarded transition
 ```
 
 **Flags:** `--id`, `--to-state`, `--from-state`, `--field key=value` (repeatable)
@@ -125,7 +116,7 @@ ticket update --id <uuid> --from-state open --to-state in-progress  # guarded tr
 
 ```bash
 ticket list                                    # all active tickets
-ticket list --state open                       # filter by state
+ticket list --state new                        # filter by state
 ticket list --type tracker-improvement         # filter by type
 ticket list --include-deleted                  # include soft-deleted
 ticket list --where component=context-trace    # filter by field value
@@ -188,8 +179,8 @@ Atomic execution — rolls back all changes on first error.
 ```bash
 # From stdin (NDJSON, one JSON object per line)
 ticket exec --batch <<'EOF'
-{"command":"create","title":"Sub-task A","type":"tracker-improvement","state":"open","fields":{"component":"context-trace"}}
-{"command":"create","title":"Sub-task B","type":"tracker-improvement","state":"open"}
+{"command":"create","title":"Sub-task A","type":"tracker-improvement","state":"new","fields":{"component":"context-trace"}}
+{"command":"create","title":"Sub-task B","type":"tracker-improvement","state":"new"}
 {"command":"link","from":"<uuid-a>","to":"<uuid-b>","kind":"depends_on"}
 EOF
 
@@ -285,7 +276,7 @@ mcp_ticket-mcp_help
 
 ```bash
 # 1. Create
-ticket create --title "Bug: X crashes on Y" --state open \
+ticket create --title "Bug: X crashes on Y" --state new \
   --field component=context-trace --field risk_level=high \
   --field "acceptance_criteria=Crash fixed; test added"
 
@@ -300,15 +291,15 @@ ticket close --id <uuid>
 
 ```bash
 # 1. Create parent
-ticket create --title "Refactor: search API" --state open \
+ticket create --title "Refactor: search API" --state new \
   --field component=context-search --field workflow_stage=plan
 
 # 2. Create sub-tickets and wire dependencies
-ticket create --title "Impl: extract QueryBuilder" --state open \
+ticket create --title "Impl: extract QueryBuilder" --state new \
   --field component=context-search
 ticket link --from <child> --to <parent> --kind depends_on
 
-ticket create --title "Impl: migrate callers" --state open \
+ticket create --title "Impl: migrate callers" --state new \
   --field component=context-search
 ticket link --from <child2> --to <child1> --kind depends_on
 
@@ -320,7 +311,7 @@ ticket close --id <parent>
 
 ```bash
 # Create with what you know
-ticket create --title "Feature: configurable retry policy" --state open \
+ticket create --title "Feature: configurable retry policy" --state new \
   --field component=context-read
 
 # After interviewing user, update with answers
