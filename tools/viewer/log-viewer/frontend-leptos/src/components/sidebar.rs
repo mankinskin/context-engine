@@ -47,16 +47,26 @@ pub fn Sidebar() -> impl IntoView {
 
     let sidebar_style = move || {
         if collapsed.get() {
-            "width: 0; overflow: hidden; min-width: 0;".to_string()
+            // Keep a 32 px strip so the toggle button stays reachable;
+            // the body and title are hidden by the .lv-sidebar-collapsed class.
+            "width: 32px;".to_string()
         } else {
             format!("width: {}px;", width.get())
+        }
+    };
+
+    let sidebar_class = move || {
+        if collapsed.get() {
+            "lv-sidebar lv-sidebar-collapsed"
+        } else {
+            "lv-sidebar"
         }
     };
 
     let file_count = move || log_files.with(|f| f.len());
 
     view! {
-        <aside class="lv-sidebar" style=sidebar_style>
+        <aside class=sidebar_class style=sidebar_style>
             <div class="lv-sidebar-header">
                 <span class="lv-sidebar-title">
                     "Log Files"

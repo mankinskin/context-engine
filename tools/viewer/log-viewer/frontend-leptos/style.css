@@ -254,6 +254,14 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
 }
 .lv-collapse-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
 
+/* When the sidebar is collapsed, hide title + body; keep the toggle button. */
+.lv-sidebar-collapsed { overflow: hidden; }
+.lv-sidebar-collapsed .lv-sidebar-title { display: none; }
+.lv-sidebar-collapsed .lv-sidebar-badge { display: none; }
+.lv-sidebar-collapsed .lv-sidebar-body { display: none; }
+.lv-sidebar-collapsed .va-resize-handle { display: none; }
+.lv-sidebar-collapsed .lv-sidebar-header { justify-content: center; padding: 6px 4px; }
+
 /* ── Sidebar body scrollable area ── */
 
 .lv-sidebar-body {
