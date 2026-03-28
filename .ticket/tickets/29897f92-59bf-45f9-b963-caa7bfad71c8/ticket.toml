@@ -4,6 +4,6 @@ acceptance_criteria = "1. Tab bar: 32px height, icon + label per tab, active tab
 component = "viewer-api-leptos"
 interview_answers = "Q1: Tabs are fixed (Logs, Hypergraph, Settings) — not closeable. No close buttons needed. Q2: Sidebar shows file tree of loaded log sources, same as TS version. TreeView component should be ported to viewer-api-leptos shared crate. Q3: Right panel (CodeViewer) left entirely to T5 — this ticket only handles sidebar + tab bar + resize."
 risk_level = "medium"
-state = "done"
+state = "in-review"
 title = "Feature: UI polish — tab bar, sidebar, and resizable panels"
 type = "tracker-improvement"

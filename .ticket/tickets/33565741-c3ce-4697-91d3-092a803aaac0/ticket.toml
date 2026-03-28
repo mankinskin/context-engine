@@ -1,0 +1,8 @@
+id = "33565741-c3ce-4697-91d3-092a803aaac0"
+created_at = "2026-03-28T19:26:50.488883400Z"
+acceptance_criteria = "1. ticket-system.instructions.md updated to require every ticket must pass through in-review before done. 2. Instructions enforce progressing through every applicable state (no skipping). 3. Instructions document the undo/revert workflow for correcting premature state transitions. 4. Instructions document per-ticket required_states field usage. 5. next command documentation updated to reflect progress-based sorting."
+component = "instructions"
+priority = "high"
+state = "new"
+title = "[ticket-system] Instruction updates: mandatory review gate and diligent state progression"
+type = "tracker-improvement"
