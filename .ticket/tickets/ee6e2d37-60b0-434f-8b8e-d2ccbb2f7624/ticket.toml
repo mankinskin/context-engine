@@ -4,6 +4,6 @@ acceptance_criteria = "GPU canvas is position:fixed covering full viewport at z-
 component = "log-viewer-leptos"
 interview_answers = "Q1: GPU overlay always running on every tab, with global toggles to disable GPU shading. Q2: Proper HiDPI support (devicePixelRatio scaling), going beyond the original TS frontend. Q3: Opaque canvas at z-index:-1 (matching original approach)."
 risk_level = "medium"
-state = "in-review"
+state = "done"
 title = "Bug: GPU canvas should cover the full page, not just hypergraph view"
 type = "tracker-improvement"
