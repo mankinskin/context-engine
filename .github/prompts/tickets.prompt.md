@@ -209,6 +209,7 @@ ticket workspace use <name> [--local]
 ### Other Commands
 
 ```bash
+ticket next [--limit 20] [--filter <prefix>]  # unblocked ready tickets, priority-ordered
 ticket status [--filter <state>] [--show-blocked]
 ticket ready-overview [--filter <state>]
 ticket audit                    # summary of all tickets by state
@@ -247,6 +248,7 @@ mcp_ticket-mcp_cancel_ticket    workspace, id
 ```
 mcp_ticket-mcp_health
 mcp_ticket-mcp_list_workspaces
+mcp_ticket-mcp_next_tickets     workspace, limit?, filter?  — unblocked ready tickets in priority order
 mcp_ticket-mcp_workflow         name (list|triage_open_tickets|fetch_ticket_context|inspect_dependencies), workspace?, id?, query?
 mcp_ticket-mcp_help
 ```
@@ -271,6 +273,18 @@ mcp_ticket-mcp_help
 ---
 
 ## Common Patterns
+
+### Find next work
+
+```bash
+# Priority-ordered list of unblocked tickets in "ready" state
+ticket next --json
+
+# Scoped to a track/prefix
+ticket next --filter "[bootstrap]" --limit 5 --json
+```
+
+Dependency convention: parents/epics `depends_on` their children (done when all children done). Children depend on sibling prerequisites, not on their parent.
 
 ### Single issue → research → plan → close
 
