@@ -31,7 +31,7 @@
 /// flags   : f32         offset 40  (highlighted)
 /// edgeType: f32         offset 44
 /// ```
-use js_sys::{Array, Float32Array, Object, Reflect};
+use js_sys::{Array, Float32Array, Function, Object, Reflect};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{GpuBuffer, GpuDevice};
@@ -453,7 +453,8 @@ pub fn write_f32_buf(device: &GpuDevice, buf: &GpuBuffer, data: &[f32]) {
 pub fn call_set_bind_group(pass: &JsValue, index: u32, bg: &JsValue) {
     let f = Reflect::get(pass, &JsValue::from_str("setBindGroup")).unwrap();
     let args = Array::of2(&JsValue::from_f64(index as f64), bg);
-    Reflect::apply(f.unchecked_ref(), pass, &args).unwrap_or(JsValue::UNDEFINED);
+    let func: &Function = f.unchecked_ref();
+    Reflect::apply(func, pass, &args).unwrap_or(JsValue::UNDEFINED);
 }
 
 // ── JS helpers ────────────────────────────────────────────────────────────────

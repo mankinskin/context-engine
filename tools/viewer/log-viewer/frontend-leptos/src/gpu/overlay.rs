@@ -12,7 +12,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use js_sys::{Array, Float32Array, Object, Reflect};
+use js_sys::{Array, Float32Array, Function, Object, Reflect};
 use leptos::prelude::*;
 use send_wrapper::SendWrapper;
 use wasm_bindgen::prelude::*;
@@ -336,7 +336,7 @@ impl GpuInner {
         pass.end();
 
         let cmd: GpuCommandBuffer = encoder.finish().dyn_into().unwrap();
-        self.queue.submit(&Array::of1(cmd.as_ref()));
+        self.queue.submit(&[cmd]);
     }
 
     fn ensure_depth(&mut self, w: u32, h: u32) {
@@ -456,7 +456,8 @@ fn mk_bind_group(device: &GpuDevice, bgl: &JsValue, bindings: &[(&GpuBuffer, u32
 fn call_set_bind_group(pass: &JsValue, index: u32, bg: &GpuBindGroup) {
     let f = Reflect::get(pass, &js_str("setBindGroup")).unwrap();
     let args = Array::of2(&js_f(index as f64), bg.as_ref());
-    Reflect::apply(f.unchecked_ref(), pass, &args).unwrap_or(JsValue::UNDEFINED);
+    let func: &Function = f.unchecked_ref();
+    Reflect::apply(func, pass, &args).unwrap_or(JsValue::UNDEFINED);
 }
 
 // ── Buffer write ──────────────────────────────────────────────────────────────
