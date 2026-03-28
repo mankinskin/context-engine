@@ -1,4 +1,4 @@
 export { HypergraphView } from './HypergraphView';
-export { HypergraphViewCore } from './HypergraphViewCore';
-export type { HypergraphViewProps } from './types';
-export type { GraphLayout, LayoutNode, LayoutEdge } from './layout';
+export { HypergraphViewCore } from '@context-engine/viewer-api-frontend';
+export type { HypergraphViewProps } from '@context-engine/viewer-api-frontend';
+export type { GraphLayout, LayoutNode, LayoutEdge } from '@context-engine/viewer-api-frontend';

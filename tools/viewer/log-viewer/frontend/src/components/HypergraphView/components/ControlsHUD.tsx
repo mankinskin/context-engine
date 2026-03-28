@@ -5,7 +5,7 @@
  * Each setting is only shown/unlocked when its prerequisite is active.
  */
 import { autoLayoutEnabled } from '../../../store';
-import type { NestingSettings } from '../types';
+import type { NestingSettings } from '@context-engine/viewer-api-frontend';
 
 export interface ControlsHUDProps {
     nestingSettings?: NestingSettings;

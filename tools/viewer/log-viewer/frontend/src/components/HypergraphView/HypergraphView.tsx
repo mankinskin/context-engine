@@ -6,7 +6,7 @@
  * are rendered here as children of the core component.
  */
 import { hypergraphSnapshot, activeSearchStep, activeSearchState, activeSearchPath, activePathEvent, activePathStep, autoLayoutEnabled } from '../../store';
-import { HypergraphViewCore } from './HypergraphViewCore';
+import { HypergraphViewCore } from '@context-engine/viewer-api-frontend';
 
 // Log-viewer-specific panels
 import {

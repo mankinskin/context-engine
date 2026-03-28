@@ -1,7 +1,7 @@
 /**
  * GraphInfoOverlay - Node/edge/atom count display.
  */
-import type { HypergraphSnapshot } from '../../../types';
+import type { GraphSnapshot as HypergraphSnapshot } from '@context-engine/types';
 
 export interface GraphInfoOverlayProps {
     snapshot: HypergraphSnapshot;

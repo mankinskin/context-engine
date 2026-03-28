@@ -6,10 +6,10 @@
  */
 import type {
     GraphOpEvent,
+    GraphSnapshot as HypergraphSnapshot,
     VizPathGraph,
     SnapshotEdge,
 } from "@context-engine/types";
-import type { HypergraphSnapshot } from "../../types";
 
 /**
  * Data props accepted by HypergraphViewCore.

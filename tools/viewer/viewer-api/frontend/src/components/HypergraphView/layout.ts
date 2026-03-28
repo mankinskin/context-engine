@@ -6,7 +6,7 @@
  * XZ positions computed via spring-electrical force simulation.
  */
 
-import type { HypergraphSnapshot, VizPathGraph } from '../../types';
+import type { GraphSnapshot as HypergraphSnapshot, VizPathGraph } from '@context-engine/types';
 
 export interface LayoutNode {
     index: number;

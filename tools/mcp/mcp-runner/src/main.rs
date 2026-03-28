@@ -28,7 +28,7 @@ fn run() -> io::Result<ExitCode> {
     let tool_args: Vec<OsString> = args.collect();
 
     let workspace_root = find_workspace_root()?;
-    let tool_dir = workspace_root.join("tools").join(&tool_name);
+    let tool_dir = workspace_root.join("tools").join("mcp").join(&tool_name);
     let tool_manifest = tool_dir.join("Cargo.toml");
     if !tool_manifest.exists() {
         return Err(io::Error::new(

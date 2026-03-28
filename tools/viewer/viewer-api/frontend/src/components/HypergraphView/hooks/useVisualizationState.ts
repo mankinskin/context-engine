@@ -11,11 +11,11 @@ import type {
     Transition,
     VizPathGraph,
 } from "@context-engine/types";
-import { allNodeIndices } from "../../../search-path/reconstruction";
+import { allNodeIndices } from "../search-path/reconstruction";
 import {
     computeSearchEdgeKeys,
     edgePairKey,
-} from "../../../search-path/edge-highlighting";
+} from "../search-path/edge-highlighting";
 
 export interface VisualizationState {
     /** Primary node being operated on */
