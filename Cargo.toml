@@ -22,6 +22,7 @@ members = [
   "tools/mcp/context-mcp",
   "tools/http/context-http",
   "tools/mcp/mcp-runner",
+  "tools/viewer/log-viewer-leptos",
 ]
 exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
 

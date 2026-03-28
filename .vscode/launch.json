@@ -141,6 +141,21 @@
       "env": {
         "RUST_LOG": "info"
       }
+    },
+    {
+      "name": "Run: log-viewer-leptos (trunk serve)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "trunk",
+      "runtimeArgs": [
+        "serve",
+        "--open"
+      ],
+      "cwd": "${workspaceFolder}/tools/viewer/log-viewer-leptos",
+      "presentation": {
+        "group": "viewers",
+        "order": 4
+      }
     }
   ],
   "compounds": [

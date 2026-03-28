@@ -1,0 +1,257 @@
+/* Basic layout for log-viewer-leptos — mirroring the TS log-viewer's structure */
+
+:root {
+    --bg: #1a1b1e;
+    --surface: #25262b;
+    --border: #373a40;
+    --text: #c1c2c5;
+    --muted: #5c5f66;
+    --accent: #228be6;
+    --error: #e03131;
+    --level-trace: #868e96;
+    --level-debug: #228be6;
+    --level-info: #40c057;
+    --level-warn: #f59f00;
+    --level-error: #e03131;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+
+.lv-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.lv-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+
+.lv-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.lv-header-title {
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+.lv-search-form {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+}
+
+.lv-search-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    padding: 4px 8px;
+    outline: none;
+}
+
+.lv-search-input:focus { border-color: var(--accent); }
+
+.lv-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 10px;
+}
+
+.lv-status {
+    color: var(--muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* ── Sidebar ───────────────────────────────────────────────────────────────── */
+
+.lv-sidebar {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.lv-sidebar-section-title {
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+}
+
+.lv-file-list { list-style: none; }
+
+.lv-file-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 1px 4px;
+}
+
+.lv-file-item:hover { background: var(--border); }
+.lv-file-item.lv-active { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent); }
+
+/* ── Main + tabs ───────────────────────────────────────────────────────────── */
+
+.lv-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lv-tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface);
+}
+
+.lv-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: inherit;
+    transition: color 0.15s;
+}
+
+.lv-tab:hover { color: var(--text); }
+.lv-tab.lv-tab-active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.lv-view-container {
+    flex: 1;
+    overflow: auto;
+}
+
+/* ── Log table ─────────────────────────────────────────────────────────────── */
+
+.lv-log-viewer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.lv-log-header-row,
+.lv-log-row {
+    display: grid;
+    grid-template-columns: 60px 160px 1fr;
+    gap: 8px;
+    padding: 3px 10px;
+    align-items: baseline;
+}
+
+.lv-log-header-row {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+}
+
+.lv-log-row { border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+.lv-log-row:hover { background: var(--surface); }
+.lv-log-rows { overflow-y: auto; flex: 1; }
+
+.lv-level-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    width: 50px;
+    text-align: center;
+    border-radius: 3px;
+    padding: 1px 4px;
+}
+
+.lv-level-trace { color: var(--level-trace); }
+.lv-level-debug { color: var(--level-debug); }
+.lv-level-info  { color: var(--level-info); }
+.lv-level-warn  { color: var(--level-warn); }
+.lv-level-error { color: var(--level-error); }
+
+/* ── Hypergraph ────────────────────────────────────────────────────────────── */
+
+.lv-hypergraph-view {
+    height: 100%;
+    overflow: auto;
+    padding: 12px;
+}
+
+.hg-info-bar {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.hg-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.hg-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.hg-atom { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.hg-node-idx { color: var(--muted); font-size: 11px; }
+
+/* ── Misc ──────────────────────────────────────────────────────────────────── */
+
+.lv-placeholder {
+    color: var(--muted);
+    text-align: center;
+    margin-top: 40px;
+}
+
+.lv-error-banner {
+    background: color-mix(in srgb, var(--error) 20%, var(--surface));
+    border: 1px solid var(--error);
+    border-radius: 4px;
+    color: var(--error);
+    margin: 8px;
+    padding: 8px 12px;
+}
