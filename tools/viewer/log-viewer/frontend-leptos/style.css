@@ -326,7 +326,8 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
 .va-resize-handle {
     position: absolute;
     top: 0;
-    right: -3px;
+    right: 0;            /* flush with container edge — do NOT use negative offset
+                            inside a parent with overflow:hidden */
     width: 6px;
     height: 100%;
     cursor: col-resize;

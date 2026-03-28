@@ -6,7 +6,7 @@ use viewer_api_leptos::components::{
 };
 
 use crate::store::Store;
-use crate::{actions, types::LogFile};
+use crate::actions;
 
 /// Default sidebar width in CSS pixels.
 const DEFAULT_WIDTH: f64 = 260.0;
@@ -17,7 +17,6 @@ const MIN_WIDTH: f64 = 120.0;
 pub fn Sidebar() -> impl IntoView {
     let store = expect_context::<Store>();
     let log_files = store.log_files;
-    let current_file = store.current_file;
 
     // Sidebar width / collapsed state
     let width = RwSignal::new(DEFAULT_WIDTH);
@@ -42,12 +41,9 @@ pub fn Sidebar() -> impl IntoView {
             .collect::<Vec<_>>()
     };
 
-    let on_select: Box<dyn Fn(String) + 'static> = {
-        let store = store;
-        Box::new(move |id: String| {
-            actions::select_file(store, id);
-        })
-    };
+    // Store is Copy; capture it in the reactive closure so a fresh callback
+    // is created on each re-render without needing Rc.
+    let on_select_store = store;
 
     let sidebar_style = move || {
         if collapsed.get() {
@@ -81,10 +77,15 @@ pub fn Sidebar() -> impl IntoView {
             </div>
 
             <div class="lv-sidebar-body">
-                <TreeView
-                    nodes=nodes()
-                    on_select=on_select
-                />
+                // Reactive wrapper ensures TreeView re-renders when log_files changes.
+                {move || {
+                    let cb: Box<dyn Fn(String) + 'static> = Box::new(move |id: String| {
+                        actions::select_file(on_select_store, id);
+                    });
+                    view! {
+                        <TreeView nodes=nodes() on_select=cb />
+                    }
+                }}
             </div>
 
             <ResizeHandle on_resize=on_resize />

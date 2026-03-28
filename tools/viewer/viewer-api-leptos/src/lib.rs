@@ -10,3 +10,6 @@ pub mod components;
 pub use components::resize_handle::ResizeHandle;
 pub use components::sidebar_shell::SidebarShell;
 pub use components::tree_view::{NodeIcon, TreeNode, TreeView};
+
+#[cfg(test)]
+mod tests;
