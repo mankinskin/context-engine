@@ -16,6 +16,7 @@ pub fn TabBar() -> impl IntoView {
             {tabs
                 .into_iter()
                 .map(|tab| {
+                    let icon = tab.icon();
                     let label = tab.label();
                     let tab_for_active = tab.clone();
                     let tab_for_click = tab.clone();
@@ -26,9 +27,11 @@ pub fn TabBar() -> impl IntoView {
                             class="lv-tab"
                             class:lv-tab-active=is_active
                             role="tab"
+                            aria-label=label
                             on:click=on_click
                         >
-                            {label}
+                            <span class="lv-tab-icon" aria-hidden="true">{icon}</span>
+                            <span class="lv-tab-label">{label}</span>
                         </button>
                     }
                 })

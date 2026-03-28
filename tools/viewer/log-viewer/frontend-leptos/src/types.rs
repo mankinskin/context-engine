@@ -123,4 +123,13 @@ impl ViewTab {
             ViewTab::Settings => "Settings",
         }
     }
+
+    pub fn icon(&self) -> &'static str {
+        match self {
+            ViewTab::Logs => "☰",
+            ViewTab::Hypergraph => "⬡",
+            ViewTab::Debug => "◎",
+            ViewTab::Settings => "⚙",
+        }
+    }
 }

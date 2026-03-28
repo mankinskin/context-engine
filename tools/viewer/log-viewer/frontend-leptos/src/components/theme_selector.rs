@@ -1,6 +1,7 @@
 /// Theme selector panel — shown in the Settings tab.
 use leptos::prelude::*;
 
+use crate::gpu::overlay::{is_gpu_overlay_enabled, set_gpu_overlay_enabled};
 use crate::store::Store;
 use crate::theme::all_presets;
 
@@ -10,6 +11,9 @@ pub fn ThemeSelector() -> impl IntoView {
     let active = store.active_theme;
 
     let preset_names: Vec<&'static str> = all_presets().iter().map(|p| p.name).collect();
+
+    // GPU overlay toggle signal (bridges thread_local flag to reactive UI).
+    let gpu_enabled = RwSignal::new(is_gpu_overlay_enabled());
 
     view! {
         <div class="lv-theme-selector">
@@ -34,6 +38,21 @@ pub fn ThemeSelector() -> impl IntoView {
                         }
                     })
                     .collect::<Vec<_>>()}
+            </div>
+
+            <div class="lv-settings-section">
+                <label class="lv-toggle-row">
+                    <input
+                        type="checkbox"
+                        prop:checked=move || gpu_enabled.get()
+                        on:change=move |_| {
+                            let next = !gpu_enabled.get_untracked();
+                            gpu_enabled.set(next);
+                            set_gpu_overlay_enabled(next);
+                        }
+                    />
+                    "GPU shading"
+                </label>
             </div>
         </div>
     }

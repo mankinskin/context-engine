@@ -45,7 +45,7 @@
     /* Layout */
     --sidebar-width:  220px;
     --header-height:  24px;
-    --tab-height:     20px;
+    --tab-height:     32px;
 
     /* Compat aliases (used by lv-* classes below) */
     --bg:      var(--bg-primary);
@@ -96,6 +96,18 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
 /* ── App shell ─────────────────────────────────────────────────────────────── */
 
 #app, .app { height: 100%; width: 100%; overflow: hidden; }
+
+/* Global GPU canvas — position:fixed so it covers the entire viewport and sits
+   behind all HTML content.  Sized to physical pixels via JS (HiDPI support). */
+#gpu-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    display: block;
+    pointer-events: none;
+}
 
 .lv-app {
     display: flex;
@@ -188,7 +200,70 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
     flex-direction: column;
     flex-shrink: 0;
     overflow: hidden;
+    position: relative; /* needed for ResizeHandle absolute positioning */
+    transition: width 0.2s;
 }
+
+/* ── Sidebar header (title + badge + collapse button) ── */
+
+.lv-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 4px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+    gap: 4px;
+}
+
+.lv-sidebar-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.lv-sidebar-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 14px;
+    padding: 0 4px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.lv-collapse-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.15s;
+}
+.lv-collapse-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── Sidebar body scrollable area ── */
+
+.lv-sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 0;
+}
+
+/* ── Legacy file-list classes (kept for potential fallback) ── */
 
 .lv-sidebar-section-title {
     padding: 6px 8px 4px;
@@ -246,6 +321,91 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
     letter-spacing: 0.1em;
 }
 
+/* ── viewer-api-leptos: ResizeHandle ── */
+
+.va-resize-handle {
+    position: absolute;
+    top: 0;
+    right: -3px;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10;
+    background: transparent;
+    transition: background 0.15s;
+}
+.va-resize-handle:hover {
+    background: color-mix(in srgb, var(--accent-blue) 30%, transparent);
+}
+
+/* ── viewer-api-leptos: TreeView ── */
+
+.va-tree-view {
+    font-size: 12px;
+    user-select: none;
+}
+
+.va-tree-item-group {
+    /* wraps item + its children */
+}
+
+.va-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-right: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    transition: background 0.1s, color 0.1s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.va-tree-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.va-tree-item.va-tree-item-selected {
+    background: var(--bg-active);
+    border-left-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.va-tree-chevron {
+    font-size: 10px;
+    color: var(--text-muted);
+    display: inline-block;
+    width: 10px;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+}
+.va-tree-chevron.va-tree-chevron-expanded {
+    transform: rotate(90deg);
+}
+
+.va-tree-icon {
+    font-size: 12px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.va-tree-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--font-mono);
+}
+
+.va-tree-badge {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    padding: 1px 4px;
+    flex-shrink: 0;
+    font-family: var(--font-sans);
+}
+
 /* ── Main + tab bar ────────────────────────────────────────────────────────── */
 
 .lv-main {
@@ -262,33 +422,47 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
     display: flex;
     align-items: center;
     height: var(--tab-height);
-    padding: 0 8px;
+    padding: 0 4px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
-    gap: 2px;
+    gap: 1px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
 }
+.lv-tab-bar::-webkit-scrollbar { display: none; }
 
 .lv-tab {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
+    gap: 5px;
+    padding: 0 10px;
+    height: 100%;
     background: transparent;
     border: none;
-    border-radius: 3px;
+    border-bottom: 2px solid transparent;
     color: var(--text-muted);
-    font-size: 11px;
+    font-size: 12px;
     font-family: var(--font-sans);
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     cursor: pointer;
-    transition: all 0.15s;
-    line-height: 1;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 .lv-tab:hover           { background: var(--bg-hover); color: var(--text-primary); }
-.lv-tab.lv-tab-active   { background: var(--bg-tertiary); color: var(--accent-blue); }
+.lv-tab.lv-tab-active   { color: var(--accent-orange); border-bottom-color: var(--accent-orange); }
+
+.lv-tab-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.lv-tab-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
 
 .lv-view-container {
     flex: 1;
@@ -646,3 +820,28 @@ select option { background: var(--bg-secondary); color: var(--text-primary); }
     color: var(--accent-orange);
     box-shadow: 0 0 6px rgba(200, 90, 24, 0.25);
 }
+
+/* ── Settings section (GPU toggle, etc.) ───────────────────────────────────── */
+
+.lv-settings-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 12px;
+}
+
+.lv-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+.lv-toggle-row input[type="checkbox"] {
+    accent-color: var(--accent-orange);
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+}
+.lv-toggle-row:hover { color: var(--text-primary); }

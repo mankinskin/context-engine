@@ -147,6 +147,18 @@ impl Default for ParticleCam {
 
 thread_local! {
     static PARTICLE_CAM: RefCell<ParticleCam> = RefCell::new(ParticleCam::default());
+    /// Global GPU overlay enable flag — toggled from the Settings panel.
+    static GPU_OVERLAY_ENABLED: RefCell<bool> = RefCell::new(true);
+}
+
+/// Enable or disable the GPU overlay globally.
+pub fn set_gpu_overlay_enabled(v: bool) {
+    GPU_OVERLAY_ENABLED.with(|e| *e.borrow_mut() = v);
+}
+
+/// Returns `true` if the GPU overlay is currently enabled.
+pub fn is_gpu_overlay_enabled() -> bool {
+    GPU_OVERLAY_ENABLED.with(|e| *e.borrow())
 }
 
 /// Called by the HypergraphView render callback every frame to feed the
@@ -201,7 +213,20 @@ fn js_f(n: f64) -> JsValue { JsValue::from_f64(n) }
 
 // ── GPU init ──────────────────────────────────────────────────────────────────
 
+/// Resize the canvas to match the viewport at the current devicePixelRatio.
+pub fn resize_canvas_to_viewport(canvas: &HtmlCanvasElement) {
+    let Some(win) = web_sys::window() else { return };
+    let dpr = win.device_pixel_ratio();
+    let css_w = win.inner_width().ok().and_then(|v| v.as_f64()).unwrap_or(800.0);
+    let css_h = win.inner_height().ok().and_then(|v| v.as_f64()).unwrap_or(600.0);
+    canvas.set_width((css_w * dpr) as u32);
+    canvas.set_height((css_h * dpr) as u32);
+}
+
 pub async fn init_gpu(canvas: HtmlCanvasElement) -> Option<GpuInner> {
+    // Set HiDPI canvas dimensions before configuring the WebGPU context.
+    resize_canvas_to_viewport(&canvas);
+
     let navigator = web_sys::window()?.navigator();
     let gpu = navigator.gpu();
 
@@ -265,6 +290,7 @@ pub async fn init_gpu(canvas: HtmlCanvasElement) -> Option<GpuInner> {
 
 impl GpuInner {
     pub(crate) fn render_frame(&mut self, callbacks: &[RenderCallback]) {
+        if !is_gpu_overlay_enabled() { return; }
         let w = self.canvas.width();
         let h = self.canvas.height();
         if w == 0 || h == 0 { return; }
@@ -589,6 +615,10 @@ fn perf_now() -> f64 {
 
 pub fn start_overlay(overlay: OverlayContext, canvas: HtmlCanvasElement) {
     spawn_local(async move {
+        // Clone the canvas handle before init_gpu takes ownership — needed for
+        // the window resize listener registered below.
+        let canvas_for_resize = canvas.clone();
+
         let Some(inner) = init_gpu(canvas).await else {
             log::warn!("[overlay] WebGPU unavailable");
             return;
@@ -606,6 +636,22 @@ pub fn start_overlay(overlay: OverlayContext, canvas: HtmlCanvasElement) {
                 let _ = el.class_list().add_1("gpu-active");
             });
         }
+
+        // Window resize listener — keeps canvas pixel dimensions in sync with
+        // the viewport and devicePixelRatio.
+        let resize_cb = Closure::<dyn FnMut()>::new(move || {
+            resize_canvas_to_viewport(&canvas_for_resize);
+        });
+        if let Some(win) = web_sys::window() {
+            let win_js: &JsValue = win.as_ref();
+            let add_fn = Reflect::get(win_js, &JsValue::from_str("addEventListener")).unwrap_or_default();
+            Reflect::apply(
+                add_fn.unchecked_ref::<Function>(),
+                win_js,
+                &Array::of2(&JsValue::from_str("resize"), resize_cb.as_ref()),
+            ).ok();
+        }
+        resize_cb.forget();
 
         // Signal to reactive Effects that GPU is now ready.
         overlay.gpu_ready.set(true);

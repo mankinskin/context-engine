@@ -2969,6 +2969,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "urlencoding",
+ "viewer-api-leptos",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -5991,6 +5992,16 @@ dependencies = [
  "tracing-appender",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "viewer-api-leptos"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

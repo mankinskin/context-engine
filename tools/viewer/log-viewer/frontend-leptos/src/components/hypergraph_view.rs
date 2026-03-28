@@ -9,14 +9,17 @@
 /// - Background smoke + particles: global `OverlayContext` render loop.
 ///
 /// # GPU init flow
-/// `HypergraphView` provides an `OverlayContext`, starts the overlay on the
-/// local canvas, and registers a GPU render callback once `overlay.gpu_ready`
-/// becomes `true` AND the hypergraph snapshot is available.
+/// The global `OverlayContext` is provided by `App` and started on the full-page
+/// canvas.  `HypergraphView` reads the context and registers a per-frame GPU
+/// render callback once `overlay.gpu_ready` becomes `true` AND the hypergraph
+/// snapshot is available.  The callback restricts its GPU operations to the
+/// container's bounding rect via `setViewport` / `setScissorRect`.
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use js_sys::{Array, Function, Reflect};
 use leptos::prelude::*;
-use send_wrapper::SendWrapper;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{GpuRenderPassEncoder, GpuTextureView, MouseEvent, WheelEvent};
 
@@ -28,7 +31,7 @@ use crate::gpu::math3d::{
     mat4_identity, mat4_inverse, mat4_look_at, mat4_multiply, mat4_perspective,
     world_scale_at_depth, world_to_screen, Vec3,
 };
-use crate::gpu::overlay::{set_particle_cam, start_overlay, write_f32, OverlayContext, RenderCallback};
+use crate::gpu::overlay::{set_particle_cam, write_f32, OverlayContext, RenderCallback};
 use crate::store::Store;
 use crate::types::{HypergraphSnapshot, SnapshotEdge};
 
@@ -222,6 +225,33 @@ fn build_default_palette() -> Vec<f32> {
     p
 }
 
+// ── GPU viewport helpers ──────────────────────────────────────────────────────
+
+/// Call `pass.setViewport(x, y, w, h, 0.0, 1.0)` via Reflect to avoid IDL overload issues.
+fn call_set_viewport(pass: &GpuRenderPassEncoder, x: u32, y: u32, w: u32, h: u32) {
+    let Ok(f) = Reflect::get(pass.as_ref(), &JsValue::from_str("setViewport")) else { return };
+    let args = Array::new();
+    args.push(&JsValue::from_f64(x as f64));
+    args.push(&JsValue::from_f64(y as f64));
+    args.push(&JsValue::from_f64(w as f64));
+    args.push(&JsValue::from_f64(h as f64));
+    args.push(&JsValue::from_f64(0.0));
+    args.push(&JsValue::from_f64(1.0));
+    Reflect::apply(f.unchecked_ref::<Function>(), pass.as_ref(), &args).ok();
+}
+
+/// Call `pass.setScissorRect(x, y, w, h)` via Reflect.
+fn call_set_scissor_rect(pass: &GpuRenderPassEncoder, x: u32, y: u32, w: u32, h: u32) {
+    let Ok(f) = Reflect::get(pass.as_ref(), &JsValue::from_str("setScissorRect")) else { return };
+    let args = Array::of4(
+        &JsValue::from_f64(x as f64),
+        &JsValue::from_f64(y as f64),
+        &JsValue::from_f64(w as f64),
+        &JsValue::from_f64(h as f64),
+    );
+    Reflect::apply(f.unchecked_ref::<Function>(), pass.as_ref(), &args).ok();
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 #[component]
@@ -229,15 +259,12 @@ pub fn HypergraphView() -> impl IntoView {
     let store    = expect_context::<Store>();
     let snapshot = store.hypergraph_snapshot();
 
-    // Create and provide the overlay context (local canvas, background + graph).
-    let overlay = OverlayContext {
-        gpu:       StoredValue::new(None),
-        gpu_ready: RwSignal::new(false),
-        callbacks: StoredValue::new(SendWrapper::new(Rc::new(RefCell::new(Vec::new())))),
-    };
-    provide_context(overlay);
+    // Use the global overlay context provided by App.
+    let overlay = expect_context::<OverlayContext>();
 
-    let canvas_ref = NodeRef::<leptos::html::Canvas>::new();
+    // NodeRef for the hypergraph container — used inside the render callback
+    // to restrict GPU drawing to the container's bounding rect.
+    let container_ref = NodeRef::<leptos::html::Div>::new();
 
     // Camera state — shared between mouse handlers and render callback.
     let camera:    Rc<RefCell<CameraState>> = Rc::new(RefCell::new(CameraState::default()));
@@ -303,8 +330,33 @@ pub fn HypergraphView() -> impl IntoView {
                   cw: u32,
                   ch: u32,
                   _depth: Option<&GpuTextureView>| {
+                // ── Container bounding rect (CSS px) ──────────────────────
+                // The canvas is full-viewport; restrict 3D drawing to this
+                // component's area via setViewport / setScissorRect.
+                let (css_x, css_y, css_w, css_h) = container_ref
+                    .get_untracked()
+                    .map(|el| {
+                        let r = el.get_bounding_client_rect();
+                        (r.left() as f32, r.top() as f32, r.width() as f32, r.height() as f32)
+                    })
+                    .unwrap_or((0.0, 0.0, cw as f32, ch as f32));
+
+                // Convert CSS px → physical px using devicePixelRatio.
+                let dpr = web_sys::window()
+                    .map(|w| w.device_pixel_ratio() as f32)
+                    .unwrap_or(1.0);
+                let px_x = (css_x * dpr) as u32;
+                let px_y = (css_y * dpr) as u32;
+                let px_w = ((css_w * dpr) as u32).min(cw.saturating_sub(px_x));
+                let px_h = ((css_h * dpr) as u32).min(ch.saturating_sub(px_y));
+                if px_w == 0 || px_h == 0 { return; }
+
+                call_set_viewport(pass, px_x, px_y, px_w, px_h);
+                call_set_scissor_rect(pass, px_x, px_y, px_w, px_h);
+
+                // Camera uses physical pixel dims for correct aspect ratio.
                 let cam = cam_rc.borrow().clone();
-                let vp  = cam.view_proj(cw, ch);
+                let vp  = cam.view_proj(px_w, px_h);
                 let eye = cam.eye();
 
                 // Push camera state for the background 3D smoke shader.
@@ -315,8 +367,9 @@ pub fn HypergraphView() -> impl IntoView {
                 let res = &res_for_cb;
                 write_f32(queue, &res.cam_ub, &pack_cam_uniform(&vp, eye, time as f32));
 
-                // Move DOM nodes to their projected screen positions.
-                update_node_transforms(&nodes_cb, vp, eye, cw, ch);
+                // Move DOM nodes to CSS-pixel positions within the container.
+                // world_to_screen maps to [0, css_w] × [0, css_h].
+                update_node_transforms(&nodes_cb, vp, eye, css_w as u32, css_h as u32);
 
                 // ── Grid ──
                 pass.set_pipeline(res.edge_pipeline.unchecked_ref());
@@ -366,13 +419,6 @@ pub fn HypergraphView() -> impl IntoView {
         });
     });
 
-    // ── Start GPU overlay when canvas mounts ──────────────────────────────────
-    Effect::new(move |_| {
-        let Some(el) = canvas_ref.get() else { return };
-        let canvas: web_sys::HtmlCanvasElement = el.unchecked_into();
-        start_overlay(overlay, canvas);
-    });
-
     // ── Mouse / wheel handlers ────────────────────────────────────────────────
 
     let on_mousedown = move |e: MouseEvent| {
@@ -405,17 +451,12 @@ pub fn HypergraphView() -> impl IntoView {
 
     view! {
         <div class="lv-hypergraph-view"
+             node_ref=container_ref
              on:mousedown=on_mousedown
              on:mousemove=on_mousemove
              on:mouseup=on_mouseup
              on:contextmenu=|e: web_sys::MouseEvent| e.prevent_default()
              on:wheel=on_wheel>
-
-            // WebGPU canvas — background (z-index 0, behind DOM nodes)
-            <canvas
-                node_ref=canvas_ref
-                class="hg-gpu-canvas"
-            />
 
             // DOM node layer — nodes are absolutely positioned via CSS transforms
             <div class="hg-node-layer">

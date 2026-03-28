@@ -1,8 +1,17 @@
-/// Sidebar — lists available log files.
+/// Sidebar — lists available log files with a collapsible panel and resize handle.
 use leptos::prelude::*;
+use viewer_api_leptos::components::{
+    resize_handle::ResizeHandle,
+    tree_view::{NodeIcon, TreeNode, TreeView},
+};
 
 use crate::store::Store;
 use crate::{actions, types::LogFile};
+
+/// Default sidebar width in CSS pixels.
+const DEFAULT_WIDTH: f64 = 260.0;
+/// Minimum sidebar width (prevents collapsing via drag).
+const MIN_WIDTH: f64 = 120.0;
 
 #[component]
 pub fn Sidebar() -> impl IntoView {
@@ -10,54 +19,75 @@ pub fn Sidebar() -> impl IntoView {
     let log_files = store.log_files;
     let current_file = store.current_file;
 
+    // Sidebar width / collapsed state
+    let width = RwSignal::new(DEFAULT_WIDTH);
+    let collapsed = RwSignal::new(false);
+
+    let on_resize = move |delta: f64| {
+        width.update(|w| *w = (*w + delta).max(MIN_WIDTH));
+    };
+
+    // Build TreeNode list from log files
+    let nodes = move || {
+        log_files
+            .get()
+            .into_iter()
+            .map(|file| TreeNode {
+                id: file.name.clone(),
+                label: file.name.clone(),
+                icon: NodeIcon::File,
+                badge: Some(format_size(file.size)),
+                children: vec![],
+            })
+            .collect::<Vec<_>>()
+    };
+
+    let on_select: Box<dyn Fn(String) + 'static> = {
+        let store = store;
+        Box::new(move |id: String| {
+            actions::select_file(store, id);
+        })
+    };
+
+    let sidebar_style = move || {
+        if collapsed.get() {
+            "width: 0; overflow: hidden; min-width: 0;".to_string()
+        } else {
+            format!("width: {}px;", width.get())
+        }
+    };
+
+    let file_count = move || log_files.with(|f| f.len());
+
     view! {
-        <aside class="lv-sidebar">
-            <div class="lv-sidebar-section-title">"Log Files"</div>
-            <ul class="lv-file-list">
-                <For
-                    each=move || log_files.get()
-                    key=|f: &LogFile| f.name.clone()
-                    children=move |file| {
-                        let name = file.name.clone();
-                        let name_display = name.clone();
-                        let name_for_active = name.clone();
-                        let name_for_click = name.clone();
-                        let store_for_click = store;
-                        let is_active =
-                            move || current_file.get().as_deref() == Some(&name_for_active);
-                        let on_click = move |_| {
-                            actions::select_file(store_for_click, name_for_click.clone());
-                        };
+        <aside class="lv-sidebar" style=sidebar_style>
+            <div class="lv-sidebar-header">
+                <span class="lv-sidebar-title">
+                    "Log Files"
+                    {move || {
+                        let n = file_count();
+                        (n > 0).then(|| view! {
+                            <span class="lv-sidebar-badge">{n}</span>
+                        })
+                    }}
+                </span>
+                <button
+                    class="lv-collapse-btn"
+                    title=move || if collapsed.get() { "Expand sidebar" } else { "Collapse sidebar" }
+                    on:click=move |_| collapsed.update(|c| *c = !*c)
+                >
+                    {move || if collapsed.get() { "›" } else { "‹" }}
+                </button>
+            </div>
 
-                        // Build metadata badges string
-                        let mut badges = Vec::new();
-                        if file.has_graph_snapshot { badges.push("⬡"); }
-                        if file.has_search_ops     { badges.push("⌕"); }
-                        if file.has_insert_ops     { badges.push("+"); }
-                        let badge_str = badges.join(" ");
-
-                        // Human-readable size
-                        let size_str = format_size(file.size);
-
-                        view! {
-                            <li
-                                class="lv-file-item"
-                                class:lv-active=is_active
-                                on:click=on_click
-                                title=name.clone()
-                            >
-                                <span class="lv-file-name">{name_display}</span>
-                                <div class="lv-file-meta">
-                                    <span>{size_str}</span>
-                                    {(!badge_str.is_empty()).then(|| view! {
-                                        <span class="lv-file-badges">{badge_str}</span>
-                                    })}
-                                </div>
-                            </li>
-                        }
-                    }
+            <div class="lv-sidebar-body">
+                <TreeView
+                    nodes=nodes()
+                    on_select=on_select
                 />
-            </ul>
+            </div>
+
+            <ResizeHandle on_resize=on_resize />
         </aside>
     }
 }
@@ -73,3 +103,4 @@ fn format_size(bytes: u64) -> String {
         format!("{} B", bytes)
     }
 }
+
