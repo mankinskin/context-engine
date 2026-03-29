@@ -1,5 +1,16 @@
 # Rendering: Bevy Render Graph, Double-Buffered SVO, and Gaussian Splatting Pipeline
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T2a** GPU Buffer Infrastructure — `c6c150d9-eba5-4370-8283-c759bac302ef`
+> - **T2b** Render Graph & Pipeline Assembly — `c7659e24-3687-4581-bc4c-54bfc7e19267`
+>
+> This ticket is done when both sub-tickets are closed.
+
+---
+
 ## Problem
 
 Bevy's render loop must host the full GPU pipeline: SVO buffer management with double buffering, procedural Gaussian generation, EWA projection, GPU radix sort, and tiled forward+ rasterization. This ticket wires the render graph and creates all buffer infrastructure.

@@ -1,5 +1,16 @@
 # 3D UI Panels: Glass SDF Elements in Gaussian-Splatted World
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T10a** WorldPanel Rendering — Glass SDF Panels & Content Textures — `d02afc1f-7e0c-483f-a70d-86c7b1e088ad`
+> - **T10b** Panel Interaction — 3D Hit Testing & Input Dispatch — `8d289d6c-941b-41e2-aaa3-58465bcba3d3`
+>
+> This ticket is done when both sub-tickets are closed.
+
+---
+
 ## Problem
 
 In-world UI panels (floating labels, health bars, menus anchored to positions) exist as glass SDF shapes inside the 3D scene. They interact with the Gaussian splatting pipeline: the tiled rasterizer renders Gaussians behind/around them, and the glass shader refracts those Gaussians through the panel surface.

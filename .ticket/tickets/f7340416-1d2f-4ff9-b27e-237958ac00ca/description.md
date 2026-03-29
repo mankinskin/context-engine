@@ -1,5 +1,17 @@
 # World: Physics, Voxel Manipulation, Double-Buffered SVO Upload, and Rapier Bridge
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T7a** VoxelWorld API — Octree + Manipulation + Raycast — `c241f246-2fc2-47dc-8742-684f5b23f08f`
+> - **T7b** Double-Buffered SVO Upload — `b29d49db-f9d9-4e53-a9ab-60de8bd25f80`
+> - **T7c** Rapier Collision Bridge — `a5ab9013-94ce-4055-8d03-400236209958`
+>
+> This ticket is done when all three sub-tickets are closed.
+
+---
+
 ## Problem
 
 The context-editor needs physics, voxel manipulation, and a bridge from SVO to Rapier collision shapes. With Gaussian splatting, the SVO is the **structural authority** (physics + editing) while Gaussians are visual-only. Voxel edits flow through the double-buffered SVO upload, and the Gaussian generator re-creates visuals from fresh octree data every frame.

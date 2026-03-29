@@ -1,5 +1,17 @@
 # World Editor: Voxel Paint/Carve with Live Gaussian Regeneration
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T16a** Core Voxel Editor — Paint, Carve & Ray-Octree — `86b0a60e-9e9b-41c5-ba1e-a0f372587dbe`
+> - **T16b** Advanced Voxel Tools — Fill, Smooth, Extrude & Clone — `dcc6ad3f-6266-4940-96e1-2f26656cae57`
+> - **T16c** Editor UX — Undo/Redo, Symmetry, Preview & Material Picker — `abbc1175-bb52-4871-af41-c6aaa2f04b19`
+>
+> This ticket is done when all three sub-tickets are closed.
+
+---
+
 ## Problem
 
 The world editor lets users paint, carve, and sculpt voxels in the SVO. Each edit dirties the SVO, which is uploaded via the double buffer (T7), triggering Gaussian regeneration on GPU (T6). The user sees visual feedback within one frame — new/removed voxels appear/disappear as Gaussians.

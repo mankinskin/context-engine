@@ -1,5 +1,18 @@
 # Rendering: Procedural Gaussian Splatting from SVO with EWA Projection and Tiled Forward+ Rasterization
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T6a** Procedural Gaussian Generation from SVO — `f0ac6e8b-4e12-4765-9a9a-6b3e107f6779`
+> - **T6b** EWA Splatting Projection — `5070c6b3-a37a-47fa-8dcf-69f805c1a2d2`
+> - **T6c** GPU Radix Sort — `cf71418d-038b-4fc1-879d-0a302b681f84`
+> - **T6d** Tiled Forward+ Rasterizer — `194ade77-6922-4be8-8c5b-4423173abcf6`
+>
+> This ticket is done when all four sub-tickets are closed.
+
+---
+
 ## Problem
 
 The context-editor world must be rendered with photorealistic quality at 120 FPS. The Sparse Voxel Octree (SVO) provides structure and physics. **Procedural Gaussian Splatting** generates the visual representation on-the-fly from the octree — no pre-baked point clouds needed. Gaussians are projected via EWA, sorted with GPU radix sort, and composited via tiled forward+ rasterization.

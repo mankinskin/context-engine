@@ -1,5 +1,16 @@
 # VFX: Liquid Glass — SDF Refraction of Gaussians with Chromatic Aberration, Caustics, and Mipmap Blur
 
+> **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
+> Implementation work happens in the children; this ticket tracks overall completion.
+>
+> **Sub-tickets:**
+> - **T3a** Glass SDF Core — Analytical SDF & Snell's Refraction — `a87f450a-f703-4773-8467-44718d5ba70f`
+> - **T3b** Glass VFX — Chromatic Aberration, Caustics & Mipmap Blur — `5008909b-e6f2-40a4-897c-8cd359efc292`
+>
+> This ticket is done when both sub-tickets are closed.
+
+---
+
 ## Problem
 
 UI panels must appear as physically realistic glass floating in 3D space. In the Gaussian Splatting pipeline, glass is an **analytical SDF evaluated per-pixel in the tiled rasterizer**. When a pixel is inside a glass region, the lookup coordinates are refracted via Snell's law before sampling tiled Gaussians, producing chromatic aberration, pseudo-caustics, and mipmap-based frosted blur.
