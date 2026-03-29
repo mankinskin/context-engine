@@ -1,4 +1,4 @@
-# Multiplayer Characters: SDF Capsule Sync, Interpolation & Gaussian Rendering
+# Multiplayer Characters: SDF Capsule Sync, Interpolation & Voxel Splat Rendering
 
 ## Problem
 
@@ -19,7 +19,7 @@ Upload to GPU uniform buffer (player_capsules[MAX_PLAYERS])
     ↓
 Ray-marching shader evaluates sd_capsule for each remote player
     ↓
-Refraction through Liquid Glass, shadow casting, SH lighting
+Refraction through Liquid Glass, shadow casting, PBR lighting
 ```
 
 ### Remote Player ECS
@@ -125,7 +125,7 @@ fn evaluate_players(p: vec3<f32>) -> HitResult {
 
 - **Liquid Glass**: Player capsule SDFs participate in Snell's law refraction. A player walking behind a glass panel is visible through the refraction.
 - **Shadows**: Player SDFs cast shadows via shadow-ray evaluation in the tiled rasterizer's glass pre-loop.
-- **Gaussians**: Players do NOT generate Gaussians. They are pure SDF entities evaluated alongside the SVO and glass SDFs, then composited with the Gaussian alpha-blending output.
+- **splats**: Players do NOT generate splats. They are pure SDF entities evaluated alongside the SVO and glass SDFs, then composited with the splat alpha-blending output.
 - **Nameplate**: A small text label rendered as a Dioxus overlay positioned via world-to-screen projection of the capsule top point.
 
 ### SpacetimeDB Callbacks
@@ -152,7 +152,7 @@ Player::on_delete(|_ctx, player| {
 ## Acceptance Criteria
 1. Remote players appear as smooth capsules in the 3D world
 2. Movement interpolation at 120Hz from ~20Hz server updates (no jitter)
-3. Player capsules cast shadows on voxels and Gaussians
+3. Player capsules cast shadows on voxels and splats
 4. Light refracts correctly through glass panels onto player capsules
 5. Player join/leave spawns/despawns entities in <100ms
 6. Nameplate text tracks capsule top position in screen space

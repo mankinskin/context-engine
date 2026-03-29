@@ -9,8 +9,8 @@ Bevy's render graph must host 7 custom nodes executing in sequence, plus canvas/
 ### Render Graph Structure
 
 ```
-Camera Extract → Buffer Swap → Particle Compute → Gaussian Gen
-  → EWA Project → Radix Sort → Tile Bin → Tiled Raster → UI Overlay
+Camera Extract → Buffer Swap → Particle Compute → Voxel Splat Kernel
+  → AABB projection Project → Radix Sort → Tile Bin → Tiled Raster → UI Overlay
 ```
 
 ### Bevy Plugin
@@ -24,14 +24,14 @@ impl Plugin for ContextEditorRenderPlugin {
         render_app
             .add_render_graph_node::<BufferSwapNode>("buffer_swap")
             .add_render_graph_node::<ParticleComputeNode>("particle_compute")
-            .add_render_graph_node::<GaussianGenNode>("gaussian_gen")
-            .add_render_graph_node::<EwaProjectNode>("ewa_project")
+            .add_render_graph_node::<VoxelSplatKernelNode>("voxel_splat_kernel")
+            .add_render_graph_node::<SortKeyBuildNode>("sort_key_build")
             .add_render_graph_node::<RadixSortNode>("radix_sort")
             .add_render_graph_node::<TileBinNode>("tile_bin")
             .add_render_graph_node::<TiledRasterNode>("tiled_raster")
             .add_render_graph_edges(&[
-                "buffer_swap", "particle_compute", "gaussian_gen",
-                "ewa_project", "radix_sort", "tile_bin", "tiled_raster",
+                "buffer_swap", "particle_compute", "voxel_splat_kernel",
+                "sort_key_build", "radix_sort", "tile_bin", "tiled_raster",
             ]);
     }
 }

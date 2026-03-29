@@ -1,4 +1,4 @@
-# Rendering: Bevy Render Graph, Double-Buffered SVO, and Gaussian Splatting Pipeline
+# Rendering: Bevy Render Graph, Double-Buffered SVO, and Voxel Splatting Pipeline
 
 > **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
 > Implementation work happens in the children; this ticket tracks overall completion.
@@ -13,7 +13,7 @@
 
 ## Problem
 
-Bevy's render loop must host the full GPU pipeline: SVO buffer management with double buffering, procedural Gaussian generation, EWA projection, GPU radix sort, and tiled forward+ rasterization. This ticket wires the render graph and creates all buffer infrastructure.
+Bevy's render loop must host the full GPU pipeline: SVO buffer management with double buffering, procedural splat generation, AABB screen projection, GPU radix sort, and tiled forward+ rasterization. This ticket wires the render graph and creates all buffer infrastructure.
 
 ## Architecture: Multi-Pass Render Graph
 
@@ -37,16 +37,16 @@ Bevy's render loop must host the full GPU pipeline: SVO buffer management with d
 │  └────────┬─────────┘                                     │
 │           │                                               │
 │  ┌────────▼─────────────────┐                             │
-│  │ Gaussian Generator       │ (compute) SVO → Gaussians   │
+│  │ Voxel Splat Kernel       │ (compute) SVO → splats   │
 │  │  per occupied voxel:     │                             │
-│  │  emit N Gaussians w/ SH  │                             │
+│  │  emit N splats w/ packed material  │                             │
 │  └────────┬─────────────────┘                             │
 │           │                                               │
 │  ┌────────▼─────────────────┐                             │
-│  │ EWA Projection           │ (compute) 3D Σ → 2D Σ'     │
-│  │  Σ' = J·W·Σ·Wᵀ·Jᵀ      │                             │
-│  │  + SH color eval         │                             │
-│  │  + low-pass filter       │                             │
+│  │ Sort Key Build           │ (compute) AABB → screen     │
+│  │  8-corner clip-space →   │                             │
+│  │  screen-space min/max    │                             │
+│  │  + tile_id | depth key   │                             │
 │  └────────┬─────────────────┘                             │
 │           │                                               │
 │  ┌────────▼─────────────────┐                             │
@@ -64,7 +64,7 @@ Bevy's render loop must host the full GPU pipeline: SVO buffer management with d
 │  ┌────────▼─────────────────┐                             │
 │  │ Tiled Rasterizer         │ (fragment) per-pixel:       │
 │  │  glass SDF refraction →  │                             │
-│  │  loop tile Gaussians →   │                             │
+│  │  loop tile splats →   │                             │
 │  │  front-to-back blend     │                             │
 │  └────────┬─────────────────┘                             │
 │           │                                               │
@@ -109,20 +109,20 @@ impl SvoDoubleBuffer {
 }
 ```
 
-### Gaussian Splatting Buffers
+### Voxel Splatting Buffers
 
 ```rust
 #[derive(Resource)]
 pub struct SplatBuffers {
-    pub gaussians: wgpu::Buffer,        // GaussianData[] from generator
-    pub projected: wgpu::Buffer,        // ProjectedGaussian[] from EWA
+    pub splats: wgpu::Buffer,        // VoxelSplat[] from generator
+    pub projected: wgpu::Buffer,        // ProjectedSplat[] from AABB projection
     pub sort_keys: wgpu::Buffer,        // u32[] (tile_id | depth)
-    pub sort_values: wgpu::Buffer,      // u32[] (gaussian indices)
+    pub sort_values: wgpu::Buffer,      // u32[] (splat indices)
     pub sort_scratch: wgpu::Buffer,     // radix sort workspace
     pub histograms: wgpu::Buffer,       // per-workgroup histograms
     pub tile_data: wgpu::Buffer,        // TileData[] (offset, count per tile)
-    pub gaussian_count: wgpu::Buffer,   // atomic counter
-    pub max_gaussians: u32,
+    pub splat_count: wgpu::Buffer,   // atomic counter
+    pub max_splats: u32,
 }
 ```
 
@@ -134,9 +134,9 @@ pub struct SplatBuffers {
 @group(0) @binding(1) var<uniform> camera: CameraUniforms;
 @group(0) @binding(2) var<uniform> globals: GlobalUniforms;
 
-// Group 1: Gaussians (generator output → EWA input → sort input)
-@group(1) @binding(0) var<storage, read_write> gaussians: array<GaussianData>;
-@group(1) @binding(1) var<storage, read_write> projected: array<ProjectedGaussian>;
+// Group 1: splats (generator output → AABB projection input → sort input)
+@group(1) @binding(0) var<storage, read_write> splats: array<VoxelSplat>;
+@group(1) @binding(1) var<storage, read_write> projected: array<ProjectedSplat>;
 @group(1) @binding(2) var<storage, read_write> sort_keys: array<u32>;
 
 // Group 2: Tiles + glass
@@ -208,14 +208,14 @@ impl Plugin for ContextEditorRenderPlugin {
         render_app
             .add_render_graph_node::<BufferSwapNode>("buffer_swap")
             .add_render_graph_node::<ParticleComputeNode>("particle_compute")
-            .add_render_graph_node::<GaussianGenNode>("gaussian_gen")
-            .add_render_graph_node::<EwaProjectNode>("ewa_project")
+            .add_render_graph_node::<VoxelSplatKernelNode>("voxel_splat_kernel")
+            .add_render_graph_node::<SortKeyBuildNode>("sort_key_build")
             .add_render_graph_node::<RadixSortNode>("radix_sort")
             .add_render_graph_node::<TileBinNode>("tile_bin")
             .add_render_graph_node::<TiledRasterNode>("tiled_raster")
             .add_render_graph_edges(&[
-                "buffer_swap", "particle_compute", "gaussian_gen",
-                "ewa_project", "radix_sort", "tile_bin", "tiled_raster",
+                "buffer_swap", "particle_compute", "voxel_splat_kernel",
+                "sort_key_build", "radix_sort", "tile_bin", "tiled_raster",
             ]);
     }
 }
@@ -227,8 +227,8 @@ impl Plugin for ContextEditorRenderPlugin {
 ## Acceptance Criteria
 1. Bevy render loop runs in WASM, drawing to the HTML canvas
 2. SVO double buffer created with front/back pair; swap works without stalls
-3. Render graph executes full pipeline: swap → particles → gen → EWA → sort → bin → raster
-4. Gaussian storage buffer created with configurable max capacity
+3. Render graph executes full pipeline: swap → particles → gen → AABB projection → sort → bin → raster
+4. splat storage buffer created with configurable max capacity
 5. Radix sort buffers (keys, values, scratch, histograms) allocated
 6. Tile data buffer sized for screen resolution / 16×16
 7. Mipmap generation compute pass produces 10 levels for background texture

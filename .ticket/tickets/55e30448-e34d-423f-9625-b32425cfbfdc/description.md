@@ -1,4 +1,4 @@
-# 3D UI Panels: Glass SDF Elements in Gaussian-Splatted World
+# 3D UI Panels: Glass SDF Elements in Voxel-Splatted World
 
 > **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
 > Implementation work happens in the children; this ticket tracks overall completion.
@@ -13,7 +13,7 @@
 
 ## Problem
 
-In-world UI panels (floating labels, health bars, menus anchored to positions) exist as glass SDF shapes inside the 3D scene. They interact with the Gaussian splatting pipeline: the tiled rasterizer renders Gaussians behind/around them, and the glass shader refracts those Gaussians through the panel surface.
+In-world UI panels (floating labels, health bars, menus anchored to positions) exist as glass SDF shapes inside the 3D scene. They interact with the voxel splatting pipeline: the tiled rasterizer renders splats behind/around them, and the glass shader refracts those splats through the panel surface.
 
 ## Architecture
 
@@ -39,12 +39,12 @@ pub enum PanelAnchor {
 }
 ```
 
-### Glass Interaction with Gaussians
+### Glass Interaction with splats
 
 The panel's SDF is evaluated in the tiled rasterizer's glass pre-loop (same path as T3).  
 When a pixel hits a panel SDF:
-1. **Clear panel** (roughness < 0.1): Chromatic aberration refraction of Gaussians behind it, plus alpha-blended content texture on top
-2. **Frosted panel** (roughness > 0.1): Mipmap blur of Gaussians behind, curvature-adaptive at edges, content on top
+1. **Clear panel** (roughness < 0.1): Chromatic aberration refraction of splats behind it, plus alpha-blended content texture on top
+2. **Frosted panel** (roughness > 0.1): Mipmap blur of splats behind, curvature-adaptive at edges, content on top
 3. **Opaque panel** (roughness = 1.0): No refraction, just content texture
 
 ```wgsl
@@ -53,7 +53,7 @@ let panel_sdf = evaluate_panel_sdf(world_pos, panel_center, panel_normal, panel_
 if panel_sdf < 0.0 {
     let panel_normal = panel_normal_at(world_pos, panel_center, panel_normal);
     if panel_roughness < 0.1 {
-        // Clear glass: chromatic refraction of Gaussians
+        // Clear glass: chromatic refraction of splats
         refraction_offset = chromatic_refract(view_dir, panel_normal, 1.0 / 1.5);
     } else {
         // Frosted: mipmap blur
@@ -68,7 +68,7 @@ Panel content (text, icons, layouts) is rendered to a separate texture per panel
 
 ```wgsl
 let content_color = textureSample(panel_content_tex, sampler, panel_uv);
-// Alpha-blend content over refracted/frosted Gaussian background
+// Alpha-blend content over refracted/frosted voxel-splatted background
 final_color = mix(refracted_bg, content_color.rgb, content_color.a);
 ```
 
@@ -99,9 +99,9 @@ Ray-cast from mouse through camera, intersect with panel planes (not SVO collide
 - T2 (render init): Bind groups for panel content textures
 
 ## Acceptance Criteria
-1. World panels render as glass SDFs in the Gaussian scene
-2. Clear glass panels show chromatic refraction of Gaussians behind them
-3. Frosted glass panels show mipmap-blurred Gaussians with curvature blur at edges
+1. World panels render as glass SDFs in the voxel-splatted scene
+2. Clear glass panels show chromatic refraction of splats behind them
+3. Frosted glass panels show mipmap-blurred splats with curvature blur at edges
 4. Panel content (text, UI) alpha-blended over glass background
 5. Billboard panels face camera
 6. Entity-attached panels follow their host entity

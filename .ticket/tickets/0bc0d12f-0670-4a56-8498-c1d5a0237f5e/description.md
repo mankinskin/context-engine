@@ -1,8 +1,8 @@
-# Code Viewer: Source Code as Glass Panels Refracting Gaussians
+# Code Viewer: Source Code as Glass Panels Refracting Voxel Splats
 
 ## Problem
 
-Source code files are displayed as glass panels in the 3D Gaussian-splatted world. Code panels use moderate roughness — enough frosting to keep syntax-highlighted text readable, but transparent enough to show the Gaussian scene behind for spatial context.
+Source code files are displayed as glass panels in the 3D Voxel-splatted world. Code panels use moderate roughness — enough frosting to keep syntax-highlighted text readable, but transparent enough to show the voxel-splatted scene behind for spatial context.
 
 ## Architecture
 
@@ -43,7 +43,7 @@ fn create_code_panel(file: &SourceFile, pos: Vec3) -> CodePanelBundle {
             half_extents: Vec2::new(2.5, 3.0),
             corner_radius: 0.05,
             content_texture: render_code_content(file),
-            roughness: 0.4,    // moderate frost — Gaussian scene softly visible behind code
+            roughness: 0.4,    // moderate frost — voxel-splatted scene softly visible behind code
             tint: Vec3::new(0.1, 0.1, 0.12),  // dark tint for code readability
             anchor: PanelAnchor::WorldFixed(pos, Quat::IDENTITY),
         },
@@ -55,12 +55,12 @@ fn create_code_panel(file: &SourceFile, pos: Vec3) -> CodePanelBundle {
 
 ### Glass Effects on Code Panels
 
-With roughness 0.4, the Gaussian scene behind the code panel is visible but blurred (mipmap level ~3.6). This creates a sense of depth — you can see colorful Gaussian blobs (graph nodes, voxel terrain) through the code, providing spatial context:
+With roughness 0.4, the voxel-splatted scene behind the code panel is visible but blurred (mipmap level ~3.6). This creates a sense of depth — you can see colorful voxel splat blobs (graph nodes, voxel terrain) through the code, providing spatial context:
 - Where you are in the 3D world
 - Which graph nodes are nearby
 - What code relates to nearby context
 
-The dark tint ensures white/colored text remains readable over the blurred Gaussian background.
+The dark tint ensures white/colored text remains readable over the blurred voxel-splatted background.
 
 ### Syntax Highlighting
 
@@ -96,8 +96,8 @@ fn render_code_content(file: &SourceFile, panel: &CodePanel) -> TextureHandle {
 
 ## Acceptance Criteria
 1. Code panels render as dark-tinted glass in 3D world
-2. Syntax highlighting visible and readable over frosted Gaussian background
+2. Syntax highlighting visible and readable over frosted voxel-splatted background
 3. Scroll works within panels
 4. Line highlighting for search results / errors
 5. Click-to-navigate between code panels
-6. Gaussian scene softly visible through panel (spatial context)
+6. voxel-splatted scene softly visible through panel (spatial context)

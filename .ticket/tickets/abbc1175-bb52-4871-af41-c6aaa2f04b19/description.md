@@ -20,7 +20,7 @@ pub struct EditSnapshot {
 }
 ```
 
-Undo restores previous voxel state → marks chunks dirty → Gaussians regenerated. Same 1-frame latency as any edit.
+Undo restores previous voxel state → marks chunks dirty → splats regenerated. Same 1-frame latency as any edit.
 
 ### Symmetry Modes
 
@@ -37,7 +37,7 @@ Each tool operation is duplicated across symmetry axes before being applied to t
 
 ### Live Brush Preview
 
-While hovering (before clicking), show a preview of affected voxels as semi-transparent Gaussians. Temporarily inject preview Gaussians into the generation buffer with reduced opacity; remove on mouse move.
+While hovering (before clicking), show a preview of affected voxels as semi-transparent splats. Temporarily inject preview splats into the generation buffer with reduced opacity; remove on mouse move.
 
 ### Material Picker
 
@@ -62,7 +62,7 @@ For large edits (64³ region = 262K voxels), upload is throttled by `DoubleBuffe
 ## Acceptance Criteria
 1. Undo reverses last edit; redo re-applies it
 2. Symmetry modes duplicate edits across axes correctly
-3. Live preview shows semi-transparent Gaussians at brush position
+3. Live preview shows semi-transparent splats at brush position
 4. Material picker displays theme palette materials
 5. Large edits don't stall rendering (upload budget throttling)
 6. Undo/redo stack has reasonable depth limit

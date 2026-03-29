@@ -1,8 +1,8 @@
-# Runtime Parameters: Gaussian Splatting, Tiling, Sorting, and Double Buffer Config
+# Runtime Parameters: Voxel Splatting, Tiling, Sorting, and Double Buffer Config
 
 ## Problem
 
-All rendering pipeline parameters must be tweakable at runtime via a Bevy resource. This includes SVO parameters, Gaussian generation, EWA projection, GPU radix sort, tiled rasterizer, glass effects, and double buffer behavior.
+All rendering pipeline parameters must be tweakable at runtime via a Bevy resource. This includes SVO parameters, splat generation, AABB screen projection, GPU radix sort, tiled rasterizer, glass effects, and double buffer behavior.
 
 ## Architecture
 
@@ -17,18 +17,18 @@ pub struct SvoParams {
 
 #[derive(Resource)]
 pub struct SplatParams {
-    pub max_gaussians: u32,       // max Gaussians in buffer (default: 2_000_000)
-    pub sh_degree: u32,           // SH degree: 0, 1, 2, or 3 (default: 3)
+    pub max_splats: u32,       // max splats in buffer (default: 2_000_000)
+    pub roughness_bits: u32,     // roughness encoding bits (default: 5)
     pub lod_near: f32,            // distance for max detail (default: 5.0)
     pub lod_far: f32,             // distance for min detail (default: 100.0)
-    pub lod_min_scale: f32,       // minimum Gaussian scale at far LOD (default: 0.5)
-    pub generation_enabled: bool, // can disable Gaussian generation (debug)
+    pub lod_min_scale: f32,       // minimum splat scale at far LOD (default: 0.5)
+    pub generation_enabled: bool, // can disable splat generation (debug)
 }
 
 #[derive(Resource)]
-pub struct EwaParams {
+pub struct SortKeyParams {
     pub low_pass_filter: f32,     // anti-aliasing: added to cov2d diagonal (default: 0.3)
-    pub cull_screen_threshold: f32, // skip Gaussians smaller than this in pixels (default: 0.1)
+    pub cull_screen_threshold: f32, // skip splats smaller than this in pixels (default: 0.1)
 }
 
 #[derive(Resource)]
@@ -41,7 +41,7 @@ pub struct SortParams {
 #[derive(Resource)]
 pub struct TileParams {
     pub tile_size: u32,           // pixels per tile edge (default: 16)
-    pub max_gaussians_per_tile: u32, // limit per tile (default: 512)
+    pub max_splats_per_tile: u32, // limit per tile (default: 512)
     pub early_out_alpha: f32,     // stop blending when remaining alpha < this (default: 0.01)
 }
 
@@ -66,7 +66,7 @@ pub struct DoubleBufferParams {
 pub struct RenderParams {
     pub svo: SvoParams,
     pub splat: SplatParams,
-    pub ewa: EwaParams,
+    pub sort_key: SortKeyParams,
     pub sort: SortParams,
     pub tile: TileParams,
     pub glass: GlassParams,
@@ -89,15 +89,15 @@ pub struct GpuRenderUniforms {
     pub viewport_size: [f32; 2],
 
     // Splat params
-    pub max_gaussians: u32,
-    pub sh_degree: u32,
+    pub max_splats: u32,
+    pub roughness_bits: u32,     // roughness encoding bits (default: 5)
     pub lod_near: f32,
     pub lod_far: f32,
     pub lod_min_scale: f32,
 
-    // EWA
-    pub ewa_low_pass: f32,
-    pub ewa_cull_threshold: f32,
+    // AABB projection
+    pub aabb_padding: f32,
+    pub cull_screen_threshold: f32,
 
     // Tiling
     pub tile_size: u32,
@@ -142,10 +142,10 @@ Parameters modified at runtime (e.g., via debug UI or world editor) take effect 
 - T6 (3D scene): All compute/render passes read these uniforms
 
 ## Acceptance Criteria
-1. All SVO, Gaussian, EWA, sort, tile, glass, double buffer params exposed as Bevy resources
+1. All SVO, voxel splat, sort key, sort, tile, glass, double buffer params exposed as Bevy resources
 2. GpuRenderUniforms uploaded every frame
 3. Changing params at runtime affects rendering next frame
 4. Default values produce correct rendering out of the box
-5. `generation_enabled = false` stops Gaussian generation (shows empty scene, useful for debug)
+5. `generation_enabled = false` stops splat generation (shows empty scene, useful for debug)
 6. `double_buffer.enabled = false` falls back to single-buffer mode (may stutter but simpler to debug)
-7. SH degree change (e.g., 3→0) visibly reduces color complexity
+7. roughness change (e.g., 3→0) visibly reduces material fidelity

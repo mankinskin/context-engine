@@ -2,7 +2,7 @@
 
 ## Problem
 
-The context-editor must not be a monolithic crate. It requires a high-performance separation between the **Engine (Kernel)** and the **Game Logic (World-Crate)**. The Kernel provides heavy infrastructure (Bevy, SVO, Gaussian Splatting, WebGPU, SpacetimeDB sync, generic Dioxus UI), while the World-Crate injects the "soul" (semantics, rules, custom HTTP/LLM prompts, and domain data models).
+The context-editor must not be a monolithic crate. It requires a high-performance separation between the **Engine (Kernel)** and the **Game Logic (World-Crate)**. The Kernel provides heavy infrastructure (Bevy, SVO, Voxel Splatting, WebGPU, SpacetimeDB sync, generic Dioxus UI), while the World-Crate injects the "soul" (semantics, rules, custom HTTP/LLM prompts, and domain data models).
 
 ## Architecture Overview: Kernel <-> World-Crate
 
@@ -11,7 +11,7 @@ The data flow ensures the Kernel keeps control over hardware resources, while th
 1. **World-Crate (Specific)**: Implements `SandboxWorld` trait, defining App Schema, Rules, LLM Prompts, Domains, and Custom RPG/Sandbox logic.
 2. **Kernel (Generic & Inclusive)**: 
    - `Dioxus` UI-Framework (provides Compound Components like `GlassScaffold`, `GlassPanel`, `LiquidTerminal`).
-   - `WebGPU` Render-Loop (SDF/Voxel Buffers, Gaussian Splatting, Tiled Forward+).
+   - `WebGPU` Render-Loop (SDF/Voxel Buffers, Voxel Splatting, Tiled Forward+).
    - `SpacetimeDB` Sync-Engine.
    - Event-Bus / Dispatcher linking UI, logic, and networking.
 
@@ -27,7 +27,7 @@ tools/context-editor/
 │   │   ├── lib.rs           # Kernel API, SandboxWorld trait
 │   │   ├── ui/              # GlassScaffold, GlassPanel, LiquidTerminal
 │   │   ├── svo/             # SVO, Octree, GPU Upload
-│   │   ├── splat/           # Gaussian generation, GPU sorting
+│   │   ├── splat/           # splat generation, GPU sorting
 │   │   ├── net/             # SpacetimeDB connection, Event-Bus
 │   │   └── gpu/             # WebGPU render pipeline
 │   └── shaders/             # WGSL shaders

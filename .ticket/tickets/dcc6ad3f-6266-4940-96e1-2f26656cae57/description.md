@@ -25,9 +25,9 @@ Flood-fill from a hit point, filling all connected empty voxels bounded by exist
 
 ### Smooth Tool
 
-Averages neighboring voxel colors/materials. Effect on Gaussians:
-- Averaged colors → smoother SH coefficients
-- Can increase covariance for a soft/blurred look at surfaces
+Averages neighboring voxel colors/materials. Effect on splats:
+- Averaged colors → smoother PBR material parameters
+- Can increase half-extent for a soft/blurred look at surfaces
 
 ### Extrude Tool
 
@@ -35,7 +35,7 @@ Select a voxel face → drag to push it outward, duplicating voxels along the no
 
 ### Clone Tool
 
-Select a region (AABB) → copy voxel data → place at new position. Uses a ghost preview (semi-transparent Gaussians) before confirming placement.
+Select a region (AABB) → copy voxel data → place at new position. Uses a ghost preview (semi-transparent splats) before confirming placement.
 
 ## Dependencies
 - T16a (core editor): EditorState, VoxelHit, basic tool dispatch
@@ -44,7 +44,7 @@ Select a region (AABB) → copy voxel data → place at new position. Uses a gho
 ## Acceptance Criteria
 1. Fill flood-fills enclosed empty regions correctly
 2. Fill has max region cap to prevent runaway
-3. Smooth visibly softens hard voxel edges (smoother Gaussians)
+3. Smooth visibly softens hard voxel edges (smoother splats)
 4. Extrude pushes faces outward by drag distance
 5. Clone copies and places voxel regions at new positions
 6. All tools respect brush_size where applicable

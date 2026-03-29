@@ -106,7 +106,7 @@ pub enum Biome {
 ```
 
 Biomes affect:
-- Material palette (fed into ThemePalette / SH coefficients for Gaussians)
+- Material palette (fed into ThemePalette / PBR material parameters for splats)
 - Structure placement (trees, rocks, ore veins as pre-computed SVO patches)
 - Regrowth rules (forests regrow fast, deserts don't)
 

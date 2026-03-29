@@ -2,7 +2,7 @@
 
 ## Problem
 
-In-world UI panels (floating labels, menus, information displays) must render as glass SDF shapes integrated into the tiled Gaussian rasterizer. Each panel has a content texture (rendered by Dioxus→Taffy) that is alpha-blended over the glass background. This ticket covers the rendering side — interaction is in T10b.
+In-world UI panels (floating labels, menus, information displays) must render as glass SDF shapes integrated into the tiled voxel splat rasterizer. Each panel has a content texture (rendered by Dioxus→Taffy) that is alpha-blended over the glass background. This ticket covers the rendering side — interaction is in T10b.
 
 ## Scope
 
@@ -65,9 +65,9 @@ Panels with `EntityAttached` anchor follow their host entity's transform (offset
 - T2a (GPU buffer infra): Bind groups for panel content textures
 
 ## Acceptance Criteria
-1. World panels render as glass SDFs in the Gaussian scene
-2. Clear glass panels show refracted Gaussians behind them
-3. Frosted glass panels show mipmap-blurred Gaussians
+1. World panels render as glass SDFs in the voxel-splatted scene
+2. Clear glass panels show refracted splats behind them
+3. Frosted glass panels show mipmap-blurred splats
 4. Panel content alpha-blended over glass background
 5. Billboard panels face camera
 6. Entity-attached panels follow host entity

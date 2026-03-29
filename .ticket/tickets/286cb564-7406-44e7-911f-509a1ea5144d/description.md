@@ -128,7 +128,7 @@ VoxelWorld.apply_server_delta(chunk, delta)
     ↓
 Mark dirty_ranges for GPU upload (T7b)
     ↓
-Gaussians regenerated for affected chunks (T6a)
+splats regenerated for affected chunks (T6a)
 ```
 
 ### Delta Application

@@ -2,7 +2,7 @@
 
 ## Problem
 
-UI panels must appear as physically realistic glass floating in 3D space. This ticket implements the core glass system: analytical SDF evaluation per-pixel, Snell's law refraction to bend Gaussian lookup coordinates, and the glass pre-loop integration in the tiled rasterizer fragment shader.
+UI panels must appear as physically realistic glass floating in 3D space. This ticket implements the core glass system: analytical SDF evaluation per-pixel, Snell's law refraction to bend splat lookup coordinates, and the glass pre-loop integration in the tiled rasterizer fragment shader.
 
 ## Scope
 
@@ -38,10 +38,10 @@ fn refract_ray(incident: vec3f, normal: vec3f, eta: f32) -> vec3f {
 
 ### Glass Pre-Loop in Tiled Rasterizer
 
-The glass SDF is evaluated BEFORE the Gaussian tile loop. If inside glass, the refraction offset shifts which tile's Gaussians are sampled (cross-tile lookup):
+The glass SDF is evaluated BEFORE the splat tile loop. If inside glass, the refraction offset shifts which tile's splats are sampled (cross-tile lookup):
 
 ```wgsl
-// In fs_main() — before Gaussian loop
+// In fs_main() — before splat loop
 for (var g = 0u; g < glass_count; g++) {
     let d = sdf_rounded_box(pixel_to_world(in.coords), glass_panels[g]);
     if d < 0.0 {
@@ -82,8 +82,8 @@ fn glass_panel_uniform_system(
 
 ## Acceptance Criteria
 1. Glass panel SDF visible as translucent region in the scene
-2. Gaussians behind glass appear refracted via Snell's law
-3. Cross-tile Gaussian sampling through refracted coordinates works
+2. splats behind glass appear refracted via Snell's law
+3. Cross-tile splat sampling through refracted coordinates works
 4. Two overlapping glass panels produce cumulative refraction + tinting
 5. Total internal reflection at extreme viewing angles
 6. Max 16 glass panels per frame (expandable)

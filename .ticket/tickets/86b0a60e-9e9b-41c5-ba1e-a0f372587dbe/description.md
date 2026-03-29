@@ -2,7 +2,7 @@
 
 ## Problem
 
-The minimum viable world editor: paint voxels onto surfaces, carve voxels away, and ray-cast to find which voxel the cursor is pointing at. Edits flow through VoxelWorld → double buffer → Gaussian regeneration for instant visual feedback.
+The minimum viable world editor: paint voxels onto surfaces, carve voxels away, and ray-cast to find which voxel the cursor is pointing at. Edits flow through VoxelWorld → double buffer → splat regeneration for instant visual feedback.
 
 ## Scope
 
@@ -68,7 +68,7 @@ Same as paint but calls `svo.remove_voxel()` for each position in the brush sphe
 
 ```
 Mouse click → ray-octree hit → apply paint/carve to SVO
-  → dirty ranges → double-buffer upload (T7b) → Gaussian regen (T6a)
+  → dirty ranges → double-buffer upload (T7b) → splat regen (T6a)
   → visual update next frame
 ```
 
@@ -78,8 +78,8 @@ Mouse click → ray-octree hit → apply paint/carve to SVO
 - T8 (character): camera for ray construction
 
 ## Acceptance Criteria
-1. Paint tool adds voxels → Gaussians appear next frame
-2. Carve tool removes voxels → Gaussians disappear next frame
+1. Paint tool adds voxels → splats appear next frame
+2. Carve tool removes voxels → splats disappear next frame
 3. Ray-octree intersection finds correct voxel surface
 4. Brush size scales spherical paint/carve region
 5. Continuous painting while mouse is held down

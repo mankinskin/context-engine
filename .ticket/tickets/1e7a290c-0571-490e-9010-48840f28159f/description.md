@@ -1,4 +1,4 @@
-# VFX: Liquid Glass — SDF Refraction of Gaussians with Chromatic Aberration, Caustics, and Mipmap Blur
+# VFX: Liquid Glass — SDF Refraction of Voxel Splats with Chromatic Aberration, Caustics, and Mipmap Blur
 
 > **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
 > Implementation work happens in the children; this ticket tracks overall completion.
@@ -13,16 +13,16 @@
 
 ## Problem
 
-UI panels must appear as physically realistic glass floating in 3D space. In the Gaussian Splatting pipeline, glass is an **analytical SDF evaluated per-pixel in the tiled rasterizer**. When a pixel is inside a glass region, the lookup coordinates are refracted via Snell's law before sampling tiled Gaussians, producing chromatic aberration, pseudo-caustics, and mipmap-based frosted blur.
+UI panels must appear as physically realistic glass floating in 3D space. In the Voxel Splatting pipeline, glass is an **analytical SDF evaluated per-pixel in the tiled rasterizer**. When a pixel is inside a glass region, the lookup coordinates are refracted via Snell's law before sampling tiled splats, producing chromatic aberration, pseudo-caustics, and mipmap-based frosted blur.
 
 ## Architecture: Glass in the Tiled Forward+ Renderer
 
 ### Why This Is Better Than Glass + Ray Marching
 
-In the previous SVO-only approach, glass was evaluated during ray marching. With Gaussian splatting the visual layer is tile-sorted splats, not ray-marched voxels. Glass now operates in 2D screen-space on the tiled output:
+In the previous SVO-only approach, glass was evaluated during ray marching. With voxel splatting the visual layer is tile-sorted splats, not ray-marched voxels. Glass now operates in 2D screen-space on the tiled output:
 
 1. Per-pixel: evaluate glass SDF → get refraction offset
-2. The offset shifts which tile's Gaussians are sampled (cross-tile lookup)
+2. The offset shifts which tile's splats are sampled (cross-tile lookup)
 3. Since all tiles are parallel in VRAM, this costs almost nothing
 4. Chromatic aberration, caustics, and frosted blur are all simple post-refraction effects
 
@@ -62,9 +62,9 @@ Real glass bends blue light more than red. Instead of three full ray traces, we 
 
 ```wgsl
 fn get_chromatic_refraction(uv: vec2f, distortion: vec2f) -> vec3f {
-    let r = sample_tiled_gaussians(uv + distortion * 1.0).r;
-    let g = sample_tiled_gaussians(uv + distortion * 1.1).g;
-    let b = sample_tiled_gaussians(uv + distortion * 1.2).b;
+    let r = sample_tiled_splats(uv + distortion * 1.0).r;
+    let g = sample_tiled_splats(uv + distortion * 1.1).g;
+    let b = sample_tiled_splats(uv + distortion * 1.2).b;
     return vec3f(r, g, b);
 }
 ```
@@ -83,7 +83,7 @@ This is orders of magnitude cheaper than path-traced caustics and visually convi
 
 ### Frosted Glass via Mipmap Blur
 
-Instead of per-pixel Gaussian blur (expensive), we use `textureSampleLevel` on a mipmapped background capture:
+Instead of per-pixel blur (expensive), we use `textureSampleLevel` on a mipmapped background capture:
 
 ```wgsl
 fn get_frosted_glass(uv: vec2f, roughness: f32) -> vec4f {
@@ -104,7 +104,7 @@ let blur_amount = clamp(base_roughness + curvature * 2.0, 0.0, 1.0);
 
 ### Integration into Tiled Rasterizer
 
-The glass evaluation happens **before** the Gaussian tile loop:
+The glass evaluation happens **before** the splat tile loop:
 
 ```wgsl
 @fragment
@@ -124,7 +124,7 @@ fn fs_main(in: FragmentInput) -> @location(0) vec4f {
 
             // Chromatic aberration
             if glass_panels[g].blur_roughness < 0.01 {
-                // Clear glass: chromatic refraction of Gaussians
+                // Clear glass: chromatic refraction of splats
                 let refracted_color = get_chromatic_refraction(uv, distortion);
                 glass_tint *= vec4f(refracted_color * glass_panels[g].tint.rgb, 1.0);
             } else {
@@ -144,7 +144,7 @@ fn fs_main(in: FragmentInput) -> @location(0) vec4f {
         }
     }
 
-    // Standard tiled Gaussian loop (using potentially shifted tile)
+    // Standard tiled splat loop (using potentially shifted tile)
     let tile_idx = tile_y * grid_width + tile_x;
     let tile = tile_data[tile_idx];
     var final_color = vec4f(0.0);
@@ -152,7 +152,7 @@ fn fs_main(in: FragmentInput) -> @location(0) vec4f {
 
     for (var i = 0u; i < tile.count; i++) {
         let inst = sorted_instances[tile.offset + i];
-        let g = projected[inst.gaussian_id];
+        let g = projected[inst.splat_id];
         let d = uv * resolution - g.center_screen;
         let power = -0.5 * (d.x * d.x * g.cov2d_inv[0] + d.y * d.y * g.cov2d_inv[1] + 2.0 * d.x * d.y * g.cov2d_inv[2]);
         if power > 0.0 { continue; }
@@ -218,16 +218,16 @@ fn glass_panel_uniform_system(
 
 ## Dependencies
 - T2 (render init): Tiled rasterizer pass, mipmap generation infrastructure
-- T6 (3D scene): Gaussian generation + sorted tile data that glass refracts
+- T6 (3D scene): splat generation + sorted tile data that glass refracts
 - T9 (bridge): Panel positions from Taffy layout → 3D transform
 
 ## Acceptance Criteria
 1. Glass panel SDF visible as translucent region in the tiled-rendered scene
-2. Objects (Gaussians) behind glass appear refracted via Snell's law
+2. Objects (splats) behind glass appear refracted via Snell's law
 3. Chromatic aberration produces visible RGB fringing at glass edges
 4. Pseudo-caustics brighten converging refraction regions
-5. Frosted glass (roughness > 0) uses mipmap blur — NOT per-pixel Gaussian blur
+5. Frosted glass (roughness > 0) uses mipmap blur — NOT per-pixel blur
 6. Curvature-adaptive roughness: glass edges appear more diffuse than flat centers
 7. Two overlapping glass panels produce cumulative refraction and tinting
 8. Total internal reflection occurs at extreme viewing angles
-9. Cross-tile Gaussian sampling through refracted coordinates works correctly
+9. Cross-tile splat sampling through refracted coordinates works correctly

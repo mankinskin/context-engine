@@ -2,7 +2,7 @@
 
 ## Problem
 
-All GPU storage buffers and bind groups must be created before the render graph can execute. This ticket covers the buffer allocation layer — double-buffered SVO, Gaussian splatting buffers, bind group layouts, and the pre-built double bind groups that enable zero-allocation buffer swaps.
+All GPU storage buffers and bind groups must be created before the render graph can execute. This ticket covers the buffer allocation layer — double-buffered SVO, voxel splatting buffers, bind group layouts, and the pre-built double bind groups that enable zero-allocation buffer swaps.
 
 ## Scope
 
@@ -44,15 +44,15 @@ impl SvoDoubleBuffer {
 ```rust
 #[derive(Resource)]
 pub struct SplatBuffers {
-    pub gaussians: wgpu::Buffer,        // GaussianData[] from generator
-    pub projected: wgpu::Buffer,        // ProjectedGaussian[] from EWA
+    pub splats: wgpu::Buffer,        // VoxelSplat[] from generator
+    pub projected: wgpu::Buffer,        // ProjectedSplat[] from AABB projection
     pub sort_keys: wgpu::Buffer,        // u32[] (tile_id | depth)
-    pub sort_values: wgpu::Buffer,      // u32[] (gaussian indices)
+    pub sort_values: wgpu::Buffer,      // u32[] (splat indices)
     pub sort_scratch: wgpu::Buffer,     // radix sort workspace
     pub histograms: wgpu::Buffer,       // per-workgroup histograms
     pub tile_data: wgpu::Buffer,        // TileData[] (offset, count per tile)
-    pub gaussian_count: wgpu::Buffer,   // atomic counter
-    pub max_gaussians: u32,
+    pub splat_count: wgpu::Buffer,   // atomic counter
+    pub max_splats: u32,
 }
 ```
 
@@ -64,9 +64,9 @@ pub struct SplatBuffers {
 @group(0) @binding(1) var<uniform> camera: CameraUniforms;
 @group(0) @binding(2) var<uniform> globals: GlobalUniforms;
 
-// Group 1: Gaussians
-@group(1) @binding(0) var<storage, read_write> gaussians: array<GaussianData>;
-@group(1) @binding(1) var<storage, read_write> projected: array<ProjectedGaussian>;
+// Group 1: splats
+@group(1) @binding(0) var<storage, read_write> splats: array<VoxelSplat>;
+@group(1) @binding(1) var<storage, read_write> projected: array<ProjectedSplat>;
 @group(1) @binding(2) var<storage, read_write> sort_keys: array<u32>;
 
 // Group 2: Tiles + glass
@@ -100,7 +100,7 @@ impl DoubleBindGroups {
 
 ## Acceptance Criteria
 1. SvoDoubleBuffer created with configurable capacity; swap works correctly
-2. SplatBuffers created with configurable max_gaussians
+2. SplatBuffers created with configurable max_splats
 3. Radix sort buffers (keys, values, scratch, histograms) allocated
 4. Tile data buffer sized for screen resolution / 16×16
 5. 4 bind group layouts created matching WGSL declarations

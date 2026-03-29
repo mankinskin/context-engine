@@ -2,7 +2,7 @@
 
 ## Problem
 
-The user navigates the 3D Gaussian-splatted world via a first-person character controller. Physics (gravity, ground detection, collision response) is handled by bevy_rapier3d with collision geometry derived from the SVO. The character doesn't interact with Gaussians directly — Gaussians are visual-only.
+The user navigates the 3D Voxel-splatted world via a first-person character controller. Physics (gravity, ground detection, collision response) is handled by bevy_rapier3d with collision geometry derived from the SVO. The character doesn't interact with splats directly — splats are visual-only.
 
 ## Architecture: Kinematic Character on SVO Terrain
 
@@ -73,9 +73,9 @@ fn character_movement_system(
 }
 ```
 
-### Camera Look + SH Interaction
+### Camera Look + PBR Material Interaction
 
-Camera rotation affects not just the view but also how Spherical Harmonics on Gaussians are evaluated — rotating the camera causes materials to shift in appearance (glossy highlights move, metallic reflections change). This is automatic: the EWA projection pass re-evaluates SH for the new view direction every frame.
+Camera rotation affects not just the view but also how PBR materials are evaluated — rotating the camera causes materials to shift in appearance (glossy highlights move, metallic reflections change). This is automatic: the AABB screen projection pass re-evaluates PBR for the new view direction every frame.
 
 ### Input Handling (WASM)
 
@@ -92,7 +92,7 @@ Pointer lock on canvas click for FPS-style mouse control.
 
 ## Dependencies
 - T7 (physics): Rapier + SVO-derived chunk colliders
-- T6 (3D scene): Camera3D component; SH evaluation depends on view direction
+- T6 (3D scene): Camera3D component; PBR evaluation depends on view direction
 - T2 (render init): Canvas + window for input capture
 
 > **Scope note:** This ticket covers the **local player** only (first-person camera, physics, input). Multiplayer remote-player rendering (SDF capsules, interpolation, nameplates) is handled by T20 — Multiplayer Characters, which depends on this ticket for the local-player baseline.
@@ -104,4 +104,4 @@ Pointer lock on canvas click for FPS-style mouse control.
 4. Slides along walls (Rapier kinematic response)
 5. Sprint with shift
 6. Pointer lock on click, ESC releases
-7. Camera rotation causes visible SH color shift on glossy/metallic Gaussians
+7. Camera rotation causes visible material appearance shift on glossy/metallic splats

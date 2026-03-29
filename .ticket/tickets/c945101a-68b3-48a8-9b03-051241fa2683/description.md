@@ -1,8 +1,8 @@
-# Context Graph 3D: Hypergraph Nodes as Voxel Clusters Generating Gaussians
+# Context Graph 3D: Hypergraph Nodes as Voxel Clusters Generating Splats
 
 ## Problem
 
-The context-engine hypergraph is visualized in 3D. Each graph node becomes a voxel cluster in the SVO, and the Gaussian generation pipeline produces Gaussians from these voxels — nodes appear as soft, volumetric shapes. Edges are voxel lines (like ticket edges in T12) that also generate Gaussians.
+The context-engine hypergraph is visualized in 3D. Each graph node becomes a voxel cluster in the SVO, and the splat generation pipeline produces splats from these voxels — nodes appear as soft, volumetric shapes. Edges are voxel lines (like ticket edges in T12) that also generate splats.
 
 ## Architecture
 
@@ -33,7 +33,7 @@ fn spawn_graph_node(
     let color = color_for_type(node.node_type);
     let material = MaterialDef {
         base_color: color,
-        roughness: 0.3,   // slightly glossy — SH gives subtle view-dependent highlights
+        roughness: 0.3,   // slightly glossy — PBR gives subtle view-dependent highlights
         metallic: 0.0,
     };
 
@@ -45,12 +45,12 @@ fn spawn_graph_node(
 }
 ```
 
-### Gaussian Visual Quality
+### Voxel Splat Visual Quality
 
-Since graph nodes are voxel clusters, the Gaussian generation pipeline (T6) converts them to Gaussians automatically:
-- Isotropic covariance from voxel size → soft spherical blobs
-- SH coefficients from MaterialDef → subtle view-dependent shading
-- LOD reduces Gaussian count for distant nodes
+Since graph nodes are voxel clusters, the splat generation pipeline (T6) converts them to splats automatically:
+- Half-extent from voxel size → soft spherical blobs
+- PBR material parameters from MaterialDef → subtle view-dependent shading
+- LOD reduces splat count for distant nodes
 
 The result: graph nodes appear as soft, volumetric, slightly glossy shapes floating in 3D space.
 
@@ -71,10 +71,10 @@ fn draw_graph_edges(
 }
 ```
 
-Edge voxels generate Gaussians too — connections appear as soft glowing lines. Edge type determines SH properties:
+Edge voxels generate splats too — connections appear as soft glowing lines. Edge type determines PBR material properties:
 - **Sequence edges**: diffuse, muted color
-- **Dependency edges**: metallic SH (specular highlights when viewed at glancing angles)
-- **Hyperedges**: bright, high-opacity Gaussians
+- **Dependency edges**: metallic PBR (specular highlights when viewed at glancing angles)
+- **Hyperedges**: bright, high-opacity splats
 
 ### Interactive Labels
 
@@ -92,22 +92,22 @@ Each node can have a small glass panel label (T10 WorldPanel) floating above it,
 When the context-engine hypergraph changes:
 1. New voxels written to SVO for added/modified nodes
 2. Removed node voxels cleared from SVO
-3. SVO marked dirty → double-buffered upload (T7) → Gaussians regenerated next frame
+3. SVO marked dirty → double-buffered upload (T7) → splats regenerated next frame
 4. Visual update is automatic through the pipeline
 
 ## Dependencies
 - T7 (physics+world): VoxelWorld / SVO storage for node clusters and edge lines
-- T6 (3D scene): Gaussian generation from node/edge voxels
-- T5 (theme): MaterialDef → SH coefficients for node/edge materials
+- T6 (3D scene): splat generation from node/edge voxels
+- T5 (theme): MaterialDef → PBR material parameters for node/edge materials
 - T10 (3D UI): Glass panel labels above nodes
 - context-api: Hypergraph data source
 
 ## Acceptance Criteria
-1. Each hypergraph node rendered as a voxel cluster → Gaussians
-2. Node type determines shape, color, and SH material
-3. Edges as voxel lines → Gaussians with type-dependent SH
+1. Each hypergraph node rendered as a voxel cluster → splats
+2. Node type determines shape, color, and PBR material
+3. Edges as voxel lines → splats with type-dependent SH
 4. Force-directed 3D layout positions nodes
 5. Click/double-click interaction for selection and zoom
 6. Node labels as billboarded glass panels
-7. Graph mutations update SVO → Gaussians regenerated via double buffer
-8. LOD reduces distant node Gaussian count
+7. Graph mutations update SVO → splats regenerated via double buffer
+8. LOD reduces distant node splat count

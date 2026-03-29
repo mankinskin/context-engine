@@ -12,9 +12,9 @@ Real glass bends blue light more than red. Single-pass UV offset per channel:
 
 ```wgsl
 fn get_chromatic_refraction(uv: vec2f, distortion: vec2f) -> vec3f {
-    let r = sample_tiled_gaussians(uv + distortion * 1.0).r;
-    let g = sample_tiled_gaussians(uv + distortion * 1.1).g;
-    let b = sample_tiled_gaussians(uv + distortion * 1.2).b;
+    let r = sample_tiled_splats(uv + distortion * 1.0).r;
+    let g = sample_tiled_splats(uv + distortion * 1.1).g;
+    let b = sample_tiled_splats(uv + distortion * 1.2).b;
     return vec3f(r, g, b);
 }
 ```
@@ -74,7 +74,7 @@ Adds `caustic_strength` and `chromatic_spread` to the GlassPanel component from 
 ## Acceptance Criteria
 1. Chromatic aberration produces visible RGB fringing at glass edges
 2. Pseudo-caustics brighten converging refraction regions
-3. Frosted glass (roughness > 0) uses mipmap blur — NOT per-pixel Gaussian blur
+3. Frosted glass (roughness > 0) uses mipmap blur — NOT per-pixel blur
 4. Curvature-adaptive roughness: edges more diffuse than flat centers
 5. Clear and frosted glass are visually distinct
 6. Mipmap blur is faster than or equal to clear glass (hardware mip interpolation)

@@ -1,4 +1,4 @@
-# World Editor: Voxel Paint/Carve with Live Gaussian Regeneration
+# World Editor: Voxel Paint/Carve with Live Splat Regeneration
 
 > **Coordinator ticket** — this ticket has been decomposed into focused sub-tickets.
 > Implementation work happens in the children; this ticket tracks overall completion.
@@ -14,7 +14,7 @@
 
 ## Problem
 
-The world editor lets users paint, carve, and sculpt voxels in the SVO. Each edit dirties the SVO, which is uploaded via the double buffer (T7), triggering Gaussian regeneration on GPU (T6). The user sees visual feedback within one frame — new/removed voxels appear/disappear as Gaussians.
+The world editor lets users paint, carve, and sculpt voxels in the SVO. Each edit dirties the SVO, which is uploaded via the double buffer (T7), triggering splat regeneration on GPU (T6). The user sees visual feedback within one frame — new/removed voxels appear/disappear as splats.
 
 ## Architecture
 
@@ -33,7 +33,7 @@ pub enum EditorTool {
     Paint,          // set voxel to current material
     Carve,          // remove voxels
     Fill,           // flood-fill enclosed region
-    Smooth,         // average neighbors (adjusts Gaussian covariance)
+    Smooth,         // average neighbors (adjusts splat extent)
     Extrude,        // push face outward
     Clone,          // copy region
 }
@@ -46,7 +46,7 @@ pub enum Symmetry {
 }
 ```
 
-### Edit → SVO → Double Buffer → Gaussians Pipeline
+### Edit → SVO → Double Buffer → splats Pipeline
 
 ```
 User action (mouse click/drag)
@@ -56,8 +56,8 @@ User action (mouse click/drag)
   → Mark dirty chunks in SVO
   → svo_upload_system writes dirty chunks to BACK buffer
   → double_buffer_swap_system swaps FRONT↔BACK
-  → gaussian_gen compute pass reads new FRONT buffer
-  → New Gaussians reflect edits
+  → voxel_splat_kernel compute pass reads new FRONT buffer
+  → New splats reflect edits
   → Tiled rasterizer renders updated scene
 ```
 
@@ -105,10 +105,10 @@ fn paint_tool_system(
 
 ### Smooth Tool
 
-Smoothing averages neighboring voxel properties, which affects the Gaussian generation:
-- Averaged colors → smoother SH coefficients on generated Gaussians
-- Averaged positions → Gaussians shift slightly, creating smoother surfaces
-- Can increase covariance (fatter Gaussians) for a soft/blurred look
+Smoothing averages neighboring voxel properties, which affects the splat generation:
+- Averaged colors → smoother PBR material parameters on generated splats
+- Averaged positions → splats shift slightly, creating smoother surfaces
+- Can increase half-extent (larger splats) for a soft/blurred look
 
 ### Material Picker
 
@@ -117,7 +117,7 @@ fn material_picker_ui(editor: &mut EditorState, palette: &ThemePalette) {
     // Shows palette materials (T5) as selectable swatches
     // Each swatch shows: base_color, roughness, metallic preview
     // Selected material applied to painted voxels
-    // SH coefficients computed by material_to_sh() in Gaussian generation
+    // PBR material parameters computed by pack_material() in splat generation
 }
 ```
 
@@ -135,11 +135,11 @@ pub struct EditSnapshot {
 }
 ```
 
-Undo restores previous voxel state → marks chunks dirty → double buffer upload → Gaussians regenerated. Same pipeline, same 1-frame latency.
+Undo restores previous voxel state → marks chunks dirty → double buffer upload → splats regenerated. Same pipeline, same 1-frame latency.
 
 ### Live Preview
 
-While dragging a brush, show a preview of affected voxels as semi-transparent Gaussians. Implementation: temporarily add preview Gaussians to the generation buffer with reduced opacity, remove them if the user cancels.
+While dragging a brush, show a preview of affected voxels as semi-transparent splats. Implementation: temporarily add preview splats to the generation buffer with reduced opacity, remove them if the user cancels.
 
 ### Performance Budget
 
@@ -147,23 +147,23 @@ For large edits (e.g., filling a 64³ region = 262,144 voxels):
 - SVO update: ~5ms (batch set_voxel)
 - Upload to BACK buffer: limited by DoubleBufferParams.upload_budget_bytes (4MB default)
 - If edit exceeds budget: upload spreads across multiple frames (progressive update)
-- Gaussian regeneration: automatic, 1 frame after upload completes
+- splat regeneration: automatic, 1 frame after upload completes
 
 ## Dependencies
 - T7 (physics+world): VoxelWorld SVO, double-buffered upload, dirty chunk tracking
-- T6 (3D scene): Gaussian generation reads SVO FRONT buffer
+- T6 (3D scene): splat generation reads SVO FRONT buffer
 - T5 (theme): Material palette for paint tool
 - T8 (character): Camera ray for ray-octree intersection
 - T11 (params): DoubleBufferParams.upload_budget_bytes for large edit throttling
 
 ## Acceptance Criteria
-1. Paint tool adds voxels → Gaussians appear next frame
-2. Carve tool removes voxels → Gaussians disappear next frame
+1. Paint tool adds voxels → splats appear next frame
+2. Carve tool removes voxels → splats disappear next frame
 3. Fill tool flood-fills enclosed regions
-4. Smooth tool averages voxel properties → softer Gaussians
+4. Smooth tool averages voxel properties → softer splats
 5. Material picker uses theme palette (T5)
 6. Undo/redo works with full voxel state restoration
 7. Symmetry modes (mirror, radial) work for all tools
 8. Large edits don't stall rendering (double buffer + upload budget)
-9. Brush preview shows semi-transparent Gaussians while dragging
+9. Brush preview shows semi-transparent splats while dragging
 10. Ray-octree intersection finds correct voxel surface

@@ -1,8 +1,8 @@
-# GPU Radix Sort: 8-Pass Parallel Sort for Gaussian Depth+Tile Ordering
+# GPU Radix Sort: 8-Pass Parallel Sort for Voxel Splat Depth+Tile Ordering
 
 ## Problem
 
-After EWA projection, ~1M Gaussians must be sorted by composite key (tile_id | depth) for correct front-to-back compositing. This ticket implements an 8-pass, 4-bit GPU radix sort entirely in compute shaders — data never leaves VRAM.
+After sort key construction (T6b), ~1M voxel splats must be sorted by composite key `(tile_id | depth)` for correct front-to-back compositing in the tiled rasterizer (T6d). This ticket implements an 8-pass, 4-bit GPU radix sort entirely in compute shaders — data never leaves VRAM.
 
 ## Scope
 
@@ -75,13 +75,13 @@ impl Node for RadixSortNode {
 ```
 
 ## Dependencies
-- T6b (EWA projection): sort_keys[] and sort_values[] input
+- T6b (sort key construction): sort_keys[] and sort_values[] input
 - T2a (GPU buffer infra): sort_scratch, histograms buffers
 
 ## Acceptance Criteria
 1. Sort correctly orders 1M elements by composite key
 2. All 8 passes execute without data corruption (ping-pong correct)
-3. Sort completes in < 1ms for 1M Gaussians
+3. Sort completes in < 1ms for 1M voxel splats
 4. Data stays in VRAM — no CPU round-trip between passes
 5. Workgroup atomics for histogram are correct (no race conditions)
 6. Prefix sum produces valid cumulative offsets

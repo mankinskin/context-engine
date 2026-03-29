@@ -14,18 +14,18 @@
 
 ## Problem
 
-The context-editor needs physics, voxel manipulation, and a bridge from SVO to Rapier collision shapes. With Gaussian splatting, the SVO is the **structural authority** (physics + editing) while Gaussians are visual-only. Voxel edits flow through the double-buffered SVO upload, and the Gaussian generator re-creates visuals from fresh octree data every frame.
+The context-editor needs physics, voxel manipulation, and a bridge from SVO to Rapier collision shapes. With voxel splatting, the SVO is the **structural authority** (physics + editing) while splats are visual-only. Voxel edits flow through the double-buffered SVO upload, and the voxel splat kernel re-creates visuals from fresh octree data every frame.
 
 ## Architecture: SVO ↔ Rapier Bridge + Double-Buffered Upload
 
-### Two-Layer Collision (unchanged by Gaussians)
+### Two-Layer Collision (unchanged by splats)
 
 | Layer | Purpose | Data Source |
 |-------|---------|-------------|
-| **SVO (GPU)** | Particle collision, Gaussian generation source | Octree storage buffer |
+| **SVO (GPU)** | Particle collision, splat generation source | Octree storage buffer |
 | **Rapier (CPU)** | Character physics, rigid body dynamics | Collision shapes derived from SVO |
 
-Gaussians have NO collision role. They are purely visual.
+splats have NO collision role. They are purely visual.
 
 ### Voxel Manipulation API
 
@@ -80,7 +80,7 @@ fn double_buffer_swap_system(mut svo_buffer: ResMut<SvoDoubleBuffer>) {
 }
 ```
 
-**Effect on Gaussians**: The Gaussian generator reads the FRONT buffer. After a swap, it reads the newly uploaded SVO data and generates fresh Gaussians. Visual update latency = 1 frame (imperceptible at 120 FPS).
+**Effect on splats**: The voxel splat kernel reads the FRONT buffer. After a swap, it reads the newly uploaded SVO data and generates fresh splats. Visual update latency = 1 frame (imperceptible at 120 FPS).
 
 **No ruckler guarantee**: If a complex edit (e.g., 1000 voxels) takes longer than a frame, the GPU keeps rendering the last valid FRONT buffer at full FPS. The edit appears on the next swap.
 
@@ -107,7 +107,7 @@ fn rapier_rebuild_system(
 | Dirty upload (5-radius brush) | < 1ms (partial `write_buffer`) |
 | Double buffer swap | < 0.01ms (pointer flip) |
 | Rapier chunk rebuild | < 2ms (amortized, only dirty chunks) |
-| Visual update after edit | 1 frame (next Gaussian generation pass) |
+| Visual update after edit | 1 frame (next splat generation pass) |
 
 ## Scope
 
@@ -130,13 +130,13 @@ fn rapier_rebuild_system(
 ## Dependencies
 - T1 (scaffold): VoxelWorld resource, svo/ module
 - T2 (render init): SvoDoubleBuffer resource
-- T6 (3D scene): Gaussian generator reads FRONT buffer
+- T6 (3D scene): voxel splat kernel reads FRONT buffer
 - T8 (character): Character controller uses Rapier colliders
 
 ## Acceptance Criteria
 1. `set_voxel()` modifies the octree and marks the region dirty
 2. Upload goes to BACK buffer; GPU renders from FRONT buffer (no stalls)
-3. After swap, Gaussian generator produces updated visuals (verify color change visible)
+3. After swap, voxel splat kernel produces updated visuals (verify color change visible)
 4. Complex edit (1000 voxels) does not drop frames — GPU continues on stale FRONT buffer
 5. Dirty upload < 1ms for a 5-radius sphere
 6. Rapier chunk colliders rebuild when voxels change

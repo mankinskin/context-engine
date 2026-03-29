@@ -1,8 +1,8 @@
-# Doc Editor: Documentation as Frosted Glass Panels in Gaussian World
+# Doc Editor: Documentation as Frosted Glass Panels in Voxel-Splatted World
 
 ## Problem
 
-Documentation pages (from doc-viewer / MCP doc sources) are displayed as frosted glass panels in the 3D Gaussian-splatted scene. Docs are read-heavy, so they use higher roughness for readability — the mipmap-blurred Gaussian background provides ambient context without distracting from text.
+Documentation pages (from doc-viewer / MCP doc sources) are displayed as frosted glass panels in the 3D Voxel-splatted scene. Docs are read-heavy, so they use higher roughness for readability — the mipmap-blurred voxel-splatted background provides ambient context without distracting from text.
 
 ## Architecture
 
@@ -41,7 +41,7 @@ fn spawn_doc_panel(doc: &Document, pos: Vec3) -> DocPanelBundle {
             half_extents: Vec2::new(2.0, 3.0),  // tall panel for text
             corner_radius: 0.08,
             content_texture: render_doc_content(doc),
-            roughness: 0.6,   // frosted — readable text over blurred Gaussian scene
+            roughness: 0.6,   // frosted — readable text over blurred voxel-splatted scene
             tint: Vec3::new(0.95, 0.95, 1.0),  // slight cool tint
             anchor: PanelAnchor::WorldFixed(pos, Quat::IDENTITY),
         },
@@ -53,7 +53,7 @@ fn spawn_doc_panel(doc: &Document, pos: Vec3) -> DocPanelBundle {
 
 ### Frosted Glass for Readability
 
-Docs use roughness 0.6 which translates to mipmap level ~5.4 (roughness × 9.0). The Gaussian scene behind the panel is heavily blurred, providing ambient visual context (you can see shapes/colors) without interfering with text readability. Curvature-adaptive blur at panel edges (fwidth(panel_normal) × 4.0) gives a polished glass-edge look.
+Docs use roughness 0.6 which translates to mipmap level ~5.4 (roughness × 9.0). The voxel-splatted scene behind the panel is heavily blurred, providing ambient visual context (you can see shapes/colors) without interfering with text readability. Curvature-adaptive blur at panel edges (fwidth(panel_normal) × 4.0) gives a polished glass-edge look.
 
 ### Scroll
 
@@ -71,7 +71,7 @@ Doc panels can link to other doc panels or ticket panels. Clicking a cross-refer
 
 ## Acceptance Criteria
 1. Doc panels render as frosted glass (roughness ~0.6) in 3D world
-2. Text is readable over blurred Gaussian background
+2. Text is readable over blurred voxel-splatted background
 3. Scroll works within panels
 4. Code blocks have syntax highlighting
 5. Cross-references navigate camera to other panels

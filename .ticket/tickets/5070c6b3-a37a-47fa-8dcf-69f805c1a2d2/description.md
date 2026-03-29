@@ -1,97 +1,161 @@
-# EWA Projection: 3D→2D Covariance, SH Evaluation, and Sort Key Construction
+# Sort Key Construction & Tiled Depth Ordering for Voxel Splats
 
 ## Problem
 
-The second stage of the Gaussian pipeline: project each 3D Gaussian's covariance to a 2D screen-space ellipse via EWA splatting, evaluate Spherical Harmonics for view-dependent color, and construct composite sort keys for the radix sort.
+The second rendering stage: project each `VoxelSplat`'s bounding box to screen-space, compute tile membership, and construct composite sort keys `(tile_id << 12) | depth` for the GPU radix sort (T6c). This replaces the old EWA covariance projection and SH evaluation — voxel splats are axis-aligned boxes, so projection is a simple AABB-to-screen transform.
 
 ## Scope
 
-### EWA Math
-
-$$\Sigma' = J \cdot W \cdot \Sigma \cdot W^T \cdot J^T$$
-
-- $W$: view matrix (3×3 rotation)
-- $J$: Jacobian of perspective projection
-- $\Sigma$: 3D covariance from generator
-- $\Sigma'$: 2D covariance → screen-space ellipse
-
-### Compute Shader: ewa_project.wgsl
+### ProjectedSplat Struct
 
 ```wgsl
+struct ProjectedSplat {
+    screen_min: vec2f,      // screen-space AABB min (pixels)
+    screen_max: vec2f,      // screen-space AABB max (pixels)
+    center_ws: vec3f,       // world-space center (for ray-box in T6d)
+    half_extent: f32,       // world-space half-size
+    depth: f32,             // view-space Z for sorting
+    material_packed: u32,   // passthrough from VoxelSplat
+    _pad: vec2u,
+}
+```
+
+### Compute Shader: sort_key_build.wgsl
+
+```wgsl
+@group(0) @binding(0) var<storage, read> splats: array<VoxelSplat>;
+@group(0) @binding(1) var<storage, read_write> projected: array<ProjectedSplat>;
+@group(0) @binding(2) var<storage, read_write> sort_keys: array<u32>;
+@group(0) @binding(3) var<storage, read_write> sort_values: array<u32>;
+@group(0) @binding(4) var<uniform> camera: CameraUniforms;
+
+struct CameraUniforms {
+    view_proj: mat4x4f,
+    view_mat: mat4x4f,
+    camera_pos: vec3f,
+    resolution: vec2f,
+    max_depth: f32,
+}
+
+const TILE_SIZE: u32 = 16u;
+
 @compute @workgroup_size(256)
-fn ewa_project(@builtin(global_invocation_id) id: vec3u) {
+fn build_sort_keys(@builtin(global_invocation_id) id: vec3u) {
     let idx = id.x;
-    if idx >= gaussian_count_val { return; }
-    let g = gaussians[idx];
+    if idx >= splat_count_val { return; }
+    let s = splats[idx];
 
-    let pos_view = (view_mat * vec4f(g.position, 1.0)).xyz;
-    if pos_view.z <= 0.001 { return; } // behind camera
-
-    let inv_z = 1.0 / pos_view.z;
-    let J = mat3x2f(
-        focal_x * inv_z, 0.0,
-        0.0, focal_y * inv_z,
-        -focal_x * pos_view.x * inv_z * inv_z, -focal_y * pos_view.y * inv_z * inv_z
+    // Transform voxel AABB corners to clip-space, find screen-space bounding rect
+    let half = vec3f(s.half_extent);
+    let corners = array<vec3f, 8>(
+        s.center_ws + vec3f(-1,-1,-1) * half,
+        s.center_ws + vec3f( 1,-1,-1) * half,
+        s.center_ws + vec3f(-1, 1,-1) * half,
+        s.center_ws + vec3f( 1, 1,-1) * half,
+        s.center_ws + vec3f(-1,-1, 1) * half,
+        s.center_ws + vec3f( 1,-1, 1) * half,
+        s.center_ws + vec3f(-1, 1, 1) * half,
+        s.center_ws + vec3f( 1, 1, 1) * half,
     );
 
-    let W = mat3x3f(view_mat[0].xyz, view_mat[1].xyz, view_mat[2].xyz);
-    let cov3d = unpack_cov3d(g.covariance);
-    let T = W * cov3d * transpose(W);
-    var cov2d = J * T * transpose(J);
+    var screen_min = vec2f(1e9);
+    var screen_max = vec2f(-1e9);
+    var min_depth = 1e9f;
+    var all_behind = true;
 
-    // Low-pass anti-aliasing filter: +0.3 pixel²
-    cov2d[0][0] += 0.3;
-    cov2d[1][1] += 0.3;
+    for (var c = 0u; c < 8u; c++) {
+        let clip = camera.view_proj * vec4f(corners[c], 1.0);
+        if clip.w <= 0.0 { continue; }
+        all_behind = false;
+        let ndc = clip.xyz / clip.w;
+        let screen = (ndc.xy * vec2f(0.5, -0.5) + 0.5) * camera.resolution;
+        screen_min = min(screen_min, screen);
+        screen_max = max(screen_max, screen);
+        min_depth = min(min_depth, clip.w);
+    }
 
-    let det = cov2d[0][0] * cov2d[1][1] - cov2d[0][1] * cov2d[0][1];
-    let inv_det = 1.0 / det;
+    if all_behind { return; }  // entirely behind camera
 
-    // SH color evaluation
-    let view_dir = normalize(g.position - camera.position.xyz);
-    let color = evaluate_sh(g.sh_coeffs, view_dir);
+    // Frustum cull: if AABB is entirely off-screen
+    if screen_max.x < 0.0 || screen_min.x > camera.resolution.x ||
+       screen_max.y < 0.0 || screen_min.y > camera.resolution.y {
+        return;
+    }
 
-    let screen = vec2f(
-        (pos_view.x * focal_x / pos_view.z + 0.5) * resolution.x,
-        (pos_view.y * focal_y / pos_view.z + 0.5) * resolution.y,
+    // Clamp to screen
+    screen_min = clamp(screen_min, vec2f(0.0), camera.resolution);
+    screen_max = clamp(screen_max, vec2f(0.0), camera.resolution);
+
+    // View-space depth for center
+    let pos_view = (camera.view_mat * vec4f(s.center_ws, 1.0)).xyz;
+
+    // Store projected splat
+    projected[idx] = ProjectedSplat(
+        screen_min, screen_max,
+        s.center_ws, s.half_extent,
+        pos_view.z, s.material_packed,
+        vec2u(0u),
     );
 
-    projected[idx] = ProjectedGaussian(
-        screen,
-        vec3f(cov2d[1][1] * inv_det, cov2d[0][0] * inv_det, -cov2d[0][1] * inv_det),
-        pos_view.z, color, g.opacity,
-    );
-
-    // Sort key: tile_id (20 bits) | depth (12 bits)
-    let tile_x = u32(screen.x) / TILE_SIZE;
-    let tile_y = u32(screen.y) / TILE_SIZE;
+    // Sort key: tile_id of center (20 bits) | depth (12 bits)
+    let center_screen = (screen_min + screen_max) * 0.5;
+    let tile_x = u32(center_screen.x) / TILE_SIZE;
+    let tile_y = u32(center_screen.y) / TILE_SIZE;
+    let grid_width = (u32(camera.resolution.x) + TILE_SIZE - 1u) / TILE_SIZE;
     let tile_id = tile_y * grid_width + tile_x;
-    let depth_quantized = u32(clamp(pos_view.z / max_depth * 4095.0, 0.0, 4095.0));
+    let depth_quantized = u32(clamp(pos_view.z / camera.max_depth * 4095.0, 0.0, 4095.0));
+
     sort_keys[idx] = (tile_id << 12u) | depth_quantized;
     sort_values[idx] = idx;
 }
 ```
 
-### SH Evaluation Function
+### Key Differences from Old EWA Approach
 
-```wgsl
-fn evaluate_sh(sh: array<f32, 48>, dir: vec3f) -> vec3f {
-    var color = vec3f(sh[0], sh[1], sh[2]) * 0.28209;
-    color += vec3f(sh[3], sh[4], sh[5]) * 0.48860 * dir.y;
-    color += vec3f(sh[6], sh[7], sh[8]) * 0.48860 * dir.z;
-    color += vec3f(sh[9], sh[10], sh[11]) * 0.48860 * dir.x;
-    // Band 2 + Band 3 terms...
-    return max(color, vec3f(0.0));
+| Old (Gaussian) | New (Voxel Splat) |
+|----------------|-------------------|
+| 3D covariance → 2D via Jacobian matrix | 8-corner AABB → screen rect |
+| SH evaluation (48 floats per Gaussian) | Material packed in 1× u32 — PBR in fragment |
+| Isotropic blur radius | Exact axis-aligned bounding box |
+| `exp(-0.5 * d²/σ²)` falloff | `sd_box` + `smoothstep` (in T6d) |
+
+This is significantly cheaper per-splat: no matrix multiplications, no SH basis function evaluation, no covariance inversion. The PBR evaluation moves to the fragment shader (T6d+T6e) where it only runs for visible pixels.
+
+### Bevy Render Node
+
+```rust
+pub struct SortKeyBuildNode;
+impl Node for SortKeyBuildNode {
+    fn run(&self, graph: &mut RenderGraphContext, world: &World) -> Result<(), NodeRunError> {
+        // Dispatch compute: ceil(splat_count / 256) workgroups
+        // Input: splats[] from VoxelSplatKernelNode
+        // Output: projected[], sort_keys[], sort_values[]
+        Ok(())
+    }
 }
 ```
 
+### Multi-Tile Splats
+
+Large voxels near the camera can span multiple tiles. For v1, each splat is assigned to one tile (its center tile). This means large splats may be clipped at tile edges. Future optimization: emit one sort entry per overlapped tile (fan-out), but this requires an additional atomic append. Deferring to a follow-up ticket.
+
+## Implementation Plan
+
+1. Define `ProjectedSplat` struct in `kernel/src/render/splat_types.rs`
+2. Create `sort_key_build.wgsl` compute shader
+3. Implement `SortKeyBuildNode` replacing the current `EwaProject` stub
+4. Create bind group: `[splats, projected, sort_keys, sort_values, camera_uniform]`
+5. Wire `CameraUniforms` extraction from Bevy camera
+6. Unit test: verify sort keys encode correct tile_id for known screen positions
+
 ## Dependencies
-- T6a (Gaussian generation): GaussianData[] input
-- T2a (GPU buffer infra): projected[], sort_keys[], sort_values[]
+- T6a (voxel splat kernel): `VoxelSplat[]` and `splat_count` input
+- T2a (GPU buffer infra): `projected[]`, `sort_keys[]`, `sort_values[]` buffers
 
 ## Acceptance Criteria
-1. EWA projection produces 2D inverse covariance for screen-space ellipses
-2. Low-pass filter (+0.3px²) prevents aliasing flicker
-3. SH evaluation shows view-dependent color shift when camera orbits
-4. Sort keys encode tile_id (20 bits) and depth (12 bits) correctly
-5. Behind-camera Gaussians are culled
-6. Projection completes in < 0.5ms for 1M Gaussians
+1. AABB projection produces tight screen-space bounding boxes for each voxel splat
+2. Frustum culling discards fully off-screen and behind-camera splats
+3. Sort keys encode `tile_id` (20 bits) and `depth` (12 bits) correctly
+4. Projection completes in < 0.3ms for 1M splats (faster than old EWA — no matrix math)
+5. `ProjectedSplat` carries world-space center + half_extent for ray-box SDF in T6d
+6. Material `u32` is passed through unchanged for PBR evaluation in T6d+T6e

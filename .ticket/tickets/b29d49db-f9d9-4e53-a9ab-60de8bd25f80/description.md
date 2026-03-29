@@ -2,7 +2,7 @@
 
 ## Problem
 
-The VoxelWorld's dirty regions must be uploaded to the GPU without stalling the render loop. WASM writes to the BACK buffer while the GPU reads the FRONT buffer. After upload, swap makes new data available for the next frame's Gaussian generation.
+The VoxelWorld's dirty regions must be uploaded to the GPU without stalling the render loop. WASM writes to the BACK buffer while the GPU reads the FRONT buffer. After upload, swap makes new data available for the next frame's splat generation.
 
 ## Scope
 
@@ -52,7 +52,7 @@ fn svo_resize_system(
 ### Latency Guarantee
 
 - Frame N: GPU renders from FRONT, WASM uploads to BACK
-- Frame N+1: After swap, Gaussian generator reads new FRONT data
+- Frame N+1: After swap, voxel splat kernel reads new FRONT data
 - If upload takes > 1 frame: GPU keeps rendering stale FRONT at full FPS
 
 ## Dependencies
@@ -61,7 +61,7 @@ fn svo_resize_system(
 
 ## Acceptance Criteria
 1. Upload writes to BACK buffer only (FRONT is untouched during upload)
-2. After swap, Gaussian generator produces updated visuals
+2. After swap, voxel splat kernel produces updated visuals
 3. Complex edit (1000 voxels) does not drop frames
 4. Dirty upload < 1ms for a 5-radius sphere brush
 5. Buffer resize correctly recreates both front/back buffers

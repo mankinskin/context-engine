@@ -1,8 +1,8 @@
-# Dioxus–Taffy Bridge: 2D UI Panels Composited Over Gaussian-Splatted Scene
+# Dioxus–Taffy Bridge: 2D UI Panels Composited Over Voxel-Splatted Scene
 
 ## Problem
 
-The 2D HUD/panel layer (Dioxus virtual DOM → Taffy layout) must composite over the 3D Gaussian-splatted scene. The bridge renders 2D UI to a texture that is alpha-blended on top of the final tiled rasterizer output.
+The 2D HUD/panel layer (Dioxus virtual DOM → Taffy layout) must composite over the 3D Voxel-splatted scene. The bridge renders 2D UI to a texture that is alpha-blended on top of the final tiled rasterizer output.
 
 ## Architecture
 
@@ -14,7 +14,7 @@ The 2D HUD/panel layer (Dioxus virtual DOM → Taffy layout) must composite over
   → [Composite pass]: sample scene_color (from tiled rasterizer) + ui_texture → swapchain
 ```
 
-The scene_color texture is the OUTPUT of the Gaussian tiled rasterizer (after all splats + glass refraction are composited). The UI layer is rendered independently and blended on top.
+The scene_color texture is the OUTPUT of the voxel splat tiled rasterizer (after all splats + glass refraction are composited). The UI layer is rendered independently and blended on top.
 
 ### Glass Effect on UI Panels
 
@@ -78,7 +78,7 @@ pub fn dioxus_bridge_system(
 ## Acceptance Criteria
 1. Dioxus VDOM diffs applied to Taffy layout each frame
 2. UI elements rendered to ui_texture
-3. Composite pass blends UI over Gaussian scene
+3. Composite pass blends UI over voxel-splatted scene
 4. Frosted glass panels sample scene mipmap with configurable blur
 5. UI click/hover detection from Taffy hit testing
 6. Text rendered with glyph atlas (wgpu_text or custom)

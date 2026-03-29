@@ -1,17 +1,17 @@
-# Style: Theme Palette Driving SVO Materials, Gaussian SH, and Glass Tints
+# Style: Theme Palette Driving SVO Materials, PBR Parameters, and Glass Tints
 
 ## Problem
 
-All visual elements — SVO voxel colors, Gaussian Spherical Harmonics coefficients, glass panel tints, particle colors, lighting — must be driven by a single `ThemePalette` Bevy resource for runtime re-theming.
+All visual elements — SVO voxel colors, PBR roughness/metallic parameters, glass panel tints, particle colors, lighting — must be driven by a single `ThemePalette` Bevy resource for runtime re-theming.
 
-## Architecture: Palette → SH Coefficients → Gaussian Color
+## Architecture: Palette → Packed Material → Voxel Color
 
 ### ThemePalette Resource
 
 ```rust
 #[derive(Resource, Clone)]
 pub struct ThemePalette {
-    // Voxel materials (stored in SVO, drive Gaussian generation)
+    // Voxel materials (stored in SVO color_data, drive PBR rendering)
     pub voxel_primary: MaterialDef,
     pub voxel_secondary: MaterialDef,
     pub voxel_terrain: MaterialDef,
@@ -40,31 +40,24 @@ pub struct ThemePalette {
 pub struct MaterialDef {
     pub base_color: Color,
     pub roughness: f32,
-    pub metallic: f32,
+    pub metallic: bool,
 }
 ```
 
-### Palette → Spherical Harmonics
+### Palette → Packed u32 Material
 
-When the Gaussian generator creates splats from SVO voxels, it reads the voxel's `color_data` and the palette's material properties to produce SH coefficients:
+When a voxel is placed or a theme changes, `MaterialDef` is packed into the `OctreeNode.color_data` u32 field using the encoding from T6e:
 
-- **Diffuse materials** (roughness ≈ 1.0): SH band 0 only (view-independent color)
-- **Glossy materials** (roughness < 0.5): SH bands 0–2 (view-dependent highlights)
-- **Metallic materials**: SH coefficients tinted by base color (colored reflections)
-
-```wgsl
-fn material_to_sh(color: vec3f, roughness: f32, metallic: f32) -> array<f32, 48> {
-    var sh: array<f32, 48>;
-    // Band 0 (DC): base color
-    sh[0] = color.r * 0.282;
-    sh[1] = color.g * 0.282;
-    sh[2] = color.b * 0.282;
-    // Higher bands: strength inversely proportional to roughness
-    let spec_scale = (1.0 - roughness) * 0.5;
-    // Band 1-3 coefficients for view-dependent appearance...
-    return sh;
-}
 ```
+Bits 0–7:   R (8 bits)
+Bits 8–15:  G (8 bits)
+Bits 16–23: B (8 bits)
+Bits 24–28: Roughness (5 bits, 0–31 → 0.0–1.0)
+Bits 29:    Metallic (1 bit)
+Bits 30–31: Reserved
+```
+
+The voxel splat kernel (T6a) passes this `u32` through to the tiled rasterizer (T6d), which unpacks it per-pixel for Cook-Torrance/GGX evaluation (T6e). No SH coefficients are involved — PBR parameters are evaluated directly.
 
 ### Theme Change System
 
@@ -74,20 +67,20 @@ fn theme_update_system(
     mut voxel_world: ResMut<VoxelWorld>,
 ) {
     if palette.is_changed() {
-        for (idx, mat) in voxel_world.material_refs.iter() {
-            let new_color = mat.resolve(&palette);
-            if voxel_world.nodes[*idx].color_data != new_color {
-                voxel_world.nodes[*idx].color_data = new_color;
+        for (idx, mat_ref) in voxel_world.material_refs.iter() {
+            let new_packed = mat_ref.resolve(&palette).pack();
+            if voxel_world.nodes[*idx].color_data != new_packed {
+                voxel_world.nodes[*idx].color_data = new_packed;
                 voxel_world.mark_dirty_node(*idx);
             }
         }
-        // Dirty SVO → re-upload → Gaussian generator re-reads colors → new SH on next frame
+        // Dirty SVO → re-upload → splat kernel re-reads color_data → PBR shows new colors
         // Glass panels re-read palette tints via glass_panel_uniform_system
     }
 }
 ```
 
-A palette change causes: dirty SVO upload → Gaussian generator re-emits with new SH → tiled renderer shows new colors. One frame latency via double buffering.
+A palette change causes: dirty SVO upload → splat kernel emits new material_packed → tiled rasterizer evaluates PBR with new colors. One frame latency via double buffering.
 
 ### Presets
 
@@ -101,13 +94,13 @@ impl ThemePalette {
 
 ## Dependencies
 - T1 (scaffold): Bevy App with resource registration
-- T6 (3D scene): Gaussian generator reads color_data + roughness from SVO
+- T6e (PBR material): unpack_material reads color_data packed by this system
 - T3 (liquid glass): Glass tints come from palette
 
 ## Acceptance Criteria
 1. `ThemePalette` resource accessible from any Bevy system
-2. Changing `palette.voxel_primary` updates all primary voxels → new Gaussians with new SH
-3. Glossy materials show view-dependent highlights via SH bands 1–3
+2. Changing `palette.voxel_primary` updates all primary voxels → new PBR appearance
+3. Roughness/metallic from palette visible: rough materials → broad specular, smooth → tight
 4. Glass panel tints reflect palette changes
 5. At least 2 preset themes (dark, light) with distinct visual appearance
 6. Theme change propagates within 1 frame (via double-buffered SVO)

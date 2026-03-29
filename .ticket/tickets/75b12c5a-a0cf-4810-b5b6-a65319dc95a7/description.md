@@ -6,7 +6,7 @@ Rendering hundreds of thousands of particles conventionally as point sprites cre
 
 ## Architecture
 
-We unify particle rendering with Gaussian Splatting. The same GPU Radix Sort and Tiled Rasterizer computing the world scene can ingest particles as dynamic Gaussians.
+We unify particle rendering with Voxel Splatting. The same GPU Radix Sort and Tiled Rasterizer computing the world scene can ingest particles as dynamic splats.
 
 ### Particle Splat Struct
 ```rust
@@ -18,11 +18,11 @@ struct ParticleSplat {
 }
 ```
 
-### Velocity Covariance Distortion (Motion Blur)
-To emulate motion blur physically in the splatting mathematics, we stretch the covariance matrix along the `p.velocity` vector before executing EWA projection:
+### Velocity AABB Stretch (Motion Blur)
+To emulate motion blur physically in the splatting mathematics, we stretch the screen-space AABB along the `p.velocity` vector before executing AABB screen projection:
 
 ```wgsl
-fn get_particle_covariance(p: Particle, view_mat: mat4x4<f32>) -> mat2x2<f32> {
+fn get_particle_stretch(p: Particle, view_mat: mat4x4<f32>) -> mat2x2<f32> {
     let velocity_stretch = length(p.velocity) * 0.01;
     let dir = normalize(p.velocity);
     // Erzeugt eine Ellipse, die in Bewegungsrichtung gestreckt ist
@@ -41,7 +41,7 @@ Because particles are rasterized via the Tiled Forward+ pipeline:
 - T6c (GPU radix sort) so these injected particles are depth-sorted alongside the SVO environment.
 
 ## Acceptance Criteria
-1. Particles render inherently as Gaussians utilizing the existing Splat renderer.
-2. Fast-moving particles appear stretched and elongated (velocity covariance).
+1. Particles render inherently as splats utilizing the existing Splat renderer.
+2. Fast-moving particles appear stretched and elongated (velocity AABB stretch).
 3. The renderer successfully processes at least 100k "dust/magic" particles with motion sorting in < 2ms.
 4. Particles naturally distort when passing behind Liquid Glass sections of the UI.

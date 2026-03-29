@@ -1,8 +1,8 @@
-# Ticket Editor: Tickets as Glass Panels in Gaussian-Splatted World
+# Ticket Editor: Tickets as Glass Panels in Voxel-Splatted World
 
 ## Problem
 
-Ticket data from the ticket-api is rendered as interactive 3D panels within the Gaussian-splatted world. Each ticket becomes a glass SDF panel (T10) displaying ticket fields, with dependency edges visualized as voxel connections that generate Gaussians.
+Ticket data from the ticket-api is rendered as interactive 3D panels within the Voxel-splatted world. Each ticket becomes a glass SDF panel (T10) displaying ticket fields, with dependency edges visualized as voxel connections that generate splats.
 
 ## Architecture
 
@@ -64,7 +64,7 @@ fn spawn_ticket_panels(
 
 ### Dependency Edges as Voxel Lines
 
-Dependency edges between tickets are drawn as thin voxel lines in the SVO. These voxels participate in Gaussian generation — each edge voxel produces a Gaussian, so dependency lines appear as soft glowing connections in the 3D scene:
+Dependency edges between tickets are drawn as thin voxel lines in the SVO. These voxels participate in splat generation — each edge voxel produces a splat, so dependency lines appear as soft glowing connections in the 3D scene:
 
 ```rust
 fn draw_ticket_edges(
@@ -81,7 +81,7 @@ fn draw_ticket_edges(
 }
 ```
 
-The Gaussians generated from edge voxels inherit their SH coefficients from the edge color/material, creating colored glowing connections. Critical path edges could have metallic SH (bright specular highlights) while normal edges use diffuse SH.
+The splats generated from edge voxels inherit their PBR material parameters from the edge color/material, creating colored glowing connections. Critical path edges could have metallic PBR (bright specular highlights) while normal edges use diffuse PBR.
 
 ### Interaction
 
@@ -94,7 +94,7 @@ The Gaussians generated from edge voxels inherit their SH coefficients from the 
 
 | Priority | Roughness | Visual |
 |----------|-----------|--------|
-| Critical | 0.0 | Crystal clear glass — Gaussians fully visible through panel |
+| Critical | 0.0 | Crystal clear glass — splats fully visible through panel |
 | High | 0.15 | Slight frost — barely blurred |
 | Medium | 0.4 | Moderate frost — background blurred |
 | Low | 0.7 | Heavy frost — mostly opaque |
@@ -110,7 +110,7 @@ The Gaussians generated from edge voxels inherit their SH coefficients from the 
 ## Dependencies
 - T10 (3D UI): WorldPanel + glass SDF for each ticket
 - T3 (liquid glass): Glass refraction + mipmap blur for panel backgrounds
-- T6 (3D scene): Edge voxels → Gaussians via generation pipeline
+- T6 (3D scene): Edge voxels → splats via generation pipeline
 - T7 (physics): SVO for edge voxel storage
 - ticket-api: Ticket data source
 
@@ -118,7 +118,7 @@ The Gaussians generated from edge voxels inherit their SH coefficients from the 
 1. Each ticket renders as a glass panel in 3D world
 2. Priority maps to glass roughness (clear=critical, frosted=low)
 3. State maps to tint color
-4. Dependency edges rendered as voxel lines that generate Gaussians
+4. Dependency edges rendered as voxel lines that generate splats
 5. Click interaction opens ticket details
 6. Panel content (title, state, priority) rendered via Dioxus→texture
 7. Force-directed or grid layout positions panels without overlap
