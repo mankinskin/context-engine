@@ -1,6 +1,24 @@
 {
   "version": "0.2.0",
   "configurations": [
+    // ──────────────────────────────────────────────────
+    // Context Editor — visual demo in Chrome
+    // ──────────────────────────────────────────────────
+    // Starts `trunk serve` (compiles kernel + sandbox-app to WASM),
+    // then opens http://localhost:8090 in a Chrome window with DevTools.
+    // Requires the built-in JS Debugger (no extra extension needed in VS Code ≥ 1.85).
+    {
+      "name": "Demo: context-editor",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8090",
+      "preLaunchTask": "context-editor: trunk serve",
+      "webRoot": "${workspaceFolder}/tools/context-editor/sandbox-app",
+      "presentation": {
+        "group": "context-editor",
+        "order": 1
+      }
+    },
     {
       "name": "Launch Extension",
       "type": "extensionHost",

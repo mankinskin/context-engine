@@ -186,6 +186,69 @@
       "presentation": {
         "reveal": "never"
       }
+    },
+
+    // ──────────────────────────────────────────────────
+    // Context Editor — sandbox-app (Dioxus WASM via Trunk)
+    // ──────────────────────────────────────────────────
+
+    // Compile the kernel + sandbox-app to WASM and serve with hot-reload.
+    // Trunk watches for file changes and rebuilds automatically.
+    // Signals ready when "server listening at" appears in the output.
+    {
+      "label": "context-editor: trunk serve",
+      "type": "shell",
+      "command": "trunk serve",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/tools/context-editor/sandbox-app"
+      },
+      "problemMatcher": {
+        "owner": "trunk-context-editor",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "starting build",
+          "endsPattern": "server listening at"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "trunk (context-editor)"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+
+    // Open http://localhost:8090 in the VS Code Simple Browser once Trunk is ready.
+    {
+      "label": "context-editor: open",
+      "type": "shell",
+      "command": "echo ${input:openContextEditor}",
+      "dependsOn": "context-editor: trunk serve",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+
+    // Compound task: compile + serve + open browser.
+    // Run via: Tasks > Run Task > context-editor
+    {
+      "label": "context-editor",
+      "dependsOn": ["context-editor: trunk serve", "context-editor: open"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
     }
   ],
 
@@ -201,6 +264,12 @@
       "type": "command",
       "command": "simpleBrowser.show",
       "args": "http://localhost:8081"
+    },
+    {
+      "id": "openContextEditor",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:8090"
     }
   ]
 }
