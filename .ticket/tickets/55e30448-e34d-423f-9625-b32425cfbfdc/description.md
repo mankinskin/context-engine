@@ -1,165 +1,98 @@
-# UI: 3D World-Space Panel System as Analytical SDFs
+# 3D UI Panels: Glass SDF Elements in Gaussian-Splatted World
 
 ## Problem
 
-Some UI elements (floating labels, context menus, data readouts) must exist as **world-space panels** — positioned in 3D space relative to world objects rather than screen-space. These panels are analytical SDFs in the unified ray marching loop, sharing the glass infrastructure from T3 but with world-anchored transforms.
+In-world UI panels (floating labels, health bars, menus anchored to positions) exist as glass SDF shapes inside the 3D scene. They interact with the Gaussian splatting pipeline: the tiled rasterizer renders Gaussians behind/around them, and the glass shader refracts those Gaussians through the panel surface.
 
-## Architecture: World-Space SDFs
+## Architecture
 
-### Screen-Space vs World-Space Panels
+### Panel as Glass SDF
 
-| Property | Screen-Space (T9) | World-Space (T10) |
-|----------|-------------------|-------------------|
-| Position | Derived from Taffy layout | Attached to ECS entity transform |
-| Movement | Fixed relative to camera | Fixed in world, moves with camera |
-| Depth | Layer-based (0, 1, 2...) | True 3D position |
-| Parallax | Simulated via layers | Real perspective |
-| Use cases | Main UI, menus, editors | Labels, tooltips, node annotations |
-
-### ECS: World-Space Panel Component
+Each world panel is defined as a flat rectangular SDF (rounded-rect) positioned in 3D space:
 
 ```rust
 #[derive(Component)]
 pub struct WorldPanel {
-    pub size: Vec2,           // panel dimensions in world units
+    pub half_extents: Vec2,       // panel size in world units
     pub corner_radius: f32,
-    pub ior: f32,
-    pub tint: Color,
-    pub blur_roughness: f32,
-    pub text_content: String, // rendered as texture or Dioxus overlay
-    pub billboard: bool,       // if true, always faces camera
+    pub content_texture: Handle<Texture>,  // UI rendered to texture
+    pub roughness: f32,           // 0.0 = clear glass, 1.0 = fully frosted
+    pub tint: Vec3,               // color tint for glass
+    pub anchor: PanelAnchor,      // world position + orientation
 }
 
-#[derive(Bundle)]
-pub struct WorldPanelBundle {
-    pub panel: WorldPanel,
-    pub glass: GlassPanel,
-    pub transform: Transform,
-    pub global_transform: GlobalTransform,
+pub enum PanelAnchor {
+    WorldFixed(Vec3, Quat),                // absolute position
+    EntityAttached(Entity, Vec3),           // offset from entity
+    Billboard { target: Entity, offset: Vec3 }, // always faces camera
 }
+```
+
+### Glass Interaction with Gaussians
+
+The panel's SDF is evaluated in the tiled rasterizer's glass pre-loop (same path as T3).  
+When a pixel hits a panel SDF:
+1. **Clear panel** (roughness < 0.1): Chromatic aberration refraction of Gaussians behind it, plus alpha-blended content texture on top
+2. **Frosted panel** (roughness > 0.1): Mipmap blur of Gaussians behind, curvature-adaptive at edges, content on top
+3. **Opaque panel** (roughness = 1.0): No refraction, just content texture
+
+```wgsl
+// In glass pre-loop (tiled_rasterizer.wgsl)
+let panel_sdf = evaluate_panel_sdf(world_pos, panel_center, panel_normal, panel_extents, panel_radius);
+if panel_sdf < 0.0 {
+    let panel_normal = panel_normal_at(world_pos, panel_center, panel_normal);
+    if panel_roughness < 0.1 {
+        // Clear glass: chromatic refraction of Gaussians
+        refraction_offset = chromatic_refract(view_dir, panel_normal, 1.0 / 1.5);
+    } else {
+        // Frosted: mipmap blur
+        frost_level = panel_roughness * 9.0 + fwidth(panel_normal) * 4.0;
+    }
+}
+```
+
+### Content Rendering
+
+Panel content (text, icons, layouts) is rendered to a separate texture per panel using the same Dioxus→Taffy pipeline (T9). This texture is sampled in the tiled rasterizer when the pixel is inside the panel SDF:
+
+```wgsl
+let content_color = textureSample(panel_content_tex, sampler, panel_uv);
+// Alpha-blend content over refracted/frosted Gaussian background
+final_color = mix(refracted_bg, content_color.rgb, content_color.a);
 ```
 
 ### Billboard System
 
-World panels with `billboard: true` always face the camera:
-
 ```rust
 fn billboard_system(
-    camera: Query<&GlobalTransform, With<Camera3D>>,
-    mut panels: Query<(&WorldPanel, &mut Transform), Without<Camera3D>>,
+    camera: Query<&Transform, With<Camera3d>>,
+    mut panels: Query<(&WorldPanel, &mut Transform), Without<Camera3d>>,
 ) {
-    let cam_pos = camera.single().translation();
-    for (panel, mut transform) in panels.iter_mut() {
-        if panel.billboard {
-            transform.look_at(cam_pos, Vec3::Y);
+    let cam_pos = camera.single().translation;
+    for (panel, mut tf) in panels.iter_mut() {
+        if let PanelAnchor::Billboard { .. } = panel.anchor {
+            tf.look_at(cam_pos, Vec3::Y);
         }
     }
 }
 ```
 
-### World Panel → Glass SDF
+### Hit Testing in 3D
 
-World panels feed into the same `GlassPanelBuffer` as screen-space panels:
-
-```rust
-fn world_panel_to_glass_system(
-    panels: Query<(&WorldPanel, &GlobalTransform)>,
-    mut glass_buffer: ResMut<GlassPanelBuffer>,
-) {
-    for (panel, transform) in panels.iter() {
-        glass_buffer.panels.push(GlassPanelGpu {
-            center: transform.translation(),
-            half_size: Vec3::new(panel.size.x * 0.5, panel.size.y * 0.5, PANEL_THICKNESS * 0.5),
-            corner_radius: panel.corner_radius,
-            ior: panel.ior,
-            tint: panel.tint.as_linear_rgba_f32().into(),
-            blur_roughness: panel.blur_roughness,
-        });
-    }
-}
-```
-
-### Anchoring to World Objects
-
-World panels can be anchored to other entities (e.g., a ticket node, a character, a data point):
-
-```rust
-#[derive(Component)]
-pub struct AnchoredTo {
-    pub entity: Entity,
-    pub offset: Vec3, // offset from anchor entity
-}
-
-fn anchor_system(
-    anchors: Query<(&AnchoredTo, &mut Transform), With<WorldPanel>>,
-    targets: Query<&GlobalTransform, Without<WorldPanel>>,
-) {
-    for (anchor, mut transform) in anchors.iter() {
-        if let Ok(target) = targets.get(anchor.entity) {
-            transform.translation = target.translation() + anchor.offset;
-        }
-    }
-}
-```
-
-### Text Rendering on World Panels
-
-Two approaches for text on world-space panels:
-
-1. **CPU-rasterized texture**: Render text to a texture on CPU, bind as overlay in shader
-2. **SDF text in ray march**: Evaluate glyph SDFs in the shader (expensive but resolution-independent)
-
-For v1, use approach 1: pre-rasterize text to a small texture, then sample it when the ray hits the panel SDF. The panel surface shows the texture instead of pure glass tint.
-
-### Interaction with World Panels
-
-World panels that are interactive (buttons, links) use the same hit-testing system as T9, but with true 3D ray-panel intersection rather than screen-space projection:
-
-```rust
-fn world_panel_hit_test(
-    ray: Ray,
-    panel_transform: &GlobalTransform,
-    panel: &WorldPanel,
-) -> Option<Vec2> {
-    // Ray-OBB intersection using panel transform
-    let local_ray = transform_ray_to_local(ray, panel_transform);
-    let hit = ray_aabb_intersection(local_ray, panel.local_bounds())?;
-    let uv = Vec2::new(
-        (hit.point.x / panel.size.x) + 0.5,
-        (hit.point.y / panel.size.y) + 0.5,
-    );
-    Some(uv)
-}
-```
-
-## Scope
-
-### Rust: World Panel ECS (`src/ui/world_panel.rs`)
-- `WorldPanel` component
-- `WorldPanelBundle`
-- `AnchoredTo` component
-- `billboard_system`
-- `anchor_system`
-- `world_panel_to_glass_system`
-
-### Rust: World Panel Interaction (`src/ui/world_hit.rs`)
-- `world_panel_hit_test()` with ray-OBB intersection
-- Integration with Dioxus event dispatch
-
-### Rust: Text Rendering (`src/ui/world_text.rs`)
-- CPU text rasterizer (basic: single font, white-on-transparent)
-- Texture bind for ray march panel surface
+Ray-cast from mouse through camera, intersect with panel planes (not SVO colliders). Panels have higher priority than world geometry for UI interaction.
 
 ## Dependencies
-- T3 (liquid glass): GlassPanelBuffer and GlassPanelGpu struct
-- T6 (3D scene): Camera3D, ray generation, render pipeline
-- T9 (bridge): GlassPanelBuffer is shared — world panels append to same buffer
+- T3 (liquid glass): Glass SDF evaluation, chromatic refraction, mipmap frosted blur
+- T6 (3D scene): Panel SDFs registered with tiled rasterizer
+- T9 (bridge): Content textures from Dioxus→Taffy rendering
+- T2 (render init): Bind groups for panel content textures
 
 ## Acceptance Criteria
-1. A `WorldPanel` entity placed at a fixed 3D position is visible in the ray-marched scene
-2. Billboard panels rotate to face the camera as it orbits
-3. Anchored panels follow their target entity when it moves
-4. World panels appear as glass SDFs with refraction and tint
-5. Text content is visible on the panel surface
-6. Clicking on a world panel returns the correct UV coordinates
-7. World panels and screen-space panels coexist in the same GlassPanelBuffer
+1. World panels render as glass SDFs in the Gaussian scene
+2. Clear glass panels show chromatic refraction of Gaussians behind them
+3. Frosted glass panels show mipmap-blurred Gaussians with curvature blur at edges
+4. Panel content (text, UI) alpha-blended over glass background
+5. Billboard panels face camera
+6. Entity-attached panels follow their host entity
+7. Mouse ray-cast hits panels for click/hover interaction
+8. Panel SDF edge smoothing (no aliased edges)

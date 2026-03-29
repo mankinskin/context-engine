@@ -1,123 +1,151 @@
-# Config: Runtime Parameters for SVO, Ray Marching, and Visual Tuning
+# Runtime Parameters: Gaussian Splatting, Tiling, Sorting, and Double Buffer Config
 
 ## Problem
 
-The context-editor needs a runtime parameter system for tuning SVO rendering, physics, particles, and UI without recompilation. Parameters must be accessible as Bevy resources and pushable to GPU uniforms.
+All rendering pipeline parameters must be tweakable at runtime via a Bevy resource. This includes SVO parameters, Gaussian generation, EWA projection, GPU radix sort, tiled rasterizer, glass effects, and double buffer behavior.
 
-## Architecture: Bevy Resource Parameters → GPU Uniforms
+## Architecture
 
-### Parameter Groups
+### Parameter Resources
 
 ```rust
 #[derive(Resource)]
 pub struct SvoParams {
-    pub max_depth: u32,          // octree traversal depth (default: 10)
-    pub world_size: f32,         // root cube edge length (default: 256.0)
-    pub lod_scale: f32,          // LOD distance scaling factor (default: 5.0)
-    pub voxel_resolution: f32,   // finest voxel edge length (default: 0.25)
+    pub max_depth: u32,           // octree depth (default: 8 → 256³)
+    pub chunk_size: u32,          // voxels per chunk for collider gen (default: 16)
 }
 
 #[derive(Resource)]
-pub struct RayMarchParams {
-    pub max_steps: u32,          // per-ray step limit (default: 128)
-    pub max_distance: f32,       // ray termination distance (default: 500.0)
-    pub hit_threshold: f32,      // SDF hit epsilon (default: 0.001)
-    pub shadow_softness: f32,    // soft shadow factor (default: 8.0)
-    pub ao_samples: u32,         // ambient occlusion sample count (default: 4)
-    pub ao_radius: f32,          // AO sampling radius (default: 2.0)
+pub struct SplatParams {
+    pub max_gaussians: u32,       // max Gaussians in buffer (default: 2_000_000)
+    pub sh_degree: u32,           // SH degree: 0, 1, 2, or 3 (default: 3)
+    pub lod_near: f32,            // distance for max detail (default: 5.0)
+    pub lod_far: f32,             // distance for min detail (default: 100.0)
+    pub lod_min_scale: f32,       // minimum Gaussian scale at far LOD (default: 0.5)
+    pub generation_enabled: bool, // can disable Gaussian generation (debug)
+}
+
+#[derive(Resource)]
+pub struct EwaParams {
+    pub low_pass_filter: f32,     // anti-aliasing: added to cov2d diagonal (default: 0.3)
+    pub cull_screen_threshold: f32, // skip Gaussians smaller than this in pixels (default: 0.1)
+}
+
+#[derive(Resource)]
+pub struct SortParams {
+    pub radix_bits: u32,          // bits per pass (default: 4)
+    pub num_passes: u32,          // total passes (default: 8 for 32-bit keys)
+    pub workgroup_size: u32,      // threads per workgroup (default: 256)
+}
+
+#[derive(Resource)]
+pub struct TileParams {
+    pub tile_size: u32,           // pixels per tile edge (default: 16)
+    pub max_gaussians_per_tile: u32, // limit per tile (default: 512)
+    pub early_out_alpha: f32,     // stop blending when remaining alpha < this (default: 0.01)
 }
 
 #[derive(Resource)]
 pub struct GlassParams {
-    pub default_ior: f32,        // index of refraction (default: 1.5)
-    pub max_panels: u32,         // max glass SDFs per frame (default: 16)
-    pub max_refraction_bounces: u32, // stacked glass limit (default: 4)
+    pub ior: f32,                        // index of refraction (default: 1.5)
+    pub chromatic_r_scale: f32,          // R channel distortion (default: 1.0)
+    pub chromatic_g_scale: f32,          // G channel (default: 1.1)
+    pub chromatic_b_scale: f32,          // B channel (default: 1.2)
+    pub caustic_strength: f32,           // pseudo-caustic brightness (default: 2.0)
+    pub max_frost_mip_level: f32,        // max mipmap level for frosted blur (default: 9.0)
+    pub curvature_blur_factor: f32,      // fwidth(normal) multiplier (default: 4.0)
 }
 
 #[derive(Resource)]
-pub struct ParticleParams {
-    pub max_particles: u32,      // buffer capacity (default: 10_000)
-    pub gravity: Vec3,           // particle gravity (default: (0, -2, 0))
-    pub restitution: f32,        // bounce factor (default: 0.6)
+pub struct DoubleBufferParams {
+    pub enabled: bool,                   // can disable for debugging (default: true)
+    pub upload_budget_bytes: u32,        // max bytes per frame upload (default: 4MB)
 }
 
 #[derive(Resource)]
-pub struct PhysicsParams {
-    pub gravity: Vec3,           // Rapier world gravity (default: (0, -9.81, 0))
-    pub chunk_size: u32,         // Rapier chunk dimensions (default: 16)
+pub struct RenderParams {
+    pub svo: SvoParams,
+    pub splat: SplatParams,
+    pub ewa: EwaParams,
+    pub sort: SortParams,
+    pub tile: TileParams,
+    pub glass: GlassParams,
+    pub double_buffer: DoubleBufferParams,
 }
 ```
 
-### Uniform Packing
+### GPU Uniform Upload
 
-Parameters flow to GPU via `GlobalUniforms`:
+Parameters flow to GPU via a uniform buffer updated each frame:
 
 ```rust
-fn pack_global_uniforms(
-    svo: &SvoParams,
-    rm: &RayMarchParams,
-    glass: &GlassParams,
-    time: f32,
-) -> GlobalUniforms {
-    GlobalUniforms {
-        world_size: svo.world_size,
-        max_depth: svo.max_depth,
-        time,
-        lod_scale: svo.lod_scale,
-        max_steps: rm.max_steps,
-        max_distance: rm.max_distance,
-        hit_threshold: rm.hit_threshold,
-        shadow_softness: rm.shadow_softness,
-        ao_samples: rm.ao_samples,
-        default_ior: glass.default_ior,
-        ..Default::default()
-    }
+#[repr(C)]
+#[derive(Pod, Zeroable, Clone, Copy)]
+pub struct GpuRenderUniforms {
+    // Camera
+    pub view_matrix: [f32; 16],
+    pub proj_matrix: [f32; 16],
+    pub camera_pos: [f32; 4],
+    pub viewport_size: [f32; 2],
+
+    // Splat params
+    pub max_gaussians: u32,
+    pub sh_degree: u32,
+    pub lod_near: f32,
+    pub lod_far: f32,
+    pub lod_min_scale: f32,
+
+    // EWA
+    pub ewa_low_pass: f32,
+    pub ewa_cull_threshold: f32,
+
+    // Tiling
+    pub tile_size: u32,
+    pub grid_width: u32,
+    pub grid_height: u32,
+    pub early_out_alpha: f32,
+
+    // Glass
+    pub glass_ior: f32,
+    pub chromatic_scales: [f32; 3],
+    pub caustic_strength: f32,
+    pub max_frost_mip: f32,
+    pub curvature_blur_factor: f32,
+
+    // Frame
+    pub frame_index: u32,
+    pub _padding: [f32; 1],
 }
 ```
 
-### Runtime Modification
-
-Parameters can be changed at runtime via:
-1. Debug UI panel (Dioxus component with sliders)
-2. Bevy system that reads from a config file
-3. Direct ECS mutation from other systems
-
-Changes take effect next frame (uniform re-packed in `upload_uniforms_system`).
-
-### Bevy Registration
+### Upload System
 
 ```rust
-app.insert_resource(SvoParams::default())
-   .insert_resource(RayMarchParams::default())
-   .insert_resource(GlassParams::default())
-   .insert_resource(ParticleParams::default())
-   .insert_resource(PhysicsParams::default())
-   .add_systems(Update, upload_uniforms_system);
+fn upload_render_uniforms(
+    params: Res<RenderParams>,
+    camera: Query<(&Transform, &Projection), With<Camera3d>>,
+    mut uniform_buffer: ResMut<GpuRenderUniformBuffer>,
+    queue: Res<wgpu::Queue>,
+) {
+    let uniforms = GpuRenderUniforms::from_params(&params, &camera);
+    queue.write_buffer(&uniform_buffer.buffer, 0, bytemuck::bytes_of(&uniforms));
+}
 ```
 
-## Scope
+### Runtime Tweaking
 
-### Rust: Parameter Resources (`src/params.rs`)
-- `SvoParams`, `RayMarchParams`, `GlassParams`, `ParticleParams`, `PhysicsParams`
-- Default constructors with documented values
-- `pack_global_uniforms()` function
-
-### Rust: Upload System
-- `upload_uniforms_system` (reads all param resources → packs → writes GPU uniform buffer)
-
-### Rust: Debug UI (optional stretch)
-- Dioxus component with parameter sliders
-- Two-way binding: slider change → resource mutation → GPU uniform update
+Parameters modified at runtime (e.g., via debug UI or world editor) take effect next frame — the uniform buffer is re-uploaded every frame. No pipeline recreation needed.
 
 ## Dependencies
-- T1 (scaffold): Bevy App for resource registration
-- T6 (3D scene): GlobalUniforms struct consumed by ray march shader
-- T2 (WebGPU init): Uniform buffer infrastructure
+- T1 (scaffold): Resource definitions
+- T2 (render init): Uniform buffer creation and bind group
+- T6 (3D scene): All compute/render passes read these uniforms
 
 ## Acceptance Criteria
-1. All parameter resources exist with documented defaults
-2. Changing `SvoParams::max_depth` at runtime changes LOD quality visibly
-3. Changing `RayMarchParams::max_steps` affects rendering fidelity and performance
-4. Changing `GlassParams::default_ior` changes glass refraction appearance
-5. Parameters propagate to GPU within one frame of mutation
-6. System handles missing/default resources gracefully
+1. All SVO, Gaussian, EWA, sort, tile, glass, double buffer params exposed as Bevy resources
+2. GpuRenderUniforms uploaded every frame
+3. Changing params at runtime affects rendering next frame
+4. Default values produce correct rendering out of the box
+5. `generation_enabled = false` stops Gaussian generation (shows empty scene, useful for debug)
+6. `double_buffer.enabled = false` falls back to single-buffer mode (may stutter but simpler to debug)
+7. SH degree change (e.g., 3→0) visibly reduces color complexity

@@ -1,98 +1,110 @@
-# Plan: context-editor — Unified GPU-Accelerated 3D World Editor
+# Epic: context-editor — Unified 3D World Editor for context-engine
 
-## Problem
+## Vision
 
-The current viewer ecosystem (log-viewer, doc-viewer, ticket-viewer) consists of separate tools with duplicated frontend infrastructure. While Leptos ports and shared viewer-api extraction are underway, the architecture remains fundamentally 2D DOM-based with WebGPU as an overlay layer.
+A single-binary, GPU-accelerated tool that merges the log-viewer, doc-viewer,
+and ticket-viewer into an immersive 3D workspace rendered entirely in the
+browser via WebGPU/WASM.
 
-This plan defines a next-generation **context-editor** tool that unifies all viewer/editor functionality into a single GPU-accelerated 3D world with physically accurate rendering, interactive UI elements integrated into 3D space, and full editor capabilities for tickets, documentation, code files, and the context graph.
+## Technology Stack
 
-## Architecture
+| Layer | Technology | Role |
+|-------|-----------|------|
+| **UI logic** | Dioxus (web) | Component tree, events, accessibility |
+| **Layout** | Taffy | Pixel-accurate flexbox for UI panel sizing |
+| **ECS runtime** | Bevy | Entity-Component-System, render graph orchestration |
+| **Physics** | bevy_rapier3d | Collision and character movement on SVO-derived geometry |
+| **World structure** | Sparse Voxel Octree (SVO) | Compact octree in GPU storage buffer — structure & physics |
+| **Visual rendering** | Procedural Gaussian Splatting (3DGS) | Photorealistic visuals generated from SVO on GPU |
+| **Projection** | EWA Splatting | Anti-aliased 3D→2D Gaussian projection via covariance matrices |
+| **Sorting** | GPU Radix Sort | Parallel depth+tile sorting of millions of splats |
+| **Compositing** | Tiled Forward+ Renderer | 16×16 tile-based rasterization with front-to-back alpha blending |
+| **Glass/UI** | Analytical SDF + Mipmap Blur | Snell's refraction, chromatic aberration, pseudo-caustics, frosted glass |
+| **CPU↔GPU sync** | Double Buffering (Ping-Pong) | Lock-free CPU writes while GPU reads previous frame |
+| **Build** | Trunk | Compile to WASM, bundle assets for browser |
+| **API** | context-api, ticket-api | Data access for workspaces, search, tickets |
 
-### Technology Stack
-- **Game Engine / ECS Runtime**: Bevy (ECS for entity management, render graph orchestration, plugin system)
-- **Scene Representation**: Sparse Voxel Octree (SVO) stored as GPU storage buffer — replaces traditional mesh-based rendering
-- **Rendering**: Ray Marching through SVO + analytical SDF for UI — single unified shader pipeline
-- **UI Logic**: Dioxus (multi-renderer architecture, strict UI/rendering separation)
-- **Layout Engine**: Taffy (pixel-precise CSS-like layout computed in Rust)
-- **Physics**: bevy_rapier3d (rigid body dynamics, collision against SVO-derived geometry)
-- **Build System**: Trunk (Rust → WASM compilation + asset bundling)
-- **Backend APIs**: context-api (workspace/search/insert/read), ticket-api (CRUD/graph/SSE)
+## Rendering Pipeline (per frame)
 
-### Core Rendering Pipeline: SVO Ray Marching + SDF UI
+```
+1. CPU (Bevy ECS / WASM)
+   ├─ Drain Dioxus events, recompute Taffy layout
+   ├─ Update SVO dirty regions → write to BACK buffer
+   └─ Swap double buffers (Front ↔ Back)
 
-The rendering pipeline unifies the 3D world and UI into a single ray marching pass:
+2. GPU Compute Phase
+   ├─ Particle simulation (SVO collision via query_svo_distance)
+   ├─ Gaussian Generator: for each occupied voxel → emit 1-N Gaussians
+   │   ├─ LOD: coarse voxel → 1 large fuzzy Gaussian
+   │   └─ Leaf voxel → many small sharp Gaussians
+   ├─ EWA Projection: Σ' = J·W·Σ·Wᵀ·Jᵀ (3D covariance → 2D ellipse)
+   ├─ Key construction: tile_id (20 bit) | depth (12 bit) → u32
+   └─ Radix Sort (8 passes × 4-bit): histogram → prefix-sum → scatter
 
-1. **Dioxus** defines UI structure → abstract component tree
-2. **Taffy** computes pixel-precise bounding boxes from the tree
-3. **Bevy** receives layout data as ECS resources; orchestrates the render graph
-4. **Ray Marching shader**: For each pixel, cast a ray that:
-   a. Queries analytical **UI SDFs** (glass panels from Taffy layout) — on hit, applies Snell's law refraction and continues
-   b. Traverses the **Sparse Voxel Octree** for world geometry — on hit, computes lighting + shadows
-   c. Computes **SDF soft shadows** and **ambient occlusion** from distance field data
-5. **DOM overlay** provides text rendering, accessibility, and click targets
+3. GPU Fragment Phase (Tiled Forward+)
+   ├─ Per-pixel: determine tile_idx from screen coords
+   ├─ Glass SDF check (analytical):
+   │   ├─ If inside glass → Snell refraction bends lookup coords
+   │   ├─ Chromatic aberration: R/G/B sampled at slightly offset UVs
+   │   ├─ Pseudo-caustics: fwidth(distortion) → brightness boost
+   │   └─ Frosted blur: textureSampleLevel at mipmap LOD from roughness
+   ├─ Loop sorted Gaussians for this tile (front-to-back):
+   │   ├─ EWA power: -0.5 · dᵀ · V · d
+   │   ├─ SH color evaluation (view-dependent material)
+   │   ├─ Alpha blend: weight = α · remaining_alpha
+   │   └─ Early-out when remaining_alpha < 0.01
+   └─ Output final pixel color
+```
 
-### Why SVO + Ray Marching?
-- **Unified physics**: UI glass panels and 3D world exist in the same mathematical space — glass casts real shadows onto voxels, light refracts through glass physically
-- **$O(\log n)$ traversal**: Octree reduces per-pixel cost vs blind ray marching; LOD is automatic (coarse voxels at distance)
-- **Minimal CPU-GPU transfer**: WASM manages octree topology; GPU does all rendering. Dirty-region updates mean only changed nodes are uploaded
-- **SDF soft shadows**: Free from the distance field — no shadow maps needed
-- **Ambient occlusion**: A few extra samples from the octree yield realistic contact shadows
+## Why SVO + Gaussian Splatting?
 
-### Why Bevy?
-- ECS architecture manages entities (particles, UI elements, world objects, lights) as components
-- Render graph orchestrates custom passes: SVO traversal, particle compute, UI overlay
-- `bevy_rapier3d` physics plugin provides collision against SVO-derived geometry
-- Bevy uses Taffy internally for `bevy_ui`, creating natural synergy with Dioxus → Taffy → Bevy data flow
-- Asset management, hot-reloading, and diagnostics built in
+| Concern | SVO alone | SVO + 3DGS hybrid |
+|---------|-----------|-------------------|
+| Visual quality | Hard voxel edges | Soft, photorealistic splats derived from voxels |
+| VRAM usage | 8 bytes/node | Same octree + Gaussians generated on-the-fly (no storage) |
+| LOD | Octree depth cutoff | Automatic: large fuzzy Gaussian at distance, sharp near camera |
+| Lighting | SDF soft shadows | Spherical Harmonics → view-dependent color + soft light scatter |
+| Glass interaction | Voxels refract OK | Gaussians have alpha/extent → organic refraction through glass |
+| Physics | Direct SVO query | SVO is authoritative; Gaussians are visual-only |
+| Sort cost | N/A (ray march) | O(N log N) GPU radix sort, amortized < 1ms for 1M splats |
 
-### Key Design Decisions
-- **SVO over meshes**: Voxel octree enables LOD, efficient ray marching, and unified SDF lighting. Traditional meshes would require separate rasterization and shadow map passes.
-- **Ray marching over rasterization**: Single shader handles world + UI + lighting + shadows. No multi-pass compositing needed for glass refraction.
-- **Dioxus over Leptos**: Dioxus has native WGPU renderer (Blitz project), strict UI/rendering separation
-- **Taffy for layout**: Bridges Dioxus component tree to Bevy resources; layout data projected as 3D box SDFs into ray marching space
-- **Analytical SDF UI**: Glass panels are mathematical SDFs in the ray marching loop, not rasterized geometry. Refraction uses Snell's law for physical correctness.
+## Why Double Buffering?
 
-## Existing Infrastructure to Build On
-- `viewer-api` — shared HTTP server, tracing, CORS, auth, SSE, dev proxy
-- `viewer-api-leptos` — shared Leptos components (TreeView, ResizeHandle, SidebarShell)
-- Existing WGSL shaders — particles (4 types), background, hypergraph, scene3d, noise, palette
-- `context-api` — workspace manager, search, insert, read, log parser, tracing capture
-- `ticket-api` — ticket store (redb + Tantivy), state machine, dependency graph, watcher
+Without ping-pong buffers, the GPU must wait for WASM to finish uploading SVO changes (stall), or WASM must wait for the GPU frame to complete. Double buffering decouples them:
+- Frame N: GPU reads FRONT buffer, WASM writes to BACK buffer
+- Frame N+1: Swap → GPU immediately renders new data at 120 FPS
+- Bind groups are pre-built for both buffers; swap is a pointer flip
+
+## Why Bevy?
+
+Bevy provides the ECS runtime, plugin system, and render graph infrastructure.
+World geometry is NOT rendered via Bevy's built-in PBR pipeline — all rendering
+flows through custom compute + fragment passes (Gaussian generator → radix sort
+→ tiled rasterizer). Bevy's value is system scheduling, resource management,
+and the `bevy_rapier3d` physics plugin.
 
 ## Phases
 
-### Phase 1 — Foundation
-- Crate scaffold (Dioxus + Bevy + Taffy + Trunk + SVO data structures)
-- Bevy app setup with custom render graph, DOM-GPU bridge
+| Phase | Tickets | Milestone |
+|-------|---------|-----------|
+| 0 – Scaffold | T1 | Crate compiles to WASM, Bevy + Dioxus run |
+| 1 – Render infra | T2, T6 | SVO + Gaussian generator + tiled renderer on canvas |
+| 2 – Visuals | T3, T4, T5 | Liquid glass with caustics, particles as Gaussians, theme |
+| 3 – World sim | T7, T8 | Physics via Rapier on SVO, character movement |
+| 4 – UI bridge | T9, T10 | Dioxus layout → 3D glass SDFs, world-space panels |
+| 5 – Integrations | T12–T15 | Ticket, doc, code, graph editors in 3D world |
+| 6 – World editor | T16 | Voxel painting with SDF brushes, live Gaussian regeneration |
+| 7 – Tuning | T11 | Runtime parameter UI for all rendering/physics knobs |
 
-### Phase 2 — Core GPU Rendering
-- SVO scene renderer with ray marching, SDF shadows, ambient occlusion, LOD
-- Liquid Glass as analytical SDFs in ray marching loop (refraction via Snell's law)
-- Particle system with GPU-side SVO collision
-- Color theme/palette system (Bevy resource + GPU uniforms)
+## Acceptance Criteria (Epic-Level)
 
-### Phase 3 — 3D World
-- SVO world management: voxel manipulation, dirty-region GPU upload, LOD streaming
-- Physics via bevy_rapier3d against SVO-derived collision geometry
-- Character controls with SVO-aware collision
-
-### Phase 4 — UI Framework
-- Dioxus-Taffy-Bevy bridge: UI layout → 3D box SDFs in ray marching space
-- 3D-integrated UI elements (glass panel SDFs, floating HUD)
-- Parameter manipulation UI
-
-### Phase 5 — Editor Tools
-- Ticket editor (ticket-api CRUD, SSE, dependency graph as Bevy entities)
-- Documentation editor (markdown, doc-viewer API)
-- Context graph editor (context-api, hypergraph visualization)
-- Code file viewer (syntax highlighting)
-- World editor (SDF brush voxel manipulation, terrain, lighting)
-
-## Acceptance Criteria
-
-1. All 16 sub-tickets created with clear scope, acceptance criteria, and dependency edges
-2. Phase ordering enforced via depends_on edges
-3. SVO ray marching architecture specified in all rendering/scene tickets
-4. Bevy ECS architecture specified in all GPU/rendering/physics tickets
-5. Backend integration (context-api, ticket-api) validated in editor tool tickets
-6. Existing shader/GPU infrastructure reuse documented in relevant tickets
+1. Single `trunk serve` command launches the full editor in a browser
+2. 3D world rendered via procedural Gaussian splatting from SVO at ≥ 60 FPS (1080p)
+3. Tiled forward+ renderer handles ≥ 1M Gaussians at < 10ms sort + rasterize
+4. Liquid glass UI panels refract Gaussians with chromatic aberration and caustics
+5. Frosted glass uses mipmap blur (textureSampleLevel), not per-pixel Gaussian blur
+6. Double-buffered SVO upload: no stalls when editing voxels mid-frame
+7. SVO drives Rapier physics; Gaussians are visual-only
+8. Spherical Harmonics on Gaussians produce view-dependent material appearance
+9. All existing viewer backends (ticket, doc, log, context) accessible from within
+10. Total WASM bundle < 15 MB gzipped

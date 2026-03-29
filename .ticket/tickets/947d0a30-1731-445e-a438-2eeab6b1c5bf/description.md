@@ -1,26 +1,26 @@
-# Style: Theme Palette Resource Driving SVO Materials and Glass Tints
+# Style: Theme Palette Driving SVO Materials, Gaussian SH, and Glass Tints
 
 ## Problem
 
-All visual elements — SVO voxel colors, glass panel tints, particle colors, lighting — must be driven by a single `ThemePalette` Bevy resource so the entire scene can be re-themed at runtime.
+All visual elements — SVO voxel colors, Gaussian Spherical Harmonics coefficients, glass panel tints, particle colors, lighting — must be driven by a single `ThemePalette` Bevy resource for runtime re-theming.
 
-## Architecture: Palette → SVO Materials
+## Architecture: Palette → SH Coefficients → Gaussian Color
 
 ### ThemePalette Resource
 
 ```rust
 #[derive(Resource, Clone)]
 pub struct ThemePalette {
-    // Voxel materials
-    pub voxel_primary: Color,     // main world surface
-    pub voxel_secondary: Color,   // accent surfaces
-    pub voxel_terrain: Color,     // ground/floor
-    pub voxel_highlight: Color,   // selected/hovered voxels
+    // Voxel materials (stored in SVO, drive Gaussian generation)
+    pub voxel_primary: MaterialDef,
+    pub voxel_secondary: MaterialDef,
+    pub voxel_terrain: MaterialDef,
+    pub voxel_highlight: MaterialDef,
 
     // Glass
-    pub glass_tint: Color,        // default UI panel tint
-    pub glass_frosted_tint: Color,// frosted panel tint
-    pub glass_accent: Color,      // highlighted panel tint
+    pub glass_tint: Color,
+    pub glass_frosted_tint: Color,
+    pub glass_accent: Color,
 
     // Particles
     pub particle_primary: Color,
@@ -35,39 +35,38 @@ pub struct ThemePalette {
     pub text_primary: Color,
     pub text_secondary: Color,
 }
+
+#[derive(Clone)]
+pub struct MaterialDef {
+    pub base_color: Color,
+    pub roughness: f32,
+    pub metallic: f32,
+}
 ```
 
-### Palette → SVO Color Data
+### Palette → Spherical Harmonics
 
-When the palette changes, voxel `color_data` fields that reference palette slots are updated:
+When the Gaussian generator creates splats from SVO voxels, it reads the voxel's `color_data` and the palette's material properties to produce SH coefficients:
 
-```rust
-#[derive(Copy, Clone)]
-pub enum VoxelMaterial {
-    PalettePrimary,
-    PaletteSecondary,
-    PaletteTerrain,
-    PaletteHighlight,
-    Custom(Color),
-}
+- **Diffuse materials** (roughness ≈ 1.0): SH band 0 only (view-independent color)
+- **Glossy materials** (roughness < 0.5): SH bands 0–2 (view-dependent highlights)
+- **Metallic materials**: SH coefficients tinted by base color (colored reflections)
 
-impl VoxelMaterial {
-    pub fn resolve(&self, palette: &ThemePalette) -> u32 {
-        let color = match self {
-            Self::PalettePrimary => palette.voxel_primary,
-            Self::PaletteSecondary => palette.voxel_secondary,
-            Self::PaletteTerrain => palette.voxel_terrain,
-            Self::PaletteHighlight => palette.voxel_highlight,
-            Self::Custom(c) => *c,
-        };
-        pack_rgba(color)
-    }
+```wgsl
+fn material_to_sh(color: vec3f, roughness: f32, metallic: f32) -> array<f32, 48> {
+    var sh: array<f32, 48>;
+    // Band 0 (DC): base color
+    sh[0] = color.r * 0.282;
+    sh[1] = color.g * 0.282;
+    sh[2] = color.b * 0.282;
+    // Higher bands: strength inversely proportional to roughness
+    let spec_scale = (1.0 - roughness) * 0.5;
+    // Band 1-3 coefficients for view-dependent appearance...
+    return sh;
 }
 ```
 
 ### Theme Change System
-
-When the palette changes, re-pack all palette-referenced voxels:
 
 ```rust
 fn theme_update_system(
@@ -75,7 +74,6 @@ fn theme_update_system(
     mut voxel_world: ResMut<VoxelWorld>,
 ) {
     if palette.is_changed() {
-        // Re-resolve palette-referenced voxels
         for (idx, mat) in voxel_world.material_refs.iter() {
             let new_color = mat.resolve(&palette);
             if voxel_world.nodes[*idx].color_data != new_color {
@@ -83,48 +81,33 @@ fn theme_update_system(
                 voxel_world.mark_dirty_node(*idx);
             }
         }
-        // Glass panels re-read palette via their tint field → handled by glass_panel_uniform_system
-        // Lights re-read palette via GlobalUniforms → handled by light_uniform_system
+        // Dirty SVO → re-upload → Gaussian generator re-reads colors → new SH on next frame
+        // Glass panels re-read palette tints via glass_panel_uniform_system
     }
 }
 ```
 
-### Bevy ECS Integration
+A palette change causes: dirty SVO upload → Gaussian generator re-emits with new SH → tiled renderer shows new colors. One frame latency via double buffering.
 
-Palette is a Bevy `Resource` inserted at app startup and modifiable at runtime:
+### Presets
 
 ```rust
-app.insert_resource(ThemePalette::dark_default())
-   .add_systems(Update, theme_update_system);
+impl ThemePalette {
+    pub fn dark_default() -> Self { /* dark voxels, cyan glass, warm key light */ }
+    pub fn light_default() -> Self { /* bright voxels, subtle glass, cool lighting */ }
+    pub fn high_contrast() -> Self { /* accessibility theme */ }
+}
 ```
-
-Preset themes:
-- `ThemePalette::dark_default()` — dark voxels, cyan glass, warm lighting
-- `ThemePalette::light_default()` — bright voxels, subtle glass, cool lighting
-- `ThemePalette::high_contrast()` — accessibility theme
-
-## Scope
-
-### Rust: Theme (`src/theme.rs`)
-- `ThemePalette` resource with color fields
-- `VoxelMaterial` enum with palette resolution
-- `theme_update_system` (re-color voxels on palette change)
-- Preset constructors (dark, light, high-contrast)
-
-### Rust: Integration
-- Glass tints read from palette in `glass_panel_uniform_system`
-- Light colors read from palette in `light_uniform_system`
-- Particle colors read from palette in `emitter_system`
 
 ## Dependencies
 - T1 (scaffold): Bevy App with resource registration
-- T6 (3D scene): Voxel color_data field drives ray march output
+- T6 (3D scene): Gaussian generator reads color_data + roughness from SVO
 - T3 (liquid glass): Glass tints come from palette
 
 ## Acceptance Criteria
-1. `ThemePalette` resource exists and is accessible from any Bevy system
-2. Changing `palette.voxel_primary` at runtime updates all primary voxels in < 1 frame
-3. Glass panel tints reflect palette changes
-4. Light colors reflect palette changes
+1. `ThemePalette` resource accessible from any Bevy system
+2. Changing `palette.voxel_primary` updates all primary voxels → new Gaussians with new SH
+3. Glossy materials show view-dependent highlights via SH bands 1–3
+4. Glass panel tints reflect palette changes
 5. At least 2 preset themes (dark, light) with distinct visual appearance
-6. Palette change triggers minimal dirty-region upload (only changed voxels)
+6. Theme change propagates within 1 frame (via double-buffered SVO)

@@ -1,193 +1,157 @@
-# Tools: Voxel World Editor with SDF Brushes
+# World Editor: Voxel Paint/Carve with Live Gaussian Regeneration
 
 ## Problem
 
-The context-editor needs world-building tools for painting, carving, and sculpting the SVO voxel terrain. Users should be able to modify the 3D environment in real-time using SDF brushes that operate on the octree, with changes immediately visible in the ray-marched scene and reflected in Rapier physics.
+The world editor lets users paint, carve, and sculpt voxels in the SVO. Each edit dirties the SVO, which is uploaded via the double buffer (T7), triggering Gaussian regeneration on GPU (T6). The user sees visual feedback within one frame — new/removed voxels appear/disappear as Gaussians.
 
-## Architecture: SDF Brush Tools on SVO
+## Architecture
 
-### Brush Types
-
-```rust
-#[derive(Clone)]
-pub enum BrushTool {
-    /// Place voxels in a sphere
-    Paint { radius: f32, material: VoxelMaterial },
-    /// Remove voxels in a sphere
-    Carve { radius: f32 },
-    /// Smooth voxel boundaries (average neighboring occupancy)
-    Smooth { radius: f32, strength: f32 },
-    /// Flatten to a plane
-    Flatten { radius: f32, plane_y: f32 },
-}
-```
-
-### Brush Application Pipeline
-
-```
-Mouse click/drag in 3D viewport
-        │
-        ▼
-Ray cast from mouse → hit point on SVO surface
-        │
-        ▼
-Apply brush at hit point:
-  Paint  → voxel_world.apply_sdf_brush(center, radius, material)
-  Carve  → voxel_world.carve_sdf_brush(center, radius)
-  Smooth → average neighbor occupancy in radius
-  Flatten → set all voxels above plane_y in radius to empty
-        │
-        ▼
-SVO dirty regions marked automatically
-        │
-        ▼
-svo_upload_system: partial GPU buffer write (< 1ms)
-        │
-        ▼
-rapier_rebuild_system: rebuild affected chunk colliders
-        │
-        ▼
-Next frame: ray marching shows updated voxels + physics updated
-```
-
-### Brush System
+### Edit Tools
 
 ```rust
 #[derive(Resource)]
-pub struct ActiveBrush {
-    pub tool: BrushTool,
-    pub is_active: bool,  // mouse pressed
+pub struct EditorState {
+    pub active_tool: EditorTool,
+    pub brush_size: u32,         // voxel radius
+    pub current_material: MaterialDef,
+    pub symmetry: Symmetry,
 }
 
-fn brush_system(
-    mouse: Res<MouseState>,
-    active_brush: Res<ActiveBrush>,
-    camera: Query<&Camera3D>,
-    mut voxel_world: ResMut<VoxelWorld>,
+pub enum EditorTool {
+    Paint,          // set voxel to current material
+    Carve,          // remove voxels
+    Fill,           // flood-fill enclosed region
+    Smooth,         // average neighbors (adjusts Gaussian covariance)
+    Extrude,        // push face outward
+    Clone,          // copy region
+}
+
+pub enum Symmetry {
+    None,
+    MirrorX,
+    MirrorXZ,
+    Radial(u32),  // N-fold rotational
+}
+```
+
+### Edit → SVO → Double Buffer → Gaussians Pipeline
+
+```
+User action (mouse click/drag)
+  → Ray cast through camera (screen → world)
+  → Hit SVO voxel surface (ray-octree traversal on CPU)
+  → Apply tool to SVO region
+  → Mark dirty chunks in SVO
+  → svo_upload_system writes dirty chunks to BACK buffer
+  → double_buffer_swap_system swaps FRONT↔BACK
+  → gaussian_gen compute pass reads new FRONT buffer
+  → New Gaussians reflect edits
+  → Tiled rasterizer renders updated scene
+```
+
+Total latency: 1 frame (edit on frame N, visible on frame N+1). With double buffering, the edit never stalls the current frame's rendering — the GPU continues reading the old FRONT buffer while WASM writes to BACK.
+
+### Ray-Octree Intersection
+
+```rust
+fn editor_raycast(
+    mouse: Res<MousePosition>,
+    camera: Query<(&Transform, &Projection), With<Camera3d>>,
+    svo: Res<VoxelWorld>,
+) -> Option<VoxelHit> {
+    let ray = camera_ray(mouse, camera);
+    svo.raycast(ray.origin, ray.direction, 200.0)  // max distance
+}
+
+pub struct VoxelHit {
+    pub position: IVec3,      // voxel coordinate
+    pub normal: IVec3,        // face normal (for placement on surface)
+    pub distance: f32,
+}
+```
+
+### Paint Tool
+
+```rust
+fn paint_tool_system(
+    input: Res<InputState>,
+    editor: Res<EditorState>,
+    mut svo: ResMut<VoxelWorld>,
+    hit: Option<Res<VoxelHit>>,
 ) {
-    if !active_brush.is_active || !mouse.left_pressed { return; }
-
-    // Ray cast to find hit point on SVO
-    let ray = camera.single().screen_to_ray(mouse.position);
-    let Some(hit) = ray_cast_svo(&voxel_world, ray) else { return; };
-
-    match &active_brush.tool {
-        BrushTool::Paint { radius, material } => {
-            voxel_world.apply_sdf_brush(hit.point, *radius, material.clone());
-        }
-        BrushTool::Carve { radius } => {
-            voxel_world.carve_sdf_brush(hit.point, *radius);
-        }
-        BrushTool::Smooth { radius, strength } => {
-            smooth_voxels(&mut voxel_world, hit.point, *radius, *strength);
-        }
-        BrushTool::Flatten { radius, plane_y } => {
-            flatten_voxels(&mut voxel_world, hit.point, *radius, *plane_y);
+    if !input.mouse_left || editor.active_tool != EditorTool::Paint { return; }
+    if let Some(hit) = hit {
+        let center = hit.position + hit.normal; // place on surface
+        for offset in sphere_offsets(editor.brush_size) {
+            let pos = center + offset;
+            svo.set_voxel(pos, editor.current_material);
+            // This marks the chunk as dirty automatically
         }
     }
 }
 ```
 
-### CPU Ray Cast for Hit Detection
+### Smooth Tool
 
-The brush needs to know WHERE the user is pointing. A CPU-side ray cast through the SVO finds the first occupied voxel:
+Smoothing averages neighboring voxel properties, which affects the Gaussian generation:
+- Averaged colors → smoother SH coefficients on generated Gaussians
+- Averaged positions → Gaussians shift slightly, creating smoother surfaces
+- Can increase covariance (fatter Gaussians) for a soft/blurred look
+
+### Material Picker
 
 ```rust
-fn ray_cast_svo(voxel_world: &VoxelWorld, ray: Ray) -> Option<VoxelHit> {
-    // DDA traversal through octree on CPU
-    // Similar to GPU ray march but on CPU for interaction
-    let mut t = 0.0;
-    for _ in 0..256 {
-        let p = ray.origin + ray.direction * t;
-        let dist = voxel_world.query_distance(p);
-        if dist < 0.01 {
-            let normal = voxel_world.compute_normal(p);
-            return Some(VoxelHit { point: p, normal, distance: t });
-        }
-        t += dist.max(0.1);
-        if t > 500.0 { break; }
-    }
-    None
+fn material_picker_ui(editor: &mut EditorState, palette: &ThemePalette) {
+    // Shows palette materials (T5) as selectable swatches
+    // Each swatch shows: base_color, roughness, metallic preview
+    // Selected material applied to painted voxels
+    // SH coefficients computed by material_to_sh() in Gaussian generation
 }
 ```
 
-### Real-Time Performance
-
-| Operation | Target | Notes |
-|-----------|--------|-------|
-| Brush apply (radius 5) | < 0.5ms | ~500 voxels modified |
-| SVO dirty upload | < 1ms | Partial buffer write |
-| Rapier chunk rebuild | < 2ms | Only affected chunks |
-| Total edit-to-visible | < 1 frame | Same frame feedback |
-
-### Brush UI
-
-Dioxus toolbar component (screen-space glass panel) with:
-- Brush type selector (paint, carve, smooth, flatten)
-- Radius slider
-- Material/color picker (from ThemePalette)
-- Undo/redo stack for brush operations
-
-### Undo System
+### Undo/Redo
 
 ```rust
 #[derive(Resource)]
-pub struct BrushHistory {
-    pub undo_stack: Vec<BrushAction>,
-    pub redo_stack: Vec<BrushAction>,
+pub struct EditHistory {
+    pub undos: Vec<EditSnapshot>,
+    pub redos: Vec<EditSnapshot>,
 }
 
-pub struct BrushAction {
-    pub affected_nodes: Vec<(usize, OctreeNode)>, // index + old node value
-}
-
-// Undo: restore saved node values, mark dirty
-fn undo_brush(history: &mut BrushHistory, voxel_world: &mut VoxelWorld) {
-    if let Some(action) = history.undo_stack.pop() {
-        let mut redo_nodes = Vec::new();
-        for (idx, old_node) in &action.affected_nodes {
-            redo_nodes.push((*idx, voxel_world.nodes[*idx]));
-            voxel_world.nodes[*idx] = *old_node;
-            voxel_world.mark_dirty_node(*idx);
-        }
-        history.redo_stack.push(BrushAction { affected_nodes: redo_nodes });
-    }
+pub struct EditSnapshot {
+    pub changed_voxels: Vec<(IVec3, Option<VoxelData>, Option<VoxelData>)>, // pos, old, new
 }
 ```
 
-## Scope
+Undo restores previous voxel state → marks chunks dirty → double buffer upload → Gaussians regenerated. Same pipeline, same 1-frame latency.
 
-### Rust: Brush Tools (`src/editor/brush.rs`)
-- `BrushTool` enum (Paint, Carve, Smooth, Flatten)
-- `ActiveBrush` resource
-- `brush_system` (ray cast → apply → dirty)
-- `ray_cast_svo()` (CPU-side octree traversal)
+### Live Preview
 
-### Rust: Undo System (`src/editor/history.rs`)
-- `BrushHistory` resource
-- `BrushAction` struct
-- `undo_brush` / `redo_brush` functions
+While dragging a brush, show a preview of affected voxels as semi-transparent Gaussians. Implementation: temporarily add preview Gaussians to the generation buffer with reduced opacity, remove them if the user cancels.
 
-### Dioxus: Brush Toolbar (`src/ui/brush_toolbar.rs`)
-- Tool selector (paint/carve/smooth/flatten)
-- Radius slider
-- Material picker
-- Undo/redo buttons
+### Performance Budget
+
+For large edits (e.g., filling a 64³ region = 262,144 voxels):
+- SVO update: ~5ms (batch set_voxel)
+- Upload to BACK buffer: limited by DoubleBufferParams.upload_budget_bytes (4MB default)
+- If edit exceeds budget: upload spreads across multiple frames (progressive update)
+- Gaussian regeneration: automatic, 1 frame after upload completes
 
 ## Dependencies
-- T7 (physics): `VoxelWorld::apply_sdf_brush` and `carve_sdf_brush` APIs
-- T6 (3D scene): Ray marching renders the modified voxels
-- T9 (bridge): Brush toolbar as screen-space glass panel
-- T5 (theme): Material colors from palette
+- T7 (physics+world): VoxelWorld SVO, double-buffered upload, dirty chunk tracking
+- T6 (3D scene): Gaussian generation reads SVO FRONT buffer
+- T5 (theme): Material palette for paint tool
+- T8 (character): Camera ray for ray-octree intersection
+- T11 (params): DoubleBufferParams.upload_budget_bytes for large edit throttling
 
 ## Acceptance Criteria
-1. Paint brush adds voxels at mouse-pointed SVO surface
-2. Carve brush removes voxels, creating visible holes
-3. Smooth brush softens sharp voxel edges
-4. Flatten brush levels terrain to a plane
-5. Changes visible in the same frame (no delay)
-6. Rapier physics updated: character can walk on painted terrain
-7. Undo reverses the last brush stroke
-8. Redo re-applies the undone stroke
-9. Brush radius adjustable via UI slider
-10. Material color selectable from palette
+1. Paint tool adds voxels → Gaussians appear next frame
+2. Carve tool removes voxels → Gaussians disappear next frame
+3. Fill tool flood-fills enclosed regions
+4. Smooth tool averages voxel properties → softer Gaussians
+5. Material picker uses theme palette (T5)
+6. Undo/redo works with full voxel state restoration
+7. Symmetry modes (mirror, radial) work for all tools
+8. Large edits don't stall rendering (double buffer + upload budget)
+9. Brush preview shows semi-transparent Gaussians while dragging
+10. Ray-octree intersection finds correct voxel surface

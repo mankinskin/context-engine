@@ -1,37 +1,30 @@
-# VFX: Liquid Glass as Analytical SDF in Ray Marching Loop
+# VFX: Liquid Glass — SDF Refraction of Gaussians with Chromatic Aberration, Caustics, and Mipmap Blur
 
 ## Problem
 
-UI panels must appear as frosted glass floating in 3D space. In the SVO ray marching architecture, glass is NOT a separate post-process pass — it is an **analytical SDF evaluated inside the same ray marching loop** as the voxel world. When a ray hits a glass SDF, Snell's law bends the ray before it continues into the SVO behind the panel.
+UI panels must appear as physically realistic glass floating in 3D space. In the Gaussian Splatting pipeline, glass is an **analytical SDF evaluated per-pixel in the tiled rasterizer**. When a pixel is inside a glass region, the lookup coordinates are refracted via Snell's law before sampling tiled Gaussians, producing chromatic aberration, pseudo-caustics, and mipmap-based frosted blur.
 
-## Architecture: SDF Glass in Unified Ray March
+## Architecture: Glass in the Tiled Forward+ Renderer
 
-### Why Not Post-Process Glass?
+### Why This Is Better Than Glass + Ray Marching
 
-Post-process glass (sample background, blur, tint) has fundamental limitations:
-- Cannot handle overlapping glass panels (only one layer of refraction)
-- Cannot bend the view of what's behind the glass (no physical refraction)
-- Requires a separate render pass for the background texture
-- No physically correct light behavior through glass
+In the previous SVO-only approach, glass was evaluated during ray marching. With Gaussian splatting the visual layer is tile-sorted splats, not ray-marched voxels. Glass now operates in 2D screen-space on the tiled output:
 
-SDF glass in the ray marching loop gives us:
-- **Physical refraction**: Snell's law changes ray direction at glass surface
-- **Stacked panels**: Multiple glass layers refract cumulatively
-- **Free soft edges**: SDF distance provides smooth anti-aliased boundaries
-- **Zero extra passes**: Same shader, same ray, same pixel
+1. Per-pixel: evaluate glass SDF → get refraction offset
+2. The offset shifts which tile's Gaussians are sampled (cross-tile lookup)
+3. Since all tiles are parallel in VRAM, this costs almost nothing
+4. Chromatic aberration, caustics, and frosted blur are all simple post-refraction effects
 
-### Glass SDF Evaluation
-
-Each UI panel is a 3D box SDF with rounded corners:
+### Glass SDF Evaluation (unchanged from SVO era)
 
 ```wgsl
 struct GlassPanel {
-    center: vec3f,    // world position
-    half_size: vec3f, // width/height/depth extents
+    center: vec3f,
+    half_size: vec3f,
     corner_radius: f32,
-    ior: f32,         // index of refraction (1.5 = glass)
-    tint: vec4f,      // RGBA tint color
-    blur_roughness: f32, // surface roughness for frosted glass
+    ior: f32,
+    tint: vec4f,
+    blur_roughness: f32,
 }
 
 fn sdf_rounded_box(p: vec3f, panel: GlassPanel) -> f32 {
@@ -40,160 +33,190 @@ fn sdf_rounded_box(p: vec3f, panel: GlassPanel) -> f32 {
 }
 ```
 
-### Ray March Integration
-
-The unified ray march loop checks both SVO voxels and glass SDFs at each step:
-
-```wgsl
-fn march_ray(origin: vec3f, dir: vec3f) -> vec4f {
-    var ray_pos = origin;
-    var ray_dir = dir;
-    var accumulated_tint = vec4f(1.0);
-    var t = 0.0;
-
-    for (var i = 0u; i < MAX_STEPS; i++) {
-        let p = origin + ray_dir * t;
-
-        // 1. Check glass SDF (closest panel)
-        let glass_dist = nearest_glass_sdf(p);
-
-        // 2. Check SVO distance
-        let svo_dist = query_svo_distance(p);
-
-        // 3. Hit glass first?
-        if glass_dist < HIT_THRESHOLD && glass_dist < svo_dist {
-            let normal = glass_sdf_normal(p);
-            // Snell's law: bend ray direction
-            ray_dir = refract(ray_dir, normal, 1.0 / panel.ior);
-            // Accumulate tint
-            accumulated_tint *= panel.tint;
-            t += HIT_THRESHOLD * 2.0; // step past surface
-            continue;
-        }
-
-        // 4. Hit SVO?
-        if svo_dist < HIT_THRESHOLD {
-            let color = shade_voxel(p, ray_dir);
-            return vec4f(color.rgb * accumulated_tint.rgb, color.a);
-        }
-
-        // 5. Step forward by minimum distance
-        t += min(glass_dist, svo_dist);
-        if t > MAX_DISTANCE { break; }
-    }
-    return vec4f(0.0); // sky/background
-}
-```
-
 ### Snell's Law Refraction
-
-When a ray enters glass, its direction changes based on the index of refraction:
 
 ```wgsl
 fn refract_ray(incident: vec3f, normal: vec3f, eta: f32) -> vec3f {
     let cos_i = dot(-incident, normal);
     let sin2_t = eta * eta * (1.0 - cos_i * cos_i);
-    if sin2_t > 1.0 {
-        return reflect(incident, normal); // total internal reflection
-    }
+    if sin2_t > 1.0 { return reflect(incident, normal); } // total internal reflection
     let cos_t = sqrt(1.0 - sin2_t);
     return eta * incident + (eta * cos_i - cos_t) * normal;
 }
 ```
 
-This creates the physical distortion effect: objects behind glass appear shifted, compressed near edges, and color-tinted.
+### Chromatic Aberration (Spectral RGB Split)
 
-### Frosted Glass (Roughness)
-
-For frosted/matte glass, the refracted ray direction is slightly randomized:
+Real glass bends blue light more than red. Instead of three full ray traces, we apply a single-pass UV offset per channel:
 
 ```wgsl
-// After computing refracted direction:
-if panel.blur_roughness > 0.0 {
-    // Perturb ray using blue noise or hash
-    let noise = hash_vec3(p * 1000.0);
-    ray_dir = normalize(ray_dir + noise * panel.blur_roughness * 0.1);
+fn get_chromatic_refraction(uv: vec2f, distortion: vec2f) -> vec3f {
+    let r = sample_tiled_gaussians(uv + distortion * 1.0).r;
+    let g = sample_tiled_gaussians(uv + distortion * 1.1).g;
+    let b = sample_tiled_gaussians(uv + distortion * 1.2).b;
+    return vec3f(r, g, b);
 }
 ```
 
-For high-quality frost, sample multiple refracted rays and average (expensive) or use a single-sample approximation with temporal accumulation.
+### Pseudo-Caustics (Refraction Divergence → Brightness)
+
+Where refraction vectors converge, light concentrates. We approximate this using `fwidth`:
+
+```wgsl
+let distortion = calculate_refraction(in.uv);
+let caustics = fwidth(distortion.x + distortion.y) * caustic_strength;
+final_color += vec3f(caustics * light_color.rgb);
+```
+
+This is orders of magnitude cheaper than path-traced caustics and visually convincing for UI glass.
+
+### Frosted Glass via Mipmap Blur
+
+Instead of per-pixel Gaussian blur (expensive), we use `textureSampleLevel` on a mipmapped background capture:
+
+```wgsl
+fn get_frosted_glass(uv: vec2f, roughness: f32) -> vec4f {
+    // roughness 0.0 = clear glass, 1.0 = fully frosted
+    let lod_level = roughness * 9.0; // 10 mip levels for 1024px
+    return textureSampleLevel(bg_tex, bg_sampler, uv, lod_level);
+}
+```
+
+Adaptive roughness from SDF curvature:
+```wgsl
+let normal = get_sdf_normal(in.uv, element);
+let curvature = length(fwidth(normal));
+let blur_amount = clamp(base_roughness + curvature * 2.0, 0.0, 1.0);
+```
+
+**Why this is fast**: GPU hardware interpolates between mip levels on-chip. Smaller mips fit in L1 cache, making frosted glass actually *faster* than clear glass.
+
+### Integration into Tiled Rasterizer
+
+The glass evaluation happens **before** the Gaussian tile loop:
+
+```wgsl
+@fragment
+fn fs_main(in: FragmentInput) -> @location(0) vec4f {
+    var tile_x = u32(in.coords.x) / TILE_SIZE;
+    var tile_y = u32(in.coords.y) / TILE_SIZE;
+    var uv = in.coords.xy / resolution;
+    var glass_tint = vec4f(1.0);
+
+    // Glass SDF check
+    for (var g = 0u; g < glass_count; g++) {
+        let d = sdf_rounded_box(pixel_to_world(in.coords), glass_panels[g]);
+        if d < 0.0 {
+            let normal = glass_sdf_normal(pixel_to_world(in.coords), glass_panels[g]);
+            let refracted = refract_ray(view_dir, normal, 1.0 / glass_panels[g].ior);
+            let distortion = refracted.xy - view_dir.xy;
+
+            // Chromatic aberration
+            if glass_panels[g].blur_roughness < 0.01 {
+                // Clear glass: chromatic refraction of Gaussians
+                let refracted_color = get_chromatic_refraction(uv, distortion);
+                glass_tint *= vec4f(refracted_color * glass_panels[g].tint.rgb, 1.0);
+            } else {
+                // Frosted glass: mipmap blur
+                let frosted = get_frosted_glass(uv + distortion, glass_panels[g].blur_roughness);
+                glass_tint *= vec4f(frosted.rgb * glass_panels[g].tint.rgb, 1.0);
+            }
+
+            // Caustics
+            let caustics = fwidth(distortion.x + distortion.y) * 5.0;
+            glass_tint.rgb += caustics * light_color.rgb;
+
+            // Shifted tile for refracted lookup
+            uv += distortion;
+            tile_x = u32(uv.x * resolution.x) / TILE_SIZE;
+            tile_y = u32(uv.y * resolution.y) / TILE_SIZE;
+        }
+    }
+
+    // Standard tiled Gaussian loop (using potentially shifted tile)
+    let tile_idx = tile_y * grid_width + tile_x;
+    let tile = tile_data[tile_idx];
+    var final_color = vec4f(0.0);
+    var remaining_alpha = 1.0;
+
+    for (var i = 0u; i < tile.count; i++) {
+        let inst = sorted_instances[tile.offset + i];
+        let g = projected[inst.gaussian_id];
+        let d = uv * resolution - g.center_screen;
+        let power = -0.5 * (d.x * d.x * g.cov2d_inv[0] + d.y * d.y * g.cov2d_inv[1] + 2.0 * d.x * d.y * g.cov2d_inv[2]);
+        if power > 0.0 { continue; }
+        let alpha = min(0.99, g.opacity * exp(power));
+        if alpha < 1.0 / 255.0 { continue; }
+        let weight = alpha * remaining_alpha;
+        final_color += vec4f(g.color * weight, weight);
+        remaining_alpha *= (1.0 - alpha);
+        if remaining_alpha < 0.01 { break; } // early-out: tile saturated
+    }
+
+    return final_color * glass_tint;
+}
+```
 
 ### Bevy ECS Integration
-
-Glass panels are ECS entities, NOT hard-coded shader data:
 
 ```rust
 #[derive(Component)]
 pub struct GlassPanel {
-    pub ior: f32,           // default 1.5
-    pub tint: Color,        // default white with alpha 0.1
-    pub blur_roughness: f32, // 0.0 = clear, 1.0 = fully frosted
+    pub ior: f32,
+    pub tint: Color,
+    pub blur_roughness: f32,
     pub corner_radius: f32,
+    pub caustic_strength: f32,
+    pub chromatic_spread: f32, // RGB offset multiplier
 }
 
-// System: collect glass panels into GPU uniform buffer
 fn glass_panel_uniform_system(
     query: Query<(&Transform, &GlassPanel, &LayoutRect)>,
     mut glass_buffer: ResMut<GlassPanelBuffer>,
-) {
-    glass_buffer.panels.clear();
-    for (transform, panel, rect) in query.iter() {
-        glass_buffer.panels.push(GlassPanelGpu {
-            center: transform.translation,
-            half_size: rect.half_size_3d(),
-            corner_radius: panel.corner_radius,
-            ior: panel.ior,
-            tint: panel.tint.as_linear_rgba_f32().into(),
-            blur_roughness: panel.blur_roughness,
-        });
-    }
-}
+) { /* pack into GPU uniform */ }
 ```
-
-### Lighting Through Glass
-
-Glass panels cast colored, soft shadows:
-- Shadow rays that pass through glass accumulate the panel's tint
-- Shadow intensity is modulated by glass opacity
-- This is automatic: the shadow ray in `soft_shadow()` also evaluates glass SDFs
 
 ### Performance
 
 | Metric | Target |
 |--------|--------|
-| Glass SDF eval per step | < 0.01ms (analytical, no texture reads) |
-| Max panels per frame | 16 (uniform buffer limit; expandable via storage buffer) |
-| Refraction overhead | ~5% over non-glass rays (one `refract` + tint multiply) |
+| Glass SDF eval per pixel | < 0.01ms (analytical) |
+| Chromatic aberration | 3 tile lookups instead of 1 (~3× per-pixel, but only in glass region) |
+| Pseudo-caustics | 1 `fwidth` per pixel (essentially free) |
+| Frosted blur | 1 `textureSampleLevel` (hardware mip interpolation, 0 extra cycles) |
+| Cross-tile refraction | Near zero (all tiles in VRAM, linear access) |
+| Max panels per frame | 16 (expandable via storage buffer) |
 
 ## Scope
 
-### WGSL (in `ray_march.wgsl` — shared with T6)
-- `GlassPanel` struct definition
-- `sdf_rounded_box()` function
-- `refract_ray()` using Snell's law
-- `nearest_glass_sdf()` — evaluate all panels, return closest
-- `glass_sdf_normal()` — gradient-based normal for refraction
-- Integration into main `march_ray()` loop
+### WGSL (in `tiled_render.wgsl`)
+- `GlassPanel` struct, `sdf_rounded_box()`, `refract_ray()`
+- `get_chromatic_refraction()`, pseudo-caustics via `fwidth`
+- `get_frosted_glass()` using `textureSampleLevel`
+- Adaptive curvature-based roughness
+- Integration pre-loop in tiled rasterizer
 
 ### Rust: ECS
-- `GlassPanel` component
-- `GlassPanelBuffer` resource (uniform buffer for GPU)
-- `glass_panel_uniform_system` (query → pack → upload)
+- `GlassPanel` component (ior, tint, roughness, caustic_strength, chromatic_spread)
+- `GlassPanelBuffer` resource
+- `glass_panel_uniform_system`
 
 ### Rust: Render
-- Glass uniform bind group layout (shared with ray march pipeline)
-- Panel count pushed as push constant or uniform
+- Mipmap generation pass for background capture texture
+- Glass uniform bind group layout
 
 ## Dependencies
-- T6 (3D scene): Ray marching pipeline and shader must exist — glass SDFs integrate into it
-- T9 (bridge): Panel positions come from Taffy layout → 3D transform
+- T2 (render init): Tiled rasterizer pass, mipmap generation infrastructure
+- T6 (3D scene): Gaussian generation + sorted tile data that glass refracts
+- T9 (bridge): Panel positions from Taffy layout → 3D transform
 
 ## Acceptance Criteria
-1. A glass panel SDF is visible in the ray-marched scene as a translucent rectangle
-2. Objects behind the glass appear refracted (visibly shifted/distorted)
-3. Tint color modulates what's seen through the glass
-4. Two overlapping glass panels produce cumulative refraction and tinting
-5. Frosted glass (roughness > 0) produces a blurred/scattered appearance
-6. Glass panel casts a colored soft shadow on voxels behind it
-7. No separate render pass — glass evaluation is inside `march_ray()` loop
-8. Total internal reflection occurs at extreme viewing angles (Snell's law edge case)
+1. Glass panel SDF visible as translucent region in the tiled-rendered scene
+2. Objects (Gaussians) behind glass appear refracted via Snell's law
+3. Chromatic aberration produces visible RGB fringing at glass edges
+4. Pseudo-caustics brighten converging refraction regions
+5. Frosted glass (roughness > 0) uses mipmap blur — NOT per-pixel Gaussian blur
+6. Curvature-adaptive roughness: glass edges appear more diffuse than flat centers
+7. Two overlapping glass panels produce cumulative refraction and tinting
+8. Total internal reflection occurs at extreme viewing angles
+9. Cross-tile Gaussian sampling through refracted coordinates works correctly

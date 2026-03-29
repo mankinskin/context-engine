@@ -1,77 +1,113 @@
-# Integration: Context Hypergraph Visualization in SVO World
+# Context Graph 3D: Hypergraph Nodes as Voxel Clusters Generating Gaussians
 
 ## Problem
 
-The context-engine hypergraph (atoms, sequences, search results) must be visualized as a 3D graph in the SVO ray-marched world. Graph nodes are voxel clusters in the SVO, and edges are voxel lines connecting them.
+The context-engine hypergraph is visualized in 3D. Each graph node becomes a voxel cluster in the SVO, and the Gaussian generation pipeline produces Gaussians from these voxels — nodes appear as soft, volumetric shapes. Edges are voxel lines (like ticket edges in T12) that also generate Gaussians.
 
-## Architecture: Hypergraph as SVO Voxel Structures
+## Architecture
 
-### Node Rendering
+### Node → Voxel Cluster
 
-Each hypergraph node is a small cluster of colored voxels in the SVO:
+Each hypergraph node is represented as a small voxel cluster (sphere, cube, or custom shape based on node type) placed at a force-directed layout position:
 
 ```rust
 #[derive(Component)]
-pub struct HypergraphNode {
-    pub atom_id: String,
-    pub node_type: NodeType, // atom, sequence, group
-    pub label: String,
+pub struct GraphNode3D {
+    pub node_id: NodeId,
+    pub node_type: NodeType,
+    pub cluster_shape: ClusterShape,
+}
+
+pub enum ClusterShape {
+    Sphere { radius_voxels: u32 },
+    Cube { half_extent_voxels: u32 },
+    Custom(Vec<IVec3>),  // explicit voxel offsets
 }
 
 fn spawn_graph_node(
-    voxel_world: &mut VoxelWorld,
-    position: IVec3,
-    node_type: NodeType,
-    palette: &ThemePalette,
+    node: &HyperNode,
+    pos: Vec3,
+    svo: &mut VoxelWorld,
 ) {
-    let material = match node_type {
-        NodeType::Atom => VoxelMaterial::PalettePrimary,
-        NodeType::Sequence => VoxelMaterial::PaletteSecondary,
-        NodeType::Group => VoxelMaterial::PaletteHighlight,
+    let shape = shape_for_type(node.node_type);
+    let color = color_for_type(node.node_type);
+    let material = MaterialDef {
+        base_color: color,
+        roughness: 0.3,   // slightly glossy — SH gives subtle view-dependent highlights
+        metallic: 0.0,
     };
-    // 3x3x3 cube of voxels for visibility
-    voxel_world.apply_sdf_brush(position.as_vec3(), 1.5, material);
-}
-```
 
-### Edge Rendering
-
-Edges between graph nodes are drawn as voxel lines:
-```rust
-fn draw_graph_edge(voxel_world: &mut VoxelWorld, from: IVec3, to: IVec3, palette: &ThemePalette) {
-    for pos in voxel_line(from, to) {
-        voxel_world.set_voxel(pos, VoxelMaterial::Custom(palette.voxel_secondary));
+    // Write voxels for this node's cluster
+    for offset in shape.voxel_offsets() {
+        let voxel_pos = world_to_svo(pos) + offset;
+        svo.set_voxel(voxel_pos, color, material);
     }
 }
 ```
 
-### Layout
+### Gaussian Visual Quality
 
-Graph layout computed on CPU using force-directed or hierarchical algorithm, then positions mapped to SVO coordinates.
+Since graph nodes are voxel clusters, the Gaussian generation pipeline (T6) converts them to Gaussians automatically:
+- Isotropic covariance from voxel size → soft spherical blobs
+- SH coefficients from MaterialDef → subtle view-dependent shading
+- LOD reduces Gaussian count for distant nodes
 
-### API Integration
+The result: graph nodes appear as soft, volumetric, slightly glossy shapes floating in 3D space.
 
-Data from context-api:
-- Workspace operations for graph traversal
-- Search results visualized as highlighted subgraphs
-- Insert operations reflected in real-time
+### Edge Visualization
 
-### Interaction
+```rust
+fn draw_graph_edges(
+    edges: &[HyperEdge],
+    nodes: &Query<(&GraphNode3D, &Transform)>,
+    svo: &mut VoxelWorld,
+) {
+    for edge in edges {
+        let from = node_position(nodes, edge.from);
+        let to = node_position(nodes, edge.to);
+        let material = edge_material(edge.edge_type);
+        svo.draw_voxel_line(from, to, material);
+    }
+}
+```
 
-- Hover on a graph node voxel cluster → tooltip WorldPanel appears (T10)
-- Click on node → detail panel with atom content
-- Search highlighting: matching nodes glow (bright `color_data`)
+Edge voxels generate Gaussians too — connections appear as soft glowing lines. Edge type determines SH properties:
+- **Sequence edges**: diffuse, muted color
+- **Dependency edges**: metallic SH (specular highlights when viewed at glancing angles)
+- **Hyperedges**: bright, high-opacity Gaussians
+
+### Interactive Labels
+
+Each node can have a small glass panel label (T10 WorldPanel) floating above it, showing node ID or summary text. These labels are billboarded (face camera).
+
+### Camera Navigation
+
+- Click node → select, show details in side panel
+- Double-click → zoom camera to node (smooth lerp)
+- Scroll → zoom in/out on graph
+- Drag → orbit around selected node or graph center
+
+### Graph Updates
+
+When the context-engine hypergraph changes:
+1. New voxels written to SVO for added/modified nodes
+2. Removed node voxels cleared from SVO
+3. SVO marked dirty → double-buffered upload (T7) → Gaussians regenerated next frame
+4. Visual update is automatic through the pipeline
 
 ## Dependencies
-- T7 (physics): VoxelWorld API for creating/destroying voxel clusters
-- T10 (3D UI): WorldPanel tooltips for node details
-- T5 (theme): Node colors from palette
-- T6 (3D scene): Voxels rendered by ray marching
+- T7 (physics+world): VoxelWorld / SVO storage for node clusters and edge lines
+- T6 (3D scene): Gaussian generation from node/edge voxels
+- T5 (theme): MaterialDef → SH coefficients for node/edge materials
+- T10 (3D UI): Glass panel labels above nodes
+- context-api: Hypergraph data source
 
 ## Acceptance Criteria
-1. Hypergraph nodes appear as colored voxel clusters in the SVO
-2. Edges are visible as voxel lines between nodes
-3. Different node types have distinct colors from the palette
-4. Search results highlight matching nodes
-5. Graph updates (insert, delete) reflect in the SVO within one frame
-6. Node detail shows on click (WorldPanel tooltip)
+1. Each hypergraph node rendered as a voxel cluster → Gaussians
+2. Node type determines shape, color, and SH material
+3. Edges as voxel lines → Gaussians with type-dependent SH
+4. Force-directed 3D layout positions nodes
+5. Click/double-click interaction for selection and zoom
+6. Node labels as billboarded glass panels
+7. Graph mutations update SVO → Gaussians regenerated via double buffer
+8. LOD reduces distant node Gaussian count

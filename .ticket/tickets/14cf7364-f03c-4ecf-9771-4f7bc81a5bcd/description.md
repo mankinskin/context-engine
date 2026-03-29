@@ -1,187 +1,320 @@
-# Rendering: SVO Ray Marching Scene Renderer
+# Rendering: Procedural Gaussian Splatting from SVO with EWA Projection and Tiled Forward+ Rasterization
 
 ## Problem
 
-The context-editor world must render a 3D voxel environment with lighting, shadows, and ambient occlusion — all from a **Sparse Voxel Octree (SVO)** traversed via ray marching in a single unified fragment shader. This replaces traditional mesh-based rasterization entirely.
+The context-editor world must be rendered with photorealistic quality at 120 FPS. The Sparse Voxel Octree (SVO) provides structure and physics. **Procedural Gaussian Splatting** generates the visual representation on-the-fly from the octree — no pre-baked point clouds needed. Gaussians are projected via EWA, sorted with GPU radix sort, and composited via tiled forward+ rasterization.
 
-## Architecture: SVO Ray Marching
+## Architecture: Dual-Layer Rendering
 
-### Why Not Meshes?
+### Layer Separation
 
-Traditional mesh rendering (PbrBundle, Camera3dBundle, shadow maps) requires:
-- Separate geometry passes per object
-- Shadow map renders from each light
-- No natural LOD for dense environments
-- Separate post-process for glass/transparency
+| Layer | Data | Purpose |
+|-------|------|---------|
+| **SVO (structure)** | `OctreeNode[]` in storage buffer | Physics collision, voxel editing, octree queries |
+| **Gaussians (visual)** | Generated per-frame from SVO | Photorealistic rendering with soft edges, SH lighting, transparency |
 
-SVO ray marching gives us:
-- **Single pass**: One full-screen fragment shader does everything
-- **Automatic LOD**: Stop octree traversal at coarse depth for distant voxels
-- **Free soft shadows**: SDF-style shadow rays through octree distance data
-- **Unified transparency**: Glass SDFs integrate into the same ray march loop
-- **O(log n) traversal**: Stackless octree descent with bitmask child pointers
+The SVO is the single source of truth. Gaussians are ephemeral — regenerated every frame. This means:
+- No Gaussian storage on disk (saves GB of VRAM)
+- Voxel edits instantly produce new visuals
+- LOD is automatic: coarse octree level → large fuzzy Gaussian, leaf level → many small sharp Gaussians
 
-### GPU Data Layout
+### Phase 1: Gaussian Generation (Compute Shader)
+
+For each occupied voxel in the SVO, emit one or more Gaussians:
 
 ```wgsl
-struct OctreeNode {
-    child_pointer: u32,  // bits 0-7: child mask, bits 8-31: first child index
-    color_data: u32,     // packed RGBA (8 bits each)
+struct GaussianData {
+    position: vec3f,
+    opacity: f32,
+    covariance: array<f32, 6>,  // upper-triangle Σ (3×3 symmetric)
+    sh_coeffs: array<f32, 48>,  // 16 SH coefficients × 3 channels (degree 3)
 }
 
-@group(0) @binding(0) var<storage, read> octree: array<OctreeNode>;
-@group(0) @binding(1) var<uniform> camera: CameraUniforms;
-@group(0) @binding(2) var<uniform> globals: GlobalUniforms;
+@compute @workgroup_size(256)
+fn generate_gaussians(@builtin(global_invocation_id) id: vec3u) {
+    let node_idx = id.x;
+    if node_idx >= total_nodes { return; }
+    let node = octree[node_idx];
+    let child_mask = node.child_pointer & 0xFFu;
+    if child_mask != 0u { return; } // skip non-leaf (children handle themselves)
+
+    let pos = node_position(node_idx);
+    let size = voxel_size_at_depth(node_idx);
+    let color = unpack_color(node.color_data);
+    let roughness = unpack_roughness(node.color_data);
+    let metallic = unpack_metallic(node.color_data);
+
+    // LOD: distance from camera determines Gaussian sharpness
+    let cam_dist = length(pos - camera.position.xyz);
+    let lod_factor = clamp(cam_dist / lod_scale, 0.5, 4.0);
+
+    let gi = atomicAdd(&gaussian_count, 1u);
+    gaussians[gi] = GaussianData(
+        pos,
+        1.0,  // full opacity for solid voxels
+        isotropic_covariance(size * lod_factor), // larger = fuzzier at distance
+        material_to_sh(color, roughness, metallic),
+    );
+}
 ```
 
-### Ray Marching Pipeline
+### Phase 2: EWA Projection (Compute Shader)
+
+Project each 3D Gaussian's covariance matrix to 2D screen-space via EWA:
+
+$$\Sigma' = J \cdot W \cdot \Sigma \cdot W^T \cdot J^T$$
+
+- $W$: view matrix (3×3 rotation part)
+- $J$: Jacobian of perspective projection
+- $\Sigma$: 3D covariance (from generator)
+- $\Sigma'$: 2D covariance for screen-space ellipse
+
+```wgsl
+@compute @workgroup_size(256)
+fn ewa_project(@builtin(global_invocation_id) id: vec3u) {
+    let idx = id.x;
+    if idx >= gaussian_count_val { return; }
+    let g = gaussians[idx];
+
+    let pos_view = (view_mat * vec4f(g.position, 1.0)).xyz;
+    if pos_view.z <= 0.001 { return; } // behind camera
+
+    // Jacobian of perspective projection
+    let inv_z = 1.0 / pos_view.z;
+    let inv_z2 = inv_z * inv_z;
+    let J = mat3x2f(
+        focal_x * inv_z, 0.0,
+        0.0, focal_y * inv_z,
+        -focal_x * pos_view.x * inv_z2, -focal_y * pos_view.y * inv_z2
+    );
+
+    // Transform 3D covariance: W * Σ * Wᵀ
+    let W = mat3x3f(view_mat[0].xyz, view_mat[1].xyz, view_mat[2].xyz);
+    let cov3d = unpack_cov3d(g.covariance);
+    let T = W * cov3d * transpose(W);
+
+    // EWA projection: J * T * Jᵀ → 2×2 matrix
+    var cov2d = J * T * transpose(J);
+
+    // Low-pass filter (antialiasing): add 0.3 pixel² blur
+    cov2d[0][0] += 0.3;
+    cov2d[1][1] += 0.3;
+
+    // Invert for fragment shader (V = Σ'⁻¹)
+    let det = cov2d[0][0] * cov2d[1][1] - cov2d[0][1] * cov2d[0][1];
+    let inv_det = 1.0 / det;
+
+    // SH evaluation: view-dependent color
+    let view_dir = normalize(g.position - camera.position.xyz);
+    let color = evaluate_sh(g.sh_coeffs, view_dir);
+
+    // Screen-space center
+    let screen = vec2f(
+        (pos_view.x * focal_x / pos_view.z + 0.5) * resolution.x,
+        (pos_view.y * focal_y / pos_view.z + 0.5) * resolution.y,
+    );
+
+    projected[idx] = ProjectedGaussian(
+        screen,
+        vec3f(cov2d[1][1] * inv_det, cov2d[0][0] * inv_det, -cov2d[0][1] * inv_det), // V
+        pos_view.z, // depth
+        color,
+        g.opacity,
+    );
+
+    // Sort key: tile_id (20 bits) | depth (12 bits)
+    let tile_x = u32(screen.x) / TILE_SIZE;
+    let tile_y = u32(screen.y) / TILE_SIZE;
+    let tile_id = tile_y * grid_width + tile_x;
+    let depth_quantized = u32(clamp(pos_view.z / max_depth * 4095.0, 0.0, 4095.0));
+    sort_keys[idx] = (tile_id << 12u) | depth_quantized;
+    sort_values[idx] = idx;
+}
+```
+
+### Phase 3: GPU Radix Sort
+
+Sort by composite key `tile_id | depth` using 8 passes of 4-bit radix sort:
 
 ```
-1. Generate ray from pixel → camera inverse-VP matrix
-2. Enter SVO bounding box (ray-AABB intersection)
-3. Stackless octree traversal:
-   a. Descend to deepest non-empty child along ray
-   b. If leaf: record hit (color, normal from gradient, depth)
-   c. If empty: advance ray to next sibling via DDA
-   d. Repeat until hit or ray exits SVO
-4. At hit point:
-   a. Compute normal from neighboring voxel occupancy
-   b. Shadow ray: march from hit toward each light through octree
-      - Accumulate occlusion factor (soft shadows from near-miss distance)
-   c. Ambient occlusion: sample 4-8 directions in octree for contact darkness
-   d. Final color = albedo × (direct_light × shadow + ambient × AO)
-5. If ray hits UI SDF before SVO (glass panel):
-   a. Evaluate glass SDF, apply Snell's refraction
-   b. Continue ray marching into SVO behind glass
-   c. Blend glass tint over SVO result
+For each 4-bit digit (8 passes for 32-bit key):
+  1. Histogram: count occurrences of each digit (0-15) per workgroup
+  2. Prefix Sum (Blelloch scan): compute global offsets
+  3. Scatter: write each element to its new sorted position
 ```
 
-### Bevy Integration
+```wgsl
+var<workgroup> local_histogram: array<atomic<u32>, 16>;
 
-This is a **custom render node** in Bevy's render graph, NOT Bevy's built-in PBR pipeline:
+@compute @workgroup_size(256)
+fn radix_histogram(@builtin(global_invocation_id) id: vec3u) {
+    let entry = sort_keys[id.x];
+    let digit = (entry >> current_bit_shift) & 0xFu;
+    atomicAdd(&local_histogram[digit], 1u);
+    workgroupBarrier();
+    if id.x % 256u == 0u {
+        // Write local histogram to global
+        for (var d = 0u; d < 16u; d++) {
+            atomicAdd(&global_histograms[d + workgroup_id * 16u], atomicLoad(&local_histogram[d]));
+        }
+    }
+}
 
-```rust
-use bevy::render::render_graph::{Node, RenderGraph};
+@compute @workgroup_size(256)
+fn radix_scatter(@builtin(global_invocation_id) id: vec3u) {
+    let key = sort_keys[id.x];
+    let digit = (key >> current_bit_shift) & 0xFu;
+    let dest = offsets[digit] + local_offset;
+    sorted_keys[dest] = key;
+    sorted_values[dest] = sort_values[id.x];
+}
+```
 
-pub struct RayMarchNode;
+**Performance**: GPU radix sort handles 1M elements in < 1ms on modern hardware. Data stays in VRAM for all 8 passes — no CPU round-trip.
 
-impl Node for RayMarchNode {
-    fn run(&self, _graph: &mut RenderGraphContext, render_context: &mut RenderContext, world: &World) -> Result<(), NodeRunError> {
-        // 1. Bind octree storage buffer
-        // 2. Bind camera + global uniforms
-        // 3. Bind UI SDF uniforms (panel positions, IOR)
-        // 4. Draw full-screen triangle
-        // 5. Fragment shader does all ray marching
-        Ok(())
+### Phase 4: Tile Binning
+
+After sorting, scan the sorted keys to find per-tile boundaries:
+
+```wgsl
+struct TileData {
+    offset: u32,
+    count: u32,
+}
+
+@compute @workgroup_size(256)
+fn build_tiles(@builtin(global_invocation_id) id: vec3u) {
+    let idx = id.x;
+    let tile_id = sorted_keys[idx] >> 12u;
+    let prev_tile = select(0xFFFFFFFFu, sorted_keys[idx - 1u] >> 12u, idx > 0u);
+    if tile_id != prev_tile {
+        tile_data[tile_id].offset = idx;
+    }
+    let next_tile = select(0xFFFFFFFFu, sorted_keys[idx + 1u] >> 12u, idx < total_count - 1u);
+    if tile_id != next_tile {
+        tile_data[tile_id].count = idx - tile_data[tile_id].offset + 1u;
     }
 }
 ```
 
-Registered in the render graph after `MainPass3d`:
-```rust
-render_graph.add_node("ray_march", RayMarchNode);
-render_graph.add_node_edge(MAIN_PASS_3D, "ray_march");
-```
-
-### Bevy ECS Systems
-
-| System | Schedule | Role |
-|--------|----------|------|
-| `camera_uniform_system` | `Update` | Extract camera matrices → `CameraUniforms` resource |
-| `light_uniform_system` | `Update` | Extract light positions/colors → `GlobalUniforms` |
-| `svo_upload_system` | `PostUpdate` | Upload dirty octree regions to GPU storage buffer |
-| `ui_sdf_uniform_system` | `PostUpdate` | Pack UI panel SDFs into uniform buffer |
-
-### LOD System
-
-LOD is automatic from the octree structure:
-- **Near camera** (< 10 voxel units): traverse to max depth → full detail
-- **Mid distance** (10-50): stop 1-2 levels early → 2×-4× larger voxels
-- **Far distance** (> 50): stop 3+ levels early → chunky silhouette
-
-The ray marcher decides traversal depth per-ray based on `ray_t` (distance from camera):
-```wgsl
-let max_depth = clamp(u32(globals.max_depth) - u32(ray_t / lod_scale), 2u, globals.max_depth);
-```
-
-### Lighting Model
-
-No shadow maps. All lighting is computed in the ray marching shader:
-
-1. **Diffuse**: Lambert from voxel normal (computed from occupancy gradient)
-2. **Soft shadows**: For each light, march a shadow ray through the octree. Track closest-miss distance — smoothstep gives penumbra width.
-3. **Ambient occlusion**: At hit point, sample 4-8 octree queries in hemisphere. Ratio of occupied samples gives AO factor.
-4. **Specular**: Optional Blinn-Phong from voxel material roughness (stored in `color_data` upper bits)
+### Phase 5: Tiled Forward+ Rasterization (Fragment Shader)
 
 ```wgsl
-fn soft_shadow(origin: vec3f, light_dir: vec3f, max_dist: f32) -> f32 {
-    var t = 0.01;
-    var shadow = 1.0;
-    for (var i = 0u; i < 64u; i++) {
-        let p = origin + light_dir * t;
-        let d = query_svo_distance(p);
-        if d < 0.001 { return 0.0; }
-        shadow = min(shadow, 8.0 * d / t);
-        t += d;
-        if t > max_dist { break; }
+@fragment
+fn fs_main(in: FragmentInput) -> @location(0) vec4f {
+    let tile_x = u32(in.coords.x) / TILE_SIZE;
+    let tile_y = u32(in.coords.y) / TILE_SIZE;
+    let tile_idx = tile_y * grid_width + tile_x;
+    let tile = tile_data[tile_idx];
+
+    var final_color = vec4f(0.0);
+    var remaining_alpha = 1.0;
+
+    // Front-to-back blending
+    for (var i = 0u; i < tile.count; i++) {
+        let inst = sorted_instances[tile.offset + i];
+        let g = projected[inst.gaussian_id];
+
+        let d = in.coords.xy - g.center_screen;
+        let power = -0.5 * (d.x * d.x * g.cov2d_inv.x + d.y * d.y * g.cov2d_inv.y + 2.0 * d.x * d.y * g.cov2d_inv.z);
+        if power > 0.0 { continue; }
+
+        let alpha = min(0.99, g.opacity * exp(power));
+        if alpha < 1.0 / 255.0 { continue; }
+
+        let weight = alpha * remaining_alpha;
+        final_color += vec4f(g.color * weight, weight);
+        remaining_alpha *= (1.0 - alpha);
+
+        if remaining_alpha < 0.01 { break; } // EARLY-OUT: pixel saturated
     }
-    return clamp(shadow, 0.0, 1.0);
+
+    return final_color;
 }
+```
+
+### Spherical Harmonics Color Evaluation
+
+Each Gaussian stores SH coefficients (degree 3, 16 coefficients per RGB channel = 48 floats). The EWA projection pass evaluates them for the current view direction:
+
+```wgsl
+fn evaluate_sh(sh: array<f32, 48>, dir: vec3f) -> vec3f {
+    // Band 0 (constant)
+    var color = vec3f(sh[0], sh[1], sh[2]) * 0.28209;
+    // Band 1 (linear)
+    color += vec3f(sh[3], sh[4], sh[5]) * 0.48860 * dir.y;
+    color += vec3f(sh[6], sh[7], sh[8]) * 0.48860 * dir.z;
+    color += vec3f(sh[9], sh[10], sh[11]) * 0.48860 * dir.x;
+    // Band 2 (quadratic) + Band 3 (cubic) — additional terms...
+    return max(color, vec3f(0.0));
+}
+```
+
+**Effect**: Materials look different from different angles — glossy highlights shift with camera, metals reflect environment color.
+
+### LOD: Automatic from Octree Depth
+
+The Gaussian generator controls LOD naturally:
+- **Near camera**: traverse to leaf voxels → many small, sharp Gaussians (high detail)
+- **Mid distance**: stop 1-2 levels early → fewer, larger, fuzzier Gaussians
+- **Far distance**: stop 3+ levels early → chunky silhouettes with soft edges
+
+LOD scaling in the generator:
+```wgsl
+let lod_factor = clamp(cam_dist / lod_scale, 0.5, 4.0);
+// Covariance scaled by lod_factor → larger Gaussian at distance
 ```
 
 ### Performance Targets
 
 | Metric | Target | Method |
 |--------|--------|--------|
-| Ray march time (1080p) | < 8ms | LOD + early termination + bitmask skip |
-| Ray march time (4K) | < 10ms | Same + reduced max steps at distance |
-| SVO buffer size | < 64MB | 8 bytes/node, ~8M nodes for rich world |
-| Octree upload (dirty) | < 1ms | Partial `queue.write_buffer` with byte offset |
+| Gaussian generation | < 1ms | 1 compute dispatch per occupied voxel |
+| EWA projection | < 0.5ms | Per-Gaussian compute, embarrassingly parallel |
+| Radix sort (1M Gaussians) | < 1ms | 8 × 4-bit passes, data stays in VRAM |
+| Tile binning | < 0.2ms | Single pass over sorted array |
+| Tiled rasterization (1080p) | < 5ms | 16×16 tiles, early-out at α < 0.01 |
+| Tiled rasterization (4K) | < 8ms | Same with 4× more tiles |
+| Total frame (1M Gaussians) | < 8ms | Leaves room for glass + particles |
 
 ## Scope
 
-### WGSL Shader: `ray_march.wgsl`
-- Full-screen ray generation from inverse camera matrix
-- Stackless octree traversal with bitmask child pointers
-- Voxel hit detection and normal computation
-- Soft shadow marching
-- Ambient occlusion sampling
-- UI SDF evaluation and Snell's law refraction (shared with T3)
-- LOD depth adjustment per ray
-- Final compositing: SVO color + glass tint + lighting
+### WGSL Shaders
+| Shader | Purpose |
+|--------|---------|
+| `gaussian_gen.wgsl` | SVO → GaussianData[] with SH coefficients |
+| `ewa_project.wgsl` | 3D→2D covariance projection + SH evaluation + sort key |
+| `radix_sort.wgsl` | Histogram, prefix-sum (Blelloch scan), scatter |
+| `tiled_render.wgsl` | Tile binning + tiled forward+ fragment rasterizer |
 
-### Rust: Bevy Render Integration
-- `RayMarchNode` implementing `bevy::render::render_graph::Node`
-- `RayMarchPipeline` (bind group layouts, shader handle, pipeline cache)
-- Camera uniform extraction system
-- Light uniform extraction system
-- SVO storage buffer management (create, resize, partial upload)
+### Rust: Bevy Render Nodes
+| Node | Type | Role |
+|------|------|------|
+| `GaussianGenNode` | Compute | Dispatch SVO → Gaussian generation |
+| `EwaProjectNode` | Compute | Dispatch EWA projection + sort key build |
+| `RadixSortNode` | Compute | 8-pass radix sort dispatch |
+| `TileBinNode` | Compute | Build per-tile offset/count |
+| `TiledRasterNode` | Fragment | Full-screen tiled Gaussian compositing |
 
-### Rust: ECS Components
-- `Camera3D` component (position, rotation, FOV — NOT Bevy's Camera3dBundle)
-- `PointLight` / `DirectionalLight` components
-- `SvoBuffer` resource (GPU buffer handle + size)
-
-## Files to Create/Edit
-| File | Purpose |
-|------|---------|
-| `shaders/ray_march.wgsl` | Unified SVO + SDF ray marching shader |
-| `src/gpu/ray_march.rs` | RayMarchNode, pipeline, bind groups |
-| `src/gpu/svo_buffer.rs` | GPU buffer create/upload/resize |
-| `src/ecs/camera.rs` | Camera3D component + uniform extraction |
-| `src/ecs/lighting.rs` | Light components + uniform extraction |
-| `src/gpu/mod.rs` | Render graph registration |
+### Rust: ECS Systems
+| System | Schedule | Role |
+|--------|----------|------|
+| `camera_uniform_system` | `Update` | Extract camera matrices → `CameraUniforms` |
+| `light_uniform_system` | `Update` | Extract lights → `GlobalUniforms` |
+| `svo_upload_system` | `PostUpdate` | Dirty regions → BACK buffer `write_buffer` |
+| `double_buffer_swap` | `PostUpdate` | Swap front/back after upload |
 
 ## Dependencies
-- T1 (crate scaffold): Project structure and svo/ module must exist
-- T2 (WebGPU/Bevy init): Bevy render graph must be running
+- T1 (crate scaffold): Project structure, svo/ and splat/ modules
+- T2 (render init): Render graph, double-buffered SVO buffers, splat buffers
 
 ## Acceptance Criteria
-1. Full-screen ray marching shader renders a test SVO (e.g., a cube)
-2. Camera orbit controls update `CameraUniforms` and scene re-renders
-3. At least one point light with soft shadows visible on voxel surface
-4. Ambient occlusion darkens concave voxel regions
-5. LOD visibly reduces detail at distance (compare near vs far voxels)
-6. Frame time < 10ms at 1080p for a 256³ voxel world
-7. Octree partial upload works: modify one voxel, only dirty region re-uploaded
-8. No Bevy PbrBundle or Camera3dBundle used — all rendering is custom ray marching
+1. Procedural Gaussians generated from SVO — no pre-baked point cloud stored
+2. EWA projection produces anti-aliased 2D ellipses (no aliasing flicker)
+3. SH evaluation shows view-dependent color shifts when camera orbits
+4. Radix sort correctly orders Gaussians by tile + depth
+5. Tiled rasterizer composites front-to-back with early-out at saturated pixels
+6. LOD visible: distant voxels → large fuzzy Gaussians, near → small sharp ones
+7. Frame time < 10ms at 1080p for a 256³ voxel world (~1M Gaussians)
+8. Early-out optimization measurably reduces fragment work (compare with/without)
+9. No Bevy PbrBundle or Camera3dBundle — all rendering is custom Gaussian pipeline

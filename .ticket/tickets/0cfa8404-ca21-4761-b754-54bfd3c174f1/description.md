@@ -1,17 +1,12 @@
-# Arch: context-editor crate scaffold with Dioxus, Bevy, Taffy, SVO, and Trunk
+# Arch: context-editor crate scaffold with Dioxus, Bevy, SVO, Gaussian Splatting, and Trunk
 
 ## Problem
 
-The context-editor needs a new crate with the correct dependency stack (Dioxus for UI, Bevy for ECS + render graph, Taffy for layout, SVO data structures for voxel world) and a Trunk-based build pipeline that compiles Rust to WASM and bundles assets for browser deployment.
+The context-editor needs a new crate with the correct dependency stack and module layout to support the full rendering pipeline: SVO for structure/physics, procedural Gaussian splatting for visuals, tiled forward+ compositing, double-buffered GPU sync, and Trunk-based WASM build.
 
-## Architecture Decision: Bevy + SVO
+## Architecture Overview
 
-Bevy serves as the ECS runtime and render graph orchestrator. The 3D world is represented as a **Sparse Voxel Octree (SVO)** stored in a GPU storage buffer, rendered via ray marching — not traditional mesh rasterization.
-
-- **ECS world**: Entities include lights, particle emitters, UI panels, character — NOT mesh bundles for world geometry
-- **SVO**: World geometry lives in a flat `Vec<OctreeNode>` uploaded to GPU. Bevy systems manage octree topology and dirty-region uploads.
-- **Render graph**: Custom ray marching pass traverses SVO + analytical UI SDFs in a single unified shader
-- **Dioxus**: Handles DOM-side only (text, events, accessibility)
+Bevy is the ECS runtime. World geometry lives in a Sparse Voxel Octree uploaded to GPU storage buffers. Visual rendering generates Gaussians from voxels on-the-fly via compute shaders, sorts them with GPU radix sort, and rasterizes via a tiled forward+ fragment pass. Dioxus handles DOM-side UI. Double buffering decouples CPU writes from GPU reads.
 
 ## Scope
 
@@ -20,40 +15,51 @@ Bevy serves as the ECS runtime and render graph orchestrator. The 3D world is re
 tools/context-editor/
 ├── Cargo.toml
 ├── Trunk.toml
-├── index.html            # GPU canvas + Dioxus root div
+├── index.html               # GPU canvas + Dioxus root div
 ├── src/
-│   ├── lib.rs            # WASM entrypoint, Bevy App + Dioxus mount
-│   ├── app.rs            # Root Dioxus component (DOM overlay)
-│   ├── bevy_app.rs       # Bevy App: plugins, systems, render graph
+│   ├── lib.rs                # WASM entrypoint, Bevy App + Dioxus mount
+│   ├── app.rs                # Root Dioxus component (DOM overlay)
+│   ├── bevy_app.rs           # Bevy App: plugins, systems, render graph
 │   ├── svo/
-│   │   ├── mod.rs        # SVO module
-│   │   ├── octree.rs     # OctreeNode, VoxelWorld, traversal
-│   │   └── upload.rs     # Dirty-region GPU buffer upload
+│   │   ├── mod.rs            # SVO module
+│   │   ├── octree.rs         # OctreeNode, VoxelWorld, traversal
+│   │   └── upload.rs         # Dirty-region GPU buffer upload
+│   ├── splat/
+│   │   ├── mod.rs            # Gaussian splatting module
+│   │   ├── gaussian.rs       # GaussianData struct, SH coefficients
+│   │   ├── generator.rs      # SVO-to-Gaussian compute pass logic
+│   │   ├── ewa.rs            # EWA projection (Σ' = J·W·Σ·Wᵀ·Jᵀ)
+│   │   ├── sort.rs           # GPU radix sort (histogram, scan, scatter)
+│   │   └── tiled.rs          # Tiled rasterizer (tile binning, fragment)
 │   ├── gpu/
-│   │   ├── mod.rs        # Custom Bevy render passes
-│   │   └── ray_march.rs  # Ray marching render node
+│   │   ├── mod.rs            # Render graph registration
+│   │   ├── buffers.rs        # DoubleBuffered<T>, SvoBuffer, SplatBuffer
+│   │   ├── bind_groups.rs    # Bind group layouts & double-buffered groups
+│   │   └── pipeline.rs       # Compute + render pipeline cache
 │   ├── ecs/
-│   │   └── mod.rs        # ECS components and systems
+│   │   └── mod.rs            # ECS components and systems
 │   ├── ui/
-│   │   └── mod.rs        # UI module (Dioxus hooks + Taffy bridge)
+│   │   └── mod.rs            # UI module (Dioxus hooks + Taffy bridge)
 │   └── editor/
-│       └── mod.rs        # Editor tools module stub
+│       └── mod.rs            # Editor tools module stub
 ├── shaders/
-│   ├── ray_march.wgsl    # Unified SVO traversal + SDF UI + lighting
+│   ├── gaussian_gen.wgsl     # SVO → Gaussian emission compute
+│   ├── ewa_project.wgsl      # 3D→2D covariance projection
+│   ├── radix_sort.wgsl       # Histogram, prefix-sum, scatter
+│   ├── tiled_render.wgsl     # Tile-based Gaussian rasterizer + glass
 │   └── particles_compute.wgsl
 └── static/
 ```
 
-### SVO Data Structures (`src/svo/`)
+### Core Data Structures
+
 ```rust
+// SVO (structure + physics)
 #[repr(C)]
 #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct OctreeNode {
-    /// Bit 0-7: child mask (which of 8 children exist)
-    /// Bit 8-31: index to first child in global buffer
-    pub child_pointer: u32,
-    /// Packed RGBA color + roughness/metallic
-    pub color_data: u32,
+    pub child_pointer: u32,  // bits 0-7: child mask, 8-31: first child index
+    pub color_data: u32,     // packed RGBA + roughness/metallic
 }
 
 #[derive(Resource)]
@@ -61,7 +67,45 @@ pub struct VoxelWorld {
     pub nodes: Vec<OctreeNode>,
     pub root_index: u32,
     pub max_depth: u32,
-    pub dirty_ranges: Vec<(usize, usize)>, // byte offset ranges to upload
+    pub dirty_ranges: Vec<(usize, usize)>,
+}
+
+// Gaussian (visual representation, generated on GPU)
+#[repr(C)]
+#[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct GaussianData {
+    pub position: [f32; 3],       // world-space center
+    pub opacity: f32,
+    pub covariance: [f32; 6],     // upper-triangle of 3×3 Σ matrix
+    pub sh_coeffs: [f32; 48],     // 16 SH coefficients × RGB (degree 3)
+}
+
+// Projected 2D Gaussian (output of EWA compute pass)
+#[repr(C)]
+#[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct ProjectedGaussian {
+    pub center_screen: [f32; 2],
+    pub cov2d_inv: [f32; 3],     // inverse 2×2 covariance (symmetric)
+    pub depth: f32,
+    pub color: [f32; 3],          // SH-evaluated color for current view
+    pub opacity: f32,
+}
+
+// Double buffering
+pub struct DoubleBuffered {
+    pub front: wgpu::Buffer,
+    pub back: wgpu::Buffer,
+    pub current_is_front: bool,
+}
+
+impl DoubleBuffered {
+    pub fn write_target(&self) -> &wgpu::Buffer {
+        if self.current_is_front { &self.back } else { &self.front }
+    }
+    pub fn read_source(&self) -> &wgpu::Buffer {
+        if self.current_is_front { &self.front } else { &self.back }
+    }
+    pub fn swap(&mut self) { self.current_is_front = !self.current_is_front; }
 }
 ```
 
@@ -72,7 +116,7 @@ pub struct VoxelWorld {
 - `taffy` (v0.3+)
 - `wasm-bindgen`, `wasm-bindgen-futures`
 - `web-sys` with WebGPU feature flags
-- `bytemuck` with `derive` feature (zero-copy SVO upload)
+- `bytemuck` with `derive` feature (zero-copy SVO + Gaussian upload)
 - `js-sys`
 
 ### Bevy App Skeleton (`src/bevy_app.rs`)
@@ -85,21 +129,18 @@ pub fn build_bevy_app() -> App {
        .init_resource::<ThemePalette>()
        .init_resource::<LayoutRects>()
        .init_resource::<GlobalUniforms>()
+       .init_resource::<SplatParams>()
        .add_systems(Update, (
-           svo_dirty_upload_system,   // upload changed octree regions
-           sync_layout_system,        // Taffy → Bevy → SDF uniforms
-           upload_uniforms_system,    // resources → GPU
-           particle_emitter_system,   // manage emitters
+           svo_dirty_upload_system,      // upload changed octree regions to BACK buffer
+           sync_layout_system,           // Taffy → Bevy → SDF uniforms
+           upload_uniforms_system,       // resources → GPU
+           particle_emitter_system,      // manage emitters
+           double_buffer_swap_system,    // swap front/back after upload
        ));
-    // Custom render graph: ray_march_node, particle_render_node
+    // Custom render graph: gaussian_gen → ewa_project → radix_sort → tiled_render
     app
 }
 ```
-
-### Build Config
-- Trunk.toml configured for wasm32-unknown-unknown target
-- Release profile with LTO enabled (`opt-level = "s"`)
-- Workspace Cargo.toml updated to include context-editor as member
 
 ## Files to Create
 | File | Purpose |
@@ -108,22 +149,19 @@ pub fn build_bevy_app() -> App {
 | `tools/context-editor/Trunk.toml` | Trunk build config |
 | `tools/context-editor/index.html` | WASM entry HTML |
 | `tools/context-editor/src/lib.rs` | WASM mount: Bevy + Dioxus |
-| `tools/context-editor/src/app.rs` | Root Dioxus component |
-| `tools/context-editor/src/bevy_app.rs` | Bevy App builder |
-| `tools/context-editor/src/svo/mod.rs` | SVO module |
-| `tools/context-editor/src/svo/octree.rs` | OctreeNode, VoxelWorld |
-| `tools/context-editor/src/svo/upload.rs` | Dirty-region GPU upload |
-| `tools/context-editor/src/gpu/mod.rs` | Custom render passes |
-| `tools/context-editor/src/gpu/ray_march.rs` | Ray marching render node |
-| `tools/context-editor/src/ecs/mod.rs` | ECS components + systems |
-| `tools/context-editor/src/ui/mod.rs` | UI module stub |
-| `tools/context-editor/src/editor/mod.rs` | Editor module stub |
+| `tools/context-editor/src/svo/` | SVO data structures + upload |
+| `tools/context-editor/src/splat/` | Gaussian generation, EWA, radix sort, tiled rasterizer |
+| `tools/context-editor/src/gpu/` | Double-buffered resources, bind groups, pipelines |
+| `tools/context-editor/src/ecs/` | ECS components + systems |
+| `tools/context-editor/src/ui/` | Dioxus + Taffy bridge |
+| `tools/context-editor/src/editor/` | Editor tools stub |
 
 ## Acceptance Criteria
 1. `trunk build` produces a working WASM bundle with Bevy + Dioxus initialized
-2. `trunk serve` launches in browser with Bevy render loop running on canvas
+2. `trunk serve` launches in browser with Bevy render loop on canvas
 3. `VoxelWorld` resource initialized with a root octree node
-4. Dioxus component renders "Hello context-editor" text over Bevy canvas
-5. Bevy ECS world starts with SVO upload system registered
-6. All dependencies resolve and compile for wasm32-unknown-unknown target
-7. No console errors in browser developer tools
+4. `DoubleBuffered` SVO buffer created with front/back pair
+5. `GaussianData` struct correctly sized at expected byte count (bytemuck)
+6. All splatting modules (`splat/`) compile for wasm32-unknown-unknown
+7. Dioxus component renders overlay text over Bevy canvas
+8. No console errors in browser developer tools

@@ -1,104 +1,124 @@
-# Integration: Ticket Editor in SVO Ray-Marched World
+# Ticket Editor: Tickets as Glass Panels in Gaussian-Splatted World
 
 ## Problem
 
-The ticket-api CRUD and graph operations must be accessible through a 3D interface in the context-editor. Ticket nodes are displayed as **world-space glass panels** (analytical SDFs in the ray marching loop) connected by visible edges in the voxel world. Users interact with tickets through the glass panel UI.
+Ticket data from the ticket-api is rendered as interactive 3D panels within the Gaussian-splatted world. Each ticket becomes a glass SDF panel (T10) displaying ticket fields, with dependency edges visualized as voxel connections that generate Gaussians.
 
-## Architecture: Tickets as World-Space Glass SDFs
+## Architecture
 
-### Ticket Node Display
-
-Each ticket is a `WorldPanel` entity (from T10) positioned in 3D space:
+### Ticket Panel Entity
 
 ```rust
 #[derive(Component)]
-pub struct TicketNode {
+pub struct TicketPanel {
     pub ticket_id: String,
-    pub title: String,
     pub state: TicketState,
     pub priority: Priority,
 }
 
-fn spawn_ticket_node(
-    commands: &mut Commands,
-    ticket: &Ticket,
-    position: Vec3,
-    palette: &ThemePalette,
-) {
-    commands.spawn(WorldPanelBundle {
-        panel: WorldPanel {
-            size: Vec2::new(3.0, 2.0),
-            corner_radius: 0.2,
-            ior: 1.3,
-            tint: state_color(ticket.state, palette),
-            blur_roughness: 0.3,
-            text_content: ticket.title.clone(),
-            billboard: true,
-        },
-        glass: GlassPanel { .. },
-        transform: Transform::from_translation(position),
-        ..default()
-    })
-    .insert(TicketNode {
-        ticket_id: ticket.id.clone(),
-        title: ticket.title.clone(),
-        state: ticket.state,
-        priority: ticket.priority,
-    });
+#[derive(Bundle)]
+pub struct TicketPanelBundle {
+    pub ticket: TicketPanel,
+    pub world_panel: WorldPanel,  // from T10 — glass SDF + content texture
+    pub transform: Transform,
+    pub global_transform: GlobalTransform,
 }
 ```
 
-### Ticket Graph Edges
-
-Dependency edges between tickets are rendered as voxel lines in the SVO:
+### Ticket → Panel Mapping
 
 ```rust
-fn draw_ticket_edge(
-    voxel_world: &mut VoxelWorld,
-    from: Vec3,
-    to: Vec3,
-    palette: &ThemePalette,
+fn spawn_ticket_panels(
+    tickets: Res<TicketStore>,
+    mut commands: Commands,
+    layout: Res<GraphLayout>,  // force-directed or grid layout
 ) {
-    // Bresenham 3D line in voxel space
-    for pos in voxel_line(from, to) {
-        voxel_world.set_voxel(pos, VoxelMaterial::Custom(palette.voxel_secondary));
+    for ticket in tickets.iter() {
+        let pos = layout.position_for(&ticket.id);
+        commands.spawn(TicketPanelBundle {
+            ticket: TicketPanel {
+                ticket_id: ticket.id.clone(),
+                state: ticket.state,
+                priority: ticket.priority,
+            },
+            world_panel: WorldPanel {
+                half_extents: Vec2::new(1.5, 1.0),
+                corner_radius: 0.1,
+                content_texture: render_ticket_content(&ticket),
+                roughness: match ticket.priority {
+                    Priority::Critical => 0.0,  // clear glass — urgent, see through
+                    Priority::High => 0.15,
+                    Priority::Medium => 0.4,
+                    Priority::Low => 0.7,       // frosted — low urgency
+                    _ => 0.5,
+                },
+                tint: state_to_tint(ticket.state),
+                anchor: PanelAnchor::WorldFixed(pos, Quat::IDENTITY),
+            },
+            transform: Transform::from_translation(pos),
+            global_transform: GlobalTransform::default(),
+        });
     }
 }
 ```
 
-### API Integration
+### Dependency Edges as Voxel Lines
 
-Ticket data is fetched from ticket-api and synchronized into ECS:
+Dependency edges between tickets are drawn as thin voxel lines in the SVO. These voxels participate in Gaussian generation — each edge voxel produces a Gaussian, so dependency lines appear as soft glowing connections in the 3D scene:
 
 ```rust
-fn ticket_sync_system(
-    mut commands: Commands,
-    ticket_api: Res<TicketApiClient>,
-    existing: Query<(Entity, &TicketNode)>,
+fn draw_ticket_edges(
+    tickets: Res<TicketStore>,
+    panels: Query<(&TicketPanel, &Transform)>,
+    mut svo: ResMut<VoxelWorld>,
 ) {
-    // Fetch ticket list from API
-    // Diff against existing entities
-    // Spawn new, despawn removed, update changed
+    for edge in tickets.edges() {
+        let from_pos = find_panel_pos(&panels, &edge.from);
+        let to_pos = find_panel_pos(&panels, &edge.to);
+        // Bresenham 3D line in SVO
+        svo.draw_voxel_line(from_pos, to_pos, edge_color(edge.kind));
+    }
 }
 ```
 
+The Gaussians generated from edge voxels inherit their SH coefficients from the edge color/material, creating colored glowing connections. Critical path edges could have metallic SH (bright specular highlights) while normal edges use diffuse SH.
+
 ### Interaction
 
-Clicking on a ticket glass panel opens a detail editor (Dioxus component):
-- View/edit title, description, state, priority
-- Transition state (with valid state machine transitions)
-- View/edit dependency edges
+- Click on panel → open ticket details (full description in Dioxus side panel)
+- Drag panel → reposition in 3D space
+- Double-click → edit ticket fields inline
+- Hover → show tooltip with summary
+
+### Glass Visual Encoding
+
+| Priority | Roughness | Visual |
+|----------|-----------|--------|
+| Critical | 0.0 | Crystal clear glass — Gaussians fully visible through panel |
+| High | 0.15 | Slight frost — barely blurred |
+| Medium | 0.4 | Moderate frost — background blurred |
+| Low | 0.7 | Heavy frost — mostly opaque |
+
+| State | Tint Color |
+|-------|------------|
+| New | Blue |
+| In-progress | Yellow |
+| In-review | Orange |
+| Done | Green |
+| Cancelled | Gray |
 
 ## Dependencies
-- T10 (3D UI): WorldPanel system for glass SDF display
-- T7 (physics): VoxelWorld for drawing edge lines
-- T5 (theme): State-dependent colors from palette
-- T9 (bridge): Hit testing for panel interaction
+- T10 (3D UI): WorldPanel + glass SDF for each ticket
+- T3 (liquid glass): Glass refraction + mipmap blur for panel backgrounds
+- T6 (3D scene): Edge voxels → Gaussians via generation pipeline
+- T7 (physics): SVO for edge voxel storage
+- ticket-api: Ticket data source
 
 ## Acceptance Criteria
-1. Tickets from ticket-api appear as glass panels in the 3D world
-2. Ticket state is reflected in panel tint color
-3. Dependency edges are visible as voxel lines between panels
-4. Clicking a ticket panel opens a detail editor
-5. State transitions through the editor respect the state machine
-6. Adding/removing tickets updates the 3D scene within one frame
+1. Each ticket renders as a glass panel in 3D world
+2. Priority maps to glass roughness (clear=critical, frosted=low)
+3. State maps to tint color
+4. Dependency edges rendered as voxel lines that generate Gaussians
+5. Click interaction opens ticket details
+6. Panel content (title, state, priority) rendered via Dioxus→texture
+7. Force-directed or grid layout positions panels without overlap
