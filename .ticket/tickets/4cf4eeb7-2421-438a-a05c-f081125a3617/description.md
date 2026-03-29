@@ -95,7 +95,7 @@ Pointer lock on canvas click for FPS-style mouse control.
 - T6 (3D scene): Camera3D component; SH evaluation depends on view direction
 - T2 (render init): Canvas + window for input capture
 
-## Acceptance Criteria
+> **Scope note:** This ticket covers the **local player** only (first-person camera, physics, input). Multiplayer remote-player rendering (SDF capsules, interpolation, nameplates) is handled by T20 — Multiplayer Characters, which depends on this ticket for the local-player baseline.
 1. WASD movement, mouse look with pitch clamp
 2. Character falls under gravity, lands on SVO voxel surface
 3. Jump + gravity works correctly

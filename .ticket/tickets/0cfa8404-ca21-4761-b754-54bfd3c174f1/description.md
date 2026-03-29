@@ -39,8 +39,20 @@ tools/context-editor/
 │   ├── ecs/
 │   │   └── mod.rs            # ECS components and systems
 │   ├── ui/
-│   │   └── mod.rs            # UI module (Dioxus hooks + Taffy bridge)
-│   └── editor/
+│   │   └── mod.rs            # UI module (Dioxus hooks + Taffy bridge)│   ├── server/
+│   │   └── mod.rs            # SpacetimeDB module tables, reducers, hooks (T17)
+│   ├── net/
+│   │   └── mod.rs            # Multiplayer networking, spatial subscriptions (T18)
+│   ├── worldgen/
+│   │   └── mod.rs            # Procedural noise world generation (T19)
+│   ├── combat/
+│   │   └── mod.rs            # Combat system, weapon SDFs (T22)
+│   ├── skills/
+│   │   └── mod.rs            # Skill/magic system, spell SDFs (T23)
+│   ├── inventory/
+│   │   └── mod.rs            # Voxel inventory, mini-SVO items (T21)
+│   ├── llm/
+│   │   └── mod.rs            # LLM text-to-voxel/shader integration (T24)│   └── editor/
 │       └── mod.rs            # Editor tools module stub
 ├── shaders/
 │   ├── gaussian_gen.wgsl     # SVO → Gaussian emission compute
@@ -118,6 +130,9 @@ impl DoubleBuffered {
 - `web-sys` with WebGPU feature flags
 - `bytemuck` with `derive` feature (zero-copy SVO + Gaussian upload)
 - `js-sys`
+- `spacetimedb-sdk` (SpacetimeDB Rust client — used by T17/T18 for multiplayer backend)
+- `naga` (WGSL validation for LLM-generated shaders — T24)
+- `noise` (procedural noise functions for world generation — T19)
 
 ### Bevy App Skeleton (`src/bevy_app.rs`)
 ```rust
