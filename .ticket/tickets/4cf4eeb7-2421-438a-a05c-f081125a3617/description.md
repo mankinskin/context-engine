@@ -96,6 +96,8 @@ Pointer lock on canvas click for FPS-style mouse control.
 - T2 (render init): Canvas + window for input capture
 
 > **Scope note:** This ticket covers the **local player** only (first-person camera, physics, input). Multiplayer remote-player rendering (SDF capsules, interpolation, nameplates) is handled by T20 — Multiplayer Characters, which depends on this ticket for the local-player baseline.
+
+## Acceptance Criteria
 1. WASD movement, mouse look with pitch clamp
 2. Character falls under gravity, lands on SVO voxel surface
 3. Jump + gravity works correctly
