@@ -1,54 +1,72 @@
-# Impl: Documentation editor — markdown editing, doc-viewer API integration, glass panels via Bevy
+# Integration: Document Editor in SVO Ray-Marched World
 
 ## Problem
 
-The context-editor needs a documentation editing panel integrated into the 3D world that connects to doc-viewer endpoints for reading/searching documentation and provides inline markdown editing. Panels are rendered as glass surfaces by the Bevy glass render pass.
+Documentation from the doc-viewer system must be browsable and editable through glass panel interfaces in the 3D SVO world. Documents are displayed as **frosted glass panels** (high `blur_roughness` SDFs) with text content rendered on the surface.
 
-## Scope
+## Architecture: Docs as Frosted Glass SDFs
 
-### Backend Integration (`src/editor/docs/api.rs`)
-- HTTP client for doc-viewer API endpoints:
-  - `GET /api/docs` — list documents
-  - `GET /api/docs/{path}` — read document content
-  - `GET /api/search?q=...` — full-text search across docs
-  - `PUT /api/docs/{path}` — update document (if supported)
+### Document Panel Display
 
-### Document Browser (`src/editor/docs/browser.rs`)
-- Tree view of documentation files (folders + files)
-- Search bar for full-text search across all docs
-- Click document → opens content in editor panel
+Each document page is a `WorldPanel` with frosted glass appearance:
 
-### Markdown Viewer/Editor (`src/editor/docs/markdown.rs`)
-- Read mode: render markdown to DOM elements (pulldown-cmark)
-- Edit mode: textarea with monospace font for raw markdown editing
-- Toggle between read/edit modes
-- Syntax highlighting for code blocks (using theme palette from Bevy `ThemePalette` resource)
-- Uses `set_text_content` for rendered text (XSS safety)
+```rust
+#[derive(Component)]
+pub struct DocPanel {
+    pub doc_id: String,
+    pub doc_type: DocType,  // agent_doc, crate_doc
+    pub content: String,
+    pub scroll_offset: f32,
+}
 
-### Glass Panel Integration
-- Document browser as sidebar glass panel (positioned via Taffy-Bevy bridge)
-- Markdown editor as main content glass panel
-- Both panels registered in `LayoutRects` Bevy resource → glass shader renders refraction
+fn spawn_doc_panel(
+    commands: &mut Commands,
+    doc: &Document,
+    position: Vec3,
+) {
+    commands.spawn(WorldPanelBundle {
+        panel: WorldPanel {
+            size: Vec2::new(4.0, 5.0), // larger for reading
+            corner_radius: 0.15,
+            ior: 1.2,
+            tint: Color::rgba(0.9, 0.95, 1.0, 0.15), // subtle blue
+            blur_roughness: 0.7, // frosted for readability
+            text_content: doc.content.clone(),
+            billboard: false, // can be oriented in world
+        },
+        ..default()
+    })
+    .insert(DocPanel {
+        doc_id: doc.id.clone(),
+        doc_type: doc.doc_type,
+        content: doc.content.clone(),
+        scroll_offset: 0.0,
+    });
+}
+```
 
-## Integration Points
-- **doc-viewer API**: document CRUD + search
-- **Bevy ECS**: glass panels as `LayoutRects` entries, theme as `ThemePalette` resource
-- **T3 (glass)**: all panels rendered by glass render node
-- **T9 (Taffy-Bevy bridge)**: panel layout computation → Bevy resource → GPU
-- **T5 (themes)**: code block and text colors from `ThemePalette` resource
+### API Integration
 
-## Files to Create
-| File | Purpose |
-|------|---------|
-| `src/editor/docs/mod.rs` | Documentation editor module |
-| `src/editor/docs/api.rs` | doc-viewer HTTP client |
-| `src/editor/docs/browser.rs` | Document tree browser |
-| `src/editor/docs/markdown.rs` | Markdown viewer/editor |
+Documents fetched from doc-viewer MCP tools or viewer-api:
+- `list` for browsing available docs
+- `search` for finding docs by content
+- `create`/`update` for editing
+
+### Interaction
+
+- Scroll: mouse wheel when hovering over doc panel (shifts text UV)
+- Edit: click to focus, then stream keystrokes to Dioxus editor overlay
+- Search: Dioxus search bar filters and highlights matching doc panels
+
+## Dependencies
+- T10 (3D UI): WorldPanel system for glass SDF display
+- T5 (theme): Document panel tint from palette
+- T9 (bridge): Hit testing and Dioxus event routing
 
 ## Acceptance Criteria
-1. Document tree loads from doc-viewer API
-2. Click document shows markdown content rendered to DOM
-3. Full-text search returns results with highlighted matches
-4. Edit mode provides raw markdown textarea
-5. Code blocks display with syntax-aware coloring from `ThemePalette`
-6. All user-supplied text rendered via `set_text_content` (no innerHTML)
+1. Documents from doc-viewer are displayed as frosted glass panels
+2. Text is readable on the frosted glass surface
+3. Scrolling works on doc panels (mouse wheel)
+4. Document search highlights matching panels
+5. Document edits persist through the API
+6. Panels integrate visually with the SVO ray-marched scene

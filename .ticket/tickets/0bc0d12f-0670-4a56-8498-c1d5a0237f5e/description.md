@@ -1,52 +1,73 @@
-# Impl: Code file viewer — syntax highlighting, glass panels via Bevy render pass
+# Integration: Code Viewer in SVO Ray-Marched World
 
 ## Problem
 
-The context-editor needs a code viewing panel for displaying source files with syntax highlighting, integrated into the 3D glass panel system (rendered by Bevy's glass render node), useful for navigating from log entries or graph nodes to source code.
+Source code must be viewable through glass panel interfaces in the 3D SVO world. Code files are displayed as **glass panels** with syntax-highlighted text content, positioned near related hypergraph nodes or ticket panels.
 
-## Scope
+## Architecture: Code as Glass SDFs
 
-### Code Display (`src/editor/code/viewer.rs`)
-- Display source file content with line numbers
-- Monospace font rendering via DOM (browser text rendering)
-- Scrollable content within glass panel
+### Code Panel Display
 
-### Syntax Highlighting (`src/editor/code/highlight.rs`)
-- Token-based highlighting for common languages (Rust, TypeScript, TOML, Markdown)
-- Colors from `ThemePalette` Bevy resource (keyword, string, comment, number, type, function)
-- Implemented as CSS classes on `<span>` elements within `<pre>` block
-- Lightweight: regex-based tokenizer (not full parser)
+Each code file/snippet is a `WorldPanel` with clear glass and monospaced text:
 
-### File Navigation (`src/editor/code/nav.rs`)
-- Open file by path (from log entry reference or context graph link)
-- Jump to specific line number
-- Highlight active line
+```rust
+#[derive(Component)]
+pub struct CodePanel {
+    pub file_path: String,
+    pub language: String,
+    pub content: String,
+    pub line_offset: usize,
+    pub scroll_offset: f32,
+}
 
-### Glass Panel Integration
-- Code viewer rendered in glass panel (positioned via Taffy-Bevy bridge → `LayoutRects` resource)
-- Tab system for multiple open files
-- Close tab / switch tabs
-- Glass refraction produced by Bevy glass render node against 3D scene background
+fn spawn_code_panel(
+    commands: &mut Commands,
+    file: &CodeFile,
+    position: Vec3,
+) {
+    commands.spawn(WorldPanelBundle {
+        panel: WorldPanel {
+            size: Vec2::new(5.0, 6.0), // tall for code
+            corner_radius: 0.1,
+            ior: 1.15,
+            tint: Color::rgba(0.05, 0.05, 0.1, 0.1), // dark tint for code
+            blur_roughness: 0.05, // nearly clear
+            text_content: file.content.clone(),
+            billboard: false,
+        },
+        ..default()
+    })
+    .insert(CodePanel {
+        file_path: file.path.clone(),
+        language: file.language.clone(),
+        content: file.content.clone(),
+        line_offset: 0,
+        scroll_offset: 0.0,
+    });
+}
+```
 
-## Integration Points
-- **viewer-api**: source file resolution (filesystem-backed, path validation)
-- **Bevy ECS**: glass panels via `LayoutRects` resource, theme via `ThemePalette` resource
-- **T3 (glass)**: code panel rendered by glass render node
-- **T5 (themes)**: syntax colors from `ThemePalette`
-- **T9 (Taffy-Bevy bridge)**: panel layout → Bevy resource → GPU
+### Features
+- Syntax highlighting via pre-computed ANSI colors mapped to palette
+- Line numbers rendered on left margin
+- Scrollable via mouse wheel (UV offset on text texture)
+- Linked to hypergraph nodes: code panel anchored near its related graph node
 
-## Files to Create
-| File | Purpose |
-|------|---------|
-| `src/editor/code/mod.rs` | Code editor module |
-| `src/editor/code/viewer.rs` | Code file display |
-| `src/editor/code/highlight.rs` | Syntax highlighting |
-| `src/editor/code/nav.rs` | File navigation + line jump |
+### Interaction
+- Scroll through code with mouse wheel
+- Click to position cursor (future: editing)
+- Search highlights matching lines
+
+## Dependencies
+- T10 (3D UI): WorldPanel system for glass SDF display
+- T5 (theme): Code colors from palette
+- T14 (context graph): Spatial proximity to related graph nodes
+- T9 (bridge): Hit testing for scroll/click events
 
 ## Acceptance Criteria
-1. Source files display with line numbers and monospace font
-2. Syntax highlighting colors Rust keywords, strings, comments distinctly
-3. Line jump scrolls to and highlights the target line
-4. Multiple files open as tabs in the same glass panel
-5. All file content rendered via `set_text_content` (XSS prevention)
-6. Theme switch updates syntax colors immediately (reads `ThemePalette` resource)
+1. Code files display as glass panels with readable monospaced text
+2. Syntax highlighting is visible on the panel surface
+3. Scrolling works for long files
+4. Code panels positioned near related graph nodes
+5. Panels integrate visually with the SVO ray-marched scene
+6. Line numbers visible on left margin

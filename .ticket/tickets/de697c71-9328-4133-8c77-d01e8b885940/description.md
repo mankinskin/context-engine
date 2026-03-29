@@ -1,57 +1,123 @@
-# Impl: Open parameter manipulation UI — Bevy resources for physics, lighting, colors, and shaders
+# Config: Runtime Parameters for SVO, Ray Marching, and Visual Tuning
 
 ## Problem
 
-The context-editor needs a flexible parameter manipulation panel that lets users tweak all simulation and rendering parameters in real time. All parameters are **Bevy resources** that rendering systems, physics, and shaders read each frame.
+The context-editor needs a runtime parameter system for tuning SVO rendering, physics, particles, and UI without recompilation. Parameters must be accessible as Bevy resources and pushable to GPU uniforms.
 
-## Architecture: Parameters as Bevy Resources
+## Architecture: Bevy Resource Parameters → GPU Uniforms
 
-Every tweakable value is stored in a Bevy resource. The parameter panel (Dioxus UI) writes to these resources via a shared channel, and Bevy systems read them to update GPU uniforms, physics config, and lighting:
+### Parameter Groups
 
+```rust
+#[derive(Resource)]
+pub struct SvoParams {
+    pub max_depth: u32,          // octree traversal depth (default: 10)
+    pub world_size: f32,         // root cube edge length (default: 256.0)
+    pub lod_scale: f32,          // LOD distance scaling factor (default: 5.0)
+    pub voxel_resolution: f32,   // finest voxel edge length (default: 0.25)
+}
+
+#[derive(Resource)]
+pub struct RayMarchParams {
+    pub max_steps: u32,          // per-ray step limit (default: 128)
+    pub max_distance: f32,       // ray termination distance (default: 500.0)
+    pub hit_threshold: f32,      // SDF hit epsilon (default: 0.001)
+    pub shadow_softness: f32,    // soft shadow factor (default: 8.0)
+    pub ao_samples: u32,         // ambient occlusion sample count (default: 4)
+    pub ao_radius: f32,          // AO sampling radius (default: 2.0)
+}
+
+#[derive(Resource)]
+pub struct GlassParams {
+    pub default_ior: f32,        // index of refraction (default: 1.5)
+    pub max_panels: u32,         // max glass SDFs per frame (default: 16)
+    pub max_refraction_bounces: u32, // stacked glass limit (default: 4)
+}
+
+#[derive(Resource)]
+pub struct ParticleParams {
+    pub max_particles: u32,      // buffer capacity (default: 10_000)
+    pub gravity: Vec3,           // particle gravity (default: (0, -2, 0))
+    pub restitution: f32,        // bounce factor (default: 0.6)
+}
+
+#[derive(Resource)]
+pub struct PhysicsParams {
+    pub gravity: Vec3,           // Rapier world gravity (default: (0, -9.81, 0))
+    pub chunk_size: u32,         // Rapier chunk dimensions (default: 16)
+}
 ```
-Dioxus slider → shared channel → Bevy resource → Bevy system → GPU uniform / Rapier config
+
+### Uniform Packing
+
+Parameters flow to GPU via `GlobalUniforms`:
+
+```rust
+fn pack_global_uniforms(
+    svo: &SvoParams,
+    rm: &RayMarchParams,
+    glass: &GlassParams,
+    time: f32,
+) -> GlobalUniforms {
+    GlobalUniforms {
+        world_size: svo.world_size,
+        max_depth: svo.max_depth,
+        time,
+        lod_scale: svo.lod_scale,
+        max_steps: rm.max_steps,
+        max_distance: rm.max_distance,
+        hit_threshold: rm.hit_threshold,
+        shadow_softness: rm.shadow_softness,
+        ao_samples: rm.ao_samples,
+        default_ior: glass.default_ior,
+        ..Default::default()
+    }
+}
+```
+
+### Runtime Modification
+
+Parameters can be changed at runtime via:
+1. Debug UI panel (Dioxus component with sliders)
+2. Bevy system that reads from a config file
+3. Direct ECS mutation from other systems
+
+Changes take effect next frame (uniform re-packed in `upload_uniforms_system`).
+
+### Bevy Registration
+
+```rust
+app.insert_resource(SvoParams::default())
+   .insert_resource(RayMarchParams::default())
+   .insert_resource(GlassParams::default())
+   .insert_resource(ParticleParams::default())
+   .insert_resource(PhysicsParams::default())
+   .add_systems(Update, upload_uniforms_system);
 ```
 
 ## Scope
 
-### Parameter Registry (`src/ui/params.rs`)
-- Central registry of all tweakable parameters
-- `ParamDef { name, group, min, max, step, default, current }` for numeric params
-- `ColorParam { name, group, current_rgba }` for color params
-- `BoolParam`, `EnumParam` for toggles and selections
-- Groups: "Physics", "Lighting", "Glass", "Particles", "Environment", "Camera"
+### Rust: Parameter Resources (`src/params.rs`)
+- `SvoParams`, `RayMarchParams`, `GlassParams`, `ParticleParams`, `PhysicsParams`
+- Default constructors with documented values
+- `pack_global_uniforms()` function
 
-### Parameter Panel Component (`src/ui/param_panel.rs`)
-- Dioxus component: collapsible groups with sliders/color pickers/toggles
-- Glass panel background (uses `use_glass_panel` hook from T9)
-- Live preview: parameter change immediately writes to Bevy resource → GPU uniform updates next frame
-- Reset to default button per parameter and per group
+### Rust: Upload System
+- `upload_uniforms_system` (reads all param resources → packs → writes GPU uniform buffer)
 
-### Parameter → Bevy Resource Bindings
-| Group | Parameters | Bevy Resource |
-|-------|-----------|---------------|
-| Physics | gravity, damping, friction, wind_strength, wind_dir | `RapierConfiguration`, `WindConfig` |
-| Lighting | sun_dir, sun_color, ambient, specular_power | `DirectionalLight` entity, `AmbientLight` resource |
-| Glass | refraction_intensity, chromatic_strength, corner_radius, edge_glow | `GlassConfig` resource → glass render node uniforms |
-| Particles | spawn_rate, lifetime, speed, size, type_weights | `ParticleConfig` resource → compute shader uniforms |
-| Environment | fog_density, fog_color, sky_zenith, sky_horizon, day_speed | `EnvironmentConfig` resource → environment shader uniforms |
-| Camera | fov, near_clip, far_clip, orbit_speed, zoom_speed | Camera entity `Projection` + `CameraMode` component |
+### Rust: Debug UI (optional stretch)
+- Dioxus component with parameter sliders
+- Two-way binding: slider change → resource mutation → GPU uniform update
 
-### Persistence
-- Parameter state saved to localStorage
-- Import/export as JSON for sharing presets
-
-## Files to Create
-| File | Purpose |
-|------|---------|
-| `src/ui/params.rs` | Parameter registry + definitions |
-| `src/ui/param_panel.rs` | Dioxus parameter panel component |
+## Dependencies
+- T1 (scaffold): Bevy App for resource registration
+- T6 (3D scene): GlobalUniforms struct consumed by ray march shader
+- T2 (WebGPU init): Uniform buffer infrastructure
 
 ## Acceptance Criteria
-1. Slider changes immediately visible in GPU rendering (< 1 frame latency via Bevy resource)
-2. Color picker updates `ThemePalette` Bevy resource in real time
-3. Physics parameters affect Rapier simulation when changed (`RapierConfiguration`)
-4. All parameter groups collapsible/expandable
-5. Reset to default restores original values
-6. Parameters persist across page reloads
-7. At least 20 parameters across 6 groups defined
+1. All parameter resources exist with documented defaults
+2. Changing `SvoParams::max_depth` at runtime changes LOD quality visibly
+3. Changing `RayMarchParams::max_steps` affects rendering fidelity and performance
+4. Changing `GlassParams::default_ior` changes glass refraction appearance
+5. Parameters propagate to GPU within one frame of mutation
+6. System handles missing/default resources gracefully

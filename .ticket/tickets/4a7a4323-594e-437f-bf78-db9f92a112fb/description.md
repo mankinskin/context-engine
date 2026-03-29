@@ -1,79 +1,207 @@
-# Impl: Particle system — Bevy ECS compute shader simulation + instanced rendering
+# VFX: GPU Particle System with SVO Collision
 
 ## Problem
 
-The context-editor needs a GPU-driven particle system for ambient effects, interactive feedback, and atmospheric world-building. Particles are managed as **Bevy entities/resources** with simulation via compute shaders and rendering via instanced draw calls in a custom Bevy render graph node.
+The context-editor needs an ambient particle system (motes, sparks, data wisps) that interact with the voxel world. Particles must **collide with SVO geometry on the GPU** via a compute shader that queries the octree, and bounce off both voxels and glass panel SDFs.
 
-## Architecture: Bevy ECS Particle Management
+## Architecture: Compute Shader SVO Collision
 
-Particles live in Bevy's ECS:
-- **`ParticleEmitter` component**: attached to entities that spawn particles (world objects, UI events)
-- **`ParticleConfig` resource**: global particle settings (max count, type weights, global forces)
-- **`ParticleRenderNode`**: custom Bevy render graph node dispatching compute + draw
-- Bevy systems handle emitter logic (spawn, burst); GPU compute handles per-particle simulation
+### Particle Lifecycle (GPU-Driven)
 
-## Scope
+All particle state lives in GPU storage buffers. The CPU only configures emitters and uploads SVO data — the GPU handles simulation, collision, and rendering.
 
-### Compute Shader (`shaders/particles_compute.wgsl`)
-- 640+ particles across multiple types (metal sparks, embers, god rays, glitter)
-- Per-particle state: position, velocity, acceleration, lifetime, type, color
-- Per-frame simulation: integrate velocity, apply gravity/wind, decay lifetime
-- Emitter logic: continuous emission from world positions, burst on events
-- View-aware: particles operate in world-space (3D scenes) or screen-space (UI)
+```
+CPU (Bevy ECS):                    GPU (Compute + Render):
+┌─────────────────┐               ┌──────────────────────┐
+│ Emitter system   │──uniforms──→│ emit_particles.wgsl   │
+│ (spawn params)   │              │ (initialize new)      │
+└─────────────────┘               └──────────┬───────────┘
+                                             │
+                                  ┌──────────▼───────────┐
+                                  │ sim_particles.wgsl    │
+                                  │ • integrate velocity  │
+                                  │ • query_svo(pos)      │
+                                  │ • sdf_glass(pos)      │
+                                  │ • bounce / kill       │
+                                  └──────────┬───────────┘
+                                             │
+                                  ┌──────────▼───────────┐
+                                  │ ray_march.wgsl        │
+                                  │ (particles as emissive│
+                                  │  point SDFs in ray)   │
+                                  └──────────────────────┘
+```
 
-### Render Shader (`shaders/particles_render.wgsl`)
-- Instanced billboard quads (camera-facing)
-- Per-type visual style: velocity-aligned streaks (sparks), tiny glows (embers), tall beams (god rays), point twinkles (glitter)
-- Alpha blending with additive mode for glow effects
-- Size modulation by lifetime (fade-out)
+### SVO Collision in Compute Shader
 
-### Bevy Integration (`src/gpu/particles.rs`)
-- `ParticlePlugin`: Bevy plugin registering systems + render graph node
-- `ParticleEmitter` component: `{ position: Vec3, particle_type: ParticleType, rate: f32, burst_count: u32 }`
-- `emit_burst` system: triggers particle bursts from emitter entities
-- `ParticleRenderNode`: custom Bevy render graph node
-  - Dispatches compute shader per frame (workgroup size 64)
-  - Draws instanced quads after scene + glass passes
-- Storage buffer (read-write) managed as Bevy render world resource
+```wgsl
+@group(0) @binding(0) var<storage, read> octree: array<OctreeNode>;
+@group(0) @binding(1) var<storage, read_write> particles: array<Particle>;
+@group(0) @binding(2) var<uniform> sim_params: SimParams;
+@group(0) @binding(3) var<storage, read> glass_panels: array<GlassPanel>;
 
-### ECS Components
-```rust
-#[derive(Component)]
-struct ParticleEmitter {
-    particle_type: ParticleType,
-    rate: f32,           // particles per second
-    burst_count: u32,    // burst size on trigger
-    active: bool,
+struct Particle {
+    pos: vec3f,
+    vel: vec3f,
+    life: f32,
+    color: u32,    // packed RGBA
+    size: f32,
 }
 
-#[derive(Resource)]
-struct ParticleConfig {
-    max_particles: u32,
-    gravity: Vec3,
-    wind: Vec3,
-    global_speed_scale: f32,
+@compute @workgroup_size(256)
+fn sim_particles(@builtin(global_invocation_id) id: vec3u) {
+    let idx = id.x;
+    if idx >= sim_params.count { return; }
+
+    var p = particles[idx];
+    if p.life <= 0.0 { return; }
+
+    // Integrate
+    p.vel += sim_params.gravity * sim_params.dt;
+    let new_pos = p.pos + p.vel * sim_params.dt;
+
+    // SVO collision: query octree at new position
+    let svo_dist = query_svo_distance(new_pos);
+    if svo_dist < p.size {
+        // Compute voxel surface normal from gradient
+        let normal = svo_gradient_normal(new_pos);
+        // Bounce
+        p.vel = reflect(p.vel, normal) * sim_params.restitution;
+        // Push out of surface
+        p.pos = new_pos + normal * (p.size - svo_dist);
+    } else {
+        p.pos = new_pos;
+    }
+
+    // Glass SDF collision
+    for (var g = 0u; g < sim_params.glass_count; g++) {
+        let glass_dist = sdf_rounded_box(p.pos, glass_panels[g]);
+        if glass_dist < p.size {
+            let glass_normal = glass_sdf_normal(p.pos, glass_panels[g]);
+            p.vel = reflect(p.vel, glass_normal) * 0.5;
+            p.pos += glass_normal * (p.size - glass_dist);
+        }
+    }
+
+    p.life -= sim_params.dt;
+    particles[idx] = p;
 }
 ```
 
-## Reuse from Existing Code
-- Port particle types and compute logic from `log-viewer/frontend/src/components/WgpuOverlay/compute.wgsl`
-- Port particle rendering from `log-viewer/frontend/src/components/WgpuOverlay/particles.wgsl`
-- Reuse noise functions from `noise.wgsl`
-- Reuse palette integration pattern from existing overlay
+### `query_svo_distance`: Shared Octree Query
 
-## Files to Create
-| File | Purpose |
-|------|---------|
-| `shaders/particles_compute.wgsl` | GPU particle simulation |
-| `shaders/particles_render.wgsl` | Instanced particle rendering |
-| `src/gpu/particles.rs` | `ParticlePlugin` (Bevy plugin: systems, components, render node) |
+Both the ray marcher (T6) and particle compute shader share the same octree query function:
+
+```wgsl
+// Returns approximate distance to nearest occupied voxel
+fn query_svo_distance(pos: vec3f) -> f32 {
+    var node_idx = 0u;  // root
+    var node_size = globals.world_size;
+    var node_center = vec3f(0.0);
+
+    for (var depth = 0u; depth < globals.max_depth; depth++) {
+        let node = octree[node_idx];
+        let child_mask = node.child_pointer & 0xFFu;
+        if child_mask == 0u { return node_size; }  // empty node → distance = node size
+
+        // Determine which octant `pos` falls in
+        let octant = octant_index(pos, node_center);
+        if (child_mask & (1u << octant)) == 0u {
+            return node_size * 0.5;  // this octant is empty
+        }
+
+        // Descend
+        let first_child = node.child_pointer >> 8u;
+        let child_offset = countOneBits(child_mask & ((1u << octant) - 1u));
+        node_idx = first_child + child_offset;
+        node_size *= 0.5;
+        node_center = child_center(node_center, node_size, octant);
+    }
+    return 0.0; // inside a leaf voxel
+}
+```
+
+### Particle Rendering in Ray March
+
+Particles are NOT rasterized as billboards. They are tiny emissive SDFs evaluated in the ray marching loop:
+
+```wgsl
+// In march_ray(), check particle proximity
+fn nearest_particle_sdf(p: vec3f) -> ParticleHit {
+    // Use spatial hash or brute force (for < 1000 particles)
+    var best = ParticleHit(999.0, vec4f(0.0));
+    for (var i = 0u; i < particle_count; i++) {
+        let d = length(p - particles[i].pos) - particles[i].size;
+        if d < best.dist {
+            best = ParticleHit(d, unpack_color(particles[i].color));
+        }
+    }
+    return best;
+}
+```
+
+For large particle counts (>1000), a GPU spatial hash or BVH stored in a storage buffer would replace the brute-force loop.
+
+### Bevy ECS: Emitter Management
+
+```rust
+#[derive(Component)]
+pub struct ParticleEmitter {
+    pub rate: f32,         // particles per second
+    pub lifetime: f32,     // seconds
+    pub speed_range: (f32, f32),
+    pub size_range: (f32, f32),
+    pub color: Color,
+    pub gravity_scale: f32,
+    pub restitution: f32,  // bounce factor
+}
+
+// System: update emitter uniforms
+fn emitter_system(
+    query: Query<(&Transform, &ParticleEmitter)>,
+    mut sim_params: ResMut<ParticleSimParams>,
+) {
+    // Pack emitter data into GPU uniform
+}
+```
+
+### Performance Targets
+
+| Metric | Target |
+|--------|--------|
+| Compute dispatch (1024 particles) | < 0.5ms |
+| Compute dispatch (10K particles) | < 2ms |
+| SVO query per particle | ~10 octree levels = ~10 memory reads |
+| Particle SDF eval in ray march | < 1ms (bounded by particle count) |
+
+## Scope
+
+### WGSL Shaders
+- `particles_compute.wgsl`: emit + simulate + SVO collide + glass SDF collide
+- `ray_march.wgsl` additions: `nearest_particle_sdf()` for rendering particles as emissive SDFs
+
+### Rust: ECS
+- `ParticleEmitter` component
+- `ParticleSimParams` resource (gravity, dt, counts)
+- `ParticleBuffer` resource (GPU storage buffer handle)
+- `emitter_system` (Update)
+- `particle_buffer_management_system` (resize buffer when particle count changes)
+
+### Rust: Render
+- Compute pipeline for particle simulation
+- Bind group sharing octree + glass panel buffers
+- Dispatch as pre-pass before ray march node
+
+## Dependencies
+- T6 (3D scene): `query_svo_distance` function in WGSL + octree storage buffer
+- T3 (liquid glass): `sdf_rounded_box` function for glass collision
+- T1 (scaffold): Compute shader infrastructure
 
 ## Acceptance Criteria
-1. Compute shader simulates 640+ particles per frame without frame drops
-2. At least 4 particle types render with distinct visual styles
-3. `ParticleEmitter` entities spawn particles at their `Transform` positions
-4. Burst emission triggered by Bevy events (click, selection)
-5. Particles fade and die based on lifetime
-6. Additive blending produces correct glow effects
-7. Particles render correctly in both screen-space and world-space modes
-8. Particle render node correctly positioned in Bevy render graph (after glass pass)
+1. Particles emit from a point emitter and fall under gravity
+2. Particles bounce off SVO voxels (visible collision response)
+3. Particles bounce off glass panel SDFs
+4. Particles rendered as tiny glowing points in the ray-marched scene (not billboards)
+5. Particle compute shader completes in < 2ms for 10K particles
+6. Dead particles (life ≤ 0) are recycled by the emitter
+7. Emitter parameters (rate, speed, color) controllable from Bevy ECS
