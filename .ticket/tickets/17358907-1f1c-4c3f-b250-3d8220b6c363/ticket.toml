@@ -4,6 +4,6 @@ acceptance_criteria = "1. Save button with inline name input stores current Them
 component = "log-viewer-leptos"
 description = "Add saved-themes management to the ThemeSettings overlay. Includes: save current theme with name, load saved themes from localStorage grid, rename saved themes (double-click), delete saved themes, export theme as JSON file, import theme from JSON file. Saved theme cards show 6-color swatch preview and creation timestamp."
 priority = "low"
-state = "ready"
+state = "new"
 title = "Feature: Theme save/load/export/import"
 type = "tracker-improvement"
