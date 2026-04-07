@@ -24,6 +24,8 @@ members = [
   "tools/mcp/mcp-runner",
   "tools/viewer/log-viewer/frontend-leptos",
   "tools/viewer/viewer-api-leptos",
+  "tools/context-editor/kernel",
+  "tools/context-editor/sandbox-app",
 ]
 exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
 
