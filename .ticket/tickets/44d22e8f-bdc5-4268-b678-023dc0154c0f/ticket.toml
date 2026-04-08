@@ -1,7 +1,7 @@
 id = "44d22e8f-bdc5-4268-b678-023dc0154c0f"
 created_at = "2026-04-08T14:20:30.629696100+00:00"
 title = "Arch: ticket-viewer dioxus-frontend crate scaffold with dx serve"
-state = "new"
+state = "done"
 acceptance_criteria = "New crate at tools/viewer/ticket-viewer/dioxus-frontend; Cargo.toml with dioxus 0.7 web + viewer-api-dioxus dep; Dioxus.toml; index.html; builds and serves on dev port via dx serve; TicketBackend trait wired to HTTP client; ticket-viewer-specific router and app shell; dx build --release produces deployable WASM"
 component = "ticket-viewer"
 priority = "critical"

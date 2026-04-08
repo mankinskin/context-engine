@@ -3,6 +3,10 @@ name = "viewer-api-dioxus"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["rlib"]
+path = "src/lib.rs"
+
 [[bin]]
 name = "viewer-api-dioxus"
 path = "src/main.rs"
