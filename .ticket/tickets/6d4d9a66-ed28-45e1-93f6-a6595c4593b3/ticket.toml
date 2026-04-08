@@ -1,17 +1,14 @@
 id = "6d4d9a66-ed28-45e1-93f6-a6595c4593b3"
-created_at = "2026-03-21T04:38:44.575695600Z"
+created_at = "2026-03-21T04:38:44.575695600+00:00"
+title = "Validation: ticket-viewer + ticket-serve E2E, scale envelope, and regression suite"
+state = "done"
 acceptance_criteria = "E2E validates auth, SSE live updates, workspace switching, and performance envelope near 2k tickets/10k edges"
 component = "viewer-tools"
 execution_wave = "3"
 interview_file_type = "interview"
+interview_files = { answers = "assets/interviews/answers.md", questions = "assets/interviews/questions.md" }
 parallel_track = "Z"
 risk_level = "high"
-state = "done"
-title = "Validation: ticket-viewer + ticket-serve E2E, scale envelope, and regression suite"
 type = "tracker-improvement"
 validation_summary = "Ran ticket-viewer frontend validation: TypeScript no-emit check passed and Playwright e2e regression suite passed (11/11), including graph success and failure paths."
 workflow_stage = "validation"
-
-[interview_files]
-answers = "assets/interviews/answers.md"
-questions = "assets/interviews/questions.md"

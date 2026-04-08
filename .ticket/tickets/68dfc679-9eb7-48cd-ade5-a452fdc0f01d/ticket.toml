@@ -1,18 +1,15 @@
 id = "68dfc679-9eb7-48cd-ade5-a452fdc0f01d"
-created_at = "2026-03-21T04:50:55.901388300Z"
+created_at = "2026-03-21T04:50:55.901388300+00:00"
+title = "Design: auth token lifecycle and rotation/reload behavior for ticket serve"
+state = "done"
 acceptance_criteria = "Define token source precedence, rotation strategy, hot-reload behavior, failure modes, and operator runbook"
 component = "context-tasks"
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"
 interview_file_type = "interview"
+interview_files = { answers = "assets/interviews/answers.md", questions = "assets/interviews/questions.md" }
 parallel_track = "A2"
 risk_level = "medium"
-state = "done"
-title = "Design: auth token lifecycle and rotation/reload behavior for ticket serve"
 type = "tracker-improvement"
 workflow_stage = "design"
-
-[interview_files]
-answers = "assets/interviews/answers.md"
-questions = "assets/interviews/questions.md"

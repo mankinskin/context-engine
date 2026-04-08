@@ -1,18 +1,15 @@
 id = "e79fdc1f-2bfb-410f-931c-dbb744cd209e"
-created_at = "2026-03-21T04:51:03.611128Z"
+created_at = "2026-03-21T04:51:03.611128+00:00"
+title = "Design: server-side subgraph query API and pagination semantics"
+state = "done"
 acceptance_criteria = "Subgraph query parameters, traversal bounds, pagination/cursor semantics, and response shape finalized"
 component = "context-tasks"
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"
 interview_file_type = "interview"
+interview_files = { answers = "assets/interviews/answers.md", questions = "assets/interviews/questions.md" }
 parallel_track = "A5"
 risk_level = "medium"
-state = "done"
-title = "Design: server-side subgraph query API and pagination semantics"
 type = "tracker-improvement"
 workflow_stage = "design"
-
-[interview_files]
-answers = "assets/interviews/answers.md"
-questions = "assets/interviews/questions.md"
