@@ -63,12 +63,12 @@ struct BoardConfig {
     /// Maximum concurrent active entries. Check-in is rejected when this limit is reached.
     /// Default: 5.
     max_wip: u32,
-    /// Seconds after last heartbeat before an entry is marked stale.
-    /// Default: 600 (10 minutes).
+    /// Seconds after last heartbeat before an entry is marked stale and escalated for human review.
+    /// Default: 3600 (1 hour).
     stale_after_secs: u64,
-    /// Whether to auto-prune completed entries older than this many seconds.
-    /// Default: 3600 (1 hour). Set to 0 to disable auto-prune.
-    auto_prune_completed_after_secs: u64,
+    /// Minimum retention window for completed entries before they are eligible for explicit cleanup.
+    /// Default: 3600 (1 hour). Cleanup remains explicit even after this window.
+    completed_audit_window_secs: u64,
 }
 ```
 
@@ -96,6 +96,14 @@ struct BoardSnapshot {
     /// Warnings for the onboarding agent session.
     warnings: Vec<String>,
 }
+
+/// Transport-layer result for `ticket board show` in CLI/MCP surfaces.
+/// The snapshot itself is read-only; `heartbeat` is populated only when the client
+/// requested auto-heartbeat and the transport performed a follow-up `board_heartbeat()`.
+struct BoardShowResult {
+    snapshot: BoardSnapshot,
+    heartbeat: Option<BoardEntry>,
+}
 ```
 
 ### Storage
@@ -121,12 +129,14 @@ impl TicketStore {
     pub fn board_heartbeat(&self, ticket_id: &Uuid, agent_id: &str) -> Result<BoardEntry, StorageError>;
 
     /// Show: lock-gated atomic snapshot of the entire board.
+    /// This method is read-only and never mutates stale status, cleanup state, or heartbeats.
     pub fn board_show(&self) -> Result<BoardSnapshot, StorageError>;
 
     /// Configure: update board settings.
     pub fn board_configure(&self, config: BoardConfig) -> Result<BoardConfig, StorageError>;
 
-    /// Clean: remove completed and optionally stale entries.
+    /// Clean: explicitly remove completed entries that are past the audit window,
+    /// and optionally stale entries after human review.
     pub fn board_clean(&self, remove_stale: bool) -> Result<BoardCleanResult, StorageError>;
 
     /// Update file ownership for an existing entry (add/remove files mid-session).
@@ -159,9 +169,11 @@ enum BoardError {
 New `board` subcommand with sub-subcommands:
 
 ```
-ticket board show [--json]
-    Lock-gated atomic snapshot. Returns BoardSnapshot.
+ticket board show [--agent <AGENT_ID>] [--json]
+    Lock-gated atomic snapshot. Returns BoardShowResult.
     Default output: human-readable table + warnings.
+    When `--agent` is supplied, the command performs a read-only snapshot first,
+    then issues a follow-up heartbeat for that agent.
 
 ticket board check-in <TICKET_ID> --agent <AGENT_ID> [--intent "..."] [--files f1 f2 ...] [--ttl-secs N] [--json]
     Register active work. Validates WIP limit and file conflicts.
@@ -172,14 +184,20 @@ ticket board check-out <TICKET_ID> [--agent <AGENT_ID>] [--json]
 ticket board heartbeat <TICKET_ID> --agent <AGENT_ID> [--json]
     Renew TTL. Returns updated entry with new expiry.
 
-ticket board configure [--max-wip N] [--stale-after-secs N] [--auto-prune-secs N] [--json]
+ticket board configure [--max-wip N] [--stale-after-secs N] [--completed-audit-window-secs N] [--json]
     View (no args) or update board configuration.
 
 ticket board clean [--include-stale] [--json]
-    Remove completed entries. With --include-stale, also remove stale entries.
+    Explicit cleanup step. Removes completed entries that are past the audit window.
+    With --include-stale, also removes stale entries after human review.
 
 ticket board update-files <TICKET_ID> --agent <AGENT_ID> [--add f1 f2] [--remove f3 f4] [--json]
     Modify file ownership for an existing entry.
+
+ticket update <TICKET_ID> ... --board-check-in --agent <AGENT_ID> [--board-intent "..."] [--board-files f1 f2 ...] [--board-ttl-secs N]
+    Explicit convenience path. The board check-in is performed only when the caller
+    opts in and supplies the required board arguments. There is no automatic check-in
+    on every state transition.
 ```
 
 ## MCP Surface (ticket-mcp)
@@ -188,20 +206,20 @@ New MCP tools:
 
 | Tool | Parameters | Returns |
 |---|---|---|
-| `board_show` | `workspace` | `BoardSnapshot` |
+| `board_show` | `workspace`, `agent_id?` | `BoardShowResult` |
 | `board_check_in` | `workspace`, `ticket_id`, `agent_id`, `intent?`, `files[]?`, `ttl_secs?` | `BoardEntry` |
 | `board_check_out` | `workspace`, `ticket_id`, `agent_id?` | success/error |
 | `board_heartbeat` | `workspace`, `ticket_id`, `agent_id` | `BoardEntry` |
 | `board_configure` | `workspace`, `max_wip?`, `stale_after_secs?` | `BoardConfig` |
 | `board_clean` | `workspace`, `include_stale?` | `BoardCleanResult` |
 
-## Questions to Resolve
+## Resolved Decisions (2026-04-09)
 
-1. Should `board show` use a read-write transaction (exclusive lock) or a read-only transaction? Read-only is faster but cannot update stale status atomically.
-2. Should the board auto-heartbeat on `board show` (extend TTL for the calling agent's entries)?
-3. Should `board check-in` be integrated into `ticket update --state in-implementation` automatically?
-4. Should completed entries be pruned immediately or retained for a configurable audit window?
-5. What is the recommended default TTL for agent sessions? (Proposal: 600 seconds / 10 minutes with heartbeat renewal.)
+1. **`board_show()` stays read-only.** Stale status is computed in memory during snapshot generation. Cleanup is always a separate explicit step via `board clean`.
+2. **Yes, auto-heartbeat on show** when the caller supplies an agent identity, but implemented as a second `board_heartbeat()` call at the CLI/MCP layer after the read-only snapshot.
+3. **No automatic check-in on `ticket update`.** Instead, add an explicit `--board-check-in` option on `ticket update` when the caller provides the required board arguments. A future iteration may reverse the coupling and update ticket state from board check-in.
+4. **Keep an audit window.** Completed entries remain visible for a configurable audit window and agents should seek user permission before invoking cleanup.
+5. **Default TTL is one hour.** After one hour without heartbeat, entries are flagged as stale and surfaced as high-priority human-review items to either renew or clean explicitly.
 
 ## Alternatives Considered
 
@@ -220,6 +238,7 @@ New MCP tools:
 ## Deliverables
 
 - [ ] Finalized `BoardEntry`, `BoardConfig`, `BoardSnapshot` structs
+- [ ] Finalized `BoardShowResult` transport wrapper for CLI/MCP `board show`
 - [ ] API contract approved (method signatures, validation rules, error types)
 - [ ] CLI subcommand arguments and output format approved
 - [ ] MCP tool schema approved
@@ -232,5 +251,5 @@ New MCP tools:
 - [ ] API contract specifies all validation rules and error cases
 - [ ] CLI and MCP surfaces are fully specified with argument types and return shapes
 - [ ] Storage design handles concurrent access safely (redb transactions)
-- [ ] All open questions are resolved with documented decisions
+- [ ] Read-only snapshot behavior, explicit cleanup flow, update-command check-in option, audit window, and one-hour TTL are documented
 - [ ] Architecture ticket updated to reference the draftboard design

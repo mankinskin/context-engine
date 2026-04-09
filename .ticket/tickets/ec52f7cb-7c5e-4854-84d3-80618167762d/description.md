@@ -22,10 +22,11 @@ Expose the draftboard as MCP tools so that agent sessions can coordinate through
 ### `board_show`
 **Parameters:**
 - `workspace` (string, required): Workspace name
+- `agent_id` (string, optional): Caller session identifier. When supplied, the tool performs a follow-up heartbeat after the read-only snapshot.
 
-**Returns:** `BoardSnapshot` — full board state with entries, config, counts, warnings, file ownership map.
+**Returns:** `BoardShowResult` — `{ snapshot: BoardSnapshot, heartbeat?: BoardEntry }`.
 
-**Usage:** Agent sessions call this at startup to orient: understand current WIP, find stale entries, discover file conflicts before starting work.
+**Usage:** Agent sessions call this at startup to orient: understand current WIP, find stale entries, discover file conflicts before starting work. The snapshot is always produced from a read-only store call; if `agent_id` is present, the tool then issues `board_heartbeat()` as a second store call and returns the refreshed entry alongside the snapshot.
 
 ### `board_check_in`
 **Parameters:**
@@ -34,7 +35,7 @@ Expose the draftboard as MCP tools so that agent sessions can coordinate through
 - `agent_id` (string, required): Caller's session identifier
 - `intent` (string, optional): Description of planned work
 - `files` (string[], optional): Files the agent will own
-- `ttl_secs` (number, optional): Heartbeat TTL in seconds (default: 600)
+- `ttl_secs` (number, optional): Heartbeat TTL in seconds (default: 3600)
 
 **Returns:** `BoardEntry` on success. `BoardError` on WIP limit or file conflict.
 
@@ -75,12 +76,14 @@ Expose the draftboard as MCP tools so that agent sessions can coordinate through
 
 **Returns:** `BoardCleanResult` with counts of removed entries.
 
+**Usage:** Explicit cleanup step only. Completed entries are eligible after the audit window. `include_stale` is intended for cases where the operator has already reviewed the stale entries and decided to remove them.
+
 ## Agent Workflow Integration
 
 Recommended agent session startup sequence:
 
 ```
-1. board_show → read current state, check WIP budget
+1. board_show(agent_id=self) → read current state, refresh own heartbeat, check WIP budget
 2. next_tickets → get unblocked work (filtered by board state)
 3. board_check_in → register selected ticket + file ownership
 4. ... do work, periodically board_heartbeat ...
@@ -89,12 +92,13 @@ Recommended agent session startup sequence:
 
 ## Acceptance Criteria
 
-- [ ] `board_show` tool registered and returns `BoardSnapshot` JSON
+- [ ] `board_show` tool registered and returns `BoardShowResult` JSON
+- [ ] `board_show(agent_id=...)` performs read-only snapshot plus follow-up heartbeat as two store calls
 - [ ] `board_check_in` validates inputs and returns `BoardEntry` or structured error
 - [ ] `board_check_out` releases board entry and lease
 - [ ] `board_heartbeat` updates TTL and returns refreshed entry
 - [ ] `board_configure` reads/writes board configuration
-- [ ] `board_clean` prunes entries and reports results
+- [ ] `board_clean` prunes only audit-window-eligible entries and stale entries after explicit operator review
 - [ ] All tools handle workspace resolution consistently with existing ticket MCP tools
 - [ ] Error responses from `BoardError` are structured and actionable
 - [ ] Tools appear in `mcp_ticket-mcp_help` output

@@ -12,11 +12,11 @@ Implement the core draftboard data layer in `crates/ticket-api/`. This is the fo
 - New redb table `BOARD_CONFIG` with singleton key `"default"` → bincode `BoardConfig`
 - `BoardEntry`, `BoardConfig`, `BoardSnapshot`, `BoardError` type definitions
 - `board_check_in()`: validate WIP limit, check file conflicts, insert entry, claim legacy lease
-- `board_check_out()`: mark completed, release lease
+- `board_check_out()`: mark completed, release lease, retain entry through the audit window
 - `board_heartbeat()`: update `last_heartbeat` timestamp, reset TTL
-- `board_show()`: read-transaction snapshot aggregating all entries into `BoardSnapshot`
+- `board_show()`: read-only snapshot aggregating all entries into `BoardSnapshot`; never performs cleanup or heartbeat writes
 - `board_configure()`: read/write board config
-- `board_clean()`: prune completed and optionally stale entries
+- `board_clean()`: explicit cleanup for audit-window-eligible completed entries and optionally stale entries after human review
 - `board_update_files()`: modify file ownership mid-session
 - Stale detection: compute `BoardEntryStatus::Stale` when `last_heartbeat + ttl_secs < now`
 - File conflict detection: on check-in, scan all active entries for file path overlap
@@ -60,15 +60,15 @@ pub enum BoardEntryStatus {
 pub struct BoardConfig {
     pub max_wip: u32,
     pub stale_after_secs: u64,
-    pub auto_prune_completed_after_secs: u64,
+    pub completed_audit_window_secs: u64,
 }
 
 impl Default for BoardConfig {
     fn default() -> Self {
         Self {
             max_wip: 5,
-            stale_after_secs: 600,
-            auto_prune_completed_after_secs: 3600,
+            stale_after_secs: 3600,
+            completed_audit_window_secs: 3600,
         }
     }
 }
@@ -131,16 +131,24 @@ const BOARD_CONFIG: TableDefinition<&str, &[u8]> = TableDefinition::new("board_c
 6. If overlap found: mark conflicting entry as `Conflict`, return `BoardError::FileConflict`.
 7. Insert new `BoardEntry` with status `Active`, `checked_in_at = now`, `last_heartbeat = now`.
 8. Call `self.claim(ticket_id, agent_id, ttl_secs, Some(intent))` for backward-compatible lease.
+9. If the caller is using the `ticket update --board-check-in` convenience path, the CLI composes the ticket update and `board_check_in()` explicitly; the store API remains decomposed unless a transactional helper proves necessary.
 
 ### Stale Computation
 
 Status is computed dynamically in `board_show()`:
 - If `entry.status == Active && now > entry.last_heartbeat + Duration::seconds(entry.ttl_secs)`: set `status = Stale`.
 - Stale entries count toward the WIP limit (to avoid ghost slots) but are flagged in warnings.
+- The default threshold is one hour. Once stale, entries are surfaced as high-priority human-review items; no automatic cleanup occurs.
 
 ### Snapshot Atomicity
 
-`board_show()` uses a single redb read transaction. All entries and config are read within this transaction, ensuring a consistent snapshot.
+`board_show()` uses a single redb read transaction. All entries and config are read within this transaction, ensuring a consistent snapshot. Auto-heartbeat is handled by higher layers as a separate explicit write after the snapshot, so the store method stays read-only.
+
+### Cleanup Semantics
+
+- Completed entries are not auto-pruned. They become cleanup-eligible only after `completed_audit_window_secs` elapses.
+- `board_clean()` is always an explicit operator-driven step.
+- `board_clean(remove_stale = true)` is intended for post-review cleanup after the user confirms the stale entries should be removed.
 
 ## Acceptance Criteria
 
@@ -149,10 +157,11 @@ Status is computed dynamically in `board_show()`:
 - [ ] `board_check_in()` enforces WIP limit, detects file conflicts, and creates backward-compatible lease
 - [ ] `board_check_out()` marks entry completed and releases lease
 - [ ] `board_heartbeat()` updates `last_heartbeat` and returns refreshed entry
-- [ ] `board_show()` returns atomic snapshot with stale computation, file ownership map, and warnings
+- [ ] `board_show()` returns atomic read-only snapshot with stale computation, file ownership map, and warnings
 - [ ] `board_configure()` reads/writes board config
-- [ ] `board_clean()` removes completed entries and optionally stale entries
+- [ ] `board_clean()` removes only audit-window-eligible completed entries and optionally stale entries after explicit operator action
 - [ ] `board_update_files()` modifies file ownership with conflict re-check
 - [ ] File conflict detection rejects check-in and marks conflicting entry
 - [ ] All board methods use redb write/read transactions for concurrency safety
-- [ ] Unit tests cover: check-in happy path, WIP limit rejection, file conflict detection, stale detection, heartbeat renewal, clean pruning, concurrent access
+- [ ] Default stale threshold is one hour and stale entries are surfaced as high-priority human-review items
+- [ ] Unit tests cover: check-in happy path, WIP limit rejection, file conflict detection, stale detection, heartbeat renewal, explicit cleanup gating, and concurrent access

@@ -75,13 +75,20 @@ Board: [3/5 active] [1 stale ⚠]
 When `active_count >= max_wip`:
 ```
 ⚠ WIP limit reached (5/5). Check out a ticket before starting new work.
-  Consider: ticket board clean --include-stale
+  Review stale or completed entries with the user before using `ticket board clean`.
 ```
 
 When `active_count >= max_wip - 1`:
 ```
 ℹ WIP near limit (4/5). One slot remaining.
 ```
+
+### Stale-entry escalation in `next` and `status`
+
+When an entry has exceeded the one-hour TTL, `next` and `status` should surface it as a high-priority human-review item rather than treating it as silently stale. The output should guide the operator toward one of two explicit actions:
+
+- renew the entry via `board heartbeat` / `board show --agent <AGENT_ID>` if the session is still active
+- clean the entry explicitly after user review if the session is abandoned
 
 ### MCP `next_tickets` enhancement
 
@@ -112,6 +119,7 @@ The `--no-board` flag disables board filtering in `next` and `status` for cases 
 - [ ] `ticket status` includes a board summary section with active entries and stale warnings
 - [ ] `mcp_ticket-mcp_next_tickets` includes board context in the response
 - [ ] Board-checked-in tickets still appear in `status` (they're active work), just excluded from `next` (not available for new agents)
+- [ ] Entries older than the one-hour TTL are surfaced as high-priority human-review items in both `next` and `status`
 - [ ] Performance: board read adds < 5ms overhead to `next` and `status`
 - [ ] Backward compatibility: existing JSON consumers are not broken by new fields
 - [ ] Integration test: check-in a ticket → verify `next` excludes it → check-out → verify `next` includes it again
