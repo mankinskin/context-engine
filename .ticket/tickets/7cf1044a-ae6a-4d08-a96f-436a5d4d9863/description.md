@@ -1,5 +1,11 @@
 # [AOH][Research] Sandbox Isolation Technologies for Agent Code Execution
 
+> **ADR-1 v1 Selection: Tier 2 — Container (Docker / Podman via `bollard`)**
+>
+> Per the locked architecture decision (ADR-1 in `34bc4938`), v1 uses **container-based isolation** with Docker (primary) and Podman (Linux CI) orchestrated through the `bollard` crate. MicroVMs (Firecracker), cloud sandboxes (E2B), and devcontainer managers (Daytona) are **background research only** — they are not in scope for v1 implementation.
+>
+> Readers working on implementation tickets should focus on Tier 2. Other tiers remain documented here for future reference.
+
 ## Objective
 
 Identify the right sandbox isolation layer for running agent sessions: from lightweight git worktrees to full VM isolation. Document tradeoffs in security, cold-start latency, resource cost, and implementation complexity within a Rust orchestrator.

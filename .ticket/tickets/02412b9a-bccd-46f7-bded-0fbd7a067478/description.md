@@ -6,6 +6,16 @@ Normalize the AOH planning tree so there is **one canonical implementation decom
 
 This ticket exists because the current AOH planning set has introduced valuable design/refinement work, but the repository already contains implementation tickets under `d5ced7e2` for sandbox manager, assignment runner, notifier, TUI, review coordinator, and E2E execution. Starting implementation without reconciliation would create duplicate ownership and inconsistent done conditions.
 
+## Resolved: Branch Naming Convention (2026-04-09)
+
+**Decision**: `aoh/{agent-id}/{ticket-slug}` — locked as **ADR-11**.
+
+This convention is now canonical across all AOH tickets. Tickets already using the old `agent/{agent-id}/{ticket-id}/{slug}` pattern have been updated:
+- `51471c3e` (sandbox manager) — worktree branch creation and ADR mapping table
+- `f3c6ed90` (GitHub API research) — Branch Operations section and PR metadata template
+
+The reconciliation deliverables below still apply for any remaining naming inconsistencies and for the full scope normalization work.
+
 ## Concrete Problems to Resolve
 
 ### 1. Duplicate decomposition risk

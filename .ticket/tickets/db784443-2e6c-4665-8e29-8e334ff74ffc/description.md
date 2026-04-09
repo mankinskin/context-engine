@@ -16,6 +16,18 @@ The current plan already assumes all of the following:
 
 Without a security contract, these assumptions are unsafe and ambiguous.
 
+## Resolved Decisions (2026-04-09)
+
+The following questions were answered during the design interview. These decisions are now locked as ADRs in `34bc4938`.
+
+| Question | Decision |
+|---|---|
+| **Q2: Messenger approval model** | **Option C** — Full messenger control. Operators can approve, reject, retry, extend-budget, stop, and terminate sessions from Telegram/Discord/Slack. Locked as **ADR-12**. |
+| **Q3: Operator identity model (v1)** | **Option B → C** — Flat allow-list of messenger user IDs in `orchestrator.toml`. Local OS user implicitly trusted for TUI actions. Designed for extensibility toward per-action grants (Option C). Locked as **ADR-12**. |
+| **Q4: Secret delivery** | **Option A** — One-time HTTP/Unix-socket fetch with nonce + TTL (default 60s). Nonce is consumed on first fetch; further requests return 404. Env vars forbidden in CI/prod; local-dev convenience flag only. Locked as **ADR-13**. |
+
+The remaining open questions below (secret storage at rest, rotation/revocation policy, replay protection details, redaction rules for each output channel, and audit log format) still need to be fully specified before implementation of the secret server and inbound messenger command handler.
+
 ## Questions to Resolve
 
 ### Operator identity and authorization

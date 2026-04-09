@@ -65,6 +65,40 @@
 - Time hard limit: 90 minutes
 - All thresholds configured in `orchestrator.toml`
 
+### ADR-11: Branch Naming Convention
+**Decision**: `aoh/{agent-id}/{ticket-slug}`  
+**Rationale**: The `aoh/` prefix identifies all AOH-managed branches; agent-id scopes to a session; ticket-slug gives human-readable context without embedding the full UUID in the branch name.  
+**Applies to**: git worktrees, remote branch pushes, PR metadata, archive artifact references, and reconciliation queries.
+
+### ADR-12: Operator Authorization and Messenger Control
+**Decision**: Full messenger control with a flat operator allow-list (Option C feature set, Option B identity model for v1).  
+**Scope**: All control actions (approve review, request changes, reject, retry, stop session, extend budget, terminate) are accessible from Telegram, Discord, and Slack.  
+**Identity (v1)**: Operator messenger user IDs (e.g. Telegram user IDs, Discord user IDs) are listed in `orchestrator.toml`. Every inbound command is checked against this allow-list before dispatch. Designed for extensibility toward per-action grants.  
+**Implementation**: Each messenger adapter implements both `Notifier` (outbound) and `CommandListener` (inbound). Inbound commands enter the orchestrator via the same operator-command channel as TUI commands and traverse identical review-coordinator transition guards.
+
+### ADR-13: Secret Delivery
+**Decision**: One-time HTTP or Unix-socket fetch from the orchestrator secret endpoint during container kickoff (Option A).  
+**Mechanism**: Orchestrator generates a nonce-keyed URL for each session. The container fetches its secrets from that URL exactly once; the nonce is consumed on first read and subsequent requests return 404. Default TTL: 60 seconds.  
+**Restriction**: Env vars are forbidden in CI/prod. A local-dev convenience flag in `orchestrator.toml` may allow env vars for development only.
+
+### ADR-14: Session Archive Layout and Retention
+**Decision**: `.aoh/archive/{ticket-id}/{session-id}/` inside the repository working tree, excluded from git via `.aoh/` in `.gitignore`.  
+**Layout**: `.aoh/archive/{ticket-id}/{session-id}/`, containing:
+- `session-archive.toml` — canonical manifest
+- `stdout.log`, `stderr.log`
+- `cargo-check.txt`, `test-results.json`, `diff.patch`
+
+**Retention**: Indefinite — archives are kept until the operator explicitly prunes them via `aoh archive prune`.  
+**Revival chaining**: Each `session-archive.toml` includes an optional `revival_of` field referencing the prior session ID for the same ticket, forming a linked revival chain.
+
+### ADR-15: Revival Strategy
+**Decision**: On revival, the orchestrator rebases the agent branch onto the latest `main`. The agent (running in-container) resolves any rebase conflicts. After the rebase, the agent branch is the authoritative source of truth. The archive TOML supplies context but does not override branch content.  
+**Sequence**:
+1. Orchestrator fetches latest `main` (or configured base branch).
+2. Orchestrator applies `git rebase origin/main` on the agent branch.
+3. If conflicts exist, the agent receives them and resolves them within its session.
+4. Resolved, rebased branch is the state for the next review cycle.
+
 ---
 
 ## Remaining Design Blockers

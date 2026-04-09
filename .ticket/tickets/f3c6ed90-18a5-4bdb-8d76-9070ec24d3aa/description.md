@@ -1,15 +1,15 @@
-# [AOH][Research] GitHub/GitLab API — PR Lifecycle, Branch Management, Code Review
+# [AOH][Research] GitHub API — PR Lifecycle, Branch Management, Code Review
 
 ## Objective
 
-Map the API surface needed to automate the full PR lifecycle from an agent branch through review, user approval/rejection, merge, and branch cleanup. Identify Rust crates and evaluate API call sequences.
+Map the GitHub API surface needed to automate the full PR lifecycle from an agent branch through review, user approval/rejection, merge, and branch cleanup. Identify Rust crates and evaluate API call sequences.
 
 ## Research Questions
 
 1. What is the minimal API call sequence to: create branch → create PR → poll review state → merge → delete branch?
 2. How do we attach structured metadata (agent ID, ticket ID, test results) to a PR in a way the reviewer can read easily?
 3. How do we receive change-request comments from the reviewer and route them back to the agent session?
-4. Which Rust crates provide typed GitHub/GitLab API clients?
+4. Which Rust crates provide typed GitHub API clients?
 5. How do branch protection rules interact with bot-created PRs?
 6. What webhook events do we need to subscribe to for async review notifications?
 
@@ -25,7 +25,7 @@ Map the API surface needed to automate the full PR lifecycle from an agent branc
 - `POST /repos/{owner}/{repo}/git/refs` — create branch
 - `DELETE /repos/{owner}/{repo}/git/refs/{ref}` — delete branch after merge
 - Branch protection: `GET /repos/{owner}/{repo}/branches/{branch}/protection`
-- Worktree branch naming convention: `agent/{agent-id}/{ticket-id}/{slug}`
+- Worktree branch naming convention: `aoh/{agent-id}/{ticket-slug}` (ADR-11)
 
 ### Pull Request Lifecycle
 - `POST /repos/{owner}/{repo}/pulls` — create PR with title, body, head, base
@@ -55,21 +55,12 @@ Map the API surface needed to automate the full PR lifecycle from an agent branc
 | Expiry | Never (classic) / 90 days (fine-grained) | 1 hour (auto-renewed) |
 | Webhook | No (use polling) | Yes (native) |
 
-## GitLab API Surface (if applicable)
-
-- `POST /projects/{id}/repository/branches` — create branch
-- `POST /projects/{id}/merge_requests` — create MR
-- `PUT /projects/{id}/merge_requests/{mr_iid}/merge` — accept MR
-- MR notes: `POST /projects/{id}/merge_requests/{mr_iid}/notes`
-- Webhooks: merge request events, notes events
-
 ## Rust Crates
 
 | Crate | Provider | Status | Notes |
 |---|---|---|---|
 | `octocrab` | GitHub | Active | Async GitHub API client; PAT + App auth |
 | `github-webhook` | GitHub | Check status | Webhook payload types |
-| `gitlab` | GitLab | Check status | GitLab REST API client |
 | `reqwest` + hand-rolled | Any | Always viable | Full control; serialization via serde |
 
 ## PR Metadata Template
@@ -79,7 +70,7 @@ Map the API surface needed to automate the full PR lifecycle from an agent branc
 
 **Ticket**: [{ticket-title}](https://...) (`{ticket-id}`)
 **Agent ID**: `{agent-id}` | **Session**: `{session-id}`
-**Branch**: `agent/{agent-id}/{ticket-id}/{slug}`
+**Branch**: `aoh/{agent-id}/{ticket-slug}`
 
 ### Validation Results
 - Tests: {pass}/{total} passing
@@ -96,7 +87,6 @@ Map the API surface needed to automate the full PR lifecycle from an agent branc
 ## Acceptance Criteria
 
 - [ ] Full PR lifecycle API call sequence documented for GitHub
-- [ ] GitLab equivalent documented if GitLab is selected (pending interview Q3)
 - [ ] Webhook events identified for async review notifications
 - [ ] Rust crate candidates evaluated (octocrab + alternatives)
 - [ ] PAT vs GitHub App recommendation with rationale

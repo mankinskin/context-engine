@@ -17,6 +17,19 @@ This affects multiple subsystems simultaneously:
 
 Without a dedicated contract, each subsystem will make different assumptions.
 
+## Resolved Decisions (2026-04-09)
+
+The following questions were answered during the design interview. These decisions are now locked as ADRs in `34bc4938`.
+
+| Question | Decision |
+|---|---|
+| **Q5: Archive storage layout** | **Option A** — `.aoh/archive/{ticket-id}/{session-id}/` inside the repository working tree. `.aoh/` is excluded from git via `.gitignore`. Locked as **ADR-14**. |
+| **Q6: Revival source of truth** | **Agent branch is canonical after rebase.** On revival, the orchestrator rebases the agent branch onto the latest `main`. The agent resolves any conflicts in-container. After the rebase, branch state is authoritative; the archive TOML provides context only. Locked as **ADR-15**. |
+| **Q7: Archive retention** | **Keep indefinitely.** Archives are retained until the operator explicitly prunes them (e.g. via `aoh archive prune`). No automatic pruning by terminal state or age. Locked as **ADR-14**. |
+| **Q8: Multiple revivals versioning** | **Option C** — Each `session-archive.toml` contains an optional `revival_of` field referencing the prior session ID for the same ticket. Revivals form a linked chain; each revival gets a fresh, independent session ID. Locked as **ADR-14**. |
+
+The remaining open questions below (exact schema fields, artifact separation strategy, evidence path format, and per-artifact retention edge cases) still need to be fully specified before implementation of `agent-session` and `sandbox-manager`.
+
 ## Questions to Resolve
 
 ### Archive content
