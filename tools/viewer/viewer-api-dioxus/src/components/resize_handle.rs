@@ -8,7 +8,7 @@
 use dioxus::prelude::*;
 
 /// Which axis the handle resizes.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum ResizeDirection {
     Horizontal,
     Vertical,
@@ -21,7 +21,7 @@ impl Default for ResizeDirection {
 }
 
 /// Which edge of the adjacent panel the handle is attached to.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum ResizeEdge {
     Left,
     Right,
