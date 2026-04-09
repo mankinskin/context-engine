@@ -221,6 +221,15 @@ New MCP tools:
 4. **Keep an audit window.** Completed entries remain visible for a configurable audit window and agents should seek user permission before invoking cleanup.
 5. **Default TTL is one hour.** After one hour without heartbeat, entries are flagged as stale and surfaced as high-priority human-review items to either renew or clean explicitly.
 
+## Remaining Refinement Blockers
+
+Two follow-up design tickets were created after a fresh review of the full track:
+
+- `84ceb9ce` — closes the open questions around board entry identity, resume semantics, same-agent re-check-in, lease/ticket/board synchronization, and file-path canonicalization.
+- `c3143e3c` — defines the human approval and conflict-resolution workflow for stale cleanup, renewal, override, and transfer operations.
+
+`8aff39cb` should be treated as the parent design contract that integrates those decisions once they are complete, rather than as the only remaining design artifact.
+
 ## Alternatives Considered
 
 ### A: Extend LeaseInfo directly

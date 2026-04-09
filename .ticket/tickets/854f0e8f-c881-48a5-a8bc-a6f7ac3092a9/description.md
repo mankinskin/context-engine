@@ -25,6 +25,16 @@ The existing lease system (`claim`/`unclaim`) provides a low-level reservation m
 5. **Stale detection** — entries without heartbeats past their TTL are flagged as stale and surfaced prominently.
 6. **Coexists with leases** — board entries internally claim leases for backward compatibility but add file ownership, WIP limits, and conflict detection.
 
+## Fresh-Review Follow-Ups
+
+This epic gained three additional child tickets after a second-pass refinement review:
+
+- `84ceb9ce` — entry identity, resume flow, and synchronization invariants
+- `c3143e3c` — stale-entry review, cleanup approval, and conflict resolution workflow
+- `be38e809` — concurrency, restart recovery, and cross-interface validation
+
+These tickets cover the first failure modes likely to appear once the draftboard is implemented: entry/key collisions during reuse, drift between board state and leases/ticket state, user-permission flow for cleanup, and race/restart behavior under real concurrent use.
+
 ## Dependency Graph
 
 ```
@@ -46,4 +56,5 @@ CLI (bcc111c6)  MCP (ec52f7cb)  next/status Integration (74160bb8)
 - [ ] File ownership conflicts escalated to human
 - [ ] `ticket next` and `ticket status` incorporate draftboard state
 - [ ] MCP tools expose all board operations for agent sessions
+- [ ] Identity/reuse invariants, cleanup approval flow, and validation coverage are finalized via the follow-up tickets
 - [ ] Documentation updated for agent onboarding workflow
