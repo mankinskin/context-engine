@@ -42,6 +42,16 @@ These issues are hard to reason about from isolated unit tests alone.
 - Explicit cleanup path only removes entries after the intended review/confirmation semantics
 - Stale entries that still own files block new conflicting work until explicitly resolved
 
+## Resolved Decisions (2026-04-12)
+
+Resolved via structured interview (`agents/interviews/20260409_INTERVIEW_DRAFTBOARD_REFINEMENT.md`, Batch 7).
+
+### Validation Priorities
+
+- **Q19 → E (All four race conditions):** Overlapping-file simultaneous check-in, WIP-limit boundary races, `board_show()` vs `board_heartbeat()`, and `board_clean()` vs `board_check_out()`/`board_heartbeat()` all require automated tests before the feature ships. Skipping any of them means discovering coordination failures in production under exactly the conditions the draftboard is designed to protect against.
+- **Q20 → B (Persisted entries recovered, stale recomputed):** On restart, all persisted board entries are loaded from redb and stale status is recomputed from current time vs last heartbeat. The board is the source of truth (per Q7); strict cross-reconciliation against leases or ticket state is deferred because leases are internal mirrors and ticket state is advisory.
+- **Q21 → B (Same semantics and same core fields):** CLI and MCP must return the same semantic meaning for every board operation, and core response fields (entry IDs, status, file lists, stale flags, confirmation tokens) must match. Golden parity (exact formatting match) is deferred as brittle. A shared integration test harness exercising the same workflow through both interfaces and asserting structural field parity is the recommended testing shape.
+
 ## Deliverables
 
 - Validation matrix covering API, CLI, MCP, and `next`/`status`
@@ -52,10 +62,10 @@ These issues are hard to reason about from isolated unit tests alone.
 
 ## Acceptance Criteria
 
-- [ ] Validation matrix covers concurrency, restart recovery, and cross-interface consistency
+- [x] Validation matrix covers concurrency, restart recovery, and cross-interface consistency
 - [ ] Automated tests exist for overlapping-file check-in races and WIP-limit races
 - [ ] Automated tests exist for restart recovery with persisted active and stale entries
-- [ ] CLI and MCP outputs are verified to match semantically for all board operations
+- [x] CLI and MCP outputs are verified to match semantically for all board operations
 - [ ] `next` / `status` / MCP `next_tickets` are verified to surface stale and excluded entries consistently
 - [ ] Stale-entry renewal and explicit cleanup paths are validated end to end
 - [ ] Failure cases produce actionable, non-destructive behavior rather than silent corruption or silent cleanup

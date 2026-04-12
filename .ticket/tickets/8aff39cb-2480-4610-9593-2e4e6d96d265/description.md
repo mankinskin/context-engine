@@ -228,7 +228,35 @@ Two follow-up design tickets were created after a fresh review of the full track
 - `84ceb9ce` — closes the open questions around board entry identity, resume semantics, same-agent re-check-in, lease/ticket/board synchronization, and file-path canonicalization.
 - `c3143e3c` — defines the human approval and conflict-resolution workflow for stale cleanup, renewal, override, and transfer operations.
 
-`8aff39cb` should be treated as the parent design contract that integrates those decisions once they are complete, rather than as the only remaining design artifact.
+A validation ticket was also created:
+
+- `be38e809` — validates concurrency, crash recovery, and cross-interface consistency.
+
+**All three refinement tickets are now resolved** (2026-04-12). The full interview record is in `agents/interviews/20260409_INTERVIEW_DRAFTBOARD_REFINEMENT.md`. Key decisions incorporated by reference:
+
+### Identity, Resume, and Synchronization (from `84ceb9ce`)
+- Hybrid `entry_id` + active uniqueness on `(ticket_id, agent_id)`.
+- Re-check-in creates a new linked attempt; completed entries are never overwritten.
+- One active entry per ticket in v1.
+- Resume strongly recommended before new work; caller-owned section in `board show`.
+- Handoff = check-out + new check-in with optional reason metadata.
+- Board is canonical ownership; leases are internal mirrors; ticket state is advisory.
+- Public `claim`/`unclaim` removed in favor of board commands.
+- All mutating lifecycle operations trigger board reconciliation.
+- Workspace-relative lexical path normalization; platform-aware case sensitivity.
+- Files + explicit renamed-file transitions in v1.
+
+### Stale Cleanup and Conflict Resolution (from `c3143e3c`)
+- Cleanup uses preview-generated confirmation tokens (CLI and MCP aligned).
+- One-hour threshold marks entries review-required stale, not auto-cleanable.
+- v1 conflict actions: renew, release specific files, mark abandoned + clean.
+- Conservative v1 policy: block aggressively, require human review for ambiguity.
+- Audit records go to board state + ticket history.
+
+### Validation Bar (from `be38e809`)
+- All four race conditions (overlapping-file, WIP-limit, show/heartbeat, clean/checkout) require automated tests.
+- Restart recovery: persisted entries loaded, stale recomputed from current time.
+- CLI/MCP consistency: same semantics and same core fields; structural field parity test harness.
 
 ## Alternatives Considered
 
@@ -246,19 +274,19 @@ Two follow-up design tickets were created after a fresh review of the full track
 
 ## Deliverables
 
-- [ ] Finalized `BoardEntry`, `BoardConfig`, `BoardSnapshot` structs
-- [ ] Finalized `BoardShowResult` transport wrapper for CLI/MCP `board show`
-- [ ] API contract approved (method signatures, validation rules, error types)
-- [ ] CLI subcommand arguments and output format approved
-- [ ] MCP tool schema approved
-- [ ] Storage design approved (redb tables, key scheme, serialization)
-- [ ] Question resolution documented
+- [x] Finalized `BoardEntry`, `BoardConfig`, `BoardSnapshot` structs
+- [x] Finalized `BoardShowResult` transport wrapper for CLI/MCP `board show`
+- [x] API contract approved (method signatures, validation rules, error types)
+- [x] CLI subcommand arguments and output format approved
+- [x] MCP tool schema approved
+- [x] Storage design approved (redb tables, key scheme, serialization)
+- [x] Question resolution documented
 
 ## Acceptance Criteria
 
-- [ ] Data model is concrete, typed, and implementation-ready
-- [ ] API contract specifies all validation rules and error cases
-- [ ] CLI and MCP surfaces are fully specified with argument types and return shapes
-- [ ] Storage design handles concurrent access safely (redb transactions)
-- [ ] Read-only snapshot behavior, explicit cleanup flow, update-command check-in option, audit window, and one-hour TTL are documented
-- [ ] Architecture ticket updated to reference the draftboard design
+- [x] Data model is concrete, typed, and implementation-ready
+- [x] API contract specifies all validation rules and error cases
+- [x] CLI and MCP surfaces are fully specified with argument types and return shapes
+- [x] Storage design handles concurrent access safely (redb transactions)
+- [x] Read-only snapshot behavior, explicit cleanup flow, update-command check-in option, audit window, and one-hour TTL are documented
+- [x] Architecture ticket updated to reference the draftboard design

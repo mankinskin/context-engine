@@ -47,6 +47,34 @@ Without explicit invariants, the system will drift under normal use.
 - How do we represent renamed files, deleted files, and generated outputs?
 - Is directory-level ownership supported, or files only?
 
+## Resolved Decisions (2026-04-12)
+
+Resolved via structured interview (`agents/interviews/20260409_INTERVIEW_DRAFTBOARD_REFINEMENT.md`, Batches 1–4).
+
+### Entry Identity (Batch 1)
+
+- **Q1 → C (Hybrid identity):** Each board entry gets an immutable `entry_id` (UUID) for audit and history. Active entry uniqueness is enforced on `(ticket_id, agent_id)`. The `entry_id` survives completion and is used in confirmation tokens, audit logs, and attempt linkage.
+- **Q2 → C (New linked attempt):** When the same agent re-checks into a ticket after a completed entry, a new entry is created with a fresh `entry_id` and an optional `previous_attempt: Option<Uuid>` linking to the prior completed entry. The old entry is never overwritten or resumed in place.
+- **Q3 → A (One active entry per ticket in v1):** Only one agent may hold an active board entry for a given ticket at a time. Multi-agent same-ticket check-in is deferred to a future release.
+
+### Resume and Handoff (Batch 2)
+
+- **Q4 → A (Strongly recommend resume):** When an agent calls `board_show(agent_id=self)` and already has an active or stale entry, the response should prominently recommend resuming that work before suggesting new tickets.
+- **Q5 → A (Separate caller-owned section):** `board_show(agent_id=self)` returns a dedicated "your work" section listing the caller's active/stale entries before the global board snapshot.
+- **Q6 → A (Handoff = check-out + new check-in):** Intentional handoff in v1 is modeled as the original agent checking out, followed by the new agent checking in. An optional `handoff_reason` metadata field on the check-out captures why the transfer happened.
+
+### Synchronization Invariants (Batch 3)
+
+- **Q7 → A (Board is primary):** The board is the canonical short-term ownership system. Leases are internal compatibility mirrors maintained by board operations. Ticket state is lifecycle state, not ownership truth.
+- **Q8 → D (Remove public claim/unclaim):** Public raw `claim` / `unclaim` workflows should be removed in favor of board commands. Any lease primitive that remains is internal/admin-only.
+- **Q9 → D (All mutating lifecycle operations reconcile):** Every mutating ticket lifecycle operation (close, cancel, revert, state transitions) must trigger board reconciliation — checking whether active ownership is still valid and surfacing conflicts or required cleanup.
+
+### File Ownership Rules (Batch 4)
+
+- **Q10 → B (Workspace-relative lexical normalization):** File paths are normalized to workspace-relative spelling with collapsed `.` / `..` and consistent separators before conflict detection. No filesystem I/O is required, so planned-but-unwritten files are supported.
+- **Q11 → C (Workspace/platform-aware case sensitivity):** Path comparison respects the workspace's actual filesystem semantics rather than forcing a global case-sensitive or case-insensitive policy.
+- **Q12 → B (Files + explicit renamed-file transitions):** v1 supports file-level ownership plus an explicit rename transition that atomically releases the old path and claims the new one. Directory-level and generated-output-group ownership are deferred.
+
 ## Deliverables
 
 - Canonical identity model for board entries
@@ -57,11 +85,11 @@ Without explicit invariants, the system will drift under normal use.
 
 ## Acceptance Criteria
 
-- [ ] Board entry identity is defined unambiguously (`entry_id` / `session_id` vs composite key)
-- [ ] Re-check-in semantics are defined for the same agent and ticket across audit windows
-- [ ] Resume workflow is specified for agents that already own active or stale entries
-- [ ] Same-ticket multi-agent semantics are either explicitly supported or explicitly forbidden in v1
-- [ ] Synchronization invariants between board entries, leases, and ticket states are documented
-- [ ] Required hooks are identified for ticket close/cancel/revert/update paths
-- [ ] File ownership canonicalization rules are specified for Windows/WSL/Linux
+- [x] Board entry identity is defined unambiguously (`entry_id` / `session_id` vs composite key)
+- [x] Re-check-in semantics are defined for the same agent and ticket across audit windows
+- [x] Resume workflow is specified for agents that already own active or stale entries
+- [x] Same-ticket multi-agent semantics are either explicitly supported or explicitly forbidden in v1
+- [x] Synchronization invariants between board entries, leases, and ticket states are documented
+- [x] Required hooks are identified for ticket close/cancel/revert/update paths
+- [x] File ownership canonicalization rules are specified for Windows/WSL/Linux
 - [ ] `8aff39cb` is updated to reference the approved identity and synchronization contract
