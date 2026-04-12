@@ -79,4 +79,4 @@ Resolved via structured interview (`agents/interviews/20260409_INTERVIEW_DRAFTBO
 - [x] Operator guidance text is defined for stale entries in `board show`, `next`, and `status`
 - [x] Conflict resolution actions are defined and scoped for v1
 - [x] Audit requirements are documented for renew, clean, override, and transfer actions
-- [ ] `8aff39cb` is updated to reference the approved stale-entry and cleanup workflow
+- [x] `8aff39cb` is updated to reference the approved stale-entry and cleanup workflow

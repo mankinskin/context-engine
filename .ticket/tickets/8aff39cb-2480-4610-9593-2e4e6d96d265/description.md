@@ -23,10 +23,16 @@ The draftboard extends the existing ticket system with a workspace-scoped coordi
 /// A draftboard entry representing one agent's active work on one ticket.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct BoardEntry {
+    /// Immutable unique identifier for this entry (UUID). Survives completion and is
+    /// used in confirmation tokens, audit logs, and attempt linkage.
+    entry_id: Uuid,
     /// The ticket being worked on.
     ticket_id: Uuid,
     /// Identity of the agent session (e.g. "copilot-session-abc123").
     agent_id: String,
+    /// Link to a prior completed entry for the same (ticket_id, agent_id) pair.
+    /// Populated when an agent re-checks into a ticket after a previous attempt.
+    previous_attempt: Option<Uuid>,
     /// When the agent checked in.
     checked_in_at: DateTime<Utc>,
     /// Last heartbeat timestamp. Updated by `board heartbeat`.
@@ -35,7 +41,7 @@ struct BoardEntry {
     ttl_secs: u64,
     /// Short description of what the agent intends to do.
     intent: String,
-    /// Files the agent declares ownership of (workspace-relative paths).
+    /// Files the agent declares ownership of (workspace-relative paths, lexically normalized).
     owned_files: Vec<String>,
     /// Current entry status, computed from heartbeat freshness and conflict state.
     status: BoardEntryStatus,
@@ -81,6 +87,9 @@ struct BoardSnapshot {
     captured_at: DateTime<Utc>,
     /// All active entries (not completed/pruned).
     entries: Vec<BoardEntry>,
+    /// Entries owned by the caller (when `agent_id` was supplied). Separated for
+    /// prominent resume recommendations. Empty when no agent_id was requested.
+    caller_entries: Vec<BoardEntry>,
     /// Current board configuration.
     config: BoardConfig,
     /// Number of active (non-stale, non-completed) entries.
@@ -108,7 +117,8 @@ struct BoardShowResult {
 
 ### Storage
 
-- **New redb table `BOARD_ENTRIES`**: Key = `"{ticket_id}:{agent_id}"` (compound string key), Value = bincode-serialized `BoardEntry`.
+- **New redb table `BOARD_ENTRIES`**: Key = `entry_id` (UUID string), Value = bincode-serialized `BoardEntry`.
+- **Secondary index `BOARD_ACTIVE_INDEX`**: Key = `"{ticket_id}:{agent_id}"` → `entry_id`. Enforces one active entry per `(ticket_id, agent_id)` pair. Completed/cleaned entries are removed from this index but remain in `BOARD_ENTRIES` until explicitly cleaned.
 - **New redb table `BOARD_CONFIG`**: Key = `"default"` (single row), Value = bincode-serialized `BoardConfig`.
 - Board entries are **ephemeral** — they are not stored on disk as TOML files. They live only in the redb index.
 - On check-in, the board also calls `store.claim()` internally for backward compatibility with existing lease consumers.
@@ -123,7 +133,8 @@ impl TicketStore {
     pub fn board_check_in(&self, entry: BoardCheckIn) -> Result<BoardEntry, StorageError>;
 
     /// Check out: mark work completed and release file ownership.
-    pub fn board_check_out(&self, ticket_id: &Uuid, agent_id: &str) -> Result<(), StorageError>;
+    /// `handoff_reason` captures why the agent is releasing (e.g. session end, handoff to another agent).
+    pub fn board_check_out(&self, ticket_id: &Uuid, agent_id: &str, handoff_reason: Option<&str>) -> Result<(), StorageError>;
 
     /// Heartbeat: renew TTL for an existing entry.
     pub fn board_heartbeat(&self, ticket_id: &Uuid, agent_id: &str) -> Result<BoardEntry, StorageError>;
@@ -135,12 +146,21 @@ impl TicketStore {
     /// Configure: update board settings.
     pub fn board_configure(&self, config: BoardConfig) -> Result<BoardConfig, StorageError>;
 
-    /// Clean: explicitly remove completed entries that are past the audit window,
-    /// and optionally stale entries after human review.
-    pub fn board_clean(&self, remove_stale: bool) -> Result<BoardCleanResult, StorageError>;
+    /// Clean (preview): return candidates eligible for cleanup and a confirmation token.
+    pub fn board_clean_preview(&self) -> Result<BoardCleanPreview, StorageError>;
+
+    /// Clean (apply): remove entries identified in a previously generated preview.
+    /// Rejects the token if the board has changed materially since the preview was generated.
+    pub fn board_clean_apply(&self, token: &str, include_stale: bool) -> Result<BoardCleanResult, StorageError>;
 
     /// Update file ownership for an existing entry (add/remove files mid-session).
+    /// When `add` and `remove` target the same logical file (old path removed, new path added),
+    /// the operation is treated as an atomic rename transition for audit purposes.
     pub fn board_update_files(&self, ticket_id: &Uuid, agent_id: &str, add: &[String], remove: &[String]) -> Result<BoardEntry, StorageError>;
+
+    /// Rename a file in an existing entry's ownership set. Atomically releases the old
+    /// path and claims the new one, recorded as a single rename audit event.
+    pub fn board_rename_file(&self, ticket_id: &Uuid, agent_id: &str, old_path: &str, new_path: &str) -> Result<BoardEntry, StorageError>;
 }
 ```
 
@@ -178,8 +198,9 @@ ticket board show [--agent <AGENT_ID>] [--json]
 ticket board check-in <TICKET_ID> --agent <AGENT_ID> [--intent "..."] [--files f1 f2 ...] [--ttl-secs N] [--json]
     Register active work. Validates WIP limit and file conflicts.
 
-ticket board check-out <TICKET_ID> [--agent <AGENT_ID>] [--json]
+ticket board check-out <TICKET_ID> [--agent <AGENT_ID>] [--reason "..."] [--json]
     Deregister from the board. Releases file ownership.
+    --reason captures an optional handoff/exit reason for audit.
 
 ticket board heartbeat <TICKET_ID> --agent <AGENT_ID> [--json]
     Renew TTL. Returns updated entry with new expiry.
@@ -187,12 +208,20 @@ ticket board heartbeat <TICKET_ID> --agent <AGENT_ID> [--json]
 ticket board configure [--max-wip N] [--stale-after-secs N] [--completed-audit-window-secs N] [--json]
     View (no args) or update board configuration.
 
-ticket board clean [--include-stale] [--json]
-    Explicit cleanup step. Removes completed entries that are past the audit window.
+ticket board clean preview [--json]
+    Preview cleanup candidates and receive a confirmation token.
+    Shows which completed (past audit window) and stale entries would be removed.
+
+ticket board clean apply <TOKEN> [--include-stale] [--json]
+    Execute cleanup using a previously generated confirmation token.
+    Rejects the token if the board has changed materially since the preview.
     With --include-stale, also removes stale entries after human review.
 
 ticket board update-files <TICKET_ID> --agent <AGENT_ID> [--add f1 f2] [--remove f3 f4] [--json]
     Modify file ownership for an existing entry.
+
+ticket board rename-file <TICKET_ID> --agent <AGENT_ID> --from <OLD_PATH> --to <NEW_PATH> [--json]
+    Atomic file rename: releases old path and claims new path as a single audited transition.
 
 ticket update <TICKET_ID> ... --board-check-in --agent <AGENT_ID> [--board-intent "..."] [--board-files f1 f2 ...] [--board-ttl-secs N]
     Explicit convenience path. The board check-in is performed only when the caller
@@ -208,10 +237,13 @@ New MCP tools:
 |---|---|---|
 | `board_show` | `workspace`, `agent_id?` | `BoardShowResult` |
 | `board_check_in` | `workspace`, `ticket_id`, `agent_id`, `intent?`, `files[]?`, `ttl_secs?` | `BoardEntry` |
-| `board_check_out` | `workspace`, `ticket_id`, `agent_id?` | success/error |
+| `board_check_out` | `workspace`, `ticket_id`, `agent_id?`, `reason?` | success/error |
 | `board_heartbeat` | `workspace`, `ticket_id`, `agent_id` | `BoardEntry` |
 | `board_configure` | `workspace`, `max_wip?`, `stale_after_secs?` | `BoardConfig` |
-| `board_clean` | `workspace`, `include_stale?` | `BoardCleanResult` |
+| `board_clean_preview` | `workspace` | `BoardCleanPreview` |
+| `board_clean_apply` | `workspace`, `token`, `include_stale?` | `BoardCleanResult` |
+| `board_update_files` | `workspace`, `ticket_id`, `agent_id`, `add[]?`, `remove[]?` | `BoardEntry` |
+| `board_rename_file` | `workspace`, `ticket_id`, `agent_id`, `old_path`, `new_path` | `BoardEntry` |
 
 ## Resolved Decisions (2026-04-09)
 

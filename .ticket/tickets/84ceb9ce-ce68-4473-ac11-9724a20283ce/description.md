@@ -92,4 +92,4 @@ Resolved via structured interview (`agents/interviews/20260409_INTERVIEW_DRAFTBO
 - [x] Synchronization invariants between board entries, leases, and ticket states are documented
 - [x] Required hooks are identified for ticket close/cancel/revert/update paths
 - [x] File ownership canonicalization rules are specified for Windows/WSL/Linux
-- [ ] `8aff39cb` is updated to reference the approved identity and synchronization contract
+- [x] `8aff39cb` is updated to reference the approved identity and synchronization contract

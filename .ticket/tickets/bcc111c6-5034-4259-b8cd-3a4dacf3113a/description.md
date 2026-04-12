@@ -44,10 +44,11 @@ ticket board check-in <ID> --agent <AGENT_ID> [--intent "..."] [--files f1 f2 ..
 
 ### `ticket board check-out`
 ```
-ticket board check-out <ID> [--agent <AGENT_ID>] [--json]
+ticket board check-out <ID> [--agent <AGENT_ID>] [--reason "..."] [--json]
 ```
 - `ID`: ticket UUID or prefix
 - `--agent`: optional if only one agent is checked in for this ticket
+- `--reason`: optional exit/handoff reason for audit
 
 ### `ticket board heartbeat`
 ```
@@ -63,15 +64,22 @@ ticket board configure [--max-wip N] [--stale-after-secs N] [--completed-audit-w
 
 ### `ticket board clean`
 ```
-ticket board clean [--include-stale] [--json]
+ticket board clean preview [--json]
+ticket board clean apply <TOKEN> [--include-stale] [--json]
 ```
 
-`board clean` is always explicit. Completed entries are removed only after the audit window; stale entries are removed only when the operator intentionally includes them after user review.
+`board clean preview` shows cleanup candidates (completed entries past the audit window, stale entries) and returns a confirmation token. `board clean apply` executes cleanup using that token. The token is rejected if the board changed materially since the preview. With `--include-stale`, stale entries are also removed after explicit operator review.
 
 ### `ticket board update-files`
 ```
 ticket board update-files <ID> --agent <AGENT_ID> [--add f1 f2 ...] [--remove f3 f4 ...] [--json]
 ```
+
+### `ticket board rename-file`
+```
+ticket board rename-file <ID> --agent <AGENT_ID> --from <OLD_PATH> --to <NEW_PATH> [--json]
+```
+Atomic file rename: releases old path and claims new path as a single audited transition.
 
 ### `ticket update` convenience path
 ```
@@ -124,10 +132,13 @@ Files:
 - [ ] `ticket board show --agent <AGENT_ID>` performs a follow-up heartbeat without changing the read-only snapshot semantics
 - [ ] `ticket board check-in` validates all arguments and calls `store.board_check_in()`
 - [ ] `ticket board check-out` calls `store.board_check_out()` with agent resolution
+- [ ] `ticket board check-out` accepts optional `--reason` for handoff audit
 - [ ] `ticket board heartbeat` calls `store.board_heartbeat()` and returns updated entry
 - [ ] `ticket board configure` reads/writes board config through the store
-- [ ] `ticket board clean` only removes audit-window-eligible entries and stale entries after explicit operator action
+- [ ] `ticket board clean preview` displays candidates and returns a confirmation token
+- [ ] `ticket board clean apply` only removes token-identified entries and rejects stale tokens; stale entries removed only with `--include-stale`
 - [ ] `ticket board update-files` modifies file ownership
+- [ ] `ticket board rename-file` performs atomic rename with audit event
 - [ ] All subcommands support `--json` output
 - [ ] Error messages are clear: WIP limit, file conflict, not-checked-in
 - [ ] `ticket update --board-check-in` explicitly composes ticket update and board check-in when the required board arguments are supplied
