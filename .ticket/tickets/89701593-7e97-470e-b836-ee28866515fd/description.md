@@ -1,8 +1,20 @@
 # [AOH][Research] Messaging Service APIs for Async User Interaction
 
+## Status: COMPLETE — All decisions locked 2026-04-13
+
 ## Context
 
 **Updated 2026-04-09**: WhatsApp removed from candidates — requires paid Meta Business account. Active candidates: **Telegram** (primary), **Discord**, **Slack**.
+
+---
+
+## Resolved Decisions (2026-04-13)
+
+| Decision | Resolution |
+|---|---|
+| **Adapter implementation order** | Telegram first (MVP), Discord second, Slack third. Matches ADR-2. `teloxide` is the best Rust bot crate with zero setup cost. |
+| **MultiNotifier routing policy (v1)** | `PrimaryOnly` — Telegram only in v1. Trait design supports `Broadcast` and `ByEventType` for v2. |
+| **Rate limiting defaults** | Max 1 notification per 10s per channel, burst up to 5 after 60s idle, digest mode when >5 events pending within 5 min. Locked as configurable defaults. |
 
 ---
 

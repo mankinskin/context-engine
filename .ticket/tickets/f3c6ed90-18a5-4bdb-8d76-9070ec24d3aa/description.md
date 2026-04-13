@@ -1,5 +1,17 @@
 # [AOH][Research] GitHub API — PR Lifecycle, Branch Management, Code Review
 
+## Status: COMPLETE — All decisions locked 2026-04-13
+
+## Resolved Decisions (2026-04-13)
+
+| Decision | Resolution |
+|---|---|
+| **Auth model (v1)** | Fine-grained PAT — trivial setup, 5000 req/hr sufficient for 5-20 agents. Auth layer designed as a trait so GitHub App can replace PAT later. |
+| **Review state mechanism** | Polling (30s interval when PRs are open) — no webhook server needed, aligns with local-first philosophy. Notifier handles async user commands separately. |
+| **Rust crate** | `octocrab` — actively maintained, typed GitHub API client, supports both PAT and App auth. Hand-rolled `reqwest` only for endpoints octocrab doesn't cover. |
+
+---
+
 ## Objective
 
 Map the GitHub API surface needed to automate the full PR lifecycle from an agent branch through review, user approval/rejection, merge, and branch cleanup. Identify Rust crates and evaluate API call sequences.

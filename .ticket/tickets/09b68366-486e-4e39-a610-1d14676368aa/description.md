@@ -1,5 +1,17 @@
 # [AOH][Research] Multi-Agent Coordination and Cross-Agent Communication Protocols
 
+## Status: COMPLETE — All decisions locked 2026-04-13
+
+## Resolved Decisions (2026-04-13)
+
+| Decision | Resolution |
+|---|---|
+| **Coordination primitive (v1)** | Ticket-api only — tickets and the draftboard serve as the sole coordination layer. No in-process event bus (`tokio::broadcast`) in v1; real-time events add too much complexity. Agents read/write ticket fields and board entries; orchestrator polls ticket/board state. This supersedes ADR-6 for v1; the broadcast channel is deferred to v2. |
+| **File-level conflict detection** | Two-stage: (1) at dispatch time via draftboard file-ownership (already implemented), (2) at commit time via file-list overlap check when agent reports results. PR-time detection deferred (too late). |
+| **Conflict resolution policy (v1)** | Pause-and-notify — operator decides via TUI or messenger. Sequential merge available as an operator-initiated action. LLM-assisted scope revision deferred to v2. |
+
+---
+
 ## Objective
 
 Define how parallel agent sessions communicate with each other and with the orchestrator: result reporting, conflict detection, work handoff, and shared state access. Identify patterns from existing multi-agent systems and design a Rust-native protocol.

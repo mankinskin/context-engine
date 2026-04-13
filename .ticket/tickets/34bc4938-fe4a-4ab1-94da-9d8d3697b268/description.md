@@ -41,7 +41,7 @@
 **Decision**: GitHub Copilot only in v1. Thin `CopilotClient` over `reqwest`. No provider abstraction in v1.
 
 ### ADR-6: Cross-Agent Coordination Protocol
-**Decision**: `ticket-api` for durable coordination + in-process `tokio::broadcast` channels for real-time events. No external broker in v1.
+**Decision**: `ticket-api` (tickets + draftboard) as the sole coordination layer in v1. Agents read/write ticket fields and board entries; orchestrator polls state. No in-process event bus in v1. `tokio::broadcast` deferred to v2.
 
 ### ADR-7: MCP Routing for Parallel Sessions
 **Decision**: Per-session MCP server sockets. Each session gets isolated MCP tool access.

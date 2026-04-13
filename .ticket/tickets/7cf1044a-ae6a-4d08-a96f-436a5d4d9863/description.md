@@ -1,10 +1,20 @@
 # [AOH][Research] Sandbox Isolation Technologies for Agent Code Execution
 
+## Status: COMPLETE — All decisions locked 2026-04-13
+
 > **ADR-1 v1 Selection: Tier 2 — Container (Docker / Podman via `bollard`)**
 >
 > Per the locked architecture decision (ADR-1 in `34bc4938`), v1 uses **container-based isolation** with Docker (primary) and Podman (Linux CI) orchestrated through the `bollard` crate. MicroVMs (Firecracker), cloud sandboxes (E2B), and devcontainer managers (Daytona) are **background research only** — they are not in scope for v1 implementation.
 >
 > Readers working on implementation tickets should focus on Tier 2. Other tiers remain documented here for future reference.
+
+## Resolved Decisions (2026-04-13)
+
+| Decision | Resolution |
+|---|---|
+| **Development default (Windows)** | Tier 2 — Docker Desktop on WSL2, consistent with CI/prod. Tier 0 (git worktree only) as fallback only when Docker is unavailable. |
+| **Secret injection** | One-time HTTP/Unix-socket fetch with nonce + TTL (ADR-13). Cross-reference `db784443` for full secret lifecycle. |
+| **Cold-start budget** | Target <5 seconds from `docker run` to agent prompt for pre-pulled images. Container BaaS ticket (`49d6fe2e`) targets <3s optimistically; 5s is the hard ceiling. |
 
 ## Objective
 
