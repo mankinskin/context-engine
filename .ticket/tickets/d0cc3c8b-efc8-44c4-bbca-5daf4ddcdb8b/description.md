@@ -85,7 +85,7 @@ enum ReviewError {
 | ADR | Implication |
 |---|---|
 | ADR-3 (GitHub remote, local-first) | PR records are local by default; remote push only on explicit trigger |
-| ADR-6 (Coordination protocol) | PR state persisted via `ticket-api`; review events broadcast via `tokio::broadcast` |
+| ADR-6 (Coordination protocol) | PR state persisted via `ticket-api`; review events routed via `tokio::mpsc` (intra-process) |
 | ADR-9 (Session revival) | Change requests route to revival queue; coordinator does not own revival execution |
 | `db784443` (Trust boundaries) | Reviewer identity verified before accepting approve/merge actions; merge requires authorized operator |
 | `ffa5361a` (Archive schema) | After merge, coordinator triggers archiving with the session's evidence chain |

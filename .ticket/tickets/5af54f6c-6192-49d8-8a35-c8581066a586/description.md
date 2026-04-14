@@ -4,7 +4,7 @@
 
 Provide the primary human interface for the AOH orchestrator in v1. Per ADR-4, the entrypoint is a **Rust daemon with a `ratatui` TUI** — no VS Code extension in v1. The TUI is the operator's console for monitoring session queues, viewing per-assignment progress, triggering review actions (approve/reject/request-changes), and managing budget/lifecycle controls.
 
-The TUI consumes real-time events from the `tokio::broadcast` channels populated by the assignment runner and review coordinator. It does not own business logic — it renders state and dispatches operator commands.
+The TUI consumes progress events from `tokio::mpsc` channels populated by the assignment runner and review coordinator. It does not own business logic — it renders state and dispatches operator commands.
 
 ## Component Boundaries
 
@@ -38,7 +38,7 @@ struct App {
     assignments: Vec<AssignmentView>,
     reviews: Vec<ReviewView>,
     selected: usize,
-    event_rx: broadcast::Receiver<ProgressEvent>,
+    event_rx: mpsc::Receiver<ProgressEvent>,
     command_tx: mpsc::Sender<OperatorCommand>,
 }
 
@@ -92,7 +92,7 @@ enum OperatorCommand {
 | ADR | Implication |
 |---|---|
 | ADR-4 (Rust daemon + TUI) | `ratatui` is the primary operator UI in v1; VS Code deferred |
-| ADR-6 (Coordination protocol) | TUI receives events via `tokio::broadcast`; sends commands via `mpsc` channel to orchestrator |
+| ADR-6 (Coordination protocol) | TUI receives events via `tokio::mpsc`; sends commands via `mpsc` channel to orchestrator |
 | ADR-10 (Budget controls) | TUI displays token/time budget meters and supports `ExtendBudget` operator action |
 | ADR-8 (Agent identity) | TUI displays persona names alongside session IDs for readability |
 | `db784443` (Trust boundaries) | TUI is a trusted local operator surface; all review actions go through transition guards in the review coordinator |

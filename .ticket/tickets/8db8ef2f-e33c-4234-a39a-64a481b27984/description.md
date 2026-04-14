@@ -121,8 +121,8 @@ enum MessengerKind {
 | ADR | Implication |
 |---|---|
 | ADR-2 (Messaging service) | Telegram primary, Discord + Slack supported; WhatsApp dropped; `MultiNotifier` routing |
-| ADR-4 (Rust daemon + TUI) | Desktop notifications complement TUI; both fed from broadcast channels |
-| ADR-6 (Coordination protocol) | Notifiers subscribe to `tokio::broadcast` progress events |
+| ADR-4 (Rust daemon + TUI) | Desktop notifications complement TUI; both fed from mpsc channels |
+| ADR-6 (Coordination protocol) | Notifiers receive progress events via dedicated `tokio::mpsc` channel (intra-process) |
 | ADR-12 / `db784443` (Trust boundaries) | Full messenger control with operator allow-list (ADR-12); inbound commands traverse same transition guards as TUI; all outgoing notifications are redacted |
 
 ## Acceptance Criteria

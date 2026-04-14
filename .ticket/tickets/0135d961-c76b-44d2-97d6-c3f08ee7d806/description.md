@@ -77,7 +77,7 @@ struct TestContainerRuntime {
 
 | ADR | Implication |
 |---|---|
-| ADR-6 (Coordination protocol) | Integration tests validate that `ticket-api` state and `tokio::broadcast` events stay consistent across the full lifecycle |
+| ADR-6 (Coordination protocol) | Integration tests validate that `ticket-api` state and `tokio::mpsc` event routing stay consistent across the full lifecycle |
 | ADR-10 (Budget controls) | Fault injection includes budget soft/hard limit scenarios with correct escalation behavior |
 | ADR-1 (Container BaaS) | Tests use `TestContainerRuntime` by default; optional real Docker tests gated behind a CI feature flag |
 | ADR-9 (Session revival) | Change-request → revival queue routing is tested end-to-end |

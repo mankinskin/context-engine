@@ -4,7 +4,7 @@
 
 Drive agent sessions from kickoff through completion, streaming progress events and managing the session lifecycle state machine. The assignment runner sits between the sandbox manager (which provisions the environment) and the review coordinator (which handles post-implementation handoff). It starts the agent process inside a provisioned container, monitors progress, enforces budget limits, and handles timeout/failure recovery.
 
-Per ADR-6, coordination uses `ticket-api` for durable state and `tokio::broadcast` channels for real-time events — no external broker.
+Per ADR-6, coordination uses `ticket-api` for durable state. Intra-process event routing uses `tokio::mpsc` channels (runner → TUI, runner → notifier) as internal plumbing — not a coordination protocol.
 
 ## Component Boundaries
 
@@ -13,7 +13,7 @@ Per ADR-6, coordination uses `ticket-api` for durable state and `tokio::broadcas
 - Session lifecycle state machine: `Provisioning → KickingOff → Running → Reporting → PROpen`
 - Start agent process inside a sandbox container (via sandbox manager handle)
 - Stream progress events from the agent session (stdout/stderr, structured progress, tool invocations)
-- Publish real-time events via `tokio::broadcast` channels for TUI and notifier consumption
+- Publish progress events via `tokio::mpsc` channels to TUI and notifier (intra-process routing)
 - Update ticket state transitions in `ticket-api` as sessions progress
 - Budget enforcement integration: receive soft/hard budget signals from cost watchdog
   - Soft limit → trigger agent self-assessment window (ADR-10: 2,000-token window)
@@ -68,7 +68,7 @@ struct BudgetLimits {
     user_notify_wait: Duration,     // default: 5 min
 }
 
-/// Progress event emitted via broadcast channel.
+/// Progress event emitted via mpsc channels (one per subscriber).
 enum ProgressEvent {
     StateChanged { session_id: SessionId, from: SessionState, to: SessionState },
     Output { session_id: SessionId, stream: OutputStream, data: String },
@@ -83,16 +83,16 @@ enum ProgressEvent {
 
 | ADR | Implication |
 |---|---|
-| ADR-6 (Coordination protocol) | `ticket-api` for durable state; `tokio::broadcast` for real-time events; no external broker |
+| ADR-6 (Coordination protocol) | `ticket-api` for durable state; `tokio::mpsc` for intra-process event routing (not a coordination protocol) |
 | ADR-7 (Per-session MCP) | Runner triggers MCP server start inside the container; each session gets isolated MCP tools |
 | ADR-10 (Budget controls) | Runner enforces soft/hard token and time limits with configurable thresholds from `orchestrator.toml` |
-| ADR-4 (Rust daemon + TUI) | Progress events flow to the TUI via broadcast channels |
+| ADR-4 (Rust daemon + TUI) | Progress events flow to the TUI via mpsc channels |
 | ADR-9 (Session revival) | On failure or change-request, session state is captured for potential revival |
 
 ## Acceptance Criteria
 
 - [ ] Runner starts agent process inside a provisioned sandbox and transitions through the session state machine
-- [ ] Progress events are streamed via `tokio::broadcast` channels in real time
+- [ ] Progress events are delivered via `tokio::mpsc` channels to TUI and notifier subscribers
 - [ ] Ticket state transitions are updated in `ticket-api` at each lifecycle stage
 - [ ] Soft budget signal triggers a self-assessment window; hard budget signal force-terminates the session
 - [ ] Time limits (soft/hard) are enforced with configurable thresholds
