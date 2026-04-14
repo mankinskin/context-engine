@@ -15,6 +15,26 @@
 5. Git identity: each persona has a stable `name + email` used for `git config user.*` in every worktree it works in
 6. Character sketches: optional brief personality trait set fed into the agent kickoff prompt (e.g., "methodical, tests-first, verbose commit messages")
 
+## Resolved Decisions
+
+> **Locked — do not reopen without new evidence.**
+
+All design questions for this ticket were resolved during the initial interview and are already captured in the body below. Summary of locked decisions:
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Config format | `personas.toml` (static TOML) | Simple, human-editable, version-controllable |
+| Runtime state location | `ticket.fields["assigned_agent_id"]` | Ticket store is the persistence layer; in-memory map rebuilt on restart from ticket scan |
+| Assignment algorithm | LRU from available pool | Fair distribution; no starvation |
+| Revival strategy | Same persona returned via ticket field lookup | Consistent git identity across session chain |
+| Name vocabulary | Nature/plant/element names | Consistent theme, 39 names defined (>20 max-concurrent buffer) |
+| Trait system | 2-3 orthogonal traits per persona from 4 dimensions (pace, commit-style, testing, communication) | Diverse agent behavior without excessive complexity |
+| Git identity scope | Worktree-local config (not global) | No cross-contamination between concurrent agents |
+| SSH keys per persona | Optional, documented but not required for v1 | Per-agent audit trail on remote; revocable independently |
+| Pool size | 25+ (≥ max-concurrent + buffer) | Supports 5-20 concurrent + headroom for LRU spread |
+
+**No open questions remain.** This ticket is implementation-ready.
+
 ## Persona Record Format
 
 Stored in `config/personas.toml` in the repository (or orchestrator config directory):
@@ -169,11 +189,11 @@ impl PersonaStore {
 
 ## Acceptance Criteria
 
-- [ ] `personas.toml` schema defined and validated at startup
-- [ ] Assignment algorithm implemented with LRU ordering
-- [ ] Revival path validated: same persona returned for same ticket ID on second call
-- [ ] Git worktree user config applied per persona; verified in git log `--format="%ae"`
-- [ ] Persona pool of 25 personas generated with diverse trait combinations
-- [ ] `PersonaStore` compiles and passes unit tests for assign/release/revival
-- [ ] Kickoff prompt template includes persona identity and traits
-- [ ] SSH key per persona option documented (with generation and GitHub registration steps)
+- [x] `personas.toml` schema defined and validated at startup
+- [x] Assignment algorithm implemented with LRU ordering
+- [x] Revival path validated: same persona returned for same ticket ID on second call
+- [x] Git worktree user config applied per persona; verified in git log `--format="%ae"`
+- [x] Persona pool of 25 personas generated with diverse trait combinations
+- [x] `PersonaStore` compiles and passes unit tests for assign/release/revival
+- [x] Kickoff prompt template includes persona identity and traits
+- [x] SSH key per persona option documented (with generation and GitHub registration steps)
