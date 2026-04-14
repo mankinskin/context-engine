@@ -9353,9 +9353,11 @@ dependencies = [
  "axum",
  "serde",
  "serde_json",
+ "tempfile",
  "ticket-api",
  "ticket-http",
  "tokio",
+ "tower 0.5.3",
  "tracing",
  "viewer-api",
 ]
