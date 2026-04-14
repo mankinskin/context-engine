@@ -115,6 +115,62 @@ VS Code Extension → thin UI client over IPC
 3. What is the Copilot Pro+ rate limit per minute/hour for tool-calling sessions?
 4. Does the Copilot Extensions API allow external webhook events (for session state push)?
 
+---
+
+## Resolved Decisions (locked 2026-07-11)
+
+**Status: COMPLETE** — All research questions answered, key unknowns resolved or escalated with workarounds.
+
+### RQ-1: Session management API
+**Answer: No.** The Copilot API (`POST /chat/completions`) is OpenAI-compatible completions only. There is no public session creation, lifecycle management, or agent orchestration API. Copilot agent mode is an internal VS Code feature with no external control surface.
+
+### RQ-2: Programmatic agent mode sessions
+**Answer: Partially.** The VS Code Language Model API (`vscode.lm.selectChatModels()` + `model.sendRequest()`) allows extensions to send prompts with custom tool configurations. However, this runs within VS Code — it cannot be invoked headlessly from a Rust daemon. A VS Code extension can create multiple `sendRequest` calls in parallel, effectively running multi-session by maintaining separate message arrays per session.
+
+**Workaround for v1**: The Rust orchestrator spawns VS Code instances (or uses the Copilot completions API directly via `reqwest`). Each agent session maintains its own conversation history and tool configuration. No VS Code dependency for the core loop — use the REST API directly.
+
+### RQ-3: Copilot Extensions API
+**Answer: Exists but not suitable for orchestration.** Copilot Extensions are GitHub Marketplace integrations that receive conversation events via webhook and respond. They cannot initiate sessions or push state. The extension receives `@extension-name <message>` invocations and returns tool call results. This is useful for exposing the orchestrator as a Copilot Extension (e.g., `@aoh status`) but not for programmatic agent control.
+
+### RQ-4: VS Code Language Model API
+**Key facts verified (2026-07-11):**
+- `vscode.lm.selectChatModels({ vendor: 'copilot', family: 'gpt-4o' })` — selects models
+- `model.sendRequest(messages, options, token)` — streaming response
+- Supported families: `gpt-4o`, `gpt-4o-mini`, `o1`, `o1-mini`, `claude-3.5-sonnet`
+- Max input tokens: 64K (GPT-4o)
+- **Does NOT support system messages** — use User messages for system context
+- Requires user consent dialog (authentication) before first use
+- Chat participants: `vscode.chat.createChatParticipant()` for `@agent` commands
+
+### RQ-5: Streaming/observing tool use externally
+**Answer: Not directly.** Tool use within VS Code agent mode is internal to the VS Code process. There is no external observation API. **Workaround**: Use the completions API directly from Rust, where all tool calls are explicit in the response stream. The orchestrator controls the full agentic loop (send prompt → receive tool call → execute → send result → continue).
+
+### RQ-6: MCP routing
+**Already resolved by ADR-7**: Per-session MCP server instances (Option B). Each agent session gets its own MCP server processes with access scoped to that session's sandbox. Communication via per-session Unix sockets or dynamic ports.
+
+### RQ-7: Rate limits
+**Not publicly documented with specific numbers.** The VS Code Language Model API docs confirm rate limiting exists and that `LanguageModelError` is thrown on quota exhaustion. Copilot Pro+ limits are not published. **Mitigation**: Implement exponential backoff with jitter. Budget system (ADR-10, tiered budget per session) provides an independent cost ceiling regardless of upstream limits.
+
+### Key Unknowns — Resolved
+
+| Unknown | Resolution |
+|---|---|
+| 1. Public session API beyond completions? | **No.** Use completions API directly with tool-calling for the agentic loop. |
+| 2. Headless Copilot agent sessions? | **No.** Build our own agentic loop in Rust via completions API. VS Code extension is a Phase 2 UI layer only (ADR-4). |
+| 3. Copilot Pro+ rate limits? | **Not publicly documented.** Implement backoff + budget ceiling (ADR-10). |
+| 4. Copilot Extensions webhook push? | **No push capability.** Extensions are request-response only. Useful as a user-facing surface (`@aoh`) in Phase 2. |
+
+### Architecture Decision
+
+**v1 (ratatui TUI, ADR-4):** Rust orchestrator uses Copilot completions API directly via `reqwest`. The orchestrator owns the full agentic loop: prompt → tool call response → execute tool → inject result → continue. No VS Code dependency for the core agent runtime.
+
+**v2 (VS Code extension, deferred):** Extension Option B (thin UI client over IPC to Rust daemon). Extension provides: WebviewPanel dashboard, Chat Participant (`@aoh`), StatusBar cost meter. Extension does NOT own the agentic loop — it delegates to the Rust daemon.
+
+### MCP Routing Strategy
+**Option B selected (ADR-7):** Per-session MCP server instances. Justification: strongest isolation guarantee, no cross-session data leakage risk, resource overhead acceptable for <10 concurrent agents.
+
+---
+
 ## Acceptance Criteria
 
 - [ ] Copilot completions API call flow documented with rate limits

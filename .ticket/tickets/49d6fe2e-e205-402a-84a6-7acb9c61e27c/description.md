@@ -221,6 +221,64 @@ Layers:
 
 ---
 
+## Resolved Decisions (locked 2026-07-11)
+
+**Status: COMPLETE** — All research questions answered, API verified, decisions locked.
+
+### RQ-1 (Minimal container image)
+Ubuntu 22.04-minimal base (~80MB). Layers: git+curl+ca-certs (~40MB), rustup+stable (~600MB), chromium/playwright (~300MB), AOH MCP tools (~50MB). Total ~1GB, pull-once cached. Use cargo-chef for layer caching.
+
+### RQ-2 (GPU passthrough)
+- **Windows/WSL2**: `--gpus all` (NVIDIA CUDA) or `--device /dev/dxg` (DirectX bridge). Chromium flags: `--use-gl=angle --use-angle=d3d11`.
+- **Linux CI**: `--gpus all` (NVIDIA) or `--device /dev/dri/card0 --device /dev/dri/renderD128` (Mesa/EGL).
+- **Graceful degradation**: SwiftShader (`--use-gl=swiftshader --disable-gpu`) on pure-CPU CI.
+
+### RQ-3 (Network isolation)
+Per-session Docker network (`docker network create aoh-{session-id} --internal`) + allow-list proxy. Rust-native tokio CONNECT proxy preferred over external squid/mitmproxy.
+
+### RQ-4 (Cold-start latency)
+Target <3s for pre-pulled images. Hard ceiling <5s. Measured at implementation time.
+
+### RQ-5 (bollard API coverage) — VERIFIED against bollard v0.20.2
+All required lifecycle operations confirmed present:
+
+| Required Operation | bollard v0.20.2 Method | Module |
+|---|---|---|
+| Create container | `docker.create_container()` | `container` |
+| Start container | `docker.start_container()` | `container` |
+| Execute command | `docker.create_exec()` + `docker.start_exec()` | `exec` |
+| Resource stats | `docker.stats()` → Stream | `container` |
+| Stream logs | `docker.logs()` → Stream | `container` |
+| Pause/unpause | `docker.pause_container()` / `docker.unpause_container()` | `container` |
+| Snapshot | `docker.commit_container()` | `image` |
+| Stop container | `docker.stop_container()` | `container` |
+| Remove container | `docker.remove_container()` | `container` |
+| Create network | `docker.create_network()` | `network` |
+| Remove network | `docker.remove_network()` | `network` |
+
+Additional useful APIs: `inspect_container` (health checks), `wait_container` (block on exit), `kill_container` (forced termination), `attach_container` (interactive sessions).
+
+**Connection**: `Docker::connect_with_local_defaults()` auto-detects Unix socket vs Windows named pipe. Windows named-pipe support via default `pipe` feature.
+
+**Note**: v0.20.x uses `ContainerCreateBody` (not the older `Config`). Code samples in ticket body use older API names — update at implementation time.
+
+### RQ-6 (Snapshot/restore)
+`docker commit` snapshots FS but not process state. Revival uses summary injection (ADR-9). Alternative: named volumes for workspace data + fresh container.
+
+### RQ-7 (Podman vs Docker)
+Docker via bollard for Windows dev compatibility. `ContainerRuntime` trait abstracts backend. Podman works via API-compatible socket path with bollard. Rootless Podman documented for Linux CI.
+
+### RQ-8 (Secret injection)
+Option 3 adopted (ADR-13): orchestrator per-session secret server on Unix socket/loopback port. One-time token, 30s expiry. Never pass secrets via `--env`.
+
+### Crate Details
+- **bollard v0.20.2**: Docker Engine API v1.52, Apache-2.0 license, 27M+ downloads
+- Default features: `http`, `pipe` (Windows named-pipe support)
+- Optional: `ssl`, `ssh`, `buildkit`, `websocket`, `chrono`/`time`
+- `Docker` struct is `Send + Sync + Clone` — safe for concurrent use
+
+---
+
 ## Acceptance Criteria
 
 - [ ] Container image Dockerfile drafted for Ubuntu + Rust + Chromium headless
