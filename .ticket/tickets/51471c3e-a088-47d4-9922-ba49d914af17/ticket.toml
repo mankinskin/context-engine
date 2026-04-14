@@ -1,6 +1,6 @@
 id = "51471c3e-a088-47d4-9922-ba49d914af17"
 created_at = "2026-03-21T03:27:38.960769800+00:00"
-title = "Impl: sandbox manager for per-assignment worktree + branch isolation"
+title = "[AOH][Impl] Sandbox Manager -- per-assignment worktree and branch isolation"
 state = "new"
 acceptance_criteria = "Each assignment provisions isolated worktree+branch, validates cwd/branch invariants, and performs idempotent cleanup/reconcile"
 component = "context-tasks"
