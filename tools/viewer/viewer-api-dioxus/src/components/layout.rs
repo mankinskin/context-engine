@@ -105,6 +105,22 @@ pub fn Layout(
 /// - `.sidebar-collapsed` when `collapsed` is `true` (desktop).
 /// - `.sidebar-mobile-open` / `.sidebar-mobile-closed` at mobile breakpoint.
 /// - `.sidebar-resizing` while a drag gesture is in progress.
+///
+/// ## Controlled mobile mode
+///
+/// Pass `mobile_open: Some(bool)` to take control of the drawer from the
+/// parent.  The parent must also update its state in response to
+/// `on_mobile_open_change` calls (fired when close button, overlay, or a
+/// swipe gesture requests a state change).  When `mobile_open` is `None`
+/// (the default), the component manages the drawer state internally.
+///
+/// ## Swipe-right-to-close gesture
+///
+/// At the ≤768 px mobile breakpoint the sidebar renders as a full-screen
+/// overlay drawer.  A right-swipe (≥60 px horizontal travel measured from
+/// the first `touchstart` to `touchend`) closes it.  All tap targets
+/// (hamburger, close button) use `min-width: 44px; min-height: 44px` so
+/// they meet WCAG AAA touch-target guidelines.
 #[component]
 pub fn Sidebar(
     /// Content rendered inside the sidebar body.
@@ -133,9 +149,85 @@ pub fn Sidebar(
     /// Extra CSS classes on the root `.sidebar` div.
     #[props(default)]
     class: String,
+    /// Controlled mobile-drawer open state.  When `Some`, overrides the
+    /// internal toggle; the caller must update their copy in response to
+    /// `on_mobile_open_change`.  When `None` (default) the component owns
+    /// the drawer state.
+    #[props(default)]
+    mobile_open: Option<bool>,
+    /// Fires with `true` (open) or `false` (close) whenever the drew should
+    /// change state.  In controlled mode the caller must propagate the new
+    /// value back via `mobile_open`.  In uncontrolled mode this is a
+    /// notification-only callback.
+    #[props(default)]
+    on_mobile_open_change: EventHandler<bool>,
 ) -> Element {
     let mut width = use_signal(|| initial_width);
-    let mut mobile_open = use_signal(|| false);
+    // Internal drawer state — only authoritative when `mobile_open` prop is None.
+    let mut drawer_open = use_signal(|| false);
+
+    // Effective open state: prefer the controlled prop when provided.
+    let is_open = mobile_open.unwrap_or_else(|| *drawer_open.read());
+
+    // ── Open / close helpers ──────────────────────────────────────────────
+
+    let mut open_drawer = move || {
+        if mobile_open.is_some() {
+            on_mobile_open_change.call(true);
+        } else {
+            drawer_open.set(true);
+            on_mobile_open_change.call(true);
+        }
+    };
+
+    let mut close_drawer = move || {
+        if mobile_open.is_some() {
+            on_mobile_open_change.call(false);
+        } else {
+            drawer_open.set(false);
+            on_mobile_open_change.call(false);
+        }
+    };
+
+    // ── Swipe-right-to-close gesture state ────────────────────────────────
+    let mut touch_start_x: Signal<f64> = use_signal(|| 0.0);
+
+    // Capture the X position of the first touch on touchstart.
+    let on_touch_start = move |evt: Event<TouchData>| {
+        #[cfg(target_arch = "wasm32")]
+        {
+            use dioxus::web::WebEventExt as _;
+            let x = evt
+                .data()
+                .try_as_web_event()
+                .and_then(|e: web_sys::TouchEvent| e.touches().get(0))
+                .map(|t| t.client_x() as f64)
+                .unwrap_or(0.0);
+            touch_start_x.set(x);
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        { let _ = evt; }
+    };
+
+    // On touchend, check for a right-swipe (≥60 px) and close if detected.
+    let on_touch_end = move |evt: Event<TouchData>| {
+        #[cfg(target_arch = "wasm32")]
+        {
+            use dioxus::web::WebEventExt as _;
+            let x_end = evt
+                .data()
+                .try_as_web_event()
+                .and_then(|e: web_sys::TouchEvent| e.changed_touches().get(0))
+                .map(|t| t.client_x() as f64)
+                .unwrap_or(0.0);
+            // Swipe right ≥60 px → close the mobile drawer.
+            if x_end - *touch_start_x.read() > 60.0 {
+                close_drawer();
+            }
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        { let _ = evt; }
+    };
 
     // Build the CSS class string.
     let sidebar_class = use_memo(move || {
@@ -143,7 +235,7 @@ pub fn Sidebar(
         if collapsed {
             parts.push("sidebar-collapsed");
         }
-        if *mobile_open.read() {
+        if is_open {
             parts.push("sidebar-mobile-open");
         } else {
             parts.push("sidebar-mobile-closed");
@@ -167,13 +259,15 @@ pub fn Sidebar(
     rsx! {
         // Mobile: dim overlay backdrop — invisible on desktop via CSS
         div {
-            class: if *mobile_open.read() { "sidebar-overlay visible" } else { "sidebar-overlay" },
-            onclick: move |_| mobile_open.set(false),
+            class: if is_open { "sidebar-overlay visible" } else { "sidebar-overlay" },
+            onclick: move |_| close_drawer(),
         }
 
         div {
             class: "{sidebar_class}",
             style: "{inline_style}",
+            ontouchstart: on_touch_start,
+            ontouchend: on_touch_end,
 
             // Header with title / badge / collapse button
             div {
@@ -184,11 +278,13 @@ pub fn Sidebar(
                 if let Some(b) = &badge {
                     span { class: "sidebar-badge", "{b}" }
                 }
-                // Mobile close button (visible only on mobile via CSS `display`)
+                // Mobile close button (visible only at ≤480px via CSS).
+                // min 44×44px tap target per WCAG AAA.
                 button {
                     class: "sidebar-close-btn",
+                    style: "min-width: 44px; min-height: 44px;",
                     aria_label: "Close sidebar",
-                    onclick: move |_| mobile_open.set(false),
+                    onclick: move |_| close_drawer(),
                     CloseIcon {}
                 }
                 // Desktop collapse button
@@ -224,13 +320,17 @@ pub fn Sidebar(
             }
         }
 
-        // Hamburger toggle — hidden on desktop, shown on mobile via CSS
-        // Exposed as a named slot so callers can place it in the Header.
-        // We also render a standalone one here for convenience.
+        // Hamburger toggle — hidden on desktop, shown on mobile via CSS.
+        // Callers that place a hamburger inside their Header should also wire
+        // the `mobile_open` / `on_mobile_open_change` props so both toggle
+        // the same state.  This standalone button is kept for convenience and
+        // for the uncontrolled default use case.
+        // min 44×44px tap target per WCAG AAA.
         button {
             class: "sidebar-hamburger",
+            style: "min-width: 44px; min-height: 44px;",
             aria_label: "Open sidebar",
-            onclick: move |_| mobile_open.set(true),
+            onclick: move |_| open_drawer(),
             HamburgerIcon {}
         }
     }

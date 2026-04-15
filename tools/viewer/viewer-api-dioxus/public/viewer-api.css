@@ -420,8 +420,11 @@ pre {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  /* ≥44px tap target (WCAG AAA / Apple HIG) */
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: none;
   background: transparent;
@@ -445,8 +448,11 @@ pre {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  /* ≥44px tap target (WCAG AAA / Apple HIG) */
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: none;
   background: transparent;
@@ -554,6 +560,29 @@ pre {
 .tree-item-row.selected {
   background: var(--bg-active);
   border-left-color: var(--accent-blue);
+}
+
+/* Keyboard focus indicator (multi-select mode). */
+.tree-item-row.focused {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+.tree-item-row.selected.focused {
+  background: var(--bg-active);
+  border-left-color: var(--accent-blue);
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+/* Checkbox rendered inside a tree row when show_checkboxes is enabled. */
+.tree-checkbox {
+  flex-shrink: 0;
+  margin-right: 6px;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
 }
 
 .tree-toggle {
