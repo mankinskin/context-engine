@@ -1,6 +1,8 @@
 pub mod components;
+pub mod effects;
 pub mod store;
 pub use components::*;
+pub use effects::WgpuOverlay;
 pub use store::*;
 // Explicit re-exports so downstream crates can import without glob.
 pub use store::session::{clear_session, get_session_id, with_session};
