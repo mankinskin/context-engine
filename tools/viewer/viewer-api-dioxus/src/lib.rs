@@ -2,6 +2,9 @@ pub mod components;
 pub mod store;
 pub use components::*;
 pub use store::*;
+// Explicit re-exports so downstream crates can import without glob.
+pub use store::session::{clear_session, get_session_id, with_session};
+pub use store::url_state::{get_hash_param, remove_hash_param, set_hash_param, UrlStateManager};
 
 use dioxus::prelude::*;
 
