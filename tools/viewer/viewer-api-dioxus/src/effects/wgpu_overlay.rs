@@ -131,7 +131,7 @@ mod wasm_impl {
     use std::{cell::{Cell, RefCell}, rc::Rc};
     use js_sys::{Array, Float32Array, Function, Object, Promise, Reflect};
     use wasm_bindgen::{closure::Closure, JsCast, JsValue};
-    use wasm_bindgen_futures::JsFuture;
+    use wasm_bindgen_futures::{JsFuture, spawn_local};
     use web_sys::{Document, Element, HtmlCanvasElement, NodeList, Window};
 
     // ── GPU state ─────────────────────────────────────────────────────────────
@@ -176,6 +176,24 @@ mod wasm_impl {
         prev_time_ms:  f64,
         /// Effect settings loaded from localStorage on init.
         settings:      EffectSettings,
+
+        // ── DOM capture texture ───────────────────────────────────────────────
+        // Each frame an async task rasterises `#ui-root` via SVG foreignObject
+        // and uploads the result here so shaders can sample it for glass/blur
+        // compositing effects.
+        dom_tex:      JsValue,  // GPUTexture (rgba8unorm)
+        dom_tex_view: JsValue,  // GPUTextureView
+        dom_sam:      JsValue,  // GPUSampler (linear filtering)
+        dom_tex_w:    u32,
+        dom_tex_h:    u32,
+        /// JS closure: `(uiRoot, width, height) -> Promise<ImageBitmap|null>`.
+        capture_fn:   JsValue,
+        /// JS closure: `(queue, tex, bitmap, w, h)` — wraps copyExternalImageToTexture.
+        copy_fn:      JsValue,
+        /// Completed bitmap from the most recent async capture task.
+        pending_dom_bitmap: Rc<RefCell<Option<JsValue>>>,
+        /// True while an async capture task is outstanding.
+        dom_capture_busy:   Rc<Cell<bool>>,
     }
 
     /// Per-theme effect settings persisted to `localStorage`.
@@ -443,7 +461,9 @@ mod wasm_impl {
         let cfg = Object::new();
         set_prop(&cfg, "device", &device);
         set_prop(&cfg, "format", &format);
-        set_prop(&cfg, "alphaMode", &"opaque".into());
+        // "premultiplied" tells the browser compositor that transparent canvas
+        // pixels reveal the DOM elements below — required for GPU overlay mode.
+        set_prop(&cfg, "alphaMode", &"premultiplied".into());
         get_fn(&context, "configure")?.call1(&context, &cfg).ok()?;
 
         // ── Shaders ───────────────────────────────────────────────────────────
@@ -475,12 +495,16 @@ mod wasm_impl {
         //   1: read-only-storage (ElemRect[]) — vertex + fragment
         //   2: read-only-storage (Particle[]) — vertex + fragment
         //   3: uniform  (ThemePalette)        — fragment
+        //   4: sampler  (dom_sam)             — fragment
+        //   5: texture_2d (dom_tex)           — fragment
         let render_bgl = {
             let entries = Array::new();
             entries.push(&bgl_buf(0, 3, "uniform"));           // VERTEX|FRAGMENT
             entries.push(&bgl_buf(1, 3, "read-only-storage")); // VERTEX|FRAGMENT
             entries.push(&bgl_buf(2, 3, "read-only-storage")); // VERTEX|FRAGMENT
             entries.push(&bgl_buf(3, 2, "uniform"));           // FRAGMENT
+            entries.push(&bgl_sampler(4, 2));                  // FRAGMENT — DOM sampler
+            entries.push(&bgl_texture(5, 2));                  // FRAGMENT — DOM texture
             create_bgl(&device, &entries)?
         };
 
@@ -523,8 +547,53 @@ mod wasm_impl {
         };
 
         // ── Bind groups ───────────────────────────────────────────────────────
+        // DOM capture texture — created before bind groups so bind groups can
+        // include the texture view from the start.
+        let dom_sam                   = create_sampler(&device)?;
+        let (dom_tex, dom_tex_view)   = create_texture_2d_with_view(&device, init_w, init_h)?;
+
+        // JS helper: rasterise #ui-root to an ImageBitmap via SVG foreignObject.
+        // Returns a Promise that resolves to an ImageBitmap or null.
+        let capture_fn = js_sys::Function::new_with_args(
+            "uiRoot, width, height",
+            r#"
+if (!uiRoot) return Promise.resolve(null);
+try {
+    var html = uiRoot.outerHTML;
+    var svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">'
+        + '<foreignObject width="100%" height="100%">'
+        + '<div xmlns="http://www.w3.org/1999/xhtml">' + html + '</div>'
+        + '</foreignObject></svg>';
+    var blob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+            URL.revokeObjectURL(url);
+            try {
+                var oc = new OffscreenCanvas(width, height);
+                var ctx2d = oc.getContext('2d');
+                ctx2d.drawImage(img, 0, 0);
+                createImageBitmap(oc)
+                    .then(function(bm) { resolve(bm); })
+                    .catch(function() { resolve(null); });
+            } catch(e) { resolve(null); }
+        };
+        img.onerror = function() { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+    });
+} catch(e) { return Promise.resolve(null); }
+            "#,
+        );
+        // JS helper: upload an ImageBitmap into a GPUTexture.
+        let copy_fn = js_sys::Function::new_with_args(
+            "queue, tex, bitmap, w, h",
+            "try { queue.copyExternalImageToTexture(\
+                {source:bitmap,flipY:false},{texture:tex},[w,h,1]); } catch(e) {}",
+        );
+
         let compute_bg = mk_bind_group(&device, &compute_bgl, &buffers)?;
-        let render_bg  = mk_render_bind_group(&device, &render_bgl, &buffers)?;
+        let render_bg  = mk_render_bind_group(&device, &render_bgl, &buffers, &dom_sam, &dom_tex_view)?;
 
         // ── Depth texture ─────────────────────────────────────────────────────
         let (depth_tex, depth_view) = create_depth_texture(&device, init_w, init_h)?;
@@ -556,6 +625,15 @@ mod wasm_impl {
             start_time_ms: now,
             prev_time_ms:  now,
             settings,
+            dom_tex,
+            dom_tex_view,
+            dom_sam,
+            dom_tex_w: init_w,
+            dom_tex_h: init_h,
+            capture_fn: capture_fn.into(),
+            copy_fn: copy_fn.into(),
+            pending_dom_bitmap: Rc::new(RefCell::new(None)),
+            dom_capture_busy:   Rc::new(Cell::new(false)),
         })
     }
 
@@ -591,6 +669,74 @@ mod wasm_impl {
             }
         }
 
+        // ── DOM capture texture resize + pending bitmap upload ─────────────────
+        // If the canvas was resized, recreate the dom_tex to match and rebuild
+        // the render bind group (texture view pointer changed).
+        if cw != gpu.dom_tex_w || ch != gpu.dom_tex_h {
+            if let Some((nt, nv)) = create_texture_2d_with_view(&gpu.device, cw, ch) {
+                gpu.dom_tex      = nt;
+                gpu.dom_tex_view = nv;
+                gpu.dom_tex_w    = cw;
+                gpu.dom_tex_h    = ch;
+                if let Some(rb) = mk_render_bind_group(
+                    &gpu.device, &gpu.pipelines.render_bgl, &gpu.buffers,
+                    &gpu.dom_sam, &gpu.dom_tex_view,
+                ) {
+                    gpu.render_bg = rb;
+                }
+            }
+        }
+
+        // If an async DOM capture just completed, upload the bitmap.
+        if let Some(bitmap) = gpu.pending_dom_bitmap.borrow_mut().take() {
+            if cw == gpu.dom_tex_w && ch == gpu.dom_tex_h {
+                if let Some(copy_fn) = gpu.copy_fn.dyn_ref::<Function>() {
+                    let args = Array::new();
+                    args.push(&gpu.queue);
+                    args.push(&gpu.dom_tex);
+                    args.push(&bitmap);
+                    args.push(&(cw as f64).into());
+                    args.push(&(ch as f64).into());
+                    let _ = copy_fn.apply(&JsValue::NULL, &args);
+                }
+            }
+            // else: canvas resized between capture start and completion — discard;
+            // the next frame will trigger a new capture at the updated size.
+        }
+
+        // Schedule the next async DOM capture if none is already in flight.
+        // The capture is fire-and-forget; the result lands in `pending_dom_bitmap`
+        // and is uploaded at the start of the NEXT render frame.
+        if !gpu.dom_capture_busy.get() {
+            if let Some(ui_root_el) = doc.get_element_by_id("ui-root") {
+                gpu.dom_capture_busy.set(true);
+                let pb      = Rc::clone(&gpu.pending_dom_bitmap);
+                let cb      = Rc::clone(&gpu.dom_capture_busy);
+                let cap_fn: Function = gpu.capture_fn.clone().unchecked_into();
+                let ui_root_js = JsValue::from(ui_root_el);
+                let promise_result = cap_fn.call3(
+                    &JsValue::NULL,
+                    &ui_root_js,
+                    &(cw as f64).into(),
+                    &(ch as f64).into(),
+                );
+                match promise_result.ok().and_then(|v| v.dyn_into::<Promise>().ok()) {
+                    Some(promise) => {
+                        let fut = JsFuture::from(promise);
+                        spawn_local(async move {
+                            if let Ok(bm_val) = fut.await {
+                                if !bm_val.is_null() && !bm_val.is_undefined() {
+                                    *pb.borrow_mut() = Some(bm_val);
+                                }
+                            }
+                            cb.set(false);
+                        });
+                    }
+                    None => { gpu.dom_capture_busy.set(false); }
+                }
+            }
+        }
+
         // ── DOM element scan ──────────────────────────────────────────────────
         let (elem_data, elem_count) = scan_ui_rects(&doc);
 
@@ -608,7 +754,10 @@ mod wasm_impl {
                 if let Some(cb) = mk_bind_group(&gpu.device, &gpu.pipelines.compute_bgl, &gpu.buffers) {
                     gpu.compute_bg = cb;
                 }
-                if let Some(rb) = mk_render_bind_group(&gpu.device, &gpu.pipelines.render_bgl, &gpu.buffers) {
+                if let Some(rb) = mk_render_bind_group(
+                    &gpu.device, &gpu.pipelines.render_bgl, &gpu.buffers,
+                    &gpu.dom_sam, &gpu.dom_tex_view,
+                ) {
                     gpu.render_bg = rb;
                 }
             }
@@ -992,6 +1141,7 @@ mod wasm_impl {
         let color_target = Object::new();
         set_prop(&color_target, "format", format);
         if additive {
+            // Additive blend: ONE + ONE (particle pass — sparks, embers, glitter).
             let bc = Object::new();
             set_prop(&bc, "srcFactor", &"one".into());
             set_prop(&bc, "dstFactor", &"one".into());
@@ -999,6 +1149,23 @@ mod wasm_impl {
             let blend = Object::new();
             set_prop(&blend, "color", &bc.clone().into());
             set_prop(&blend, "alpha", &bc.into());
+            set_prop(&color_target, "blend", &blend.into());
+        } else {
+            // Alpha-over blend: standard src-alpha / one-minus-src-alpha for
+            // the background pass so the GPU overlay composites correctly on
+            // top of the DOM. The alpha channel uses `one / one-minus-src-alpha`
+            // to produce premultiplied-compatible output for the compositor.
+            let bc = Object::new();
+            set_prop(&bc, "srcFactor", &"src-alpha".into());
+            set_prop(&bc, "dstFactor", &"one-minus-src-alpha".into());
+            set_prop(&bc, "operation", &"add".into());
+            let ba = Object::new();
+            set_prop(&ba, "srcFactor", &"one".into());
+            set_prop(&ba, "dstFactor", &"one-minus-src-alpha".into());
+            set_prop(&ba, "operation", &"add".into());
+            let blend = Object::new();
+            set_prop(&blend, "color", &bc.into());
+            set_prop(&blend, "alpha", &ba.into());
             set_prop(&color_target, "blend", &blend.into());
         }
         let targets = Array::new();
@@ -1072,16 +1239,77 @@ mod wasm_impl {
         get_fn(device, "createBindGroup")?.call1(device, &desc.into()).ok()
     }
 
-    /// Same as [`mk_bind_group`] — both compute and render BGL have identical
-    /// slot assignments for these four buffers.
+    /// Same as [`mk_bind_group`] but adds DOM sampler (binding 4) and DOM
+    /// texture view (binding 5) required by the render BGL.
     fn mk_render_bind_group(
         device: &JsValue, layout: &JsValue, buffers: &GpuBuffers,
+        dom_sam: &JsValue, dom_tex_view: &JsValue,
     ) -> Option<JsValue> {
-        mk_bind_group(device, layout, buffers)
+        let entries = Array::new();
+        entries.push(&bg_binding_entry(0, &buf_resource(&buffers.uniform_buf)));
+        entries.push(&bg_binding_entry(1, &buf_resource(&buffers.elem_buf)));
+        entries.push(&bg_binding_entry(2, &buf_resource(&buffers.particle_buf)));
+        entries.push(&bg_binding_entry(3, &buf_resource(&buffers.palette_buf)));
+        // Binding 4: sampler resource = the sampler object itself.
+        entries.push(&bg_binding_entry(4, dom_sam));
+        // Binding 5: texture resource = the GPUTextureView.
+        entries.push(&bg_binding_entry(5, dom_tex_view));
+        let desc = Object::new();
+        set_prop(&desc, "layout",  layout);
+        set_prop(&desc, "entries", &entries.into());
+        get_fn(device, "createBindGroup")?.call1(device, &desc.into()).ok()
     }
 
     fn create_tex_view(texture: &JsValue) -> Option<JsValue> {
         get_fn(texture, "createView")?.call0(texture).ok()
+    }
+
+    /// Build a `GPUBindGroupLayoutEntry` for a sampler binding.
+    fn bgl_sampler(binding: u32, visibility: u32) -> JsValue {
+        let entry = Object::new();
+        set_prop(&entry, "binding",    &binding.into());
+        set_prop(&entry, "visibility", &visibility.into());
+        let sam = Object::new();
+        set_prop(&sam, "type", &"filtering".into());
+        set_prop(&entry, "sampler", &sam.into());
+        entry.into()
+    }
+
+    /// Build a `GPUBindGroupLayoutEntry` for a 2-D float texture binding.
+    fn bgl_texture(binding: u32, visibility: u32) -> JsValue {
+        let entry = Object::new();
+        set_prop(&entry, "binding",    &binding.into());
+        set_prop(&entry, "visibility", &visibility.into());
+        let tex = Object::new();
+        set_prop(&tex, "sampleType",    &"float".into());
+        set_prop(&tex, "viewDimension", &"2d".into());
+        set_prop(&tex, "multisampled",  &JsValue::FALSE);
+        set_prop(&entry, "texture", &tex.into());
+        entry.into()
+    }
+
+    /// Create a linear-filter `GPUSampler`.
+    fn create_sampler(device: &JsValue) -> Option<JsValue> {
+        let desc = Object::new();
+        set_prop(&desc, "magFilter", &"linear".into());
+        set_prop(&desc, "minFilter", &"linear".into());
+        get_fn(device, "createSampler")?.call1(device, &desc.into()).ok()
+    }
+
+    /// Create an `rgba8unorm` 2-D `GPUTexture` with TEXTURE_BINDING + COPY_DST
+    /// usage, and return it together with a default view.
+    fn create_texture_2d_with_view(device: &JsValue, w: u32, h: u32) -> Option<(JsValue, JsValue)> {
+        let size = Object::new();
+        set_prop(&size, "width",  &(w as f64).into());
+        set_prop(&size, "height", &(h as f64).into());
+        let desc = Object::new();
+        set_prop(&desc, "size",   &size.into());
+        set_prop(&desc, "format", &"rgba8unorm".into());
+        // GPUTextureUsage.TEXTURE_BINDING = 0x04, COPY_DST = 0x08
+        set_prop(&desc, "usage", &(0x04u32 | 0x08u32).into());
+        let tex  = get_fn(device, "createTexture")?.call1(device, &desc.into()).ok()?;
+        let view = create_tex_view(&tex)?;
+        Some((tex, view))
     }
 
     fn create_depth_texture(device: &JsValue, w: u32, h: u32) -> Option<(JsValue, JsValue)> {
@@ -1108,7 +1336,7 @@ mod wasm_impl {
         set_prop(&clear, "r", &0.0f64.into());
         set_prop(&clear, "g", &0.0f64.into());
         set_prop(&clear, "b", &0.0f64.into());
-        set_prop(&clear, "a", &1.0f64.into());
+        set_prop(&clear, "a", &0.0f64.into()); // transparent — DOM shows through
         set_prop(&ca, "clearValue", &clear.into());
 
         // Depth attachment
