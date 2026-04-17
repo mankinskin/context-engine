@@ -23,9 +23,9 @@ members = [
   "tools/http/context-http",
   "tools/mcp/mcp-runner",
   "tools/viewer/log-viewer/frontend-leptos",
-  "tools/viewer/viewer-api-leptos",
-  "tools/viewer/viewer-api-dioxus",
-  "tools/viewer/ticket-viewer/dioxus-frontend",
+  "tools/viewer/viewer-api/frontend/leptos",
+  "tools/viewer/viewer-api/frontend/dioxus",
+  "tools/viewer/ticket-viewer/frontend/dioxus",
   "tools/context-editor/kernel",
   "tools/context-editor/sandbox-app",
 ]

@@ -41,9 +41,9 @@ use crate::gpu::math3d::{Mat4, Vec3};
 // ── Embedded shaders ──────────────────────────────────────────────────────────
 
 const PALETTE_WGSL: &str =
-    include_str!("../../../../viewer-api/frontend/src/effects/palette.wgsl");
+    include_str!("../../../../viewer-api/frontend/ts/src/effects/palette.wgsl");
 const HYPERGRAPH_WGSL: &str =
-    include_str!("../../../../viewer-api/frontend/src/components/HypergraphView/hypergraph.wgsl");
+    include_str!("../../../../viewer-api/frontend/ts/src/components/HypergraphView/hypergraph.wgsl");
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
