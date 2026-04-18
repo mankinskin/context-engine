@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "crates/memory-api",
   "crates/ticket-api",
   "crates/context-search",
   "crates/context-insert",
