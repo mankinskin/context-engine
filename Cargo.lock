@@ -9306,19 +9306,14 @@ dependencies = [
 name = "ticket-api"
 version = "0.1.0"
 dependencies = [
- "bincode",
  "chrono",
  "fs4 0.11.1",
  "memory-api",
  "notify",
  "pretty_assertions",
- "redb",
  "reqwest",
  "serde",
  "serde_json",
- "sha2",
- "tantivy",
- "tempfile",
  "thiserror 2.0.18",
  "tokio",
  "toml 0.8.23",
