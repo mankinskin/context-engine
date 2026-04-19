@@ -1,92 +1,35 @@
-# spec-api Crate: SpecManifest Model
+# spec-api Crate — Umbrella Ticket
 
 ## Objective
 
-Create the `crates/spec-api/` crate with the core specification data model, multi-file folder structure, and human-readable slug system.
+This is the parent ticket for the spec-api crate. It tracks the execution order and dependencies of all P1 sub-tickets.
 
-## Spec Folder Structure
+## Sub-tickets (Execution Order)
 
-Each spec is stored as a UUID-named directory with multiple files:
+### Phase 0.5 (prerequisite)
+1. **d5722e8e** — EntityStore convenience facade in memory-api
 
-```
-<scan_root>/<uuid>/
-  spec.toml             ← manifest (metadata, fields, slug, parent, code_refs)
-  body.md               ← main specification body
-  sections/             ← optional sub-sections
-    overview.md
-    api-surface.md
-    error-handling.md
-  assets/               ← diagrams, images
-    architecture.png
-  .spec-lock            ← advisory lock (fs4 exclusive)
-  history.ndjson        ← append-only revision log
-```
+### Phase 1a (foundation — no internal deps)
+2. **ad531f63** — spec-api crate scaffold + SpecManifest model
 
-## SpecManifest Fields
+### Phase 1b-1c (depend on 1a)
+3. **90c88ead** — Slug system (validation, uniqueness, resolution) — depends on ad531f63
+4. **614f5f2a** — Multi-file folder structure (spec.toml, body.md, sections/) — depends on ad531f63, d5722e8e
+5. **4b6dc9d5** — Schema/state machine (draft→reviewed→approved→implemented→verified) — depends on ad531f63
+6. **55a1b302** — Code references (CodeRef struct, validation, reverse lookup) — depends on ad531f63
 
-```toml
-# spec.toml
-id = "uuid"
-created_at = "2026-04-18T..."
-slug = "ticket-api/storage/store"        # unique human-readable identifier
-title = "TicketStore — Central Storage Coordinator"
-type = "specification"                   # entity type for schema lookup
-state = "draft"                          # lifecycle state
+### Phase 1d (integrates everything)
+7. **ab47648c** — SpecStore storage layer (wraps EntityStore, slug enforcement, sections, hierarchy) — depends on 4b6dc9d5, ad531f63, 90c88ead, 614f5f2a
 
-# Hierarchy
-parent = "uuid-of-parent-spec"           # optional parent spec ID
+## Design Decisions (Resolved)
 
-# Classification
-component = "ticket-api"                 # which crate/tool
-scope = "module"                         # crate | module | function | trait | type
+- **SpecManifest pattern**: Uses `EntityManifest` with `extra: BTreeMap` (same as tickets). Typed accessor methods for slug, title, state, parent, component, scope.
+- **EntityStore**: New convenience facade in memory-api composing RedbIndexStore + EntityFs + TantivySearchIndex. SpecStore wraps EntityStore.
+- **CodeRef**: Owned by ticket 55a1b302 (not this ticket).
+- **FeatureStatus**: Owned by ticket c4c9e9d4 (P4).
 
-# Code references (symbol-level)
-[[code_refs]]
-file = "crates/ticket-api/src/storage/store.rs"
-symbol = "TicketStore"
-kind = "struct"
-line_start = 45
-line_end = 52
+## Outside Dependencies
 
-[[code_refs]]
-file = "crates/ticket-api/src/storage/store.rs"
-symbol = "TicketStore::create"
-kind = "fn"
-line_start = 120
-line_end = 180
-
-# Feature tracking
-[features]
-implemented = ["create", "get", "update", "delete", "list", "search"]
-planned = ["bulk_update", "import_export"]
-blocked = []
-bugs = ["stale index after concurrent writes"]
-```
-
-## Slug System
-
-- Slugs are hierarchical, separated by `/`: `ticket-api/storage/store`
-- Must be unique within the spec store
-- Validated: lowercase alphanumeric + hyphens + slashes
-- Used in CLI: `spec get ticket-api/storage/store`
-- Resolved via index lookup (slug → UUID)
-
-## Implementation Plan
-
-1. Create `crates/spec-api/Cargo.toml` depending on `memory-api`
-2. Define `SpecManifest` extending `memory_api::EntityManifest`
-3. Define `CodeRef` struct for symbol-level references
-4. Define `FeatureStatus` struct for feature tracking
-5. Implement slug validation and uniqueness enforcement
-6. Implement multi-file folder read/write extending `EntityFs`
-7. Add section management (create/read/update/delete sections)
-
-## Acceptance Criteria
-
-- [ ] `crates/spec-api/` crate compiles
-- [ ] SpecManifest supports all fields above
-- [ ] Multi-file folder structure: spec.toml + body.md + sections/ + assets/
-- [ ] Slug validation rejects invalid slugs
-- [ ] CodeRef struct with file, symbol, kind, line_start, line_end
-- [ ] Section management: CRUD for sections/*.md files
-- [ ] Unit tests for manifest serialization roundtrip
+- Depends on: e0b3e9a8 (memory-api extraction) ✅ DONE
+- Blocked by: nothing (all prerequisites done)
+- Blocks: P2 (cli, mcp, http), P3 (creation, sync), P4-P8 (all downstream)
