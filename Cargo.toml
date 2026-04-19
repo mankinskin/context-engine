@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "crates/memory-api",
   "crates/ticket-api",
+  "crates/spec-api",
   "crates/context-search",
   "crates/context-insert",
   "crates/context-read",

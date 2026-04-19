@@ -8796,6 +8796,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec-api"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "memory-api",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml 0.8.23",
+ "uuid",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
