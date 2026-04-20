@@ -8818,12 +8818,15 @@ dependencies = [
  "clap",
  "memory-api",
  "pretty_assertions",
+ "proc-macro2",
  "serde",
  "serde_json",
  "spec-api",
+ "syn 2.0.117",
  "tempfile",
  "thiserror 2.0.18",
  "uuid",
+ "walkdir",
 ]
 
 [[package]]
