@@ -1,0 +1,143 @@
+[config]
+skip_core_tasks = true
+default_to_workspace = false
+
+# ── Viewer default ports (override with PORT env var when launching) ──────────
+[env]
+LOG_VIEWER_PORT    = "3000"
+DOC_VIEWER_PORT    = "3001"
+TICKET_VIEWER_PORT = "3002"
+SPEC_VIEWER_PORT   = "4002"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build — compile server binaries in release mode.
+# Frontend artifacts are not built here; use the start-* tasks for that.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.build-viewers]
+description = "Build all viewer server binaries (release)"
+dependencies = [
+  "build-doc-viewer",
+  "build-log-viewer",
+  "build-ticket-viewer",
+  "build-spec-viewer",
+]
+
+[tasks.build-doc-viewer]
+description = "Build the doc-viewer server binary (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "doc-viewer"]
+
+[tasks.build-log-viewer]
+description = "Build the log-viewer server binary (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "log-viewer"]
+
+[tasks.build-ticket-viewer]
+description = "Build the ticket-viewer server binary (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "ticket-viewer"]
+
+[tasks.build-spec-viewer]
+description = "Build the spec-viewer server binary (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "spec-viewer"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Install — cargo-install viewer binaries to the global Cargo bin directory
+# (~/.cargo/bin on Linux/macOS, %USERPROFILE%\.cargo\bin on Windows).
+# After install, each viewer binary is available on PATH without cargo run.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.install-viewers]
+description = "Install all viewer server binaries to ~/.cargo/bin"
+dependencies = [
+  "install-doc-viewer",
+  "install-log-viewer",
+  "install-ticket-viewer",
+  "install-spec-viewer",
+]
+
+[tasks.install-doc-viewer]
+description = "Install doc-viewer to ~/.cargo/bin (global)"
+command = "cargo"
+args = ["install", "--path", "tools/viewer/doc-viewer", "--force"]
+
+[tasks.install-log-viewer]
+description = "Install log-viewer to ~/.cargo/bin (global)"
+command = "cargo"
+args = ["install", "--path", "tools/viewer/log-viewer", "--force"]
+
+[tasks.install-ticket-viewer]
+description = "Install ticket-viewer to ~/.cargo/bin (global)"
+command = "cargo"
+args = ["install", "--path", "tools/viewer/ticket-viewer", "--force"]
+
+[tasks.install-spec-viewer]
+description = "Install spec-viewer to ~/.cargo/bin (global)"
+command = "cargo"
+args = ["install", "--path", "tools/viewer/spec-viewer", "--force"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Start — build the frontend artifacts and launch the viewer server.
+# Delegates to scripts/start-viewer.sh which handles:
+#   • port conflict detection and cleanup
+#   • frontend build (Vite or Dioxus/trunk)
+#   • server launch (cargo run)
+# The PORT env var overrides the default port for any viewer.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.start-doc-viewer]
+description = "Start the doc-viewer server on port ${DOC_VIEWER_PORT}"
+command = "bash"
+args = ["scripts/start-viewer.sh", "doc-viewer"]
+
+[tasks.start-log-viewer]
+description = "Start the log-viewer server on port ${LOG_VIEWER_PORT}"
+command = "bash"
+args = ["scripts/start-viewer.sh", "log-viewer"]
+
+[tasks.start-ticket-viewer]
+description = "Start the ticket-viewer server on port ${TICKET_VIEWER_PORT}"
+command = "bash"
+args = ["scripts/start-viewer.sh", "ticket-viewer"]
+
+[tasks.start-spec-viewer]
+description = "Start the spec-viewer server on port ${SPEC_VIEWER_PORT}"
+command = "bash"
+args = ["scripts/start-viewer.sh", "spec-viewer"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stop — detect and kill the viewer server process listening on its port.
+# Prints process details (name, PID) and falls back to printing the manual
+# kill command if the automatic kill fails.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.stop-doc-viewer]
+description = "Stop the doc-viewer server (kills process on port ${DOC_VIEWER_PORT})"
+command = "bash"
+args = ["scripts/start-viewer.sh", "doc-viewer", "--stop"]
+
+[tasks.stop-log-viewer]
+description = "Stop the log-viewer server (kills process on port ${LOG_VIEWER_PORT})"
+command = "bash"
+args = ["scripts/start-viewer.sh", "log-viewer", "--stop"]
+
+[tasks.stop-ticket-viewer]
+description = "Stop the ticket-viewer server (kills process on port ${TICKET_VIEWER_PORT})"
+command = "bash"
+args = ["scripts/start-viewer.sh", "ticket-viewer", "--stop"]
+
+[tasks.stop-spec-viewer]
+description = "Stop the spec-viewer server (kills process on port ${SPEC_VIEWER_PORT})"
+command = "bash"
+args = ["scripts/start-viewer.sh", "spec-viewer", "--stop"]
+
+[tasks.stop-viewers]
+description = "Stop all running viewer servers"
+dependencies = [
+  "stop-doc-viewer",
+  "stop-log-viewer",
+  "stop-ticket-viewer",
+  "stop-spec-viewer",
+]

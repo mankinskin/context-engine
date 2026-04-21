@@ -34,11 +34,13 @@ fi
 VIEWER="$1"; shift
 NO_BUILD="${NO_BUILD:-0}"
 CHECK_ONLY=0
+STOP=0
 EXTRA_ARGS=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --no-build)   NO_BUILD=1; shift ;;
     --check-only) CHECK_ONLY=1; shift ;;
+    --stop)       STOP=1; shift ;;
     --)           shift; EXTRA_ARGS+=("$@"); break ;;
     *)            EXTRA_ARGS+=("$1"); shift ;;
   esac
@@ -122,6 +124,69 @@ kill_pid() {
     kill -9 "$pid" 2>/dev/null || true
   fi
 }
+
+# ── Stop mode ───────────────────────────────────────────────────────────────
+# When --stop is passed, detect and kill any process on the viewer's port,
+# print process details and manual kill instructions, then exit.
+if (( STOP )); then
+  log "looking for $VIEWER on port $PORT..."
+  mapfile -t PIDS < <(find_listeners_on_port "$PORT")
+  # Filter out empty entries
+  LIVE_PIDS=()
+  for _p in "${PIDS[@]}"; do [[ -n "$_p" ]] && LIVE_PIDS+=("$_p"); done
+
+  if (( ${#LIVE_PIDS[@]} == 0 )); then
+    log "no process found listening on port $PORT — $VIEWER is not running."
+    exit 0
+  fi
+
+  for pid in "${LIVE_PIDS[@]}"; do
+    warn "found process on port $PORT:"
+    # Print process details (platform-aware)
+    if command -v tasklist >/dev/null 2>&1; then
+      tasklist //FI "PID eq $pid" //FO LIST 2>/dev/null \
+        | grep -E 'Image Name|PID|Mem Usage' \
+        | sed 's/^/  /' || printf '  PID: %s\n' "$pid"
+    elif command -v ps >/dev/null 2>&1; then
+      ps -p "$pid" -o pid,comm,args --no-headers 2>/dev/null \
+        | sed 's/^/  /' || printf '  PID: %s\n' "$pid"
+    else
+      printf '  PID: %s\n' "$pid"
+    fi
+
+    warn "killing PID $pid..."
+    killed=0
+    if command -v taskkill >/dev/null 2>&1; then
+      if taskkill //F //PID "$pid" >/dev/null 2>&1; then
+        log "PID $pid terminated."
+        killed=1
+      fi
+    else
+      kill "$pid" 2>/dev/null || true
+      sleep 0.5
+      if ! kill -0 "$pid" 2>/dev/null; then
+        log "PID $pid terminated."
+        killed=1
+      else
+        kill -9 "$pid" 2>/dev/null || true
+        sleep 0.5
+        if ! kill -0 "$pid" 2>/dev/null; then
+          log "PID $pid terminated (SIGKILL)."
+          killed=1
+        fi
+      fi
+    fi
+
+    if (( ! killed )); then
+      err "could not kill PID $pid automatically. Kill it manually:"
+      if command -v taskkill >/dev/null 2>&1; then
+        err "  taskkill /F /PID $pid"
+      fi
+      err "  kill -9 $pid"
+    fi
+  done
+  exit 0
+fi
 
 log "checking port $PORT for existing instances..."
 mapfile -t LISTENERS < <(find_listeners_on_port "$PORT")
