@@ -179,6 +179,12 @@ build_dioxus() {
     err "dioxus build did not produce $STATIC_DIR/index.html"
     exit 1
   fi
+  # dx may not copy public/ assets when wasm-opt fails on Windows; do it explicitly.
+  local public_dir="$FRONTEND_DIR/public"
+  if [[ -d "$public_dir" ]]; then
+    cp -r "$public_dir/." "$STATIC_DIR/"
+    log "copied public/ assets to $STATIC_DIR"
+  fi
 }
 
 if (( ! NO_BUILD )); then
@@ -195,4 +201,4 @@ fi
 log "starting $CARGO_PKG on port $PORT"
 cd "$REPO_ROOT"
 export PORT
-exec cargo run -p "$CARGO_PKG" -- "${EXTRA_ARGS[@]}"
+exec cargo run --quiet -p "$CARGO_PKG" -- "${EXTRA_ARGS[@]}"
