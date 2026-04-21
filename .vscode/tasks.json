@@ -249,6 +249,230 @@
       "presentation": {
         "reveal": "never"
       }
+    },
+    // ──────────────────────────────────────────────────
+    // Viewer launchers (generic — scripts/start-viewer.sh)
+    // ──────────────────────────────────────────────────
+    // The "<viewer>: managed start" tasks delegate to a single script that:
+    //   1. kills any process already listening on the viewer's port,
+    //   2. builds the frontend artifacts (Vite or Dioxus, auto-detected),
+    //   3. launches `cargo run -p <viewer>` in the foreground.
+    // Each compound "<viewer>: managed" task also opens the URL in Simple Browser.
+    // ── doc-viewer (port 3001, Vite) ────────────────────────────────────────
+    {
+      "label": "doc-viewer: managed start",
+      "type": "shell",
+      "command": "bash scripts/start-viewer.sh doc-viewer",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": {
+        "owner": "doc-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[doc-viewer\\] starting",
+          "endsPattern": "Starting HTTP server"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Doc Viewer"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "doc-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openDocViewer}",
+      "dependsOn": "doc-viewer: managed start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    {
+      "label": "doc-viewer: managed",
+      "dependsOn": [
+        "doc-viewer: managed start",
+        "doc-viewer: open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    // ── log-viewer (port 3000, Vite) ────────────────────────────────────────
+    {
+      "label": "log-viewer: managed start",
+      "type": "shell",
+      "command": "bash scripts/start-viewer.sh log-viewer",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": {
+        "owner": "log-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[log-viewer\\] starting",
+          "endsPattern": "Starting HTTP server"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Log Viewer"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "log-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openLogViewer}",
+      "dependsOn": "log-viewer: managed start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    {
+      "label": "log-viewer: managed",
+      "dependsOn": [
+        "log-viewer: managed start",
+        "log-viewer: open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    // ── ticket-viewer (port 3002, Dioxus) ───────────────────────────────────
+    {
+      "label": "ticket-viewer: managed start",
+      "type": "shell",
+      "command": "bash scripts/start-viewer.sh ticket-viewer",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": {
+        "owner": "ticket-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[ticket-viewer\\] starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Ticket Viewer (managed)"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "ticket-viewer: managed open",
+      "type": "shell",
+      "command": "echo ${input:openTicketViewer}",
+      "dependsOn": "ticket-viewer: managed start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    {
+      "label": "ticket-viewer: managed",
+      "dependsOn": [
+        "ticket-viewer: managed start",
+        "ticket-viewer: managed open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    // ── spec-viewer (port 4002, Dioxus) ─────────────────────────────────────
+    {
+      "label": "spec-viewer: managed start",
+      "type": "shell",
+      "command": "bash scripts/start-viewer.sh spec-viewer",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": {
+        "owner": "spec-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[spec-viewer\\] starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Spec Viewer"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "spec-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openSpecViewer}",
+      "dependsOn": "spec-viewer: managed start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    {
+      "label": "spec-viewer: managed",
+      "dependsOn": [
+        "spec-viewer: managed start",
+        "spec-viewer: open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
     }
   ],
 
@@ -270,6 +494,24 @@
       "type": "command",
       "command": "simpleBrowser.show",
       "args": "http://localhost:8090"
+    },
+    {
+      "id": "openDocViewer",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:3001"
+    },
+    {
+      "id": "openLogViewer",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:3000"
+    },
+    {
+      "id": "openSpecViewer",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:4002"
     }
   ]
 }

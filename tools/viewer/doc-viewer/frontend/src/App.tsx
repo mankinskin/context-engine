@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from '@context-engine/viewer-api-frontend';
-import { Sidebar as SharedSidebar } from '@context-engine/viewer-api-frontend';
+import { Sidebar as SharedSidebar, ThemeSettings } from '@context-engine/viewer-api-frontend';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Breadcrumbs } from './components/Breadcrumbs';
@@ -8,10 +8,14 @@ import { DocViewer } from './components/DocViewer';
 import { FilterPanel } from './components/FilterPanel';
 import { FileViewer } from './components/FileViewer';
 import { loadDocs, initUrlListener, codeViewerFile, closeCodeViewer, totalDocs, isLoading, docTree } from './store';
+import { themeSettingsStore } from './theme';
 import '@context-engine/viewer-api-frontend/styles/code-viewer.css';
 
 export function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showTheme, setShowTheme] = useState(false);
+  // Ensure theme store module is initialised on first render.
+  void themeSettingsStore;
 
   useEffect(() => {
     loadDocs();
@@ -28,9 +32,20 @@ export function App() {
     setMobileOpen(false);
   }, []);
 
+  const toggleTheme = useCallback(() => {
+    setShowTheme(prev => !prev);
+  }, []);
+
   return (
     <div class="app">
-      <Header onMenuToggle={toggleMobileSidebar} />
+      <Header onMenuToggle={toggleMobileSidebar} onThemeToggle={toggleTheme} />
+      {showTheme && (
+        <div class="theme-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowTheme(false); }}>
+          <div class="theme-overlay__panel">
+            <ThemeSettings store={themeSettingsStore} />
+          </div>
+        </div>
+      )}
       <FilterPanel />
       <div class="main-layout">
         <SharedSidebar
