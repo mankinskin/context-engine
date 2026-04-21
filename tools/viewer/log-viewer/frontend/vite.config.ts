@@ -1,6 +1,8 @@
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 
+const viewerApiSrc = fileURLToPath(new URL('../../viewer-api/frontend/ts/src', import.meta.url));
 const isStatic = !!process.env.VITE_STATIC_MODE;
 
 export default defineConfig({
@@ -14,9 +16,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   resolve: {
-    preserveSymlinks: true,
     dedupe: ['preact', '@preact/signals', '@preact/signals-core'],
     alias: {
+      '@context-engine/viewer-api-frontend': viewerApiSrc,
       'react': 'preact/compat',
       'react-dom': 'preact/compat',
     },

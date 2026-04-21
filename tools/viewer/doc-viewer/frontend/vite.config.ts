@@ -1,5 +1,8 @@
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
+
+const viewerApiSrc = fileURLToPath(new URL('../../viewer-api/frontend/ts/src', import.meta.url));
 
 export default defineConfig({
   plugins: [preact()],
@@ -8,9 +11,11 @@ export default defineConfig({
     emptyOutDir: true,
   },
   resolve: {
-    preserveSymlinks: true,
     // Ensure only one copy of preact is used (prevents hooks issues with shared components)
     dedupe: ['preact', 'preact/hooks', '@preact/signals'],
+    alias: {
+      '@context-engine/viewer-api-frontend': viewerApiSrc,
+    },
   },
   optimizeDeps: {
     exclude: ['@context-engine/viewer-api-frontend'],

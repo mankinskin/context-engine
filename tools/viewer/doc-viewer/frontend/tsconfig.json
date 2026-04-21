@@ -14,7 +14,13 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@context-engine/viewer-api-frontend": [
+        "../../viewer-api/frontend/ts/src/index.ts"
+      ]
+    }
   },
   "include": ["src"]
 }

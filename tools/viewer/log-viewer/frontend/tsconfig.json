@@ -26,7 +26,12 @@
     
     "paths": {
       "@/*": ["./src/*"],
-      "@context-engine/types": ["./src/types/generated/index.ts"]
+      "@context-engine/types": [
+        "./src/types/generated/index.ts"
+      ],
+      "@context-engine/viewer-api-frontend": [
+        "../../viewer-api/frontend/ts/src/index.ts"
+      ]
     },
     "baseUrl": ".",
     "types": ["vite/client", "node"]
