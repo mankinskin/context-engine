@@ -42,7 +42,7 @@ infrastructure.
 - [ ] Advance blocked (advisory warning) when health issues exist per health-gate
       table in `spec-editor/state-machine` spec.
 - [ ] `cargo check --target wasm32-unknown-unknown -p spec-editor-dioxus` passes.
-- [ ] `dx build --release -p spec-editor-dioxus` produces `public/` output.
+- [ ] `trunk build --release` in `tools/viewer/spec-editor/frontend/dioxus` produces `dist/` output.
 
 ---
 

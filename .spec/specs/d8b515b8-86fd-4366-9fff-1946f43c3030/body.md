@@ -52,7 +52,7 @@ spec-viewer (binary)
   `with_static_files`.
 - Mount `spec-http` router at `/api/` — identical to how `ticket-viewer` mounts
   `ticket-http`.
-- Serve built SPA from `target/dx/spec-viewer-dioxus/release/web/public` or fallback
+- Serve built SPA from `tools/viewer/spec-viewer/frontend/dioxus/dist` (trunk output) or fallback
   `static/`.
 
 ### Frontend SPA

@@ -1,6 +1,6 @@
 # Epic: Dioxus Viewer Platform
 
-Port the viewer-api frontend library and ticket-viewer SPA from TypeScript/Preact to Rust/Dioxus 0.7, compiled to WASM via `dx serve` (Dioxus CLI). Adds full ticket mutation capabilities powered by new ticket-http write endpoints.
+Port the viewer-api frontend library and ticket-viewer SPA from TypeScript/Preact to Rust/Dioxus 0.7, compiled to WASM via `trunk` (Trunk WASM bundler). Adds full ticket mutation capabilities powered by new ticket-http write endpoints.
 
 ## Motivation
 
@@ -56,7 +56,7 @@ tools/viewer/ticket-viewer/dioxus-frontend/   # ticket-viewer SPA
 | Creation form | **Dynamic fields from schema endpoint** | Schema endpoint is hard prerequisite for creation form |
 | Batch operations | **Yes: multi-select, queue, bulk apply** | New tickets created: `b21604c1` (UI) + `8034efd8` (API) |
 | Mobile responsive | **Required — improve over existing** | Collapsible sidebar, stacked panels, touch-friendly |
-| Build tooling | **`dx serve` (Dioxus CLI)** | Hot-reload; `Dioxus.toml` config; diverges from Trunk |
+| Build tooling | **`trunk serve`** | Hot-reload; `Trunk.toml` + `index.html` config; consistent with log-viewer-leptos |
 | Update strategy | **Optimistic with gate** | Apply immediately, block further mutations until server confirms |
 | TypeScript fate | **Freeze → archive → remove** | No new TS features; remove after Dioxus is proven |
 
@@ -67,7 +67,7 @@ Port shared UI primitives from viewer-api/frontend to Dioxus components.
 
 | Ticket | Component | Priority |
 |--------|-----------|----------|
-| `7346feae` | Crate scaffold + `dx serve` build | Critical |
+| `7346feae` | Crate scaffold + `trunk serve` build | Critical |
 | `b3f9878d` | Layout: Header, Sidebar, Panel, GlassPanel | Critical |
 | `9dec4f23` | ResizeHandle with rAF drag | High |
 | `31739fc3` | TreeView + FileTree with sort/filter | High |
@@ -82,7 +82,7 @@ Port the ticket-viewer SPA using viewer-api-dioxus components.
 
 | Ticket | Component | Priority |
 |--------|-----------|----------|
-| `44d22e8f` | Crate scaffold with `dx serve` | Critical |
+| `44d22e8f` | Crate scaffold with `trunk serve` | Critical |
 | `80b4b77f` | WorkspacePicker + auth token | High |
 | `3e79be12` | TicketTree: state groups, search, filter, sort | Critical |
 | `af19b0f6` | TicketContent: Markdown + TOML tabs | Critical |

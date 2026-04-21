@@ -11,10 +11,10 @@ build_frontend() {
   local vite_dir="tools/viewer/$viewer/frontend/ts"
   local dioxus_dir="tools/viewer/$viewer/frontend/dioxus"
 
-  if [[ -d "$dioxus_dir" && -f "$dioxus_dir/Dioxus.toml" ]]; then
+  if [[ -d "$dioxus_dir" && -f "$dioxus_dir/Trunk.toml" ]]; then
     echo "Building Dioxus frontend for $viewer ..."
     pushd "$dioxus_dir"
-    dx build --release
+    trunk build --release
     popd
   elif [[ -d "$vite_dir" ]]; then
     echo "Building Vite frontend for $viewer ..."
@@ -33,7 +33,7 @@ if [[ "$1" == "--all" ]]; then
     viewer=$(basename "$(dirname "$(dirname "$dir")")")
     # Avoid building the same viewer twice if both ts/ and dioxus/ exist.
     # Prefer dioxus when present.
-    if [[ "$dir" == *"/frontend/ts" && -d "tools/viewer/$viewer/frontend/dioxus" && -f "tools/viewer/$viewer/frontend/dioxus/Dioxus.toml" ]]; then
+    if [[ "$dir" == *"/frontend/ts" && -d "tools/viewer/$viewer/frontend/dioxus" && -f "tools/viewer/$viewer/frontend/dioxus/Trunk.toml" ]]; then
       continue
     fi
     build_frontend "$viewer"

@@ -24,7 +24,7 @@ Axum backend embedding `spec-http` + Dioxus/WASM SPA on port **4002**.
 - [ ] SSE subscription on `SpecListPage` refreshes the list on `spec.updated` events.
 - [ ] Keyboard navigation: `Tab` through tree nodes, `Enter` to open detail.
 - [ ] `cargo check --target wasm32-unknown-unknown -p spec-viewer-dioxus` passes.
-- [ ] `dx build --release -p spec-viewer-dioxus` produces `public/` output.
+- [ ] `trunk build --release` in `tools/viewer/spec-viewer/frontend/dioxus` produces `dist/` output.
 
 ---
 

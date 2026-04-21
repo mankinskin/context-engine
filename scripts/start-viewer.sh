@@ -68,16 +68,16 @@ case "$VIEWER" in
     ;;
   ticket-viewer)
     DEFAULT_PORT=3002
-    FRONTEND_KIND="dioxus"
+    FRONTEND_KIND="trunk"
     FRONTEND_DIR="$VIEWER_DIR/frontend/dioxus"
-    STATIC_DIR="$REPO_ROOT/target/dx/ticket-viewer-dioxus/release/web/public"
+    STATIC_DIR="$VIEWER_DIR/frontend/dioxus/dist"
     CARGO_PKG="ticket-viewer"
     ;;
   spec-viewer)
     DEFAULT_PORT=4002
-    FRONTEND_KIND="dioxus"
+    FRONTEND_KIND="trunk"
     FRONTEND_DIR="$VIEWER_DIR/frontend/dioxus"
-    STATIC_DIR="$REPO_ROOT/target/dx/spec-viewer-dioxus/release/web/public"
+    STATIC_DIR="$VIEWER_DIR/frontend/dioxus/dist"
     CARGO_PKG="spec-viewer"
     ;;
   *)
@@ -164,33 +164,27 @@ build_vite() {
   fi
 }
 
-build_dioxus() {
+build_trunk() {
   if [[ ! -d "$FRONTEND_DIR" ]]; then
-    err "dioxus frontend directory not found: $FRONTEND_DIR"
+    err "trunk frontend directory not found: $FRONTEND_DIR"
     exit 1
   fi
-  if ! command -v dx >/dev/null 2>&1; then
-    err "Dioxus CLI 'dx' not found on PATH. Install with: cargo install dioxus-cli"
+  if ! command -v trunk >/dev/null 2>&1; then
+    err "'trunk' not found on PATH. Install with: cargo install trunk"
     exit 1
   fi
-  log "dioxus build (release) in $FRONTEND_DIR → $STATIC_DIR"
-  (cd "$FRONTEND_DIR" && dx build --release)
+  log "trunk build (release) in $FRONTEND_DIR → $STATIC_DIR"
+  (cd "$FRONTEND_DIR" && trunk build --release)
   if [[ ! -f "$STATIC_DIR/index.html" ]]; then
-    err "dioxus build did not produce $STATIC_DIR/index.html"
+    err "trunk build did not produce $STATIC_DIR/index.html"
     exit 1
-  fi
-  # dx may not copy public/ assets when wasm-opt fails on Windows; do it explicitly.
-  local public_dir="$FRONTEND_DIR/public"
-  if [[ -d "$public_dir" ]]; then
-    cp -r "$public_dir/." "$STATIC_DIR/"
-    log "copied public/ assets to $STATIC_DIR"
   fi
 }
 
 if (( ! NO_BUILD )); then
   case "$FRONTEND_KIND" in
-    vite)   build_vite ;;
-    dioxus) build_dioxus ;;
+    vite)  build_vite ;;
+    trunk) build_trunk ;;
   esac
   log "frontend artifacts ready."
 else
