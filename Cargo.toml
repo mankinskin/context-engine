@@ -15,6 +15,7 @@ members = [
   "tools/viewer/log-viewer",
   "tools/viewer/viewer-api",
   "tools/viewer/ticket-viewer",
+  "tools/viewer/spec-viewer",
   "tools/http/ticket-http",
   "tools/http/spec-http",
   "tools/cli/ticket-cli",
@@ -31,6 +32,7 @@ members = [
   "tools/viewer/viewer-api/frontend/leptos",
   "tools/viewer/viewer-api/frontend/dioxus",
   "tools/viewer/ticket-viewer/frontend/dioxus",
+  "tools/viewer/spec-viewer/frontend/dioxus",
   "tools/context-editor/kernel",
   "tools/context-editor/sandbox-app",
 ]
