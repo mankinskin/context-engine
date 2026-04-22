@@ -251,18 +251,19 @@
       }
     },
     // ──────────────────────────────────────────────────
-    // Viewer launchers (generic — scripts/start-viewer.sh)
+    // Viewer launchers (viewer-ctl)
     // ──────────────────────────────────────────────────
-    // The "<viewer>: managed start" tasks delegate to a single script that:
-    //   1. kills any process already listening on the viewer's port,
-    //   2. builds the frontend artifacts (Vite or Dioxus, auto-detected),
-    //   3. launches `cargo run -p <viewer>` in the foreground.
+    // The "<viewer>: managed start" tasks delegate to viewer-ctl which:
+    //   1. Kills any process already listening on the viewer port.
+    //   2. Builds the frontend artifacts (Vite or trunk, auto-detected).
+    //   3. Auto-installs the server binary to ~/.cargo/bin if not found.
+    //   4. Launches the installed binary (no cargo build overhead).
     // Each compound "<viewer>: managed" task also opens the URL in Simple Browser.
-    // ── doc-viewer (port 3001, Vite) ────────────────────────────────────────
+    // ── doc-viewer (port 3001, Vite) ─────────────────────────────────────────
     {
       "label": "doc-viewer: managed start",
       "type": "shell",
-      "command": "bash scripts/start-viewer.sh doc-viewer",
+      "command": "viewer-ctl start doc-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -316,7 +317,7 @@
     {
       "label": "log-viewer: managed start",
       "type": "shell",
-      "command": "bash scripts/start-viewer.sh log-viewer",
+      "command": "viewer-ctl start log-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -370,7 +371,7 @@
     {
       "label": "ticket-viewer: managed start",
       "type": "shell",
-      "command": "bash scripts/start-viewer.sh ticket-viewer",
+      "command": "viewer-ctl start ticket-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -424,7 +425,7 @@
     {
       "label": "spec-viewer: managed start",
       "type": "shell",
-      "command": "bash scripts/start-viewer.sh spec-viewer",
+      "command": "viewer-ctl start spec-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"

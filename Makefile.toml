@@ -146,3 +146,27 @@ dependencies = [
   "stop-ticket-viewer",
   "stop-spec-viewer",
 ]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TypeScript type generation — replaces scripts/generate-types.sh
+# Generates ts-rs bindings from Rust crates, then builds @context-engine/types.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.gen-types]
+description = "Generate TypeScript types from Rust ts-rs exports and build the npm package"
+command = "viewer-ctl"
+args = ["gen-types"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VS Code extension — replaces tools/ticket-vscode/build-and-install.sh
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.build-vscode-ext]
+description = "Compile the ticket-vscode extension TypeScript (npm run compile)"
+command = "viewer-ctl"
+args = ["vscode-ext", "build"]
+
+[tasks.install-vscode-ext]
+description = "Compile and install ticket-vscode into the VS Code extensions directory"
+command = "viewer-ctl"
+args = ["vscode-ext", "install"]
