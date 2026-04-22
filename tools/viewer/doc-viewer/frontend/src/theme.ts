@@ -39,7 +39,7 @@ const DOC_DARK_COLORS: ThemeColors = {
   accentYellow: '#c9a820',
 };
 
-const _store = createThemeStore('doc-viewer-theme', DOC_DARK_COLORS, false);
+const _store = createThemeStore('doc-viewer-theme', DOC_DARK_COLORS, /* enableGpuOverrides */ true);
 export const themeColors = _store.colors;
 
 // ── Preset definitions ────────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ export const DOC_PRESETS: ThemePreset[] = [
   { name: 'Scratchboard', description: 'High-contrast dark', colors: SCRATCHBOARD_COLORS },
 ];
 
-// ── Effect settings (off by default; doc-viewer has no GPU overlay) ──────────
+// ── Effect settings (off by default; users can enable via ThemeSettings) ────────
 
 const EFFECT_KEY = 'doc-viewer-effects';
 function loadEffects(): EffectSettings {

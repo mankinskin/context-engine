@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from '@context-engine/viewer-api-frontend';
-import { Sidebar as SharedSidebar, ThemeSettings } from '@context-engine/viewer-api-frontend';
+import { Sidebar as SharedSidebar, ThemeSettings, WgpuOverlay } from '@context-engine/viewer-api-frontend';
+import { DOC_VIEWER_SCHEMA } from './gpu-schema';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Breadcrumbs } from './components/Breadcrumbs';
@@ -38,6 +39,7 @@ export function App() {
 
   return (
     <div class="app">
+      <WgpuOverlay schema={DOC_VIEWER_SCHEMA} />
       <Header onMenuToggle={toggleMobileSidebar} onThemeToggle={toggleTheme} />
       {showTheme && (
         <div class="theme-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowTheme(false); }}>
