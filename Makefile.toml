@@ -10,8 +10,18 @@ TICKET_VIEWER_PORT = "3002"
 SPEC_VIEWER_PORT   = "4002"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Build — compile server binaries in release mode.
-# Frontend artifacts are not built here; use the start-* tasks for that.
+# viewer-ctl — install the lifecycle manager itself.
+# All viewer tasks use viewer-ctl as their runtime.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.install-viewer-ctl]
+description = "Install viewer-ctl to ~/.cargo/bin (lifecycle manager)"
+command = "cargo"
+args = ["install", "--path", "tools/viewer/viewer-ctl", "--force"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build — compile viewer server binaries in release mode only.
+# Frontend artifacts are NOT built here; use start-* tasks for that.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.build-viewers]
@@ -44,9 +54,7 @@ command = "cargo"
 args = ["build", "--release", "-p", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Install — cargo-install viewer binaries to the global Cargo bin directory
-# (~/.cargo/bin on Linux/macOS, %USERPROFILE%\.cargo\bin on Windows).
-# After install, each viewer binary is available on PATH without cargo run.
+# Install — install viewer server binaries to ~/.cargo/bin via viewer-ctl.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.install-viewers]
@@ -59,78 +67,76 @@ dependencies = [
 ]
 
 [tasks.install-doc-viewer]
-description = "Install doc-viewer to ~/.cargo/bin (global)"
-command = "cargo"
-args = ["install", "--path", "tools/viewer/doc-viewer", "--force"]
+description = "Install doc-viewer to ~/.cargo/bin"
+command = "viewer-ctl"
+args = ["install", "doc-viewer"]
 
 [tasks.install-log-viewer]
-description = "Install log-viewer to ~/.cargo/bin (global)"
-command = "cargo"
-args = ["install", "--path", "tools/viewer/log-viewer", "--force"]
+description = "Install log-viewer to ~/.cargo/bin"
+command = "viewer-ctl"
+args = ["install", "log-viewer"]
 
 [tasks.install-ticket-viewer]
-description = "Install ticket-viewer to ~/.cargo/bin (global)"
-command = "cargo"
-args = ["install", "--path", "tools/viewer/ticket-viewer", "--force"]
+description = "Install ticket-viewer to ~/.cargo/bin"
+command = "viewer-ctl"
+args = ["install", "ticket-viewer"]
 
 [tasks.install-spec-viewer]
-description = "Install spec-viewer to ~/.cargo/bin (global)"
-command = "cargo"
-args = ["install", "--path", "tools/viewer/spec-viewer", "--force"]
+description = "Install spec-viewer to ~/.cargo/bin"
+command = "viewer-ctl"
+args = ["install", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Start — build the frontend artifacts, auto-install the server binary from
-# ~/.cargo/bin if not already present, then launch it. The installed binary is
-# used directly so repeat starts skip the cargo compile step entirely.
+# Start — build frontend artifacts, auto-install the server binary if not
+# already in ~/.cargo/bin, then launch it directly.
 # To force a reinstall after source changes: cargo make install-<viewer>
-# The PORT env var overrides the default port for any viewer.
+# Override the port: PORT=4010 cargo make start-spec-viewer
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.start-doc-viewer]
 description = "Build frontend, auto-install if needed, start doc-viewer on port ${DOC_VIEWER_PORT}"
-command = "bash"
-args = ["scripts/start-viewer.sh", "doc-viewer"]
+command = "viewer-ctl"
+args = ["start", "doc-viewer"]
 
 [tasks.start-log-viewer]
 description = "Build frontend, auto-install if needed, start log-viewer on port ${LOG_VIEWER_PORT}"
-command = "bash"
-args = ["scripts/start-viewer.sh", "log-viewer"]
+command = "viewer-ctl"
+args = ["start", "log-viewer"]
 
 [tasks.start-ticket-viewer]
 description = "Build frontend, auto-install if needed, start ticket-viewer on port ${TICKET_VIEWER_PORT}"
-command = "bash"
-args = ["scripts/start-viewer.sh", "ticket-viewer"]
+command = "viewer-ctl"
+args = ["start", "ticket-viewer"]
 
 [tasks.start-spec-viewer]
 description = "Build frontend, auto-install if needed, start spec-viewer on port ${SPEC_VIEWER_PORT}"
-command = "bash"
-args = ["scripts/start-viewer.sh", "spec-viewer"]
+command = "viewer-ctl"
+args = ["start", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stop — detect and kill the viewer server process listening on its port.
-# Prints process details (name, PID) and falls back to printing the manual
-# kill command if the automatic kill fails.
+# Stop — detect and kill the viewer server listening on its port.
+# Prints process details and the manual kill command if auto-kill fails.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.stop-doc-viewer]
 description = "Stop the doc-viewer server (kills process on port ${DOC_VIEWER_PORT})"
-command = "bash"
-args = ["scripts/start-viewer.sh", "doc-viewer", "--stop"]
+command = "viewer-ctl"
+args = ["stop", "doc-viewer"]
 
 [tasks.stop-log-viewer]
 description = "Stop the log-viewer server (kills process on port ${LOG_VIEWER_PORT})"
-command = "bash"
-args = ["scripts/start-viewer.sh", "log-viewer", "--stop"]
+command = "viewer-ctl"
+args = ["stop", "log-viewer"]
 
 [tasks.stop-ticket-viewer]
 description = "Stop the ticket-viewer server (kills process on port ${TICKET_VIEWER_PORT})"
-command = "bash"
-args = ["scripts/start-viewer.sh", "ticket-viewer", "--stop"]
+command = "viewer-ctl"
+args = ["stop", "ticket-viewer"]
 
 [tasks.stop-spec-viewer]
 description = "Stop the spec-viewer server (kills process on port ${SPEC_VIEWER_PORT})"
-command = "bash"
-args = ["scripts/start-viewer.sh", "spec-viewer", "--stop"]
+command = "viewer-ctl"
+args = ["stop", "spec-viewer"]
 
 [tasks.stop-viewers]
 description = "Stop all running viewer servers"
