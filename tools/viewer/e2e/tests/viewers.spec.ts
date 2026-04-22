@@ -230,5 +230,53 @@ for (const viewer of DIOXUS_VIEWERS) {
       await expect(panel).not.toBeVisible({ timeout: 5_000 });
     });
 
+    test('GPU overlay master toggle defaults OFF and toggles on/off', async ({ page }) => {
+      test.setTimeout(90_000);
+
+      await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
+      await page.locator(viewer.readySelector).first().waitFor({
+        state: 'visible',
+        timeout: viewer.readyTimeout,
+      });
+
+      // Wipe persisted toggle so default-OFF assertion is meaningful.
+      await page.evaluate(() => localStorage.removeItem('viewer-api-gpu-enabled'));
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.locator(viewer.readySelector).first().waitFor({
+        state: 'visible',
+        timeout: viewer.readyTimeout,
+      });
+
+      const themeBtn = page.locator('button[aria-label="Theme settings"]');
+      await expect(themeBtn).toBeVisible({ timeout: 30_000 });
+      await themeBtn.click();
+
+      const panel = page.locator('.theme-settings');
+      await expect(panel).toBeVisible({ timeout: 5_000 });
+
+      // The "Enable GPU overlay" row in the Effects section.
+      const label = panel.locator('.theme-settings__effect-label', {
+        hasText: 'Enable GPU overlay',
+      });
+      await expect(label).toBeVisible();
+
+      const checkbox = panel.locator('.theme-settings__toggle-switch input[type="checkbox"]').first();
+      // Hidden by CSS (opacity:0) — verify state via DOM property, not visibility.
+      await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(false);
+
+      // Toggle ON via the visible slider span (the input itself is invisible).
+      const slider = panel.locator('.theme-settings__toggle-slider').first();
+      await slider.click({ force: true });
+      await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(true);
+
+      // localStorage reflects the new state.
+      const stored = await page.evaluate(() => localStorage.getItem('viewer-api-gpu-enabled'));
+      expect(stored).toBe('true');
+
+      // Toggle OFF again.
+      await slider.click({ force: true });
+      await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(false);
+    });
+
   });
 }
