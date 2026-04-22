@@ -79,31 +79,30 @@ command = "cargo"
 args = ["install", "--path", "tools/viewer/spec-viewer", "--force"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Start — build the frontend artifacts and launch the viewer server.
-# Delegates to scripts/start-viewer.sh which handles:
-#   • port conflict detection and cleanup
-#   • frontend build (Vite or Dioxus/trunk)
-#   • server launch (cargo run)
+# Start — build the frontend artifacts, auto-install the server binary from
+# ~/.cargo/bin if not already present, then launch it. The installed binary is
+# used directly so repeat starts skip the cargo compile step entirely.
+# To force a reinstall after source changes: cargo make install-<viewer>
 # The PORT env var overrides the default port for any viewer.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.start-doc-viewer]
-description = "Start the doc-viewer server on port ${DOC_VIEWER_PORT}"
+description = "Build frontend, auto-install if needed, start doc-viewer on port ${DOC_VIEWER_PORT}"
 command = "bash"
 args = ["scripts/start-viewer.sh", "doc-viewer"]
 
 [tasks.start-log-viewer]
-description = "Start the log-viewer server on port ${LOG_VIEWER_PORT}"
+description = "Build frontend, auto-install if needed, start log-viewer on port ${LOG_VIEWER_PORT}"
 command = "bash"
 args = ["scripts/start-viewer.sh", "log-viewer"]
 
 [tasks.start-ticket-viewer]
-description = "Start the ticket-viewer server on port ${TICKET_VIEWER_PORT}"
+description = "Build frontend, auto-install if needed, start ticket-viewer on port ${TICKET_VIEWER_PORT}"
 command = "bash"
 args = ["scripts/start-viewer.sh", "ticket-viewer"]
 
 [tasks.start-spec-viewer]
-description = "Start the spec-viewer server on port ${SPEC_VIEWER_PORT}"
+description = "Build frontend, auto-install if needed, start spec-viewer on port ${SPEC_VIEWER_PORT}"
 command = "bash"
 args = ["scripts/start-viewer.sh", "spec-viewer"]
 

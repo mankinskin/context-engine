@@ -4,11 +4,12 @@
 # Handles four viewers: doc-viewer, log-viewer, ticket-viewer, spec-viewer.
 # For each viewer:
 #   1. Detects + kills any process already listening on the viewer's port.
-#   2. Builds the frontend artifacts (Vite or Dioxus, auto-detected).
-#   3. Launches the cargo-built server in the foreground.
+#   2. Builds the frontend artifacts (Vite or trunk, auto-detected).
+#   3. Runs the installed binary from ~/.cargo/bin; auto-installs if missing.
+#      To force a reinstall after code changes: cargo make install-<viewer>
 #
 # Usage:
-#   scripts/start-viewer.sh <viewer> [--no-build] [--check-only] [-- <extra cargo args>]
+#   scripts/start-viewer.sh <viewer> [--no-build] [--check-only] [--stop] [-- <extra args>]
 #
 # Environment overrides:
 #   PORT       — override the default port for this viewer.
@@ -257,7 +258,15 @@ else
 fi
 
 # ── Step 3: launch the server ───────────────────────────────────────────────
-log "starting $CARGO_PKG on port $PORT"
+# Use the installed binary from ~/.cargo/bin so the server starts without
+# recompiling. Auto-install from source if the binary is not yet on PATH.
+# To force a reinstall after source changes: cargo make install-<viewer>
+if ! command -v "$CARGO_PKG" >/dev/null 2>&1; then
+  log "$CARGO_PKG not found on PATH — installing from source..."
+  cargo install --path "$VIEWER_DIR"
+fi
+VIEWER_BIN="$(command -v "$CARGO_PKG")"
+log "starting $VIEWER_BIN on port $PORT"
 cd "$REPO_ROOT"
 export PORT
-exec cargo run --quiet -p "$CARGO_PKG" -- "${EXTRA_ARGS[@]}"
+exec "$VIEWER_BIN" "${EXTRA_ARGS[@]}"
