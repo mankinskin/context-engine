@@ -175,3 +175,60 @@ for (const viewer of VIEWERS) {
 
   });
 }
+
+// ── GPU overlay + ThemeSettings — Dioxus viewers only ─────────────────────────
+
+const DIOXUS_VIEWERS = VIEWERS.filter(v =>
+  v.name === 'ticket-viewer' || v.name === 'spec-viewer',
+);
+
+for (const viewer of DIOXUS_VIEWERS) {
+  test.describe(`${viewer.name} — GPU overlay & theme settings`, () => {
+
+    test('WebGPU canvas element is present in the DOM', async ({ page }) => {
+      test.setTimeout(90_000);
+
+      await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
+      await page.locator(viewer.readySelector).first().waitFor({
+        state: 'visible',
+        timeout: viewer.readyTimeout,
+      });
+
+      // ViewerShell always renders <canvas id="webgpu-canvas">.
+      const canvas = page.locator('#webgpu-canvas');
+      await expect(canvas).toBeAttached({ timeout: 5_000 });
+    });
+
+    test('theme settings panel opens and closes via the palette button', async ({ page }) => {
+      test.setTimeout(90_000);
+
+      await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
+      await page.locator(viewer.readySelector).first().waitFor({
+        state: 'visible',
+        timeout: viewer.readyTimeout,
+      });
+
+      // The 🎨 button in the header right slot.
+      // ticket-viewer does a redirect (/→/workspace/default) + SSE connect,
+      // so give it up to 30 s to settle before asserting the button.
+      const themeBtn = page.locator('button[aria-label="Theme settings"]');
+      await expect(themeBtn).toBeVisible({ timeout: 30_000 });
+
+      // Panel is not yet visible.
+      const panel = page.locator('.theme-settings');
+      await expect(panel).not.toBeVisible();
+
+      // Open the panel.
+      await themeBtn.click();
+      await expect(panel).toBeVisible({ timeout: 5_000 });
+
+      // The panel should contain the "Theme Settings" heading.
+      await expect(panel.locator('.glass-panel__title')).toContainText('Theme Settings');
+
+      // Close via the ✕ button inside the panel.
+      await panel.locator('button[aria-label="Close theme settings"]').click();
+      await expect(panel).not.toBeVisible({ timeout: 5_000 });
+    });
+
+  });
+}
