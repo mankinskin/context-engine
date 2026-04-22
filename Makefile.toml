@@ -10,7 +10,94 @@ TICKET_VIEWER_PORT = "3002"
 SPEC_VIEWER_PORT   = "4002"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# viewer-ctl — install the lifecycle manager itself.
+# build-all — single target that compiles every deployable tool binary and
+# every viewer frontend artifact.  Use this to verify nothing is broken after
+# a cross-cutting change.
+#
+#   cargo make build-all
+#
+# Individual sub-targets can be run independently:
+#   cargo make build-native-tools   — all Rust CLI/HTTP/MCP/viewer binaries
+#   cargo make build-all-frontends  — all Vite + Trunk frontend bundles
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.build-all]
+description = "Build all native tool binaries AND all viewer frontend artifacts"
+dependencies = [
+  "build-native-tools",
+  "build-all-frontends",
+]
+
+# ── Native (Rust) binaries ────────────────────────────────────────────────────
+
+[tasks.build-native-tools]
+description = "Build every deployable Rust binary (CLI, HTTP, MCP, viewers, utilities)"
+dependencies = [
+  "build-cli-tools",
+  "build-http-tools",
+  "build-mcp-tools",
+  "build-viewers",
+  "build-viewer-ctl",
+  "build-misc-tools",
+]
+
+[tasks.build-cli-tools]
+description = "Build context-cli, spec-cli, and ticket-cli (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "context-cli", "-p", "spec-cli", "-p", "ticket-cli"]
+
+[tasks.build-http-tools]
+description = "Build context-http, spec-http, and ticket-http (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "context-http", "-p", "spec-http", "-p", "ticket-http"]
+
+[tasks.build-mcp-tools]
+description = "Build context-mcp, spec-mcp, ticket-mcp, and mcp-runner (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "mcp-runner"]
+
+[tasks.build-viewer-ctl]
+description = "Build the viewer-ctl lifecycle manager binary (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "viewer-ctl"]
+
+[tasks.build-misc-tools]
+description = "Build tracing-analyzer (release)"
+command = "cargo"
+args = ["build", "--release", "-p", "tracing-analyzer"]
+
+# ── Viewer frontend artifacts (Vite + Trunk WASM) ────────────────────────────
+
+[tasks.build-all-frontends]
+description = "Build all viewer frontend bundles (Vite for doc/log, Trunk/WASM for ticket/spec)"
+dependencies = [
+  "build-frontend-doc-viewer",
+  "build-frontend-log-viewer",
+  "build-frontend-ticket-viewer",
+  "build-frontend-spec-viewer",
+]
+
+[tasks.build-frontend-doc-viewer]
+description = "Build the doc-viewer Vite frontend"
+command = "viewer-ctl"
+args = ["build", "doc-viewer"]
+
+[tasks.build-frontend-log-viewer]
+description = "Build the log-viewer Vite frontend"
+command = "viewer-ctl"
+args = ["build", "log-viewer"]
+
+[tasks.build-frontend-ticket-viewer]
+description = "Build the ticket-viewer Trunk/Dioxus frontend"
+command = "viewer-ctl"
+args = ["build", "ticket-viewer"]
+
+[tasks.build-frontend-spec-viewer]
+description = "Build the spec-viewer Trunk/Dioxus frontend"
+command = "viewer-ctl"
+args = ["build", "spec-viewer"]
+
+
 # All viewer tasks use viewer-ctl as their runtime.
 # ─────────────────────────────────────────────────────────────────────────────
 
