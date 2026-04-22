@@ -257,3 +257,42 @@ args = ["vscode-ext", "build"]
 description = "Compile and install ticket-vscode into the VS Code extensions directory"
 command = "viewer-ctl"
 args = ["vscode-ext", "install"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# E2E tests — Playwright smoke tests for all viewer tools.
+#
+# Prerequisite: the four release-binary viewer servers must be running.
+# Start them with `cargo make start-<viewer>` or launch manually.
+#
+#   cargo make e2e-install   — npm install (first time only)
+#   cargo make test-e2e      — run the full Playwright suite
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tasks.e2e-install]
+description = "Install npm dependencies for the viewer E2E test suite"
+command = "cmd"
+args = ["/c", "npm", "install"]
+cwd = "tools/viewer/e2e"
+
+[tasks.e2e-install.linux]
+command = "npm"
+args = ["install"]
+
+[tasks.e2e-install.mac]
+command = "npm"
+args = ["install"]
+
+[tasks.test-e2e]
+description = "Run Playwright E2E tests against running viewer servers (all four must be up)"
+command = "cmd"
+args = ["/c", "npx", "playwright", "test"]
+cwd = "tools/viewer/e2e"
+
+[tasks.test-e2e.linux]
+command = "npx"
+args = ["playwright", "test"]
+
+[tasks.test-e2e.mac]
+command = "npx"
+args = ["playwright", "test"]
+

@@ -118,7 +118,43 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
   | python3 -c "import sys,json; d=json.load(sys.stdin); print('spec-mcp OK, server:', d['result']['serverInfo']['name'])"
 ```
 
-## Step 6 — Report results
+## Step 6 — Run Playwright E2E tests in the browser
+
+The E2E suite validates that each viewer **actually works in Chromium** —
+no console errors, no missing assets, and the UI renders after WASM/JS hydration.
+
+Prerequisites: all four viewer servers must be running (start them with
+`cargo make start-<viewer>` if not already up).
+
+```bash
+# Install npm deps (first time only)
+cargo make e2e-install
+
+# Run the full Playwright suite against all running viewers
+cargo make test-e2e
+```
+
+Or run manually from the e2e directory:
+
+```bash
+cd tools/viewer/e2e
+npx playwright test
+```
+
+The suite tests each viewer for:
+- **No console errors** — no `console.error()` or uncaught exceptions after load
+- **No missing static assets** — no HTTP 404 for JS/CSS/WASM/font files
+- **UI is visible** — the viewer-specific ready selector appears within timeout
+
+> Viewer-specific ready selectors (signals that the app has fully rendered):
+> | Viewer | Selector | Timeout |
+> |---|---|---|
+> | log-viewer | `.tab-bar` | 20 s |
+> | doc-viewer | `.app` | 20 s |
+> | ticket-viewer | `header.header` | 60 s (WASM) |
+> | spec-viewer | `header.header` | 60 s (WASM) |
+
+## Step 7 — Report results
 
 Summarize in a checklist. Mark each tool as ✅ (passed) or ❌ (failed with
 the error message).
@@ -148,6 +184,12 @@ MCP servers (initialize handshake)
   [x] ticket-mcp
   [x] context-mcp
   [x] spec-mcp
+
+Playwright E2E (no console errors, no missing assets, UI renders)
+  [x] log-viewer
+  [x] doc-viewer
+  [x] ticket-viewer
+  [x] spec-viewer
 ```
 
 Any ❌ item must be fixed before considering the change safe to merge.
@@ -163,3 +205,5 @@ Any ❌ item must be fixed before considering the change safe to merge.
 | `viewer-ctl stop <viewer>` | `cargo make stop-<viewer>` |
 | TypeScript type generation | `cargo make gen-types` |
 | VS Code extension install | `cargo make install-vscode-ext` |
+| `npm install` in e2e dir | `cargo make e2e-install` |
+| `npx playwright test` | `cargo make test-e2e` |
