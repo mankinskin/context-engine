@@ -7,7 +7,7 @@ Canonical UX and behavior specification for the **shared theme-settings panel** 
 All viewers MUST present the same panel, the same controls, in the same order, with the same defaults, and with the same persistence semantics. Per-viewer customization is limited to:
 
 - The **preset list** (each viewer ships its own named ColorTheme presets).
-- The **GPU effect default** (a viewer MAY default the master GPU toggle to OFF if it is "read-first" — `ticket-viewer` and `spec-viewer` do this; `doc-viewer` and `log-viewer` default ON).
+- The **GPU effect default** (this is a deliberate cross-viewer constant: every viewer defaults the master GPU toggle to **ON**. The viewer is intended to be fully GPU-accelerated by default — 3D graph rendering, glass panels, particle effects, smoke. Users can opt out via the master toggle in ThemeSettings).
 
 ---
 
@@ -81,10 +81,7 @@ Color updates are **applied instantly** (every keystroke) and persisted to local
 
 A single iOS-style toggle in the GPU Rendering section. Wired to `gpuOverlayEnabled` (TS) / `set_gpu_overlay_enabled(bool)` (Rust). Persisted to localStorage key `viewer-api-gpu-enabled`.
 
-Default by viewer:
-
-- `doc-viewer`, `log-viewer`: **ON**
-- `ticket-viewer`, `spec-viewer`: **OFF** (read-first viewers; effects opt-in)
+**Default for all viewers: ON.** The viewer is fully GPU-accelerated by default (3D graph rendering, glass panels, particle effects, background animation). Users can opt out via the master toggle.
 
 When OFF, the WebGPU RAF loop does not draw — the canvas stays clear, even though all CSS theming still applies.
 

@@ -230,8 +230,21 @@ for (const viewer of DIOXUS_VIEWERS) {
       await expect(panel).not.toBeVisible({ timeout: 5_000 });
     });
 
-    test('GPU overlay master toggle defaults OFF and toggles on/off', async ({ page }) => {
+    test('GPU overlay master toggle defaults ON and toggles off/on without errors', async ({ page }) => {
       test.setTimeout(90_000);
+
+      // Track JS errors so we can assert nothing throws while interacting.
+      // We deliberately ignore network/resource-load errors (covered by
+      // loadAndInspect) — only true JS exceptions and console.error from app
+      // code should fail this test.
+      const jsErrors: string[] = [];
+      page.on('pageerror', (err) => jsErrors.push(`pageerror: ${err.message}`));
+      page.on('console', (msg) => {
+        if (msg.type() !== 'error') return;
+        const text = msg.text();
+        if (text.includes('Failed to load resource')) return;
+        jsErrors.push(`console.error: ${text}`);
+      });
 
       await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
       await page.locator(viewer.readySelector).first().waitFor({
@@ -239,7 +252,7 @@ for (const viewer of DIOXUS_VIEWERS) {
         timeout: viewer.readyTimeout,
       });
 
-      // Wipe persisted toggle so default-OFF assertion is meaningful.
+      // Wipe persisted toggle so default-ON assertion is meaningful.
       await page.evaluate(() => localStorage.removeItem('viewer-api-gpu-enabled'));
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.locator(viewer.readySelector).first().waitFor({
@@ -262,20 +275,127 @@ for (const viewer of DIOXUS_VIEWERS) {
 
       const checkbox = panel.locator('.theme-settings__toggle-switch input[type="checkbox"]').first();
       // Hidden by CSS (opacity:0) — verify state via DOM property, not visibility.
-      await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(false);
-
-      // Toggle ON via the visible slider span (the input itself is invisible).
-      const slider = panel.locator('.theme-settings__toggle-slider').first();
-      await slider.click({ force: true });
+      // Default for all viewers: ON (the viewer is fully GPU-accelerated by default).
       await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(true);
 
-      // localStorage reflects the new state.
-      const stored = await page.evaluate(() => localStorage.getItem('viewer-api-gpu-enabled'));
-      expect(stored).toBe('true');
-
-      // Toggle OFF again.
+      // Toggle OFF via the visible slider span (the input itself is invisible).
+      const slider = panel.locator('.theme-settings__toggle-slider').first();
       await slider.click({ force: true });
       await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(false);
+
+      // localStorage reflects the new state.
+      await expect
+        .poll(() => page.evaluate(() => localStorage.getItem('viewer-api-gpu-enabled')))
+        .toBe('false');
+
+      // Toggle back ON.
+      await slider.click({ force: true });
+      await expect.poll(() => checkbox.evaluate((el: HTMLInputElement) => el.checked)).toBe(true);
+      await expect
+        .poll(() => page.evaluate(() => localStorage.getItem('viewer-api-gpu-enabled')))
+        .toBe('true');
+
+      // No JS errors during the entire interaction.
+      expect(jsErrors, `${viewer.name} produced JS errors during toggle interaction`).toEqual([]);
+    });
+
+    test('every theme-settings toggle and button can be activated without JS errors', async ({ page }) => {
+      // Smoke test for *all* interactive controls in the theme panel.
+      // Visual correctness of effects is verified manually / by an agent;
+      // this test only catches JS exceptions, console.error, or unhandled
+      // promise rejections triggered by the UI interactions themselves.
+      test.setTimeout(120_000);
+
+      // Ignore network/resource-load errors (covered by loadAndInspect) — only
+      // app-code JS exceptions and console.error should fail this test.
+      const jsErrors: string[] = [];
+      page.on('pageerror', (err) => jsErrors.push(`pageerror: ${err.message}`));
+      page.on('console', (msg) => {
+        if (msg.type() !== 'error') return;
+        const text = msg.text();
+        if (text.includes('Failed to load resource')) return;
+        jsErrors.push(`console.error: ${text}`);
+      });
+
+      await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
+      await page.locator(viewer.readySelector).first().waitFor({
+        state: 'visible',
+        timeout: viewer.readyTimeout,
+      });
+
+      const themeBtn = page.locator('button[aria-label="Theme settings"]');
+      await expect(themeBtn).toBeVisible({ timeout: 30_000 });
+      await themeBtn.click();
+
+      const panel = page.locator('.theme-settings');
+      await expect(panel).toBeVisible({ timeout: 5_000 });
+
+      // ── Exercise every iOS-style toggle (master GPU + any per-effect toggles).
+      // Toggle each one OFF then back ON via its visible slider span.
+      const sliders = panel.locator('.theme-settings__toggle-slider');
+      const sliderCount = await sliders.count();
+      for (let i = 0; i < sliderCount; i++) {
+        const s = sliders.nth(i);
+        await s.click({ force: true });
+        await page.waitForTimeout(50);
+        await s.click({ force: true });
+        await page.waitForTimeout(50);
+      }
+
+      // ── Exercise every preset card (if present).
+      const presetCards = panel.locator('.theme-preset-card, .theme-settings__preset-button');
+      const presetCount = await presetCards.count();
+      for (let i = 0; i < presetCount; i++) {
+        await presetCards.nth(i).click();
+        await page.waitForTimeout(50);
+      }
+
+      // ── Exercise every range slider (if present): set to min, then to max.
+      const ranges = panel.locator('input[type="range"]');
+      const rangeCount = await ranges.count();
+      for (let i = 0; i < rangeCount; i++) {
+        const r = ranges.nth(i);
+        const max = await r.evaluate((el: HTMLInputElement) => el.max);
+        const min = await r.evaluate((el: HTMLInputElement) => el.min);
+        await r.evaluate((el: HTMLInputElement, v: string) => {
+          el.value = v;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        }, min);
+        await page.waitForTimeout(20);
+        await r.evaluate((el: HTMLInputElement, v: string) => {
+          el.value = v;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        }, max);
+        await page.waitForTimeout(20);
+      }
+
+      // ── Exercise color pickers: set to a known value via DOM API.
+      const colorPickers = panel.locator('input[type="color"]');
+      const colorCount = await colorPickers.count();
+      for (let i = 0; i < colorCount; i++) {
+        const c = colorPickers.nth(i);
+        await c.evaluate((el: HTMLInputElement) => {
+          el.value = '#abcdef';
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        await page.waitForTimeout(20);
+      }
+
+      // ── Close the panel.
+      const closeBtn = panel.locator('button[aria-label="Close theme settings"]');
+      if (await closeBtn.count() > 0) {
+        await closeBtn.click();
+        await expect(panel).not.toBeVisible({ timeout: 5_000 });
+      }
+
+      // No JS errors during the entire interaction.
+      expect(
+        jsErrors,
+        `${viewer.name} produced JS errors while exercising theme controls`,
+      ).toEqual([]);
     });
 
   });
