@@ -25,7 +25,12 @@
  *   initial route.  A 60 s timeout covers slow WASM initialisation.
  */
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import {
+  getHashParam,
+  getSelectedTreeLabels,
+  loadAndInspectViewer,
+} from '../../viewer-api/frontend/dioxus/e2e/test_apis';
 
 // ── Viewer configurations ─────────────────────────────────────────────────────
 
@@ -77,65 +82,6 @@ const VIEWERS: ViewerConfig[] = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Static asset extensions — 404s for these indicate a broken build. */
-const STATIC_EXTENSIONS = /\.(js|ts|css|wasm|png|svg|ico|woff2?)(\?.*)?$/i;
-
-interface LoadResult {
-  /** console.error() messages and uncaught page exceptions. */
-  errors: string[];
-  /** URLs of responses with HTTP 404 that match static asset patterns. */
-  missingAssets: string[];
-}
-
-/**
- * Navigate to `config.url`, wait for the app to render, then return any
- * collected errors and missing-asset URLs.
- *
- * Error collection starts *before* navigation so that errors fired during
- * the initial page load are not missed.
- */
-async function loadAndInspect(page: Page, config: ViewerConfig): Promise<LoadResult> {
-  const errors: string[] = [];
-  const missingAssets: string[] = [];
-
-  // Collect uncaught JS exceptions (e.g. WASM panic).
-  page.on('pageerror', (err) => {
-    errors.push(`pageerror: ${err.message}`);
-  });
-
-  // Collect console.error() calls (includes fetch 404 messages from WASM SSE).
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      errors.push(`console.error: ${msg.text()}`);
-    }
-  });
-
-  // Collect HTTP 404s for static asset URLs (JS, CSS, WASM, fonts, images).
-  // API 404s (e.g. empty list endpoints) are intentionally excluded.
-  page.on('response', (response) => {
-    if (response.status() === 404) {
-      const url = response.url();
-      if (STATIC_EXTENSIONS.test(url)) {
-        missingAssets.push(url);
-      }
-    }
-  });
-
-  await page.goto(config.url, { waitUntil: 'domcontentloaded' });
-
-  // Wait for the viewer-specific ready signal.
-  await page.locator(config.readySelector).first().waitFor({
-    state: 'visible',
-    timeout: config.readyTimeout,
-  });
-
-  // Brief settle window: lets SSE reconnect logic and background fetches
-  // complete so their errors (if any) are captured before assertions run.
-  await page.waitForTimeout(2_000);
-
-  return { errors, missingAssets };
-}
-
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 for (const viewer of VIEWERS) {
@@ -145,7 +91,12 @@ for (const viewer of VIEWERS) {
       // Per-test timeout covers WASM load + settle window.
       test.setTimeout(90_000);
 
-      const { errors } = await loadAndInspect(page, viewer);
+      const { errors } = await loadAndInspectViewer(
+        page,
+        viewer.url,
+        viewer.readySelector,
+        viewer.readyTimeout,
+      );
 
       expect(
         errors,
@@ -156,7 +107,12 @@ for (const viewer of VIEWERS) {
     test('no missing static assets (no 404 for JS/CSS/WASM)', async ({ page }) => {
       test.setTimeout(90_000);
 
-      const { missingAssets } = await loadAndInspect(page, viewer);
+      const { missingAssets } = await loadAndInspectViewer(
+        page,
+        viewer.url,
+        viewer.readySelector,
+        viewer.readyTimeout,
+      );
 
       expect(
         missingAssets,
@@ -198,6 +154,54 @@ for (const viewer of DIOXUS_VIEWERS) {
       const canvas = page.locator('#webgpu-canvas');
       await expect(canvas).toBeAttached({ timeout: 5_000 });
     });
+
+    if (viewer.name === 'spec-viewer') {
+      test('tree selection follows URL hash when navigating browser history', async ({ page }) => {
+        // Regression guard:
+        // spec-viewer updates #id=... from selection and restores it on back/forward.
+        // The highlighted tree row must track that hash-driven selection.
+        test.setTimeout(90_000);
+
+        await page.goto(viewer.url, { waitUntil: 'domcontentloaded' });
+        await page.locator(viewer.readySelector).first().waitFor({
+          state: 'visible',
+          timeout: viewer.readyTimeout,
+        });
+
+        const rows = page.locator('.tree-item-row');
+        await expect(rows.first()).toBeVisible({ timeout: 20_000 });
+
+        const firstLabel = (await rows.nth(0).locator('.tree-label').textContent())?.trim() ?? '';
+        const secondLabel = (await rows.nth(1).locator('.tree-label').textContent())?.trim() ?? '';
+
+        await rows.nth(0).click();
+        const firstId = await getHashParam(page, 'id');
+        expect(firstId, 'first selection should set #id').toBeTruthy();
+
+        await rows.nth(1).click();
+        const secondId = await getHashParam(page, 'id');
+        expect(secondId, 'second selection should set #id').toBeTruthy();
+        expect(secondId).not.toBe(firstId);
+
+        await page.goBack();
+
+        await expect
+          .poll(() => getHashParam(page, 'id'), {
+            timeout: 10_000,
+            message: 'URL hash id should return to the first selected spec after browser back',
+          })
+          .toBe(firstId);
+
+        await expect
+          .poll(() => getSelectedTreeLabels(page), {
+            timeout: 10_000,
+            message: 'selected file-tree row should track hash-driven selection',
+          })
+          .toEqual([firstLabel]);
+
+        expect(secondLabel).not.toBe(firstLabel);
+      });
+    }
 
     test('theme settings panel opens and closes via the palette button', async ({ page }) => {
       test.setTimeout(90_000);
