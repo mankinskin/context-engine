@@ -71,4 +71,54 @@ test.describe('spec-viewer — navigation and selection', () => {
 
     expect(secondLabel).not.toBe(firstLabel);
   });
+
+  test('theme presets recolor selected spec rows (no fixed dark-blue background)', async ({ page }) => {
+    test.setTimeout(90_000);
+
+    await gotoAndWaitForViewer(page, SPEC_VIEWER);
+
+    const themeBtn = page.getByRole('button', { name: 'Theme settings' });
+    await expect(themeBtn).toBeVisible({ timeout: 20_000 });
+    await themeBtn.click();
+
+    const panel = page.locator('.theme-settings');
+    await expect(panel).toBeVisible({ timeout: 10_000 });
+
+    const firstRow = page.locator('.tree-item-row').first();
+    await expect(firstRow).toBeVisible({ timeout: 20_000 });
+
+    const selectedRowBg = () =>
+      page.evaluate(() => {
+        const row = document.querySelector('.tree-item-row.selected') ?? document.querySelector('.tree-item-row');
+        if (!row) return null;
+        return window.getComputedStyle(row as HTMLElement).backgroundColor;
+      });
+
+    await panel.getByRole('button', { name: 'Dark', exact: true }).click();
+    await panel.getByRole('button', { name: 'Apply', exact: true }).click();
+    await firstRow.click();
+
+    const darkRowBg = await selectedRowBg();
+
+    await panel.getByRole('button', { name: 'Paper', exact: true }).click();
+    await panel.getByRole('button', { name: 'Apply', exact: true }).click();
+    await firstRow.click();
+
+    await expect
+      .poll(
+        () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim()),
+        { timeout: 10_000, message: 'Paper preset should update primary background token' },
+      )
+      .toBe('#f5f0eb');
+
+    const paperRowBg = await selectedRowBg();
+
+    expect(darkRowBg, 'should be able to read selected row background in dark preset').toBeTruthy();
+    expect(paperRowBg, 'should be able to read selected row background in paper preset').toBeTruthy();
+    expect(paperRowBg, 'Paper preset should recolor selected row from dark preset value').not.toBe(darkRowBg);
+    expect(
+      paperRowBg,
+      'selected row should not keep the legacy fixed dark-blue background in light themes',
+    ).not.toBe('rgb(42, 58, 74)');
+  });
 });
