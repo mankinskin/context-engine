@@ -10380,6 +10380,7 @@ name = "viewer-api-dioxus"
 version = "0.1.0"
 dependencies = [
  "dioxus",
+ "gloo-events",
  "js-sys",
  "pulldown-cmark",
  "syntect",
