@@ -1,0 +1,50 @@
+// ──────────────────────────────────────────────────────────────────────────
+// Context Editor — sandbox-app (Dioxus WASM via Trunk)
+// ──────────────────────────────────────────────────────────────────────────
+// Compiles the kernel + sandbox-app to WASM with hot-reload, then opens
+// http://localhost:8090 in the Simple Browser. Used for visual demos and
+// local UI iteration.
+{
+  "tasks": [
+    {
+      "label": "context-editor: trunk serve",
+      "type": "shell",
+      "command": "trunk serve",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/tools/context-editor/sandbox-app"
+      },
+      "problemMatcher": {
+        "owner": "trunk-context-editor",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting trunk",
+          "endsPattern": "server listening at"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "trunk (context-editor)"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+
+    {
+      "label": "context-editor: open",
+      "type": "shell",
+      "command": "echo ${input:openContextEditor}",
+      "dependsOn": "context-editor: trunk serve",
+      "presentation": { "reveal": "never", "close": true }
+    },
+
+    {
+      "label": "context-editor",
+      "dependsOn": ["context-editor: trunk serve", "context-editor: open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    }
+  ]
+}

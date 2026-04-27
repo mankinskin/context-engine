@@ -199,14 +199,15 @@ Build it with: (cd tools/viewer/log-viewer/frontend && npx vite build)",
             format!("{}:{}", config.server.host, config.server.port)
                 .parse()
                 .expect("Invalid server address in config");
-        let display_addr = format!(
-            "{}:{}",
+        let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+        // Single-line URL log so VS Code's `serverReadyAction` regex can
+        // capture it. Keep the exact "Listening on http://..." prefix — the
+        // launch.json pattern matches on it across all viewers.
+        info!(
+            "Listening on http://{}:{}",
             display_host(&config.server.host),
             config.server.port
         );
-        info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
-
-        let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
         viewer_api::axum::serve(listener, app)
             .with_graceful_shutdown(viewer_api::shutdown_signal())
             .await

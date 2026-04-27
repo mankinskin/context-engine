@@ -200,9 +200,11 @@ async fn run_http_server(
     let app = http::create_router(state, Some(static_dir));
 
     let bind_addr = format!("0.0.0.0:{}", port);
-    let display_addr = format!("{}:{}", display_host("0.0.0.0"), port);
-    info!(addr = %format!("http://{}", display_addr), "Starting HTTP server");
     let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
+    // Single-line URL log so VS Code's `serverReadyAction` regex can capture
+    // it. Keep the exact "Listening on http://..." prefix — the launch.json
+    // pattern matches on it across all viewers.
+    info!("Listening on http://{}:{}", display_host("0.0.0.0"), port);
     viewer_api::axum::serve(listener, app)
         .with_graceful_shutdown(viewer_api::shutdown_signal())
         .await?;

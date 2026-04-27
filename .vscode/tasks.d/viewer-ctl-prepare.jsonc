@@ -1,0 +1,49 @@
+// ──────────────────────────────────────────────────────────────────────────
+// viewer-ctl frontend prepare (lldb preLaunchTasks)
+// ──────────────────────────────────────────────────────────────────────────
+// Each `<viewer>: prepare frontend` task delegates to viewer-ctl which:
+//   1. Stops anything on the viewer's port.
+//   2. Kills orphaned debug binaries by image name (frees Windows file
+//      locks on target/debug/<viewer>.exe).
+//   3. Builds and installs the linked frontend bundle to
+//      ~/.context-engine/static/<viewer>/.
+//
+// Used as `preLaunchTask` by the `Run:` and `Debug:` lldb configurations
+// in launch.json so a freshly cargo-built debug binary serves the
+// freshly built frontend bundle via the STATIC_DIR env var.
+{
+  "tasks": [
+    {
+      "label": "ticket-viewer: prepare frontend",
+      "type": "shell",
+      "command": "viewer-ctl prepare ticket-viewer",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "doc-viewer: prepare frontend",
+      "type": "shell",
+      "command": "viewer-ctl prepare doc-viewer",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "log-viewer: prepare frontend",
+      "type": "shell",
+      "command": "viewer-ctl prepare log-viewer",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "spec-viewer: prepare frontend",
+      "type": "shell",
+      "command": "viewer-ctl prepare spec-viewer",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    }
+  ]
+}

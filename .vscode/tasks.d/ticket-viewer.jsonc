@@ -1,0 +1,57 @@
+// ──────────────────────────────────────────────────────────────────────────
+// Ticket Viewer — direct cargo run (legacy / debugging path)
+// ──────────────────────────────────────────────────────────────────────────
+// Runs `cargo run -p ticket-viewer` in-place without going through
+// viewer-ctl. Useful when iterating on the server source and you don't
+// need a freshly installed frontend bundle.
+//
+// For the production / managed path that builds + installs the frontend
+// and reuses ~/.cargo/bin/ticket-viewer.exe, see
+// `viewer-ctl-managed.jsonc`.
+{
+  "tasks": [
+    // Start the ticket-viewer HTTP server in the background.
+    // The problem matcher signals "ready" when "Listening on http:"
+    // appears in stdout, which lets dependent tasks proceed.
+    {
+      "label": "ticket-viewer: start",
+      "type": "shell",
+      "command": "cargo run -p ticket-viewer",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "ticket-viewer",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Ticket Viewer starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "Ticket Viewer"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+
+    // Open http://localhost:3002 in the VS Code Simple Browser.
+    // Echo is a no-op carrier; the side effect comes from the input hook.
+    {
+      "label": "ticket-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openTicketViewer}",
+      "dependsOn": "ticket-viewer: start",
+      "presentation": { "reveal": "never", "close": true }
+    },
+
+    // Compound: server then browser. Run via Tasks > ticket-viewer.
+    {
+      "label": "ticket-viewer",
+      "dependsOn": ["ticket-viewer: start", "ticket-viewer: open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    }
+  ]
+}

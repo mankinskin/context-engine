@@ -1,0 +1,167 @@
+// ──────────────────────────────────────────────────────────────────────────
+// Viewer launchers (viewer-ctl managed)
+// ──────────────────────────────────────────────────────────────────────────
+// The "<viewer>: managed start" tasks delegate to viewer-ctl which:
+//   1. Kills any process already listening on the viewer port
+//      (and any orphaned debug binary holding a Windows file lock).
+//   2. Builds the frontend artifacts (Vite or trunk, auto-detected).
+//   3. Auto-installs the server binary to ~/.cargo/bin if not found.
+//   4. Launches the installed binary (no cargo build overhead).
+// Each compound "<viewer>: managed" task also opens the URL in Simple
+// Browser. To add a new viewer, copy a 3-task block (start / open /
+// compound) below and update the labels, port, and viewer name.
+{
+  "tasks": [
+    // ── doc-viewer (port 3001, Vite) ─────────────────────────────────────
+    {
+      "label": "doc-viewer: managed start",
+      "type": "shell",
+      "command": "viewer-ctl start doc-viewer",
+      "isBackground": true,
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "owner": "doc-viewer",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[doc-viewer\\] starting",
+          "endsPattern": "Starting HTTP server"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Doc Viewer"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "doc-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openDocViewer}",
+      "dependsOn": "doc-viewer: managed start",
+      "presentation": { "reveal": "never", "close": true }
+    },
+    {
+      "label": "doc-viewer: managed",
+      "dependsOn": ["doc-viewer: managed start", "doc-viewer: open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    },
+
+    // ── log-viewer (port 3000, Vite) ─────────────────────────────────────
+    {
+      "label": "log-viewer: managed start",
+      "type": "shell",
+      "command": "viewer-ctl start log-viewer",
+      "isBackground": true,
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "owner": "log-viewer",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[log-viewer\\] starting",
+          "endsPattern": "Starting HTTP server"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Log Viewer"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "log-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openLogViewer}",
+      "dependsOn": "log-viewer: managed start",
+      "presentation": { "reveal": "never", "close": true }
+    },
+    {
+      "label": "log-viewer: managed",
+      "dependsOn": ["log-viewer: managed start", "log-viewer: open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    },
+
+    // ── ticket-viewer (port 3002, Dioxus) ────────────────────────────────
+    {
+      "label": "ticket-viewer: managed start",
+      "type": "shell",
+      "command": "viewer-ctl start ticket-viewer",
+      "isBackground": true,
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "owner": "ticket-viewer",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[ticket-viewer\\] starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Ticket Viewer (managed)"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "ticket-viewer: managed open",
+      "type": "shell",
+      "command": "echo ${input:openTicketViewer}",
+      "dependsOn": "ticket-viewer: managed start",
+      "presentation": { "reveal": "never", "close": true }
+    },
+    {
+      "label": "ticket-viewer: managed",
+      "dependsOn": ["ticket-viewer: managed start", "ticket-viewer: managed open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    },
+
+    // ── spec-viewer (port 4002, Dioxus) ──────────────────────────────────
+    {
+      "label": "spec-viewer: managed start",
+      "type": "shell",
+      "command": "viewer-ctl start spec-viewer",
+      "isBackground": true,
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "owner": "spec-viewer",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[spec-viewer\\] starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Spec Viewer"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "spec-viewer: open",
+      "type": "shell",
+      "command": "echo ${input:openSpecViewer}",
+      "dependsOn": "spec-viewer: managed start",
+      "presentation": { "reveal": "never", "close": true }
+    },
+    {
+      "label": "spec-viewer: managed",
+      "dependsOn": ["spec-viewer: managed start", "spec-viewer: open"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": false },
+      "presentation": { "reveal": "never" }
+    }
+  ]
+}

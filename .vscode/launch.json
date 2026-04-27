@@ -35,21 +35,17 @@
       "name": "Run: ticket-viewer",
       "type": "lldb",
       "request": "launch",
-      "cargo": {
-        "args": [
-          "build",
-          "--bin=ticket-viewer",
-          "--package=ticket-viewer"
-        ],
-        "filter": {
-          "name": "ticket-viewer",
-          "kind": "bin"
-        }
-      },
-      "args": [],
+      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "args": [
+        "start",
+        "ticket-viewer"
+      ],
       "cwd": "${workspaceFolder}",
-      "env": {
-        "RUST_LOG": "info"
+      "preLaunchTask": "ticket-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       },
       "noDebug": true
     },
@@ -71,28 +67,31 @@
       "args": [],
       "cwd": "${workspaceFolder}",
       "env": {
-        "RUST_LOG": "info"
+        "RUST_LOG": "info",
+        "STATIC_DIR": "${userHome}/.context-engine/static/ticket-viewer"
+      },
+      "preLaunchTask": "ticket-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       }
     },
     {
       "name": "Run: doc-viewer",
       "type": "lldb",
       "request": "launch",
-      "cargo": {
-        "args": [
-          "build",
-          "--bin=doc-viewer",
-          "--package=doc-viewer"
-        ],
-        "filter": {
-          "name": "doc-viewer",
-          "kind": "bin"
-        }
-      },
-      "args": [],
+      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "args": [
+        "start",
+        "doc-viewer"
+      ],
       "cwd": "${workspaceFolder}",
-      "env": {
-        "RUST_LOG": "info"
+      "preLaunchTask": "doc-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       },
       "noDebug": true
     },
@@ -114,28 +113,31 @@
       "args": [],
       "cwd": "${workspaceFolder}",
       "env": {
-        "RUST_LOG": "info"
+        "RUST_LOG": "info",
+        "STATIC_DIR": "${userHome}/.context-engine/static/doc-viewer"
+      },
+      "preLaunchTask": "doc-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       }
     },
     {
       "name": "Run: log-viewer",
       "type": "lldb",
       "request": "launch",
-      "cargo": {
-        "args": [
-          "build",
-          "--bin=log-viewer",
-          "--package=log-viewer"
-        ],
-        "filter": {
-          "name": "log-viewer",
-          "kind": "bin"
-        }
-      },
-      "args": [],
+      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "args": [
+        "start",
+        "log-viewer"
+      ],
       "cwd": "${workspaceFolder}",
-      "env": {
-        "RUST_LOG": "info"
+      "preLaunchTask": "log-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       },
       "noDebug": true
     },
@@ -154,10 +156,65 @@
           "kind": "bin"
         }
       },
+      "args": [
+        "--static"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_LOG": "info",
+        "STATIC_DIR": "${userHome}/.context-engine/static/log-viewer"
+      },
+      "preLaunchTask": "log-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      "name": "Run: spec-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "args": [
+        "start",
+        "spec-viewer"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "spec-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      },
+      "noDebug": true
+    },
+    {
+      "name": "Debug: spec-viewer",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=spec-viewer",
+          "--package=spec-viewer"
+        ],
+        "filter": {
+          "name": "spec-viewer",
+          "kind": "bin"
+        }
+      },
       "args": [],
       "cwd": "${workspaceFolder}",
       "env": {
-        "RUST_LOG": "info"
+        "RUST_LOG": "info",
+        "STATIC_DIR": "${userHome}/.context-engine/static/spec-viewer"
+      },
+      "preLaunchTask": "spec-viewer: prepare frontend",
+      "serverReadyAction": {
+        "pattern": "Listening on\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
       }
     },
     {
@@ -206,5 +263,6 @@
       ],
       "stopAll": true
     }
-  ]
+  ],
+  "inputs": []
 }

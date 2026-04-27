@@ -1,0 +1,35 @@
+// ──────────────────────────────────────────────────────────────────────────
+// VS Code Extension — ticket-vscode
+// ──────────────────────────────────────────────────────────────────────────
+// Compile/watch tasks for the TypeScript extension that ships in
+// `tools/ticket-vscode/`. The Extension Host launch config in launch.json
+// uses `ticket-vscode: compile` as its preLaunchTask.
+{
+  "tasks": [
+    // One-shot compile before launching the Extension Host.
+    {
+      "label": "ticket-vscode: compile",
+      "type": "shell",
+      "command": "npm run compile",
+      "options": { "cwd": "${workspaceFolder}/tools/ticket-vscode" },
+      "group": "build",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": "$tsc"
+    },
+
+    // Watch mode for active extension development.
+    {
+      "label": "ticket-vscode: watch",
+      "type": "shell",
+      "command": "npm run watch",
+      "isBackground": true,
+      "options": { "cwd": "${workspaceFolder}/tools/ticket-vscode" },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "ticket-vscode watch"
+      },
+      "problemMatcher": "$tsc-watch"
+    }
+  ]
+}
