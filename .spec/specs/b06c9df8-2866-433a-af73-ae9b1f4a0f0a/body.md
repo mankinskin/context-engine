@@ -237,3 +237,28 @@ A change is considered complete when ALL of the following hold:
   used elsewhere in the codebase.
 - `tools/viewer/log-viewer` — the eventual consumer of WASM logs once the
   file-sink spec ships.
+
+---
+
+## 6. End-to-end tests
+
+The acceptance criteria for this specification are exercised by the Playwright
+E2E suite under `tools/viewer/e2e`.
+
+**Test file:** `tests/viewers/tracing.spec.ts`
+
+| Test name | Acceptance criterion |
+|-----------|----------------------|
+| `startup: tracing subscriber emits first record to browser console` | AC #4 — structured records visible in DevTools |
+| `default: no POST to /api/client-log without log_sink flag` | AC #4 — console-only by default; no leakage to network |
+| `?log_sink=on: network layer posts batched records to /api/client-log` | companion spec AC #3 — opt-in network sink works |
+| `localStorage opt-in: network layer activates when viewer-api-log-sink=on` | companion spec AC #3 — localStorage opt-in |
+| `?log=off: filter blocks all events from reaching the network layer` | AC #5 — filter applied before any layer receives events |
+| `localStorage filter: viewer-api-log-filter overrides default level` | AC #5 — localStorage filter resolution |
+
+Registered for: `spec-viewer` (port 4002) and `ticket-viewer` (port 3002).
+
+```sh
+cd tools/viewer/e2e
+npx playwright test tests/viewers/tracing.spec.ts
+```

@@ -204,3 +204,41 @@ A change is considered complete when ALL of the following hold:
 - Server-side tracing infrastructure in `crates/context-trace`.
 - `tools/viewer/log-viewer` for the format conventions JSON-Lines records
   should follow so they remain queryable by the existing JQ-based tooling.
+
+---
+
+## 6. End-to-end tests
+
+The acceptance criteria for this specification are exercised by the Playwright
+E2E suite under `tools/viewer/e2e`.
+
+**Test file:** `tests/viewers/tracing.spec.ts`
+
+### Browser-side (suite: `tracing-console-suite`)
+
+Registered for `spec-viewer` and `ticket-viewer`.
+
+| Test name | Acceptance criterion |
+|-----------|----------------------|
+| `default: no POST to /api/client-log without log_sink flag` | AC #3 — no traffic when disabled |
+| `?log_sink=on: network layer posts batched records to /api/client-log` | AC #3 — traffic present when enabled; payload is `{"records":[...]}` |
+| `localStorage opt-in: network layer activates when viewer-api-log-sink=on` | AC #3 — localStorage trigger |
+| `?log=off: filter blocks all events from reaching the network layer` | AC #3 — filter interaction with sink |
+
+### Server endpoint (suite: `client-log-api-suite`)
+
+Registered for `spec-viewer` and `ticket-viewer`.
+
+| Test name | Acceptance criterion |
+|-----------|----------------------|
+| `valid payload returns 204 No Content` | AC #1 — endpoint exists and accepts records |
+| `empty records array returns 204 No Content` | AC #1 — degenerate case handled |
+| `batch of multiple records returns 204 No Content` | AC #1 — batch ingest works |
+| `malformed JSON body returns 422 Unprocessable Entity` | AC #1 — invalid payload rejected |
+| `JSON missing "records" field returns 422 Unprocessable Entity` | AC #1 — schema validated |
+| `body exceeding 1 MiB returns 413 Payload Too Large` | AC #6 — body size limit enforced |
+
+```sh
+cd tools/viewer/e2e
+npx playwright test tests/viewers/tracing.spec.ts
+```
