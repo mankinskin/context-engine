@@ -39,7 +39,7 @@ function createFileState(): FileState {
         codeViewerFile: null,
         codeViewerContent: '',
         codeViewerLine: null,
-      activeTab: 'logs',
+      activeTab: 'hypergraph',
       activeSearchStep: -1,
       activePathId: null,
       activePathStep: -1,
@@ -55,7 +55,7 @@ export const error = signal<string | null>(null);
 export const statusMessage = signal('Ready');
 
 // View state (shared across files)
-export const activeTab = signal<ViewTab>('logs');
+export const activeTab = signal<ViewTab>('hypergraph');
 export const showRaw = signal(false);
 
 /** When true, selecting a node triggers automatic layout around it.

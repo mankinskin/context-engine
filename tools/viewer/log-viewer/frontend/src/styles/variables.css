@@ -122,6 +122,20 @@
   text-shadow: var(--gpu-glow);
   backdrop-filter: var(--gpu-blur);
   -webkit-backdrop-filter: var(--gpu-blur);
+  /* Solid panel background — same recipe as the in-graph node-detail
+     panels (e.g. .search-state-panel) so file-tree text stays readable
+     when the WgpuOverlay is rendered behind the HTML layer. */
+  background: rgba(10, 10, 14, 0.92);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Same opaque-panel treatment for the global Panel containers
+   (file-tree on the left, code-viewer on the right, etc.). */
+:root.gpu-active .panel {
+  background: rgba(10, 10, 14, 0.92);
+  border-color: rgba(255, 255, 255, 0.15);
+  -webkit-text-stroke: var(--gpu-stroke);
+  text-shadow: var(--gpu-glow);
 }
 
 :root.gpu-active .sidebar .tree-icon,

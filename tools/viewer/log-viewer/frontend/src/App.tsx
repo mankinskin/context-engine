@@ -10,7 +10,7 @@ import { Scene3D } from './components/Scene3D/Scene3D';
 import { HypergraphView } from './components/HypergraphView/HypergraphView';
 import { ThemeSettings } from './components/ThemeSettings/ThemeSettings';
 import { activeTab, logFiles, loadLogFiles, initUrlListener, getStateFromUrl, loadLogFile, setTab } from './store';
-import { Sidebar as SharedSidebar, Panel, WgpuOverlay } from '@context-engine/viewer-api-frontend';
+import { Panel, WgpuOverlay } from '@context-engine/viewer-api-frontend';
 import { LOG_VIEWER_SCHEMA } from './gpu-schema';
 import { useGlobalKeyboard, usePanelFocus, focusedPanel } from './hooks';
 import './store/theme';  // initialize theme effects on startup
@@ -54,7 +54,7 @@ export function App() {
       case 'settings':
         return <ThemeSettings />;
       default:
-        return <LogViewer />;
+        return <HypergraphView />;
     }
   };
 
@@ -64,35 +64,35 @@ export function App() {
       <Header onMenuToggle={toggleMobileSidebar} />
       <FilterPanel />
       <div class="main-layout">
-        <SharedSidebar
-          class="log-sidebar"
-          title="Log Files"
-          badge={logFiles.value.length}
-          collapsible
-          resizable
-          initialWidth={280}
-          mobileOpen={mobileOpen}
-          onMobileClose={closeMobileSidebar}
+        <Panel
+          placement="left"
+          class="log-files-panel"
+          initialSize={280}
+          minSize={180}
         >
-          <SidebarContent onFileSelect={closeMobileSidebar} />
-        </SharedSidebar>
+          <div class="panel-header">
+            <h2 class="panel-title">Log Files</h2>
+            <span class="panel-badge">{logFiles.value.length}</span>
+          </div>
+          <div class="panel-body">
+            <SidebarContent onFileSelect={closeMobileSidebar} />
+          </div>
+        </Panel>
         <main class="content">
-          <div class="center-right-split">
-            <div class="center-pane">
-              <TabBar />
-              <div
-                class={`view-container ${focusedPanel.value === 'content' ? 'focused' : ''}`}
-                ref={(el: HTMLDivElement | null) => { contentRef.current = el; }}
-                tabIndex={-1}
-              >
-                {renderContent()}
-              </div>
+          <div class="center-pane">
+            <TabBar />
+            <div
+              class={`view-container ${focusedPanel.value === 'content' ? 'focused' : ''}`}
+              ref={(el: HTMLDivElement | null) => { contentRef.current = el; }}
+              tabIndex={-1}
+            >
+              {renderContent()}
             </div>
-            <Panel placement="right" initialSize={320}>
-              <CodeViewer />
-            </Panel>
           </div>
         </main>
+        <Panel placement="right" class="code-viewer-panel" initialSize={320}>
+          <CodeViewer />
+        </Panel>
       </div>
     </div>
   );

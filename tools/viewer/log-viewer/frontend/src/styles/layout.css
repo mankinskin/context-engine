@@ -231,3 +231,57 @@
   outline: 1px solid var(--accent-blue);
   outline-offset: -1px;
 }
+
+/* ── Generic Panel header / body for global side panels (file tree etc.) ── */
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+}
+
+:root.gpu-active .panel-header {
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-purple);
+}
+
+.panel-badge {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+:root.gpu-active .panel-badge {
+  background: rgba(0, 0, 0, 0.55);
+  color: #b0a898;
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make sure the file-tree fills the panel body and scrolls internally. */
+.log-files-panel .panel-body .file-tree {
+  flex: 1;
+  min-height: 0;
+}
