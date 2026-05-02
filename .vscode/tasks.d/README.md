@@ -12,7 +12,6 @@ inputs), and `scripts/build-vscode-tasks.py` merges them into the canonical
 | `00-inputs.jsonc`             | shared `inputs` (simpleBrowser openers)              |
 | `ticket-viewer.jsonc`         | direct cargo-run ticket-viewer tasks                 |
 | `ticket-vscode.jsonc`         | ticket-vscode extension compile/watch                |
-| `log-viewer-leptos.jsonc`     | log-viewer Leptos frontend (trunk serve)             |
 | `context-editor.jsonc`        | context-editor sandbox-app (trunk serve)             |
 | `viewer-ctl-managed.jsonc`    | viewer-ctl `start` + browser-open compounds (4 viewers) |
 | `viewer-ctl-prepare.jsonc`    | viewer-ctl `prepare` preLaunchTasks for lldb         |

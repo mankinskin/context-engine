@@ -216,35 +216,9 @@
         "uriFormat": "%s",
         "action": "openExternally"
       }
-    },
-    {
-      "name": "Run: log-viewer-leptos (trunk serve)",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "trunk",
-      "runtimeArgs": [
-        "serve"
-      ],
-      "cwd": "${workspaceFolder}/tools/viewer/log-viewer/frontend-leptos",
-      "presentation": {
-        "group": "viewers",
-        "order": 4
-      }
     }
   ],
   "compounds": [
-    {
-      "name": "Run: log-viewer + leptos",
-      "configurations": [
-        "Run: log-viewer",
-        "Run: log-viewer-leptos (trunk serve)"
-      ],
-      "stopAll": true,
-      "presentation": {
-        "group": "viewers",
-        "order": 5
-      }
-    },
     {
       "name": "Run: all viewers",
       "configurations": [

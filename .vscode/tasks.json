@@ -60,85 +60,6 @@
       }
     },
     {
-      "label": "log-viewer: start (api)",
-      "type": "shell",
-      "command": "cargo run -p log-viewer -- --static",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "log-viewer",
-        "pattern": {
-          "regexp": "^$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Starting HTTP server",
-          "endsPattern": "Starting HTTP server"
-        }
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "label": "log-viewer backend"
-      },
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "log-viewer-leptos: trunk serve",
-      "type": "shell",
-      "command": "trunk serve",
-      "isBackground": true,
-      "options": {
-        "cwd": "${workspaceFolder}/tools/viewer/log-viewer/frontend-leptos"
-      },
-      "problemMatcher": {
-        "owner": "trunk",
-        "pattern": {
-          "regexp": "^$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "starting build",
-          "endsPattern": "server listening at"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "label": "trunk (leptos)"
-      },
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "log-viewer-leptos: open",
-      "type": "shell",
-      "command": "echo ${input:openLeptosViewer}",
-      "dependsOn": "log-viewer-leptos: trunk serve",
-      "presentation": {
-        "reveal": "never",
-        "close": true
-      }
-    },
-    {
-      "label": "log-viewer-leptos",
-      "dependsOn": [
-        "log-viewer: start (api)",
-        "log-viewer-leptos: trunk serve",
-        "log-viewer-leptos: open"
-      ],
-      "dependsOrder": "sequence",
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      },
-      "presentation": {
-        "reveal": "never"
-      }
-    },
-    {
       "label": "ticket-viewer: start",
       "type": "shell",
       "command": "cargo run -p ticket-viewer",
@@ -488,12 +409,6 @@
       "type": "command",
       "command": "simpleBrowser.show",
       "args": "http://localhost:3002"
-    },
-    {
-      "id": "openLeptosViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:8081"
     },
     {
       "id": "openContextEditor",
