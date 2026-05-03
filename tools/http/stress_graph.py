@@ -107,8 +107,11 @@ def phase_baseline(ids: List[str], base_url: str, workspace: str,
         f"{base_url}/api/graph/subgraph?workspace={workspace}&root={ids[i % len(ids)]}&depth={depth}"
         for i in range(n)
     ]
-    for url in urls:
-        s.results.append(fetch_one(url, timeout))
+    for i, url in enumerate(urls):
+        r = fetch_one(url, timeout)
+        s.results.append(r)
+        status = "ok" if r.status == 200 else f"ERR {r.status}"
+        print(f"    [{i+1}/{n}] {status}  {r.elapsed:.2f}s", flush=True)
     return s
 
 
@@ -120,10 +123,24 @@ def phase_concurrency(ids: List[str], base_url: str, workspace: str,
         f"{base_url}/api/graph/subgraph?workspace={workspace}&root={ids[i % len(ids)]}&depth={depth}"
         for i in range(n)
     ]
+    t0 = time.perf_counter()
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as ex:
         futures = [ex.submit(fetch_one, url, timeout) for url in urls]
+        done = 0
+        ok = 0
+        err = 0
         for f in concurrent.futures.as_completed(futures):
-            s.results.append(f.result())
+            r = f.result()
+            s.results.append(r)
+            done += 1
+            if r.status == 200:
+                ok += 1
+            else:
+                err += 1
+            elapsed = time.perf_counter() - t0
+            status = "ok" if r.status == 200 else f"ERR {r.status}"
+            print(f"    [{done}/{n}] {status}  {r.elapsed:.2f}s  (wall {elapsed:.1f}s)", flush=True)
+    print()  # newline after progress
     return s
 
 
@@ -142,11 +159,14 @@ def phase_sustained(ids: List[str], base_url: str, workspace: str,
         )
         return fetch_one(url, timeout)
 
+    t0 = time.perf_counter()
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as ex:
         idx = 0
         pending = set()
+        total = 0
+        ok = 0
+        err = 0
         while True:
-            # Keep the pool full while the deadline hasn't passed
             while len(pending) < concurrency and time.perf_counter() < deadline:
                 pending.add(ex.submit(worker, idx))
                 idx += 1
@@ -159,9 +179,16 @@ def phase_sustained(ids: List[str], base_url: str, workspace: str,
                 r = f.result()
                 if r is not None:
                     s.results.append(r)
+                    total += 1
+                    if r.status == 200:
+                        ok += 1
+                    else:
+                        err += 1
+            remaining = max(0, deadline - time.perf_counter())
+            print(f"    {total} done  ok={ok}  err={err}  {remaining:.0f}s left", flush=True)
             if time.perf_counter() >= deadline and not pending:
                 break
-
+    print()
     return s
 
 
@@ -179,7 +206,7 @@ def check_recovery(base_url: str, workspace: str, depth: int,
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base-url",   default="http://localhost:3002")
+    parser.add_argument("--base-url",   default="http://127.0.0.1:3002")
     parser.add_argument("--workspace",  default="default")
     parser.add_argument("--depth",      type=int,   default=4)
     parser.add_argument("--timeout",    type=float, default=10.0)
@@ -224,12 +251,14 @@ def main() -> None:
     failing_level: Optional[int] = None
     for c in sweep_levels:
         n_req = max(c * 8, 40)
-        log(f"  running c={c} n={n_req} ...", )
+        t0 = time.perf_counter()
+        log(f"  c={c:2d} n={n_req} ...", )
         s = phase_concurrency(ids, base, ws, args.depth, args.timeout,
                               concurrency=c, n=n_req)
+        elapsed = time.perf_counter() - t0
         results.append(s)
         ok_pct = 100.0 * len(s.ok()) / len(s.results) if s.results else 0
-        log(f"  {s.report()}  ok%={ok_pct:.0f}%")
+        log(f"  {s.report()}  ok%={ok_pct:.0f}%  wall={elapsed:.1f}s")
         if ok_pct < 80 and failing_level is None:
             failing_level = c
         check_recovery(base, ws, args.depth, args.timeout, ids)
