@@ -9471,8 +9471,10 @@ name = "ticket-viewer-dioxus"
 version = "0.1.0"
 dependencies = [
  "dioxus",
+ "futures-util",
  "gloo-events",
  "gloo-net",
+ "gloo-timers 0.3.0",
  "js-sys",
  "percent-encoding",
  "serde",
