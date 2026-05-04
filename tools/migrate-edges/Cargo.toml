@@ -1,0 +1,13 @@
+[package]
+name = "migrate-edges"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "migrate-edges"
+path = "src/main.rs"
+
+[dependencies]
+redb = "2"
+rusqlite = { version = "0.32", features = ["bundled"] }
