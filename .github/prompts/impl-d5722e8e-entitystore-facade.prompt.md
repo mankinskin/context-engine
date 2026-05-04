@@ -22,7 +22,7 @@ Add an `EntityStore` struct to `memory-api` that composes `RedbIndexStore`, `Ent
 ## Context
 
 - `memory-api` at `crates/memory-api/` has three storage components:
-  - `storage::index::RedbIndexStore` — redb-backed metadata index
+  - `storage::index::RedbIndexStore` — SQLite-backed metadata index (despite the name, now backed by SQLite)
   - `storage::entity_fs::EntityFs` — filesystem operations (scan, read/write TOML manifests)
   - `storage::search::TantivySearchIndex` — full-text search
 - Currently `TicketStore` in ticket-api manually composes `RedbIndexStore` + `TantivySearchIndex` + `SchemaRegistry`
@@ -54,7 +54,7 @@ pub struct EntityStore {
 impl EntityStore {
     /// Open (or create) an entity store.
     ///
-    /// `index_root` is the directory for redb + Tantivy index files.
+    /// `index_root` is the directory for SQLite + Tantivy index files.
     pub fn open(index_root: &Path) -> Result<Self, StorageError> {
         Self::open_with(index_root, SchemaRegistry::with_builtins())
     }
@@ -62,7 +62,7 @@ impl EntityStore {
     /// Open with a custom schema registry.
     pub fn open_with(index_root: &Path, schema_registry: SchemaRegistry) -> Result<Self, StorageError> {
         std::fs::create_dir_all(index_root)?;
-        let db_path = index_root.join("tickets.redb");
+        let db_path = index_root.join("tickets.db");
         let search_dir = index_root.join("search_index");
 
         let index = RedbIndexStore::open(&db_path)?;

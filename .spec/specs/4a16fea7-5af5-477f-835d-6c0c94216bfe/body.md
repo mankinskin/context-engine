@@ -12,7 +12,7 @@ Source: `crates/memory-api/src/error.rs`
 
 ### `StorageError` (Enum)
 
-Runtime storage errors covering redb, filesystem, and search index operations.
+Runtime storage errors covering SQLite, filesystem, and search index operations.
 
 ### `ProtocolError` (Enum)
 

@@ -73,7 +73,7 @@ mkdir -p .spec/specs
 
 The store auto-scans on every CLI invocation, so manually-edited
 `.spec/specs/<slug>/spec.toml` files are picked up without an explicit `scan` call.
-Use `spec scan --force` to rebuild the redb + Tantivy indexes from disk.
+Use `spec scan --force` to rebuild the SQLite + Tantivy indexes from disk.
 
 ---
 

@@ -6,12 +6,12 @@ Source: `crates/memory-api/src/storage/indexed.rs`
 
 ### `IndexedEntity` (Struct)
 
-Metadata stored per-entity in the redb index.
+Metadata stored per-entity in the SQLite index.
 Does not hold full content — that lives in the manifest file on disk.
 
 ### `LeaseInfo` (Struct)
 
-Lease record stored in the LEASES redb table.
+Lease record stored in the LEASES SQLite table.
 
 ### `LeaseInfo` (Impl)
 

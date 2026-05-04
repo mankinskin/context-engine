@@ -192,7 +192,7 @@ ticket batch --file ./bulk-ops.ndjson
 
 ```bash
 ticket scan              # scan registered roots for new ticket folders
-ticket scan --reindex    # full rebuild of redb + search index from filesystem
+ticket scan --reindex    # full rebuild of SQLite + search index from filesystem
 ```
 
 ### Workspace Management

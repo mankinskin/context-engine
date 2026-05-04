@@ -28,7 +28,7 @@ This is the critical-path ticket — 12 downstream tickets (CLI, MCP, HTTP, heal
 
 ```
 SpecStore
-├── inner: EntityStore         (memory-api — redb index + Tantivy search + EntityFs)
+├── inner: EntityStore         (memory-api — SQLite index + Tantivy search + EntityFs)
 ├── slug_index: SlugIndex      (spec-api — in-memory slug→UUID cache)
 └── EntityFs configured with ("spec.toml", ".spec-lock")
 ```
@@ -149,7 +149,7 @@ pub fn scan(&mut self, reindex: bool) -> Result<memory_api::storage::entity_stor
     Ok(report)
 }
 
-/// Rebuild the SlugIndex from the redb index.
+/// Rebuild the SlugIndex from the SQLite index.
 fn rebuild_slug_index(&mut self) -> Result<(), SpecError> {
     let all = self.inner.list_indexed(false)?;
     let entries = all.iter().filter_map(|e| {
@@ -211,7 +211,7 @@ pub fn create(
     }
 
     // Index the entity
-    // ... integrate into redb + search (reuse inner.scan pattern or manually insert)
+    // ... integrate into SQLite + search (reuse inner.scan pattern or manually insert)
 
     // Register slug
     self.slug_index.insert(slug.to_string(), manifest.id)?;
@@ -223,7 +223,7 @@ pub fn create(
 }
 ```
 
-**IMPORTANT**: Look at how `EntityStore::scan` calls `integrate_entry` to index entities in redb + search. You'll need to do the same after creating a spec. Either:
+**IMPORTANT**: Look at how `EntityStore::scan` calls `integrate_entry` to index entities in SQLite + search. You'll need to do the same after creating a spec. Either:
 - (a) Call `self.inner.scan(false)` after create to pick it up, or
 - (b) Directly call `self.inner.index.insert_ticket(...)` + `self.inner.search.upsert(...)` like TicketStore does
 
@@ -304,7 +304,7 @@ pub fn update(
 
     let updated = self.inner.fs.update(&indexed.path, &patch, to_state)?;
 
-    // Update redb + search indexes
+    // Update SQLite + search indexes
     // ... (follow TicketStore::update pattern)
 
     // Append history
@@ -643,7 +643,7 @@ cargo check -p spec-api
 
 ## Key Constraints
 
-1. **Wrap EntityStore** — do NOT duplicate redb/Tantivy/filesystem logic. EntityStore handles persistence; SpecStore adds domain logic.
+1. **Wrap EntityStore** — do NOT duplicate SQLite/Tantivy/filesystem logic. EntityStore handles persistence; SpecStore adds domain logic.
 2. **body.md vs description.md**: EntityFs writes `description.md` on create. SpecStore renames it to `body.md`. For reads, use `body.md` directly (not EntityFs `read_description`).
 3. **Slug index is ephemeral** — rebuilt from disk on `scan()`. No persistent slug storage beyond the spec.toml `slug` field.
 4. **SpecManifest ↔ EntityManifest conversion** — handle `code_refs` field carefully. Consider reading `spec.toml` directly into `SpecManifest` via `toml::from_str` instead of going through EntityManifest for `get` operations.

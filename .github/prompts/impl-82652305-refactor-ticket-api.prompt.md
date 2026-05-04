@@ -117,7 +117,7 @@ After replacing modules, fix any import paths in:
 ### Step 6: Remove heavy dependencies from ticket-api
 
 After re-exporting from memory-api, ticket-api no longer needs these direct dependencies (they come transitively):
-- `redb`
+- `rusqlite`
 - `tantivy`
 - `bincode`
 - `sha2`

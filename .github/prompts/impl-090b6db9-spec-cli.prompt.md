@@ -213,7 +213,7 @@ pub struct SpecCli {
     #[arg(long, global = true)]
     pub json: bool,
 
-    /// Root directory for the redb index and Tantivy search index.
+    /// Root directory for the SQLite index and Tantivy search index.
     #[arg(long, global = true)]
     pub index_root: Option<PathBuf>,
 
