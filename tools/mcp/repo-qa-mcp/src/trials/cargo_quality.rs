@@ -18,6 +18,7 @@ use serde_json::{
 
 use crate::error::AuditError;
 use crate::config::{
+    normalize_output_text,
     is_repo_relative_path_excluded,
     normalize_repo_relative_path,
 };
@@ -101,9 +102,13 @@ pub fn collect_compiler_warnings(
                 warnings.push(json!({
                     "message": compiler_message.message.message,
                     "code": compiler_message.message.code.as_ref().map(|code| code.code.clone()),
-                    "path": primary_span.map(|span| span.file_name.clone()),
+                    "path": primary_span.map(|span| normalize_output_text(&span.file_name)),
                     "line": primary_span.map(|span| span.line_start),
-                    "rendered": compiler_message.message.rendered,
+                    "rendered": compiler_message
+                        .message
+                        .rendered
+                        .as_deref()
+                        .map(normalize_output_text),
                 }));
             }
         }
@@ -547,7 +552,7 @@ fn cargo_scope(
         .exec()
         .map_err(|err| AuditError::CommandFailed {
             command: "cargo metadata --no-deps".to_string(),
-            details: err.to_string(),
+            details: normalize_output_text(err.to_string()),
         })?;
 
     let package_names = metadata
@@ -610,7 +615,7 @@ struct CargoScope {
 fn trim_output(output: &[u8]) -> String {
     let text = String::from_utf8_lossy(output);
     let lines = text.lines().take(40).collect::<Vec<_>>();
-    lines.join("\n")
+    normalize_output_text(lines.join("\n"))
 }
 
 fn missing_coverage_tool_result() -> CoverageTrialResult {

@@ -3,7 +3,10 @@ use std::path::Path;
 
 use chrono::Utc;
 
-use crate::config::RepoQaFileConfig;
+use crate::config::{
+    RepoQaFileConfig,
+    format_output_path,
+};
 use crate::error::AuditError;
 use crate::index::RepositoryIndex;
 use crate::models::{
@@ -23,7 +26,7 @@ pub fn audit_repository(
     config: AuditConfig,
 ) -> Result<AuditReport, AuditError> {
     if !repo_root.exists() {
-        return Err(AuditError::MissingRepoRoot(repo_root.display().to_string()));
+        return Err(AuditError::MissingRepoRoot(format_output_path(repo_root)));
     }
 
     let repo_root = repo_root.canonicalize()?;
@@ -82,8 +85,8 @@ pub fn audit_repository(
 
     Ok(AuditReport {
         service: "repo-qa-mcp".to_string(),
-        repo_root: repo_root.display().to_string(),
-        index_database: index.db_path().display().to_string(),
+        repo_root: format_output_path(&repo_root),
+        index_database: format_output_path(index.db_path()),
         sync,
         run: AuditRunInfo {
             run_id,

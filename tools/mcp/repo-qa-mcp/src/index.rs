@@ -17,7 +17,10 @@ use sha2::{
     Sha256,
 };
 
-use crate::config::is_repo_relative_path_excluded;
+use crate::config::{
+    format_output_path,
+    is_repo_relative_path_excluded,
+};
 use crate::error::AuditError;
 use crate::models::{
     AuditFinding,
@@ -37,7 +40,7 @@ pub struct RepositoryIndex {
 impl RepositoryIndex {
     pub fn open(repo_root: &Path) -> Result<Self, AuditError> {
         if !repo_root.exists() {
-            return Err(AuditError::MissingRepoRoot(repo_root.display().to_string()));
+            return Err(AuditError::MissingRepoRoot(format_output_path(repo_root)));
         }
 
         let index_dir = repo_root.join(INDEX_DIR);
@@ -227,7 +230,7 @@ impl RepositoryIndex {
                 sync_json
              ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
-                self.repo_root.display().to_string(),
+                format_output_path(&self.repo_root),
                 started_at,
                 finished_at,
                 status,

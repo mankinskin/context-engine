@@ -185,8 +185,33 @@ fn cli_supports_json_and_text_output() {
         CliOutput::Json(value) => {
             assert_eq!(value["service"], "repo-qa-mcp");
             assert!(value["findings"].as_array().is_some_and(|findings| !findings.is_empty()));
+            assert_unix_formatted_output_value(&value["repo_root"]);
+            assert_unix_formatted_output_value(&value["index_database"]);
+            let compiler_warning = value["findings"]
+                .as_array()
+                .and_then(|findings| {
+                    findings.iter().find(|finding| finding["category"] == "compiler_warning")
+                })
+                .expect("compiler warning finding");
+            assert_unix_formatted_output_value(&compiler_warning["evidence"]["sample"][0]["path"]);
         },
         CliOutput::Text(_) => panic!("expected json output"),
+    }
+
+    let text_cli = parse_cli_from([
+        "repo-qa",
+        "audit",
+        repo.path().to_string_lossy().as_ref(),
+        "--max-file-lines",
+        "20",
+        "--max-cyclomatic-complexity",
+        "3",
+    ])
+    .expect("parse text cli");
+
+    match run(text_cli).expect("run text cli") {
+        CliOutput::Text(output) => assert_unix_formatted_output_text(&output),
+        CliOutput::Json(_) => panic!("expected text output"),
     }
 
     let mut command = Command::cargo_bin("repo-qa").expect("repo-qa binary");
@@ -257,4 +282,14 @@ edition = "2021"
         )
         .expect("query excluded row count");
     assert_eq!(indexed_count, 0);
+}
+
+fn assert_unix_formatted_output_value(value: &serde_json::Value) {
+    let text = value.as_str().expect("string output value");
+    assert_unix_formatted_output_text(text);
+}
+
+fn assert_unix_formatted_output_text(text: &str) {
+    assert!(!text.contains('\\'), "expected Unix-style path separators: {text}");
+    assert!(!text.contains("//?/"), "expected no Windows extended path prefix: {text}");
 }

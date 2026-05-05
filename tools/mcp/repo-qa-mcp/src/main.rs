@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use repo_qa_mcp::config::format_output_path;
 use repo_qa_mcp::server;
 
 #[tokio::main]
@@ -17,7 +18,7 @@ async fn main() {
         PathBuf::from(".")
     });
 
-    eprintln!("repo-qa-mcp starting (base_dir: {})", base_dir.display());
+    eprintln!("repo-qa-mcp starting (base_dir: {})", format_output_path(&base_dir));
 
     if let Err(err) = server::run_mcp_server(base_dir).await {
         eprintln!("Fatal error: {err}");
