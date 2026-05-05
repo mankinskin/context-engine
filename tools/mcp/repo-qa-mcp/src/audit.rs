@@ -3,6 +3,7 @@ use std::path::Path;
 
 use chrono::Utc;
 
+use crate::config::RepoQaFileConfig;
 use crate::error::AuditError;
 use crate::index::RepositoryIndex;
 use crate::models::{
@@ -26,9 +27,10 @@ pub fn audit_repository(
     }
 
     let repo_root = repo_root.canonicalize()?;
+    let file_config = RepoQaFileConfig::load(&repo_root)?;
     let started_at = Utc::now();
     let index = RepositoryIndex::open(&repo_root)?;
-    let sync = index.sync_source_files()?;
+    let sync = index.sync_source_files(&file_config.exclude_paths)?;
     let indexed_files = index.indexed_files()?;
 
     let file_length_result = file_length::evaluate(&indexed_files, config.max_file_lines);
@@ -37,9 +39,16 @@ pub fn audit_repository(
         &indexed_files,
         config.max_cyclomatic_complexity,
     )?;
-    let compiler_warnings_result = cargo_quality::collect_compiler_warnings(&repo_root)?;
-    let test_results = cargo_quality::collect_test_success(&repo_root)?;
-    let coverage_result = cargo_quality::collect_coverage(&repo_root, config.coverage_warn_below)?;
+    let compiler_warnings_result = cargo_quality::collect_compiler_warnings(
+        &repo_root,
+        &file_config.exclude_paths,
+    )?;
+    let test_results = cargo_quality::collect_test_success(&repo_root, &file_config.exclude_paths)?;
+    let coverage_result = cargo_quality::collect_coverage(
+        &repo_root,
+        &file_config.exclude_paths,
+        config.coverage_warn_below,
+    )?;
 
     let mut findings = file_length_result.findings;
     findings.extend(static_metrics_result.findings);

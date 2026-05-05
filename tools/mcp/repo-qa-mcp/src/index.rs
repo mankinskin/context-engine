@@ -17,6 +17,7 @@ use sha2::{
     Sha256,
 };
 
+use crate::config::is_repo_relative_path_excluded;
 use crate::error::AuditError;
 use crate::models::{
     AuditFinding,
@@ -56,7 +57,10 @@ impl RepositoryIndex {
         &self.db_path
     }
 
-    pub fn sync_source_files(&self) -> Result<SyncStats, AuditError> {
+    pub fn sync_source_files(
+        &self,
+        exclude_paths: &[String],
+    ) -> Result<SyncStats, AuditError> {
         let mut conn = self.connect()?;
         let tx = conn.transaction()?;
         let scan_token = Utc::now().format("%Y%m%d%H%M%S%3f").to_string();
@@ -67,7 +71,14 @@ impl RepositoryIndex {
         let mut walker = WalkBuilder::new(&self.repo_root);
         walker.standard_filters(true);
         walker.hidden(false);
-        walker.filter_entry(|entry| !is_excluded_path(entry.path()));
+        let repo_root = self.repo_root.clone();
+        let exclude_paths = exclude_paths.to_vec();
+        walker.filter_entry(move |entry| {
+            let Ok(relative_path) = entry.path().strip_prefix(&repo_root) else {
+                return true;
+            };
+            !is_excluded_path(relative_path, &exclude_paths)
+        });
 
         for entry in walker.build() {
             let entry = match entry {
@@ -314,14 +325,21 @@ impl RepositoryIndex {
     }
 }
 
-fn is_excluded_path(path: &Path) -> bool {
-    path.components().any(|component| {
+fn is_excluded_path(
+    relative_path: &Path,
+    exclude_paths: &[String],
+) -> bool {
+    if relative_path.components().any(|component| {
         let value = component.as_os_str().to_string_lossy();
         matches!(
             value.as_ref(),
             ".git" | "target" | "node_modules" | ".repo-qa" | ".idea" | ".vscode"
         )
-    })
+    }) {
+        return true;
+    }
+
+    is_repo_relative_path_excluded(relative_path, exclude_paths)
 }
 
 fn detect_language(path: &Path) -> Option<&'static str> {

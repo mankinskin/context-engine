@@ -1,0 +1,5 @@
+# Paths are relative to the repository root.
+# Entries exclude matching directories and files from repo-qa audits.
+exclude_paths = [
+  "crates/deps/",
+]

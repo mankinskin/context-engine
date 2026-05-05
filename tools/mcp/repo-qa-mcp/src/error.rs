@@ -6,6 +6,8 @@ pub enum AuditError {
     MissingRepoRoot(String),
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("config parse error: {0}")]
+    Toml(#[from] toml::de::Error),
     #[error("sqlite error: {0}")]
     Sqlite(#[from] rusqlite::Error),
     #[error("json error: {0}")]

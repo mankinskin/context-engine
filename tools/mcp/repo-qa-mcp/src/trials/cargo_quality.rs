@@ -6,6 +6,7 @@ use std::process::{
 };
 
 use cargo_metadata::{
+    MetadataCommand,
     Message,
     diagnostic::DiagnosticLevel,
 };
@@ -16,6 +17,10 @@ use serde_json::{
 };
 
 use crate::error::AuditError;
+use crate::config::{
+    is_repo_relative_path_excluded,
+    normalize_repo_relative_path,
+};
 use crate::models::{
     AuditFinding,
     CountMetric,
@@ -40,8 +45,12 @@ pub struct CoverageTrialResult {
     pub findings: Vec<AuditFinding>,
 }
 
-pub fn collect_compiler_warnings(repo_root: &Path) -> Result<CountTrialResult, AuditError> {
-    if !has_cargo_manifest(repo_root) {
+pub fn collect_compiler_warnings(
+    repo_root: &Path,
+    exclude_paths: &[String],
+) -> Result<CountTrialResult, AuditError> {
+    let cargo_scope = cargo_scope(repo_root, exclude_paths)?;
+    if !cargo_scope.has_manifest {
         return Ok(CountTrialResult {
             metric: CountMetric {
                 status: TrialStatus::NotApplicable,
@@ -52,16 +61,25 @@ pub fn collect_compiler_warnings(repo_root: &Path) -> Result<CountTrialResult, A
         });
     }
 
-    let output = run_command(
-        repo_root,
-        "cargo",
-        &[
-            "check",
-            "--workspace",
-            "--all-targets",
-            "--message-format=json-diagnostic-rendered-ansi",
-        ],
-    )?;
+    if cargo_scope.package_names.is_empty() {
+        return Ok(CountTrialResult {
+            metric: CountMetric {
+                status: TrialStatus::NotApplicable,
+                count: None,
+                details: Some("All workspace Cargo packages are excluded by config.".to_string()),
+            },
+            findings: Vec::new(),
+        });
+    }
+
+    let mut args = vec![
+        "check".to_string(),
+        "--all-targets".to_string(),
+        "--message-format=json-diagnostic-rendered-ansi".to_string(),
+    ];
+    append_package_args(&mut args, &cargo_scope.package_names);
+
+    let output = run_command(repo_root, "cargo", args)?;
 
     let mut warnings = Vec::new();
     for message in Message::parse_stream(Cursor::new(&output.stdout)) {
@@ -75,6 +93,11 @@ pub fn collect_compiler_warnings(repo_root: &Path) -> Result<CountTrialResult, A
                     .spans
                     .iter()
                     .find(|span| span.is_primary);
+                if primary_span.is_some_and(|span| {
+                    is_file_name_excluded(repo_root, &span.file_name, exclude_paths)
+                }) {
+                    continue;
+                }
                 warnings.push(json!({
                     "message": compiler_message.message.message,
                     "code": compiler_message.message.code.as_ref().map(|code| code.code.clone()),
@@ -154,8 +177,12 @@ pub fn collect_compiler_warnings(repo_root: &Path) -> Result<CountTrialResult, A
     })
 }
 
-pub fn collect_test_success(repo_root: &Path) -> Result<TestTrialResult, AuditError> {
-    if !has_cargo_manifest(repo_root) {
+pub fn collect_test_success(
+    repo_root: &Path,
+    exclude_paths: &[String],
+) -> Result<TestTrialResult, AuditError> {
+    let cargo_scope = cargo_scope(repo_root, exclude_paths)?;
+    if !cargo_scope.has_manifest {
         return Ok(TestTrialResult {
             metric: TestSummary {
                 status: TrialStatus::NotApplicable,
@@ -170,21 +197,36 @@ pub fn collect_test_success(repo_root: &Path) -> Result<TestTrialResult, AuditEr
         });
     }
 
-    let output = run_command(
-        repo_root,
-        "cargo",
-        &[
-            "test",
-            "--workspace",
-            "--lib",
-            "--tests",
-            "--no-fail-fast",
-            "--",
-            "--format=json",
-            "-Z",
-            "unstable-options",
-        ],
-    )?;
+    if cargo_scope.package_names.is_empty() {
+        return Ok(TestTrialResult {
+            metric: TestSummary {
+                status: TrialStatus::NotApplicable,
+                total: None,
+                passed: None,
+                failed: None,
+                ignored: None,
+                success_rate: None,
+                details: Some("All workspace Cargo packages are excluded by config.".to_string()),
+            },
+            findings: Vec::new(),
+        });
+    }
+
+    let mut args = vec![
+        "test".to_string(),
+        "--lib".to_string(),
+        "--tests".to_string(),
+        "--no-fail-fast".to_string(),
+    ];
+    append_package_args(&mut args, &cargo_scope.package_names);
+    args.extend([
+        "--".to_string(),
+        "--format=json".to_string(),
+        "-Z".to_string(),
+        "unstable-options".to_string(),
+    ]);
+
+    let output = run_command(repo_root, "cargo", args)?;
 
     let mut passed = 0usize;
     let mut failed = 0usize;
@@ -295,9 +337,11 @@ pub fn collect_test_success(repo_root: &Path) -> Result<TestTrialResult, AuditEr
 
 pub fn collect_coverage(
     repo_root: &Path,
+    exclude_paths: &[String],
     warn_below: f64,
 ) -> Result<CoverageTrialResult, AuditError> {
-    if !has_cargo_manifest(repo_root) {
+    let cargo_scope = cargo_scope(repo_root, exclude_paths)?;
+    if !cargo_scope.has_manifest {
         return Ok(CoverageTrialResult {
             metric: CoverageSummary {
                 status: TrialStatus::NotApplicable,
@@ -305,6 +349,19 @@ pub fn collect_coverage(
                 covered_lines: None,
                 total_lines: None,
                 details: Some("No Cargo.toml found at the repository root.".to_string()),
+            },
+            findings: Vec::new(),
+        });
+    }
+
+    if cargo_scope.package_names.is_empty() {
+        return Ok(CoverageTrialResult {
+            metric: CoverageSummary {
+                status: TrialStatus::NotApplicable,
+                line_percent: None,
+                covered_lines: None,
+                total_lines: None,
+                details: Some("All workspace Cargo packages are excluded by config.".to_string()),
             },
             findings: Vec::new(),
         });
@@ -323,11 +380,9 @@ pub fn collect_coverage(
         return Ok(missing_coverage_tool_result());
     }
 
-    let output = run_command(
-        repo_root,
-        "cargo",
-        &["llvm-cov", "--workspace", "--json-summary"],
-    )?;
+    let mut args = vec!["llvm-cov".to_string(), "--json-summary".to_string()];
+    append_package_args(&mut args, &cargo_scope.package_names);
+    let output = run_command(repo_root, "cargo", args)?;
 
     if !output.status.success() {
         return Ok(CoverageTrialResult {
@@ -462,7 +517,7 @@ struct LibtestEvent {
 fn run_command(
     repo_root: &Path,
     program: &str,
-    args: &[&str],
+    args: Vec<String>,
 ) -> Result<Output, AuditError> {
     let output = Command::new(program)
         .args(args)
@@ -473,6 +528,83 @@ fn run_command(
 
 fn has_cargo_manifest(repo_root: &Path) -> bool {
     repo_root.join("Cargo.toml").exists()
+}
+
+fn cargo_scope(
+    repo_root: &Path,
+    exclude_paths: &[String],
+) -> Result<CargoScope, AuditError> {
+    if !has_cargo_manifest(repo_root) {
+        return Ok(CargoScope {
+            has_manifest: false,
+            package_names: Vec::new(),
+        });
+    }
+
+    let metadata = MetadataCommand::new()
+        .current_dir(repo_root)
+        .no_deps()
+        .exec()
+        .map_err(|err| AuditError::CommandFailed {
+            command: "cargo metadata --no-deps".to_string(),
+            details: err.to_string(),
+        })?;
+
+    let package_names = metadata
+        .workspace_packages()
+        .iter()
+        .filter_map(|package| {
+            let manifest_path = package.manifest_path.as_std_path().canonicalize().ok()?;
+            let relative_manifest = manifest_path.strip_prefix(repo_root).ok()?;
+            if is_repo_relative_path_excluded(relative_manifest, exclude_paths) {
+                return None;
+            }
+            Some(package.name.to_string())
+        })
+        .collect();
+
+    Ok(CargoScope {
+        has_manifest: true,
+        package_names,
+    })
+}
+
+fn append_package_args(
+    args: &mut Vec<String>,
+    package_names: &[String],
+) {
+    for package_name in package_names {
+        args.push("-p".to_string());
+        args.push(package_name.clone());
+    }
+}
+
+fn is_file_name_excluded(
+    repo_root: &Path,
+    file_name: &str,
+    exclude_paths: &[String],
+) -> bool {
+    let file_path = Path::new(file_name);
+    let relative = file_path
+        .strip_prefix(repo_root)
+        .ok()
+        .map(normalize_repo_relative_path)
+        .or_else(|| {
+            if file_path.is_relative() {
+                Some(normalize_repo_relative_path(file_path))
+            } else {
+                None
+            }
+        });
+
+    relative
+        .as_deref()
+        .is_some_and(|relative| is_repo_relative_path_excluded(Path::new(relative), exclude_paths))
+}
+
+struct CargoScope {
+    has_manifest: bool,
+    package_names: Vec<String>,
 }
 
 fn trim_output(output: &[u8]) -> String {
