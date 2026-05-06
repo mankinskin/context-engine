@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { getHashParam } from '../../../viewer-api/frontend/dioxus/e2e/test_apis';
+import { getHashParam } from '../../../../../viewer-api/tools/viewer/viewer-api/frontend/dioxus/e2e/test_apis';
 import { SPEC_VIEWER, gotoAndWaitForViewer } from '../shared/viewers';
 
 /**

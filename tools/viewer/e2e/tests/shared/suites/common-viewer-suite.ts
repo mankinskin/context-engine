@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loadAndInspectViewer } from '../../../../viewer-api/frontend/dioxus/e2e/test_apis';
+import { loadAndInspectViewer } from '../../../../../../viewer-api/tools/viewer/viewer-api/frontend/dioxus/e2e/test_apis';
 import type { ViewerConfig } from '../viewers';
 
 /**

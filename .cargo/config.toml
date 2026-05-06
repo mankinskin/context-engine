@@ -99,8 +99,8 @@
 log-viewer = "run --manifest-path tools/viewer/log-viewer/Cargo.toml -- --dev"
 doc-viewer = "run --manifest-path tools/viewer/doc-viewer/Cargo.toml"
 # Start the ticket-viewer server after both viewer and backend builds succeed
-ticket-viewer = "run --manifest-path tools/viewer/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
-spec-viewer = "run --manifest-path tools/viewer/spec-viewer/Cargo.toml"
+ticket-viewer = "run --manifest-path memory-viewers/tools/viewer/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
+spec-viewer = "run --manifest-path memory-viewers/tools/viewer/spec-viewer/Cargo.toml"
 context-cli = "run --manifest-path tools/cli/context-cli/Cargo.toml"
 dungeon = "run --manifest-path tools/dungeon-crawler/Cargo.toml --bin dungeon"
 

@@ -47,13 +47,13 @@ start_args = ["--static"]
 name = "ticket-viewer"
 package = "ticket-viewer"
 port = 3002
-source_dir = "tools/viewer/ticket-viewer"
+source_dir = "memory-viewers/tools/viewer/ticket-viewer"
 
 [[server]]
 name = "spec-viewer"
 package = "spec-viewer"
 port = 4002
-source_dir = "tools/viewer/spec-viewer"
+source_dir = "memory-viewers/tools/viewer/spec-viewer"
 
 # ── Frontends ────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ build_cmd = ["npx", "vite", "build"]
 build_output = "tools/viewer/doc-viewer/static"
 
 [[frontend.prebuild]]
-dir = "tools/viewer/viewer-api/frontend/ts"
+dir = "viewer-api/tools/viewer/viewer-api/frontend/ts"
 cmd = ["npm", "install"]
 condition = "missing:node_modules"
 
@@ -82,7 +82,7 @@ build_cmd = ["npx", "vite", "build"]
 build_output = "tools/viewer/log-viewer/static"
 
 [[frontend.prebuild]]
-dir = "tools/viewer/viewer-api/frontend/ts"
+dir = "viewer-api/tools/viewer/viewer-api/frontend/ts"
 cmd = ["npm", "install"]
 condition = "missing:node_modules"
 
@@ -94,25 +94,25 @@ condition = "missing:node_modules"
 [[frontend]]
 name = "ticket-viewer"
 serves = "ticket-viewer"
-source_dir = "tools/viewer/ticket-viewer/frontend/dioxus"
+source_dir = "memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus"
 build_cmd = ["trunk", "build", "--release"]
-build_output = "tools/viewer/ticket-viewer/frontend/dioxus/dist"
-extra_assets = ["tools/viewer/ticket-viewer/frontend/dioxus/public"]
+build_output = "memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus/dist"
+extra_assets = ["memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus/public"]
 
 [[frontend]]
 name = "spec-viewer"
 serves = "spec-viewer"
-source_dir = "tools/viewer/spec-viewer/frontend/dioxus"
+source_dir = "memory-viewers/tools/viewer/spec-viewer/frontend/dioxus"
 build_cmd = ["trunk", "build", "--release"]
-build_output = "tools/viewer/spec-viewer/frontend/dioxus/dist"
-extra_assets = ["tools/viewer/spec-viewer/frontend/dioxus/public"]
+build_output = "memory-viewers/tools/viewer/spec-viewer/frontend/dioxus/dist"
+extra_assets = ["memory-viewers/tools/viewer/spec-viewer/frontend/dioxus/public"]
 
 # ── Extensions ───────────────────────────────────────────────────────────────
 
 [[extension]]
 name = "ticket-vscode"
 kind = "vscode"
-source_dir = "tools/ticket-vscode"
+source_dir = "memory-api/tools/ticket-vscode"
 package_json = "package.json"
 build_cmd = ["npm", "run", "compile"]
 

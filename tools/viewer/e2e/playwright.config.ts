@@ -1,17 +1,18 @@
 import { defineConfig } from '@playwright/test';
+import path from 'node:path';
 
 /**
  * Playwright configuration for the centralized viewer E2E suite.
  *
- * Tests run against the **release binaries** — all four viewer servers must
- * already be running on their default ports before executing the suite:
+ * Tests run against the **release binaries**. Playwright starts the viewer
+ * servers automatically through `viewer-ctl` before executing the suite:
  *
- *   log-viewer    http://localhost:3000
- *   doc-viewer    http://localhost:3001
- *   ticket-viewer http://localhost:3002
- *   spec-viewer   http://localhost:4002
+ *   log-viewer    http://127.0.0.1:3000
+ *   doc-viewer    http://127.0.0.1:3001
+ *   ticket-viewer http://127.0.0.1:3002
+ *   spec-viewer   http://127.0.0.1:4002
  *
- * Run with (servers must be started first):
+ * Run with:
  *   cd tools/viewer/e2e
  *   npm install            # first time only
  *   npx playwright install chromium  # first time only
@@ -21,6 +22,15 @@ import { defineConfig } from '@playwright/test';
  * Or via cargo-make from the workspace root:
  *   cargo make test-e2e
  */
+const repoRoot = path.resolve(__dirname, '../../..');
+
+const managedViewers = [
+  { name: 'log-viewer', url: 'http://127.0.0.1:3000' },
+  { name: 'doc-viewer', url: 'http://127.0.0.1:3001' },
+  { name: 'ticket-viewer', url: 'http://127.0.0.1:3002' },
+  { name: 'spec-viewer', url: 'http://127.0.0.1:4002' },
+];
+
 export default defineConfig({
   testDir: './tests',
 
@@ -48,5 +58,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
-  // No webServer block — assumes release binaries are already running.
+  webServer: managedViewers.map(({ name, url }) => ({
+    command: `viewer-ctl prepare ${name} && viewer-ctl start ${name} --foreground`,
+    url,
+    cwd: repoRoot,
+    reuseExistingServer: !process.env['CI'],
+    timeout: 300_000,
+  })),
 });

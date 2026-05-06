@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   getHashParam,
   getSelectedTreeLabels,
-} from '../../../viewer-api/frontend/dioxus/e2e/test_apis';
+} from '../../../../../viewer-api/tools/viewer/viewer-api/frontend/dioxus/e2e/test_apis';
 import { SPEC_VIEWER, gotoAndWaitForViewer } from '../shared/viewers';
 
 /**

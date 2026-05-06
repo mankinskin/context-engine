@@ -1,7 +1,8 @@
 // ──────────────────────────────────────────────────────────────────────────
 // Ticket Viewer — direct cargo run (legacy / debugging path)
 // ──────────────────────────────────────────────────────────────────────────
-// Runs `cargo run -p ticket-viewer` in-place without going through
+// Runs `cargo run --manifest-path memory-viewers/tools/viewer/ticket-viewer/Cargo.toml`
+// against the extracted submodule without going through
 // viewer-ctl. Useful when iterating on the server source and you don't
 // need a freshly installed frontend bundle.
 //
@@ -16,7 +17,7 @@
     {
       "label": "ticket-viewer: start",
       "type": "shell",
-      "command": "cargo run -p ticket-viewer",
+      "command": "cargo run --manifest-path memory-viewers/tools/viewer/ticket-viewer/Cargo.toml",
       "isBackground": true,
       "problemMatcher": {
         "owner": "ticket-viewer",

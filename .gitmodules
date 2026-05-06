@@ -4,3 +4,12 @@
 [submodule "justlog"]
 	path = crates/deps/justlog
 	url = https://github.com/mankinskin/justlog
+[submodule "memory-api"]
+	path = memory-api
+	url = ../memory-api
+[submodule "viewer-api"]
+	path = viewer-api
+	url = ../viewer-api
+[submodule "memory-viewers"]
+	path = memory-viewers
+	url = ../memory-viewers

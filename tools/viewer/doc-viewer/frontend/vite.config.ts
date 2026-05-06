@@ -2,7 +2,7 @@ import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 
-const viewerApiSrc = fileURLToPath(new URL('../../viewer-api/frontend/ts/src', import.meta.url));
+const viewerApiSrc = fileURLToPath(new URL('../../../../viewer-api/tools/viewer/viewer-api/frontend/ts/src', import.meta.url));
 
 export default defineConfig({
   plugins: [preact()],

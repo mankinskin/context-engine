@@ -1,5 +1,7 @@
 import type { Page } from '@playwright/test';
 
+const VIEWER_HOST = '127.0.0.1';
+
 export interface ViewerConfig {
   /** Human-readable name used in test titles. */
   name: string;
@@ -14,26 +16,26 @@ export interface ViewerConfig {
 export const VIEWERS: ViewerConfig[] = [
   {
     name: 'log-viewer',
-    url: 'http://localhost:3000',
+    url: `http://${VIEWER_HOST}:3000`,
     readySelector: '.tab-bar',
     readyTimeout: 20_000,
   },
   {
     name: 'doc-viewer',
-    url: 'http://localhost:3001',
+    url: `http://${VIEWER_HOST}:3001`,
     readySelector: '.app',
     readyTimeout: 20_000,
   },
   {
     name: 'ticket-viewer',
-    url: 'http://localhost:3002',
+    url: `http://${VIEWER_HOST}:3002`,
     // viewer-api Header component renders <header class="header">.
     readySelector: 'header.header',
     readyTimeout: 60_000,
   },
   {
     name: 'spec-viewer',
-    url: 'http://localhost:4002',
+    url: `http://${VIEWER_HOST}:4002`,
     readySelector: 'header.header',
     readyTimeout: 60_000,
   },
