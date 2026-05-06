@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use repo_qa_mcp::config::format_output_path;
+use repo_qa_api::config::format_output_path;
 use repo_qa_mcp::server;
 
 #[tokio::main]

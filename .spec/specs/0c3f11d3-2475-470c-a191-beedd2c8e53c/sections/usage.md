@@ -5,19 +5,19 @@
 Run a default audit:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- audit .
+cargo run -p repo-qa-cli --bin repo-qa -- audit .
 ```
 
 Request structured JSON:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- --json audit .
+cargo run -p repo-qa-cli --bin repo-qa -- --json audit .
 ```
 
 Override thresholds:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- audit . \
+cargo run -p repo-qa-cli --bin repo-qa -- audit . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85

@@ -1,6 +1,6 @@
 ---
 description: "Use when editing or operating the repo-qa audit tool. Covers CLI and MCP usage, repo config, and how to interpret audit output."
-applyTo: "tools/mcp/repo-qa-mcp/**,.repo-qa.toml"
+applyTo: "crates/repo-qa-api/**,tools/cli/repo-qa-cli/**,tools/mcp/repo-qa-mcp/**,.repo-qa.toml"
 ---
 
 # Repo QA Guidance
@@ -9,9 +9,16 @@ applyTo: "tools/mcp/repo-qa-mcp/**,.repo-qa.toml"
 
 `repo-qa` is the repository quality audit tool for this workspace.
 
-- CLI binary: `repo-qa`
-- MCP server: `repo-qa-mcp`
-- Single MCP tool: `audit_repository`
+- Core library crate: `repo-qa-api`
+- CLI package: `repo-qa-cli` with the `repo-qa` binary
+- MCP package: `repo-qa-mcp`
+- MCP tool: `audit_repository`
+
+Keep the layering thin and explicit:
+
+1. `repo-qa-api` owns audit logic, models, config loading, indexing, and trials.
+2. `repo-qa-cli` owns argument parsing and human/json rendering.
+3. `repo-qa-mcp` only translates MCP inputs into `repo-qa-api` calls and serializes the result.
 
 One audit run:
 
@@ -29,19 +36,19 @@ Prefer JSON output for automation and agent workflows. Prefer text output for lo
 Basic audit:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- audit .
+cargo run -p repo-qa-cli --bin repo-qa -- audit .
 ```
 
 Machine-readable output:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- --json audit .
+cargo run -p repo-qa-cli --bin repo-qa -- --json audit .
 ```
 
 Override thresholds for a stricter audit:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa -- audit . \
+cargo run -p repo-qa-cli --bin repo-qa -- audit . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85

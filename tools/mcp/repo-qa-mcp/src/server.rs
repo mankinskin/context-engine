@@ -1,9 +1,6 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::audit;
-use crate::models::AuditConfig;
-
 use rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
     handler::server::{tool::ToolRouter, wrapper::Parameters},
@@ -12,6 +9,8 @@ use rmcp::{
     tool, tool_handler, tool_router,
     transport::stdio,
 };
+use repo_qa_api::audit;
+use repo_qa_api::models::AuditConfig;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 

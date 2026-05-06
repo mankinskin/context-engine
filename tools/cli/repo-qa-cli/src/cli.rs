@@ -11,9 +11,9 @@ use serde_json::{
     json,
 };
 
-use crate::audit::audit_repository;
-use crate::error::AuditError;
-use crate::models::{
+use repo_qa_api::audit::audit_repository;
+use repo_qa_api::error::AuditError;
+use repo_qa_api::models::{
     AuditConfig,
     AuditReport,
     TrialStatus,
@@ -178,7 +178,7 @@ fn render_human(report: &AuditReport) -> String {
     lines.join("\n")
 }
 
-fn render_count_metric(metric: &crate::models::CountMetric) -> String {
+fn render_count_metric(metric: &repo_qa_api::models::CountMetric) -> String {
     match metric.status {
         TrialStatus::Collected | TrialStatus::Failed => metric
             .count
@@ -191,7 +191,7 @@ fn render_count_metric(metric: &crate::models::CountMetric) -> String {
     }
 }
 
-fn render_test_metric(metric: &crate::models::TestSummary) -> String {
+fn render_test_metric(metric: &repo_qa_api::models::TestSummary) -> String {
     match metric.status {
         TrialStatus::Collected | TrialStatus::Failed => format!(
             "{} passed, {} failed, {} ignored, success rate {}",
@@ -210,7 +210,7 @@ fn render_test_metric(metric: &crate::models::TestSummary) -> String {
     }
 }
 
-fn render_coverage_metric(metric: &crate::models::CoverageSummary) -> String {
+fn render_coverage_metric(metric: &repo_qa_api::models::CoverageSummary) -> String {
     match metric.status {
         TrialStatus::Collected => metric
             .line_percent

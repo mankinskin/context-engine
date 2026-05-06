@@ -50,3 +50,9 @@ Text output shows:
 - `fix:` lines under each finding
 
 The text view is a condensed rendering of the same report contract used in JSON mode.
+
+The transport split is intentional:
+
+- `repo-qa-api` produces the `AuditReport`
+- `repo-qa-cli` renders it for terminal use
+- `repo-qa-mcp` serializes it for MCP clients

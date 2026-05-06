@@ -2,15 +2,15 @@ use std::fs;
 use std::path::Path;
 
 use assert_cmd::Command;
-use repo_qa_mcp::cli::{
+use repo_qa_api::audit::audit_repository;
+use repo_qa_api::models::{
+    AuditConfig,
+    TrialStatus,
+};
+use repo_qa_cli::cli::{
     CliOutput,
     parse_cli_from,
     run,
-};
-use repo_qa_mcp::audit::audit_repository;
-use repo_qa_mcp::models::{
-    AuditConfig,
-    TrialStatus,
 };
 use rusqlite::{
     Connection,

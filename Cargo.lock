@@ -7872,26 +7872,45 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51743d3e274e2b18df81c4dc6caf8a5b8e15dbe799e0dca05c7617380094e884"
 
 [[package]]
-name = "repo-qa-mcp"
+name = "repo-qa-api"
 version = "0.1.0"
 dependencies = [
- "assert_cmd",
  "cargo_metadata",
  "chrono",
- "clap",
  "ignore",
- "predicates",
  "proc-macro2",
- "rmcp",
  "rusqlite",
  "serde",
  "serde_json",
  "sha2",
  "syn 2.0.117",
+ "thiserror 2.0.18",
+ "toml 0.8.23",
+]
+
+[[package]]
+name = "repo-qa-cli"
+version = "0.1.0"
+dependencies = [
+ "assert_cmd",
+ "clap",
+ "predicates",
+ "repo-qa-api",
+ "rusqlite",
+ "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "repo-qa-mcp"
+version = "0.1.0"
+dependencies = [
+ "repo-qa-api",
+ "rmcp",
+ "serde",
+ "serde_json",
  "tokio",
- "toml 0.8.23",
  "tracing",
  "tracing-subscriber",
 ]
