@@ -56,7 +56,7 @@
       "cargo": {
         "args": [
           "build",
-          "--manifest-path=memory-viewers/tools/viewer/ticket-viewer/Cargo.toml",
+          "--manifest-path=memory-viewers/ticket-viewer/Cargo.toml",
           "--bin=ticket-viewer"
         ],
         "filter": {
@@ -196,7 +196,7 @@
       "cargo": {
         "args": [
           "build",
-          "--manifest-path=memory-viewers/tools/viewer/spec-viewer/Cargo.toml",
+          "--manifest-path=memory-viewers/spec-viewer/Cargo.toml",
           "--bin=spec-viewer"
         ],
         "filter": {

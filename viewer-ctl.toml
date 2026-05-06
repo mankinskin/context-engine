@@ -47,13 +47,13 @@ start_args = ["--static"]
 name = "ticket-viewer"
 package = "ticket-viewer"
 port = 3002
-source_dir = "memory-viewers/tools/viewer/ticket-viewer"
+source_dir = "memory-viewers/ticket-viewer"
 
 [[server]]
 name = "spec-viewer"
 package = "spec-viewer"
 port = 4002
-source_dir = "memory-viewers/tools/viewer/spec-viewer"
+source_dir = "memory-viewers/spec-viewer"
 
 # ── Frontends ────────────────────────────────────────────────────────────────
 
@@ -94,18 +94,18 @@ condition = "missing:node_modules"
 [[frontend]]
 name = "ticket-viewer"
 serves = "ticket-viewer"
-source_dir = "memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus"
+source_dir = "memory-viewers/ticket-viewer/frontend/dioxus"
 build_cmd = ["trunk", "build", "--release"]
-build_output = "memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus/dist"
-extra_assets = ["memory-viewers/tools/viewer/ticket-viewer/frontend/dioxus/public"]
+build_output = "memory-viewers/ticket-viewer/frontend/dioxus/dist"
+extra_assets = ["memory-viewers/ticket-viewer/frontend/dioxus/public"]
 
 [[frontend]]
 name = "spec-viewer"
 serves = "spec-viewer"
-source_dir = "memory-viewers/tools/viewer/spec-viewer/frontend/dioxus"
+source_dir = "memory-viewers/spec-viewer/frontend/dioxus"
 build_cmd = ["trunk", "build", "--release"]
-build_output = "memory-viewers/tools/viewer/spec-viewer/frontend/dioxus/dist"
-extra_assets = ["memory-viewers/tools/viewer/spec-viewer/frontend/dioxus/public"]
+build_output = "memory-viewers/spec-viewer/frontend/dioxus/dist"
+extra_assets = ["memory-viewers/spec-viewer/frontend/dioxus/public"]
 
 # ── Extensions ───────────────────────────────────────────────────────────────
 

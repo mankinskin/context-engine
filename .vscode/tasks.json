@@ -62,7 +62,7 @@
     {
       "label": "ticket-viewer: start",
       "type": "shell",
-      "command": "cargo run --manifest-path memory-viewers/tools/viewer/ticket-viewer/Cargo.toml",
+      "command": "cargo run --manifest-path memory-viewers/ticket-viewer/Cargo.toml",
       "isBackground": true,
       "problemMatcher": {
         "owner": "ticket-viewer",
