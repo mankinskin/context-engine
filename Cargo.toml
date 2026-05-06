@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-  "crates/repo-qa-api",
+  "crates/audit-api",
   "crates/memory-api",
   "crates/ticket-api",
   "crates/spec-api",
@@ -20,13 +20,13 @@ members = [
   "tools/viewer/spec-viewer",
   "tools/http/ticket-http",
   "tools/http/spec-http",
-  "tools/cli/repo-qa-cli",
+  "tools/cli/audit-cli",
   "tools/cli/ticket-cli",
   "tools/migrate-edges",
   "tools/cli/spec-cli",
   "tools/mcp/ticket-mcp",
   "tools/mcp/spec-mcp",
-  "tools/mcp/repo-qa-mcp",
+  "tools/mcp/audit-mcp",
   "tools/tracing-analyzer",
   "tools/dungeon-crawler",
   "tools/cli/context-cli",

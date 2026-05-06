@@ -1,30 +1,30 @@
 ---
-description: "Use when editing or operating the repo-qa audit tool. Covers CLI and MCP usage, repo config, and how to interpret audit output."
-applyTo: "crates/repo-qa-api/**,tools/cli/repo-qa-cli/**,tools/mcp/repo-qa-mcp/**,.repo-qa.toml"
+description: "Use when editing or operating the audit tool. Covers CLI and MCP usage, repo config, and how to interpret audit output."
+applyTo: "crates/audit-api/**,tools/cli/audit-cli/**,tools/mcp/audit-mcp/**,.audit.toml"
 ---
 
-# Repo QA Guidance
+# Audit Guidance
 
 ## Purpose
 
-`repo-qa` is the repository quality audit tool for this workspace.
+`audit` is the repository quality audit tool for this workspace.
 
-- Core library crate: `repo-qa-api`
-- CLI package: `repo-qa-cli` with the `repo-qa` binary
-- MCP package: `repo-qa-mcp`
-- MCP tool: `audit_repository`
+- Core library crate: `audit-api`
+- CLI package: `audit-cli` with the `audit` binary
+- MCP package: `audit-mcp`
+- MCP tool: `audit`
 
 Keep the layering thin and explicit:
 
-1. `repo-qa-api` owns audit logic, models, config loading, indexing, and trials.
-2. `repo-qa-cli` owns argument parsing and human/json rendering.
-3. `repo-qa-mcp` only translates MCP inputs into `repo-qa-api` calls and serializes the result.
+1. `audit-api` owns audit logic, models, config loading, indexing, and trials.
+2. `audit-cli` owns argument parsing and human/json rendering.
+3. `audit-mcp` only translates MCP inputs into `audit-api` calls and serializes the result.
 
 One audit run:
 
 1. resolves the repo root
-2. loads `.repo-qa.toml`
-3. syncs source files into `.repo-qa/repo-qa.sqlite3`
+2. loads `.audit.toml`
+3. syncs source files into `.audit/audit.sqlite3`
 4. prunes stale index rows not seen in the latest scan
 5. collects file length, compiler warning, test success, coverage, and static complexity metrics
 6. returns raw metrics plus actionable findings and deduplicated fix instructions
@@ -36,19 +36,19 @@ Prefer JSON output for automation and agent workflows. Prefer text output for lo
 Basic audit:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- audit .
+cargo run -p audit-cli --bin audit -- .
 ```
 
 Machine-readable output:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- --json audit .
+cargo run -p audit-cli --bin audit -- --json .
 ```
 
 Override thresholds for a stricter audit:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- audit . \
+cargo run -p audit-cli --bin audit -- . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85
@@ -65,7 +65,7 @@ The default thresholds are:
 Run the server on stdio:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa-mcp
+cargo run -p audit-mcp --bin audit-mcp
 ```
 
 Tool input example:
@@ -83,13 +83,13 @@ The MCP tool always returns the full structured `AuditReport` payload. Use it as
 
 ## Repo Config
 
-`repo-qa` auto-loads a repo-root `.repo-qa.toml` file.
+`audit` auto-loads a repo-root `.audit.toml` file.
 
 Example:
 
 ```toml
 # Paths are relative to the repository root.
-# Entries exclude matching directories and files from repo-qa audits.
+# Entries exclude matching directories and files from audit runs.
 exclude_paths = [
   "crates/deps/",
   "target/",
@@ -107,9 +107,9 @@ All printed and serialized paths use Unix separators (`/`), including on Windows
 
 ### Top-level fields
 
-- `service`: service identifier. Current value is `repo-qa-mcp`.
+- `service`: service identifier. Current value is `audit-mcp`.
 - `repo_root`: canonical repository root used for the audit.
-- `index_database`: path to the local SQLite index at `.repo-qa/repo-qa.sqlite3`.
+- `index_database`: path to the local SQLite index at `.audit/audit.sqlite3`.
 - `sync`: current scan statistics.
 - `run`: persisted audit run metadata.
 - `metrics`: raw collected metric values and trial status.

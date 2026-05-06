@@ -1,19 +1,19 @@
 [package]
-name = "repo-qa-mcp"
+name = "audit-mcp"
 version = "0.1.0"
 edition = "2024"
 description = "MCP server for repository quality audits with a synchronized local index"
 
 [[bin]]
-name = "repo-qa-mcp"
+name = "audit-mcp"
 path = "src/main.rs"
 
 [lib]
-name = "repo_qa_mcp"
+name = "audit_mcp"
 path = "src/lib.rs"
 
 [dependencies]
-repo-qa-api = { path = "../../../crates/repo-qa-api" }
+audit-api = { path = "../../../crates/audit-api" }
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

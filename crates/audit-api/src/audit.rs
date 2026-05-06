@@ -4,7 +4,7 @@ use std::path::Path;
 use chrono::Utc;
 
 use crate::config::{
-    RepoQaFileConfig,
+    AuditFileConfig,
     format_output_path,
 };
 use crate::error::AuditError;
@@ -21,7 +21,7 @@ use crate::trials::{
     static_metrics,
 };
 
-pub fn audit_repository(
+pub fn audit(
     repo_root: &Path,
     config: AuditConfig,
 ) -> Result<AuditReport, AuditError> {
@@ -30,7 +30,7 @@ pub fn audit_repository(
     }
 
     let repo_root = repo_root.canonicalize()?;
-    let file_config = RepoQaFileConfig::load(&repo_root)?;
+    let file_config = AuditFileConfig::load(&repo_root)?;
     let started_at = Utc::now();
     let index = RepositoryIndex::open(&repo_root)?;
     let sync = index.sync_source_files(&file_config.exclude_paths)?;
@@ -84,7 +84,7 @@ pub fn audit_repository(
     )?;
 
     Ok(AuditReport {
-        service: "repo-qa-mcp".to_string(),
+        service: "audit-mcp".to_string(),
         repo_root: format_output_path(&repo_root),
         index_database: format_output_path(index.db_path()),
         sync,

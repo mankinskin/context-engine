@@ -4,35 +4,28 @@ use std::path::PathBuf;
 use clap::{
     Args,
     Parser,
-    Subcommand,
 };
 use serde_json::{
     Value,
     json,
 };
 
-use repo_qa_api::audit::audit_repository;
-use repo_qa_api::error::AuditError;
-use repo_qa_api::models::{
+use audit_api::audit::audit;
+use audit_api::error::AuditError;
+use audit_api::models::{
     AuditConfig,
     AuditReport,
     TrialStatus,
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "repo-qa", about = "Repository quality audit CLI", version)]
-pub struct RepoQaCli {
+#[command(name = "audit", about = "Repository quality audit CLI", version)]
+pub struct AuditCli {
     #[arg(long, global = true)]
     pub json: bool,
 
-    #[command(subcommand)]
-    pub command: RepoQaCommand,
-}
-
-#[derive(Debug, Subcommand)]
-pub enum RepoQaCommand {
-    /// Audit a repository and emit metrics plus actionable findings.
-    Audit(AuditArgs),
+    #[command(flatten)]
+    pub args: AuditArgs,
 }
 
 #[derive(Debug, Args)]
@@ -62,35 +55,31 @@ pub enum CliOutput {
     Text(String),
 }
 
-pub fn parse_cli_from<I, T>(args: I) -> Result<RepoQaCli, clap::Error>
+pub fn parse_cli_from<I, T>(args: I) -> Result<AuditCli, clap::Error>
 where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    RepoQaCli::try_parse_from(args)
+    AuditCli::try_parse_from(args)
 }
 
-pub fn run(cli: RepoQaCli) -> Result<CliOutput, CliRunError> {
-    match cli.command {
-        RepoQaCommand::Audit(args) => {
-            let mut config = AuditConfig::default();
-            if let Some(max_file_lines) = args.max_file_lines {
-                config.max_file_lines = max_file_lines;
-            }
-            if let Some(max_cyclomatic_complexity) = args.max_cyclomatic_complexity {
-                config.max_cyclomatic_complexity = max_cyclomatic_complexity;
-            }
-            if let Some(coverage_warn_below) = args.coverage_warn_below {
-                config.coverage_warn_below = coverage_warn_below;
-            }
+pub fn run(cli: AuditCli) -> Result<CliOutput, CliRunError> {
+    let mut config = AuditConfig::default();
+    if let Some(max_file_lines) = cli.args.max_file_lines {
+        config.max_file_lines = max_file_lines;
+    }
+    if let Some(max_cyclomatic_complexity) = cli.args.max_cyclomatic_complexity {
+        config.max_cyclomatic_complexity = max_cyclomatic_complexity;
+    }
+    if let Some(coverage_warn_below) = cli.args.coverage_warn_below {
+        config.coverage_warn_below = coverage_warn_below;
+    }
 
-            let report = audit_repository(&args.repo_root, config)?;
-            if cli.json {
-                Ok(CliOutput::Json(json!(report)))
-            } else {
-                Ok(CliOutput::Text(render_human(&report)))
-            }
-        },
+    let report = audit(&cli.args.repo_root, config)?;
+    if cli.json {
+        Ok(CliOutput::Json(json!(report)))
+    } else {
+        Ok(CliOutput::Text(render_human(&report)))
     }
 }
 
@@ -111,7 +100,7 @@ pub fn error_output(
 
 fn render_human(report: &AuditReport) -> String {
     let mut lines = Vec::new();
-    lines.push("Repository QA Audit".to_string());
+    lines.push("Repository Audit".to_string());
     lines.push(format!("Repo: {}", report.repo_root));
     lines.push(format!("Index: {}", report.index_database));
     lines.push(format!(
@@ -178,7 +167,7 @@ fn render_human(report: &AuditReport) -> String {
     lines.join("\n")
 }
 
-fn render_count_metric(metric: &repo_qa_api::models::CountMetric) -> String {
+fn render_count_metric(metric: &audit_api::models::CountMetric) -> String {
     match metric.status {
         TrialStatus::Collected | TrialStatus::Failed => metric
             .count
@@ -191,7 +180,7 @@ fn render_count_metric(metric: &repo_qa_api::models::CountMetric) -> String {
     }
 }
 
-fn render_test_metric(metric: &repo_qa_api::models::TestSummary) -> String {
+fn render_test_metric(metric: &audit_api::models::TestSummary) -> String {
     match metric.status {
         TrialStatus::Collected | TrialStatus::Failed => format!(
             "{} passed, {} failed, {} ignored, success rate {}",
@@ -210,7 +199,7 @@ fn render_test_metric(metric: &repo_qa_api::models::TestSummary) -> String {
     }
 }
 
-fn render_coverage_metric(metric: &repo_qa_api::models::CoverageSummary) -> String {
+fn render_coverage_metric(metric: &audit_api::models::CoverageSummary) -> String {
     match metric.status {
         TrialStatus::Collected => metric
             .line_percent

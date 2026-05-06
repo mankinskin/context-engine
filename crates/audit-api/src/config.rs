@@ -5,15 +5,15 @@ use serde::Deserialize;
 
 use crate::error::AuditError;
 
-pub const CONFIG_FILE_NAME: &str = ".repo-qa.toml";
+pub const CONFIG_FILE_NAME: &str = ".audit.toml";
 
 #[derive(Debug, Clone, Default, Deserialize)]
-pub struct RepoQaFileConfig {
+pub struct AuditFileConfig {
     #[serde(default)]
     pub exclude_paths: Vec<String>,
 }
 
-impl RepoQaFileConfig {
+impl AuditFileConfig {
     pub fn load(repo_root: &Path) -> Result<Self, AuditError> {
         let config_path = repo_root.join(CONFIG_FILE_NAME);
         if !config_path.exists() {

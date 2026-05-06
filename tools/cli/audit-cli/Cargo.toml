@@ -1,19 +1,19 @@
 [package]
-name = "repo-qa-cli"
+name = "audit-cli"
 version = "0.1.0"
 edition = "2024"
-description = "CLI interface for repo-qa-api: the `repo-qa` command"
+description = "CLI interface for audit-api: the `audit` command"
 
 [[bin]]
-name = "repo-qa"
-path = "src/bin/repo-qa.rs"
+name = "audit"
+path = "src/bin/audit.rs"
 
 [lib]
-name = "repo_qa_cli"
+name = "audit_cli"
 path = "src/lib.rs"
 
 [dependencies]
-repo-qa-api = { path = "../../../crates/repo-qa-api" }
+audit-api = { path = "../../../crates/audit-api" }
 clap = { version = "4", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"

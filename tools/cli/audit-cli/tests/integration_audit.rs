@@ -2,12 +2,12 @@ use std::fs;
 use std::path::Path;
 
 use assert_cmd::Command;
-use repo_qa_api::audit::audit_repository;
-use repo_qa_api::models::{
+use audit_api::audit::audit;
+use audit_api::models::{
     AuditConfig,
     TrialStatus,
 };
-use repo_qa_cli::cli::{
+use audit_cli::cli::{
     CliOutput,
     parse_cli_from,
     run,
@@ -23,7 +23,7 @@ fn audit_collects_findings_and_prunes_stale_index_entries() {
     let repo = tempdir().expect("temp repo");
     write_sample_repo(repo.path());
 
-    let report = audit_repository(
+    let report = audit(
         repo.path(),
         AuditConfig {
             max_file_lines: 20,
@@ -67,7 +67,7 @@ fn audit_collects_findings_and_prunes_stale_index_entries() {
 
     fs::remove_file(repo.path().join("src/extra.rs")).expect("remove stale file");
 
-    let second_report = audit_repository(
+    let second_report = audit(
         repo.path(),
         AuditConfig {
             max_file_lines: 20,
@@ -170,7 +170,6 @@ fn cli_supports_json_and_text_output() {
     write_sample_repo(repo.path());
 
     let cli = parse_cli_from([
-        "repo-qa",
         "audit",
         repo.path().to_string_lossy().as_ref(),
         "--json",
@@ -183,7 +182,7 @@ fn cli_supports_json_and_text_output() {
 
     match run(cli).expect("run cli") {
         CliOutput::Json(value) => {
-            assert_eq!(value["service"], "repo-qa-mcp");
+            assert_eq!(value["service"], "audit-mcp");
             assert!(value["findings"].as_array().is_some_and(|findings| !findings.is_empty()));
             assert_unix_formatted_output_value(&value["repo_root"]);
             assert_unix_formatted_output_value(&value["index_database"]);
@@ -199,7 +198,6 @@ fn cli_supports_json_and_text_output() {
     }
 
     let text_cli = parse_cli_from([
-        "repo-qa",
         "audit",
         repo.path().to_string_lossy().as_ref(),
         "--max-file-lines",
@@ -214,9 +212,8 @@ fn cli_supports_json_and_text_output() {
         CliOutput::Json(_) => panic!("expected text output"),
     }
 
-    let mut command = Command::cargo_bin("repo-qa").expect("repo-qa binary");
+    let mut command = Command::cargo_bin("audit").expect("audit binary");
     command
-        .arg("audit")
         .arg(repo.path())
         .arg("--max-file-lines")
         .arg("20")
@@ -225,7 +222,7 @@ fn cli_supports_json_and_text_output() {
     command
         .assert()
         .success()
-        .stdout(predicates::str::contains("Repository QA Audit"));
+        .stdout(predicates::str::contains("Repository Audit"));
 }
 
 #[test]
@@ -244,7 +241,7 @@ edition = "2021"
     )
     .expect("write Cargo.toml");
     fs::write(
-        repo.path().join(".repo-qa.toml"),
+        repo.path().join(".audit.toml"),
         "exclude_paths = [\"crates/deps/\"]\n",
     )
     .expect("write config");
@@ -259,7 +256,7 @@ edition = "2021"
     )
     .expect("write excluded file");
 
-    let report = audit_repository(
+    let report = audit(
         repo.path(),
         AuditConfig {
             max_file_lines: 2,

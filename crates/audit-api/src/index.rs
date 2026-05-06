@@ -29,8 +29,8 @@ use crate::models::{
     SyncStats,
 };
 
-const INDEX_DIR: &str = ".repo-qa";
-const INDEX_DB: &str = "repo-qa.sqlite3";
+const INDEX_DIR: &str = ".audit";
+const INDEX_DB: &str = "audit.sqlite3";
 
 pub struct RepositoryIndex {
     repo_root: PathBuf,
@@ -336,7 +336,7 @@ fn is_excluded_path(
         let value = component.as_os_str().to_string_lossy();
         matches!(
             value.as_ref(),
-            ".git" | "target" | "node_modules" | ".repo-qa" | ".idea" | ".vscode"
+            ".git" | "target" | "node_modules" | ".audit" | ".idea" | ".vscode"
         )
     }) {
         return true;

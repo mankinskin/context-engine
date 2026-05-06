@@ -1,11 +1,11 @@
 [package]
-name = "repo-qa-api"
+name = "audit-api"
 version = "0.1.0"
 edition = "2024"
 description = "Core repository quality audit logic and data models"
 
 [lib]
-name = "repo_qa_api"
+name = "audit_api"
 path = "src/lib.rs"
 
 [dependencies]

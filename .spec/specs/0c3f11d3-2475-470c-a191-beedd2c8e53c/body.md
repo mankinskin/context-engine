@@ -1,12 +1,12 @@
-# repo-qa
+# audit
 
-`repo-qa` is the repository quality audit tool for this workspace. Its code is split across three layers:
+`audit` is the repository quality audit tool for this workspace. Its code is split across three layers:
 
-- `repo-qa-api` for audit logic, models, config loading, indexing, and quality trials
-- `repo-qa-cli` for the `repo-qa` command and output rendering
-- `repo-qa-mcp` for the thin MCP transport exposing `audit_repository`
+- `audit-api` for audit logic, models, config loading, indexing, and quality trials
+- `audit-cli` for the `audit` command and output rendering
+- `audit-mcp` for the thin MCP transport exposing `audit`
 
-Each run canonicalizes the repository root, loads `.repo-qa.toml`, synchronizes source files into `.repo-qa/repo-qa.sqlite3`, prunes stale index rows, collects repository quality metrics, stores an audit run record, and returns actionable findings plus aggregated repair instructions.
+Each run canonicalizes the repository root, loads `.audit.toml`, synchronizes source files into `.audit/audit.sqlite3`, prunes stale index rows, collects repository quality metrics, stores an audit run record, and returns actionable findings plus aggregated repair instructions.
 
 The current quality trials cover:
 

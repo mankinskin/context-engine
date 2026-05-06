@@ -1,14 +1,14 @@
 use std::path::PathBuf;
 
-use repo_qa_api::config::format_output_path;
-use repo_qa_mcp::server;
+use audit_api::config::format_output_path;
+use audit_mcp::server;
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("repo_qa_mcp=info".parse().unwrap()),
+                .add_directive("audit_mcp=info".parse().unwrap()),
         )
         .with_writer(std::io::stderr)
         .init();
@@ -18,7 +18,7 @@ async fn main() {
         PathBuf::from(".")
     });
 
-    eprintln!("repo-qa-mcp starting (base_dir: {})", format_output_path(&base_dir));
+    eprintln!("audit-mcp starting (base_dir: {})", format_output_path(&base_dir));
 
     if let Err(err) = server::run_mcp_server(base_dir).await {
         eprintln!("Fatal error: {err}");

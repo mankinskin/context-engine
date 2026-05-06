@@ -5,19 +5,19 @@
 Run a default audit:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- audit .
+cargo run -p audit-cli --bin audit -- .
 ```
 
 Request structured JSON:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- --json audit .
+cargo run -p audit-cli --bin audit -- --json .
 ```
 
 Override thresholds:
 
 ```bash
-cargo run -p repo-qa-cli --bin repo-qa -- audit . \
+cargo run -p audit-cli --bin audit -- . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85
@@ -28,10 +28,10 @@ cargo run -p repo-qa-cli --bin repo-qa -- audit . \
 Start the stdio server:
 
 ```bash
-cargo run -p repo-qa-mcp --bin repo-qa-mcp
+cargo run -p audit-mcp --bin audit-mcp
 ```
 
-Call `audit_repository` with a payload such as:
+Call `audit` with a payload such as:
 
 ```json
 {
@@ -44,7 +44,7 @@ Call `audit_repository` with a payload such as:
 
 ## Config
 
-`repo-qa` auto-loads `.repo-qa.toml` from the repository root.
+`audit` auto-loads `.audit.toml` from the repository root.
 
 ```toml
 exclude_paths = [

@@ -9,8 +9,8 @@ use rmcp::{
     tool, tool_handler, tool_router,
     transport::stdio,
 };
-use repo_qa_api::audit;
-use repo_qa_api::models::AuditConfig;
+use audit_api::audit;
+use audit_api::models::AuditConfig;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
@@ -27,13 +27,13 @@ pub struct AuditRepositoryInput {
 }
 
 #[derive(Clone)]
-pub struct RepoQaServer {
+pub struct AuditServer {
     base_dir: PathBuf,
     tool_router: ToolRouter<Self>,
     audit_lock: Arc<Mutex<()>>,
 }
 
-impl RepoQaServer {
+impl AuditServer {
     pub fn new(base_dir: PathBuf) -> Self {
         Self {
             base_dir,
@@ -50,12 +50,12 @@ impl RepoQaServer {
 }
 
 #[tool_router]
-impl RepoQaServer {
+impl AuditServer {
     #[tool(
-        name = "audit_repository",
+        name = "audit",
         description = "Run a repository quality audit and return structured metrics and findings."
     )]
-    async fn audit_repository(
+    async fn audit(
         &self,
         Parameters(input): Parameters<AuditRepositoryInput>,
     ) -> Result<CallToolResult, McpError> {
@@ -73,7 +73,7 @@ impl RepoQaServer {
             config.coverage_warn_below = coverage_warn_below;
         }
 
-        let report = audit::audit_repository(&repo_root, config)
+        let report = audit::audit(&repo_root, config)
             .map_err(|err| McpError::internal_error(err.to_string(), None))?;
 
         Self::json_result(&report)
@@ -81,11 +81,11 @@ impl RepoQaServer {
 }
 
 #[tool_handler]
-impl ServerHandler for RepoQaServer {
+impl ServerHandler for AuditServer {
     fn get_info(&self) -> rmcp::model::ServerInfo {
         rmcp::model::ServerInfo {
             instructions: Some(
-                "Use audit_repository to run one synchronized repository quality audit.".
+                "Use audit to run one synchronized repository quality audit.".
                     to_string(),
             ),
             capabilities: rmcp::model::ServerCapabilities::builder().enable_tools().build(),
@@ -97,9 +97,9 @@ impl ServerHandler for RepoQaServer {
 pub async fn run_mcp_server(
     base_dir: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let server = RepoQaServer::new(base_dir);
+    let server = AuditServer::new(base_dir);
 
-    tracing::info!("Starting repo-qa-mcp server on stdio");
+    tracing::info!("Starting audit-mcp server on stdio");
 
     let service = server.serve(stdio()).await.inspect_err(|err| {
         eprintln!("Server error: {err:?}");

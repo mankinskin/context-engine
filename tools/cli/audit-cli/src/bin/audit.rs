@@ -1,4 +1,4 @@
-use repo_qa_cli::cli::{
+use audit_cli::cli::{
 	CliOutput,
 	error_output,
 	parse_cli_from,

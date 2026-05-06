@@ -1,6 +1,6 @@
 # Output
 
-`repo-qa` returns an `AuditReport` with these top-level fields:
+`audit` returns an `AuditReport` with these top-level fields:
 
 - `service`
 - `repo_root`
@@ -53,6 +53,6 @@ The text view is a condensed rendering of the same report contract used in JSON 
 
 The transport split is intentional:
 
-- `repo-qa-api` produces the `AuditReport`
-- `repo-qa-cli` renders it for terminal use
-- `repo-qa-mcp` serializes it for MCP clients
+- `audit-api` produces the `AuditReport`
+- `audit-cli` renders it for terminal use
+- `audit-mcp` serializes it for MCP clients
