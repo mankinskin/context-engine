@@ -24,10 +24,10 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/memory-api/tools/ticket-vscode"
+        "--extensionDevelopmentPath=${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
       ],
       "outFiles": [
-        "${workspaceFolder}/memory-api/tools/ticket-vscode/out/**/*.js"
+        "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode/out/**/*.js"
       ],
       "preLaunchTask": "ticket-vscode: compile"
     },

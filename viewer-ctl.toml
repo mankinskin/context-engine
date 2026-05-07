@@ -65,7 +65,7 @@ build_cmd = ["npx", "vite", "build"]
 build_output = "tools/viewer/doc-viewer/static"
 
 [[frontend.prebuild]]
-dir = "viewer-api/tools/viewer/viewer-api/frontend/ts"
+dir = "memory-viewers/viewer-api/tools/viewer/viewer-api/frontend/ts"
 cmd = ["npm", "install"]
 condition = "missing:node_modules"
 
@@ -82,7 +82,7 @@ build_cmd = ["npx", "vite", "build"]
 build_output = "tools/viewer/log-viewer/static"
 
 [[frontend.prebuild]]
-dir = "viewer-api/tools/viewer/viewer-api/frontend/ts"
+dir = "memory-viewers/viewer-api/tools/viewer/viewer-api/frontend/ts"
 cmd = ["npm", "install"]
 condition = "missing:node_modules"
 
@@ -112,7 +112,7 @@ extra_assets = ["memory-viewers/spec-viewer/frontend/dioxus/public"]
 [[extension]]
 name = "ticket-vscode"
 kind = "vscode"
-source_dir = "memory-api/tools/ticket-vscode"
+source_dir = "memory-viewers/memory-api/tools/ticket-vscode"
 package_json = "package.json"
 build_cmd = ["npm", "run", "compile"]
 
