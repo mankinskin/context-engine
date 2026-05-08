@@ -1,0 +1,1 @@
+Example: if `cargo llvm-cov` is missing, `coverage.status` will be `unavailable` and `details` will explain why.

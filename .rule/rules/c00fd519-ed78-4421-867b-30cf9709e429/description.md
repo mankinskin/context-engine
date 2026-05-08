@@ -1,0 +1,1 @@
+Alternatively, use the MCP ticket tools (`mcp_ticket-mcp_next_tickets`, `mcp_ticket-mcp_list_tickets`, `mcp_ticket-mcp_health`, `mcp_ticket-mcp_board_show`) when the MCP server is running.

@@ -1,0 +1,4 @@
+- `collected`: metric ran successfully
+- `unavailable`: required tool is missing or the environment cannot provide the metric
+- `failed`: the metric execution itself failed
+- `not_applicable`: the metric does not apply to the current repo slice

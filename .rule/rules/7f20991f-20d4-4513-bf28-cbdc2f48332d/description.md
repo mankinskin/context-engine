@@ -1,0 +1,1 @@
+When adding a new storage-layer optimization, add a matching Criterion benchmark that shows the before/after comparison.

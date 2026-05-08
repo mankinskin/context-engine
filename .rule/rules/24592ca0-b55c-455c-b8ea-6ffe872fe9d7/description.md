@@ -1,0 +1,4 @@
+- `scanned_files`: files seen in the current walk
+- `updated_files`: files re-read because content or metadata changed
+- `reused_files`: unchanged files reused from the existing index
+- `pruned_files`: stale index rows deleted because the file was no longer seen

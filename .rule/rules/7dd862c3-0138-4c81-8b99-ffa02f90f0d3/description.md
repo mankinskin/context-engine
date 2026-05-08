@@ -1,0 +1,2 @@
+- Add or run a Criterion benchmark in `crates/<crate>/benches/`.
+- Confirm `phase3_get_indexed_many` is used instead of repeated `get_indexed()` calls.

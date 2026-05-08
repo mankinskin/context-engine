@@ -1,0 +1,22 @@
+id = "cb5e9d61-0366-4257-aedf-b1aff275efec"
+created_at = "2026-05-08T11:28:03.127717600+00:00"
+title = "Paths are relative to the repository root."
+state = "draft"
+body = "```toml\n# Paths are relative to the repository root.\n# Entries exclude matching directories and files from audit runs.\nexclude_paths = [\n  \"crates/deps/\",\n  \"target/\",\n]\n```"
+feedback_helpful_count = 0
+feedback_mixed_count = 0
+feedback_not_helpful_count = 0
+feedback_note_count = 0
+feedback_unresolved_count = 0
+file_kind = ".instructions"
+order_key = 24
+path_scopes = [".github/instructions/audit.instructions.md"]
+repo_scopes = ["context-engine", "memory-api"]
+section = "paths-are-relative-to-the-repository-root"
+sentence_anchors = []
+slug = "shared/instructions/audit/paths-are-relative-to-the-repository-root/l90"
+source_end_line = 97
+source_path = ".github/instructions/audit.instructions.md"
+source_repo = "context-engine"
+source_start_line = 90
+type = "rule-entry"

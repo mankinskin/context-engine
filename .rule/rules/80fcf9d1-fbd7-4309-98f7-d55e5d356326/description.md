@@ -1,0 +1,1 @@
+Treat text output as a readable projection of the JSON report, not as a separate contract.

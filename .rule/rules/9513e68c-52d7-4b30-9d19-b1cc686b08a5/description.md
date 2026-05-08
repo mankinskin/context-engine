@@ -1,0 +1,1 @@
+The MCP tool always returns the full structured `AuditReport` payload. Use it as the single synchronized read for repository quality state.

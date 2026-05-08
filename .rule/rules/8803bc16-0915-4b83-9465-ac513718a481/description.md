@@ -1,0 +1,1 @@
+Trial `status` values mean:

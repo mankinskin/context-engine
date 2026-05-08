@@ -1,0 +1,22 @@
+id = "384ad946-63e0-4b0e-9e6d-ce721eb41491"
+created_at = "2026-05-08T11:28:20.395487800+00:00"
+title = "Survey all new tickets"
+state = "draft"
+body = "# Survey all new tickets\n./target/debug/ticket.exe list --where state=new --json"
+feedback_helpful_count = 0
+feedback_mixed_count = 0
+feedback_not_helpful_count = 0
+feedback_note_count = 0
+feedback_unresolved_count = 0
+file_kind = ".instructions"
+order_key = 7
+path_scopes = [".github/instructions/ticket-system.instructions.md"]
+repo_scopes = ["context-engine", "memory-viewers", "memory-api"]
+section = "survey-all-new-tickets"
+sentence_anchors = []
+slug = "shared/instructions/ticket-system/survey-all-new-tickets/l35"
+source_end_line = 36
+source_path = ".github/instructions/ticket-system.instructions.md"
+source_repo = "context-engine"
+source_start_line = 35
+type = "rule-entry"

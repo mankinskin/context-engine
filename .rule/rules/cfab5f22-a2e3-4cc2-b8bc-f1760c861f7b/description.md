@@ -1,0 +1,5 @@
+- `file_length`: always summarizes indexed source files
+- `compiler_warnings`: count-style metric with `status`, `count`, and optional `details`
+- `test_results`: pass/fail totals plus success rate
+- `coverage`: line coverage summary
+- `static_metrics`: complexity summary over analyzed Rust functions

@@ -1,0 +1,1 @@
+Returns: `tickets_checked`, `finding_count`, `summary` (counts by check), `findings[]` (ticket_id, check, severity, message).

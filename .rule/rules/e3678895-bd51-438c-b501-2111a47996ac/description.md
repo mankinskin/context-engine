@@ -1,0 +1,5 @@
+- Fill in missing `description`, `priority`, or `type` fields on tickets you encounter.
+- Split vague tickets into concrete, actionable child tickets linked with `depends_on`.
+- Remove or merge duplicate tickets.
+- Verify that `in-implementation` tickets actually have an active owner/context; flag stale ones.
+- After any structural refactor, re-run `ticket health --all` and resolve reported issues.

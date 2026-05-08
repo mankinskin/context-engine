@@ -1,0 +1,22 @@
+id = "79072d96-8a70-4e68-ae7f-56dc40c75955"
+created_at = "2026-05-08T11:28:25.864280500+00:00"
+title = "Find what a completed ticket blocks"
+state = "draft"
+body = "```bash\n# Find what a completed ticket blocks\n./target/debug/ticket.exe topgraph <id> --json \\\n  | jq -r '.payload.nodes[] | select(.state==\"new\" or .state==\"ready\") | .id'\n```"
+feedback_helpful_count = 0
+feedback_mixed_count = 0
+feedback_not_helpful_count = 0
+feedback_note_count = 0
+feedback_unresolved_count = 0
+file_kind = ".instructions"
+order_key = 64
+path_scopes = [".github/instructions/ticket-system.instructions.md"]
+repo_scopes = ["context-engine", "memory-viewers", "memory-api"]
+section = "find-what-a-completed-ticket-blocks"
+sentence_anchors = []
+slug = "shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/l291"
+source_end_line = 295
+source_path = ".github/instructions/ticket-system.instructions.md"
+source_repo = "context-engine"
+source_start_line = 291
+type = "rule-entry"

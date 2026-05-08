@@ -1,0 +1,1 @@
+If MCP-facing behavior or docs changed, run documentation validation workflows.

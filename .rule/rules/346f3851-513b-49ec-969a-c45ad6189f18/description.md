@@ -1,0 +1,4 @@
+- A ticket transitions to `closed` (work milestone reached).
+- A batch of related tickets all reach `closed` or `in-implementation` together.
+- A dependency graph changes materially (new links added/removed).
+- A tracked bug is fixed and its ticket closed.

@@ -1,0 +1,3 @@
+- Run lint and typecheck in each affected frontend package.
+- Run nearest unit/component tests for changed UI code.
+- Run at least one browser-based end-to-end path that covers changed UX behavior.

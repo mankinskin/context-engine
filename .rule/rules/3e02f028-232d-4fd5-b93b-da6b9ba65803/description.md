@@ -1,0 +1,2 @@
+- Prefer a failing reproducer assertion before or with the fix.
+- Keep regression coverage focused on the reported failure mode.

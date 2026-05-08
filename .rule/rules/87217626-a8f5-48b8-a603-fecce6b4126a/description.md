@@ -1,0 +1,1 @@
+`pruned_files` is the stale-entry signal. A non-zero value means the run removed outdated index rows.

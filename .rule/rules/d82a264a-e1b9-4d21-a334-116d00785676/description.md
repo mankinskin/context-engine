@@ -1,0 +1,1 @@
+Use `findings` when you need to drive follow-up remediation work. Use `instructions` when you need a deduplicated repair checklist across the whole run.

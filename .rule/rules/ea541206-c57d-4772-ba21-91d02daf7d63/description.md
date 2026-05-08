@@ -1,0 +1,1 @@
+When `wip_limit_reached` is true, resolve existing entries before checking in.

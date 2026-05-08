@@ -1,0 +1,1 @@
+Default limit: 5 simultaneous active entries. Configure:

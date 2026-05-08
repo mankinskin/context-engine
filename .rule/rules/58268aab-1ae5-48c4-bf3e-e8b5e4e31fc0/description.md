@@ -1,0 +1,6 @@
+### Review Gate Before Closing
+
+**Never `close` a ticket directly from `in-implementation`.** Always move
+through `in-review` first, even for small changes.
+The schema's `required_states` enforcement prevents skipping `in-review`,
+but you should still follow the full progression diligently.

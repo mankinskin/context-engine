@@ -1,0 +1,3 @@
+- `max_file_lines = 400`
+- `max_cyclomatic_complexity = 12`
+- `coverage_warn_below = 80.0`

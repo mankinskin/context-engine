@@ -1,0 +1,5 @@
+- Loading, empty, success, and error states exist and are user-visible.
+- Error messages are actionable and include recovery options when possible.
+- Keyboard-only interaction works for affected controls and navigation.
+- Focus placement is deterministic after route or data transitions.
+- Rendering remains usable at desktop, tablet, and mobile widths.

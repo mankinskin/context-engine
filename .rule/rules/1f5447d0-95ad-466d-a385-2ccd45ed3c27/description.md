@@ -1,0 +1,5 @@
+- repo and index paths
+- sync counters
+- metric summaries
+- one line per finding
+- indented `fix:` lines for each finding-specific instruction

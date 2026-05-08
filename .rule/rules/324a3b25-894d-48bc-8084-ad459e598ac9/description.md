@@ -1,0 +1,7 @@
+- `category`: high-level issue group such as file length or coverage
+- `severity`: `low`, `medium`, or `high`
+- `summary`: short human-readable diagnosis
+- `path` and `line`: optional source location
+- `metric_name`, `metric_value`, `threshold`: raw measurement data
+- `instructions`: concrete fix steps for that finding
+- `evidence`: structured supporting details

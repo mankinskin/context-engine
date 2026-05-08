@@ -1,0 +1,2 @@
+- Add or run assertions that verify the viewer contract with context-api or ticket-api for changed endpoints.
+- For filesystem-backed behaviors, include path-handling and access-boundary assertions.

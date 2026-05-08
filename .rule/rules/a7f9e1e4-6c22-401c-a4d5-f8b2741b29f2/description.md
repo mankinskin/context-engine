@@ -1,0 +1,1 @@
+**Windows note**: always use `127.0.0.1` (not `localhost`) in `--base-url`. Windows resolves `localhost` to IPv6 (`::1`) first; the server only binds IPv4, causing ~2s connection timeout per request before fallback.

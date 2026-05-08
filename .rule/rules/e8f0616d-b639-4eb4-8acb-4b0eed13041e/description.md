@@ -1,0 +1,1 @@
+Prefer JSON output for automation and agent workflows. Prefer text output for local inspection.
