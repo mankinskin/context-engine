@@ -103,7 +103,7 @@ to = "cancelled"
 - [ ] AC4: Existing tickets in `in-validation` state are migrated to
       `in-review` (or `done` if validation was complete).
 - [ ] AC5: All references to removed states updated in:
-      - `.github/instructions/ticket-system.instructions.md`
+      - `.agents/instructions/ticket-system.instructions.md`
       - `AGENTS.md`
       - `.github/prompts/` files
       - CLI help text and examples
@@ -152,7 +152,7 @@ to = "cancelled"
 
 Update all documentation referencing the old states:
 
-- `.github/instructions/ticket-system.instructions.md`
+- `.agents/instructions/ticket-system.instructions.md`
   - State transition table
   - Review gate instructions
   - CLI examples
@@ -258,7 +258,7 @@ tree view immediately benefits from fewer, clearer states.
 - `crates/ticket-api/schemas/tracker-improvement.toml` — schema update
 - `crates/ticket-api/src/model/schema.rs` — verify no hardcoded state refs
 - `crates/ticket-api/src/storage/store.rs` — verify transition logic
-- `.github/instructions/ticket-system.instructions.md` — doc update
+- `.agents/instructions/ticket-system.instructions.md` — doc update
 - `AGENTS.md` — doc update
 - `.github/prompts/*.prompt.md` — doc updates
 - Migration script or batch commands for existing tickets

@@ -359,7 +359,7 @@ This would scan source files to:
 **Priority:** High  
 **Type:** Documentation
 
-Update `.github/instructions.md` and `AGENTS.md` to:
+Update `.agents/instructions.md` and `AGENTS.md` to:
 
 1. Add crate documentation to priority order:
    ```
@@ -383,7 +383,7 @@ Update `.github/instructions.md` and `AGENTS.md` to:
 
 3. Document MCP tool usage for crate docs
 
-**Files to modify:** `.github/instructions.md`, `AGENTS.md`
+**Files to modify:** `.agents/instructions.md`, `AGENTS.md`
 
 ---
 

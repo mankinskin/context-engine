@@ -21,7 +21,7 @@ This file provides:
 <!-- rule-api:entry id=8ebcaf3f-e36e-4914-b11b-7b403846ac9d slug=shared/github-readme/github-copilot-configuration/active-files/supporting-documentation/l16 -->
 ### Supporting Documentation
 **`COPILOT_INSTRUCTIONS_GUIDE.md`** - Meta-documentation about the custom instructions system
-**`.github/instructions/*.instructions.md`** - Path-scoped guidance loaded by file pattern
+**`.agents/instructions/*.instructions.md`** - Path-scoped guidance loaded by file pattern
 Includes `viewer-api-tools.instructions.md` for viewer-api-driven frontend and API/file integration work.
 **`.github/prompts/*.prompt.md`** - Explicit workflow prompts
 
@@ -36,7 +36,7 @@ GitHub Copilot supports multiple instruction file types (in priority order):
    - Used as the single source of core behavior
 
 <!-- rule-api:entry id=7024db8a-d420-49be-b16a-a6c2083a19a9 slug=shared/github-readme/github-copilot-configuration/github-copilot-instruction-types/l30 -->
-2. **Path-specific**: `.github/instructions/*.instructions.md`
+2. **Path-specific**: `.agents/instructions/*.instructions.md`
    - Target specific files/directories with glob patterns
    - Use for crate/tool/test specific guidance
    - Implemented in this repository
@@ -77,7 +77,7 @@ To verify Copilot is using these instructions:
 **In VS Code:**
 - Use Copilot Chat
 - Check "References" in response
-- Look for `AGENTS.md` and/or matching `.github/instructions/*.instructions.md`
+- Look for `AGENTS.md` and/or matching `.agents/instructions/*.instructions.md`
 
 <!-- rule-api:entry id=87c6008d-186f-4c68-ac8b-89ff25c94189 slug=shared/github-readme/github-copilot-configuration/verification/l67 -->
 **On GitHub.com:**
@@ -95,7 +95,7 @@ To verify Copilot is using these instructions:
 
 When updating instruction architecture:
 - keep `AGENTS.md` concise and stable
-- place domain rules in `.github/instructions/*.instructions.md`
+- place domain rules in `.agents/instructions/*.instructions.md`
 - place task recipes in `.github/prompts/*.prompt.md`
 - avoid duplicated copies of the same instruction content
 

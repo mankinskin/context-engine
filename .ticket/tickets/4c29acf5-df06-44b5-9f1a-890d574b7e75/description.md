@@ -217,8 +217,8 @@ In the "Use live sources first" numbered list, insert after point 2 (Known issue
 
 | File | Change |
 |------|--------|
-| `.github/instructions/ticket-system.instructions.md` | Add Board Coordination section + board show in Orientation bash block |
-| `.github/instructions/mcp-tools.instructions.md` | Add Board Tools section after existing tool table |
+| `.agents/instructions/ticket-system.instructions.md` | Add Board Coordination section + board show in Orientation bash block |
+| `.agents/instructions/mcp-tools.instructions.md` | Add Board Tools section after existing tool table |
 | `AGENTS.md` | Insert board show step in Discovery Protocol |
 
 ## Verification After Changes

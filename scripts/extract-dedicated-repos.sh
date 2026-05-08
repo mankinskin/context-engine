@@ -127,17 +127,17 @@ validate_project() {
 
 project_keep_regex() {
   local project="$1"
-  local common='\.gitignore|\.gitattributes|AGENTS\.md|\.github/README\.md|\.github/copilot-instructions\.md|\.github/COPILOT_INSTRUCTIONS_GUIDE\.md|\.github/agents(/|$)'
+  local common='\.gitignore|\.gitattributes|AGENTS\.md|\.github/README\.md|\.github/copilot-instructions\.md|\.github/COPILOT_INSTRUCTIONS_GUIDE\.md|\.agents/agents(/|$)'
 
   case "$project" in
     memory-api)
-      printf '%s' "(${common}|\\.github/instructions/(audit\.instructions\.md|mcp-tools\.instructions\.md|tests\.instructions\.md|ticket-system\.instructions\.md)|crates/(audit-api|memory-api|spec-api|ticket-api)(/|$)|tools/cli/(audit-cli|spec-cli|ticket-cli)(/|$)|tools/http/(spec-http|ticket-http)(/|$)|tools/mcp/(audit-mcp|spec-mcp|ticket-mcp)(/|$)|tools/ticket-vscode(/|$))"
+      printf '%s' "(${common}|\\.agents/instructions/(audit\.instructions\.md|mcp-tools\.instructions\.md|tests\.instructions\.md|ticket-system\.instructions\.md)|crates/(audit-api|memory-api|spec-api|ticket-api)(/|$)|tools/cli/(audit-cli|spec-cli|ticket-cli)(/|$)|tools/http/(spec-http|ticket-http)(/|$)|tools/mcp/(audit-mcp|spec-mcp|ticket-mcp)(/|$)|tools/ticket-vscode(/|$))"
       ;;
     viewer-api)
-      printf '%s' "(${common}|viewer-ctl\.toml|\\.github/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md)|tools/viewer/(viewer-api|viewer-ctl)(/|$))"
+      printf '%s' "(${common}|viewer-ctl\.toml|\\.agents/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md)|tools/viewer/(viewer-api|viewer-ctl)(/|$))"
       ;;
     memory-viewers)
-      printf '%s' "(${common}|\\.github/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md|ticket-system\.instructions\.md)|tools/viewer/(ticket-viewer|spec-viewer)(/|$))"
+      printf '%s' "(${common}|\\.agents/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md|ticket-system\.instructions\.md)|tools/viewer/(ticket-viewer|spec-viewer)(/|$))"
       ;;
     *)
       die "No keep-regex defined for project: $project"
