@@ -1,0 +1,146 @@
+targets:
+  - name: context-engine-agents
+    repo_scope: context-engine
+    file_kind: AGENTS
+    path_scope: AGENTS.md
+    output_path: AGENTS.md
+    nodes:
+      - name: agent-rules
+        title: Agent Rules
+        section: agent-rules
+        nodes:
+          - name: operating-principles
+            title: Operating Principles
+            section: agent-rules/operating-principles
+          - name: discovery-protocol-before-editing
+            title: Discovery Protocol (Before Editing)
+            section: agent-rules/discovery-protocol-before-editing
+          - name: task-routing
+            title: Task Routing
+            section: agent-rules/task-routing
+          - name: quality-gates
+            title: Quality Gates
+            section: agent-rules/quality-gates
+          - name: escalation-rules
+            title: Escalation Rules
+            section: agent-rules/escalation-rules
+          - name: fallback-mode-when-mcp-is-unavailable
+            title: Fallback Mode (When MCP Is Unavailable)
+            section: agent-rules/fallback-mode-when-mcp-is-unavailable
+          - name: canonical-sources
+            title: Canonical Sources
+            section: agent-rules/canonical-sources
+
+  - name: context-engine-github-readme
+    repo_scope: context-engine
+    file_kind: .github/README
+    path_scope: .github/README.md
+    output_path: .github/README.md
+    nodes:
+      - name: github-copilot-configuration
+        title: GitHub Copilot Configuration
+        section: github-copilot-configuration
+        nodes:
+          - name: active-files
+            title: Active Files
+            section: github-copilot-configuration/active-files
+            nodes:
+              - name: primary-agent-instructions
+                title: Primary Agent Instructions
+                section: github-copilot-configuration/active-files/primary-agent-instructions
+              - name: supporting-documentation
+                title: Supporting Documentation
+                section: github-copilot-configuration/active-files/supporting-documentation
+          - name: github-copilot-instruction-types
+            title: GitHub Copilot Instruction Types
+            section: github-copilot-configuration/github-copilot-instruction-types
+          - name: documentation-architecture
+            title: Documentation Architecture
+            section: github-copilot-configuration/documentation-architecture
+          - name: verification
+            title: Verification
+            section: github-copilot-configuration/verification
+            nodes:
+              - name: in-vs-code
+                title: In VS Code
+                section: github-copilot-configuration/verification/in-vs-code
+              - name: on-github-com
+                title: On GitHub.com
+                section: github-copilot-configuration/verification/on-github-com
+              - name: for-code-review
+                title: For Code Review
+                section: github-copilot-configuration/verification/for-code-review
+          - name: updates
+            title: Updates
+            section: github-copilot-configuration/updates
+          - name: references
+            title: References
+            section: github-copilot-configuration/references
+
+  - name: context-engine-copilot-instructions
+    repo_scope: context-engine
+    file_kind: copilot-instructions
+    path_scope: .github/copilot-instructions.md
+    output_path: .github/copilot-instructions.md
+    nodes:
+      - name: github-copilot-instructions
+        title: GitHub Copilot Instructions
+        section: github-copilot-instructions
+        nodes:
+          - name: source-of-truth
+            title: Source of Truth
+            section: github-copilot-instructions/source-of-truth
+          - name: optional-copilot-cli-mcp-config
+            title: Optional Copilot CLI MCP Config
+            section: github-copilot-instructions/optional-copilot-cli-mcp-config
+          - name: hooks
+            title: Hooks
+            section: github-copilot-instructions/hooks
+
+  - name: context-engine-instruction-audit
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/audit.instructions.md
+    output_path: .github/instructions/audit.instructions.md
+
+  - name: context-engine-instruction-context-http
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/context-http.instructions.md
+    output_path: .github/instructions/context-http.instructions.md
+
+  - name: context-engine-instruction-core-crates
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/core-crates.instructions.md
+    output_path: .github/instructions/core-crates.instructions.md
+
+  - name: context-engine-instruction-frontend
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/frontend.instructions.md
+    output_path: .github/instructions/frontend.instructions.md
+
+  - name: context-engine-instruction-mcp-tools
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/mcp-tools.instructions.md
+    output_path: .github/instructions/mcp-tools.instructions.md
+
+  - name: context-engine-instruction-tests
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/tests.instructions.md
+    output_path: .github/instructions/tests.instructions.md
+
+  - name: context-engine-instruction-ticket-system
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/ticket-system.instructions.md
+    output_path: .github/instructions/ticket-system.instructions.md
+
+  - name: context-engine-instruction-viewer-api-tools
+    repo_scope: context-engine
+    file_kind: .instructions
+    path_scope: .github/instructions/viewer-api-tools.instructions.md
+    output_path: .github/instructions/viewer-api-tools.instructions.md
