@@ -6,5 +6,8 @@ entities.db
 entities.db-shm
 entities.db-wal
 
+# generated target sync metadata (runtime state; rebuilt by rule sync)
+entities/
+
 # full-text search index (derived; rebuilt automatically)
 search_index/
