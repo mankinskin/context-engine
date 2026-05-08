@@ -42,9 +42,9 @@ dependencies = [
 ]
 
 [tasks.build-cli-tools]
-description = "Build context-cli, spec-cli, and ticket-cli (release)"
+description = "Build context-cli, spec-cli, ticket-cli, and audit-cli (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-cli", "-p", "spec-cli", "-p", "ticket-cli"]
+args = ["build", "--release", "-p", "context-cli", "-p", "spec-cli", "-p", "ticket-cli", "-p", "audit-cli"]
 
 [tasks.build-http-tools]
 description = "Build context-http, spec-http, and ticket-http (release)"
@@ -52,9 +52,9 @@ command = "cargo"
 args = ["build", "--release", "-p", "context-http", "-p", "spec-http", "-p", "ticket-http"]
 
 [tasks.build-mcp-tools]
-description = "Build context-mcp, spec-mcp, ticket-mcp, and mcp-runner (release)"
+description = "Build context-mcp, spec-mcp, ticket-mcp, audit-mcp, and mcp-runner (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "mcp-runner"]
+args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "audit-mcp", "-p", "mcp-runner"]
 
 [tasks.build-viewer-ctl]
 description = "Build the viewer-ctl lifecycle manager binary (release)"

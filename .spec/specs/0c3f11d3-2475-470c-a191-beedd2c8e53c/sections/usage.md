@@ -14,6 +14,27 @@ Request structured JSON:
 cargo run -p audit-cli --bin audit -- --json .
 ```
 
+Summarize findings by crate:
+
+```bash
+cargo run -p audit-cli --bin audit -- summary --by crate .
+```
+
+Summarize findings by severity as JSON:
+
+```bash
+cargo run -p audit-cli --bin audit -- --json summary --by severity .
+```
+
+Supported `--by` values:
+
+- `crate`
+- `package` (alias of `crate`)
+- `category`
+- `severity`
+- `metric`
+- `path`
+
 Override thresholds:
 
 ```bash
@@ -36,6 +57,18 @@ Call `audit` with a payload such as:
 ```json
 {
   "repo_root": ".",
+  "max_file_lines": 350,
+  "max_cyclomatic_complexity": 10,
+  "coverage_warn_below": 85.0
+}
+```
+
+Call `audit_summary` with a payload such as:
+
+```json
+{
+  "repo_root": ".",
+  "by": "crate",
   "max_file_lines": 350,
   "max_cyclomatic_complexity": 10,
   "coverage_warn_below": 85.0

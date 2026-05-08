@@ -11,6 +11,15 @@
 - `findings`
 - `instructions`
 
+`audit summary --by ...` and `audit_summary` return an `AuditSummaryReport` with these top-level fields:
+
+- `repo_root`
+- `by`
+- `total_findings`
+- `repo_wide_issues`
+- `groups`
+- `unmapped_paths`
+
 ## Sync semantics
 
 `sync.pruned_files` is the indicator that stale index rows were removed during this run. `updated_files` and `reused_files` distinguish newly refreshed content from unchanged index entries.
@@ -41,7 +50,7 @@ Each finding carries:
 
 ## Human-readable projection
 
-Text output shows:
+Text output from the full `audit` report shows:
 
 - repo path and index path
 - sync summary
@@ -49,10 +58,19 @@ Text output shows:
 - one finding line per issue
 - `fix:` lines under each finding
 
-The text view is a condensed rendering of the same report contract used in JSON mode.
+Text output from the summary view shows:
+
+- repo path
+- grouping key
+- total findings and repo-wide issues
+- one grouped count line per key
+- unmapped paths when crate ownership cannot be resolved
+
+Each text view is a condensed rendering of the same JSON contract used in automation mode.
 
 The transport split is intentional:
 
 - `audit-api` produces the `AuditReport`
-- `audit-cli` renders it for terminal use
-- `audit-mcp` serializes it for MCP clients
+- `audit-api` also produces the `AuditSummaryReport`
+- `audit-cli` renders both contracts for terminal use
+- `audit-mcp` serializes both contracts for MCP clients

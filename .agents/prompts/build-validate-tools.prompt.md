@@ -48,6 +48,9 @@ Run a smoke check on each CLI binary. Any non-zero exit code is a failure.
 
 # spec CLI
 ./target/release/spec --help
+
+# audit CLI
+./target/release/audit --help
 ```
 
 Expected: each command prints structured JSON or a help message and exits 0.
@@ -116,6 +119,10 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke-test","version":"0"}}}' \
   | timeout 3 ./target/release/spec-mcp 2>/dev/null \
   | python3 -c "import sys,json; d=json.load(sys.stdin); print('spec-mcp OK, server:', d['result']['serverInfo']['name'])"
+
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke-test","version":"0"}}}' \
+  | timeout 3 ./target/release/audit-mcp 2>/dev/null \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print('audit-mcp OK, server:', d['result']['serverInfo']['name'])"
 ```
 
 ## Step 6 — Run Playwright E2E tests in the browser
@@ -168,6 +175,7 @@ CLI tools
   [x] ticket list
   [x] context-cli --help
   [x] spec --help
+  [x] audit --help
 
 HTTP servers
   [x] ticket-http
@@ -184,6 +192,7 @@ MCP servers (initialize handshake)
   [x] ticket-mcp
   [x] context-mcp
   [x] spec-mcp
+  [x] audit-mcp
 
 Playwright E2E (no console errors, no missing assets, UI renders)
   [x] log-viewer
