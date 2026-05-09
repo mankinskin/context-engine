@@ -18,7 +18,7 @@ import './store/theme';  // initialize theme effects on startup
 export function App() {
   useGlobalKeyboard();
   const contentRef = usePanelFocus('content');
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [, setMobileOpen] = useState(false);
 
   useEffect(() => {
     (async () => {

@@ -77,19 +77,10 @@ condition = "missing:node_modules"
 [[frontend]]
 name = "log-viewer"
 serves = "log-viewer"
-source_dir = "tools/viewer/log-viewer/frontend"
-build_cmd = ["npx", "vite", "build"]
-build_output = "tools/viewer/log-viewer/static"
-
-[[frontend.prebuild]]
-dir = "memory-viewers/viewer-api/tools/viewer/viewer-api/frontend/ts"
-cmd = ["npm", "install"]
-condition = "missing:node_modules"
-
-[[frontend.prebuild]]
-dir = "tools/viewer/log-viewer/frontend"
-cmd = ["npm", "install"]
-condition = "missing:node_modules"
+source_dir = "tools/viewer/log-viewer/frontend/dioxus"
+build_cmd = ["trunk", "build", "--release"]
+build_output = "tools/viewer/log-viewer/frontend/dioxus/dist"
+extra_assets = ["tools/viewer/log-viewer/frontend/dioxus/public"]
 
 [[frontend]]
 name = "ticket-viewer"

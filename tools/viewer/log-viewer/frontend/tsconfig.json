@@ -6,6 +6,7 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "preserveSymlinks": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -30,7 +31,7 @@
         "./src/types/generated/index.ts"
       ],
       "@context-engine/viewer-api-frontend": [
-        "../../../../viewer-api/tools/viewer/viewer-api/frontend/ts/src/index.ts"
+        "./node_modules/@context-engine/viewer-api-frontend/src/index.ts"
       ]
     },
     "baseUrl": ".",
