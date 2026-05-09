@@ -178,13 +178,12 @@ Build it with: (cd tools/viewer/log-viewer/frontend && npx vite build)",
             {
                 Ok(server) => {
                     _dev_server = Some(server);
-                    frontend_mode =
-                        router::FrontendMode::DevProxy(vite_port);
-                }
+                    frontend_mode = router::FrontendMode::DevProxy(vite_port);
+                },
                 Err(e) => {
                     eprintln!("Failed to start Vite dev server: {}", e);
                     std::process::exit(1);
-                }
+                },
             }
         } else {
             _dev_server = None;
@@ -219,10 +218,7 @@ Build it with: (cd tools/viewer/log-viewer/frontend && npx vite build)",
 mod tests {
     use super::*;
     use axum_test::TestServer;
-    use source::{
-        detect_language,
-    };
-    use viewer_api::source::resolve_source_path;
+    use source::detect_language;
     use std::{
         collections::HashMap,
         fs,
@@ -233,6 +229,7 @@ mod tests {
         },
     };
     use tempfile::TempDir;
+    use viewer_api::source::resolve_source_path;
 
     /// Create a test app with a temporary log directory
     fn create_test_app() -> (TestServer, TempDir, TempDir) {
@@ -241,10 +238,16 @@ mod tests {
 
         let state = AppState {
             log_dir: log_dir.path().to_path_buf(),
-            signatures_dir: log_dir.path().parent().unwrap_or(log_dir.path()).join("debug_signatures"),
+            signatures_dir: log_dir
+                .path()
+                .parent()
+                .unwrap_or(log_dir.path())
+                .join("debug_signatures"),
             workspace_root: workspace_dir.path().to_path_buf(),
             parser: Arc::new(LogParser::new()),
-            source_backend: SourceBackend::Local { workspace_root: workspace_dir.path().to_path_buf() },
+            source_backend: SourceBackend::Local {
+                workspace_root: workspace_dir.path().to_path_buf(),
+            },
             sessions: Arc::new(RwLock::new(HashMap::new())),
         };
 

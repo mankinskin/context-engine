@@ -25,8 +25,7 @@ mod tests {
 
     #[test]
     fn test_filter_select() {
-        let filter =
-            JqFilter::compile("select(.level == \"ERROR\")").unwrap();
+        let filter = JqFilter::compile("select(.level == \"ERROR\")").unwrap();
 
         let error_doc = json!({"level": "ERROR", "title": "Bug"});
         let info_doc = json!({"level": "INFO", "title": "Guide"});

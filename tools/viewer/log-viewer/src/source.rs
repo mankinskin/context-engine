@@ -50,13 +50,14 @@ async fn fetch_content(
     state: &AppState,
     path: &str,
 ) -> Result<String, (StatusCode, Json<ErrorResponse>)> {
-    let location = state
-        .source_backend
-        .resolve_url_or_path(path)
-        .map_err(|e| {
-            warn!(error = %e, path = %path, "Invalid source path");
-            (StatusCode::BAD_REQUEST, Json(ErrorResponse { error: e }))
-        })?;
+    let location =
+        state
+            .source_backend
+            .resolve_url_or_path(path)
+            .map_err(|e| {
+                warn!(error = %e, path = %path, "Invalid source path");
+                (StatusCode::BAD_REQUEST, Json(ErrorResponse { error: e }))
+            })?;
 
     match location {
         SourceLocation::Path(full_path) => {
@@ -74,7 +75,7 @@ async fn fetch_content(
                     }),
                 )
             })
-        }
+        },
         SourceLocation::Url(url) => {
             debug!(url = %url, "Fetching remote source file");
             let response = reqwest::get(&url).await.map_err(|e| {
@@ -93,7 +94,10 @@ async fn fetch_content(
                 return Err((
                     StatusCode::NOT_FOUND,
                     Json(ErrorResponse {
-                        error: format!("Remote source file not found: {} (HTTP {})", path, status),
+                        error: format!(
+                            "Remote source file not found: {} (HTTP {})",
+                            path, status
+                        ),
                     }),
                 ));
             }
@@ -107,7 +111,7 @@ async fn fetch_content(
                     }),
                 )
             })
-        }
+        },
     }
 }
 

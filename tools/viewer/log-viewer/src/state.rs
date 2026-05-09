@@ -103,7 +103,10 @@ fn resolve_source_backend(
         (repo_cfg.repo_url.as_ref(), explicit_commit)
     {
         // Parse "https://github.com/owner/repo" -> owner/repo
-        if let Some(path) = repo_url.trim_end_matches('/').strip_prefix("https://github.com/") {
+        if let Some(path) = repo_url
+            .trim_end_matches('/')
+            .strip_prefix("https://github.com/")
+        {
             let parts: Vec<&str> = path.splitn(2, '/').collect();
             if parts.len() == 2 {
                 return SourceBackend::github(

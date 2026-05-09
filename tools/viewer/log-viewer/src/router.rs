@@ -55,14 +55,13 @@ pub fn create_router(
         .with_state(state);
 
     match frontend {
-        FrontendMode::Static(dir) => {
+        FrontendMode::Static(dir) =>
             if dir.exists() {
                 router = router.fallback_service(ServeDir::new(&dir));
-            }
-        }
+            },
         FrontendMode::DevProxy(port) => {
             router = router.merge(dev_proxy::dev_proxy_fallback(port));
-        }
+        },
     }
 
     router

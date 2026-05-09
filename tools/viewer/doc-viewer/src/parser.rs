@@ -3,11 +3,11 @@
 use crate::{
     helpers::unix_path,
     schema::{
-    CrateMetadata,
-    DocMetadata,
-    DocType,
-    ModuleMetadata,
-    PlanStatus,
+        CrateMetadata,
+        DocMetadata,
+        DocType,
+        ModuleMetadata,
+        PlanStatus,
     },
 };
 use regex::Regex;
@@ -146,7 +146,7 @@ pub fn parse_module_index(path: &Path) -> Result<ModuleMetadata, String> {
 /// Read a markdown file's content.
 pub fn read_markdown_file(path: &Path) -> Result<String, String> {
     fs::read_to_string(path)
-    .map_err(|e| format!("Failed to read {}: {}", unix_path(path), e))
+        .map_err(|e| format!("Failed to read {}: {}", unix_path(path), e))
 }
 
 #[cfg(test)]

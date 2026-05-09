@@ -14,11 +14,14 @@ use viewer_api::axum::{
         State,
     },
     http::{
+        header,
         HeaderMap,
         StatusCode,
-        header,
     },
-    response::{Json, IntoResponse},
+    response::{
+        IntoResponse,
+        Json,
+    },
 };
 
 use crate::{

@@ -142,7 +142,8 @@ impl Config {
                                 to_unix_path(&path)
                             );
                             // Remember config file directory for resolving relative paths
-                            config.config_dir = path.parent().map(|p| p.to_path_buf());
+                            config.config_dir =
+                                path.parent().map(|p| p.to_path_buf());
                             return Some(config);
                         },
                         Err(e) => {
@@ -221,7 +222,10 @@ impl Config {
     }
 
     /// Resolve a path that may be relative to the config file's directory.
-    fn resolve_path(&self, p: &PathBuf) -> PathBuf {
+    fn resolve_path(
+        &self,
+        p: &PathBuf,
+    ) -> PathBuf {
         if p.is_relative() {
             if let Some(base) = &self.config_dir {
                 return base.join(p);
@@ -264,7 +268,10 @@ impl Config {
             return self.resolve_path(p);
         }
         let log_dir = self.resolve_log_dir();
-        log_dir.parent().unwrap_or(&log_dir).join("debug_signatures")
+        log_dir
+            .parent()
+            .unwrap_or(&log_dir)
+            .join("debug_signatures")
     }
 
     /// Resolve static_dir (pre-built frontend assets for production).

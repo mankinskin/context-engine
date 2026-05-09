@@ -550,7 +550,9 @@ fn scan_crate_source_files(
                         if ext == "rs" {
                             let rel_path = path
                                 .strip_prefix(crate_dir)
-                                .map(|p| normalize_path_str(&p.to_string_lossy()))
+                                .map(|p| {
+                                    normalize_path_str(&p.to_string_lossy())
+                                })
                                 .unwrap_or_default();
                             let abs_path = unix_path(&path);
                             let vscode_uri = to_vscode_file_uri(&path);
@@ -576,7 +578,9 @@ fn scan_crate_source_files(
                         if ext == "yaml" || ext == "yml" || ext == "md" {
                             let rel_path = path
                                 .strip_prefix(crate_dir)
-                                .map(|p| normalize_path_str(&p.to_string_lossy()))
+                                .map(|p| {
+                                    normalize_path_str(&p.to_string_lossy())
+                                })
                                 .unwrap_or_default();
                             let abs_path = unix_path(&path);
                             let vscode_uri = to_vscode_file_uri(&path);

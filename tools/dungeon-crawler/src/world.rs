@@ -1,9 +1,23 @@
-use std::collections::{HashMap, HashSet};
 use rand::Rng;
+use std::collections::{
+    HashMap,
+    HashSet,
+};
 
-use crate::items::{self, Item};
-use crate::enemy::{self, Enemy};
-use crate::npc::{self, Npc};
+use crate::{
+    enemy::{
+        self,
+        Enemy,
+    },
+    items::{
+        self,
+        Item,
+    },
+    npc::{
+        self,
+        Npc,
+    },
+};
 
 /// Position type: signed to support infinite expansion in all directions.
 pub type Pos = (i32, i32);
@@ -32,7 +46,10 @@ pub struct Map {
 
 impl Map {
     /// Deterministic hash for a position — used to decide room existence & content.
-    fn pos_hash(&self, pos: Pos) -> u64 {
+    fn pos_hash(
+        &self,
+        pos: Pos,
+    ) -> u64 {
         let mut h = self.seed;
         h = h.wrapping_add((pos.0 as u64).wrapping_mul(0x9E3779B97F4A7C15));
         h = h.wrapping_add((pos.1 as u64).wrapping_mul(0x517CC1B727220A95));
@@ -45,8 +62,13 @@ impl Map {
     }
 
     /// Whether a room deterministically exists at `pos`.
-    fn room_should_exist(&self, pos: Pos) -> bool {
-        if pos == (0, 0) || pos == self.exit_pos { return true; }
+    fn room_should_exist(
+        &self,
+        pos: Pos,
+    ) -> bool {
+        if pos == (0, 0) || pos == self.exit_pos {
+            return true;
+        }
         // 60% density
         (self.pos_hash(pos) % 100) < 60
     }
@@ -64,7 +86,12 @@ impl Map {
 
     /// Ensure all positions within `radius` of `center` have been decided.
     /// New rooms get populated with enemies, NPCs, and items.
-    pub fn ensure_generated(&mut self, center: Pos, radius: i32, rng: &mut impl Rng) {
+    pub fn ensure_generated(
+        &mut self,
+        center: Pos,
+        radius: i32,
+        rng: &mut impl Rng,
+    ) {
         let mut new_rooms: Vec<Pos> = Vec::new();
 
         for dr in -radius..=radius {
@@ -75,14 +102,19 @@ impl Map {
                 }
                 self.decided.insert(pos);
                 if self.room_should_exist(pos) {
-                    let desc = ROOM_DESCS[self.pos_hash(pos) as usize % ROOM_DESCS.len()].to_string();
-                    self.rooms.insert(pos, Room {
-                        description: desc,
-                        enemy: None,
-                        npc: None,
-                        items: Vec::new(),
-                        visited: false,
-                    });
+                    let desc = ROOM_DESCS
+                        [self.pos_hash(pos) as usize % ROOM_DESCS.len()]
+                    .to_string();
+                    self.rooms.insert(
+                        pos,
+                        Room {
+                            description: desc,
+                            enemy: None,
+                            npc: None,
+                            items: Vec::new(),
+                            visited: false,
+                        },
+                    );
                     new_rooms.push(pos);
                 }
             }
@@ -90,7 +122,9 @@ impl Map {
 
         // Populate new rooms (skip origin and exit — those are pre-built)
         for pos in new_rooms {
-            if pos == (0, 0) || pos == self.exit_pos { continue; }
+            if pos == (0, 0) || pos == self.exit_pos {
+                continue;
+            }
             let h = self.pos_hash(pos);
             let tier = Self::tier_at(pos);
 
@@ -117,7 +151,11 @@ impl Map {
     }
 
     /// Reveal (mark visited) all rooms within `radius` of `center`.
-    pub fn reveal_area(&mut self, center: Pos, radius: u32) {
+    pub fn reveal_area(
+        &mut self,
+        center: Pos,
+        radius: u32,
+    ) {
         let r = radius as i32;
         for dr in -r..=r {
             for dc in -r..=r {
@@ -129,14 +167,17 @@ impl Map {
         }
     }
 
-    pub fn neighbors(&self, pos: Pos) -> Vec<(&'static str, Pos)> {
+    pub fn neighbors(
+        &self,
+        pos: Pos,
+    ) -> Vec<(&'static str, Pos)> {
         let mut result = Vec::new();
         let (r, c) = pos;
         let dirs: [(&str, Pos); 4] = [
             ("north", (r - 1, c)),
             ("south", (r + 1, c)),
-            ("west",  (r, c - 1)),
-            ("east",  (r, c + 1)),
+            ("west", (r, c - 1)),
+            ("east", (r, c + 1)),
         ];
         for (name, npos) in dirs {
             if self.rooms.contains_key(&npos) {
@@ -146,17 +187,27 @@ impl Map {
         result
     }
 
-    pub fn exits(&self, pos: Pos) -> Vec<&'static str> {
-        self.neighbors(pos).into_iter().map(|(name, _)| name).collect()
+    pub fn exits(
+        &self,
+        pos: Pos,
+    ) -> Vec<&'static str> {
+        self.neighbors(pos)
+            .into_iter()
+            .map(|(name, _)| name)
+            .collect()
     }
 
-    pub fn move_dir(&self, pos: Pos, dir: &str) -> Option<Pos> {
+    pub fn move_dir(
+        &self,
+        pos: Pos,
+        dir: &str,
+    ) -> Option<Pos> {
         let (r, c) = pos;
         let target = match dir {
             "north" | "n" => (r - 1, c),
             "south" | "s" => (r + 1, c),
-            "west"  | "w" => (r, c - 1),
-            "east"  | "e" => (r, c + 1),
+            "west" | "w" => (r, c - 1),
+            "east" | "e" => (r, c + 1),
             _ => return None,
         };
         if self.rooms.contains_key(&target) {
@@ -199,7 +250,11 @@ pub fn generate_dungeon(rng: &mut impl Rng) -> Map {
     let exit_dist = rng.gen_range(25..=30) as i32;
     let exit_r = rng.gen_range(-exit_dist..=exit_dist);
     let remaining = exit_dist - exit_r.abs();
-    let exit_c = if rng.gen_bool(0.5) { remaining } else { -remaining };
+    let exit_c = if rng.gen_bool(0.5) {
+        remaining
+    } else {
+        -remaining
+    };
     let exit_pos: Pos = (exit_r, exit_c);
 
     let mut map = Map {
@@ -214,7 +269,9 @@ pub fn generate_dungeon(rng: &mut impl Rng) -> Map {
 
     // Set up start room
     if let Some(start) = map.rooms.get_mut(&(0, 0)) {
-        start.description = "The dungeon entrance. Faint light filters in from behind you.".into();
+        start.description =
+            "The dungeon entrance. Faint light filters in from behind you."
+                .into();
         start.visited = true;
         start.enemy = None;
         start.npc = None;
@@ -224,7 +281,9 @@ pub fn generate_dungeon(rng: &mut impl Rng) -> Map {
     // Pre-generate and set up exit room
     map.ensure_generated(exit_pos, 1, rng);
     if let Some(exit) = map.rooms.get_mut(&exit_pos) {
-        exit.description = "A vast cavern. A DRAGON guards a massive golden door — the EXIT!".into();
+        exit.description =
+            "A vast cavern. A DRAGON guards a massive golden door — the EXIT!"
+                .into();
         exit.enemy = Some(enemy::dragon());
         exit.npc = None;
     }
@@ -235,7 +294,11 @@ pub fn generate_dungeon(rng: &mut impl Rng) -> Map {
 // ── Map Display ─────────────────────────────────────────────────────────
 
 /// Draw the map as ASCII art showing only rooms within `view_dist` of the player.
-pub fn draw_map(map: &Map, player_pos: Pos, view_dist: i32) -> String {
+pub fn draw_map(
+    map: &Map,
+    player_pos: Pos,
+    view_dist: i32,
+) -> String {
     let mut lines = Vec::new();
 
     let min_r = player_pos.0 - view_dist;
@@ -309,6 +372,8 @@ pub fn draw_map(map: &Map, player_pos: Pos, view_dist: i32) -> String {
     }
 
     lines.push(String::new());
-    lines.push("@ You  X Exit  E Enemy  N NPC  ? Item  # Unexplored  /// Wall".into());
+    lines.push(
+        "@ You  X Exit  E Enemy  N NPC  ? Item  # Unexplored  /// Wall".into(),
+    );
     lines.join("\n")
 }

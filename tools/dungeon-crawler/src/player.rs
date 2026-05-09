@@ -1,4 +1,11 @@
-use crate::items::{Item, ItemKind, PotionEffect, BookEffect, Stat, Spell};
+use crate::items::{
+    BookEffect,
+    Item,
+    ItemKind,
+    PotionEffect,
+    Spell,
+    Stat,
+};
 
 // ── Stats ───────────────────────────────────────────────────────────────
 
@@ -12,10 +19,18 @@ pub struct Stats {
 
 impl Stats {
     pub fn new() -> Self {
-        Stats { strength: 5, dexterity: 5, intelligence: 5, wisdom: 5 }
+        Stats {
+            strength: 5,
+            dexterity: 5,
+            intelligence: 5,
+            wisdom: 5,
+        }
     }
 
-    pub fn get(&self, stat: &Stat) -> i32 {
+    pub fn get(
+        &self,
+        stat: &Stat,
+    ) -> i32 {
         match stat {
             Stat::Strength => self.strength,
             Stat::Dexterity => self.dexterity,
@@ -24,7 +39,11 @@ impl Stats {
         }
     }
 
-    pub fn add(&mut self, stat: &Stat, amount: i32) {
+    pub fn add(
+        &mut self,
+        stat: &Stat,
+        amount: i32,
+    ) {
         match stat {
             Stat::Strength => self.strength += amount,
             Stat::Dexterity => self.dexterity += amount,
@@ -56,7 +75,12 @@ pub struct Inventory {
 
 impl Inventory {
     pub fn new() -> Self {
-        Inventory { items: Vec::new(), weapon: None, armor: None, backpack: None }
+        Inventory {
+            items: Vec::new(),
+            weapon: None,
+            armor: None,
+            backpack: None,
+        }
     }
 
     pub fn max_slots(&self) -> usize {
@@ -82,7 +106,10 @@ impl Inventory {
             + self.backpack.as_ref().map_or(0, |i| i.weight);
         let reduction = match &self.backpack {
             Some(item) => match &item.kind {
-                ItemKind::Backpack { weight_reduction_pct, .. } => *weight_reduction_pct,
+                ItemKind::Backpack {
+                    weight_reduction_pct,
+                    ..
+                } => *weight_reduction_pct,
                 _ => 0,
             },
             None => 0,
@@ -90,11 +117,18 @@ impl Inventory {
         raw * (100 - reduction) / 100
     }
 
-    pub fn max_weight(&self, strength: i32) -> u32 {
+    pub fn max_weight(
+        &self,
+        strength: i32,
+    ) -> u32 {
         (20 + strength * 3).max(0) as u32
     }
 
-    pub fn can_add(&self, item: &Item, strength: i32) -> Result<(), &'static str> {
+    pub fn can_add(
+        &self,
+        item: &Item,
+        strength: i32,
+    ) -> Result<(), &'static str> {
         if self.used_slots() >= self.max_slots() {
             return Err("Inventory full (no free slots)");
         }
@@ -106,9 +140,14 @@ impl Inventory {
         Ok(())
     }
 
-    pub fn find_by_name(&self, name: &str) -> Option<usize> {
+    pub fn find_by_name(
+        &self,
+        name: &str,
+    ) -> Option<usize> {
         let name_lower = name.to_lowercase();
-        self.items.iter().position(|item| item.name.to_lowercase().contains(&name_lower))
+        self.items
+            .iter()
+            .position(|item| item.name.to_lowercase().contains(&name_lower))
     }
 }
 
@@ -183,19 +222,31 @@ impl Player {
         }
     }
 
-    pub fn effective_stat(&self, stat: &Stat) -> i32 {
+    pub fn effective_stat(
+        &self,
+        stat: &Stat,
+    ) -> i32 {
         let base = self.stats.get(stat);
-        let buff_bonus: i32 = self.buffs.iter()
+        let buff_bonus: i32 = self
+            .buffs
+            .iter()
             .filter(|b| &b.stat == stat)
             .map(|b| b.amount)
             .sum();
         base + buff_bonus
     }
 
-    pub fn attack_damage(&self, rng: &mut impl rand::Rng) -> i32 {
+    pub fn attack_damage(
+        &self,
+        rng: &mut impl rand::Rng,
+    ) -> i32 {
         let (min_dmg, max_dmg, scaling) = match &self.inventory.weapon {
             Some(item) => match &item.kind {
-                ItemKind::Weapon { min_dmg, max_dmg, scaling } => (*min_dmg, *max_dmg, scaling.clone()),
+                ItemKind::Weapon {
+                    min_dmg,
+                    max_dmg,
+                    scaling,
+                } => (*min_dmg, *max_dmg, scaling.clone()),
                 _ => (1, 2, Stat::Strength),
             },
             None => (1, 2, Stat::Strength),
@@ -236,7 +287,10 @@ impl Player {
         }
     }
 
-    pub fn use_potion(&mut self, index: usize) -> Option<String> {
+    pub fn use_potion(
+        &mut self,
+        index: usize,
+    ) -> Option<String> {
         if index >= self.inventory.items.len() {
             return None;
         }
@@ -247,13 +301,19 @@ impl Player {
                     PotionEffect::Health(amount) => {
                         let heal = (*amount).min(self.max_hp - self.hp);
                         self.hp += heal;
-                        format!("Restored {} HP! (HP: {}/{})", heal, self.hp, self.max_hp)
-                    }
+                        format!(
+                            "Restored {} HP! (HP: {}/{})",
+                            heal, self.hp, self.max_hp
+                        )
+                    },
                     PotionEffect::Mana(amount) => {
                         let restore = (*amount).min(self.max_mana - self.mana);
                         self.mana += restore;
-                        format!("Restored {} mana! (Mana: {}/{})", restore, self.mana, self.max_mana)
-                    }
+                        format!(
+                            "Restored {} mana! (Mana: {}/{})",
+                            restore, self.mana, self.max_mana
+                        )
+                    },
                     PotionEffect::StrengthBuff { amount, turns } => {
                         self.buffs.push(Buff {
                             name: "Strength Elixir".into(),
@@ -262,7 +322,7 @@ impl Player {
                             turns_remaining: *turns,
                         });
                         format!("+{} STR for {} turns!", amount, turns)
-                    }
+                    },
                     PotionEffect::SwiftnessBuff { amount, turns } => {
                         self.buffs.push(Buff {
                             name: "Swiftness".into(),
@@ -271,16 +331,19 @@ impl Player {
                             turns_remaining: *turns,
                         });
                         format!("+{} DEX for {} turns!", amount, turns)
-                    }
+                    },
                 };
                 self.inventory.items.remove(index);
                 Some(msg)
-            }
+            },
             _ => None,
         }
     }
 
-    pub fn use_book(&mut self, index: usize) -> Option<String> {
+    pub fn use_book(
+        &mut self,
+        index: usize,
+    ) -> Option<String> {
         if index >= self.inventory.items.len() {
             return None;
         }
@@ -295,22 +358,28 @@ impl Player {
                         let name = spell.name().to_string();
                         self.known_spells.push(spell.clone());
                         format!("You learned {}!", name)
-                    }
+                    },
                     BookEffect::RevealArea(radius) => {
-                        format!("The map reveals rooms within {} tiles!", radius) // handled by game.rs
-                    }
+                        format!(
+                            "The map reveals rooms within {} tiles!",
+                            radius
+                        ) // handled by game.rs
+                    },
                     BookEffect::SkillPoints(pts) => {
                         self.skill_points += pts;
-                        format!("Gained {} skill points! (Total: {})", pts, self.skill_points)
-                    }
+                        format!(
+                            "Gained {} skill points! (Total: {})",
+                            pts, self.skill_points
+                        )
+                    },
                     BookEffect::RevealEnemies => {
                         self.enemies_revealed = true;
                         "You can now see enemy stats before fighting!".into()
-                    }
+                    },
                 };
                 self.inventory.items.remove(index);
                 Some(msg)
-            }
+            },
             _ => None,
         }
     }

@@ -118,7 +118,10 @@ mod tests {
     fn normalizes_unix_paths() {
         let path = Path::new("C:\\Users\\test\\file.txt");
         assert_eq!(unix_path(path), "C:/Users/test/file.txt");
-        assert_eq!(normalize_path_str("src\\graph\\mod.rs"), "src/graph/mod.rs");
+        assert_eq!(
+            normalize_path_str("src\\graph\\mod.rs"),
+            "src/graph/mod.rs"
+        );
     }
 
     #[test]

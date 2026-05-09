@@ -4,8 +4,15 @@
 /// Edge columns in SQLite: from_id, to_id, kind, created_at
 ///
 /// Usage: migrate-edges <path/to/.ticket>
-use redb::{Database, ReadableTable, TableDefinition};
-use rusqlite::{Connection, params};
+use redb::{
+    Database,
+    ReadableTable,
+    TableDefinition,
+};
+use rusqlite::{
+    params,
+    Connection,
+};
 
 const EDGES: TableDefinition<&str, ()> = TableDefinition::new("edges");
 
@@ -29,7 +36,7 @@ fn main() {
             eprintln!("Could not open 'edges' table in redb: {e}");
             eprintln!("The old database may have no edges.");
             return;
-        }
+        },
     };
 
     let mut edges: Vec<(String, String, String)> = Vec::new();
@@ -38,7 +45,11 @@ fn main() {
         let key = k.value().to_string();
         let parts: Vec<&str> = key.splitn(3, '|').collect();
         if parts.len() == 3 {
-            edges.push((parts[0].to_string(), parts[1].to_string(), parts[2].to_string()));
+            edges.push((
+                parts[0].to_string(),
+                parts[1].to_string(),
+                parts[2].to_string(),
+            ));
         } else {
             eprintln!("Skipping malformed edge key: {key}");
         }
@@ -51,8 +62,10 @@ fn main() {
     }
 
     // Open SQLite and insert.
-    let conn = Connection::open(&sqlite_path).expect("failed to open tickets.db");
-    conn.execute_batch("PRAGMA journal_mode=WAL;").expect("WAL pragma failed");
+    let conn =
+        Connection::open(&sqlite_path).expect("failed to open tickets.db");
+    conn.execute_batch("PRAGMA journal_mode=WAL;")
+        .expect("WAL pragma failed");
 
     let now = chrono_now();
     let mut inserted = 0usize;
@@ -65,7 +78,11 @@ fn main() {
                 params![from, to, kind, now],
             )
             .expect("failed to insert edge");
-        if rows > 0 { inserted += 1; } else { skipped += 1; }
+        if rows > 0 {
+            inserted += 1;
+        } else {
+            skipped += 1;
+        }
     }
 
     println!("Migrated {inserted} edge(s) ({skipped} already existed).");
@@ -73,7 +90,10 @@ fn main() {
 
 fn chrono_now() -> String {
     // RFC3339 UTC timestamp without pulling in chrono.
-    use std::time::{SystemTime, UNIX_EPOCH};
+    use std::time::{
+        SystemTime,
+        UNIX_EPOCH,
+    };
     let secs = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()

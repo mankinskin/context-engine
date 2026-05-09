@@ -1,10 +1,19 @@
-use std::env;
-use std::ffi::OsString;
-use std::fs;
-use std::io;
-use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode, Stdio};
-use std::time::SystemTime;
+use std::{
+    env,
+    ffi::OsString,
+    fs,
+    io,
+    path::{
+        Path,
+        PathBuf,
+    },
+    process::{
+        Command,
+        ExitCode,
+        Stdio,
+    },
+    time::SystemTime,
+};
 
 fn main() -> ExitCode {
     match run() {
@@ -12,7 +21,7 @@ fn main() -> ExitCode {
         Err(err) => {
             eprintln!("mcp-runner: {err}");
             ExitCode::from(1)
-        }
+        },
     }
 }
 
@@ -33,7 +42,10 @@ fn run() -> io::Result<ExitCode> {
     if !tool_manifest.exists() {
         return Err(io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Unknown tool '{tool_name}' (missing {})", tool_manifest.display()),
+            format!(
+                "Unknown tool '{tool_name}' (missing {})",
+                tool_manifest.display()
+            ),
         ));
     }
 
@@ -78,7 +90,9 @@ fn find_workspace_root() -> io::Result<PathBuf> {
     }
 
     let exe = env::current_exe()?;
-    if let Some(root) = find_workspace_from(exe.parent().unwrap_or(Path::new("."))) {
+    if let Some(root) =
+        find_workspace_from(exe.parent().unwrap_or(Path::new(".")))
+    {
         return Ok(root);
     }
 
@@ -101,7 +115,10 @@ fn is_workspace_root(path: &Path) -> bool {
     path.join("Cargo.toml").is_file() && path.join("tools").is_dir()
 }
 
-fn preferred_exe_path(workspace_root: &Path, tool_name: &str) -> PathBuf {
+fn preferred_exe_path(
+    workspace_root: &Path,
+    tool_name: &str,
+) -> PathBuf {
     #[cfg(windows)]
     {
         workspace_root
@@ -119,7 +136,10 @@ fn preferred_exe_path(workspace_root: &Path, tool_name: &str) -> PathBuf {
     }
 }
 
-fn existing_exe_path(workspace_root: &Path, tool_name: &str) -> Option<PathBuf> {
+fn existing_exe_path(
+    workspace_root: &Path,
+    tool_name: &str,
+) -> Option<PathBuf> {
     let release_dir = workspace_root.join("target").join("release");
     let exe_with_ext = release_dir.join(format!("{tool_name}.exe"));
     let exe_no_ext = release_dir.join(tool_name);
@@ -139,12 +159,14 @@ fn should_build(
     tool_dir: &Path,
     exe_path: &Path,
 ) -> io::Result<bool> {
-    if !exe_path.exists() && existing_exe_path(workspace_root, tool_name).is_none() {
+    if !exe_path.exists()
+        && existing_exe_path(workspace_root, tool_name).is_none()
+    {
         return Ok(true);
     }
 
-    let existing_exe =
-        existing_exe_path(workspace_root, tool_name).unwrap_or_else(|| exe_path.to_path_buf());
+    let existing_exe = existing_exe_path(workspace_root, tool_name)
+        .unwrap_or_else(|| exe_path.to_path_buf());
 
     if !existing_exe.exists() {
         return Ok(true);
@@ -165,12 +187,17 @@ fn should_build(
         return Ok(true);
     }
 
-    let viewer_manifest = workspace_root.join("tools").join("viewer-api").join("Cargo.toml");
-    if viewer_manifest.exists() && modified_time(&viewer_manifest)? > exe_mtime {
+    let viewer_manifest = workspace_root
+        .join("tools")
+        .join("viewer-api")
+        .join("Cargo.toml");
+    if viewer_manifest.exists() && modified_time(&viewer_manifest)? > exe_mtime
+    {
         return Ok(true);
     }
 
-    let viewer_src = workspace_root.join("tools").join("viewer-api").join("src");
+    let viewer_src =
+        workspace_root.join("tools").join("viewer-api").join("src");
     if newest_rs_mtime(&viewer_src)?
         .map(|t| t > exe_mtime)
         .unwrap_or(false)
@@ -181,7 +208,10 @@ fn should_build(
     Ok(false)
 }
 
-fn build_tool(tool_manifest: &Path, tool_name: &str) -> io::Result<()> {
+fn build_tool(
+    tool_manifest: &Path,
+    tool_name: &str,
+) -> io::Result<()> {
     let output = Command::new("cargo")
         .arg("build")
         .arg("--release")
@@ -228,13 +258,17 @@ fn newest_rs_mtime(path: &Path) -> io::Result<Option<SystemTime>> {
     Ok(newest)
 }
 
-fn walk_rs_files(path: &Path, on_file: &mut dyn FnMut(&Path)) -> io::Result<()> {
+fn walk_rs_files(
+    path: &Path,
+    on_file: &mut dyn FnMut(&Path),
+) -> io::Result<()> {
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let entry_path = entry.path();
         if entry.file_type()?.is_dir() {
             walk_rs_files(&entry_path, on_file)?;
-        } else if entry_path.extension().and_then(|s| s.to_str()) == Some("rs") {
+        } else if entry_path.extension().and_then(|s| s.to_str()) == Some("rs")
+        {
             on_file(&entry_path);
         }
     }
@@ -244,7 +278,8 @@ fn walk_rs_files(path: &Path, on_file: &mut dyn FnMut(&Path)) -> io::Result<()> 
 
 fn exit_code_from_status(code: Option<i32>) -> ExitCode {
     match code {
-        Some(value) if (0..=255).contains(&value) => ExitCode::from(value as u8),
+        Some(value) if (0..=255).contains(&value) =>
+            ExitCode::from(value as u8),
         Some(_) => ExitCode::from(1),
         None => ExitCode::from(1),
     }
