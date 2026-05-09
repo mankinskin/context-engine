@@ -108,9 +108,16 @@ fn has_built_static_frontend(dir: &Path) -> bool {
     };
 
     // Built Vite output points at hashed /assets bundles.
-    index_html.contains("/assets/index-")
+    let vite_build = index_html.contains("/assets/index-")
         // Dev index should never be served in static mode.
-        && !index_html.contains("/src/main.tsx")
+        && !index_html.contains("/src/main.tsx");
+
+    // Built Trunk output includes wasm bootstrap and generated wasm artifact.
+    let trunk_build = index_html.contains("_bg.wasm")
+        && (index_html.contains("import init")
+            || index_html.contains("TrunkApplicationStarted"));
+
+    vite_build || trunk_build
 }
 
 #[tokio::main]
@@ -153,7 +160,7 @@ async fn main() {
         if force_static && !static_available {
             eprintln!(
                 "--static requested but no built frontend was found in {}. \
-Build it with: (cd tools/viewer/log-viewer/frontend && npx vite build)",
+Build it with either:\n  (cd tools/viewer/log-viewer/frontend && npx vite build)\n  (cd tools/viewer/log-viewer/frontend/dioxus && trunk build --release)",
                 to_unix_path(&static_dir)
             );
             std::process::exit(1);

@@ -210,6 +210,20 @@ impl Config {
             self.workspace_root = Some(PathBuf::from(workspace_root));
         }
 
+        // STATIC_DIR / LOG_VIEWER_STATIC_DIR override config file
+        if let Ok(static_dir) = env::var("STATIC_DIR")
+            .or_else(|_| env::var("LOG_VIEWER_STATIC_DIR"))
+        {
+            self.static_dir = Some(PathBuf::from(static_dir));
+        }
+
+        // FRONTEND_DIR / LOG_VIEWER_FRONTEND_DIR override config file
+        if let Ok(frontend_dir) = env::var("FRONTEND_DIR")
+            .or_else(|_| env::var("LOG_VIEWER_FRONTEND_DIR"))
+        {
+            self.frontend_dir = Some(PathBuf::from(frontend_dir));
+        }
+
         // LOG_LEVEL overrides config file
         if let Ok(level) = env::var("LOG_LEVEL") {
             self.logging.level = level;
