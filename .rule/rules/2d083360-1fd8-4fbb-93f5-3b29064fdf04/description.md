@@ -1,3 +1,3 @@
 ```bash
-cargo run -p audit-cli --bin audit -- --json .
+cargo run -p audit-cli --bin audit -- --json run .
 ```

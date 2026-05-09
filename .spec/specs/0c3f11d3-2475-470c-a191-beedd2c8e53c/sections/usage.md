@@ -5,13 +5,13 @@
 Run a default audit:
 
 ```bash
-cargo run -p audit-cli --bin audit -- .
+cargo run -p audit-cli --bin audit -- run .
 ```
 
 Request structured JSON:
 
 ```bash
-cargo run -p audit-cli --bin audit -- --json .
+cargo run -p audit-cli --bin audit -- --json run .
 ```
 
 Summarize findings by crate:
@@ -38,7 +38,7 @@ Supported `--by` values:
 Override thresholds:
 
 ```bash
-cargo run -p audit-cli --bin audit -- . \
+cargo run -p audit-cli --bin audit -- run . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85

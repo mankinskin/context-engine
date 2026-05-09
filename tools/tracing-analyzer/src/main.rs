@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use std::path::{
     Path,
     PathBuf,
@@ -39,6 +39,12 @@ struct Args {
 }
 
 fn main() {
+    if std::env::args_os().len() == 1 {
+        let mut command = Args::command();
+        print!("{}", command.render_long_help());
+        return;
+    }
+
     let args = Args::parse();
 
     let source_files = collect_source_files(&args.path);

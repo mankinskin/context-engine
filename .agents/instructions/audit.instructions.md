@@ -46,7 +46,7 @@ Basic audit:
 
 <!-- rule-api:entry id=c94cae90-a606-4f6e-bc56-a2fc96cf7104 slug=shared/instructions/audit/audit-guidance/cli-usage/l38 -->
 ```bash
-cargo run -p audit-cli --bin audit -- .
+cargo run -p audit-cli --bin audit -- run .
 ```
 
 <!-- rule-api:entry id=06e37556-0516-4c4f-91be-3ea19a20b86a slug=shared/instructions/audit/audit-guidance/cli-usage/l42 -->
@@ -54,7 +54,7 @@ Machine-readable output:
 
 <!-- rule-api:entry id=2d083360-1fd8-4fbb-93f5-3b29064fdf04 slug=shared/instructions/audit/audit-guidance/cli-usage/l44 -->
 ```bash
-cargo run -p audit-cli --bin audit -- --json .
+cargo run -p audit-cli --bin audit -- --json run .
 ```
 
 <!-- rule-api:entry id=e0241e95-5a78-43c2-9cac-81f60c64e849 slug=shared/instructions/audit/audit-guidance/cli-usage/l48 -->
@@ -77,7 +77,7 @@ Override thresholds for a stricter audit:
 
 <!-- rule-api:entry id=6a68252e-b548-4df6-863b-383bdb0233a4 slug=shared/instructions/audit/audit-guidance/cli-usage/l50 -->
 ```bash
-cargo run -p audit-cli --bin audit -- . \
+cargo run -p audit-cli --bin audit -- run . \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85
