@@ -2,16 +2,20 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 use viewer_api_dioxus::{
+    is_mobile_sidebar_viewport,
     set_gpu_overlay_enabled,
-    CodeViewer,
     FileTree,
+    FileContentViewer,
     FilterDef,
+    GlassPanel,
+    HamburgerIcon,
     Header,
+    HeaderActions,
     Layout,
+    Overlay,
     LogIcon,
-    Panel,
-    PanelPlacement,
     SearchIcon,
+    Sidebar,
     StatsIcon,
     TabBar,
     TabItem,
@@ -173,7 +177,10 @@ pub fn App() -> Element {
     let mut search_input = use_signal(String::new);
     let mut jq_input = use_signal(String::new);
     let mut show_filters = use_signal(|| false);
+    let mut show_theme_settings = use_signal(|| false);
     let mut fx_enabled = use_signal(|| true);
+    let mut sidebar_collapsed = use_signal(|| false);
+    let mut mobile_sidebar_open = use_signal(|| false);
 
     use_effect(move || {
         set_gpu_overlay_enabled(*fx_enabled.read());
@@ -352,7 +359,6 @@ pub fn App() -> Element {
             closeable: false,
         },
         TabItem::new("hypergraph", "Hypergraph"),
-        TabItem::new("settings", "Theme"),
     ];
 
     rsx! {
@@ -364,6 +370,20 @@ pub fn App() -> Element {
                     header: rsx! {
                         Header {
                             left: rsx! {
+                                button {
+                                    class: if *mobile_sidebar_open.read() || !*sidebar_collapsed.read() { "btn btn-icon btn-active" } else { "btn btn-icon" },
+                                    aria_label: "Toggle sidebar",
+                                    title: "Toggle sidebar",
+                                    onclick: move |_| {
+                                        if is_mobile_sidebar_viewport() {
+                                            let next = !*mobile_sidebar_open.read();
+                                            mobile_sidebar_open.set(next);
+                                        } else {
+                                            sidebar_collapsed.toggle();
+                                        }
+                                    },
+                                    HamburgerIcon {}
+                                }
                                 div {
                                     class: "header-left",
                                     LogIcon { size: 14, color: "#8b9dc3" }
@@ -473,24 +493,8 @@ pub fn App() -> Element {
                                         },
                                         if *fx_enabled.read() { "✦ FX" } else { "✧ FX" }
                                     }
-                                    button {
-                                        class: "btn",
-                                        onclick: move |_| {
-                                            active_tab.set("settings".to_string());
-                                            if let Some(file) = current_file.read().clone() {
-                                                file_states.with_mut(|states| {
-                                                    if let Some(state) = states.get_mut(&file) {
-                                                        state.active_tab = "settings".to_string();
-                                                    }
-                                                });
-                                                update_hash(&file, "settings");
-                                            }
-                                        },
-                                        "Theme"
-                                    }
-                                    button {
-                                        class: "btn",
-                                        onclick: move |_| {
+                                    HeaderActions {
+                                        on_refresh: Some(EventHandler::new(move |_| {
                                             refresh_all();
                                             if let Some(file) = current_file.read().clone() {
                                                 file_states.with_mut(|states| {
@@ -498,45 +502,71 @@ pub fn App() -> Element {
                                                 });
                                                 load_file(file, None);
                                             }
-                                        },
-                                        "Refresh"
+                                        })),
+                                        on_filter_toggle: Some(EventHandler::new(move |_| {
+                                            let next = !*show_filters.read();
+                                            show_filters.set(next);
+                                        })),
+                                        on_clear: Some(EventHandler::new(move |_| {
+                                            if let Some(file) = current_file.read().clone() {
+                                                file_states.with_mut(|states| {
+                                                    if let Some(state) = states.get_mut(&file) {
+                                                        state.visible_entries = state.all_entries.clone();
+                                                        state.search_query.clear();
+                                                        state.jq_filter.clear();
+                                                    }
+                                                });
+                                            }
+                                            search_input.set(String::new());
+                                            jq_input.set(String::new());
+                                            status_message.set("Cleared filters".to_string());
+                                        })),
+                                        on_theme_toggle: Some(EventHandler::new(move |_| {
+                                            let next = !*show_theme_settings.read();
+                                            show_theme_settings.set(next);
+                                        })),
+                                        filter_active: *show_filters.read(),
+                                        has_active_filters: !search_input.read().trim().is_empty()
+                                            || !jq_input.read().trim().is_empty(),
                                     }
                                 }
                             },
                         }
                     },
 
-                    Panel {
-                        placement: PanelPlacement::Left,
-                        initial_size: 300.0,
-                        min_size: 180.0,
-                        class: "log-files-panel".to_string(),
-                        div {
-                            class: "panel-header",
-                            h2 { class: "panel-title", "Log Files" }
-                            span { class: "panel-badge", "{log_files.read().len()}" }
-                        }
-                        div {
-                            class: "panel-body",
-                            FileTree {
-                                nodes: tree_nodes,
-                                filters: filter_defs,
-                                active_filters: active_category.read().as_ref().map(|v| vec![v.clone()]).unwrap_or_default(),
-                                selected_id: current_file.read().as_ref().map(|name| format!("file:{name}")),
-                                loading: *is_loading.read() && log_files.read().is_empty(),
-                                on_filter: move |key: String| {
-                                    if active_category.read().as_deref() == Some(key.as_str()) {
-                                        active_category.set(None);
-                                    } else {
-                                        active_category.set(Some(key));
-                                    }
-                                },
-                                on_select: move |id: String| {
-                                    if let Some(name) = id.strip_prefix("file:") {
-                                        load_file(name.to_string(), None);
-                                    }
-                                },
+                    Sidebar {
+                        title: "Log Files".to_string(),
+                        badge: log_files.read().len().to_string(),
+                        collapsed: *sidebar_collapsed.read(),
+                        on_toggle: move |_| {
+                            if is_mobile_sidebar_viewport() {
+                                mobile_sidebar_open.set(false);
+                            } else {
+                                sidebar_collapsed.toggle();
                             }
+                        },
+                        mobile_open: Some(*mobile_sidebar_open.read()),
+                        on_mobile_open_change: move |open| mobile_sidebar_open.set(open),
+
+                        FileTree {
+                            nodes: tree_nodes,
+                            filters: filter_defs,
+                            active_filters: active_category.read().as_ref().map(|v| vec![v.clone()]).unwrap_or_default(),
+                            selected_id: current_file.read().as_ref().map(|name| format!("file:{name}")),
+                            loading: *is_loading.read() && log_files.read().is_empty(),
+                            on_filter: move |key: String| {
+                                if active_category.read().as_deref() == Some(key.as_str()) {
+                                    active_category.set(None);
+                                } else {
+                                    active_category.set(Some(key));
+                                }
+                            },
+                            on_select: move |id: String| {
+                                if let Some(name) = id.strip_prefix("file:") {
+                                    load_file(name.to_string(), None);
+                                    mobile_sidebar_open.set(false);
+                                }
+                            },
                         }
                     }
 
@@ -633,47 +663,50 @@ pub fn App() -> Element {
                                 }
 
                                 if *active_tab.read() == "logs" {
-                                    if current_entries.is_empty() {
-                                        div { class: "empty-state", "Select a log file to view entries." }
-                                    } else {
-                                        ul {
-                                            class: "log-list",
-                                            for entry in current_entries.iter() {
-                                                {
-                                                    let entry = entry.clone();
-                                                    let level = entry.level.to_uppercase();
-                                                    let message = entry.message.clone();
-                                                    rsx! {
-                                                        li {
-                                                            key: "entry-{entry.line_number}",
-                                                            class: "log-row",
-                                                            onclick: move |_| {
-                                                                let Some(path) = entry.file.clone() else { return; };
-                                                                let backend = backend.read().clone();
-                                                                let file = current_file.read().clone();
-                                                                let mut file_states = file_states;
-                                                                let mut error_message = error_message;
-                                                                spawn(async move {
-                                                                    match backend.get_source_file(&path).await {
-                                                                        Ok(src) => {
-                                                                            if let Some(file) = file {
-                                                                                file_states.with_mut(|states| {
-                                                                                    if let Some(state) = states.get_mut(&file) {
-                                                                                        state.code_file = Some(path.clone());
-                                                                                        state.code_content = src.content;
-                                                                                        state.code_language = Some(src.language);
-                                                                                        state.selected_line = entry.source_line.map(|n| n as usize);
-                                                                                    }
-                                                                                });
+                                    GlassPanel {
+                                        title: "Log Entries",
+                                        if current_entries.is_empty() {
+                                            div { class: "empty-state", "Select a log file to view entries." }
+                                        } else {
+                                            ul {
+                                                class: "log-list",
+                                                for entry in current_entries.iter() {
+                                                    {
+                                                        let entry = entry.clone();
+                                                        let level = entry.level.to_uppercase();
+                                                        let message = entry.message.clone();
+                                                        rsx! {
+                                                            li {
+                                                                key: "entry-{entry.line_number}",
+                                                                class: "log-row",
+                                                                onclick: move |_| {
+                                                                    let Some(path) = entry.file.clone() else { return; };
+                                                                    let backend = backend.read().clone();
+                                                                    let file = current_file.read().clone();
+                                                                    let mut file_states = file_states;
+                                                                    let mut error_message = error_message;
+                                                                    spawn(async move {
+                                                                        match backend.get_source_file(&path).await {
+                                                                            Ok(src) => {
+                                                                                if let Some(file) = file {
+                                                                                    file_states.with_mut(|states| {
+                                                                                        if let Some(state) = states.get_mut(&file) {
+                                                                                            state.code_file = Some(path.clone());
+                                                                                            state.code_content = src.content;
+                                                                                            state.code_language = Some(src.language);
+                                                                                            state.selected_line = entry.source_line.map(|n| n as usize);
+                                                                                        }
+                                                                                    });
+                                                                                }
                                                                             }
+                                                                            Err(err) => error_message.set(Some(err.to_string())),
                                                                         }
-                                                                        Err(err) => error_message.set(Some(err.to_string())),
-                                                                    }
-                                                                });
-                                                            },
-                                                            span { class: "log-row-level", "{level}" }
-                                                            span { class: "log-row-line", "#{entry.line_number}" }
-                                                            span { class: "log-row-message", "{message}" }
+                                                                    });
+                                                                },
+                                                                span { class: "log-row-level", "{level}" }
+                                                                span { class: "log-row-line", "#{entry.line_number}" }
+                                                                span { class: "log-row-message", "{message}" }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -681,8 +714,7 @@ pub fn App() -> Element {
                                         }
                                     }
                                 } else if *active_tab.read() == "stats" {
-                                    div {
-                                        class: "glass-panel",
+                                    GlassPanel {
                                         h3 { "Stats" }
                                         p { "Entries in current view: {current_entries.len()}" }
                                         if let Some(state) = current_state.clone() {
@@ -691,31 +723,28 @@ pub fn App() -> Element {
                                         }
                                     }
                                 } else if *active_tab.read() == "hypergraph" {
-                                    div {
-                                        class: "glass-panel",
+                                    GlassPanel {
                                         h3 { "Hypergraph" }
                                         p { "Hypergraph-specific rendering will be migrated in LOG-5e." }
                                     }
-                                } else {
-                                    ThemeSettings {}
                                 }
                             }
                         }
                     }
 
-                    Panel {
-                        placement: PanelPlacement::Right,
-                        initial_size: 340.0,
-                        min_size: 220.0,
-                        class: "code-viewer-panel".to_string(),
+                    div {
+                        class: "log-source-panel",
                         if let Some(state) = current_state {
                             if state.code_content.is_empty() {
-                                div {
-                                    class: "empty-state",
-                                    "Select a log entry with source info to open code context."
+                                GlassPanel {
+                                    title: "Source",
+                                    div {
+                                        class: "empty-state",
+                                        "Select a log entry with source info to open code context."
+                                    }
                                 }
                             } else {
-                                CodeViewer {
+                                FileContentViewer {
                                     content: state.code_content,
                                     filename: state.code_file.unwrap_or_else(|| "source.rs".to_string()),
                                     language: state.code_language,
@@ -723,11 +752,22 @@ pub fn App() -> Element {
                                 }
                             }
                         } else {
-                            div {
-                                class: "empty-state",
-                                "No file selected."
+                            GlassPanel {
+                                title: "Source",
+                                div {
+                                    class: "empty-state",
+                                    "No file selected."
+                                }
                             }
                         }
+                    }
+                }
+
+                Overlay {
+                    open: *show_theme_settings.read(),
+                    on_close: move |_| show_theme_settings.set(false),
+                    ThemeSettings {
+                        on_close: move |_| show_theme_settings.set(false),
                     }
                 }
             }
