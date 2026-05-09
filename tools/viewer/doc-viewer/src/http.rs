@@ -47,6 +47,11 @@ use viewer_api::{
 };
 
 use crate::{
+    helpers::{
+        normalize_path_str,
+        to_vscode_file_uri,
+        unix_path,
+    },
     markdown_ast,
     query,
     schema::{
@@ -406,7 +411,7 @@ async fn browse_crate(
             let crate_path = state
                 .crate_manager
                 .get_crate_path(&name)
-                .map(|p| p.to_string_lossy().to_string())
+                .map(|p| unix_path(&p))
                 .unwrap_or_default();
 
             // Scan for source files at the crate root (src/ and agents/docs/)
@@ -545,17 +550,10 @@ fn scan_crate_source_files(
                         if ext == "rs" {
                             let rel_path = path
                                 .strip_prefix(crate_dir)
-                                .map(|p| {
-                                    p.to_string_lossy()
-                                        .to_string()
-                                        .replace('\\', "/")
-                                })
+                                .map(|p| normalize_path_str(&p.to_string_lossy()))
                                 .unwrap_or_default();
-                            let abs_path = path.to_string_lossy().to_string();
-                            let vscode_uri = format!(
-                                "vscode://file/{}",
-                                abs_path.replace('\\', "/")
-                            );
+                            let abs_path = unix_path(&path);
+                            let vscode_uri = to_vscode_file_uri(&path);
                             files.push(SourceFileLinkResponse {
                                 rel_path,
                                 abs_path,
@@ -578,17 +576,10 @@ fn scan_crate_source_files(
                         if ext == "yaml" || ext == "yml" || ext == "md" {
                             let rel_path = path
                                 .strip_prefix(crate_dir)
-                                .map(|p| {
-                                    p.to_string_lossy()
-                                        .to_string()
-                                        .replace('\\', "/")
-                                })
+                                .map(|p| normalize_path_str(&p.to_string_lossy()))
                                 .unwrap_or_default();
-                            let abs_path = path.to_string_lossy().to_string();
-                            let vscode_uri = format!(
-                                "vscode://file/{}",
-                                abs_path.replace('\\', "/")
-                            );
+                            let abs_path = unix_path(&path);
+                            let vscode_uri = to_vscode_file_uri(&path);
                             files.push(SourceFileLinkResponse {
                                 rel_path,
                                 abs_path,

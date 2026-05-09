@@ -16,6 +16,7 @@ use super::{
     ToolResult,
 };
 use crate::{
+    helpers::unix_path,
     parser::{
         extract_metadata,
         parse_filename,
@@ -91,7 +92,7 @@ impl DocsManager {
         self.update_index(params.doc_type)?;
 
         Ok(CreateDocResult {
-            path: path.display().to_string(),
+            path: unix_path(&path),
             filename,
         })
     }
@@ -163,7 +164,7 @@ impl DocsManager {
         let path = self.agents_dir.join(doc_type.directory()).join("INDEX.md");
         fs::write(&path, &content)?;
 
-        Ok(path.display().to_string())
+        Ok(unix_path(&path))
     }
 
     /// Update metadata for an existing document.
@@ -469,7 +470,7 @@ impl DocsManager {
         // Update index
         self.update_index(meta.doc_type)?;
 
-        Ok(path.display().to_string())
+        Ok(unix_path(&path))
     }
 
     /// Read the full content of a document.

@@ -100,8 +100,8 @@ targets:
   - name: context-engine-instruction-audit
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/audit.instructions.md
-    output_path: .github/instructions/audit.instructions.md
+    path_scope: .agents/instructions/audit.instructions.md
+    output_path: .agents/instructions/audit.instructions.md
     nodes: &audit_instruction_nodes
       - name: frontmatter
         section: audit-instructions
@@ -147,8 +147,8 @@ targets:
   - name: context-engine-instruction-context-http
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/context-http.instructions.md
-    output_path: .github/instructions/context-http.instructions.md
+    path_scope: .agents/instructions/context-http.instructions.md
+    output_path: .agents/instructions/context-http.instructions.md
     nodes:
       - name: frontmatter
         section: context-http-instructions
@@ -181,8 +181,8 @@ targets:
   - name: context-engine-instruction-core-crates
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/core-crates.instructions.md
-    output_path: .github/instructions/core-crates.instructions.md
+    path_scope: .agents/instructions/core-crates.instructions.md
+    output_path: .agents/instructions/core-crates.instructions.md
     nodes:
       - name: frontmatter
         section: core-crates-instructions
@@ -206,8 +206,8 @@ targets:
   - name: context-engine-instruction-frontend
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/frontend.instructions.md
-    output_path: .github/instructions/frontend.instructions.md
+    path_scope: .agents/instructions/frontend.instructions.md
+    output_path: .agents/instructions/frontend.instructions.md
     nodes: &frontend_instruction_nodes
       - name: frontmatter
         section: frontend-instructions
@@ -237,8 +237,8 @@ targets:
   - name: context-engine-instruction-mcp-tools
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/mcp-tools.instructions.md
-    output_path: .github/instructions/mcp-tools.instructions.md
+    path_scope: .agents/instructions/mcp-tools.instructions.md
+    output_path: .agents/instructions/mcp-tools.instructions.md
     nodes: &mcp_tools_instruction_nodes
       - name: frontmatter
         section: mcp-tools-instructions
@@ -285,8 +285,8 @@ targets:
   - name: context-engine-instruction-tests
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/tests.instructions.md
-    output_path: .github/instructions/tests.instructions.md
+    path_scope: .agents/instructions/tests.instructions.md
+    output_path: .agents/instructions/tests.instructions.md
     nodes: &tests_instruction_nodes
       - name: frontmatter
         section: tests-instructions
@@ -339,8 +339,8 @@ targets:
   - name: context-engine-instruction-ticket-system
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/ticket-system.instructions.md
-    output_path: .github/instructions/ticket-system.instructions.md
+    path_scope: .agents/instructions/ticket-system.instructions.md
+    output_path: .agents/instructions/ticket-system.instructions.md
     nodes: &ticket_system_instruction_nodes
       - name: frontmatter
         section: ticket-system-instructions
@@ -554,8 +554,8 @@ targets:
   - name: context-engine-instruction-viewer-api-tools
     repo_scope: context-engine
     file_kind: .instructions
-    path_scope: .github/instructions/viewer-api-tools.instructions.md
-    output_path: .github/instructions/viewer-api-tools.instructions.md
+    path_scope: .agents/instructions/viewer-api-tools.instructions.md
+    output_path: .agents/instructions/viewer-api-tools.instructions.md
     nodes: &viewer_api_tools_instruction_nodes
       - name: frontmatter
         section: viewer-api-tools-instructions

@@ -1,11 +1,14 @@
 //! Parse existing documents to extract metadata.
 
-use crate::schema::{
+use crate::{
+    helpers::unix_path,
+    schema::{
     CrateMetadata,
     DocMetadata,
     DocType,
     ModuleMetadata,
     PlanStatus,
+    },
 };
 use regex::Regex;
 use serde::de::DeserializeOwned;
@@ -118,7 +121,7 @@ pub fn extract_metadata(
 /// Parse a YAML file into a typed structure.
 pub fn parse_yaml_file<T: DeserializeOwned>(path: &Path) -> Result<T, String> {
     let content = fs::read_to_string(path)
-        .map_err(|e| format!("Failed to read {}: {}", path.display(), e))?;
+        .map_err(|e| format!("Failed to read {}: {}", unix_path(path), e))?;
     parse_yaml_content(&content)
 }
 
@@ -143,7 +146,7 @@ pub fn parse_module_index(path: &Path) -> Result<ModuleMetadata, String> {
 /// Read a markdown file's content.
 pub fn read_markdown_file(path: &Path) -> Result<String, String> {
     fs::read_to_string(path)
-        .map_err(|e| format!("Failed to read {}: {}", path.display(), e))
+    .map_err(|e| format!("Failed to read {}: {}", unix_path(path), e))
 }
 
 #[cfg(test)]

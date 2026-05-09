@@ -18,6 +18,11 @@ use crate::{
         get_most_recent_modification,
         is_git_repository,
     },
+    helpers::{
+        normalize_path_str,
+        to_vscode_file_uri,
+        unix_path,
+    },
     parser::{
         parse_crate_index,
         parse_module_index,
@@ -122,7 +127,7 @@ impl CrateDocsManager {
             crates_dirs: self
                 .crates_dirs
                 .iter()
-                .map(|p| p.display().to_string())
+                .map(|p| unix_path(p))
                 .collect(),
             dirs_exist: self.crates_dirs.iter().map(|p| p.exists()).collect(),
         };
@@ -131,7 +136,7 @@ impl CrateDocsManager {
             if !crates_dir.exists() {
                 result.diagnostics.push(format!(
                     "Crates directory does not exist: {}",
-                    crates_dir.display()
+                    unix_path(crates_dir)
                 ));
                 continue;
             }
@@ -141,7 +146,7 @@ impl CrateDocsManager {
                 Err(e) => {
                     result.diagnostics.push(format!(
                         "Failed to read {}: {}",
-                        crates_dir.display(),
+                        unix_path(crates_dir),
                         e
                     ));
                     continue;
@@ -154,7 +159,7 @@ impl CrateDocsManager {
                     Err(e) => {
                         result.diagnostics.push(format!(
                             "Failed to read entry in {}: {}",
-                            crates_dir.display(),
+                            unix_path(crates_dir),
                             e
                         ));
                         continue;
@@ -193,8 +198,8 @@ impl CrateDocsManager {
                             description: meta.description,
                             module_count: meta.modules.len(),
                             has_readme: readme_path.exists(),
-                            crate_path: path.to_string_lossy().to_string(),
-                            docs_path: docs_path.to_string_lossy().to_string(),
+                            crate_path: unix_path(&path),
+                            docs_path: unix_path(&docs_path),
                         });
                     },
                     Err(e) => {
@@ -320,7 +325,7 @@ impl CrateDocsManager {
         if !index_path.exists() {
             return Err(ToolError::NotFound(format!(
                 "Module docs not found: {}",
-                module_path.display()
+                unix_path(module_path)
             )));
         }
 
@@ -397,11 +402,11 @@ impl CrateDocsManager {
         let source_files =
             self.extract_source_file_links(&index_content, &crate_path);
 
-        let crate_path_str = crate_path.to_string_lossy().to_string();
+        let crate_path_str = unix_path(&crate_path);
 
         Ok(CrateDocResult {
             crate_name: crate_name.to_string(),
-            module_path: module_path.map(|s| s.to_string()),
+            module_path: module_path.map(normalize_path_str),
             index_yaml: index_content,
             readme: readme_content,
             crate_path: crate_path_str,
@@ -426,13 +431,10 @@ impl CrateDocsManager {
         source_files
             .into_iter()
             .map(|rel_path| {
+                let rel_path = normalize_path_str(&rel_path);
                 let abs_path = crate_path.join(&rel_path);
-                let abs_path_str = abs_path.to_string_lossy().to_string();
-                // Create VS Code URI - encode the path properly
-                let vscode_uri = format!(
-                    "vscode://file/{}",
-                    abs_path_str.replace('\\', "/")
-                );
+                let abs_path_str = unix_path(&abs_path);
+                let vscode_uri = to_vscode_file_uri(&abs_path);
                 SourceFileLink {
                     rel_path,
                     abs_path: abs_path_str,
@@ -543,7 +545,7 @@ impl CrateDocsManager {
 
         fs::write(docs_path.join("index.yaml"), yaml)?;
 
-        Ok(docs_path.to_string_lossy().to_string())
+        Ok(unix_path(&docs_path))
     }
 
     /// Delete module documentation directory
@@ -572,7 +574,7 @@ impl CrateDocsManager {
         // Remove the directory and all contents
         fs::remove_dir_all(&docs_path)?;
 
-        Ok(docs_path.to_string_lossy().to_string())
+        Ok(unix_path(&docs_path))
     }
 
     /// Update specific fields in a crate or module's index.yaml
@@ -614,11 +616,36 @@ impl CrateDocsManager {
         let content = fs::read_to_string(&index_path)?;
         let mut changes = Vec::new();
 
+        let source_files = source_files.map(|files| {
+            files
+                .into_iter()
+                .map(|f| normalize_path_str(&f))
+                .collect::<Vec<_>>()
+        });
+        let add_source_files = add_source_files.map(|files| {
+            files
+                .into_iter()
+                .map(|f| normalize_path_str(&f))
+                .collect::<Vec<_>>()
+        });
+        let remove_source_files = remove_source_files.map(|files| {
+            files
+                .into_iter()
+                .map(|f| normalize_path_str(&f))
+                .collect::<Vec<_>>()
+        });
+
         if module_path.is_some() {
             let mut meta: ModuleMetadata = serde_yaml::from_str(&content)
                 .map_err(|e| {
                     ToolError::InvalidInput(format!("Invalid YAML: {}", e))
                 })?;
+
+            meta.source_files = meta
+                .source_files
+                .into_iter()
+                .map(|f| normalize_path_str(&f))
+                .collect();
 
             // Handle source_files updates
             if let Some(files) = source_files {
@@ -656,6 +683,12 @@ impl CrateDocsManager {
                 .map_err(|e| {
                     ToolError::InvalidInput(format!("Invalid YAML: {}", e))
                 })?;
+
+            meta.source_files = meta
+                .source_files
+                .into_iter()
+                .map(|f| normalize_path_str(&f))
+                .collect();
 
             // Handle source_files updates
             if let Some(files) = source_files {
@@ -1263,7 +1296,7 @@ impl CrateDocsManager {
         if source_files.is_empty() {
             return StaleDocItem {
                 crate_name: crate_name.to_string(),
-                module_path: module_path.map(|s| s.to_string()),
+                module_path: module_path.map(normalize_path_str),
                 staleness: StalenessLevel::Unknown,
                 doc_last_synced: last_synced.map(|s| s.to_string()),
                 source_last_modified: None,
@@ -1281,7 +1314,7 @@ impl CrateDocsManager {
         // Determine modified files since last sync
         let modified_files = match last_synced {
             Some(synced) => get_files_modified_since(&file_infos, synced),
-            None => source_files.to_vec(), // All files are "modified" if never synced
+            None => file_infos.iter().map(|f| f.path.clone()).collect(),
         };
 
         // Calculate days
@@ -1315,7 +1348,7 @@ impl CrateDocsManager {
 
         StaleDocItem {
             crate_name: crate_name.to_string(),
-            module_path: module_path.map(|s| s.to_string()),
+            module_path: module_path.map(normalize_path_str),
             staleness,
             doc_last_synced: last_synced.map(|s| s.to_string()),
             source_last_modified,

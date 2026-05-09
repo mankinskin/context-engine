@@ -1,5 +1,9 @@
 //! Helper functions for parsing and formatting.
 
+use std::path::Path;
+
+use viewer_api::to_unix_path;
+
 use crate::{
     schema::{
         DocType,
@@ -8,6 +12,18 @@ use crate::{
     },
     tools,
 };
+
+pub fn unix_path(path: &Path) -> String {
+    to_unix_path(path)
+}
+
+pub fn normalize_path_str(path: &str) -> String {
+    path.replace('\\', "/")
+}
+
+pub fn to_vscode_file_uri(path: &Path) -> String {
+    format!("vscode://file/{}", unix_path(path))
+}
 
 /// Parse a document type string
 pub fn parse_doc_type(s: &str) -> Option<DocType> {
@@ -92,4 +108,25 @@ pub fn format_module_tree(
     }
 
     md
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalizes_unix_paths() {
+        let path = Path::new("C:\\Users\\test\\file.txt");
+        assert_eq!(unix_path(path), "C:/Users/test/file.txt");
+        assert_eq!(normalize_path_str("src\\graph\\mod.rs"), "src/graph/mod.rs");
+    }
+
+    #[test]
+    fn builds_vscode_uri_with_unix_path() {
+        let path = Path::new("C:\\Users\\test\\file.txt");
+        assert_eq!(
+            to_vscode_file_uri(path),
+            "vscode://file/C:/Users/test/file.txt"
+        );
+    }
 }

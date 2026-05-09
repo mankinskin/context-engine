@@ -13,7 +13,10 @@ use chrono::{
     Utc,
 };
 
-use crate::schema::FileModificationInfo;
+use crate::{
+    helpers::normalize_path_str,
+    schema::FileModificationInfo,
+};
 
 /// Check if a directory is a git repository
 pub fn is_git_repository(path: &Path) -> bool {
@@ -82,19 +85,20 @@ pub fn get_files_info(
     file_paths
         .iter()
         .map(|path| {
-            let full_path = repo_path.join(path);
+            let normalized_path = normalize_path_str(path);
+            let full_path = repo_path.join(&normalized_path);
             let exists = full_path.exists();
 
-            match get_file_info(repo_path, path) {
+            match get_file_info(repo_path, &normalized_path) {
                 Some(info) => FileModificationInfo {
-                    path: path.clone(),
+                    path: normalized_path.clone(),
                     last_modified: Some(info.last_modified),
                     last_commit: Some(info.commit_hash),
                     commit_message: Some(info.commit_message),
                     exists,
                 },
                 None => FileModificationInfo {
-                    path: path.clone(),
+                    path: normalized_path,
                     last_modified: None,
                     last_commit: None,
                     commit_message: None,
