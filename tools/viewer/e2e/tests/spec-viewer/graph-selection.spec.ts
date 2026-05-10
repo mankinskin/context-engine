@@ -74,6 +74,47 @@ test.describe('spec-viewer - graph selection', () => {
     await expect(card).not.toHaveClass(/node-card-selected/);
   });
 
+  test('dragging inside theme settings does not move the graph camera', async ({ page }) => {
+    test.setTimeout(120_000);
+
+    await gotoGraph(page);
+
+    const visibleIndex = await firstVisibleGraphCardIndex(page);
+    expect(visibleIndex, 'spec graph should position at least one visible node card for drag regression coverage')
+      .toBeGreaterThanOrEqual(0);
+
+    const card = page.locator('#spec-graph3d-container .graph-node-card').nth(visibleIndex);
+    const themeButton = page.getByRole('button', { name: 'Theme settings' });
+
+    await themeButton.click();
+
+    const panel = page.locator('.modal-panel').first();
+    const header = panel.locator('.glass-panel__header');
+    await expect(panel).toBeVisible({ timeout: 10_000 });
+    await expect(header).toBeVisible({ timeout: 10_000 });
+
+    const before = await card.boundingBox();
+    const headerBox = await header.boundingBox();
+    expect(before, 'expected a visible graph card before dragging the theme panel').not.toBeNull();
+    expect(headerBox, 'expected the theme settings header to be measurable for drag testing').not.toBeNull();
+
+    const startX = headerBox!.x + Math.max(24, Math.min(96, headerBox!.width * 0.3));
+    const startY = headerBox!.y + headerBox!.height / 2;
+
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    await page.mouse.move(startX + 140, startY + 70, { steps: 12 });
+    await page.mouse.up();
+    await page.waitForTimeout(150);
+
+    const after = await card.boundingBox();
+    expect(after, 'expected the same graph card to remain measurable after dragging the theme panel').not.toBeNull();
+
+    expect(Math.abs(after!.x - before!.x), 'theme panel drag should not orbit the graph horizontally').toBeLessThan(0.5);
+    expect(Math.abs(after!.y - before!.y), 'theme panel drag should not orbit the graph vertically').toBeLessThan(0.5);
+    await expect(panel).toBeVisible();
+  });
+
   test('zoom to selected node recenters and enlarges the chosen graph card', async ({ page }) => {
     test.setTimeout(120_000);
 
