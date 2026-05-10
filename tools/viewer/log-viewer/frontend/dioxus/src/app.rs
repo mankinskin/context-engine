@@ -158,9 +158,11 @@ fn build_hypergraph_layout(entries: &[LogEntry]) -> Option<Layout3D> {
         let len = layer.len() as f32;
 
         for (i, node) in layer.iter().enumerate() {
+            // Spread nodes horizontally within the tier; use Y for the width
+            // dimension so layers stack top (large width) to bottom (small width).
             let x = (i as f32 - (len - 1.0) * 0.5) * 3.6;
-            let y = ((node.index % 7) as f32 - 3.0) * 0.8;
-            let z = (width as f32 - mean_width) * 3.0;
+            let y = (width as f32 - mean_width) * 4.0;
+            let z = 0.0_f32;
             index_to_layout_idx.insert(node.index, nodes.len());
             nodes.push(Node3D {
                 id: node.index.to_string(),
@@ -429,8 +431,10 @@ pub fn App() -> Element {
         let mut initial_camera = Camera::default();
         let (center, radius) = layout.bounds();
         initial_camera.frame(center, radius);
-        initial_camera.distance =
-            (initial_camera.distance * 0.45).clamp(10.0, 24.0);
+        // Front-facing view: world-Y maps directly to screen-Y so the
+        // width-tier layout (larger width = higher Y) appears top-to-bottom.
+        initial_camera.pitch = 0.0;
+        initial_camera.yaw = 0.0;
         initial_camera
     });
 
