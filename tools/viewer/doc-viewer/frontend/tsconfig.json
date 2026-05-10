@@ -25,7 +25,7 @@
     "baseUrl": ".",
     "paths": {
       "@context-engine/viewer-api-frontend": [
-        "../../../../viewer-api/tools/viewer/viewer-api/frontend/ts/src/index.ts"
+        "./node_modules/@context-engine/viewer-api-frontend/src/index.ts"
       ],
       "@context-engine/types": [
         "../../log-viewer/frontend/src/types/generated/index.ts"

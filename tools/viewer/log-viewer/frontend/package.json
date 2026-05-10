@@ -10,7 +10,7 @@
         "test:watch": "vitest"
     },
     "dependencies": {
-        "@context-engine/viewer-api-frontend": "file:../../../../memory-viewers/viewer-api/viewer-api/frontend/ts",
+        "@context-engine/viewer-api-frontend": "file:./viewer-api-frontend",
         "@context-engine/types": "file:../../../packages/context-types",
         "@preact/signals": "^1.2.2",
         "chart.js": "^4.4.1",

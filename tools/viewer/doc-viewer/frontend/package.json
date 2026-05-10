@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@context-engine/viewer-api-frontend": "file:../../log-viewer/frontend/viewer-api-frontend",
     "@preact/signals": "^1.2.2",
     "highlight.js": "^11.11.1",
     "marked": "^11.0.0",
