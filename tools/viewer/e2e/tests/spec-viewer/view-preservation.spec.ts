@@ -139,6 +139,82 @@ test.describe('spec-viewer - detail view preservation', () => {
       'clicking a different browse card should keep the sections view instead of resetting to body',
     ).not.toBe(sourceUrl);
   });
+
+  test('browser history restores browse, detail view, and graph state', async ({ page }) => {
+    test.setTimeout(120_000);
+
+    await gotoAndWaitForViewer(page, SPEC_VIEWER);
+
+    const firstCard = page.locator('.card.card--clickable').first();
+    const secondCard = page.locator('.card.card--clickable').nth(1);
+    await expect(secondCard).toBeVisible({ timeout: 20_000 });
+
+    await firstCard.click();
+    await page.getByRole('button', { name: 'Sections' }).click();
+    await expectSectionsView(page);
+
+    await page.getByRole('link', { name: '📐 Specs' }).click();
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'detail navigation should record the root browse route in browser history',
+      })
+      .toBe(`${SPEC_VIEWER.url}/specs`);
+
+    await secondCard.click();
+    const secondSectionsUrl = await expectSectionsView(page);
+
+    await page.getByRole('link', { name: '🌐 Graph' }).click();
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'detail navigation should record the graph route in browser history',
+      })
+      .toBe(`${SPEC_VIEWER.url}/specs/graph`);
+    await waitForGraph(page);
+
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'browser back should restore the previously selected spec and its sections view',
+      })
+      .toBe(secondSectionsUrl);
+    await expect(page.getByRole('button', { name: 'Sections' })).toHaveClass(/active/, {
+      timeout: 10_000,
+    });
+
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'browser back should restore the root browse state after the detail page',
+      })
+      .toBe(`${SPEC_VIEWER.url}/specs`);
+    await expect(page.getByRole('heading', { name: 'Specifications' }).first()).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await page.goForward({ waitUntil: 'domcontentloaded' });
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'browser forward should restore the selected spec and preserved sections view',
+      })
+      .toBe(secondSectionsUrl);
+    await expect(page.getByRole('button', { name: 'Sections' })).toHaveClass(/active/, {
+      timeout: 10_000,
+    });
+
+    await page.goForward({ waitUntil: 'domcontentloaded' });
+    await expect
+      .poll(() => page.url(), {
+        timeout: 15_000,
+        message: 'browser forward should restore the graph collection view',
+      })
+      .toBe(`${SPEC_VIEWER.url}/specs/graph`);
+    await waitForGraph(page);
+  });
 });
 
 test.describe('spec-viewer - graph detail view preservation', () => {
