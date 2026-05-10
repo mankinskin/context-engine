@@ -2,7 +2,12 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 use viewer_api_dioxus::{
+    Camera,
+    EdgeRef3D,
+    Graph3D,
     is_mobile_sidebar_viewport,
+    Layout3D,
+    Node3D,
     set_gpu_overlay_enabled,
     FileTree,
     FileContentViewer,
@@ -88,12 +93,110 @@ const CATEGORIES: [Category; 4] = [
     },
 ];
 
+#[derive(Clone, Debug, serde::Deserialize)]
+struct SnapshotNode {
+    index: usize,
+    label: String,
+    width: usize,
+}
+
+#[derive(Clone, Debug, serde::Deserialize)]
+struct SnapshotEdge {
+    from: usize,
+    to: usize,
+    pattern_idx: usize,
+    sub_index: usize,
+}
+
+#[derive(Clone, Debug, serde::Deserialize)]
+struct GraphSnapshot {
+    nodes: Vec<SnapshotNode>,
+    edges: Vec<SnapshotEdge>,
+}
+
+fn parse_graph_snapshot(value: &serde_json::Value) -> Option<GraphSnapshot> {
+    if value.is_string() {
+        let raw = value.as_str()?;
+        return serde_json::from_str::<GraphSnapshot>(raw).ok();
+    }
+    serde_json::from_value::<GraphSnapshot>(value.clone()).ok()
+}
+
+fn build_hypergraph_layout(entries: &[LogEntry]) -> Option<Layout3D> {
+    let snapshot = entries.iter().rev().find_map(|entry| {
+        entry
+            .fields
+            .get("graph_data")
+            .and_then(parse_graph_snapshot)
+    })?;
+
+    let mut groups: HashMap<usize, Vec<&SnapshotNode>> = HashMap::new();
+    for node in &snapshot.nodes {
+        groups.entry(node.width).or_default().push(node);
+    }
+
+    let width_values: Vec<f32> = snapshot
+        .nodes
+        .iter()
+        .map(|node| node.width as f32)
+        .collect();
+    let mean_width = if width_values.is_empty() {
+        1.0
+    } else {
+        width_values.iter().sum::<f32>() / width_values.len() as f32
+    };
+
+    let mut widths: Vec<usize> = groups.keys().copied().collect();
+    widths.sort_unstable();
+
+    let mut nodes = Vec::with_capacity(snapshot.nodes.len());
+    let mut index_to_layout_idx = HashMap::new();
+
+    for width in widths {
+        let mut layer = groups.remove(&width).unwrap_or_default();
+        layer.sort_by_key(|node| node.index);
+        let len = layer.len() as f32;
+
+        for (i, node) in layer.iter().enumerate() {
+            let x = (i as f32 - (len - 1.0) * 0.5) * 3.6;
+            let y = ((node.index % 7) as f32 - 3.0) * 0.8;
+            let z = (width as f32 - mean_width) * 3.0;
+            index_to_layout_idx.insert(node.index, nodes.len());
+            nodes.push(Node3D {
+                id: node.index.to_string(),
+                label: Some(node.label.clone()),
+                state: Some(format!("w{}", node.width)),
+                x,
+                y,
+                z,
+            });
+        }
+    }
+
+    let mut edges = Vec::with_capacity(snapshot.edges.len());
+    for edge in snapshot.edges {
+        let Some(from_idx) = index_to_layout_idx.get(&edge.from).copied() else {
+            continue;
+        };
+        let Some(to_idx) = index_to_layout_idx.get(&edge.to).copied() else {
+            continue;
+        };
+        edges.push(EdgeRef3D {
+            from_idx,
+            to_idx,
+            kind: format!("p{}:{}", edge.pattern_idx, edge.sub_index),
+        });
+    }
+
+    Some(Layout3D::new(nodes, edges))
+}
+
 fn parse_route(hash: &str) -> Option<(String, String)> {
     let raw = hash.trim_start_matches('#');
     let path = raw.trim_start_matches('/');
     let rest = path.strip_prefix("file/")?;
 
-    let valid_tabs = ["logs", "stats", "hypergraph", "settings"];
+    let valid_tabs = ["logs", "stats", "hypergraph"];
     if let Some(last_slash) = rest.rfind('/') {
         let possible_tab = &rest[last_slash + 1..];
         if valid_tabs.contains(&possible_tab) {
@@ -181,6 +284,7 @@ pub fn App() -> Element {
     let mut fx_enabled = use_signal(|| true);
     let mut sidebar_collapsed = use_signal(|| false);
     let mut mobile_sidebar_open = use_signal(|| false);
+    let mut selected_hypergraph_node = use_signal(|| Option::<String>::None);
 
     use_effect(move || {
         set_gpu_overlay_enabled(*fx_enabled.read());
@@ -318,6 +422,17 @@ pub fn App() -> Element {
         .as_ref()
         .map(|state| state.visible_entries.clone())
         .unwrap_or_default();
+    let hypergraph_layout = current_state
+        .as_ref()
+        .and_then(|state| build_hypergraph_layout(&state.all_entries));
+    let hypergraph_initial_camera = hypergraph_layout.as_ref().map(|layout| {
+        let mut initial_camera = Camera::default();
+        let (center, radius) = layout.bounds();
+        initial_camera.frame(center, radius);
+        initial_camera.distance =
+            (initial_camera.distance * 0.45).clamp(10.0, 24.0);
+        initial_camera
+    });
 
     let selected_filter = active_category.read().clone();
     let mut tree_nodes = Vec::new();
@@ -723,9 +838,69 @@ pub fn App() -> Element {
                                         }
                                     }
                                 } else if *active_tab.read() == "hypergraph" {
-                                    GlassPanel {
-                                        h3 { "Hypergraph" }
-                                        p { "Hypergraph-specific rendering will be migrated in LOG-5e." }
+                                    if let Some(layout) = hypergraph_layout.clone() {
+                                        div {
+                                            class: "hypergraph-tab",
+                                            Graph3D {
+                                                layout: layout.clone(),
+                                                initial_camera: hypergraph_initial_camera.clone(),
+                                                container_id: "log-hypergraph3d".to_string(),
+                                                container_style: "position: absolute; inset: 0; overflow: hidden; user-select: none; cursor: grab;".to_string(),
+                                                selected_node_id: selected_hypergraph_node.read().clone(),
+                                                div {
+                                                    id: "graph3d-nodes",
+                                                    style: "position: absolute; inset: 0; pointer-events: none;",
+                                                    for (idx, node) in layout.nodes.iter().enumerate() {
+                                                        {
+                                                            let node_id = node.id.clone();
+                                                            let title = node.label.clone().unwrap_or_else(|| format!("#{}", node.id));
+                                                            let node_state = node.state.clone().unwrap_or_else(|| "node".to_string());
+                                                            let is_selected = selected_hypergraph_node.read().as_deref() == Some(node.id.as_str());
+                                                            rsx! {
+                                                                div {
+                                                                    key: "hyper-node-{node.id}",
+                                                                    class: if is_selected { "graph-node-card content node-card-selected" } else { "graph-node-card content" },
+                                                                    "data-node-idx": "{idx}",
+                                                                    style: "position: absolute; top: 0; left: 0; pointer-events: auto; transform-origin: center center; display: none; width: 220px; height: 52px; box-sizing: border-box; border: 1px solid var(--graph-node-border, rgba(200,200,200,0.35)); border-left: 3px solid var(--accent-blue); border-radius: 7px; background: var(--graph-node-surface, rgba(30,30,40,0.92)); backdrop-filter: blur(2px); padding: 8px 10px; cursor: pointer; overflow: hidden; color: var(--graph-node-text, #e8e8f0); box-shadow: var(--graph-node-shadow, 0 3px 12px rgba(0,0,0,0.6));",
+                                                                    onclick: move |evt: Event<MouseData>| {
+                                                                        evt.stop_propagation();
+                                                                        selected_hypergraph_node.set(Some(node_id.clone()));
+                                                                    },
+                                                                    div {
+                                                                        style: "font-size: 13px; font-weight: 600; color: var(--graph-node-text, #e8e8f0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+                                                                        "{title}"
+                                                                    }
+                                                                    div {
+                                                                        style: "display: flex; align-items: center; gap: 6px; margin-top: 4px;",
+                                                                        span {
+                                                                            style: "font-size: 11px; color: var(--accent-blue); font-weight: 500;",
+                                                                            "{node_state}"
+                                                                        }
+                                                                        span {
+                                                                            style: "font-size: 10px; color: var(--text-muted);",
+                                                                            "#{node.id}"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                div {
+                                                    class: "graph-controls-hint",
+                                                    "Left-drag: orbit • Right-drag: pan • Scroll: zoom • Click card: focus"
+                                                }
+                                                div {
+                                                    class: "graph-count-badge",
+                                                    "{layout.nodes.len()} nodes • {layout.edges.len()} edges"
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        GlassPanel {
+                                            h3 { "Hypergraph" }
+                                            p { "No graph snapshot found in this log. Capture one with graph.emit_graph_snapshot() in the traced test." }
+                                        }
                                     }
                                 }
                             }
