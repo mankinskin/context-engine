@@ -115,6 +115,50 @@ test.describe('spec-viewer - graph selection', () => {
     await expect(panel).toBeVisible();
   });
 
+  test('frustum defaults relayout during camera drag and keep visible overlap bounded', async ({ page }) => {
+    test.setTimeout(120_000);
+
+    await gotoGraph(page);
+
+    const before = await readVisibleGraphLayout(page);
+    expect(before.viewportNodes, 'spec graph should expose enough visible cards for frustum regression coverage')
+      .toBeGreaterThan(60);
+    expect(before.overlapPairs, 'default frustum tuning should keep visible overlap within a coarse sanity bound')
+      .toBeLessThanOrEqual(45);
+    expect(before.maxOverlapArea, 'default frustum tuning should avoid large visible overlap slabs')
+      .toBeLessThan(950);
+
+    const container = page.locator('#spec-graph3d-container');
+    const box = await container.boundingBox();
+    expect(box, 'expected the graph container to expose a measurable drag surface').not.toBeNull();
+
+    const startX = box!.x + box!.width * 0.58;
+    const startY = box!.y + box!.height * 0.58;
+
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    await page.mouse.move(startX + 120, startY - 60, { steps: 16 });
+    await page.waitForTimeout(160);
+    const during1 = await readVisibleGraphLayout(page);
+
+    await page.mouse.move(startX + 220, startY - 120, { steps: 16 });
+    await page.waitForTimeout(160);
+    const during2 = await readVisibleGraphLayout(page);
+
+    await page.mouse.up();
+    const release = await readVisibleGraphLayout(page);
+    await page.waitForTimeout(500);
+    const settled = await readVisibleGraphLayout(page);
+
+    const liveMotion = graphLayoutMotion(before, during1) + graphLayoutMotion(during1, during2);
+    const postReleaseMotion = graphLayoutMotion(release, settled);
+
+    expect(liveMotion, 'frustum relayout should respond while the camera drag is still in progress')
+      .toBeGreaterThan(80);
+    expect(liveMotion, 'camera drag should trigger substantially more motion before mouseup than after release')
+      .toBeGreaterThan(Math.max(postReleaseMotion * 3, 80));
+  });
+
   test('zoom to selected node recenters and enlarges the chosen graph card', async ({ page }) => {
     test.setTimeout(120_000);
 
@@ -446,6 +490,84 @@ async function pickBystanderGraphCard(page: Page, selectedIndex: number): Promis
   }, selectedIndex);
 }
 
+async function readVisibleGraphLayout(page: Page): Promise<VisibleGraphLayout> {
+  return page.evaluate(() => {
+    const container = document.querySelector('#spec-graph3d-container');
+    if (!(container instanceof HTMLElement)) {
+      return { viewportNodes: 0, overlapPairs: 0, maxOverlapArea: 0, cards: [] };
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const cards = Array.from(document.querySelectorAll('#spec-graph3d-container .graph-node-card'))
+      .map((card, index) => {
+        const el = card as HTMLElement;
+        if (el.style.display === 'none') {
+          return null;
+        }
+
+        const rect = el.getBoundingClientRect();
+        const intersectsContainer = rect.right > containerRect.left
+          && rect.left < containerRect.right
+          && rect.bottom > containerRect.top
+          && rect.top < containerRect.bottom;
+        if (!intersectsContainer) {
+          return null;
+        }
+
+        return {
+          index,
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          centerX: rect.left + rect.width / 2,
+          centerY: rect.top + rect.height / 2,
+        };
+      })
+      .filter((card): card is VisibleGraphCard => Boolean(card));
+
+    let overlapPairs = 0;
+    let maxOverlapArea = 0;
+    for (let i = 0; i < cards.length; i += 1) {
+      for (let j = i + 1; j < cards.length; j += 1) {
+        const left = cards[i]!;
+        const right = cards[j]!;
+        const overlapX = Math.min(left.right, right.right) - Math.max(left.left, right.left);
+        const overlapY = Math.min(left.bottom, right.bottom) - Math.max(left.top, right.top);
+        if (overlapX > 0 && overlapY > 0) {
+          overlapPairs += 1;
+          maxOverlapArea = Math.max(maxOverlapArea, overlapX * overlapY);
+        }
+      }
+    }
+
+    return {
+      viewportNodes: cards.length,
+      overlapPairs,
+      maxOverlapArea,
+      cards,
+    };
+  });
+}
+
+function graphLayoutMotion(
+  before: VisibleGraphLayout,
+  after: VisibleGraphLayout,
+): number {
+  const afterByIndex = new Map(after.cards.map((card) => [card.index, card]));
+  return before.cards.reduce((total, card) => {
+    const next = afterByIndex.get(card.index);
+    if (!next) {
+      return total;
+    }
+
+    return total + Math.hypot(
+      next.centerX - card.centerX,
+      next.centerY - card.centerY,
+    );
+  }, 0);
+}
+
 type GraphCardMetrics = {
   index: number;
   initialScale: number;
@@ -457,4 +579,21 @@ type CardMetrics = {
   centerX: number;
   centerY: number;
   distanceToCenter: number;
+};
+
+type VisibleGraphCard = {
+  index: number;
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  centerX: number;
+  centerY: number;
+};
+
+type VisibleGraphLayout = {
+  viewportNodes: number;
+  overlapPairs: number;
+  maxOverlapArea: number;
+  cards: VisibleGraphCard[];
 };
