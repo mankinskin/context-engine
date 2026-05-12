@@ -3,6 +3,7 @@
 Completed features and enhancements.
 
 | Date | File | Summary |
+| 2026-05-12 | [20260512_RULE_DOC_DUPLICATION_INVENTORY.md](20260512_RULE_DOC_DUPLICATION_INVENTORY.md) | Inventory of current generated rule-doc owners and remaining byte-identical AGENTS duplicates across the four migration repos |
 |------|------|----------|
 | 2026-02-16 | [20260216_MCP_DOCS_SERVER_TOOLS_REFACTOR.md](20260216_MCP_DOCS_SERVER_TOOLS_REFACTOR.md) | Refactored tools.rs into modular tools/ directory, removed dead code |
 | 2026-02-11 | [20260211_OVERLAP_LINK_ABSTRACTION.md](20260211_OVERLAP_LINK_ABSTRACTION.md) | Implemented overlap link abstraction in BandChain to track overlaps between tokens in decompositions |
