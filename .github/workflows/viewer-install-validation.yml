@@ -1,0 +1,48 @@
+name: Viewer Install Validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/viewer-install-validation.yml'
+      - '.dockerignore'
+      - 'viewer-ctl.toml'
+      - 'tools/install-validation/**'
+      - 'tools/viewer/doc-viewer/**'
+      - 'crates/**'
+      - 'Cargo.lock'
+      - 'memory-viewers'
+  push:
+    branches: [main, master]
+    paths:
+      - '.github/workflows/viewer-install-validation.yml'
+      - '.dockerignore'
+      - 'viewer-ctl.toml'
+      - 'tools/install-validation/**'
+      - 'tools/viewer/doc-viewer/**'
+      - 'crates/**'
+      - 'Cargo.lock'
+      - 'memory-viewers'
+  workflow_dispatch:
+
+concurrency:
+  group: viewer-install-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker-viewer-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Show Docker version
+        run: docker version
+
+      - name: Run viewer install validation
+        shell: bash
+        run: bash tools/install-validation/run-docker-viewer-validation.sh

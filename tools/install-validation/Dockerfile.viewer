@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+
+ARG NODE_BASE_IMAGE=node:20-bookworm-slim
+ARG RUST_BASE_IMAGE=rust:1.91-bookworm
+
+FROM ${NODE_BASE_IMAGE} AS node
+
+FROM ${RUST_BASE_IMAGE}
+
+COPY --from=node /usr/local /usr/local
+
+WORKDIR /workspace
+COPY . /workspace
+
+ENTRYPOINT ["bash", "tools/install-validation/run-viewer-in-container.sh"]
