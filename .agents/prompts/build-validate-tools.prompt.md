@@ -127,25 +127,37 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 
 ## Step 6 — Run Playwright E2E tests in the browser
 
-The E2E suite validates that each viewer **actually works in Chromium** —
-no console errors, no missing assets, and the UI renders after WASM/JS hydration.
+The Playwright suites validate that each viewer **actually works in Chromium** —
+no console errors, no missing assets, and the UI renders after hydration.
 
-Prerequisites: all four viewer servers must be running (start them with
-`cargo make start-<viewer>` if not already up).
+Shared managed-viewer suites now live under
+`memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared`.
+The spec/doc/log entrypoints start their own managed viewer servers through
+`viewer-ctl`; ticket-viewer release coverage remains separate.
 
 ```bash
-# Install npm deps (first time only)
+# Install npm deps for spec/doc/log viewer suites (first time only)
 cargo make e2e-install
 
-# Run the full Playwright suite against all running viewers
+# Run the spec/doc/log viewer suites
 cargo make test-e2e
+
+# Run ticket-viewer release coverage separately
+cd memory-viewers/ticket-viewer/frontend/dioxus
+npm run test:e2e:release
 ```
 
-Or run manually from the e2e directory:
+Or run manually from the viewer-specific package:
 
 ```bash
-cd tools/viewer/e2e
-npx playwright test
+cd memory-viewers/spec-viewer/frontend/dioxus
+npm run test:e2e:release
+
+cd tools/viewer/doc-viewer/e2e
+npm test
+
+cd tools/viewer/log-viewer/e2e
+npm run test:managed
 ```
 
 The suite tests each viewer for:

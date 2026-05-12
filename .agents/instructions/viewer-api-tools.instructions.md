@@ -39,7 +39,8 @@ Applies to viewer-api-driven HTTP/SPA tools and shared frontend packages.
 <!-- rule-api:entry id=888100f3-1b66-4c3b-b7ef-23196f6768ef slug=shared/instructions/viewer-api-tools/viewer-api-tools-guidance/frontend-rules/l34 -->
 ## Frontend Rules
 
-- Reuse shared UI primitives/styles from `tools/viewer/viewer-api/frontend/ts` where possible.
+- Reuse shared TS UI primitives/styles from `tools/viewer/log-viewer/frontend/viewer-api-frontend` where applicable.
+- Reuse shared Dioxus viewer primitives and test helpers from `memory-viewers/viewer-api/viewer-api/frontend/dioxus` for WASM viewers.
 - Keep viewer-specific features modular; avoid duplicating shared components.
 - Prefer explicit loading/error/empty states for all async data views.
 - Keep theme/effects integration centralized so log-viewer and ticket-viewer can share behavior.

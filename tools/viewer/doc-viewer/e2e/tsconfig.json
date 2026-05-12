@@ -9,10 +9,5 @@
     "baseUrl": ".",
     "paths": {}
   },
-  "include": [
-    "tests/**/*",
-    "tests-managed/**/*",
-    "playwright.config.ts",
-    "playwright.managed.config.ts"
-  ]
+  "include": ["tests-managed/**/*", "playwright.managed.config.ts"]
 }

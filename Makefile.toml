@@ -259,40 +259,54 @@ command = "viewer-ctl"
 args = ["vscode-ext", "install"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# E2E tests — Playwright smoke tests for all viewer tools.
+# E2E tests — viewer-specific Playwright entrypoints.
 #
-# Prerequisite: the four release-binary viewer servers must be running.
-# Start them with `cargo make start-<viewer>` or launch manually.
+# Shared managed viewer suites now live under:
+#   memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared
 #
-#   cargo make e2e-install   — npm install (first time only)
-#   cargo make test-e2e      — run the full Playwright suite
+# Spec-viewer release E2E runs from:
+#   memory-viewers/spec-viewer/frontend/dioxus
+#   npm run test:e2e:release
+#
+# Doc-viewer shared smoke runs from:
+#   tools/viewer/doc-viewer/e2e
+#   npm test
+#
+# Log-viewer shared smoke runs from:
+#   tools/viewer/log-viewer/e2e
+#   npm run test:managed
+#
+# Ticket-viewer release E2E still runs from:
+#   memory-viewers/ticket-viewer/frontend/dioxus
+#   npm run test:e2e:release
+#
+#   cargo make e2e-install   — npm install for spec/doc/log viewer suites
+#   cargo make test-e2e      — run spec/doc/log viewer suites sequentially
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.e2e-install]
-description = "Install npm dependencies for the viewer E2E test suite"
+description = "Install npm dependencies for the spec/doc/log viewer E2E suites"
 command = "cmd"
-args = ["/c", "npm", "install"]
-cwd = "tools/viewer/e2e"
+args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm install && popd && pushd tools\\viewer\\doc-viewer\\e2e && npm install && popd && pushd tools\\viewer\\log-viewer\\e2e && npm install && popd"]
 
 [tasks.e2e-install.linux]
-command = "npm"
-args = ["install"]
+command = "bash"
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
 
 [tasks.e2e-install.mac]
-command = "npm"
-args = ["install"]
+command = "bash"
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
 
 [tasks.test-e2e]
-description = "Run Playwright E2E tests against running viewer servers (all four must be up)"
+description = "Run Playwright E2E tests for spec-viewer plus shared doc/log smoke suites"
 command = "cmd"
-args = ["/c", "npx", "playwright", "test"]
-cwd = "tools/viewer/e2e"
+args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm run test:e2e:release && popd && pushd tools\\viewer\\doc-viewer\\e2e && npm test && popd && pushd tools\\viewer\\log-viewer\\e2e && npm run test:managed && popd"]
 
 [tasks.test-e2e.linux]
-command = "npx"
-args = ["playwright", "test"]
+command = "bash"
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
 
 [tasks.test-e2e.mac]
-command = "npx"
-args = ["playwright", "test"]
+command = "bash"
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
 
