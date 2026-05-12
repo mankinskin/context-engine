@@ -1,0 +1,20 @@
+id = "904871fa-0b97-4484-9540-f2926e32476f"
+created_at = "2026-05-11T17:20:18.087776200+00:00"
+title = "induced graph structure"
+state = "draft"
+code_refs = [
+  { description = "Public read command that exposes one deterministic tree view over the induced graph.", file = "crates/context-api/src/commands/read.rs", kind = "function", line_end = 196, line_start = 130, symbol = "read_sequence" },
+  { description = "Linear inputs produce a flat atom-chain root with matching width.", file = "crates/context-read/src/tests/linear.rs", kind = "function", line_end = 42, line_start = 28, symbol = "linear_read_abc" },
+  { description = "Later rereads can refine earlier flat roots into tighter compound decompositions.", file = "crates/context-read/src/tests/read/mod.rs", kind = "function", line_end = 137, line_start = 68, symbol = "read_sequence1" },
+  { description = "Repeated known blocks collapse to reused subpatterns and keep single-character reads atomic.", file = "crates/context-read/src/tests/read/mod.rs", kind = "function", line_end = 173, line_start = 139, symbol = "read_sequence2" },
+  { description = "Infix rereads can introduce reusable subpatterns and alternative decompositions.", file = "crates/context-read/src/tests/read/mod.rs", kind = "function", line_end = 238, line_start = 176, symbol = "read_infix1" },
+  { description = "Triple-repeat overlaps produce both valid binary decompositions of the root.", file = "crates/context-read/src/tests/overlapping.rs", kind = "function", line_end = 48, line_start = 29, symbol = "repetition_abcabcabc" },
+  { description = "Complex overlapping inputs accumulate the full regression-corpus decomposition set.", file = "crates/context-read/src/tests/overlapping.rs", kind = "function", line_end = 123, line_start = 92, symbol = "complex_abcabababcaba" },
+  { description = "Rotating overlap cases can accumulate multiple compatible decompositions on related roots.", file = "crates/context-read/src/tests/read/mod.rs", kind = "function", line_end = 383, line_start = 305, symbol = "read_multiple_overlaps1" },
+  { description = "PatternReadResult and ReadNode expose only one deterministic tree even when the graph stores multiple child patterns.", file = "crates/context-api/src/types.rs", kind = "struct", line_end = 458, line_start = 432, symbol = "PatternReadResult" }
+]
+component = "context-read"
+parent = "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
+scope = "internal"
+slug = "context-stack/graph-induction/read-sequence/induced-graph-structure"
+type = "specification"
