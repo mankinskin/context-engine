@@ -90,25 +90,16 @@ assert_viewer_ctl_installed() {
     "$install_cargo_home/bin/viewer-ctl" list >/dev/null
 }
 
-assert_doc_viewer_server_installed() {
-    [[ -x "$install_cargo_home/bin/doc-viewer" ]] \
-        || fail "missing installed server binary: doc-viewer"
+assert_viewer_server_installed() {
+    local viewer_name=$1
+
+    [[ -x "$install_cargo_home/bin/$viewer_name" ]] \
+        || fail "missing installed server binary: $viewer_name"
 }
 
-assert_doc_viewer_frontend_installed() {
-    local static_root=$install_home/.context-engine/static/doc-viewer
-
-    [[ -f "$static_root/index.html" ]] \
-        || fail "missing installed frontend bundle: $static_root/index.html"
-}
-
-assert_log_viewer_server_installed() {
-    [[ -x "$install_cargo_home/bin/log-viewer" ]] \
-        || fail "missing installed server binary: log-viewer"
-}
-
-assert_log_viewer_frontend_installed() {
-    local static_root=$install_home/.context-engine/static/log-viewer
+assert_viewer_frontend_installed() {
+    local viewer_name=$1
+    local static_root=$install_home/.context-engine/static/$viewer_name
 
     [[ -f "$static_root/index.html" ]] \
         || fail "missing installed frontend bundle: $static_root/index.html"
@@ -127,34 +118,34 @@ run_view_01() {
 
 run_view_02() {
     local command
+    local viewer_name
 
-    log_step VIEW-02 "install the baseline doc-viewer and log-viewer server/frontend artifacts"
+    log_step VIEW-02 "install all managed viewer server/frontend artifacts"
     while IFS= read -r command; do
         [[ -n "$command" ]] || continue
         run_command "$repo_root" "$command"
     done < <(scenario_commands VIEW-02)
 
-    assert_doc_viewer_server_installed
-    assert_doc_viewer_frontend_installed
-    assert_log_viewer_server_installed
-    assert_log_viewer_frontend_installed
+    for viewer_name in doc-viewer log-viewer ticket-viewer spec-viewer; do
+        assert_viewer_server_installed "$viewer_name"
+        assert_viewer_frontend_installed "$viewer_name"
+    done
 
-    log_step VIEW-02 "rerun the baseline viewer install commands"
+    log_step VIEW-02 "rerun the managed viewer install commands"
     while IFS= read -r command; do
         [[ -n "$command" ]] || continue
         run_command "$repo_root" "$command"
     done < <(scenario_commands VIEW-02)
 
-    assert_doc_viewer_server_installed
-    assert_doc_viewer_frontend_installed
-    assert_log_viewer_server_installed
-    assert_log_viewer_frontend_installed
-    run_command "$repo_root" "viewer-ctl static-dir doc-viewer | grep -Fx '$install_home/.context-engine/static/doc-viewer'"
-    run_command "$repo_root" "viewer-ctl static-dir log-viewer | grep -Fx '$install_home/.context-engine/static/log-viewer'"
+    for viewer_name in doc-viewer log-viewer ticket-viewer spec-viewer; do
+        assert_viewer_server_installed "$viewer_name"
+        assert_viewer_frontend_installed "$viewer_name"
+        run_command "$repo_root" "viewer-ctl static-dir $viewer_name | grep -Fx '$install_home/.context-engine/static/$viewer_name'"
+    done
 }
 
 log_step setup "using $(rustc --version)"
 prepare_install_env
 run_view_01
 run_view_02
-log_step done "baseline viewer install scenarios passed in Docker"
+log_step done "managed viewer install scenarios passed in Docker"
