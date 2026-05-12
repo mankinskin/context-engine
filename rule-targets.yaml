@@ -31,6 +31,27 @@ targets:
             title: Canonical Sources
             section: agent-rules/canonical-sources
 
+  - name: memory-viewers-agents
+    repo_scope: memory-viewers
+    file_kind: AGENTS
+    path_scope: memory-viewers/AGENTS.md
+    output_path: memory-viewers/AGENTS.md
+    nodes: *agents_nodes
+
+  - name: memory-api-agents
+    repo_scope: memory-api
+    file_kind: AGENTS
+    path_scope: memory-viewers/memory-api/AGENTS.md
+    output_path: memory-viewers/memory-api/AGENTS.md
+    nodes: *agents_nodes
+
+  - name: viewer-api-agents
+    repo_scope: viewer-api
+    file_kind: AGENTS
+    path_scope: memory-viewers/viewer-api/AGENTS.md
+    output_path: memory-viewers/viewer-api/AGENTS.md
+    nodes: *agents_nodes
+
   - name: context-engine-github-readme
     repo_scope: context-engine
     file_kind: .github/README

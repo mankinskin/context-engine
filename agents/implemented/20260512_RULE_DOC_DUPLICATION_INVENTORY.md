@@ -15,7 +15,10 @@ The goal is to identify which user-facing markdown surfaces are already owned by
 
 | Repo | Output file(s) | Current owner | Notes |
 | --- | --- | --- | --- |
-| `context-engine` | `AGENTS.md` | `rule-targets.yaml` target `context-engine-agents` | Current generated output is only the provenance marker; the agent-rules body is not yet present in the root output. |
+| `context-engine` | `AGENTS.md` | root `rule-targets.yaml` target `context-engine-agents` | Generated from canonical root `shared/agent-rules/*` entries. |
+| `memory-viewers` | `AGENTS.md` | root `rule-targets.yaml` target `memory-viewers-agents` | Generated from the same canonical root `shared/agent-rules/*` entries as the root repo output. |
+| `memory-viewers/memory-api` | `AGENTS.md` | root `rule-targets.yaml` target `memory-api-agents` | Generated from the same canonical root `shared/agent-rules/*` entries as the other AGENTS outputs. |
+| `memory-viewers/viewer-api` | `AGENTS.md` | root `rule-targets.yaml` target `viewer-api-agents` | Generated from the same canonical root `shared/agent-rules/*` entries as the other AGENTS outputs. |
 | `context-engine` | `.github/README.md` | `rule-targets.yaml` target `context-engine-github-readme` | Generated from canonical `github-copilot-configuration/*` sections. |
 | `context-engine` | `.github/copilot-instructions.md` | `rule-targets.yaml` target `context-engine-copilot-instructions` | Generated from canonical `github-copilot-instructions/*` sections. |
 | `context-engine` | `.agents/instructions/*.instructions.md` | `rule-targets.yaml` targets `context-engine-instruction-*` | Path-scoped instruction bodies are generated from canonical rule entries and preserve repo-specific `applyTo` metadata at render time. |
@@ -25,13 +28,19 @@ The goal is to identify which user-facing markdown surfaces are already owned by
 | `memory-viewers/viewer-api` | `README.md` | `memory-viewers/viewer-api/rule-targets.yaml` target `viewer-api-readme` | Generated from canonical `viewer-api/*` sections. |
 | `memory-viewers/viewer-api` | `viewer-ctl/README.md` | `memory-viewers/viewer-api/rule-targets.yaml` target `viewer-ctl-readme` | Generated onboarding README for the viewer lifecycle manager, owned by canonical `tools/viewer-ctl/readme` content. |
 
-## Byte-Identical Static Group
+## Shared AGENTS Migration
 
-The following files are still byte-identical static copies rather than generated outputs.
+The former byte-identical nested `AGENTS.md` group now renders from one canonical source in the root `.rule` store:
 
-| Hash | Files | Current state | Intended canonical owner |
-| --- | --- | --- | --- |
-| `7dbaf53f83cbadc7eb907f4c2ca3fbe0af5a0e2f936ab8421286636c28d1ecc2` | `memory-viewers/AGENTS.md`, `memory-viewers/memory-api/AGENTS.md`, `memory-viewers/viewer-api/AGENTS.md` | Static copies with identical bodies | Shared `Agent Rules` content should be moved behind generated `AGENTS.md` targets so the body is owned by canonical rule entries rather than handwritten copies. |
+- canonical sections: `agent-rules/*`
+- canonical slugs: `shared/agent-rules/*`
+- generated outputs:
+	- `AGENTS.md`
+	- `memory-viewers/AGENTS.md`
+	- `memory-viewers/memory-api/AGENTS.md`
+	- `memory-viewers/viewer-api/AGENTS.md`
+
+This removes copy-paste ownership of the shared `Agent Rules` body while preserving per-file provenance comments in each generated output.
 
 ## Path-Scoped Instruction Status
 
@@ -57,4 +66,4 @@ Each file is rendered from canonical rule entries and keeps repo-local `applyTo`
 
 ## Remaining Migration Gap
 
-The remaining duplicated file group for phase one is the nested `AGENTS.md` set. The inventory above is the committed record of that gap and the canonical ownership expected for its shared body.
+No remaining byte-identical markdown group remains in the current phase-one migration inventory. Further work, if any, is follow-up refinement rather than unresolved ownership migration.
