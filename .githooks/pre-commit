@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit hook: ensure .vscode/tasks.json is in sync with its
-# source-of-truth fragments under .vscode/tasks.d/.
+# Pre-commit hook: ensure generated workspace artifacts stay in sync.
 #
 # Install once per clone:
 #     git config core.hooksPath .github/hooks
@@ -9,42 +8,86 @@
 #     git commit --no-verify
 #
 # Behaviour:
-#   * If neither the part-files nor tasks.json are staged, do nothing.
-#   * Otherwise re-run the merge script and abort the commit if the
-#     resulting tasks.json differs from what's currently on disk (i.e.
-#     the part-files were edited but tasks.json was not regenerated, or
-#     tasks.json was hand-edited and the part-files weren't updated).
+#   * If staged changes touch generated VS Code tasks, regenerate them and
+#     reject drift.
+#   * If staged changes touch rule storage/config or generated rule outputs,
+#     run the matching `rule sync-targets --check` gate and reject drift.
 
 set -euo pipefail
 
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-# Are any tasks-related files staged?
-if ! git diff --cached --name-only \
-        | grep -Eq '^\.vscode/(tasks\.json|tasks\.d/.*\.jsonc)$'; then
+staged_files="$(git diff --cached --name-only)"
+
+if [[ -z "$staged_files" ]]; then
     exit 0
 fi
 
-if ! command -v python >/dev/null 2>&1; then
-    echo "pre-commit: python not on PATH; skipping vscode-tasks check" >&2
-    exit 0
+staged_matches() {
+    local pattern="$1"
+    printf '%s\n' "$staged_files" | grep -Eq "$pattern"
+}
+
+check_vscode_tasks() {
+    if ! command -v python >/dev/null 2>&1; then
+        echo "pre-commit: python not on PATH; skipping vscode-tasks check" >&2
+        return 0
+    fi
+
+    local expected
+    expected="$(mktemp)"
+    cp .vscode/tasks.json "$expected"
+
+    if ! python scripts/build-vscode-tasks.py >/dev/null; then
+        rm -f "$expected"
+        echo "pre-commit: scripts/build-vscode-tasks.py failed — fix part-files" >&2
+        exit 1
+    fi
+
+    if ! diff -q "$expected" .vscode/tasks.json >/dev/null 2>&1; then
+        rm -f "$expected"
+        echo "pre-commit: .vscode/tasks.json was out of date with .vscode/tasks.d/*.jsonc" >&2
+        echo "             it has been regenerated; please 'git add .vscode/tasks.json' and re-commit" >&2
+        exit 1
+    fi
+
+    rm -f "$expected"
+}
+
+check_rule_targets() {
+    local config="$1"
+
+    if ! command -v cargo >/dev/null 2>&1; then
+        echo "pre-commit: cargo not on PATH; cannot validate generated rule outputs for $config" >&2
+        exit 1
+    fi
+
+    if ! cargo run -p rule-cli --bin rule -- sync-targets --config "$config" --check >/dev/null; then
+        echo "pre-commit: generated rule outputs are out of date for $config" >&2
+        echo "             run: cargo run -p rule-cli --bin rule -- sync-targets --config $config" >&2
+        exit 1
+    fi
+}
+
+if staged_matches '^\.vscode/(tasks\.json|tasks\.d/.*\.jsonc)$'; then
+    check_vscode_tasks
 fi
 
-# Snapshot, regenerate, diff.
-expected="$(mktemp)"
-trap 'rm -f "$expected"' EXIT
-cp .vscode/tasks.json "$expected"
-
-if ! python scripts/build-vscode-tasks.py >/dev/null; then
-    echo "pre-commit: scripts/build-vscode-tasks.py failed — fix part-files" >&2
-    exit 1
+if staged_matches '^(rule-targets\.yaml|\.rule/.*|AGENTS\.md|\.github/README\.md|\.github/copilot-instructions\.md|\.agents/instructions/.*\.instructions\.md)$'; then
+    check_rule_targets 'rule-targets.yaml'
 fi
 
-if ! diff -q "$expected" .vscode/tasks.json >/dev/null 2>&1; then
-    echo "pre-commit: .vscode/tasks.json was out of date with .vscode/tasks.d/*.jsonc" >&2
-    echo "             it has been regenerated; please 'git add .vscode/tasks.json' and re-commit" >&2
-    exit 1
+if staged_matches '^(memory-viewers/rule-targets\.yaml|memory-viewers/\.rule/.*|memory-viewers/README\.md)$'; then
+    check_rule_targets 'memory-viewers/rule-targets.yaml'
+fi
+
+if staged_matches '^(memory-viewers/memory-api/rule-targets\.yaml|memory-viewers/memory-api/\.rule/.*|memory-viewers/memory-api/README\.md)$'; then
+    check_rule_targets 'memory-viewers/memory-api/rule-targets.yaml'
+fi
+
+if staged_matches '^(memory-viewers/viewer-api/rule-targets\.yaml|memory-viewers/viewer-api/\.rule/.*|memory-viewers/viewer-api/README\.md)$'; then
+    check_rule_targets 'memory-viewers/viewer-api/rule-targets.yaml'
 fi
 
 exit 0

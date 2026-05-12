@@ -15,7 +15,7 @@ applyTo: "crates/audit-api/**,tools/cli/audit-cli/**,tools/mcp/audit-mcp/**,.aud
 - Core library crate: `audit-api`
 - CLI package: `audit-cli` with the `audit` binary
 - MCP package: `audit-mcp`
-- MCP tools: `audit`, `audit_summary`
+- MCP tool: `audit`
 
 <!-- rule-api:entry id=07d051e6-7fde-419c-a1fd-e83061b1ec4c slug=shared/instructions/audit/audit-guidance/purpose/l17 -->
 Keep the layering thin and explicit:
@@ -58,21 +58,6 @@ cargo run -p audit-cli --bin audit -- --json run .
 ```
 
 <!-- rule-api:entry id=e0241e95-5a78-43c2-9cac-81f60c64e849 slug=shared/instructions/audit/audit-guidance/cli-usage/l48 -->
-Summarize findings by one grouping key:
-
-```bash
-cargo run -p audit-cli --bin audit -- summary --by crate .
-```
-
-Supported `--by` values are:
-
-- `crate`
-- `package` (alias of `crate`)
-- `category`
-- `severity`
-- `metric`
-- `path`
-
 Override thresholds for a stricter audit:
 
 <!-- rule-api:entry id=6a68252e-b548-4df6-863b-383bdb0233a4 slug=shared/instructions/audit/audit-guidance/cli-usage/l50 -->
@@ -115,19 +100,7 @@ Tool input example:
 ```
 
 <!-- rule-api:entry id=9513e68c-52d7-4b30-9d19-b1cc686b08a5 slug=shared/instructions/audit/audit-guidance/mcp-usage/l82 -->
-Grouped summary example:
-
-```json
-{
-  "repo_root": ".",
-  "by": "crate",
-  "max_file_lines": 350,
-  "max_cyclomatic_complexity": 10,
-  "coverage_warn_below": 85.0
-}
-```
-
-Use `audit` when you need the full structured `AuditReport` payload. Use `audit_summary` when you need grouped issue counts for a single dimension.
+The MCP tool always returns the full structured `AuditReport` payload. Use it as the single synchronized read for repository quality state.
 
 <!-- rule-api:entry id=184e9ac3-8b61-4d2b-a1ce-16def714557a slug=shared/instructions/audit/audit-guidance/repo-config/l84 -->
 ## Repo Config
