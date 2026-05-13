@@ -35,7 +35,7 @@ Before writing any code, run a quick orientation to understand the current ticke
 
 <!-- rule-api:entry id=ff999de8-3c2f-46fd-886f-1b238fd4f975 slug=shared/instructions/ticket-system/check-the-draftboard-active-agents-wip-limit-stale-warnings/l44 -->
 # Check the draftboard (active agents, WIP limit, stale warnings)
-./target/debug/ticket.exe board show --json
+ticket board show --json
 ```
 
 <!-- rule-api:entry id=c00fd519-ed78-4421-867b-30cf9709e429 slug=shared/instructions/ticket-system/check-the-draftboard-active-agents-wip-limit-stale-warnings/l48 -->
@@ -236,12 +236,12 @@ Use `ticket next` to find the highest-priority unblocked tickets:
 <!-- rule-api:entry id=efbe3dcd-4b64-4ff0-a6ea-19eb84fcf70c slug=shared/instructions/ticket-system/find-unblocked-ready-tickets-you-can-work-on-now-priority-ordered/l31 -->
 ```bash
 # Find unblocked ready tickets you can work on now (priority-ordered)
-./target/debug/ticket.exe next --json
+ticket next --json
 
 <!-- rule-api:entry id=11d31eeb-c6ad-44a3-9fba-b7b0566642c8 slug=shared/instructions/ticket-system/list-unblocked-tickets-sorted-by-progress-then-priority/l198 -->
 ```bash
 # List unblocked tickets sorted by progress, then priority
-./target/debug/ticket.exe next --json
+ticket next --json
 
 <!-- rule-api:entry id=a575836a-1397-4cd6-9c7d-c3315cba7c0b slug=shared/instructions/ticket-system/with-a-title-prefix-filter-for-a-specific-track/l202 -->
 # With a title prefix filter for a specific track
