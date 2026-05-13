@@ -17,6 +17,22 @@ cargo build -p crane-cli --bin crane
 cargo run -p crane-cli --bin crane -- transplant --help
 ```
 
+## Branch-root rewrites
+
+Use an empty destination mapping when the selected source tree should become the target branch root.
+
+```bash
+crane transplant \
+  --source-repo . \
+  --target-repo ../context-stack \
+  --target-branch main \
+  --import-branch crane/context-stack-root-review \
+  --mapping crates/context-stack= \
+  --dry-run
+```
+
+Use this mode when the selected subtree already represents the standalone repository root you want to review or import. Destination scopes must stay non-overlapping, so a branch-root mapping cannot be combined with other mappings that would land in the same root path space.
+
 ## Verification Flow
 
 Before using `crane` for a production migration:

@@ -116,7 +116,7 @@ where
 
         if let Some(data_len) = parse_data_len(&line)? {
             writer.write_all(&line).map_err(CraneError::Io)?;
-            copy_exact(reader, writer, data_len + 1)?;
+            copy_exact(reader, writer, data_len)?;
             continue;
         }
 
@@ -260,15 +260,41 @@ pub fn remap_path(
 ) -> Option<String> {
     for mapping in mappings {
         if path == mapping.source {
-            return Some(mapping.destination.clone());
+            return Some(remap_exact_path(path, mapping));
         }
         if let Some(suffix) = path.strip_prefix(&mapping.source)
             && suffix.starts_with('/')
         {
-            return Some(format!("{}{}", mapping.destination, suffix));
+            return Some(join_mapped_path(&mapping.destination, suffix));
         }
     }
     None
+}
+
+fn remap_exact_path(
+    path: &str,
+    mapping: &PathMapping,
+) -> String {
+    if !mapping.destination.is_empty() {
+        return mapping.destination.clone();
+    }
+
+    path.rsplit('/').next().unwrap_or(path).to_string()
+}
+
+fn join_mapped_path(
+    destination: &str,
+    suffix: &str,
+) -> String {
+    let trimmed_suffix = suffix.trim_start_matches('/');
+    if destination.is_empty() {
+        return trimmed_suffix.to_string();
+    }
+    if trimmed_suffix.is_empty() {
+        return destination.to_string();
+    }
+
+    format!("{destination}/{trimmed_suffix}")
 }
 
 fn parse_data_len(line: &[u8]) -> Result<Option<usize>, CraneError> {

@@ -51,7 +51,12 @@ pub struct TransplantArgs {
     #[arg(long)]
     pub anchor_commit: Option<String>,
 
-    #[arg(long = "mapping", value_parser = parse_mapping, required = true)]
+    #[arg(
+        long = "mapping",
+        value_parser = parse_mapping,
+        required = true,
+        help = "Map <source>=<destination>; use an empty destination (for example crates/context-stack=) to rewrite the selected subtree to branch root"
+    )]
     pub mappings: Vec<PathMapping>,
 
     #[arg(long, default_value_t = false)]
@@ -73,11 +78,6 @@ pub fn parse_mapping(raw: &str) -> Result<PathMapping, String> {
 
     if source.is_empty() {
         return Err(format!("invalid mapping `{raw}`; source path is empty"));
-    }
-    if destination.is_empty() {
-        return Err(format!(
-            "invalid mapping `{raw}`; destination path is empty"
-        ));
     }
 
     Ok(PathMapping {
@@ -116,10 +116,30 @@ pub fn validate_mappings(
                     left.source, right.source
                 )));
             }
+            if path_scopes_overlap(&left.destination, &right.destination) {
+                return Err(CraneError::BadRequest(format!(
+                    "overlapping destination mappings are not supported: `{}={}` and `{}={}`",
+                    left.source,
+                    left.destination,
+                    right.source,
+                    right.destination
+                )));
+            }
         }
     }
 
     Ok(normalized)
+}
+
+fn path_scopes_overlap(
+    left: &str,
+    right: &str,
+) -> bool {
+    if left.is_empty() || right.is_empty() {
+        return true;
+    }
+
+    is_path_prefix(left, right) || is_path_prefix(right, left)
 }
 
 fn is_path_prefix(
