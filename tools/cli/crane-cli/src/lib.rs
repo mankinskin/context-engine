@@ -60,12 +60,22 @@ fn render_outcome(outcome: &TransplantOutcome) -> String {
     let mut lines = vec![
         format!("source_repo={}", outcome.plan.source_repo.display()),
         format!("target_repo={}", outcome.plan.target_repo.display()),
+        format!("source_ref={}", outcome.plan.source_ref),
         format!("source_commit={}", outcome.plan.source_commit),
         format!("anchor_commit={}", outcome.plan.anchor_commit),
         format!("range_spec={}", outcome.plan.range_spec),
+        format!("target_branch={}", outcome.plan.target_branch),
         format!("import_branch={}", outcome.plan.import_branch),
+        format!("import_ref={}", outcome.plan.import_ref),
         format!("merged={}", outcome.merged),
     ];
+
+    for mapping in &outcome.plan.mappings {
+        lines.push(format!(
+            "mapping={}={}",
+            mapping.source, mapping.destination
+        ));
+    }
 
     if let Some(stats) = &outcome.stats {
         lines.push(format!("commit_count={}", stats.commit_count));
