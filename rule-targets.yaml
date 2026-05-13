@@ -55,52 +55,6 @@ targets:
     output_path: memory-viewers/viewer-api/AGENTS.md
     nodes: *agents_nodes
 
-  - name: context-engine-github-readme
-    repo_scope: context-engine
-    file_kind: .github/README
-    path_scope: .github/README.md
-    output_path: .github/README.md
-    nodes: &github_readme_nodes
-      - name: github-copilot-configuration
-        title: GitHub Copilot Configuration
-        section: github-copilot-configuration
-        nodes:
-          - name: active-files
-            title: Active Files
-            section: github-copilot-configuration/active-files
-            nodes:
-              - name: primary-agent-instructions
-                title: Primary Agent Instructions
-                section: github-copilot-configuration/active-files/primary-agent-instructions
-              - name: supporting-documentation
-                title: Supporting Documentation
-                section: github-copilot-configuration/active-files/supporting-documentation
-          - name: github-copilot-instruction-types
-            title: GitHub Copilot Instruction Types
-            section: github-copilot-configuration/github-copilot-instruction-types
-          - name: documentation-architecture
-            title: Documentation Architecture
-            section: github-copilot-configuration/documentation-architecture
-          - name: verification
-            title: Verification
-            section: github-copilot-configuration/verification
-            nodes:
-              - name: in-vs-code
-                title: In VS Code
-                section: github-copilot-configuration/verification/in-vs-code
-              - name: on-github-com
-                title: On GitHub.com
-                section: github-copilot-configuration/verification/on-github-com
-              - name: for-code-review
-                title: For Code Review
-                section: github-copilot-configuration/verification/for-code-review
-          - name: updates
-            title: Updates
-            section: github-copilot-configuration/updates
-          - name: references
-            title: References
-            section: github-copilot-configuration/references
-
   - name: context-engine-copilot-instructions
     repo_scope: context-engine
     file_kind: copilot-instructions
