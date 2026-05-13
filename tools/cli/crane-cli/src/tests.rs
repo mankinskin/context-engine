@@ -719,6 +719,132 @@ fn transplant_rewrites_selected_tree_to_branch_root() {
     );
 }
 
+#[test]
+fn transplant_rejects_dirty_target_before_replacing_import_ref() {
+    let fixture = setup_branch_root_fixture();
+    let import_branch = "crane/context-stack-root-review";
+    let import_ref = "refs/heads/crane/context-stack-root-review";
+
+    execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: import_branch.to_string(),
+        anchor_commit: None,
+        mappings: vec![
+            parse_mapping("crates/context-stack=")
+                .expect("branch-root mapping should parse"),
+        ],
+        no_merge: true,
+        dry_run: false,
+    })
+    .expect("initial branch-root import should succeed");
+
+    let import_head_before = git_output(&fixture.target_repo, &["rev-parse", import_ref])
+        .trim()
+        .to_string();
+    fs::write(fixture.target_repo.join("DIRTY.md"), "dirty\n")
+        .expect("dirty file should be written");
+
+    let error = execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: import_branch.to_string(),
+        anchor_commit: None,
+        mappings: vec![
+            parse_mapping("crates/context-stack=")
+                .expect("branch-root mapping should parse"),
+        ],
+        no_merge: true,
+        dry_run: false,
+    })
+    .expect_err("dirty targets must be rejected before import");
+
+    assert!(matches!(error, CraneError::DirtyTargetRepo(_)));
+    assert!(git_ref_exists(&fixture.target_repo, import_ref));
+    assert_eq!(
+        git_output(&fixture.target_repo, &["rev-parse", import_ref])
+            .trim()
+            .to_string(),
+        import_head_before,
+        "dirty-target rejection must not delete or rewrite the existing import ref"
+    );
+}
+
+#[test]
+fn transplant_replaces_preexisting_import_ref_before_branch_root_import() {
+    let fixture = setup_branch_root_fixture();
+    let import_branch = "crane/context-stack-root-review";
+    let import_ref = "refs/heads/crane/context-stack-root-review";
+
+    execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: import_branch.to_string(),
+        anchor_commit: None,
+        mappings: vec![
+            parse_mapping("crates/context-stack=")
+                .expect("branch-root mapping should parse"),
+        ],
+        no_merge: true,
+        dry_run: false,
+    })
+    .expect("initial branch-root import should succeed");
+
+    run_git(&fixture.target_repo, &["checkout", import_branch]);
+    commit_file(
+        &fixture.target_repo,
+        "STALE_IMPORT.md",
+        "stale\n",
+        "stale import branch commit",
+    );
+    let stale_import_head = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+        .trim()
+        .to_string();
+    run_git(&fixture.target_repo, &["checkout", "main"]);
+
+    execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: import_branch.to_string(),
+        anchor_commit: None,
+        mappings: vec![
+            parse_mapping("crates/context-stack=")
+                .expect("branch-root mapping should parse"),
+        ],
+        no_merge: true,
+        dry_run: false,
+    })
+    .expect("rerunning branch-root import should replace the stale import ref");
+
+    let refreshed_import_head = git_output(&fixture.target_repo, &["rev-parse", import_ref])
+        .trim()
+        .to_string();
+    let import_tree = git_output(
+        &fixture.target_repo,
+        &["ls-tree", "-r", "--name-only", import_ref],
+    );
+
+    assert_ne!(
+        refreshed_import_head, stale_import_head,
+        "existing import refs should be replaced, not extended in place"
+    );
+    assert!(
+        !import_tree.contains("STALE_IMPORT.md"),
+        "stale files from a previous import branch must not survive ref replacement"
+    );
+    assert!(import_tree.contains("Cargo.toml"));
+    assert!(import_tree.contains("src/lib.rs"));
+    assert!(import_tree.contains("tests/smoke.rs"));
+}
+
 struct BranchRootFixture {
     _temp: TempDir,
     source_repo: PathBuf,
