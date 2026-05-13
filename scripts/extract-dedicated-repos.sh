@@ -93,7 +93,7 @@ Create history-filtered sibling repositories for dedicated tool splits.
 
 Options:
   --project <name>       Extract only one project. Repeatable.
-                         Valid names: memory-api, viewer-api, memory-viewers
+                         Valid names: memory-api, viewer-api, memory-viewers, context-stack
   --source-repo <path>   Source repository to clone and filter.
                          Default: ${SOURCE_REPO_DEFAULT}
   --target-parent <path> Parent directory where sibling repos are created.
@@ -105,6 +105,7 @@ Options:
 Examples:
   ${SCRIPT_NAME} --dry-run
   ${SCRIPT_NAME} --project viewer-api --replace
+  ${SCRIPT_NAME} --project context-stack --replace
   ${SCRIPT_NAME} --target-parent /c/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app --replace
 EOF
 }
@@ -120,7 +121,7 @@ canonical_dir() {
 
 validate_project() {
   case "$1" in
-    memory-api|viewer-api|memory-viewers) ;;
+    memory-api|viewer-api|memory-viewers|context-stack) ;;
     *) die "Unknown project: $1" ;;
   esac
 }
@@ -139,10 +140,27 @@ project_keep_regex() {
     memory-viewers)
       printf '%s' "(${common}|\\.agents/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md|ticket-system\.instructions\.md)|tools/viewer/(ticket-viewer|spec-viewer)(/|$))"
       ;;
+    context-stack)
+      printf '%s' '(crates/(context-api|context-insert|context-read|context-search|context-trace|context-trace-macros|ngrams)(/|$)|crates/deps/petgraph(/|$))'
+      ;;
     *)
       die "No keep-regex defined for project: $project"
       ;;
   esac
+}
+
+context_stack_rewrite_branch() {
+  printf '%s' 'context-stack-source'
+}
+
+context_stack_branch_root() {
+  printf '%s' 'crates/context-stack'
+}
+
+context_stack_tree_filter() {
+  cat <<'EOF'
+git ls-files -s | sed 's#\tcrates/#\tcrates/context-stack/#' | GIT_INDEX_FILE="${GIT_INDEX_FILE}.new" git update-index --index-info && mv "${GIT_INDEX_FILE}.new" "$GIT_INDEX_FILE"
+EOF
 }
 
 default_projects() {
@@ -254,6 +272,11 @@ filter_project_repo() {
   local keep_regex="$3"
   local log_file="${LOG_ROOT}/${project}/filter-branch.log"
 
+  if [[ "$project" == 'context-stack' ]]; then
+    filter_context_stack_repo "$dest_repo" "$keep_regex"
+    return
+  fi
+
   local index_filter
   index_filter="git ls-files -z | grep -zvE '${keep_regex}' | xargs -0r git rm -r --cached --ignore-unmatch --"
 
@@ -286,6 +309,105 @@ filter_project_repo() {
   finish_step
 }
 
+filter_context_stack_repo() {
+  local dest_repo="$1"
+  local keep_regex="$2"
+  local rewrite_branch
+  local branch_root
+  local initial_log="${LOG_ROOT}/context-stack/filter-branch.log"
+  local move_log="${LOG_ROOT}/context-stack/rewrite-branch.log"
+  local subdir_log="${LOG_ROOT}/context-stack/subdirectory-filter.log"
+  local index_filter
+  local tree_filter
+
+  rewrite_branch="$(context_stack_rewrite_branch)"
+  branch_root="$(context_stack_branch_root)"
+  index_filter="git ls-files -z | grep -zvE '${keep_regex}' | xargs -0r git rm -r --cached --ignore-unmatch --"
+  tree_filter="$(context_stack_tree_filter)"
+
+  run_cmd "Create rewrite branch for context-stack" git -C "$dest_repo" checkout -B "$rewrite_branch" HEAD
+
+  if [[ "$DRY_RUN" == true ]]; then
+    start_step 'Rewrite history for context-stack'
+    log "WORKTREE: ${dest_repo}"
+    log "KEEP REGEX: ${keep_regex}"
+    log "LOG FILE: ${initial_log}"
+    log "COMMAND: $(format_command git -C "$dest_repo" filter-branch -f --prune-empty --index-filter "$index_filter" --tag-name-filter cat -- "$rewrite_branch")"
+    log 'DRY RUN: command not executed'
+    finish_step
+
+    start_step 'Move context-stack crates into branch layout'
+    log "WORKTREE: ${dest_repo}"
+    log "BRANCH ROOT: ${branch_root}"
+    log "LOG FILE: ${move_log}"
+    log "COMMAND: $(format_command git -C "$dest_repo" filter-branch -f --prune-empty --index-filter "$tree_filter" --tag-name-filter cat -- "$rewrite_branch")"
+    log 'DRY RUN: command not executed'
+    finish_step
+
+    start_step 'Strip context-stack branch root'
+    log "WORKTREE: ${dest_repo}"
+    log "SUBDIRECTORY: ${branch_root}"
+    log "LOG FILE: ${subdir_log}"
+    log "COMMAND: $(format_command git -C "$dest_repo" filter-branch -f --prune-empty --subdirectory-filter "$branch_root" --tag-name-filter cat -- "$rewrite_branch")"
+    log 'DRY RUN: command not executed'
+    finish_step
+
+    run_cmd 'Promote context-stack rewrite branch to main' git -C "$dest_repo" checkout -B main "$rewrite_branch"
+    return
+  fi
+
+  start_step 'Rewrite history for context-stack'
+  log "WORKTREE: ${dest_repo}"
+  log "KEEP REGEX: ${keep_regex}"
+  log "LOG FILE: ${initial_log}"
+  log "COMMAND : $(format_command git filter-branch -f --prune-empty --index-filter "$index_filter" --tag-name-filter cat -- "$rewrite_branch")"
+  mkdir -p -- "$(dirname -- "$initial_log")"
+  (
+    cd -- "$dest_repo"
+    FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch \
+      -f \
+      --prune-empty \
+      --index-filter "$index_filter" \
+      --tag-name-filter cat \
+      -- "$rewrite_branch"
+  ) >"$initial_log" 2>&1
+  finish_step
+
+  start_step 'Move context-stack crates into branch layout'
+  log "WORKTREE: ${dest_repo}"
+  log "BRANCH ROOT: ${branch_root}"
+  log "LOG FILE: ${move_log}"
+  log "COMMAND : $(format_command git filter-branch -f --prune-empty --index-filter "$tree_filter" --tag-name-filter cat -- "$rewrite_branch")"
+  (
+    cd -- "$dest_repo"
+    FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch \
+      -f \
+      --prune-empty \
+      --index-filter "$tree_filter" \
+      --tag-name-filter cat \
+      -- "$rewrite_branch"
+  ) >"$move_log" 2>&1
+  finish_step
+
+  start_step 'Strip context-stack branch root'
+  log "WORKTREE: ${dest_repo}"
+  log "SUBDIRECTORY: ${branch_root}"
+  log "LOG FILE: ${subdir_log}"
+  log "COMMAND : $(format_command git filter-branch -f --prune-empty --subdirectory-filter "$branch_root" --tag-name-filter cat -- "$rewrite_branch")"
+  (
+    cd -- "$dest_repo"
+    FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch \
+      -f \
+      --prune-empty \
+      --subdirectory-filter "$branch_root" \
+      --tag-name-filter cat \
+      -- "$rewrite_branch"
+  ) >"$subdir_log" 2>&1
+  finish_step
+
+  run_cmd 'Promote context-stack rewrite branch to main' git -C "$dest_repo" checkout -B main "$rewrite_branch"
+}
+
 cleanup_project_repo() {
   local project="$1"
   local dest_repo="$2"
@@ -307,6 +429,19 @@ cleanup_project_repo() {
     cd -- "$dest_repo"
     rm -rf .git/refs/original .git/logs/refs/original .git-rewrite
     git reflog expire --expire=now --all
+    if [[ "$project" == 'context-stack' ]]; then
+      while IFS= read -r branch_name; do
+        if [[ -n "$branch_name" && "$branch_name" != 'main' ]]; then
+          git branch -D "$branch_name"
+        fi
+      done < <(git for-each-ref --format='%(refname:short)' refs/heads)
+
+      while IFS= read -r tag_name; do
+        if [[ -n "$tag_name" ]]; then
+          git tag -d "$tag_name"
+        fi
+      done < <(git tag --list)
+    fi
     git gc --prune=now
     if git remote | grep -qx 'origin'; then
       git remote remove origin
