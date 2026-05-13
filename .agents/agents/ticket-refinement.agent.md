@@ -1,7 +1,7 @@
 ---
 name: "Ticket Refinement Agent"
 description: "Use when creating, reviewing, or updating ticket-system tickets through codebase research, user interviews, and implementation planning."
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, web, browser, 'doc-viewer-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, web, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
 ---
@@ -23,6 +23,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - Do not invent unsupported ticket states, fields, or edge kinds.
 - Keep lifecycle transitions valid according to the ticket state machine.
 - Prefer MCP ticket tools first; use CLI fallback only if MCP is unavailable.
+- Treat the spec stack as the docs/specification surface; generated docs should be attached to implemented spec entries rather than routed through a separate docs tool.
 - Keep updates auditable: every ticket change must be justified by research or user input.
 
 ## Required Workflow
@@ -31,7 +32,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - Discover the active ticket workspace.
 - Use `ticket next` or `mcp_ticket-mcp_next_tickets` to see what's currently actionable.
 - Search for related tickets before creating new ones.
-- Read relevant docs/prompts/instructions and nearby code/tests as needed.
+- Read relevant spec-stack entries, prompts/instructions, and nearby code/tests as needed.
 
 2. Clarify with interview questions
 - Ask concise, decision-driving questions when requirements are ambiguous.

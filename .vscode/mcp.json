@@ -5,10 +5,9 @@
       "command": "cargo",
       "args": [
         "run",
-        "-p",
-        "mcp-runner",
+        "--quiet",
         "--release",
-        "--",
+        "-p",
         "context-mcp"
       ]
     },
@@ -17,24 +16,21 @@
       "command": "cargo",
       "args": [
         "run",
-        "-p",
-        "mcp-runner",
+        "--quiet",
         "--release",
-        "--",
+        "-p",
         "ticket-mcp"
       ]
     },
-    "doc-viewer-mcp": {
+    "spec-mcp": {
       "type": "stdio",
       "command": "cargo",
       "args": [
         "run",
-        "-p",
-        "mcp-runner",
+        "--quiet",
         "--release",
-        "--",
-        "doc-viewer",
-        "--mcp"
+        "-p",
+        "spec-mcp"
       ]
     },
     "log-viewer-mcp": {
@@ -42,11 +38,11 @@
       "command": "cargo",
       "args": [
         "run",
-        "-p",
-        "mcp-runner",
+        "--quiet",
         "--release",
-        "--",
+        "-p",
         "log-viewer",
+        "--",
         "--mcp"
       ]
     }

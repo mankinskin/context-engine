@@ -52,9 +52,9 @@ command = "cargo"
 args = ["build", "--release", "-p", "context-http", "-p", "spec-http", "-p", "ticket-http"]
 
 [tasks.build-mcp-tools]
-description = "Build context-mcp, spec-mcp, ticket-mcp, audit-mcp, and mcp-runner (release)"
+description = "Build context-mcp, spec-mcp, ticket-mcp, and audit-mcp (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "audit-mcp", "-p", "mcp-runner"]
+args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "audit-mcp"]
 
 [tasks.build-viewer-ctl]
 description = "Build the viewer-ctl lifecycle manager binary (release)"
