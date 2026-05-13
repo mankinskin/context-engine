@@ -141,7 +141,7 @@ project_keep_regex() {
       printf '%s' "(${common}|\\.agents/instructions/(frontend\.instructions\.md|tests\.instructions\.md|viewer-api-tools\.instructions\.md|ticket-system\.instructions\.md)|tools/viewer/(ticket-viewer|spec-viewer)(/|$))"
       ;;
     context-stack)
-      printf '%s' '(crates/(context-api|context-insert|context-read|context-search|context-trace|context-trace-macros|ngrams)(/|$)|crates/deps/petgraph(/|$))'
+      printf '%s' '(crates/(context-api|context-insert|context-read|context-search|context-trace|context-trace-macros|ngrams)(/|$))'
       ;;
     *)
       die "No keep-regex defined for project: $project"

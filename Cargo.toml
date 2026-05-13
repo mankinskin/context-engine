@@ -44,7 +44,7 @@ members = [
 ]
 exclude = [
   "./crates/context-stack/deps/petgraph",
-  "./crates/deps/justlog",
+  "./crates/context-stack/deps/justlog",
 ]
 
 [profile.dev]
