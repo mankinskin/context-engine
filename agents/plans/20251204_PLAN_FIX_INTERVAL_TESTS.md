@@ -18,7 +18,7 @@ Fix `interval_graph1` and `interval_graph2` tests which are failing with `assert
 
 ### Failing Tests
 
-Both tests in `crates/context-insert/src/tests/interval.rs`:
+Both tests in `crates/context-stack/context-insert/src/tests/interval.rs`:
 - `interval_graph1` (line 206-235)
 - `interval_graph2` (line 237-348)
 
@@ -32,7 +32,7 @@ Both tests expect the search result to **not** be query-exhausted, but the query
 
 ### Files Affected
 
-- `crates/context-insert/src/tests/interval.rs` - Test implementations
+- `crates/context-stack/context-insert/src/tests/interval.rs` - Test implementations
 - Potentially query/search logic if expectations are correct
 
 ## Analysis

@@ -336,7 +336,7 @@ let matched = advanced.mark_match();
 ### Phase 1: Core Type Refactoring
 
 **Files to modify:**
-- `crates/context-search/src/cursor/checkpointed.rs` (main changes)
+- `crates/context-stack/context-search/src/cursor/checkpointed.rs` (main changes)
 
 **Changes:**
 1. Add `CandidateState` trait and marker types
@@ -348,8 +348,8 @@ let matched = advanced.mark_match();
 ### Phase 2: Update CompareState
 
 **Files to modify:**
-- `crates/context-search/src/compare/state/core.rs`
-- `crates/context-search/src/compare/state/transitions.rs`
+- `crates/context-stack/context-search/src/compare/state/core.rs`
+- `crates/context-stack/context-search/src/compare/state/transitions.rs`
 
 **Changes:**
 1. Add `CandidateState` parameters to `CompareState`:
@@ -375,8 +375,8 @@ let matched = advanced.mark_match();
 ### Phase 3: Update MatchResult and Response
 
 **Files to modify:**
-- `crates/context-search/src/state/matched/mod.rs`
-- `crates/context-search/src/state/result.rs`
+- `crates/context-stack/context-search/src/state/matched/mod.rs`
+- `crates/context-stack/context-search/src/state/result.rs`
 
 **Changes:**
 1. Update `MatchResult::cursor` field type:
@@ -389,8 +389,8 @@ let matched = advanced.mark_match();
 ### Phase 4: Update Search Algorithm
 
 **Files to modify:**
-- `crates/context-search/src/search/mod.rs`
-- `crates/context-search/src/match/root_cursor/advance.rs`
+- `crates/context-stack/context-search/src/search/mod.rs`
+- `crates/context-stack/context-search/src/match/root_cursor/advance.rs`
 
 **Changes:**
 1. Update `finish_root_cursor()` to use typed candidate states
@@ -419,7 +419,7 @@ let pos = checkpointed.current().atom_position;
 ### Phase 6: Update Tests
 
 **Files to modify:**
-- `crates/context-search/src/tests/**/*.rs` (40 test files)
+- `crates/context-stack/context-search/src/tests/**/*.rs` (40 test files)
 
 **Changes:**
 1. Update type annotations with candidate state parameters

@@ -426,7 +426,7 @@ pub fn join_root_partitions(ctx: &mut NodeJoinCtx, root_mode: RootMode) -> Token
 ### 5.1 Current File Structure
 
 ```
-crates/context-insert/src/join/
+crates/context-stack/context-insert/src/join/
 ├── mod.rs                           # Module exports only
 ├── context/
 │   ├── mod.rs                       # Module exports
@@ -498,7 +498,7 @@ crates/context-insert/src/join/
 This isolates the new implementation from the old code, allowing parallel development and easy rollback.
 
 ```rust
-// crates/context-insert/src/join/context/node/root.rs
+// crates/context-stack/context-insert/src/join/context/node/root.rs
 
 use std::collections::HashMap;
 use std::num::NonZeroUsize;
@@ -597,7 +597,7 @@ pub fn join_root_partitions(&mut self) -> Token {
 ## 8. Implementation Checklist (Phased)
 
 ### Phase 1: Create New Module
-- [ ] Create `crates/context-insert/src/join/context/node/root.rs`
+- [ ] Create `crates/context-stack/context-insert/src/join/context/node/root.rs`
 - [ ] Add module export in `context/node/mod.rs`
 - [ ] Define `RootJoinContext` struct
 - [ ] Define `PartitionType` enum

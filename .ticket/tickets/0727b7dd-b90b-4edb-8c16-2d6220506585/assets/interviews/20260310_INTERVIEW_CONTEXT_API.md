@@ -16,7 +16,7 @@ status: ✅ Complete
 
 ### 1.1 What We're Building
 
-A new `crates/context-api` crate that serves as the **single public interface** for all hypergraph operations. Today, consumers must depend on `context-trace`, `context-search`, `context-insert`, and `context-read` directly, wiring together the correct trait calls, error handling, and type conversions themselves. `context-api` replaces that with:
+A new `crates/context-stack/context-api` crate that serves as the **single public interface** for all hypergraph operations. Today, consumers must depend on `context-trace`, `context-search`, `context-insert`, and `context-read` directly, wiring together the correct trait calls, error handling, and type conversions themselves. `context-api` replaces that with:
 
 - A **Workspace** model — named hypergraphs stored on disk in a user directory
 - A **command-oriented API** — atomic operations like `add_atom`, `add_pattern`, `search_pattern`, `insert_first_match`, `read_pattern`
@@ -683,7 +683,7 @@ Final crate name?
 *To be refined after interview answers*
 
 ### Phase 1 — Foundation
-- Create `crates/context-api` with `Cargo.toml` (core deps only)
+- Create `crates/context-stack/context-api` with `Cargo.toml` (core deps only)
 - `Workspace` struct wrapping `HypergraphRef`
 - `WorkspaceManager` with create/open/close/list/delete
 - Persistence (save/load hypergraph to disk)
@@ -777,7 +777,7 @@ context-api
 ## Appendix C: File Structure Sketch
 
 ```
-crates/context-api/
+crates/context-stack/context-api/
 ├── Cargo.toml
 ├── src/
 │   ├── lib.rs                  # Public re-exports, feature gates

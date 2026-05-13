@@ -17,7 +17,7 @@ Successfully implemented Phase 1 of the codebase refactoring plan: consolidating
 
 ### New Consolidated Traits
 
-Created `crates/context-trace/src/path/accessors/path_accessor.rs` with three new traits:
+Created `crates/context-stack/context-trace/src/path/accessors/path_accessor.rs` with three new traits:
 
 #### 1. `PathAccessor` trait
 **Replaces**: `HasPath<R>`, `HasRolePath<R>`
@@ -111,7 +111,7 @@ pub trait HasPrevPos { ... }
 ## Files Modified
 
 ### New Files
-- `crates/context-trace/src/path/accessors/path_accessor.rs` (157 lines)
+- `crates/context-stack/context-trace/src/path/accessors/path_accessor.rs` (157 lines)
 
 ### Modified Files
 **context-trace** (core trait definitions):

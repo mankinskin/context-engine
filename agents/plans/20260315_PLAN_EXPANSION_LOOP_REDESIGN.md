@@ -329,16 +329,16 @@ Impact** sections in each batch file.
 
 | File | Change | RC |
 |------|--------|----|
-| `crates/context-read/src/expansion/mod.rs` | Redesign `ExpansionCtx` iterator — add `atoms`, `cursor`, `anchor` fields; implement `insert_next_match` loop with postfix overlap search | RC-2/RC-3 |
-| `crates/context-read/src/expansion/block.rs` | Simplify `BlockExpansionCtx` — may reduce to thin wrapper or dissolve | RC-2/RC-3 |
-| `crates/context-read/src/expansion/chain/mod.rs` | `BandState::new` / `BandState::with_overlap` constructors; `collapse` may need adjustment | RC-2/RC-3 |
-| `crates/context-read/src/expansion/chain/expand.rs` | `ExpandCtx` may be repurposed as the per-step postfix probe helper (no longer an `Iterator` driving the outer loop) | RC-2/RC-3 |
-| `crates/context-read/src/context/root.rs` | `append_collapsed` overlap logic — may be removed if overlaps are fully committed via `BandState::WithOverlap` | RC-2/RC-3 |
-| `crates/context-read/src/context/mod.rs` | `ReadCtx::read_segment` — simplify to delegate to new `ExpansionCtx` | RC-2/RC-3 |
-| `crates/context-api/src/commands/insert.rs` | `insert_sequence` — add outer cursor-advancing loop | RC-1 |
-| `crates/context-read/src/tests/cursor.rs` | Fix compilation (stale imports); update `TODO` tests to assert correct behaviour | all |
-| `crates/context-read/src/tests/linear.rs` | Should pass without changes once RC-1 fixed | RC-1 |
-| `crates/context-read/src/tests/overlapping.rs` | Should pass after RC-2/RC-3 fixed | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/expansion/mod.rs` | Redesign `ExpansionCtx` iterator — add `atoms`, `cursor`, `anchor` fields; implement `insert_next_match` loop with postfix overlap search | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/expansion/block.rs` | Simplify `BlockExpansionCtx` — may reduce to thin wrapper or dissolve | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/expansion/chain/mod.rs` | `BandState::new` / `BandState::with_overlap` constructors; `collapse` may need adjustment | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/expansion/chain/expand.rs` | `ExpandCtx` may be repurposed as the per-step postfix probe helper (no longer an `Iterator` driving the outer loop) | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/context/root.rs` | `append_collapsed` overlap logic — may be removed if overlaps are fully committed via `BandState::WithOverlap` | RC-2/RC-3 |
+| `crates/context-stack/context-read/src/context/mod.rs` | `ReadCtx::read_segment` — simplify to delegate to new `ExpansionCtx` | RC-2/RC-3 |
+| `crates/context-stack/context-api/src/commands/insert.rs` | `insert_sequence` — add outer cursor-advancing loop | RC-1 |
+| `crates/context-stack/context-read/src/tests/cursor.rs` | Fix compilation (stale imports); update `TODO` tests to assert correct behaviour | all |
+| `crates/context-stack/context-read/src/tests/linear.rs` | Should pass without changes once RC-1 fixed | RC-1 |
+| `crates/context-stack/context-read/src/tests/overlapping.rs` | Should pass after RC-2/RC-3 fixed | RC-2/RC-3 |
 | `tools/context-cli/tests/FAILING_TESTS.md` | Update after each fix round | all |
 
 ---

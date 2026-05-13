@@ -18,25 +18,25 @@ This work was completed as part of understanding and extending the alternate dec
 
 ### Core Implementation
 
-#### 1. Enhanced OverlapLink Structure (`crates/context-read/src/expansion/chain/link.rs`)
+#### 1. Enhanced OverlapLink Structure (`crates/context-stack/context-read/src/expansion/chain/link.rs`)
 - ✅ Defined `OverlapLink` with three fields:
   - `child_path: IndexEndPath` - Top-down path from starting root to expandable postfix (first token's view of overlap)
   - `search_path: IndexStartPath` - Bottom-up then top-down path from expansion (second token's view of overlap)
   - `start_bound: usize` - Position where the overlap starts in the input sequence
 - ✅ Added comprehensive documentation explaining the dual-perspective nature of overlaps
 
-#### 2. BandChain Storage (`crates/context-read/src/expansion/chain/mod.rs`)
+#### 2. BandChain Storage (`crates/context-stack/context-read/src/expansion/chain/mod.rs`)
 - ✅ Added `links: Vec<OverlapLink>` field to `BandChain` struct
 - ✅ Added `append_overlap_link()` method to store links when expansions occur
 - ✅ Updated `BandChain::new()` to initialize empty links vector
 - ✅ Simplified `ends_at()` and `last()` to use cleaned up `BandCtx`
 - ✅ Removed commented-out link code
 
-#### 3. BandCtx Cleanup (`crates/context-read/src/expansion/chain/band.rs`)
+#### 3. BandCtx Cleanup (`crates/context-stack/context-read/src/expansion/chain/band.rs`)
 - ✅ Simplified `BandCtx` by removing commented-out `back_link` and `front_link` fields
 - ✅ Now only contains `band: &'a Band` reference
 
-#### 4. Expansion Logic (`crates/context-read/src/expansion/mod.rs`)
+#### 4. Expansion Logic (`crates/context-stack/context-read/src/expansion/mod.rs`)
 - ✅ Modified `apply_op()` to create and store overlap links during expansions
 - ✅ Added `create_overlap_link()` helper method that converts `ExpansionLink` to `OverlapLink`
 - ✅ Added `OverlapLink` import
@@ -163,10 +163,10 @@ Based on this implementation, the following enhancements are now possible:
 ## Related Files
 
 ### Modified Files
-- `crates/context-read/src/expansion/chain/link.rs`
-- `crates/context-read/src/expansion/chain/mod.rs`
-- `crates/context-read/src/expansion/chain/band.rs`
-- `crates/context-read/src/expansion/mod.rs`
+- `crates/context-stack/context-read/src/expansion/chain/link.rs`
+- `crates/context-stack/context-read/src/expansion/chain/mod.rs`
+- `crates/context-stack/context-read/src/expansion/chain/band.rs`
+- `crates/context-stack/context-read/src/expansion/mod.rs`
 - `agents/analysis/ALTERNATE_DECOMPOSITION_ANALYSIS.md`
 
 ### New Files

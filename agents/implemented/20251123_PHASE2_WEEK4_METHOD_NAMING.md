@@ -34,13 +34,13 @@ Updated doc comments to explain:
 
 ### Files Modified
 
-1. **`crates/context-search/src/match/root_cursor.rs`**:
+1. **`crates/context-stack/context-search/src/match/root_cursor.rs`**:
    - 3 method signatures renamed
    - 9 doc comment updates
    - 8 debug message updates
    - 1 internal call site updated
 
-2. **`crates/context-search/src/match/iterator.rs`**:
+2. **`crates/context-stack/context-search/src/match/iterator.rs`**:
    - 1 call site updated
 
 ## Naming Pattern Established

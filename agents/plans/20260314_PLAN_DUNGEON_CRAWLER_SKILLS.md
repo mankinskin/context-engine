@@ -275,7 +275,7 @@ context-cli inspect dungeon-demo --all
 #### Related Skills
 
 - **Next:** [02 — Reading Text](02_reading_text.md)
-- **Deep Dive:** `crates/context-trace/HIGH_LEVEL_GUIDE.md`
+- **Deep Dive:** `crates/context-stack/context-trace/HIGH_LEVEL_GUIDE.md`
 
 ---
 
@@ -412,7 +412,7 @@ context-cli inspect dungeon-demo "You see a "
 
 - **Previous:** [01 — The Hypergraph Model](01_the_hypergraph_model.md)
 - **Next:** [03 — Context Completion](03_context_completion.md)
-- **Deep Dive:** `crates/context-read/HIGH_LEVEL_GUIDE.md`
+- **Deep Dive:** `crates/context-stack/context-read/HIGH_LEVEL_GUIDE.md`
 
 ---
 
@@ -549,7 +549,7 @@ context-cli read dungeon-demo "hello"
 
 - **Previous:** [02 — Reading Text](02_reading_text.md)
 - **Next:** [04 — Overlapping Decompositions](04_overlapping_decompositions.md)
-- **Deep Dive:** `crates/context-insert/HIGH_LEVEL_GUIDE.md`
+- **Deep Dive:** `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
 
 ---
 
@@ -689,7 +689,7 @@ Note: `"abcabc"` in the baseline case is represented as one pattern `[abc, abc]`
 
 The string `"abcabababcaba"` (length 13) was run through the ngrams reference
 algorithm and produced the following structure (verified 2026-03-14 via
-`crates/context-read/tests/overlapping.rs::complex_abcabababcaba`):
+`crates/context-stack/context-read/tests/overlapping.rs::complex_abcabababcaba`):
 
 ```
 Atoms: a, b, c
@@ -890,7 +890,7 @@ context-cli inspect dungeon-demo "You see a "
 #### Related Skills
 
 - **Previous:** [03 — Context Completion](03_context_completion.md)
-- **Deep Dive:** `crates/context-read/HIGH_LEVEL_GUIDE.md`, `crates/context-insert/HIGH_LEVEL_GUIDE.md`
+- **Deep Dive:** `crates/context-stack/context-read/HIGH_LEVEL_GUIDE.md`, `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
 
 ---
 
@@ -917,7 +917,7 @@ context-cli inspect dungeon-demo "You see a "
   - Focus on: vertex, token, atom, pattern, width, child patterns, parent references
   - ASCII art: 5-6 vertex hypergraph with shared atoms
   - Ensure the "width = total atom count" insight is prominent
-  - **Verification:** All terminology is consistent with `crates/context-trace/HIGH_LEVEL_GUIDE.md`
+  - **Verification:** All terminology is consistent with `crates/context-stack/context-trace/HIGH_LEVEL_GUIDE.md`
 
 - [ ] **Step 3: Write Skill 2 — Reading Text**
   - Follow the template structure
@@ -1042,10 +1042,10 @@ context-cli workspace delete skill-test
 - (future) `PLAN_READ_STREAM_DESIGN.md` — Lazy atom resolution and stream-based reading
 
 ### Crate Documentation
-- `crates/context-trace/HIGH_LEVEL_GUIDE.md` — Foundational graph structures (Skill 1 reference)
-- `crates/context-search/HIGH_LEVEL_GUIDE.md` — Search algorithm (Skill 2 reference)
-- `crates/context-insert/HIGH_LEVEL_GUIDE.md` — Insert algorithm (Skill 3 reference)
-- `crates/context-read/HIGH_LEVEL_GUIDE.md` — Read algorithm (Skills 2-4 reference)
+- `crates/context-stack/context-trace/HIGH_LEVEL_GUIDE.md` — Foundational graph structures (Skill 1 reference)
+- `crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md` — Search algorithm (Skill 2 reference)
+- `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md` — Insert algorithm (Skill 3 reference)
+- `crates/context-stack/context-read/HIGH_LEVEL_GUIDE.md` — Read algorithm (Skills 2-4 reference)
 
 ### Sibling Plans (from same design phase)
 - (future) `PLAN_INTEGRATION_TESTS.md` — CLI integration test suite (can run in parallel with this plan)

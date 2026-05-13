@@ -76,7 +76,7 @@ Created `context-trace/src/tests/cases/`:
 ## File Structure
 
 ```
-crates/context-trace/src/tests/
+crates/context-stack/context-trace/src/tests/
 ├── mod.rs                          # Added test_case and cases modules
 ├── env/mod.rs                      # Added GraphEnvironment impls
 ├── test_case/                      # NEW

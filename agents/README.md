@@ -3,10 +3,10 @@
 Organization system for agent workflows, documentation, and knowledge management.
 
 > **📁 PROJECT STRUCTURE:** All crates are in `crates/` directory:
-> - `crates/context-trace/` - Foundation layer
-> - `crates/context-search/` - Search layer
-> - `crates/context-insert/` - Insert layer
-> - `crates/context-read/` - Read layer
+> - `crates/context-stack/context-trace/` - Foundation layer
+> - `crates/context-stack/context-search/` - Search layer
+> - `crates/context-stack/context-insert/` - Insert layer
+> - `crates/context-stack/context-read/` - Read layer
 
 ## Directory Structure
 

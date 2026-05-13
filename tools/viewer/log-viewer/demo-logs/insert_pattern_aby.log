@@ -10,7 +10,7 @@
     "message": "Test tracing initialized",
     "test_name": "insert_pattern1"
   },
-  "filename": "crates/context-trace/src/logging/tracing_utils/test_tracing.rs",
+  "filename": "crates/context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs",
   "level": "INFO",
   "line_number": 299,
   "target": "context_trace::logging::tracing_utils::test_tracing",
@@ -209,7 +209,7 @@
     "message": "graph_snapshot",
     "node_count": 12
   },
-  "filename": "crates/context-trace/src/graph/snapshot.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/snapshot.rs",
   "level": "INFO",
   "line_number": 112,
   "target": "context_trace::graph::snapshot",
@@ -220,7 +220,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-insert/src/insert/context.rs",
+  "filename": "crates/context-stack/context-insert/src/insert/context.rs",
   "level": "INFO",
   "line_number": 53,
   "span": "insert",
@@ -235,7 +235,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -275,7 +275,7 @@
       "text": "by"
     }
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "search",
@@ -291,7 +291,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 102,
   "span": "search",
@@ -308,7 +308,7 @@
     "batch_len": 1,
     "message": "first parent batch obtained"
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 96,
   "span": "search",
@@ -324,7 +324,7 @@
   "fields": {
     "message": "start search successful, beginning fold"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 69,
   "span": "search",
@@ -347,7 +347,7 @@
       ]
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 397,
   "span": "search",
@@ -410,7 +410,7 @@
     "op_type": "Search",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -477,7 +477,7 @@
     "op_type": "Search",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -493,7 +493,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -512,7 +512,7 @@
     "node_index": 10,
     "queue_remaining": 0
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -591,7 +591,7 @@
     "op_type": "Search",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -607,7 +607,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -626,7 +626,7 @@
     "message": "No next child in pattern - at end of pattern",
     "pattern_len": 2
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 60,
   "span": "advance_state",
@@ -645,7 +645,7 @@
     "time.busy": "678µs",
     "time.idle": "4.30µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -664,7 +664,7 @@
     "node_index": 10,
     "num_added": 1
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 122,
   "span": "search",
@@ -739,7 +739,7 @@
     "op_type": "Search",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -758,7 +758,7 @@
     "node_index": 11,
     "queue_remaining": 0
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -849,7 +849,7 @@
     "op_type": "Search",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -865,7 +865,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -883,7 +883,7 @@
     "message": "Found next child in pattern",
     "next_i": 1
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "advance_state",
@@ -937,7 +937,7 @@
     },
     "message": "Created child_cursor from parent_state"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "TRACE",
   "line_number": 55,
   "span": "advance_state",
@@ -956,7 +956,7 @@
     "time.busy": "1.65ms",
     "time.idle": "6.80µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -986,7 +986,7 @@
     },
     "query_width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 195,
   "span": "search",
@@ -1004,7 +1004,7 @@
     "token": 4,
     "width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 208,
   "span": "search",
@@ -1025,7 +1025,7 @@
     "new_checkpoint_pos": "3",
     "old_checkpoint_pos": "2"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 57,
   "span": "search",
@@ -1046,7 +1046,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 133,
   "span": "search",
@@ -1155,7 +1155,7 @@
     "op_type": "Search",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -1259,7 +1259,7 @@
     "op_type": "Search",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -1368,7 +1368,7 @@
     "op_type": "Search",
     "step": 7
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -1384,7 +1384,7 @@
   "fields": {
     "message": "Found matching root — clearing search queue (will explore via parents)"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 852,
   "span": "search",
@@ -1405,7 +1405,7 @@
     },
     "root_width": 5
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 859,
   "span": "search",
@@ -1426,7 +1426,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 492,
   "span": "search",
@@ -1482,7 +1482,7 @@
       "position": 3
     }
   },
-  "filename": "crates/context-search/src/compare/state/core.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/core.rs",
   "level": "DEBUG",
   "line_number": 155,
   "span": "search",
@@ -1498,7 +1498,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -1515,7 +1515,7 @@
   "fields": {
     "message": "→ advance_to_next_match: starting advancement"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "INFO",
   "line_number": 57,
   "span": "advance_to_next_match",
@@ -1532,7 +1532,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - calling advance_query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 145,
   "span": "advance_to_next_match",
@@ -1549,7 +1549,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -1572,7 +1572,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 214,
   "span": "advance_query",
@@ -1610,7 +1610,7 @@
     },
     "message": "advancing query cursor only"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "advance_query",
@@ -1628,7 +1628,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - reached end of pattern, returning Break"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 111,
   "span": "advance_query",
@@ -1646,7 +1646,7 @@
   "fields": {
     "message": "query cursor cannot advance - query pattern ended"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "DEBUG",
   "line_number": 117,
   "span": "advance_query",
@@ -1669,7 +1669,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 241,
   "span": "advance_query",
@@ -1687,7 +1687,7 @@
   "fields": {
     "message": "root_cursor advance_query: root_parent=\"xabyz\"(11), entry_pos=2, exit_pos=2, checkpoint.atom_position=3, last_token_width=1, end_pos=3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 261,
   "span": "advance_query",
@@ -1707,7 +1707,7 @@
     "final_end_index": 1,
     "message": "advance_query: returning checkpoint cursor for exhausted query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 277,
   "span": "advance_query",
@@ -1725,7 +1725,7 @@
   "fields": {
     "message": "from_range_path BEFORE simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 90,
   "span": "advance_query",
@@ -1743,7 +1743,7 @@
   "fields": {
     "message": "from_range_path AFTER simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 97,
   "span": "advance_query",
@@ -1761,7 +1761,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=false, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "advance_query",
@@ -1779,7 +1779,7 @@
   "fields": {
     "message": "Creating PostfixEnd with exit_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 131,
   "span": "advance_query",
@@ -1799,7 +1799,7 @@
     "time.busy": "1.93ms",
     "time.idle": "3.80µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -1816,7 +1816,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - query ended (QueryExhausted)"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "advance_to_next_match",
@@ -1833,7 +1833,7 @@
   "fields": {
     "message": "→ advance_to_next_match: query exhausted - complete match"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "advance_to_next_match",
@@ -1852,7 +1852,7 @@
     "time.busy": "2.79ms",
     "time.idle": "4.10µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -1868,7 +1868,7 @@
   "fields": {
     "message": "Conclusive end: Exhausted - keeping best match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 632,
   "span": "search",
@@ -1884,7 +1884,7 @@
   "fields": {
     "message": "from_range_path BEFORE simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 90,
   "span": "search",
@@ -1900,7 +1900,7 @@
   "fields": {
     "message": "from_range_path AFTER simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 97,
   "span": "search",
@@ -1916,7 +1916,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=false, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "search",
@@ -1932,7 +1932,7 @@
   "fields": {
     "message": "Creating PostfixEnd with exit_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 131,
   "span": "search",
@@ -1952,7 +1952,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -1970,7 +1970,7 @@
     "message": "found matched state",
     "query_exhausted": true
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 898,
   "span": "search",
@@ -1986,7 +1986,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -2002,7 +2002,7 @@
   "fields": {
     "message": "no more matches found"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 765,
   "span": "search",
@@ -2022,7 +2022,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -2044,7 +2044,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 428,
   "span": "search",
@@ -2196,7 +2196,7 @@
     },
     "message": "final matched state"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 458,
   "span": "search",
@@ -2299,7 +2299,7 @@
     "op_type": "Search",
     "step": 8
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -2315,7 +2315,7 @@
   "fields": {
     "message": "Creating PostfixCommand from PostfixEnd: entry_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/postfix.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/postfix.rs",
   "level": "TRACE",
   "line_number": 45,
   "span": "search",
@@ -2331,7 +2331,7 @@
   "fields": {
     "message": "PostfixCommand::trace - entry_pos=UpPosition(AtomPosition(2))"
   },
-  "filename": "crates/context-trace/src/trace/traceable/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/mod.rs",
   "level": "DEBUG",
   "line_number": 299,
   "span": "search",
@@ -2347,7 +2347,7 @@
   "fields": {
     "message": "trace_role_sub_path - starting with prev=UpKey { index: \"by\"(6), pos: UpPosition(AtomPosition(2)) }, path_len=1"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 90,
   "span": "search",
@@ -2363,7 +2363,7 @@
   "fields": {
     "message": "trace_role_sub_path - step 0: prev=UpKey { index: \"by\"(6), pos: UpPosition(AtomPosition(2)) }, location=ChildLocation { parent: \"xaby\"(10), pattern_id: PatternId(a9fef06b-4fd7-48f5-8ead-67d5352e8f79), sub_index: 1 }, target=UpKey { index: \"xaby\"(10), pos: UpPosition(AtomPosition(2)) }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 102,
   "span": "search",
@@ -2379,7 +2379,7 @@
   "fields": {
     "message": "add_state: index=\"xaby\"(10), pos=BottomUp(UpPosition(AtomPosition(2)))"
   },
-  "filename": "crates/context-trace/src/trace/cache/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 49,
   "span": "search",
@@ -2395,7 +2395,7 @@
   "fields": {
     "message": "trace_role_sub_path - step 0: added key=DirectedKey { index: \"xaby\"(10), pos: BottomUp(UpPosition(AtomPosition(2))) }, was_new=true"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 106,
   "span": "search",
@@ -2411,7 +2411,7 @@
   "fields": {
     "message": "trace_role_sub_path - complete, result=UpKey { index: \"xaby\"(10), pos: UpPosition(AtomPosition(2)) }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 110,
   "span": "search",
@@ -2427,7 +2427,7 @@
   "fields": {
     "message": "PostfixRootCommand::trace_root - entry_key=UpKey { index: \"xabyz\"(11), pos: UpPosition(AtomPosition(2)) }, prev=UpKey { index: \"xaby\"(10), pos: UpPosition(AtomPosition(2)) }, location=ChildLocation { parent: \"xabyz\"(11), pattern_id: PatternId(db98586c-8dc6-48fd-9087-5b3d1ca3e4ce), sub_index: 0 }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/root.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/root.rs",
   "level": "DEBUG",
   "line_number": 80,
   "span": "search",
@@ -2443,7 +2443,7 @@
   "fields": {
     "message": "add_state: index=\"xabyz\"(11), pos=BottomUp(UpPosition(AtomPosition(2)))"
   },
-  "filename": "crates/context-trace/src/trace/cache/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 49,
   "span": "search",
@@ -2459,7 +2459,7 @@
   "fields": {
     "message": "PostfixRootCommand::trace_root - added to cache: key=DirectedKey { index: \"xabyz\"(11), pos: BottomUp(UpPosition(AtomPosition(2))) }, was_new=true"
   },
-  "filename": "crates/context-trace/src/trace/traceable/root.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/root.rs",
   "level": "DEBUG",
   "line_number": 92,
   "span": "search",
@@ -2475,7 +2475,7 @@
   "fields": {
     "message": "PostfixCommand::trace - complete"
   },
-  "filename": "crates/context-trace/src/trace/traceable/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/mod.rs",
   "level": "DEBUG",
   "line_number": 304,
   "span": "search",
@@ -2627,7 +2627,7 @@
     },
     "message": "search complete"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 479,
   "span": "search",
@@ -2645,7 +2645,7 @@
     "time.busy": "16.0ms",
     "time.idle": "3.90µs"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -2699,7 +2699,7 @@
     "op_type": "Insert",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -2714,7 +2714,7 @@
   "fields": {
     "message": "IntervalGraph::from - init"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 72,
   "span": "insert",
@@ -2765,7 +2765,7 @@
       2
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 206,
   "span": "insert",
@@ -2781,7 +2781,7 @@
     "inner_offsets": [],
     "message": "After add_inner_offsets"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 226,
   "span": "insert",
@@ -2803,7 +2803,7 @@
       "_variant": "Some"
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 488,
   "span": "insert",
@@ -2835,7 +2835,7 @@
       "sub_index": 0
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 497,
   "span": "insert",
@@ -2856,7 +2856,7 @@
     },
     "wrapper_start_offset": 0
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 516,
   "span": "insert",
@@ -2873,7 +2873,7 @@
     "intermediate_offset": 2,
     "message": "Found inner offset in wrapper"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 547,
   "span": "insert",
@@ -2905,7 +2905,7 @@
       "sub_index": 0
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 497,
   "span": "insert",
@@ -2926,7 +2926,7 @@
     },
     "wrapper_start_offset": 0
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 516,
   "span": "insert",
@@ -2943,7 +2943,7 @@
     "intermediate_offset": 2,
     "message": "Found inner offset in wrapper"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 547,
   "span": "insert",
@@ -2959,7 +2959,7 @@
     "count": 0,
     "message": "Total wrapper_splits"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 573,
   "span": "insert",
@@ -2975,7 +2975,7 @@
     "message": "After add_wrapper_offsets",
     "wrapper_offsets": []
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 239,
   "span": "insert",
@@ -2993,7 +2993,7 @@
     ],
     "message": "Final positions"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 245,
   "span": "insert",
@@ -3011,7 +3011,7 @@
       0
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 256,
   "span": "insert",
@@ -3032,7 +3032,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 295,
   "span": "insert",
@@ -3053,7 +3053,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 316,
   "span": "insert",
@@ -3074,7 +3074,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/required.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/required.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -3097,7 +3097,7 @@
       }
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 320,
   "span": "insert",
@@ -3112,7 +3112,7 @@
   "fields": {
     "message": "IntervalGraph::from - run iterator to end"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 75,
   "span": "insert",
@@ -3127,7 +3127,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -3142,7 +3142,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -3190,7 +3190,7 @@
       }
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 184,
   "span": "insert",
@@ -3205,7 +3205,7 @@
   "fields": {
     "message": "SplitRun::from - calling finish"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 77,
   "span": "insert",
@@ -3220,7 +3220,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -3268,7 +3268,7 @@
       }
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 184,
   "span": "insert",
@@ -3283,7 +3283,7 @@
   "fields": {
     "message": "SplitRun::from - finish done, creating IntervalGraph"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 79,
   "span": "insert",
@@ -3347,7 +3347,7 @@
     "op_type": "Insert",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -3403,7 +3403,7 @@
     "op_type": "Insert",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -3467,7 +3467,7 @@
     "op_type": "Insert",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -3551,7 +3551,7 @@
       "_variant": "None"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -3566,7 +3566,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -3598,7 +3598,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -3615,7 +3615,7 @@
     "message": "Detected partition type",
     "partition_type": "Prefix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -3637,7 +3637,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -3656,7 +3656,7 @@
     "range_start": 0,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -3677,7 +3677,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -3702,7 +3702,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -3728,7 +3728,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -3760,7 +3760,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -3777,7 +3777,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -3799,7 +3799,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -3818,7 +3818,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -3839,7 +3839,7 @@
     "range_end": 1,
     "range_start": 1
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -3864,7 +3864,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -3890,7 +3890,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -3905,7 +3905,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 2\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -3937,7 +3937,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -3954,7 +3954,7 @@
     "message": "Detected partition type",
     "partition_type": "Full"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -3969,7 +3969,7 @@
   "fields": {
     "message": "Merging full partition - adding sub-merge patterns (intermediary node)"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 322,
   "span": "insert",
@@ -3994,7 +3994,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -4020,7 +4020,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -4084,7 +4084,7 @@
     "op_type": "Insert",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -4168,7 +4168,7 @@
       "_variant": "None"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -4183,7 +4183,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -4215,7 +4215,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -4232,7 +4232,7 @@
     "message": "Detected partition type",
     "partition_type": "Prefix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -4254,7 +4254,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -4273,7 +4273,7 @@
     "range_start": 0,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -4294,7 +4294,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -4319,7 +4319,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -4345,7 +4345,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -4377,7 +4377,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -4394,7 +4394,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -4416,7 +4416,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -4435,7 +4435,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -4456,7 +4456,7 @@
     "range_end": 1,
     "range_start": 1
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -4481,7 +4481,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -4507,7 +4507,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -4522,7 +4522,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 2\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -4554,7 +4554,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -4571,7 +4571,7 @@
     "message": "Detected partition type",
     "partition_type": "Full"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -4586,7 +4586,7 @@
   "fields": {
     "message": "Merging full partition - adding sub-merge patterns (intermediary node)"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 322,
   "span": "insert",
@@ -4611,7 +4611,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -4637,7 +4637,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -4701,7 +4701,7 @@
     "op_type": "Insert",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -4716,7 +4716,7 @@
   "fields": {
     "message": "Starting root merge join"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 75,
   "span": "insert",
@@ -4825,7 +4825,7 @@
       "_variant": "Some"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -4846,7 +4846,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 186,
   "span": "insert",
@@ -4868,7 +4868,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -4887,7 +4887,7 @@
     "range_start": 0,
     "skip_pattern_replacement": true
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -4908,7 +4908,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -4923,7 +4923,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -4960,7 +4960,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -4977,7 +4977,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -4999,7 +4999,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -5018,7 +5018,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -5066,7 +5066,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-insert/src/join/context/pattern/borders.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/pattern/borders.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -5114,7 +5114,7 @@
       "text": "xab"
     }
   },
-  "filename": "crates/context-insert/src/join/context/pattern/borders.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/pattern/borders.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -5129,7 +5129,7 @@
   "fields": {
     "message": "JoinedPatterns: JoinedPatterns {\n    patterns: [\n        Pattern(\n            [\n                \"b\"(1),\n                \"yz\"(7),\n            ],\n        ),\n        Pattern(\n            [\n                \"by\"(6),\n                \"z\"(4),\n            ],\n        ),\n    ],\n    perfect: SinglePerfect(\n        None,\n    ),\n    range: None,\n    delta: PatternSubDeltas {\n        inner: {\n            PatternId(\n                750ee3b1-623b-41ba-8ef1-94dce164b1fb,\n            ): 0,\n            PatternId(\n                db98586c-8dc6-48fd-9087-5b3d1ca3e4ce,\n            ): 0,\n        },\n    },\n}"
   },
-  "filename": "crates/context-insert/src/join/joined/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/joined/partition.rs",
   "level": "DEBUG",
   "line_number": 103,
   "span": "insert",
@@ -5153,7 +5153,7 @@
     "message": "JoinPartitionInfo succeeded with delta",
     "token": "T12w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 179,
   "span": "insert",
@@ -5174,7 +5174,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 414,
   "span": "insert",
@@ -5196,7 +5196,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -5219,7 +5219,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -5235,7 +5235,7 @@
     "message": "Target token extracted from range_map",
     "target_token": "T12w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 82,
   "span": "insert",
@@ -5309,7 +5309,7 @@
     "op_type": "Insert",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -5340,7 +5340,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 618,
   "span": "insert",
@@ -5355,7 +5355,7 @@
   "fields": {
     "message": "=== VERTEX DATA PATTERNS (actual token child patterns) ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 109,
   "span": "insert",
@@ -5375,7 +5375,7 @@
     },
     "num_patterns": 3
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 115,
   "span": "insert",
@@ -5390,7 +5390,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"xab\"(9), \"yz\"(7)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5405,7 +5405,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xa\"(8), T12w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5420,7 +5420,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xaby\"(10), \"z\"(4)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5437,7 +5437,7 @@
     "num_patterns": 2,
     "token": "T12w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 129,
   "span": "insert",
@@ -5452,7 +5452,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"b\"(1), \"yz\"(7)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -5467,7 +5467,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"by\"(6), \"z\"(4)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -5482,7 +5482,7 @@
   "fields": {
     "message": "=== END VERTEX DATA PATTERNS ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 140,
   "span": "insert",
@@ -5497,7 +5497,7 @@
   "fields": {
     "message": "=== VERTEX DATA PATTERNS (actual token child patterns) ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 109,
   "span": "insert",
@@ -5517,7 +5517,7 @@
     },
     "num_patterns": 3
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 115,
   "span": "insert",
@@ -5532,7 +5532,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"xab\"(9), \"yz\"(7)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5547,7 +5547,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xa\"(8), T12w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5562,7 +5562,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xaby\"(10), \"z\"(4)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -5582,7 +5582,7 @@
       "text": "xabyz"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 129,
   "span": "insert",
@@ -5597,7 +5597,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"xab\"(9), \"yz\"(7)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -5612,7 +5612,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xa\"(8), T12w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -5627,7 +5627,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xaby\"(10), \"z\"(4)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -5642,7 +5642,7 @@
   "fields": {
     "message": "=== END VERTEX DATA PATTERNS ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 140,
   "span": "insert",
@@ -5658,7 +5658,7 @@
     "message": "Root join complete - returning target token",
     "target_token": "T12w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 99,
   "span": "insert",
@@ -5720,7 +5720,7 @@
     "op_type": "Insert",
     "step": 7
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -5737,7 +5737,7 @@
     "time.busy": "35.0ms",
     "time.idle": "8.00µs"
   },
-  "filename": "crates/context-insert/src/insert/context.rs",
+  "filename": "crates/context-stack/context-insert/src/insert/context.rs",
   "level": "INFO",
   "line_number": 53,
   "span": "insert",
@@ -5750,7 +5750,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 91,
   "span": "find_ancestor",
@@ -5765,7 +5765,7 @@
   "fields": {
     "message": "starting ancestor search"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 99,
   "span": "find_ancestor",
@@ -5780,7 +5780,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -5820,7 +5820,7 @@
       "text": "by"
     }
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "search",
@@ -5836,7 +5836,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 102,
   "span": "search",
@@ -5853,7 +5853,7 @@
     "batch_len": 2,
     "message": "first parent batch obtained"
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 96,
   "span": "search",
@@ -5869,7 +5869,7 @@
   "fields": {
     "message": "start search successful, beginning fold"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 69,
   "span": "search",
@@ -5893,7 +5893,7 @@
       ]
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 397,
   "span": "search",
@@ -5957,7 +5957,7 @@
     "op_type": "Search",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6026,7 +6026,7 @@
     "op_type": "Search",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6042,7 +6042,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -6061,7 +6061,7 @@
     "node_index": 12,
     "queue_remaining": 1
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -6142,7 +6142,7 @@
     "op_type": "Search",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6158,7 +6158,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -6176,7 +6176,7 @@
     "message": "Found next child in pattern",
     "next_i": 1
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "advance_state",
@@ -6227,7 +6227,7 @@
     },
     "message": "Created child_cursor from parent_state"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "TRACE",
   "line_number": 55,
   "span": "advance_state",
@@ -6246,7 +6246,7 @@
     "time.busy": "1.13ms",
     "time.idle": "4.80µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -6276,7 +6276,7 @@
     },
     "query_width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 195,
   "span": "search",
@@ -6294,7 +6294,7 @@
     "token": 4,
     "width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 208,
   "span": "search",
@@ -6315,7 +6315,7 @@
     "new_checkpoint_pos": "3",
     "old_checkpoint_pos": "2"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 57,
   "span": "search",
@@ -6333,7 +6333,7 @@
     "node_index": 12,
     "root": "T12w3"
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 133,
   "span": "search",
@@ -6432,7 +6432,7 @@
     "op_type": "Search",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6526,7 +6526,7 @@
     "op_type": "Search",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6625,7 +6625,7 @@
     "op_type": "Search",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -6641,7 +6641,7 @@
   "fields": {
     "message": "Found matching root — clearing search queue (will explore via parents)"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 852,
   "span": "search",
@@ -6659,7 +6659,7 @@
     "root_parent": "T12w3",
     "root_width": 3
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 859,
   "span": "search",
@@ -6677,7 +6677,7 @@
     "message": "New root match - finishing root cursor",
     "root": "T12w3"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 492,
   "span": "search",
@@ -6733,7 +6733,7 @@
       "position": 3
     }
   },
-  "filename": "crates/context-search/src/compare/state/core.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/core.rs",
   "level": "DEBUG",
   "line_number": 155,
   "span": "search",
@@ -6749,7 +6749,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -6766,7 +6766,7 @@
   "fields": {
     "message": "→ advance_to_next_match: starting advancement"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "INFO",
   "line_number": 57,
   "span": "advance_to_next_match",
@@ -6783,7 +6783,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - calling advance_query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 145,
   "span": "advance_to_next_match",
@@ -6800,7 +6800,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -6820,7 +6820,7 @@
     "query_pos": 3,
     "root": "T12w3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 214,
   "span": "advance_query",
@@ -6858,7 +6858,7 @@
     },
     "message": "advancing query cursor only"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "advance_query",
@@ -6876,7 +6876,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - reached end of pattern, returning Break"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 111,
   "span": "advance_query",
@@ -6894,7 +6894,7 @@
   "fields": {
     "message": "query cursor cannot advance - query pattern ended"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "DEBUG",
   "line_number": 117,
   "span": "advance_query",
@@ -6914,7 +6914,7 @@
     "query_pos": 3,
     "root": "T12w3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 241,
   "span": "advance_query",
@@ -6932,7 +6932,7 @@
   "fields": {
     "message": "root_cursor advance_query: root_parent=T12w3, entry_pos=2, exit_pos=2, checkpoint.atom_position=3, last_token_width=1, end_pos=3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 261,
   "span": "advance_query",
@@ -6952,7 +6952,7 @@
     "final_end_index": 1,
     "message": "advance_query: returning checkpoint cursor for exhausted query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 277,
   "span": "advance_query",
@@ -6970,7 +6970,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "advance_query",
@@ -6990,7 +6990,7 @@
     "time.busy": "1.21ms",
     "time.idle": "3.00µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -7007,7 +7007,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - query ended (QueryExhausted)"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "advance_to_next_match",
@@ -7024,7 +7024,7 @@
   "fields": {
     "message": "→ advance_to_next_match: query exhausted - complete match"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "advance_to_next_match",
@@ -7043,7 +7043,7 @@
     "time.busy": "1.89ms",
     "time.idle": "3.70µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -7059,7 +7059,7 @@
   "fields": {
     "message": "Conclusive end: Exhausted - keeping best match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 632,
   "span": "search",
@@ -7075,7 +7075,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "search",
@@ -7095,7 +7095,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -7113,7 +7113,7 @@
     "message": "found matched state",
     "query_exhausted": true
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 898,
   "span": "search",
@@ -7129,7 +7129,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -7145,7 +7145,7 @@
   "fields": {
     "message": "no more matches found"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 765,
   "span": "search",
@@ -7165,7 +7165,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -7184,7 +7184,7 @@
     "query_exhausted": true,
     "root": "T12w3"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 428,
   "span": "search",
@@ -7316,7 +7316,7 @@
     },
     "message": "final matched state"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 458,
   "span": "search",
@@ -7407,7 +7407,7 @@
     "op_type": "Search",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -7539,7 +7539,7 @@
     },
     "message": "search complete"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 479,
   "span": "search",
@@ -7557,7 +7557,7 @@
     "time.busy": "9.27ms",
     "time.idle": "3.20µs"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -7572,7 +7572,7 @@
   "fields": {
     "message": "ancestor search succeeded"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 103,
   "span": "find_ancestor",
@@ -7589,7 +7589,7 @@
     "time.busy": "9.64ms",
     "time.idle": "3.90µs"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 91,
   "span": "find_ancestor",
@@ -7606,7 +7606,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "target": "context_search::state::matched",
@@ -7617,7 +7617,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-insert/src/insert/context.rs",
+  "filename": "crates/context-stack/context-insert/src/insert/context.rs",
   "level": "INFO",
   "line_number": 53,
   "span": "insert",
@@ -7632,7 +7632,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -7672,7 +7672,7 @@
       "text": "ab"
     }
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "search",
@@ -7688,7 +7688,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 102,
   "span": "search",
@@ -7705,7 +7705,7 @@
     "batch_len": 1,
     "message": "first parent batch obtained"
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 96,
   "span": "search",
@@ -7721,7 +7721,7 @@
   "fields": {
     "message": "start search successful, beginning fold"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 69,
   "span": "search",
@@ -7744,7 +7744,7 @@
       ]
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 397,
   "span": "search",
@@ -7807,7 +7807,7 @@
     "op_type": "Search",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -7874,7 +7874,7 @@
     "op_type": "Search",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -7890,7 +7890,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -7909,7 +7909,7 @@
     "node_index": 9,
     "queue_remaining": 0
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -7988,7 +7988,7 @@
     "op_type": "Search",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8004,7 +8004,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -8023,7 +8023,7 @@
     "message": "No next child in pattern - at end of pattern",
     "pattern_len": 2
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 60,
   "span": "advance_state",
@@ -8042,7 +8042,7 @@
     "time.busy": "640µs",
     "time.idle": "4.80µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -8061,7 +8061,7 @@
     "node_index": 9,
     "num_added": 2
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 122,
   "span": "search",
@@ -8138,7 +8138,7 @@
     "op_type": "Search",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8157,7 +8157,7 @@
     "node_index": 10,
     "queue_remaining": 1
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -8250,7 +8250,7 @@
     "op_type": "Search",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8266,7 +8266,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -8284,7 +8284,7 @@
     "message": "Found next child in pattern",
     "next_i": 1
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "advance_state",
@@ -8338,7 +8338,7 @@
     },
     "message": "Created child_cursor from parent_state"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "TRACE",
   "line_number": 55,
   "span": "advance_state",
@@ -8357,7 +8357,7 @@
     "time.busy": "1.36ms",
     "time.idle": "6.00µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -8387,7 +8387,7 @@
     },
     "query_width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 195,
   "span": "search",
@@ -8405,7 +8405,7 @@
     "token": 3,
     "width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 208,
   "span": "search",
@@ -8426,7 +8426,7 @@
     "new_checkpoint_pos": "3",
     "old_checkpoint_pos": "2"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 57,
   "span": "search",
@@ -8447,7 +8447,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 133,
   "span": "search",
@@ -8558,7 +8558,7 @@
     "op_type": "Search",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8664,7 +8664,7 @@
     "op_type": "Search",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8775,7 +8775,7 @@
     "op_type": "Search",
     "step": 7
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -8791,7 +8791,7 @@
   "fields": {
     "message": "Found matching root — clearing search queue (will explore via parents)"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 852,
   "span": "search",
@@ -8812,7 +8812,7 @@
     },
     "root_width": 4
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 859,
   "span": "search",
@@ -8833,7 +8833,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 492,
   "span": "search",
@@ -8889,7 +8889,7 @@
       "position": 3
     }
   },
-  "filename": "crates/context-search/src/compare/state/core.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/core.rs",
   "level": "DEBUG",
   "line_number": 155,
   "span": "search",
@@ -8905,7 +8905,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -8922,7 +8922,7 @@
   "fields": {
     "message": "→ advance_to_next_match: starting advancement"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "INFO",
   "line_number": 57,
   "span": "advance_to_next_match",
@@ -8939,7 +8939,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - calling advance_query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 145,
   "span": "advance_to_next_match",
@@ -8956,7 +8956,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -8979,7 +8979,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 214,
   "span": "advance_query",
@@ -9017,7 +9017,7 @@
     },
     "message": "advancing query cursor only"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "advance_query",
@@ -9035,7 +9035,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - reached end of pattern, returning Break"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 111,
   "span": "advance_query",
@@ -9053,7 +9053,7 @@
   "fields": {
     "message": "query cursor cannot advance - query pattern ended"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "DEBUG",
   "line_number": 117,
   "span": "advance_query",
@@ -9076,7 +9076,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 241,
   "span": "advance_query",
@@ -9094,7 +9094,7 @@
   "fields": {
     "message": "root_cursor advance_query: root_parent=\"xaby\"(10), entry_pos=2, exit_pos=2, checkpoint.atom_position=3, last_token_width=1, end_pos=3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 261,
   "span": "advance_query",
@@ -9114,7 +9114,7 @@
     "final_end_index": 1,
     "message": "advance_query: returning checkpoint cursor for exhausted query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 277,
   "span": "advance_query",
@@ -9132,7 +9132,7 @@
   "fields": {
     "message": "from_range_path BEFORE simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 90,
   "span": "advance_query",
@@ -9150,7 +9150,7 @@
   "fields": {
     "message": "from_range_path AFTER simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 97,
   "span": "advance_query",
@@ -9168,7 +9168,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=false, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "advance_query",
@@ -9186,7 +9186,7 @@
   "fields": {
     "message": "Creating PostfixEnd with exit_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 131,
   "span": "advance_query",
@@ -9206,7 +9206,7 @@
     "time.busy": "1.76ms",
     "time.idle": "3.10µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -9223,7 +9223,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - query ended (QueryExhausted)"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "advance_to_next_match",
@@ -9240,7 +9240,7 @@
   "fields": {
     "message": "→ advance_to_next_match: query exhausted - complete match"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "advance_to_next_match",
@@ -9259,7 +9259,7 @@
     "time.busy": "2.49ms",
     "time.idle": "3.80µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -9275,7 +9275,7 @@
   "fields": {
     "message": "Conclusive end: Exhausted - keeping best match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 632,
   "span": "search",
@@ -9291,7 +9291,7 @@
   "fields": {
     "message": "from_range_path BEFORE simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 90,
   "span": "search",
@@ -9307,7 +9307,7 @@
   "fields": {
     "message": "from_range_path AFTER simplify: start_path.len=1, end_path.len=0"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 97,
   "span": "search",
@@ -9323,7 +9323,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=false, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "search",
@@ -9339,7 +9339,7 @@
   "fields": {
     "message": "Creating PostfixEnd with exit_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 131,
   "span": "search",
@@ -9359,7 +9359,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -9377,7 +9377,7 @@
     "message": "found matched state",
     "query_exhausted": true
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 898,
   "span": "search",
@@ -9393,7 +9393,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -9409,7 +9409,7 @@
   "fields": {
     "message": "no more matches found"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 765,
   "span": "search",
@@ -9429,7 +9429,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -9451,7 +9451,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 428,
   "span": "search",
@@ -9603,7 +9603,7 @@
     },
     "message": "final matched state"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 458,
   "span": "search",
@@ -9706,7 +9706,7 @@
     "op_type": "Search",
     "step": 8
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -9722,7 +9722,7 @@
   "fields": {
     "message": "Creating PostfixCommand from PostfixEnd: entry_pos=2"
   },
-  "filename": "crates/context-search/src/state/end/postfix.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/postfix.rs",
   "level": "TRACE",
   "line_number": 45,
   "span": "search",
@@ -9738,7 +9738,7 @@
   "fields": {
     "message": "PostfixCommand::trace - entry_pos=UpPosition(AtomPosition(2))"
   },
-  "filename": "crates/context-trace/src/trace/traceable/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/mod.rs",
   "level": "DEBUG",
   "line_number": 299,
   "span": "search",
@@ -9754,7 +9754,7 @@
   "fields": {
     "message": "trace_role_sub_path - starting with prev=UpKey { index: \"ab\"(5), pos: UpPosition(AtomPosition(2)) }, path_len=1"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 90,
   "span": "search",
@@ -9770,7 +9770,7 @@
   "fields": {
     "message": "trace_role_sub_path - step 0: prev=UpKey { index: \"ab\"(5), pos: UpPosition(AtomPosition(2)) }, location=ChildLocation { parent: \"xab\"(9), pattern_id: PatternId(1f2da770-006b-440a-9c2b-6bb31c7c3936), sub_index: 1 }, target=UpKey { index: \"xab\"(9), pos: UpPosition(AtomPosition(2)) }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 102,
   "span": "search",
@@ -9786,7 +9786,7 @@
   "fields": {
     "message": "add_state: index=\"xab\"(9), pos=BottomUp(UpPosition(AtomPosition(2)))"
   },
-  "filename": "crates/context-trace/src/trace/cache/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 49,
   "span": "search",
@@ -9802,7 +9802,7 @@
   "fields": {
     "message": "trace_role_sub_path - step 0: added key=DirectedKey { index: \"xab\"(9), pos: BottomUp(UpPosition(AtomPosition(2))) }, was_new=true"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 106,
   "span": "search",
@@ -9818,7 +9818,7 @@
   "fields": {
     "message": "trace_role_sub_path - complete, result=UpKey { index: \"xab\"(9), pos: UpPosition(AtomPosition(2)) }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/role.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/role.rs",
   "level": "DEBUG",
   "line_number": 110,
   "span": "search",
@@ -9834,7 +9834,7 @@
   "fields": {
     "message": "PostfixRootCommand::trace_root - entry_key=UpKey { index: \"xaby\"(10), pos: UpPosition(AtomPosition(2)) }, prev=UpKey { index: \"xab\"(9), pos: UpPosition(AtomPosition(2)) }, location=ChildLocation { parent: \"xaby\"(10), pattern_id: PatternId(ef32d7cb-29c9-4496-80f7-fc4ab1d3b3fd), sub_index: 0 }"
   },
-  "filename": "crates/context-trace/src/trace/traceable/root.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/root.rs",
   "level": "DEBUG",
   "line_number": 80,
   "span": "search",
@@ -9850,7 +9850,7 @@
   "fields": {
     "message": "add_state: index=\"xaby\"(10), pos=BottomUp(UpPosition(AtomPosition(2)))"
   },
-  "filename": "crates/context-trace/src/trace/cache/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 49,
   "span": "search",
@@ -9866,7 +9866,7 @@
   "fields": {
     "message": "PostfixRootCommand::trace_root - added to cache: key=DirectedKey { index: \"xaby\"(10), pos: BottomUp(UpPosition(AtomPosition(2))) }, was_new=true"
   },
-  "filename": "crates/context-trace/src/trace/traceable/root.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/root.rs",
   "level": "DEBUG",
   "line_number": 92,
   "span": "search",
@@ -9882,7 +9882,7 @@
   "fields": {
     "message": "PostfixCommand::trace - complete"
   },
-  "filename": "crates/context-trace/src/trace/traceable/mod.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/traceable/mod.rs",
   "level": "DEBUG",
   "line_number": 304,
   "span": "search",
@@ -10034,7 +10034,7 @@
     },
     "message": "search complete"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 479,
   "span": "search",
@@ -10052,7 +10052,7 @@
     "time.busy": "13.9ms",
     "time.idle": "3.40µs"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -10106,7 +10106,7 @@
     "op_type": "Insert",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -10121,7 +10121,7 @@
   "fields": {
     "message": "IntervalGraph::from - init"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 72,
   "span": "insert",
@@ -10172,7 +10172,7 @@
       1
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 206,
   "span": "insert",
@@ -10188,7 +10188,7 @@
     "inner_offsets": [],
     "message": "After add_inner_offsets"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 226,
   "span": "insert",
@@ -10210,7 +10210,7 @@
       "_variant": "Some"
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 488,
   "span": "insert",
@@ -10242,7 +10242,7 @@
       "sub_index": 0
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 497,
   "span": "insert",
@@ -10263,7 +10263,7 @@
     },
     "wrapper_start_offset": 0
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 516,
   "span": "insert",
@@ -10280,7 +10280,7 @@
     "intermediate_offset": 1,
     "message": "Found inner offset in wrapper"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 547,
   "span": "insert",
@@ -10312,7 +10312,7 @@
       "sub_index": 0
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 497,
   "span": "insert",
@@ -10333,7 +10333,7 @@
     },
     "wrapper_start_offset": 0
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 516,
   "span": "insert",
@@ -10350,7 +10350,7 @@
     "intermediate_offset": 1,
     "message": "Found inner offset in wrapper"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 547,
   "span": "insert",
@@ -10366,7 +10366,7 @@
     "count": 0,
     "message": "Total wrapper_splits"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 573,
   "span": "insert",
@@ -10382,7 +10382,7 @@
     "message": "After add_wrapper_offsets",
     "wrapper_offsets": []
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 239,
   "span": "insert",
@@ -10400,7 +10400,7 @@
     ],
     "message": "Final positions"
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 245,
   "span": "insert",
@@ -10418,7 +10418,7 @@
       0
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 256,
   "span": "insert",
@@ -10439,7 +10439,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 295,
   "span": "insert",
@@ -10460,7 +10460,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 316,
   "span": "insert",
@@ -10481,7 +10481,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/required.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/required.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -10504,7 +10504,7 @@
       }
     ]
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 320,
   "span": "insert",
@@ -10519,7 +10519,7 @@
   "fields": {
     "message": "IntervalGraph::from - run iterator to end"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 75,
   "span": "insert",
@@ -10534,7 +10534,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -10549,7 +10549,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -10597,7 +10597,7 @@
       }
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 184,
   "span": "insert",
@@ -10612,7 +10612,7 @@
   "fields": {
     "message": "SplitRun::from - calling finish"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 77,
   "span": "insert",
@@ -10627,7 +10627,7 @@
   "fields": {
     "message": "augment_nodes"
   },
-  "filename": "crates/context-insert/src/split/cache/mod.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/mod.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "insert",
@@ -10660,7 +10660,7 @@
       }
     }
   },
-  "filename": "crates/context-insert/src/split/cache/vertex.rs",
+  "filename": "crates/context-stack/context-insert/src/split/cache/vertex.rs",
   "level": "DEBUG",
   "line_number": 184,
   "span": "insert",
@@ -10675,7 +10675,7 @@
   "fields": {
     "message": "SplitRun::from - finish done, creating IntervalGraph"
   },
-  "filename": "crates/context-insert/src/split/run.rs",
+  "filename": "crates/context-stack/context-insert/src/split/run.rs",
   "level": "DEBUG",
   "line_number": 79,
   "span": "insert",
@@ -10739,7 +10739,7 @@
     "op_type": "Insert",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -10795,7 +10795,7 @@
     "op_type": "Insert",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -10859,7 +10859,7 @@
     "op_type": "Insert",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -10928,7 +10928,7 @@
       "_variant": "None"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -10943,7 +10943,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -10975,7 +10975,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -10992,7 +10992,7 @@
     "message": "Detected partition type",
     "partition_type": "Prefix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11014,7 +11014,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -11033,7 +11033,7 @@
     "range_start": 0,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -11054,7 +11054,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -11079,7 +11079,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -11105,7 +11105,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -11137,7 +11137,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -11154,7 +11154,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11176,7 +11176,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -11195,7 +11195,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -11216,7 +11216,7 @@
     "range_end": 1,
     "range_start": 1
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -11241,7 +11241,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -11267,7 +11267,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -11282,7 +11282,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 2\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -11314,7 +11314,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -11331,7 +11331,7 @@
     "message": "Detected partition type",
     "partition_type": "Full"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11346,7 +11346,7 @@
   "fields": {
     "message": "Merging full partition - adding sub-merge patterns (intermediary node)"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 322,
   "span": "insert",
@@ -11371,7 +11371,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -11397,7 +11397,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -11461,7 +11461,7 @@
     "op_type": "Insert",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -11545,7 +11545,7 @@
       "_variant": "None"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -11560,7 +11560,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -11592,7 +11592,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -11609,7 +11609,7 @@
     "message": "Detected partition type",
     "partition_type": "Prefix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11631,7 +11631,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -11650,7 +11650,7 @@
     "range_start": 0,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -11671,7 +11671,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -11696,7 +11696,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -11722,7 +11722,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -11754,7 +11754,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -11771,7 +11771,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11793,7 +11793,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -11812,7 +11812,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -11833,7 +11833,7 @@
     "range_end": 1,
     "range_start": 1
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -11858,7 +11858,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -11884,7 +11884,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -11899,7 +11899,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 2\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -11931,7 +11931,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -11948,7 +11948,7 @@
     "message": "Detected partition type",
     "partition_type": "Full"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -11963,7 +11963,7 @@
   "fields": {
     "message": "Merging full partition - adding sub-merge patterns (intermediary node)"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 322,
   "span": "insert",
@@ -11988,7 +11988,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -12014,7 +12014,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -12078,7 +12078,7 @@
     "op_type": "Insert",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -12093,7 +12093,7 @@
   "fields": {
     "message": "Starting root merge join"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 75,
   "span": "insert",
@@ -12202,7 +12202,7 @@
       "_variant": "Some"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 108,
   "span": "insert",
@@ -12223,7 +12223,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 186,
   "span": "insert",
@@ -12245,7 +12245,7 @@
     },
     "role": "PREFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -12264,7 +12264,7 @@
     "range_start": 0,
     "skip_pattern_replacement": true
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -12285,7 +12285,7 @@
     "range_end": 0,
     "range_start": 0
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 203,
   "span": "insert",
@@ -12300,7 +12300,7 @@
   "fields": {
     "message": "\n    ==============================================================\n    merging partitions of length 1\n    =============================================================="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 125,
   "span": "insert",
@@ -12337,7 +12337,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 222,
   "span": "insert",
@@ -12354,7 +12354,7 @@
     "message": "Detected partition type",
     "partition_type": "Postfix"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 234,
   "span": "insert",
@@ -12376,7 +12376,7 @@
     },
     "role": "POSTFIX"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 353,
   "span": "insert",
@@ -12395,7 +12395,7 @@
     "range_start": 1,
     "skip_pattern_replacement": false
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "insert",
@@ -12443,7 +12443,7 @@
       "text": "xa"
     }
   },
-  "filename": "crates/context-insert/src/join/context/pattern/borders.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/pattern/borders.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -12491,7 +12491,7 @@
       "text": "xab"
     }
   },
-  "filename": "crates/context-insert/src/join/context/pattern/borders.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/pattern/borders.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "insert",
@@ -12506,7 +12506,7 @@
   "fields": {
     "message": "JoinedPatterns: JoinedPatterns {\n    patterns: [\n        Pattern(\n            [\n                \"ab\"(5),\n                \"y\"(3),\n            ],\n        ),\n        Pattern(\n            [\n                \"a\"(0),\n                \"by\"(6),\n            ],\n        ),\n    ],\n    perfect: SinglePerfect(\n        None,\n    ),\n    range: None,\n    delta: PatternSubDeltas {\n        inner: {\n            PatternId(\n                ef32d7cb-29c9-4496-80f7-fc4ab1d3b3fd,\n            ): 0,\n            PatternId(\n                a9fef06b-4fd7-48f5-8ead-67d5352e8f79,\n            ): 0,\n        },\n    },\n}"
   },
-  "filename": "crates/context-insert/src/join/joined/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/joined/partition.rs",
   "level": "DEBUG",
   "line_number": 103,
   "span": "insert",
@@ -12530,7 +12530,7 @@
     "message": "JoinPartitionInfo succeeded with delta",
     "token": "T13w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/partition.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/partition.rs",
   "level": "DEBUG",
   "line_number": 179,
   "span": "insert",
@@ -12551,7 +12551,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 414,
   "span": "insert",
@@ -12573,7 +12573,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 259,
   "span": "insert",
@@ -12596,7 +12596,7 @@
       ]
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 443,
   "span": "insert",
@@ -12612,7 +12612,7 @@
     "message": "Target token extracted from range_map",
     "target_token": "T13w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 82,
   "span": "insert",
@@ -12686,7 +12686,7 @@
     "op_type": "Insert",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -12717,7 +12717,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/iter.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/iter.rs",
   "level": "DEBUG",
   "line_number": 618,
   "span": "insert",
@@ -12732,7 +12732,7 @@
   "fields": {
     "message": "=== VERTEX DATA PATTERNS (actual token child patterns) ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 109,
   "span": "insert",
@@ -12752,7 +12752,7 @@
     },
     "num_patterns": 3
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 115,
   "span": "insert",
@@ -12767,7 +12767,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"x\"(2), T13w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12782,7 +12782,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xab\"(9), \"y\"(3)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12797,7 +12797,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xa\"(8), \"by\"(6)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12814,7 +12814,7 @@
     "num_patterns": 2,
     "token": "T13w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 129,
   "span": "insert",
@@ -12829,7 +12829,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"a\"(0), \"by\"(6)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -12844,7 +12844,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"ab\"(5), \"y\"(3)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -12859,7 +12859,7 @@
   "fields": {
     "message": "=== END VERTEX DATA PATTERNS ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 140,
   "span": "insert",
@@ -12874,7 +12874,7 @@
   "fields": {
     "message": "=== VERTEX DATA PATTERNS (actual token child patterns) ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 109,
   "span": "insert",
@@ -12894,7 +12894,7 @@
     },
     "num_patterns": 3
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 115,
   "span": "insert",
@@ -12909,7 +12909,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"x\"(2), T13w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12924,7 +12924,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xab\"(9), \"y\"(3)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12939,7 +12939,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xa\"(8), \"by\"(6)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 123,
   "span": "insert",
@@ -12959,7 +12959,7 @@
       "text": "xaby"
     }
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 129,
   "span": "insert",
@@ -12974,7 +12974,7 @@
   "fields": {
     "message": "  Child Pattern 0: [\"x\"(2), T13w3]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -12989,7 +12989,7 @@
   "fields": {
     "message": "  Child Pattern 1: [\"xab\"(9), \"y\"(3)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -13004,7 +13004,7 @@
   "fields": {
     "message": "  Child Pattern 2: [\"xa\"(8), \"by\"(6)]"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 137,
   "span": "insert",
@@ -13019,7 +13019,7 @@
   "fields": {
     "message": "=== END VERTEX DATA PATTERNS ==="
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 140,
   "span": "insert",
@@ -13035,7 +13035,7 @@
     "message": "Root join complete - returning target token",
     "target_token": "T13w3"
   },
-  "filename": "crates/context-insert/src/join/context/node/merge/node.rs",
+  "filename": "crates/context-stack/context-insert/src/join/context/node/merge/node.rs",
   "level": "INFO",
   "line_number": 99,
   "span": "insert",
@@ -13097,7 +13097,7 @@
     "op_type": "Insert",
     "step": 7
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "insert",
@@ -13114,7 +13114,7 @@
     "time.busy": "31.5ms",
     "time.idle": "4.50µs"
   },
-  "filename": "crates/context-insert/src/insert/context.rs",
+  "filename": "crates/context-stack/context-insert/src/insert/context.rs",
   "level": "INFO",
   "line_number": 53,
   "span": "insert",
@@ -13127,7 +13127,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 71,
   "span": "find_parent",
@@ -13142,7 +13142,7 @@
   "fields": {
     "message": "starting parent search"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 79,
   "span": "find_parent",
@@ -13157,7 +13157,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -13197,7 +13197,7 @@
       "text": "ab"
     }
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "search",
@@ -13213,7 +13213,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - advancing from 0 to 1, old end.root_entry=0"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 102,
   "span": "search",
@@ -13230,7 +13230,7 @@
     "batch_len": 2,
     "message": "first parent batch obtained"
   },
-  "filename": "crates/context-search/src/state/start/core.rs",
+  "filename": "crates/context-stack/context-search/src/state/start/core.rs",
   "level": "TRACE",
   "line_number": 96,
   "span": "search",
@@ -13246,7 +13246,7 @@
   "fields": {
     "message": "start search successful, beginning fold"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 69,
   "span": "search",
@@ -13270,7 +13270,7 @@
       ]
     }
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 397,
   "span": "search",
@@ -13334,7 +13334,7 @@
     "op_type": "Search",
     "step": 0
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -13403,7 +13403,7 @@
     "op_type": "Search",
     "step": 1
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -13419,7 +13419,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -13438,7 +13438,7 @@
     "node_index": 13,
     "queue_remaining": 1
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 104,
   "span": "search",
@@ -13519,7 +13519,7 @@
     "op_type": "Search",
     "step": 2
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -13535,7 +13535,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -13553,7 +13553,7 @@
     "message": "Found next child in pattern",
     "next_i": 1
   },
-  "filename": "crates/context-trace/src/trace/state/parent.rs",
+  "filename": "crates/context-stack/context-trace/src/trace/state/parent.rs",
   "level": "DEBUG",
   "line_number": 43,
   "span": "advance_state",
@@ -13604,7 +13604,7 @@
     },
     "message": "Created child_cursor from parent_state"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "TRACE",
   "line_number": 55,
   "span": "advance_state",
@@ -13623,7 +13623,7 @@
     "time.busy": "1.06ms",
     "time.idle": "4.00µs"
   },
-  "filename": "crates/context-search/src/compare/parent.rs",
+  "filename": "crates/context-stack/context-search/src/compare/parent.rs",
   "level": "DEBUG",
   "line_number": 47,
   "span": "advance_state",
@@ -13653,7 +13653,7 @@
     },
     "query_width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 195,
   "span": "search",
@@ -13671,7 +13671,7 @@
     "token": 3,
     "width": 1
   },
-  "filename": "crates/context-search/src/compare/state/decomposition.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/decomposition.rs",
   "level": "TRACE",
   "line_number": 208,
   "span": "search",
@@ -13692,7 +13692,7 @@
     "new_checkpoint_pos": "3",
     "old_checkpoint_pos": "2"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 57,
   "span": "search",
@@ -13710,7 +13710,7 @@
     "node_index": 13,
     "root": "T13w3"
   },
-  "filename": "crates/context-search/src/match/iterator.rs",
+  "filename": "crates/context-stack/context-search/src/match/iterator.rs",
   "level": "DEBUG",
   "line_number": 133,
   "span": "search",
@@ -13809,7 +13809,7 @@
     "op_type": "Search",
     "step": 3
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -13903,7 +13903,7 @@
     "op_type": "Search",
     "step": 4
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -14002,7 +14002,7 @@
     "op_type": "Search",
     "step": 5
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -14018,7 +14018,7 @@
   "fields": {
     "message": "Found matching root — clearing search queue (will explore via parents)"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 852,
   "span": "search",
@@ -14036,7 +14036,7 @@
     "root_parent": "T13w3",
     "root_width": 3
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "DEBUG",
   "line_number": 859,
   "span": "search",
@@ -14054,7 +14054,7 @@
     "message": "New root match - finishing root cursor",
     "root": "T13w3"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 492,
   "span": "search",
@@ -14110,7 +14110,7 @@
       "position": 3
     }
   },
-  "filename": "crates/context-search/src/compare/state/core.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/core.rs",
   "level": "DEBUG",
   "line_number": 155,
   "span": "search",
@@ -14126,7 +14126,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -14143,7 +14143,7 @@
   "fields": {
     "message": "→ advance_to_next_match: starting advancement"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "INFO",
   "line_number": 57,
   "span": "advance_to_next_match",
@@ -14160,7 +14160,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - calling advance_query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 145,
   "span": "advance_to_next_match",
@@ -14177,7 +14177,7 @@
   "fields": {
     "message": "enter"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -14197,7 +14197,7 @@
     "query_pos": 3,
     "root": "T13w3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 214,
   "span": "advance_query",
@@ -14235,7 +14235,7 @@
     },
     "message": "advancing query cursor only"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "TRACE",
   "line_number": 93,
   "span": "advance_query",
@@ -14253,7 +14253,7 @@
   "fields": {
     "message": "PatternRangePath::move_root_index - reached end of pattern, returning Break"
   },
-  "filename": "crates/context-trace/src/path/structs/rooted/pattern_range.rs",
+  "filename": "crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs",
   "level": "TRACE",
   "line_number": 111,
   "span": "advance_query",
@@ -14271,7 +14271,7 @@
   "fields": {
     "message": "query cursor cannot advance - query pattern ended"
   },
-  "filename": "crates/context-search/src/compare/state/transitions.rs",
+  "filename": "crates/context-stack/context-search/src/compare/state/transitions.rs",
   "level": "DEBUG",
   "line_number": 117,
   "span": "advance_query",
@@ -14291,7 +14291,7 @@
     "query_pos": 3,
     "root": "T13w3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 241,
   "span": "advance_query",
@@ -14309,7 +14309,7 @@
   "fields": {
     "message": "root_cursor advance_query: root_parent=T13w3, entry_pos=2, exit_pos=2, checkpoint.atom_position=3, last_token_width=1, end_pos=3"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 261,
   "span": "advance_query",
@@ -14329,7 +14329,7 @@
     "final_end_index": 1,
     "message": "advance_query: returning checkpoint cursor for exhausted query"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 277,
   "span": "advance_query",
@@ -14347,7 +14347,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "advance_query",
@@ -14367,7 +14367,7 @@
     "time.busy": "1.33ms",
     "time.idle": "3.90µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "TRACE",
   "line_number": 206,
   "span": "advance_query",
@@ -14384,7 +14384,7 @@
   "fields": {
     "message": "  → advance_both_cursors_internal: Step 1 - query ended (QueryExhausted)"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 161,
   "span": "advance_to_next_match",
@@ -14401,7 +14401,7 @@
   "fields": {
     "message": "→ advance_to_next_match: query exhausted - complete match"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 70,
   "span": "advance_to_next_match",
@@ -14420,7 +14420,7 @@
     "time.busy": "2.08ms",
     "time.idle": "3.50µs"
   },
-  "filename": "crates/context-search/src/match/root_cursor/advance.rs",
+  "filename": "crates/context-stack/context-search/src/match/root_cursor/advance.rs",
   "level": "DEBUG",
   "line_number": 55,
   "span": "advance_to_next_match",
@@ -14436,7 +14436,7 @@
   "fields": {
     "message": "Conclusive end: Exhausted - keeping best match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 632,
   "span": "search",
@@ -14452,7 +14452,7 @@
   "fields": {
     "message": "from_range_path: start_at_border=true, start_path_empty=true, end_at_border=true, end_path_empty=true"
   },
-  "filename": "crates/context-search/src/state/end/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/end/mod.rs",
   "level": "TRACE",
   "line_number": 112,
   "span": "search",
@@ -14472,7 +14472,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -14490,7 +14490,7 @@
     "message": "found matched state",
     "query_exhausted": true
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 898,
   "span": "search",
@@ -14506,7 +14506,7 @@
   "fields": {
     "message": "searching for next match"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 753,
   "span": "search",
@@ -14522,7 +14522,7 @@
   "fields": {
     "message": "no more matches found"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 765,
   "span": "search",
@@ -14542,7 +14542,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "span": "search",
@@ -14561,7 +14561,7 @@
     "query_exhausted": true,
     "root": "T13w3"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 428,
   "span": "search",
@@ -14693,7 +14693,7 @@
     },
     "message": "final matched state"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 458,
   "span": "search",
@@ -14784,7 +14784,7 @@
     "op_type": "Search",
     "step": 6
   },
-  "filename": "crates/context-trace/src/graph/visualization.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/visualization.rs",
   "level": "INFO",
   "line_number": 561,
   "span": "search",
@@ -14916,7 +14916,7 @@
     },
     "message": "search complete"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 479,
   "span": "search",
@@ -14934,7 +14934,7 @@
     "time.busy": "9.11ms",
     "time.idle": "3.80µs"
   },
-  "filename": "crates/context-search/src/search/searchable.rs",
+  "filename": "crates/context-stack/context-search/src/search/searchable.rs",
   "level": "TRACE",
   "line_number": 59,
   "span": "search",
@@ -14949,7 +14949,7 @@
   "fields": {
     "message": "parent search succeeded"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "TRACE",
   "line_number": 83,
   "span": "find_parent",
@@ -14966,7 +14966,7 @@
     "time.busy": "9.50ms",
     "time.idle": "3.80µs"
   },
-  "filename": "crates/context-search/src/search/mod.rs",
+  "filename": "crates/context-stack/context-search/src/search/mod.rs",
   "level": "INFO",
   "line_number": 71,
   "span": "find_parent",
@@ -14983,7 +14983,7 @@
     "message": "query_exhausted check",
     "path_empty": true
   },
-  "filename": "crates/context-search/src/state/matched/mod.rs",
+  "filename": "crates/context-stack/context-search/src/state/matched/mod.rs",
   "level": "TRACE",
   "line_number": 156,
   "target": "context_search::state::matched",

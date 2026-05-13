@@ -8,13 +8,13 @@ status: 📋
 
 ## Objective
 
-Extend `crates/context-api` with the algorithm commands that wrap `context-search` (`Find`), `context-insert` (`ToInsertCtx`), and `context-read`. This phase adds `search_pattern`, `search_sequence`, `insert_first_match`, `insert_sequence`, `insert_sequences`, `read_pattern`, `read_as_text`, plus developer commands `get_trace_cache` and `validate_graph`. The CLI is updated with corresponding subcommands and REPL commands.
+Extend `crates/context-stack/context-api` with the algorithm commands that wrap `context-search` (`Find`), `context-insert` (`ToInsertCtx`), and `context-read`. This phase adds `search_pattern`, `search_sequence`, `insert_first_match`, `insert_sequence`, `insert_sequences`, `read_pattern`, `read_as_text`, plus developer commands `get_trace_cache` and `validate_graph`. The CLI is updated with corresponding subcommands and REPL commands.
 
 ## Context
 
 ### Prerequisites
 
-- **Phase 1 complete** — `crates/context-api` and `tools/context-cli` exist with workspace management, atom/pattern commands, persistence, and error types.
+- **Phase 1 complete** — `crates/context-stack/context-api` and `tools/context-cli` exist with workspace management, atom/pattern commands, persistence, and error types.
 - **context-read dependency enabled** — Phase 1 commented out `context-read` in `Cargo.toml`; this phase enables it.
 
 ### Interview Reference
@@ -44,24 +44,24 @@ Phase 1 plan: `agents/plans/20260310_PLAN_CONTEXT_API_PHASE1.md`
 ### Files Affected
 
 **Modified:**
-- `crates/context-api/Cargo.toml` — enable `context-read` dependency
-- `crates/context-api/src/lib.rs` — (no changes expected, modules already declared)
-- `crates/context-api/src/error.rs` — fill in `SearchError`, `InsertError`, `ReadError` variants
-- `crates/context-api/src/types.rs` — add `SearchResult`, `InsertResult`, `PatternReadResult`, `PartialMatchInfo`, `TraceCacheInfo`, `ValidationReport`
-- `crates/context-api/src/commands/mod.rs` — add `Command` variants for search/insert/read/debug, update `WorkspaceApi` trait, update `execute()` dispatch
+- `crates/context-stack/context-api/Cargo.toml` — enable `context-read` dependency
+- `crates/context-stack/context-api/src/lib.rs` — (no changes expected, modules already declared)
+- `crates/context-stack/context-api/src/error.rs` — fill in `SearchError`, `InsertError`, `ReadError` variants
+- `crates/context-stack/context-api/src/types.rs` — add `SearchResult`, `InsertResult`, `PatternReadResult`, `PartialMatchInfo`, `TraceCacheInfo`, `ValidationReport`
+- `crates/context-stack/context-api/src/commands/mod.rs` — add `Command` variants for search/insert/read/debug, update `WorkspaceApi` trait, update `execute()` dispatch
 - `tools/context-cli/src/commands.rs` — add CLI subcommands
 - `tools/context-cli/src/repl.rs` — add REPL commands
 - `tools/context-cli/src/output.rs` — add formatters for new result types
 
 **New:**
-- `crates/context-api/src/commands/search.rs` — search command implementations
-- `crates/context-api/src/commands/insert.rs` — insert command implementations
-- `crates/context-api/src/commands/read.rs` — read command implementations
-- `crates/context-api/src/resolve.rs` — `TokenRef` resolution logic (shared by search/insert)
-- `crates/context-api/src/tests/search_tests.rs`
-- `crates/context-api/src/tests/insert_tests.rs`
-- `crates/context-api/src/tests/read_tests.rs`
-- `crates/context-api/src/tests/integration_tests.rs` — end-to-end round-trips
+- `crates/context-stack/context-api/src/commands/search.rs` — search command implementations
+- `crates/context-stack/context-api/src/commands/insert.rs` — insert command implementations
+- `crates/context-stack/context-api/src/commands/read.rs` — read command implementations
+- `crates/context-stack/context-api/src/resolve.rs` — `TokenRef` resolution logic (shared by search/insert)
+- `crates/context-stack/context-api/src/tests/search_tests.rs`
+- `crates/context-stack/context-api/src/tests/insert_tests.rs`
+- `crates/context-stack/context-api/src/tests/read_tests.rs`
+- `crates/context-stack/context-api/src/tests/integration_tests.rs` — end-to-end round-trips
 
 ---
 
@@ -124,7 +124,7 @@ context-cli validate myworkspace
 
 ### Step 1: Enable context-read Dependency
 
-**File:** `crates/context-api/Cargo.toml`
+**File:** `crates/context-stack/context-api/Cargo.toml`
 
 Uncomment or add:
 
@@ -138,7 +138,7 @@ context-read = { path = "../context-read", features = ["test-api"] }
 
 ### Step 2: Change Workspace to Store HypergraphRef
 
-**File:** `crates/context-api/src/workspace/mod.rs`
+**File:** `crates/context-stack/context-api/src/workspace/mod.rs`
 
 ```pseudo
 pub struct Workspace {
@@ -180,7 +180,7 @@ impl Workspace {
 
 ### Step 3: TokenRef Resolution Module
 
-**File:** `crates/context-api/src/resolve.rs`
+**File:** `crates/context-stack/context-api/src/resolve.rs`
 
 This module resolves `TokenRef` values into concrete `Token` values from the graph.
 
@@ -239,7 +239,7 @@ pub fn resolve_token_refs(
 
 ### Step 4: Error Types for Search, Insert, Read
 
-**File:** `crates/context-api/src/error.rs` (modify existing)
+**File:** `crates/context-stack/context-api/src/error.rs` (modify existing)
 
 ```pseudo
 #[derive(Debug, thiserror::Error)]
@@ -306,7 +306,7 @@ impl From<SearchError> for InsertError {
 
 ### Step 5: Result Types for Search, Insert, Read
 
-**File:** `crates/context-api/src/types.rs` (modify existing)
+**File:** `crates/context-stack/context-api/src/types.rs` (modify existing)
 
 ```pseudo
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -393,7 +393,7 @@ pub struct ValidationReport {
 
 ### Step 6: Search Commands
 
-**File:** `crates/context-api/src/commands/search.rs`
+**File:** `crates/context-stack/context-api/src/commands/search.rs`
 
 ```pseudo
 use context_search::Find;
@@ -506,7 +506,7 @@ fn build_partial_match_info(
 
 ### Step 7: Insert Commands
 
-**File:** `crates/context-api/src/commands/insert.rs`
+**File:** `crates/context-stack/context-api/src/commands/insert.rs`
 
 ```pseudo
 use context_insert::ToInsertCtx;
@@ -627,7 +627,7 @@ impl WorkspaceManager {
 
 ### Step 8: Read Commands
 
-**File:** `crates/context-api/src/commands/read.rs`
+**File:** `crates/context-stack/context-api/src/commands/read.rs`
 
 ```pseudo
 impl WorkspaceManager {
@@ -736,7 +736,7 @@ fn collect_leaf_text(graph: &Hypergraph<BaseGraphKind>, token: Token) -> String 
 
 ### Step 9: Debug Commands (Trace Cache, Validate)
 
-**File:** `crates/context-api/src/commands/debug.rs` (modify existing)
+**File:** `crates/context-stack/context-api/src/commands/debug.rs` (modify existing)
 
 Add to the existing debug commands:
 
@@ -837,7 +837,7 @@ impl WorkspaceManager {
 
 ### Step 10: Update Command Enum and WorkspaceApi Trait
 
-**File:** `crates/context-api/src/commands/mod.rs`
+**File:** `crates/context-stack/context-api/src/commands/mod.rs`
 
 Add the new command variants:
 
@@ -1087,7 +1087,7 @@ pub fn print_trace_cache(info: &TraceCacheInfo) {
 
 ### Step 14: Tests
 
-**File:** `crates/context-api/src/tests/search_tests.rs`
+**File:** `crates/context-stack/context-api/src/tests/search_tests.rs`
 
 ```pseudo
 #[test]
@@ -1127,7 +1127,7 @@ fn search_too_short() {
 }
 ```
 
-**File:** `crates/context-api/src/tests/insert_tests.rs`
+**File:** `crates/context-stack/context-api/src/tests/insert_tests.rs`
 
 ```pseudo
 #[test]
@@ -1170,7 +1170,7 @@ fn insert_preserves_graph_integrity() {
 }
 ```
 
-**File:** `crates/context-api/src/tests/read_tests.rs`
+**File:** `crates/context-stack/context-api/src/tests/read_tests.rs`
 
 ```pseudo
 #[test]
@@ -1203,7 +1203,7 @@ fn read_nonexistent() {
 }
 ```
 
-**File:** `crates/context-api/src/tests/integration_tests.rs`
+**File:** `crates/context-stack/context-api/src/tests/integration_tests.rs`
 
 ```pseudo
 #[test]

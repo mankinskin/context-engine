@@ -18,7 +18,7 @@ Fix `index_prefix1` test which is failing with a pattern width mismatch assertio
 
 ### Failing Test
 
-Test in `crates/context-insert/src/tests/insert.rs`:
+Test in `crates/context-stack/context-insert/src/tests/insert.rs`:
 - `index_prefix1` (lines 277-327)
 
 ### Current Failure
@@ -33,7 +33,7 @@ The test is creating a token with width 4, but the pattern being inserted expect
 
 ### Files Affected
 
-- `crates/context-insert/src/tests/insert.rs` - Test implementation
+- `crates/context-stack/context-insert/src/tests/insert.rs` - Test implementation
 - Potentially token width calculation logic
 - Pattern insertion logic
 

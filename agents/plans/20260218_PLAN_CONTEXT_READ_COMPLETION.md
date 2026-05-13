@@ -276,39 +276,39 @@ Work through tests in increasing complexity:
 ## Key Code References
 
 ### Entry Points
-- [ReadCtx::read_segment](crates/context-read/src/context/mod.rs#L72-L95) - Main per-segment processing
-- [BlockExpansionCtx::process](crates/context-read/src/expansion/block.rs#L61-L75) - Block expansion loop
-- [ExpansionCtx::next](crates/context-read/src/expansion/mod.rs#L42-L60) - Expansion iterator
+- [ReadCtx::read_segment](crates/context-stack/context-read/src/context/mod.rs#L72-L95) - Main per-segment processing
+- [BlockExpansionCtx::process](crates/context-stack/context-read/src/expansion/block.rs#L61-L75) - Block expansion loop
+- [ExpansionCtx::next](crates/context-stack/context-read/src/expansion/mod.rs#L42-L60) - Expansion iterator
 
 ### Cursor & State
-- [CursorCtx](crates/context-read/src/expansion/cursor.rs) - Minimal cursor wrapper (needs redesign)
-- [BandState](crates/context-read/src/expansion/chain/mod.rs#L13-L30) - Single/WithOverlap state machine
-- [Band](crates/context-read/src/expansion/chain/band.rs) - Pattern with positional bounds
+- [CursorCtx](crates/context-stack/context-read/src/expansion/cursor.rs) - Minimal cursor wrapper (needs redesign)
+- [BandState](crates/context-stack/context-read/src/expansion/chain/mod.rs#L13-L30) - Single/WithOverlap state machine
+- [Band](crates/context-stack/context-read/src/expansion/chain/band.rs) - Pattern with positional bounds
 
 ### Expansion & Overlap
-- [ExpandCtx](crates/context-read/src/expansion/chain/expand.rs) - Postfix iteration for overlaps
-- [OverlapLink](crates/context-read/src/expansion/chain/link.rs#L17-L32) - Overlap path tracking
-- [ExpansionLink](crates/context-read/src/expansion/link.rs) - Prefix/postfix path link
+- [ExpandCtx](crates/context-stack/context-read/src/expansion/chain/expand.rs) - Postfix iteration for overlaps
+- [OverlapLink](crates/context-stack/context-read/src/expansion/chain/link.rs#L17-L32) - Overlap path tracking
+- [ExpansionLink](crates/context-stack/context-read/src/expansion/link.rs) - Prefix/postfix path link
 
 ### Insert Interface
-- [ToInsertCtx::insert_or_get_complete](crates/context-insert/src/insert/mod.rs#L31-L35) - Find or insert token
-- [InitInterval](crates/context-insert/src/interval/init.rs#L12-L16) - Search→insert conversion
-- [InsertCtx::insert_init](crates/context-insert/src/insert/context.rs#L70-L80) - Insert from init interval
+- [ToInsertCtx::insert_or_get_complete](crates/context-stack/context-insert/src/insert/mod.rs#L31-L35) - Find or insert token
+- [InitInterval](crates/context-stack/context-insert/src/interval/init.rs#L12-L16) - Search→insert conversion
+- [InsertCtx::insert_init](crates/context-stack/context-insert/src/insert/context.rs#L70-L80) - Insert from init interval
 
 ### Commit & Root
-- [RootManager::commit_state](crates/context-read/src/context/root.rs#L99-L115) - Collapse and append
-- [RootManager::append_collapsed](crates/context-read/src/context/root.rs#L120-L217) - Complex append with overlap detection
-- [BandState::collapse](crates/context-read/src/expansion/chain/mod.rs#L152-L216) - Build decompositions
+- [RootManager::commit_state](crates/context-stack/context-read/src/context/root.rs#L99-L115) - Collapse and append
+- [RootManager::append_collapsed](crates/context-stack/context-read/src/context/root.rs#L120-L217) - Complex append with overlap detection
+- [BandState::collapse](crates/context-stack/context-read/src/expansion/chain/mod.rs#L152-L216) - Build decompositions
 
 ### Complement
-- [ComplementBuilder::build](crates/context-read/src/complement.rs#L14-L46) - Extract complement token
-- [build_prefix_complement](crates/context-read/src/expansion/chain/mod.rs#L222-L260) - Prefix complement for collapse
-- [build_postfix_complement](crates/context-read/src/expansion/chain/mod.rs#L262-L335) - Postfix complement for collapse
+- [ComplementBuilder::build](crates/context-stack/context-read/src/complement.rs#L14-L46) - Extract complement token
+- [build_prefix_complement](crates/context-stack/context-read/src/expansion/chain/mod.rs#L222-L260) - Prefix complement for collapse
+- [build_postfix_complement](crates/context-stack/context-read/src/expansion/chain/mod.rs#L262-L335) - Postfix complement for collapse
 
 ### Tests (in order of complexity)
-- [tests/linear.rs](crates/context-read/src/tests/linear.rs) - No-repeat tests (passing)
-- [tests/overlapping.rs](crates/context-read/src/tests/overlapping.rs) - Triple repeat tests (failing)
-- [tests/read/mod.rs](crates/context-read/src/tests/read/mod.rs) - Complex multi-read tests (failing)
+- [tests/linear.rs](crates/context-stack/context-read/src/tests/linear.rs) - No-repeat tests (passing)
+- [tests/overlapping.rs](crates/context-stack/context-read/src/tests/overlapping.rs) - Triple repeat tests (failing)
+- [tests/read/mod.rs](crates/context-stack/context-read/src/tests/read/mod.rs) - Complex multi-read tests (failing)
 
 ---
 
@@ -432,5 +432,5 @@ Multi-read scenarios with rotating overlaps. Target: `read_multiple_overlaps1`, 
 - [20260207_BLOCK_ITER_OVERLAP_EXPANSION.md](agents/guides/20260207_BLOCK_ITER_OVERLAP_EXPANSION.md) - Segment/block guide
 - [20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md](agents/guides/20260211_BANDCHAIN_OVERLAP_LINKS_GUIDE.md) - BandChain guide
 - [20260205_CONTEXT_INSERT_EDGE_CASES.md](agents/analysis/20260205_CONTEXT_INSERT_EDGE_CASES.md) - Edge case analysis
-- [context-insert HIGH_LEVEL_GUIDE.md](crates/context-insert/HIGH_LEVEL_GUIDE.md) - Insert architecture
-- [context-search HIGH_LEVEL_GUIDE.md](crates/context-search/HIGH_LEVEL_GUIDE.md) - Search architecture
+- [context-insert HIGH_LEVEL_GUIDE.md](crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md) - Insert architecture
+- [context-search HIGH_LEVEL_GUIDE.md](crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md) - Search architecture

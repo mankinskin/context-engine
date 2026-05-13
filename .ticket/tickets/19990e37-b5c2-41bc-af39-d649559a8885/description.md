@@ -845,15 +845,15 @@ context-cli compare ngrams-abc read-abc --mode subset || echo "VALIDATION FAILED
 
 | Path | Description |
 |------|-------------|
-| `crates/context-api/src/commands/compare.rs` | `compare_workspaces`, `compare_vertices` implementations |
+| `crates/context-stack/context-api/src/commands/compare.rs` | `compare_workspaces`, `compare_vertices` implementations |
 
 ### Modified Files
 
 | File | Change |
 |------|--------|
-| `crates/context-api/src/types.rs` | Add `GraphDiffResult`, `DiffSummary`, `SharedVertex`, `VertexMatchKind`, `PatternDiff`, `DiffVertexEntry`, `DiffVerdict`, `CompareMode` |
-| `crates/context-api/src/commands/mod.rs` | Add `Command::CompareWorkspaces`, `Command::CompareVertices`, `CommandResult::GraphDiff`, `WorkspaceApi` trait methods, `execute` dispatch, `compare.rs` module declaration |
-| `crates/context-api/src/error.rs` | Add `CompareError` |
+| `crates/context-stack/context-api/src/types.rs` | Add `GraphDiffResult`, `DiffSummary`, `SharedVertex`, `VertexMatchKind`, `PatternDiff`, `DiffVertexEntry`, `DiffVerdict`, `CompareMode` |
+| `crates/context-stack/context-api/src/commands/mod.rs` | Add `Command::CompareWorkspaces`, `Command::CompareVertices`, `CommandResult::GraphDiff`, `WorkspaceApi` trait methods, `execute` dispatch, `compare.rs` module declaration |
+| `crates/context-stack/context-api/src/error.rs` | Add `CompareError` |
 | `tools/context-cli/src/main.rs` | Add `CliCommand::Compare`, `CliCommand::CompareVertex` variants |
 | `tools/context-cli/src/repl.rs` | Add `compare` and `compare-vertex` REPL verbs, help text |
 | `tools/context-cli/src/output.rs` | Add `print_graph_diff`, `print_pattern_diff` formatters |
@@ -888,7 +888,7 @@ Implement `From<CompareError>` for `ApiError`.
 **Entry criteria:** Step 1 done.
 **Exit criteria:** `context-api` compiles; `CompareError` is importable.
 
-### Step 3: Implement `crates/context-api/src/commands/compare.rs`
+### Step 3: Implement `crates/context-stack/context-api/src/commands/compare.rs`
 
 Implement the comparison algorithm (Steps 1–5 from §Comparison Algorithm):
 
@@ -1056,8 +1056,8 @@ context-cli repl
 | [`20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md`](20260314_PLAN_CONTEXT_READ_UX_IMPROVEMENT.md) | Parent plan; this is Phase 3.2 |
 | [`20260315_PLAN_NGRAMS_ORACLE_VALIDATION.md`](20260315_PLAN_NGRAMS_ORACLE_VALIDATION.md) | Sibling Phase 3.1 — shares LabelMap concept; oracle tests will use `compare` internally |
 | [`20260314_PLAN_INTEGRATION_TESTS.md`](20260314_PLAN_INTEGRATION_TESTS.md) | Phase 3d — general integration tests; `compare_tests.rs` is added alongside these |
-| `crates/context-api/src/types.rs` | Extended with new diff types |
-| `crates/context-trace/src/graph/snapshot.rs` | `GraphSnapshot` is the input to the comparison algorithm |
+| `crates/context-stack/context-api/src/types.rs` | Extended with new diff types |
+| `crates/context-stack/context-trace/src/graph/snapshot.rs` | `GraphSnapshot` is the input to the comparison algorithm |
 | `tools/context-cli/tests/FAILING_TESTS.md` | Updated with new passing tests after Step 8 |
 | `docs/skills/03_context_completion.md` | Mentions `compare` as a diagnostic tool in the "Try It Yourself" REPL section |
 

@@ -42,14 +42,14 @@ Centralize all TypeScript type generation in the `context-api` crate (behind a `
 ### Files Affected
 
 **Modified (existing):**
-- `crates/context-api/Cargo.toml` — ensure `ts-gen` feature includes `ts-rs` dep
-- `crates/context-api/src/types.rs` — add `#[derive(TS)]` behind `#[cfg_attr(feature = "ts-gen", derive(TS))]`
-- `crates/context-api/src/error.rs` — same ts-rs derive pattern
-- `crates/context-api/src/commands/mod.rs` — `Command` + `CommandResult` ts-rs derives
-- `crates/context-trace/src/graph/snapshot.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs (migrated to context-api)
-- `crates/context-trace/src/graph/visualization.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs
-- `crates/context-trace/src/graph/search_path.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs
-- `crates/context-trace/Cargo.toml` — make `ts-rs` dependency optional or remove if no longer needed
+- `crates/context-stack/context-api/Cargo.toml` — ensure `ts-gen` feature includes `ts-rs` dep
+- `crates/context-stack/context-api/src/types.rs` — add `#[derive(TS)]` behind `#[cfg_attr(feature = "ts-gen", derive(TS))]`
+- `crates/context-stack/context-api/src/error.rs` — same ts-rs derive pattern
+- `crates/context-stack/context-api/src/commands/mod.rs` — `Command` + `CommandResult` ts-rs derives
+- `crates/context-stack/context-trace/src/graph/snapshot.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs (migrated to context-api)
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs
+- `crates/context-stack/context-trace/src/graph/search_path.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs
+- `crates/context-stack/context-trace/Cargo.toml` — make `ts-rs` dependency optional or remove if no longer needed
 - `tools/log-viewer/src/types.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs (migrated)
 - `tools/log-viewer/src/log_parser.rs` — remove `#[derive(TS)]` and `#[ts(...)]` attrs
 - `tools/log-viewer/frontend/package.json` — add `@context-engine/types` dependency
@@ -61,8 +61,8 @@ Centralize all TypeScript type generation in the `context-api` crate (behind a `
 - `packages/context-types/src/index.ts` — barrel export
 - `packages/context-types/src/generated/` — ts-rs output target directory
 - `packages/context-types/README.md`
-- `crates/context-api/src/ts_export.rs` — module that re-exports all types with ts-rs derives (or inline in types.rs)
-- `crates/context-api/src/commands/export_import.rs` — export/import workspace commands
+- `crates/context-stack/context-api/src/ts_export.rs` — module that re-exports all types with ts-rs derives (or inline in types.rs)
+- `crates/context-stack/context-api/src/commands/export_import.rs` — export/import workspace commands
 - `agents/designs/20260310_DESIGN_INSTRUCTION_LANGUAGE.md` — instruction language grammar sketch
 
 **Workspace root:**
@@ -104,7 +104,7 @@ The migration from scattered `#[derive(TS)]` to centralized generation must be d
 Rather than modifying `context-trace` types directly (which would require `context-trace` to depend on `context-api` — a circular dependency), we use **wrapper types or re-export modules** in `context-api`:
 
 ```pseudo
-// crates/context-api/src/ts_export.rs
+// crates/context-stack/context-api/src/ts_export.rs
 // This module exists solely to re-derive TS on types from other crates.
 // It creates newtype wrappers or uses ts-rs's #[ts(as = "...")] on re-exports.
 
@@ -216,7 +216,7 @@ packages/context-types/
 
 ### Step 2: Add ts-rs Derives to context-api Types
 
-Update `crates/context-api/Cargo.toml` to ensure ts-gen feature is properly configured:
+Update `crates/context-stack/context-api/Cargo.toml` to ensure ts-gen feature is properly configured:
 
 ```toml
 [features]
@@ -243,7 +243,7 @@ All export paths should point to:
 ```
 ../../../../packages/context-types/src/generated/
 ```
-(Relative from `crates/context-api/src/` to `packages/context-types/src/generated/`)
+(Relative from `crates/context-stack/context-api/src/` to `packages/context-types/src/generated/`)
 
 Example:
 ```pseudo
@@ -272,9 +272,9 @@ pub struct AtomInfo {
 Update the `export_to` paths in `context-trace` to point to the shared package:
 
 **Files to modify:**
-- `crates/context-trace/src/graph/snapshot.rs` — 3 types: `GraphSnapshot`, `SnapshotVertex`, `SnapshotEdge`
-- `crates/context-trace/src/graph/visualization.rs` — 8 types: `OperationType`, `GraphOpEvent`, `NodeHighlightState`, `QueryInfo`, `GraphMutation`, `MutationDiff`, `SearchVisualizationEvent`
-- `crates/context-trace/src/graph/search_path.rs` — 4 types: `SearchPathEdge`, `SearchPathNode`, `SearchPathTransition`, `SearchPath`
+- `crates/context-stack/context-trace/src/graph/snapshot.rs` — 3 types: `GraphSnapshot`, `SnapshotVertex`, `SnapshotEdge`
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — 8 types: `OperationType`, `GraphOpEvent`, `NodeHighlightState`, `QueryInfo`, `GraphMutation`, `MutationDiff`, `SearchVisualizationEvent`
+- `crates/context-stack/context-trace/src/graph/search_path.rs` — 4 types: `SearchPathEdge`, `SearchPathNode`, `SearchPathTransition`, `SearchPath`
 
 **Change all `export_to` from:**
 ```
@@ -485,7 +485,7 @@ Write-Host "=== Done ==="
 
 Add data portability commands to `context-api`:
 
-**New file: `crates/context-api/src/commands/export_import.rs`**
+**New file: `crates/context-stack/context-api/src/commands/export_import.rs`**
 
 ```pseudo
 /// Export a workspace to a portable format.
@@ -531,7 +531,7 @@ ExportData(WorkspaceExport),  // when no path specified — inline result
 - `export_workspace`: serialize the in-memory `Hypergraph` to the requested format, bundle with metadata, write to file or return inline.
 - `import_workspace`: read file, detect format (by extension or magic bytes), deserialize graph, create workspace directory, save.
 
-- [x] Create `crates/context-api/src/commands/export_import.rs`
+- [x] Create `crates/context-stack/context-api/src/commands/export_import.rs`
 - [x] Add `ExportWorkspace` and `ImportWorkspace` to `Command` enum
 - [x] Add `ExportFormat` to types with ts-rs derive
 - [x] Implement export logic in `WorkspaceManager`
@@ -660,7 +660,7 @@ cd packages/context-types && npm run build
 ```
 
 - [ ] Create/update `packages/context-types/README.md`
-- [ ] Update `crates/context-api/README.md` to mention ts-gen feature and the types package
+- [ ] Update `crates/context-stack/context-api/README.md` to mention ts-gen feature and the types package
 - [ ] Update master plan overview to mark Phase 5 scope as documented
 
 ---

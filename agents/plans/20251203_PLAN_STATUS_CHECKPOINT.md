@@ -14,7 +14,7 @@ Began implementing the plan to add support for advanced query cursors in `MatchR
 
 ### Phase 1: Enhance Checkpointed Core ✅ (PARTIALLY)
 
-**File:** `crates/context-search/src/cursor/checkpointed.rs`
+**File:** `crates/context-stack/context-search/src/cursor/checkpointed.rs`
 
 **Changes Made:**
 1. ✅ Changed structure from `current: C` → `candidate: Option<C>`
@@ -139,7 +139,7 @@ But this requires adding a `Cell` or similar for interior mutability.
 
 ## Files Modified
 
-- `crates/context-search/src/cursor/checkpointed.rs` - Core changes
+- `crates/context-stack/context-search/src/cursor/checkpointed.rs` - Core changes
 - `agents/plans/20251127_PLAN_EFFICIENT_CHECKPOINTED_CURSOR.md` - Updated with StateAdvance decision
 
 ## Test Status

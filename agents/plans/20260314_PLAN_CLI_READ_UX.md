@@ -72,13 +72,13 @@ The `ReadSequence` implementation will initially use `ReadCtx::read_sequence` fr
 
 | File | Lines | Change |
 |------|-------|--------|
-| `crates/context-api/src/commands/mod.rs` | L558–565 (Command enum) | Add `ReadSequence` and `ReadFile` variants after existing `ReadAsText` |
-| `crates/context-api/src/commands/mod.rs` | L81–254 (WorkspaceApi trait) | Add `read_sequence` and `read_file` trait methods |
-| `crates/context-api/src/commands/mod.rs` | L260–463 (WorkspaceApi impl) | Add delegation for new trait methods |
-| `crates/context-api/src/commands/mod.rs` | L884–891 (execute dispatch) | Add match arms for `ReadSequence` and `ReadFile` |
-| `crates/context-api/src/commands/mod.rs` | L1075–1116 (command_name) | Add name entries for new variants |
-| `crates/context-api/src/commands/read.rs` | after L115 | Add `read_sequence` and `read_file` impl methods |
-| `crates/context-api/src/error.rs` | L179–191 (ReadError) | Add `FileReadError` and `SequenceTooShort` variants |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L558–565 (Command enum) | Add `ReadSequence` and `ReadFile` variants after existing `ReadAsText` |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L81–254 (WorkspaceApi trait) | Add `read_sequence` and `read_file` trait methods |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L260–463 (WorkspaceApi impl) | Add delegation for new trait methods |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L884–891 (execute dispatch) | Add match arms for `ReadSequence` and `ReadFile` |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L1075–1116 (command_name) | Add name entries for new variants |
+| `crates/context-stack/context-api/src/commands/read.rs` | after L115 | Add `read_sequence` and `read_file` impl methods |
+| `crates/context-stack/context-api/src/error.rs` | L179–191 (ReadError) | Add `FileReadError` and `SequenceTooShort` variants |
 | `tools/context-cli/src/main.rs` | L169–182 (CliCommand enum) | Add `ReadSequence` and `ReadFile` subcommands |
 | `tools/context-cli/src/main.rs` | L391–591 (execute_subcommand) | Add mapping for new subcommands |
 | `tools/context-cli/src/repl.rs` | L455–479 (`read` handler) | Replace numeric-only parsing with smart parsing |
@@ -89,9 +89,9 @@ The `ReadSequence` implementation will initially use `ReadCtx::read_sequence` fr
 
 | File | Lines | Change |
 |------|-------|--------|
-| `crates/context-api/src/commands/mod.rs` | L1307–1342 (serde tests) | Add serde round-trip tests for new variants |
-| `crates/context-api/src/commands/mod.rs` | L1362–1467 (all-variants test) | Add new variants to exhaustive tag test |
-| `crates/context-api/src/types.rs` | (no changes needed) | `PatternReadResult` is already suitable for sequence reads |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L1307–1342 (serde tests) | Add serde round-trip tests for new variants |
+| `crates/context-stack/context-api/src/commands/mod.rs` | L1362–1467 (all-variants test) | Add new variants to exhaustive tag test |
+| `crates/context-stack/context-api/src/types.rs` | (no changes needed) | `PatternReadResult` is already suitable for sequence reads |
 
 ---
 
@@ -101,12 +101,12 @@ The `ReadSequence` implementation will initially use `ReadCtx::read_sequence` fr
 
 #### Step 1: Add `ReadError` variants for new operations
 
-**File:** `crates/context-api/src/error.rs` at L179–191
+**File:** `crates/context-stack/context-api/src/error.rs` at L179–191
 
 Add two new variants to `ReadError`:
 
 ```rust
-// crates/context-api/src/error.rs — inside pub enum ReadError
+// crates/context-stack/context-api/src/error.rs — inside pub enum ReadError
 
 /// The input text sequence is too short (must be at least 1 character).
 #[error("sequence too short: need at least 1 character, got {len}")]
@@ -123,10 +123,10 @@ FileReadError { path: String, reason: String },
 
 #### Step 2: Add `Command::ReadSequence` to enum
 
-**File:** `crates/context-api/src/commands/mod.rs` at L562–565 (after `ReadAsText`)
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` at L562–565 (after `ReadAsText`)
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside pub enum Command
+// crates/context-stack/context-api/src/commands/mod.rs — inside pub enum Command
 
 /// Read a text sequence through the graph (auto-creates atoms, builds decomposition).
 ReadSequence {
@@ -141,10 +141,10 @@ ReadSequence {
 
 #### Step 3: Add `Command::ReadFile` to enum
 
-**File:** `crates/context-api/src/commands/mod.rs` — immediately after `ReadSequence`
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` — immediately after `ReadSequence`
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside pub enum Command
+// crates/context-stack/context-api/src/commands/mod.rs — inside pub enum Command
 
 /// Read a file's contents through the graph.
 ReadFile {
@@ -159,10 +159,10 @@ ReadFile {
 
 #### Step 4: Add `WorkspaceApi` trait methods
 
-**File:** `crates/context-api/src/commands/mod.rs` at L191–201 (after existing `read_as_text`)
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` at L191–201 (after existing `read_as_text`)
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside pub trait WorkspaceApi
+// crates/context-stack/context-api/src/commands/mod.rs — inside pub trait WorkspaceApi
 
 fn read_sequence(
     &mut self,
@@ -187,10 +187,10 @@ fn read_file(
 
 #### Step 5: Implement `read_sequence` on `WorkspaceManager`
 
-**File:** `crates/context-api/src/commands/read.rs` — add after existing `read_as_text` impl (after L115)
+**File:** `crates/context-stack/context-api/src/commands/read.rs` — add after existing `read_as_text` impl (after L115)
 
 ```rust
-// crates/context-api/src/commands/read.rs — inside impl WorkspaceManager
+// crates/context-stack/context-api/src/commands/read.rs — inside impl WorkspaceManager
 
 /// Read a text sequence through the graph.
 ///
@@ -288,10 +288,10 @@ pub fn read_sequence(
 
 #### Step 6: Implement `read_file` on `WorkspaceManager`
 
-**File:** `crates/context-api/src/commands/read.rs` — add after `read_sequence`
+**File:** `crates/context-stack/context-api/src/commands/read.rs` — add after `read_sequence`
 
 ```rust
-// crates/context-api/src/commands/read.rs — inside impl WorkspaceManager
+// crates/context-stack/context-api/src/commands/read.rs — inside impl WorkspaceManager
 
 /// Read a file's contents through the graph.
 ///
@@ -323,10 +323,10 @@ pub fn read_file(
 
 #### Step 7: Add `WorkspaceApi` impl delegation
 
-**File:** `crates/context-api/src/commands/mod.rs` at ~L402–408 (after existing `read_as_text` delegation)
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` at ~L402–408 (after existing `read_as_text` delegation)
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside impl WorkspaceApi for WorkspaceManager
+// crates/context-stack/context-api/src/commands/mod.rs — inside impl WorkspaceApi for WorkspaceManager
 
 fn read_sequence(
     &mut self,
@@ -351,10 +351,10 @@ fn read_file(
 
 #### Step 8: Add execute dispatch for new commands
 
-**File:** `crates/context-api/src/commands/mod.rs` at ~L891 (after `ReadAsText` dispatch)
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` at ~L891 (after `ReadAsText` dispatch)
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside pub fn execute
+// crates/context-stack/context-api/src/commands/mod.rs — inside pub fn execute
 
 Command::ReadSequence { workspace, text } => {
     let result = manager.read_sequence(&workspace, &text)?;
@@ -374,10 +374,10 @@ Command::ReadFile { workspace, path } => {
 
 #### Step 9: Add `command_name` entries
 
-**File:** `crates/context-api/src/commands/mod.rs` at ~L1099 (after `ReadAsText` entry)
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` at ~L1099 (after `ReadAsText` entry)
 
 ```rust
-// crates/context-api/src/commands/mod.rs — inside impl Command::command_name
+// crates/context-stack/context-api/src/commands/mod.rs — inside impl Command::command_name
 
 Command::ReadSequence { .. } => "read_sequence",
 Command::ReadFile { .. } => "read_file",
@@ -562,7 +562,7 @@ adequate because `CommandResult::ReadResult` is reused.
 
 #### Step 16: Add serde round-trip tests for new command variants
 
-**File:** `crates/context-api/src/commands/mod.rs` — in the `#[cfg(test)] mod tests` block
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` — in the `#[cfg(test)] mod tests` block
 
 ```rust
 #[test]
@@ -608,7 +608,7 @@ fn command_serde_read_file() {
 
 #### Step 17: Add integration test for `read_sequence` via `execute`
 
-**File:** `crates/context-api/src/commands/mod.rs` — in the `#[cfg(test)] mod tests` block
+**File:** `crates/context-stack/context-api/src/commands/mod.rs` — in the `#[cfg(test)] mod tests` block
 
 ```rust
 #[test]
@@ -646,7 +646,7 @@ fn execute_read_sequence_workflow() {
 
 #### Step 18: Add unit test for `read_sequence` in `read.rs`
 
-**File:** `crates/context-api/src/commands/read.rs` — in the existing test module
+**File:** `crates/context-stack/context-api/src/commands/read.rs` — in the existing test module
 
 ```rust
 #[test]
@@ -1032,7 +1032,7 @@ cargo check -p context-cli
 | R1 | `context-read` has failing tests (29 failures in context-read, 15 in context-search as of parent plan research) | High | Medium | `read_sequence` wraps `ReadCtx::read_sequence` with graceful error handling. If it returns `None`, we return `ReadError::InternalError` with a descriptive message. The caller sees a clean error, not a panic. |
 | R2 | `ReadCtx::new` with `Chars` may panic on edge cases (empty iterators, unusual Unicode) | Medium | Medium | Pre-validate input length before constructing `ReadCtx`. Single-char input is handled as a special case without `ReadCtx`. |
 | R3 | Atom auto-creation in `ReadCtx` may not properly mark workspace as dirty | Medium | Low | Explicitly call `ws.mark_dirty()` after `read_sequence` completes, regardless of whether new atoms were created. This is safe (worst case: an unnecessary save). |
-| R4 | `context-read` dependency not in `context-api`'s `Cargo.toml` | Low | High | Verify `context-read` is listed as a dependency. If not, add `context-read = { path = "../context-read" }` to `crates/context-api/Cargo.toml`. |
+| R4 | `context-read` dependency not in `context-api`'s `Cargo.toml` | Low | High | Verify `context-read` is listed as a dependency. If not, add `context-read = { path = "../context-read" }` to `crates/context-stack/context-api/Cargo.toml`. |
 | R5 | Large file reads via `read_file` could cause memory issues | Medium | Medium | For this initial implementation, `std::fs::read_to_string` loads the entire file. A future enhancement (from `PLAN_READ_STREAM_DESIGN.md`) will add streaming support via `ReadCtx`'s iterator-based design. |
 | R6 | REPL smart parsing ambiguity: user wants to read text that is a number (e.g., `read 404`) | Low | Low | Numeric strings are always interpreted as indices. Users can quote or use `read-sequence` for text that happens to be numeric. Document this in help text. |
 | R7 | `WorkspaceApi` trait method signature change (`&self` → `&mut self`) for read operations | Medium | High | Only the new methods (`read_sequence`, `read_file`) take `&mut self`. Existing `read_pattern` and `read_as_text` remain `&self`. No breakage. |

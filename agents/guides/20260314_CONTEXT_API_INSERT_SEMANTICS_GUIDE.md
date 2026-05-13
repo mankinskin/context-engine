@@ -29,7 +29,7 @@ This guide covers:
 
 ## API Entry Points
 
-All three methods live in `crates/context-api/src/commands/insert.rs`.
+All three methods live in `crates/context-stack/context-api/src/commands/insert.rs`.
 
 | Method | Input | Creates atoms? | Min length |
 |--------|-------|----------------|------------|
@@ -156,11 +156,11 @@ child, so `try_original_*_tokens` returns `None`).
 
 | File | Role |
 |------|------|
-| `crates/context-api/src/commands/insert.rs` | API entry points — thin forward to `context-insert` |
-| `crates/context-insert/src/join/context/node/merge/iter.rs` | `populate_edge_partitions`, `add_root_pattern`, `try_original_prefix_tokens`, `try_original_postfix_tokens` |
-| `crates/context-insert/src/join/context/node/merge/partition.rs` | `merge_token_only` — still used when boundary is inside compound child |
-| `crates/context-insert/src/join/context/frontier.rs` | `FrontierSplitIterator` — orchestrates the join walk |
-| `crates/context-insert/src/insert/context.rs` | `InsertCtx::insert_init` — creates `FrontierSplitIterator` |
+| `crates/context-stack/context-api/src/commands/insert.rs` | API entry points — thin forward to `context-insert` |
+| `crates/context-stack/context-insert/src/join/context/node/merge/iter.rs` | `populate_edge_partitions`, `add_root_pattern`, `try_original_prefix_tokens`, `try_original_postfix_tokens` |
+| `crates/context-stack/context-insert/src/join/context/node/merge/partition.rs` | `merge_token_only` — still used when boundary is inside compound child |
+| `crates/context-stack/context-insert/src/join/context/frontier.rs` | `FrontierSplitIterator` — orchestrates the join walk |
+| `crates/context-stack/context-insert/src/insert/context.rs` | `InsertCtx::insert_init` — creates `FrontierSplitIterator` |
 
 ---
 
@@ -286,8 +286,8 @@ default.
 - **Insert algorithm:** `agents/guides/20251203_CONTEXT_INSERT_GUIDE.md`
 - **Search ↔ Insert interop:** `agents/guides/20251204_CONTEXT_INSERT_SEARCH_INTEROP.md`
 - **Cheat sheet (types & patterns):** `agents/CHEAT_SHEET.md`
-- **context-insert architecture:** `crates/context-insert/HIGH_LEVEL_GUIDE.md`
-- **context-api README:** `crates/context-api/README.md`
+- **context-insert architecture:** `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
+- **context-api README:** `crates/context-stack/context-api/README.md`
 
 ---
 

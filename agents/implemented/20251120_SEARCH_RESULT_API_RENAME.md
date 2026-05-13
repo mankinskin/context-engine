@@ -20,13 +20,13 @@ These are two orthogonal properties that were previously conflated under the amb
 
 ### New API Methods
 
-#### `Response` type (`crates/context-search/src/state/result.rs`)
+#### `Response` type (`crates/context-stack/context-search/src/state/result.rs`)
 - ✅ Added `query_exhausted() -> bool` - Checks if entire query was matched
 - ✅ Added `is_entire_root() -> bool` - Checks if result is `PathCoverage::EntireRoot`
 - ✅ Updated `expect_complete()` to require both conditions
 - ✅ Updated `as_complete()` to require both conditions
 
-#### `MatchResult` type (`crates/context-search/src/state/matched/mod.rs`)
+#### `MatchResult` type (`crates/context-stack/context-search/src/state/matched/mod.rs`)
 - ✅ Added `query_exhausted() -> bool` - Checks cursor position >= query length
 - ✅ Added `is_entire_root() -> bool` - Checks for `PathCoverage::EntireRoot`
 
@@ -41,17 +41,17 @@ These are two orthogonal properties that were previously conflated under the amb
 
 #### Updated Guides
 - ✅ `CHEAT_SHEET.md` - Updated all examples and API reference
-- ✅ `crates/context-search/HIGH_LEVEL_GUIDE.md` - Updated Response section and examples
-- ✅ `crates/context-insert/HIGH_LEVEL_GUIDE.md` - Updated insertion patterns
+- ✅ `crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md` - Updated Response section and examples
+- ✅ `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md` - Updated insertion patterns
 
 ### Code Updates
 
 #### Production Code
-- ✅ `crates/context-insert/src/insert/context.rs` - Updated `insert_result()` to check both properties
+- ✅ `crates/context-stack/context-insert/src/insert/context.rs` - Updated `insert_result()` to check both properties
 
 #### Test Code
-- ✅ `crates/context-insert/src/tests/interval.rs` - Updated assertions (2 files)
-- ✅ `crates/context-insert/src/tests/insert.rs` - Updated assertions (5 locations)
+- ✅ `crates/context-stack/context-insert/src/tests/interval.rs` - Updated assertions (2 files)
+- ✅ `crates/context-stack/context-insert/src/tests/insert.rs` - Updated assertions (5 locations)
 
 ## API Semantics
 
@@ -150,20 +150,20 @@ These tests likely need to check both `query_exhausted()` AND `is_entire_root()`
 ## Files Modified
 
 ### Source Code (3 files)
-1. `crates/context-search/src/state/result.rs`
-2. `crates/context-search/src/state/matched/mod.rs`
-3. `crates/context-insert/src/insert/context.rs`
+1. `crates/context-stack/context-search/src/state/result.rs`
+2. `crates/context-stack/context-search/src/state/matched/mod.rs`
+3. `crates/context-stack/context-insert/src/insert/context.rs`
 
 ### Documentation (4 files)
 1. `agents/guides/20251203_SEARCH_ALGORITHM_GUIDE.md` (new)
 2. `agents/guides/INDEX.md`
 3. `CHEAT_SHEET.md`
-4. `crates/context-search/HIGH_LEVEL_GUIDE.md`
-5. `crates/context-insert/HIGH_LEVEL_GUIDE.md`
+4. `crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md`
+5. `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
 
 ### Tests (2 files)
-1. `crates/context-insert/src/tests/interval.rs`
-2. `crates/context-insert/src/tests/insert.rs`
+1. `crates/context-stack/context-insert/src/tests/interval.rs`
+2. `crates/context-stack/context-insert/src/tests/insert.rs`
 
 ## Next Steps
 

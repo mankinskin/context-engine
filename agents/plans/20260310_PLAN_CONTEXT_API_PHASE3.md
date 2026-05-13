@@ -14,7 +14,7 @@ Create `tools/context-mcp`, a thin binary crate that exposes the entire `context
 
 ### Prerequisites
 
-- **Phase 1 complete** — `crates/context-api` exists with workspace management, atom/pattern commands, persistence.
+- **Phase 1 complete** — `crates/context-stack/context-api` exists with workspace management, atom/pattern commands, persistence.
 - **Phase 2 complete** — Algorithm commands (search, insert, read) and the full `Command` enum with `execute()` dispatch are in place.
 
 ### Interview Reference
@@ -110,7 +110,7 @@ name = "context-mcp"
 path = "src/main.rs"
 
 [dependencies]
-context-api = { path = "../../crates/context-api" }
+context-api = { path = "../../crates/context-stack/context-api" }
 
 rmcp = { version = "0.14", features = ["server", "transport-io"] }
 serde = { version = "1", features = ["derive"] }
@@ -324,7 +324,7 @@ pub async fn run_mcp_server(base_dir: std::path::PathBuf) -> Result<(), Box<dyn 
 
 4. **JsonSchema on Command** — For the MCP schema to work, `Command` in `context-api` must derive `schemars::JsonSchema`. This requires adding `schemars` as a dependency to `context-api`. This is a small addition:
    ```toml
-   # In crates/context-api/Cargo.toml:
+   # In crates/context-stack/context-api/Cargo.toml:
    schemars = "0.8"
    ```
    And adding `#[derive(JsonSchema)]` alongside the existing `#[derive(Serialize, Deserialize)]` on `Command`, `CommandResult`, `TokenRef`, and related types.
@@ -372,13 +372,13 @@ async fn main() {
 
 ### Step 5: Add JsonSchema to context-api Types
 
-**File:** `crates/context-api/Cargo.toml` — add dependency:
+**File:** `crates/context-stack/context-api/Cargo.toml` — add dependency:
 
 ```toml
 schemars = "0.8"
 ```
 
-**Files:** `crates/context-api/src/types.rs`, `crates/context-api/src/commands/mod.rs`
+**Files:** `crates/context-stack/context-api/src/types.rs`, `crates/context-stack/context-api/src/commands/mod.rs`
 
 Add `#[derive(schemars::JsonSchema)]` to:
 - `Command` enum
@@ -648,7 +648,7 @@ See the tool's JSON schema for the complete list of commands and their parameter
 
 ### Prerequisite: schemars in context-api
 
-This phase requires adding `schemars = "0.8"` to `crates/context-api/Cargo.toml` and deriving `JsonSchema` on all public API types. This is a mechanical change (~30 `#[derive(JsonSchema)]` additions) but touches many files in context-api. It should be done as the first commit of this phase.
+This phase requires adding `schemars = "0.8"` to `crates/context-stack/context-api/Cargo.toml` and deriving `JsonSchema` on all public API types. This is a mechanical change (~30 `#[derive(JsonSchema)]` additions) but touches many files in context-api. It should be done as the first commit of this phase.
 
 ### Future Enhancements
 

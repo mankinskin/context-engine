@@ -266,7 +266,7 @@ In these cases, add a separate method (not a trait requirement).
 
 ### Phase 2: Implement StateAdvance (Simplified)
 
-**File:** `crates/context-search/src/cursor/checkpointed.rs`
+**File:** `crates/context-stack/context-search/src/cursor/checkpointed.rs`
 
 ```rust
 impl<P> StateAdvance for Checkpointed<PathCursor<P, Matched>>

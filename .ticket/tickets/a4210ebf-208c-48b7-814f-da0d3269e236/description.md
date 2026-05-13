@@ -99,7 +99,7 @@ as a side effect of RC-1, and RC-3 is independent of both.
 
 ### RC-1 — `insert_sequence` Outer Loop Missing
 
-**Location:** `crates/context-api/src/workspace/manager.rs` — `WorkspaceManager::insert_sequence`
+**Location:** `crates/context-stack/context-api/src/workspace/manager.rs` — `WorkspaceManager::insert_sequence`
 
 **Mechanism:** `insert_sequence` converts the input text to atom tokens and then calls
 `insert_next_match([atom₀, atom₁, …, atomₙ])` **once**. On a fresh graph the first call
@@ -121,7 +121,7 @@ finally wraps them into a compound root token. The loop is already implemented i
 
 ### RC-2 — `ReadCtx::read_sequence` Returns `None` After Insert
 
-**Location:** `crates/context-read/src/context/mod.rs` (or `read.rs`) — `ReadCtx::read_sequence`
+**Location:** `crates/context-stack/context-read/src/context/mod.rs` (or `read.rs`) — `ReadCtx::read_sequence`
 
 **Mechanism:** After `insert_sequence` writes atoms and a (broken, width=1) token into the graph,
 a subsequent call to `ReadCtx::read_sequence` on the same text returns `None`. The API layer
@@ -141,7 +141,7 @@ make atom lookup lazy) so that it sees the current graph state on each call.
 
 ### RC-3 — Repeated-Character Cursor Advancement
 
-**Location:** `crates/context-read/src/context/` — cursor advancement / `append_to_pattern`
+**Location:** `crates/context-stack/context-read/src/context/` — cursor advancement / `append_to_pattern`
 interaction for all-same-character or repeated-pattern inputs.
 
 **Mechanism:** When `read_sequence` (or the future looping `insert_sequence`) encounters a
@@ -176,7 +176,7 @@ After this round:
 ### Entry Point
 
 ```
-crates/context-api/src/workspace/manager.rs
+crates/context-stack/context-api/src/workspace/manager.rs
 ```
 
 Find the method `insert_sequence` (or the equivalent function that:
@@ -245,15 +245,15 @@ fn insert_sequence(&mut self, workspace: &str, text: &str) -> Result<CommandResu
 Before writing the fix, answer these questions by reading the source:
 
 1. **Where exactly is `insert_sequence` called in `WorkspaceManager`?**
-   - `grep -r "insert_sequence\|InsertSequence" crates/context-api/src/`
+   - `grep -r "insert_sequence\|InsertSequence" crates/context-stack/context-api/src/`
    - Note the actual function signature and which workspace method it delegates to.
 
 2. **What does `insert_next_match` return today?**
-   - Read `crates/context-insert/src/insert/outcome.rs` for the `InsertOutcome` enum.
+   - Read `crates/context-stack/context-insert/src/insert/outcome.rs` for the `InsertOutcome` enum.
    - Confirm: `Created`, `Complete`, `NoExpansion` — what does each carry? What is `.width`?
 
 3. **How does `ReadCtx` implement the outer loop?**
-   - Read `crates/context-read/src/context/` — find `SegmentIter` or the equivalent iterator.
+   - Read `crates/context-stack/context-read/src/context/` — find `SegmentIter` or the equivalent iterator.
    - The fix should replicate exactly this logic in `insert_sequence`.
 
 4. **What wraps segments into a compound root?**
@@ -269,12 +269,12 @@ Before writing the fix, answer these questions by reading the source:
 
 | File | Why |
 |------|-----|
-| `crates/context-api/src/workspace/manager.rs` | Entry point — find `insert_sequence` |
-| `crates/context-api/src/commands/mod.rs` | `Command::InsertSequence` dispatch |
-| `crates/context-insert/src/insert/outcome.rs` | `InsertOutcome` enum — width, token |
-| `crates/context-insert/src/insert/mod.rs` | `insert_next_match` trait method |
-| `crates/context-read/src/context/mod.rs` | Outer loop reference implementation |
-| `crates/context-read/src/context/segment.rs` | `SegmentIter` — cursor advancement logic |
+| `crates/context-stack/context-api/src/workspace/manager.rs` | Entry point — find `insert_sequence` |
+| `crates/context-stack/context-api/src/commands/mod.rs` | `Command::InsertSequence` dispatch |
+| `crates/context-stack/context-insert/src/insert/outcome.rs` | `InsertOutcome` enum — width, token |
+| `crates/context-stack/context-insert/src/insert/mod.rs` | `insert_next_match` trait method |
+| `crates/context-stack/context-read/src/context/mod.rs` | Outer loop reference implementation |
+| `crates/context-stack/context-read/src/context/segment.rs` | `SegmentIter` — cursor advancement logic |
 
 ### Verification Commands
 
@@ -342,7 +342,7 @@ If all three pass → Round 2 is already done. Skip to Round 3.
 ### Entry Point (if still failing after RC-1)
 
 ```
-crates/context-read/src/context/mod.rs   (or read.rs — wherever read_sequence lives)
+crates/context-stack/context-read/src/context/mod.rs   (or read.rs — wherever read_sequence lives)
 ```
 
 ### Investigation Steps
@@ -381,10 +381,10 @@ crates/context-read/src/context/mod.rs   (or read.rs — wherever read_sequence 
 
 | File | Why |
 |------|-----|
-| `crates/context-api/src/workspace/manager.rs` | `read_sequence` dispatch → `ReadCtx` creation |
-| `crates/context-read/src/context/mod.rs` | `ReadCtx::new`, `read_sequence` return paths |
-| `crates/context-read/src/context/atom.rs` | Atom resolution / caching |
-| `crates/context-read/src/context/segment.rs` | Cursor state and advancement |
+| `crates/context-stack/context-api/src/workspace/manager.rs` | `read_sequence` dispatch → `ReadCtx` creation |
+| `crates/context-stack/context-read/src/context/mod.rs` | `ReadCtx::new`, `read_sequence` return paths |
+| `crates/context-stack/context-read/src/context/atom.rs` | Atom resolution / caching |
+| `crates/context-stack/context-read/src/context/segment.rs` | Cursor state and advancement |
 
 ### Verification Commands
 
@@ -497,10 +497,10 @@ However, somewhere in this path, the cursor does not advance. The exact bug loca
 
 | File | Why |
 |------|-----|
-| `crates/context-read/src/context/segment.rs` | Cursor advancement, overlap detection |
-| `crates/context-read/src/context/root.rs` | `RootManager` — uses `append_to_owned_pattern` |
-| `crates/context-trace/src/graph/insert/parents.rs` | `extend_root_pattern` implementation |
-| `crates/context-insert/src/insert/context.rs` | `insert_next_match` — width returned |
+| `crates/context-stack/context-read/src/context/segment.rs` | Cursor advancement, overlap detection |
+| `crates/context-stack/context-read/src/context/root.rs` | `RootManager` — uses `append_to_owned_pattern` |
+| `crates/context-stack/context-trace/src/graph/insert/parents.rs` | `extend_root_pattern` implementation |
+| `crates/context-stack/context-insert/src/insert/context.rs` | `insert_next_match` — width returned |
 | `agents/plans/20260218_PLAN_CONTEXT_READ_COMPLETION.md` | Existing analysis of repeat/overlap |
 
 ### Verification Commands

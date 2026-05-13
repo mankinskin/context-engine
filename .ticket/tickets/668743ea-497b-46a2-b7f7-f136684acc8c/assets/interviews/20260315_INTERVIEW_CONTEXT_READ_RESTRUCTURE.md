@@ -3,15 +3,15 @@ tags: `#interview` `#context-read` `#api` `#restructuring` `#architecture`
 summary: Design interview for context-read module restructuring, public API shape, dead code disposition, and overlap chain design.
 status: ✅ complete
 date: 2026-03-15
-canonical: crates/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md
-plan: crates/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md
+canonical: crates/context-stack/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md
+plan: crates/context-stack/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md
 ---
 
 # Interview: context-read Restructuring & Public API Design
 
 > **This is a cross-reference entry.**
 > The full interview record lives in the crate-local agent workspace:
-> [`crates/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md)
+> [`crates/context-stack/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-stack/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md)
 
 **Date:** 2026-03-15
 **Scope:** `context-read` crate — module layout, public API, dead code, chain design, infrastructure migration
@@ -41,6 +41,6 @@ execution plan.
 
 ## Related Documents
 
-- Full interview: [`crates/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md)
-- Execution plan: [`crates/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md)
-- Complement design: [`crates/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`](../../crates/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md)
+- Full interview: [`crates/context-stack/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-stack/context-read/agents/interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md)
+- Execution plan: [`crates/context-stack/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md`](../../crates/context-stack/context-read/agents/plans/20260315_PLAN_CONTEXT_READ_RESTRUCTURE.md)
+- Complement design: [`crates/context-stack/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`](../../crates/context-stack/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md)

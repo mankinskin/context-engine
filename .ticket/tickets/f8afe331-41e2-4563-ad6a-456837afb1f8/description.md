@@ -13,7 +13,7 @@ cargo test -p context-cli --test cli_integration -- dedup_atoms_not_duplicated -
 
 ```
 thread 'integration::dedup_tests::dedup_atoms_not_duplicated' panicked at
-crates/context-trace/src/graph/vertex/data/children.rs:80:13:
+crates/context-stack/context-trace/src/graph/vertex/data/children.rs:80:13:
 Pattern vertex has no children VertexData {
     token: T0w1,
     key: VertexKey(8800fea7-1841-4f45-ae7e-cd108e868b5b),
@@ -46,7 +46,7 @@ A vertex `T0w1` (atom 'a', width 1) has a parent entry recording width=2 (indica
 
 This is likely caused by `insert_text("ab")` when atoms 'a' and 'b' were pre-created — the insert path creates a compound token linking the two atoms but does not write the child edges back into both atom vertices. The atom vertex for 'a' acquires a parent reference to the compound token but no corresponding child entry.
 
-Relevant file: `crates/context-trace/src/graph/vertex/data/children.rs:80`
+Relevant file: `crates/context-stack/context-trace/src/graph/vertex/data/children.rs:80`
 
 ### Fix Direction
 

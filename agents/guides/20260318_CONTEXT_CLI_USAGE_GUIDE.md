@@ -261,7 +261,7 @@ the `try_extend_tail_with` path in `RootManager` created a second `aa` vertex vi
 Root cause: `insert_pattern` always allocates a fresh vertex.  The fix is to
 detect when `old_root`'s child pattern already equals `[last_child, token]` and
 reuse `old_root` as the `combined` token directly — see
-`crates/context-read/src/pipeline/root.rs` `try_extend_tail_with`.
+`crates/context-stack/context-read/src/pipeline/root.rs` `try_extend_tail_with`.
 
 ```
 Graph: 4 vertices          ← should be 3
@@ -335,5 +335,5 @@ all in-memory changes.
 
 - `agents/guides/20260314_CLI_PRINTF_SCRIPTING_GUIDE.md` — advanced scripting patterns
 - `agents/guides/20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md` — insertion semantics
-- `crates/context-api/README.md` — API reference
-- `crates/context-read/src/pipeline/root.rs` — `RootManager` (read pipeline internals)
+- `crates/context-stack/context-api/README.md` — API reference
+- `crates/context-stack/context-read/src/pipeline/root.rs` — `RootManager` (read pipeline internals)

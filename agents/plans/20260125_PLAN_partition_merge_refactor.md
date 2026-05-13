@@ -140,8 +140,8 @@ impl<'a, R: RangeRole<Mode = Join>> MergePartitionCtx<'a, R> {
 5. Update all call sites
 
 **Files to modify:**
-- `crates/context-insert/src/split/pattern.rs`
-- `crates/context-insert/src/split/vertex/mod.rs`
+- `crates/context-stack/context-insert/src/split/pattern.rs`
+- `crates/context-stack/context-insert/src/split/vertex/mod.rs`
 
 ### Phase 2: Simplify VisitBorders (1-2 hours)
 
@@ -151,8 +151,8 @@ impl<'a, R: RangeRole<Mode = Join>> MergePartitionCtx<'a, R> {
 4. Update all implementations of `VisitBorders`
 
 **Files to modify:**
-- `crates/context-insert/src/interval/partition/info/border/mod.rs`
-- `crates/context-insert/src/interval/partition/info/border/visit.rs`
+- `crates/context-stack/context-insert/src/interval/partition/info/border/mod.rs`
+- `crates/context-stack/context-insert/src/interval/partition/info/border/visit.rs`
 
 ### Phase 3: Create MergePartitionCtx (2-3 hours)
 
@@ -163,9 +163,9 @@ impl<'a, R: RangeRole<Mode = Join>> MergePartitionCtx<'a, R> {
 5. Simplify the match on `PartitionType` in merge loop
 
 **Files to modify:**
-- `crates/context-insert/src/join/context/node/merge/partition.rs`
-- `crates/context-insert/src/join/context/node/merge/context.rs`
-- `crates/context-insert/src/interval/partition/mod.rs`
+- `crates/context-stack/context-insert/src/join/context/node/merge/partition.rs`
+- `crates/context-stack/context-insert/src/join/context/node/merge/context.rs`
+- `crates/context-stack/context-insert/src/interval/partition/mod.rs`
 
 ### Phase 4: Verify & Clean Up (1 hour)
 

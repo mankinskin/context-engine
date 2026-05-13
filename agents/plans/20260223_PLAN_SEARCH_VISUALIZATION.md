@@ -58,11 +58,11 @@ The search algorithm maintains these node roles at each step:
 ### Files Affected
 
 **Rust (new/modified):**
-- `crates/context-trace/src/graph/snapshot.rs` — extend `GraphSnapshot` with optional search state **OR** add new `SearchSnapshot` struct
-- `crates/context-search/src/search/mod.rs` — emit search state events at key transitions
-- `crates/context-search/src/match/iterator.rs` — emit events when queue changes
-- `crates/context-search/src/match/mod.rs` — emit events on node comparison results
-- `crates/context-search/src/search/searchable.rs` — emit initial search setup event
+- `crates/context-stack/context-trace/src/graph/snapshot.rs` — extend `GraphSnapshot` with optional search state **OR** add new `SearchSnapshot` struct
+- `crates/context-stack/context-search/src/search/mod.rs` — emit search state events at key transitions
+- `crates/context-stack/context-search/src/match/iterator.rs` — emit events when queue changes
+- `crates/context-stack/context-search/src/match/mod.rs` — emit events on node comparison results
+- `crates/context-stack/context-search/src/search/searchable.rs` — emit initial search setup event
 
 **Frontend (new/modified):**
 - `tools/log-viewer/frontend/src/types/index.ts` — add `SearchStateEvent` types
@@ -238,12 +238,12 @@ pub fn emit_search_state(snapshot: &SearchStateSnapshot) {
 
 ### Phase 1: Rust-side event emission (context-search + context-trace)
 
-1. **Add `SearchStateSnapshot` struct** to `crates/context-trace/src/graph/snapshot.rs` (or a new `search_snapshot.rs` module)
+1. **Add `SearchStateSnapshot` struct** to `crates/context-stack/context-trace/src/graph/snapshot.rs` (or a new `search_snapshot.rs` module)
    - Add `serde::Serialize` derive
    - Add `SearchPhase` enum
    - Add `emit_search_state()` helper function
 
-2. **Add step counter** to `SearchState` struct in `crates/context-search/src/search/mod.rs`
+2. **Add step counter** to `SearchState` struct in `crates/context-stack/context-search/src/search/mod.rs`
    - `step_counter: usize` field
    - Increment and emit at each transition point
 

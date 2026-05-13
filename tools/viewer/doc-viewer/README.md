@@ -231,7 +231,7 @@ Analyze source files and suggest documentation updates. Parses Rust source files
 To enable stale detection, add these fields to `index.yaml`:
 
 ```yaml
-# crates/context-trace/agents/docs/index.yaml
+# crates/context-stack/context-trace/agents/docs/index.yaml
 name: context-trace
 description: Graph structures and traversal
 source_files:

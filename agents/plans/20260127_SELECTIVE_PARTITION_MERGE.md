@@ -8,7 +8,7 @@ status: 📋
 
 > **Status:** Design Phase  
 > **Created:** 2026-01-27  
-> **Related Test:** `EnvInsertInfix1` in `crates/context-insert/src/tests/cases/insert/infix.rs`
+> **Related Test:** `EnvInsertInfix1` in `crates/context-stack/context-insert/src/tests/cases/insert/infix.rs`
 
 ## Overview
 

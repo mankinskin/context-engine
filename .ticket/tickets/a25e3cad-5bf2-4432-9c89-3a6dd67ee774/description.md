@@ -96,7 +96,7 @@ blocking bugs are fixed.  See §Execution Steps for the unblocking sequence.
 
 ## The Ngrams Algorithm — What It Produces
 
-The `parse_corpus` function in `crates/ngrams/src/graph/mod.rs` runs four
+The `parse_corpus` function in `crates/context-stack/ngrams/src/graph/mod.rs` runs four
 passes:
 
 ```
@@ -603,8 +603,8 @@ context-cli show --workspace read-abcabc
 | [`20260314_PLAN_INTEGRATION_TESTS.md`](20260314_PLAN_INTEGRATION_TESTS.md) | Phase 3d — general integration test suite; oracle tests complement it |
 | `tools/context-cli/tests/FAILING_TESTS.md` | Tracks RC-1, RC-2, RC-3; oracle tests depend on RC-1 and RC-3 fixes |
 | `docs/skills/03_context_completion.md` | Skill 3 doc; oracle tests validate the "Created" and "Complete" examples |
-| `crates/ngrams/src/graph/mod.rs` | Ngrams algorithm entry point (`parse_corpus`) |
-| `crates/ngrams/src/tests/mod.rs` | Existing ngrams tests and corpus fixtures |
+| `crates/context-stack/ngrams/src/graph/mod.rs` | Ngrams algorithm entry point (`parse_corpus`) |
+| `crates/context-stack/ngrams/src/tests/mod.rs` | Existing ngrams tests and corpus fixtures |
 
 ---
 

@@ -112,7 +112,7 @@ Using `end_pos` (which is `checkpoint.atom_position` = one past the last matched
 
 ### Step 1: Add root_pos to PrefixEnd
 
-**File:** `crates/context-search/src/state/end/prefix.rs`
+**File:** `crates/context-stack/context-search/src/state/end/prefix.rs`
 
 ```rust
 pub struct PrefixEnd {
@@ -129,7 +129,7 @@ pub struct PrefixEnd {
 
 ### Step 2: Update PrefixCommand to use root_pos
 
-**File:** `crates/context-trace/src/trace/command.rs`
+**File:** `crates/context-stack/context-trace/src/trace/command.rs`
 
 ```rust
 pub struct PrefixCommand {
@@ -176,7 +176,7 @@ impl Traceable for PrefixCommand {
 
 ### Step 3: Update PrefixEnd creation
 
-**File:** `crates/context-search/src/state/end/mod.rs`
+**File:** `crates/context-stack/context-search/src/state/end/mod.rs`
 
 In `from_range_path()`, when creating `PrefixEnd`:
 
@@ -192,7 +192,7 @@ In `from_range_path()`, when creating `PrefixEnd`:
 
 ### Step 4: Update PathCoverage::root_key()
 
-**File:** `crates/context-search/src/state/end/mod.rs`
+**File:** `crates/context-stack/context-search/src/state/end/mod.rs`
 
 Update the `RootKey` implementation to return `root_pos` for `PrefixEnd`:
 
@@ -214,7 +214,7 @@ impl RootKey for PathCoverage {
 
 ### Step 5: Update PrefixEnd conversion
 
-**File:** `crates/context-search/src/state/end/prefix.rs`
+**File:** `crates/context-stack/context-search/src/state/end/prefix.rs`
 
 Update the `From` implementation:
 
@@ -244,9 +244,9 @@ After these changes:
 
 ## Files to Modify
 
-1. `crates/context-search/src/state/end/prefix.rs` - Add root_pos field, update From impl
-2. `crates/context-trace/src/trace/command.rs` - Add root_pos to PrefixCommand, update trace()
-3. `crates/context-search/src/state/end/mod.rs` - Pass root_pos when creating PrefixEnd, update root_key()
+1. `crates/context-stack/context-search/src/state/end/prefix.rs` - Add root_pos field, update From impl
+2. `crates/context-stack/context-trace/src/trace/command.rs` - Add root_pos to PrefixCommand, update trace()
+3. `crates/context-stack/context-search/src/state/end/mod.rs` - Pass root_pos when creating PrefixEnd, update root_key()
 
 ## Validation
 

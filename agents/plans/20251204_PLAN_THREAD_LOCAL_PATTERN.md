@@ -16,7 +16,7 @@ Establish thread-local test environment pattern to eliminate lock poisoning and 
 
 ## What Was Implemented
 
-Replaced `lazy_static!` with `thread_local!` in `crates/context-trace/src/tests/env/mod.rs` to give each test thread its own isolated environment.
+Replaced `lazy_static!` with `thread_local!` in `crates/context-stack/context-trace/src/tests/env/mod.rs` to give each test thread its own isolated environment.
 
 **Result:** Lock poisoning completely eliminated. Tests run independently.
 
@@ -56,7 +56,7 @@ Add to testing best practices:
 ### Optional Enhancement 3: Apply Pattern to Other Test Modules
 
 Check if other test modules could benefit from thread-local isolation:
-- `crates/context-search/src/tests/` - already uses different pattern
+- `crates/context-stack/context-search/src/tests/` - already uses different pattern
 - Other crates with shared test fixtures
 
 ## Validation

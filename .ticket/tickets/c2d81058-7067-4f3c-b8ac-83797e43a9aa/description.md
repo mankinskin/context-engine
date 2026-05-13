@@ -8,7 +8,7 @@ status: 📋
 
 ## Objective
 
-Create `crates/context-api`, a new library crate that provides the single unified public interface for all hypergraph operations across the context-engine workspace. It wraps `context-trace`, `context-search`, `context-insert`, and `context-read` behind a workspace-oriented, command-based API with feature-gated adapters for CLI, MCP, HTTP, and future protocols.
+Create `crates/context-stack/context-api`, a new library crate that provides the single unified public interface for all hypergraph operations across the context-engine workspace. It wraps `context-trace`, `context-search`, `context-insert`, and `context-read` behind a workspace-oriented, command-based API with feature-gated adapters for CLI, MCP, HTTP, and future protocols.
 
 ## Context
 
@@ -70,7 +70,7 @@ All design decisions are captured in:
 ### Phase 1 — Foundation + CLI
 **Plan file:** `20260310_PLAN_CONTEXT_API_PHASE1.md`
 **Scope:**
-- Create `crates/context-api` crate skeleton with `Cargo.toml`
+- Create `crates/context-stack/context-api` crate skeleton with `Cargo.toml`
 - Unified error types (per-command, composed upward)
 - API-level result types (`AtomInfo`, `PatternInfo`, `TokenInfo`, `SearchResult`, etc.)
 - `Workspace` struct wrapping `HypergraphRef` + metadata
@@ -162,7 +162,7 @@ All design decisions are captured in:
 ## File Structure
 
 ```
-crates/context-api/
+crates/context-stack/context-api/
 ├── Cargo.toml
 ├── README.md
 ├── HIGH_LEVEL_GUIDE.md

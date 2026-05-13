@@ -18,7 +18,7 @@ Fix `index_postfix1` test which is failing with a path type assertion.
 
 ### Failing Test
 
-Test in `crates/context-insert/src/tests/insert.rs`:
+Test in `crates/context-stack/context-insert/src/tests/insert.rs`:
 - `index_postfix1` (lines 330-375)
 
 ### Current Failure
@@ -31,7 +31,7 @@ The test expects a complete response to have an `EntireRoot` path, but it's retu
 
 ### Files Affected
 
-- `crates/context-insert/src/tests/insert.rs` - Test implementation
+- `crates/context-stack/context-insert/src/tests/insert.rs` - Test implementation
 - Search/response path logic
 - Pattern insertion and search traversal
 

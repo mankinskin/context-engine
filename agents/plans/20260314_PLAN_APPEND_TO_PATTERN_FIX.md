@@ -50,8 +50,8 @@ The fix is **independent** of the other Phase 2 plans (`PLAN_INSERT_NEXT_MATCH`,
 
 | File | Change Type | Description |
 |------|-------------|-------------|
-| `crates/context-trace/src/graph/insert/parents.rs` | **Modified** | Add `extend_root_pattern`, add `append_to_owned_pattern`, deprecate `append_to_pattern` |
-| `crates/context-read/src/context/root.rs` | **Modified** | Update 3 call sites in `RootManager` to use `append_to_owned_pattern` |
+| `crates/context-stack/context-trace/src/graph/insert/parents.rs` | **Modified** | Add `extend_root_pattern`, add `append_to_owned_pattern`, deprecate `append_to_pattern` |
+| `crates/context-stack/context-read/src/context/root.rs` | **Modified** | Update 3 call sites in `RootManager` to use `append_to_owned_pattern` |
 
 ---
 
@@ -59,7 +59,7 @@ The fix is **independent** of the other Phase 2 plans (`PLAN_INSERT_NEXT_MATCH`,
 
 ### Current Implementation
 
-The function `append_to_pattern` lives at `crates/context-trace/src/graph/insert/parents.rs` (L92–138) on `Hypergraph<G>`:
+The function `append_to_pattern` lives at `crates/context-stack/context-trace/src/graph/insert/parents.rs` (L92–138) on `Hypergraph<G>`:
 
 ```rust
 pub fn append_to_pattern(
@@ -102,7 +102,7 @@ More critically, if `V8` *did* have parents (violating the implicit contract), t
 
 ### Current Call Sites (All in `RootManager`)
 
-All 3 call sites are in `crates/context-read/src/context/root.rs`:
+All 3 call sites are in `crates/context-stack/context-read/src/context/root.rs`:
 
 **1. `append_pattern`** (L40–43):
 ```rust
@@ -149,7 +149,7 @@ All three guard with `parents().is_empty() && child_patterns().len() == 1`, and 
 
 ### Step 1: Add `extend_root_pattern` to `Hypergraph` in `parents.rs`
 
-**File:** `crates/context-trace/src/graph/insert/parents.rs`
+**File:** `crates/context-stack/context-trace/src/graph/insert/parents.rs`
 **Location:** After the existing `append_to_pattern` impl block (after L138)
 
 This is the **safe variant** that creates a new vertex instead of mutating the parent in-place. See [Implementation Design](#extend_root_pattern-implementation-design) for full details.
@@ -200,7 +200,7 @@ impl<G: GraphKind> Hypergraph<G> {
 
 ### Step 2: Add `append_to_owned_pattern` to `Hypergraph` in `parents.rs`
 
-**File:** `crates/context-trace/src/graph/insert/parents.rs`
+**File:** `crates/context-stack/context-trace/src/graph/insert/parents.rs`
 **Location:** In the same `#[allow(dead_code)]` impl block, adjacent to the deprecated `append_to_pattern`
 
 This is the **in-place variant** — identical to the current `append_to_pattern` body, but with a `debug_assert!` enforcing the safety invariant.
@@ -293,7 +293,7 @@ impl<G: GraphKind> Hypergraph<G> {
 
 ### Step 3: Deprecate `append_to_pattern`
 
-**File:** `crates/context-trace/src/graph/insert/parents.rs`
+**File:** `crates/context-stack/context-trace/src/graph/insert/parents.rs`
 **Location:** The existing `append_to_pattern` function (L92)
 
 Add a `#[deprecated]` attribute to the existing function:
@@ -322,7 +322,7 @@ The body is replaced with a delegation to `append_to_owned_pattern` so the `debu
 
 ### Step 4: Update `RootManager::append_pattern` call site
 
-**File:** `crates/context-read/src/context/root.rs`
+**File:** `crates/context-stack/context-read/src/context/root.rs`
 **Location:** L43
 
 The caller already guards with `child_patterns().len() == 1 && parents().is_empty()`, so `append_to_owned_pattern` is correct.
@@ -340,7 +340,7 @@ self.graph.append_to_owned_pattern(*root, pid, new)
 
 ### Step 5: Update `RootManager::append_token` call site
 
-**File:** `crates/context-read/src/context/root.rs`
+**File:** `crates/context-stack/context-read/src/context/root.rs`
 **Location:** L78
 
 Same guard pattern — `append_to_owned_pattern` is safe here.
@@ -358,7 +358,7 @@ self.graph.append_to_owned_pattern(*root, pid, token)
 
 ### Step 6: Update `RootManager::append_collapsed` call site
 
-**File:** `crates/context-read/src/context/root.rs`
+**File:** `crates/context-stack/context-read/src/context/root.rs`
 **Location:** L233
 
 Same guard pattern — `append_to_owned_pattern` is safe here. The additional guard `!append_pattern.iter().any(|t| t.vertex_index() == root.vertex_index())` prevents self-referential patterns but isn't part of the ownership invariant.
@@ -376,7 +376,7 @@ self.graph.append_to_owned_pattern(root, pid, append_pattern)
 
 ### Step 7: Add unit tests for both new functions
 
-**File:** `crates/context-trace/src/graph/insert/parents.rs` (or a new test module)
+**File:** `crates/context-stack/context-trace/src/graph/insert/parents.rs` (or a new test module)
 
 Two test categories:
 
@@ -553,7 +553,7 @@ extend_root_pattern(parent, pattern_id, new) -> Token:
 
 ### Why `insert_pattern` is Sufficient
 
-`insert_pattern` (in `crates/context-trace/src/graph/insert/pattern.rs` L57–64) already:
+`insert_pattern` (in `crates/context-stack/context-trace/src/graph/insert/pattern.rs` L57–64) already:
 1. Computes the combined width from all child tokens
 2. Allocates a new `VertexIndex`
 3. Creates `VertexData` with the pattern

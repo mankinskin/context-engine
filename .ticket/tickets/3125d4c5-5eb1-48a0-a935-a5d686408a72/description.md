@@ -17,7 +17,7 @@ The context-read crate has 28 compilation errors indicating it's significantly o
 ## Error Categories
 
 ### 1. Missing Imports (2 errors)
-**File:** `crates/context-read/src/complement.rs:48-50`
+**File:** `crates/context-stack/context-read/src/complement.rs:48-50`
 
 ```rust
 use context_trace::{
@@ -32,9 +32,9 @@ use context_trace::{
 
 ### 2. Type Name Errors (7 errors)
 **Files affected:**
-- `crates/context-read/src/sequence/block_iter.rs`
-- `crates/context-read/src/sequence/mod.rs`
-- `crates/context-read/src/expansion/chain/expand.rs`
+- `crates/context-stack/context-read/src/sequence/block_iter.rs`
+- `crates/context-stack/context-read/src/sequence/mod.rs`
+- `crates/context-stack/context-read/src/expansion/chain/expand.rs`
 
 **Missing types:**
 - `NewAtomndex` (typo for `NewAtomIndex`?) - line 12
@@ -45,7 +45,7 @@ use context_trace::{
 **Error:** `E0412: cannot find type`
 
 ### 3. Method Naming - Capitalization (3 errors)
-**File:** `crates/context-read/src/sequence/mod.rs:18, 26`
+**File:** `crates/context-stack/context-read/src/sequence/mod.rs:18, 26`
 
 **Issue:** Trait methods use `to_new_atom_indices` but should be `to_new_Atom_indices` (capital A)
 
@@ -65,56 +65,56 @@ fn to_new_Atom_indices(...)  // Capital 'A'
 ### 4. Removed/Renamed Methods (9 errors)
 
 #### `root_child` → `graph_root_child`
-**File:** `crates/context-read/src/complement.rs:20`
+**File:** `crates/context-stack/context-read/src/complement.rs:20`
 ```rust
 let root = self.link.root_postfix.root_child(trav);  // ❌
 // Should be: graph_root_child(trav)
 ```
 
 #### `vertex_mut` → `vertex` (no mut variant?)
-**Files:** `crates/context-read/src/context/root.rs:37, 64`
+**Files:** `crates/context-stack/context-read/src/context/root.rs:37, 64`
 ```rust
 let vertex = (*root).vertex_mut(&mut graph);  // ❌
 // Should be: vertex(&mut graph)? Or different API?
 ```
 
 #### `retract` method removed
-**File:** `crates/context-read/src/complement.rs:64`
+**File:** `crates/context-stack/context-read/src/complement.rs:64`
 ```rust
 std::iter::repeat_with(|| complement_path.retract(trav))  // ❌
 ```
 **Type:** `RootedRolePath<context_trace::End, IndexRoot>`
 
 #### `postfix_iter` removed
-**File:** `crates/context-read/src/expansion/chain/expand.rs:28`
+**File:** `crates/context-stack/context-read/src/expansion/chain/expand.rs:28`
 ```rust
 let mut postfix_iter = last_end.postfix_iter(ctx.ctx.clone());  // ❌
 ```
 **Type:** `context_trace::Token`
 
 #### `start_index` removed
-**File:** `crates/context-read/src/expansion/mod.rs:71`
+**File:** `crates/context-stack/context-read/src/expansion/mod.rs:71`
 ```rust
 index: cursor.start_index(&trav),  // ❌
 ```
 **Type:** `&'a mut RootedRangePath<context_trace::Pattern>`
 
 #### `prefix_path` removed
-**File:** `crates/context-read/src/expansion/mod.rs:141`
+**File:** `crates/context-stack/context-read/src/expansion/mod.rs:141`
 ```rust
 let prefix_path = expansion.prefix_path(&self.cursor.ctx, overlap);  // ❌
 ```
 **Type:** `&context_trace::Token`
 
 #### `new_directed` removed
-**File:** `crates/context-read/src/context/mod.rs:62`
+**File:** `crates/context-stack/context-read/src/context/mod.rs:62`
 ```rust
 match PatternEndPath::new_directed::<Right>(known.clone()) {  // ❌
 ```
 **Type:** `RootedRolePath<context_trace::End, context_trace::Pattern>`
 
 #### `to_new_atom_indices` (lowercase version)
-**File:** `crates/context-read/src/context/mod.rs:47`
+**File:** `crates/context-stack/context-read/src/context/mod.rs:47`
 ```rust
 let new_indices = seq.to_new_atom_indices(&mut graph.graph_mut());  // ❌
 // Should be: to_new_Atom_indices (capital A)
@@ -123,7 +123,7 @@ let new_indices = seq.to_new_atom_indices(&mut graph.graph_mut());  // ❌
 ### 5. Private API Access (2 errors)
 
 #### Private field: `root_entry`
-**File:** `crates/context-read/src/complement.rs:23`
+**File:** `crates/context-stack/context-read/src/complement.rs:23`
 ```rust
 let intersection_start = self.link.root_postfix.root_entry;  // ❌
 ```
@@ -131,7 +131,7 @@ let intersection_start = self.link.root_postfix.root_entry;  // ❌
 **Error:** `E0616: field 'root_entry' of struct 'SubPath' is private`
 
 #### Private method: `new_atom_indices`
-**File:** `crates/context-read/src/sequence/mod.rs:30`
+**File:** `crates/context-stack/context-read/src/sequence/mod.rs:30`
 ```rust
 graph.graph_mut().new_atom_indices(self)  // ❌
 ```
@@ -148,13 +148,13 @@ graph.graph_mut().new_atom_indices(self)  // ❌
 
 ## Files Affected
 
-1. `crates/context-read/src/complement.rs` - 6 errors
-2. `crates/context-read/src/context/root.rs` - 2 errors
-3. `crates/context-read/src/context/mod.rs` - 3 errors
-4. `crates/context-read/src/expansion/chain/expand.rs` - 3 errors
-5. `crates/context-read/src/expansion/mod.rs` - 2 errors
-6. `crates/context-read/src/sequence/block_iter.rs` - 5 errors
-7. `crates/context-read/src/sequence/mod.rs` - 6 errors
+1. `crates/context-stack/context-read/src/complement.rs` - 6 errors
+2. `crates/context-stack/context-read/src/context/root.rs` - 2 errors
+3. `crates/context-stack/context-read/src/context/mod.rs` - 3 errors
+4. `crates/context-stack/context-read/src/expansion/chain/expand.rs` - 3 errors
+5. `crates/context-stack/context-read/src/expansion/mod.rs` - 2 errors
+6. `crates/context-stack/context-read/src/sequence/block_iter.rs` - 5 errors
+7. `crates/context-stack/context-read/src/sequence/mod.rs` - 6 errors
 
 ## Root Cause Analysis
 
@@ -176,8 +176,8 @@ graph.graph_mut().new_atom_indices(self)  // ❌
 
 - `agents/implemented/` - Check for trait consolidation, method renames
 - `CHEAT_SHEET.md` - Current API reference
-- `crates/context-trace/HIGH_LEVEL_GUIDE.md` - API design
-- `crates/context-trace/src/` - Source of truth for current API
+- `crates/context-stack/context-trace/HIGH_LEVEL_GUIDE.md` - API design
+- `crates/context-stack/context-trace/src/` - Source of truth for current API
 
 ## Next Steps
 

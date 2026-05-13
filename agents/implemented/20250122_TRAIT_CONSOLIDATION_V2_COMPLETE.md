@@ -21,11 +21,11 @@ Created `range_accessor.rs` with three new traits:
 - `RangePathAccessor` - Marker trait combining both (auto-implemented)
 
 **Files created:**
-- `crates/context-trace/src/path/accessors/range_accessor.rs` (new file, 86 lines)
+- `crates/context-stack/context-trace/src/path/accessors/range_accessor.rs` (new file, 86 lines)
 
 **Files modified:**
-- `crates/context-trace/src/path/accessors/mod.rs` - Added module
-- `crates/context-trace/src/lib.rs` - Exported new traits
+- `crates/context-stack/context-trace/src/path/accessors/mod.rs` - Added module
+- `crates/context-stack/context-trace/src/lib.rs` - Exported new traits
 
 ### Phase 2: Implement Tier 2 Traits ✅
 Added implementations for `RootedRangePath`:
@@ -34,18 +34,18 @@ Added implementations for `RootedRangePath`:
 - `RangePathAccessor` auto-implemented via blanket impl
 
 **Files modified:**
-- `crates/context-trace/src/path/structs/rooted/mod.rs` - Added 28 lines of impl code
+- `crates/context-stack/context-trace/src/path/structs/rooted/mod.rs` - Added 28 lines of impl code
 
 ### Phase 3: Migrate Qualified Trait Calls ✅
 Converted 18 qualified trait calls from `HasPath::<R>::path()` / `HasRolePath::<R>::role_path()` to method syntax `self.path()` / `self.role_path()`:
 
 **Files migrated:**
-- `crates/context-trace/src/path/structs/rooted/index_range.rs` - 3 calls
-- `crates/context-trace/src/path/structs/rooted/pattern_range.rs` - 2 calls
-- `crates/context-trace/src/path/structs/rooted/role_path/mod.rs` - 5 calls (1 kept qualified for disambiguation)
-- `crates/context-trace/src/path/mod.rs` - 4 calls
-- `crates/context-trace/src/trace/child/state.rs` - 2 calls
-- `crates/context-search/src/cursor/path.rs` - 2 calls (kept qualified for disambiguation)
+- `crates/context-stack/context-trace/src/path/structs/rooted/index_range.rs` - 3 calls
+- `crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs` - 2 calls
+- `crates/context-stack/context-trace/src/path/structs/rooted/role_path/mod.rs` - 5 calls (1 kept qualified for disambiguation)
+- `crates/context-stack/context-trace/src/path/mod.rs` - 4 calls
+- `crates/context-stack/context-trace/src/trace/child/state.rs` - 2 calls
+- `crates/context-stack/context-search/src/cursor/path.rs` - 2 calls (kept qualified for disambiguation)
 
 **Note:** Some qualified calls remained where needed for disambiguation between HasPath and PathAccessor traits in scope.
 
@@ -64,7 +64,7 @@ Removed `#[deprecated]` attributes from both `HasRolePath` and `HasPath` traits 
 - Complements PathAccessor rather than replacing it
 
 **Files modified:**
-- `crates/context-trace/src/path/accessors/has_path.rs` - Updated both trait docs
+- `crates/context-stack/context-trace/src/path/accessors/has_path.rs` - Updated both trait docs
 
 ## Results
 
@@ -163,21 +163,21 @@ where
 ## Files Modified Summary
 
 ### New Files (1)
-- `crates/context-trace/src/path/accessors/range_accessor.rs` - 86 lines
+- `crates/context-stack/context-trace/src/path/accessors/range_accessor.rs` - 86 lines
 
 ### Modified Files (9)
-1. `crates/context-trace/src/path/accessors/mod.rs` - Module declaration
-2. `crates/context-trace/src/lib.rs` - Trait exports
-3. `crates/context-trace/src/path/accessors/has_path.rs` - Un-deprecated HasRolePath
-4. `crates/context-trace/src/path/structs/rooted/mod.rs` - Tier 2 implementations
-5. `crates/context-trace/src/path/structs/rooted/index_range.rs` - Migrated calls
-6. `crates/context-trace/src/path/structs/rooted/pattern_range.rs` - Migrated calls
-7. `crates/context-trace/src/path/structs/rooted/role_path/mod.rs` - Migrated calls
-8. `crates/context-trace/src/path/mod.rs` - Migrated calls
-9. `crates/context-trace/src/trace/child/state.rs` - Migrated calls
+1. `crates/context-stack/context-trace/src/path/accessors/mod.rs` - Module declaration
+2. `crates/context-stack/context-trace/src/lib.rs` - Trait exports
+3. `crates/context-stack/context-trace/src/path/accessors/has_path.rs` - Un-deprecated HasRolePath
+4. `crates/context-stack/context-trace/src/path/structs/rooted/mod.rs` - Tier 2 implementations
+5. `crates/context-stack/context-trace/src/path/structs/rooted/index_range.rs` - Migrated calls
+6. `crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs` - Migrated calls
+7. `crates/context-stack/context-trace/src/path/structs/rooted/role_path/mod.rs` - Migrated calls
+8. `crates/context-stack/context-trace/src/path/mod.rs` - Migrated calls
+9. `crates/context-stack/context-trace/src/trace/child/state.rs` - Migrated calls
 
 ### Modified Files (context-search) (1)
-10. `crates/context-search/src/cursor/path.rs` - Migrated calls
+10. `crates/context-stack/context-search/src/cursor/path.rs` - Migrated calls
 
 ## What Remains (Future Work)
 
@@ -237,12 +237,12 @@ Successfully removed all deprecated position trait definitions and implementatio
 - PostfixEnd implementation for HasRootPos
 
 **Files modified:**
-- `crates/context-trace/src/trace/state/mod.rs` - Removed trait definitions and implementations
-- `crates/context-trace/src/trace/child/state.rs` - Removed HasTargetPos implementation
-- `crates/context-trace/src/lib.rs` - Removed trait exports
-- `crates/context-search/src/state/mod.rs` - Removed TraversalState implementation
-- `crates/context-search/src/state/end/postfix.rs` - Removed PostfixEnd implementation
-- `crates/context-search/src/logging/mod.rs` - Added StatePosition import, fixed target_pos() call
+- `crates/context-stack/context-trace/src/trace/state/mod.rs` - Removed trait definitions and implementations
+- `crates/context-stack/context-trace/src/trace/child/state.rs` - Removed HasTargetPos implementation
+- `crates/context-stack/context-trace/src/lib.rs` - Removed trait exports
+- `crates/context-stack/context-search/src/state/mod.rs` - Removed TraversalState implementation
+- `crates/context-stack/context-search/src/state/end/postfix.rs` - Removed PostfixEnd implementation
+- `crates/context-stack/context-search/src/logging/mod.rs` - Added StatePosition import, fixed target_pos() call
 
 **Result:** 0 deprecation warnings for position traits (was ~50+ warnings)
 

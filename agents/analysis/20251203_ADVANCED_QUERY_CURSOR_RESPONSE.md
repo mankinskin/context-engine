@@ -424,7 +424,7 @@ pub enum PathCoverage {
 
 #### Phase 1: Create CursorPosition Type (30 min)
 
-**File**: `crates/context-search/src/cursor/position.rs` (new)
+**File**: `crates/context-stack/context-search/src/cursor/position.rs` (new)
 
 ```rust
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -465,7 +465,7 @@ impl CursorPosition {
 
 #### Phase 2: Update MatchResult (45 min)
 
-**File**: `crates/context-search/src/state/matched/mod.rs`
+**File**: `crates/context-stack/context-search/src/state/matched/mod.rs`
 
 1. Replace `pub cursor: PatternCursor` with `pub position: CursorPosition`
 2. Add convenience methods:
@@ -477,7 +477,7 @@ impl CursorPosition {
 
 #### Phase 3: Update create_parent_exploration_state() (20 min)
 
-**File**: `crates/context-search/src/match/root_cursor/advance.rs`
+**File**: `crates/context-stack/context-search/src/match/root_cursor/advance.rs`
 
 ```rust
 pub(crate) fn create_parent_exploration_state(&self) -> MatchResult {
@@ -495,7 +495,7 @@ pub(crate) fn create_parent_exploration_state(&self) -> MatchResult {
 
 #### Phase 4: Update create_result_from_state() (20 min)
 
-**File**: `crates/context-search/src/search/mod.rs`
+**File**: `crates/context-stack/context-search/src/search/mod.rs`
 
 ```rust
 pub(crate) fn create_result_from_state(
@@ -513,7 +513,7 @@ pub(crate) fn create_result_from_state(
 
 #### Phase 5: Update All Callers (60 min)
 
-**Files**: Throughout `crates/context-search/src/`
+**Files**: Throughout `crates/context-stack/context-search/src/`
 
 1. Replace `.cursor()` with `.cursor()` (no change - accessor unchanged)
 2. Replace `.cursor.path` with `.cursor().path` or `.position.checkpoint.path`
@@ -522,14 +522,14 @@ pub(crate) fn create_result_from_state(
 
 #### Phase 6: Update Response API (15 min)
 
-**File**: `crates/context-search/src/state/result.rs`
+**File**: `crates/context-stack/context-search/src/state/result.rs`
 
 - `query_cursor()` → returns `&self.end.position.checkpoint` (or add `current_cursor()`)
 - `cursor_position()` → returns `self.end.position.atom_position()`
 
 #### Phase 7: Update Tests (30 min)
 
-**File**: `crates/context-search/src/tests/search/consecutive.rs`
+**File**: `crates/context-stack/context-search/src/tests/search/consecutive.rs`
 
 ```rust
 // After first search

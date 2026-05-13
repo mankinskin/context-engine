@@ -17,7 +17,7 @@ The search path visualization system (`VizPathGraph`, `PathTransition`, etc.) is
 
 | File | Purpose |
 |------|---------|
-| `crates/context-trace/src/graph/search_path.rs` | Rust types, `VizPathGraph::apply()`, and fixture generator |
+| `crates/context-stack/context-trace/src/graph/search_path.rs` | Rust types, `VizPathGraph::apply()`, and fixture generator |
 | `tools/log-viewer/frontend/src/search-path/reconstruction.ts` | TypeScript mirror of `VizPathGraph` reconstruction |
 | `tools/log-viewer/frontend/src/search-path/reconstruction.test.ts` | Vitest tests (fixtures + edge cases) |
 | `tools/log-viewer/frontend/src/search-path/test-fixtures.json` | Generated fixtures (do not edit manually) |

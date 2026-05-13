@@ -159,6 +159,6 @@ When searching for "abcd" with pattern `[a, b, c, d]`:
 
 ## References
 
-- Test file: `crates/context-insert/src/join/context/node/tests.rs::insert_postfix1`
-- Merge implementation: `crates/context-insert/src/join/context/node/merge/shared.rs`
-- Root merge entry: `crates/context-insert/src/join/context/node/merge/root.rs`
+- Test file: `crates/context-stack/context-insert/src/join/context/node/tests.rs::insert_postfix1`
+- Merge implementation: `crates/context-stack/context-insert/src/join/context/node/merge/shared.rs`
+- Root merge entry: `crates/context-stack/context-insert/src/join/context/node/merge/root.rs`

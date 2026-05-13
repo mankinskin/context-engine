@@ -291,7 +291,7 @@ The algorithm essentially performs **bottom-up pattern discovery** while **top-d
 ## Related Documentation
 
 - **CHEAT_SHEET.md**: Quick API reference for Response methods
-- **crates/context-search/HIGH_LEVEL_GUIDE.md**: Comprehensive search concepts
+- **crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md**: Comprehensive search concepts
 - **agents/tmp/PATTERN_MATCHING_EXAMPLE.md**: Detailed step-by-step example
 - **agents/guides/20251203_UNIFIED_API_GUIDE.md**: Response type and unified API
 

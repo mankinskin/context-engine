@@ -32,10 +32,10 @@ patterns:
 ## Test Evidence
 
 ### Test File Location
-`crates/context-search/src/tests/cases/ababab.rs`
+`crates/context-stack/context-search/src/tests/cases/ababab.rs`
 
 ### Test Environment
-`crates/context-search/src/tests/env/ababab.rs` - `EnvAbabab`
+`crates/context-stack/context-search/src/tests/env/ababab.rs` - `EnvAbabab`
 
 ### Test Output
 ```
@@ -56,7 +56,7 @@ The search algorithm has a **flawed assumption** about parent exploration.
 
 ### Bug Location
 
-**File:** `crates/context-search/src/match/iterator.rs`  
+**File:** `crates/context-stack/context-search/src/match/iterator.rs`  
 **Lines:** 102-106
 
 ```rust
@@ -139,10 +139,10 @@ The cleanest fix is likely **Option A** - continue processing all queue items an
 - `test_search_xy_exact` - Works but has cache differences
 
 ### Test Files
-- `crates/context-search/src/tests/cases/ababab.rs`
-- `crates/context-search/src/tests/cases/xyyxy.rs`
-- `crates/context-search/src/tests/env/ababab.rs`
-- `crates/context-search/src/tests/env/xyyxy.rs`
+- `crates/context-stack/context-search/src/tests/cases/ababab.rs`
+- `crates/context-stack/context-search/src/tests/cases/xyyxy.rs`
+- `crates/context-stack/context-search/src/tests/env/ababab.rs`
+- `crates/context-stack/context-search/src/tests/env/xyyxy.rs`
 
 ## Impact
 

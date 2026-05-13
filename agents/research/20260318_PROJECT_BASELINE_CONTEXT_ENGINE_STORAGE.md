@@ -8,7 +8,7 @@ The current `context-engine` workspace already implements a practical persistenc
 
 ## Confirmed Current Persistence Model
 
-From `crates/context-api` docs and source:
+From `crates/context-stack/context-api` docs and source:
 - Workspace data stored under `.context-engine/<workspace>/`
 - Binary graph payload in `graph.bin` (bincode)
 - Human-readable metadata in `metadata.json`
@@ -17,8 +17,8 @@ From `crates/context-api` docs and source:
 - Atomic writes via temporary-file + rename pattern
 
 Observed from code/docs:
-- `crates/context-api/README.md`
-- `crates/context-api/src/workspace/persistence.rs`
+- `crates/context-stack/context-api/README.md`
+- `crates/context-stack/context-api/src/workspace/persistence.rs`
 
 ## Interface/Adapter Pattern Already In Place
 

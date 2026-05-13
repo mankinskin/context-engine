@@ -58,7 +58,7 @@ The actual cache structure for `cdefghi` at position 4 is inverted or has entrie
 
 ### Failing Tests
 
-Both tests in `crates/context-insert/src/tests/interval.rs`:
+Both tests in `crates/context-stack/context-insert/src/tests/interval.rs`:
 - `interval_graph1` (line 205-235)
 - `interval_graph2` (line 237-348)
 
@@ -220,9 +220,9 @@ Refined as:
 
 ## Related Files
 
-- `crates/context-insert/src/tests/interval.rs` - Test file
-- `crates/context-search/src/state/matched/mod.rs` - MatchResult, query_exhausted()
-- `crates/context-search/src/state/end/mod.rs` - PathCoverage enum
+- `crates/context-stack/context-insert/src/tests/interval.rs` - Test file
+- `crates/context-stack/context-search/src/state/matched/mod.rs` - MatchResult, query_exhausted()
+- `crates/context-stack/context-search/src/state/end/mod.rs` - PathCoverage enum
 - `target/test-logs/interval_graph*.log` - Test execution logs
 
 ## Notes

@@ -44,8 +44,8 @@ pub(crate) enum IndexAdvanceResult<EndNode: PathNode = ...> {
 ```
 
 **Files modified:**
-- `crates/context-search/src/compare/state.rs` - Enum definitions (2), return sites (2 functions)
-- `crates/context-search/src/match/root_cursor.rs` - Call sites (4 match expressions)
+- `crates/context-stack/context-search/src/compare/state.rs` - Enum definitions (2), return sites (2 functions)
+- `crates/context-stack/context-search/src/match/root_cursor.rs` - Call sites (4 match expressions)
 
 **Call sites:** 4 matches updated from `Ok`/`Err` to `Advanced`/`Exhausted`
 
@@ -76,7 +76,7 @@ pub(crate) enum AdvanceCursorsResult<K: SearchKind> {
 - Removes need for match on tuple destructuring
 
 **Files modified:**
-- `crates/context-search/src/match/root_cursor.rs` - Enum definition, return site (1 function), call site (1 match)
+- `crates/context-stack/context-search/src/match/root_cursor.rs` - Enum definition, return site (1 function), call site (1 match)
 
 **Call sites:** 1 complex nested match simplified to flat 3-variant match
 
@@ -109,8 +109,8 @@ pub(crate) enum AdvanceToEndResult<K: SearchKind> {
 - `advance_to_matched()` - returns `AdvanceToEndResult`
 
 **Files modified:**
-- `crates/context-search/src/match/root_cursor.rs` - Enum definition, 2 function signatures, 3 return sites
-- `crates/context-search/src/match/iterator.rs` - Import, 1 call site with named struct destructuring
+- `crates/context-stack/context-search/src/match/root_cursor.rs` - Enum definition, 2 function signatures, 3 return sites
+- `crates/context-stack/context-search/src/match/iterator.rs` - Import, 1 call site with named struct destructuring
 
 **Call sites:** 1 complex match simplified, using named fields `checkpoint` and `cursor`
 
@@ -130,8 +130,8 @@ pub(crate) fn get_parent_batch(self, trav: &K::Trav)
 ```
 
 **Files modified:**
-- `crates/context-search/src/match/root_cursor.rs` - 2 function definitions (both overloads)
-- `crates/context-search/src/match/iterator.rs` - 1 call site
+- `crates/context-stack/context-search/src/match/root_cursor.rs` - 2 function definitions (both overloads)
+- `crates/context-stack/context-search/src/match/iterator.rs` - 1 call site
 
 **Rationale:** "get" clearly indicates retrieval without side effects, "batch" indicates it returns multiple items at once
 

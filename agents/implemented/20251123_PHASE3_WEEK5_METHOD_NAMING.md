@@ -39,7 +39,7 @@ Renamed methods and trait in `CompareState` and related types:
 
 ### Files Modified
 
-1. **`crates/context-search/src/compare/state.rs`**:
+1. **`crates/context-stack/context-search/src/compare/state.rs`**:
    - 3 method signatures renamed
    - 1 trait method renamed
    - 2 trait impls updated

@@ -280,7 +280,7 @@ pub struct PositionAnnotatedPath {
 ## Execution Steps
 
 ### Step 1: Add Position Tracking to ChildState
-**File:** `crates/context-trace/src/trace/child/state.rs`
+**File:** `crates/context-stack/context-trace/src/trace/child/state.rs`
 
 ```rust
 pub struct ChildState {
@@ -296,7 +296,7 @@ pub struct ChildState {
 - Add helper methods to access position for a given path level
 
 ### Step 2: Track Positions During Traversal
-**File:** `crates/context-search/src/match/root_cursor.rs`
+**File:** `crates/context-stack/context-search/src/match/root_cursor.rs`
 
 **Where to record positions:**
 - In `advance_child()` - when entering a child during top-down search
@@ -313,7 +313,7 @@ child_state.path.end_path.push(child_location);
 ```
 
 ### Step 3: Use Stored Positions in create_end_state
-**File:** `crates/context-search/src/match/root_cursor.rs` (lines 567-625)
+**File:** `crates/context-stack/context-search/src/match/root_cursor.rs` (lines 567-625)
 
 ```rust
 fn create_end_state(...) -> MatchResult {
@@ -329,14 +329,14 @@ fn create_end_state(...) -> MatchResult {
 ```
 
 ### Step 4: Handle Position Updates
-**File:** `crates/context-search/src/compare/state.rs`
+**File:** `crates/context-stack/context-search/src/compare/state.rs`
 
 When `mark_match()` updates checkpoint, we might need to track:
 - Whether we're matching in end path vs start path
 - Update position annotations when popping/replacing path segments
 
 ### Step 5: Update Tests
-**File:** `crates/context-search/src/tests/search/mod.rs`
+**File:** `crates/context-stack/context-search/src/tests/search/mod.rs`
 
 Run `find_pattern1` and verify:
 - Cache entries all at position 2 (as expected)
@@ -420,8 +420,8 @@ Run `find_pattern1` and verify:
 
 ## References
 
-- **Test:** `crates/context-search/src/tests/search/mod.rs` - find_pattern1 (lines 108-177)
-- **ChildState:** `crates/context-trace/src/trace/child/state.rs` (lines 75-105)
-- **RootCursor:** `crates/context-search/src/match/root_cursor.rs` (lines 567-625)
-- **CompareState:** `crates/context-search/src/compare/state.rs` (lines 140-165)
+- **Test:** `crates/context-stack/context-search/src/tests/search/mod.rs` - find_pattern1 (lines 108-177)
+- **ChildState:** `crates/context-stack/context-trace/src/trace/child/state.rs` (lines 75-105)
+- **RootCursor:** `crates/context-stack/context-search/src/match/root_cursor.rs` (lines 567-625)
+- **CompareState:** `crates/context-stack/context-search/src/compare/state.rs` (lines 140-165)
 - **User's explanation:** Conversation about entering yz at checkpoint 2, matching y → checkpoint 3

@@ -10,7 +10,7 @@ summary: Search Response returns root_token that isn't present in its TraceCache
 Panic in `context-insert` with:
 ```
 thread 'tests::ngrams_validation::validate_triple_repeat' panicked at 
-crates/context-insert/src/interval/partition/info/range/splits.rs:63:14:
+crates/context-stack/context-insert/src/interval/partition/info/range/splits.rs:63:14:
 called `Option::unwrap()` on a `None` value
 ```
 

@@ -20,7 +20,7 @@ The `test_split_cache1` test in the context-insert crate failed with a lock pois
 ### Symptoms
 
 When running `cargo test -p context-insert`, 5 tests fail:
-1. **`test_split_cache1`** - Fails with `PoisonError` at `crates/context-trace/src/tests/env/mod.rs:242:25`
+1. **`test_split_cache1`** - Fails with `PoisonError` at `crates/context-stack/context-trace/src/tests/env/mod.rs:242:25`
 2. **`interval_graph1`** - Panics with assertion failure
 3. **`interval_graph2`** - Panics with assertion failure  
 4. **`index_prefix1`** - Panics with pattern width mismatch assertion
@@ -28,7 +28,7 @@ When running `cargo test -p context-insert`, 5 tests fail:
 
 ### Root Cause
 
-The tests share a global `lazy_static` `RwLock<Env1>` defined in `crates/context-trace/src/tests/env/mod.rs`:
+The tests share a global `lazy_static` `RwLock<Env1>` defined in `crates/context-stack/context-trace/src/tests/env/mod.rs`:
 
 ```rust
 lazy_static::lazy_static! {
@@ -67,13 +67,13 @@ Rust's `RwLock` uses lock poisoning as a safety mechanism. When a thread panics 
 
 ### Error Message
 ```
-🔥 PANIC: panicked at crates/context-trace/src/tests/env/mod.rs:242:25:
+🔥 PANIC: panicked at crates/context-stack/context-trace/src/tests/env/mod.rs:242:25:
 called `Result::unwrap()` on an `Err` value: PoisonError { .. }
 ```
 
 ### Code Location
 ```rust
-// File: crates/context-trace/src/tests/env/mod.rs
+// File: crates/context-stack/context-trace/src/tests/env/mod.rs
 // Lines 241-243
 fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
     CONTEXT.write().unwrap()  // ← This unwrap() panics
@@ -82,7 +82,7 @@ fn get_expected_mut<'a>() -> RwLockWriteGuard<'a, Self> {
 
 ### Test Usage Pattern
 ```rust
-// File: crates/context-insert/src/tests/interval.rs
+// File: crates/context-stack/context-insert/src/tests/interval.rs
 // Line 71
 let env @ Env1 { ... } = &*Env1::get_expected_mut();  // Holds lock during test
 ```
@@ -96,8 +96,8 @@ let env @ Env1 { ... } = &*Env1::get_expected_mut();  // Holds lock during test
 - **Development velocity** - developers cannot trust test results
 
 ### Affected Files
-1. `crates/context-trace/src/tests/env/mod.rs` - Lock implementation
-2. `crates/context-insert/src/tests/interval.rs` - Tests using the shared context
+1. `crates/context-stack/context-trace/src/tests/env/mod.rs` - Lock implementation
+2. `crates/context-stack/context-insert/src/tests/interval.rs` - Tests using the shared context
 3. Test execution framework - non-deterministic ordering
 
 ## Underlying Issues
@@ -151,8 +151,8 @@ See implementation plan: `agents/plans/20251204_PLAN_FIX_LOCK_POISONING.md`
 ## References
 
 - **Rust RwLock documentation**: https://doc.rust-lang.org/std/sync/struct.RwLock.html#poisoning
-- **Test file**: `crates/context-insert/src/tests/interval.rs`
-- **Lock implementation**: `crates/context-trace/src/tests/env/mod.rs`
+- **Test file**: `crates/context-stack/context-insert/src/tests/interval.rs`
+- **Lock implementation**: `crates/context-stack/context-trace/src/tests/env/mod.rs`
 - **Related memory**: Repository memory notes test status showing 6 expected failures
 
 ## Appendix: Full Test Output
@@ -183,7 +183,7 @@ Fixing the lock poisoning requires addressing both the immediate test failures a
 
 ### Solution Implemented
 
-Replaced `lazy_static!` with `thread_local!` in `crates/context-trace/src/tests/env/mod.rs` to give each test thread its own isolated environment:
+Replaced `lazy_static!` with `thread_local!` in `crates/context-stack/context-trace/src/tests/env/mod.rs` to give each test thread its own isolated environment:
 
 **Before (lazy_static - shared across all test threads):**
 ```rust

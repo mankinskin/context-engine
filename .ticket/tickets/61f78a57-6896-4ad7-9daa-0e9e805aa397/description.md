@@ -25,16 +25,16 @@ Currently, the engine crates (`context-search`, `context-insert`) emit rich stru
 
 | Component | What it does | Where |
 |-----------|-------------|-------|
-| `GraphOpEvent::emit()` | Emits `tracing::info!(graph_op = %json, ...)` for search/insert/read visualization events | `crates/context-trace/src/graph/visualization.rs` |
-| `TestTracing` | Per-test JSON log files via `PrettyJsonWriter`, auto-cleanup, `SignatureStore` | `crates/context-trace/src/logging/tracing_utils/test_tracing.rs` |
-| `PrettyJsonWriter` | Wraps `tracing-subscriber` JSON output with indentation; currently `pub(super)` | `crates/context-trace/src/logging/tracing_utils/writers.rs` |
-| `FlushingWriter` | Auto-flushing `std::fs::File` wrapper; currently `pub(super)` | `crates/context-trace/src/logging/tracing_utils/writers.rs` |
+| `GraphOpEvent::emit()` | Emits `tracing::info!(graph_op = %json, ...)` for search/insert/read visualization events | `crates/context-stack/context-trace/src/graph/visualization.rs` |
+| `TestTracing` | Per-test JSON log files via `PrettyJsonWriter`, auto-cleanup, `SignatureStore` | `crates/context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs` |
+| `PrettyJsonWriter` | Wraps `tracing-subscriber` JSON output with indentation; currently `pub(super)` | `crates/context-stack/context-trace/src/logging/tracing_utils/writers.rs` |
+| `FlushingWriter` | Auto-flushing `std::fs::File` wrapper; currently `pub(super)` | `crates/context-stack/context-trace/src/logging/tracing_utils/writers.rs` |
 | `LogParser` | Parses pretty-printed JSON log files using `serde_json::Deserializer::from_str().into_iter()` → `Vec<LogEntry>` | `tools/log-viewer/src/log_parser.rs` |
 | `JqFilter` | Compiles and runs JQ expressions via `jaq-core`/`jaq-interpret`/`jaq-std` | `tools/viewer-api/src/query.rs` |
 | `LogServer` (MCP) | 6-tool MCP server for querying test log files | `tools/log-viewer/src/mcp_server.rs` |
 | `context-cli` REPL | `rustyline` REPL with `split_whitespace` parsing, `current_workspace` tracking | `tools/context-cli/src/repl.rs` |
 | `context-mcp` | 3-tool MCP server: `execute`, `help`, `workflow` | `tools/context-mcp/src/server.rs` |
-| Insert visualization thread-locals | `INSERT_STEP`, `INSERT_PATH_ID`, `INSERT_VIZ_PATH` — per-thread state for step counting and path accumulation | `crates/context-insert/src/visualization.rs` |
+| Insert visualization thread-locals | `INSERT_STEP`, `INSERT_PATH_ID`, `INSERT_VIZ_PATH` — per-thread state for step counting and path accumulation | `crates/context-stack/context-insert/src/visualization.rs` |
 
 ### Key Insight: Reuse the Existing Tracing Infrastructure
 
@@ -88,7 +88,7 @@ log-viewer ──→ viewer-api      (log-viewer uses viewer-api's JQ + the re-e
 ```text
 DEPENDENCY GRAPH (after Phase 3.1):
 
-crates/context-api
+crates/context-stack/context-api
   ├── context-trace  (graph types, tracing infra, PrettyJsonWriter)
   ├── context-search
   ├── context-insert
@@ -116,14 +116,14 @@ tools/context-mcp
 ### Files Affected
 
 **Modified (existing):**
-- `crates/context-trace/src/logging/tracing_utils/writers.rs` — change `pub(super)` → `pub` on `PrettyJsonWriter`, `FlushingWriter`
-- `crates/context-trace/src/logging/tracing_utils/debug_to_json.rs` — change `pub(super)` → `pub` on `SignatureStore` type alias, `new_signature_store()`
-- `crates/context-trace/src/logging/tracing_utils/mod.rs` — re-export writers and debug_to_json
-- `crates/context-trace/src/logging/mod.rs` — re-export the new public items
-- `crates/context-api/Cargo.toml` — add `jaq-core`, `jaq-std`, `jaq-interpret`, `jaq-syn`
-- `crates/context-api/src/commands/mod.rs` — add log `Command` variants, `CommandResult` variants, dispatch arms
-- `crates/context-api/src/types.rs` — add log-related types
-- `crates/context-api/src/workspace/` — add log directory management
+- `crates/context-stack/context-trace/src/logging/tracing_utils/writers.rs` — change `pub(super)` → `pub` on `PrettyJsonWriter`, `FlushingWriter`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/debug_to_json.rs` — change `pub(super)` → `pub` on `SignatureStore` type alias, `new_signature_store()`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/mod.rs` — re-export writers and debug_to_json
+- `crates/context-stack/context-trace/src/logging/mod.rs` — re-export the new public items
+- `crates/context-stack/context-api/Cargo.toml` — add `jaq-core`, `jaq-std`, `jaq-interpret`, `jaq-syn`
+- `crates/context-stack/context-api/src/commands/mod.rs` — add log `Command` variants, `CommandResult` variants, dispatch arms
+- `crates/context-stack/context-api/src/types.rs` — add log-related types
+- `crates/context-stack/context-api/src/workspace/` — add log directory management
 - `tools/viewer-api/Cargo.toml` — add `context-api` dependency
 - `tools/viewer-api/src/lib.rs` — re-export log parser and types from `context-api`
 - `tools/log-viewer/src/log_parser.rs` — remove (replaced by `context-api::log_parser`)
@@ -135,10 +135,10 @@ tools/context-mcp
 - `tools/context-mcp/src/server.rs` — add `trace` flag to `ExecuteInput`, log commands to `help`/`workflow`
 
 **New:**
-- `crates/context-api/src/log_parser.rs` — log file parser (moved from `log-viewer`, adapted)
-- `crates/context-api/src/jq.rs` — thin JQ wrapper around `jaq-*` (like `viewer-api/src/query.rs`)
-- `crates/context-api/src/commands/logs.rs` — log command implementations
-- `crates/context-api/src/tracing_capture.rs` — per-command trace capture infrastructure
+- `crates/context-stack/context-api/src/log_parser.rs` — log file parser (moved from `log-viewer`, adapted)
+- `crates/context-stack/context-api/src/jq.rs` — thin JQ wrapper around `jaq-*` (like `viewer-api/src/query.rs`)
+- `crates/context-stack/context-api/src/commands/logs.rs` — log command implementations
+- `crates/context-stack/context-api/src/tracing_capture.rs` — per-command trace capture infrastructure
 
 ---
 
@@ -260,18 +260,18 @@ This lets agents see at a glance what happened without having to separately quer
 ### Step 1: Expose Tracing Capture Infrastructure from `context-trace`
 
 **Files:**
-- `crates/context-trace/src/logging/tracing_utils/writers.rs`
-- `crates/context-trace/src/logging/tracing_utils/debug_to_json.rs`
-- `crates/context-trace/src/logging/tracing_utils/mod.rs`
-- `crates/context-trace/src/logging/tracing_utils/special_fields.rs`
-- `crates/context-trace/src/logging/mod.rs`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/writers.rs`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/debug_to_json.rs`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/mod.rs`
+- `crates/context-stack/context-trace/src/logging/tracing_utils/special_fields.rs`
+- `crates/context-stack/context-trace/src/logging/mod.rs`
 
 Currently, `PrettyJsonWriter`, `FlushingWriter`, and `SignatureStore` are `pub(super)` — visible only within the `tracing_utils` module. External crates like `context-api` cannot use them to build their own scoped dispatchers. We need to open up a public API for constructing capture dispatchers.
 
 **Option A (minimal visibility change):** Change `pub(super)` to `pub` on the writer types and re-export through the module chain:
 
 ```rust
-// crates/context-trace/src/logging/tracing_utils/writers.rs
+// crates/context-stack/context-trace/src/logging/tracing_utils/writers.rs
 // Change:
 //   pub(super) struct FlushingWriter { ... }
 //   pub(super) struct PrettyJsonWriter<W> { ... }
@@ -281,7 +281,7 @@ pub struct PrettyJsonWriter<W> { ... }
 ```
 
 ```rust
-// crates/context-trace/src/logging/tracing_utils/mod.rs
+// crates/context-stack/context-trace/src/logging/tracing_utils/mod.rs
 // Add:
 pub use writers::{FlushingWriter, PrettyJsonWriter};
 pub use debug_to_json::{SignatureStore, new_signature_store};
@@ -289,7 +289,7 @@ pub use special_fields::SpecialFieldExtractor;
 ```
 
 ```rust
-// crates/context-trace/src/logging/mod.rs
+// crates/context-stack/context-trace/src/logging/mod.rs
 // Add:
 pub use tracing_utils::{
     FlushingWriter,
@@ -304,7 +304,7 @@ pub use tracing_utils::{
 **Option B (higher-level API — recommended):** In addition to exposing the raw types, add a builder function that constructs a complete capture `Dispatch`:
 
 ```rust
-// crates/context-trace/src/logging/tracing_utils/capture.rs (NEW)
+// crates/context-stack/context-trace/src/logging/tracing_utils/capture.rs (NEW)
 
 use std::path::Path;
 use std::fs;
@@ -404,11 +404,11 @@ This gives `context-api` a single function to call — `build_capture_dispatch()
 ### Step 2: Log Parser and JQ in `context-api`
 
 **Files:**
-- `crates/context-api/Cargo.toml` — add `jaq-core`, `jaq-std`, `jaq-interpret`, `jaq-syn`
-- `crates/context-api/src/log_parser.rs` (new)
-- `crates/context-api/src/jq.rs` (new)
+- `crates/context-stack/context-api/Cargo.toml` — add `jaq-core`, `jaq-std`, `jaq-interpret`, `jaq-syn`
+- `crates/context-stack/context-api/src/log_parser.rs` (new)
+- `crates/context-stack/context-api/src/jq.rs` (new)
 
-Move the log parsing logic from `tools/log-viewer/src/log_parser.rs` into `crates/context-api/src/log_parser.rs`. This is the canonical home because:
+Move the log parsing logic from `tools/log-viewer/src/log_parser.rs` into `crates/context-stack/context-api/src/log_parser.rs`. This is the canonical home because:
 - Log types are domain types that belong in the API crate
 - The log parser is needed by `context-api`'s log commands
 - Downstream consumers (`viewer-api`, `log-viewer`) re-import from here
@@ -419,7 +419,7 @@ The move is largely mechanical. Key changes during the move:
 - Keep the `LogEntry` struct and `LogParser` struct with their full field set
 - Keep the streaming `serde_json::Deserializer` approach for parsing
 
-Create `crates/context-api/src/jq.rs` with the JQ wrapper:
+Create `crates/context-stack/context-api/src/jq.rs` with the JQ wrapper:
 
 ```rust
 // Thin wrapper around jaq-* crates, modeled on viewer-api/src/query.rs
@@ -441,7 +441,7 @@ pub fn filter_values(values: &[serde_json::Value], query: &str) -> Result<Vec<se
 
 ### Step 3: Log-Related API Types
 
-**File:** `crates/context-api/src/types.rs` (modify)
+**File:** `crates/context-stack/context-api/src/types.rs` (modify)
 
 Add types for log command results:
 
@@ -524,7 +524,7 @@ pub struct LogFileSearchResult {
 
 ### Step 4: Per-Command Tracing Capture Module
 
-**File:** `crates/context-api/src/tracing_capture.rs` (new)
+**File:** `crates/context-stack/context-api/src/tracing_capture.rs` (new)
 
 This module uses the `build_capture_dispatch()` API from Step 1 to wrap `execute()` calls:
 
@@ -630,7 +630,7 @@ where
 
 ### Step 5: Log Directory Management in Workspace
 
-**Files:** `crates/context-api/src/workspace/`
+**Files:** `crates/context-stack/context-api/src/workspace/`
 
 Add log directory creation/management to the workspace system:
 
@@ -653,7 +653,7 @@ impl WorkspaceManager {
 
 ### Step 6: Log Commands in the Command Enum
 
-**Files:** `crates/context-api/src/commands/mod.rs`, `crates/context-api/src/commands/logs.rs` (new)
+**Files:** `crates/context-stack/context-api/src/commands/mod.rs`, `crates/context-stack/context-api/src/commands/logs.rs` (new)
 
 Add log command variants to `Command` and `CommandResult`:
 
@@ -746,7 +746,7 @@ Command::ListLogs { workspace, pattern, limit } => {
 The `logs.rs` module implements the actual logic using `LogParser` and `JqFilter` from the same crate:
 
 ```rust
-// crates/context-api/src/commands/logs.rs
+// crates/context-stack/context-api/src/commands/logs.rs
 
 use crate::log_parser::LogParser;
 use crate::jq::JqFilter;
@@ -803,7 +803,7 @@ impl Command {
 ### Step 7: Update `viewer-api` to Depend on `context-api`
 
 **Files:**
-- `tools/viewer-api/Cargo.toml` — add `context-api = { path = "../../crates/context-api" }`
+- `tools/viewer-api/Cargo.toml` — add `context-api = { path = "../../crates/context-stack/context-api" }`
 - `tools/viewer-api/src/lib.rs` — re-export log types and parser
 
 ```rust
@@ -1039,7 +1039,7 @@ Match on the new `CommandResult` variants in `print_command_result()`.
 
 ### Step 14: Integration Tests
 
-**Files:** `crates/context-api/src/commands/logs.rs`, `tools/context-mcp/src/server.rs`
+**Files:** `crates/context-stack/context-api/src/commands/logs.rs`, `tools/context-mcp/src/server.rs`
 
 Key test scenarios:
 
@@ -1069,7 +1069,7 @@ Key test scenarios:
 **Files:**
 - `tools/context-mcp/README.md` — add log tools section, trace flag documentation
 - `tools/context-cli/README.md` — add `--trace` flag, REPL log commands
-- `crates/context-api/README.md` — add log parser and JQ module documentation
+- `crates/context-stack/context-api/README.md` — add log parser and JQ module documentation
 
 ---
 
@@ -1211,7 +1211,7 @@ A traced `insert_sequence` call produces a log file like this (excerpt from actu
   "target": "context_insert::visualization",
   "span": "insert",
   "spans": ["insert"],
-  "filename": "crates/context-insert/src/visualization.rs",
+  "filename": "crates/context-stack/context-insert/src/visualization.rs",
   "line_number": 103
 }
 ```
@@ -1230,7 +1230,7 @@ select(.level == "ERROR" or .level == "WARN")       → errors and warnings
 ## Appendix B: Dependency Graph After Phase 3.1
 
 ```text
-crates/context-api
+crates/context-stack/context-api
   ├── context-trace       (graph types, scoped capture via build_capture_dispatch)
   ├── context-search      (search commands)
   ├── context-insert      (insert commands)

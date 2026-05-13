@@ -209,10 +209,10 @@ See **`agents/plans/20250122_PLAN_TRAIT_CONSOLIDATION_V2.md`** for:
 ## Files for Review
 
 **Key files showing problems:**
-1. `crates/context-trace/src/path/structs/rooted/index_range.rs` - 3 qualified calls
-2. `crates/context-trace/src/path/structs/rooted/role_path/mod.rs` - 5 qualified calls
-3. `crates/context-trace/src/path/mod.rs` - 4 qualified calls
-4. `crates/context-trace/src/path/accessors/has_path.rs` - Deprecated but needed traits
+1. `crates/context-stack/context-trace/src/path/structs/rooted/index_range.rs` - 3 qualified calls
+2. `crates/context-stack/context-trace/src/path/structs/rooted/role_path/mod.rs` - 5 qualified calls
+3. `crates/context-stack/context-trace/src/path/mod.rs` - 4 qualified calls
+4. `crates/context-stack/context-trace/src/path/accessors/has_path.rs` - Deprecated but needed traits
 
 **Build output:**
 ```bash

@@ -18,7 +18,7 @@ A domain-specific language (DSL) for the context-engine hypergraph would provide
 
 ## Relationship to the Command Enum
 
-Each instruction in the DSL maps **1:1** to a `Command` variant (defined in `crates/context-api/src/commands/mod.rs`). The instruction language is **syntactic sugar** over `Command` JSON — the parser produces `Vec<Command>` which is then executed sequentially via the existing `execute()` function.
+Each instruction in the DSL maps **1:1** to a `Command` variant (defined in `crates/context-stack/context-api/src/commands/mod.rs`). The instruction language is **syntactic sugar** over `Command` JSON — the parser produces `Vec<Command>` which is then executed sequentially via the existing `execute()` function.
 
 ```text
 Instruction Text  →  Parser  →  Vec<Command>  →  execute()  →  Vec<CommandResult>
@@ -250,7 +250,7 @@ Alternative: `pest` (PEG-based, generates parser from grammar file — good for 
 ### Implementation Sketch
 
 ```rust
-// Future: crates/context-api/src/instruction.rs
+// Future: crates/context-stack/context-api/src/instruction.rs
 use winnow::prelude::*;
 
 pub fn parse_program(input: &str) -> Result<Vec<Command>, ParseError> {

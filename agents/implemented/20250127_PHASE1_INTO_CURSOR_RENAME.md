@@ -17,7 +17,7 @@ Renamed `ToCursor` trait to `IntoCursor` following Rust naming conventions for c
 
 ### Trait Rename
 
-**File:** `crates/context-search/src/state/start.rs`
+**File:** `crates/context-stack/context-search/src/state/start.rs`
 
 **Before:**
 ```rust

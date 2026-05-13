@@ -63,10 +63,10 @@ The current wording was derived from these repository sources:
 
 - old doc-viewer output for `context-insert` root and `insert` module
 - old doc-viewer output for `context-read` root and `expansion` module
-- `crates/context-insert/agents/docs/README.md`
-- `crates/context-read/agents/docs/README.md`
+- `crates/context-stack/context-insert/agents/docs/README.md`
+- `crates/context-stack/context-read/agents/docs/README.md`
 - `agents/guides/20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md`
-- `crates/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`
+- `crates/context-stack/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`
 
 The insert semantics guide is partially stale relative to the live code. In
 particular, it still describes `insert_sequence` as a minimum-two-character

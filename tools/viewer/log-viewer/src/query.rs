@@ -202,20 +202,20 @@ mod tests {
     #[test]
     fn test_filter_by_file_path() {
         let filter = JqFilter::compile(
-            r#"select(.file | startswith("crates/context-insert"))"#,
+            r#"select(.file | startswith("crates/context-stack/context-insert"))"#,
         )
         .unwrap();
 
         let insert_entry = json!({
             "level": "DEBUG",
             "message": "inserting",
-            "file": "crates/context-insert/src/lib.rs"
+            "file": "crates/context-stack/context-insert/src/lib.rs"
         });
 
         let search_entry = json!({
             "level": "DEBUG",
             "message": "searching",
-            "file": "crates/context-search/src/lib.rs"
+            "file": "crates/context-stack/context-search/src/lib.rs"
         });
 
         assert!(filter.matches(&insert_entry));

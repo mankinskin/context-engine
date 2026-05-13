@@ -177,12 +177,12 @@ module_name/
 ## Files Modified
 
 ### New Directories Created (6)
-1. `crates/context-trace/src/logging/tracing_utils/config/`
-2. `crates/context-trace/src/graph/vertex/data/`
-3. `crates/context-trace/src/tests/macros/`
-4. `crates/context-trace/src/logging/tracing_utils/formatter/`
-5. `crates/context-trace/src/path/structs/rooted/index_range/`
-6. `crates/context-trace/src/graph/insert/`
+1. `crates/context-stack/context-trace/src/logging/tracing_utils/config/`
+2. `crates/context-stack/context-trace/src/graph/vertex/data/`
+3. `crates/context-stack/context-trace/src/tests/macros/`
+4. `crates/context-stack/context-trace/src/logging/tracing_utils/formatter/`
+5. `crates/context-stack/context-trace/src/path/structs/rooted/index_range/`
+6. `crates/context-stack/context-trace/src/graph/insert/`
 
 ### New Files Created (32)
 - config/: types.rs, loader.rs, builder.rs, mod.rs (4)
@@ -193,12 +193,12 @@ module_name/
 - insert/: vertex.rs, atom.rs, pattern.rs, patterns.rs, range.rs, replace.rs, parents.rs, mod.rs (8)
 
 ### Files Deleted (6)
-1. `crates/context-trace/src/logging/tracing_utils/config.rs`
-2. `crates/context-trace/src/graph/vertex/data.rs`
-3. `crates/context-trace/src/tests/macros.rs`
-4. `crates/context-trace/src/logging/tracing_utils/formatter.rs`
-5. `crates/context-trace/src/path/structs/rooted/index_range.rs`
-6. `crates/context-trace/src/graph/insert.rs`
+1. `crates/context-stack/context-trace/src/logging/tracing_utils/config.rs`
+2. `crates/context-stack/context-trace/src/graph/vertex/data.rs`
+3. `crates/context-stack/context-trace/src/tests/macros.rs`
+4. `crates/context-stack/context-trace/src/logging/tracing_utils/formatter.rs`
+5. `crates/context-stack/context-trace/src/path/structs/rooted/index_range.rs`
+6. `crates/context-stack/context-trace/src/graph/insert.rs`
 
 ## Commits
 

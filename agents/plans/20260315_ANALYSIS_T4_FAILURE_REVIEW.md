@@ -9,7 +9,7 @@ parent: 20260315_PLAN_EXPANSION_LOOP_REDESIGN.md
 
 **Date:** 2026-03-15
 **Scope:** Analysis only — no code changes proposed here
-**Test suite:** `crates/context-read` unit tests
+**Test suite:** `crates/context-stack/context-read` unit tests
 **Baseline:** 64 pass / 11 fail / 0 ignored
 
 ---

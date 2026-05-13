@@ -21,7 +21,7 @@ Eliminated ~200 lines of duplicated cursor state transition logic by creating a 
 
 ### 1. New Trait: `CursorStateMachine`
 
-**File:** `crates/context-search/src/cursor/state_machine.rs` (NEW)
+**File:** `crates/context-stack/context-search/src/cursor/state_machine.rs` (NEW)
 
 ```rust
 /// Unified state machine trait for all cursor types
@@ -44,7 +44,7 @@ pub trait CursorStateMachine: Sized {
 
 ### 2. Implementations for PathCursor
 
-**File:** `crates/context-search/src/cursor/mod.rs` (MODIFIED)
+**File:** `crates/context-stack/context-search/src/cursor/mod.rs` (MODIFIED)
 
 Added 3 implementations:
 - `impl<P: Clone> CursorStateMachine for PathCursor<P, Matched>`
@@ -55,7 +55,7 @@ Added 3 implementations:
 
 ### 3. Implementations for ChildCursor
 
-**File:** `crates/context-search/src/cursor/mod.rs` (MODIFIED)
+**File:** `crates/context-stack/context-search/src/cursor/mod.rs` (MODIFIED)
 
 Added 3 implementations:
 - `impl<EndNode: PathNode> CursorStateMachine for ChildCursor<Matched, EndNode>`
@@ -66,7 +66,7 @@ Added 3 implementations:
 
 ### 4. Refactored Checkpointed Wrappers
 
-**File:** `crates/context-search/src/cursor/checkpointed.rs` (MODIFIED)
+**File:** `crates/context-stack/context-search/src/cursor/checkpointed.rs` (MODIFIED)
 
 **Before (duplicated across 6 impl blocks):**
 ```rust
@@ -116,7 +116,7 @@ Applied to all 6 Checkpointed impl blocks (3 for PathCursor states, 3 for ChildC
 ## Module Structure
 
 ```
-crates/context-search/src/cursor/
+crates/context-stack/context-search/src/cursor/
 ├── mod.rs
 │   ├── PathCursor implementations (MODIFIED: now use trait)
 │   └── ChildCursor implementations (MODIFIED: now use trait)

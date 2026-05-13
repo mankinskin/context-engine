@@ -44,7 +44,7 @@ Compute the required partition set during the augmentation phase (`root_augmenta
 
 ### New Type: `RequiredPartitions`
 
-**Location:** `crates/context-insert/src/join/context/node/merge/required.rs`
+**Location:** `crates/context-stack/context-insert/src/join/context/node/merge/required.rs`
 
 ```rust
 use super::PartitionRange;
@@ -106,7 +106,7 @@ impl RequiredPartitions {
 
 ### Add `overlap()` to `PartitionRange`
 
-**Location:** `crates/context-insert/src/join/context/node/merge/partition_range.rs`
+**Location:** `crates/context-stack/context-insert/src/join/context/node/merge/partition_range.rs`
 
 ```rust
 impl PartitionRange {

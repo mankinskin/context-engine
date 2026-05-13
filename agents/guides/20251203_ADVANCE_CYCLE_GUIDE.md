@@ -543,7 +543,7 @@ fn test_queue_ordering() {
 ## Related Documentation
 
 - **CHEAT_SHEET.md:** Quick reference for types and patterns
-- **crates/context-search/HIGH_LEVEL_GUIDE.md:** Architecture overview
+- **crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md:** Architecture overview
 - **agents/guides/20251203_UNIFIED_API_GUIDE.md:** Response API and usage
 - **agents/guides/20251203_TRACING_GUIDE.md:** Debugging and log analysis
 - **agents/bug-reports/INDEX.md:** Known issues and patterns

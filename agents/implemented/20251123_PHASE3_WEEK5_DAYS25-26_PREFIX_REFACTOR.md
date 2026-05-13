@@ -99,7 +99,7 @@ impl PrefixStates for ChildState<ChildLocation> {
 
 ### Files Modified
 
-1. **`crates/context-search/src/compare/state.rs`**:
+1. **`crates/context-stack/context-search/src/compare/state.rs`**:
    - Added `decompose_token_to_prefixes` helper function
    - Renamed 3 methods (CompareState + trait + PathCursor)
    - Simplified 3 implementations using helper

@@ -45,7 +45,7 @@ After investigation, the formatting is **working correctly**:
 
 ### Tracing Setup
 
-File: `crates/context-trace/src/logging/tracing_utils/test_tracing.rs`
+File: `crates/context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs`
 
 - Uses tracing subscriber with custom formatting
 - Writes to log files via `tracing_appender`
@@ -53,7 +53,7 @@ File: `crates/context-trace/src/logging/tracing_utils/test_tracing.rs`
 
 ### Panic Hook
 
-File: `crates/context-trace/src/logging/tracing_utils/panic.rs`
+File: `crates/context-stack/context-trace/src/logging/tracing_utils/panic.rs`
 
 ```rust
 pub(super) fn install_panic_hook(config: PanicConfig) {
@@ -70,7 +70,7 @@ The panic message includes the full `panic_info` which contains colored diff out
 
 ### Pretty Assertions
 
-File: `crates/context-insert/src/tests/interval.rs` (line 9)
+File: `crates/context-stack/context-insert/src/tests/interval.rs` (line 9)
 
 ```rust
 use pretty_assertions::assert_eq;
@@ -158,9 +158,9 @@ TBD based on solution chosen.
 
 ## Related Code Locations
 
-- `crates/context-trace/src/logging/tracing_utils/panic.rs` - Panic hook
-- `crates/context-trace/src/logging/tracing_utils/test_tracing.rs` - Test tracing setup
-- `crates/context-insert/src/tests/interval.rs` - Uses pretty_assertions
+- `crates/context-stack/context-trace/src/logging/tracing_utils/panic.rs` - Panic hook
+- `crates/context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs` - Test tracing setup
+- `crates/context-stack/context-insert/src/tests/interval.rs` - Uses pretty_assertions
 - Dependency: `pretty_assertions` crate
 
 ## Questions

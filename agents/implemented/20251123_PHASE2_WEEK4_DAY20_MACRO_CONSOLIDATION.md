@@ -109,7 +109,7 @@ impl_state_position! {
 
 ### Implementation
 
-Located in `crates/context-trace/src/path/accessors/path_accessor.rs`:
+Located in `crates/context-stack/context-trace/src/path/accessors/path_accessor.rs`:
 
 - 4 macro patterns (basic/generic × with/without target_pos)
 - ~160 lines of macro definition
@@ -118,17 +118,17 @@ Located in `crates/context-trace/src/path/accessors/path_accessor.rs`:
 
 ## Files Modified
 
-1. **`crates/context-trace/src/path/accessors/path_accessor.rs`**:
+1. **`crates/context-stack/context-trace/src/path/accessors/path_accessor.rs`**:
    - Added `impl_state_position!` macro (~160 lines)
    - Exported via `pub use impl_state_position;`
 
-2. **`crates/context-trace/src/trace/state/mod.rs`**:
+2. **`crates/context-stack/context-trace/src/trace/state/mod.rs`**:
    - Replaced 2 manual impls with 2 macro calls
    - ParentState: 17 lines → 7 lines
    - BaseState<P>: 19 lines → 7 lines
    - **Net reduction**: 36 lines → 14 lines (22 lines saved)
 
-3. **`crates/context-trace/src/trace/child/state.rs`**:
+3. **`crates/context-stack/context-trace/src/trace/child/state.rs`**:
    - Replaced 1 manual impl with 1 macro call
    - ChildState<EndNode>: 30 lines → 7 lines
    - **Net reduction**: 30 lines → 7 lines (23 lines saved)

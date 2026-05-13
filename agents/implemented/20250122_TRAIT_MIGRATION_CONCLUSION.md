@@ -133,21 +133,21 @@ range.start_path().root_entry  // Use structural accessor
 ## Files Changed
 
 ### New Implementations
-- `crates/context-trace/src/path/structs/role_path.rs`: Added PathAccessor impl
-- `crates/context-trace/src/path/structs/rooted/role_path/mod.rs`: Added PathAccessor + RootedPathAccessor impls
+- `crates/context-stack/context-trace/src/path/structs/role_path.rs`: Added PathAccessor impl
+- `crates/context-stack/context-trace/src/path/structs/rooted/role_path/mod.rs`: Added PathAccessor + RootedPathAccessor impls
 
 ### Migrated Call Sites
-- `crates/context-search/src/cursor/path.rs`
-- `crates/context-search/src/match/root_cursor.rs`
-- `crates/context-search/src/state/end/mod.rs`
-- `crates/context-search/src/state/mod.rs`
-- `crates/context-search/src/tests/state_advance.rs`
-- `crates/context-trace/src/tests/macros.rs`
-- `crates/context-trace/src/trace/child/state.rs`
+- `crates/context-stack/context-search/src/cursor/path.rs`
+- `crates/context-stack/context-search/src/match/root_cursor.rs`
+- `crates/context-stack/context-search/src/state/end/mod.rs`
+- `crates/context-stack/context-search/src/state/mod.rs`
+- `crates/context-stack/context-search/src/tests/state_advance.rs`
+- `crates/context-stack/context-trace/src/tests/macros.rs`
+- `crates/context-stack/context-trace/src/trace/child/state.rs`
 
 ### Attempted but Reverted
-- `crates/context-trace/src/path/accessors/path_accessor.rs`: Tried adding impls, caused conflicts
-- `crates/context-trace/src/path/structs/rooted/mod.rs`: Tried adding PathAccessor for RootedRangePath, conflicts
+- `crates/context-stack/context-trace/src/path/accessors/path_accessor.rs`: Tried adding impls, caused conflicts
+- `crates/context-stack/context-trace/src/path/structs/rooted/mod.rs`: Tried adding PathAccessor for RootedRangePath, conflicts
 
 ## Lessons Learned
 

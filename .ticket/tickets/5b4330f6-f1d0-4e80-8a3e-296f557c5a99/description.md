@@ -2,14 +2,14 @@
 
 ## Problem
 
-`crates/context-trace` uses a `PrettyJsonWriter` to produce structured log output, and `crates/context-api/src/log_parser.rs` parses it. There are no automated tests ensuring the writer's output stays parseable as the two crates evolve independently. Any field rename or format change in `context-trace` can silently break the log-viewer without a failing test.
+`crates/context-stack/context-trace` uses a `PrettyJsonWriter` to produce structured log output, and `crates/context-stack/context-api/src/log_parser.rs` parses it. There are no automated tests ensuring the writer's output stays parseable as the two crates evolve independently. Any field rename or format change in `context-trace` can silently break the log-viewer without a failing test.
 
 ## Scope
 
 Add an integration test (or a dedicated test module) that:
 
 1. Runs a minimal context-trace operation (e.g. a single `insert_sequence` + `search_sequence` on a test graph) with tracing enabled and writing to a temp file.
-2. Passes that file to `crates/context-api::log_parser::parse_log_file()`.
+2. Passes that file to `crates/context-stack/context-api::log_parser::parse_log_file()`.
 3. Asserts:
    - At least one `LogEntry` is returned.
    - Expected fields are present (`level`, `timestamp`, `target`, `fields.message` or equivalent).
@@ -24,9 +24,9 @@ Add an integration test (or a dedicated test module) that:
 
 ## Files
 
-- New: `crates/context-api/tests/log_parser_compat.rs` (or similar)
-- Read: `crates/context-api/src/log_parser.rs`
-- Read: `crates/context-trace/src/graph/visualization.rs`
+- New: `crates/context-stack/context-api/tests/log_parser_compat.rs` (or similar)
+- Read: `crates/context-stack/context-api/src/log_parser.rs`
+- Read: `crates/context-stack/context-trace/src/graph/visualization.rs`
 
 ## Depends on
 

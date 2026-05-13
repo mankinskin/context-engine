@@ -146,16 +146,16 @@ pub(crate) enum EndReason {
 **Lines modified:** ~154 insertions/deletions
 
 ```
- crates/context-search/src/match/iterator.rs        | 22 ++++----
- crates/context-search/src/match/root_cursor.rs     | 64 ++++++++++------------
- crates/context-search/src/search/mod.rs            | 28 +++++-----
- crates/context-search/src/state/end/mod.rs         |  4 +-
- crates/context-search/src/state/matched/mod.rs     | 10 ++--
- crates/context-search/src/state/result.rs          |  6 +-
- crates/context-search/src/tests/search/ancestor.rs |  6 +-
- crates/context-search/src/tests/search/mod.rs      |  4 +-
- crates/context-search/src/tests/traversal.rs       |  8 +-
- crates/context-search/src/traversal/mod.rs         |  2 +-
+ crates/context-stack/context-search/src/match/iterator.rs        | 22 ++++----
+ crates/context-stack/context-search/src/match/root_cursor.rs     | 64 ++++++++++------------
+ crates/context-stack/context-search/src/search/mod.rs            | 28 +++++-----
+ crates/context-stack/context-search/src/state/end/mod.rs         |  4 +-
+ crates/context-stack/context-search/src/state/matched/mod.rs     | 10 ++--
+ crates/context-stack/context-search/src/state/result.rs          |  6 +-
+ crates/context-stack/context-search/src/tests/search/ancestor.rs |  6 +-
+ crates/context-stack/context-search/src/tests/search/mod.rs      |  4 +-
+ crates/context-stack/context-search/src/tests/traversal.rs       |  8 +-
+ crates/context-stack/context-search/src/traversal/mod.rs         |  2 +-
 ```
 
 ---

@@ -20,10 +20,10 @@ Research findings for fixing the 28 compilation errors in context-read. The crat
 
 | context-read (Wrong) | context-trace (Correct) | Location |
 |---------------------|------------------------|----------|
-| `NewAtomndex` | `NewAtomIndex` | `crates/context-trace/src/graph/vertex/atom.rs:85` |
+| `NewAtomndex` | `NewAtomIndex` | `crates/context-stack/context-trace/src/graph/vertex/atom.rs:85` |
 | `NewAtomIndex` | ✅ EXISTS | `pub(crate) enum` |
 | `NewAtomIndices` | ✅ EXISTS | `pub(crate) type NewAtomIndices = Vec<NewAtomIndex>` (line 134) |
-| `PostfixIterator` | ✅ EXISTS | `crates/context-trace/src/trace/child/bands/mod.rs` |
+| `PostfixIterator` | ✅ EXISTS | `crates/context-stack/context-trace/src/trace/child/bands/mod.rs` |
 
 **Fix for NewAtomIndex/NewAtomIndices:**
 ```rust

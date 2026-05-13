@@ -111,8 +111,8 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | Step | Description |
 |------|-------------|
 | 3.1 | Design new path_id format: `<op_type>/<module>/<semantic_id>` (e.g. `search/context-search/token-42-start-0`) |
-| 3.2 | Update `context-search` path_id generation in `crates/context-search/src/state/start/core.rs` |
-| 3.3 | Update `context-insert` path_id generation in `crates/context-insert/src/visualization.rs` |
+| 3.2 | Update `context-search` path_id generation in `crates/context-stack/context-search/src/state/start/core.rs` |
+| 3.3 | Update `context-insert` path_id generation in `crates/context-stack/context-insert/src/visualization.rs` |
 | 3.4 | Design path_id format for future `context-read` events |
 
 ### Phase 3B: Transition Naming Cleanup (Rust)
@@ -120,7 +120,7 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | Step | Description |
 |------|-------------|
 | 3.5 | Audit all 18 transition kinds for naming consistency |
-| 3.6 | Rename inconsistent transition variants in `crates/context-trace/src/graph/visualization.rs` |
+| 3.6 | Rename inconsistent transition variants in `crates/context-stack/context-trace/src/graph/visualization.rs` |
 | 3.7 | Update all call sites in `context-search` and `context-insert` |
 | 3.8 | Re-export TypeScript types: `cargo test -p context-trace -p log-viewer export_bindings` |
 
@@ -133,12 +133,12 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | 3.11 | Update `PathChainPanel` labels if transition names changed |
 
 **Files affected:**
-- `crates/context-trace/src/graph/visualization.rs` — Transition enum, path_id helpers
-- `crates/context-search/src/search/mod.rs` — ~10 emission call sites
-- `crates/context-search/src/state/start/core.rs` — path_id generation
-- `crates/context-insert/src/visualization.rs` — path_id generation
-- `crates/context-insert/src/insert/context.rs` — emission call sites
-- `crates/context-insert/src/join/context/frontier.rs` — emission call sites
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — Transition enum, path_id helpers
+- `crates/context-stack/context-search/src/search/mod.rs` — ~10 emission call sites
+- `crates/context-stack/context-search/src/state/start/core.rs` — path_id generation
+- `crates/context-stack/context-insert/src/visualization.rs` — path_id generation
+- `crates/context-stack/context-insert/src/insert/context.rs` — emission call sites
+- `crates/context-stack/context-insert/src/join/context/frontier.rs` — emission call sites
 - `tools/log-viewer/frontend/src/types/generated/` — regenerated
 - `tools/log-viewer/frontend/src/store/index.ts` — remove legacy parsing
 - `tools/log-viewer/frontend/src/components/HypergraphView/components/SearchStatePanel.tsx`
@@ -181,8 +181,8 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | 4.9 | Sync query cursor with search step navigation |
 
 **Files affected:**
-- `crates/context-trace/src/graph/visualization.rs` — new Transition variants, QueryInfo extensions
-- `crates/context-search/src/search/mod.rs` — new event emission points
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — new Transition variants, QueryInfo extensions
+- `crates/context-stack/context-search/src/search/mod.rs` — new event emission points
 - `tools/log-viewer/frontend/src/types/generated/` — regenerated
 - `tools/log-viewer/frontend/src/components/HypergraphView/components/QueryPathPanel.tsx` — new
 - `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useVisualizationState.ts`
@@ -238,7 +238,7 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 - `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useVisualizationState.ts`
 - `tools/log-viewer/frontend/src/components/HypergraphView/components/PathChainPanel.tsx`
 - `tools/log-viewer/frontend/src/components/HypergraphView/components/SearchStatePanel.tsx`
-- Possibly `crates/context-search/src/search/mod.rs` — if events need fixing
+- Possibly `crates/context-stack/context-search/src/search/mod.rs` — if events need fixing
 
 **Validation:**
 - Stepping through a full search with rejections shows correct path at each step
@@ -273,10 +273,10 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 | 7.11 | Update SearchStatePanel to distinguish insert path groups visually | ✅ |
 
 **Files affected:**
-- `crates/context-trace/src/graph/visualization.rs` — GraphOpEvent extensions
-- `crates/context-insert/src/visualization.rs` — delta emission
-- `crates/context-insert/src/insert/context.rs` — graph delta emission
-- `crates/context-insert/src/join/context/frontier.rs` — graph delta emission
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — GraphOpEvent extensions
+- `crates/context-stack/context-insert/src/visualization.rs` — delta emission
+- `crates/context-stack/context-insert/src/insert/context.rs` — graph delta emission
+- `crates/context-stack/context-insert/src/join/context/frontier.rs` — graph delta emission
 - `tools/log-viewer/frontend/src/types/generated/` — regenerated
 - `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useVisualizationState.ts`
 - `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useOverlayRenderer.ts`
@@ -310,7 +310,7 @@ Implement 8 features across the viewer toolchain: extract shared infrastructure,
 **Files affected:**
 - `agents/guides/20260301_GRAPH_OP_EVENTS_GUIDE.md` — new
 - `agents/guides/INDEX.md` — updated
-- `crates/context-trace/src/graph/visualization.rs` — doc comment improvements
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — doc comment improvements
 
 **Validation:**
 - Guide covers all Transition variants

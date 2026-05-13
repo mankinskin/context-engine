@@ -447,8 +447,8 @@ fn test_with_position_tracing() {
 
 - **Architecture:** `agents/analysis/20251204_CONTEXT_INSERT_ARCHITECTURE.md`
 - **API Reference:** `agents/CHEAT_SHEET.md` (Position Semantics section)
-- **Crate Guide:** `crates/context-insert/HIGH_LEVEL_GUIDE.md`
-- **Search API:** `crates/context-search/HIGH_LEVEL_GUIDE.md`
+- **Crate Guide:** `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
+- **Search API:** `crates/context-stack/context-search/HIGH_LEVEL_GUIDE.md`
 
 ## Summary
 

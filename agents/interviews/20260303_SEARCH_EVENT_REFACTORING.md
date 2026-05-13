@@ -26,7 +26,7 @@ Critically review the search algorithm's event emission system and refactor it t
 
 #### 1. `PoppedNode` is unnecessary
 
-[iterator.rs](crates/context-search/src/match/iterator.rs#L25-L30) defines `PoppedNode`:
+[iterator.rs](crates/context-stack/context-search/src/match/iterator.rs#L25-L30) defines `PoppedNode`:
 ```rust
 pub(crate) struct PoppedNode {
     pub node: SearchNode,
@@ -43,7 +43,7 @@ pub(crate) struct PoppedNode {
 
 #### 2. `CompareInfo` uses raw `usize` instead of `Token`
 
-[mod.rs](crates/context-search/src/match/mod.rs#L43-L52):
+[mod.rs](crates/context-stack/context-search/src/match/mod.rs#L43-L52):
 ```rust
 pub(crate) struct CompareInfo {
     pub node: usize,
@@ -69,7 +69,7 @@ Both should use `Token` directly. `Token { index: VertexIndex, width: TokenWidth
 
 #### 4. Bloated event emission in `SearchState`
 
-[search/mod.rs](crates/context-search/src/search/mod.rs#L260-L340) — `emit_compare_events` manually translates `CompareInfo` fields into `Transition` variants with duplicated `EdgeRef` construction. The same `EdgeRef { from, to, pattern_idx: 0, sub_index: 0 }` pattern appears 6+ times.
+[search/mod.rs](crates/context-stack/context-search/src/search/mod.rs#L260-L340) — `emit_compare_events` manually translates `CompareInfo` fields into `Transition` variants with duplicated `EdgeRef` construction. The same `EdgeRef { from, to, pattern_idx: 0, sub_index: 0 }` pattern appears 6+ times.
 
 #### 5. `finish_root_cursor` duplicates child extraction
 
@@ -255,7 +255,7 @@ Current `Transition` variants use `node: usize` and `width: usize` separately. S
 2. **Use a `VizNode { index: usize, width: usize }` struct** — similar to `PathNode` in search_path.rs but for Transition
 3. **Keep `usize` fields** — no frontend changes needed; conversion happens at emission site
 
-Note: `PathNode { index: usize, width: usize }` already exists in [search_path.rs](crates/context-trace/src/graph/search_path.rs#L53-L60) and serves exactly this purpose. We could reuse it.
+Note: `PathNode { index: usize, width: usize }` already exists in [search_path.rs](crates/context-stack/context-trace/src/graph/search_path.rs#L53-L60) and serves exactly this purpose. We could reuse it.
 
 **Answer:** Option 2 — Reuse `PathNode { index: usize, width: usize }`. Already Serialize+TS, plain usize fields. Use in both Transition variants and `CompareInfo`/`PrefixChildInfo`.
 
@@ -416,13 +416,13 @@ This pairs each search-path step with the corresponding query-path position.
 
 | File | Changes |
 |------|---------|
-| `crates/context-search/src/match/mod.rs` | `SearchNode` methods, `CompareInfo`→PathNode, `PrefixChildInfo`→PathNode |
-| `crates/context-search/src/match/iterator.rs` | Remove `PoppedNode`, `pop_node`, `process_node`; keep `pop_and_process_one` as primary API |
-| `crates/context-search/src/search/mod.rs` | Clean up `emit_compare_events`, `finish_root_cursor`, add `IntoTransition` impls, hooks around `pop_and_process_one` |
-| `crates/context-search/src/match/root_cursor/advance.rs` | Add event collector to `advance_to_next_match` (phase 2) |
-| `crates/context-trace/src/graph/visualization.rs` | Refactor Transition variants to use `PathNode`, add tentative root concept, query path Transitions |
-| `crates/context-trace/src/graph/search_path.rs` | Extend `VizPathGraph` for tentative root, update `apply_transition` |
-| `crates/context-search/src/tests/search/event_helpers.rs` | Update test helpers for new event shapes |
+| `crates/context-stack/context-search/src/match/mod.rs` | `SearchNode` methods, `CompareInfo`→PathNode, `PrefixChildInfo`→PathNode |
+| `crates/context-stack/context-search/src/match/iterator.rs` | Remove `PoppedNode`, `pop_node`, `process_node`; keep `pop_and_process_one` as primary API |
+| `crates/context-stack/context-search/src/search/mod.rs` | Clean up `emit_compare_events`, `finish_root_cursor`, add `IntoTransition` impls, hooks around `pop_and_process_one` |
+| `crates/context-stack/context-search/src/match/root_cursor/advance.rs` | Add event collector to `advance_to_next_match` (phase 2) |
+| `crates/context-stack/context-trace/src/graph/visualization.rs` | Refactor Transition variants to use `PathNode`, add tentative root concept, query path Transitions |
+| `crates/context-stack/context-trace/src/graph/search_path.rs` | Extend `VizPathGraph` for tentative root, update `apply_transition` |
+| `crates/context-stack/context-search/src/tests/search/event_helpers.rs` | Update test helpers for new event shapes |
 | `tools/log-viewer/frontend/src/` | Update TS types for PathNode in Transitions, tentative root styling, query path rendering |
 
 ---

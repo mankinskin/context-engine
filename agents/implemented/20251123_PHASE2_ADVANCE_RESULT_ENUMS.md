@@ -63,7 +63,7 @@ pub(crate) enum IndexAdvanceResult<EndNode: PathNode = PositionAnnotated<ChildLo
 ### 3. Updated Call Sites (4 match expressions)
 
 **Files modified:**
-- `crates/context-search/src/match/root_cursor.rs` (3 call sites)
+- `crates/context-stack/context-search/src/match/root_cursor.rs` (3 call sites)
 
 **Pattern changes:**
 - `Ok(x)` → `QueryAdvanceResult::Advanced(x)` or `IndexAdvanceResult::Advanced(x)`
@@ -126,11 +126,11 @@ cargo test -p context-search --lib
 
 ## Files Modified
 
-1. `crates/context-search/src/compare/state.rs`
+1. `crates/context-stack/context-search/src/compare/state.rs`
    - Replaced type aliases with enums
    - Updated 2 return sites
 
-2. `crates/context-search/src/match/root_cursor.rs`
+2. `crates/context-stack/context-search/src/match/root_cursor.rs`
    - Added enum imports
    - Updated 4 match expressions
 

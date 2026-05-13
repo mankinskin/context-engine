@@ -39,11 +39,11 @@ Testing revealed that while the MCP server has good tool coverage, several issue
   - `sync_crate_docs` fails entirely
 - **Fix:** Add source_files to each crate's index.yaml
 - **Files:** 
-  - `crates/context-trace/agents/docs/index.yaml`
-  - `crates/context-search/agents/docs/index.yaml`
-  - `crates/context-insert/agents/docs/index.yaml`
-  - `crates/context-read/agents/docs/index.yaml`
-  - `crates/context-trace-macros/agents/docs/index.yaml`
+  - `crates/context-stack/context-trace/agents/docs/index.yaml`
+  - `crates/context-stack/context-search/agents/docs/index.yaml`
+  - `crates/context-stack/context-insert/agents/docs/index.yaml`
+  - `crates/context-stack/context-read/agents/docs/index.yaml`
+  - `crates/context-stack/context-trace-macros/agents/docs/index.yaml`
 
 ### P1: API Quality Improvements
 

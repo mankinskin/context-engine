@@ -7,7 +7,7 @@ summary: The `context-read` crate is the **highest-level abstraction** in the co
 
 **Generated:** 2026-02-06  
 **Crate:** `context-read`  
-**Location:** `context-engine/crates/context-read/`
+**Location:** `context-engine/crates/context-stack/context-read/`
 
 ---
 ## ⚠️ CRITICAL: 13/44 Tests Failing
@@ -324,7 +324,7 @@ The search system correctly reports what it finds. The issue is that `context-re
 
 ### Root Cause Found (2026-02-06)
 
-**Bug Location**: `append_to_pattern()` in [context-trace/src/graph/insert/parents.rs#L122](context-engine/crates/context-trace/src/graph/insert/parents.rs#L122)
+**Bug Location**: `append_to_pattern()` in [context-trace/src/graph/insert/parents.rs#L122](context-engine/crates/context-stack/context-trace/src/graph/insert/parents.rs#L122)
 
 ```rust
 // This line modifies the vertex width IN PLACE:

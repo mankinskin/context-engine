@@ -5,7 +5,7 @@ apply_ts_export_macro.py
 Replaces every ts-gen cfg_attr pair *together with all preceding attributes
 and the item they decorate* with a single ``ts_export! { ... }`` invocation.
 
-The macro is defined in crates/context-api/src/lib.rs and expands back to the
+The macro is defined in crates/context-stack/context-api/src/lib.rs and expands back to the
 two cfg_attr lines, so no behaviour changes — the export_to path string moves
 from N call-sites down to exactly one place.
 
@@ -66,11 +66,11 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 DEFAULT_FILES = [
-    "crates/context-api/src/types.rs",
-    "crates/context-api/src/commands/mod.rs",
-    "crates/context-api/src/commands/export_import.rs",
-    "crates/context-api/src/log_parser.rs",
-    "crates/context-api/src/error.rs",
+    "crates/context-stack/context-api/src/types.rs",
+    "crates/context-stack/context-api/src/commands/mod.rs",
+    "crates/context-stack/context-api/src/commands/export_import.rs",
+    "crates/context-stack/context-api/src/log_parser.rs",
+    "crates/context-stack/context-api/src/error.rs",
 ]
 
 # ---------------------------------------------------------------------------

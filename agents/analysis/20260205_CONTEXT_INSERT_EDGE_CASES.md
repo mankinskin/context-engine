@@ -221,12 +221,12 @@ The validation in context-insert (end_bound=0, empty patterns) works correctly. 
 ## References
 
 - Test files:
-  - `crates/context-insert/src/tests/cases/insert/edge_cases.rs`
-  - `crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs`
-- context-read source: `crates/context-read/src/context/mod.rs`
-- context-search fix: `crates/context-search/src/search/mod.rs`
-- Panic location 1: `crates/context-insert/src/interval/partition/info/range/splits.rs:63`
-- Panic location 2: `crates/context-trace/src/path/structs/rooted/pattern_range.rs:175`
+  - `crates/context-stack/context-insert/src/tests/cases/insert/edge_cases.rs`
+  - `crates/context-stack/context-insert/src/tests/cases/insert/context_read_scenarios.rs`
+- context-read source: `crates/context-stack/context-read/src/context/mod.rs`
+- context-search fix: `crates/context-stack/context-search/src/search/mod.rs`
+- Panic location 1: `crates/context-stack/context-insert/src/interval/partition/info/range/splits.rs:63`
+- Panic location 2: `crates/context-stack/context-trace/src/path/structs/rooted/pattern_range.rs:175`
 - Related docs:
   - `20251204_CONTEXT_INSERT_ARCHITECTURE.md`
   - `20260205_ENTIRE_ROOT_CURSOR_POSITION_FIX.md`

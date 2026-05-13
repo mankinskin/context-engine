@@ -51,24 +51,24 @@ The current API has three problems:
 
 | File | Lines | Change |
 |------|-------|--------|
-| `crates/context-insert/src/insert/outcome.rs` | NEW | New `InsertOutcome` enum definition |
-| `crates/context-insert/src/insert/mod.rs` | L1-9, L15-36 | Add `pub mod outcome;`, add `insert_next_match` to `ToInsertCtx`, deprecate `insert_or_get_complete` |
-| `crates/context-insert/src/insert/context.rs` | L62-67, L158-206 | Add `insert_next_match` impl on `InsertCtx`, add `insert_next_match_impl` |
+| `crates/context-stack/context-insert/src/insert/outcome.rs` | NEW | New `InsertOutcome` enum definition |
+| `crates/context-stack/context-insert/src/insert/mod.rs` | L1-9, L15-36 | Add `pub mod outcome;`, add `insert_next_match` to `ToInsertCtx`, deprecate `insert_or_get_complete` |
+| `crates/context-stack/context-insert/src/insert/context.rs` | L62-67, L158-206 | Add `insert_next_match` impl on `InsertCtx`, add `insert_next_match_impl` |
 
 ### Production Call Site Updates
 
 | File | Lines | Change |
 |------|-------|--------|
-| `crates/context-api/src/commands/insert.rs` | L73-97, L161-185 | Migrate `insert_first_match` and `insert_sequence` to `insert_next_match` |
-| `crates/context-read/src/expansion/mod.rs` | L94-116 | Migrate `ExpansionCtx::new` to `insert_next_match` |
+| `crates/context-stack/context-api/src/commands/insert.rs` | L73-97, L161-185 | Migrate `insert_first_match` and `insert_sequence` to `insert_next_match` |
+| `crates/context-stack/context-read/src/expansion/mod.rs` | L94-116 | Migrate `ExpansionCtx::new` to `insert_next_match` |
 
 ### Test Call Site Updates
 
 | File | Call Count | Change |
 |------|-----------|--------|
-| `crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs` | 2 | Migrate `insert_or_get_complete` → `insert_next_match` |
-| `crates/context-insert/src/tests/cases/insert/expanded_overlap.rs` | 8 | Migrate all `insert_or_get_complete` calls |
-| `crates/context-read/src/tests/cursor.rs` | 12 | Migrate all `insert_or_get_complete` calls |
+| `crates/context-stack/context-insert/src/tests/cases/insert/context_read_scenarios.rs` | 2 | Migrate `insert_or_get_complete` → `insert_next_match` |
+| `crates/context-stack/context-insert/src/tests/cases/insert/expanded_overlap.rs` | 8 | Migrate all `insert_or_get_complete` calls |
+| `crates/context-stack/context-read/src/tests/cursor.rs` | 12 | Migrate all `insert_or_get_complete` calls |
 
 ### Documentation Updates
 
@@ -83,9 +83,9 @@ The current API has three problems:
 
 ### Step 1: Create `InsertOutcome` enum in `outcome.rs`
 
-**File:** `crates/context-insert/src/insert/outcome.rs` (NEW)
+**File:** `crates/context-stack/context-insert/src/insert/outcome.rs` (NEW)
 
-```crates/context-insert/src/insert/outcome.rs#L1-84
+```crates/context-stack/context-insert/src/insert/outcome.rs#L1-84
 use context_search::Response;
 use context_trace::*;
 
@@ -185,13 +185,13 @@ impl InsertOutcome {
 
 ### Step 2: Add `insert_next_match` to `InsertCtx` (parallel to `insert_or_get_complete`)
 
-**File:** `crates/context-insert/src/insert/context.rs`
+**File:** `crates/context-stack/context-insert/src/insert/context.rs`
 
 Add a new method `insert_next_match` and a new internal method `insert_next_match_impl` alongside the existing methods. The existing `insert_or_get_complete` and `insert_impl` remain untouched at this step.
 
 **Add after L67** (after `insert_or_get_complete`):
 
-```crates/context-insert/src/insert/context.rs#L68-73
+```crates/context-stack/context-insert/src/insert/context.rs#L68-73
     #[context_trace::instrument_sig(level = "info", skip(self))]
     pub fn insert_next_match(
         &mut self,
@@ -203,7 +203,7 @@ Add a new method `insert_next_match` and a new internal method `insert_next_matc
 
 **Add after `insert_impl`** (after ~L206, as a new method on `InsertCtx<R>`):
 
-```crates/context-insert/src/insert/context.rs#L208-264
+```crates/context-stack/context-insert/src/insert/context.rs#L208-264
     /// Core implementation for `insert_next_match`.
     ///
     /// Unlike `insert_impl`, this method:
@@ -272,7 +272,7 @@ Add a new method `insert_next_match` and a new internal method `insert_next_matc
 
 **Also add the import at the top of context.rs** (after existing imports):
 
-```crates/context-insert/src/insert/context.rs#L2-3
+```crates/context-stack/context-insert/src/insert/context.rs#L2-3
 use crate::insert::outcome::InsertOutcome;
 use crate::insert::result::ResultExtraction;
 ```
@@ -283,17 +283,17 @@ use crate::insert::result::ResultExtraction;
 
 ### Step 3: Add `insert_next_match` to `ToInsertCtx` trait
 
-**File:** `crates/context-insert/src/insert/mod.rs`
+**File:** `crates/context-stack/context-insert/src/insert/mod.rs`
 
 **Add after `pub mod result;` (L9):**
 
-```crates/context-insert/src/insert/mod.rs#L10
+```crates/context-stack/context-insert/src/insert/mod.rs#L10
 pub mod outcome;
 ```
 
 **Add new trait method after `insert_or_get_complete` (after L36):**
 
-```crates/context-insert/src/insert/mod.rs#L37-43
+```crates/context-stack/context-insert/src/insert/mod.rs#L37-43
     fn insert_next_match(
         &self,
         searchable: impl Searchable<InsertTraversal>,
@@ -304,7 +304,7 @@ pub mod outcome;
 
 **Add re-export at the top of mod.rs for convenience** (after `use context_search::*;` on L5):
 
-```crates/context-insert/src/insert/mod.rs#L6
+```crates/context-stack/context-insert/src/insert/mod.rs#L6
 pub use outcome::InsertOutcome;
 ```
 
@@ -332,7 +332,7 @@ The problem: `InitInterval::from(result)` on L201 of `context.rs` **moves** the 
 
 #### Solution: Clone `Response` Before the Move
 
-`Response` derives `Clone` (confirmed: `#[derive(Debug, Clone, Eq)]` at `crates/context-search/src/state/response.rs` L17). The clone cost is acceptable because:
+`Response` derives `Clone` (confirmed: `#[derive(Debug, Clone, Eq)]` at `crates/context-stack/context-search/src/state/response.rs` L17). The clone cost is acceptable because:
 
 1. **`Response` is small-ish** — it contains a `TraceCache` (HashMap of visited entries), a `MatchResult` (enum + cursor), and a `Vec<GraphOpEvent>`. In practice these are modest-sized for typical queries.
 2. **`Created` is the rare branch** — most calls hit `Complete` or `NoExpansion`, which don't need a clone (they move `result` directly into the outcome).
@@ -433,13 +433,13 @@ This works because:
 
 ### Step 5: Update `context-api` production call sites
 
-**File:** `crates/context-api/src/commands/insert.rs`
+**File:** `crates/context-stack/context-api/src/commands/insert.rs`
 
 #### 5a: `insert_first_match` (L73-97)
 
 **Before** (L73-97):
 
-```crates/context-api/src/commands/insert.rs#L73-97
+```crates/context-stack/context-api/src/commands/insert.rs#L73-97
         // Delegate directly to context-insert's insert_or_get_complete
         let result = <_ as ToInsertCtx<context_trace::IndexWithPath>>::insert_or_get_complete(
             &graph_ref,
@@ -507,7 +507,7 @@ use context_insert::InsertOutcome;
 
 **Before** (L161-185):
 
-```crates/context-api/src/commands/insert.rs#L161-185
+```crates/context-stack/context-api/src/commands/insert.rs#L161-185
         // Delegate directly to context-insert's insert_or_get_complete
         let result = <_ as ToInsertCtx<context_trace::IndexWithPath>>::insert_or_get_complete(
             &graph_ref,
@@ -566,11 +566,11 @@ use context_insert::InsertOutcome;
 
 ### Step 6: Update `context-read` production call site
 
-**File:** `crates/context-read/src/expansion/mod.rs` (L94-116)
+**File:** `crates/context-stack/context-read/src/expansion/mod.rs` (L94-116)
 
 **Before** (L94-116):
 
-```crates/context-read/src/expansion/mod.rs#L94-116
+```crates/context-stack/context-read/src/expansion/mod.rs#L94-116
         } else {
             // No root - use insert_or_get_complete to find longest prefix match
             let result: Result<Result<IndexWithPath, _>, _> =
@@ -651,13 +651,13 @@ No additional import needed — `InsertOutcome` is re-exported from `context_ins
 
 #### 7a: `context_read_scenarios.rs` (2 tests)
 
-**File:** `crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs`
+**File:** `crates/context-stack/context-insert/src/tests/cases/insert/context_read_scenarios.rs`
 
 **Test: `integration_partial_match_no_checkpoint`** (L41-58)
 
 **Before:**
 
-```crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs#L49-58
+```crates/context-stack/context-insert/src/tests/cases/insert/context_read_scenarios.rs#L49-58
     // This mimics what context-read does: insert_or_get_complete
     // Should handle gracefully without panicking
     let result: Result<Result<IndexWithPath, _>, _> =
@@ -697,7 +697,7 @@ No additional import needed — `InsertOutcome` is re-exported from `context_ins
 
 **Before:**
 
-```crates/context-insert/src/tests/cases/insert/context_read_scenarios.rs#L97-106
+```crates/context-stack/context-insert/src/tests/cases/insert/context_read_scenarios.rs#L97-106
     // insert_or_get_complete should handle this without panic
     let result: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(query);
@@ -727,7 +727,7 @@ No additional import needed — `InsertOutcome` is re-exported from `context_ins
 
 #### 7b: `expanded_overlap.rs` (8 tests)
 
-**File:** `crates/context-insert/src/tests/cases/insert/expanded_overlap.rs`
+**File:** `crates/context-stack/context-insert/src/tests/cases/insert/expanded_overlap.rs`
 
 All 8 tests follow the same pattern. Here's the migration template:
 
@@ -771,7 +771,7 @@ All 8 tests follow the same pattern. Here's the migration template:
 
 **Before:**
 
-```crates/context-insert/src/tests/cases/insert/expanded_overlap.rs#L351-366
+```crates/context-stack/context-insert/src/tests/cases/insert/expanded_overlap.rs#L351-366
     let result: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(query.clone());
 
@@ -816,7 +816,7 @@ All 8 tests follow the same pattern. Here's the migration template:
 
 ### Step 8: Update test call sites in `context-read` tests
 
-**File:** `crates/context-read/src/tests/cursor.rs` (12 call sites)
+**File:** `crates/context-stack/context-read/src/tests/cursor.rs` (12 call sites)
 
 All tests follow similar patterns. Here are the migration templates:
 
@@ -824,7 +824,7 @@ All tests follow similar patterns. Here are the migration templates:
 
 **Before** (e.g., `cursor_single_token_exhausts` L138-142):
 
-```crates/context-read/src/tests/cursor.rs#L138-142
+```crates/context-stack/context-read/src/tests/cursor.rs#L138-142
     let result: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(query.clone());
 
@@ -861,7 +861,7 @@ All tests follow similar patterns. Here are the migration templates:
 
 **Before** (e.g., `cursor_repeated_atoms_aa` L227-228):
 
-```crates/context-read/src/tests/cursor.rs#L227-228
+```crates/context-stack/context-read/src/tests/cursor.rs#L227-228
     let result: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(query);
 ```
@@ -883,7 +883,7 @@ Then update downstream matching accordingly (each test has its own assertions).
 
 **Before:**
 
-```crates/context-read/src/tests/cursor.rs#L473-488
+```crates/context-stack/context-read/src/tests/cursor.rs#L473-488
     // Step 1: First insert_or_get_complete
     let result1: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(original_query.to_vec());
@@ -922,7 +922,7 @@ Also update comment on L491-494:
 
 **Before:**
 
-```crates/context-read/src/tests/cursor.rs#L509-510
+```crates/context-stack/context-read/src/tests/cursor.rs#L509-510
     let result: Result<Result<IndexWithPath, _>, _> =
         graph.insert_or_get_complete(query);
 ```
@@ -937,7 +937,7 @@ Also update comment on L491-494:
 
 **Before:**
 
-```crates/context-read/src/tests/cursor.rs#L526-527
+```crates/context-stack/context-read/src/tests/cursor.rs#L526-527
     let result: Result<Result<IndexWithPath, _>, ErrorReason> =
         graph.insert_or_get_complete(query);
 ```
@@ -956,13 +956,13 @@ The downstream `match` on `result` already handles `Err(ErrorReason::SingleIndex
 
 ### Step 9: Deprecate `insert_or_get_complete`
 
-**File:** `crates/context-insert/src/insert/mod.rs`
+**File:** `crates/context-stack/context-insert/src/insert/mod.rs`
 
 Add `#[deprecated]` attribute to the trait method:
 
 **Before** (L31-36):
 
-```crates/context-insert/src/insert/mod.rs#L31-36
+```crates/context-stack/context-insert/src/insert/mod.rs#L31-36
     fn insert_or_get_complete(
         &self,
         searchable: impl Searchable<InsertTraversal>,
@@ -986,13 +986,13 @@ Add `#[deprecated]` attribute to the trait method:
     }
 ```
 
-**File:** `crates/context-insert/src/insert/context.rs`
+**File:** `crates/context-stack/context-insert/src/insert/context.rs`
 
 Add `#[deprecated]` attribute to the impl method:
 
 **Before** (L62-67):
 
-```crates/context-insert/src/insert/context.rs#L62-67
+```crates/context-stack/context-insert/src/insert/context.rs#L62-67
     pub(crate) fn insert_or_get_complete(
         &mut self,
         searchable: impl Searchable<InsertTraversal> + Debug,

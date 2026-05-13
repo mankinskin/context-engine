@@ -20,17 +20,17 @@ Refactor the search algorithm's event emission system to eliminate duplication, 
 ### Files Affected
 
 **Rust (context-trace):**
-- `crates/context-trace/src/graph/visualization.rs` — Transition variants → PathNode, tentative root
-- `crates/context-trace/src/graph/search_path.rs` — VizPathGraph tentative root field, apply_transition updates
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — Transition variants → PathNode, tentative root
+- `crates/context-stack/context-trace/src/graph/search_path.rs` — VizPathGraph tentative root field, apply_transition updates
 
 **Rust (context-search):**
-- `crates/context-search/src/match/mod.rs` — SearchNode methods, CompareInfo/PrefixChildInfo → PathNode
-- `crates/context-search/src/match/iterator.rs` — Remove PoppedNode/pop_node/process_node, BfsStepResult cleanup
-- `crates/context-search/src/match/root_cursor/advance.rs` — Event collector in advance_to_next_match (Phase 7)
-- `crates/context-search/src/match/root_cursor/core.rs` — RootAdvanceResult enrichment
-- `crates/context-search/src/search/mod.rs` — SearchState event emission cleanup, IntoTransition impls, query path stream
-- `crates/context-search/src/tests/search/event_helpers.rs` — Update helpers for PathNode-based events
-- `crates/context-search/src/tests/search/*.rs` — Update event assertions
+- `crates/context-stack/context-search/src/match/mod.rs` — SearchNode methods, CompareInfo/PrefixChildInfo → PathNode
+- `crates/context-stack/context-search/src/match/iterator.rs` — Remove PoppedNode/pop_node/process_node, BfsStepResult cleanup
+- `crates/context-stack/context-search/src/match/root_cursor/advance.rs` — Event collector in advance_to_next_match (Phase 7)
+- `crates/context-stack/context-search/src/match/root_cursor/core.rs` — RootAdvanceResult enrichment
+- `crates/context-stack/context-search/src/search/mod.rs` — SearchState event emission cleanup, IntoTransition impls, query path stream
+- `crates/context-stack/context-search/src/tests/search/event_helpers.rs` — Update helpers for PathNode-based events
+- `crates/context-stack/context-search/src/tests/search/*.rs` — Update event assertions
 
 **Frontend (log-viewer):**
 - `tools/log-viewer/frontend/src/types/generated/Transition.ts` — Auto-generated (ts-rs)

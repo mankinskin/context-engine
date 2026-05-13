@@ -17,7 +17,7 @@ This guide explains how BandChain generates decompositions through expansion, an
 
 ### BandChain
 
-**Location:** `crates/context-read/src/expansion/chain/mod.rs`
+**Location:** `crates/context-stack/context-read/src/expansion/chain/mod.rs`
 
 A BandChain is an ordered collection (BTreeSet) of Band structures that tracks sequential expansions and overlap decompositions during context reading.
 
@@ -36,7 +36,7 @@ pub(crate) struct BandChain {
 
 ### Band
 
-**Location:** `crates/context-read/src/expansion/chain/band.rs`
+**Location:** `crates/context-stack/context-read/src/expansion/chain/band.rs`
 
 ```rust
 pub(crate) struct Band {
@@ -50,7 +50,7 @@ Bands are ordered in the BTreeSet by their `end_bound`, allowing efficient looku
 
 ### OverlapLink
 
-**Location:** `crates/context-read/src/expansion/chain/link.rs`
+**Location:** `crates/context-stack/context-read/src/expansion/chain/link.rs`
 
 Represents the overlap between two tokens in a decomposition, capturing the dual perspective of the overlap region.
 
@@ -78,7 +78,7 @@ pub(crate) struct OverlapLink {
 
 ### RolePath
 
-**Location:** `crates/context-trace/src/path/structs/rooted/role_path.rs`
+**Location:** `crates/context-stack/context-trace/src/path/structs/rooted/role_path.rs`
 
 Paths have directional semantics through the `PathRole` trait:
 - `RolePath<Start>` - Path with Start role (bottom-up, then top-down from expansion)
@@ -199,7 +199,7 @@ The `ComplementBuilder` uses the paths from `ExpansionLink`:
 
 ### ExpansionLink
 
-**Location:** `crates/context-read/src/expansion/link.rs`
+**Location:** `crates/context-stack/context-read/src/expansion/link.rs`
 
 ```rust
 pub(crate) struct ExpansionLink {
@@ -306,12 +306,12 @@ Potential improvements to the overlap link system:
 
 ## Related Files
 
-- `crates/context-read/src/expansion/chain/mod.rs` - BandChain implementation
-- `crates/context-read/src/expansion/chain/link.rs` - OverlapLink, ChainOp types
-- `crates/context-read/src/expansion/chain/band.rs` - Band structure
-- `crates/context-read/src/expansion/mod.rs` - ExpansionCtx and expansion logic
-- `crates/context-read/src/expansion/chain/expand.rs` - ExpandCtx postfix iteration
-- `crates/context-read/src/complement.rs` - ComplementBuilder
-- `crates/context-read/src/context/root.rs` - commit_chain function
-- `crates/context-trace/src/path/structs/rooted/` - Path type definitions
+- `crates/context-stack/context-read/src/expansion/chain/mod.rs` - BandChain implementation
+- `crates/context-stack/context-read/src/expansion/chain/link.rs` - OverlapLink, ChainOp types
+- `crates/context-stack/context-read/src/expansion/chain/band.rs` - Band structure
+- `crates/context-stack/context-read/src/expansion/mod.rs` - ExpansionCtx and expansion logic
+- `crates/context-stack/context-read/src/expansion/chain/expand.rs` - ExpandCtx postfix iteration
+- `crates/context-stack/context-read/src/complement.rs` - ComplementBuilder
+- `crates/context-stack/context-read/src/context/root.rs` - commit_chain function
+- `crates/context-stack/context-trace/src/path/structs/rooted/` - Path type definitions
 - `agents/analysis/ALTERNATE_DECOMPOSITION_ANALYSIS.md` - Algorithm analysis and examples

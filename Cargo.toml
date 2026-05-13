@@ -6,13 +6,13 @@ members = [
   "memory-viewers/memory-api/crates/rule-api",
   "memory-viewers/memory-api/crates/ticket-api",
   "memory-viewers/memory-api/crates/spec-api",
-  "crates/context-search",
-  "crates/context-insert",
-  "crates/context-read",
-  "crates/context-trace",
-  "crates/context-trace-macros",
-  "crates/context-api",
-  "crates/ngrams",
+  "crates/context-stack/context-search",
+  "crates/context-stack/context-insert",
+  "crates/context-stack/context-read",
+  "crates/context-stack/context-trace",
+  "crates/context-stack/context-trace-macros",
+  "crates/context-stack/context-api",
+  "crates/context-stack/ngrams",
   "tools/viewer/doc-viewer",
   "tools/viewer/log-viewer",
   "tools/viewer/log-viewer/frontend/dioxus",
@@ -42,7 +42,10 @@ members = [
   "tools/context-editor/kernel",
   "tools/context-editor/sandbox-app",
 ]
-exclude = ["./crates/deps/petgraph", "./crates/deps/justlog"]
+exclude = [
+  "./crates/context-stack/deps/petgraph",
+  "./crates/deps/justlog",
+]
 
 [profile.dev]
 debug = true

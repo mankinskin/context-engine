@@ -242,11 +242,11 @@ Does this ordering make sense, or do you prefer a different sequence?
 - `tools/log-viewer/frontend/src/components/HypergraphView/layout.ts` — layout algorithms
 
 **Event emission (Rust):**
-- `crates/context-trace/src/graph/visualization.rs` — `GraphOpEvent`, `Transition`, `LocationInfo`, `OperationType`, `QueryInfo`
-- `crates/context-search/src/search/mod.rs` — search event emission (~10 call sites)
-- `crates/context-insert/src/visualization.rs` — insert event helpers
-- `crates/context-insert/src/insert/context.rs` — split/join event emission
-- `crates/context-insert/src/join/context/frontier.rs` — join step events
+- `crates/context-stack/context-trace/src/graph/visualization.rs` — `GraphOpEvent`, `Transition`, `LocationInfo`, `OperationType`, `QueryInfo`
+- `crates/context-stack/context-search/src/search/mod.rs` — search event emission (~10 call sites)
+- `crates/context-stack/context-insert/src/visualization.rs` — insert event helpers
+- `crates/context-stack/context-insert/src/insert/context.rs` — split/join event emission
+- `crates/context-stack/context-insert/src/join/context/frontier.rs` — join step events
 
 **Shared infrastructure:**
 - `tools/viewer-api/src/lib.rs` — Rust server infrastructure

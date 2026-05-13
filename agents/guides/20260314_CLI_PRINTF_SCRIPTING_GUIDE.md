@@ -399,7 +399,7 @@ context-cli insert-sequence demo ab || echo "Insert failed"
 ## Related Documentation
 
 - **Context-API insert semantics:** `agents/guides/20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md`
-- **Context-API README:** `crates/context-api/README.md`
+- **Context-API README:** `crates/context-stack/context-api/README.md`
 - **Insert algorithm guide:** `agents/guides/20251203_CONTEXT_INSERT_GUIDE.md`
 - **CLI source:** `tools/context-cli/src/main.rs` (subcommands), `tools/context-cli/src/repl.rs` (REPL)
 - **Output formatting:** `tools/context-cli/src/output.rs`

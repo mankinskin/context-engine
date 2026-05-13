@@ -22,7 +22,7 @@ The `test_split_cache1` test was failing with `PoisonError` because other tests 
 
 ### Code Changes
 
-**File:** `crates/context-trace/src/tests/env/mod.rs`
+**File:** `crates/context-stack/context-trace/src/tests/env/mod.rs`
 
 Replaced:
 ```rust

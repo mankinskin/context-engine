@@ -8,7 +8,7 @@ status: 🔧
 
 ## Objective
 
-Refactor `tools/viewer-api` and `tools/log-viewer` so that **all context-engine domain logic** (workspace management, graph operations, log parsing, log querying, tracing capture) is served exclusively by `tools/context-http` and `crates/context-api`.  The viewer tools become **thin frontend-server shells** that:
+Refactor `tools/viewer-api` and `tools/log-viewer` so that **all context-engine domain logic** (workspace management, graph operations, log parsing, log querying, tracing capture) is served exclusively by `tools/context-http` and `crates/context-stack/context-api`.  The viewer tools become **thin frontend-server shells** that:
 
 1. Depend on `context-http` (as a library) for the canonical REST/RPC API surface.
 2. Retain **only** viewer-specific concerns: frontend serving (Vite dev proxy, static files), session management, source-file resolution, and any UI-specific presentation endpoints.
@@ -21,7 +21,7 @@ This sets the stage for a frontend redesign where the Preact SPA talks to the un
 ### Prerequisites
 
 - **Phase 4 complete** — `tools/context-http` exists with `POST /api/execute`, REST convenience endpoints, error mapping, and `AppState` wrapping `Arc<Mutex<WorkspaceManager>>`.
-- **Phase 3.1 complete** — Log commands (`ListLogs`, `GetLog`, `QueryLog`, `AnalyzeLog`, `SearchLogs`, `DeleteLog`, `DeleteLogs`) are implemented in `crates/context-api` and accessible via `context-http`'s RPC endpoint.
+- **Phase 3.1 complete** — Log commands (`ListLogs`, `GetLog`, `QueryLog`, `AnalyzeLog`, `SearchLogs`, `DeleteLog`, `DeleteLogs`) are implemented in `crates/context-stack/context-api` and accessible via `context-http`'s RPC endpoint.
 - **`viewer-api`** is a shared library used by `log-viewer`, `doc-viewer`, and `context-http`.
 - **`log-viewer`** is a full-stack tool (Rust backend + Preact frontend) that currently implements its own log-reading, parsing, searching, and querying handlers by directly calling `viewer_api::log_parser` and `viewer_api::query`.
 
@@ -273,8 +273,8 @@ pub struct LogFileInfo {
 
 Update `commands::logs::list_logs` to scan the first 64KB of each file for the marker strings (same logic as `log-viewer/handlers.rs::list_logs`).
 
-- [x] Modify `crates/context-api/src/types.rs` — add 4 boolean fields to `LogFileInfo`
-- [x] Modify `crates/context-api/src/commands/logs.rs` — add feature-flag scanning to `list_logs`
+- [x] Modify `crates/context-stack/context-api/src/types.rs` — add 4 boolean fields to `LogFileInfo`
+- [x] Modify `crates/context-stack/context-api/src/commands/logs.rs` — add feature-flag scanning to `list_logs`
 - [x] Add tests for the new fields (`test_list_logs_feature_flags`, `test_list_logs_feature_flags_escaped_format`)
 - [x] Verification: `cargo test -p context-api` passes (24/24 log tests pass)
 

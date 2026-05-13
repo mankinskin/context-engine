@@ -8,7 +8,7 @@ status: 📋
 
 ## Objective
 
-Create the `crates/context-api` library crate and `tools/context-cli` binary crate from scratch. This phase delivers the core workspace model (create, open, close, save, delete), basic graph commands (add atoms, add simple patterns, get/list vertices), bincode persistence with explicit commit semantics, a unified error model, and a fully functional CLI with subcommands and interactive REPL.
+Create the `crates/context-stack/context-api` library crate and `tools/context-cli` binary crate from scratch. This phase delivers the core workspace model (create, open, close, save, delete), basic graph commands (add atoms, add simple patterns, get/list vertices), bincode persistence with explicit commit semantics, a unified error model, and a fully functional CLI with subcommands and interactive REPL.
 
 ## Context
 
@@ -55,7 +55,7 @@ Master plan: `agents/plans/20260310_PLAN_CONTEXT_API_OVERVIEW.md`
 
 All files are **new** (greenfield):
 
-**`crates/context-api/`:**
+**`crates/context-stack/context-api/`:**
 - `Cargo.toml`
 - `README.md`
 - `src/lib.rs`
@@ -85,7 +85,7 @@ All files are **new** (greenfield):
 - `src/output.rs`
 
 **Workspace root:**
-- `Cargo.toml` — add `crates/context-api` and `tools/context-cli` to `[workspace.members]`
+- `Cargo.toml` — add `crates/context-stack/context-api` and `tools/context-cli` to `[workspace.members]`
 
 ---
 
@@ -123,15 +123,15 @@ A working `tools/context-cli` binary that:
 
 ### Step 1: Workspace Setup — Cargo.toml and Crate Skeleton
 
-**1.1** Add `crates/context-api` and `tools/context-cli` to workspace `Cargo.toml`:
+**1.1** Add `crates/context-stack/context-api` and `tools/context-cli` to workspace `Cargo.toml`:
 
 ```toml
 # In root Cargo.toml [workspace] members list, add:
-"crates/context-api",
+"crates/context-stack/context-api",
 "tools/context-cli",
 ```
 
-**1.2** Create `crates/context-api/Cargo.toml`:
+**1.2** Create `crates/context-stack/context-api/Cargo.toml`:
 
 ```toml
 [package]
@@ -180,7 +180,7 @@ name = "context-cli"
 path = "src/main.rs"
 
 [dependencies]
-context-api = { path = "../../crates/context-api" }
+context-api = { path = "../../crates/context-stack/context-api" }
 clap = { version = "4", features = ["derive"] }
 rustyline = "14"
 serde_json = "1"
@@ -188,7 +188,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 ```
 
-**1.4** Create minimal `crates/context-api/src/lib.rs`:
+**1.4** Create minimal `crates/context-stack/context-api/src/lib.rs`:
 
 ```rust
 pub mod error;
@@ -1304,7 +1304,7 @@ All tests use `tempfile::TempDir` as the base directory to avoid filesystem poll
 
 ### Step 17: README
 
-**File:** `crates/context-api/README.md`
+**File:** `crates/context-stack/context-api/README.md`
 
 Brief description of the crate's purpose, feature flags, quick usage example, and pointer to the CLI.
 

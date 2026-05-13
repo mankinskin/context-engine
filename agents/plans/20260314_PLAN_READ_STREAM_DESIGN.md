@@ -146,20 +146,20 @@ Self {
 
 | File | Change |
 |------|--------|
-| `crates/context-read/src/segment.rs` | Replace `SegmentIter` internals: `Peekable<IntoIter<NewAtomIndex>>` → generic `Peekable<I>` over lazy iterator |
-| `crates/context-read/src/context/mod.rs` | Add `from_reader()` constructor; refactor `ReadCtx::new()` to use lazy resolution; add `ReadSequenceIter` wrapper |
-| `crates/context-read/src/context/has_read_context.rs` | Update `HasReadCtx` trait to support `from_reader` |
-| `crates/context-read/src/request.rs` | Add `RequestInput::Reader` variant or `from_reader` method |
-| `crates/context-read/src/lib.rs` | Re-export `ReadSequenceIter` if public |
-| `crates/context-read/Cargo.toml` | Remove unused async deps (`async-std`, `futures`, `async-trait`, `async-recursion`, `pin-project-lite`); keep `tokio` + `tokio-stream` behind feature flag |
-| `crates/context-read/src/expansion/mod.rs` | Add `debug_assert!` for multi-band invariant in `ExpansionCtx::next()` |
+| `crates/context-stack/context-read/src/segment.rs` | Replace `SegmentIter` internals: `Peekable<IntoIter<NewAtomIndex>>` → generic `Peekable<I>` over lazy iterator |
+| `crates/context-stack/context-read/src/context/mod.rs` | Add `from_reader()` constructor; refactor `ReadCtx::new()` to use lazy resolution; add `ReadSequenceIter` wrapper |
+| `crates/context-stack/context-read/src/context/has_read_context.rs` | Update `HasReadCtx` trait to support `from_reader` |
+| `crates/context-stack/context-read/src/request.rs` | Add `RequestInput::Reader` variant or `from_reader` method |
+| `crates/context-stack/context-read/src/lib.rs` | Re-export `ReadSequenceIter` if public |
+| `crates/context-stack/context-read/Cargo.toml` | Remove unused async deps (`async-std`, `futures`, `async-trait`, `async-recursion`, `pin-project-lite`); keep `tokio` + `tokio-stream` behind feature flag |
+| `crates/context-stack/context-read/src/expansion/mod.rs` | Add `debug_assert!` for multi-band invariant in `ExpansionCtx::next()` |
 
 ### Secondary (Documentation Only)
 
 | File | Change |
 |------|--------|
-| `crates/context-read/HIGH_LEVEL_GUIDE.md` | Update iterator architecture section |
-| `crates/context-read/src/expansion/chain/mod.rs` | Add doc comments describing the async yield point pattern |
+| `crates/context-stack/context-read/HIGH_LEVEL_GUIDE.md` | Update iterator architecture section |
+| `crates/context-stack/context-read/src/expansion/chain/mod.rs` | Add doc comments describing the async yield point pattern |
 
 ---
 
@@ -311,7 +311,7 @@ impl<C: Iterator<Item = char>> Iterator for LazyAtomIter<C> {
 }
 ```
 
-**Files:** `crates/context-read/src/segment.rs`
+**Files:** `crates/context-stack/context-read/src/segment.rs`
 **Test:** Unit test with `Cursor::new(b"hello")` verifying lazy resolution produces correct `NewAtomIndex` sequence.
 
 ---
@@ -352,7 +352,7 @@ impl<I: Iterator<Item = NewAtomIndex>> SegmentIter<I> {
 pub(crate) type ErasedSegmentIter = SegmentIter<Box<dyn Iterator<Item = NewAtomIndex>>>;
 ```
 
-**Files:** `crates/context-read/src/segment.rs`, `crates/context-read/src/context/mod.rs`
+**Files:** `crates/context-stack/context-read/src/segment.rs`, `crates/context-stack/context-read/src/context/mod.rs`
 **Test:** Existing `SegmentIter` tests still pass; new test with `LazyAtomIter` produces identical segments.
 
 ---
@@ -424,7 +424,7 @@ impl Iterator for ReadSequenceIter {
 }
 ```
 
-**Files:** `crates/context-read/src/context/mod.rs`, `crates/context-read/src/lib.rs`
+**Files:** `crates/context-stack/context-read/src/context/mod.rs`, `crates/context-stack/context-read/src/lib.rs`
 **Test:** Iterate `ReadSequenceIter` over "abcab", verify two segments yielded with correct types.
 
 ---
@@ -461,7 +461,7 @@ features = ["sync", "time", "io-util"]
 
 **Verification:** `cargo check -p context-read` succeeds. `cargo check -p context-read --features async` succeeds.
 
-**Files:** `crates/context-read/Cargo.toml`
+**Files:** `crates/context-stack/context-read/Cargo.toml`
 
 ---
 
@@ -494,7 +494,7 @@ impl ReadCtx {
 
 > **Note:** Proper UTF-8 decoding from `impl Read` should use a crate like `utf8-read` or manually decode with `String::from_utf8_lossy` on buffered chunks. The exact decoding strategy is an implementation detail.
 
-**Files:** `crates/context-read/src/context/mod.rs`
+**Files:** `crates/context-stack/context-read/src/context/mod.rs`
 **Test:** `ReadCtx::from_reader(graph, Cursor::new(b"hello"))` produces same result as `ReadCtx::new(graph, "hello".chars())`.
 
 ---
@@ -507,7 +507,7 @@ impl ReadCtx {
 
 See [Future Async Stream Pattern](#future-async-stream-pattern) section below.
 
-**Files:** `crates/context-read/src/expansion/chain/mod.rs` (doc comments), `crates/context-read/HIGH_LEVEL_GUIDE.md`
+**Files:** `crates/context-stack/context-read/src/expansion/chain/mod.rs` (doc comments), `crates/context-stack/context-read/HIGH_LEVEL_GUIDE.md`
 
 ---
 
@@ -537,7 +537,7 @@ fn next(&mut self) -> Option<Self::Item> {
 }
 ```
 
-**Files:** `crates/context-read/src/expansion/mod.rs`
+**Files:** `crates/context-stack/context-read/src/expansion/mod.rs`
 **Test:** Existing tests pass. Add a `#[test] #[should_panic]` test that calls `.next()` without committing after overlap.
 
 ---
@@ -780,7 +780,7 @@ cargo test -p context-read -p context-insert -p context-search
 | Generic `SegmentIter<I>` propagates type parameter through `ReadCtx`, making API complex | Medium | Medium | Use type erasure (`Box<dyn Iterator>`) at `ReadCtx` boundary. Small runtime cost (vtable dispatch per atom) is negligible vs. graph operations. |
 | Lazy resolution changes timing of atom creation vs. eager | Low | Low | Proven equivalent (see Analysis section). Both approaches create atoms on first encounter. Add property test comparing lazy vs. eager on random strings. |
 | Graph state changes between `LazyAtomIter.next()` calls | Low | Low | Already handled by interior mutability. The expansion pipeline mutates the graph during processing. Atom insertion is strictly additive (never removes/modifies existing atoms). |
-| Removing async deps breaks downstream crates | Low | High | `grep -r "async-std\|async-trait\|async-recursion\|futures\|pin-project-lite" crates/context-read/src/` confirms zero usage. Run full workspace `cargo check` after removal. |
+| Removing async deps breaks downstream crates | Low | High | `grep -r "async-std\|async-trait\|async-recursion\|futures\|pin-project-lite" crates/context-stack/context-read/src/` confirms zero usage. Run full workspace `cargo check` after removal. |
 | `from_reader` UTF-8 decoding edge cases (multi-byte chars, BOM, invalid sequences) | Medium | Medium | Use `std::io::BufRead::lines()` or a proper UTF-8 streaming decoder. Add tests with non-ASCII input (emoji, CJK, mixed scripts). |
 | `ReadSequenceIter` changes public API surface | Low | Low | `ReadCtx::read_sequence()` remains the primary entry point. `ReadSequenceIter` is additive — new API for users who want segment-by-segment control. |
 | `debug_assert` in `ExpansionCtx::next()` triggers in existing tests | Low | Medium | The current `BlockExpansionCtx::process()` loop commits overlap state before calling `next()` again. If any test fails, it reveals an existing bug in the commit protocol. |

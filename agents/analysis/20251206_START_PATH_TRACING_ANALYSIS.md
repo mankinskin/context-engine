@@ -39,7 +39,7 @@ patterns (hierarchical):
 
 ### When Parent Exploration is Triggered
 
-File: `crates/context-search/src/match/root_cursor/advance.rs:359`
+File: `crates/context-stack/context-search/src/match/root_cursor/advance.rs:359`
 
 ```rust
 pub(crate) fn create_parent_exploration_state(&self) -> MatchResult {
@@ -64,7 +64,7 @@ pub(crate) fn create_parent_exploration_state(&self) -> MatchResult {
 
 ### Trace Execution
 
-File: `crates/context-trace/src/trace/traceable/mod.rs:148-171`
+File: `crates/context-stack/context-trace/src/trace/traceable/mod.rs:148-171`
 
 ```rust
 impl IntoRootCommand<Start> for RangeCommand {
@@ -124,7 +124,7 @@ The intermediate parent `cdefg` should be added to the cache during this travers
 
 ### 1. Parent Exploration (find_ancestor)
 
-File: `crates/context-search/src/search/mod.rs:240-243`
+File: `crates/context-stack/context-search/src/search/mod.rs:240-243`
 
 ```rust
 RootEndResult::Inconclusive(need_parent_cursor) => {
@@ -139,7 +139,7 @@ When root cursor exhausted but query continues, creates a `MatchResult` with pat
 
 ### 2. Final State Tracing
 
-File: `crates/context-search/src/search/mod.rs:168-169`
+File: `crates/context-stack/context-search/src/search/mod.rs:168-169`
 
 ```rust
 let trace_ctx = &mut self.matches.trace_ctx;
@@ -151,7 +151,7 @@ The final matched state (including parent exploration state) is traced, which ca
 
 ### 3. Trace Cache Population
 
-File: `crates/context-trace/src/trace/traceable/mod.rs:219-237`
+File: `crates/context-stack/context-trace/src/trace/traceable/mod.rs:219-237`
 
 ```rust
 impl Traceable for RangeCommand {
@@ -191,7 +191,7 @@ For query `[d, e, f, g, h]` finding `cdefghi`:
 
 **Problem**: When creating `PostfixRootCommand` during parent exploration, the code overwrites the position of the last traced vertex with the entry position of the new root. This creates a direct edge that skips intermediate parents.
 
-**Location**: `crates/context-trace/src/trace/traceable/mod.rs:163`
+**Location**: `crates/context-stack/context-trace/src/trace/traceable/mod.rs:163`
 
 **Solution**: Need to trace the full bottom-up path from the last matched parent through ALL intermediate parents to the new root, not just update the position.
 

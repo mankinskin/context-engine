@@ -18,7 +18,7 @@ This violated the invariant that for `EntireRoot` matches, the cursor position s
 
 ## Root Cause
 
-In `crates/context-search/src/search/mod.rs` lines 140-162, the "no matches found" case created:
+In `crates/context-stack/context-search/src/search/mod.rs` lines 140-162, the "no matches found" case created:
 ```rust
 let raw_cursor = PatternCursor {
     atom_position: AtomPosition::default(),  // ❌ Wrong: was 0
@@ -30,12 +30,12 @@ let raw_cursor = PatternCursor {
 
 | File | Change |
 |------|--------|
-| `crates/context-search/src/search/mod.rs` | Fixed "no matches found" case to use `AtomPosition::from(token_width)` instead of `AtomPosition::default()` |
-| `crates/context-search/src/search/mod.rs` | Updated both `MatchResult` creation sites to use `MatchResult::new()` |
-| `crates/context-search/src/state/matched/mod.rs` | Added `MatchResult::new()` constructor with invariant validation |
-| `crates/context-search/src/state/matched/mod.rs` | Added `validate_entire_root_invariant()` with `debug_assert_eq!` |
-| `crates/context-search/src/tests/search/mod.rs` | Added 2 new tests for the invariant |
-| `crates/context-insert/src/interval/init.rs` | Changed to use `cursor_position()` instead of `matched_end_position()` |
+| `crates/context-stack/context-search/src/search/mod.rs` | Fixed "no matches found" case to use `AtomPosition::from(token_width)` instead of `AtomPosition::default()` |
+| `crates/context-stack/context-search/src/search/mod.rs` | Updated both `MatchResult` creation sites to use `MatchResult::new()` |
+| `crates/context-stack/context-search/src/state/matched/mod.rs` | Added `MatchResult::new()` constructor with invariant validation |
+| `crates/context-stack/context-search/src/state/matched/mod.rs` | Added `validate_entire_root_invariant()` with `debug_assert_eq!` |
+| `crates/context-stack/context-search/src/tests/search/mod.rs` | Added 2 new tests for the invariant |
+| `crates/context-stack/context-insert/src/interval/init.rs` | Changed to use `cursor_position()` instead of `matched_end_position()` |
 
 ## API
 

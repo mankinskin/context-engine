@@ -58,7 +58,7 @@ When advancing a `Checkpointed<C>` cursor:
 
 ### 1. Implement StateAdvance for Checkpointed<PathCursor<P, Matched>>
 
-**Location:** `crates/context-search/src/cursor/checkpointed.rs`
+**Location:** `crates/context-stack/context-search/src/cursor/checkpointed.rs`
 
 **Requirements:**
 - `P: Clone + Advance` (where `Advance` is `MovePath<Right, End>` from context-trace)
@@ -112,7 +112,7 @@ where
 
 ### 2. Implement StateAdvance for Checkpointed<ChildCursor<Matched, EndNode>>
 
-**Location:** `crates/context-search/src/cursor/checkpointed.rs`
+**Location:** `crates/context-stack/context-search/src/cursor/checkpointed.rs`
 
 **Requirements:**
 - `EndNode: PathNode + Clone`
@@ -169,7 +169,7 @@ where
 
 ### 3. Add Required Imports
 
-**Location:** `crates/context-search/src/cursor/checkpointed.rs`
+**Location:** `crates/context-stack/context-search/src/cursor/checkpointed.rs`
 
 Add to imports section:
 ```rust
@@ -182,7 +182,7 @@ use context_trace::{
 
 ### 4. Update mod.rs to Export StateAdvance Usage
 
-**Location:** `crates/context-search/src/cursor/mod.rs`
+**Location:** `crates/context-stack/context-search/src/cursor/mod.rs`
 
 Ensure trait is accessible where needed (check if re-export needed).
 

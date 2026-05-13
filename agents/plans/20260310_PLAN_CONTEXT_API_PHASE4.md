@@ -14,7 +14,7 @@ Create `tools/context-http`, a thin binary crate that exposes the entire `contex
 
 ### Prerequisites
 
-- **Phase 1 complete** — `crates/context-api` exists with workspace management, atom/pattern commands, persistence.
+- **Phase 1 complete** — `crates/context-stack/context-api` exists with workspace management, atom/pattern commands, persistence.
 - **Phase 2 complete** — Algorithm commands (search, insert, read) and the full `Command` enum with `execute()` dispatch are in place.
 - **Phase 3 complete** (recommended, not required) — MCP adapter validates the `Command`/`CommandResult` JSON contract end-to-end.
 
@@ -168,7 +168,7 @@ default = []
 graphql = ["dep:async-graphql", "dep:async-graphql-axum"]
 
 [dependencies]
-context-api = { path = "../../crates/context-api" }
+context-api = { path = "../../crates/context-stack/context-api" }
 viewer-api = { path = "../viewer-api" }
 
 axum = { version = "0.8", features = ["json"] }

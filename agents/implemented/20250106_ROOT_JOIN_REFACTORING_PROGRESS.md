@@ -61,17 +61,17 @@ Implemented new `root.rs` module for root node joining with support for Prefix, 
 
 ## Files Changed
 
-- `crates/context-insert/src/join/context/node/root.rs` (NEW, ~500 lines)
+- `crates/context-stack/context-insert/src/join/context/node/root.rs` (NEW, ~500 lines)
   - `join_root_partitions()` - entry point
   - `join_postfix_root()` - postfix handling
   - `join_prefix_root()` - prefix handling  
   - `join_infix_root()` - infix handling
 
-- `crates/context-insert/src/join/context/node/context.rs`
+- `crates/context-stack/context-insert/src/join/context/node/context.rs`
   - `join_root_partitions()` now delegates to `root.rs`
   - Legacy functions marked `#[allow(dead_code)]`
 
-- `crates/context-insert/src/join/context/node/mod.rs`
+- `crates/context-stack/context-insert/src/join/context/node/mod.rs`
   - Added `pub mod root;`
 
 ## Next Steps

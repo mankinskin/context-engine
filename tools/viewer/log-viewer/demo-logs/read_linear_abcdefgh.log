@@ -10,7 +10,7 @@
     "message": "Test tracing initialized",
     "test_name": "linear_read_unique_chars"
   },
-  "filename": "crates/context-trace/src/logging/tracing_utils/test_tracing.rs",
+  "filename": "crates/context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs",
   "level": "INFO",
   "line_number": 299,
   "target": "context_trace::logging::tracing_utils::test_tracing",
@@ -21,7 +21,7 @@
   "fields": {
     "message": "New ReadCtx"
   },
-  "filename": "crates/context-read/src/context/mod.rs",
+  "filename": "crates/context-stack/context-read/src/context/mod.rs",
   "level": "DEBUG",
   "line_number": 44,
   "target": "context_read::context",
@@ -79,7 +79,7 @@
     },
     "unknown_len": 8
   },
-  "filename": "crates/context-read/src/context/mod.rs",
+  "filename": "crates/context-stack/context-read/src/context/mod.rs",
   "level": "DEBUG",
   "line_number": 72,
   "target": "context_read::context",
@@ -191,7 +191,7 @@
     "message": "graph_snapshot",
     "node_count": 9
   },
-  "filename": "crates/context-trace/src/graph/snapshot.rs",
+  "filename": "crates/context-stack/context-trace/src/graph/snapshot.rs",
   "level": "INFO",
   "line_number": 112,
   "target": "context_trace::graph::snapshot",

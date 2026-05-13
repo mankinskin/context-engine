@@ -57,7 +57,7 @@ All failures stem from position calculation discrepancies between:
 
 **Updated Files:**
 
-#### `crates/context-insert/HIGH_LEVEL_GUIDE.md`
+#### `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md`
 - ✅ Clarified InitInterval.end_bound semantics (uses checkpoint_position)
 - ✅ Added "Position Semantics (Critical Understanding)" section
 - ✅ Added "Search-Insert Interoperability" section (100+ lines)
@@ -223,7 +223,7 @@ All failures trace to **position calculation semantics**:
 - `agents/implemented/20251204_CONTEXT_INSERT_DOCUMENTATION_UPDATE.md` (this file)
 
 ### Updated
-- `crates/context-insert/HIGH_LEVEL_GUIDE.md` (added 120+ lines)
+- `crates/context-stack/context-insert/HIGH_LEVEL_GUIDE.md` (added 120+ lines)
 - `agents/CHEAT_SHEET.md` (added 50+ lines)
 - `agents/analysis/INDEX.md` (added entry)
 - `agents/guides/INDEX.md` (added tags)

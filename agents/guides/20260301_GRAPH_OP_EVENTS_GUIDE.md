@@ -624,12 +624,12 @@ read/context-read/<semantic-id>
 
 | File | Role |
 |------|------|
-| `crates/context-trace/src/graph/visualization.rs` | Transition enum, GraphOpEvent, LocationInfo, QueryInfo, GraphMutation |
-| `crates/context-trace/src/graph/search_path.rs` | VizPathGraph and apply_transition (start_path/end_path management) |
-| `crates/context-search/src/search/mod.rs` | Search event emission (~10 call sites) |
-| `crates/context-insert/src/insert/context.rs` | Insert event emission (split, join start/complete) |
-| `crates/context-insert/src/join/context/frontier.rs` | JoinStep emission |
-| `crates/context-insert/src/join/context/node/merge/iter.rs` | CreatePattern emission |
+| `crates/context-stack/context-trace/src/graph/visualization.rs` | Transition enum, GraphOpEvent, LocationInfo, QueryInfo, GraphMutation |
+| `crates/context-stack/context-trace/src/graph/search_path.rs` | VizPathGraph and apply_transition (start_path/end_path management) |
+| `crates/context-stack/context-search/src/search/mod.rs` | Search event emission (~10 call sites) |
+| `crates/context-stack/context-insert/src/insert/context.rs` | Insert event emission (split, join start/complete) |
+| `crates/context-stack/context-insert/src/join/context/frontier.rs` | JoinStep emission |
+| `crates/context-stack/context-insert/src/join/context/node/merge/iter.rs` | CreatePattern emission |
 | `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useVisualizationState.ts` | Transition → viz state derivation |
 | `tools/log-viewer/frontend/src/components/HypergraphView/hooks/useOverlayRenderer.ts` | Edge color logic |
 | `tools/log-viewer/frontend/src/search-path/edge-highlighting.ts` | Search path edge key computation |
