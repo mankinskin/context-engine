@@ -1,6 +1,9 @@
 use std::{
     fs,
-    path::Path,
+    path::{
+        Path,
+        PathBuf,
+    },
     process::Command,
 };
 
@@ -133,6 +136,104 @@ fn parse_mapping_rejects_empty_destination() {
 }
 
 #[test]
+fn transplant_same_path_context_tools_excludes_sibling_prefixes() {
+    let fixture = setup_same_path_context_tools_fixture();
+
+    let outcome = execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: "crane/context-tools".to_string(),
+        anchor_commit: None,
+        mappings: tool_mappings(),
+        no_merge: false,
+        dry_run: false,
+    })
+    .expect("same-path transplant should succeed");
+
+    assert!(outcome.merged);
+    assert_eq!(outcome.plan.anchor_commit, fixture.anchor_commit);
+    assert_eq!(outcome.plan.source_commit, fixture.head_commit);
+
+    assert_eq!(
+        fs::read_to_string(
+            fixture
+                .target_repo
+                .join("tools/cli/context-cli/src/main.rs")
+        )
+        .expect("selected cli file should exist"),
+        "fn main() { println!(\"cli\"); }\n"
+    );
+    assert_eq!(
+        fs::read_to_string(
+            fixture
+                .target_repo
+                .join("tools/http/context-http/src/lib.rs")
+        )
+        .expect("selected http file should exist"),
+        "pub fn serve() { println!(\"http\"); }\n"
+    );
+    assert!(
+        !fixture
+            .target_repo
+            .join("tools/http/context-http/src/router.rs")
+            .exists(),
+        "deletes inside selected paths should carry across"
+    );
+
+    for excluded_path in [
+        "tools/cli/context-cli-extra/src/main.rs",
+        "tools/http/context-http-extra/src/lib.rs",
+        "tools/mcp/context-mcp-extra/src/main.rs",
+        "tools/context-editor-old/kernel/Cargo.toml",
+    ] {
+        assert!(
+            !fixture.target_repo.join(excluded_path).exists(),
+            "excluded sibling path should not be imported: {excluded_path}"
+        );
+    }
+
+    let selected_log = git_output(
+        &fixture.target_repo,
+        &[
+            "log",
+            "--format=%s",
+            "--all",
+            "--",
+            "tools/cli/context-cli",
+            "tools/http/context-http",
+            "tools/mcp/context-mcp",
+            "tools/context-editor",
+        ],
+    );
+    assert!(selected_log.contains("tool family scaffold"));
+    assert!(selected_log.contains("mixed selected and sibling updates"));
+    assert!(
+        !selected_log.contains("excluded sibling only update"),
+        "commits touching only excluded siblings should not be imported"
+    );
+
+    let excluded_log = git_output(
+        &fixture.target_repo,
+        &[
+            "log",
+            "--format=%s",
+            "--all",
+            "--",
+            "tools/cli/context-cli-extra",
+            "tools/http/context-http-extra",
+            "tools/mcp/context-mcp-extra",
+            "tools/context-editor-old",
+        ],
+    );
+    assert!(
+        excluded_log.trim().is_empty(),
+        "excluded siblings should not carry history into the target"
+    );
+}
+
+#[test]
 fn dry_run_reports_reviewable_plan_metadata() {
     let temp = TempDir::new().expect("tempdir should exist");
     let source_repo = temp.path().join("source");
@@ -234,6 +335,54 @@ fn dry_run_reports_reviewable_plan_metadata() {
     assert!(output.contains("dry_run=true"));
 }
 
+#[test]
+fn dry_run_leaves_same_path_target_repo_untouched() {
+    let fixture = setup_same_path_context_tools_fixture();
+    let target_head_before = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+        .trim()
+        .to_string();
+
+    assert!(
+        !git_ref_exists(&fixture.target_repo, "refs/heads/crane/context-tools-review"),
+        "fixture target should not start with the import ref"
+    );
+
+    let outcome = execute(TransplantArgs {
+        source_repo: fixture.source_repo.clone(),
+        target_repo: fixture.target_repo.clone(),
+        source_ref: "HEAD".to_string(),
+        target_branch: "main".to_string(),
+        import_branch: "crane/context-tools-review".to_string(),
+        anchor_commit: None,
+        mappings: tool_mappings(),
+        no_merge: false,
+        dry_run: true,
+    })
+    .expect("same-path dry-run should succeed");
+
+    assert!(!outcome.merged);
+    assert!(outcome.stats.is_none());
+    assert_eq!(outcome.plan.anchor_commit, fixture.anchor_commit);
+    assert_eq!(outcome.plan.source_commit, fixture.head_commit);
+    assert_eq!(
+        outcome.plan.range_spec,
+        format!("{}..{}", fixture.initial_commit, fixture.head_commit)
+    );
+
+    let target_head_after = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+        .trim()
+        .to_string();
+    assert_eq!(target_head_after, target_head_before);
+    assert!(
+        git_output(&fixture.target_repo, &["status", "--short"]).trim().is_empty(),
+        "dry-run should not dirty the target repo"
+    );
+    assert!(
+        !git_ref_exists(&fixture.target_repo, "refs/heads/crane/context-tools-review"),
+        "dry-run should not create the import ref"
+    );
+}
+
 fn tool_mappings() -> Vec<crate::PathMapping> {
     vec![
         parse_mapping("tools/cli/context-cli=tools/cli/context-cli")
@@ -245,6 +394,106 @@ fn tool_mappings() -> Vec<crate::PathMapping> {
         parse_mapping("tools/context-editor=tools/context-editor")
             .expect("editor mapping should parse"),
     ]
+}
+
+struct SamePathContextToolsFixture {
+    _temp: TempDir,
+    source_repo: PathBuf,
+    target_repo: PathBuf,
+    initial_commit: String,
+    anchor_commit: String,
+    head_commit: String,
+}
+
+fn setup_same_path_context_tools_fixture() -> SamePathContextToolsFixture {
+    let temp = TempDir::new().expect("tempdir should exist");
+    let source_repo = temp.path().join("source");
+    let target_repo = temp.path().join("target");
+
+    init_repo(&source_repo);
+    let initial_commit = commit_file(
+        &source_repo,
+        "README.md",
+        "root\n",
+        "initial root commit",
+    );
+    let anchor_commit = commit_files(
+        &source_repo,
+        &[
+            ("tools/cli/context-cli/src/main.rs", "fn main() {}\n"),
+            ("tools/cli/context-cli/src/output.rs", "pub fn output() {}\n"),
+            ("tools/http/context-http/src/lib.rs", "pub fn serve() {}\n"),
+            ("tools/http/context-http/src/router.rs", "pub fn route() {}\n"),
+            ("tools/mcp/context-mcp/src/main.rs", "fn main() {}\n"),
+            (
+                "tools/context-editor/kernel/Cargo.toml",
+                "[package]\nname = \"context-editor-kernel\"\nversion = \"0.1.0\"\nedition = \"2024\"\n",
+            ),
+            (
+                "tools/cli/context-cli-extra/src/main.rs",
+                "fn main() { println!(\"cli-extra\"); }\n",
+            ),
+            (
+                "tools/http/context-http-extra/src/lib.rs",
+                "pub fn serve_extra() {}\n",
+            ),
+            (
+                "tools/mcp/context-mcp-extra/src/main.rs",
+                "fn main() { println!(\"mcp-extra\"); }\n",
+            ),
+            (
+                "tools/context-editor-old/kernel/Cargo.toml",
+                "[package]\nname = \"context-editor-old\"\nversion = \"0.1.0\"\nedition = \"2024\"\n",
+            ),
+        ],
+        "tool family scaffold",
+    );
+    commit_file(
+        &source_repo,
+        "tools/http/context-http-extra/README.md",
+        "excluded sibling only\n",
+        "excluded sibling only update",
+    );
+    let _ = fs::remove_file(source_repo.join("tools/http/context-http/src/router.rs"));
+    let head_commit = commit_files(
+        &source_repo,
+        &[
+            (
+                "tools/cli/context-cli/src/main.rs",
+                "fn main() { println!(\"cli\"); }\n",
+            ),
+            (
+                "tools/http/context-http/src/lib.rs",
+                "pub fn serve() { println!(\"http\"); }\n",
+            ),
+            (
+                "tools/cli/context-cli-extra/src/main.rs",
+                "fn main() { println!(\"cli-extra-updated\"); }\n",
+            ),
+            (
+                "tools/http/context-http-extra/src/lib.rs",
+                "pub fn serve_extra() { println!(\"extra\"); }\n",
+            ),
+        ],
+        "mixed selected and sibling updates",
+    );
+
+    init_repo(&target_repo);
+    commit_file(
+        &target_repo,
+        "Cargo.toml",
+        "[workspace]\nresolver = \"2\"\nmembers = []\n",
+        "target init",
+    );
+
+    SamePathContextToolsFixture {
+        _temp: temp,
+        source_repo,
+        target_repo,
+        initial_commit,
+        anchor_commit,
+        head_commit,
+    }
 }
 
 fn init_repo(path: &Path) {
@@ -303,4 +552,16 @@ fn git_output(
         .expect("git command should run");
     assert!(output.status.success(), "git {:?} failed", args);
     String::from_utf8(output.stdout).expect("git output should be utf8")
+}
+
+fn git_ref_exists(
+    repo: &Path,
+    ref_name: &str,
+) -> bool {
+    Command::new("git")
+        .args(["rev-parse", "--verify", "--quiet", ref_name])
+        .current_dir(repo)
+        .status()
+        .expect("git command should run")
+        .success()
 }
