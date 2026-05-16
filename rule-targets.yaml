@@ -1,14 +1,91 @@
-targets:
-  - name: context-engine-agents
+files:
+- name: AGENTS.md
+  target:
+    name: context-engine-agents
     repo_scope: context-engine
     file_kind: AGENTS
     path_scope: AGENTS.md
-    output_path: AGENTS.md
-    nodes: &agents_nodes
+    nodes:
+    - name: agent-rules
+      title: Agent Rules
+      section: agent-rules
+      nodes:
+      - name: operating-principles
+        title: Operating Principles
+        section: agent-rules/operating-principles
+      - name: discovery-protocol-before-editing
+        title: Discovery Protocol (Before Editing)
+        section: agent-rules/discovery-protocol-before-editing
+      - name: task-routing
+        title: Task Routing
+        section: agent-rules/task-routing
+      - name: quality-gates
+        title: Quality Gates
+        section: agent-rules/quality-gates
+      - name: feedback-workflow
+        title: Feedback Workflow
+        section: agent-rules/feedback-workflow
+      - name: escalation-rules
+        title: Escalation Rules
+        section: agent-rules/escalation-rules
+      - name: fallback-mode-when-mcp-is-unavailable
+        title: Fallback Mode (When MCP Is Unavailable)
+        section: agent-rules/fallback-mode-when-mcp-is-unavailable
+      - name: canonical-sources
+        title: Canonical Sources
+        section: agent-rules/canonical-sources
+folders:
+- name: memory-viewers
+  files:
+  - name: AGENTS.md
+    target:
+      name: memory-viewers-agents
+      repo_scope: memory-viewers
+      file_kind: AGENTS
+      path_scope: memory-viewers/AGENTS.md
+      nodes:
       - name: agent-rules
         title: Agent Rules
         section: agent-rules
         nodes:
+        - name: operating-principles
+          title: Operating Principles
+          section: agent-rules/operating-principles
+        - name: discovery-protocol-before-editing
+          title: Discovery Protocol (Before Editing)
+          section: agent-rules/discovery-protocol-before-editing
+        - name: task-routing
+          title: Task Routing
+          section: agent-rules/task-routing
+        - name: quality-gates
+          title: Quality Gates
+          section: agent-rules/quality-gates
+        - name: feedback-workflow
+          title: Feedback Workflow
+          section: agent-rules/feedback-workflow
+        - name: escalation-rules
+          title: Escalation Rules
+          section: agent-rules/escalation-rules
+        - name: fallback-mode-when-mcp-is-unavailable
+          title: Fallback Mode (When MCP Is Unavailable)
+          section: agent-rules/fallback-mode-when-mcp-is-unavailable
+        - name: canonical-sources
+          title: Canonical Sources
+          section: agent-rules/canonical-sources
+  folders:
+  - name: memory-api
+    files:
+    - name: AGENTS.md
+      target:
+        name: memory-api-agents
+        repo_scope: memory-api
+        file_kind: AGENTS
+        path_scope: memory-viewers/memory-api/AGENTS.md
+        nodes:
+        - name: agent-rules
+          title: Agent Rules
+          section: agent-rules
+          nodes:
           - name: operating-principles
             title: Operating Principles
             section: agent-rules/operating-principles
@@ -33,105 +110,130 @@ targets:
           - name: canonical-sources
             title: Canonical Sources
             section: agent-rules/canonical-sources
-
-  - name: memory-viewers-agents
-    repo_scope: memory-viewers
-    file_kind: AGENTS
-    path_scope: memory-viewers/AGENTS.md
-    output_path: memory-viewers/AGENTS.md
-    nodes: *agents_nodes
-
-  - name: memory-api-agents
-    repo_scope: memory-api
-    file_kind: AGENTS
-    path_scope: memory-viewers/memory-api/AGENTS.md
-    output_path: memory-viewers/memory-api/AGENTS.md
-    nodes: *agents_nodes
-
-  - name: viewer-api-agents
-    repo_scope: viewer-api
-    file_kind: AGENTS
-    path_scope: memory-viewers/viewer-api/AGENTS.md
-    output_path: memory-viewers/viewer-api/AGENTS.md
-    nodes: *agents_nodes
-
-  - name: context-engine-copilot-instructions
-    repo_scope: context-engine
-    file_kind: copilot-instructions
-    path_scope: .github/copilot-instructions.md
-    output_path: .github/copilot-instructions.md
-    nodes: &copilot_instructions_nodes
+  - name: viewer-api
+    files:
+    - name: AGENTS.md
+      target:
+        name: viewer-api-agents
+        repo_scope: viewer-api
+        file_kind: AGENTS
+        path_scope: memory-viewers/viewer-api/AGENTS.md
+        nodes:
+        - name: agent-rules
+          title: Agent Rules
+          section: agent-rules
+          nodes:
+          - name: operating-principles
+            title: Operating Principles
+            section: agent-rules/operating-principles
+          - name: discovery-protocol-before-editing
+            title: Discovery Protocol (Before Editing)
+            section: agent-rules/discovery-protocol-before-editing
+          - name: task-routing
+            title: Task Routing
+            section: agent-rules/task-routing
+          - name: quality-gates
+            title: Quality Gates
+            section: agent-rules/quality-gates
+          - name: feedback-workflow
+            title: Feedback Workflow
+            section: agent-rules/feedback-workflow
+          - name: escalation-rules
+            title: Escalation Rules
+            section: agent-rules/escalation-rules
+          - name: fallback-mode-when-mcp-is-unavailable
+            title: Fallback Mode (When MCP Is Unavailable)
+            section: agent-rules/fallback-mode-when-mcp-is-unavailable
+          - name: canonical-sources
+            title: Canonical Sources
+            section: agent-rules/canonical-sources
+- name: .github
+  files:
+  - name: copilot-instructions.md
+    target:
+      name: context-engine-copilot-instructions
+      repo_scope: context-engine
+      file_kind: copilot-instructions
+      path_scope: .github/copilot-instructions.md
+      nodes:
       - name: github-copilot-instructions
         title: GitHub Copilot Instructions
         section: github-copilot-instructions
         nodes:
-          - name: source-of-truth
-            title: Source of Truth
-            section: github-copilot-instructions/source-of-truth
-          - name: optional-copilot-cli-mcp-config
-            title: Optional Copilot CLI MCP Config
-            section: github-copilot-instructions/optional-copilot-cli-mcp-config
-          - name: hooks
-            title: Hooks
-            section: github-copilot-instructions/hooks
-
-  - name: context-engine-prompt-spec
-    repo_scope: context-engine
-    file_kind: .prompt
-    path_scope: .github/prompts/spec.prompt.md
-    output_path: .github/prompts/spec.prompt.md
-    nodes:
-      - name: spec-prompt
-        section: spec-prompt
-
-  - name: context-engine-prompt-rule
-    repo_scope: context-engine
-    file_kind: .prompt
-    path_scope: .github/prompts/rule.prompt.md
-    output_path: .github/prompts/rule.prompt.md
-    nodes:
-      - name: rule-prompt
-        section: rule-prompt
-
-  - name: context-engine-prompt-rule-target
-    repo_scope: context-engine
-    file_kind: .prompt
-    path_scope: .github/prompts/rule-target.prompt.md
-    output_path: .github/prompts/rule-target.prompt.md
-    nodes:
-      - name: rule-target-prompt
-        section: rule-target-prompt
-
-  - name: context-engine-prompt-ticket
-    repo_scope: context-engine
-    file_kind: .prompt
-    path_scope: .github/prompts/ticket.prompt.md
-    output_path: .github/prompts/ticket.prompt.md
-    nodes:
-      - name: ticket-prompt
-        section: ticket-prompt
-
-  - name: context-engine-prompt-tickets
-    repo_scope: context-engine
-    file_kind: .prompt
-    path_scope: .github/prompts/tickets.prompt.md
-    output_path: .github/prompts/tickets.prompt.md
-    nodes:
-      - name: tickets-prompt
-        section: tickets-prompt
-
-  - name: context-engine-instruction-audit
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/audit.instructions.md
-    output_path: .agents/instructions/audit.instructions.md
-    nodes: &audit_instruction_nodes
-      - name: frontmatter
-        section: audit-instructions
-      - name: audit-guidance
-        title: Audit Guidance
-        section: audit-guidance
+        - name: source-of-truth
+          title: Source of Truth
+          section: github-copilot-instructions/source-of-truth
+        - name: optional-copilot-cli-mcp-config
+          title: Optional Copilot CLI MCP Config
+          section: github-copilot-instructions/optional-copilot-cli-mcp-config
+        - name: hooks
+          title: Hooks
+          section: github-copilot-instructions/hooks
+  folders:
+  - name: prompts
+    files:
+    - name: spec.prompt.md
+      target:
+        name: context-engine-prompt-spec
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/spec.prompt.md
         nodes:
+        - name: spec-prompt
+          section: spec-prompt
+    - name: rule.prompt.md
+      target:
+        name: context-engine-prompt-rule
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/rule.prompt.md
+        nodes:
+        - name: rule-prompt
+          section: rule-prompt
+    - name: rule-target.prompt.md
+      target:
+        name: context-engine-prompt-rule-target
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/rule-target.prompt.md
+        nodes:
+        - name: rule-target-prompt
+          section: rule-target-prompt
+    - name: ticket.prompt.md
+      target:
+        name: context-engine-prompt-ticket
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/ticket.prompt.md
+        nodes:
+        - name: ticket-prompt
+          section: ticket-prompt
+    - name: tickets.prompt.md
+      target:
+        name: context-engine-prompt-tickets
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/tickets.prompt.md
+        nodes:
+        - name: tickets-prompt
+          section: tickets-prompt
+- name: .agents
+  folders:
+  - name: instructions
+    files:
+    - name: audit.instructions.md
+      target:
+        name: context-engine-instruction-audit
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/audit.instructions.md
+        nodes:
+        - name: frontmatter
+          section: audit-instructions
+        - name: audit-guidance
+          title: Audit Guidance
+          section: audit-guidance
+          nodes:
           - name: purpose
             title: Purpose
             section: audit-guidance/purpose
@@ -148,37 +250,37 @@ targets:
             title: Output Contract
             section: audit-guidance/output-contract
             nodes:
-              - name: top-level-fields
-                title: Top-level fields
-                section: audit-guidance/output-contract/top-level-fields
-              - name: sync
-                title: Sync
-                section: audit-guidance/output-contract/sync
-              - name: metrics
-                title: Metrics
-                section: audit-guidance/output-contract/metrics
-              - name: findings
-                title: Findings
-                section: audit-guidance/output-contract/findings
-              - name: human-output
-                title: Human Output
-                section: audit-guidance/output-contract/human-output
+            - name: top-level-fields
+              title: Top-level fields
+              section: audit-guidance/output-contract/top-level-fields
+            - name: sync
+              title: Sync
+              section: audit-guidance/output-contract/sync
+            - name: metrics
+              title: Metrics
+              section: audit-guidance/output-contract/metrics
+            - name: findings
+              title: Findings
+              section: audit-guidance/output-contract/findings
+            - name: human-output
+              title: Human Output
+              section: audit-guidance/output-contract/human-output
           - name: operating-notes
             title: Operating Notes
             section: audit-guidance/operating-notes
-
-  - name: context-engine-instruction-context-http
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/context-http.instructions.md
-    output_path: .agents/instructions/context-http.instructions.md
-    nodes:
-      - name: frontmatter
-        section: context-http-instructions
-      - name: context-http-guidance
-        title: Context HTTP Guidance
-        section: context-http-guidance
+    - name: context-http.instructions.md
+      target:
+        name: context-engine-instruction-context-http
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/context-http.instructions.md
         nodes:
+        - name: frontmatter
+          section: context-http-instructions
+        - name: context-http-guidance
+          title: Context HTTP Guidance
+          section: context-http-guidance
+          nodes:
           - name: architecture
             title: Architecture
             section: context-http-guidance/architecture
@@ -200,19 +302,19 @@ targets:
           - name: validation
             title: Validation
             section: context-http-guidance/validation
-
-  - name: context-engine-instruction-core-crates
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/core-crates.instructions.md
-    output_path: .agents/instructions/core-crates.instructions.md
-    nodes:
-      - name: frontmatter
-        section: core-crates-instructions
-      - name: core-crates-guidance
-        title: Core Crates Guidance
-        section: core-crates-guidance
+    - name: core-crates.instructions.md
+      target:
+        name: context-engine-instruction-core-crates
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/core-crates.instructions.md
         nodes:
+        - name: frontmatter
+          section: core-crates-instructions
+        - name: core-crates-guidance
+          title: Core Crates Guidance
+          section: core-crates-guidance
+          nodes:
           - name: architecture-order
             title: Architecture Order
             section: core-crates-guidance/architecture-order
@@ -225,19 +327,19 @@ targets:
           - name: testing-and-validation
             title: Testing and Validation
             section: core-crates-guidance/testing-and-validation
-
-  - name: context-engine-instruction-frontend
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/frontend.instructions.md
-    output_path: .agents/instructions/frontend.instructions.md
-    nodes: &frontend_instruction_nodes
-      - name: frontmatter
-        section: frontend-instructions
-      - name: frontend-guidance
-        title: Frontend Guidance
-        section: frontend-guidance
+    - name: frontend.instructions.md
+      target:
+        name: context-engine-instruction-frontend
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/frontend.instructions.md
         nodes:
+        - name: frontmatter
+          section: frontend-instructions
+        - name: frontend-guidance
+          title: Frontend Guidance
+          section: frontend-guidance
+          nodes:
           - name: stack-and-shared-dependencies
             title: Stack and Shared Dependencies
             section: frontend-guidance/stack-and-shared-dependencies
@@ -256,19 +358,19 @@ targets:
           - name: ux-validation-expectations
             title: UX Validation Expectations
             section: frontend-guidance/ux-validation-expectations
-
-  - name: context-engine-instruction-mcp-tools
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/mcp-tools.instructions.md
-    output_path: .agents/instructions/mcp-tools.instructions.md
-    nodes: &mcp_tools_instruction_nodes
-      - name: frontmatter
-        section: mcp-tools-instructions
-      - name: mcp-tools-guidance
-        title: MCP Tools Guidance
-        section: mcp-tools-guidance
+    - name: mcp-tools.instructions.md
+      target:
+        name: context-engine-instruction-mcp-tools
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/mcp-tools.instructions.md
         nodes:
+        - name: frontmatter
+          section: mcp-tools-instructions
+        - name: mcp-tools-guidance
+          title: MCP Tools Guidance
+          section: mcp-tools-guidance
+          nodes:
           - name: contract-stability
             title: Contract Stability
             section: mcp-tools-guidance/contract-stability
@@ -279,15 +381,15 @@ targets:
             title: ticket-mcp Tool Examples
             section: mcp-tools-guidance/ticket-mcp-tool-examples
             nodes:
-              - name: health-check-run-quality-checks-on-tickets
-                title: health_check — Run quality checks on tickets
-                section: mcp-tools-guidance/ticket-mcp-tool-examples/health-check-run-quality-checks-on-tickets
-              - name: chaining-subgraph-health-check-in-mcp
-                title: Chaining subgraph → health_check in MCP
-                section: mcp-tools-guidance/ticket-mcp-tool-examples/chaining-subgraph-health-check-in-mcp
-              - name: available-ticket-mcp-tools
-                title: Available ticket-mcp tools
-                section: mcp-tools-guidance/ticket-mcp-tool-examples/available-ticket-mcp-tools
+            - name: health-check-run-quality-checks-on-tickets
+              title: "health_check \u2014 Run quality checks on tickets"
+              section: mcp-tools-guidance/ticket-mcp-tool-examples/health-check-run-quality-checks-on-tickets
+            - name: chaining-subgraph-health-check-in-mcp
+              title: "Chaining subgraph \u2192 health_check in MCP"
+              section: mcp-tools-guidance/ticket-mcp-tool-examples/chaining-subgraph-health-check-in-mcp
+            - name: available-ticket-mcp-tools
+              title: Available ticket-mcp tools
+              section: mcp-tools-guidance/ticket-mcp-tool-examples/available-ticket-mcp-tools
           - name: hooks-and-validation
             title: Hooks and Validation
             section: mcp-tools-guidance/hooks-and-validation
@@ -295,28 +397,28 @@ targets:
             title: Board Tools (ticket-mcp)
             section: mcp-tools-guidance/board-tools-ticket-mcp
             nodes:
-              - name: tool-reference
-                title: Tool reference
-                section: mcp-tools-guidance/board-tools-ticket-mcp/tool-reference
-              - name: json-examples
-                title: JSON examples
-                section: mcp-tools-guidance/board-tools-ticket-mcp/json-examples
-              - name: next-tickets-board-fields
-                title: next_tickets board fields
-                section: mcp-tools-guidance/board-tools-ticket-mcp/next-tickets-board-fields
-
-  - name: context-engine-instruction-tests
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/tests.instructions.md
-    output_path: .agents/instructions/tests.instructions.md
-    nodes: &tests_instruction_nodes
-      - name: frontmatter
-        section: tests-instructions
-      - name: quick-reference-common-commands
-        title: Quick Reference — Common Commands
-        section: __group__/quick-reference-common-commands
+            - name: tool-reference
+              title: Tool reference
+              section: mcp-tools-guidance/board-tools-ticket-mcp/tool-reference
+            - name: json-examples
+              title: JSON examples
+              section: mcp-tools-guidance/board-tools-ticket-mcp/json-examples
+            - name: next-tickets-board-fields
+              title: next_tickets board fields
+              section: mcp-tools-guidance/board-tools-ticket-mcp/next-tickets-board-fields
+    - name: tests.instructions.md
+      target:
+        name: context-engine-instruction-tests
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/tests.instructions.md
         nodes:
+        - name: frontmatter
+          section: tests-instructions
+        - name: quick-reference-common-commands
+          title: "Quick Reference \u2014 Common Commands"
+          section: __group__/quick-reference-common-commands
+          nodes:
           - name: run-a-single-test-by-name-fastest-use-first
             title: Run a single test by name (fastest, use first)
             section: run-a-single-test-by-name-fastest-use-first
@@ -329,23 +431,23 @@ targets:
           - name: http-level-stress-test-requires-running-ticket-viewer-server
             title: HTTP-level stress test (requires running ticket-viewer server)
             section: http-level-stress-test-requires-running-ticket-viewer-server
-      - name: full-workspace-test-slow-only-after-local-crate-tests-pass
-        title: Full workspace test (slow — only after local crate tests pass)
-        section: full-workspace-test-slow-only-after-local-crate-tests-pass
-        nodes:
+        - name: full-workspace-test-slow-only-after-local-crate-tests-pass
+          title: "Full workspace test (slow \u2014 only after local crate tests pass)"
+          section: full-workspace-test-slow-only-after-local-crate-tests-pass
+          nodes:
           - name: criterion-benchmarks
             title: Criterion Benchmarks
             section: full-workspace-test-slow-only-after-local-crate-tests-pass/criterion-benchmarks
           - name: http-level-stress-testing
             title: HTTP-Level Stress Testing
             section: full-workspace-test-slow-only-after-local-crate-tests-pass/http-level-stress-testing
-      - name: build-the-binary-must-build-the-viewer-not-just-the-library
-        title: Deploying ticket-viewer for HTTP Testing
-        section: build-the-binary-must-build-the-viewer-not-just-the-library
-      - name: deploy-and-restart
-        title: Deploy and restart
-        section: deploy-and-restart
-        nodes:
+        - name: build-the-binary-must-build-the-viewer-not-just-the-library
+          title: Deploying ticket-viewer for HTTP Testing
+          section: build-the-binary-must-build-the-viewer-not-just-the-library
+        - name: deploy-and-restart
+          title: Deploy and restart
+          section: deploy-and-restart
+          nodes:
           - name: tracing-setup
             title: Tracing Setup
             section: deploy-and-restart/tracing-setup
@@ -358,19 +460,19 @@ targets:
           - name: assertions
             title: Assertions
             section: deploy-and-restart/assertions
-
-  - name: context-engine-instruction-ticket-system
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/ticket-system.instructions.md
-    output_path: .agents/instructions/ticket-system.instructions.md
-    nodes: &ticket_system_instruction_nodes
-      - name: frontmatter
-        section: ticket-system-instructions
-      - name: ticket-system-guidance
-        title: Ticket System Guidance
-        section: __group__/ticket-system-guidance
+    - name: ticket-system.instructions.md
+      target:
+        name: context-engine-instruction-ticket-system
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/ticket-system.instructions.md
         nodes:
+        - name: frontmatter
+          section: ticket-system-instructions
+        - name: ticket-system-guidance
+          title: Ticket System Guidance
+          section: __group__/ticket-system-guidance
+          nodes:
           - name: scope
             title: Scope
             section: ticket-system-guidance/scope
@@ -378,30 +480,30 @@ targets:
             title: Design Constraints
             section: ticket-system-guidance/design-constraints
           - name: ticket-quality-standing-obligations
-            title: Ticket Quality — Standing Obligations
+            title: "Ticket Quality \u2014 Standing Obligations"
             section: ticket-system-guidance/ticket-quality-standing-obligations
             nodes:
-              - name: orientation-start-of-every-session
-                title: Orientation (start of every session)
-                section: ticket-system-guidance/ticket-quality-standing-obligations/orientation-start-of-every-session
-      - name: start-of-session-checks
-        title: Start-of-Session Checks
-        section: __group__/start-of-session-checks
-        nodes:
+            - name: orientation-start-of-every-session
+              title: Orientation (start of every session)
+              section: ticket-system-guidance/ticket-quality-standing-obligations/orientation-start-of-every-session
+        - name: start-of-session-checks
+          title: Start-of-Session Checks
+          section: __group__/start-of-session-checks
+          nodes:
           - name: check-the-draftboard-active-agents-wip-limit-stale-warnings
             title: Check the draftboard (active agents, WIP limit, stale warnings)
             section: check-the-draftboard-active-agents-wip-limit-stale-warnings
             nodes:
-              - name: discovery-before-creating
-                title: Discovery Before Creating
-                section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating
-                nodes:
-                  - name: continuous-state-updates
-                    title: Continuous State Updates
-                    section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating/continuous-state-updates
-                  - name: correcting-state-transitions-undo-revert
-                    title: Correcting State Transitions (Undo / Revert)
-                    section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating/correcting-state-transitions-undo-revert
+            - name: discovery-before-creating
+              title: Discovery Before Creating
+              section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating
+              nodes:
+              - name: continuous-state-updates
+                title: Continuous State Updates
+                section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating/continuous-state-updates
+              - name: correcting-state-transitions-undo-revert
+                title: Correcting State Transitions (Undo / Revert)
+                section: check-the-draftboard-active-agents-wip-limit-stale-warnings/discovery-before-creating/correcting-state-transitions-undo-revert
           - name: check-for-stale-in-implementation-tickets-that-may-conflict-with-your-work
             title: Check for stale in-implementation tickets that may conflict with your work
             section: check-for-stale-in-implementation-tickets-that-may-conflict-with-your-work
@@ -411,10 +513,10 @@ targets:
           - name: check-overall-graph-health
             title: Check overall graph health
             section: check-overall-graph-health
-      - name: workflow-and-state
-        title: Workflow and State
-        section: __group__/workflow-and-state
-        nodes:
+        - name: workflow-and-state
+          title: Workflow and State
+          section: __group__/workflow-and-state
+          nodes:
           - name: undo-the-most-recent-state-change-reverts-to-the-previous-state
             title: Undo the most recent state change (reverts to the previous state)
             section: undo-the-most-recent-state-change-reverts-to-the-previous-state
@@ -422,23 +524,23 @@ targets:
             title: Revert to revision 6 (re-applies fields from that point in history)
             section: revert-to-revision-6-re-applies-fields-from-that-point-in-history
             nodes:
-              - name: schema-enforced-workflow-required-states
-                title: Schema-Enforced Workflow (`required_states`)
-                section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states
+            - name: schema-enforced-workflow-required-states
+              title: Schema-Enforced Workflow (`required_states`)
+              section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states
+              nodes:
+              - name: review-gate-before-closing
+                title: Review Gate Before Closing
+                section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing
                 nodes:
-                  - name: review-gate-before-closing
-                    title: Review Gate Before Closing
-                    section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing
-                    nodes:
-                      - name: step-1-move-to-in-review
-                        title: Step 1 — Move to in-review
-                        section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-1-move-to-in-review
-                      - name: step-2-code-review-checklist
-                        title: Step 2 — Code Review Checklist
-                        section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-2-code-review-checklist
-                      - name: step-3-validate-acceptance-criteria
-                        title: Step 3 — Validate Acceptance Criteria
-                        section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-3-validate-acceptance-criteria
+                - name: step-1-move-to-in-review
+                  title: "Step 1 \u2014 Move to in-review"
+                  section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-1-move-to-in-review
+                - name: step-2-code-review-checklist
+                  title: "Step 2 \u2014 Code Review Checklist"
+                  section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-2-code-review-checklist
+                - name: step-3-validate-acceptance-criteria
+                  title: "Step 3 \u2014 Validate Acceptance Criteria"
+                  section: revert-to-revision-6-re-applies-fields-from-that-point-in-history/schema-enforced-workflow-required-states/review-gate-before-closing/step-3-validate-acceptance-criteria
           - name: native-unit-tests-pure-rust-logic-no-browser-needed
             title: Native unit tests (pure-Rust logic, no browser needed)
             section: native-unit-tests-pure-rust-logic-no-browser-needed
@@ -449,17 +551,17 @@ targets:
             title: Cargo check for WASM target (quick compile gate)
             section: cargo-check-for-wasm-target-quick-compile-gate
             nodes:
-              - name: step-3-close
-                title: Step 3 — Close
-                section: cargo-check-for-wasm-target-quick-compile-gate/step-3-close
-                nodes:
-                  - name: picking-next-work
-                    title: Picking Next Work
-                    section: cargo-check-for-wasm-target-quick-compile-gate/step-3-close/picking-next-work
-      - name: queue-management
-        title: Queue Management
-        section: __group__/queue-management
-        nodes:
+            - name: step-3-close
+              title: "Step 3 \u2014 Close"
+              section: cargo-check-for-wasm-target-quick-compile-gate/step-3-close
+              nodes:
+              - name: picking-next-work
+                title: Picking Next Work
+                section: cargo-check-for-wasm-target-quick-compile-gate/step-3-close/picking-next-work
+        - name: queue-management
+          title: Queue Management
+          section: __group__/queue-management
+          nodes:
           - name: find-unblocked-ready-tickets-you-can-work-on-now-priority-ordered
             title: Find unblocked ready tickets you can work on now (priority-ordered)
             section: find-unblocked-ready-tickets-you-can-work-on-now-priority-ordered
@@ -473,9 +575,9 @@ targets:
             title: Limit results
             section: limit-results
             nodes:
-              - name: board-coordination
-                title: Board Coordination
-                section: limit-results/board-coordination
+            - name: board-coordination
+              title: Board Coordination
+              section: limit-results/board-coordination
           - name: register-yourself-as-actively-working-a-ticket
             title: Register yourself as actively working a ticket
             section: register-yourself-as-actively-working-a-ticket
@@ -486,17 +588,17 @@ targets:
             title: Check out when done (records handoff reason in audit trail)
             section: check-out-when-done-records-handoff-reason-in-audit-trail
             nodes:
-              - name: wip-limit
-                title: WIP Limit
-                section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit
+            - name: wip-limit
+              title: WIP Limit
+              section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit
+              nodes:
+              - name: stale-entry-response
+                title: Stale-Entry Response
+                section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response
                 nodes:
-                  - name: stale-entry-response
-                    title: Stale-Entry Response
-                    section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response
-                    nodes:
-                      - name: file-ownership
-                        title: File Ownership
-                        section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership
+                - name: file-ownership
+                  title: File Ownership
+                  section: check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership
           - name: add-remove-files-from-an-active-entry
             title: Add / remove files from an active entry
             section: add-remove-files-from-an-active-entry
@@ -504,27 +606,27 @@ targets:
             title: Rename a file in an active entry (atomic)
             section: rename-a-file-in-an-active-entry-atomic
             nodes:
-              - name: dependency-maintenance
-                title: Dependency Maintenance
-                section: rename-a-file-in-an-active-entry-atomic/dependency-maintenance
+            - name: dependency-maintenance
+              title: Dependency Maintenance
+              section: rename-a-file-in-an-active-entry-atomic/dependency-maintenance
           - name: find-what-a-completed-ticket-blocks
             title: Find what a completed ticket blocks
             section: find-what-a-completed-ticket-blocks
             nodes:
-              - name: commit-checkpoint-suggestions
-                title: Commit Checkpoint Suggestions
-                section: find-what-a-completed-ticket-blocks/commit-checkpoint-suggestions
-                nodes:
-                  - name: aggressive-quality-improvement
-                    title: Aggressive Quality Improvement
-                    section: find-what-a-completed-ticket-blocks/commit-checkpoint-suggestions/aggressive-quality-improvement
-              - name: workflow-expectations
-                title: Workflow Expectations
-                section: find-what-a-completed-ticket-blocks/workflow-expectations
-      - name: health-and-batch-examples
-        title: Health and Batch Examples
-        section: __group__/health-and-batch-examples
-        nodes:
+            - name: commit-checkpoint-suggestions
+              title: Commit Checkpoint Suggestions
+              section: find-what-a-completed-ticket-blocks/commit-checkpoint-suggestions
+              nodes:
+              - name: aggressive-quality-improvement
+                title: Aggressive Quality Improvement
+                section: find-what-a-completed-ticket-blocks/commit-checkpoint-suggestions/aggressive-quality-improvement
+            - name: workflow-expectations
+              title: Workflow Expectations
+              section: find-what-a-completed-ticket-blocks/workflow-expectations
+        - name: health-and-batch-examples
+          title: Health and Batch Examples
+          section: __group__/health-and-batch-examples
+          nodes:
           - name: health-check-a-subgraph-rooted-at-a-ticket-bfs-traversal
             title: Health-check a subgraph rooted at a ticket (BFS traversal)
             section: health-check-a-subgraph-rooted-at-a-ticket-bfs-traversal
@@ -541,51 +643,51 @@ targets:
             title: Command Chaining (pipe via --stdin)
             section: list-tickets-pipe-ids-health-check
           - name: subgraph-filter-new-tickets-health-check
-            title: Subgraph → filter new tickets → health check
+            title: "Subgraph \u2192 filter new tickets \u2192 health check"
             section: subgraph-filter-new-tickets-health-check
           - name: topgraph-health-check-all-reverse-dependencies
-            title: Topgraph → health check all reverse dependencies
+            title: "Topgraph \u2192 health check all reverse dependencies"
             section: topgraph-health-check-all-reverse-dependencies
             nodes:
-              - name: batch-cli-syntax-transactional
-                title: Batch (CLI-syntax, transactional)
-                section: topgraph-health-check-all-reverse-dependencies/batch-cli-syntax-transactional
+            - name: batch-cli-syntax-transactional
+              title: Batch (CLI-syntax, transactional)
+              section: topgraph-health-check-all-reverse-dependencies/batch-cli-syntax-transactional
           - name: from-a-checked-in-batch-file
             title: From a checked-in batch file
             section: from-a-checked-in-batch-file
           - name: heredoc-create-tickets-link-all-atomic
-            title: Heredoc — create tickets + link, all atomic
+            title: "Heredoc \u2014 create tickets + link, all atomic"
             section: heredoc-create-tickets-link-all-atomic
           - name: stdin-from-another-process
             title: Stdin from another process
             section: stdin-from-another-process
             nodes:
-              - name: http-endpoints
-                title: HTTP Endpoints
-                section: stdin-from-another-process/http-endpoints
-              - name: index-reconciliation-scan-force
-                title: Index Reconciliation (`scan --force`)
-                section: stdin-from-another-process/index-reconciliation-scan-force
+            - name: http-endpoints
+              title: HTTP Endpoints
+              section: stdin-from-another-process/http-endpoints
+            - name: index-reconciliation-scan-force
+              title: Index Reconciliation (`scan --force`)
+              section: stdin-from-another-process/index-reconciliation-scan-force
           - name: force-reconcile-all-indexes-from-disk
             title: Force-reconcile all indexes from disk
             section: force-reconcile-all-indexes-from-disk
             nodes:
-              - name: validation
-                title: Validation
-                section: force-reconcile-all-indexes-from-disk/validation
-
-  - name: context-engine-instruction-viewer-api-tools
-    repo_scope: context-engine
-    file_kind: .instructions
-    path_scope: .agents/instructions/viewer-api-tools.instructions.md
-    output_path: .agents/instructions/viewer-api-tools.instructions.md
-    nodes: &viewer_api_tools_instruction_nodes
-      - name: frontmatter
-        section: viewer-api-tools-instructions
-      - name: viewer-api-tools-guidance
-        title: Viewer API Tools Guidance
-        section: viewer-api-tools-guidance
+            - name: validation
+              title: Validation
+              section: force-reconcile-all-indexes-from-disk/validation
+    - name: viewer-api-tools.instructions.md
+      target:
+        name: context-engine-instruction-viewer-api-tools
+        repo_scope: context-engine
+        file_kind: .instructions
+        path_scope: .agents/instructions/viewer-api-tools.instructions.md
         nodes:
+        - name: frontmatter
+          section: viewer-api-tools-instructions
+        - name: viewer-api-tools-guidance
+          title: Viewer API Tools Guidance
+          section: viewer-api-tools-guidance
+          nodes:
           - name: scope
             title: Scope
             section: viewer-api-tools-guidance/scope
@@ -619,5 +721,3 @@ targets:
           - name: ux-definition-of-done
             title: UX Definition of Done
             section: viewer-api-tools-guidance/ux-definition-of-done
-
-
