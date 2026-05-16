@@ -75,6 +75,33 @@ targets:
             title: Hooks
             section: github-copilot-instructions/hooks
 
+  - name: context-engine-prompt-spec
+    repo_scope: context-engine
+    file_kind: .prompt
+    path_scope: .github/prompts/spec.prompt.md
+    output_path: .github/prompts/spec.prompt.md
+    nodes:
+      - name: spec-prompt
+        section: spec-prompt
+
+  - name: context-engine-prompt-rule
+    repo_scope: context-engine
+    file_kind: .prompt
+    path_scope: .github/prompts/rule.prompt.md
+    output_path: .github/prompts/rule.prompt.md
+    nodes:
+      - name: rule-prompt
+        section: rule-prompt
+
+  - name: context-engine-prompt-rule-target
+    repo_scope: context-engine
+    file_kind: .prompt
+    path_scope: .github/prompts/rule-target.prompt.md
+    output_path: .github/prompts/rule-target.prompt.md
+    nodes:
+      - name: rule-target-prompt
+        section: rule-target-prompt
+
   - name: context-engine-instruction-audit
     repo_scope: context-engine
     file_kind: .instructions
