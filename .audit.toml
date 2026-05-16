@@ -2,4 +2,5 @@
 # Entries exclude matching directories and files from audit runs.
 exclude_paths = [
   "crates/deps/",
+  "crates/context-stack/deps/",
 ]
