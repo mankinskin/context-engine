@@ -102,6 +102,24 @@ targets:
       - name: rule-target-prompt
         section: rule-target-prompt
 
+  - name: context-engine-prompt-ticket
+    repo_scope: context-engine
+    file_kind: .prompt
+    path_scope: .github/prompts/ticket.prompt.md
+    output_path: .github/prompts/ticket.prompt.md
+    nodes:
+      - name: ticket-prompt
+        section: ticket-prompt
+
+  - name: context-engine-prompt-tickets
+    repo_scope: context-engine
+    file_kind: .prompt
+    path_scope: .github/prompts/tickets.prompt.md
+    output_path: .github/prompts/tickets.prompt.md
+    nodes:
+      - name: tickets-prompt
+        section: tickets-prompt
+
   - name: context-engine-instruction-audit
     repo_scope: context-engine
     file_kind: .instructions
