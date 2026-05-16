@@ -27,9 +27,10 @@ Workflow:
 8. Ask one concise clarification if the target store, scope, or ticket shape is still ambiguous after a focused search.
 9. Do not split the request into multiple tickets unless the user explicitly asks; `/ticket` should create one ticket.
 10. Do not change unrelated tickets, edges, or board state unless the user explicitly asks.
+11. In markdown outputs, reference the ticket by its folder path instead of a bare id. Use the folder path as the markdown link text and target; for example, `[.ticket/tickets/<full-uuid>/](.ticket/tickets/<full-uuid>/) - Ticket title` when the default store is used.
 
 Response:
-- created or matched ticket id and title
+- created or matched ticket folder path and title, rendered as a markdown link named by the folder path instead of a raw id
 - chosen type, priority, and state
 - duplicate candidates considered, if any
 - assumptions that still matter

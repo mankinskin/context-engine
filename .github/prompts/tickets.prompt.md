@@ -27,9 +27,10 @@ Workflow:
 8. If some of the needed tickets already exist, reuse them and create only the missing ones.
 9. Ask one concise clarification if the target store or ticket breakdown is still ambiguous after a focused search.
 10. Do not implement code or change unrelated tickets unless the user explicitly asks.
+11. In markdown outputs, reference each ticket by its folder path instead of a bare id. Use the folder path as the markdown link text and target; for example, `[.ticket/tickets/<full-uuid>/](.ticket/tickets/<full-uuid>/) - Ticket title` when the default store is used.
 
 Response:
 - target store and number of tickets created or matched
-- ticket ids and titles created or reused
+- ticket folder paths and titles created or reused, rendered as markdown links named by the folder paths instead of raw ids
 - dependency edges added, if any
 - assumptions or follow-up gaps
