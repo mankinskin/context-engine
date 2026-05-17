@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::JsCast;
 use viewer_api_dioxus::{
     BreadcrumbItem,
     Breadcrumbs,
@@ -26,6 +28,11 @@ use crate::{
         DocWorkspaceResponse,
     },
 };
+
+const RUSTDOC_IFRAME_ID: &str = "doc-browser-frame";
+const RUSTDOC_STYLE_ID: &str = "doc-viewer-rustdoc-theme";
+const RUSTDOC_STYLE_TEXT: &str =
+    include_str!("../public/doc-viewer-overrides.css");
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum ArtifactView {
@@ -70,6 +77,46 @@ impl OpenArtifactTab {
 fn artifact_id(artifact: &CargoDocArtifact) -> String {
     format!("{}::{}", artifact.package_name, artifact.target_name)
 }
+
+#[cfg(target_arch = "wasm32")]
+fn apply_rustdoc_iframe_theme() {
+    let Some(window) = web_sys::window() else {
+        return;
+    };
+    let Some(document) = window.document() else {
+        return;
+    };
+    let Some(frame) = document
+        .get_element_by_id(RUSTDOC_IFRAME_ID)
+        .and_then(|element| element.dyn_into::<web_sys::HtmlIFrameElement>().ok())
+    else {
+        return;
+    };
+    let Some(frame_document) = frame.content_document() else {
+        return;
+    };
+    let Some(head) = frame_document.head() else {
+        return;
+    };
+
+    let element = if let Some(existing) =
+        frame_document.get_element_by_id(RUSTDOC_STYLE_ID)
+    {
+        existing
+    } else {
+        let Ok(new_element) = frame_document.create_element("style") else {
+            return;
+        };
+        new_element.set_id(RUSTDOC_STYLE_ID);
+        let _ = head.append_child(&new_element);
+        new_element
+    };
+
+    element.set_text_content(Some(RUSTDOC_STYLE_TEXT));
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn apply_rustdoc_iframe_theme() {}
 
 fn build_tree(artifacts: &[CargoDocArtifact]) -> (Vec<TreeNode>, Vec<String>) {
     let mut grouped: BTreeMap<String, Vec<CargoDocArtifact>> = BTreeMap::new();
@@ -489,9 +536,11 @@ pub fn App() -> Element {
 
                                 if active_view == ArtifactView::Html && active_html_exists {
                                     iframe {
+                                        id: RUSTDOC_IFRAME_ID,
                                         class: "doc-browser__frame",
                                         src: "{active_html_src}",
                                         title: "{active_tab_label}",
+                                        onload: move |_| apply_rustdoc_iframe_theme(),
                                     }
                                 } else if active_json_loading {
                                     div { class: "doc-browser__loading", "Loading rustdoc JSON..." }
