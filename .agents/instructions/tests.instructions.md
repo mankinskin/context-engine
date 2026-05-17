@@ -86,11 +86,15 @@ When a test fails:
 1. Run targeted tests first.
 2. Inspect `target/test-logs/` for full trace output.
 3. Use log-viewer MCP tools (`query_logs`, `search_all_logs`) with jq filters instead of parsing logs manually.
+4. Re-run the nearest required validation after each local fix until it passes or the failure repeats without new signal.
+5. If the failure remains a blocker, record the failing command, log path, and current diagnosis in the ticket/spec status summary instead of dropping the validation step.
 
 ## Test Execution Strategy
 
 - Start with nearest unit/integration tests.
 - Expand to crate-level runs once local failures are resolved.
+- Keep working outward until the required validation passes or you have a clearly repeated blocker to report.
+- If dedicated automation is unavailable, use the closest manual or command-line validation path and record the limitation in the status summary.
 - Avoid unrelated full-workspace test runs unless required.
 
 For frontend-impacting changes:

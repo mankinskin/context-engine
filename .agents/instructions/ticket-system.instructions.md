@@ -48,8 +48,8 @@ Update ticket state immediately when the work status changes — do not defer to
 
 | Situation | Action |
 |---|---|
-| Starting implementation | `update --state in-implementation` |
-| Implementation complete, moving to review | `update --state in-review` |
+| Starting implementation | `update --to-state in-implementation` |
+| Implementation complete, moving to review | `update --to-state in-review` |
 | All acceptance criteria met and validated | `close <id>` |
 | Ticket is no longer relevant | `cancel <id>` with a reason |
 
@@ -119,17 +119,18 @@ under `crates/ticket-api/schemas/<type>.toml`.
 through `in-review` first, even for small changes.
 The schema's `required_states` enforcement prevents skipping `in-review`,
 but you should still follow the full progression diligently.
+Review readiness means the implementation, required validation, documentation updates, and spec traceability are current before the state change.
 
 #### Step 1 — Move to in-review
 
 ```bash
-./target/debug/ticket.exe update <id> --state in-review
+./target/debug/ticket.exe update <id> --to-state in-review
 ```
 
 #### Step 2 — Code Review Checklist
 
 Before moving to validation, verify each of the following. Fix any issue
-found before proceeding:
+found before proceeding, including missing documentation or spec traceability needed for review.
 
 **Correctness & Reactivity (frontend)**
 - [ ] All signal reads that must re-run on change are inside reactive closures,
@@ -158,10 +159,13 @@ found before proceeding:
 **General**
 - [ ] No dead code, unused imports, or unreachable branches left behind.
 - [ ] Public API changes reflected in docs/changelogs if applicable.
+- [ ] The relevant spec links the exact ticket folder path(s), the updated docs, and the passing or blocked validation results for this work.
+- [ ] The implementation summary captures implementation, validation, and documentation status.
 
 #### Step 3 — Validate Acceptance Criteria
 
-Run the relevant test suite(s) against the ticket's acceptance criteria:
+Run the relevant test suite(s) against the ticket's acceptance criteria.
+Keep iterating on the nearest required validation until it passes or you have a clearly repeated failure with enough evidence to stop and report the blocker:
 
 ```bash
 # Native unit tests (pure-Rust logic, no browser needed)
@@ -319,9 +323,15 @@ Opportunistically improve ticket quality whenever you touch the store:
 
 ## Workflow Expectations
 
-- For larger ticket-system work, start with ticket planning workflow first.
-- Search existing tickets/issues before introducing new behavior.
-- Record acceptance criteria for behavior changes.
+- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.
+- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.
+- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.
+- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.
+- Summaries and handoffs must report implementation, validation, and documentation status.
+- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.
+- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.
+- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.
+- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.
 
 ### Health Checks
 
