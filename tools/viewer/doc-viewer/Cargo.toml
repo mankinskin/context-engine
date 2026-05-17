@@ -11,6 +11,7 @@ path = "src/main.rs"
 [dependencies]
 # Shared viewer infrastructure
 viewer-api = { path = "../../../memory-viewers/viewer-api/viewer-api" }
+doc-http = { path = "../../../memory-viewers/memory-api/tools/http/doc-http" }
 
 # App-specific
 tokio = { version = "1", features = ["full"] }

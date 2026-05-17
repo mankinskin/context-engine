@@ -1,0 +1,103 @@
+.doc-browser__content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.doc-browser__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    flex: 1;
+    padding: 16px;
+}
+
+.doc-browser__empty,
+.doc-browser__error,
+.doc-browser__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(7, 10, 16, 0.72);
+    color: var(--text-secondary, #b7c0d6);
+}
+
+.doc-browser__error {
+    color: #ffb4b4;
+}
+
+.doc-browser__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.doc-browser__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary, #b7c0d6);
+    font-size: 12px;
+}
+
+.doc-browser__mode-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.doc-browser__mode-btn {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary, #f5f7ff);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.doc-browser__mode-btn--active {
+    background: rgba(129, 187, 255, 0.18);
+    border-color: rgba(129, 187, 255, 0.45);
+}
+
+.doc-browser__frame {
+    width: 100%;
+    flex: 1;
+    min-height: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.doc-browser__json {
+    margin: 0;
+    padding: 16px;
+    overflow: auto;
+    min-height: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(7, 10, 16, 0.72);
+    color: var(--text-primary, #f5f7ff);
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.doc-browser__sidebar-help {
+    padding: 12px 16px;
+    color: var(--text-secondary, #b7c0d6);
+    font-size: 12px;
+}

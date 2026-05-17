@@ -60,14 +60,10 @@ source_dir = "memory-viewers/spec-viewer"
 [[frontend]]
 name = "doc-viewer"
 serves = "doc-viewer"
-source_dir = "tools/viewer/doc-viewer/frontend"
-build_cmd = ["npx", "vite", "build"]
-build_output = "tools/viewer/doc-viewer/static"
-
-[[frontend.prebuild]]
-dir = "tools/viewer/doc-viewer/frontend"
-cmd = ["npm", "install"]
-condition = "missing:node_modules"
+source_dir = "tools/viewer/doc-viewer/frontend/dioxus"
+build_cmd = ["trunk", "build", "--release"]
+build_output = "tools/viewer/doc-viewer/frontend/dioxus/dist"
+extra_assets = ["tools/viewer/doc-viewer/frontend/dioxus/public"]
 
 [[frontend]]
 name = "log-viewer"

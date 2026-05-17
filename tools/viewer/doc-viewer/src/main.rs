@@ -52,6 +52,10 @@ use viewer_api::{
     tracing::info,
     TracingConfig,
 };
+use doc_http::{
+    build_router as build_doc_http_router,
+    DocAppState,
+};
 
 use mcp::DocsServer;
 
@@ -197,7 +201,9 @@ async fn run_http_server(
         sessions: SessionStore::new(),
     };
 
-    let app = http::create_router(state, Some(static_dir));
+    let app = http::create_router(state, Some(static_dir)).merge(
+        build_doc_http_router(DocAppState::new(workspace_root.clone())),
+    );
 
     let bind_addr = format!("0.0.0.0:{}", port);
     let listener = tokio::net::TcpListener::bind(&bind_addr).await?;

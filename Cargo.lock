@@ -3555,6 +3555,7 @@ name = "doc-viewer"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "doc-http",
  "markdown",
  "regex",
  "rmcp",
@@ -11130,6 +11131,19 @@ dependencies = [
  "serde_json",
  "unicode-xid",
  "wasmparser",
+]
+
+[[package]]
+name = "workflow-cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "time",
+ "uuid",
 ]
 
 [[package]]
