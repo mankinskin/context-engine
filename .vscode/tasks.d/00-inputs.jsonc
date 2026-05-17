@@ -1,44 +1,8 @@
 // ──────────────────────────────────────────────────────────────────────────
-// Shared inputs — Simple Browser openers
+// Reserved merge slot
 // ──────────────────────────────────────────────────────────────────────────
-// Each input is a no-result command hook that calls `simpleBrowser.show`
-// with the viewer's URL as a side effect. Tasks reference these via
-// `command: "echo ${input:openXxx}"` to chain "open browser" after the
-// server is ready.
-//
-// Adding a new viewer? Append a new entry here and reference it from your
-// `<viewer>: open` task.
-{
-  "inputs": [
-    {
-      "id": "openTicketViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3002"
-    },
-    {
-      "id": "openContextEditor",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:8090"
-    },
-    {
-      "id": "openDocViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3001"
-    },
-    {
-      "id": "openLogViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3000"
-    },
-    {
-      "id": "openSpecViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:4002"
-    }
-  ]
-}
+// Viewer open tasks now call `scripts/open-external-browser.mjs` directly so
+// the default path stays in an external Chromium-family browser instead of
+// VS Code's integrated Simple Browser. Keep this part-file so the merge order
+// remains stable if shared inputs are added back later.
+{}

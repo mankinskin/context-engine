@@ -37,7 +37,7 @@
     {
       "label": "context-editor: open",
       "type": "shell",
-      "command": "echo ${input:openContextEditor}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:8090\"",
       "dependsOn": "context-editor: trunk serve",
       "presentation": {
         "reveal": "never",
@@ -87,7 +87,7 @@
     {
       "label": "ticket-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openTicketViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: start",
       "presentation": {
         "reveal": "never",
@@ -169,7 +169,7 @@
     {
       "label": "doc-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openDocViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3001\"",
       "dependsOn": "doc-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -222,7 +222,7 @@
     {
       "label": "log-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openLogViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3000\"",
       "dependsOn": "log-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -275,7 +275,7 @@
     {
       "label": "ticket-viewer: managed open",
       "type": "shell",
-      "command": "echo ${input:openTicketViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -328,7 +328,7 @@
     {
       "label": "spec-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openSpecViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:4002\"",
       "dependsOn": "spec-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -403,36 +403,5 @@
       "problemMatcher": []
     }
   ],
-  "inputs": [
-    {
-      "id": "openTicketViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3002"
-    },
-    {
-      "id": "openContextEditor",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:8090"
-    },
-    {
-      "id": "openDocViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3001"
-    },
-    {
-      "id": "openLogViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:3000"
-    },
-    {
-      "id": "openSpecViewer",
-      "type": "command",
-      "command": "simpleBrowser.show",
-      "args": "http://localhost:4002"
-    }
-  ]
+  "inputs": []
 }

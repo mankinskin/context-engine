@@ -36,12 +36,11 @@
       "runOptions": { "instanceLimit": 1 }
     },
 
-    // Open http://localhost:3002 in the VS Code Simple Browser.
-    // Echo is a no-op carrier; the side effect comes from the input hook.
+    // Open http://localhost:3002 in an external Chromium-family browser.
     {
       "label": "ticket-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openTicketViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: start",
       "presentation": { "reveal": "never", "close": true }
     },

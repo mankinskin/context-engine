@@ -3,3 +3,4 @@
 - Keyboard-only interaction works for affected controls and navigation.
 - Focus placement is deterministic after route or data transitions.
 - Rendering remains usable at desktop, tablet, and mobile widths.
+- Manual visual checks note the screen or viewport size used so layout conclusions stay tied to an explicit resolution.

@@ -7,9 +7,9 @@
 //   2. Builds the frontend artifacts (Vite or trunk, auto-detected).
 //   3. Auto-installs the server binary to ~/.cargo/bin if not found.
 //   4. Launches the installed binary (no cargo build overhead).
-// Each compound "<viewer>: managed" task also opens the URL in Simple
-// Browser. To add a new viewer, copy a 3-task block (start / open /
-// compound) below and update the labels, port, and viewer name.
+// Each compound "<viewer>: managed" task also opens the URL in an external
+// Chromium-family browser. To add a new viewer, copy a 3-task block (start /
+// open / compound) below and update the labels, port, and viewer name.
 {
   "tasks": [
     // ── doc-viewer (port 3001, Vite) ─────────────────────────────────────
@@ -38,7 +38,7 @@
     {
       "label": "doc-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openDocViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3001\"",
       "dependsOn": "doc-viewer: managed start",
       "presentation": { "reveal": "never", "close": true }
     },
@@ -76,7 +76,7 @@
     {
       "label": "log-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openLogViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3000\"",
       "dependsOn": "log-viewer: managed start",
       "presentation": { "reveal": "never", "close": true }
     },
@@ -114,7 +114,7 @@
     {
       "label": "ticket-viewer: managed open",
       "type": "shell",
-      "command": "echo ${input:openTicketViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: managed start",
       "presentation": { "reveal": "never", "close": true }
     },
@@ -152,7 +152,7 @@
     {
       "label": "spec-viewer: open",
       "type": "shell",
-      "command": "echo ${input:openSpecViewer}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:4002\"",
       "dependsOn": "spec-viewer: managed start",
       "presentation": { "reveal": "never", "close": true }
     },

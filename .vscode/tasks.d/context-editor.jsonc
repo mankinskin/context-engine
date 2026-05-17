@@ -2,8 +2,8 @@
 // Context Editor — sandbox-app (Dioxus WASM via Trunk)
 // ──────────────────────────────────────────────────────────────────────────
 // Compiles the kernel + sandbox-app to WASM with hot-reload, then opens
-// http://localhost:8090 in the Simple Browser. Used for visual demos and
-// local UI iteration.
+// http://localhost:8090 in an external Chromium-family browser. Used for
+// visual demos and local UI iteration.
 {
   "tasks": [
     {
@@ -34,7 +34,7 @@
     {
       "label": "context-editor: open",
       "type": "shell",
-      "command": "echo ${input:openContextEditor}",
+      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:8090\"",
       "dependsOn": "context-editor: trunk serve",
       "presentation": { "reveal": "never", "close": true }
     },

@@ -9,11 +9,11 @@ inputs), and `scripts/build-vscode-tasks.py` merges them into the canonical
 
 | file                          | scope                                                |
 | ----------------------------- | ---------------------------------------------------- |
-| `00-inputs.jsonc`             | shared `inputs` (simpleBrowser openers)              |
+| `00-inputs.jsonc`             | reserved merge slot; shared inputs currently unused  |
 | `ticket-viewer.jsonc`         | direct cargo-run ticket-viewer tasks                 |
 | `ticket-vscode.jsonc`         | ticket-vscode extension compile/watch                |
 | `context-editor.jsonc`        | context-editor sandbox-app (trunk serve)             |
-| `viewer-ctl-managed.jsonc`    | viewer-ctl `start` + browser-open compounds (4 viewers) |
+| `viewer-ctl-managed.jsonc`    | viewer-ctl `start` + external-browser compounds (4 viewers) |
 | `viewer-ctl-prepare.jsonc`    | viewer-ctl `prepare` preLaunchTasks for lldb         |
 
 Each file contains a JSON object with optional `tasks` and/or `inputs`
@@ -32,6 +32,10 @@ The script:
 - concatenates `tasks` and `inputs` arrays,
 - validates label uniqueness across `tasks` and id uniqueness across `inputs`,
 - writes `.vscode/tasks.json` with a generated-file header.
+
+Viewer-facing open tasks should prefer `scripts/open-external-browser.mjs`
+over VS Code's integrated browser so visual validation runs in an external
+Chromium-family window by default.
 
 `.vscode/tasks.json` is committed (VS Code needs to read it directly) but
 **must not be hand-edited** — the header reminds you. Edit the part-files
