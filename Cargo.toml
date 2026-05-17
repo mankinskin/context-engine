@@ -2,10 +2,12 @@
 resolver = "2"
 members = [
   "memory-viewers/memory-api/crates/audit-api",
+  "memory-viewers/memory-api/crates/doc-api",
   "memory-viewers/memory-api/crates/memory-api",
   "memory-viewers/memory-api/crates/rule-api",
   "memory-viewers/memory-api/crates/ticket-api",
   "memory-viewers/memory-api/crates/spec-api",
+  "memory-viewers/memory-api/tools/http/doc-http",
   "crates/context-stack/context-search",
   "crates/context-stack/context-insert",
   "crates/context-stack/context-read",

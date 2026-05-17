@@ -3522,6 +3522,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "doc-api"
+version = "0.1.0"
+dependencies = [
+ "cargo_metadata",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "doc-http"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "doc-api",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tower 0.5.3",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "doc-viewer"
 version = "0.1.0"
 dependencies = [
