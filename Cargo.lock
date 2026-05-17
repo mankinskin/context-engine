@@ -9198,6 +9198,7 @@ name = "ticket-viewer-dioxus"
 version = "0.1.0"
 dependencies = [
  "dioxus",
+ "dioxus-web",
  "futures-util",
  "gloo-events",
  "gloo-net",
@@ -9989,6 +9990,7 @@ name = "viewer-api-dioxus"
 version = "0.1.0"
 dependencies = [
  "dioxus",
+ "dioxus-web",
  "gloo-events",
  "js-sys",
  "pulldown-cmark",
