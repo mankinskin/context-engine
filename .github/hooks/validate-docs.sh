@@ -4,11 +4,7 @@
 
 # Path patterns for matching (Unix and Windows style)
 DOC_VIEWER_SRC_UNIX="tools/viewer/doc-viewer/src/"
-DOC_VIEWER_SRC_WIN="tools\\\\viewer\\\\doc-viewer\\\\src\\\\"
-AGENTS_DIR_UNIX="agents/"
-AGENTS_DIR_WIN="agents\\\\"
-AGENTS_TMP_UNIX="agents/tmp/"
-AGENTS_TMP_WIN="agents\\\\tmp\\\\"
+DOC_VIEWER_SRC_WIN="tools\\viewer\\doc-viewer\\src\\"
 
 # Read JSON input from stdin
 INPUT=$(cat)
@@ -40,21 +36,6 @@ if [[ "$FILE_PATH" == *"$DOC_VIEWER_SRC_UNIX"* || "$FILE_PATH" == *"$DOC_VIEWER_
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
     "additionalContext": "⚠️ Doc viewer source modified. Run documentation validation: mcp_docs-server_validate_docs and mcp_docs-server_check_stale_docs"
-  }
-}
-EOF
-    exit 0
-fi
-
-# Check if agent docs were modified
-if [[ "$FILE_PATH" == *"$AGENTS_DIR_UNIX"* && "$FILE_PATH" != *"$AGENTS_TMP_UNIX"* ]] || \
-   [[ "$FILE_PATH" == *"$AGENTS_DIR_WIN"* && "$FILE_PATH" != *"$AGENTS_TMP_WIN"* ]]; then
-    echo "[validate-docs] MATCH: Agent docs file" >&2
-    cat << 'EOF'
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PostToolUse",
-    "additionalContext": "📝 Agent docs modified. Consider updating INDEX.md if adding new files."
   }
 }
 EOF

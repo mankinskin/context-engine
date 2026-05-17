@@ -39,9 +39,9 @@ check_vscode_tasks() {
     expected="$(mktemp)"
     cp .vscode/tasks.json "$expected"
 
-    if ! python scripts/build-vscode-tasks.py >/dev/null; then
+    if ! python .vscode/build-vscode-tasks.py >/dev/null; then
         rm -f "$expected"
-        echo "pre-commit: scripts/build-vscode-tasks.py failed — fix part-files" >&2
+        echo "pre-commit: .vscode/build-vscode-tasks.py failed — fix part-files" >&2
         exit 1
     fi
 

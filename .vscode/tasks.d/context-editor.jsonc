@@ -12,7 +12,7 @@
       "command": "trunk serve",
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/crates/context-stack/tools/context-editor/sandbox-app"
+        "cwd": "${workspaceFolder}/context-stack/tools/context-editor/sandbox-app"
       },
       "problemMatcher": {
         "owner": "trunk-context-editor",
@@ -34,7 +34,7 @@
     {
       "label": "context-editor: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:8090\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:8090\"",
       "dependsOn": "context-editor: trunk serve",
       "presentation": { "reveal": "never", "close": true }
     },

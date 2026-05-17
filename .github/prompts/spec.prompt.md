@@ -9,8 +9,6 @@ agent: "agent"
 
 Create or update a draft spec entry from the user's current slash-command request.
 
-Reference [Spec Tool](../../agents/skills/SPEC_TOOL.md) for slug rules, store layout, and transport details.
-
 Workflow:
 1. Treat the text typed after `/spec` as the source request.
 2. Search existing specs first to avoid duplicates and to identify the best component and parent.

@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════════╗
 // ║  GENERATED FILE — DO NOT EDIT BY HAND                                ║
 // ║  Source: .vscode/tasks.d/*.jsonc                                     ║
-// ║  Regenerate with: python scripts/build-vscode-tasks.py               ║
+// ║  Regenerate with: python .vscode/build-vscode-tasks.py               ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 {
   "version": "2.0.0",
@@ -12,7 +12,7 @@
       "command": "trunk serve",
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/crates/context-stack/tools/context-editor/sandbox-app"
+        "cwd": "${workspaceFolder}/context-stack/tools/context-editor/sandbox-app"
       },
       "problemMatcher": {
         "owner": "trunk-context-editor",
@@ -37,7 +37,7 @@
     {
       "label": "context-editor: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:8090\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:8090\"",
       "dependsOn": "context-editor: trunk serve",
       "presentation": {
         "reveal": "never",
@@ -87,7 +87,7 @@
     {
       "label": "ticket-viewer: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: start",
       "presentation": {
         "reveal": "never",
@@ -169,7 +169,7 @@
     {
       "label": "doc-viewer: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3001\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3001\"",
       "dependsOn": "doc-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -222,7 +222,7 @@
     {
       "label": "log-viewer: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3000\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3000\"",
       "dependsOn": "log-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -275,7 +275,7 @@
     {
       "label": "ticket-viewer: managed open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: managed start",
       "presentation": {
         "reveal": "never",
@@ -328,7 +328,7 @@
     {
       "label": "spec-viewer: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:4002\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:4002\"",
       "dependsOn": "spec-viewer: managed start",
       "presentation": {
         "reveal": "never",

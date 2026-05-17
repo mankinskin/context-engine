@@ -13,7 +13,7 @@
       "request": "launch",
       "url": "http://localhost:8090",
       "preLaunchTask": "context-editor: trunk serve",
-      "webRoot": "${workspaceFolder}/crates/context-stack/tools/context-editor/sandbox-app",
+      "webRoot": "${workspaceFolder}/context-stack/tools/context-editor/sandbox-app",
       "presentation": {
         "group": "context-editor",
         "order": 1

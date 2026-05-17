@@ -40,7 +40,7 @@
     {
       "label": "ticket-viewer: open",
       "type": "shell",
-      "command": "node \"${workspaceFolder}/scripts/open-external-browser.mjs\" \"http://localhost:3002\"",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3002\"",
       "dependsOn": "ticket-viewer: start",
       "presentation": { "reveal": "never", "close": true }
     },

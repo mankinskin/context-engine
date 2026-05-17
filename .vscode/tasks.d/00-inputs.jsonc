@@ -1,7 +1,7 @@
 // ──────────────────────────────────────────────────────────────────────────
 // Reserved merge slot
 // ──────────────────────────────────────────────────────────────────────────
-// Viewer open tasks now call `scripts/open-external-browser.mjs` directly so
+// Viewer open tasks now call `.vscode/open-external-browser.mjs` directly so
 // the default path stays in an external Chromium-family browser instead of
 // VS Code's integrated Simple Browser. Keep this part-file so the merge order
 // remains stable if shared inputs are added back later.

@@ -2,7 +2,7 @@
 
 VS Code only reads a single `tasks.json`, so this directory is a build-time
 source layout: each `*.jsonc` file owns one logical group of tasks (or
-inputs), and `scripts/build-vscode-tasks.py` merges them into the canonical
+inputs), and `.vscode/build-vscode-tasks.py` merges them into the canonical
 `.vscode/tasks.json`.
 
 ### Layout
@@ -23,7 +23,7 @@ arrays. Comments (`//` and `/* */`) and trailing commas are allowed
 ### Regenerating `tasks.json`
 
 ```bash
-python scripts/build-vscode-tasks.py
+python .vscode/build-vscode-tasks.py
 ```
 
 The script:
@@ -33,7 +33,7 @@ The script:
 - validates label uniqueness across `tasks` and id uniqueness across `inputs`,
 - writes `.vscode/tasks.json` with a generated-file header.
 
-Viewer-facing open tasks should prefer `scripts/open-external-browser.mjs`
+Viewer-facing open tasks should prefer `.vscode/open-external-browser.mjs`
 over VS Code's integrated browser so visual validation runs in an external
 Chromium-family window by default.
 
