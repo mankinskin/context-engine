@@ -1,7 +1,7 @@
 id = "d0cc3c8b-efc8-44c4-bbca-5daf4ddcdb8b"
 created_at = "2026-03-21T03:27:46.716317200+00:00"
 title = "[AOH][Impl] Review Coordinator -- validator handoff and state guards"
-state = "new"
+state = "cancelled"
 acceptance_criteria = "Worker->review->validating handoff enforces separation-of-duties, validates transition preconditions, and records assignment evidence chain"
 component = "context-tasks"
 execution_order = "3"
