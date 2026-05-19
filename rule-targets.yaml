@@ -574,10 +574,12 @@ folders:
           - name: limit-results
             title: Limit results
             section: limit-results
-            nodes:
-            - name: board-coordination
-              title: Board Coordination
-              section: limit-results/board-coordination
+          - name: dependency-semantics
+            title: Dependency Semantics
+            section: dependency-semantics
+          - name: board-coordination
+            title: Board Coordination
+            section: board-coordination
           - name: register-yourself-as-actively-working-a-ticket
             title: Register yourself as actively working a ticket
             section: register-yourself-as-actively-working-a-ticket

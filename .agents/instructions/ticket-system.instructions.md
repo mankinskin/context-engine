@@ -219,7 +219,13 @@ edges all point to `done`/`cancelled` tickets. Results are sorted by:
 2. **Priority** — `critical > high > medium > low > none`.
 3. **Creation date** — oldest first (FIFO tiebreaker).
 
+### Dependency Semantics
+
+Use these rules to model planning, design, tracker, and implementation ticket relationships correctly.
+
 **Dependency direction convention:** Parents/epics `depends_on` their children (an epic is done when all children are done). Children do **not** depend on their parent — they depend on sibling prerequisites.
+
+Planning or design tickets track the creation and refinement of specs, tickets, and execution shape. Implementation tickets depend on the planning or design ticket being completed before implementation starts. Tracker or epic tickets are separate execution parents: the tracker ticket depends on the child implementation tickets and closes when those children are done. Do not use a planning or design ticket as the tracker for its own implementation work.
 
 ### Board Coordination
 
