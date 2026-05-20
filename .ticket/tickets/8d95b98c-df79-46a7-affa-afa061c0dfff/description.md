@@ -1,0 +1,1 @@
+Implemented child-workspace ownership fixes for ticket refs and follow-up reads. Follow-up requested after review: remove special default workspace naming entirely and replace opaque 500s with actionable API errors; tracking continues in a new ticket.
