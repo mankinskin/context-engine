@@ -7,13 +7,15 @@ use viewer_api_dioxus::{
     BreadcrumbItem,
     Breadcrumbs,
     HamburgerIcon,
-    Header,
     Layout,
     NodeIcon,
-    RefreshIcon,
+    Overlay,
+    PageHeader,
     Sidebar,
     TabBar,
     TabItem,
+    TabsStore,
+    ThemeSettings,
     ThemeProvider,
     TreeNode,
     TreeView,
@@ -118,6 +120,107 @@ fn apply_rustdoc_iframe_theme() {
 #[cfg(not(target_arch = "wasm32"))]
 fn apply_rustdoc_iframe_theme() {}
 
+fn availability_label(exists: bool) -> &'static str {
+    if exists {
+        "available"
+    } else {
+        "missing"
+    }
+}
+
+fn artifact_tree_node(artifact: CargoDocArtifact) -> TreeNode {
+    let target_name = artifact.target_name.clone();
+    let package_name = artifact.package_name.clone();
+    let target_kind = artifact.target_kind.join(", ");
+    let html_exists = artifact.html_exists;
+    let html_path = artifact.html_index_path.clone();
+    let json_exists = artifact.rustdoc_json_exists;
+    let json_path = artifact.rustdoc_json_path.clone();
+    let tooltip_label = format!("{package_name}::{target_name}");
+    let tooltip_kind = target_kind.clone();
+    let tooltip_html_status = availability_label(html_exists).to_string();
+    let tooltip_json_status = availability_label(json_exists).to_string();
+
+    TreeNode {
+        id: artifact_id(&artifact),
+        label: target_name,
+        badge: Some(target_kind),
+        tooltip: Some(format!(
+            "html: {} | json: {}",
+            artifact.html_exists,
+            artifact.rustdoc_json_exists,
+        )),
+        tooltip_render: None,
+        badge_color: None,
+        is_dir: false,
+        icon: NodeIcon::Doc,
+        children: vec![],
+    }
+    .with_tooltip_render(move || {
+        rsx! {
+            div {
+                style: "display: flex; flex-direction: column; gap: 4px; max-width: 360px;",
+                div {
+                    style: "font-weight: 600; color: var(--text-primary);",
+                    "{tooltip_label}"
+                }
+                div { "kinds: {tooltip_kind}" }
+                div { "html: {tooltip_html_status}" }
+                if html_exists {
+                    div {
+                        style: "color: var(--text-muted); font-size: 11px; overflow-wrap: anywhere;",
+                        "{html_path}"
+                    }
+                }
+                div { "rustdoc json: {tooltip_json_status}" }
+                if json_exists {
+                    div {
+                        style: "color: var(--text-muted); font-size: 11px; overflow-wrap: anywhere;",
+                        "{json_path}"
+                    }
+                }
+            }
+        }
+    })
+}
+
+fn package_tree_node(
+    package_id: String,
+    package_name: String,
+    children: Vec<TreeNode>,
+    artifact_count: usize,
+    html_count: usize,
+    json_count: usize,
+) -> TreeNode {
+    let tooltip_package_name = package_name.clone();
+
+    TreeNode {
+        id: package_id,
+        label: package_name,
+        badge: Some(artifact_count.to_string()),
+        tooltip: Some(format!("{artifact_count} targets")),
+        tooltip_render: None,
+        badge_color: None,
+        is_dir: true,
+        icon: NodeIcon::Crate,
+        children,
+    }
+    .with_tooltip_render(move || {
+        rsx! {
+            div {
+                style: "display: flex; flex-direction: column; gap: 4px;",
+                div {
+                    style: "font-weight: 600; color: var(--text-primary);",
+                    "{tooltip_package_name}"
+                }
+                div { "targets: {artifact_count}" }
+                div { "html artifacts: {html_count}" }
+                div { "rustdoc json artifacts: {json_count}" }
+            }
+        }
+    })
+}
+
 fn build_tree(artifacts: &[CargoDocArtifact]) -> (Vec<TreeNode>, Vec<String>) {
     let mut grouped: BTreeMap<String, Vec<CargoDocArtifact>> = BTreeMap::new();
     for artifact in artifacts {
@@ -132,78 +235,70 @@ fn build_tree(artifacts: &[CargoDocArtifact]) -> (Vec<TreeNode>, Vec<String>) {
 
     for (package_name, mut package_artifacts) in grouped {
         package_artifacts.sort_by(|left, right| left.target_name.cmp(&right.target_name));
+        let artifact_count = package_artifacts.len();
+        let html_count = package_artifacts.iter().filter(|artifact| artifact.html_exists).count();
+        let json_count = package_artifacts
+            .iter()
+            .filter(|artifact| artifact.rustdoc_json_exists)
+            .count();
         let package_id = format!("package::{package_name}");
         expanded.push(package_id.clone());
         let children = package_artifacts
             .into_iter()
-            .map(|artifact| TreeNode {
-                id: artifact_id(&artifact),
-                label: artifact.target_name.clone(),
-                badge: Some(artifact.target_kind.join(", ")),
-                tooltip: Some(format!(
-                    "html: {} | json: {}",
-                    artifact.html_exists,
-                    artifact.rustdoc_json_exists,
-                )),
-                tooltip_render: None,
-                badge_color: None,
-                is_dir: false,
-                icon: NodeIcon::Doc,
-                children: vec![],
-            })
+            .map(artifact_tree_node)
             .collect::<Vec<_>>();
 
-        nodes.push(TreeNode {
-            id: package_id,
-            label: package_name,
-            badge: Some(children.len().to_string()),
-            tooltip: None,
-            tooltip_render: None,
-            badge_color: None,
-            is_dir: true,
-            icon: NodeIcon::Crate,
+        nodes.push(package_tree_node(
+            package_id,
+            package_name,
             children,
-        });
+            artifact_count,
+            html_count,
+            json_count,
+        ));
     }
 
     (nodes, expanded)
 }
 
 fn spawn_fetch_json(
-    mut open_tabs: Signal<Vec<OpenArtifactTab>>,
+    mut tabs_store: TabsStore<OpenArtifactTab>,
     tab_id: String,
     package_name: String,
     target_name: String,
 ) {
-    let already_loaded = open_tabs
+    let already_loaded = tabs_store
+        .tabs
         .read()
         .iter()
         .find(|tab| tab.id == tab_id)
-        .map(|tab| tab.json_loading || tab.json_content.is_some())
+        .map(|tab| {
+            tab.payload.json_loading || tab.payload.json_content.is_some()
+        })
         .unwrap_or(false);
     if already_loaded {
         return;
     }
 
-    open_tabs.with_mut(|tabs| {
+    tabs_store.tabs.with_mut(|tabs| {
         if let Some(tab) = tabs.iter_mut().find(|tab| tab.id == tab_id) {
-            tab.json_loading = true;
-            tab.json_error = None;
+            tab.payload.json_loading = true;
+            tab.payload.json_error = None;
         }
     });
 
     spawn(async move {
         match api::fetch_rustdoc_json(&package_name, &target_name).await {
-            Ok(json) => open_tabs.with_mut(|tabs| {
+            Ok(json) => tabs_store.tabs.with_mut(|tabs| {
                 if let Some(tab) = tabs.iter_mut().find(|tab| tab.id == tab_id) {
-                    tab.json_loading = false;
-                    tab.json_content = Some(json);
+                    tab.payload.json_loading = false;
+                    tab.payload.json_content = Some(json);
                 }
             }),
-            Err(err) => open_tabs.with_mut(|tabs| {
+            Err(err) => tabs_store.tabs.with_mut(|tabs| {
                 if let Some(tab) = tabs.iter_mut().find(|tab| tab.id == tab_id) {
-                    tab.json_loading = false;
-                    tab.json_error = Some(err);
+                    tab.payload.json_loading = false;
+                    tab.payload.json_error = Some(err);
                 }
             }),
         }
@@ -212,50 +307,61 @@ fn spawn_fetch_json(
 
 fn open_artifact_tab(
     artifact: CargoDocArtifact,
-    mut open_tabs: Signal<Vec<OpenArtifactTab>>,
-    mut active_tab_id: Signal<Option<String>>,
+    mut tabs_store: TabsStore<OpenArtifactTab>,
     mut mobile_sidebar_open: Signal<bool>,
 ) {
     let tab_id = artifact_id(&artifact);
-    let exists = open_tabs.read().iter().any(|tab| tab.id == tab_id);
+    let exists = tabs_store.tabs.read().iter().any(|tab| tab.id == tab_id);
     if !exists {
-        open_tabs.with_mut(|tabs| tabs.push(OpenArtifactTab::from_artifact(artifact.clone())));
+        tabs_store.open(tab_id.clone(), OpenArtifactTab::from_artifact(artifact.clone()));
+    } else {
+        tabs_store.activate(&tab_id);
     }
 
     if artifact.rustdoc_json_exists {
         spawn_fetch_json(
-            open_tabs,
+            tabs_store,
             tab_id.clone(),
             artifact.package_name.clone(),
             artifact.target_name.clone(),
         );
     }
 
-    active_tab_id.set(Some(tab_id));
     mobile_sidebar_open.set(false);
 }
 
 fn close_tab(
     tab_id: &str,
-    mut open_tabs: Signal<Vec<OpenArtifactTab>>,
-    mut active_tab_id: Signal<Option<String>>,
+    mut tabs_store: TabsStore<OpenArtifactTab>,
 ) {
-    open_tabs.with_mut(|tabs| tabs.retain(|tab| tab.id != tab_id));
-
-    if active_tab_id.read().as_deref() == Some(tab_id) {
-        let next = open_tabs.read().last().map(|tab| tab.id.clone());
-        active_tab_id.set(next);
+    if !tabs_store.tabs.read().iter().any(|tab| tab.id == tab_id) {
+        return;
     }
+
+    let remaining = tabs_store
+        .tabs
+        .read()
+        .iter()
+        .filter(|tab| tab.id != tab_id)
+        .cloned()
+        .collect::<Vec<_>>();
+    let next_active = if tabs_store.active.read().as_deref() == Some(tab_id) {
+        remaining.last().map(|tab| tab.id.clone())
+    } else {
+        tabs_store.active.read().clone()
+    };
+
+    tabs_store.set_tabs(remaining, next_active);
 }
 
 fn set_active_view(
     tab_id: &str,
     view: ArtifactView,
-    mut open_tabs: Signal<Vec<OpenArtifactTab>>,
+    mut tabs_store: TabsStore<OpenArtifactTab>,
 ) {
-    open_tabs.with_mut(|tabs| {
+    tabs_store.tabs.with_mut(|tabs| {
         if let Some(tab) = tabs.iter_mut().find(|tab| tab.id == tab_id) {
-            tab.active_view = view;
+            tab.payload.active_view = view;
         }
     });
 }
@@ -265,8 +371,7 @@ fn spawn_load_index(
     mut artifacts: Signal<Vec<CargoDocArtifact>>,
     mut loading: Signal<bool>,
     mut error: Signal<Option<String>>,
-    mut open_tabs: Signal<Vec<OpenArtifactTab>>,
-    mut active_tab_id: Signal<Option<String>>,
+    mut tabs_store: TabsStore<OpenArtifactTab>,
 ) {
     spawn(async move {
         loading.set(true);
@@ -282,18 +387,16 @@ fn spawn_load_index(
 
                 workspace.set(Some(index.workspace));
                 artifacts.set(index.artifacts.clone());
-                open_tabs.set(Vec::new());
-                active_tab_id.set(None);
+                tabs_store.set_tabs(Vec::new(), None);
 
                 if let Some(artifact) = first {
                     let tab = OpenArtifactTab::from_artifact(artifact.clone());
                     let tab_id = tab.id.clone();
-                    open_tabs.set(vec![tab]);
-                    active_tab_id.set(Some(tab_id.clone()));
+                    tabs_store.open(tab_id.clone(), tab);
 
                     if artifact.rustdoc_json_exists {
                         spawn_fetch_json(
-                            open_tabs,
+                            tabs_store,
                             tab_id,
                             artifact.package_name.clone(),
                             artifact.target_name.clone(),
@@ -318,23 +421,20 @@ pub fn App() -> Element {
     let artifacts = use_signal(Vec::<CargoDocArtifact>::new);
     let loading = use_signal(|| true);
     let error = use_signal(|| Option::<String>::None);
-    let open_tabs = use_signal(Vec::<OpenArtifactTab>::new);
-    let mut active_tab_id = use_signal(|| Option::<String>::None);
+    let tabs_store: TabsStore<OpenArtifactTab> =
+        use_hook(|| TabsStore::new());
     let mut sidebar_collapsed = use_signal(|| false);
     let mut mobile_sidebar_open = use_signal(|| false);
+    let mut show_theme_settings = use_signal(|| false);
 
     use_effect(move || {
-        spawn_load_index(workspace, artifacts, loading, error, open_tabs, active_tab_id);
+        spawn_load_index(workspace, artifacts, loading, error, tabs_store);
     });
 
     let artifact_nodes = build_tree(&artifacts.read().clone());
     let tree_nodes = artifact_nodes.0;
     let initially_expanded = artifact_nodes.1;
-    let active_tab = open_tabs
-        .read()
-        .iter()
-        .find(|tab| active_tab_id.read().as_deref() == Some(tab.id.as_str()))
-        .cloned();
+    let active_tab = tabs_store.active_tab().map(|tab| tab.payload);
     let active_tab_kind_label = active_tab
         .as_ref()
         .map(|tab| tab.artifact.target_kind.join(", "))
@@ -395,11 +495,12 @@ pub fn App() -> Element {
     let json_target_name = active_target_name.clone();
 
     let artifacts_for_select = artifacts.read().clone();
-    let tab_items = open_tabs
+    let tab_items = tabs_store
+        .tabs
         .read()
         .iter()
         .map(|tab| {
-            let mut item = TabItem::new(tab.id.clone(), tab.label.clone());
+            let mut item = TabItem::new(tab.id.clone(), tab.payload.label.clone());
             item.closeable = true;
             item
         })
@@ -412,8 +513,8 @@ pub fn App() -> Element {
                 WgpuOverlay {}
                 Layout {
                     header: rsx! {
-                        Header {
-                            left: rsx! {
+                        PageHeader {
+                            lead: Some(rsx! {
                                 button {
                                     class: if *sidebar_collapsed.read() { "btn btn-icon btn-active" } else { "btn btn-icon" },
                                     aria_label: "Toggle sidebar",
@@ -427,23 +528,20 @@ pub fn App() -> Element {
                                     },
                                     HamburgerIcon {}
                                 }
-                                span { class: "header-icon", "Docs" }
-                                span { class: "header-title", "Doc Viewer" }
-                                if let Some(workspace) = workspace.read().as_ref() {
-                                    span { class: "header-subtitle", "{workspace.package_count} packages" }
-                                }
-                            },
-                            right: rsx! {
-                                button {
-                                    class: "btn btn-icon",
-                                    aria_label: "Reload doc-http data",
-                                    title: "Reload doc-http data",
-                                    onclick: move |_| {
-                                        spawn_load_index(workspace, artifacts, loading, error, open_tabs, active_tab_id);
-                                    },
-                                    RefreshIcon {}
-                                }
-                            }
+                            }),
+                            icon: Some(rsx! { "Docs" }),
+                            title: Some("Doc Viewer".to_string()),
+                            subtitle: workspace
+                                .read()
+                                .as_ref()
+                                .map(|workspace| format!("{} packages", workspace.package_count)),
+                            on_refresh: Some(EventHandler::new(move |_| {
+                                spawn_load_index(workspace, artifacts, loading, error, tabs_store);
+                            })),
+                            on_theme_toggle: Some(EventHandler::new(move |_| {
+                                let next = !*show_theme_settings.read();
+                                show_theme_settings.set(next);
+                            })),
                         }
                     },
                     Sidebar {
@@ -466,11 +564,11 @@ pub fn App() -> Element {
                         } else {
                             TreeView {
                                 nodes: tree_nodes,
-                                selected_id: active_tab_id.read().clone(),
+                                selected_id: tabs_store.active.read().clone(),
                                 initially_expanded,
                                 on_select: move |id: String| {
                                     if let Some(artifact) = artifacts_for_select.iter().find(|artifact| artifact_id(artifact) == id).cloned() {
-                                        open_artifact_tab(artifact, open_tabs, active_tab_id, mobile_sidebar_open);
+                                        open_artifact_tab(artifact, tabs_store, mobile_sidebar_open);
                                     }
                                 },
                             }
@@ -490,9 +588,12 @@ pub fn App() -> Element {
                             if !tab_items.is_empty() {
                                 TabBar {
                                     tabs: tab_items,
-                                    active_id: active_tab_id.read().clone().unwrap_or_default(),
-                                    on_select: move |tab_id: String| active_tab_id.set(Some(tab_id)),
-                                    on_close: move |tab_id: String| close_tab(&tab_id, open_tabs, active_tab_id),
+                                    active_id: tabs_store.active.read().clone().unwrap_or_default(),
+                                    on_select: move |tab_id: String| {
+                                        let mut tabs_store = tabs_store;
+                                        tabs_store.activate(&tab_id);
+                                    },
+                                    on_close: move |tab_id: String| close_tab(&tab_id, tabs_store),
                                 }
                             }
 
@@ -518,7 +619,7 @@ pub fn App() -> Element {
                                     if active_html_exists {
                                         button {
                                             class: if active_view == ArtifactView::Html { "doc-browser__mode-btn doc-browser__mode-btn--active" } else { "doc-browser__mode-btn" },
-                                            onclick: move |_| set_active_view(&html_tab_id, ArtifactView::Html, open_tabs),
+                                            onclick: move |_| set_active_view(&html_tab_id, ArtifactView::Html, tabs_store),
                                             "HTML"
                                         }
                                     }
@@ -526,8 +627,8 @@ pub fn App() -> Element {
                                         button {
                                             class: if active_view == ArtifactView::Json { "doc-browser__mode-btn doc-browser__mode-btn--active" } else { "doc-browser__mode-btn" },
                                             onclick: move |_| {
-                                                set_active_view(&json_tab_id, ArtifactView::Json, open_tabs);
-                                                spawn_fetch_json(open_tabs, json_tab_id.clone(), json_package_name.clone(), json_target_name.clone());
+                                                set_active_view(&json_tab_id, ArtifactView::Json, tabs_store);
+                                                spawn_fetch_json(tabs_store, json_tab_id.clone(), json_package_name.clone(), json_target_name.clone());
                                             },
                                             "Rustdoc JSON"
                                         }
@@ -555,6 +656,15 @@ pub fn App() -> Element {
                                 div { class: "doc-browser__empty", "Select a generated doc target from the sidebar to browse its HTML or rustdoc JSON output." }
                             }
                         }
+                    }
+                }
+                Overlay {
+                    open: *show_theme_settings.read(),
+                    on_close: move |_| show_theme_settings.set(false),
+                    panel_class: "theme-settings-modal".to_string(),
+                    aria_label: "Theme settings".to_string(),
+                    ThemeSettings {
+                        on_close: move |_| show_theme_settings.set(false),
                     }
                 }
             }
