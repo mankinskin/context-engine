@@ -72,7 +72,9 @@ impl GitRepo {
                 cwd: self.path.clone(),
                 command: format_command(args),
                 status: output.status.code(),
-                stderr: String::from_utf8_lossy(&output.stderr).trim().to_string(),
+                stderr: String::from_utf8_lossy(&output.stderr)
+                    .trim()
+                    .to_string(),
             });
         }
 

@@ -2,23 +2,23 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 use viewer_api_dioxus::{
+    is_mobile_sidebar_viewport,
+    set_gpu_overlay_enabled,
     Camera,
     EdgeRef3D,
-    Graph3D,
-    is_mobile_sidebar_viewport,
-    Layout3D,
-    Node3D,
-    set_gpu_overlay_enabled,
-    FileTree,
     FileContentViewer,
+    FileTree,
     FilterDef,
     GlassPanel,
+    Graph3D,
     HamburgerIcon,
     Header,
     HeaderActions,
     Layout,
-    Overlay,
+    Layout3D,
     LogIcon,
+    Node3D,
+    Overlay,
     SearchIcon,
     Sidebar,
     StatsIcon,
@@ -177,7 +177,8 @@ fn build_hypergraph_layout(entries: &[LogEntry]) -> Option<Layout3D> {
 
     let mut edges = Vec::with_capacity(snapshot.edges.len());
     for edge in snapshot.edges {
-        let Some(from_idx) = index_to_layout_idx.get(&edge.from).copied() else {
+        let Some(from_idx) = index_to_layout_idx.get(&edge.from).copied()
+        else {
             continue;
         };
         let Some(to_idx) = index_to_layout_idx.get(&edge.to).copied() else {

@@ -19,12 +19,12 @@ use crate::{
         parse_mapping,
         validate_mappings,
     },
+    execute,
+    run,
     transform::{
         remap_path,
         transform_export,
     },
-    execute,
-    run,
 };
 
 #[test]
@@ -34,12 +34,7 @@ fn transplant_imports_filtered_history_into_target_repo() {
     let target_repo = temp.path().join("target");
 
     init_repo(&source_repo);
-    commit_file(
-        &source_repo,
-        "README.md",
-        "root\n",
-        "initial root commit",
-    );
+    commit_file(&source_repo, "README.md", "root\n", "initial root commit");
     commit_files(
         &source_repo,
         &[
@@ -64,8 +59,14 @@ fn transplant_imports_filtered_history_into_target_repo() {
     commit_files(
         &source_repo,
         &[
-            ("tools/cli/context-cli/src/main.rs", "fn main() { println!(\"cli\"); }\n"),
-            ("tools/http/context-http/src/lib.rs", "pub fn serve() { println!(\"http\"); }\n"),
+            (
+                "tools/cli/context-cli/src/main.rs",
+                "fn main() { println!(\"cli\"); }\n",
+            ),
+            (
+                "tools/http/context-http/src/lib.rs",
+                "pub fn serve() { println!(\"http\"); }\n",
+            ),
         ],
         "shared cli http update",
     );
@@ -104,12 +105,16 @@ fn transplant_imports_filtered_history_into_target_repo() {
     assert!(outcome.merged);
     assert!(outcome.stats.is_some());
     assert_eq!(
-        fs::read_to_string(target_repo.join("tools/cli/context-cli/src/main.rs"))
-            .expect("cli file should exist"),
+        fs::read_to_string(
+            target_repo.join("tools/cli/context-cli/src/main.rs")
+        )
+        .expect("cli file should exist"),
         "fn main() { println!(\"cli\"); }\n"
     );
     assert!(
-        target_repo.join("tools/context-editor/kernel/Cargo.toml").exists(),
+        target_repo
+            .join("tools/context-editor/kernel/Cargo.toml")
+            .exists(),
         "context-editor history should be imported"
     );
 
@@ -158,15 +163,17 @@ fn validate_mappings_rejects_overlapping_destinations() {
     .expect_err("overlapping destination scopes must fail");
 
     assert!(matches!(error, CraneError::BadRequest(_)));
-    assert!(error
-        .to_string()
-        .contains("overlapping destination mappings are not supported"));
+    assert!(
+        error
+            .to_string()
+            .contains("overlapping destination mappings are not supported")
+    );
 }
 
 #[test]
 fn transform_export_rewrites_branch_root_file_ops() {
-    let mapping =
-        parse_mapping("crates/context-stack=").expect("branch-root mapping should parse");
+    let mapping = parse_mapping("crates/context-stack=")
+        .expect("branch-root mapping should parse");
     assert_eq!(
         remap_path("crates/context-stack/Cargo.toml", &[mapping.clone()]),
         Some("Cargo.toml".to_string())
@@ -194,7 +201,8 @@ fn transform_export_rewrites_branch_root_file_ops() {
     )
     .expect("branch-root transform should succeed");
 
-    let output = String::from_utf8(output).expect("transform output should be utf8");
+    let output =
+        String::from_utf8(output).expect("transform output should be utf8");
 
     assert_eq!(stats.commit_count, 1);
     assert_eq!(stats.rewritten_ops, 5);
@@ -311,12 +319,8 @@ fn dry_run_reports_reviewable_plan_metadata() {
     let target_repo = temp.path().join("target");
 
     init_repo(&source_repo);
-    let initial_commit = commit_file(
-        &source_repo,
-        "README.md",
-        "root\n",
-        "initial root commit",
-    );
+    let initial_commit =
+        commit_file(&source_repo, "README.md", "root\n", "initial root commit");
     let first_tool_commit = commit_files(
         &source_repo,
         &[
@@ -377,7 +381,10 @@ fn dry_run_reports_reviewable_plan_metadata() {
 
     let outcome = execute(args.clone()).expect("dry-run should succeed");
     assert!(!outcome.merged, "dry-run must not report a merge");
-    assert!(outcome.stats.is_none(), "dry-run must not emit import stats");
+    assert!(
+        outcome.stats.is_none(),
+        "dry-run must not emit import stats"
+    );
     assert_eq!(outcome.plan.source_ref, "HEAD");
     assert_eq!(outcome.plan.source_commit, head_commit);
     assert_eq!(outcome.plan.anchor_commit, first_tool_commit);
@@ -398,23 +405,31 @@ fn dry_run_reports_reviewable_plan_metadata() {
     assert!(output.contains("source_ref=HEAD"));
     assert!(output.contains(&format!("source_commit={head_commit}")));
     assert!(output.contains(&format!("anchor_commit={first_tool_commit}")));
-    assert!(output.contains(&format!("range_spec={initial_commit}..{head_commit}")));
+    assert!(
+        output.contains(&format!("range_spec={initial_commit}..{head_commit}"))
+    );
     assert!(output.contains("target_branch=main"));
     assert!(output.contains("import_branch=crane/tools-review"));
     assert!(output.contains("import_ref=refs/heads/crane/tools-review"));
-    assert!(output.contains("mapping=tools/context-editor=tools/context-editor"));
+    assert!(
+        output.contains("mapping=tools/context-editor=tools/context-editor")
+    );
     assert!(output.contains("dry_run=true"));
 }
 
 #[test]
 fn dry_run_leaves_same_path_target_repo_untouched() {
     let fixture = setup_same_path_context_tools_fixture();
-    let target_head_before = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
-        .trim()
-        .to_string();
+    let target_head_before =
+        git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+            .trim()
+            .to_string();
 
     assert!(
-        !git_ref_exists(&fixture.target_repo, "refs/heads/crane/context-tools-review"),
+        !git_ref_exists(
+            &fixture.target_repo,
+            "refs/heads/crane/context-tools-review"
+        ),
         "fixture target should not start with the import ref"
     );
 
@@ -440,16 +455,22 @@ fn dry_run_leaves_same_path_target_repo_untouched() {
         format!("{}..{}", fixture.initial_commit, fixture.head_commit)
     );
 
-    let target_head_after = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
-        .trim()
-        .to_string();
+    let target_head_after =
+        git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+            .trim()
+            .to_string();
     assert_eq!(target_head_after, target_head_before);
     assert!(
-        git_output(&fixture.target_repo, &["status", "--short"]).trim().is_empty(),
+        git_output(&fixture.target_repo, &["status", "--short"])
+            .trim()
+            .is_empty(),
         "dry-run should not dirty the target repo"
     );
     assert!(
-        !git_ref_exists(&fixture.target_repo, "refs/heads/crane/context-tools-review"),
+        !git_ref_exists(
+            &fixture.target_repo,
+            "refs/heads/crane/context-tools-review"
+        ),
         "dry-run should not create the import ref"
     );
 }
@@ -482,19 +503,21 @@ fn setup_same_path_context_tools_fixture() -> SamePathContextToolsFixture {
     let target_repo = temp.path().join("target");
 
     init_repo(&source_repo);
-    let initial_commit = commit_file(
-        &source_repo,
-        "README.md",
-        "root\n",
-        "initial root commit",
-    );
+    let initial_commit =
+        commit_file(&source_repo, "README.md", "root\n", "initial root commit");
     let anchor_commit = commit_files(
         &source_repo,
         &[
             ("tools/cli/context-cli/src/main.rs", "fn main() {}\n"),
-            ("tools/cli/context-cli/src/output.rs", "pub fn output() {}\n"),
+            (
+                "tools/cli/context-cli/src/output.rs",
+                "pub fn output() {}\n",
+            ),
             ("tools/http/context-http/src/lib.rs", "pub fn serve() {}\n"),
-            ("tools/http/context-http/src/router.rs", "pub fn route() {}\n"),
+            (
+                "tools/http/context-http/src/router.rs",
+                "pub fn route() {}\n",
+            ),
             ("tools/mcp/context-mcp/src/main.rs", "fn main() {}\n"),
             (
                 "tools/context-editor/kernel/Cargo.toml",
@@ -525,7 +548,9 @@ fn setup_same_path_context_tools_fixture() -> SamePathContextToolsFixture {
         "excluded sibling only\n",
         "excluded sibling only update",
     );
-    let _ = fs::remove_file(source_repo.join("tools/http/context-http/src/router.rs"));
+    let _ = fs::remove_file(
+        source_repo.join("tools/http/context-http/src/router.rs"),
+    );
     let head_commit = commit_files(
         &source_repo,
         &[
@@ -703,13 +728,24 @@ fn transplant_rewrites_selected_tree_to_branch_root() {
         "selected subtree should collapse to root, not keep its source prefix"
     );
     assert!(
-        !fixture.target_repo.join("crates/context-stack-extra").exists(),
+        !fixture
+            .target_repo
+            .join("crates/context-stack-extra")
+            .exists(),
         "excluded sibling subtrees must stay out of the target"
     );
 
     let root_log = git_output(
         &fixture.target_repo,
-        &["log", "--format=%s", "--all", "--", "Cargo.toml", "src", "tests"],
+        &[
+            "log",
+            "--format=%s",
+            "--all",
+            "--",
+            "Cargo.toml",
+            "src",
+            "tests",
+        ],
     );
     assert!(root_log.contains("context-stack scaffold"));
     assert!(root_log.contains("context-stack root updates"));
@@ -741,9 +777,10 @@ fn transplant_rejects_dirty_target_before_replacing_import_ref() {
     })
     .expect("initial branch-root import should succeed");
 
-    let import_head_before = git_output(&fixture.target_repo, &["rev-parse", import_ref])
-        .trim()
-        .to_string();
+    let import_head_before =
+        git_output(&fixture.target_repo, &["rev-parse", import_ref])
+            .trim()
+            .to_string();
     fs::write(fixture.target_repo.join("DIRTY.md"), "dirty\n")
         .expect("dirty file should be written");
 
@@ -803,9 +840,10 @@ fn transplant_replaces_preexisting_import_ref_before_branch_root_import() {
         "stale\n",
         "stale import branch commit",
     );
-    let stale_import_head = git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
-        .trim()
-        .to_string();
+    let stale_import_head =
+        git_output(&fixture.target_repo, &["rev-parse", "HEAD"])
+            .trim()
+            .to_string();
     run_git(&fixture.target_repo, &["checkout", "main"]);
 
     execute(TransplantArgs {
@@ -824,9 +862,10 @@ fn transplant_replaces_preexisting_import_ref_before_branch_root_import() {
     })
     .expect("rerunning branch-root import should replace the stale import ref");
 
-    let refreshed_import_head = git_output(&fixture.target_repo, &["rev-parse", import_ref])
-        .trim()
-        .to_string();
+    let refreshed_import_head =
+        git_output(&fixture.target_repo, &["rev-parse", import_ref])
+            .trim()
+            .to_string();
     let import_tree = git_output(
         &fixture.target_repo,
         &["ls-tree", "-r", "--name-only", import_ref],
@@ -859,12 +898,7 @@ fn setup_branch_root_fixture() -> BranchRootFixture {
     let target_repo = temp.path().join("target");
 
     init_repo(&source_repo);
-    commit_file(
-        &source_repo,
-        "README.md",
-        "root\n",
-        "initial root commit",
-    );
+    commit_file(&source_repo, "README.md", "root\n", "initial root commit");
     let anchor_commit = commit_files(
         &source_repo,
         &[
@@ -876,10 +910,7 @@ fn setup_branch_root_fixture() -> BranchRootFixture {
                 "crates/context-stack/src/lib.rs",
                 "pub fn context_stack() {}\n",
             ),
-            (
-                "crates/context-stack/src/old.rs",
-                "pub fn old() {}\n",
-            ),
+            ("crates/context-stack/src/old.rs", "pub fn old() {}\n"),
             (
                 "crates/context-stack-extra/Cargo.toml",
                 "[package]\nname = \"context-stack-extra\"\nversion = \"0.1.0\"\nedition = \"2024\"\n",
@@ -897,7 +928,8 @@ fn setup_branch_root_fixture() -> BranchRootFixture {
         "pub fn extra() { println!(\"extra\"); }\n",
         "sibling crate only update",
     );
-    let _ = fs::remove_file(source_repo.join("crates/context-stack/src/old.rs"));
+    let _ =
+        fs::remove_file(source_repo.join("crates/context-stack/src/old.rs"));
     let head_commit = commit_files(
         &source_repo,
         &[
@@ -914,12 +946,7 @@ fn setup_branch_root_fixture() -> BranchRootFixture {
     );
 
     init_repo(&target_repo);
-    commit_file(
-        &target_repo,
-        "UNRELATED.md",
-        "target\n",
-        "target init",
-    );
+    commit_file(&target_repo, "UNRELATED.md", "target\n", "target init");
 
     BranchRootFixture {
         _temp: temp,

@@ -32,7 +32,9 @@ pub enum CraneError {
     MissingPathHistory(String),
     #[error("target repository is not clean: {0}")]
     DirtyTargetRepo(PathBuf),
-    #[error("git command failed in {cwd}: `{command}` (status: {status:?}) {stderr}")]
+    #[error(
+        "git command failed in {cwd}: `{command}` (status: {status:?}) {stderr}"
+    )]
     CommandFailed {
         cwd: PathBuf,
         command: String,
@@ -52,7 +54,7 @@ pub fn run(cli: CraneCli) -> Result<String, CraneError> {
         CraneCommand::Transplant(args) => {
             let outcome = transplant::execute(args)?;
             Ok(render_outcome(&outcome))
-        }
+        },
     }
 }
 

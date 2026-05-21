@@ -98,7 +98,8 @@ pub fn validate_mappings(
     mappings: &[PathMapping]
 ) -> Result<Vec<PathMapping>, CraneError> {
     let mut normalized = mappings.to_vec();
-    normalized.sort_by(|left, right| right.source.len().cmp(&left.source.len()));
+    normalized
+        .sort_by(|left, right| right.source.len().cmp(&left.source.len()));
 
     for (index, left) in normalized.iter().enumerate() {
         for right in normalized.iter().skip(index + 1) {

@@ -63,7 +63,7 @@ pub fn execute(args: TransplantArgs) -> Result<TransplantOutcome, CraneError> {
                 .ok_or_else(|| {
                     CraneError::MissingPathHistory(source_paths.join(", "))
                 })?
-        }
+        },
     };
 
     let anchor_parent = source_repo.rev_parse(&format!("{anchor_commit}^"));
@@ -135,7 +135,8 @@ fn import_history(
         plan.range_spec.clone(),
         "--".to_string(),
     ];
-    export_args.extend(plan.mappings.iter().map(|mapping| mapping.source.clone()));
+    export_args
+        .extend(plan.mappings.iter().map(|mapping| mapping.source.clone()));
 
     let mut exporter = source_repo
         .command(export_args.clone())
@@ -154,7 +155,9 @@ fn import_history(
         .map_err(CraneError::Io)?;
 
     let export_stdout = exporter.stdout.take().ok_or_else(|| {
-        CraneError::FastExport("failed to capture fast-export stdout".to_string())
+        CraneError::FastExport(
+            "failed to capture fast-export stdout".to_string(),
+        )
     })?;
     let import_stdin = importer.stdin.take().ok_or_else(|| {
         CraneError::FastExport("failed to open fast-import stdin".to_string())

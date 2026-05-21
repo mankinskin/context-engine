@@ -45,7 +45,12 @@ where
             writer
                 .write_all(format!("commit {import_ref}\n").as_bytes())
                 .map_err(CraneError::Io)?;
-            transform_commit_body(&mut reader, &mut writer, mappings, &mut stats)?;
+            transform_commit_body(
+                &mut reader,
+                &mut writer,
+                mappings,
+                &mut stats,
+            )?;
             continue;
         }
 
@@ -176,7 +181,9 @@ fn rewrite_file_op(
     stats: &mut TransformStats,
 ) -> Result<Option<String>, CraneError> {
     let raw = std::str::from_utf8(line).map_err(|error| {
-        CraneError::FastExport(format!("fast-export line is not utf-8: {error}"))
+        CraneError::FastExport(format!(
+            "fast-export line is not utf-8: {error}"
+        ))
     })?;
     let trimmed = raw.trim_end_matches('\n');
 
@@ -193,11 +200,11 @@ fn rewrite_file_op(
             Some(mapped) => {
                 stats.rewritten_ops += 1;
                 return Ok(Some(format!("M {mode} {data_ref} {mapped}\n")));
-            }
+            },
             None => {
                 stats.dropped_ops += 1;
                 return Ok(None);
-            }
+            },
         }
     }
 
@@ -206,11 +213,11 @@ fn rewrite_file_op(
             Some(mapped) => {
                 stats.rewritten_ops += 1;
                 return Ok(Some(format!("D {mapped}\n")));
-            }
+            },
             None => {
                 stats.dropped_ops += 1;
                 return Ok(None);
-            }
+            },
         }
     }
 
@@ -245,9 +252,7 @@ fn rewrite_pair_op(
     };
 
     stats.rewritten_ops += 1;
-    Ok(Some(format!(
-        "{op} {mapped_source} {mapped_destination}\n"
-    )))
+    Ok(Some(format!("{op} {mapped_source} {mapped_destination}\n")))
 }
 
 fn malformed_op(raw: &str) -> CraneError {
@@ -299,7 +304,9 @@ fn join_mapped_path(
 
 fn parse_data_len(line: &[u8]) -> Result<Option<usize>, CraneError> {
     let raw = std::str::from_utf8(line).map_err(|error| {
-        CraneError::FastExport(format!("fast-export line is not utf-8: {error}"))
+        CraneError::FastExport(format!(
+            "fast-export line is not utf-8: {error}"
+        ))
     })?;
     let Some(rest) = raw.strip_prefix("data ") else {
         return Ok(None);

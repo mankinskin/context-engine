@@ -35,6 +35,10 @@ mod schema;
 mod templates;
 mod tools;
 
+use doc_http::{
+    build_router as build_doc_http_router,
+    DocAppState,
+};
 use rmcp::{
     transport::stdio,
     ServiceExt,
@@ -51,10 +55,6 @@ use viewer_api::{
     to_unix_path,
     tracing::info,
     TracingConfig,
-};
-use doc_http::{
-    build_router as build_doc_http_router,
-    DocAppState,
 };
 
 use mcp::DocsServer;
