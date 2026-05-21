@@ -35,7 +35,7 @@ Workflow:
 15. Do not implement code or change unrelated tickets, specs, edges, or board state unless the user explicitly asks.
 
 Response:
-- created or matched ticket folder path and title, rendered as a markdown link whose text and target are the exact folder path returned by ticket-api output
+- created or matched ticket folder path and title, rendered as a markdown link of the form `[<short-id> <title>](<exact ticket folder path returned by ticket-api output>)`
 - chosen type, priority, and state
 - created or updated spec slug and id, or why no spec change was needed
 - duplicate candidates considered, if any

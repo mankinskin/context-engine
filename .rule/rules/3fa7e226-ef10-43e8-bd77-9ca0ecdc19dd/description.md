@@ -36,7 +36,7 @@ Workflow:
 
 Response:
 - target store and number of tickets created or matched
-- ticket folder paths and titles created or reused, rendered as markdown links whose text and target are the exact folder paths returned by ticket-api output
+- ticket folder paths and titles created or reused, rendered as markdown links of the form `[<short-id> <title>](<exact ticket folder path returned by ticket-api output>)`
 - created or updated spec slug and id, or why no spec change was needed
 - dependency edges added, if any
 - assumptions or follow-up gaps

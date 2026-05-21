@@ -336,9 +336,9 @@ Opportunistically improve ticket quality whenever you touch the store:
 - If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.
 - Summaries and handoffs must report implementation, validation, and documentation status.
 - When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.
-- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.
+- When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the markdown link target.
 - Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.
-- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.
+- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target preserves the returned folder path exactly as emitted by the tool output.
 
 ### Health Checks
 
