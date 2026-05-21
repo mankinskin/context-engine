@@ -1,7 +1,7 @@
 id = "17c99c98-9127-4bd0-90b5-c47f990b56de"
 created_at = "2026-05-13T22:39:57.278270800+00:00"
 title = "Verify crane-cli against controlled and real dry-run flows"
-state = "in-review"
+state = "done"
 acceptance_criteria = "Define a repeatable crane-cli verification path covering crate tests, production-like fixture coverage, and reviewed real dry-run metadata before future live imports."
 component = "context-stack"
 doc_category = "tool-history-migration"
