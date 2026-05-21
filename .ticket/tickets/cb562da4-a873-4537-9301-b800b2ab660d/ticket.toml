@@ -1,7 +1,7 @@
 id = "cb562da4-a873-4537-9301-b800b2ab660d"
 created_at = "2026-05-21T16:58:44.285475400+00:00"
 title = "[ticket-api][ticket-http][ticket-viewer] Design: canonical workspace identity and search consistency"
-state = "ready"
+state = "in-review"
 acceptance_criteria = "Workspace identity contract is collision-safe and reversible; reconciliation contract unifies search/index visibility for normal and force scan; unresolved-hit policy forbids synthetic ghost tickets; filtered explorer live-update semantics are specified; child implementation tickets carry explicit unit/integration/browser validation gates with required commands and fixtures; the validation matrix maps every invariant to passing tests"
 component = "ticket-api"
 depends_on = ["429f6f1d-6429-4601-bfac-b572fdb4dbff", "700b9763-17f8-436e-ace0-45b88bedd1d7"]
