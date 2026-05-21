@@ -4,6 +4,7 @@ title = "[AOH][Impl] Terminal UI -- queue view, assignment status, and review wo
 state = "cancelled"
 acceptance_criteria = "TUI shows queue/run/review state, per-assignment logs, operator actions (reassign/retry/stop), and latency/error indicators"
 component = "context-tasks"
+depends_on = ["8db8ef2f-e33c-4234-a39a-64a481b27984", "a8632357-fce3-4191-9283-3de2b53c2e82", "d5ced7e2-fc67-4a37-a621-96a54a71e51f"]
 execution_order = "4"
 execution_wave = "2"
 parallel_track = "C2"

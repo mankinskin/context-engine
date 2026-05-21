@@ -4,6 +4,7 @@ title = "Plan: integration test remediation — RC-1, RC-2, RC-3 fix rounds"
 state = "new"
 acceptance_criteria = "9 failing integration tests fixed; 20 ignored oracle/skill3 tests unblocked"
 component = "context-insert"
+depends_on = ["f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef", "f8afe331-41e2-4563-ad6a-456837afb1f8"]
 doc_category = "plan"
 risk_level = "medium"
 source_agent_files = "plans/20260315_PLAN_INTEGRATION_TEST_REMEDIATION.md"

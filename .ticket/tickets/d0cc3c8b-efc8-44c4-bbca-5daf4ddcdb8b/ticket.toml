@@ -4,6 +4,7 @@ title = "[AOH][Impl] Review Coordinator -- validator handoff and state guards"
 state = "cancelled"
 acceptance_criteria = "Worker->review->validating handoff enforces separation-of-duties, validates transition preconditions, and records assignment evidence chain"
 component = "context-tasks"
+depends_on = ["a8632357-fce3-4191-9283-3de2b53c2e82", "d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94", "d5ced7e2-fc67-4a37-a621-96a54a71e51f"]
 execution_order = "3"
 execution_wave = "2"
 parallel_track = "B2"

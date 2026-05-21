@@ -4,6 +4,7 @@ title = "Impl: ticket serve mode (HTTP + auth + workspace-aware ticket endpoints
 state = "done"
 acceptance_criteria = "Server mode exposes authenticated ticket and edge endpoints with workspace selection and structured errors"
 component = "context-tasks"
+depends_on = ["21a1b9ca-c053-4709-8785-e41fb0661c31", "91e22471-4895-4fcf-bab2-63efd7d9262d"]
 doc_category = "implementation"
 execution_wave = "1"
 impl_status = "complete"

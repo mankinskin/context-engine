@@ -4,6 +4,7 @@ title = "Plan: Copilot API execution layer — isolated sub-agents + review orch
 state = "cancelled"
 acceptance_criteria = "Execution-layer implementation tickets created; dependencies wired to bootstrap and intra-phase blockers; validation strategy documented"
 component = "context-tasks"
+depends_on = ["6e6b8cf6-3dd8-4b82-939e-a879248271ce", "a92569e5-3582-4191-9513-80ce6938cda4"]
 doc_category = "plan"
 execution_order = "0"
 execution_wave = "0"

@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "worker failures emit structured diagnostics with correlation ids and suggested recovery action"
 bootstrap_blocker = "false"
 component = "watcher"
+depends_on = ["2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2"]
 doc_category = "research"
 risk_level = "low"
 rollout_stage = "tracker-first"

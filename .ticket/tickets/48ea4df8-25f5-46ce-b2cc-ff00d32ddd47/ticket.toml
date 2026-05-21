@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "trial has zero critical data-loss or deadlock incidents; rollout recommendation published"
 bootstrap_blocker = "false"
 component = "cli"
+depends_on = ["2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2", "77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4", "de6c3391-27c2-4e27-bde8-1456f0eb3f43", "ee43f72e-53ef-4937-8216-92e17f185d85", "f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16"]
 doc_category = "research"
 risk_level = "low"
 rollout_stage = "tracker-first"

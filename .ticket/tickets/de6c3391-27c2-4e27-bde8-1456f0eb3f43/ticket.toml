@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "simulated mid-write crash recovers via scan/reconcile with no silent data loss"
 bootstrap_blocker = "true"
 component = "watcher"
+depends_on = ["4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1"]
 doc_category = "research"
 risk_level = "high"
 rollout_stage = "mirror"

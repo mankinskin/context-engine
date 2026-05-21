@@ -4,6 +4,7 @@ title = "Design: server-side subgraph query API and pagination semantics"
 state = "done"
 acceptance_criteria = "Subgraph query parameters, traversal bounds, pagination/cursor semantics, and response shape finalized"
 component = "context-tasks"
+depends_on = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"

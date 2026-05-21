@@ -4,5 +4,6 @@ title = "[spec] spec-api <-> ticket-api: link component entities and detect drif
 state = "new"
 acceptance_criteria = "Canonical component mapping between spec-api and ticket-api; health check detects stale, unknown, and newly inserted component values including log-viewer-leptos"
 component = "ticket-api"
+depends_on = ["f22d5297-3f60-4161-bf90-1eb56f3ced5d"]
 risk_level = "high"
 type = "tracker-improvement"

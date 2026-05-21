@@ -4,6 +4,7 @@ title = "[AOH][Impl] End-to-end executor integration and fault-injection suite"
 state = "cancelled"
 acceptance_criteria = "Integration suite validates concurrent isolated assignments, review handoff, notifier delivery, cleanup recovery, and merge-chain metadata"
 component = "context-tasks"
+depends_on = ["51471c3e-a088-47d4-9922-ba49d914af17", "5af54f6c-6192-49d8-8a35-c8581066a586", "8c185de3-88f9-4565-915e-220d5656d9ac", "8db8ef2f-e33c-4234-a39a-64a481b27984", "a8632357-fce3-4191-9283-3de2b53c2e82", "d0cc3c8b-efc8-44c4-bbca-5daf4ddcdb8b", "d5ced7e2-fc67-4a37-a621-96a54a71e51f", "f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16"]
 execution_order = "5"
 execution_wave = "3"
 parallel_track = "D1"

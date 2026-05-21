@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "Doc-viewer runs as Leptos WASM app; reuses viewer-api-leptos for layout/sidebar/code-viewer/theme; domain-specific: doc tree navigation, markdown rendering, category pages, breadcrumbs; served by the existing doc-viewer Rust backend"
 cancel_reason = "replaced with dioxus"
 component = "doc-viewer"
+depends_on = ["ca0f6ccc-545d-45df-bbbb-74a3daf0d18c"]
 interview_answers = "Q1: pulldown-cmark rendering to Leptos DOM nodes (not innerHTML) works. Q2: Full module tree — expand crate to see modules to see source files, same as TS. Q3: Support server-side session persistence via /api/session endpoint."
 risk_level = "medium"
 type = "tracker-improvement"

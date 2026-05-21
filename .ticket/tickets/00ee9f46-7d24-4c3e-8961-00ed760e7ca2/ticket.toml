@@ -5,6 +5,7 @@ state = "done"
 acceptance_criteria = "Server supports safe token refresh/reload without restart, emits auth reconfiguration events, and has integration coverage"
 auth_class = "AuthState+TokenSource+TokenSet"
 component = "context-tasks"
+depends_on = ["43dedd9b-46cd-46c7-96f8-6683ded2cc4d", "68dfc679-9eb7-48cd-ade5-a452fdc0f01d", "91e22471-4895-4fcf-bab2-63efd7d9262d"]
 doc_category = "implementation"
 execution_wave = "1"
 impl_status = "complete"

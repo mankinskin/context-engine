@@ -4,6 +4,7 @@ title = "Impl: live ticket graph stream pipeline (SSE + hooks + conflict events)
 state = "done"
 acceptance_criteria = "SSE stream emits node/edge/conflict events from command hooks with fallback reconcile path"
 component = "context-tasks"
+depends_on = ["09a32876-665c-476c-9587-8dcb3acd6e6a", "21a1b9ca-c053-4709-8785-e41fb0661c31", "24aa7e5e-1d62-4f35-a4f7-b056a0b8abce", "43dedd9b-46cd-46c7-96f8-6683ded2cc4d", "91e22471-4895-4fcf-bab2-63efd7d9262d"]
 doc_category = "implementation"
 execution_wave = "1"
 impl_status = "complete"

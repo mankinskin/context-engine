@@ -4,6 +4,7 @@ title = "Design: ticket HTTP API + SSE event contract + auth model"
 state = "done"
 acceptance_criteria = "Endpoint list, payload schemas, auth flow, conflict event format, and command-hook integration contract approved"
 component = "context-tasks"
+depends_on = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"

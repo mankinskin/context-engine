@@ -3,6 +3,7 @@ created_at = "2026-05-18T21:21:34.090914500+00:00"
 title = "[sandbox-v1][impl] Firecracker control plane and repo-local microVM foundation"
 state = "ready"
 component = "context-engine"
+depends_on = ["456d9b69-ec43-4746-b47d-20704da01be9"]
 priority = "high"
 tags = "sandbox,v1,orchestrator,core"
 type = "tracker-improvement"

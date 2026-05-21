@@ -4,6 +4,7 @@ title = "Feature: Theme save/load/export/import"
 state = "cancelled"
 acceptance_criteria = "1. Save button with inline name input stores current ThemeColors + EffectSettings to localStorage. 2. Saved themes grid shows cards with 6-color swatch, name, timestamp. 3. Double-click card name to rename. 4. Apply / Delete buttons per card. 5. Export button downloads theme as JSON. 6. Import button accepts JSON file and applies theme."
 component = "log-viewer-leptos"
+depends_on = ["92d5223b-05a4-4b80-ae6a-f5f5d45db2fc"]
 description = "Add saved-themes management to the ThemeSettings overlay. Includes: save current theme with name, load saved themes from localStorage grid, rename saved themes (double-click), delete saved themes, export theme as JSON file, import theme from JSON file. Saved theme cards show 6-color swatch preview and creation timestamp."
 priority = "low"
 type = "tracker-improvement"

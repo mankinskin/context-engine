@@ -4,6 +4,7 @@ title = "[LOG-5d] Port log-viewer app shell, URL state, and per-file store to Di
 state = "done"
 acceptance_criteria = "Port app shell, URL restore, per-file state cache, sidebar/header controls, and API-mode parity to Dioxus."
 component = "tools/viewer/log-viewer/frontend/dioxus"
+depends_on = ["c179ef57-6866-451d-ba7f-f7923ad1374b"]
 priority = "P1"
 risk_level = "high"
 tags = "#log-viewer #frontend #dioxus #viewer-api"

@@ -4,6 +4,7 @@ title = "[AOH][Impl] Copilot API client -- execution provider contracts and auth
 state = "cancelled"
 acceptance_criteria = "Typed provider client supports API-key auth, request/response mapping, retry/backoff, and redacted logging tests"
 component = "context-tasks"
+depends_on = ["a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61", "d5ced7e2-fc67-4a37-a621-96a54a71e51f"]
 execution_order = "1"
 execution_wave = "1"
 parallel_track = "A1"

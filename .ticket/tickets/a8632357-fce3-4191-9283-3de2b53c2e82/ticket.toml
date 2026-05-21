@@ -4,6 +4,7 @@ title = "[AOH][Impl] Assignment Runner -- concurrent sub-agent execution and pro
 state = "cancelled"
 acceptance_criteria = "Runner starts/monitors sub-agent sessions, streams progress events, updates ticket state transitions, and handles timeout/early-stop recovery"
 component = "context-tasks"
+depends_on = ["51471c3e-a088-47d4-9922-ba49d914af17", "8c185de3-88f9-4565-915e-220d5656d9ac", "c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83", "d5ced7e2-fc67-4a37-a621-96a54a71e51f", "e4c6d8f1-9a2b-4c3d-8e4f-5a6b7c8d9ea5"]
 execution_order = "2"
 execution_wave = "2"
 parallel_track = "B1"

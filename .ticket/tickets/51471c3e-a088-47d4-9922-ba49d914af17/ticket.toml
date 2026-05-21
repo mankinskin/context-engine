@@ -4,6 +4,7 @@ title = "[AOH][Impl] Sandbox Manager -- per-assignment worktree and branch isola
 state = "cancelled"
 acceptance_criteria = "Each assignment provisions isolated worktree+branch, validates cwd/branch invariants, and performs idempotent cleanup/reconcile"
 component = "context-tasks"
+depends_on = ["b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72", "d5ced7e2-fc67-4a37-a621-96a54a71e51f"]
 execution_order = "1"
 execution_wave = "1"
 parallel_track = "A2"

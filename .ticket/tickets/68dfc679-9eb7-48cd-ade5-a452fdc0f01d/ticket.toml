@@ -4,6 +4,7 @@ title = "Design: auth token lifecycle and rotation/reload behavior for ticket se
 state = "done"
 acceptance_criteria = "Define token source precedence, rotation strategy, hot-reload behavior, failure modes, and operator runbook"
 component = "context-tasks"
+depends_on = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"

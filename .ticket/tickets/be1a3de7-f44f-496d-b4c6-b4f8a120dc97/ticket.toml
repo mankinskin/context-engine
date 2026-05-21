@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "merge queue honors dependency and conflict constraints; queue output is machine-readable"
 bootstrap_blocker = "false"
 component = "graph"
+depends_on = ["5e4727f9-53a6-4d36-a98f-4c9a6db81216"]
 doc_category = "research"
 risk_level = "medium"
 rollout_stage = "hybrid"

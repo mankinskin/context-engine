@@ -4,6 +4,7 @@ title = "Design: SSE event schema freeze for ticket graph updates"
 state = "done"
 acceptance_criteria = "Event names, payload schemas, ordering guarantees, versioning policy, and compatibility rules documented and approved"
 component = "context-tasks"
+depends_on = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"

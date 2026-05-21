@@ -4,6 +4,7 @@ title = "Implement Docker harness for documented install and deinstall flows"
 state = "in-implementation"
 acceptance_criteria = "Implement a reproducible Docker harness plus synchronized .spec contract entries and README generation rules for documented install and deinstall flows."
 component = "documentation-tooling"
+depends_on = ["5d320d7e-f974-4d52-9e25-8265bf7a42cf"]
 doc_category = "user-facing-installation"
 phase = "implementation-planning"
 priority = "high"

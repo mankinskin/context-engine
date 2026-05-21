@@ -4,6 +4,7 @@ title = "Gate install and deinstall documentation continuously in CI"
 state = "ready"
 acceptance_criteria = "Continuously validate install and deinstall docs in CI across executable Docker tests, .spec contracts, and .rule-generated README documentation."
 component = "documentation-tooling"
+depends_on = ["0ffac34a-4e33-426c-8eef-ef6482ab3bde"]
 doc_category = "user-facing-installation"
 phase = "planning"
 priority = "high"

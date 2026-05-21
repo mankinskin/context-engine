@@ -4,6 +4,7 @@ title = "Design: command-hook emission contract and fallback reconciliation"
 state = "done"
 acceptance_criteria = "Define hook trigger points, delivery semantics, idempotency keys, and fallback reconcile behavior under hook failures"
 component = "context-tasks"
+depends_on = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]
 design_status = "review_ready"
 doc_category = "design"
 execution_wave = "0"

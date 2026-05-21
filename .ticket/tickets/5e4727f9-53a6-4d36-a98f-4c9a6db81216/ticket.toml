@@ -5,6 +5,7 @@ state = "cancelled"
 acceptance_criteria = "dependency traversal and cycle/dangling detection pass scenario tests"
 bootstrap_blocker = "false"
 component = "graph"
+depends_on = ["4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1"]
 doc_category = "research"
 risk_level = "medium"
 rollout_stage = "hybrid"
