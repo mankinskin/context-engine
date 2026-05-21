@@ -1,7 +1,7 @@
 id = "0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274"
 created_at = "2026-05-17T15:21:00.007077600+00:00"
 title = "Rewrite workflow traceability spec around first-class metadata links"
-state = "in-review"
+state = "done"
 acceptance_criteria = "Rewritten spec removes wrapper-owned workflow artifacts as authoritative source; first-class reversible identities span ticket/spec/doc/test/log surfaces; retrieval uses existing memory-system tools; markdown paths remain compatibility output only"
 component = "repo-workflow-tooling"
 priority = "high"

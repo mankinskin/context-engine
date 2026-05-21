@@ -1,7 +1,7 @@
 id = "1031c748-ba1e-43c0-ab4a-8ad2a0e9e97b"
 created_at = "2026-05-17T16:45:50.655990200+00:00"
 title = "Remove workflow-cli prototype from live repo surfaces"
-state = "in-review"
+state = "done"
 acceptance_criteria = "Canonical rules and generated instructions no longer reference workflow-cli or workflow docs commands; the root workspace no longer includes the workflow-cli crate; the prototype crate directory is removed; validation confirms no remaining live repo surfaces point at the wrapper prototype"
 component = "repo-workflow-tooling"
 priority = "high"

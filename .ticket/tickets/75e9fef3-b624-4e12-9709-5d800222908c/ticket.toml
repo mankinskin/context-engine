@@ -1,7 +1,7 @@
 id = "75e9fef3-b624-4e12-9709-5d800222908c"
 created_at = "2026-05-17T15:20:58.616951200+00:00"
 title = "Rewrite workflow validation spec around embedded memory-api behavior"
-state = "in-review"
+state = "done"
 acceptance_criteria = "Rewritten spec removes separate wrapper validation CLI and artifact-store assumptions; validation workflow becomes default shared-library behavior in ticket/spec/doc APIs and future test/log APIs; test-api and log-api responsibilities are defined; wrapper-only prototype behavior is treated as migration context rather than target architecture"
 component = "repo-workflow-tooling"
 priority = "high"
