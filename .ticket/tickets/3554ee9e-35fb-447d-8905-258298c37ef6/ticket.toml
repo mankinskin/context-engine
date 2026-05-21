@@ -1,7 +1,7 @@
 id = "3554ee9e-35fb-447d-8905-258298c37ef6"
 created_at = "2026-05-21T16:58:45.044516300+00:00"
 title = "[ticket-http][ticket-viewer] Introduce collision-safe public workspace identity"
-state = "in-implementation"
+state = "in-review"
 acceptance_criteria = "Public workspace identifiers remain reversible under duplicate basenames; list/detail/history/files/asset flows stay stable for both colliding workspaces; ambiguous legacy labels fail typedly or map through an explicit compatibility path; specs and tests document identifier and display-label behavior; duplicate-basename fixtures prove registry, HTTP, and any affected viewer routing do not silently shadow one workspace"
 component = "ticket-http"
 depends_on = ["429f6f1d-6429-4601-bfac-b572fdb4dbff", "700b9763-17f8-436e-ace0-45b88bedd1d7", "cb562da4-a873-4537-9301-b800b2ab660d"]
