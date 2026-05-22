@@ -1,0 +1,50 @@
+folders:
+- name: .github
+  folders:
+  - name: prompts
+    files:
+    - name: spec.prompt.md
+      target:
+        name: context-engine-prompt-spec
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/spec.prompt.md
+        nodes:
+        - name: spec-prompt
+          section: spec-prompt
+    - name: rule.prompt.md
+      target:
+        name: context-engine-prompt-rule
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/rule.prompt.md
+        nodes:
+        - name: rule-prompt
+          section: rule-prompt
+    - name: rule-target.prompt.md
+      target:
+        name: context-engine-prompt-rule-target
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/rule-target.prompt.md
+        nodes:
+        - name: rule-target-prompt
+          section: rule-target-prompt
+    - name: ticket.prompt.md
+      target:
+        name: context-engine-prompt-ticket
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/ticket.prompt.md
+        nodes:
+        - name: ticket-prompt
+          section: ticket-prompt
+    - name: tickets.prompt.md
+      target:
+        name: context-engine-prompt-tickets
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/tickets.prompt.md
+        nodes:
+        - name: tickets-prompt
+          section: tickets-prompt

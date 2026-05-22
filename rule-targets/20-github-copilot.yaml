@@ -1,0 +1,23 @@
+folders:
+- name: .github
+  files:
+  - name: copilot-instructions.md
+    target:
+      name: context-engine-copilot-instructions
+      repo_scope: context-engine
+      file_kind: copilot-instructions
+      path_scope: .github/copilot-instructions.md
+      nodes:
+      - name: github-copilot-instructions
+        title: GitHub Copilot Instructions
+        section: github-copilot-instructions
+        nodes:
+        - name: source-of-truth
+          title: Source of Truth
+          section: github-copilot-instructions/source-of-truth
+        - name: optional-copilot-cli-mcp-config
+          title: Optional Copilot CLI MCP Config
+          section: github-copilot-instructions/optional-copilot-cli-mcp-config
+        - name: hooks
+          title: Hooks
+          section: github-copilot-instructions/hooks
