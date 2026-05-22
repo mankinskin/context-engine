@@ -15,6 +15,10 @@ spec.
   input characters or input tokens consumed.
 - Every stored child pattern preserves ordered concatenation of the underlying
   leaf atoms.
+- Each matched range corresponds to at most one token.
+- A token may hold multiple first-class decompositions in `child_patterns`.
+- `child_patterns` are semantically unordered. Any order used by search,
+  traversal, or projection code is operational and caller-specific.
 - Reads may reuse existing tokens, add tighter decompositions to existing
   tokens, or add alternate decompositions when the same span can be represented
   multiple valid ways.
@@ -34,18 +38,18 @@ chain. `linear_read_abc` and the related linear tests freeze this behavior.
 The graph is allowed to become tighter over time. `read_sequence1` shows
 `hypergraph` first stored as a flat pattern and later represented as
 `[[hyper, graph]]` after `hyper` and `graph` are read later. `read_sequence2`
-shows the same refinement pattern for repeated blocks such as `heldld` and
+shows the same refinement pattern for related blocks such as `heldld` and
 `hell`.
 
 ### Repeated blocks and adjacent overlap
 
-`repetition_abcabcabc` freezes the minimal reusable structure for a triple
-repeat:
+`repetition_abcabcabc` freezes reusable overlap structure for a triple repeat:
 
 - `abc` exists as `[a, b, c]`;
 - `abcabc` exists as `[abc, abc]`;
 - the root stores both valid adjacent decompositions `[abcabc, abc]` and
-  `[abc, abcabc]`.
+  `[abc, abcabc]` because both are first-class decompositions of the same
+  token.
 
 ### Infix rereads and rotating overlaps
 
@@ -57,17 +61,18 @@ token when each pattern is a valid ordered decomposition of the same span.
 ### Complex overlap corpus
 
 `complex_abcabababcaba` records a larger overlap family derived from the
-repository's ngrams-oracle work. The stable point is not a specific search
-order. It is the set of valid decompositions that must exist once the graph has
-processed that input.
+repository's ngrams-oracle work. The stable point is not a specific traversal
+order. It is the set of valid tokens and decompositions that must exist once the
+graph has processed that input.
 
 ## Relation to `PatternReadResult`
 
 The public `read_sequence` command returns `PatternReadResult` and `ReadNode`,
 but that tree is only one deterministic projection of the induced graph.
-`build_read_tree` sorts child patterns by `PatternId` and follows the first one,
-so the returned tree may show fewer decompositions than the graph actually
-stores.
+`build_read_tree` sorts child patterns by `PatternId` and follows one path, so
+the returned tree may show fewer decompositions than the graph actually stores.
+That projection order is deterministic for callers, but not semantically
+canonical.
 
 ## Draft boundary
 
@@ -75,7 +80,9 @@ This spec does not freeze:
 
 - the exact moment during a multi-step read when each alternate decomposition is
   materialized;
+- the exact retention and invalidation policy for all materialized intermediate
+  results;
 - behavior currently identified as defects in active lower-layer tickets, such
-  as repeated-single-character width mismatches;
+  as width mismatches or duplicate-border failures;
 - a requirement that the induced graph match a full ngrams closure rather than
   the current regression corpus.

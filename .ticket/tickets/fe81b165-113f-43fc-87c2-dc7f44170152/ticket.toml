@@ -1,0 +1,11 @@
+id = "fe81b165-113f-43fc-87c2-dc7f44170152"
+created_at = "2026-05-22T21:09:08.748063500+00:00"
+title = "Tracker: context-read final test remediation for context-stack integration"
+state = "new"
+acceptance_criteria = "context-read read-sequence specs reflect the largest-overlap incremental join model; remaining failures are resolved or explicitly rebaselined under that contract; cargo test --manifest-path context-stack/context-read/Cargo.toml --lib passes"
+component = "context-read"
+depends_on = ["05925875-000c-4af3-913e-e4121ab223ca", "51cfdc74-4454-481d-91af-1d94b4934dec", "73d1bf88-8f61-431b-bc2d-d36c523f8f03", "bfe43d0d-2870-4146-b651-1464a55ec7aa", "c6cc7d5a-dcfb-4ae0-bfc7-d8682462503b"]
+linked = ["978ce8a5-3936-467b-aca8-822eeecd1eb0", "a25e3cad-5bf2-4432-9c89-3a6dd67ee774"]
+risk_level = "high"
+tags = "#tracker,#context-read,#context-stack,#integration,#testing,#read,#spec"
+type = "tracker-improvement"

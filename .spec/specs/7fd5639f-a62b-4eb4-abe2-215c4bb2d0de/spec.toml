@@ -3,13 +3,13 @@ created_at = "2026-05-09T10:42:25.446355600+00:00"
 title = "read_sequence"
 state = "draft"
 code_refs = [
-  { description = "Workspace command that reads text through the graph and returns a decomposition result.", file = "crates/context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 196, line_start = 130, symbol = "read_sequence" },
-  { description = "Result shape returned by read commands.", file = "crates/context-stack/context-api/src/types.rs", kind = "struct", line_end = 440, line_start = 432, symbol = "PatternReadResult" },
-  { description = "Recursive decomposition-tree node returned inside PatternReadResult.", file = "crates/context-stack/context-api/src/types.rs", kind = "struct", line_end = 458, line_start = 450, symbol = "ReadNode" },
-  { description = "Contract test: reading a short multi-character string returns matching text and width.", file = "crates/context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 462, line_start = 457, symbol = "read_sequence_basic" },
-  { description = "Contract test: a single character returns a leaf atom node.", file = "crates/context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 474, line_start = 465, symbol = "read_sequence_single_char" },
-  { description = "Contract test: the empty string is rejected with SequenceTooShort.", file = "crates/context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 486, line_start = 477, symbol = "read_sequence_empty_returns_error" },
-  { description = "Contract test: an inserted token can be read back as identical leaf text.", file = "crates/context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 454, line_start = 441, symbol = "read_inserted_sequence" }
+  { description = "Workspace command that reads text through the graph and returns a decomposition result.", file = "context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 196, line_start = 130, symbol = "read_sequence" },
+  { description = "Result shape returned by read commands.", file = "context-stack/context-api/src/types.rs", kind = "struct", line_end = 440, line_start = 432, symbol = "PatternReadResult" },
+  { description = "Recursive decomposition-tree node returned inside PatternReadResult.", file = "context-stack/context-api/src/types.rs", kind = "struct", line_end = 458, line_start = 450, symbol = "ReadNode" },
+  { description = "Contract test: reading a short multi-character string returns matching text and width.", file = "context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 462, line_start = 457, symbol = "read_sequence_basic" },
+  { description = "Contract test: a single character returns a leaf atom node.", file = "context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 474, line_start = 465, symbol = "read_sequence_single_char" },
+  { description = "Contract test: the empty string is rejected with SequenceTooShort.", file = "context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 486, line_start = 477, symbol = "read_sequence_empty_returns_error" },
+  { description = "Contract test: an inserted token can be read back as identical leaf text.", file = "context-stack/context-api/src/commands/read.rs", kind = "function", line_end = 454, line_start = 441, symbol = "read_inserted_sequence" }
 ]
 component = "context-stack"
 parent = "16c3ad95-451d-4c09-a118-ca90bcefed9a"

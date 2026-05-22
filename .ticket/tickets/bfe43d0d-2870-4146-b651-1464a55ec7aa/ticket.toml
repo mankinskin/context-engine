@@ -1,0 +1,10 @@
+id = "bfe43d0d-2870-4146-b651-1464a55ec7aa"
+created_at = "2026-05-22T21:09:09.146859300+00:00"
+title = "[Bug] context-read largest-overlap incremental join misses expected decompositions"
+state = "new"
+acceptance_criteria = "read_repeating_known1 and read_multiple_overlaps1 pass; each overlap expansion step follows largest-overlap search, complement completion, and safe root commit"
+component = "context-read"
+depends_on = ["73d1bf88-8f61-431b-bc2d-d36c523f8f03"]
+risk_level = "high"
+tags = "#bug,#context-read,#largest-overlap,#decomposition,#overlap,#read"
+type = "tracker-improvement"
