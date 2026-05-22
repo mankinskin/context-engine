@@ -1,7 +1,7 @@
 id = "dd2947da-d4d2-4c8a-9a9a-3633060ff4c5"
 created_at = "2026-05-21T16:58:44.663927100+00:00"
 title = "[ticket-api] Reconcile aggregate scan, prune, and search visibility"
-state = "in-review"
+state = "done"
 acceptance_criteria = "Normal scan and force scan share user-visible search/list/get semantics; deleted nested tickets, removed scan roots, and moved or stale child paths reconcile in both index and search on scan(false); stale drift emits diagnostics; the same fixtures prove agreement across search_tickets, list, get, and indexed metadata; focused ticket-api commands pass for deleted-on-disk, removed-root, moved-path, and visibility-agreement fixtures"
 component = "ticket-api"
 depends_on = ["cb562da4-a873-4537-9301-b800b2ab660d"]
