@@ -1,0 +1,1 @@
+Update canonical ticket-reference guidance so chat/spec outputs keep the authoritative ticket folder path from ticket-api output for traceability, but append the concrete ticket file path when rendering markdown links so editors can open the target directly. Regenerate the affected rule targets after updating the canonical entries.

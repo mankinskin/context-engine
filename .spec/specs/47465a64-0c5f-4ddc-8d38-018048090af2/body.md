@@ -16,6 +16,8 @@ An `imports:` entry should be able to reference either a specific config file or
 
 Nested workspace guidance files under `.github/agents/` should be rendered from canonical rule entries instead of remaining hand-written files.
 
+Guidance and prompt surfaces that reference tickets should preserve the exact authoritative ticket folder path returned by `ticket-api` output and append `/ticket.toml` only at markdown-link render time so editors can open a concrete file directly.
+
 # Constraints
 
 - Existing flat `targets` configs must remain supported
@@ -35,9 +37,11 @@ Nested workspace guidance files under `.github/agents/` should be rendered from 
 - Child workspaces own the targets for their `.github/agents/*.agent.md` outputs
 - Canonical rules exist for the nested workspace `roast` and `Ticket Refinement Agent` files and generate the current agent content correctly
 - Regenerating the touched workspaces updates the nested agent files from rule targets without manual edits to those outputs
+- Generated guidance and traceability links that reference tickets use targets of the form `<exact authoritative ticket folder path>/ticket.toml` so editor links open a concrete file without rewriting the returned folder path
 - Focused tests cover directory import parsing, deterministic fragment ordering, and duplicate handling across imported fragments
 
 # Traceability
 
-- [e4f6e712 [repo-guidance][rule-api] Import child rule-target configs and generate nested workspace agent files](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/e4f6e712-b3b6-493a-9ca2-d5f0d91f61b9)
-- [45379405 [repo-guidance][rule-api] Split rule-target configs into thematic folders across nested workspaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/45379405-d7c3-41bf-bd6d-059354c4291b)
+- [e4f6e712 [repo-guidance][rule-api] Import child rule-target configs and generate nested workspace agent files](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/e4f6e712-b3b6-493a-9ca2-d5f0d91f61b9/ticket.toml)
+- [45379405 [repo-guidance][rule-api] Split rule-target configs into thematic folders across nested workspaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/45379405-d7c3-41bf-bd6d-059354c4291b/ticket.toml)
+- [5d3cd5da [repo-guidance] Link ticket references to ticket.toml in generated guidance](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/5d3cd5da-99e5-4320-979c-595fedf24a88/ticket.toml)
