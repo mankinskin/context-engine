@@ -1,0 +1,12 @@
+id = "d39e9e08-5104-461b-83ff-bd4361e967d9"
+created_at = "2026-05-22T20:51:42.849006900+00:00"
+title = "[ticket-cli] Add blockers command and nested tree rendering"
+state = "new"
+acceptance_criteria = "1. ticket blockers <id> returns an ordered upstream blocker tree with all deep blockers and emphasized frontier leaves. 2. ticket unblocked-by <id> returns an ordered downstream tree that preserves direct parent-child structure beneath the queried root and highlights frontier leaves. 3. Machine-readable and human-readable output both render nested tree structure clearly instead of flattening results into generic lists. 4. Focused integration tests cover nested JSON shape, sibling ordering, and human-readable rendering."
+component = "ticket-cli"
+depends_on = ["3b6a2a26-bd4e-44ce-ba15-41594b809b9a", "d74412e4-1d0e-4679-8725-e5da6f266fe9"]
+priority = "high"
+risk_level = "medium"
+spec_refs = "d702ed9e-f75c-4727-8f05-1b2b244ec74f"
+tags = "ticket-cli,workflow,dependencies,trees,ux"
+type = "tracker-improvement"
