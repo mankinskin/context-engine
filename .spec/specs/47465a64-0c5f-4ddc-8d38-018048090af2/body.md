@@ -1,69 +1,35 @@
-# Repository Workflow Guidance
+# Motivation
 
-## Goal
+Repository guidance is partly rule-generated today, but nested workspaces still carry hand-written agent files and the parent workspace duplicates child target definitions directly in its own `rule-targets.yaml`.
 
-Define the required repository workflow for guidance, planning, implementation, validation, documentation, and review.
+That duplication weakens ownership boundaries and makes guidance drift more likely because child workspaces cannot be the single source of truth for their own generated outputs.
 
-## Required workflow
+# Intended Behavior
 
-1. Create one or more tickets for the requested work before implementation starts.
-2. Update or create the relevant spec entry so the new requirements and goals are recorded before code changes proceed.
-3. For each ticket:
-   - implement the requested change
-   - run the required validation until it passes or repeatedly fails
-   - update the docs for each affected codebase or generated guidance surface
-   - verify the spec links to the docs, the tickets, and the test or validation results
-   - move the ticket to `in-review` for peer review
-4. Summarize the current status of implementation, validation, and documentation.
+The rule-target system must allow a workspace to import target definitions from child workspaces and compose them into a parent workspace run without copying those target definitions into the parent config.
 
-## Requirements for guidance surfaces
+Each workspace should define only the smallest set of local target definitions and canonical rules that it owns. Parent workspaces should import and reuse child targets wherever the generated outputs belong to those child workspaces.
 
-The generated guidance under `.agents/` and `.github/` should consistently reinforce this workflow.
+Nested workspace guidance files under `.github/agents/` should be rendered from canonical rule entries instead of remaining hand-written files.
 
-At minimum, guidance should make the following expectations explicit:
+# Constraints
 
-- ticket creation comes before implementation work
-- spec updates come before implementation work for new or changed requirements/goals
-- validation is required and repeated failures must be reported clearly when they block completion
-- docs must be updated for changed codebases and generated guidance surfaces
-- review readiness includes verifying that the spec links to the relevant docs, tickets, and test results
-- status summaries must cover implementation, validation, and documentation
+- Existing flat `targets` configs must remain supported
+- Existing `files` and `folders` tree-shaped target configs must remain supported
+- Relative import paths must resolve from the importing config file so nested workspace configs stay relocatable
+- Imported targets must retain deterministic ordering and duplicate-name validation across the merged config set
+- Frontmatter-based `.agent` outputs must continue rendering without provenance markers when that is the established renderer behavior
 
-## Implementation status
+# Acceptance Criteria
 
-- workflow rules were updated in the canonical rule store and regenerated into the repository guidance targets
-- partial tooling is accounted for explicitly: dedicated test-tool missing, doc-tool partial, cross-store linking partial
-- the guidance now requires the strongest available substitute plus explicit gap reporting instead of silently skipping workflow steps
-- follow-up tickets now track the missing workflow tooling surfaces called out by the guidance rewrite
+- A parent `rule-targets` config can import child workspace target configs with relative paths
+- Loading a config merges local and imported targets deterministically and rejects duplicate target names across the combined config graph
+- Root guidance generation reuses imported child targets instead of redefining the same child targets inline
+- Child workspaces own the targets for their `.github/agents/*.agent.md` outputs
+- Canonical rules exist for the nested workspace `roast` and `Ticket Refinement Agent` files and generate the current agent content correctly
+- Regenerating the touched workspaces updates the nested agent files from rule targets without manual edits to those outputs
+- Focused tests cover config import parsing and duplicate handling across imports
 
-## Traceability
+# Traceability
 
-### Completed workflow ticket
-
-- [.ticket/tickets/762d9ac9-e0e0-4f02-b60f-21c79e3c26f6](.ticket/tickets/762d9ac9-e0e0-4f02-b60f-21c79e3c26f6)
-
-### Follow-up tooling tickets
-
-- [.ticket/tickets/02bf9cf0-7e14-46f8-b80a-9e66b38878f9](.ticket/tickets/02bf9cf0-7e14-46f8-b80a-9e66b38878f9)
-- [.ticket/tickets/042efd55-80a7-4a79-a821-75972f8886e3](.ticket/tickets/042efd55-80a7-4a79-a821-75972f8886e3)
-- [.ticket/tickets/74b32430-cd23-43ad-94dd-086ff752e2b4](.ticket/tickets/74b32430-cd23-43ad-94dd-086ff752e2b4)
-
-### Guidance docs
-
-- [AGENTS.md](AGENTS.md)
-- [.github/prompts/spec.prompt.md](.github/prompts/spec.prompt.md)
-- [.github/prompts/ticket.prompt.md](.github/prompts/ticket.prompt.md)
-- [.github/prompts/tickets.prompt.md](.github/prompts/tickets.prompt.md)
-- [.agents/instructions/tests.instructions.md](.agents/instructions/tests.instructions.md)
-- [.agents/instructions/ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)
-
-### Validation results
-
-- [target/tmp/repository-workflow-guidance-validation.md](target/tmp/repository-workflow-guidance-validation.md)
-
-## Status summary
-
-- Implementation: complete for the targeted canonical rules and regenerated guidance outputs.
-- Validation: `rule sync-targets` and `rule sync-targets --check` passed.
-- Documentation: AGENTS, ticket/spec prompts, and ticket/test instructions now require the repository workflow.
-- Follow-up planning: dedicated tickets now exist for workflow validation tooling, documentation tooling coverage, and cross-store traceability links.
+- [e4f6e712 [repo-guidance][rule-api] Import child rule-target configs and generate nested workspace agent files](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/e4f6e712-b3b6-493a-9ca2-d5f0d91f61b9)
