@@ -1,0 +1,5 @@
+- `doc-api` owns the data model for documentation validation status, manual checks, generated-guidance checks, and coverage gaps
+- a future `doc-cli` is the primary CLI surface for doc inspection and workflow-driven validation operations
+- generated-guidance checks such as `rule sync-targets --check` are captured as native documentation-validation records
+- ticket/spec workflow metadata references documentation-validation state through shared libraries rather than through wrapper-owned artifacts
+- any wrapper-only documentation commands are treated only as migration context until the doc-owned model lands

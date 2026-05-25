@@ -1,0 +1,1 @@
+Documentation checks, generated-guidance validation, manual verification, and partial-coverage reporting should live in native metadata owned by `doc-api` and surfaced by a future `doc-cli` plus the normal ticket/spec workflow surfaces.

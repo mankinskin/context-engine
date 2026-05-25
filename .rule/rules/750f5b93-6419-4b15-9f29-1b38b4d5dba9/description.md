@@ -1,0 +1,5 @@
+- define a minimal cross-store identity and reference model spanning tickets, specs, docs, future `test-api` records, and future `log-api` records
+- support linking workflow state from native store metadata rather than from a dedicated wrapper artifact store
+- be queryable through existing or planned memory-system tool surfaces
+- preserve current markdown path links as compatibility presentation, not source of truth
+- describe migration from any existing wrapper-owned link payloads if they need to be retained temporarily

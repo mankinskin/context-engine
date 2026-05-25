@@ -1,0 +1,6 @@
+- `ticket-api` and `spec-api` store workflow-facing metadata and cross-store references directly in their native models
+- `doc-api` owns documentation-validation metadata and a future `doc-cli` becomes the thin CLI surface for those operations
+- a future `test-api` owns validation specifications, executions, and outcomes such as `passed`, `failed`, and `blocked`
+- a future `log-api` owns captured validation logs and retrieval for review/debugging evidence
+- CLI, MCP, and HTTP surfaces are thin interfaces over shared-library behavior; workflow capture is not a second command path users must remember
+- any wrapper-only prototype code is migration context, not the product goal

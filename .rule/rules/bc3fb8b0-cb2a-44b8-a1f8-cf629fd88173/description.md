@@ -1,0 +1,1 @@
+The source of truth for workflow links should live in the memory stores and shared libraries themselves, with existing tool surfaces returning those identities directly.

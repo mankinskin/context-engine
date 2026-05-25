@@ -1,0 +1,5 @@
+- each participating store owns the identities of its records and exposes them through shared-library APIs
+- `ticket-api`, `spec-api`, and `doc-api` can reference or query workflow-linked records directly through native metadata
+- future `test-api` records and `log-api` records have their own native identifiers and queryable metadata
+- CLI, MCP, and HTTP surfaces return authoritative identities and can additionally render compatible markdown/path links for humans
+- wrapper-owned workflow artifact payloads are not authoritative and, if retained temporarily, exist only for migration compatibility

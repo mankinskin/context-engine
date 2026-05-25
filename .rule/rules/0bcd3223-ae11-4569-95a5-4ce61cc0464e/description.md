@@ -1,0 +1,1 @@
+Validation specifications, executions, outcomes, blockers, and traceability should live in first-class metadata owned by shared libraries. Existing and future tool surfaces such as `ticket`, `spec`, `doc`, `test`, and `log` should expose that behavior directly.

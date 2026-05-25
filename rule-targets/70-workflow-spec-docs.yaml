@@ -1,0 +1,16 @@
+targets:
+- name: workflow-validation-tool-body
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md
+  output_path: generated/spec-docs/context-engine/workflow-validation-tool/body.md
+- name: workflow-documentation-validation-tooling-body
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md
+  output_path: generated/spec-docs/context-engine/workflow-documentation-validation-tooling/body.md
+- name: cross-store-workflow-traceability-links-body
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md
+  output_path: generated/spec-docs/context-engine/cross-store-workflow-traceability-links/body.md

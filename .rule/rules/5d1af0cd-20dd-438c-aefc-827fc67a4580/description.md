@@ -1,0 +1,5 @@
+- define native documentation-validation metadata in `doc-api`
+- support validation records for authored docs, generated guidance surfaces, and manual verification steps
+- allow unsupported or partial coverage to be reported explicitly in native workflow metadata
+- define how documentation validation links to tickets, specs, and future `test-api` / `log-api` entities
+- define `doc-cli` as a thin CLI over `doc-api`, not as a second storage model

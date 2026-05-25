@@ -1,0 +1,5 @@
+- define native workflow validation metadata owned by the shared memory-system APIs
+- define how validation specifications, executions, outcomes, and blockers are represented without a separate workflow artifact store
+- make workflow capture part of normal ticket/spec/doc behavior and future `test-api` and `log-api` behavior
+- define the minimal default configuration knobs that turn workflow capture on for the existing tool surfaces
+- describe how any wrapper-only prototype logic is absorbed into shared libraries or discarded
