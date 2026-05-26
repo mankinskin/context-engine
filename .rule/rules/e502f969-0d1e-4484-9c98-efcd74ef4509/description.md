@@ -1,0 +1,3 @@
+## Resolving the canonical path
+
+If the first ticket-api response (for example `ticket create`) omits the folder path, run a follow-up call such as `ticket get <id> --json` and read `.payload.ticket.path` before composing the reference. Nested workspaces, alternate scan roots, and ancestor checkouts all produce different canonical paths, so the path must come from ticket-api rather than from a template.

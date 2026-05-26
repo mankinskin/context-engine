@@ -1,0 +1,22 @@
+id = "2747b7bf-6901-465b-bc3b-e9734ae359fb"
+created_at = "2026-05-26T16:12:10.548297100+00:00"
+title = "Entry marker"
+state = "draft"
+body = "## Entry marker\n\nEach composed snippet is preceded by `<!-- <domain>:entry id=<uuid> slug=<path> -->`. The `id` is the canonical entry id in the source store and the `slug` is the hierarchical identifier of that entry. Entry markers let regenerators detect identical inputs, surface diffs, and let editors navigate from generated prose to its canonical source."
+feedback_helpful_count = 0
+feedback_mixed_count = 0
+feedback_not_helpful_count = 0
+feedback_note_count = 0
+feedback_unresolved_count = 0
+file_kind = "spec-doc"
+order_key = 3
+path_scopes = [".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md"]
+repo_scopes = ["context-engine"]
+section = "generated-file-markers/entry-marker"
+sentence_anchors = []
+slug = "context-engine/recurring-principles/generated-file-markers/generated-file-markers/entry-marker/l9"
+source_end_line = 11
+source_path = ".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md"
+source_repo = "context-engine"
+source_start_line = 9
+type = "rule-entry"

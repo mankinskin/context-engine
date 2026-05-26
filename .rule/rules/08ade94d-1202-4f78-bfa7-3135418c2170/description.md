@@ -1,0 +1,3 @@
+- `<short-id>` is the first 8 characters of the authoritative ticket id.
+- `<title>` is the authoritative ticket title.
+- `<canonical ticket folder path>` is the exact folder path returned by ticket-api for that ticket. Never synthesize a path from a UUID, from the current store root, or from an example path.

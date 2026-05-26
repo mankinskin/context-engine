@@ -1,0 +1,26 @@
+targets:
+- name: context-engine-recurring-principles-body
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md
+  output_path: generated/spec-docs/context-engine/recurring-principles/body.md
+- name: context-engine-recurring-principles-browser-validation
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/browser-validation.md
+  output_path: generated/spec-docs/context-engine/recurring-principles/browser-validation.md
+- name: context-engine-recurring-principles-generated-file-markers
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md
+  output_path: generated/spec-docs/context-engine/recurring-principles/generated-file-markers.md
+- name: context-engine-recurring-principles-traceability-link-format
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/traceability-link-format.md
+  output_path: generated/spec-docs/context-engine/recurring-principles/traceability-link-format.md
+- name: context-engine-recurring-principles-validation-evidence
+  repo_scope: context-engine
+  file_kind: spec-doc
+  path_scope: .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/validation-evidence.md
+  output_path: generated/spec-docs/context-engine/recurring-principles/validation-evidence.md

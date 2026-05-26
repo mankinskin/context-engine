@@ -1,0 +1,22 @@
+id = "abd295a4-1f53-4bd4-adaf-eea3dd1957f3"
+created_at = "2026-05-26T16:12:10.462341500+00:00"
+title = "File marker"
+state = "draft"
+body = "## File marker\n\nThe first non-empty line of a generated file is `<!-- <domain>:file generated=true -->`, where `<domain>` is the owning API (`rule-api`, `spec-api`, …). The marker signals that the file is owned by the generation pipeline and must not be hand-edited."
+feedback_helpful_count = 0
+feedback_mixed_count = 0
+feedback_not_helpful_count = 0
+feedback_note_count = 0
+feedback_unresolved_count = 0
+file_kind = "spec-doc"
+order_key = 2
+path_scopes = [".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md"]
+repo_scopes = ["context-engine"]
+section = "generated-file-markers/file-marker"
+sentence_anchors = []
+slug = "context-engine/recurring-principles/generated-file-markers/generated-file-markers/file-marker/l5"
+source_end_line = 7
+source_path = ".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md"
+source_repo = "context-engine"
+source_start_line = 5
+type = "rule-entry"

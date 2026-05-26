@@ -1,0 +1,19 @@
+[body]
+config = "rule-targets.yaml"
+target = "context-engine-recurring-principles-body"
+
+[sections.browser-validation]
+config = "rule-targets.yaml"
+target = "context-engine-recurring-principles-browser-validation"
+
+[sections.generated-file-markers]
+config = "rule-targets.yaml"
+target = "context-engine-recurring-principles-generated-file-markers"
+
+[sections.traceability-link-format]
+config = "rule-targets.yaml"
+target = "context-engine-recurring-principles-traceability-link-format"
+
+[sections.validation-evidence]
+config = "rule-targets.yaml"
+target = "context-engine-recurring-principles-validation-evidence"
