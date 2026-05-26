@@ -3,8 +3,9 @@
 ```bash
 # Register yourself as actively working a ticket
 ./target/debug/ticket.exe board check-in <ticket-id> \
-  --agent-id <agent-id> \
+  --agent <agent-id> \
   --intent "brief description of planned work" \
-  --files "src/foo.rs,src/bar.rs" \
-  --ttl 3600 \
+  --file "src/foo.rs" \
+  --file "src/bar.rs" \
+  --ttl-secs 3600 \
   --json
