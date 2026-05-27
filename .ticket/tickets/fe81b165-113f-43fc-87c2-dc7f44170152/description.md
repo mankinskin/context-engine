@@ -46,6 +46,24 @@ Failing tests:
 - overlap-step materialization, retention, and structural invariant safety
 - largest-overlap incremental join behavior for repeat and rotating-overlap cases
 
+## Shared design decisions for child tickets
+
+- The rewritten read-spec chain is the source of truth; current shortcut code is not.
+- `context-read` should orchestrate lower-crate primitives instead of reimplementing traversal or overlap bundling.
+- Equal-span peer decompositions are graph facts and must accumulate over time.
+- C3 and broader chain buffering remain deferred until the semantic repair tickets are complete.
+
+## Manual validation gate for spec-backed work
+
+When any child ticket implements a specification-backed change:
+
+1. Run the narrowest relevant automated checks first.
+2. If broader `context-read` failures remain, perform a manual graph/log inspection for the affected family and record:
+	- which spec entry changed;
+	- which tokens/decompositions were confirmed manually;
+	- which remaining failures are outside the ticket's scope.
+3. Do not close the child ticket on spec prose alone; each spec-backed change needs either a passing focused check or an explicit blocked validation note.
+
 ## Done when
 
 - The child remediation tickets are resolved under the clarified model above.

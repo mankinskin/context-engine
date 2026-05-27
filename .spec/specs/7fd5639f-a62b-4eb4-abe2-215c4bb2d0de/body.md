@@ -1,9 +1,10 @@
 # read_sequence
 
-`WorkspaceManager::read_sequence` reads text through the graph and returns a
-deterministic projection of the resulting root token.
+`WorkspaceManager::read_sequence` reads text through the graph and returns one
+deterministic projection of the root token induced by that read.
 
-See also the parent [graph induction](spec:16c3ad95-451d-4c09-a118-ca90bcefed9a) spec.
+See also the parent [graph induction](spec:16c3ad95-451d-4c09-a118-ca90bcefed9a)
+spec.
 
 ## Public contract
 
@@ -18,32 +19,44 @@ See also the parent [graph induction](spec:16c3ad95-451d-4c09-a118-ca90bcefed9a)
   the returned projection.
 - The graph may store multiple first-class decompositions for the same token.
   `PatternReadResult` exposes one deterministic projection over that set; it is
-  not a proof that the graph has only one decomposition.
-- The returned `ReadNode` tree is deterministic for a fixed graph snapshot
-  because the helper sorts child patterns by `PatternId` and then follows one
-  path. That ordering is operational, not semantic or canonical.
-- The command may enrich the graph while it reads. Repeated or related reads may
-  tighten roots, materialize new overlap tokens, or add alternate
-  decompositions instead of duplicating structure blindly.
-- This public command may expose normalized facets of read results when that is
-  useful for callers, even when lower-level path and cursor surfaces retain
-  non-normalized embedded-path coverage for longer.
+  not proof that the graph has only one decomposition.
+- Repeated or related reads may tighten earlier roots, materialize reusable
+  overlap tokens, or add alternate decompositions instead of duplicating
+  structure.
+- The returned tree is deterministic for a fixed graph snapshot, but that order
+  is operational only. It is never semantic or canonical.
+
+## Semantic model
+
+Multi-character reads proceed as a sequence of committed blocks.
+
+```text
+input suffix
+    |
+    v
+t_block_0 -> t_block_1 -> ... -> t_block_n
+              ^
+              |
+  each step follows the current block's longest postfix path(s)
+  and chooses the first postfix on those paths that can extend rightward
+```
+
+At each step the implementation may materialize new tokens and new compatible
+decompositions for an already-known span. The public API returns one
+deterministic tree over that induced graph.
 
 ## Spec hierarchy
 
 This public command spec is refined by two child specs:
 
 - [context-read pipeline](spec:e0913182-7a5e-4c8f-a750-799afd58baae)
-  describes how `context-read` partitions the input into unknown and known
-  segments and applies the largest-overlap incremental join rule.
+  defines the block/postfix/overlap algorithm and the worked traces.
 - [induced graph structure](spec:904871fa-0b97-4484-9540-f2926e32476f)
-  describes the graph-shape guarantees already fixed by the `context-read`
-  regression corpus.
+  defines the graph facts that must hold after those reads complete.
 
-## Worked trace corpus
+## Worked trace families
 
-The child pipeline spec includes step-by-step worked traces for the current
-clarified overlap model. The active corpus is:
+The child specs cover the current read corpus:
 
 - `heldld -> hell`
 - `aabb -> aabbaabb`
@@ -52,17 +65,15 @@ clarified overlap model. The active corpus is:
 - `subdivision -> visualization` and `subvisu -> visub`
 - `abcabababcaba`
 
-Those traces document `root`, `anchor`, `flat_root`, overlap selection,
-complement completion, and root commit behavior. They are normative examples of
-the read progression, not a canonical ordering over `child_patterns`.
+These traces are normative examples of the read progression. They do not define
+any canonical ordering over `child_patterns`.
 
-## Confidence boundary
+## Boundary
 
 This spec freezes the command boundary, error handling, return shape, and the
 fact that `PatternReadResult` is a deterministic projection over the induced
 graph.
 
-It does not freeze the exact internal order in which lower-level traversal
-surfaces enumerate alternative decompositions, nor every intermediate token that
-may appear while `context-read` is still under algorithmic cleanup. Those
-details live in the child specs and remain partially draft.
+It does not freeze the exact order in which lower-level traversal surfaces
+enumerate peer decompositions, nor require every lower-level path surface to
+normalize embedded coverage immediately.

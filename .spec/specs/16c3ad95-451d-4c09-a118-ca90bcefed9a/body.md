@@ -40,6 +40,53 @@ Across the currently specified command surfaces:
   the `context-read` child specs under [read-sequence](spec:7fd5639f-a62b-4eb4-abe2-215c4bb2d0de) own the algorithmic detail beneath
   multi-character reads.
 
+## Boundary classification invariant
+
+At the split/join layer, a queried atom offset may be a direct child boundary in
+at most one stored pattern. Two peer patterns must not both claim the same atom
+position as their own boundary.
+
+This gives the induction stack one important decision rule:
+
+- a queried offset has zero or one clean split witness;
+- a clean split is the already-aligned case (`inner_offset = None`, the current
+  "perfect split" terminology in `context-insert`);
+- a dirty split is the child-interior case (`inner_offset = Some(...)`, the
+  current "unperfect split" terminology in `context-insert`);
+- wrapper and inner partitions exist to reconcile dirty cuts, not to mint extra
+  clean boundaries.
+
+### Boundary requirement matrix
+
+| ID | Queried split state | Clean split available? | Replacement-range consequence | Required behavior |
+| --- | --- | --- | --- | --- |
+| G-B1 | No pattern exposes the queried atom offset as a direct child boundary | No | A replacement cannot anchor directly on that cut | Do not synthesize a clean split; only use surrounding dirty coverage if a higher layer still needs the span |
+| G-B2 | Exactly one pattern exposes the queried offset as a clean split | Yes, unique | The replacement can reuse the aligned target cut directly | Treat the target range as authoritative and skip wrapper growth at that boundary |
+| G-B3 | Exactly one pattern exposes the queried offset, but only as a dirty split | No | The replacement must extend to an aligned wrapper boundary before it can reuse structure safely | Materialize wrapper and any induced inner or overlap partitions, but keep the queried cut dirty |
+| G-B4 | Multiple patterns cross the queried offset, but none exposes it as a direct boundary | No | Several dirty witnesses may justify the span, but there is still no clean anchor for replacement | Merge dirty evidence without inventing duplicate clean boundaries |
+| G-B5 | Replacement-range selection discovers one clean cut inside the operating region | Yes, but only for that one cut | The clean cut can shorten or stabilize the replacement range on that side | Prefer the clean cut when choosing replacement extent; only dirty sides need wrapper handling |
+| G-B6 | Replacement-range selection finds no clean cut in the operating region | No | Replacement extent is driven entirely by dirty wrapper coverage | Preserve ordered leaf coverage and compatible decompositions without promoting wrapper hints into new clean boundaries |
+
+## Replacement scenario matrix
+
+The split/join layer must distinguish the span the algorithm wants to
+materialize from the aligned span it may need to replace in the parent pattern.
+
+| Scenario | Left boundary | Right boundary | Clean witness availability | Replacement scope | Required graph outcome |
+| --- | --- | --- | --- | --- | --- |
+| R1 | Clean | Clean | Both requested edges are clean | Requested range itself | Reuse or create the requested token directly, and allow the parent or root to splice that token without wrapper growth |
+| R2 | Dirty | Clean | Only the right edge is clean | Extend leftward to the smallest clean wrapper edge | Replace the parent or root at wrapper scope, and require the wrapper token to carry the requested token plus the dirty-left complement as a first-class decomposition |
+| R3 | Clean | Dirty | Only the left edge is clean | Extend rightward to the smallest clean wrapper edge | Replace the parent or root at wrapper scope, and require the wrapper token to carry the requested token plus the dirty-right complement as a first-class decomposition |
+| R4 | Dirty | Dirty | A single clean witness exists only inside the wider operating region | Extend to the smallest wrapper range whose outer edges are clean | Splice the wrapper token into the parent or root, use the interior clean witness only to stabilize helper ranges, and keep the requested edges dirty unless they themselves are clean |
+| R5 | Dirty | Dirty | No clean witness exists inside the needed operating region | Extend by dirty coverage alone until a wrapper range can be expressed at clean outer boundaries | Splice only the wrapper token into the parent or root, and represent the requested token exclusively through wrapper decompositions and helper ranges |
+| R6 | Mixed peers | Mixed peers | One peer offers a unique clean witness while other peers remain dirty | Use the clean witness only to choose wrapper extent or legal replacement edge | Preserve the dirty peer decompositions inside the equal-span token instead of discarding them or upgrading their dirty cuts into new clean boundaries |
+| R7 | Earlier commit was dirty-only; a later reread discovers a clean witness | Later clean | The later read may reduce wrapper dependence | Reuse the same requested and wrapper spans | Add the tighter peer decomposition to the existing token set rather than duplicating the equal-span token |
+
+These scenarios impose one shared rule: if the requested range is dirty at the
+replacement edge, the parent pattern is updated through a clean wrapper range,
+while the requested range remains represented as a first-class decomposition of
+that wrapper token.
+
 ## Layer responsibilities
 
 - `context-api` validates command inputs and shapes returned result values.
@@ -63,10 +110,10 @@ The current wording was derived from these repository sources:
 
 - old doc-viewer output for `context-insert` root and `insert` module
 - old doc-viewer output for `context-read` root and `expansion` module
-- `crates/context-stack/context-insert/agents/docs/README.md`
-- `crates/context-stack/context-read/agents/docs/README.md`
+- `context-stack/context-insert/agents/docs/README.md`
+- `context-stack/context-read/agents/docs/README.md`
 - `agents/guides/20260314_CONTEXT_API_INSERT_SEMANTICS_GUIDE.md`
-- `crates/context-stack/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`
+- `context-stack/context-read/agents/designs/20260315_DESIGN_COMPLEMENT_PATH_BUILDING.md`
 
 The insert semantics guide is partially stale relative to the live code. In
 particular, it still describes `insert_sequence` as a minimum-two-character

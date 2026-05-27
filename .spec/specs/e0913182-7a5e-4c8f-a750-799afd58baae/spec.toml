@@ -7,7 +7,7 @@ code_refs = [
   { description = "Top-level read orchestrator; owns segment iteration and the running root.", file = "context-stack/context-read/src/pipeline/mod.rs", kind = "struct", line_end = 245, line_start = 92, symbol = "ReadCtx" },
   { description = "Lazy atom resolution for streaming constructors.", file = "context-stack/context-read/src/segment.rs", kind = "struct", line_end = 152, line_start = 76, symbol = "LazyAtomIter" },
   { description = "Segment classification into alternating unknown and known runs.", file = "context-stack/context-read/src/segment.rs", kind = "struct", line_end = 323, line_start = 236, symbol = "SegmentIter" },
-  { description = "Known-block expansion loop: largest-match scan plus overlap probing.", file = "context-stack/context-read/src/expansion/mod.rs", kind = "struct", line_end = 260, line_start = 21, symbol = "ExpansionCtx" },
+  { description = "Known-block expansion loop: largest-match scan plus overlap probing.", file = "context-stack/context-read/src/expansion/mod.rs", kind = "struct", line_end = 259, line_start = 21, symbol = "ExpansionCtx" },
   { description = "Commit loop that refreshes the anchor after every known-block step.", file = "context-stack/context-read/src/expansion/block.rs", kind = "struct", line_end = 55, line_start = 13, symbol = "BlockExpansionCtx" },
   { description = "Root commit logic for sequential tokens and overlaps.", file = "context-stack/context-read/src/pipeline/root.rs", kind = "function", line_end = 229, line_start = 140, symbol = "commit_state" },
   { description = "Unknown-segment append path that bypasses overlap search.", file = "context-stack/context-read/src/pipeline/root.rs", kind = "function", line_end = 391, line_start = 361, symbol = "append_pattern" }

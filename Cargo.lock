@@ -7640,6 +7640,7 @@ dependencies = [
  "memory-api",
  "rule-api",
  "serde_json",
+ "spec-api",
  "tempfile",
  "thiserror 2.0.18",
 ]
@@ -7653,6 +7654,7 @@ dependencies = [
  "rule-api",
  "serde",
  "serde_json",
+ "spec-api",
  "tempfile",
  "tokio",
  "tracing",
@@ -8559,6 +8561,7 @@ dependencies = [
  "memory-api",
  "pretty_assertions",
  "proc-macro2",
+ "rule-api",
  "serde",
  "serde_json",
  "spec-api",

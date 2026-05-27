@@ -1,0 +1,11 @@
+id = "f8dfcd09-0e29-4ee6-a61f-de64aed1098f"
+created_at = "2026-05-25T11:12:43.006816100+00:00"
+title = "[context-read] Revisit prior roots when new overlap subparts materialize"
+state = "new"
+acceptance_criteria = "equal-span roots gain peer decompositions when later subparts materialize; rotating-overlap corpus matches spec-backed decomposition sets; focused revisitation validation and manual graph inspection are recorded"
+component = "context-read"
+depends_on = ["6e61bef1-6037-42c8-abc1-d79a3f9367f7", "9f8d842e-3c7c-4470-b840-dd69b92380b5"]
+priority = "high"
+risk_level = "high"
+tags = "#context-read,#read,#decomposition,#revisitation,#overlap,#reconciliation"
+type = "tracker-improvement"
