@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+repo_root=$script_dir
+
+tool_names=(
+    viewer-ctl
+    trunk
+    ticket-cli
+    spec-cli
+    audit-cli
+    rule-cli
+)
+
+tool_path() {
+    case "$1" in
+        viewer-ctl) printf '%s\n' "memory-viewers/viewer-api/viewer-ctl" ;;
+        trunk) printf '%s\n' "" ;;
+        ticket-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/ticket-cli" ;;
+        spec-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/spec-cli" ;;
+        audit-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/audit-cli" ;;
+        rule-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/rule-cli" ;;
+        *)
+            printf 'error: unknown tool: %s\n' "$1" >&2
+            exit 1
+            ;;
+    esac
+}
+
+tool_bin() {
+    case "$1" in
+        viewer-ctl) printf '%s\n' "viewer-ctl" ;;
+        trunk) printf '%s\n' "trunk" ;;
+        ticket-cli) printf '%s\n' "ticket" ;;
+        spec-cli) printf '%s\n' "spec" ;;
+        audit-cli) printf '%s\n' "audit" ;;
+        rule-cli) printf '%s\n' "rule" ;;
+        *)
+            printf 'error: unknown tool: %s\n' "$1" >&2
+            exit 1
+            ;;
+    esac
+}
+
+usage() {
+    cat <<'EOF'
+Usage: ./install-tools.sh [options] [tool ...]
+
+Install selected workspace tools with cargo install --path.
+
+Workspace crates use `cargo install --path`; external toolchain commands such as
+`trunk` use `cargo install <crate>`.
+
+Options:
+  --tool <name>       Install one tool; repeatable.
+  --tools <a,b,c>     Install a comma-separated list of tools.
+  --all               Install all supported tools.
+  --list              Print supported tools and exit.
+  --dry-run           Print the cargo install commands without running them.
+  --no-force          Do not pass --force to cargo install.
+  -h, --help          Show this help text.
+
+Supported tools:
+  viewer-ctl
+    trunk
+  ticket-cli
+  spec-cli
+  audit-cli
+  rule-cli
+
+Environment:
+  INSTALL_TOOLS       Comma-separated tool list used when no tools are passed.
+
+Examples:
+  ./install-tools.sh
+    ./install-tools.sh --tool viewer-ctl --tool trunk
+  ./install-tools.sh --tool viewer-ctl --tool ticket-cli
+  INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
+EOF
+}
+
+print_supported_tools() {
+    local tool
+
+    for tool in "${tool_names[@]}"; do
+        printf '%s\n' "$tool"
+    done
+}
+
+contains_tool() {
+    local needle=$1
+    shift
+
+    local item
+    for item in "$@"; do
+        if [[ "$item" == "$needle" ]]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+append_tool() {
+    local tool=$1
+
+    if ! contains_tool "$tool" "${tool_names[@]}"; then
+        printf 'error: unsupported tool: %s\n' "$tool" >&2
+        printf 'supported tools:\n' >&2
+        print_supported_tools >&2
+        exit 1
+    fi
+
+    if ! contains_tool "$tool" "${selected_tools[@]}"; then
+        selected_tools+=("$tool")
+    fi
+}
+
+append_csv_tools() {
+    local csv=$1
+    local item
+
+    IFS=',' read -r -a csv_tools <<< "$csv"
+    for item in "${csv_tools[@]}"; do
+        item=${item//[[:space:]]/}
+        [[ -n "$item" ]] || continue
+        append_tool "$item"
+    done
+}
+
+selected_tools=()
+force_install=1
+dry_run=0
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --tool)
+            [[ $# -ge 2 ]] || {
+                printf 'error: --tool requires a value\n' >&2
+                exit 1
+            }
+            append_tool "$2"
+            shift 2
+            ;;
+        --tools)
+            [[ $# -ge 2 ]] || {
+                printf 'error: --tools requires a value\n' >&2
+                exit 1
+            }
+            append_csv_tools "$2"
+            shift 2
+            ;;
+        --all)
+            selected_tools=()
+            append_csv_tools "viewer-ctl,trunk,ticket-cli,spec-cli,audit-cli,rule-cli"
+            shift
+            ;;
+        --list)
+            print_supported_tools
+            exit 0
+            ;;
+        --dry-run)
+            dry_run=1
+            shift
+            ;;
+        --no-force)
+            force_install=0
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            while [[ $# -gt 0 ]]; do
+                append_tool "$1"
+                shift
+            done
+            break
+            ;;
+        -*)
+            printf 'error: unknown option: %s\n' "$1" >&2
+            exit 1
+            ;;
+        *)
+            append_tool "$1"
+            shift
+            ;;
+    esac
+done
+
+if [[ ${#selected_tools[@]} -eq 0 && -n "${INSTALL_TOOLS:-}" ]]; then
+    append_csv_tools "$INSTALL_TOOLS"
+fi
+
+if [[ ${#selected_tools[@]} -eq 0 ]]; then
+    append_csv_tools "viewer-ctl,trunk,ticket-cli,spec-cli,audit-cli,rule-cli"
+fi
+
+install_one() {
+    local tool=$1
+    local path
+    local bin
+    local command
+
+    path=$(tool_path "$tool")
+    bin=$(tool_bin "$tool")
+
+    if [[ -n "$path" ]]; then
+        command=(cargo install --path "$path" --bin "$bin")
+    else
+        command=(cargo install "$bin")
+    fi
+
+    if [[ $force_install -eq 1 ]]; then
+        command+=(--force)
+    fi
+
+    printf '==> %s\n' "$tool"
+    printf '    %s\n' "${command[*]}"
+
+    if [[ $dry_run -eq 1 ]]; then
+        return 0
+    fi
+
+    (
+        cd "$repo_root"
+        "${command[@]}"
+    )
+}
+
+for tool in "${selected_tools[@]}"; do
+    install_one "$tool"
+done
