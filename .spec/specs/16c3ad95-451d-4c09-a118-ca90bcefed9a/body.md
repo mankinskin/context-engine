@@ -56,6 +56,57 @@ This gives the induction stack one important decision rule:
 - wrapper and inner partitions exist to reconcile dirty cuts, not to mint extra
   clean boundaries.
 
+## Duplication replacement invariant
+
+Across all first-class decompositions, an exposed adjacent child sequence must
+not remain un-tokenized when the same atom span is already covered as a proper
+subrange of another existing child token.
+
+Concretely:
+
+- if some pattern exposes adjacent children whose concatenation covers span `S`;
+- and some other existing child token already covers `S` as a strict subrange of
+  its own atom coverage;
+- then `S` must itself already be represented by a dedicated token.
+
+A witness set that leaves such a span un-tokenized is illegal. Merge must not
+reason from it as if it were a valid starting point.
+
+Examples:
+
+- if `[a][bcd]` is exposed while token `abcde` already exists, then token
+  `abcd` must already exist;
+- if `[fg][h]` is exposed while token `efgh` already exists, then token `fgh`
+  must already exist.
+
+This is the ubiquitous form of the "replace duplication" rule. It applies
+before wrapper choice, before inner-range planning, and before merge examples
+are considered valid.
+
+## Representation preservation invariant
+
+When merge updates a token's decomposition set, it must preserve that token's
+existing representation closure.
+
+Concretely:
+
+- if token `R` represented token `T` before the merge, whether directly as a
+  child or indirectly through descendant decompositions;
+- then after the merge, `R` must still represent `T` through some
+  decomposition path.
+
+Direct child status may change, but reachability from the updated root must not
+be lost.
+
+This means:
+
+- merge must reject candidate root updates that would make a previously
+  represented token unreachable from the root;
+- replacing a direct child with a wrapper is only legal if that wrapper still
+  exposes the displaced token somewhere in its own decomposition closure;
+- preserving the requested token is not sufficient if other previously
+  represented tokens, such as `abcde` or `gh`, become unreachable.
+
 ### Boundary requirement matrix
 
 | ID | Queried split state | Clean split available? | Replacement-range consequence | Required behavior |
@@ -69,23 +120,30 @@ This gives the induction stack one important decision rule:
 
 ## Replacement scenario matrix
 
-The split/join layer must distinguish the span the algorithm wants to
-materialize from the aligned span it may need to replace in the parent pattern.
+`context-search` hands merge the smallest existing root token that still covers
+the requested atom range. A valid merge step therefore must always update the
+root decomposition set. If a merge would leave the root unchanged, the search
+result was not actually the tightest existing cover.
 
-| Scenario | Left boundary | Right boundary | Clean witness availability | Replacement scope | Required graph outcome |
-| --- | --- | --- | --- | --- | --- |
-| R1 | Clean | Clean | Both requested edges are clean | Requested range itself | Reuse or create the requested token directly, and allow the parent or root to splice that token without wrapper growth |
-| R2 | Dirty | Clean | Only the right edge is clean | Extend leftward to the smallest clean wrapper edge | Replace the parent or root at wrapper scope, and require the wrapper token to carry the requested token plus the dirty-left complement as a first-class decomposition |
-| R3 | Clean | Dirty | Only the left edge is clean | Extend rightward to the smallest clean wrapper edge | Replace the parent or root at wrapper scope, and require the wrapper token to carry the requested token plus the dirty-right complement as a first-class decomposition |
-| R4 | Dirty | Dirty | A single clean witness exists only inside the wider operating region | Extend to the smallest wrapper range whose outer edges are clean | Splice the wrapper token into the parent or root, use the interior clean witness only to stabilize helper ranges, and keep the requested edges dirty unless they themselves are clean |
-| R5 | Dirty | Dirty | No clean witness exists inside the needed operating region | Extend by dirty coverage alone until a wrapper range can be expressed at clean outer boundaries | Splice only the wrapper token into the parent or root, and represent the requested token exclusively through wrapper decompositions and helper ranges |
-| R6 | Mixed peers | Mixed peers | One peer offers a unique clean witness while other peers remain dirty | Use the clean witness only to choose wrapper extent or legal replacement edge | Preserve the dirty peer decompositions inside the equal-span token instead of discarding them or upgrading their dirty cuts into new clean boundaries |
-| R7 | Earlier commit was dirty-only; a later reread discovers a clean witness | Later clean | The later read may reduce wrapper dependence | Reuse the same requested and wrapper spans | Add the tighter peer decomposition to the existing token set rather than duplicating the equal-span token |
+The split/join layer must reason per root child pattern. Each root child
+pattern whose atom coverage contains the requested range contributes its own
+pattern-local witness, and the merge may need to add more than one root-level
+decomposition to account for all legal witnesses.
 
-These scenarios impose one shared rule: if the requested range is dirty at the
-replacement edge, the parent pattern is updated through a clean wrapper range,
-while the requested range remains represented as a first-class decomposition of
-that wrapper token.
+| Scenario | Pattern-local witness set | Root-level consequence | Required graph outcome |
+| --- | --- | --- | --- |
+| R1 | One clean-clean witness | Direct root update | Add a root pattern that places the requested token next to the surviving outer context; the requested token exposes the clean subrange decomposition |
+| R2 | One one-sided dirty witness | Direct root update unless a wrapper is provably more useful | Materialize the dirty-side helper or inner partitions inside the requested or wrapper token, and preserve the surviving outer context at the root |
+| R3 | One dirty-dirty witness | Prefer direct root update unless a wrapper adds beneficial reusable adjacency | Keep the surviving outer context visible and do not introduce a wrapper that only mirrors the direct result |
+| R4 | Multiple root patterns with disjoint clean boundaries | Consider all witnesses, not just the first pattern | The resulting decomposition set must preserve the compatible per-pattern witnesses induced by each root pattern and must already satisfy duplication-replacement closure |
+| R5 | Dirty cuts strictly inside the requested or wrapper range | Inner materialization required | Inner partitions become first-class decomposition members of the requested or wrapper token, may recurse downward, and must not masquerade as new authoritative root boundaries |
+| R6 | An exposed witness would leave a repeated subrange un-tokenized while another token already contains it | Invalid witness input to merge | Materialize the repeated subrange first or reject the witness set as illegal; merge must not build on unreplaced duplication |
+| R7 | A candidate root update would orphan previously represented tokens | Invalid merge output | Add the wrapper-backed or multi-pattern update needed to keep those tokens root-reachable |
+| R8 | Merge would not change the root | Invalid search input to merge | Search should have returned a tighter token instead; merge must not be a no-op at the root |
+
+The reviewed merge examples and the focused validation anchors for these cases
+live in the child [context-read pipeline](spec:e0913182-7a5e-4c8f-a750-799afd58baae)
+spec.
 
 ## Layer responsibilities
 

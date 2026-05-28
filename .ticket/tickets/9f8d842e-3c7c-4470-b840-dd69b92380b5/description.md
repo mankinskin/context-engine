@@ -12,8 +12,9 @@ The algorithm materializes `t_block_{n+1}` from `t_block_n`, the chosen postfix,
 - `t_block_{n+1}` must be built from the previous block, the chosen postfix, and the two complements; semantic growth must not depend on last-child replacement shortcuts.
 - `try_extend_tail_with` is not part of the intended algorithm. If a repetition case still matters, the general block rule must produce it.
 - Dirty-cut replacement remains a lower-layer concern. `RootManager` should
-	consume a wrapper-splice token supplied by `context-insert`, not attempt to
-	reinterpret dirty boundaries locally.
+	consume the root-level tokenization decision supplied by `context-insert`:
+	either the requested token directly or a beneficial wrapper token, without
+	reinterpreting dirty boundaries locally.
 
 ## 2026-05-26 dependency boundary
 
@@ -22,17 +23,20 @@ This ticket still owns the removal of mutation-heavy root growth shortcuts in
 decomposition bug.
 
 - The remaining `abcabababcaba`-style failure depends on an explicit
-	requested-range versus wrapper-range replacement plan in the split or merge
-	layer.
+	requested-range versus witness-and-wrapper replacement plan in the split or
+	merge layer.
 - The root-materialization slice should therefore stay aligned with that plan:
-	once a step is known structurally, `RootManager` should splice the token that
-	represents the wrapper replacement range and leave requested-range exposure to
-	the wrapper token's decompositions.
+	once a step is known structurally, `RootManager` should splice whichever token
+	`context-insert` chose for the root update and leave requested-range exposure
+	and inner materialization to the lower merge layer.
 
 ## Specification touchpoints
 
 - Keep the `context-read pipeline` spec authoritative for the block transition formula.
 - Keep the `induced graph structure` spec authoritative for the peer decompositions that must survive the transition.
+- Keep the reviewed dirty-cut merge requirements and examples in:
+	- [context-read pipeline](../../../.spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/body.md)
+	- [graph induction](../../../.spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/body.md)
 
 ## Manual validation guidelines
 

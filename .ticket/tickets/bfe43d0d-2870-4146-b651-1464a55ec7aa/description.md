@@ -17,14 +17,17 @@ The remaining failure is not just a missing decomposition ordering detail. It
 is a dirty-cut replacement problem.
 
 - The algorithm still requires a dedicated token for the requested span.
-- If the requested span lands on a dirty cut, the parent pattern must not
-  replace at that dirty edge directly.
-- Instead, the implementation must extend to a clean wrapper range, create or
-  reuse the wrapper token, splice that wrapper token into the parent or root
-  pattern, and ensure the requested token appears as a first-class
-  decomposition of the wrapper token.
-- Helper ranges may be materialized to support that representation, but helper
-  ranges must not be promoted into new authoritative clean boundaries.
+- If the requested span lands on a dirty cut, the implementation must still
+  update the tight root, but it may do so either by a direct root pattern update
+  or by splicing a beneficial wrapper token.
+- Direct root updates are preferred whenever they preserve surviving outer
+  context without introducing redundant wrapper structure.
+- Wrapper tokens are still allowed when they create beneficial reusable
+  adjacency or decomposition structure that the direct update cannot express as
+  cleanly.
+- Helper and inner ranges may be materialized to support that representation,
+  but helper-only ranges must not be promoted into new authoritative clean
+  boundaries.
 
 ## Current implementation gap
 
@@ -42,18 +45,25 @@ confuse.
 
 ## Updated implementation plan
 
-1. Introduce an explicit replacement plan for root merge that separates the
-  requested range from the wrapper replacement range.
+1. Introduce explicit root-merge planning state that separates the requested
+  range from the pattern-local witnesses and from any wrapper range that is
+  actually beneficial enough to splice.
 2. Classify left, right, and interior witnesses as clean or dirty, and carry
   that authority alongside the plan.
-3. Materialize the helper ranges needed to expose the requested token inside the
-  wrapper token, but tag helper-only ranges so they do not become fake clean
-  split boundaries.
-4. Keep root or parent replacement at wrapper scope whenever the requested edge
-  is dirty.
+3. Materialize the helper and inner ranges needed to expose the requested token
+  inside the updated structure, but tag helper-only ranges so they do not
+  become fake clean split boundaries.
+4. Prefer direct root updates when they preserve surviving outer context without
+  redundancy; use wrapper-backed replacement only when it is provably more
+  useful.
 5. Revalidate the overlap corpus, especially `complex_abcabababcaba`, to prove
   that the requested token becomes available without manufacturing extra clean
   cuts.
+
+## Spec anchors
+
+- [context-read pipeline](../../../.spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/body.md)
+- [graph induction](../../../.spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/body.md)
 
 ## Per-step algorithm to preserve
 

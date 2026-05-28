@@ -167,102 +167,323 @@ is not solved by manufacturing extra clean cuts. The fix has to preserve the
 unique-clean-cut invariant while still exposing the dirty coverage needed for
 the replacement range.
 
-## Implementation design
+## Merge-step requirements
 
-The split/join layer should represent overlap replacement with an explicit plan
-that separates the requested span from the wrapper span used for the actual
-parent-pattern replacement.
+Search hands merge the smallest existing root token that still covers the
+requested atom range. A merge step therefore must always add at least one new
+root-level decomposition. If no root pattern changes, the chosen root was not
+actually tight.
 
-```rust
-struct RootReplacementPlan {
-      requested_range: PartitionRange,
-      replacement_range: PartitionRange,
-      replacement_mode: ReplacementMode,
-      left_boundary: BoundaryWitness,
-      right_boundary: BoundaryWitness,
-      interior_witnesses: Vec<BoundaryWitness>,
-      helper_ranges: Vec<HelperRange>,
-}
+For requested range `Q` inside root `R`:
 
-enum ReplacementMode {
-      Direct,
-      WrapLeft,
-      WrapRight,
-      WrapBoth,
-}
+1. `Q` must map to exactly one equal-span token.
+2. Merge must inspect every root child pattern whose atom coverage contains `Q`,
+   not only the first pattern encountered.
+3. Each such pattern contributes a pattern-local witness: the smallest
+   contiguous child slice in that pattern whose atom coverage contains `Q`.
+4. A single merge may add one or more new root patterns. All first-class
+   witnesses that remain legal after the update must be represented somewhere in
+   the resulting decomposition set.
+5. Because a given atom position may be a direct boundary in at most one
+   pattern, at most one root pattern may witness a given requested edge cleanly.
+   Complementary peers may clean different edges, but they must not duplicate
+   the same clean boundary.
+6. If an exposed adjacent child sequence covers span `S` while some other
+  existing child token already covers `S` as a proper subrange, then `S` must
+  already be tokenized. Merge must not use witness sets that leave such
+  duplication unreplaced.
+7. Prefer a direct root update whenever the root can expose `Q` next to the
+   surviving outer context without losing prior child-token exposure or
+   introducing redundant equal-span structure.
+8. Use a wrapper only when it is beneficial. A wrapper is beneficial only if it
+   places the covered span next to outer context in a way the direct root update
+   cannot, or if it creates a reusable decomposition that avoids redundancy.
+9. Dirty cuts strictly inside `Q` or inside a chosen wrapper induce inner
+   partitions. Those inner partitions materialize as first-class members of `Q`
+   or the wrapper token's `child_patterns`; they are not standalone root
+   replacements.
+10. Inner materialization is recursive. If an induced inner partition still
+   crosses dirty child boundaries, merge must propagate the needed split edges
+   and helper tokens into descendant nodes.
+11. Merge must preserve root-reachable representation closure. Any token that
+  the root represented before the update must remain reachable from the root
+  after the update, even if it is no longer a direct child of a root pattern.
+12. Existing compatible root and child decompositions remain first-class when
+  they still fit the updated structure. Merge must not orphan prior witnesses
+  just because a tighter one was added.
 
-enum BoundaryClass {
-      Clean,
-      Dirty,
-}
+### Requirement matrix seed
 
-struct BoundaryWitness {
-      offset_index: usize,
-      class: BoundaryClass,
-}
+| Case | Witness set at root | Preferred root action | Inner materialization | Validation focus |
+| --- | --- | --- | --- | --- |
+| M1 | Single clean-clean witness | Add a direct root pattern using `Q` | Only clean subranges inside `Q` | Direct clean-clean root update |
+| M2 | Complementary one-sided dirty witnesses across multiple root patterns | Add the wrapper-backed root updates needed to preserve previously represented tokens indirectly | Required on each dirty side as needed | Multi-pattern witness and representation-closure |
+| M3 | Single dirty-dirty witness with no beneficial wrapper | Add a direct root pattern and reject wrapper-only shortcuts | Required on both dirty sides as needed | Direct dirty-dirty root update |
+| M4 | Dirty edge plus repeated subsequence inside `Q` | Add a direct root pattern or a proven-beneficial wrapper, and materialize the repeated inner partition inside it | Mandatory | Inner partition closure |
+| M5 | Wrapper-beneficial witness set | Add a wrapper-backed root pattern update and expose `Q` inside the wrapper while preserving prior root-reachable tokens | Required wherever the wrapper still crosses dirty interior boundaries | Wrapper benefit and preservation proof |
 
-struct HelperRange {
-      range: PartitionRange,
-      role: HelperRole,
-      authority: BoundaryAuthority,
-}
+### Planning surface
 
-enum HelperRole {
-      Wrapper,
-      InnerPrefix,
-      InnerSuffix,
-      Overlap,
-}
+Any eventual merge-plan type has to represent at least:
 
-enum BoundaryAuthority {
-      Authoritative,
-      HelperOnly,
-}
+- the requested equal-span range `Q`;
+- the set of root-pattern witnesses keyed by pattern identity;
+- the chosen root updates, which may be more than one pattern addition;
+- any wrapper candidate together with the reason it is beneficial rather than
+  redundant;
+- the prior root-representation obligations that each chosen update must keep
+  reachable;
+- the induced inner materialization obligations and their clean-versus-dirty
+  authority.
+
+## Solved examples
+
+Each solved example below follows the same procedure:
+
+1. verify that the root is the tightest existing token containing `Q`;
+2. reject the setup if any exposed adjacent child sequence violates
+  duplication-replacement closure;
+3. list the root-pattern witnesses that cover `Q`;
+4. reject any candidate update that would make previously represented tokens
+   unreachable from the root;
+5. decide whether the root update should be direct or wrapper-backed;
+6. materialize any required inner partitions inside `Q` or the chosen wrapper;
+7. add the new root pattern and the needed child decompositions.
+
+These examples intentionally avoid duplicated boundary positions across the root
+pattern set.
+
+### E1 Solve a clean-clean request directly
+
+```text
+atoms:           a  b  c  d  e  f  g
+existing root:   [ab][cd][ef][g]
+request Q:             c  d  e  f
 ```
 
-Implementation obligations:
+How to solve it:
 
-- `requested_range` is the exact span the algorithm is trying to materialize as
-   a dedicated token.
-- `replacement_range` is the aligned wrapper span that is legally spliced into
-   the parent or root pattern. In the current code, this is the role played by
-   the merge operating range.
-- If `requested_range == replacement_range`, the replacement is direct and the
-   requested token is the same token that the parent or root splices.
-- If `requested_range != replacement_range`, the parent or root must splice the
-   `replacement_range` token, while the `requested_range` token must appear in
-   the wrapper token's `child_patterns` as a first-class decomposition.
-- `helper_ranges` may be materialized so the wrapper token can expose the
-   requested token and any compatible peer decompositions, but `HelperOnly`
-   ranges must not become authoritative new clean split boundaries.
-- Only outer wrapper edges and explicit clean witnesses may authorize
-   replacement boundaries or emitted split positions.
+1. Tight-root check:
+  no child token in the root already covers `cdef`, so the root is the right
+  merge target.
+2. Witness collection:
+  the single witness is `[cd][ef]`.
+3. Boundary classification:
+  left edge `b|c` is clean and right edge `f|g` is clean.
+4. Representation-preservation check:
+  the direct update does not orphan any previously represented token.
+5. Root action:
+  choose a direct root update because no wrapper is needed.
+6. Child materialization:
+  create or reuse `Q = cdef` with decomposition `[cd][ef]`.
+7. Root update:
 
-### Scenario-to-plan matrix
+```text
+add root pattern: [ab][Q][g]
+Q exposes:        [cd][ef]
+```
 
-| Scenario | `requested_range` | `replacement_range` | `helper_ranges` | Root or parent splice | Required stored decomposition |
-| --- | --- | --- | --- | --- | --- |
-| D1 clean-clean | exact requested span | same as requested | none beyond direct subranges | splice requested token directly | requested token may expose any already-valid clean splits |
-| D2 dirty-left clean-right | dirty-cut requested span | left-expanded wrapper | left wrapper + induced overlaps | splice wrapper token | wrapper token must expose `[left_dirty_complement, requested]` or an equivalent first-class decomposition |
-| D3 clean-left dirty-right | dirty-cut requested span | right-expanded wrapper | right wrapper + induced overlaps | splice wrapper token | wrapper token must expose `[requested, right_dirty_complement]` or an equivalent first-class decomposition |
-| D4 dirty-dirty with interior clean witness | dirty-cut requested span | outer clean wrapper | both-side wrapper helpers plus interior witness-guided helpers | splice wrapper token | wrapper token must expose the requested token without turning the requested dirty cuts into clean boundaries |
-| D5 dirty-dirty without interior clean witness | dirty-cut requested span | outer dirty-driven wrapper that still lands on clean outer edges | wrapper + inner + overlap helpers | splice wrapper token | requested token exists only through wrapper decompositions and helper-supported merges |
-| D6 mixed clean and dirty peers | equal-span token under review | wrapper chosen from the unique clean witness | helpers for dirty peers remain helper-only | splice wrapper token or direct token depending on witness location | preserve dirty peer decompositions alongside the clean-guided replacement |
-| D7 later reread upgrades prior dirty case | existing requested token | existing wrapper or a tighter clean wrapper | only the helpers needed for the new peer path | reuse existing equal-span token | add the new peer decomposition instead of creating a duplicate token |
+What this proves:
 
-### Required code alignment
+- clean-clean requests are the baseline direct case;
+- no helper or inner token is needed when both edges are already aligned.
 
-- `IntervalGraph.target_range` already plays the role of `requested_range`.
-- The root merge operating range currently acts as `replacement_range`, but that
-   role is implicit and should become explicit in the planning data.
-- `RequiredPartitions` currently mixes two concerns: ranges that must be
-   materialized and cuts that are authoritative for replacement. The
-   implementation should either replace it with a richer replacement plan or add
-   explicit authority metadata so helper-only ranges do not masquerade as clean
-   replacement boundaries.
-- `add_root_pattern` should continue to splice the replacement-range token into
-   the root, while target tracking should continue to return the requested-range
-   token separately.
+### E2 Solve complementary one-sided dirty witnesses with two wrappers
+
+```text
+atoms:           a  b  c  d  e  f  g  h
+existing P0:     [ab][cdef][gh]
+existing P1:     [abcde][fg][h]
+request Q:             c  d  e  f  g
+```
+
+How to solve it:
+
+1. Tight-root check:
+  neither `P0` nor `P1` has a child token that already covers `cdefg`, so the
+  root remains the tightest existing token.
+2. Duplication-closure check:
+  `P0` is legal because it exposes `[ab][cdef]`, not `[a][bcd]`, so it does not
+  leave `abcd` un-tokenized while `abcde` exists.
+  `P1` is legal because `[fg][h]` is already tokenized by `gh` in `P0` only as
+  `gh`, not as `fgh`; there is no unreplaced exposed `fgh` witness.
+3. Witness collection:
+  `P0` contributes witness `[cdef][gh]` and `P1` contributes witness
+  `[abcde][fg]`.
+4. Boundary classification:
+  `P0` is clean on the left and dirty on the right;
+  `P1` is dirty on the left and clean on the right.
+5. Representation-preservation check:
+  the naive direct update `[ab][Q][h]` is illegal because it would make the
+  previously represented tokens `abcde` and `gh` unreachable from the updated
+  root.
+6. Root action:
+  create two wrappers, one for each clean-dirty witness, so the root keeps both
+  previously represented sides reachable while still introducing `Q` legally.
+7. Child materialization:
+
+```text
+create wrappers: W0, W1
+
+root P0 = [ab][W0]
+root P1 = [W1][h]
+
+W0 exposes:
+  W0P0 = [cdef][gh]
+  W0P1 = [Q][h]
+
+W1 exposes:
+  W1P0 = [abcde][fg]
+  W1P1 = [ab][Q]
+```
+
+What this proves:
+
+- merge must inspect every root pattern that covers `Q`;
+- complementary clean edges from different patterns may require multiple
+  wrapper-backed root updates rather than one direct root update;
+- wrapper choice is justified here by representation preservation, not by dirty
+  cuts alone;
+- the starting witness set itself must already satisfy duplication-replacement
+  closure.
+
+### E3 Solve a dirty-dirty request by rejecting a redundant wrapper
+
+```text
+atoms:           a  b  c  d  e  f  g  h
+existing root:   [ab][cdef][gh]
+request Q:                d  e  f  g
+```
+
+How to solve it:
+
+1. Tight-root check:
+  no child token already covers `defg`, so the root is still the correct merge
+  target.
+2. Duplication-closure check:
+  the single root pattern is legal; it does not expose an adjacent child span
+  that some other child token already contains as a proper subrange.
+3. Witness collection:
+  the witness is `[cdef][gh]`.
+4. Boundary classification:
+  both requested edges are dirty.
+5. Representation-preservation check:
+  keeping the old root pattern means the direct update can preserve prior tokens
+  without extra wrapper help.
+6. Wrapper test:
+  candidate wrappers such as `cdefg` do not buy any useful outer-context
+  adjacency at the root. They would only hide structure that the direct update
+  can already expose.
+7. Root action:
+  reject the wrapper and split only what is needed for a direct root update.
+8. Child materialization:
+
+```text
+Q exposes: [def][g]
+```
+
+9. Root update:
+
+```text
+add root pattern: [ab][c][Q][h]
+```
+
+10. Preservation check:
+  keep the old root pattern `[ab][cdef][gh]` as a first-class decomposition so
+  `cdef` and `gh` remain exposed.
+
+What this proves:
+
+- dirty-dirty does not imply wrapper-backed replacement;
+- the correct question is whether the wrapper is beneficial, not whether one can
+  be drawn.
+
+### E4 Solve a one-sided dirty request with an inner partition inside `Q`
+
+```text
+atoms:           x  x  a  b  c  d  e  f  w
+existing root:   [x][x][ab][cdef][w]
+request Q:                   a  b  c  d
+```
+
+How to solve it:
+
+1. Tight-root check:
+  no child token in the existing root already covers `abcd`.
+2. Duplication-closure check:
+  the starting root is legal because no exposed adjacent child span is already a
+  proper subrange of another existing child token without being tokenized.
+3. Witness collection:
+  the witness is `[ab][cdef]`.
+4. Boundary classification:
+  left edge is clean and right edge is dirty.
+5. Representation-preservation check:
+  the direct update remains legal because the old root pattern can stay and keep
+  `ab` and `cdef` reachable.
+6. Root action:
+  choose a direct root update, because `[x][x][Q][ef][w]` already preserves the
+  outer context. A wrapper such as `abcdef` is not beneficial at the root.
+7. Inner materialization:
+  create `I = cd` inside `Q`. The dirty right cut through `cdef` means `Q`
+  cannot stop at `d` without materializing the repeated subrange `cd`.
+8. Child materialization:
+
+```text
+Q exposes: [ab][I]
+I = cd
+```
+
+9. Root update:
+
+```text
+add root pattern: [x][x][Q][ef][w]
+```
+
+10. Recursion rule:
+  if `I` itself still crossed dirty child boundaries, the same reasoning would
+  recurse below `Q`.
+
+What this proves:
+
+- inner partitions are not abstract helper labels;
+- they are concrete child-pattern materialization obligations inside the updated
+  token.
+
+### E5 wrapper-beneficial case is still deferred
+
+`M5` remains a real requirement, but this spec does not yet freeze a concrete
+worked wrapper-beneficial example. The next example added here must satisfy all
+of the following before it becomes authoritative:
+
+- the root is still the tightest existing token covering `Q`;
+- no root patterns duplicate a boundary position;
+- the wrapper preserves or creates reusable outer-context adjacency that the
+  direct root update cannot express without redundancy;
+- the wrapper's internal decomposition set explains exactly why the wrapper is
+  better than the direct alternative.
+
+## Validation and documentation flow
+
+- The shared [graph induction](spec:16c3ad95-451d-4c09-a118-ca90bcefed9a)
+  spec owns the tight-root invariant, the one-clean-boundary-per-offset rule,
+  and the wrapper-benefit constraint.
+- This child spec owns the reviewed merge examples and the future requirement
+  matrix used by implementation tickets.
+- The sibling [induced graph structure](spec:904871fa-0b97-4484-9540-f2926e32476f)
+  spec remains the place that freezes the stable decomposition shapes that the
+  read pipeline should observe after merge succeeds.
+
+Focused validation should land in `context-insert` before broader
+`context-read` regression repair:
+
+- preserve and extend the nearby interval coverage around
+  `test_perfect_split_no_wrapper_offset` and
+  `test_required_partitions_perfect_vs_unperfect`;
+- add focused merge cases for `E1` through `E4` before broad overlap tests;
+- only then re-run `complex_abcabababcaba` and the wider overlap corpus.
+
+Relevant implementation tickets should link here before code changes so the
+same reviewed examples and validation anchors drive the design discussion.
 
 ## Boundary
 
