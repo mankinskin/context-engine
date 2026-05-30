@@ -2,7 +2,6 @@ id = "28f59839-73ec-4570-9b03-fd2cc4bcbd6e"
 created_at = "2026-05-08T11:28:27.858268500+00:00"
 title = "Stdin from another process"
 state = "draft"
-body = "# Stdin from another process\necho -e \"create --title 'Setup CI' --type tracker-improvement\\nclose <UUID>\" \\\n  | ticket batch --json\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

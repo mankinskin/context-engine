@@ -2,7 +2,6 @@ id = "c6521dbd-4cf3-4aaa-a747-25caeeedd975"
 created_at = "2026-05-26T16:12:10.627619800+00:00"
 title = "Byte stability"
 state = "draft"
-body = "## Byte stability\n\nRegeneration must be byte-stable: running the generation command twice with no source changes produces no diff. The shared builder preserves the existing newline convention on rewrite, orders snippets deterministically, and rejects duplicate snippet ids so that re-runs are idempotent."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

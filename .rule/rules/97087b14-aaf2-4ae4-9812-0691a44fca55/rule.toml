@@ -2,7 +2,6 @@ id = "97087b14-aaf2-4ae4-9812-0691a44fca55"
 created_at = "2026-05-08T11:28:30.148107200+00:00"
 title = "State Management Patterns"
 state = "draft"
-body = "## State Management Patterns\n\n- For shared mutable backend state, follow `Arc<Mutex<_>>` app-state patterns used by adapter tools.\n- For hot-reloadable runtime config (for example auth tokens), follow arc-swap style patterns used by HTTP tools.\n- Keep session-like frontend/backend coordination in shared utilities when available."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

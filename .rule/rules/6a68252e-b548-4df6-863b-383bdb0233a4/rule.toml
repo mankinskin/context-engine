@@ -2,7 +2,6 @@ id = "6a68252e-b548-4df6-863b-383bdb0233a4"
 created_at = "2026-05-08T11:28:02.149398700+00:00"
 title = "```bash"
 state = "draft"
-body = "```bash\ncargo run -p audit-cli --bin audit -- . \\\n  --max-file-lines 300 \\\n  --max-cyclomatic-complexity 10 \\\n  --coverage-warn-below 85\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

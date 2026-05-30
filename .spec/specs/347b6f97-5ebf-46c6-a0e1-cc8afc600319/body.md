@@ -12,8 +12,8 @@ Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tool
 
 - Ticket: `.ticket/tickets/fe5232d9-537a-4217-b8c0-b8e3ca81d95b`.
 - Docs/instructions:
-	- `.rule/rules/61d90f3e-3126-4250-9604-de69eeabf87f/description.md`
-	- `memory-viewers/.rule/rules/397b0447-135e-4d35-ad05-bcc69047d2c0/description.md`
+	- `.rule/rules/61d90f3e-3126-4250-9604-de69eeabf87f/body.md`
+	- `memory-viewers/.rule/rules/397b0447-135e-4d35-ad05-bcc69047d2c0/body.md`
 	- `AGENTS.md`
 	- `memory-viewers/AGENTS.md`
 	- `memory-viewers/memory-api/AGENTS.md`

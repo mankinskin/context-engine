@@ -2,7 +2,6 @@ id = "ce774188-d116-46fc-a5ab-aeec2081b386"
 created_at = "2026-05-08T11:28:22.780397900+00:00"
 title = "Correctness & Reactivity (frontend)**"
 state = "draft"
-body = "**Correctness & Reactivity (frontend)**\n- [ ] All signal reads that must re-run on change are inside reactive closures,\n      not computed once outside the `view!` macro.\n- [ ] State updated correctly on all paths (including edge cases like empty data)."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "2747b7bf-6901-465b-bc3b-e9734ae359fb"
 created_at = "2026-05-26T16:12:10.548297100+00:00"
 title = "Entry marker"
 state = "draft"
-body = "## Entry marker\n\nEach composed snippet is preceded by `<!-- <domain>:entry id=<uuid> slug=<path> -->`. The `id` is the canonical entry id in the source store and the `slug` is the hierarchical identifier of that entry. Entry markers let regenerators detect identical inputs, surface diffs, and let editors navigate from generated prose to its canonical source."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "e502f969-0d1e-4484-9c98-efcd74ef4509"
 created_at = "2026-05-26T16:12:12.125707600+00:00"
 title = "Resolving the canonical path"
 state = "draft"
-body = "## Resolving the canonical path\n\nIf the first ticket-api response (for example `ticket create`) omits the folder path, run a follow-up call such as `ticket get <id> --json` and read `.payload.ticket.path` before composing the reference. Nested workspaces, alternate scan roots, and ancestor checkouts all produce different canonical paths, so the path must come from ticket-api rather than from a template."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

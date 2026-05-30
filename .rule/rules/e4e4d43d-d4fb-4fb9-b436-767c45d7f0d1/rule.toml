@@ -2,7 +2,6 @@ id = "e4e4d43d-d4fb-4fb9-b436-767c45d7f0d1"
 created_at = "2026-05-25T22:18:35.709779600+00:00"
 title = "Acceptance criteria"
 state = "draft"
-body = "## Acceptance criteria\n\n- This spec no longer depends on a dedicated wrapper validation CLI or wrapper-owned artifact store.\n- Validation workflow state is defined as default shared-library behavior across `ticket-api`, `spec-api`, `doc-api`, and future `test-api` / `log-api`.\n- First-class responsibilities for `test-api` and `log-api` are part of the design, including native identifiers and cross-store links.\n- Any wrapper-only prototype implementation is explicitly described as migration context rather than target architecture.\n- Existing CLI, MCP, and HTTP surfaces are treated as the default way users interact with workflow metadata once the shared-library behavior lands."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

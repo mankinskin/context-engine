@@ -2,7 +2,6 @@ id = "7b85403c-efe0-4a2d-9d5a-a6a4c371e67e"
 created_at = "2026-05-08T11:28:21.212544300+00:00"
 title = "| Situation | Action |"
 state = "draft"
-body = "| Situation | Action |\r\n|---|---|\r\n| Starting implementation | `update --to-state in-implementation` |\r\n| Implementation complete, moving to review | `update --to-state in-review` |\r\n| All acceptance criteria met and validated | `close <id>` |\r\n| Ticket is no longer relevant | `cancel <id>` with a reason |"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "ef02dffa-16e2-42ec-9ea1-8494cbf63a33"
 created_at = "2026-05-26T16:12:09.022537100+00:00"
 title = "Browser validation contract"
 state = "draft"
-body = "# Browser validation contract\n\nAny change to a server interface or to a frontend feature must be verified in an external Chromium-family browser before the work moves to `in-review`. VS Code's integrated browser is not a substitute and must not be used for this gate."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

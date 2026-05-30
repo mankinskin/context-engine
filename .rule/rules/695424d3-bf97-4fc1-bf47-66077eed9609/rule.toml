@@ -2,7 +2,6 @@ id = "695424d3-bf97-4fc1-bf47-66077eed9609"
 created_at = "2026-05-08T11:28:27.386087500+00:00"
 title = "Topgraph → health check all reverse dependencies"
 state = "draft"
-body = "# Topgraph → health check all reverse dependencies\nticket topgraph abcd1234 --json \\\n  | jq -r '.payload.nodes[].id' \\\n  | ticket health --stdin --json\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

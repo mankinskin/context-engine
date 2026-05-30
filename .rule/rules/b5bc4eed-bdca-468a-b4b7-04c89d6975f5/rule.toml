@@ -2,7 +2,6 @@ id = "b5bc4eed-bdca-468a-b4b7-04c89d6975f5"
 created_at = "2026-05-08T11:28:13.093706+00:00"
 title = "Tool reference"
 state = "draft"
-body = "### Tool reference\n\n| Tool | Required | Optional |\n|------|----------|----------|\n| `board_show` | workspace | agent_id |\n| `board_check_in` | workspace, ticket_id, agent_id | intent, files, ttl_secs |\n| `board_check_out` | workspace, ticket_id | agent_id, reason |\n| `board_heartbeat` | workspace, entry_id | — |\n| `board_configure` | workspace | max_wip, stale_after_secs, completed_audit_window_secs |\n| `board_clean_preview` | workspace | include_stale |\n| `board_clean_apply` | workspace, token | include_stale |\n| `board_update_files` | workspace, ticket_id, agent_id | add, remove |\n| `board_rename_file` | workspace, ticket_id, agent_id, old_path, new_path | — |"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

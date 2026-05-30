@@ -2,7 +2,6 @@ id = "5b51b39b-44c4-4241-bb06-2e0fc3293e6d"
 created_at = "2026-05-08T11:28:27.178004900+00:00"
 title = "Command Chaining (pipe via --stdin)"
 state = "draft"
-body = "### Command Chaining (pipe via --stdin)\n\n```bash\n# List tickets → pipe IDs → health check\nticket list --where priority=high --json \\\n  | jq -r '.payload.items[].id' \\\n  | ticket health --stdin --json"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

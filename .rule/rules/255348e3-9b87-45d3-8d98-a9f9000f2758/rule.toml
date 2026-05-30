@@ -2,7 +2,6 @@ id = "255348e3-9b87-45d3-8d98-a9f9000f2758"
 created_at = "2026-05-08T11:28:24.991278300+00:00"
 title = "Check out when done (records handoff reason in audit trail)"
 state = "draft"
-body = "# Check out when done (records handoff reason in audit trail)\n./target/debug/ticket.exe board check-out <ticket-id> \\\n  --agent <agent-id> \\\n  --reason \"implemented and tested\" \\\n  --json\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "750f5b93-6419-4b15-9f29-1b38b4d5dba9"
 created_at = "2026-05-25T22:21:43.375800300+00:00"
 title = "define a minimal cross-store identity and reference model spanning tickets, spec"
 state = "draft"
-body = "- define a minimal cross-store identity and reference model spanning tickets, specs, docs, future `test-api` records, and future `log-api` records\n- support linking workflow state from native store metadata rather than from a dedicated wrapper artifact store\n- be queryable through existing or planned memory-system tool surfaces\n- preserve current markdown path links as compatibility presentation, not source of truth\n- describe migration from any existing wrapper-owned link payloads if they need to be retained temporarily"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

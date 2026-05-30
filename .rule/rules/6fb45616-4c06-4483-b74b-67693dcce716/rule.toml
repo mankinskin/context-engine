@@ -2,7 +2,6 @@ id = "6fb45616-4c06-4483-b74b-67693dcce716"
 created_at = "2026-05-08T11:28:06.264236300+00:00"
 title = "Primary Interface"
 state = "draft"
-body = "## Primary Interface\n\n- `POST /api/execute` is the universal RPC endpoint and should remain the primary API surface.\n- Command payloads must preserve `Command` JSON shape with `\"command\"` discriminant.\n- Optional `\"trace\": true` behavior should keep parity with current traced execution semantics.\n- REST routes under `/api/workspaces/...` are convenience endpoints; maintain consistency with command semantics."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

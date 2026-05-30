@@ -2,7 +2,6 @@ id = "dda5ff60-8330-4de0-823d-aad37cb5f2cd"
 created_at = "2026-05-08T11:28:28.176778400+00:00"
 title = "Force-reconcile all indexes from disk"
 state = "draft"
-body = "```bash\n# Force-reconcile all indexes from disk\n./target/debug/ticket.exe scan --force --json\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "a66e4443-6299-48f7-ba76-a8224da89dcb"
 created_at = "2026-05-08T11:28:30.070682400+00:00"
 title = "Integration Boundaries"
 state = "draft"
-body = "## Integration Boundaries\n\n- Treat `context-api` and `ticket-api` as system-of-record contracts.\n- Keep business logic in API crates/services; viewers should focus on transport, presentation, and interaction.\n- Preserve request/response compatibility unless the task explicitly requires an API change.\n- If API behavior changes, update dependent viewer routes and docs in the same change."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

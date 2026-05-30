@@ -2,7 +2,6 @@ id = "618b7a5e-65e5-4781-b095-4231b85b573f"
 created_at = "2026-05-08T11:28:10.238684+00:00"
 title = "TypeScript Type Generation"
 state = "draft"
-body = "## TypeScript Type Generation\n\n- Do not hand-edit generated files under `packages/context-types/src/generated/`.\n- Generate types from Rust `ts-rs` exports using `viewer-ctl gen-types` (or `cargo make gen-types`).\n- PowerShell variant also available at `scripts/generate-types.ps1`.\n- For context-api type exports, maintain feature-gated generation patterns (`ts-gen`) where required."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

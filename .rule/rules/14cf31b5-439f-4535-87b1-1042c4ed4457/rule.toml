@@ -2,7 +2,6 @@ id = "14cf31b5-439f-4535-87b1-1042c4ed4457"
 created_at = "2026-05-08T11:28:30.516276700+00:00"
 title = "HTTP and Runtime Conventions"
 state = "draft"
-body = "## HTTP and Runtime Conventions\n\n- Reuse `viewer-api` server utilities for tracing, CORS, static files, and CLI args.\n- Keep router composition explicit and stable; avoid breaking endpoint names without migration.\n- Preserve single-process viewer startup assumptions where present (for example ticket-viewer embedding ticket-http)."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

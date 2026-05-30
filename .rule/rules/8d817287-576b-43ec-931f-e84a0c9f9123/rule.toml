@@ -2,7 +2,6 @@ id = "8d817287-576b-43ec-931f-e84a0c9f9123"
 created_at = "2026-05-26T16:12:09.126669300+00:00"
 title = "Tool order"
 state = "draft"
-body = "## Tool order\n\n1. Prefer the MCP Playwright/browser tools when they cover the scenario.\n2. Fall back to repo-local Playwright commands only when MCP cannot drive the page.\n3. As a last resort, launch the external browser through the repo's browser-open task helpers."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

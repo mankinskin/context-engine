@@ -2,7 +2,6 @@ id = "abd295a4-1f53-4bd4-adaf-eea3dd1957f3"
 created_at = "2026-05-26T16:12:10.462341500+00:00"
 title = "File marker"
 state = "draft"
-body = "## File marker\n\nThe first non-empty line of a generated file is `<!-- <domain>:file generated=true -->`, where `<domain>` is the owning API (`rule-api`, `spec-api`, …). The marker signals that the file is owned by the generation pipeline and must not be hand-edited."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

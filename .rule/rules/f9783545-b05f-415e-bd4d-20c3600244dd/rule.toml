@@ -2,7 +2,6 @@ id = "f9783545-b05f-415e-bd4d-20c3600244dd"
 created_at = "2026-05-26T16:12:09.549045800+00:00"
 title = "Shared managed-viewer suites under `memory-viewers/viewer-api/viewer-api/fronten"
 state = "draft"
-body = "- Shared managed-viewer suites under `memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.\n- Spec-viewer release suite at `memory-viewers/spec-viewer/frontend/dioxus/` (`npm run test:e2e:release`).\n- Ticket-viewer release suite at `memory-viewers/ticket-viewer/frontend/dioxus/` (`npm run test:e2e:release`).\n- Doc-viewer and log-viewer keep local Playwright wrappers under `tools/viewer/doc-viewer/e2e/` and `tools/viewer/log-viewer/e2e/` that import the shared suites."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

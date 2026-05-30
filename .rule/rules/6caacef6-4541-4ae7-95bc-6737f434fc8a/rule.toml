@@ -2,7 +2,6 @@ id = "6caacef6-4541-4ae7-95bc-6737f434fc8a"
 created_at = "2026-05-08T11:28:15.881118500+00:00"
 title = "HTTP-level stress test (requires running ticket-viewer server)"
 state = "draft"
-body = "# HTTP-level stress test (requires running ticket-viewer server)\npython tools/http/stress_graph.py          # concurrency sweep 2–32\npython tools/http/bench2.py               # verbose per-request phase timing"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

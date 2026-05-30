@@ -2,7 +2,6 @@ id = "b764e251-8216-458f-846b-a4ecdd3a72ad"
 created_at = "2026-05-08T11:28:20.480255+00:00"
 title = "Check for stale in-implementation tickets that may conflict with your work"
 state = "draft"
-body = "# Check for stale in-implementation tickets that may conflict with your work\n./target/debug/ticket.exe list --where state=in-implementation --json"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

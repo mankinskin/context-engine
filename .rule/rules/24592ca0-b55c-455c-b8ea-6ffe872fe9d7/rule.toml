@@ -2,7 +2,6 @@ id = "24592ca0-b55c-455c-b8ea-6ffe872fe9d7"
 created_at = "2026-05-08T11:28:03.688296300+00:00"
 title = "`scanned_files`: files seen in the current walk"
 state = "draft"
-body = "- `scanned_files`: files seen in the current walk\n- `updated_files`: files re-read because content or metadata changed\n- `reused_files`: unchanged files reused from the existing index\n- `pruned_files`: stale index rows deleted because the file was no longer seen"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

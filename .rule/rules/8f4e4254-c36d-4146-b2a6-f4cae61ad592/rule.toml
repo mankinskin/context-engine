@@ -2,7 +2,6 @@ id = "8f4e4254-c36d-4146-b2a6-f4cae61ad592"
 created_at = "2026-05-08T11:28:10.158235900+00:00"
 title = "Shared Frontend Package Usage"
 state = "draft"
-body = "## Shared Frontend Package Usage\n\n- Shared TS UI/style primitives currently live under `tools/viewer/log-viewer/frontend/viewer-api-frontend/`.\n- Shared Dioxus viewer primitives and test helpers live under `memory-viewers/viewer-api/viewer-api/frontend/dioxus/`.\n- Place cross-viewer reusable components in the shared package, not copied per tool.\n- Keep tool-specific behavior in each tool frontend and shared behavior in viewer-api frontend."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "d54a07f0-f327-49f7-a4ea-fdb45ab1e415"
 created_at = "2026-05-08T11:28:06.542071500+00:00"
 title = "Error Mapping"
 state = "draft"
-body = "## Error Mapping\n\n- Preserve explicit mapping from `ApiError` categories to HTTP status codes.\n- Keep response body shape stable for handler errors.\n- Add new error kinds only with explicit HTTP status mapping."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

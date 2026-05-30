@@ -2,7 +2,6 @@ id = "2b535b58-c7de-423f-bb02-eb663ea642c5"
 created_at = "2026-05-08T11:28:22.965449300+00:00"
 title = "Memory & Cleanup**"
 state = "draft"
-body = "**Memory & Cleanup**\n- [ ] No unbounded `Closure::forget()` calls; use `Closure::into_js_value()` to\n      transfer ownership to the JS GC instead.\n- [ ] Document-level event listeners registered with a `on_cleanup` removal hook\n      so they are unregistered if the component unmounts mid-gesture.\n- [ ] No `Rc`/`RefCell` or wasm-bindgen closures that outlive component scope\n      without an explicit cleanup path."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

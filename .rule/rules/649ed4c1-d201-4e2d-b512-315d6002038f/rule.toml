@@ -2,7 +2,6 @@ id = "649ed4c1-d201-4e2d-b512-315d6002038f"
 created_at = "2026-05-25T22:18:35.380483300+00:00"
 title = "define native workflow validation metadata owned by the shared memory-system API"
 state = "draft"
-body = "- define native workflow validation metadata owned by the shared memory-system APIs\n- define how validation specifications, executions, outcomes, and blockers are represented without a separate workflow artifact store\n- make workflow capture part of normal ticket/spec/doc behavior and future `test-api` and `log-api` behavior\n- define the minimal default configuration knobs that turn workflow capture on for the existing tool surfaces\n- describe how any wrapper-only prototype logic is absorbed into shared libraries or discarded"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

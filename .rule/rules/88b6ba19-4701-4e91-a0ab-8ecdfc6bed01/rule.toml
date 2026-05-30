@@ -2,7 +2,6 @@ id = "88b6ba19-4701-4e91-a0ab-8ecdfc6bed01"
 created_at = "2026-05-08T11:28:12.872540200+00:00"
 title = "Available ticket-mcp tools"
 state = "draft"
-body = "### Available ticket-mcp tools\n\n| Tool | Required | Optional |\n|------|----------|----------|\n| `health` | — | — |\n| `list_workspaces` | — | — |\n| `list_tickets` | workspace | state, query, limit |\n| `get_ticket` | workspace, id | — |\n| `get_ticket_description` | workspace, id | — |\n| `list_edges` | workspace | kind |\n| `subgraph` | workspace, root | direction, edge_kind, depth, limit_nodes, limit_edges |\n| `topgraph` | workspace, root | direction, edge_kind, depth, limit_nodes, limit_edges |\n| `health_check` | workspace | root, all, ids, depth, direction |\n| `update_ticket` | workspace, id | to_state, fields |\n| `close_ticket` | workspace, id | to_state |\n| `cancel_ticket` | workspace, id | — |\n| `workflow` | — | name, workspace, id, query |"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

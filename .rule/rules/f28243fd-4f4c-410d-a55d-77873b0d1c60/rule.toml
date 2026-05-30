@@ -2,7 +2,6 @@ id = "f28243fd-4f4c-410d-a55d-77873b0d1c60"
 created_at = "2026-05-08T11:28:10.079643500+00:00"
 title = "Stack and Shared Dependencies"
 state = "draft"
-body = "## Stack and Shared Dependencies\n\n- Frontends in this repository use Preact + Vite + TypeScript.\n- Prefer `@preact/signals` patterns for shared reactive state where already used.\n- Reuse shared package primitives from `@context-engine/viewer-api-frontend` before adding tool-local duplicates."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

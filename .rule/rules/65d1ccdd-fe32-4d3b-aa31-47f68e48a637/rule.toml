@@ -2,7 +2,6 @@ id = "65d1ccdd-fe32-4d3b-aa31-47f68e48a637"
 created_at = "2026-05-08T11:28:21.660863100+00:00"
 title = "Undo the most recent state change (reverts to the previous state)"
 state = "draft"
-body = "```bash\n# Undo the most recent state change (reverts to the previous state)\n./target/debug/ticket.exe update <id> --undo --json\n```"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

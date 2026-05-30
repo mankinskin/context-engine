@@ -2,7 +2,6 @@ id = "491e6e1f-28c0-4cfc-ba7e-5357d5bca56d"
 created_at = "2026-05-08T11:28:03.453471100+00:00"
 title = "Top-level fields"
 state = "draft"
-body = "### Top-level fields\n\n- `service`: service identifier. Current value is `audit-mcp`.\n- `repo_root`: canonical repository root used for the audit.\n- `index_database`: path to the local SQLite index at `.audit/audit.sqlite3`.\n- `sync`: current scan statistics.\n- `run`: persisted audit run metadata.\n- `metrics`: raw collected metric values and trial status.\n- `findings`: actionable issue records.\n- `instructions`: unique repo-level fix instructions aggregated from findings."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

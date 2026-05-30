@@ -2,7 +2,6 @@ id = "fcfe73f0-3dd4-48f9-ba00-d4b217f64332"
 created_at = "2026-05-08T11:28:17.077449200+00:00"
 title = "Deploying ticket-viewer for HTTP Testing"
 state = "draft"
-body = "## Deploying ticket-viewer for HTTP Testing\n\n```bash\n# Build the binary (must build the viewer, not just the library)\ncargo build -p ticket-viewer --release"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

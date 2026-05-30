@@ -2,7 +2,6 @@ id = "cb0f3062-03e8-4b6b-85e1-b899d12fc459"
 created_at = "2026-05-08T11:28:30.438039+00:00"
 title = "Filesystem and Source Access"
 state = "draft"
-body = "## Filesystem and Source Access\n\n- Constrain filesystem reads to configured roots (workspace/log/static roots).\n- Normalize and validate paths before access; prevent path traversal.\n- Prefer existing viewer-api helpers/utilities before adding new path logic.\n- When local source is unavailable (remote/deployed mode), use configured remote source resolution paths."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

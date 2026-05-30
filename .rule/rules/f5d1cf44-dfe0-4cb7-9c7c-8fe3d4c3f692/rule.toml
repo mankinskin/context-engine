@@ -2,7 +2,6 @@ id = "f5d1cf44-dfe0-4cb7-9c7c-8fe3d4c3f692"
 created_at = "2026-05-08T11:28:27.484502100+00:00"
 title = "Batch (CLI-syntax, transactional)"
 state = "draft"
-body = "### Batch (CLI-syntax, transactional)\n\n`ticket batch` reads one CLI command per line from stdin (or `--file`). All\ncommands execute against the same store in order. If any command fails, all\nprior writes are rolled back automatically. Blank lines and `#` comments are\nignored."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

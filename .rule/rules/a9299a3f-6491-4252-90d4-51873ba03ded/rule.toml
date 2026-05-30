@@ -2,7 +2,6 @@ id = "a9299a3f-6491-4252-90d4-51873ba03ded"
 created_at = "2026-05-08T11:28:24.479109600+00:00"
 title = "1. **State progress** — tickets closest to `done` appear first (e.g."
 state = "draft"
-body = "1. **State progress** — tickets closest to `done` appear first (e.g.\n   `in-review` > `in-implementation` > `ready` > `new`).\n   Progress is determined by the state's index in the schema's `states` list.\n2. **Priority** — `critical > high > medium > low > none`.\n3. **Creation date** — oldest first (FIFO tiebreaker)."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

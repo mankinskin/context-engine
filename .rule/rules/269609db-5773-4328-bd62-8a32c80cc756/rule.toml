@@ -2,7 +2,6 @@ id = "269609db-5773-4328-bd62-8a32c80cc756"
 created_at = "2026-05-25T22:21:41.884263300+00:00"
 title = "Acceptance criteria"
 state = "draft"
-body = "## Acceptance criteria\n\n- This spec no longer treats a separate wrapper documentation command path as the target surface.\n- `doc-api` owns documentation-validation metadata and `doc-cli` is defined as the primary CLI surface.\n- Generated-guidance checks and manual documentation verification are captured in native workflow metadata.\n- Unsupported or partial documentation coverage is explicit in the doc-owned model.\n- Any existing wrapper implementation is explicitly described as migration context rather than target architecture."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

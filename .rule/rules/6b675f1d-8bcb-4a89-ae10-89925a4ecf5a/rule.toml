@@ -2,7 +2,6 @@ id = "6b675f1d-8bcb-4a89-ae10-89925a4ecf5a"
 created_at = "2026-05-08T11:28:24.722947300+00:00"
 title = "Check-In / Check-Out / Heartbeat"
 state = "draft"
-body = "#### Check-In / Check-Out / Heartbeat\n\n```bash\n# Register yourself as actively working a ticket\n./target/debug/ticket.exe board check-in <ticket-id> \\\n  --agent <agent-id> \\\n  --intent \"brief description of planned work\" \\\n  --file \"src/foo.rs\" \\\n  --file \"src/bar.rs\" \\\n  --ttl-secs 3600 \\\n  --json"
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

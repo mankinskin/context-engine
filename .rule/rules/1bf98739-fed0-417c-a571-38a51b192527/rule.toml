@@ -2,7 +2,6 @@ id = "1bf98739-fed0-417c-a571-38a51b192527"
 created_at = "2026-05-08T11:28:27.935661300+00:00"
 title = "Rules:**"
 state = "draft"
-body = "**Rules:**\n- Each line is parsed identically to a top-level `ticket <subcommand>` call.\n- `serve`, `watch`, nested `batch`, `scan`, lease commands, and\n  config commands (`add-root`, `workspace`, `export-command-schema`) are\n  rejected with a clear error — they cannot be used inside a batch.\n- On rollback: `create` → deleted, `update` → state/fields restored, `link`\n  → edge removed. Read-only commands (`get`, `list`, `search`, `health`, etc.)\n  produce no undo entry and are not affected by rollback.\n- No `--index-root` requirement — uses normal workspace resolution like any\n  other CLI command."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

@@ -2,7 +2,6 @@ id = "e4e48e92-b01a-4907-a335-bc68faf895d3"
 created_at = "2026-05-08T11:28:23.108093600+00:00"
 title = "Security**"
 state = "draft"
-body = "**Security**\n- [ ] User-controlled strings inserted into the DOM use text-node APIs (e.g.\n      `set_text_content`) — not `set_inner_html` — to prevent XSS.\n- [ ] URLs derived from external data are validated before fetch/navigation."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

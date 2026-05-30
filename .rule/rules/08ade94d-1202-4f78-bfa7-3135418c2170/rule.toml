@@ -2,7 +2,6 @@ id = "08ade94d-1202-4f78-bfa7-3135418c2170"
 created_at = "2026-05-26T16:12:12.045770200+00:00"
 title = "`<short-id>` is the first 8 characters of the authoritative ticket id."
 state = "draft"
-body = "- `<short-id>` is the first 8 characters of the authoritative ticket id.\n- `<title>` is the authoritative ticket title.\n- `<canonical ticket folder path>` is the exact folder path returned by ticket-api for that ticket. Never synthesize a path from a UUID, from the current store root, or from an example path."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0

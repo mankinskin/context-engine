@@ -2,7 +2,6 @@ id = "61d90f3e-3126-4250-9604-de69eeabf87f"
 created_at = "2026-05-08T11:28:10.568895300+00:00"
 title = "1. Lint and typecheck for each affected frontend package."
 state = "draft"
-body = "1. Lint and typecheck for each affected frontend package.\n2. Nearest unit/component tests where available (for example Vitest in log-viewer frontend).\n3. Browser end-to-end checks where available. For browser-hosted frontend code, first try the MCP Playwright/browser tools; if they are unavailable or insufficient for the scenario, fall back to repo-local Playwright flows (for example ticket-viewer frontend).\n4. Contract checks for changed API integration paths."
 feedback_helpful_count = 0
 feedback_mixed_count = 0
 feedback_not_helpful_count = 0
