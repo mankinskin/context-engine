@@ -130,6 +130,28 @@ such as `test`, `assert_matches`, `try_blocks`, `slice_pattern`,
 The `rust-toolchain.toml` file in the repository root automatically selects the 
 nightly toolchain when you work in this directory.
 
+### Working with Submodules
+
+`git submodule update --init --recursive` keeps the repository on the pinned
+submodule commits and leaves those checkouts detached by design.
+
+When you need to edit or publish submodule changes on their tracked branches,
+run:
+
+```bash
+git submodule update --init --recursive
+bash tools/checkout-submodule-branches.sh
+```
+
+The helper switches each initialized submodule to its configured tracking
+branch. If a submodule is currently detached at commits ahead of its local
+branch, the script attaches that branch to the detached commit so the work can
+be pushed instead of being stranded off-branch. Nested submodules without an
+explicit branch in `.gitmodules` fall back to their upstream default branch.
+
+After you push the submodule branch, commit the updated submodule pointer in
+this repository.
+
 ### Building and Testing
 
 Each crate can be developed and tested independently:
