@@ -1,0 +1,41 @@
+folders:
+- name: .agents
+  folders:
+  - name: agents
+    files:
+    - name: testing.agent.md
+      target:
+        name: context-engine-agent-testing
+        repo_scope: context-engine
+        file_kind: .agent
+        path_scope: .agents/agents/testing.agent.md
+        nodes:
+        - name: testing-agent
+          section: testing-agent
+    - name: research.agent.md
+      target:
+        name: context-engine-agent-research
+        repo_scope: context-engine
+        file_kind: .agent
+        path_scope: .agents/agents/research.agent.md
+        nodes:
+        - name: research-agent
+          section: research-agent
+    - name: interview.agent.md
+      target:
+        name: context-engine-agent-interview
+        repo_scope: context-engine
+        file_kind: .agent
+        path_scope: .agents/agents/interview.agent.md
+        nodes:
+        - name: interview-agent
+          section: interview-agent
+    - name: audit.agent.md
+      target:
+        name: context-engine-agent-audit
+        repo_scope: context-engine
+        file_kind: .agent
+        path_scope: .agents/agents/audit.agent.md
+        nodes:
+        - name: audit-agent
+          section: audit-agent

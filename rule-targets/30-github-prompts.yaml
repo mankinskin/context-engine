@@ -48,3 +48,66 @@ folders:
         nodes:
         - name: tickets-prompt
           section: tickets-prompt
+    - name: memory-setup.prompt.md
+      target:
+        name: context-engine-prompt-memory-setup
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/memory-setup.prompt.md
+        nodes:
+        - name: memory-setup-prompt
+          section: memory-setup-prompt
+    - name: interview.prompt.md
+      target:
+        name: context-engine-prompt-interview
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/interview.prompt.md
+        nodes:
+        - name: interview-prompt
+          section: interview-prompt
+    - name: user-training.prompt.md
+      target:
+        name: context-engine-prompt-user-training
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/user-training.prompt.md
+        nodes:
+        - name: user-training-prompt
+          section: user-training-prompt
+    - name: ticket-next.prompt.md
+      target:
+        name: context-engine-prompt-ticket-next
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/ticket-next.prompt.md
+        nodes:
+        - name: ticket-next-prompt
+          section: ticket-next-prompt
+    - name: next.prompt.md
+      target:
+        name: context-engine-prompt-next
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/next.prompt.md
+        nodes:
+        - name: next-prompt
+          section: next-prompt
+    - name: audit.prompt.md
+      target:
+        name: context-engine-prompt-audit
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/audit.prompt.md
+        nodes:
+        - name: audit-prompt
+          section: audit-prompt
+    - name: tdd.prompt.md
+      target:
+        name: context-engine-prompt-tdd
+        repo_scope: context-engine
+        file_kind: .prompt
+        path_scope: .github/prompts/tdd.prompt.md
+        nodes:
+        - name: tdd-prompt
+          section: tdd-prompt
