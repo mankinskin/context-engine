@@ -5,8 +5,8 @@ HTTP `/api/workflow/next` expose inconsistent, narrowly scoped discovery knobs.
 This spec defines the canonical, reusable **selector contract** that all
 workflow discovery surfaces must honour.
 
-**Tracking ticket:** `.ticket/tickets/790df512-d8a9-42bd-b3d6-6e2b4d5eda9c`
-**Convergence tracker:** `.ticket/tickets/cf4246c3-6539-4f1c-a876-6d34073db7b3`
+**Tracking ticket:** [790df512 Specify scoped selector contract for board and next](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/790df512-d8a9-42bd-b3d6-6e2b4d5eda9c/ticket.toml)
+**Convergence tracker:** [cf4246c3 Track workflow and health surface convergence](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/cf4246c3-6539-4f1c-a876-6d34073db7b3/ticket.toml)
 
 ---
 
@@ -134,9 +134,23 @@ HTTP `/api/workflow/next` is Phase 1 (depends on `0e375356`).
 
 # Related Tickets
 
-- `790df512` — this spec ticket (selector contract definition)
-- `68a08b34` — implementation (CLI + MCP scope-aware board/next)
-- `0e375356` — Phase 1 (full selector surface across CLI, MCP, HTTP)
-- `c031aeb0` — Phase 2 (ticket-api core + adapter boundaries)
-- `6484d4b7` — Phase 3 (parity validation suite)
-- `4a48b371` — board-aware next parity fix for HTTP plus shared backend extraction
+- [790df512 Specify scoped selector contract for board and next](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/790df512-d8a9-42bd-b3d6-6e2b4d5eda9c/ticket.toml) — this spec ticket
+- [68a08b34 Scope-aware board and next for multi-root workspaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/68a08b34-000b-4585-8354-4b1a26a15f4b/ticket.toml) — CLI and MCP scope-aware selector rollout
+- [0e375356 Implement scoped selectors for board and next](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/0e375356-b74e-48c4-8f1d-77cd28e055bc/ticket.toml) — Phase 1 selector surface across CLI, MCP, and HTTP
+- [c031aeb0 Define minimal workflow and health core plus adapter responsibilities](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/c031aeb0-f374-4d57-9d46-2463dfa8571d/ticket.toml) — Phase 2 shared ticket-api workflow and health core
+- [6484d4b7 Build larger-integration parity routine for workflow and health surfaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/6484d4b7-e24b-4c13-999c-d0b00928d97c/ticket.toml) — Phase 3 parity fixture and cross-interface regression suite
+- [4a48b371 Unify board-aware next filtering across workflow surfaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/4a48b371-7dc0-4bf2-badb-747a8f00a0fc/ticket.toml) — follow-up parity fix aligning HTTP with the shared board-aware next contract
+
+# Validation Evidence
+
+Automated review evidence for tracker closeout:
+
+- `cargo test -p ticket-api apply_board_filter -- --nocapture`
+- `cargo test -p ticket-http --test integration_parity -- --nocapture`
+- `cargo test -p ticket-mcp next_tickets_excludes_board_active_and_surfaces_wip_warning -- --nocapture`
+
+Audit outcome:
+
+- ticket health for [cf4246c3 Track workflow and health surface convergence](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/cf4246c3-6539-4f1c-a876-6d34073db7b3/ticket.toml) returned zero findings.
+- spec health and refs validation for this spec returned `ok` with zero issues.
+- Focused review of the shared backend and HTTP/MCP adapter call sites found no undocumented workflow or health drift after the board-aware next follow-up.
