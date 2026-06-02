@@ -1,0 +1,10 @@
+id = "cf4246c3-6539-4f1c-a876-6d34073db7b3"
+created_at = "2026-06-01T21:49:01.125723300+00:00"
+title = "[ticket-api][ticket-cli][ticket-mcp][ticket-http] Track workflow and health surface convergence"
+state = "new"
+component = "ticket-api"
+depends_on = ["0e375356-b74e-48c4-8f1d-77cd28e055bc", "6484d4b7-e24b-4c13-999c-d0b00928d97c", "c031aeb0-f374-4d57-9d46-2463dfa8571d"]
+priority = "high"
+risk_level = "medium"
+tags = "ticket-api,ticket-cli,ticket-mcp,ticket-http,workflow,health,board,validation,e2e,parity"
+type = "tracker-improvement"

@@ -31,6 +31,24 @@ Operators need to focus workflow discovery on a related slice of tickets: a modu
 - The spec defines machine-readable scope metadata plus empty-state or omitted-ticket behavior.
 - The spec records a regression matrix for CLI, MCP, and HTTP parity coverage.
 
+# Implementation Summary
+
+**Spec created:** `.spec/specs/a595eb0c-f9f1-4e29-a425-120df5334f7d/` (slug `ticket-api/workflow/scoped-selector-contract`).
+
+The spec defines:
+- Five selector axes: workspace, title-prefix filter, graph-root scope, field predicates (Phase 1+), and future text-query (Phase 1+).
+- Intersection composition semantics.
+- Machine-readable `scope` object required in every workflow-discovery response.
+- Backward compatibility table for all existing CLI/MCP/HTTP inputs.
+- Phase 0 surface scope: CLI `ticket next`, CLI `ticket board show`, MCP `next_tickets`, MCP `board_show`.
+- Regression matrix for Phase 0 (CLI + MCP) and Phase 1 (HTTP).
+
+**Phase 0 implementation in `68a08b34`:** adds `root` param to MCP `next_tickets`, adds `scope` object to CLI next/board-show and MCP next_tickets/board_show responses.
+
+# Related Spec
+
+- `.spec/specs/a595eb0c-f9f1-4e29-a425-120df5334f7d/` — scoped selector contract spec
+
 # Related Existing Tickets
 
 - `68a08b34` covers workspace or root-aware board / next selection in multi-root repositories.
