@@ -98,6 +98,12 @@ surface must declare it explicitly.
 
 No existing field is renamed or removed. New fields are additive.
 
+When board state hides otherwise actionable tickets, `next` surfaces MUST keep
+the visible `items` list board-aware and surface the hidden tickets separately
+in `excluded_by_board`, alongside any board warnings needed to explain the
+filtered result. HTTP Phase 1+ must match the same behavior already used by CLI
+and MCP rather than returning the raw unfiltered candidate set.
+
 ---
 
 # Surfaces in Scope (Phase 0)
@@ -121,6 +127,7 @@ HTTP `/api/workflow/next` is Phase 1 (depends on `0e375356`).
 | root-scoped next | scope.root = resolved UUID | scope.root = resolved UUID | Phase 1 |
 | filter-scoped next | scope.filter = prefix | scope.filter = prefix | Phase 1 |
 | No selector (wide) | scope fields null | scope fields null | Phase 1 |
+| board-aware next exclusion | filtered `items`, `excluded_by_board`, `warnings` | filtered `items`, `excluded_by_board`, `warnings` | Phase 1 parity with CLI/MCP |
 | board show scope | scope.active_index_root set | scope.active_index_root set | Phase 1 |
 
 ---
@@ -132,3 +139,4 @@ HTTP `/api/workflow/next` is Phase 1 (depends on `0e375356`).
 - `0e375356` — Phase 1 (full selector surface across CLI, MCP, HTTP)
 - `c031aeb0` — Phase 2 (ticket-api core + adapter boundaries)
 - `6484d4b7` — Phase 3 (parity validation suite)
+- `4a48b371` — board-aware next parity fix for HTTP plus shared backend extraction
