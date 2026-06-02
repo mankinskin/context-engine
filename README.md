@@ -1,185 +1,56 @@
-# Context Framework
+# context-engine
 
-A comprehensive Rust framework for graph-based data structures with 
-advanced search, insertion, and traversal capabilities. Built around 
-hypergraph data structures with sophisticated path operations and 
-bidirectional tracing.
+context-engine is the top-level workspace that coordinates the graph crates in `context-stack`, the viewer and operator tooling in `memory-viewers`, and the repo-local configuration and install surfaces that bind them together.
 
-## Framework Components
+## Repository Map
 
-The context framework consists of four interconnected crates:
+| Child repo or folder | What it contains | Direct README |
+| --- | --- | --- |
+| [context-stack](context-stack/README.md) | Graph, search, insert, and read crates plus extracted support dependencies. | [context-stack/README.md](context-stack/README.md) |
+| [memory-viewers](memory-viewers/README.md) | Viewer binaries, CLI/MCP/HTTP tooling, and shared viewer runtime packages. | [memory-viewers/README.md](memory-viewers/README.md) |
+| [config](config/README.md) | Shared tracing and repository configuration. | [config/README.md](config/README.md) |
 
-- **[context-trace](context-trace/)**: Core graph and tracing functionality
-  - Foundational hypergraph data structures
-  - Thread-safe graph references (Arc/RwLock)
-  - Path operations with accessors and mutators
-  - Bidirectional tracing (bottom-up and top-down)
-  - Comprehensive cache management
+context-stack child READMEs:
 
-- **[context-search](context-search/)**: Search and traversal operations
-  - Policy-driven search operations
-  - Configurable traversal strategies (BFT, DFT)
-  - Early-terminating foldable operations
-  - Pattern matching with partial match handling
-  - Resumable search operations
+- [context-stack/context-api/README.md](context-stack/context-api/README.md)
+- [context-stack/context-trace/README.md](context-stack/context-trace/README.md)
+- [context-stack/context-search/README.md](context-stack/context-search/README.md)
+- [context-stack/context-insert/README.md](context-stack/context-insert/README.md)
+- [context-stack/context-read/README.md](context-stack/context-read/README.md)
 
-- **[context-insert](context-insert/)**: Graph insertion operations
-  - Complex pattern insertion into existing structures
-  - Split-join architecture for safe modifications
-  - Multi-phase processing (pre/in/post visit modes)
-  - Interval management for insertion state tracking
-  - Sophisticated caching for split and join operations
+memory-viewers child READMEs:
 
-- **[context-read](context-read/)**: Reading and expansion operations
-  - Ordered recursive hypergraph operations
-  - Sequenced tokenized data handling
-  - Graph complement operations
-  - Expansion chain management
-  - Block iteration for sequence processing
+- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md)
+- [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md)
 
-## Architecture Overview
+## Installable Tools
 
-The framework follows a layered architecture where each crate builds 
-upon the previous ones:
+The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository:
 
-1. **context-trace** provides the foundational graph structures
-2. **context-search** adds search and traversal capabilities
-3. **context-insert** enables complex graph modifications
-4. **context-read** provides high-level reading and expansion operations
+- [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
+- [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
+- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs plus the MCP and HTTP surfaces behind them.
+- [tools/viewer/doc-viewer/README.md](tools/viewer/doc-viewer/README.md) covers the `doc-viewer` binary.
+- [tools/viewer/log-viewer/README.md](tools/viewer/log-viewer/README.md) covers the `log-viewer` binary.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    context-read                         │
-│         (Builds largest token decompositions)           │
-├─────────────────────────────────────────────────────────┤
-│                   context-insert                        │
-│      (Inserts new nodes maintaining invariants)         │
-├─────────────────────────────────────────────────────────┤
-│                   context-search                        │
-│         (Traverses hierarchy to find matches)           │
-├─────────────────────────────────────────────────────────┤
-│                   context-trace                         │
-│    (Foundational types, graph structure, tracing)       │
-└─────────────────────────────────────────────────────────┘
-```
-
-### The Reachability Invariant
-
-A crucial property maintained throughout the framework:
-
-> Two nodes have a path between them **if and only if** one is a substring of the other.
-
-This creates a **containment hierarchy** where larger patterns contain smaller 
-ones. The graph stores only edges to closest neighbors (transitive reduction), 
-yet all substring relationships remain reachable through traversal.
-
-This invariant enables:
-- **context-search** to traverse upward from small to large patterns
-- **context-insert** to find correct insertion points
-- **context-read** to build optimal token decompositions
-
-See [Crate Architecture](../doc/hypergraph-context-model/crate-architecture.md) 
-for detailed documentation.
-
-## Key Features
-
-- **Hypergraph Data Structures**: Advanced graph representation with 
-  vertex and token management
-- **Policy-Based Design**: Configurable behavior through policy objects
-- **Thread Safety**: Safe concurrent access through Arc/RwLock wrappers
-- **State Management**: Comprehensive caching and state continuation
-- **Type Safety**: Strong typing throughout the framework
-- **Performance**: Optimized for large-scale graph operations
-
-## Getting Started
-
-Add the required crates to your `Cargo.toml`:
-
-```toml
-[dependencies]
-context-trace = { path = "context-engine/context-trace" }
-context-search = { path = "context-engine/context-search" }
-context-insert = { path = "context-engine/context-insert" }
-context-read = { path = "context-engine/context-read" }
-```
-
-Basic usage example:
-
-```rust
-use context_trace::Hypergraph;
-use context_search::Searchable;
-use context_insert::ToInsertCtx;
-
-// Create a hypergraph
-let mut graph = Hypergraph::new();
-
-// Insert patterns
-let result = graph.insert(pattern)?;
-
-// Search for sequences
-let search_result = graph.find_sequence(vec!["hello", "world"])?;
-```
-
-## Development
-
-### Prerequisites
-
-This project requires Rust nightly due to the use of unstable language features
-such as `test`, `assert_matches`, `try_blocks`, `slice_pattern`, 
-`exact_size_is_empty`, `associated_type_defaults`, and `type_changing_struct_update`.
-The `rust-toolchain.toml` file in the repository root automatically selects the 
-nightly toolchain when you work in this directory.
-
-### Working with Submodules
-
-`git submodule update --init --recursive` keeps the repository on the pinned
-submodule commits and leaves those checkouts detached by design.
-
-When you need to edit or publish submodule changes on their tracked branches,
-run:
+## Working With Submodules
 
 ```bash
 git submodule update --init --recursive
 bash tools/checkout-submodule-branches.sh
 ```
 
-The helper switches each initialized submodule to its configured tracking
-branch. If a submodule is currently detached at commits ahead of its local
-branch, the script attaches that branch to the detached commit so the work can
-be pushed instead of being stranded off-branch. Nested submodules without an
-explicit branch in `.gitmodules` fall back to their upstream default branch.
+- `git submodule update --init --recursive` follows the Git submodule workflow documented in [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+- [tools/checkout-submodule-branches.sh](tools/checkout-submodule-branches.sh) attaches initialized submodules to their configured tracking branches when you need to edit them.
+- Once the submodules are attached, continue from [context-stack/README.md](context-stack/README.md) and [memory-viewers/README.md](memory-viewers/README.md) for repository-local commands.
 
-After you push the submodule branch, commit the updated submodule pointer in
-this repository.
-
-### Building and Testing
-
-Each crate can be developed and tested independently:
+## Workspace Validation
 
 ```bash
-# Run all tests
 cargo test --workspace
-
-# Generate documentation
 cargo doc --workspace --open
-
-# Run specific crate tests
-cargo test -p context-trace
-cargo test -p context-search
-cargo test -p context-insert
-cargo test -p context-read
 ```
 
-## Features
-
-- **test-api**: Enables testing utilities across all crates
-- **logging**: Comprehensive tracing and debugging support
-
-## Contributing
-
-Please refer to individual crate READMEs for specific implementation 
-details and contribution guidelines.
-
-## License
-
-This project is part of the graph_app repository.
+- `cargo test --workspace` is documented in [The Cargo Book: cargo test](https://doc.rust-lang.org/cargo/commands/cargo-test.html).
+- `cargo doc --workspace --open` is documented in [The Cargo Book: cargo doc](https://doc.rust-lang.org/cargo/commands/cargo-doc.html).
+- Crate-specific validation entry points live in [context-stack/README.md](context-stack/README.md) and the child READMEs linked above.

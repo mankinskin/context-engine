@@ -1,0 +1,1 @@
+Update install-tools.sh so the root installer refreshes doc-viewer, log-viewer, spec-viewer, and ticket-viewer PATH binaries. Keep ticket-vscode PATH-first launch behavior unchanged; solve the stale-backend issue by ensuring the installed viewer binaries stay current.

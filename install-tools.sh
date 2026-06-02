@@ -7,6 +7,10 @@ repo_root=$script_dir
 tool_names=(
     viewer-ctl
     trunk
+    doc-viewer
+    log-viewer
+    spec-viewer
+    ticket-viewer
     ticket-cli
     spec-cli
     audit-cli
@@ -17,6 +21,10 @@ tool_path() {
     case "$1" in
         viewer-ctl) printf '%s\n' "memory-viewers/viewer-api/viewer-ctl" ;;
         trunk) printf '%s\n' "" ;;
+        doc-viewer) printf '%s\n' "tools/viewer/doc-viewer" ;;
+        log-viewer) printf '%s\n' "tools/viewer/log-viewer" ;;
+        spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
+        ticket-viewer) printf '%s\n' "memory-viewers/ticket-viewer" ;;
         ticket-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/ticket-cli" ;;
         spec-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/spec-cli" ;;
         audit-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/audit-cli" ;;
@@ -32,6 +40,10 @@ tool_bin() {
     case "$1" in
         viewer-ctl) printf '%s\n' "viewer-ctl" ;;
         trunk) printf '%s\n' "trunk" ;;
+        doc-viewer) printf '%s\n' "doc-viewer" ;;
+        log-viewer) printf '%s\n' "log-viewer" ;;
+        spec-viewer) printf '%s\n' "spec-viewer" ;;
+        ticket-viewer) printf '%s\n' "ticket-viewer" ;;
         ticket-cli) printf '%s\n' "ticket" ;;
         spec-cli) printf '%s\n' "spec" ;;
         audit-cli) printf '%s\n' "audit" ;;
@@ -64,6 +76,10 @@ Options:
 Supported tools:
   viewer-ctl
     trunk
+    doc-viewer
+    log-viewer
+    spec-viewer
+    ticket-viewer
   ticket-cli
   spec-cli
   audit-cli
@@ -76,6 +92,7 @@ Examples:
   ./install-tools.sh
     ./install-tools.sh --tool viewer-ctl --tool trunk
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
+    ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
   INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
 EOF
 }
@@ -196,7 +213,7 @@ if [[ ${#selected_tools[@]} -eq 0 && -n "${INSTALL_TOOLS:-}" ]]; then
 fi
 
 if [[ ${#selected_tools[@]} -eq 0 ]]; then
-    append_csv_tools "viewer-ctl,trunk,ticket-cli,spec-cli,audit-cli,rule-cli"
+    append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli"
 fi
 
 install_one() {
