@@ -13,13 +13,14 @@ This spec covers:
 - a repo-local `context-stack/.rule` store
 - a local `context-stack/rule-targets.yaml` shim plus themed fragments
 - a generated `context-stack/README.md`
-- generated first-level child README targets for the in-scope `context-stack` surfaces
+- generated first-level child README targets for `context-api`, `context-trace`, `context-search`, `context-insert`, `context-read`, `context-trace-macros`, `ngrams`, `deps/petgraph`, `deps/justlog`, and `packages/context-types`
 
 ## Intended Behavior
 
 - `context-stack` can run `rule explain-target`, `rule sync-targets`, and `rule sync-targets --check` from its own repo root.
 - The root README clearly states the repo has no root executable binary surface.
 - First-level child READMEs link back to `context-stack/README.md` via repo-internal parent blocks.
+- The previously undocumented first-level children (`context-trace-macros`, `ngrams`, `deps/justlog`, and `packages/context-types`) gain generated README surfaces instead of remaining root-level exceptions.
 - The generated README tree does not infer any external submodule parent.
 
 ## Assumptions To Prove
