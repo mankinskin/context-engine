@@ -29,7 +29,7 @@ The shared installer in [install-tools.sh](install-tools.sh) refreshes the execu
 
 - [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
 - [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
-- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs plus the MCP and HTTP surfaces behind them.
+- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
 - [tools/viewer/doc-viewer/README.md](tools/viewer/doc-viewer/README.md) covers the `doc-viewer` binary.
 - [tools/viewer/log-viewer/README.md](tools/viewer/log-viewer/README.md) covers the `log-viewer` binary.
 
