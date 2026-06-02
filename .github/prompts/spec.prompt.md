@@ -19,7 +19,7 @@ Workflow:
 5. If `spec-mcp` is unavailable, fall back to `./target/debug/spec.exe` and register `.spec/specs` with `spec.exe add-root .spec/specs --label default --json` if needed.
 6. Infer a clear title, slug, component, and parent. Keep slugs lowercase, use `-` within segments, and `/` between segments.
 7. Prefer updating a matching spec over creating a near-duplicate. If no matching spec exists, create one in `draft` state.
-8. Ensure the spec body captures motivation, intended behavior or scope, constraints or non-goals when obvious, acceptance criteria, and a traceability section that links the related tickets when they are known.
+8. Ensure the spec body captures the intended system properties, explicit acceptance criteria, required evidence or traceability needed to evaluate implementation, and non-goals when obvious. Keep problem statements, current-state analysis, rollout sequencing, blockers, and implementation notes in related tickets unless the user explicitly asks for them in the spec.
 9. When linking tickets in the spec or chat output, never synthesize a ticket folder path from a UUID, a store root, or an example path. If the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding. Use the exact returned folder path as the link base and append `/ticket.toml` for the markdown target so editors can open the file directly.
 10. If the request clearly implies implementation work and the related ticket does not exist yet, create the needed ticket first or state explicitly that ticket creation is still required before implementation begins.
 11. If required details are still ambiguous after a focused search, ask one concise clarification rather than guessing.
