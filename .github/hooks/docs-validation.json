@@ -13,6 +13,14 @@
         "cwd": ".",
         "timeout": 5
       }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/session-capture-stop.sh",
+        "cwd": ".",
+        "timeout": 120
+      }
     ]
   }
 }
