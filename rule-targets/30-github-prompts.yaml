@@ -1,3 +1,5 @@
+defaults:
+  repo_scope: context-engine
 folders:
 - name: .github
   folders:
@@ -6,8 +8,6 @@ folders:
     - name: spec.prompt.md
       target:
         name: context-engine-prompt-spec
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/spec.prompt.md
         nodes:
         - name: spec-prompt
@@ -15,8 +15,6 @@ folders:
     - name: rule.prompt.md
       target:
         name: context-engine-prompt-rule
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/rule.prompt.md
         nodes:
         - name: rule-prompt
@@ -24,8 +22,6 @@ folders:
     - name: rule-target.prompt.md
       target:
         name: context-engine-prompt-rule-target
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/rule-target.prompt.md
         nodes:
         - name: rule-target-prompt
@@ -33,8 +29,6 @@ folders:
     - name: ticket.prompt.md
       target:
         name: context-engine-prompt-ticket
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/ticket.prompt.md
         nodes:
         - name: ticket-prompt
@@ -42,8 +36,6 @@ folders:
     - name: tickets.prompt.md
       target:
         name: context-engine-prompt-tickets
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/tickets.prompt.md
         nodes:
         - name: tickets-prompt
@@ -51,8 +43,6 @@ folders:
     - name: memory-setup.prompt.md
       target:
         name: context-engine-prompt-memory-setup
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/memory-setup.prompt.md
         nodes:
         - name: memory-setup-prompt
@@ -60,8 +50,6 @@ folders:
     - name: interview.prompt.md
       target:
         name: context-engine-prompt-interview
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/interview.prompt.md
         nodes:
         - name: interview-prompt
@@ -69,8 +57,6 @@ folders:
     - name: user-training.prompt.md
       target:
         name: context-engine-prompt-user-training
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/user-training.prompt.md
         nodes:
         - name: user-training-prompt
@@ -78,8 +64,6 @@ folders:
     - name: ticket-next.prompt.md
       target:
         name: context-engine-prompt-ticket-next
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/ticket-next.prompt.md
         nodes:
         - name: ticket-next-prompt
@@ -87,8 +71,6 @@ folders:
     - name: next.prompt.md
       target:
         name: context-engine-prompt-next
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/next.prompt.md
         nodes:
         - name: next-prompt
@@ -96,8 +78,6 @@ folders:
     - name: audit.prompt.md
       target:
         name: context-engine-prompt-audit
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/audit.prompt.md
         nodes:
         - name: audit-prompt
@@ -105,8 +85,6 @@ folders:
     - name: tdd.prompt.md
       target:
         name: context-engine-prompt-tdd
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .github/prompts/tdd.prompt.md
         nodes:
         - name: tdd-prompt

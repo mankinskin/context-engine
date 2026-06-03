@@ -1,3 +1,6 @@
+defaults:
+  repo_scope: context-engine
+  file_kind: .prompt
 folders:
 - name: .agents
   folders:
@@ -6,8 +9,6 @@ folders:
     - name: reviews.prompt.md
       target:
         name: context-engine-prompt-reviews
-        repo_scope: context-engine
-        file_kind: .prompt
         path_scope: .agents/prompts/reviews.prompt.md
         nodes:
         - name: reviews-prompt

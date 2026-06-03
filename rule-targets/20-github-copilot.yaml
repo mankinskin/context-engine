@@ -1,11 +1,11 @@
+defaults:
+  repo_scope: context-engine
 folders:
 - name: .github
   files:
   - name: copilot-instructions.md
     target:
       name: context-engine-copilot-instructions
-      repo_scope: context-engine
-      file_kind: copilot-instructions
       path_scope: .github/copilot-instructions.md
       nodes:
       - name: github-copilot-instructions

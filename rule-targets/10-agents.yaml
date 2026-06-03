@@ -1,9 +1,9 @@
+defaults:
+  repo_scope: context-engine
 files:
 - name: AGENTS.md
   target:
     name: context-engine-agents
-    repo_scope: context-engine
-    file_kind: AGENTS
     path_scope: AGENTS.md
     nodes:
     - name: agent-rules

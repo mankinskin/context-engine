@@ -1,3 +1,5 @@
+defaults:
+  repo_scope: context-engine
 folders:
 - name: .agents
   folders:
@@ -6,8 +8,7 @@ folders:
     - name: audit.instructions.md
       target:
         name: context-engine-instruction-audit
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/audit.instructions.md
         nodes:
         - name: frontmatter
@@ -53,8 +54,7 @@ folders:
     - name: context-http.instructions.md
       target:
         name: context-engine-instruction-context-http
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/context-http.instructions.md
         nodes:
         - name: frontmatter
@@ -87,8 +87,7 @@ folders:
     - name: core-crates.instructions.md
       target:
         name: context-engine-instruction-core-crates
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/core-crates.instructions.md
         nodes:
         - name: frontmatter
@@ -112,8 +111,7 @@ folders:
     - name: frontend.instructions.md
       target:
         name: context-engine-instruction-frontend
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/frontend.instructions.md
         nodes:
         - name: frontmatter
@@ -143,8 +141,7 @@ folders:
     - name: mcp-tools.instructions.md
       target:
         name: context-engine-instruction-mcp-tools
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/mcp-tools.instructions.md
         nodes:
         - name: frontmatter
@@ -191,8 +188,7 @@ folders:
     - name: tests.instructions.md
       target:
         name: context-engine-instruction-tests
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/tests.instructions.md
         nodes:
         - name: frontmatter
@@ -245,8 +241,7 @@ folders:
     - name: ticket-system.instructions.md
       target:
         name: context-engine-instruction-ticket-system
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/ticket-system.instructions.md
         nodes:
         - name: frontmatter
@@ -462,8 +457,7 @@ folders:
     - name: viewer-api-tools.instructions.md
       target:
         name: context-engine-instruction-viewer-api-tools
-        repo_scope: context-engine
-        file_kind: .instructions
+
         path_scope: .agents/instructions/viewer-api-tools.instructions.md
         nodes:
         - name: frontmatter
