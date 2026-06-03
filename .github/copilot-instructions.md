@@ -43,6 +43,8 @@ docker ps                  rtk docker ps
 kubectl get pods           rtk kubectl pods
 ```
 
+When a repository CLI supports `--toon`, prefer `rtk <cmd> --toon ...` over `rtk <cmd> --json ...` for compact machine-readable output. Use the `toon-format` / `toon-rust` codec for encoding and decoding TOON instead of hand-rolled text transforms.
+
 ## Meta commands (use directly)
 
 ```bash
