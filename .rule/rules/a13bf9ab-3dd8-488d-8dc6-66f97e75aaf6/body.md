@@ -1,3 +1,3 @@
 ## Optional Copilot CLI MCP Config
 
-To run Copilot CLI with MCP config from this repository:
+Repository-local Copilot CLI MCP config guidance lives alongside the relevant tool README files:

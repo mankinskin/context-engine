@@ -1,3 +1,1 @@
-```bash
-copilot --additional-mcp-config @.github/copilot-mcp-config.json
-```
+See [context-mcp README](../context-stack/tools/mcp/context-mcp/README.md) for the current repository-local Copilot CLI MCP config example.
