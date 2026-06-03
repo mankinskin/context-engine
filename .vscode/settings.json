@@ -1,7 +1,7 @@
 {
-    "chat.hookFilesLocations": [
-        ".github/hooks/docs-validation.json"
-    ],
+    "chat.hookFilesLocations": {
+        ".github/hooks": true
+    },
     "chat.mcp.serverSampling": {
         "context-engine/.vscode/mcp.json: spec-mcp": {
             "allowedModels": [

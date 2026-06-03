@@ -57,17 +57,27 @@ check_vscode_tasks() {
 
 check_rule_targets() {
     local config="$1"
+    local output_file
 
     if ! command -v cargo >/dev/null 2>&1; then
         echo "pre-commit: cargo not on PATH; cannot validate generated rule outputs for $config" >&2
         exit 1
     fi
 
-    if ! cargo run -p rule-cli --bin rule -- sync-targets --config "$config" --check >/dev/null; then
-        echo "pre-commit: generated rule outputs are out of date for $config" >&2
-        echo "             run: cargo run -p rule-cli --bin rule -- sync-targets --config $config" >&2
+    output_file="$(mktemp)"
+
+    if ! cargo run -p rule-cli --bin rule -- sync-targets --config "$config" --check >"$output_file" 2>&1; then
+        echo "pre-commit: rule validation failed for $config" >&2
+        echo "pre-commit: command output follows:" >&2
+        cat "$output_file" >&2
+        echo "pre-commit: rerun for details or regeneration:" >&2
+        echo "             cargo run -p rule-cli --bin rule -- sync-targets --config $config --check" >&2
+        echo "             cargo run -p rule-cli --bin rule -- sync-targets --config $config" >&2
+        rm -f "$output_file"
         exit 1
     fi
+
+    rm -f "$output_file"
 }
 
 if staged_matches '^\.vscode/(tasks\.json|tasks\.d/.*\.jsonc)$'; then
