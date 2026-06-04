@@ -1,91 +1,99 @@
 defaults:
   repo_scope: context-engine
+  file_kind: .prompt
 folders:
-- name: .github
+- name: .agents
   folders:
   - name: prompts
     files:
+    - name: reviews.prompt.md
+      target:
+        name: context-engine-prompt-reviews
+        path_scope: .agents/prompts/reviews.prompt.md
+        nodes:
+        - name: reviews-prompt
+          section: reviews-prompt
     - name: spec.prompt.md
       target:
         name: context-engine-prompt-spec
-        path_scope: .github/prompts/spec.prompt.md
+        path_scope: .agents/prompts/spec.prompt.md
         nodes:
         - name: spec-prompt
           section: spec-prompt
     - name: rule.prompt.md
       target:
         name: context-engine-prompt-rule
-        path_scope: .github/prompts/rule.prompt.md
+        path_scope: .agents/prompts/rule.prompt.md
         nodes:
         - name: rule-prompt
           section: rule-prompt
     - name: rule-target.prompt.md
       target:
         name: context-engine-prompt-rule-target
-        path_scope: .github/prompts/rule-target.prompt.md
+        path_scope: .agents/prompts/rule-target.prompt.md
         nodes:
         - name: rule-target-prompt
           section: rule-target-prompt
     - name: ticket.prompt.md
       target:
         name: context-engine-prompt-ticket
-        path_scope: .github/prompts/ticket.prompt.md
+        path_scope: .agents/prompts/ticket.prompt.md
         nodes:
         - name: ticket-prompt
           section: ticket-prompt
     - name: tickets.prompt.md
       target:
         name: context-engine-prompt-tickets
-        path_scope: .github/prompts/tickets.prompt.md
+        path_scope: .agents/prompts/tickets.prompt.md
         nodes:
         - name: tickets-prompt
           section: tickets-prompt
     - name: memory-setup.prompt.md
       target:
         name: context-engine-prompt-memory-setup
-        path_scope: .github/prompts/memory-setup.prompt.md
+        path_scope: .agents/prompts/memory-setup.prompt.md
         nodes:
         - name: memory-setup-prompt
           section: memory-setup-prompt
     - name: interview.prompt.md
       target:
         name: context-engine-prompt-interview
-        path_scope: .github/prompts/interview.prompt.md
+        path_scope: .agents/prompts/interview.prompt.md
         nodes:
         - name: interview-prompt
           section: interview-prompt
     - name: user-training.prompt.md
       target:
         name: context-engine-prompt-user-training
-        path_scope: .github/prompts/user-training.prompt.md
+        path_scope: .agents/prompts/user-training.prompt.md
         nodes:
         - name: user-training-prompt
           section: user-training-prompt
     - name: ticket-next.prompt.md
       target:
         name: context-engine-prompt-ticket-next
-        path_scope: .github/prompts/ticket-next.prompt.md
+        path_scope: .agents/prompts/ticket-next.prompt.md
         nodes:
         - name: ticket-next-prompt
           section: ticket-next-prompt
     - name: next.prompt.md
       target:
         name: context-engine-prompt-next
-        path_scope: .github/prompts/next.prompt.md
+        path_scope: .agents/prompts/next.prompt.md
         nodes:
         - name: next-prompt
           section: next-prompt
     - name: audit.prompt.md
       target:
         name: context-engine-prompt-audit
-        path_scope: .github/prompts/audit.prompt.md
+        path_scope: .agents/prompts/audit.prompt.md
         nodes:
         - name: audit-prompt
           section: audit-prompt
     - name: tdd.prompt.md
       target:
         name: context-engine-prompt-tdd
-        path_scope: .github/prompts/tdd.prompt.md
+        path_scope: .agents/prompts/tdd.prompt.md
         nodes:
         - name: tdd-prompt
           section: tdd-prompt

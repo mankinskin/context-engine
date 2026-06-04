@@ -11,7 +11,7 @@ Create generated workflow prompts and agents from canonical rule entries, then p
 - Passed `cargo test -p session-api` with the initial scaffold tests.
 
 # Evidence Trail
-- Generated doc surfaces: `.github/prompts/*` additions and `.agents/agents/*` additions from this batch.
+- Generated doc surfaces: `.agents/prompts/*` additions and `.agents/agents/*` additions from this batch.
 - Source/doc surfaces: `Cargo.toml`, `rule-targets/30-github-prompts.yaml`, `rule-targets/45-agents-agents.yaml`, and the new `memory-viewers/memory-api/crates/session-api` crate.
 - Validation logs: rule CLI JSON output plus `cargo test -p session-api` terminal output.
 

@@ -18,7 +18,7 @@ Update the canonical workflow guidance so the generated files under `.agents/` a
 This includes:
 
 - shared AGENTS workflow rules that govern routing and quality gates
-- ticket/spec prompt rules under `.github/prompts/`
+- ticket/spec prompt rules under `.agents/prompts/`
 - ticket-system instructions under `.agents/instructions/`
 - any adjacent generated guidance needed to keep the workflow coherent after regeneration
 

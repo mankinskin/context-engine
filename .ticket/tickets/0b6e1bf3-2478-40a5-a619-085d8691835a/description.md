@@ -9,7 +9,7 @@ The current prompt and mirrored rule guidance actively encourage motivation, pro
 # Scope
 
 - define the observable contract for expectation-oriented specs using create, update, get, search, and health behavior
-- update [.github/prompts/spec.prompt.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.github/prompts/spec.prompt.md) so ticket-level problem and rollout details are no longer treated as core spec content
+- update [.agents/prompts/spec.prompt.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.agents/prompts/spec.prompt.md) so ticket-level problem and rollout details are no longer treated as core spec content
 - update the mirrored authoring guidance in [.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md) to keep the rule-backed guidance in sync with the prompt contract
 - add regression coverage that fails if either guidance surface drifts or reintroduces motivation, problem, current-state, or rollout sections as core spec requirements
 - preserve the current markdown-oriented spec shell during the first slice unless a specific layout change is required by the tests
@@ -23,7 +23,7 @@ The current prompt and mirrored rule guidance actively encourage motivation, pro
 # Acceptance Criteria
 
 - A red/green test suite defines the minimum observable contract for an expectation-oriented spec.
-- [.github/prompts/spec.prompt.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.github/prompts/spec.prompt.md) and [.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md) describe the same contract.
+- [.agents/prompts/spec.prompt.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.agents/prompts/spec.prompt.md) and [.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.rule/rules/0719f0c1-9036-4983-912c-599de3a37d23/body.md) describe the same contract.
 - The default authoring guidance tells users to keep current-state analysis, rollout sequencing, blockers, and implementation notes in tickets rather than in the spec contract.
 - The first slice keeps the current format stable unless the tests prove a structure change is necessary.
 - Regression coverage exists for both legacy current-format specs and newly authored expectation-oriented specs, plus drift between the two guidance surfaces.

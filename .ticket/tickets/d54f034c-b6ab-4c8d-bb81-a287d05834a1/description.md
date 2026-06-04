@@ -105,7 +105,7 @@ to = "cancelled"
 - [ ] AC5: All references to removed states updated in:
       - `.agents/instructions/ticket-system.instructions.md`
       - `AGENTS.md`
-      - `.github/prompts/` files
+      - `.agents/prompts/` files
       - CLI help text and examples
 - [ ] AC6: `ticket scan --force` succeeds after migration with no orphaned
       state references.
@@ -157,7 +157,7 @@ Update all documentation referencing the old states:
   - Review gate instructions
   - CLI examples
 - `AGENTS.md` — remove references to `in-refinement`, `in-validation`
-- `.github/prompts/*.prompt.md` — update any state references
+- `.agents/prompts/*.prompt.md` — update any state references
 
 ### Phase 4: E2E Testing
 
@@ -260,5 +260,5 @@ tree view immediately benefits from fewer, clearer states.
 - `crates/ticket-api/src/storage/store.rs` — verify transition logic
 - `.agents/instructions/ticket-system.instructions.md` — doc update
 - `AGENTS.md` — doc update
-- `.github/prompts/*.prompt.md` — doc updates
+- `.agents/prompts/*.prompt.md` — doc updates
 - Migration script or batch commands for existing tickets

@@ -16,7 +16,7 @@ Generate the requested workflow prompt and agent files from canonical rule-api e
 - ValidationExecution: passed `./target/debug/rule.exe sync-targets --config rule-targets/45-agents-agents.yaml --check --json`.
 
 # Evidence Trail
-- DocEvidenceRecord candidates: generated prompt files under `.github/prompts/` and generated agent files under `.agents/agents/`.
+- DocEvidenceRecord candidates: generated prompt files under `.agents/prompts/` and generated agent files under `.agents/agents/`.
 - ValidationLogCapture / ValidationLogRetrieval: rule CLI JSON output captured in the current session terminal; no repo-local workflow artifact was written for this slice.
 - The linked spec records the ticket paths, generated documentation surfaces, and the passing validation commands.
 

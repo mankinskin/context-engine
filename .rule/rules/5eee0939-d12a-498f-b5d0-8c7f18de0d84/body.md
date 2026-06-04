@@ -7,5 +7,5 @@ Priority Order (for agents):
 5. <crate>/src/tests/                ← Usage examples
 6. bug-reports/                      ← Known issues
 7. QUESTIONS_FOR_AUTHOR.md           ← Unclear topics
-8. .github/prompts/*.prompt.md       ← Operational workflows
+8. .agents/prompts/*.prompt.md       ← Operational workflows
 ```

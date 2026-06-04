@@ -3,8 +3,8 @@
 The repository workflow guidance spec says the guidance under `.agents/` and `.github/` is regenerated from canonical rule content, but three key files are still effectively being treated as directly edited markdown instead of obvious generated targets:
 
 - `.agents/instructions/ticket-system.instructions.md`
-- `.github/prompts/ticket.prompt.md`
-- `.github/prompts/tickets.prompt.md`
+- `.agents/prompts/ticket.prompt.md`
+- `.agents/prompts/tickets.prompt.md`
 
 That creates two problems:
 
@@ -24,7 +24,7 @@ This includes:
 
 ## Acceptance criteria
 
-1. `.agents/instructions/ticket-system.instructions.md`, `.github/prompts/ticket.prompt.md`, and `.github/prompts/tickets.prompt.md` are rendered by the rule target pipeline from canonical rule entries.
+1. `.agents/instructions/ticket-system.instructions.md`, `.agents/prompts/ticket.prompt.md`, and `.agents/prompts/tickets.prompt.md` are rendered by the rule target pipeline from canonical rule entries.
 2. The generated files clearly present themselves as generated outputs, consistent with the repository's generated-guidance conventions.
 3. The latest ticket-link formatting rule lives in canonical rule content and survives regeneration.
 4. `rule sync-targets --config rule-targets.yaml` passes.

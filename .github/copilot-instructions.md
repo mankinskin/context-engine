@@ -10,7 +10,7 @@ This file is intentionally minimal.
 
 All behavioral and workflow guidance lives in [AGENTS.md](../AGENTS.md).
 Path-scoped guidance lives in [.agents/instructions/](../.agents/instructions/).
-Workflow prompts live in [.github/prompts/](./prompts/).
+Workflow prompts live in [.agents/prompts/](./prompts/).
 
 <!-- rule-api:entry id=a13bf9ab-3dd8-488d-8dc6-66f97e75aaf6 slug=shared/copilot-instructions/github-copilot-instructions/optional-copilot-cli-mcp-config/l11 -->
 ## Optional Copilot CLI MCP Config

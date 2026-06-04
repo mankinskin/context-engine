@@ -34,13 +34,13 @@ Generate the requested workflow prompt and agent files from canonical rule-api e
 - Created canonical `.rule` entries for all new prompt and agent surfaces.
 - Extended the generated agent set with `.agents/agents/implement.agent.md` from a matching root target and canonical `.rule` entry.
 - Generated the following documentation surfaces from rule-api:
-  - `.github/prompts/memory-setup.prompt.md`
-  - `.github/prompts/interview.prompt.md`
-  - `.github/prompts/user-training.prompt.md`
-  - `.github/prompts/ticket-next.prompt.md`
-  - `.github/prompts/next.prompt.md`
-  - `.github/prompts/audit.prompt.md`
-  - `.github/prompts/tdd.prompt.md`
+  - `.agents/prompts/memory-setup.prompt.md`
+  - `.agents/prompts/interview.prompt.md`
+  - `.agents/prompts/user-training.prompt.md`
+  - `.agents/prompts/ticket-next.prompt.md`
+  - `.agents/prompts/next.prompt.md`
+  - `.agents/prompts/audit.prompt.md`
+  - `.agents/prompts/tdd.prompt.md`
   - `.agents/agents/testing.agent.md`
   - `.agents/agents/research.agent.md`
   - `.agents/agents/interview.agent.md`
