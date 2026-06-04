@@ -1,0 +1,16 @@
+defaults:
+  repo_scope: context-engine
+  file_kind: .skill
+folders:
+- name: .agents
+  folders:
+  - name: skills
+    files:
+    - name: token-optimized-agentic-engineering.SKILL.md
+      target:
+        name: context-engine-skill-token-optimized-agentic-engineering
+        path_scope: .agents/skills/token-optimized-agentic-engineering.SKILL.md
+        nodes:
+        - name: token-optimized-agentic-engineering
+          title: TOKEN-OPTIMIZED AGENTIC ENGINEERING
+          section: token-optimized-agentic-engineering
