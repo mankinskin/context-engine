@@ -115,3 +115,16 @@ let _tracing = init_test_tracing!(&graph);
 - Swarm workflow details: `.agents/prompts/swarm-worker.prompt.md`
 - Path-specific rules: `.agents/instructions/*.instructions.md`
 - Cline adapter surface: `.clinerules/`
+
+<!-- rule-api:entry id=7606b9be-c328-4b0c-aeac-c0b0824aee5c slug=shared/agent-rules/token-efficient-output/l72 -->
+## Token-Efficient Output
+
+Keep terminal output, file reads, and structural exploration bounded to avoid unnecessary token consumption.
+
+- **Compact by default**: prefer `--toon` over `--json`; prefix commands with `rtk` for automatic filtering.
+- **Bounded file reads**: use `repo_map.toon` and interface skeletons before opening source files; read targeted line windows instead of whole files.
+- **Differential patching**: use `replace_string_in_file` with context lines instead of full-file rewrites.
+- **Long output handling**: when `rtk` or the compact-terminal MCP tool truncates output, inspect the transient file via bounded read/search before replaying the command.
+- **TOON vs JSON**: use `--toon` for tool-to-tool pipelines; use `--json` only when piping to external tools (jq, Python). Never request JSON and discard most of it.
+
+Full guidance: `.agents/instructions/token-efficiency.instructions.md`
