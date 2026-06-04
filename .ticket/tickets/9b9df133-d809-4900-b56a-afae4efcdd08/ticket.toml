@@ -1,9 +1,9 @@
 id = "9b9df133-d809-4900-b56a-afae4efcdd08"
 created_at = "2026-06-04T18:02:20.148988500+00:00"
 title = "[token-efficiency] Track token-efficient agent tooling rollout"
-state = "new"
+state = "in-implementation"
 component = "agent-tooling"
-depends_on = ["20b6a09a-080a-480b-8f09-79cbf7bc20bd", "4f066c96-b398-4aba-93f1-7d0fd4da39ba", "65819900-1d16-4c53-8b5d-7548c64a75ef", "685b577e-9e5e-4c96-86de-ce5420db46bc", "72c1e92d-65e1-445b-9365-e3384d9da088", "d4605cc0-5901-4b68-94d5-e7e3e6cac06f", "f227c217-6fda-452e-ae35-4208eb3974f5"]
+depends_on = ["06cfe998-c2e1-48a4-83e9-11e85e7c40f4", "0dd23fe6-6892-4d21-9927-4a81584dc77a", "20b6a09a-080a-480b-8f09-79cbf7bc20bd", "4f066c96-b398-4aba-93f1-7d0fd4da39ba", "65819900-1d16-4c53-8b5d-7548c64a75ef", "685b577e-9e5e-4c96-86de-ce5420db46bc", "72c1e92d-65e1-445b-9365-e3384d9da088", "d4605cc0-5901-4b68-94d5-e7e3e6cac06f", "e29e24ba-1f7e-43b3-97bd-c20d53b76df8", "f227c217-6fda-452e-ae35-4208eb3974f5", "f93e5db5-4f20-4e23-8832-498c4591938f"]
 effort = "15000"
 priority = "high"
 tags = "token-efficiency,agent-workflow,tooling"
