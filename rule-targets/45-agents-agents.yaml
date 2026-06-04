@@ -41,3 +41,10 @@ folders:
         nodes:
         - name: implement-agent
           section: implement-agent
+    - name: commit.agent.md
+      target:
+        name: context-engine-agent-commit
+        path_scope: .agents/agents/commit.agent.md
+        nodes:
+        - name: commit-agent
+          section: commit-agent

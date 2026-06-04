@@ -97,3 +97,10 @@ folders:
         nodes:
         - name: tdd-prompt
           section: tdd-prompt
+    - name: commit.prompt.md
+      target:
+        name: context-engine-prompt-commit
+        path_scope: .agents/prompts/commit.prompt.md
+        nodes:
+        - name: commit-prompt
+          section: commit-prompt

@@ -499,3 +499,29 @@ folders:
           - name: ux-definition-of-done
             title: UX Definition of Done
             section: viewer-api-tools-guidance/ux-definition-of-done
+    - name: commit.instructions.md
+      target:
+        name: context-engine-instruction-commit
+        path_scope: .agents/instructions/commit.instructions.md
+        nodes:
+        - name: frontmatter
+          section: commit-instructions
+        - name: commit-guidance
+          title: Commit Guidance
+          section: commit-guidance
+          nodes:
+          - name: submodules
+            title: Submodule Structure
+            section: commit-guidance/submodules
+          - name: pre-commit
+            title: Pre-commit Hook
+            section: commit-guidance/pre-commit
+          - name: generated-files
+            title: Generated Files
+            section: commit-guidance/generated-files
+          - name: commit-messages
+            title: Commit Message Conventions
+            section: commit-guidance/commit-messages
+          - name: workflow
+            title: Commit Workflow
+            section: commit-guidance/workflow
