@@ -6,6 +6,12 @@
         "command": "rtk hook copilot",
         "cwd": ".",
         "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/preflight-write.sh",
+        "cwd": ".",
+        "timeout": 30
       }
     ],
     "PostToolUse": [
