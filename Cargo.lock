@@ -2107,6 +2107,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "compact-terminal-mcp"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "compact_str"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6987,6 +7002,14 @@ name = "pastey"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b867cad97c0791bbd3aaa6472142568c6c9e8f71937e98379f584cfb0cf35bec"
+
+[[package]]
+name = "peek-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+]
 
 [[package]]
 name = "percent-encoding"
