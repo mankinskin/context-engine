@@ -104,3 +104,10 @@ folders:
         nodes:
         - name: commit-prompt
           section: commit-prompt
+    - name: implement.prompt.md
+      target:
+        name: context-engine-prompt-implement
+        path_scope: .agents/prompts/implement.prompt.md
+        nodes:
+        - name: implement-prompt
+          section: implement-prompt
