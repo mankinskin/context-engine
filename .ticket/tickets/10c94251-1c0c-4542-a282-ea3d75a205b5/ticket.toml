@@ -1,0 +1,13 @@
+id = "10c94251-1c0c-4542-a282-ea3d75a205b5"
+created_at = "2026-06-05T00:26:40.792171700+00:00"
+title = "[ticket-viewer][viewer-api] Graph focus and 2D presentation follow-up"
+state = "new"
+acceptance_criteria = "1. Child tickets define implementation-ready behavior for stepwise focus falloff, property-based rendering tiers, panel-aware framing, and configurable 2D/keyframed presentation. 2. The graph node design explicitly covers the ordered tier ladder point-or-sphere → icon → label → compact → full, camera-mode-specific minimal glyphs, one-tier hover promotion, and selected-state effects. 3. Browser and Playwright coverage explicitly cover deselection, tier transitions, selected-node effects, panel overlap safety, 2D mode switching, configurable auto-keyframing, explicit keyframing, and restore behavior."
+component = "ticket-viewer"
+depends_on = ["68eaae1f-b230-4aab-8572-cbf41d1d3b6d", "923c866a-fecd-4ddb-8be0-00ca4cb22af9", "929bc26a-5296-4d64-b1b2-2ec580c0659c", "f9e9aaae-b1ec-434c-a839-7ec990d1e6c7"]
+linked = ["05dae5fd-1a1d-4a64-be62-f29ca0771a4d"]
+priority = "high"
+risk_level = "high"
+spec_refs = "98b4f75d-3628-470d-a5cc-c91b6cc9811a"
+tags = "ticket-viewer,viewer-api,graph,focus,lod,presentation,2d"
+type = "tracker-improvement"
