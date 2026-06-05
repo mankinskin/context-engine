@@ -67,8 +67,8 @@ For each selected ticket, work in rank order.
 - Record missing evidence explicitly instead of assuming the ticket is complete.
 
 5. Decide the outcome.
-- If the ticket is incomplete, ambiguous, or missing required validation, move it back to implementation with `update_ticket` or `ticket update <id> --to-state in-implementation`, and explain why.
-- If the ticket satisfies its acceptance criteria and review evidence is sufficient, close it with `close_ticket` or `ticket close <id>`.
+- If the ticket is incomplete, ambiguous, or missing required validation, move it back to implementation with sparse `update_ticket` input such as `{"workspace":"default","id":"<id>","to_state":"in-implementation"}` or `ticket update <id> --to-state in-implementation`, and explain why.
+- If the ticket satisfies its acceptance criteria and review evidence is sufficient, close it with sparse `close_ticket` input such as `{"workspace":"default","id":"<id>"}` or `ticket close <id>`.
 - Do not skip the decision; every reviewed ticket must end with either a return to implementation or closure.
 
 ## Stop Conditions

@@ -10,7 +10,12 @@ Key instruction files:
 - `tests.instructions.md` — test commands and strategy
 - `frontend.instructions.md` — frontend stack and patterns
 - `ticket-system.instructions.md` — ticket workflow commands
-- `mcp-tools.instructions.md` — MCP tool usage
 - `audit.instructions.md` — audit guidance
 - `context-http.instructions.md` — context HTTP guidance
 - `viewer-api-tools.instructions.md` — viewer API tools guidance
+
+MCP tool contracts and examples live in the tool-specific READMEs:
+- `memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md` — ticket MCP inputs, sparse update payloads, board tools, and follow-up metadata
+- `memory-viewers/memory-api/tools/mcp/spec-mcp/README.md` — spec MCP sparse update payloads and minimal responses
+- `memory-viewers/memory-api/tools/mcp/rule-mcp/README.md` — rule MCP sparse update payloads and minimal responses
+- `memory-viewers/memory-api/tools/mcp/audit-mcp/README.md` — audit MCP capabilities and invocation surface
