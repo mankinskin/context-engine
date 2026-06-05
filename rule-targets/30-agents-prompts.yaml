@@ -111,3 +111,17 @@ folders:
         nodes:
         - name: implement-prompt
           section: implement-prompt
+    - name: handoff.prompt.md
+      target:
+        name: context-engine-prompt-handoff
+        path_scope: .agents/prompts/handoff.prompt.md
+        nodes:
+        - name: handoff-prompt
+          section: handoff-prompt
+    - name: handoff-tickets.prompt.md
+      target:
+        name: context-engine-prompt-handoff-tickets
+        path_scope: .agents/prompts/handoff-tickets.prompt.md
+        nodes:
+        - name: handoff-tickets-prompt
+          section: handoff-tickets-prompt
