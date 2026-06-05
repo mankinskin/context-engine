@@ -5,6 +5,53 @@ folders:
   folders:
   - name: instructions
     files:
+    - name: spec-system.instructions.md
+      target:
+        name: context-engine-instruction-spec-system
+
+        path_scope: .agents/instructions/spec-system.instructions.md
+        nodes:
+        - name: frontmatter
+          section: spec-system-instructions
+        - name: spec-system-guidance
+          title: Spec System Guidance
+          section: __group__/spec-system-guidance
+          nodes:
+          - name: scope
+            title: Scope
+            section: spec-system-guidance/scope
+          - name: design-constraints
+            title: Design Constraints
+            section: spec-system-guidance/design-constraints
+          - name: spec-quality-standing-obligations
+            title: "Spec Quality — Standing Obligations"
+            section: spec-system-guidance/spec-quality-standing-obligations
+            nodes:
+            - name: orientation-start-of-every-session
+              title: Orientation (start of every session)
+              section: spec-system-guidance/spec-quality-standing-obligations/orientation-start-of-every-session
+            - name: discovery-before-creating
+              title: Discovery Before Creating
+              section: spec-system-guidance/spec-quality-standing-obligations/discovery-before-creating
+          - name: spec-authoring-workflow
+            title: Spec Authoring Workflow
+            section: spec-system-guidance/spec-authoring-workflow
+            nodes:
+            - name: choose-component-slug-and-parent
+              title: Choose Component, Slug, and Parent
+              section: spec-system-guidance/spec-authoring-workflow/choose-component-slug-and-parent
+            - name: structure-the-spec
+              title: Structure the Spec
+              section: spec-system-guidance/spec-authoring-workflow/structure-the-spec
+            - name: link-tickets-tests-and-related-specs
+              title: Link Tickets, Tests, and Related Specs
+              section: spec-system-guidance/spec-authoring-workflow/link-tickets-tests-and-related-specs
+            - name: validation-before-review
+              title: Validation Before Review
+              section: spec-system-guidance/spec-authoring-workflow/validation-before-review
+          - name: workflow-expectations
+            title: Workflow Expectations
+            section: spec-system-guidance/workflow-expectations
     - name: audit.instructions.md
       target:
         name: context-engine-instruction-audit

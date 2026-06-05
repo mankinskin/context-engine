@@ -6,6 +6,13 @@ folders:
   folders:
   - name: agents
     files:
+    - name: spec.agent.md
+      target:
+        name: context-engine-agent-spec
+        path_scope: .agents/agents/spec.agent.md
+        nodes:
+        - name: spec-agent
+          section: spec-agent
     - name: testing.agent.md
       target:
         name: context-engine-agent-testing
