@@ -1,7 +1,7 @@
 id = "f9e9aaae-b1ec-434c-a839-7ec990d1e6c7"
 created_at = "2026-06-05T00:27:06.018046+00:00"
 title = "[viewer-api][ticket-viewer] Introduce property-based graph node rendering tiers"
-state = "ready"
+state = "in-review"
 acceptance_criteria = "1. Rendering is selected from explicit property-based rules instead of a card-first default. 2. The ordered tier ladder is point-or-sphere → icon → label → compact → full. 3. Minimal tiers switch by camera mode between flat points in 2D and shaded spheres in 3D. 4. Hover raises a node by exactly one detail tier. 5. Non-full tiers do not rely on an extra tooltip fallback when tier promotion is sufficient. 6. Full HTML rendering is reserved for high-detail tiers only. 7. Release Playwright coverage proves tier ordering, camera-mode-specific lowest tiers, and one-tier hover promotion."
 component = "viewer-api"
 priority = "high"

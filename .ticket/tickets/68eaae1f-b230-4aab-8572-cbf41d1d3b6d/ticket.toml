@@ -1,7 +1,7 @@
 id = "68eaae1f-b230-4aab-8572-cbf41d1d3b6d"
 created_at = "2026-06-05T00:27:05.877846800+00:00"
 title = "[viewer-api][ticket-viewer] Add optional 2D graph mode and presentation keyframing"
-state = "ready"
+state = "in-review"
 acceptance_criteria = "1. Users can switch between current 3D mode and an explicit 2D graph mode. 2. The 2D mode uses a fixed planar camera, matching 2D grid presentation, and flat-point minimal node glyphs. 3. Presentation keyframing works for both explicit user invocation and selection-triggered automatic activation. 4. Automatic keyframing is configurable in settings so selection-triggered behavior can be enabled, disabled, or tuned. 5. Temporary presentation layouts restore the prior arrangement predictably. 6. Browser and Playwright validation cover 2D mode, explicit keyframing, auto-keyframing settings behavior, and restore semantics."
 component = "viewer-api"
 priority = "high"
