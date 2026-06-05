@@ -227,13 +227,12 @@ agent_files:
         - name: instructions
           kind: dir
           path: "agent-files/.agents/instructions"
-          children[10]{name,kind,path}:
+          children[9]{name,kind,path}:
             audit.instructions.md,file,"agent-files/.agents/instructions/audit.instructions.md"
             commit.instructions.md,file,"agent-files/.agents/instructions/commit.instructions.md"
             "context-http.instructions.md",file,"agent-files/.agents/instructions/context-http.instructions.md"
             "core-crates.instructions.md",file,"agent-files/.agents/instructions/core-crates.instructions.md"
             frontend.instructions.md,file,"agent-files/.agents/instructions/frontend.instructions.md"
-            "mcp-tools.instructions.md",file,"agent-files/.agents/instructions/mcp-tools.instructions.md"
             tests.instructions.md,file,"agent-files/.agents/instructions/tests.instructions.md"
             "ticket-system.instructions.md",file,"agent-files/.agents/instructions/ticket-system.instructions.md"
             "token-efficiency.instructions.md",file,"agent-files/.agents/instructions/token-efficiency.instructions.md"
