@@ -12,6 +12,8 @@ Define and implement the shared README schema primitives needed for repository-r
 - Inherited README nodes can be overridden or extended by workspace-specific targets.
 - Missing required blocks can be surfaced during `explain-target` or `sync-targets --check` rather than only through manual review.
 - Existing generated README and AGENTS targets remain byte-stable when they do not opt into the shared schema.
+- Shared schema fragments must register once per canonical config file during a single config load, even when reached through both explicit imports and fragment discovery.
+- Schema visibility must remain global for the active config load so sibling fragments can reference shared schemas without re-registering them.
 
 ## Test-Driven Plan
 
@@ -24,3 +26,4 @@ Define and implement the shared README schema primitives needed for repository-r
 - The child implementation tickets in this branch are closed.
 - Shared README schema support exists in `rule-api`.
 - Required parent/child/installable/command-doc blocks can be validated automatically.
+- Representative multi-fragment config loads do not fail from duplicate shared-schema registration.

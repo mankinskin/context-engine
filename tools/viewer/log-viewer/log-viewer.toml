@@ -3,7 +3,7 @@
 # Relative paths are resolved from this file's directory.
 
 # Directory containing log files (default: auto-detected target/test-logs)
-log_dir = "../../../target/test-logs"
+log_dir = "../../../context-stack/target/test-logs"
 
 # Workspace root for source file resolution (default: auto-detected via Cargo.toml)
 workspace_root = "../../.."

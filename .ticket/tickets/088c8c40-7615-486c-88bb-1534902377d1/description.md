@@ -11,6 +11,7 @@ Adopt the shared README schema in `memory-api` and add parent-linked README targ
 - The existing `memory-api` workspace-doc targets can be migrated to the shared schema without losing local ownership.
 - The generated tool READMEs under `tools/cli`, `tools/mcp`, and `tools/http` can include parent links back to `memory-api/README.md`.
 - Command-doc coverage can remain direct and explicit after the schema migration.
+- Shared schema fragments can be consumed through the workspace target layout without duplicate-registration or unknown-schema failures during `sync-targets --check`.
 
 ## Test-Driven Plan
 
@@ -23,6 +24,7 @@ Adopt the shared README schema in `memory-api` and add parent-linked README targ
 - `memory-viewers/memory-api/README.md` uses the shared README schema.
 - The in-scope generated tool READMEs include parent links to `memory-api/README.md`.
 - `sync-targets --check` passes from the `memory-api` workspace root.
+- The workspace no longer fails due to shared-schema loader behavior.
 
 ## Validation
 
