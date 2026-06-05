@@ -1,0 +1,298 @@
+format: repo_map_toon_v1
+description: "Compact workspace structural map for low-token orientation"
+usage: Read this before opening source files for structural orientation
+refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
+workspace:
+  root: "C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine"
+top_level_dirs[5]: config,"context-stack","memory-viewers","rule-targets",tools
+crates:
+  name: crates
+  kind: dir
+  path: crates
+  children[3]:
+    - name: "context-stack"
+      kind: dir
+      path: "crates/context-stack"
+      children[8]:
+        - name: "context-api"
+          kind: dir
+          path: "crates/context-stack/context-api"
+          note: "crate=context-api"
+        - name: "context-insert"
+          kind: dir
+          path: "crates/context-stack/context-insert"
+          note: "crate=context-insert"
+        - name: "context-read"
+          kind: dir
+          path: "crates/context-stack/context-read"
+          note: "crate=context-read"
+        - name: "context-search"
+          kind: dir
+          path: "crates/context-stack/context-search"
+          note: "crate=context-search"
+        - name: "context-trace"
+          kind: dir
+          path: "crates/context-stack/context-trace"
+          note: "crate=context-trace"
+        - name: "context-trace-macros"
+          kind: dir
+          path: "crates/context-stack/context-trace-macros"
+          note: "crate=context-trace-macros"
+        - name: ngrams
+          kind: dir
+          path: "crates/context-stack/ngrams"
+          note: crate=ngrams
+        - name: tools
+          kind: dir
+          path: "crates/context-stack/tools"
+          children[4]:
+            - name: cli
+              kind: dir
+              path: "crates/context-stack/tools/cli"
+              children[1]{name,kind,path,note}:
+                "context-cli",dir,"crates/context-stack/tools/cli/context-cli","crate=context-cli"
+            - name: "context-editor"
+              kind: dir
+              path: "crates/context-stack/tools/context-editor"
+              children[2]{name,kind,path,note}:
+                kernel,dir,"crates/context-stack/tools/context-editor/kernel","crate=context-editor-kernel"
+                "sandbox-app",dir,"crates/context-stack/tools/context-editor/sandbox-app","crate=sandbox-app"
+            - name: http
+              kind: dir
+              path: "crates/context-stack/tools/http"
+              children[1]{name,kind,path,note}:
+                "context-http",dir,"crates/context-stack/tools/http/context-http","crate=context-http"
+            - name: mcp
+              kind: dir
+              path: "crates/context-stack/tools/mcp"
+              children[1]{name,kind,path,note}:
+                "context-mcp",dir,"crates/context-stack/tools/mcp/context-mcp","crate=context-mcp"
+    - name: "memory-viewers"
+      kind: dir
+      path: "crates/memory-viewers"
+      children[4]:
+        - name: "memory-api"
+          kind: dir
+          path: "crates/memory-viewers/memory-api"
+          children[2]:
+            - name: crates
+              kind: dir
+              path: "crates/memory-viewers/memory-api/crates"
+              children[9]{name,kind,path,note}:
+                "audit-api",dir,"crates/memory-viewers/memory-api/crates/audit-api","crate=audit-api"
+                "doc-api",dir,"crates/memory-viewers/memory-api/crates/doc-api","crate=doc-api"
+                "log-api",dir,"crates/memory-viewers/memory-api/crates/log-api","crate=log-api"
+                "memory-api",dir,"crates/memory-viewers/memory-api/crates/memory-api","crate=memory-api"
+                "rule-api",dir,"crates/memory-viewers/memory-api/crates/rule-api","crate=rule-api"
+                "session-api",dir,"crates/memory-viewers/memory-api/crates/session-api","crate=session-api"
+                "spec-api",dir,"crates/memory-viewers/memory-api/crates/spec-api","crate=spec-api"
+                "test-api",dir,"crates/memory-viewers/memory-api/crates/test-api","crate=test-api"
+                "ticket-api",dir,"crates/memory-viewers/memory-api/crates/ticket-api","crate=ticket-api"
+            - name: tools
+              kind: dir
+              path: "crates/memory-viewers/memory-api/tools"
+              children[3]:
+                - name: cli
+                  kind: dir
+                  path: "crates/memory-viewers/memory-api/tools/cli"
+                  children[4]{name,kind,path,note}:
+                    "audit-cli",dir,"crates/memory-viewers/memory-api/tools/cli/audit-cli","crate=audit-cli"
+                    "rule-cli",dir,"crates/memory-viewers/memory-api/tools/cli/rule-cli","crate=rule-cli"
+                    "spec-cli",dir,"crates/memory-viewers/memory-api/tools/cli/spec-cli","crate=spec-cli"
+                    "ticket-cli",dir,"crates/memory-viewers/memory-api/tools/cli/ticket-cli","crate=ticket-cli"
+                - name: http
+                  kind: dir
+                  path: "crates/memory-viewers/memory-api/tools/http"
+                  children[3]{name,kind,path,note}:
+                    "doc-http",dir,"crates/memory-viewers/memory-api/tools/http/doc-http","crate=doc-http"
+                    "spec-http",dir,"crates/memory-viewers/memory-api/tools/http/spec-http","crate=spec-http"
+                    "ticket-http",dir,"crates/memory-viewers/memory-api/tools/http/ticket-http","crate=ticket-http"
+                - name: mcp
+                  kind: dir
+                  path: "crates/memory-viewers/memory-api/tools/mcp"
+                  children[4]{name,kind,path,note}:
+                    "audit-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
+                    "rule-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
+                    "spec-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
+                    "ticket-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/ticket-mcp","crate=ticket-mcp"
+        - name: "spec-viewer"
+          kind: dir
+          path: "crates/memory-viewers/spec-viewer"
+          note: "crate=spec-viewer"
+          children[1]:
+            - name: frontend
+              kind: dir
+              path: "crates/memory-viewers/spec-viewer/frontend"
+              children[1]{name,kind,path,note}:
+                dioxus,dir,"crates/memory-viewers/spec-viewer/frontend/dioxus","crate=spec-viewer-dioxus"
+        - name: "ticket-viewer"
+          kind: dir
+          path: "crates/memory-viewers/ticket-viewer"
+          note: "crate=ticket-viewer"
+          children[1]:
+            - name: frontend
+              kind: dir
+              path: "crates/memory-viewers/ticket-viewer/frontend"
+              children[1]{name,kind,path,note}:
+                dioxus,dir,"crates/memory-viewers/ticket-viewer/frontend/dioxus","crate=ticket-viewer-dioxus"
+        - name: "viewer-api"
+          kind: dir
+          path: "crates/memory-viewers/viewer-api"
+          children[2]:
+            - name: "viewer-api"
+              kind: dir
+              path: "crates/memory-viewers/viewer-api/viewer-api"
+              note: "crate=viewer-api"
+              children[1]:
+                - name: frontend
+                  kind: dir
+                  path: "crates/memory-viewers/viewer-api/viewer-api/frontend"
+                  children[1]{name,kind,path,note}:
+                    dioxus,dir,"crates/memory-viewers/viewer-api/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
+            - name: "viewer-ctl"
+              kind: dir
+              path: "crates/memory-viewers/viewer-api/viewer-ctl"
+              note: "crate=viewer-ctl"
+    - name: tools
+      kind: dir
+      path: crates/tools
+      children[6]:
+        - name: cli
+          kind: dir
+          path: crates/tools/cli
+          children[2]{name,kind,path,note}:
+            "crane-cli",dir,"crates/tools/cli/crane-cli","crate=crane-cli"
+            "peek-cli",dir,"crates/tools/cli/peek-cli","crate=peek-cli"
+        - name: "dungeon-crawler"
+          kind: dir
+          path: "crates/tools/dungeon-crawler"
+          note: "crate=dungeon-crawler"
+        - name: mcp
+          kind: dir
+          path: crates/tools/mcp
+          children[1]{name,kind,path,note}:
+            "compact-terminal-mcp",dir,"crates/tools/mcp/compact-terminal-mcp","crate=compact-terminal-mcp"
+        - name: "migrate-edges"
+          kind: dir
+          path: "crates/tools/migrate-edges"
+          note: "crate=migrate-edges"
+        - name: "tracing-analyzer"
+          kind: dir
+          path: "crates/tools/tracing-analyzer"
+          note: "crate=tracing-analyzer"
+        - name: viewer
+          kind: dir
+          path: crates/tools/viewer
+          children[2]:
+            - name: "doc-viewer"
+              kind: dir
+              path: "crates/tools/viewer/doc-viewer"
+              note: "crate=doc-viewer"
+            - name: "log-viewer"
+              kind: dir
+              path: "crates/tools/viewer/log-viewer"
+              note: "crate=log-viewer"
+              children[1]:
+                - name: frontend
+                  kind: dir
+                  path: "crates/tools/viewer/log-viewer/frontend"
+                  children[1]{name,kind,path,note}:
+                    dioxus,dir,"crates/tools/viewer/log-viewer/frontend/dioxus","crate=log-viewer-dioxus"
+agent_guidance:
+  name: "agent-guidance"
+  kind: dir
+  path: "agent-guidance"
+  children[2]:
+    - name: .agents
+      kind: dir
+      path: "agent-guidance/.agents"
+      children[1]:
+        - name: instructions
+          kind: dir
+          path: "agent-guidance/.agents/instructions"
+          children[1]{name,kind,path}:
+            "token-efficiency.instructions.md",file,"agent-guidance/.agents/instructions/token-efficiency.instructions.md"
+    - name: AGENTS.md
+      kind: file
+      path: "agent-guidance/AGENTS.md"
+agent_files:
+  name: "agent-files"
+  kind: dir
+  path: "agent-files"
+  children[1]:
+    - name: .agents
+      kind: dir
+      path: "agent-files/.agents"
+      children[3]:
+        - name: instructions
+          kind: dir
+          path: "agent-files/.agents/instructions"
+          children[10]{name,kind,path}:
+            audit.instructions.md,file,"agent-files/.agents/instructions/audit.instructions.md"
+            commit.instructions.md,file,"agent-files/.agents/instructions/commit.instructions.md"
+            "context-http.instructions.md",file,"agent-files/.agents/instructions/context-http.instructions.md"
+            "core-crates.instructions.md",file,"agent-files/.agents/instructions/core-crates.instructions.md"
+            frontend.instructions.md,file,"agent-files/.agents/instructions/frontend.instructions.md"
+            "mcp-tools.instructions.md",file,"agent-files/.agents/instructions/mcp-tools.instructions.md"
+            tests.instructions.md,file,"agent-files/.agents/instructions/tests.instructions.md"
+            "ticket-system.instructions.md",file,"agent-files/.agents/instructions/ticket-system.instructions.md"
+            "token-efficiency.instructions.md",file,"agent-files/.agents/instructions/token-efficiency.instructions.md"
+            "viewer-api-tools.instructions.md",file,"agent-files/.agents/instructions/viewer-api-tools.instructions.md"
+        - name: prompts
+          kind: dir
+          path: "agent-files/.agents/prompts"
+          children[19]{name,kind,path}:
+            audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
+            "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
+            commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
+            "debug-test.prompt.md",file,"agent-files/.agents/prompts/debug-test.prompt.md"
+            implement.prompt.md,file,"agent-files/.agents/prompts/implement.prompt.md"
+            interview.prompt.md,file,"agent-files/.agents/prompts/interview.prompt.md"
+            "memory-setup.prompt.md",file,"agent-files/.agents/prompts/memory-setup.prompt.md"
+            next.prompt.md,file,"agent-files/.agents/prompts/next.prompt.md"
+            research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"
+            reviews.prompt.md,file,"agent-files/.agents/prompts/reviews.prompt.md"
+            "rule-target.prompt.md",file,"agent-files/.agents/prompts/rule-target.prompt.md"
+            rule.prompt.md,file,"agent-files/.agents/prompts/rule.prompt.md"
+            spec.prompt.md,file,"agent-files/.agents/prompts/spec.prompt.md"
+            "swarm-worker.prompt.md",file,"agent-files/.agents/prompts/swarm-worker.prompt.md"
+            tdd.prompt.md,file,"agent-files/.agents/prompts/tdd.prompt.md"
+            "ticket-next.prompt.md",file,"agent-files/.agents/prompts/ticket-next.prompt.md"
+            ticket.prompt.md,file,"agent-files/.agents/prompts/ticket.prompt.md"
+            tickets.prompt.md,file,"agent-files/.agents/prompts/tickets.prompt.md"
+            "user-training.prompt.md",file,"agent-files/.agents/prompts/user-training.prompt.md"
+        - name: skills
+          kind: dir
+          path: "agent-files/.agents/skills"
+          children[1]{name,kind,path}:
+            "token-optimized-agentic-engineering.SKILL.md",file,"agent-files/.agents/skills/token-optimized-agentic-engineering.SKILL.md"
+hooks:
+  name: hooks
+  kind: dir
+  path: hooks
+  children[2]:
+    - name: .githooks
+      kind: dir
+      path: hooks/.githooks
+      children[2]{name,kind,path}:
+        README.md,file,hooks/.githooks/README.md
+        "pre-commit",file,"hooks/.githooks/pre-commit"
+    - name: .github
+      kind: dir
+      path: hooks/.github
+      children[1]:
+        - name: hooks
+          kind: dir
+          path: hooks/.github/hooks
+          children[5]{name,kind,path}:
+            hooks.json,file,hooks/.github/hooks/hooks.json
+            "session-capture-stop.sh",file,"hooks/.github/hooks/session-capture-stop.sh"
+            "terminal-pwd.sh",file,"hooks/.github/hooks/terminal-pwd.sh"
+            "validate-docs-stop.sh",file,"hooks/.github/hooks/validate-docs-stop.sh"
+            "validate-docs.sh",file,"hooks/.github/hooks/validate-docs.sh"
+key_tools[4]{path,description}:
+  target/debug/ticket.exe,"ticket-cli (state machine, board, deps)"
+  target/debug/spec.exe,"spec-cli"
+  target/debug/peek,"bounded inspection + repo-map generation"
+  rtk <cmd>,"token-optimized CLI proxy (auto-compress output)"
+bounded_inspection_pattern[4]: "peek <file> --count  # 1. learn size","peek <file> --grep <pattern>  # 2. locate target line","peek <file> --start N --end M  # 3. bounded read","peek . --repo-map --output repo_map.toon  # refresh structural map"

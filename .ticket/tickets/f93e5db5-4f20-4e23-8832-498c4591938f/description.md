@@ -1,12 +1,11 @@
 ## Goal
-Replace the current Python-based `.agent/repo_map.toon` generation flow with a repo-aware `peek-api` skeleton/tree renderer that can accept a folder path, apply compaction/filtering rules, and emit a tree-shaped structural map without repeating path segments.
+Replace the current Python-based repo-map generation flow with a repo-aware `peek-api` skeleton/tree renderer that can accept a folder path, apply compaction/filtering rules, and emit a tree-shaped structural map without repeating path segments.
 
 ## Why
-The current generator in `.agent/gen_repo_map.py` hardcodes repository-specific extraction rules and emits mostly flat sections. The new behavior should live in the same Rust inspection stack as `peek`, reuse skeletonization rules, and support directory/folder rendering directly instead of relying on a one-off Python script.
+The current generator hardcodes repository-specific extraction rules and emits mostly flat sections. The new behavior should live in the same Rust inspection stack as `peek`, reuse skeletonization rules, and support directory/folder rendering directly instead of relying on a one-off Python script.
 
 ## References
-- Current repo map generator: `.agent/gen_repo_map.py`
-- Current generated output: `.agent/repo_map.toon`
+- Current generated output: `repo_map.toon`
 - Current structural-awareness guidance: `.agents/instructions/token-efficiency.instructions.md`
 - Existing `peek` CLI behavior and skeleton docs: `tools/cli/peek-cli/src/main.rs`, `tools/cli/peek-cli/README.md`
 - Workspace membership source: `Cargo.toml`
@@ -23,8 +22,8 @@ Required outcomes:
 - folder input support for skeleton rendering
 - tree-structured output that compacts repeated path prefixes
 - repo-aware filtering for low-token structural maps
-- replacement of `.agent/gen_repo_map.py` with a Rust-based generation path
-- regenerated `.agent/repo_map.toon` produced by the new path
+- replacement of the old Python shim with a Rust-based generation path
+- regenerated `repo_map.toon` produced by the new path
 
 ## Proposed behavior
 1. `peek-api` gains a folder skeleton mode that:
@@ -33,7 +32,7 @@ Required outcomes:
    - emits a hierarchical tree view instead of repeating full paths per row
 2. `repo_map.toon` generation becomes a specialized use of that folder skeleton mode, with repository-specific sections layered on top only where needed.
 3. The output should compact repeated path segments, for example by rendering nested directory trees instead of repeated `tools/...` and `memory-viewers/...` prefixes.
-4. The current Python script should be removed or reduced to a thin compatibility shim that invokes the Rust command, with the Rust path becoming the source of truth.
+4. The old Python script should be removed, with the Rust path becoming the source of truth.
 
 ## Implementation plan
 1. Define folder-skeleton request/response types in `peek-api`.
@@ -45,21 +44,21 @@ Required outcomes:
    - hook files
    - key tool locations
 5. Expose the new generation path through `peek-cli` (for local generation) and optionally `peek-mcp` (for agent workflows).
-6. Replace `.agent/gen_repo_map.py` with the Rust-based generator flow.
+6. Remove the old Python generator flow in favor of the Rust-backed command.
 7. Update docs and hook guidance so refresh instructions reference the Rust generator, not Python.
 
 ## Acceptance criteria
 - Folder skeleton generation works on directories, not just files.
 - The generated repo map uses a tree structure that avoids repeating path segments unnecessarily.
 - The filtering/compaction rules keep output low-token and structurally useful.
-- `.agent/repo_map.toon` can be regenerated without relying on custom Python parsing logic.
+- `repo_map.toon` can be regenerated without relying on custom Python parsing logic.
 - Guidance/docs point at the new Rust-backed generation flow.
 
 ## Validation notes
 Required validation before review:
 - `cargo test -p peek-api`
 - `cargo test -p peek-cli`
-- generate `.agent/repo_map.toon` using the new path and inspect the diff
+- generate `repo_map.toon` using the new path and inspect the diff
 - verify the generated output still covers current sections needed by agent guidance
 
 Recommended focused tests:

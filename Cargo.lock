@@ -7008,7 +7008,12 @@ name = "peek-cli"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "assert_cmd",
  "clap",
+ "serde_json",
+ "tempfile",
+ "toon-format",
+ "viewer-api",
 ]
 
 [[package]]

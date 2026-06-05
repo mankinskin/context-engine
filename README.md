@@ -4,6 +4,16 @@ context-engine is the top-level workspace that coordinates the graph crates in `
 
 ## Repository Map
 
+The root-level `repo_map.toon` file is the compact structural index for this repository.
+Refresh it with:
+
+```bash
+cargo run -p peek-cli -- . --repo-map --output repo_map.toon
+```
+
+Use `peek repo_map.toon --grep "crates"` for bounded inspection or decode/query it
+as TOON when automation needs machine-readable structure.
+
 | Child repo or folder | What it contains | Direct README |
 | --- | --- | --- |
 | [context-stack](context-stack/README.md) | Graph, search, insert, and read crates plus extracted support dependencies. | [context-stack/README.md](context-stack/README.md) |

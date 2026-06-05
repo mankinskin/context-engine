@@ -130,6 +130,23 @@ Output example:
 Use `--skeleton` to map a file's architecture before deciding which function
 bodies to read in detail with `--start`/`--end`.
 
+### Repository map generation
+
+Generate a compact tree-shaped workspace map without the old Python parser:
+
+```bash
+peek . --repo-map --output repo_map.toon
+
+# Inspect a directory tree directly
+peek .agents --skeleton
+```
+
+`--repo-map` compacts shared path prefixes into nested trees and emits the
+crate, agent-file, and hook sections consumed by the root-level `repo_map.toon`.
+
+The generated file is TOON-encoded and can be decoded or queried from Rust with
+`toon-format` plus JQ-style filters over the decoded JSON structure.
+
 ## Flags
 
 | Flag | Short | Description |
@@ -142,4 +159,6 @@ bodies to read in detail with `--start`/`--end`.
 | `--grep PATTERN` | `-g` | Find matching lines; combine with `--window` for context |
 | `--count` | `-c` | Print total line count only |
 | `--skeleton` | `-k` | Architecture map: signatures only, bodies collapsed |
+| `--repo-map` | | Generate compact workspace repo map |
+| `--output PATH` | | Write generated repo-map output to a file |
 | `--all` | | Escape hatch: full file (explicit opt-in) |

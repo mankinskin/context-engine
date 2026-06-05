@@ -49,7 +49,7 @@ Integrate this skill when you want autonomous coding agents to maximize efficien
 
 ### Workspace Infrastructure and State Persistence
 
-- **Static repo maps**: Keep a compressed root map such as `.agent/repo_map.toon`, refreshed by pre-commit hooks, to avoid expensive tree walks.
+- **Static repo maps**: Keep a compressed root map such as `repo_map.toon`, refreshed by `peek --repo-map`, to avoid expensive tree walks.
 - **Externalized instructions**: Move coding standards and business logic into `.agent/instructions.md`, then access them via line ranges or targeted search.
 - **Error boundary at write time**: Integrate syntax checking into file-write boundaries. Reject invalid code before it enters an expensive debug loop.
 - **Externalized progress**: Store plans and to-dos in `.agent/plan.md` so chat can be reset without losing working state.

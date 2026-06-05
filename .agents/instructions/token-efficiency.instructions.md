@@ -35,7 +35,7 @@ Rules:
 Never pull an entire file when only a targeted slice is needed.
 
 Preferred pattern:
-1. Use `repo_map.toon` (`.agent/repo_map.toon`) for structural orientation before opening any file.
+1. Use `repo_map.toon` (`repo_map.toon` at the repository root) for structural orientation before opening any file.
 2. Use an interface skeleton view before reading full source when available.
 3. Open a bounded line window with explicit start/end coordinates.
 4. Only escalate to a full-file read when the bounded window is genuinely insufficient.
@@ -100,8 +100,8 @@ Rules:
 
 Before running exploratory searches or broad file reads, consult compact structural sources first:
 
-1. **`.agent/repo_map.toon`** — compact workspace map. Read this first for directory/crate layout.
-   Refresh with `python3 .agent/gen_repo_map.py` when crates or agent files change.
+1. **`repo_map.toon`** — compact workspace map at the repository root. Read this first for directory/crate layout.
+  Refresh with `cargo run -p peek-cli -- . --repo-map --output repo_map.toon` when crates or agent files change.
 2. **Interface skeletons** — stripped function/type signatures without bodies (when available).
 3. **`CHEAT_SHEET.md`** — API patterns, common gotchas.
 4. **Crate `README.md`** and `HIGH_LEVEL_GUIDE.md` — design context.
