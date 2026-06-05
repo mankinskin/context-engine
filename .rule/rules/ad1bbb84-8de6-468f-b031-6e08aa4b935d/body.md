@@ -1,3 +1,3 @@
 ```bash
-./target/debug/ticket.exe search "<keywords>" --json
+./target/debug/ticket.exe search "<keywords>" --toon
 ```

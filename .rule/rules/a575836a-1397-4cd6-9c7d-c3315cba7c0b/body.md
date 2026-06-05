@@ -1,2 +1,2 @@
 # With a title prefix filter for a specific track
-./target/debug/ticket.exe next --filter "[bootstrap]" --json
+./target/debug/ticket.exe next --filter "[bootstrap]" --toon

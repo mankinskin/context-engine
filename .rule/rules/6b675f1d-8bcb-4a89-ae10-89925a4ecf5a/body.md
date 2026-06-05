@@ -8,4 +8,4 @@
   --file "src/foo.rs" \
   --file "src/bar.rs" \
   --ttl-secs 3600 \
-  --json
+  --toon

@@ -41,7 +41,7 @@ Run a smoke check on each CLI binary. Any non-zero exit code is a failure.
 
 ```bash
 # ticket CLI (most commonly used — run a real read-only command)
-./target/release/ticket list --limit 3 --json
+./target/release/ticket list --limit 3 --toon
 
 # context CLI
 ./target/release/context-cli --help

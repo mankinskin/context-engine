@@ -1,6 +1,6 @@
 ```bash
 # Heredoc — create tickets + link, all atomic
-ticket batch --json <<'EOF'
+ticket batch --toon <<'EOF'
 create --title "Extract GPU pipeline" --type tracker-improvement
 create --title "Add shader cache" --type tracker-improvement
 # link is resolved after creates succeed

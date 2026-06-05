@@ -69,17 +69,17 @@ If a ticket was advanced to the wrong state, use `--undo` to roll back the
 last transition:
 
 # Check for stale in-implementation tickets that may conflict with your work
-./target/debug/ticket.exe list --where state=in-implementation --json
+./target/debug/ticket.exe list --where state=in-implementation --toon
 
 # Survey all new tickets
-./target/debug/ticket.exe list --where state=new --json
+./target/debug/ticket.exe list --where state=new --toon
 
 # Check overall graph health
-./target/debug/ticket.exe health --all --json
+./target/debug/ticket.exe health --all --toon
 
 ```bash
 # Undo the most recent state change (reverts to the previous state)
-./target/debug/ticket.exe update <id> --undo --json
+./target/debug/ticket.exe update <id> --undo --toon
 ```
 
 For deeper rollbacks, use `revert --to <rev>` to restore a specific historical
@@ -87,7 +87,7 @@ revision:
 
 ```bash
 # Revert to revision 6 (re-applies fields from that point in history)
-./target/debug/ticket.exe revert <id> --to 6 --json
+./target/debug/ticket.exe revert <id> --to 6 --toon
 ```
 
 > `--undo` is a convenience for the common case of "I advanced too far" and is
@@ -195,17 +195,17 @@ Use `ticket next` to find the highest-priority unblocked tickets:
 
 ```bash
 # Find unblocked ready tickets you can work on now (priority-ordered)
-ticket next --json
+ticket next --toon
 
 ```bash
 # List unblocked tickets sorted by progress, then priority
-ticket next --json
+ticket next --toon
 
 # With a title prefix filter for a specific track
-./target/debug/ticket.exe next --filter "[bootstrap]" --json
+./target/debug/ticket.exe next --filter "[bootstrap]" --toon
 
 # Limit results
-./target/debug/ticket.exe next --limit 5 --json
+./target/debug/ticket.exe next --limit 5 --toon
 ```
 
 Or via MCP: `mcp_ticket-mcp_next_tickets` with `workspace`, optional `limit` and `filter`.
@@ -242,16 +242,16 @@ are owned. Check in when starting implementation; check out when done.
   --file "src/foo.rs" \
   --file "src/bar.rs" \
   --ttl-secs 3600 \
-  --json
+  --toon
 
 # Refresh your heartbeat before TTL elapses
-./target/debug/ticket.exe board heartbeat <entry-id> --json
+./target/debug/ticket.exe board heartbeat <entry-id> --toon
 
 # Check out when done (records handoff reason in audit trail)
 ./target/debug/ticket.exe board check-out <ticket-id> \
   --agent <agent-id> \
   --reason "implemented and tested" \
-  --json
+  --toon
 ```
 
 #### WIP Limit
@@ -263,7 +263,7 @@ reached — finish or hand off an existing entry first.
 Default limit: 5 simultaneous active entries. Configure:
 
 ```bash
-./target/debug/ticket.exe board configure --max-wip 3 --json
+./target/debug/ticket.exe board configure --max-wip 3 --toon
 ```
 
 #### Stale-Entry Response
@@ -291,11 +291,11 @@ flag names as the rest of `ticket-cli`.
 ```bash
 # Add / remove files from an active entry
 ./target/debug/ticket.exe board update-files <ticket-id> \
-  --agent <agent-id> --add "new.rs" --remove "old.rs" --json
+  --agent <agent-id> --add "new.rs" --remove "old.rs" --toon
 
 # Rename a file in an active entry (atomic)
 ./target/debug/ticket.exe board rename-file <ticket-id> \
-  --agent <agent-id> --from "old.rs" --to "new.rs" --json
+  --agent <agent-id> --from "old.rs" --to "new.rs" --toon
 ```
 
 ### Dependency Maintenance
@@ -350,17 +350,17 @@ Opportunistically improve ticket quality whenever you touch the store:
 
 ```bash
 # Health-check a subgraph rooted at a ticket (BFS traversal)
-ticket health abcd1234 --json
+ticket health abcd1234 --toon
 
 # Health-check a subgraph, filtering to a specific type
-ticket health abcd1234 --where type=tracker-improvement --json
+ticket health abcd1234 --where type=tracker-improvement --toon
 ```
 
 # Health-check all tickets
-ticket health --all --json
+ticket health --all --toon
 
 # Health-check all new tickets (--where filter)
-ticket health --all --where state=new --json
+ticket health --all --where state=new --toon
 
 ### Command Chaining (pipe via --stdin)
 
@@ -368,17 +368,17 @@ ticket health --all --where state=new --json
 # List tickets → pipe IDs → health check
 ticket list --where priority=high --json \
   | jq -r '.payload.items[].id' \
-  | ticket health --stdin --json
+  | ticket health --stdin --toon
 
 # Subgraph → filter new tickets → health check
 ticket subgraph abcd1234 --json \
   | jq -r '.payload.nodes[] | select(.state=="new") | .id' \
-  | ticket health --stdin --json
+  | ticket health --stdin --toon
 
 # Topgraph → health check all reverse dependencies
 ticket topgraph abcd1234 --json \
   | jq -r '.payload.nodes[].id' \
-  | ticket health --stdin --json
+  | ticket health --stdin --toon
 ```
 
 ### Batch (CLI-syntax, transactional)
@@ -389,11 +389,11 @@ prior writes are rolled back automatically. Blank lines and `#` comments are
 ignored.
 
 # From a checked-in batch file
-ticket batch --file scripts/bootstrap-tickets.txt --json
+ticket batch --file scripts/bootstrap-tickets.txt --toon
 
 ```bash
 # Heredoc — create tickets + link, all atomic
-ticket batch --json <<'EOF'
+ticket batch --toon <<'EOF'
 create --title "Extract GPU pipeline" --type tracker-improvement
 create --title "Add shader cache" --type tracker-improvement
 # link is resolved after creates succeed
@@ -402,7 +402,7 @@ EOF
 
 # Stdin from another process
 echo -e "create --title 'Setup CI' --type tracker-improvement\nclose <UUID>" \
-  | ticket batch --json
+  | ticket batch --toon
 ```
 
 **Rules:**
@@ -433,7 +433,7 @@ from disk and both the SQLite index and Tantivy search index are rebuilt:
 
 ```bash
 # Force-reconcile all indexes from disk
-./target/debug/ticket.exe scan --force --json
+./target/debug/ticket.exe scan --force --toon
 ```
 
 Output includes `"force": true` and `"reconciled": <count>` showing how many

@@ -36,7 +36,7 @@ Provide these inputs before execution (prefer a single Assignment Packet):
 ## Workflow
 
 1. Acquire ownership
-- Use `ticket next --json` (or `mcp_ticket-mcp_next_tickets`) to find unblocked, priority-ordered tickets if no specific ticket is assigned.
+- Use `ticket next --toon` (or `mcp_ticket-mcp_next_tickets`) to find unblocked, priority-ordered tickets if no specific ticket is assigned.
 - Confirm lease ownership for the ticket with worker ID.
 - Record start context (current state, dependency/blocker status, branch lifecycle fields).
 - Validate assignment invariants before edits (full UUID ticket ID, explicit index root, role-specific constraints).
