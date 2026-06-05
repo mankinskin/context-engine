@@ -25,7 +25,7 @@ Reference [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/READ
 2. Prefer MCP when available:
 - `mcp_ticket-mcp_list_tickets` with `{"workspace":"default","state":"in-review"}`
 3. Fall back to CLI when MCP is unavailable:
-- `ticket list --state in-review --json`
+- `ticket list --state in-review --toon`
 4. If there are no `in-review` tickets, return immediately with a concise note and do not continue.
 
 ## Ranking
@@ -34,7 +34,7 @@ Reference [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/READ
 2. Prefer:
 - `mcp_ticket-mcp_next_tickets`
 3. Fall back to:
-- `ticket next --json`
+- `ticket next --toon`
 4. Because the ranking surface includes all non-terminal tickets, collect tickets with `state == "in-review"` in returned order.
 5. If the first ranked page does not yield enough `in-review` tickets to satisfy the requested limit, increase the ranking query limit and repeat until either:
 - enough `in-review` tickets have been collected
@@ -47,7 +47,7 @@ For each selected ticket, work in rank order.
 
 1. Audit the ticket itself.
 - Read the manifest and description with `get_ticket` and `get_ticket_description`, or `ticket get` and `ticket describe`.
-- Run `mcp_ticket-mcp_health_check` scoped to the ticket, or `ticket health <id> --depth 0 --json`.
+- Run `mcp_ticket-mcp_health_check` scoped to the ticket, or `ticket health <id> --depth 0 --toon`.
 - Confirm the ticket is valid, well-defined, and actionable: title, description, dependencies, state, and acceptance criteria must be coherent.
 
 2. Gather context.
@@ -58,7 +58,7 @@ For each selected ticket, work in rank order.
 
 3. Audit the implementation slice.
 - Use audit tools when the ticket touches code that needs quality or complexity review.
-- Prefer `audit.exe run . --json` or `audit.exe summary --by path . --json` when a repository-level audit helps explain risk or missing validation.
+- Prefer `audit.exe run . --toon` or `audit.exe summary --by path . --toon` when a repository-level audit helps explain risk or missing validation.
 - Use the strongest available audit or validation signal for the affected code paths.
 
 4. Verify the acceptance criteria.

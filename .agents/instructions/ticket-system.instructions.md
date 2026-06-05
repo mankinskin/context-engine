@@ -27,7 +27,7 @@ These rules apply during **every session**, not only when working on ticket-syst
 Before writing any code, run a quick orientation to understand the current ticket landscape:
 
 # Check the draftboard (active agents, WIP limit, stale warnings)
-ticket board show --json
+ticket board show --toon
 ```
 
 Alternatively, use the MCP ticket tools (`mcp_ticket-mcp_next_tickets`, `mcp_ticket-mcp_list_tickets`, `mcp_ticket-mcp_health`, `mcp_ticket-mcp_board_show`) when the MCP server is running.
@@ -37,7 +37,7 @@ Alternatively, use the MCP ticket tools (`mcp_ticket-mcp_next_tickets`, `mcp_tic
 Always search for existing tickets before creating new ones. Duplicate tickets degrade store quality.
 
 ```bash
-./target/debug/ticket.exe search "<keywords>" --json
+./target/debug/ticket.exe search "<keywords>" --toon
 ```
 
 Or via MCP: `mcp_ticket-mcp_list_tickets` with a `where` filter, or `mcp_ticket-mcp_get_ticket_description`.
