@@ -12,8 +12,11 @@ if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
 fi
 
 WORKSPACE_SLUG=$(basename "$PWD")
-STORE_ROOT="memory-viewers/memory-api/.memory-api"
 MANIFEST_PATH="memory-viewers/memory-api/crates/session-api/Cargo.toml"
+# The session store lives inside the memory-api submodule. Anchor it relative to
+# the tool execution root so running from the repository root reuses the nested
+# store instead of creating a duplicate .memory-api directory at the root.
+STORE_ROOT="$PWD/memory-viewers/memory-api/.memory-api"
 
 if ! cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- \
     --transcript-path "$TRANSCRIPT_PATH" \
