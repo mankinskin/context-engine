@@ -1,7 +1,7 @@
 id = "929bc26a-5296-4d64-b1b2-2ec580c0659c"
 created_at = "2026-06-05T00:27:05.807250100+00:00"
 title = "[ticket-viewer][viewer-api] Make graph framing panel-aware and keep nodes behind UI panels"
-state = "in-review"
+state = "in-implementation"
 acceptance_criteria = "1. Graph nodes remain visually behind sidebar and in-viewport panels at all times. 2. Camera focus shifts into the remaining visible graph region outside active panels. 3. Dense clusters are biased away from panel edges. 4. Panel-safe layering and framing expose stable validation hooks or reproducible screenshots. 5. Release Playwright coverage proves nodes stay behind panels while panel-aware framing and repulsion remain stable under changing panel states."
 component = "ticket-viewer"
 priority = "high"

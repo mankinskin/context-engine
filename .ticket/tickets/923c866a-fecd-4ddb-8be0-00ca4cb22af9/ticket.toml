@@ -1,7 +1,7 @@
 id = "923c866a-fecd-4ddb-8be0-00ca4cb22af9"
 created_at = "2026-06-05T00:27:05.942400+00:00"
 title = "[ticket-viewer][viewer-api] Refine graph selection focus and outside-click deselection"
-state = "in-review"
+state = "in-implementation"
 acceptance_criteria = "1. Only nodes outside the active focus neighborhood render with low-focus transparency. 2. Selecting a node keeps the selected node and direct linked neighbors visually emphasized by default, with stepwise path-distance falloff available for wider neighborhoods. 3. Selected-state emphasis includes stable hooks for scale growth, glow or halo, brighter or thicker linked edges, and neighborhood tint shifts. 4. Clicking or tapping empty graph space clears active selection. 5. Release Playwright coverage proves deselection, focus-band transitions, and selected-neighborhood effects."
 component = "ticket-viewer"
 priority = "high"
