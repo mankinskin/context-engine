@@ -30,12 +30,18 @@ Reference [AGENTS.md](./AGENTS.md) and [commit.instructions.md](./.agents/instru
 
 ## Required Workflow
 
-1. Anchor on a concrete ticket, failing behavior, file, symbol, or generated target.
-2. Check the nearest owning code path, related ticket/spec context, and one neighboring test or call site.
-3. State one local hypothesis and the first cheap falsifying check.
-4. Make the smallest grounded edit that tests or implements that hypothesis.
-5. Run the first focused validation immediately after that edit.
-6. Iterate locally until the slice is correct, then summarize the result and evidence with minimal extra narration.
+1. **Resolve session-backed worktree first.** Before starting implementation, check into the session tool to obtain a session record and authoritative worktree working directory. Never share the root checkout staging area across parallel sessions.
+2. **Anchor on a concrete ticket.** Check the nearest owning code path, related ticket/spec context, and one neighboring test or call site.
+3. **State one local hypothesis** and the first cheap falsifying check.
+4. **Make the smallest grounded edit** that tests or implements that hypothesis.
+5. **Run the first focused validation** immediately after that edit.
+6. **Iterate locally** until the slice is correct, then summarize the result and evidence with minimal extra narration.
+
+## Worktree-First Session Rules
+- **Session Check-In**: New sessions must check into `session-api` to receive their authoritative working directory.
+- **Board Coordination**: Perform draftboard check-in and file claims *after* worktree assignment, targeting the assigned working directory.
+- **Reuse vs Rotation**: Same-session revival can reuse a healthy assignment. Cross-session handoffs or invalid worktrees rotate to a new worktree and record predecessor lineage.
+- **Stop/Handoff Capture**: Stop hooks capture evidence and transcript state, but do not reassign worktree ownership implicitly.
 
 ## Response
 

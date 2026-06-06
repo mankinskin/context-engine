@@ -22,7 +22,7 @@ cat << 'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "PostToolUse",
-    "additionalContext": "Run pwd to confirm cwd."
+    "additionalContext": "Run pwd to confirm cwd. If inside a session-assigned worktree, perform all implementation, validation, and board check-in operations from that directory."
   }
 }
 EOF

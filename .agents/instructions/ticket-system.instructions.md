@@ -22,6 +22,14 @@ Applies to:
 
 These rules apply during **every session**, not only when working on ticket-system code.
 
+### Worktree-First Session Startup
+
+Before starting implementation work on any ticket:
+1. **Check into the session tool** to obtain a session record and authoritative worktree working directory.
+2. **Switch to the assigned worktree** and perform all subsequent implementation, validation, and board check-in operations from that directory.
+3. **Never share the root checkout staging area** across parallel sessions.
+4. **Reuse vs Rotation**: Same-session revival can reuse a healthy assignment. Cross-session handoffs or invalid worktrees rotate to a new worktree and record predecessor lineage.
+
 ### Orientation (start of every session)
 
 Before writing any code, run a quick orientation to understand the current ticket landscape:
