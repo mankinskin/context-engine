@@ -1,7 +1,7 @@
 ---
 name: "Ticket Refinement Agent"
 description: "Use when creating, reviewing, or updating ticket-system tickets through codebase research, user interviews, and implementation planning."
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, web, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, execute/runTests, execute/testFailure, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, web/fetch, web/githubRepo, web/githubTextSearch, ticket-mcp/*, spec-mcp/*, todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
 ---

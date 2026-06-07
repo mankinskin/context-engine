@@ -30,6 +30,12 @@ Hook reminders are configured in [.github/hooks/](./hooks/).
 
 **rtk** is a CLI proxy that filters and compresses command outputs, saving 60-90% tokens.
 
+## Install
+
+```bash
+cargo install --git https://github.com/rtk-ai/rtk
+```
+
 ## Rule
 
 Always prefix shell commands with `rtk`:
