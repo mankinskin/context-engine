@@ -358,7 +358,7 @@
         "cwd": "${workspaceFolder}"
       },
       "presentation": {
-        "reveal": "silent",
+        "reveal": "always",
         "panel": "shared"
       },
       "problemMatcher": []
@@ -372,7 +372,7 @@
       },
       "presentation": {
         "reveal": "silent",
-        "panel": "shared"
+        "panel": "dedicated",
       },
       "problemMatcher": []
     },
