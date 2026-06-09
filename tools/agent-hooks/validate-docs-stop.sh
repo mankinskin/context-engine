@@ -8,8 +8,12 @@
 # Path patterns for matching
 DOC_VIEWER_SRC_PATTERN="tools/viewer/doc-viewer/src/"
 
-# Read JSON input from stdin
-INPUT=$(cat)
+# Read JSON input from stdin (non-blocking)
+if read -t 0; then
+    INPUT=$(cat)
+else
+    INPUT="{}"
+fi
 
 # Debug output to stderr
 echo "[validate-docs-stop] Checking for uncommitted doc-viewer changes..." >&2

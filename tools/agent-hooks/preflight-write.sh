@@ -27,7 +27,11 @@ log_warn() { echo "[preflight-write] WARN: $*" >&2; }
 log_info() { echo "[preflight-write] $*" >&2; }
 log_block() { echo "[preflight-write] BLOCK: $*" >&2; }
 
-INPUT="$(cat)"
+if read -t 0; then
+    INPUT="$(cat)"
+else
+    INPUT="{}"
+fi
 
 # Extract the file path from the hook payload.
 FILE_PATH="$(echo "$INPUT" | python3 -c "

@@ -3,7 +3,7 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "rtk hook copilot",
+        "command": "bash tools/agent-hooks/rtk-hook-copilot.sh",
         "cwd": ".",
         "timeout": 5
       },

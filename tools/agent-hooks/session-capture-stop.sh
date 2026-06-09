@@ -6,7 +6,11 @@
 
 set -uo pipefail
 
-INPUT=$(cat)
+if read -t 0; then
+    INPUT=$(cat)
+else
+    INPUT="{}"
+fi
 TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path // empty' 2>/dev/null)
 
 if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then

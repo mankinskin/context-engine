@@ -9,8 +9,12 @@
 DOC_VIEWER_SRC_UNIX="tools/viewer/doc-viewer/src/"
 DOC_VIEWER_SRC_WIN="tools\\viewer\\doc-viewer\\src\\"
 
-# Read JSON input from stdin
-INPUT=$(cat)
+# Read JSON input from stdin (non-blocking)
+if read -t 0; then
+    INPUT=$(cat)
+else
+    INPUT="{}"
+fi
 
 # Debug: Log raw input to stderr (shows in VS Code Output panel)
 echo "[validate-docs] Raw input (first 500 chars): ${INPUT:0:500}" >&2

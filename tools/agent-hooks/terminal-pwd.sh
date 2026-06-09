@@ -5,7 +5,11 @@
 # Canonical location: tools/agent-hooks/terminal-pwd.sh
 # Referenced by: .github/hooks/hooks.json, .clinerules/hooks/hooks.json
 
-INPUT=$(cat)
+if read -t 0; then
+    INPUT=$(cat)
+else
+    INPUT="{}"
+fi
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // .toolName // "unknown"' 2>/dev/null)
 
 # Only act on run_in_terminal calls (non-background)
