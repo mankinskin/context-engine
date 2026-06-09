@@ -1,39 +1,60 @@
 ## Problem
 
-Each memory-api tool domain (ticket, spec, rule, audit, test, log, doc, session) owns a store folder (`.ticket/`, `.spec/`, `.rule/`, etc.). Agents and humans currently navigate those stores by scanning raw TOML and markdown files, which is verbose and causes repetitive, hard-to-update guidance infrastructure. The same store layout descriptions are duplicated across `AGENTS.md`, `.agents/instructions/`, and inline prompts.
+Each tool domain stores structured data in its own local store (`.ticket/`, `.spec/`, `.rule/`, `.audit/`, and related workspace-local metadata). Agents and humans still have to inspect raw TOML and markdown files directly, which is verbose and expensive. The repository needs committed index artifacts that make those stores easier to navigate and consume.
+
+The earlier version of this track was too memory-api-centric. `memory-api` is a generic backend library and should not absorb specialized ticket/spec/rule/audit/workspace generator logic. Each domain should own a thin generator and reuse only shared generic infrastructure from `memory-api`.
+
+The track also had three planning gaps that would have made early generator work premature:
+- no explicit integration plan with the existing `rule-api` rendering/generation pipeline
+- no explicit `peek-cli` / level-of-detail validation story for efficient agent consumption
+- no dedicated benchmarking and profiling plan to keep commit-time regeneration fast
 
 ## Goal
 
-Generate lightweight, committed index artifacts for every memory-api store domain:
-- A human-readable `README.md` co-located inside each store folder (e.g. `.ticket/README.md`)
-- A compact machine-readable TOON sidecar co-located with the README (e.g. `.ticket/index.toon`)
-- An agent-consumable hook under `.agents/` that points agents at the indexed store
-
-This eliminates guidance duplication: instead of repeating store layout in every instruction file, agents reference the single committed index. The store index also serves as the primary surface for similarity search and RAG retrieval.
+Generate lightweight, committed store-index artifacts for the memory-api tool domains while preserving separation of concerns:
+- each domain owns its own thin generator in its local crate or CLI surface
+- `memory-api` provides only shared generic infrastructure such as schema types, digest/sidecar helpers, validation utilities, and reusable rendering support
+- generated outputs are designed for both human browsing and efficient agent consumption
 
 ## Scope
 
-This track lives entirely in the memory-api ecosystem (`memory-viewers/memory-api/`). **The `context-stack/` codebase is not touched at all.** The shared schema types are `IndexEntry` (an entity captured in a memory-api domain index) and `IndexRef` (a cross-reference link between index entries) — named after what they represent inside the generated index, not the store infrastructure.
+This track covers the planning and implementation work needed to generate committed index artifacts for the tool domains first under review: ticket, spec, rule, audit, and workspace summaries.
 
-## Resolved design decisions
+The architecture boundary is explicit:
+- domain crates own domain-specific loading, normalization, grouping, and thin generation
+- `memory-api` remains generic and does not learn specialized domain semantics
+- shared rendering and generation infrastructure must align with the existing repository rendering pipeline rather than creating a parallel one
 
-- **D1 — Placement:** index nodes live across the file tree — folder-level READMEs, workspace-folder indexes (co-located with the store root), and `.agents/` agent-hook nodes.
-- **D2 — Hook type:** git pre-commit hooks, profiled for low commit latency; post-commit fallback if budget exceeded.
-- **D3 — Spec depth:** full depth, one file per node, one canonical-named folder per node for its children, relative markdown links.
-- **D4 — Rule grouping:** slug-prefix segments for now; no new `category` field.
-- **D5 — Committed:** all generated index files committed to git.
-- **D6 — Test catalog gate:** wait for test-api and log-api bootstrap to reach `done`.
-- **D7 — Missing tests:** emit as `not-run`; catalog is a complete registry.
-- **D8 — Encoding:** TOON primary, slim-but-dense references; JSON opt-in only.
-- **D9 — Workspace DAG:** each store workspace is a DAG node with multiple parents/children, holding a config folder that indexes parent/child names + locations. Each workspace is the root anchor for its tool execution.
+## Track decisions so far
+
+- Shared schema and sidecar foundations already exist in `0dba399a` and `e7a0ee3c`.
+- Generator tickets must not advance until the planning blockers for hook automation, domain digest inputs, generator layering, rendering-pipeline integration, efficient `peek-cli` consumption, and performance budgeting are reviewed.
+- Generated outputs are committed to git and should support stable diffs and digest-stable regeneration on unchanged inputs.
 
 ## Child tickets
 
-- `0dba399a` Define IndexEntry schema and serde contract ← blocks all generators
-- `e7a0ee3c` IndexEntry TOON sidecar format and validator ← blocks all generators
+Foundational blockers:
+- `0dba399a` Define IndexEntry schema and serde contract
+- `e7a0ee3c` IndexEntry TOON sidecar format and validator
+- `52dfd793` Define git hook automation for store-index regeneration
+- `7f7fe4a8` Define domain digest input contract for generated index entries
+- `94c56f3d` Define domain-owned thin generator architecture for store indexes
+- `db667eed` Define shared rendering pipeline integration for generated indexes
+- `d3a95908` Define peek-cli and level-of-detail validation for generated indexes
+- `98bc6b1c` Define benchmarking and profiling plan for store-index generation
+
+Generator / implementation slices under this tracker:
 - `c5e9bb39` Ticket store index generator with git hook integration
 - `b9757ba7` Spec store hierarchy generator
 - `9336a096` Rule store catalog generator
 - `855a1e5d` Audit store status summary generator
-- `a72e3aca` Test store catalog generator (gated on test-api + log-api bootstrap)
+- `a72e3aca` Test store catalog generator (still gated on test-api + log-api bootstrap)
 - `c2409055` Memory workspace DAG indexing
+
+## Review gate
+
+Before any generator ticket is moved forward again, review should confirm that the six planning blockers above capture:
+- domain-owned generator placement instead of memory-api specialization
+- rendering-pipeline integration with existing generator infrastructure
+- efficient `peek-cli` / bounded-read consumption and optional LOD handling
+- explicit performance budgets and profiling evidence for commit-time execution
