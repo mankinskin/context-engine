@@ -5,6 +5,14 @@ instead of pulling whole files into a token context. Bounded reads are the
 **default interaction pattern**; full-file reads require an explicit `--all`
 flag so the cost is always visible in command history.
 
+## Architecture
+
+`peek` now follows the repository's standard transport layering:
+
+- `tools/peek-api` owns the shared inspection and skeletonization behavior
+- `tools/cli/peek-cli` owns clap parsing and text output
+- `tools/mcp/peek-mcp` exposes the same core operations as named MCP tools
+
 ## Why
 
 AI agents that read entire source files to locate a single function waste 50–90%
