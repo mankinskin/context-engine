@@ -3,6 +3,7 @@ created_at = "2026-06-09T09:01:04.470441800+00:00"
 title = "[memory-index] Define domain digest input contract for generated index entries"
 state = "new"
 component = "memory-api"
+depends_on = ["db667eed-f507-49ee-b1b6-b7b3edca98ce"]
 effort = "3600"
 priority = "high"
 risk_level = "high"

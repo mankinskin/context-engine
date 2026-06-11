@@ -1,60 +1,80 @@
-## Problem
-
-Each tool domain stores structured data in its own local store (`.ticket/`, `.spec/`, `.rule/`, `.audit/`, and related workspace-local metadata). Agents and humans still have to inspect raw TOML and markdown files directly, which is verbose and expensive. The repository needs committed index artifacts that make those stores easier to navigate and consume.
-
-The earlier version of this track was too memory-api-centric. `memory-api` is a generic backend library and should not absorb specialized ticket/spec/rule/audit/workspace generator logic. Each domain should own a thin generator and reuse only shared generic infrastructure from `memory-api`.
-
-The track also had three planning gaps that would have made early generator work premature:
-- no explicit integration plan with the existing `rule-api` rendering/generation pipeline
-- no explicit `peek-cli` / level-of-detail validation story for efficient agent consumption
-- no dedicated benchmarking and profiling plan to keep commit-time regeneration fast
-
 ## Goal
 
-Generate lightweight, committed store-index artifacts for the memory-api tool domains while preserving separation of concerns:
-- each domain owns its own thin generator in its local crate or CLI surface
-- `memory-api` provides only shared generic infrastructure such as schema types, digest/sidecar helpers, validation utilities, and reusable rendering support
-- generated outputs are designed for both human browsing and efficient agent consumption
+Provide one canonical roadmap tracker for the memory-index work so implementation proceeds in a single explicit order instead of a loose set of related tickets.
 
-## Scope
+This roadmap assumes the architecture boundary already reviewed in this track:
+- `memory-api` stays a generic backend library
+- each domain owns a thin generator in its own crate or CLI surface
+- shared rendering, digest, validation, and hook infrastructure are reused rather than reimplemented per domain
 
-This track covers the planning and implementation work needed to generate committed index artifacts for the tool domains first under review: ticket, spec, rule, audit, and workspace summaries.
+## Roadmap order
 
-The architecture boundary is explicit:
-- domain crates own domain-specific loading, normalization, grouping, and thin generation
-- `memory-api` remains generic and does not learn specialized domain semantics
-- shared rendering and generation infrastructure must align with the existing repository rendering pipeline rather than creating a parallel one
+### Phase 0 — Foundations already completed
+1. `0dba399a` Define IndexEntry schema and serde contract
+2. `e7a0ee3c` IndexEntry TOON sidecar format and validator
 
-## Track decisions so far
+These are complete and remain the base prerequisites for every remaining slice.
 
-- Shared schema and sidecar foundations already exist in `0dba399a` and `e7a0ee3c`.
-- Generator tickets must not advance until the planning blockers for hook automation, domain digest inputs, generator layering, rendering-pipeline integration, efficient `peek-cli` consumption, and performance budgeting are reviewed.
-- Generated outputs are committed to git and should support stable diffs and digest-stable regeneration on unchanged inputs.
+### Phase 1 — Planning and architecture contracts
+3. `94c56f3d` Define domain-owned thin generator architecture for store indexes
+4. `db667eed` Define shared rendering pipeline integration for generated indexes
+5. `7f7fe4a8` Define domain digest input contract for generated index entries
+6. `d3a95908` Define peek-cli and level-of-detail validation for generated indexes
+7. `98bc6b1c` Define benchmarking and profiling plan for store-index generation
+8. `52dfd793` Define git hook automation for store-index regeneration
 
-## Child tickets
+Phase 1 must finish before any new generator implementation resumes. The purpose is to lock down placement, rendering, digest stability, bounded-consumption validation, and commit-time performance constraints first.
 
-Foundational blockers:
-- `0dba399a` Define IndexEntry schema and serde contract
-- `e7a0ee3c` IndexEntry TOON sidecar format and validator
-- `52dfd793` Define git hook automation for store-index regeneration
-- `7f7fe4a8` Define domain digest input contract for generated index entries
-- `94c56f3d` Define domain-owned thin generator architecture for store indexes
-- `db667eed` Define shared rendering pipeline integration for generated indexes
-- `d3a95908` Define peek-cli and level-of-detail validation for generated indexes
-- `98bc6b1c` Define benchmarking and profiling plan for store-index generation
+### Phase 2 — First implementation reference path
+9. `9336a096` Rule store catalog generator
 
-Generator / implementation slices under this tracker:
-- `c5e9bb39` Ticket store index generator with git hook integration
-- `b9757ba7` Spec store hierarchy generator
-- `9336a096` Rule store catalog generator
-- `855a1e5d` Audit store status summary generator
-- `a72e3aca` Test store catalog generator (still gated on test-api + log-api bootstrap)
-- `c2409055` Memory workspace DAG indexing
+This is the first implementation slice because it most directly exercises the rendering-pipeline decision and gives the track one reference generator for committed file rendering.
 
-## Review gate
+### Phase 3 — First hook-backed domain generator
+10. `c5e9bb39` Ticket store index generator with git hook integration
 
-Before any generator ticket is moved forward again, review should confirm that the six planning blockers above capture:
-- domain-owned generator placement instead of memory-api specialization
-- rendering-pipeline integration with existing generator infrastructure
-- efficient `peek-cli` / bounded-read consumption and optional LOD handling
-- explicit performance budgets and profiling evidence for commit-time execution
+The ticket generator follows the rule generator so the track can prove hook-backed regeneration on a core store after the rendering reference path exists.
+
+### Phase 4 — Extend the pattern to another summary domain
+11. `855a1e5d` Audit store status summary generator
+
+Audit follows the ticket generator so the same shared pattern is exercised on another non-hierarchical domain before the track moves into hierarchy-heavy output.
+
+### Phase 5 — Hierarchical generator after the simpler reference slices
+12. `b9757ba7` Spec store hierarchy generator
+
+Spec comes after rule, ticket, and audit because it adds the most demanding traversal and markdown-link structure.
+
+### Phase 6 — Workspace graphing after local store patterns are proven
+13. `c2409055` Memory workspace DAG indexing
+
+Workspace DAG indexing comes after the local domain generator pattern is proven, so it can build on stable workspace-local outputs rather than forcing earlier generators to guess the final workspace shape.
+
+### Phase 7 — Externally gated final slice
+14. `a72e3aca` Test store catalog generator
+
+The test generator remains last because it is additionally gated on the external bootstrap tickets for test-api and log-api evidence identities and because it benefits from the earlier validation and workspace decisions already being proven.
+
+## Execution rule
+
+Only the earliest unfinished roadmap ticket should move into implementation. Later slices stay parked until every earlier roadmap step is done or explicitly re-sequenced here.
+
+## Dependency policy
+
+The roadmap order is encoded directly in the ticket graph:
+- the planning chain is serialized from architecture through hook automation
+- the implementation chain is serialized from rule to ticket to audit to spec to workspace to test
+- the tracker depends on the entire ordered sequence
+
+## Acceptance criteria for this tracker
+
+- The roadmap order is explicit in the tracker description
+- The graph encodes that order through `depends_on` edges between roadmap steps
+- Generator work cannot advance ahead of unresolved planning or earlier implementation tickets
+- The roadmap remains the single source of truth for the implementation sequence
+
+## Non-goals
+
+- Does not add new generator features beyond sequencing the existing ticket set
+- Does not replace per-ticket implementation details or acceptance criteria
+- Does not force closure of already-completed foundation tickets
