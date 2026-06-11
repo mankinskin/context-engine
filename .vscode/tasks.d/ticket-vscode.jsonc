@@ -34,6 +34,17 @@
         "label": "ticket-vscode watch"
       },
       "problemMatcher": "$tsc-watch"
+    },
+
+    // Package and install the latest VSIX into the local VS Code profile.
+    {
+      "label": "ticket-vscode: install vsix",
+      "type": "shell",
+      "command": "npm run install:vsix",
+      "options": {
+        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+      },
+      "presentation": { "reveal": "always", "panel": "shared" }
     }
   ]
 }

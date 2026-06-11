@@ -37,6 +37,10 @@ memory-viewers child READMEs:
 
 The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository:
 
+The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:
+
+- [memory-viewers/memory-api/tools/ticket-vscode/package.json](memory-viewers/memory-api/tools/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
+
 - [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
 - [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
 - [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
