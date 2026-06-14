@@ -9546,6 +9546,40 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "test-cli"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "memory-api",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "test-api",
+ "thiserror 2.0.18",
+ "toon-format",
+]
+
+[[package]]
+name = "test-mcp"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "memory-api",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "test-api",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

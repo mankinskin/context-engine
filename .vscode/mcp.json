@@ -33,6 +33,17 @@
         "spec-mcp"
       ]
     },
+    "test-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "test-mcp"
+      ]
+    },
     "log-viewer-mcp": {
       "type": "stdio",
       "command": "cargo",
