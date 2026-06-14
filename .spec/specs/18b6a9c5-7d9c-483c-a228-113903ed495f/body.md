@@ -50,9 +50,9 @@ Workspaces are modeled as a Directed Acyclic Graph (DAG) with support for multip
 
 # Reference and Schema Definitions
 
-## ContextRef Format
+## StoreNodeRef Format
 ```rust
-struct ContextRef {
+struct StoreNodeRef {
     node_id: String,
     relation_kind: RelationKind,
     content_kind: ContentKind,
@@ -62,9 +62,9 @@ struct ContextRef {
 }
 ```
 
-## ContextNode Schema
+## StoreNode Schema
 ```rust
-struct ContextNode {
+struct StoreNode {
     id: String,
     kind: ContentKind,
     source_path: String,
@@ -73,7 +73,7 @@ struct ContextNode {
     keywords: Vec<String>,        // Context tags for similarity indexing
     scope: String,
     non_goals: Vec<String>,
-    relations: Vec<ContextRef>,   // Multiple parent/child edges (DAG)
+    relations: Vec<StoreNodeRef>,   // Multiple parent/child edges (DAG)
     digest: String,               // Hashed representation of normalized fields
     tags: Vec<String>,
     generated_at: u64,
@@ -82,7 +82,7 @@ struct ContextNode {
 ```
 
 # Acceptance Criteria
-- Every generated catalog/index has a corresponding `.toon` sidecar payload containing serialized `ContextNode` objects.
+- Every generated catalog/index has a corresponding `.toon` sidecar payload containing serialized `StoreNode` objects.
 - Folder READMEs, store folders, and `.agents/` hooks are automatically updated by git hook commands.
 - The spec hierarchy is written as physical folders and relative files.
 - Command latency in the git pre-commit hook is verified and profile-bounded.

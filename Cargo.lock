@@ -9716,6 +9716,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-vscode-core"
+version = "0.1.0"
+dependencies = [
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+]
+
+[[package]]
 name = "tiff"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
