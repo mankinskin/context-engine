@@ -105,7 +105,7 @@ check_rule_targets() {
 # Domain enable flags — all OFF until the owning generator ticket flips one.
 STORE_INDEX_TICKET_ENABLED=0   # c5e9bb39
 STORE_INDEX_SPEC_ENABLED=0     # b9757ba7
-STORE_INDEX_RULE_ENABLED=0     # 9336a096
+STORE_INDEX_RULE_ENABLED=1     # 9336a096
 STORE_INDEX_WORKSPACE_ENABLED=0 # c2409055
 
 check_store_index() {
@@ -152,10 +152,10 @@ fi
 
 if [[ "$STORE_INDEX_RULE_ENABLED" == "1" ]] \
     && staged_matches '^\.rule/'; then
-    # Owns: .rule/index.toon
+    # Owns: .rule/README.md, .rule/index.toon, .agents/rules-catalog.md
     check_store_index 'rule' \
-        'rule store-index --check' \
-        'rule store-index regen'
+        'cargo run -q -p rule-cli --bin rule -- store-index --check' \
+        'cargo run -p rule-cli --bin rule -- store-index'
 fi
 
 if [[ "$STORE_INDEX_WORKSPACE_ENABLED" == "1" ]] \
