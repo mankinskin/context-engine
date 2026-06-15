@@ -80,6 +80,92 @@ check_rule_targets() {
     rm -f "$output_file"
 }
 
+# ---------------------------------------------------------------------------
+# Store-index generation (memory-index track) — guarded-no-op scaffold.
+#
+# Spec: .spec git-hook-automation (53c70cae). Decisions Q6.1/Q6.2/Q6.3/QX.1.
+#
+# This block lands the execution surface now so each generator ticket only has
+# to flip its domain from OFF to ON in one place. Every domain flag below is
+# OFF by default, so this scaffold is a no-op until a generator implements the
+# matching `<domain> store-index --check` command surface.
+#
+# Contract (Q6.2, --check-only — mirrors `rule sync-targets --check`):
+#   * The hook runs the domain's READ-ONLY check command. It MUST NOT write.
+#   * On drift the check command exits non-zero; the hook prints the touched
+#     outputs and a restage instruction, then fails the commit.
+#   * The user runs the writing variant (`<domain> store-index regen`) and
+#     re-stages the regenerated outputs.
+#
+# Audit (Q6.3) is intentionally absent: its index is derived from an audit run,
+# not from editing `.audit/`, so it is hook-exempt by default until 855a1e5d
+# defines its real source inputs.
+# ---------------------------------------------------------------------------
+
+# Domain enable flags — all OFF until the owning generator ticket flips one.
+STORE_INDEX_TICKET_ENABLED=0   # c5e9bb39
+STORE_INDEX_SPEC_ENABLED=0     # b9757ba7
+STORE_INDEX_RULE_ENABLED=0     # 9336a096
+STORE_INDEX_WORKSPACE_ENABLED=0 # c2409055
+
+check_store_index() {
+    local domain="$1"
+    local check_cmd="$2"
+    local regen_cmd="$3"
+    local output_file
+
+    if ! command -v cargo >/dev/null 2>&1; then
+        echo "pre-commit: cargo not on PATH; cannot validate $domain store-index" >&2
+        exit 1
+    fi
+
+    output_file="$(mktemp)"
+
+    if ! eval "$check_cmd" >"$output_file" 2>&1; then
+        echo "pre-commit: $domain store-index is out of date" >&2
+        echo "pre-commit: command output follows:" >&2
+        cat "$output_file" >&2
+        echo "pre-commit: regenerate and re-stage the touched outputs:" >&2
+        echo "             $regen_cmd" >&2
+        rm -f "$output_file"
+        exit 1
+    fi
+
+    rm -f "$output_file"
+}
+
+if [[ "$STORE_INDEX_TICKET_ENABLED" == "1" ]] \
+    && staged_matches '^\.ticket/'; then
+    # Owns: .ticket/README.md, .ticket/index.toon
+    check_store_index 'ticket' \
+        'ticket store-index --check' \
+        'ticket store-index regen'
+fi
+
+if [[ "$STORE_INDEX_SPEC_ENABLED" == "1" ]] \
+    && staged_matches '^\.spec/'; then
+    # Owns: .spec/index.toon
+    check_store_index 'spec' \
+        'spec store-index --check' \
+        'spec store-index regen'
+fi
+
+if [[ "$STORE_INDEX_RULE_ENABLED" == "1" ]] \
+    && staged_matches '^\.rule/'; then
+    # Owns: .rule/index.toon
+    check_store_index 'rule' \
+        'rule store-index --check' \
+        'rule store-index regen'
+fi
+
+if [[ "$STORE_INDEX_WORKSPACE_ENABLED" == "1" ]] \
+    && staged_matches '^(\.ticket/|\.spec/|\.rule/|\.agents/)'; then
+    # Owns: workspace summaries and .agents/ hook entries
+    check_store_index 'workspace' \
+        'workspace store-index --check' \
+        'workspace store-index regen'
+fi
+
 if staged_matches '^\.vscode/(tasks\.json|tasks\.d/.*\.jsonc)$'; then
     check_vscode_tasks
 fi
