@@ -21,6 +21,11 @@
 
 set -euo pipefail
 
+# Ensure ~/.cargo/bin is in PATH since this hook may run in a non-interactive shell where profile files are not sourced
+if [[ -d "$HOME/.cargo/bin" ]]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 # ── helpers ────────────────────────────────────────────────────────────────
 
 log_warn() { echo "[preflight-write] WARN: $*" >&2; }
