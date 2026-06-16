@@ -1,0 +1,2374 @@
+version: 1
+domain: spec
+store_path: .spec
+generated_at: "1970-01-01T00:00:00Z"
+entries[163]:
+  - id: "01f7eae8-555d-46e2-bb54-0e0bf2b2da90"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml"
+    title: tasks
+    summary: A task is an ordered list of shell command invocations. Tasks are the
+    keywords[2]: task,tasks
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 5336a74c9d0d6a5a9581bb16f26d377b13853031f784008a8d80687d83617429
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0386c4d0-15c4-4561-a33f-63b881c852c5"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml"
+    title: "CLI reverse-dependency unlock and blocker follow-up discovery"
+    summary: "The ticket CLI needs first-class reverse-dependency workflow support: `ticket unblocked-by <id>` should show which dependents a prerequisite unlocks or still affects, and `ticket next <id>` should sh…"
+    keywords[6]: blocker,discovery,"follow-up","reverse-dependency",unblocked,unlock
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
+        entry_id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 9c85b3d8fb8e4906c7ecf95e12a049150e6fb98311dadc773506400909a42982
+    tags[3]: draft,"scope:public","ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "04a264ca-5dd6-44d4-ab5a-165822d85079"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/04a264ca-5dd6-44d4-ab5a-165822d85079/spec.toml"
+    title: "viewer-api: source"
+    summary: "Canonical specification for `viewer-api::source` — the safe source-file"
+    keywords[2]: source,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 55a6980dd73ef0565847670fe5ad49ad4a4ac45ded160efaa6f0a2cec6f4a511
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "067c60c2-6be0-4f51-bbd3-80dcd29b9d35"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/067c60c2-6be0-4f51-bbd3-80dcd29b9d35/spec.toml"
+    title: routes
+    summary: "Source: `tools/http/spec-http/src/routes.rs`"
+    keywords[1]: routes
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 2d5c1c48f9384c6ebd826c8a797ea59fbaddb672638f4bfb7ef396cc87ce1b98
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "08aa283e-34ee-47d4-83bc-4c4311a9c85f"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/spec.toml"
+    title: Expressive ticket query and ordering contract
+    summary: Ticket discovery is split across several partial query mechanisms with
+    keywords[5]: contract,expressive,ordering,query,ticket
+    non_goals: "Redefining the workflow convergence ranking comparator. That is owned by `ticket-api/workflow/best-next-ordering` and `ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering`. Changing board-aware exclusion / WIP semantics. Introducing a new persistence format or a se…"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: e7139b541064a8fb0aa1643f9ad148ac88913c1187735c6e2ae0b49ebf91f862
+    tags[3]: draft,"scope:public","ticket-query"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "09f96d83-4795-4f19-9259-64ad0d452387"
+    kind: spec
+    source_path: ".spec/specs/09f96d83-4795-4f19-9259-64ad0d452387/spec.toml"
+    title: "VS Code Copilot stop-hook session capture"
+    summary: "Wire the repository's VS Code GitHub Copilot hook configuration to persist chat sessions through `session-api` after each agent response stops."
+    keywords[8]: capture,code,copilot,hook,session,stop,"stop-hook",vscode
+    scope: "register the root hook configuration file in workspace settings via `chat.hookFilesLocations` extend the root hook configuration with a `Stop` hook alongside the existing `PostToolUse` hooks add a small executable `session-api` adapter that reads `Stop` hook input, resolves `tra…"
+    non_goals: "replacing or removing the existing `PostToolUse` hook reminders changing the existing session store layout or append-only merge semantics adding new query, MCP, or HTTP surfaces beyond the current `session-api` store API supporting every Copilot hook event type in one slice"
+    digest: 8c5db5a1d29594f6cefb70e5a4744573b83654fb2e060f48d36c85260c9c1328
+    tags[4]: draft,root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0b1888f2-7e59-45fb-95d8-1bf14ff7747f"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml"
+    title: "Ancestor Workspace Ticket References for Child-Workspace Dependencies"
+    summary: "Child ticket workspaces need a way to surface ancestor-owned ticket entries when those parent entries participate directly in dependency relationships with child-owned tickets."
+    keywords[8]: ancestor,"child-workspace",dependencies,dependency,references,ticket,visibility,workspace
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
+        entry_id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 83e0ccd69f195872239fdb132b58f8a3b2e53abfab9980ac4ecd807287e5a54f
+    tags[3]: draft,"scope:public","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0c141c86-957c-4b93-b86e-f50a05e84763"
+    kind: spec
+    source_path: ".spec/specs/0c141c86-957c-4b93-b86e-f50a05e84763/spec.toml"
+    title: tool history transplant
+    summary: "This spec records the decision to replace the old bash extraction flow with `crane-cli` for context-stack tool-history migrations."
+    keywords[3]: history,tool,transplant
+    relations:
+      parent:
+        canonical_path: ".spec/specs/c6feacef-a06e-4769-a4cf-5c557be50f7d/spec.toml"
+        entry_id: "c6feacef-a06e-4769-a4cf-5c557be50f7d"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c20e9527d36cd6763d0665c9d011db502f94dcaf1fa19a74239fc56235bed99d
+    tags[3]: "context-stack",draft,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e/spec.toml"
+    title: board
+    summary: "Source: `crates/memory-api/src/storage/board.rs`"
+    keywords[1]: board
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c08c75538c0a6e04b8f83e919922005890b980141c0b1f6bb0183f117fad94b0
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0c3f11d3-2475-470c-a191-beedd2c8e53c"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0c3f11d3-2475-470c-a191-beedd2c8e53c/spec.toml"
+    title: audit
+    summary: "`audit` is the repository quality audit tool for this workspace. Its code is split across three layers:"
+    keywords[1]: audit
+    digest: 3e43998120c56b3fe6d876c7849e25690c54f69ac9f97891ee799f3127346c6b
+    tags[4]: audit,draft,root,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0df82e71-79ef-48ec-8459-43b4693d4543"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0df82e71-79ef-48ec-8459-43b4693d4543/spec.toml"
+    title: tree
+    summary: "Source: `tools/http/spec-http/src/handlers/tree.rs`"
+    keywords[1]: tree
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a2d48121a300536e1551d7106e1d9be0424e300b22dac5def6a3be4acf9ac31e
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0e9beee3-9974-48df-ad22-a79504c438af"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0e9beee3-9974-48df-ad22-a79504c438af/spec.toml"
+    title: store
+    summary: "Source:"
+    keywords[1]: store
+    non_goals: "Renaming ticket or other non-rule entity description files. Changing target composition rules beyond the source of hydrated rule body content. Removing compatibility for legacy rule folders before the repository backfill is complete."
+    digest: "095c43e3a4ca9877c99becd27208d0a09db581cc012ac28a643bb483e46a4026"
+    tags[4]: draft,root,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0f684a90-6abe-4028-a9f1-5d2d6322f1b9"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml"
+    title: state
+    summary: "Source: `tools/http/spec-http/src/state.rs`"
+    keywords[1]: state
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 86f5c3eb9deec327f5d063d87806e6e406699f9e6bcdb8c9a8a76933cbafb656
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "12045379-ce22-416b-8a5e-31d560c35992"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/12045379-ce22-416b-8a5e-31d560c35992/spec.toml"
+    title: filesystem
+    summary: "Source: `crates/memory-api/src/model/filesystem.rs`"
+    keywords[1]: filesystem
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: cbe29a3bcfbb3d437df6c1208f6edcf780313cd3d87f0badb6d0a3ca3218cd14
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "121a0e79-a212-40af-8041-83c1ea11f029"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/121a0e79-a212-40af-8041-83c1ea11f029/spec.toml"
+    title: indexed
+    summary: "Source: `crates/memory-api/src/storage/indexed.rs`"
+    keywords[1]: indexed
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 12172a5ac48034c6a06b42adba73c6649f55f588c9388c15a52ed108074d7a81
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
+    kind: spec
+    source_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
+    title: graph induction
+    summary: Graph induction is the part of the context stack that accepts token sequences or
+    keywords[2]: graph,induction
+    relations:
+      parent:
+        canonical_path: ".spec/specs/c6feacef-a06e-4769-a4cf-5c557be50f7d/spec.toml"
+        entry_id: "c6feacef-a06e-4769-a4cf-5c557be50f7d"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/7fd5639f-a62b-4eb4-abe2-215c4bb2d0de/spec.toml","7fd5639f-a62b-4eb4-abe2-215c4bb2d0de",child,spec,""
+        ".spec/specs/92112188-8acd-4573-bb22-f784fcf371ca/spec.toml","92112188-8acd-4573-bb22-f784fcf371ca",child,spec,""
+        ".spec/specs/bbd92962-33f4-4b9e-b301-f4ce9909c135/spec.toml","bbd92962-33f4-4b9e-b301-f4ce9909c135",child,spec,""
+        ".spec/specs/e631e914-1840-4fec-9df5-b50a85c6cf00/spec.toml","e631e914-1840-4fec-9df5-b50a85c6cf00",child,spec,""
+    digest: 98cacc4197d1174cc6638db9ecd03428cbf7ff7e6a1aa85574d86340ec9c6773
+    tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+    kind: spec
+    source_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+    title: Generated context index hierarchy and semantic reference format
+    summary: "Define a generated, human-readable markdown index hierarchy that integrates with the repository structure, and define a compact machine-friendly semantic summary format (TOON) for similarity search, …"
+    keywords[8]: context,format,generated,hierarchy,index,reference,refs,semantic
+    relations:
+      children[6]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/449fe68a-541c-4804-bbfd-476af783f80c/spec.toml","449fe68a-541c-4804-bbfd-476af783f80c",child,spec,""
+        ".spec/specs/53c70cae-731b-41b5-bd1a-1de9a98eb36f/spec.toml","53c70cae-731b-41b5-bd1a-1de9a98eb36f",child,spec,""
+        ".spec/specs/9109f12a-cc02-47ae-948f-98008b6c167d/spec.toml","9109f12a-cc02-47ae-948f-98008b6c167d",child,spec,""
+        ".spec/specs/bf217ce5-8890-4749-9a2d-deffb6d0f4dd/spec.toml","bf217ce5-8890-4749-9a2d-deffb6d0f4dd",child,spec,""
+        ".spec/specs/c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0/spec.toml","c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0",child,spec,""
+        ".spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469/spec.toml","c598ddb2-4d3a-4b81-90ea-8b25a54b8469",child,spec,""
+    digest: b5ac845ba43f41cb7ba87752238f19a99d2822a1aaf01c3cc1d0f91fc7592da1
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "18d7cbc2-d454-498b-9f10-9f1a0d320f2e"
+    kind: spec
+    source_path: ".spec/specs/18d7cbc2-d454-498b-9f10-9f1a0d320f2e/spec.toml"
+    title: "spec-editor: body editor"
+    summary: The `BodyEditor` component is the core authoring surface for a spec's `body.md`.
+    keywords[3]: body,editor,"spec-editor"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
+        entry_id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 4c2b9ec1e284a6100ece1f2cdd833c3958892cba0388576e3b8b2ece15b7b717
+    tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1cf68c36-7f64-4d81-b553-1947b978fbe3"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/spec.toml"
+    title: generated documents
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[2]: documents,generated
+    non_goals: "Replacing authored `spec.toml` metadata with generated content. Moving all `rule-api` target configuration into `spec-api` in the first slice. Requiring `spec-api` to understand every `rule-api` filter or explain feature before generated spec documents are possible."
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 17ec5d8ab4a2a8110eff15490079ae8e06dc7e709d9cbdbb5611a18eb9b6935b
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1d62442b-61dc-4eeb-9b7c-e933f84470f2"
+    kind: spec
+    source_path: ".spec/specs/1d62442b-61dc-4eeb-9b7c-e933f84470f2/spec.toml"
+    title: "ticket-api state transition path unification"
+    summary: "Unify ticket state transition handling so `update_ticket` and `close_ticket` share one schema-validated transition-path implementation, remove reliance on caller-supplied `from_state`, and support ex…"
+    keywords[5]: path,state,"ticket-api",transition,unification
+    scope: "This spec covers:"
+    digest: 5b35c08136506024afaf311daf3c2261e8d49b65b13ce89ebdbe6c991ceda39f
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1d6481ff-308b-45ca-ac91-4c2f8d5546f3"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml"
+    title: "spec-cli"
+    summary: Bootstrapped from source analysis.
+    keywords[2]: spec,"spec-cli"
+    relations:
+      children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml","ec1013ff-2d5f-4860-8d25-64acb6c60587",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml","ee36710b-1725-436a-a5fc-1e5a7d27f6bb",child,spec,""
+    digest: 44294971c91a6fcfda9ff2d859d3fa02da20251e00ea0c1268af2439753713cc
+    tags[4]: draft,root,"scope:public","spec-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "226ff55f-eebf-43b8-aa1e-5abf81b99101"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml"
+    title: manifest
+    summary: "Source: `crates/spec-api/src/manifest.rs`"
+    keywords[1]: manifest
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 6e9a97d53bffd0d164e46a34ca3e6b2d4760b21bce5437c243c7faced6cf0909
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "227df77c-c047-4a96-bab3-57b6cda0773d"
+    kind: spec
+    source_path: ".spec/specs/227df77c-c047-4a96-bab3-57b6cda0773d/spec.toml"
+    title: test
+    summary: Canonical specification for the **HTTP server bootstrap** primitives exported
+    keywords[1]: test
+    digest: 1bb55fb19107a1bf3ce3686f0ac1654a714b37fe86076f4fc76a6c7bfdeb6b78
+    tags[3]: draft,root,test
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "24baf686-38fd-417d-9528-bebc02a556d0"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/spec.toml"
+    title: "doc-api"
+    summary: "`memory-api` should gain a `docs` domain so humans and agents can navigate repository structure through the same family pattern already used for rules, specs, tickets, and audits. The first primitive…"
+    keywords[1]: "doc-api"
+    scope: "This spec defines a new `doc-api` family with matching transport layers:"
+    digest: cb6cffe00adde1bce41d92e5f694c739bcbe2f15ab376b788564438305614960
+    tags[4]: "doc-api",draft,root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2594c83e-12e3-49d9-a5b7-abe7122e5f52"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/2594c83e-12e3-49d9-a5b7-abe7122e5f52/spec.toml"
+    title: entity_store
+    summary: "Source: `crates/memory-api/src/storage/entity_store.rs`"
+    keywords[3]: entity,entity_store,store
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c5ea44804026858a2f4b72bde82c2a9f93ee0c7edacc720e72dc1e96055f9aef
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "267acfdc-7df4-4090-9f17-7d6d71232814"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/267acfdc-7df4-4090-9f17-7d6d71232814/spec.toml"
+    title: entity
+    summary: "Source: `crates/memory-api/src/model/entity.rs`"
+    keywords[1]: entity
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 0ef7329ad980682e5dd759d82937f5b39a6761268a73a8b5f20e28a051eabe96
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "26f51d64-3bf7-4907-ae9d-2f006bb7d1fa"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/26f51d64-3bf7-4907-ae9d-2f006bb7d1fa/spec.toml"
+    title: error
+    summary: "Source: `tools/http/spec-http/src/error.rs`"
+    keywords[1]: error
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: e453e3e26d905da73199997a8ed7d2ae6431315bd2ea0a1e9e2ee63331e3894f
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2860a8db-0c4e-4e94-984a-c10a72a67ffc"
+    kind: spec
+    source_path: ".spec/specs/2860a8db-0c4e-4e94-984a-c10a72a67ffc/spec.toml"
+    title: "default worktree-backed session workflow"
+    summary: Make dedicated git worktrees the default workflow for new agent sessions in this repository so parallel implementation tracks do not share one staging area.
+    keywords[5]: default,session,workflow,worktree,"worktree-backed"
+    scope: "require new sessions to check into the session tool before implementation begins assign each checked-in session an authoritative worktree working directory expose that working directory through targeted `session-api` CLI, MCP, hook, or startup surfaces define how ticket-board ow…"
+    non_goals: "reviving the cancelled AOH sandbox-manager implementation as-is changing the existing append-only `session-api` transcript persistence contract designing full merge automation or PR orchestration in this slice"
+    digest: db862d94c94dc382e5da92651deaf1c96967ad4126acb0fc8e4f31f5385488bb
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "298f2f92-df7e-4c8a-b4fe-b63c27622142"
+    kind: spec
+    source_path: ".spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/spec.toml"
+    title: "Expectation-oriented specification contract and store-owned evidence workflow"
+    summary: "Define an expectation-oriented specification contract for this repository so specs capture intended system properties plus explicit acceptance and evidence requirements, while tickets carry problem s…"
+    keywords[11]: contract,evidence,expectation,"expectation-oriented",oriented,owned,spec,specification,store,"store-owned",workflow
+    scope: "This spec covers:"
+    digest: dc59cbbf9c367e1fc879e9bdf04da9e7a9a4b2a9416d877eec721ca5fe0dfe89
+    tags[3]: "context-engine",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2e56d63e-c53a-45a0-a984-088b3f9da19a"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/2e56d63e-c53a-45a0-a984-088b3f9da19a/spec.toml"
+    title: "viewer-api: keyboard interaction model"
+    summary: "Draft cross-viewer interaction contract for keyboard ownership, shortcut precedence, and phased rollout across shared viewer surfaces."
+    keywords[4]: interaction,keyboard,model,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: db04cfd27d927b813d7a87b87b6d0d820ba5800cf0f055c7368769fbd26e9da3
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3235e977-b12a-4981-aa09-6edf218bb97d"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/3235e977-b12a-4981-aa09-6edf218bb97d/spec.toml"
+    title: schema
+    summary: "Source: `crates/memory-api/src/model/schema.rs`"
+    keywords[1]: schema
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 1d29c3e323f0b76669251bfef4974e61624062dea95e74332e892cebe71f729f
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "32eaa05c-cef6-4a3b-b506-b5a5410a4674"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/32eaa05c-cef6-4a3b-b506-b5a5410a4674/spec.toml"
+    title: code_ref
+    summary: "Source: `crates/spec-api/src/code_ref.rs`"
+    keywords[2]: code,code_ref
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 4926172b435c61723f9376aec77f128a59879c04eb1e26abf21cba40061dfab8
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "33e731c2-a0cf-41f7-bd7c-2df6c4545bf3"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/33e731c2-a0cf-41f7-bd7c-2df6c4545bf3/spec.toml"
+    title: "ticket-viewer: explorer interactions"
+    summary: "Canonical specification for the ticket-viewer navigation surfaces that let a user find and open tickets: the sidebar explorer and the quick-search overlay."
+    keywords[3]: explorer,interactions,"ticket-viewer"
+    digest: 64374b4c70dbeb8265d4e734f34280149351dc2de6c74673b461e704ebb69450
+    tags[4]: draft,root,"scope:component","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "347b6f97-5ebf-46c6-a0e1-cc8afc600319"
+    kind: spec
+    source_path: ".spec/specs/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml"
+    title: Prefer MCP Playwright/browser tools for browser frontend validation
+    summary: "Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tools before repo-local Playwright wrappers or manual browser steps."
+    keywords[7]: browser,frontend,playwright,playwright/browser,prefer,tools,validation
+    digest: 79ab84143124b0205094fb809c976ea58d7ba2fc0c045b9dc1820bb51ffd3681
+    tags[4]: "agent-rules",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "348e17f7-23a8-4e11-bbb3-224cf0bbe9d6"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/348e17f7-23a8-4e11-bbb3-224cf0bbe9d6/spec.toml"
+    title: "viewer-api: TabBar"
+    summary: Canonical specification for the shared `TabBar` Dioxus component
+    keywords[2]: tabbar,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: aea777ff9bcf6de44ffb246e9935b392e31370b3e0f6afaddf8c4f7546614236
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "351389c0-0873-4c3c-bc46-3551459ba1cd"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml"
+    title: store
+    summary: "Source: `crates/spec-api/src/store.rs`"
+    keywords[1]: store
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: ee4292e9c7396236716fa92bfb12a2515122a9b85da230017b83ef21d8f366ad
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "351e65fe-0629-4a0f-9c19-27dabb36b72f"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/351e65fe-0629-4a0f-9c19-27dabb36b72f/spec.toml"
+    title: server lifecycle
+    summary: "Servers are long-running Rust binaries that bind a TCP port. viewer-ctl owns"
+    keywords[2]: lifecycle,server
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c8851508c8ab635e48b9c6f53de73e83e06a84b044e60e327c398fcde43fdd8c
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "36ebdecb-0b9e-47be-9f44-fe575aa6ad6f"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/36ebdecb-0b9e-47be-9f44-fe575aa6ad6f/spec.toml"
+    title: "viewer-api: theme settings (canonical)"
+    summary: "Canonical UX and behavior specification for the **shared theme-settings panel** used by every Dioxus viewer (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). The reference implementation …"
+    keywords[4]: canonical,settings,theme,"viewer-api"
+    digest: "01e43ac71335c997feca80a89879cf07a28db7037137cf114bd4aa10cbec4d25"
+    tags[4]: draft,root,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "36fd7849-65eb-405e-8cc5-70440f0cb7c2"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/36fd7849-65eb-405e-8cc5-70440f0cb7c2/spec.toml"
+    title: "session-api hook ingestion and read query"
+    summary: "Extend `session-api` so repeated Copilot hook captures preserve transcript history as an append-only log and expose a first read/query API over the persisted store."
+    keywords[5]: hook,ingestion,query,read,"session-api"
+    scope: make repeated session captures append only at the transcript layer keep the existing session manifest path and session directory layout add read APIs that reconstruct stored sessions from manifest plus transcript files add a small query surface for listing and filtering stored s…
+    non_goals: "a CLI, MCP, or HTTP endpoint for session ingestion a database index for sessions pagination or ranking beyond a small in-memory query filter hook installation scripts or editor integration"
+    digest: 1a40a694efab89df6898117c7d777f3c657dd3044e6bd770fc5f3928961b4944
+    tags[4]: draft,root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "38e337c2-cdda-4488-9aa7-b47a300563b0"
+    kind: spec
+    source_path: ".spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/spec.toml"
+    title: "cross-store workflow traceability metadata"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[7]: cross,"cross-store",links,metadata,store,traceability,workflow
+    scope: "Rewrite the first cross-store traceability slice around first-class metadata rather than wrapper-owned artifacts."
+    non_goals: "migrating every historic markdown path reference in one pass preserving a wrapper-owned link registry as the canonical source of truth solving every frontend visualization or query UX in the same change introducing a cross-product object model broader than the workflow-linked ti…"
+    digest: a405e78fb70754759d6ad9bc6745ccead5e0359dbff8f2d9964892a803bccd6c
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3b96ec1c-4e99-48f4-86e5-a36ba24b827a"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml"
+    title: "memory-api Rule Workspace and README Generation"
+    summary: "`memory-api` needs its own repo-local rule workspace so the repo README and local usage guides are authored next to the crates and tools they describe. The local target config should stay manageable …"
+    keywords[6]: generation,memory,"memory-api",readme,rule,workspace
+    scope: "This spec defines the desired local rule workspace for `memory-viewers/memory-api/`:"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml"
+        entry_id: "e815f261-ca7d-4957-8f68-666e1e1dfbfe"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: efd9a3af655d1f0c1da0530a4503e80cd17c28dd503be98682fe69ddcd142bd2
+    tags[3]: draft,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
+    kind: spec
+    source_path: ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml"
+    title: Generated repository README schema adoption
+    summary: "Adopt the shared README schema across the existing generated repos in the `memory-viewers` family so those workspaces stop carrying bespoke README target layouts and gain consistent parent/child navi…"
+    keywords[6]: adoption,generated,readme,repos,repository,schema
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
+        entry_id: "b9bf7713-5644-413d-a99d-00866828d534"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[3]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c/spec.toml","4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c",child,spec,""
+        ".spec/specs/5f9a1652-943f-4d98-8812-a4f7ca1d5e61/spec.toml","5f9a1652-943f-4d98-8812-a4f7ca1d5e61",child,spec,""
+        ".spec/specs/cfbb4500-4632-4a95-96a1-838dc4dccfd5/spec.toml","cfbb4500-4632-4a95-96a1-838dc4dccfd5",child,spec,""
+    digest: 21515ea016a970f1876c57090b197135eb060554dcf5a200d839f56edf850ae8
+    tags[3]: draft,"repo-guidance","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3ccdde3a-368c-4655-a6c8-20a58822c83d"
+    kind: spec
+    source_path: ".spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d/spec.toml"
+    title: "peek-api transport layering"
+    summary: "Define a reusable `peek-api` layer that owns token-bounded file inspection and structural skeleton rendering so CLI and MCP transports share one contract and one error model."
+    keywords[4]: layering,peek,"peek-api",transport
+    scope: "This spec covers the shared behavior contract for:"
+    non_goals: "defining repository-specific folder-tree and repo-map generation behavior beyond the shared primitives it depends on changing the user-facing semantics of existing `peek-cli` modes unless a separately tracked bug or spec requires it introducing a second command or validation mod…"
+    digest: 3e9fe04aa3dfe12a81d2771f7be5bd67ea15681eeaf65010b7eee8b4b639a5d6
+    tags[4]: "agent-tooling",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3fa36e9e-b097-4566-90e4-7d5f8053cd55"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/3fa36e9e-b097-4566-90e4-7d5f8053cd55/spec.toml"
+    title: configuration
+    summary: "The component registry that drives viewer-ctl is a single TOML file at the"
+    keywords[2]: config,configuration
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 225fd185aec6adab0825ddb9c372675f42b4ab8f8b2d4b01f4de8d5733b29034
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4066c5a3-3e04-4eeb-81a2-91fb8e53cc94"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/4066c5a3-3e04-4eeb-81a2-91fb8e53cc94/spec.toml"
+    title: "spec-mcp"
+    summary: Bootstrapped from source analysis.
+    keywords[2]: spec,"spec-mcp"
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml","d4831fdc-9790-4a26-ac32-d675bb6a7792",child,spec,""
+    digest: af1a831e005f1eec0e31b6d37ef429e384f965fe30612e3d4b575c4004a32f3d
+    tags[4]: draft,root,"scope:public","spec-mcp"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4482f2d0-131c-4ea0-91c0-f0bde198eedd"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml"
+    title: sections
+    summary: "Source: `tools/http/spec-http/src/handlers/sections.rs`"
+    keywords[1]: sections
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 928c9eefbc4696bf9df2991fc20e3840846945294b3045593cd42e71abafff26
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "449fe68a-541c-4804-bbfd-476af783f80c"
+    kind: spec
+    source_path: ".spec/specs/449fe68a-541c-4804-bbfd-476af783f80c/spec.toml"
+    title: Domain digest input contract for generated index entries
+    summary: "Define the domain-level digest input contract for generated memory-index entries so every generator derives a stable `IndexEntry` payload before calling `seal()`. Given identical source inputs, every…"
+    keywords[7]: contract,digest,domain,entries,generated,index,input
+    scope: "Per-domain mapping from source fields to the nine digest input fields. Universal normalization rules (N1–N7). Stable synthetic-ID derivation and the invariant that mutable inputs never feed IDs. Relation ordering for diff stability (relations excluded from digest)."
+    non_goals: "Does not wire git hooks (git-hook-automation spec). Does not implement the generator binaries (per-domain generator tickets). Does not change the SHA-256 digest algorithm (`0dba399a`)."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 9438d05156ed6d96395b834e240c08f3a493f743df559f342492ac84180f5a39
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "47465a64-0c5f-4ddc-8d38-018048090af2"
+    kind: spec
+    source_path: ".spec/specs/47465a64-0c5f-4ddc-8d38-018048090af2/spec.toml"
+    title: repository workflow guidance
+    summary: "Repository guidance is partly rule-generated today, but nested workspaces still carry hand-written agent files and the parent workspace duplicates child target definitions directly in its own `rule-t…"
+    keywords[3]: guidance,repository,workflow
+    digest: cb5e00b8ff6daef48456511fb64d1bc3e46abb45870405918081f7547331b7f2
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "479e226a-b4ef-4e30-ade0-ebdabbf956ed"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml"
+    title: "viewer-api: WASM tracing file sink"
+    summary: Specification for shipping `tracing` records emitted by the Dioxus WASM
+    keywords[5]: file,sink,tracing,"viewer-api",wasm
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml"
+        entry_id: "b06c9df8-2866-433a-af73-ae9b1f4a0f0a"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: af7dd1a4b14b555a3bbe0176689faf8a768d74af98bfe9afcd97c9e05c6181d4
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4a16fea7-5af5-477f-835d-6c0c94216bfe"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/4a16fea7-5af5-477f-835d-6c0c94216bfe/spec.toml"
+    title: error
+    summary: "Source: `crates/memory-api/src/error.rs`"
+    keywords[1]: error
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: "032cb1be270b7b0e6b1110899ac13554a142735577bfdb77fcb8b40a1c7dd358"
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4aa3cbc9-4d95-41ea-8fc3-f4b46eb3483e"
+    kind: spec
+    source_path: ".spec/specs/4aa3cbc9-4d95-41ea-8fc3-f4b46eb3483e/spec.toml"
+    title: "Root-level context-stack workspace layout"
+    summary: "Relocate the context-stack submodule from crates/context-stack to a top-level context-stack directory and remove deprecated repository folders that should no longer participate in the active workspac…"
+    keywords[8]: context,"context-stack",layout,level,root,"root-level",stack,workspace
+    digest: 8e3ae8a389171f92eb466f01f7905b833aecd2d0d9ca2dc123970e4cd4cb4932
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4bd3cd3f-5851-4d9e-b499-978cb7b53275"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/4bd3cd3f-5851-4d9e-b499-978cb7b53275/spec.toml"
+    title: "Graph-aware best-next ranking and dependency convergence"
+    summary: "The current best-next contract is deterministic but shallow: default next discovery ranks only dependency-satisfied candidates by candidate workflow state, priority, immediate dependees, and recency.…"
+    keywords[9]: aware,best,"best-next",convergence,dependency,graph,"graph-aware",next,ranking
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml","d702ed9e-f75c-4727-8f05-1b2b244ec74f",child,spec,""
+    digest: d8517bf1ee1689c55db4a217348084f09d7131d88ea6dd9c480d569b813c85ba
+    tags[4]: draft,root,"scope:public","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+    title: "viewer-api: demo-viewer"
+    summary: "The **demo-viewer** is a reference application that lives inside the `viewer-api`"
+    keywords[4]: demo,"demo-viewer",viewer,"viewer-api"
+    non_goals: "Not a replacement for unit or integration tests of individual modules. Not a \"playground\" for unstable APIs — only stable, public surface. Not a production-grade application; auth, persistence and styling are minimal (whatever is needed to demonstrate the feature)."
+    relations:
+      children[17]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/viewer-api/.spec/specs/04a264ca-5dd6-44d4-ab5a-165822d85079/spec.toml","04a264ca-5dd6-44d4-ab5a-165822d85079",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/2e56d63e-c53a-45a0-a984-088b3f9da19a/spec.toml","2e56d63e-c53a-45a0-a984-088b3f9da19a",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/348e17f7-23a8-4e11-bbb3-224cf0bbe9d6/spec.toml","348e17f7-23a8-4e11-bbb3-224cf0bbe9d6",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml","4f14356f-c4bd-4554-be1e-35361de241da",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/51c69e48-c8a1-4d45-b050-e06671fe7d71/spec.toml","51c69e48-c8a1-4d45-b050-e06671fe7d71",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/52521803-fd21-4b40-a4e5-6801b823d59d/spec.toml","52521803-fd21-4b40-a4e5-6801b823d59d",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/54800731-e07f-4fb2-8802-fd7d2acc8c05/spec.toml","54800731-e07f-4fb2-8802-fd7d2acc8c05",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/59979a95-a4cb-4aa3-9a79-486b029532a3/spec.toml","59979a95-a4cb-4aa3-9a79-486b029532a3",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/7b43dfd1-39aa-4585-b5fe-dc57c6d57eba/spec.toml","7b43dfd1-39aa-4585-b5fe-dc57c6d57eba",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml","a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/b3362691-09a0-4028-8daa-13b4c4102c15/spec.toml","b3362691-09a0-4028-8daa-13b4c4102c15",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/b748e117-a847-474d-92ee-b58723cee612/spec.toml","b748e117-a847-474d-92ee-b58723cee612",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/baaa35ff-4eb6-4288-b4d3-257311b98aa4/spec.toml","baaa35ff-4eb6-4288-b4d3-257311b98aa4",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/c6e3cc79-a2de-49f1-9c99-effe1b64a873/spec.toml","c6e3cc79-a2de-49f1-9c99-effe1b64a873",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml","c9b40e5d-1239-4ad6-99b1-0b759a9c4c49",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml","df67eee9-08a0-4a6e-b1ff-b483599d232d",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml","f153483c-f984-4564-94ac-36234b5cbe3f",child,spec,""
+    digest: 8b44e26f369d2ba2d0578e5810e065bca87e3687dca92e859ceb0cee31fdac14
+    tags[4]: draft,root,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4dafde12-e894-43d7-aa65-cda9a072be27"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/4dafde12-e894-43d7-aa65-cda9a072be27/spec.toml"
+    title: "command-line interface"
+    summary: "The viewer-ctl command-line interface is defined by `clap` in `src/cli.rs`."
+    keywords[2]: "command-line",interface
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c6442bc3f7125996341c1387122f10f9fc641ff4253c73f0deb88f70498b70a6
+    tags[3]: draft,"scope:public","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4f14356f-c4bd-4554-be1e-35361de241da"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml"
+    title: "viewer-api: Graph3D"
+    summary: "Canonical specification for the shared 3D dependency-graph Dioxus component"
+    keywords[2]: graph3d,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 31f84a37c71591754257560097f0d8cd89f270ef9f5898800ef560d02b2da27b
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c"
+    kind: spec
+    source_path: ".spec/specs/4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c/spec.toml"
+    title: "memory-api README schema adoption"
+    summary: "Migrate `memory-api` from bespoke README target structure to the shared schema and extend its generated tool README surfaces with parent links back to the repo root."
+    keywords[5]: adoption,memory,"memory-api",readme,schema
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml"
+        entry_id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: be13abf8e5e02e3efb805d2a682ab1825ffc56acd182c59e2835423ccbca58f4
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "51c69e48-c8a1-4d45-b050-e06671fe7d71"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/51c69e48-c8a1-4d45-b050-e06671fe7d71/spec.toml"
+    title: "viewer-api: session"
+    summary: "Canonical specification for `viewer-api::session` — the lightweight server"
+    keywords[2]: session,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 5c2f07a3d17b1c9d53ce995298485ac1e975e492cdc900169d2f6e74702da2ad
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "52521803-fd21-4b40-a4e5-6801b823d59d"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/52521803-fd21-4b40-a4e5-6801b823d59d/spec.toml"
+    title: "viewer-api: auth + middleware + error"
+    summary: "Canonical specification for the `viewer-api::auth`, `viewer-api::middleware`,"
+    keywords[4]: auth,error,middleware,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 488fad23c21867e251e1885a357bf53a043969f8030d989c7639da5535b26299
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "53c70cae-731b-41b5-bd1a-1de9a98eb36f"
+    kind: spec
+    source_path: ".spec/specs/53c70cae-731b-41b5-bd1a-1de9a98eb36f/spec.toml"
+    title: "Git hook automation for store-index regeneration"
+    summary: "Define the repository-local git-hook automation contract for store-index regeneration so generator tickets have one concrete execution surface instead of each hand-waving at \"pre-commit/post-commit h…"
+    keywords[4]: automation,hook,regeneration,"store-index"
+    scope: "The contract for the `.githooks/pre-commit` store-index branch (trigger matrix, dispatch, drift, fallback). The separation from Copilot/editor hooks. The incremental enablement model gated on per-domain generator + budget evidence."
+    non_goals: "Does not define the semantic digest inputs (digest-input-contract spec). Does not redesign `IndexEntry` / `IndexSidecar` (`0dba399a` / `e7a0ee3c`). Does not replace docs/session/editor hooks in `.github/hooks/hooks.json`."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 25999655f5e01f4b45b361bfef380dfac0bad5d8d1721dc9c88b11a5ffb58489
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "54800731-e07f-4fb2-8802-fd7d2acc8c05"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/54800731-e07f-4fb2-8802-fd7d2acc8c05/spec.toml"
+    title: "viewer-api: SSE streaming"
+    summary: "Canonical specification for `viewer-api::sse` — the server-sent-events"
+    keywords[2]: streaming,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: e172e979f225930db9031e75686ec4ef09dea1c56bbaf1aa10ac8dbfe7dbe132
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5650b307-8408-4ca0-922f-c515dd0bfa27"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/5650b307-8408-4ca0-922f-c515dd0bfa27/spec.toml"
+    title: "ticket-viewer: shell and header actions"
+    summary: "Canonical specification for the ticket-viewer shell-level interaction contract that sits above the existing explorer and theme-settings specs."
+    keywords[4]: actions,header,shell,"ticket-viewer"
+    digest: 34978418090c5d7dfb625e66d7bcb44b38af8ec037e3105913c3609f00c80e4e
+    tags[4]: draft,root,"scope:component","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "59216a24-598e-48eb-a280-ee8766857c0b"
+    kind: spec
+    source_path: ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml"
+    title: Manual repository README generation rollout
+    summary: "Migrate the manual README trees in `context-engine` and `context-stack` onto the same rule-backed generation flow and parent/child navigation contract already used in the generated nested workspaces."
+    keywords[6]: generation,manual,readme,repos,repository,rollout
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
+        entry_id: "b9bf7713-5644-413d-a99d-00866828d534"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/6d73975e-5af4-4ac6-b732-33c381bf768d/spec.toml","6d73975e-5af4-4ac6-b732-33c381bf768d",child,spec,""
+        ".spec/specs/b8ddb54c-8939-4bbd-a3b3-2e469caa09da/spec.toml","b8ddb54c-8939-4bbd-a3b3-2e469caa09da",child,spec,""
+    digest: f475592918075e10ec631c3382b52f50950ca255effd0b9f6e142bc83539a7fa
+    tags[3]: draft,"repo-guidance","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "597de059-859d-4aae-89ad-bfe2d84462c0"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml"
+    title: default_schema
+    summary: "Source: `crates/spec-api/src/default_schema.rs`"
+    keywords[3]: default,default_schema,schema
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: "02b6427ae7d6929dd6762c0a36b37a9f4301a5ad4df5286112ccbf0b4402e22b"
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "59979a95-a4cb-4aa3-9a79-486b029532a3"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/59979a95-a4cb-4aa3-9a79-486b029532a3/spec.toml"
+    title: "viewer-api: server-infra"
+    summary: Canonical specification for the **HTTP server bootstrap** primitives exported
+    keywords[4]: infra,server,"server-infra","viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 5985515b0c411fe7c8d64c61050e848d004d2d8d5d370902af0708dded956031
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5b69006d-e2ce-425d-91a7-97f4517a9bc6"
+    kind: spec
+    source_path: ".spec/specs/5b69006d-e2ce-425d-91a7-97f4517a9bc6/spec.toml"
+    title: Install tools refreshes viewer binaries
+    summary: "Keep the PATH-first viewer workflow intact by making the shared repo installer refresh every shipped viewer binary."
+    keywords[5]: binaries,install,refreshes,tools,viewer
+    digest: 68943f2a5e344f9fda57e02047439aad3790ba227cb689b98c518fa0704ff7fc
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5bd4fd1a-cd0e-4893-9d83-452cd5b533bb"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/5bd4fd1a-cd0e-4893-9d83-452cd5b533bb/spec.toml"
+    title: "ticket-http: ticket list endpoint"
+    summary: "Canonical contract for the ticket list API consumed by the Dioxus ticket-viewer explorer and related ticket-picking surfaces."
+    keywords[5]: endpoint,list,ticket,"ticket-http",tickets
+    digest: 8ea3d9d200f237772b540a80ecef0285752526b4aee9bf317b49beac3edb6c1e
+    tags[4]: draft,root,"scope:public","ticket-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5d17db06-c8a0-46bd-a22e-8a783643d7a8"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/5d17db06-c8a0-46bd-a22e-8a783643d7a8/spec.toml"
+    title: "ticket-vscode Extension"
+    summary: "The `ticket-vscode` extension (VS Code package id: `ticket-viewer`, v0.1.0) surfaces the ticket graph from a running `ticket-viewer` Axum/Dioxus server directly inside VS Code's activity bar. It allo…"
+    keywords[4]: extension,ticket,"ticket-vscode",vscode
+    digest: c361c7f945d0dfccce221bad91a5148851034d2ec892950010d1b112678a2cd4
+    tags[4]: reviewed,root,"scope:component","ticket-vscode"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5de125ad-eb0c-4bcb-8e6d-175df1ba33a6"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml"
+    title: Nested Workspace Discovery and Target Resolution
+    summary: "Nested rule workspaces should extend the existing `rule-api` store and target model from \"one store + one config\" into an explicitly scanned workspace graph. The owning repo workspace remains the uni…"
+    keywords[5]: discovery,nested,resolution,target,workspace
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml"
+        entry_id: "e815f261-ca7d-4957-8f68-666e1e1dfbfe"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 46319357f3b1d274bf8fb14033ac8fed9de992a140d7df84a13ce2bc5c8a407d
+    tags[3]: draft,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5f9a1652-943f-4d98-8812-a4f7ca1d5e61"
+    kind: spec
+    source_path: ".spec/specs/5f9a1652-943f-4d98-8812-a4f7ca1d5e61/spec.toml"
+    title: "viewer-api README schema adoption"
+    summary: "Migrate `viewer-api` to the shared README schema and extend its generated child README surfaces with parent links back to the repo root."
+    keywords[5]: adoption,readme,schema,viewer,"viewer-api"
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml"
+        entry_id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: adfa4475fac6527523493ba542008dc5bd97461e8975067994013aa15381c7e2
+    tags[3]: draft,"scope:internal","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "62f6b6d6-eb0c-43cc-ad3e-a75347f2a705"
+    kind: spec
+    source_path: ".spec/specs/62f6b6d6-eb0c-43cc-ad3e-a75347f2a705/spec.toml"
+    title: "spec-editor: state machine control"
+    summary: The `StateTransition` component surfaces the spec state machine as an interactive
+    keywords[4]: control,machine,"spec-editor",state
+    relations:
+      parent:
+        canonical_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
+        entry_id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: "0498203f02e6530556120a041e2abcac4dc5c646c9cb865d598249f4b6b3a65c"
+    tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "69f8d8ce-d895-4270-b3f9-0d6c951f2a9a"
+    kind: spec
+    source_path: ".spec/specs/69f8d8ce-d895-4270-b3f9-0d6c951f2a9a/spec.toml"
+    title: reviews prompt target
+    summary: "Define a reusable generated prompt under `.agents/prompts/reviews.prompt.md` for reviewing the highest-ranked `in-review` tickets using the repository ticket workflow."
+    keywords[3]: prompt,reviews,target
+    digest: ef82680781e94abb46c2d2dec015ffbf5ebdf156e07ada8afc942dc5fb40b7fc
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6cf1685d-dc05-4022-abbb-efdd8e94af22"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/6cf1685d-dc05-4022-abbb-efdd8e94af22/spec.toml"
+    title: "ticket-viewer: theme settings"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[3]: settings,theme,"ticket-viewer"
+    digest: 8806f1315f5be7a5f8868eee39a677394acb138d4e77bef5f40c9182246d6d9a
+    tags[4]: draft,root,"scope:component","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6d73975e-5af4-4ac6-b732-33c381bf768d"
+    kind: spec
+    source_path: ".spec/specs/6d73975e-5af4-4ac6-b732-33c381bf768d/spec.toml"
+    title: "context-engine root README tree generation"
+    summary: "Generate the top-level `context-engine` README tree from the root `.rule` store, including the repo root plus the root-owned first-level child README surfaces that currently break the navigation chai…"
+    keywords[7]: context,"context-engine",engine,generation,readme,root,tree
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml"
+        entry_id: "59216a24-598e-48eb-a280-ee8766857c0b"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 87ce9c3849f96b8500fd07ee3359210fa8c6a26e1ed9b8883a3bde4f5e9fccc1
+    tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6e63979a-f29b-4c6f-a4b7-5264fd9c29d4"
+    kind: spec
+    source_path: ".spec/specs/6e63979a-f29b-4c6f-a4b7-5264fd9c29d4/spec.toml"
+    title: "Add TOON format support across the memory-api CLI suite"
+    summary: "Add a compact TOON machine-readable format alongside existing JSON output across the memory-api CLI suite."
+    keywords[6]: across,format,"memory-api",suite,support,toon
+    scope: "Add a global `--toon` output flag next to `--json` for `ticket`, `spec`, `rule`, and `audit`. Keep existing human-readable output unchanged. Ensure machine-readable success and error payloads render as TOON when requested. Extend structured file-reading inputs that are currently…"
+    digest: a1ba6b40accda899b8d07808dc18922595deb6c24754cbdb6111396124ecb686
+    tags[4]: draft,"memory-api",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "717be077-49f6-49bc-8221-ea5105ba5ff3"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml"
+    title: health
+    summary: "Source: `tools/http/spec-http/src/handlers/health.rs`"
+    keywords[1]: health
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 34da3915accefa6c1c2897b60a8cb92d6a0143789719da11853a464bf987db7a
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "77ca6056-180d-4e88-a76a-dcf8ff280c7a"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml"
+    title: specs
+    summary: "Source: `tools/http/spec-http/src/handlers/specs.rs`"
+    keywords[1]: specs
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+        entry_id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c1938a76e701224404c82c974a9dcb3158a35fe528c081f94af1c7cf2af39166
+    tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
+    kind: spec
+    source_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
+    title: "spec-editor"
+    summary: "`spec-editor` is a **fully interactive, GPU-accelerated specification editor**. It"
+    keywords[3]: editor,spec,"spec-editor"
+    relations:
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/18d7cbc2-d454-498b-9f10-9f1a0d320f2e/spec.toml","18d7cbc2-d454-498b-9f10-9f1a0d320f2e",child,spec,""
+        ".spec/specs/62f6b6d6-eb0c-43cc-ad3e-a75347f2a705/spec.toml","62f6b6d6-eb0c-43cc-ad3e-a75347f2a705",child,spec,""
+        ".spec/specs/cbac783c-e3a1-4a31-ac11-a539b39164c5/spec.toml","cbac783c-e3a1-4a31-ac11-a539b39164c5",child,spec,""
+        ".spec/specs/ffb89723-178b-435b-8591-c639d3c7d5dd/spec.toml","ffb89723-178b-435b-8591-c639d3c7d5dd",child,spec,""
+    digest: cb58c51b4fe88d091242ba53272c73b005bf744f8c4f1f65ef386505141923cf
+    tags[4]: draft,root,"scope:system","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "798c9a3c-404a-4842-874d-484edb4209ef"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/spec.toml"
+    title: "viewer-api recurring principles"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[3]: principles,recurring,"viewer-api"
+    digest: d057b8d05b71e55e01c6a7f968d80a5a108291297ed14dbf3368e82b69b7322a
+    tags[4]: draft,root,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7b0ad285-c7df-4b19-a9d7-a11e71bab2ba"
+    kind: spec
+    source_path: ".spec/specs/7b0ad285-c7df-4b19-a9d7-a11e71bab2ba/spec.toml"
+    title: "Cline agent client integration with client-agnostic .agents/ standard"
+    summary: Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent gu…
+    keywords[8]: agent,agents,client,"client-agnostic",cline,integration,standard,with
+    digest: b212f6bf270a8893d844075e6b69b023e6dc96e901ba763414dd743823a8ed42
+    tags[4]: draft,"repo-guidance",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7b43dfd1-39aa-4585-b5fe-dc57c6d57eba"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/7b43dfd1-39aa-4585-b5fe-dc57c6d57eba/spec.toml"
+    title: "viewer-api: icons + Spinner"
+    summary: Canonical specification for the shared icon set and `Spinner` Dioxus
+    keywords[3]: icons,spinner,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 6b80373c006e9d3cef914e8ffcf554146008521ff07283102ada94b21b6bca24
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
+    kind: spec
+    source_path: ".spec/specs/7fd5639f-a62b-4eb4-abe2-215c4bb2d0de/spec.toml"
+    title: read_sequence
+    summary: "`WorkspaceManager::read_sequence` reads text through the graph and returns one"
+    keywords[3]: read,read_sequence,sequence
+    relations:
+      parent:
+        canonical_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
+        entry_id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/904871fa-0b97-4484-9540-f2926e32476f/spec.toml","904871fa-0b97-4484-9540-f2926e32476f",child,spec,""
+        ".spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/spec.toml","e0913182-7a5e-4c8f-a750-799afd58baae",child,spec,""
+    digest: 936438648b71fdee0f32b962154e0ecf36f90a8e510c7b8e67ee417a8235d5bd
+    tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+    title: "memory-api"
+    summary: Bootstrapped from source analysis.
+    keywords[2]: memory,"memory-api"
+    relations:
+      children[19]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/spec.toml","08aa283e-34ee-47d4-83bc-4c4311a9c85f",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e/spec.toml","0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/12045379-ce22-416b-8a5e-31d560c35992/spec.toml","12045379-ce22-416b-8a5e-31d560c35992",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/121a0e79-a212-40af-8041-83c1ea11f029/spec.toml","121a0e79-a212-40af-8041-83c1ea11f029",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/2594c83e-12e3-49d9-a5b7-abe7122e5f52/spec.toml","2594c83e-12e3-49d9-a5b7-abe7122e5f52",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/267acfdc-7df4-4090-9f17-7d6d71232814/spec.toml","267acfdc-7df4-4090-9f17-7d6d71232814",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/3235e977-b12a-4981-aa09-6edf218bb97d/spec.toml","3235e977-b12a-4981-aa09-6edf218bb97d",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/4a16fea7-5af5-477f-835d-6c0c94216bfe/spec.toml","4a16fea7-5af5-477f-835d-6c0c94216bfe",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/86b37a8b-4798-4cfe-971e-d53bb842ae80/spec.toml","86b37a8b-4798-4cfe-971e-d53bb842ae80",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/9c33e0fa-2a18-45ba-a837-a04d71638944/spec.toml","9c33e0fa-2a18-45ba-a837-a04d71638944",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml","ae5ef697-0ee5-4f74-9dca-2cb268290dae",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/b9129cf5-ddad-49f5-9dd0-60fdb72ee306/spec.toml","b9129cf5-ddad-49f5-9dd0-60fdb72ee306",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/bb77b62c-bb18-4274-8ba2-7543f6d81ff5/spec.toml","bb77b62c-bb18-4274-8ba2-7543f6d81ff5",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/d3dea825-4850-4a95-a03d-4884ce85a232/spec.toml","d3dea825-4850-4a95-a03d-4884ce85a232",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/ddac3853-65b3-4b6b-b216-81e78e250bb1/spec.toml","ddac3853-65b3-4b6b-b216-81e78e250bb1",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/de14117a-df7b-4f2a-87b8-55074ade0487/spec.toml","de14117a-df7b-4f2a-87b8-55074ade0487",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml","f081e8f4-7d28-4505-9faf-85c65b033b44",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml","f156fa16-7910-4c98-b69c-f848073dba00",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml","fded16bb-1a4b-4dd9-a610-c26459d19403",child,spec,""
+    digest: 5aca386722a6470b5be125cf3787cd6f9aadcd3a3f95ce4fed8ac9350424c2f3
+    tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "823b22cf-c0dc-46c6-a03d-00cdd3c4c83a"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/823b22cf-c0dc-46c6-a03d-00cdd3c4c83a/spec.toml"
+    title: "session-api persistence writer"
+    summary: "Persist `session-api` capture requests into a deterministic filesystem layout that can become the first memory-api-backed session store."
+    keywords[3]: persistence,"session-api",writer
+    scope: "keep the existing `SessionCaptureRequest -> SessionRecord -> SessionStorePlan` flow add the first write path that materializes the planned session directory and JSON files serialize a session manifest and transcript payload in a stable, readable format return explicit IO and ser…"
+    non_goals: "watcher-based ingestion CLI, MCP, or HTTP session capture commands query or search APIs over persisted sessions schema migration or retention logic beyond the planned file layout"
+    digest: 783349e035b9a852e6961f3b032a52558b14bdd98b731f41aced5fd36b1af36f
+    tags[4]: draft,root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "83094beb-d315-4b16-b132-3ae22a528422"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml"
+    title: error
+    summary: "Source: `crates/spec-api/src/error.rs`"
+    keywords[1]: error
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a50577891c3150061bb02830994a151ea2ec25948ed2ed17edb19858f0677a5d
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "86877b97-2df6-46b5-923d-a9e608655fed"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+    title: "spec-api"
+    summary: Bootstrapped from source analysis.
+    keywords[2]: spec,"spec-api"
+    relations:
+      children[7]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/spec.toml","1cf68c36-7f64-4d81-b553-1947b978fbe3",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml","226ff55f-eebf-43b8-aa1e-5abf81b99101",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/32eaa05c-cef6-4a3b-b506-b5a5410a4674/spec.toml","32eaa05c-cef6-4a3b-b506-b5a5410a4674",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml","351389c0-0873-4c3c-bc46-3551459ba1cd",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml","597de059-859d-4aae-89ad-bfe2d84462c0",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml","83094beb-d315-4b16-b132-3ae22a528422",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml","b0b3c0c6-168f-4b00-93b2-e06ce506855a",child,spec,""
+    digest: 720199458597a5a44008b5beb038472d93be6b5d95e2de7a87bfca46c0e013a1
+    tags[4]: draft,root,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "86b37a8b-4798-4cfe-971e-d53bb842ae80"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/86b37a8b-4798-4cfe-971e-d53bb842ae80/spec.toml"
+    title: index
+    summary: "Source: `crates/memory-api/src/storage/index.rs`"
+    keywords[1]: index
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 1b88108c229d31d56696f6330394e0cd62681a79b89b28443c15d4befbec98c2
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "86bb3a01-ef29-4c7b-905b-9582a0d75f40"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/86bb3a01-ef29-4c7b-905b-9582a0d75f40/spec.toml"
+    title: process management
+    summary: "viewer-ctl needs to find and terminate processes that occupy a TCP port."
+    keywords[2]: management,process
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: ebea197637c5d3c36577b8883d644795ab30fcd14ccc6605ad8d8ba950dcabd9
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "88c88341-5f9c-4e59-87c7-9176e4afc26a"
+    kind: spec
+    source_path: ".spec/specs/88c88341-5f9c-4e59-87c7-9176e4afc26a/spec.toml"
+    title: temp
+    summary: ""
+    keywords[3]: probe,review,temp
+    digest: f9d34b193f38d720415d9528a66bbab7c7c377d5d6a911b9d55932e670e4fceb
+    tags[3]: draft,root,"viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "8c2bbb42-4ca0-43a3-8196-334218bf543e"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/8c2bbb42-4ca0-43a3-8196-334218bf543e/spec.toml"
+    title: "spec-viewer: spec-tree component"
+    summary: The `SpecTree` Dioxus component renders the spec hierarchy as a collapsible tree.
+    keywords[5]: component,spec,"spec-tree","spec-viewer",tree
+    relations:
+      parent:
+        canonical_path: "memory-viewers/.spec/specs/d8b515b8-86fd-4366-9fff-1946f43c3030/spec.toml"
+        entry_id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 161247b51d35c18bb259a6c6bb535672c6b320f89ee00ce7c4c135bef6c96eac
+    tags[3]: draft,"scope:component","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "8c4d51ef-c0b6-437d-bc14-672b0802cef2"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/8c4d51ef-c0b6-437d-bc14-672b0802cef2/spec.toml"
+    title: "ticket-viewer: integrated ticket document and focused full-graph view"
+    summary: "The ticket-viewer main layout still splits ticket reading across separate content and detail panels, while graph mode fetches a fixed-depth root-local subgraph and treats selection changes like graph…"
+    keywords[9]: detail,document,focused,"full-graph",graph,integrated,ticket,"ticket-viewer",view
+    digest: c016b5351bd83b1c04163338f143ecd5a5b168132757111806753db1d3af6364
+    tags[4]: draft,root,"scope:public","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "904871fa-0b97-4484-9540-f2926e32476f"
+    kind: spec
+    source_path: ".spec/specs/904871fa-0b97-4484-9540-f2926e32476f/spec.toml"
+    title: induced graph structure
+    summary: This internal child spec records the graph facts that must hold after the
+    keywords[3]: graph,induced,structure
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7fd5639f-a62b-4eb4-abe2-215c4bb2d0de/spec.toml"
+        entry_id: "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 98e603be4f89d6fbbf16ffc3193192fad7a5360a833fb85fe7f09ae9e073047e
+    tags[3]: "context-read",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9074b2ef-c8fe-4bb0-a987-87063078c1ff"
+    kind: spec
+    source_path: ".spec/specs/9074b2ef-c8fe-4bb0-a987-87063078c1ff/spec.toml"
+    title: Workflow and health parity for ticket interfaces
+    summary: "Ticket CLI, ticket HTTP, and ticket MCP currently return different workflow and health answers for the same store because parity-critical domain behavior still lives in their interface crates instead…"
+    keywords[9]: contract,cross,health,interfaces,parity,surface,ticket,validation,workflow
+    non_goals: "Consolidated ticket detail/context read parity. That remains adjacent follow-up work under [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/tic…"
+    digest: 6d91ee5d9723a5fd18745d09e22f3ed46867538d911572a5318731d5dbb639b4
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9109f12a-cc02-47ae-948f-98008b6c167d"
+    kind: spec
+    source_path: ".spec/specs/9109f12a-cc02-47ae-948f-98008b6c167d/spec.toml"
+    title: Shared rendering pipeline integration for generated store indexes
+    summary: "Define the shared rendering-pipeline integration for generated store indexes so README/index files route through one rendering paradigm instead of per-domain ad hoc renderers. Store-index generation …"
+    keywords[7]: generated,indexes,integration,pipeline,rendering,shared,store
+    scope: "The requirement that store-index markdown routes through `memory-api::generated_markdown`. Per-domain provenance config conventions. Idempotent write contract enabling hook `--check`. Relationship between the markdown surface and the TOON sidecar surface."
+    non_goals: "Does not implement any generator's rendering (per-domain generator tickets). Does not change rule entry semantics or the rule sync pipeline. Does not define digest normalization rules (digest-input-contract spec). Does not define git-hook triggers (git-hook-automation spec)."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 8855a57171ff805178fbd5e302ec6b5e5e3bb0c80566ce19f36c6954f8247e27
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "91b5b5fe-0046-424c-b5e5-3fb961f4d940"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml"
+    title: args
+    summary: "Source: `tools/cli/spec-cli/src/cli/args.rs`"
+    keywords[1]: args
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml"
+        entry_id: "ee36710b-1725-436a-a5fc-1e5a7d27f6bb"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 2f7a3e5ba610c8b1ad762acc3ae10b41c51cba0518e6eeeeaab6972fdd0e4d06
+    tags[3]: draft,"scope:public","spec-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "92112188-8acd-4573-bb22-f784fcf371ca"
+    kind: spec
+    source_path: ".spec/specs/92112188-8acd-4573-bb22-f784fcf371ca/spec.toml"
+    title: insert_first_match
+    summary: "`WorkspaceManager::insert_first_match` induces graph structure from an existing"
+    keywords[4]: first,insert,insert_first_match,match
+    relations:
+      parent:
+        canonical_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
+        entry_id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 4837f80b4897ba0c2e2bb477f446eba4bf2b1af4ccdf7695ca25893db0efc05d
+    tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "954d9807-f357-41e5-9fd4-b1da39e0933d"
+    kind: spec
+    source_path: ".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/spec.toml"
+    title: "Recurring cross-cutting principles"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[3]: "cross-cutting",principles,recurring
+    digest: 9b971158b2c9bab2f53b966bce3b5d86ae80c95abb875de437fca93b77df7bf4
+    tags[4]: "context-engine",draft,root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "95562129-87d8-4d86-9cd3-c8a09473a6d0"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/95562129-87d8-4d86-9cd3-c8a09473a6d0/spec.toml"
+    title: "spec-viewer: routes and pages"
+    summary: "Defines the Dioxus `Route` enum and the four page-level components for the spec-viewer SPA."
+    keywords[3]: pages,routes,"spec-viewer"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/.spec/specs/d8b515b8-86fd-4366-9fff-1946f43c3030/spec.toml"
+        entry_id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 24f04e68bd83e1fdc6d14aca6a5fcb70236a3595a9ad382134b37363a07dd589
+    tags[3]: draft,"scope:component","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "96dc0068-d05d-4e61-b785-144272119fa9"
+    kind: spec
+    source_path: ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml"
+    title: workflow guidance generation and session capture scaffolding
+    summary: "Generate the requested workflow prompt and agent files from canonical rule-api entries, then seed a bounded first session-api scaffold for storing Copilot chat sessions in the memory-api store."
+    keywords[6]: capture,generation,guidance,scaffolding,session,workflow
+    scope: "add generated root guidance prompts for `/memory-setup`, `/interview`, `/user-training`, `/ticket-next`, `/next`, `/audit`, and `/tdd` add generated root agent files for `testing`, `research`, `interview`, `audit`, and `implement` keep rule-target configs and canonical rule entr…"
+    non_goals: "building every future MCP, HTTP, CLI, or UI surface for session capture in one change replacing the existing workflow metadata direction for `doc-api`, `test-api`, or `log-api` hand-authoring prompt or agent files without rule-api-backed generation"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/spec.toml"
+        entry_id: "a4f48d84-50ed-4769-a42f-38321ea9600c"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml","9e04ff58-9160-4766-b307-74c0fb32a92c",child,spec,""
+    digest: d6853009e5a2b8839b86d05a5b5d6e45a33b21a9f8e1bf2defb81b74c6b1cb25
+    tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "98b4f75d-3628-470d-a5cc-c91b6cc9811a"
+    kind: spec
+    source_path: ".spec/specs/98b4f75d-3628-470d-a5cc-c91b6cc9811a/spec.toml"
+    title: "ticket-viewer: graph focus, property-based rendering, and 2D presentation mode"
+    summary: "The current ticket-viewer graph still centers its presentation around rich DOM ticket cards, limited focus falloff, and a mostly 3D/isometric camera model. That makes dense graphs expensive to render…"
+    keywords[8]: focus,graph,mode,presentation,property,"property-based",rendering,"ticket-viewer"
+    digest: 52c382a81b123f4cb851b984232ee5d76cb26bc9150a42ece8b2742ea2a0bf70
+    tags[4]: active,root,"scope:public","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9983b865-5082-437a-945a-05c26a56c113"
+    kind: spec
+    source_path: ".spec/specs/9983b865-5082-437a-945a-05c26a56c113/spec.toml"
+    title: submodule branch tracking workflow
+    summary: "Top-level submodules in the repository currently land in detached HEAD state, which makes local commits easy to create without advancing the intended `main` branch in each submodule."
+    keywords[4]: branch,submodule,tracking,workflow
+    digest: 9314e36b132ffbb28dd97b1145239f498c66a9f225c4e551c5211d7863703169
+    tags[4]: active,"context-engine",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9c33e0fa-2a18-45ba-a837-a04d71638944"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/9c33e0fa-2a18-45ba-a837-a04d71638944/spec.toml"
+    title: query
+    summary: "Source: `crates/memory-api/src/model/query.rs`"
+    keywords[1]: query
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 5c59f3d82bd19151eb1a8e45f1dfbbc834ac0d48b1265d29c920715b000e948e
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9e04ff58-9160-4766-b307-74c0fb32a92c"
+    kind: spec
+    source_path: ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml"
+    title: handoff workflow prompts
+    summary: "Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly."
+    keywords[3]: handoff,prompts,workflow
+    scope: "add root prompt targets for `/handoff` and `/handoff-tickets` create canonical rule entries for both generated prompt files generate prompt outputs through the existing rule-target workflow make `/handoff` produce a short, paragraph-style, reference-centric jumpstart prompt for …"
+    non_goals: "changing the existing `session-api` storage model or Stop-hook persistence path introducing a new first-class session coordination primitive in this slice implementing board automation beyond the current ticket workflow tools"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml"
+        entry_id: "96dc0068-d05d-4e61-b785-144272119fa9"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 5dedf5e07fa3996c008a6a7d5ea3d64003cf0c36858c2bc831998c6dc8032ddd
+    tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml"
+    title: "viewer-api: TreeView"
+    summary: Canonical specification for the shared `TreeView` Dioxus component
+    keywords[4]: tree,treeview,view,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 72b1e2674127a4fdbc2c7d66c087434d32374d13dd9def72088f112b1f8696fb
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a4f48d84-50ed-4769-a42f-38321ea9600c"
+    kind: spec
+    source_path: ".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/spec.toml"
+    title: workflow validation metadata and default tool behavior
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[6]: behavior,default,metadata,tool,validation,workflow
+    scope: Rewrite the target architecture for the first embedded workflow slice.
+    non_goals: "preserving a dedicated wrapper validation CLI as the long-term public interface keeping validation state in a separate path-only JSON artifact store implementing every `test-api`, `log-api`, `doc-cli`, HTTP, and MCP surface in the same change migrating every existing prototype a…"
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml","96dc0068-d05d-4e61-b785-144272119fa9",child,spec,""
+    digest: 68b0fc7e6c0d9ca422317710ed2e1147b1c176e4b1a7d0ea36aa6733eab8125f
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a592900c-f513-4ec2-8dd2-53dbd04aac7b"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/a592900c-f513-4ec2-8dd2-53dbd04aac7b/spec.toml"
+    title: "ticket-vscode Rust/WASM port"
+    summary: "Port `memory-viewers/memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM cor…"
+    keywords[5]: port,rust,rust/wasm,"ticket-vscode",wasm
+    digest: d8001c4b186358056f0efd7b5c7a17e6b43bbb3954d1e9d9c4d73fe68c76f2ee
+    tags[4]: reviewed,root,"scope:internal","ticket-vscode"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a595eb0c-f9f1-4e29-a425-120df5334f7d"
+    kind: spec
+    source_path: ".spec/specs/a595eb0c-f9f1-4e29-a425-120df5334f7d/spec.toml"
+    title: Scoped selector contract for board and next workflow discovery
+    summary: "`ticket board show`, `ticket next`, MCP `board_show`/`next_tickets`, and"
+    keywords[7]: board,contract,discovery,next,scoped,selector,workflow
+    digest: f837381ed4c912bf5f7b9498b41130318b48ed0f4b44ec1807781634062c019a
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a6318461-3a06-4d6d-aabb-7e06c33f4e1b"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/a6318461-3a06-4d6d-aabb-7e06c33f4e1b/spec.toml"
+    title: "audit-api ticket dependency topology validation"
+    summary: "`audit-api` should flag orphan tickets so every active ticket participates"
+    keywords[5]: "audit-api",dependency,ticket,topology,validation
+    digest: bc04ece565a3a7dd2803c8b76edd52aedb911ad57d66c1c5ff567aae3937dbf2
+    tags[3]: "audit-api",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a67fdd95-a5c7-44f4-a861-8b427f1923cd"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/a67fdd95-a5c7-44f4-a861-8b427f1923cd/spec.toml"
+    title: Probe Spec
+    summary: ""
+    keywords[2]: probe,spec
+    digest: ec03ced99f5a2e65b78b4e803d3e1fc74285c6e9e1a30d4d3d2204a10585acc8
+    tags[3]: draft,probe,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
+    title: workspace
+    summary: "Source: `crates/memory-api/src/workspace.rs`"
+    keywords[1]: workspace
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[3]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml","0386c4d0-15c4-4561-a33f-63b881c852c5",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml","0b1888f2-7e59-45fb-95d8-1bf14ff7747f",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml","ec22fe34-2d24-4dc5-a067-85121bed3655",child,spec,""
+    digest: 4d9d32ae8d78c702d10bc02b84b6d156994f10acc3f2258ef05a4f892d10df96
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "afe17aef-793e-419f-93c1-568bf10a2955"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml"
+    title: install layout
+    summary: "viewer-ctl installs three classes of artifacts. The layout is fixed and"
+    keywords[2]: install,layout
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c28cc725b08ec4a237160b583d5ed96066f0b729454314020696cc27b31dce5f
+    tags[3]: draft,"scope:public","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b06c9df8-2866-433a-af73-ae9b1f4a0f0a"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml"
+    title: "viewer-api: structured tracing for WASM frontend"
+    summary: "Specification for replacing ad-hoc `web_sys::console::log_1!()` calls in the"
+    keywords[5]: frontend,structured,tracing,"viewer-api",wasm
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml","479e226a-b4ef-4e30-ade0-ebdabbf956ed",child,spec,""
+    digest: 888e8ea6d6c4edae65438a70b973b1a9fdbf0c77cdac3dbdd24eed4529f6bf45
+    tags[4]: draft,root,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b0b3c0c6-168f-4b00-93b2-e06ce506855a"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml"
+    title: slug
+    summary: "Source: `crates/spec-api/src/slug.rs`"
+    keywords[1]: slug
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
+        entry_id: "86877b97-2df6-46b5-923d-a9e608655fed"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 82c12b0596cd96cbaadbcfa8076545d0026fb3fff2d6ee5ce57bf5caec5e434f
+    tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b3362691-09a0-4028-8daa-13b4c4102c15"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/b3362691-09a0-4028-8daa-13b4c4102c15/spec.toml"
+    title: "viewer-api: layout components"
+    summary: "Canonical specification for the shared **page-shell** Dioxus components"
+    keywords[3]: components,layout,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: d2018177e283f25a4f33089e8a940541d142aa9e4266ce4f13ce247432d68cb7
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b568bb7a-6726-46ac-bb78-fbc1858da4b8"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml"
+    title: extension lifecycle
+    summary: "VS Code extensions are TypeScript projects compiled to `out/`. viewer-ctl"
+    keywords[2]: extension,lifecycle
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 0fcc6d360373ec662971ecbc51b7448f416ce7c7cfe84b83ee98bd2850eea770
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b748e117-a847-474d-92ee-b58723cee612"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/b748e117-a847-474d-92ee-b58723cee612/spec.toml"
+    title: "viewer-api: dev proxy"
+    summary: "Canonical specification for `viewer-api::dev_proxy` — the optional"
+    keywords[2]: proxy,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 70295e90bb1fb1f31efa2b3401316fc17013dd167ec5195eb4ea204535e5c9f7
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+    title: "viewer-ctl"
+    summary: "`viewer-ctl` is the **lifecycle manager** for context-engine viewer servers,"
+    keywords[2]: viewer,"viewer-ctl"
+    non_goals: "Process supervision** — viewer-ctl does not keep servers alive, restart them on crash, or aggregate logs. Once `start` returns the server is detached (Windows) or replaces the viewer-ctl process (Unix `exec`). Cross-process orchestration** — viewer-ctl manages one component per …"
+    relations:
+      children[8]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml","01f7eae8-555d-46e2-bb54-0e0bf2b2da90",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/351e65fe-0629-4a0f-9c19-27dabb36b72f/spec.toml","351e65fe-0629-4a0f-9c19-27dabb36b72f",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/3fa36e9e-b097-4566-90e4-7d5f8053cd55/spec.toml","3fa36e9e-b097-4566-90e4-7d5f8053cd55",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/4dafde12-e894-43d7-aa65-cda9a072be27/spec.toml","4dafde12-e894-43d7-aa65-cda9a072be27",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/86bb3a01-ef29-4c7b-905b-9582a0d75f40/spec.toml","86bb3a01-ef29-4c7b-905b-9582a0d75f40",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml","afe17aef-793e-419f-93c1-568bf10a2955",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml","b568bb7a-6726-46ac-bb78-fbc1858da4b8",child,spec,""
+        "memory-viewers/viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml","c23166c7-2315-4b89-9160-cde7df3086e6",child,spec,""
+    digest: b4adbba5849369bf81f67dadb73086b2946155614350c4eb8857987adc5280d3
+    tags[4]: draft,root,"scope:system","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b8ddb54c-8939-4bbd-a3b3-2e469caa09da"
+    kind: spec
+    source_path: ".spec/specs/b8ddb54c-8939-4bbd-a3b3-2e469caa09da/spec.toml"
+    title: "context-stack rule-backed README tree"
+    summary: "Give `context-stack` a repo-local rule workspace and generate both its root README and its first-level child README tree from local rules."
+    keywords[6]: context,"context-stack",readme,"rule-backed",stack,tree
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml"
+        entry_id: "59216a24-598e-48eb-a280-ee8766857c0b"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a58cc1e86ebab18c7bd68c5577a0e57409a2f69ee3f96b83a391c33a5fc36eea
+    tags[3]: "context-stack",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b9129cf5-ddad-49f5-9dd0-60fdb72ee306"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/b9129cf5-ddad-49f5-9dd0-60fdb72ee306/spec.toml"
+    title: store bootstrap open
+    summary: "The local memory-api store wrappers currently expose two low-level entry points:"
+    keywords[3]: bootstrap,open,store
+    non_goals: "silently changing strict `open(...)` semantics for all callers forcing a scan on every successful `open_or_init(...)` call when the index is already present changing workspace-root resolution rules for `.ticket`, `.spec`, or `.rule`"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 9dd96ee8aef1e8e0af1fba16c05fa2d1f1e12849777ba5792171b8d0a5c7965b
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b9bf7713-5644-413d-a99d-00866828d534"
+    kind: spec
+    source_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
+    title: README shared schema rollout
+    summary: "Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-…"
+    keywords[4]: readme,rollout,schema,shared
+    scope: "This rollout spec coordinates four delivery branches:"
+    relations:
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml","3c4c0c4f-7d5c-4fa5-9c45-037420e56cee",child,spec,""
+        ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml","59216a24-598e-48eb-a280-ee8766857c0b",child,spec,""
+        ".spec/specs/c163eba4-51c5-496e-88cd-ef8bcd8fe433/spec.toml","c163eba4-51c5-496e-88cd-ef8bcd8fe433",child,spec,""
+        ".spec/specs/cde871d1-d390-454e-ae0b-94b152baca15/spec.toml","cde871d1-d390-454e-ae0b-94b152baca15",child,spec,""
+    digest: 7f759867829bf2af36009957fc5a0698b3b215ad9458a850bb437631a4859111
+    tags[4]: draft,"repo-guidance",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "baaa35ff-4eb6-4288-b4d3-257311b98aa4"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/baaa35ff-4eb6-4288-b4d3-257311b98aa4/spec.toml"
+    title: "viewer-api: store primitives"
+    summary: "Canonical specification for the shared client-side store helpers under"
+    keywords[3]: primitives,store,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 4f0bf160fbaafd493aa3fd66e02f462512e7700b8437c45b6a0381264cbf2d39
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bb77b62c-bb18-4274-8ba2-7543f6d81ff5"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/bb77b62c-bb18-4274-8ba2-7543f6d81ff5/spec.toml"
+    title: schema_registry
+    summary: "Source: `crates/memory-api/src/model/schema_registry.rs`"
+    keywords[3]: registry,schema,schema_registry
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: bae14915971ce6a1e8409e9ddad6119ccdd8cd1ee51a5638f795806dffe9171d
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bbd92962-33f4-4b9e-b301-f4ce9909c135"
+    kind: spec
+    source_path: ".spec/specs/bbd92962-33f4-4b9e-b301-f4ce9909c135/spec.toml"
+    title: insert_sequences
+    summary: "`WorkspaceManager::insert_sequences` performs bulk graph induction over an"
+    keywords[3]: insert,insert_sequences,sequences
+    relations:
+      parent:
+        canonical_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
+        entry_id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 71224cd94b3d9435fe1182266848cdc448e6c1a64cc826f5e4324d3253027488
+    tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bca2c4a5-b39e-4896-91f2-8453a1f4ff60"
+    kind: spec
+    source_path: ".spec/specs/bca2c4a5-b39e-4896-91f2-8453a1f4ff60/spec.toml"
+    title: "Generalize graph improvements across all memory-viewers"
+    summary: "The four graph improvements implemented in ticket-viewer need to be generalized to spec-viewer and log-viewer:"
+    keywords[6]: across,generalization,generalize,graph,improvements,"memory-viewers"
+    digest: ac19c9b20cfce948a716baa91a8d6a14b822f5d60a60d7d266164194ecf2206d
+    tags[4]: draft,root,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bcea435e-c397-4e30-846f-c5e58cfa0755"
+    kind: spec
+    source_path: ".spec/specs/bcea435e-c397-4e30-846f-c5e58cfa0755/spec.toml"
+    title: Smooth repository README surfaces
+    summary: "Make the repository-root README surfaces navigable and consistent enough to iterate on without re-auditing the same structural gaps each time."
+    keywords[4]: readme,repository,smooth,surfaces
+    scope: "Manual quick-fix refresh for `context-engine/README.md` and `context-stack/README.md`. Rule-source updates for the generated repository READMEs in `memory-viewers`, `memory-viewers/memory-api`, and `memory-viewers/viewer-api`."
+    digest: 9cfb5b8830a0484a7f3eeb8081f3a19d51e42872efb175492d48696fce859c90
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "be7d7ae7-bb1f-4438-813d-f69f17d65cf6"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/be7d7ae7-bb1f-4438-813d-f69f17d65cf6/spec.toml"
+    title: CLI and Viewer Installation Contract
+    summary: "This spec defines the canonical installation contract for the `memory-api` operator surfaces that are exposed to users through generated README documentation. The goal is to keep one synchronized ins…"
+    keywords[3]: contract,installation,viewer
+    digest: d623c938a8b062042c7fcbeb2bf10d44931bbe46b27ef505e6a3c29d38685bca
+    tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bf217ce5-8890-4749-9a2d-deffb6d0f4dd"
+    kind: spec
+    source_path: ".spec/specs/bf217ce5-8890-4749-9a2d-deffb6d0f4dd/spec.toml"
+    title: "Domain-owned thin generator architecture for store indexes"
+    summary: "Define the architecture boundary for store-index generation so each domain owns a **thin** generator while `memory-api` exposes only reusable, domain-agnostic infrastructure. An implementer must be a…"
+    keywords[6]: architecture,"domain-owned",generator,indexes,store,thin
+    scope: "The ownership boundary between `memory-api` (generic) and domain crates/CLIs (thin generators). The minimal extension-point surface required to keep generators thin. The push-model dependency direction (no `memory-api -> domain` edges)."
+    non_goals: "Does not implement any generator (deferred to the per-domain generator tickets). Does not redefine `IndexEntry` or the TOON sidecar format (owned by `0dba399a` / `e7a0ee3c`). Does not decide git-hook triggers or performance budgets (sibling specs). Does not define the per-field …"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: d789ec0c486514dd552bd0793077f0cf49e8284315ba1f799d4b32c038a3a4ba
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c163eba4-51c5-496e-88cd-ef8bcd8fe433"
+    kind: spec
+    source_path: ".spec/specs/c163eba4-51c5-496e-88cd-ef8bcd8fe433/spec.toml"
+    title: README completeness audit
+    summary: "Add a mechanical completeness check for the README contract so missing generation, parent or child navigation blocks, installable-content sections, or command-doc references fail before review."
+    keywords[3]: audit,completeness,readme
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
+        entry_id: "b9bf7713-5644-413d-a99d-00866828d534"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c27607852d194ccd70933acf13184183821187d900f912527a178d003c9f8867
+    tags[3]: draft,"repo-guidance","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c23166c7-2315-4b89-9160-cde7df3086e6"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml"
+    title: frontend lifecycle
+    summary: "Frontends are static-asset bundles produced by `trunk` (Dioxus/WASM) or"
+    keywords[2]: frontend,lifecycle
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
+        entry_id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a376da77bec7a00f28748e2aaef857e823bccd22f619c8af5c5105ee46706300
+    tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0"
+    kind: spec
+    source_path: ".spec/specs/c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0/spec.toml"
+    title: "peek-cli consumption and level-of-detail validation for generated indexes"
+    summary: "Define the `peek-cli` consumption and level-of-detail (LOD) validation plan for generated store indexes, so generators are reviewed against token-efficient agent consumption, not just correctness. Ge…"
+    keywords[7]: consumption,generated,indexes,"level-of-detail",peek,"peek-cli",validation
+    scope: "LOD tiers the markdown rendering must expose for peek consumption. The cross-domain peek validation matrix (markdown + TOON). The invariant that LOD presentation never changes digest or breaks diff stability."
+    non_goals: Does not implement LOD rendering (generator tickets). Does not benchmark runtime performance (benchmarking spec `98bc6b1c`). Does not change the digest schema (`0dba399a`).
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 1d5cba4363f04550ab40f7b6d8ff09207d86131b37eb5039d95e4dc9a76d2ec3
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c598ddb2-4d3a-4b81-90ea-8b25a54b8469"
+    kind: spec
+    source_path: ".spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469/spec.toml"
+    title: "Benchmarking and profiling plan for store-index generation"
+    summary: "Define the benchmarking and profiling plan for store-index generation so hook automation and generator implementations share explicit latency budgets, a repeatable measurement method, and evidence re…"
+    keywords[5]: benchmarking,generation,plan,profiling,"store-index"
+    scope: "Latency budgets for incremental and full runs. Criterion + tracing measurement methodology. Representative fixtures and the regression rule. The hand-off of evidence to git-hook automation."
+    non_goals: "Does not implement generators (generator tickets). Does not wire git hooks (git-hook-automation spec). Does not redefine digest inputs or rendering behavior."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
+        entry_id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 4f30bbb21316e24499fa0d0bad6a274f9e8c0aebc243ff0f5404deb86b7c24b1
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c5b11920-6ae8-4686-ae07-b8e9f8100bf8"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/spec.toml"
+    title: "spec-viewer: theme settings"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[3]: settings,"spec-viewer",theme
+    relations:
+      parent:
+        canonical_path: "memory-viewers/.spec/specs/d8b515b8-86fd-4366-9fff-1946f43c3030/spec.toml"
+        entry_id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 92338d7d792b383279f2b1759536496583a874eb6927d701d6b37f42b0c45da9
+    tags[3]: draft,"scope:component","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c6e3cc79-a2de-49f1-9c99-effe1b64a873"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/c6e3cc79-a2de-49f1-9c99-effe1b64a873/spec.toml"
+    title: "viewer-api: client log endpoint"
+    summary: "Canonical specification for `viewer-api::client_log` — the server endpoint"
+    keywords[3]: client,endpoint,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c48c17a479b6cbbbe385437aa410c95a2286e2bac0db0c6baaed91543247001d
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c6feacef-a06e-4769-a4cf-5c557be50f7d"
+    kind: spec
+    source_path: ".spec/specs/c6feacef-a06e-4769-a4cf-5c557be50f7d/spec.toml"
+    title: "context-stack"
+    summary: This branch captures the most confident specification material currently
+    keywords[3]: context,"context-stack",stack
+    relations:
+      children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/0c141c86-957c-4b93-b86e-f50a05e84763/spec.toml","0c141c86-957c-4b93-b86e-f50a05e84763",child,spec,""
+        ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml","16c3ad95-451d-4c09-a118-ca90bcefed9a",child,spec,""
+    digest: de2b8b3f9fb1c16cac23a478c50754fce881a20b92074454c63d28547c7e1fb6
+    tags[4]: "context-stack",draft,root,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c9b40e5d-1239-4ad6-99b1-0b759a9c4c49"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml"
+    title: "viewer-api: pagination + query helpers"
+    summary: "Canonical specification for `viewer-api::pagination` and `viewer-api::query`"
+    keywords[4]: helpers,pagination,query,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: d67b72609effe1538cbde7df9fab7a26a70831af46a544ac13963ae05be00c07
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "cbac783c-e3a1-4a31-ac11-a539b39164c5"
+    kind: spec
+    source_path: ".spec/specs/cbac783c-e3a1-4a31-ac11-a539b39164c5/spec.toml"
+    title: "spec-editor: section editor"
+    summary: The `SectionPanel` and `SectionEditor` components manage a spec's named subdocuments
+    keywords[3]: editor,section,"spec-editor"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
+        entry_id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 7534e253208926cb6c851cc21a97d5ed3c0bffb4c84c8497fb89e166608912a9
+    tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "cde871d1-d390-454e-ae0b-94b152baca15"
+    kind: spec
+    source_path: ".spec/specs/cde871d1-d390-454e-ae0b-94b152baca15/spec.toml"
+    title: Shared README schema and validation
+    summary: "Add a shared README schema layer to `rule-api` so repository README targets can inherit a standard structure, enforce required blocks, and expose enough validation detail to fail fast when navigation…"
+    keywords[4]: readme,schema,shared,validation
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
+        entry_id: "b9bf7713-5644-413d-a99d-00866828d534"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c411feb0f86ca42dfbe6e6e6c466529b6c148a4d264ee7ebe67b8cac64d8050c
+    tags[3]: draft,"rule-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "cf5e2942-1a47-43cc-a0ee-14e5774680a6"
+    kind: spec
+    source_path: ".spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/spec.toml"
+    title: "workflow documentation validation via doc-api and doc-cli"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[6]: "doc-api","doc-cli",documentation,tooling,validation,workflow
+    scope: "Rewrite the first workflow-facing documentation validation slice around `doc-api` and a future `doc-cli`."
+    non_goals: "complete parsing or linting coverage for every markdown/doc surface in one pass replacing existing doc generation flows keeping a dedicated wrapper documentation command path as the long-term public interface solving every documentation ownership and rendering problem in the sam…"
+    digest: 961467fa93c66e770dc23358d4b155808efbc0b952b54277c76006e393254267
+    tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "cfbb4500-4632-4a95-96a1-838dc4dccfd5"
+    kind: spec
+    source_path: ".spec/specs/cfbb4500-4632-4a95-96a1-838dc4dccfd5/spec.toml"
+    title: "memory-viewers aggregate README schema adoption"
+    summary: "Adopt the shared README schema in the aggregate `memory-viewers` repo root and normalize its child blocks after the `memory-api` and `viewer-api` child roots settle."
+    keywords[7]: adoption,aggregate,memory,"memory-viewers",readme,schema,viewers
+    scope: "This spec covers:"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml"
+        entry_id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: fd33892af44bcbc1d2be1ec13b97076f17aaf857708685052d2d014b53b07d25
+    tags[3]: draft,"memory-viewers","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d3dea825-4850-4a95-a03d-4884ce85a232"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/d3dea825-4850-4a95-a03d-4884ce85a232/spec.toml"
+    title: edge
+    summary: "Source: `crates/memory-api/src/model/edge.rs`"
+    keywords[1]: edge
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 66e865cf3037dac234c57637469bb9a7f283d1d760c8c39396c94dfc4c581045
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d4831fdc-9790-4a26-ac32-d675bb6a7792"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml"
+    title: server
+    summary: "Source: `tools/mcp/spec-mcp/src/server.rs`"
+    keywords[1]: server
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/4066c5a3-3e04-4eeb-81a2-91fb8e53cc94/spec.toml"
+        entry_id: "4066c5a3-3e04-4eeb-81a2-91fb8e53cc94"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a1023d62fdb015e8266f80543c4ec8c8303ead2da73556266a31c73e9cbf2710
+    tags[3]: draft,"scope:public","spec-mcp"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d702ed9e-f75c-4727-8f05-1b2b244ec74f"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml"
+    title: "Blocker trees and recently-unblocked workflow ordering"
+    summary: "The current workflow surface has two strong but separate pieces:"
+    keywords[7]: blocker,ordering,recently,"recently-unblocked",trees,unblocked,workflow
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/4bd3cd3f-5851-4d9e-b499-978cb7b53275/spec.toml"
+        entry_id: "4bd3cd3f-5851-4d9e-b499-978cb7b53275"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: e801fe811f1e63e6cf9fe7d7cab733b01b0cf6ade0477500e117a7fe5f2937f1
+    tags[3]: draft,"scope:public","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
+    kind: spec
+    source_path: "memory-viewers/.spec/specs/d8b515b8-86fd-4366-9fff-1946f43c3030/spec.toml"
+    title: "spec-viewer"
+    summary: "`spec-viewer` is a single-process, GPU-accelerated web application for **reading and"
+    keywords[3]: spec,"spec-viewer",viewer
+    relations:
+      children[3]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/.spec/specs/8c2bbb42-4ca0-43a3-8196-334218bf543e/spec.toml","8c2bbb42-4ca0-43a3-8196-334218bf543e",child,spec,""
+        "memory-viewers/.spec/specs/95562129-87d8-4d86-9cd3-c8a09473a6d0/spec.toml","95562129-87d8-4d86-9cd3-c8a09473a6d0",child,spec,""
+        "memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/spec.toml","c5b11920-6ae8-4686-ae07-b8e9f8100bf8",child,spec,""
+    digest: 3640f2218fae501990dc5e8a2ad3a0dd1cb22d0c9a5241c7371cf6178bb29431
+    tags[4]: draft,root,"scope:system","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d8c6114b-1188-4bc4-a8fb-dbfd3b1816ee"
+    kind: spec
+    source_path: ".spec/specs/d8c6114b-1188-4bc4-a8fb-dbfd3b1816ee/spec.toml"
+    title: probe
+    summary: ""
+    keywords[1]: probe
+    digest: 81667b44a1487a9627c54b296da4c60d927450953631009ed069cc641d17bd50
+    tags[3]: draft,root,"viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
+    title: "spec-http"
+    summary: Bootstrapped from source analysis.
+    keywords[3]: http,spec,"spec-http"
+    relations:
+      children[7]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/067c60c2-6be0-4f51-bbd3-80dcd29b9d35/spec.toml","067c60c2-6be0-4f51-bbd3-80dcd29b9d35",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/0df82e71-79ef-48ec-8459-43b4693d4543/spec.toml","0df82e71-79ef-48ec-8459-43b4693d4543",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml","0f684a90-6abe-4028-a9f1-5d2d6322f1b9",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/26f51d64-3bf7-4907-ae9d-2f006bb7d1fa/spec.toml","26f51d64-3bf7-4907-ae9d-2f006bb7d1fa",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml","4482f2d0-131c-4ea0-91c0-f0bde198eedd",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml","717be077-49f6-49bc-8221-ea5105ba5ff3",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml","77ca6056-180d-4e88-a76a-dcf8ff280c7a",child,spec,""
+    digest: d48eef023697040faf0e2149da188009892cf6c4f3a618bc9baf4ba3517e08d8
+    tags[4]: draft,root,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ddac3853-65b3-4b6b-b216-81e78e250bb1"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/ddac3853-65b3-4b6b-b216-81e78e250bb1/spec.toml"
+    title: "ticket-cli board option naming"
+    summary: "`ticket board` should present the same flag naming style as the rest of `ticket-cli`."
+    keywords[4]: board,naming,option,"ticket-cli"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 26d87dfc86423fc8de7327de71ffeab947d62f9aaa5064547323254f4130fd69
+    tags[3]: draft,"scope:public","ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "de14117a-df7b-4f2a-87b8-55074ade0487"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/de14117a-df7b-4f2a-87b8-55074ade0487/spec.toml"
+    title: manifest_format
+    summary: "Source: `crates/memory-api/src/model/manifest_format.rs`"
+    keywords[3]: format,manifest,manifest_format
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: bad55803456891598f98612daaee2657274e5ba59f9aa4b0c12037f9e7c0e535
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "df67eee9-08a0-4a6e-b1ff-b483599d232d"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml"
+    title: "viewer-api: CodeViewer + FileContentViewer"
+    summary: Canonical specification for the shared code/file display Dioxus components
+    keywords[5]: code,codeviewer,filecontentviewer,viewer,"viewer-api"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: be93132b2f4f4dbaf0c66cef5f30c3bc7c899cad35cf403a5451205988a766dc
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e0913182-7a5e-4c8f-a750-799afd58baae"
+    kind: spec
+    source_path: ".spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/spec.toml"
+    title: "context-read pipeline"
+    summary: "This internal child spec defines the intended `context-read` algorithm for"
+    keywords[4]: context,"context-read",pipeline,read
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7fd5639f-a62b-4eb4-abe2-215c4bb2d0de/spec.toml"
+        entry_id: "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: "0319c9ddf2ff7f226d0ec9baffd6b59787aa76cdb87cde678280ad81c225cef5"
+    tags[3]: "context-read",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e09cb882-4146-47c5-b14e-ad35a8f53173"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/e09cb882-4146-47c5-b14e-ad35a8f53173/spec.toml"
+    title: Persist dependency edges in tracked ticket files
+    summary: "Dependency edges created through `ticket link` and removed through `ticket unlink` must survive a rebuild from the tracked ticket store, not only the ignored SQLite index."
+    keywords[10]: backed,dependency,edge,edges,file,files,persist,persistence,ticket,tracked
+    digest: b5166b730b6f4e3ac97840be020695adb9da4c4f520386def180c02141e87fef
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e101aa4a-f5c1-413b-abb4-f4360c0a1123"
+    kind: spec
+    source_path: ".spec/specs/e101aa4a-f5c1-413b-abb4-f4360c0a1123/spec.toml"
+    title: Spec system guidance and Spec Agent workflow
+    summary: "Add generated agent guidance for spec-system work so spec creation and updates consistently follow a clear workflow."
+    keywords[5]: agent,guidance,spec,system,workflow
+    digest: 51d66975636a1c223ce78b074ab2b79a6a9c26240585763c36f415c3ffd65a32
+    tags[4]: "agent-workflow",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e631e914-1840-4fec-9df5-b50a85c6cf00"
+    kind: spec
+    source_path: ".spec/specs/e631e914-1840-4fec-9df5-b50a85c6cf00/spec.toml"
+    title: insert_sequence
+    summary: "`WorkspaceManager::insert_sequence` induces graph structure from a text string."
+    keywords[3]: insert,insert_sequence,sequence
+    relations:
+      parent:
+        canonical_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
+        entry_id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 72c4c3e49213273531121315d22bd1f5145d2ae55327a8fb0904d396a2c183d1
+    tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e815f261-ca7d-4957-8f68-666e1e1dfbfe"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml"
+    title: Rule Workspace Topology and Composition
+    summary: "`rule-api` already supports canonical rule storage in `.rule/rules/**`, repo-scoped filtering, hierarchical target outlines, and deterministic generation from a single `rule-targets.yaml`. The next s…"
+    keywords[5]: composition,rule,topology,workspace,workspaces
+    non_goals: "Replacing the existing top-level `context-engine/.rule` workflow immediately. Allowing parent repos to mutate child rule entries in place. Hiding rule provenance when multiple workspaces contribute to one target."
+    relations:
+      children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml","3b96ec1c-4e99-48f4-86e5-a36ba24b827a",child,spec,""
+        "memory-viewers/memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml","5de125ad-eb0c-4bcb-8e6d-175df1ba33a6",child,spec,""
+    digest: e76b6ba303d75bed9eb98914622f12b727737968a400685635f99750e7c58951
+    tags[4]: draft,root,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ec1013ff-2d5f-4860-8d25-64acb6c60587"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml"
+    title: bootstrap
+    summary: "Source: `tools/cli/spec-cli/src/cli/commands/bootstrap.rs`"
+    keywords[1]: bootstrap
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml"
+        entry_id: "1d6481ff-308b-45ca-ac91-4c2f8d5546f3"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 3767899b1677d0d93fa375fa7f6f1d52e0f8a4c539357d374f98c3a6686a9e6b
+    tags[3]: draft,"scope:public","spec-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ec22fe34-2d24-4dc5-a067-85121bed3655"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml"
+    title: "Cross-interface best-next ordering"
+    summary: "Best-next-ticket discovery must remain consistent anywhere the repository surfaces candidate work."
+    keywords[5]: best,"best-next","cross-interface",next,ordering
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
+        entry_id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c72d904856128985c30e325ebc1068db51a3972c61cb75bfa2393f37d6ebf7fd
+    tags[3]: draft,"scope:public","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ee36710b-1725-436a-a5fc-1e5a7d27f6bb"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml"
+    title: cli
+    summary: "Source: `tools/cli/spec-cli/src/cli.rs`"
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml"
+        entry_id: "1d6481ff-308b-45ca-ac91-4c2f8d5546f3"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        "memory-viewers/memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml","91b5b5fe-0046-424c-b5e5-3fb961f4d940",child,spec,""
+    digest: 1af70957d27c89cd12d1054cc3a122440d08d794b712b5e1d5aa88d65ce81ffa
+    tags[3]: draft,"scope:public","spec-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f081e8f4-7d28-4505-9faf-85c65b033b44"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml"
+    title: entity_fs
+    summary: "Source: `crates/memory-api/src/storage/entity_fs.rs`"
+    keywords[2]: entity,entity_fs
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 8be3e3ac2de99281857396a8c894bec793c1ef53a32ca7425e5aba22beaeac8f
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f153483c-f984-4564-94ac-36234b5cbe3f"
+    kind: spec
+    source_path: "memory-viewers/viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml"
+    title: "viewer-api: WebGPU overlay"
+    summary: Canonical specification for the WebGPU overlay subsystem under
+    keywords[4]: overlay,"viewer-api",webgpu,wgpu
+    relations:
+      parent:
+        canonical_path: "memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
+        entry_id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: fd4c82fa87a8dd46251cfa8ec5fd9e7532dde8c5aeb13130023f366db77486af
+    tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f156fa16-7910-4c98-b69c-f848073dba00"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml"
+    title: search
+    summary: "Source: `crates/memory-api/src/storage/search.rs`"
+    keywords[1]: search
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 506819504d14395bd496adf8d34dc3524d472d759394ac2111f95113c671e3b8
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f9c32554-9884-41c4-8b5b-d1d32b37e341"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/spec.toml"
+    title: "memory-api recurring principles"
+    summary: "<!-- spec-api:file generated=true -->"
+    keywords[3]: "memory-api",principles,recurring
+    digest: c0211a8c9e3ca500f225215c97da13d9933c613cf3b7c3ead464a5319535861d
+    tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "fa5265cc-e82f-4bbe-b1b5-dad7e6672d06"
+    kind: spec
+    source_path: ".spec/specs/fa5265cc-e82f-4bbe-b1b5-dad7e6672d06/spec.toml"
+    title: "Tracker-improvement effort field"
+    summary: "The built-in `tracker-improvement` ticket schema includes an optional `effort` field used to capture the estimated token budget required to complete the ticket."
+    keywords[5]: effort,field,improvement,tracker,"tracker-improvement"
+    digest: 531ab06c13e4ee33b6b9e959d33d7bc5f150f89be37a786765275fd014066357
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "fb968dea-b658-4c0d-b138-266bdd2615f9"
+    kind: spec
+    source_path: ".spec/specs/fb968dea-b658-4c0d-b138-266bdd2615f9/spec.toml"
+    title: functional v1 sandbox orchestration layer
+    summary: "Define the first functional sandbox orchestration slice for this repository's agentic workflow system while keeping memory-stack traceability intact. The first delivery target must produce isolated a…"
+    keywords[4]: functional,layer,orchestration,sandbox
+    digest: 7e18d0af4427875fa1faef3c4b7e15d53f3b1752786602afb1c13efbcbb7ed95
+    tags[3]: "context-engine",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "fded16bb-1a4b-4dd9-a610-c26459d19403"
+    kind: spec
+    source_path: "memory-viewers/memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml"
+    title: schema
+    summary: "Source: `crates/memory-api/src/storage/schema.rs`"
+    keywords[1]: schema
+    relations:
+      parent:
+        canonical_path: "memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
+        entry_id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c15b2b3b9c774846afc46fc1133a39dcdfb26c79a89522792b414d25a1b9a012
+    tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ffb89723-178b-435b-8591-c639d3c7d5dd"
+    kind: spec
+    source_path: ".spec/specs/ffb89723-178b-435b-8591-c639d3c7d5dd/spec.toml"
+    title: "spec-editor: coderef editor"
+    summary: "The `CodeRefEditor` component provides a three-step picker for adding or editing"
+    keywords[3]: coderef,editor,"spec-editor"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
+        entry_id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 1ad295b64ff710ee85d34a2f518bf04e03f8acacdf556c5f656ee5fbdcf73ee5
+    tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
