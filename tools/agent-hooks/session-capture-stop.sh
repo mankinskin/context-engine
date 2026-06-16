@@ -6,6 +6,21 @@
 
 set -uo pipefail
 
+# Ensure ~/.cargo/bin is in PATH since this hook may run in a non-interactive shell where profile files are not sourced
+for dir in \
+    "$HOME/.cargo/bin" \
+    "${USERPROFILE:-}/.cargo/bin" \
+    "/c/Users/${USERNAME:-}/.cargo/bin" \
+    "/c/Users/${USER:-}/.cargo/bin" \
+    "C:\\Users\\${USERNAME:-}\\.cargo\\bin" \
+    "C:\\Users\\${USER:-}\\.cargo\\bin"
+do
+    if [[ -n "$dir" && -d "$dir" && ( -f "$dir/cargo.exe" || -f "$dir/cargo" ) ]]; then
+        export PATH="$dir:$PATH"
+        break
+    fi
+done
+
 if read -t 0; then
     INPUT=$(cat)
 else
