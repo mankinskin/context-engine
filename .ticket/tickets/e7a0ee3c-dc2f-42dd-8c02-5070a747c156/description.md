@@ -17,7 +17,6 @@ Design and implement the compact machine-readable TOON sidecar emitted alongside
 
 ## Non-goals
 - No global merged sidecar across different tools.
-- No central `.context/` store folder.
 - No JSON-L primary storage (opt-in JSON export is fine; TOON is primary per D8).
 - No modification of context-stack crates.
 
