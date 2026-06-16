@@ -6,20 +6,24 @@
 
 set -uo pipefail
 
-# Ensure ~/.cargo/bin is in PATH since this hook may run in a non-interactive shell where profile files are not sourced
-for dir in \
-    "$HOME/.cargo/bin" \
-    "${USERPROFILE:-}/.cargo/bin" \
-    "/c/Users/${USERNAME:-}/.cargo/bin" \
-    "/c/Users/${USER:-}/.cargo/bin" \
-    "C:\\Users\\${USERNAME:-}\\.cargo\\bin" \
-    "C:\\Users\\${USER:-}\\.cargo\\bin"
+CARGO_BIN=""
+for candidate in \
+    "${HOME:-}/.cargo/bin/cargo.exe" \
+    "${HOME:-}/.cargo/bin/cargo" \
+    "${USERPROFILE:-}\\.cargo\\bin\\cargo.exe" \
+    "${USERPROFILE:-}/.cargo/bin/cargo.exe" \
+    "/c/Users/${USERNAME:-}/.cargo/bin/cargo.exe" \
+    "/c/Users/${USER:-}/.cargo/bin/cargo.exe"
 do
-    if [[ -n "$dir" && -d "$dir" && ( -f "$dir/cargo.exe" || -f "$dir/cargo" ) ]]; then
-        export PATH="$dir:$PATH"
+    if [[ -n "$candidate" && -f "$candidate" ]]; then
+        CARGO_BIN="$candidate"
         break
     fi
 done
+
+if [[ -z "$CARGO_BIN" ]]; then
+    CARGO_BIN="$(command -v cargo 2>/dev/null || true)"
+fi
 
 if read -t 0; then
     INPUT=$(cat)
@@ -36,7 +40,7 @@ fi
 WORKSPACE_SLUG=$(basename "$PWD")
 MANIFEST_PATH="memory-viewers/memory-api/crates/session-api/Cargo.toml"
 
-if ! cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- \
+if [[ -n "$CARGO_BIN" ]] && ! "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- \
     --transcript-path "$TRANSCRIPT_PATH" \
     --workspace-slug "$WORKSPACE_SLUG" \
     --trigger stop >/dev/null; then

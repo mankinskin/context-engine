@@ -6,21 +6,29 @@
 
 set -euo pipefail
 
-# Ensure ~/.cargo/bin is in PATH since this hook may run in a non-interactive shell where profile files are not sourced
-for dir in \
-    "$HOME/.cargo/bin" \
-    "${USERPROFILE:-}/.cargo/bin" \
-    "/c/Users/${USERNAME:-}/.cargo/bin" \
-    "/c/Users/${USER:-}/.cargo/bin" \
-    "C:\\Users\\${USERNAME:-}\\.cargo\\bin" \
-    "C:\\Users\\${USER:-}\\.cargo\\bin"
+RTK_BIN=""
+for candidate in \
+    "${HOME:-}/.cargo/bin/rtk.exe" \
+    "${HOME:-}/.cargo/bin/rtk" \
+    "${USERPROFILE:-}\\.cargo\\bin\\rtk.exe" \
+    "${USERPROFILE:-}/.cargo/bin/rtk.exe" \
+    "/c/Users/${USERNAME:-}/.cargo/bin/rtk.exe" \
+    "/c/Users/${USER:-}/.cargo/bin/rtk.exe"
 do
-    if [[ -n "$dir" && -d "$dir" && ( -f "$dir/rtk.exe" || -f "$dir/rtk" ) ]]; then
-        export PATH="$dir:$PATH"
+    if [[ -n "$candidate" && -f "$candidate" ]]; then
+        RTK_BIN="$candidate"
         break
     fi
 done
 
+if [[ -z "$RTK_BIN" ]]; then
+    RTK_BIN="$(command -v rtk 2>/dev/null || true)"
+fi
+
 if read -t 0; then
-    rtk hook copilot
+    if [[ -n "$RTK_BIN" ]]; then
+        "$RTK_BIN" hook copilot
+    else
+        echo "[rtk-hook-copilot] WARN: rtk not found; skipping rtk hook copilot" >&2
+    fi
 fi

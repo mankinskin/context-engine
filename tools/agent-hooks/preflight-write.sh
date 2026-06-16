@@ -21,20 +21,24 @@
 
 set -euo pipefail
 
-# Ensure ~/.cargo/bin is in PATH since this hook may run in a non-interactive shell where profile files are not sourced
-for dir in \
-    "$HOME/.cargo/bin" \
-    "${USERPROFILE:-}/.cargo/bin" \
-    "/c/Users/${USERNAME:-}/.cargo/bin" \
-    "/c/Users/${USER:-}/.cargo/bin" \
-    "C:\\Users\\${USERNAME:-}\\.cargo\\bin" \
-    "C:\\Users\\${USER:-}\\.cargo\\bin"
+CARGO_BIN=""
+for candidate in \
+    "${HOME:-}/.cargo/bin/cargo.exe" \
+    "${HOME:-}/.cargo/bin/cargo" \
+    "${USERPROFILE:-}\\.cargo\\bin\\cargo.exe" \
+    "${USERPROFILE:-}/.cargo/bin/cargo.exe" \
+    "/c/Users/${USERNAME:-}/.cargo/bin/cargo.exe" \
+    "/c/Users/${USER:-}/.cargo/bin/cargo.exe"
 do
-    if [[ -n "$dir" && -d "$dir" && ( -f "$dir/cargo.exe" || -f "$dir/cargo" ) ]]; then
-        export PATH="$dir:$PATH"
+    if [[ -n "$candidate" && -f "$candidate" ]]; then
+        CARGO_BIN="$candidate"
         break
     fi
 done
+
+if [[ -z "$CARGO_BIN" ]]; then
+    CARGO_BIN="$(command -v cargo 2>/dev/null || true)"
+fi
 
 # ── helpers ────────────────────────────────────────────────────────────────
 
@@ -105,12 +109,12 @@ check_rust() {
     dir="$(dirname "$file")"
     while [[ "$dir" != "$REPO_ROOT" && "$dir" != "/" ]]; do
         if [[ -f "$dir/Cargo.toml" ]]; then
-            if ! command -v cargo >/dev/null 2>&1; then
+            if [[ -z "$CARGO_BIN" ]]; then
                 log_warn "cargo not on PATH; skipping Rust check"
                 return 0
             fi
             log_info "cargo check in $dir"
-            if ! cargo check --manifest-path "$dir/Cargo.toml" --quiet 2>&1 | head -20 >&2; then
+            if ! "$CARGO_BIN" check --manifest-path "$dir/Cargo.toml" --quiet 2>&1 | head -20 >&2; then
                 log_block "cargo check failed for $REL_PATH — fix errors before saving"
                 return 1
             fi
