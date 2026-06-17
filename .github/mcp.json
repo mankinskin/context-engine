@@ -1,4 +1,63 @@
 {
+  "servers": {
+    "context-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "context-mcp"
+      ]
+    },
+    "ticket-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "ticket-mcp"
+      ]
+    },
+    "spec-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "spec-mcp"
+      ]
+    },
+    "test-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "test-mcp"
+      ]
+    },
+    "log-viewer-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "log-viewer",
+        "--",
+        "--mcp"
+      ]
+    }
+  },
   "mcpServers": {
     "context-mcp": {
       "type": "stdio",
