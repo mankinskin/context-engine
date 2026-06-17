@@ -4,12 +4,12 @@ Even once the `context-stack` root README is generated, the internal README tree
 
 ## Scope
 
-Generate the first-level `context-stack` child README targets needed for repo-internal navigation, covering `context-api`, `context-trace`, `context-search`, `context-insert`, `context-read`, `context-trace-macros`, `ngrams`, `deps/petgraph`, `deps/justlog`, and `packages/context-types`.
+Generate the first-level `context-stack` child README targets needed for repo-internal navigation, covering `context-api`, `context-trace`, `context-search`, `context-insert`, `context-read`, `context-trace-macros`, `ngrams`, and `packages/context-types`.
 
 ## Assumptions To Prove
 
 - First-level child READMEs can adopt the shared schema without forcing deeper agent or docs trees into the same ticket.
-- Missing repository-level README surfaces for `context-trace-macros`, `ngrams`, `deps/justlog`, and `packages/context-types` can be introduced as part of the same first-level rollout.
+- Missing repository-level README surfaces for `context-trace-macros`, `ngrams`, and `packages/context-types` can be introduced as part of the same first-level rollout.
 - Each child README can include a parent block that links to `context-stack/README.md` only.
 - Command-doc coverage can be supplied through local child docs or explicit external command references where no local README exists.
 

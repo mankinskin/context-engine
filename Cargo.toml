@@ -57,10 +57,6 @@ members = [
   "context-stack/tools/context-editor/kernel",
   "context-stack/tools/context-editor/sandbox-app",
 ]
-exclude = [
-  "./context-stack/deps/petgraph",
-  "./context-stack/deps/justlog",
-]
 
 [profile.dev]
 debug = true
