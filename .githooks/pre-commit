@@ -103,7 +103,7 @@ check_rule_targets() {
 # ---------------------------------------------------------------------------
 
 # Domain enable flags — all OFF until the owning generator ticket flips one.
-STORE_INDEX_TICKET_ENABLED=0   # c5e9bb39
+STORE_INDEX_TICKET_ENABLED=1   # c5e9bb39
 STORE_INDEX_SPEC_ENABLED=1     # b9757ba7
 STORE_INDEX_RULE_ENABLED=1     # 9336a096
 STORE_INDEX_WORKSPACE_ENABLED=0 # c2409055
@@ -139,7 +139,7 @@ if [[ "$STORE_INDEX_TICKET_ENABLED" == "1" ]] \
     # Owns: .ticket/README.md, .ticket/index.toon
     check_store_index 'ticket' \
         'ticket store-index --check' \
-        'ticket store-index regen'
+    'ticket store-index'
 fi
 
 if [[ "$STORE_INDEX_SPEC_ENABLED" == "1" ]] \
