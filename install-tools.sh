@@ -224,6 +224,52 @@ if [[ ${#selected_tools[@]} -eq 0 ]]; then
     append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
 fi
 
+run_filtered_command() {
+    local label=$1
+    shift
+    local status_file
+    local last_stdout_line=""
+    local saw_stdout=0
+    local command_status=1
+    local interactive=0
+
+    if [[ -t 1 ]]; then
+        interactive=1
+    fi
+
+    status_file=$(mktemp)
+
+    while IFS= read -r line; do
+        saw_stdout=1
+        last_stdout_line=$line
+
+        if [[ $interactive -eq 1 ]]; then
+            printf '\r\033[2K    %s: %s' "$label" "$line"
+        fi
+    done < <(
+        (
+            "$@"
+            printf '%s\n' "$?" > "$status_file"
+        ) 2> >(cat >&2)
+    )
+
+    if [[ -s "$status_file" ]]; then
+        command_status=$(<"$status_file")
+    fi
+
+    rm -f "$status_file"
+
+    if [[ $saw_stdout -eq 1 ]]; then
+        if [[ $interactive -eq 1 ]]; then
+            printf '\r\033[2K    %s: %s\n' "$label" "$last_stdout_line"
+        else
+            printf '    %s: %s\n' "$label" "$last_stdout_line"
+        fi
+    fi
+
+    return "$command_status"
+}
+
 install_one() {
     local tool=$1
     local path
@@ -240,6 +286,8 @@ install_one() {
     else
         command=(cargo install "$bin")
     fi
+
+    command+=(--quiet)
 
     if [[ $force_install -eq 1 ]]; then
         command+=(--force)
@@ -262,7 +310,7 @@ install_one() {
 
     if ! (
         cd "$repo_root"
-        "${command[@]}"
+        run_filtered_command "$tool" "${command[@]}"
     ); then
         failed=1
     fi
@@ -270,7 +318,7 @@ install_one() {
     if [[ $failed -eq 0 && ${#post_command[@]} -gt 0 ]]; then
         if ! (
             cd "$repo_root"
-            "${post_command[@]}"
+            run_filtered_command "$tool (post)" "${post_command[@]}"
         ); then
             failed=1
         fi
