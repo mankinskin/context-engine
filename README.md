@@ -35,7 +35,9 @@ memory-viewers child READMEs:
 
 ## Installable Tools
 
-The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository:
+The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository.
+
+The companion installer in [install-deps.sh](install-deps.sh) installs repo-wide developer dependencies such as `ripgrep` and `rtk`.
 
 The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:
 
