@@ -3,6 +3,15 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$script_dir
+common_install_helpers="$repo_root/tools/install/common.sh"
+
+if [[ ! -f "$common_install_helpers" ]]; then
+    printf 'error: missing shared installer helpers: %s\n' "$common_install_helpers" >&2
+    exit 1
+fi
+
+# shellcheck source=tools/install/common.sh
+source "$common_install_helpers"
 
 tool_names=(
     viewer-ctl
@@ -224,52 +233,6 @@ if [[ ${#selected_tools[@]} -eq 0 ]]; then
     append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
 fi
 
-run_filtered_command() {
-    local label=$1
-    shift
-    local status_file
-    local last_stdout_line=""
-    local saw_stdout=0
-    local command_status=1
-    local interactive=0
-
-    if [[ -t 1 ]]; then
-        interactive=1
-    fi
-
-    status_file=$(mktemp)
-
-    while IFS= read -r line; do
-        saw_stdout=1
-        last_stdout_line=$line
-
-        if [[ $interactive -eq 1 ]]; then
-            printf '\r\033[2K    %s: %s' "$label" "$line"
-        fi
-    done < <(
-        (
-            "$@"
-            printf '%s\n' "$?" > "$status_file"
-        ) 2> >(cat >&2)
-    )
-
-    if [[ -s "$status_file" ]]; then
-        command_status=$(<"$status_file")
-    fi
-
-    rm -f "$status_file"
-
-    if [[ $saw_stdout -eq 1 ]]; then
-        if [[ $interactive -eq 1 ]]; then
-            printf '\r\033[2K    %s: %s\n' "$label" "$last_stdout_line"
-        else
-            printf '    %s: %s\n' "$label" "$last_stdout_line"
-        fi
-    fi
-
-    return "$command_status"
-}
-
 install_one() {
     local tool=$1
     local path
@@ -338,43 +301,11 @@ for tool in "${selected_tools[@]}"; do
     install_one "$tool" || true
 done
 
-print_joined_tools() {
-    local first=1
-    local tool
-
-    for tool in "$@"; do
-        if [[ $first -eq 1 ]]; then
-            printf '%s' "$tool"
-            first=0
-        else
-            printf ', %s' "$tool"
-        fi
-    done
-}
-
-printf '\nInstall summary: requested=%d, succeeded=%d, failed=%d\n' \
-    "${#selected_tools[@]}" "${#installed_tools[@]}" "${#failed_tools[@]}"
-
-if [[ ${#installed_tools[@]} -gt 0 ]]; then
-    printf 'Succeeded: '
-    print_joined_tools "${installed_tools[@]}"
-    printf '\n'
+retry_prefix="./install-tools.sh"
+if [[ $force_install -eq 0 ]]; then
+    retry_prefix="$retry_prefix --no-force"
 fi
 
-if [[ ${#failed_tools[@]} -gt 0 ]]; then
-    printf 'Failed: '
-    print_joined_tools "${failed_tools[@]}"
-    printf '\n\n'
-    printf 'Retry failed installs with:\n'
-    printf '  ./install-tools.sh'
-    if [[ $force_install -eq 0 ]]; then
-        printf ' --no-force'
-    fi
-    for tool in "${failed_tools[@]}"; do
-        printf ' %q' "$tool"
-    done
-    printf '\n\n'
-    printf 'For more options, run:\n'
-    printf '  ./install-tools.sh --help\n'
+if ! installer_print_summary "${#selected_tools[@]}" installed_tools failed_tools "$retry_prefix" "./install-tools.sh --help"; then
     exit 1
 fi

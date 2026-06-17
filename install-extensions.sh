@@ -3,6 +3,15 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$script_dir
+common_install_helpers="$repo_root/tools/install/common.sh"
+
+if [[ ! -f "$common_install_helpers" ]]; then
+    printf 'error: missing shared installer helpers: %s\n' "$common_install_helpers" >&2
+    exit 1
+fi
+
+# shellcheck source=tools/install/common.sh
+source "$common_install_helpers"
 
 extension_names=(
     ticket-vscode
@@ -100,6 +109,8 @@ append_csv_extensions() {
 }
 
 selected_extensions=()
+installed_extensions=()
+failed_extensions=()
 dry_run=0
 
 while [[ $# -gt 0 ]]; do
@@ -167,25 +178,52 @@ fi
 for extension in "${selected_extensions[@]}"; do
     extension_dir=$(extension_path "$extension")
     full_dir="$repo_root/$extension_dir"
+    failed=0
 
     if [[ ! -d "$full_dir" ]]; then
         printf 'error: extension directory not found: %s\n' "$full_dir" >&2
-        exit 1
+        failed_extensions+=("$extension")
+        continue
     fi
 
     printf '==> %s (%s)\n' "$extension" "$extension_dir"
 
     if [[ ! -d "$full_dir/node_modules" ]]; then
         if [[ $dry_run -eq 1 ]]; then
-            printf '[dry-run] (cd %q && npm ci)\n' "$full_dir"
+            printf '    (cd %q && npm ci)\n' "$full_dir"
         else
-            (cd "$full_dir" && npm ci)
+            printf '    npm ci\n'
+            if ! (
+                cd "$full_dir"
+                run_filtered_command "$extension (npm ci)" npm ci
+            ); then
+                failed=1
+            fi
         fi
     fi
 
-    if [[ $dry_run -eq 1 ]]; then
-        printf '[dry-run] (cd %q && npm run install:vsix:dry-run)\n' "$full_dir"
+    if [[ $failed -eq 0 ]]; then
+        if [[ $dry_run -eq 1 ]]; then
+            printf '    (cd %q && npm run install:vsix:dry-run)\n' "$full_dir"
+        else
+            printf '    npm run install:vsix\n'
+            if ! (
+                cd "$full_dir"
+                run_filtered_command "$extension (install)" npm run install:vsix
+            ); then
+                failed=1
+            fi
+        fi
+    fi
+
+    if [[ $failed -eq 0 ]]; then
+        installed_extensions+=("$extension")
     else
-        (cd "$full_dir" && npm run install:vsix)
+        failed_extensions+=("$extension")
+        printf 'error: install failed for extension %s\n' "$extension" >&2
     fi
 done
+
+if ! installer_print_summary "${#selected_extensions[@]}" installed_extensions failed_extensions "./install-extensions.sh" "./install-extensions.sh --help"; then
+    exit 1
+fi
