@@ -50,6 +50,24 @@ Add generated agent guidance for spec-system work so spec creation and updates c
 
 ## audit-api
 
+<!-- spec-index:entry id=5b404022-6a67-4395-90e0-1e4282fd83b4 slug=audit-api/workspace-graph-health-and-board-check-in-validation digest=b18a6a7b70ee -->
+### audit-api: workspace graph health and board check-in validation _(root)_
+
+Current topology checks can detect orphan tickets and planned convergence risks, but they do not enforce whether dependency requirements are defined, whether required dependency evidence is passing, …
+
+- slug: `audit-api/workspace-graph-health-and-board-check-in-validation`
+- tags: audit-api, draft, root
+- ref: `.spec/specs/5b404022-6a67-4395-90e0-1e4282fd83b4/spec.toml`
+
+<!-- spec-index:entry id=5c8b350c-3bd1-4103-ab49-3fb7aea33126 slug=audit-api/store-health-metrics-and-cleanup-feedback-loops digest=e4fc44648a97 -->
+### audit-api: store health metrics and cleanup feedback loops _(root)_
+
+Spec, rule, and ticket stores accumulate stale, conflicting, and low-value entries over time. Current checks are useful but insufficient for sustained curation because they do not combine change acti…
+
+- slug: `audit-api/store-health-metrics-and-cleanup-feedback-loops`
+- tags: audit-api, draft, root
+- ref: `.spec/specs/5c8b350c-3bd1-4103-ab49-3fb7aea33126/spec.toml`
+
 <!-- spec-index:entry id=a6318461-3a06-4d6d-aabb-7e06c33f4e1b slug=audit-api/ticket-dependency-topology-validation digest=bc04ece565a3 -->
 ### audit-api ticket dependency topology validation _(root)_
 
@@ -183,6 +201,15 @@ Top-level submodules in the repository currently land in detached HEAD state, wh
 - scope: internal
 - tags: active, context-engine, root, scope:internal
 - ref: `.spec/specs/9983b865-5082-437a-945a-05c26a56c113/spec.toml`
+
+<!-- spec-index:entry id=9c3ec5a5-0e1e-4061-b66a-16006611f671 slug=program/store-expansion-and-operational-health digest=d99550e6c790 -->
+### Store expansion and operational health program _(root)_
+
+Coordinate the next major store vectors (interview, feedback, health auditing, and scaffold automation) as a dependency-aware program aligned to the cross-store architecture constraints.
+
+- slug: `program/store-expansion-and-operational-health`
+- tags: context-engine, draft, root
+- ref: `.spec/specs/9c3ec5a5-0e1e-4061-b66a-16006611f671/spec.toml`
 
 <!-- spec-index:entry id=9e04ff58-9160-4766-b307-74c0fb32a92c slug=context-engine/handoff-workflow-prompts digest=5dedf5e07fa3 -->
 ### handoff workflow prompts
@@ -363,6 +390,28 @@ This branch captures the most confident specification material currently
 - tags: doc-api, draft, root, scope:public
 - ref: `memory-viewers/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/spec.toml`
 
+## feedback-api
+
+<!-- spec-index:entry id=e4ac6ae2-3ef6-4104-911d-eb27fae70d1a slug=feedback-api/structured-feedback-inbox-and-deep-reconciliation-search digest=bd9074e3c084 -->
+### feedback-api: structured feedback inbox and deep reconciliation search _(root)_
+
+User and agent feedback is fragmented, hard to query at scale, and not consistently tied to remediation workflows. Teams need an inbox-like store with structured metadata, deep search, and reconcilia…
+
+- slug: `feedback-api/structured-feedback-inbox-and-deep-reconciliation-search`
+- tags: draft, feedback-api, root
+- ref: `.spec/specs/e4ac6ae2-3ef6-4104-911d-eb27fae70d1a/spec.toml`
+
+## interview-api
+
+<!-- spec-index:entry id=7e9131d1-6c7a-4e59-9208-5990079040d5 slug=interview-api/persistent-interview-sessions-and-survey-synthesis digest=5ebf75465d8e -->
+### interview-api: persistent interview sessions and survey synthesis _(root)_
+
+Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into a…
+
+- slug: `interview-api/persistent-interview-sessions-and-survey-synthesis`
+- tags: draft, interview-api, root
+- ref: `.spec/specs/7e9131d1-6c7a-4e59-9208-5990079040d5/spec.toml`
+
 ## memory-api
 
 <!-- spec-index:entry id=0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e slug=memory-api/storage/board digest=c08c75538c0a -->
@@ -474,6 +523,16 @@ Define the repository-local git-hook automation contract for store-index regener
 - parent: `generated-context/index-hierarchy-semantic-refs`
 - tags: draft, memory-api, scope:internal
 - ref: `.spec/specs/53c70cae-731b-41b5-bd1a-1de9a98eb36f/spec.toml`
+
+<!-- spec-index:entry id=6571abcf-b1b9-4259-b81c-78783e227467 slug=architecture/cross-store-workspace-interaction digest=a1322f2e7e69 -->
+### Cross-store workspace interaction architecture _(root)_
+
+Define a workspace architecture where each store remains domain-isolated while cross-store interaction is enabled through contract interfaces and API-layer composition.
+
+- slug: `architecture/cross-store-workspace-interaction`
+- scope: public
+- tags: draft, memory-api, root, scope:public
+- ref: `.spec/specs/6571abcf-b1b9-4259-b81c-78783e227467/spec.toml`
 
 <!-- spec-index:entry id=6e63979a-f29b-4c6f-a4b7-5264fd9c29d4 slug=memory-api/cli/toon-format-support digest=a1ba6b40accd -->
 ### Add TOON format support across the memory-api CLI suite _(root)_
@@ -806,6 +865,17 @@ Add a shared README schema layer to `rule-api` so repository README targets can 
 - children (2): `rule-api/workspaces/memory-api-readme-generation`, `rule-api/workspaces/nested-resolution`
 - tags: draft, root, rule-api, scope:public
 - ref: `memory-viewers/memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml`
+
+## scaffold
+
+<!-- spec-index:entry id=9ee9387f-5384-42a9-95c4-ecbad1713030 slug=scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill digest=f78479657e96 -->
+### scaffold: rule-generated domain-store bootstrap instructions and slash skill _(root)_
+
+Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and r…
+
+- slug: `scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill`
+- tags: draft, root, scaffold
+- ref: `.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml`
 
 ## session-api
 
@@ -1258,6 +1328,15 @@ Ticket CLI, ticket HTTP, and ticket MCP currently return different workflow and 
 - tags: draft, root, scope:internal, ticket-api
 - ref: `.spec/specs/a595eb0c-f9f1-4e29-a425-120df5334f7d/spec.toml`
 
+<!-- spec-index:entry id=b4d038e0-ade9-459b-8ba3-92fd81d80e6a slug=ticket-api/validation-aware-dependency-requirements-and-health digest=58851127be4c -->
+### ticket-api: validation-aware dependency requirements and health model _(root)_
+
+`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has b…
+
+- slug: `ticket-api/validation-aware-dependency-requirements-and-health`
+- tags: draft, root, ticket-api
+- ref: `.spec/specs/b4d038e0-ade9-459b-8ba3-92fd81d80e6a/spec.toml`
+
 <!-- spec-index:entry id=d702ed9e-f75c-4727-8f05-1b2b244ec74f slug=ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering digest=e801fe811f1e -->
 ### Blocker trees and recently-unblocked workflow ordering
 
@@ -1312,6 +1391,15 @@ The ticket CLI needs first-class reverse-dependency workflow support: `ticket un
 - parent: `memory-api/workspace`
 - tags: draft, scope:public, ticket-cli
 - ref: `memory-viewers/memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml`
+
+<!-- spec-index:entry id=42e8d710-2199-4178-9ab3-dea8d61bfc4a slug=ticket-cli/graph-rendering-and-closure-aware-dependency-display digest=3eee9ade04b1 -->
+### ticket-cli: graph rendering and closure-aware dependency display _(root)_
+
+The ticket graph is queryable, but operators still have to mentally reconstruct dependency shape, bridge nodes, and parallel tracks from list output. Existing graph-aware next planning improves ranki…
+
+- slug: `ticket-cli/graph-rendering-and-closure-aware-dependency-display`
+- tags: draft, root, ticket-cli
+- ref: `.spec/specs/42e8d710-2199-4178-9ab3-dea8d61bfc4a/spec.toml`
 
 <!-- spec-index:entry id=ddac3853-65b3-4b6b-b216-81e78e250bb1 slug=ticket-cli/board-option-naming digest=26d87dfc8642 -->
 ### ticket-cli board option naming

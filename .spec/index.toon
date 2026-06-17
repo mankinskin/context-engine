@@ -2,7 +2,7 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[163]:
+entries[172]:
   - id: "01f7eae8-555d-46e2-bb54-0e0bf2b2da90"
     kind: spec
     source_path: "memory-viewers/viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml"
@@ -646,6 +646,15 @@ entries[163]:
     digest: af1a831e005f1eec0e31b6d37ef429e384f965fe30612e3d4b575c4004a32f3d
     tags[4]: draft,root,"scope:public","spec-mcp"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "42e8d710-2199-4178-9ab3-dea8d61bfc4a"
+    kind: spec
+    source_path: ".spec/specs/42e8d710-2199-4178-9ab3-dea8d61bfc4a/spec.toml"
+    title: "ticket-cli: graph rendering and closure-aware dependency display"
+    summary: "The ticket graph is queryable, but operators still have to mentally reconstruct dependency shape, bridge nodes, and parallel tracks from list output. Existing graph-aware next planning improves ranki…"
+    keywords[8]: aware,closure,"closure-aware",dependency,display,graph,rendering,"ticket-cli"
+    digest: 3eee9ade04b1e8548f42e3103f99799592805559ed841e978fa4c3d2c9ef3028
+    tags[3]: draft,root,"ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "4482f2d0-131c-4ea0-91c0-f0bde198eedd"
     kind: spec
     source_path: "memory-viewers/memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml"
@@ -947,6 +956,15 @@ entries[163]:
     digest: 5985515b0c411fe7c8d64c61050e848d004d2d8d5d370902af0708dded956031
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "5b404022-6a67-4395-90e0-1e4282fd83b4"
+    kind: spec
+    source_path: ".spec/specs/5b404022-6a67-4395-90e0-1e4282fd83b4/spec.toml"
+    title: "audit-api: workspace graph health and board check-in validation"
+    summary: "Current topology checks can detect orphan tickets and planned convergence risks, but they do not enforce whether dependency requirements are defined, whether required dependency evidence is passing, …"
+    keywords[8]: "audit-api",board,check,"check-in",graph,health,validation,workspace
+    digest: b18a6a7b70ee6aa76f3dd27511be70d633830c927bdcd8558c07d63d44c472f3
+    tags[3]: "audit-api",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "5b69006d-e2ce-425d-91a7-97f4517a9bc6"
     kind: spec
     source_path: ".spec/specs/5b69006d-e2ce-425d-91a7-97f4517a9bc6/spec.toml"
@@ -964,6 +982,15 @@ entries[163]:
     keywords[5]: endpoint,list,ticket,"ticket-http",tickets
     digest: 8ea3d9d200f237772b540a80ecef0285752526b4aee9bf317b49beac3edb6c1e
     tags[4]: draft,root,"scope:public","ticket-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5c8b350c-3bd1-4103-ab49-3fb7aea33126"
+    kind: spec
+    source_path: ".spec/specs/5c8b350c-3bd1-4103-ab49-3fb7aea33126/spec.toml"
+    title: "audit-api: store health metrics and cleanup feedback loops"
+    summary: "Spec, rule, and ticket stores accumulate stale, conflicting, and low-value entries over time. Current checks are useful but insufficient for sustained curation because they do not combine change acti…"
+    keywords[7]: "audit-api",cleanup,feedback,health,loops,metrics,store
+    digest: e4fc44648a97847b7db62e26ee898ef1428c287f36c4cf05790b9e48b92dc9db
+    tags[3]: "audit-api",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5d17db06-c8a0-46bd-a22e-8a783643d7a8"
     kind: spec
@@ -1022,6 +1049,17 @@ entries[163]:
         digest: ""
     digest: "0498203f02e6530556120a041e2abcac4dc5c646c9cb865d598249f4b6b3a65c"
     tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6571abcf-b1b9-4259-b81c-78783e227467"
+    kind: spec
+    source_path: ".spec/specs/6571abcf-b1b9-4259-b81c-78783e227467/spec.toml"
+    title: "Cross-store workspace interaction architecture"
+    summary: "Define a workspace architecture where each store remains domain-isolated while cross-store interaction is enabled through contract interfaces and API-layer composition."
+    keywords[6]: architecture,cross,"cross-store",interaction,store,workspace
+    scope: "Isolate domain persistence and workflow logic per store. Define a generic interfacing layer in memory-api for store discovery, indexing, references, and diagnostics. Define contract interfaces for cross-store interaction using inversion of control. Define migration phases that p…"
+    non_goals: "No immediate full rewrite of all stores in a single release. No runtime dependency-injection framework; composition remains in binaries via static typing. No removal of legacy aliases until migration gates are satisfied."
+    digest: a1322f2e7e69cd6b5d209b395bfad49d8f3fb04bd8a35593c66d3e968aa4c9db
+    tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "69f8d8ce-d895-4270-b3f9-0d6c951f2a9a"
     kind: spec
@@ -1148,6 +1186,15 @@ entries[163]:
         digest: ""
     digest: 6b80373c006e9d3cef914e8ffcf554146008521ff07283102ada94b21b6bca24
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7e9131d1-6c7a-4e59-9208-5990079040d5"
+    kind: spec
+    source_path: ".spec/specs/7e9131d1-6c7a-4e59-9208-5990079040d5/spec.toml"
+    title: "interview-api: persistent interview sessions and survey synthesis"
+    summary: "Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into a…"
+    keywords[6]: interview,"interview-api",persistent,sessions,survey,synthesis
+    digest: 5ebf75465d8e8b31816474b531a9f17bcf6fd500ca790c8d3eb1f6a22cf47480
+    tags[3]: draft,"interview-api",root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
     kind: spec
@@ -1464,6 +1511,15 @@ entries[163]:
     digest: 5c59f3d82bd19151eb1a8e45f1dfbbc834ac0d48b1265d29c920715b000e948e
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "9c3ec5a5-0e1e-4061-b66a-16006611f671"
+    kind: spec
+    source_path: ".spec/specs/9c3ec5a5-0e1e-4061-b66a-16006611f671/spec.toml"
+    title: Store expansion and operational health program
+    summary: "Coordinate the next major store vectors (interview, feedback, health auditing, and scaffold automation) as a dependency-aware program aligned to the cross-store architecture constraints."
+    keywords[5]: expansion,health,operational,program,store
+    digest: d99550e6c790a8389514cca3138d72df6e66232bf8339b00fe204e64cb5b169a
+    tags[3]: "context-engine",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "9e04ff58-9160-4766-b307-74c0fb32a92c"
     kind: spec
     source_path: ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml"
@@ -1481,6 +1537,15 @@ entries[163]:
         digest: ""
     digest: 5dedf5e07fa3996c008a6a7d5ea3d64003cf0c36858c2bc831998c6dc8032ddd
     tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9ee9387f-5384-42a9-95c4-ecbad1713030"
+    kind: spec
+    source_path: ".spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml"
+    title: "scaffold: rule-generated domain-store bootstrap instructions and slash skill"
+    summary: "Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and r…"
+    keywords[11]: bootstrap,domain,"domain-store",generated,instructions,rule,"rule-generated",scaffold,skill,slash,store
+    digest: f78479657e9677a80c961b98be3e8555b0ab926378781058834d59813c195282
+    tags[3]: draft,root,scaffold
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6"
     kind: spec
@@ -1627,6 +1692,15 @@ entries[163]:
         digest: ""
     digest: d2018177e283f25a4f33089e8a940541d142aa9e4266ce4f13ce247432d68cb7
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b4d038e0-ade9-459b-8ba3-92fd81d80e6a"
+    kind: spec
+    source_path: ".spec/specs/b4d038e0-ade9-459b-8ba3-92fd81d80e6a/spec.toml"
+    title: "ticket-api: validation-aware dependency requirements and health model"
+    summary: "`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has b…"
+    keywords[8]: aware,dependency,health,model,requirements,"ticket-api",validation,"validation-aware"
+    digest: 58851127be4cb8a774f5ae0f1574acdcc833e4cb7dd50d7c581edadcca1e033f
+    tags[3]: draft,root,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b568bb7a-6726-46ac-bb78-fbc1858da4b8"
     kind: spec
@@ -2185,6 +2259,15 @@ entries[163]:
     keywords[5]: agent,guidance,spec,system,workflow
     digest: 51d66975636a1c223ce78b074ab2b79a6a9c26240585763c36f415c3ffd65a32
     tags[4]: "agent-workflow",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e4ac6ae2-3ef6-4104-911d-eb27fae70d1a"
+    kind: spec
+    source_path: ".spec/specs/e4ac6ae2-3ef6-4104-911d-eb27fae70d1a/spec.toml"
+    title: "feedback-api: structured feedback inbox and deep reconciliation search"
+    summary: "User and agent feedback is fragmented, hard to query at scale, and not consistently tied to remediation workflows. Teams need an inbox-like store with structured metadata, deep search, and reconcilia…"
+    keywords[7]: deep,feedback,"feedback-api",inbox,reconciliation,search,structured
+    digest: bd9074e3c084002023c4b5bbf229630fecb1b4709527019d49c71f0416b4330a
+    tags[3]: draft,"feedback-api",root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e631e914-1840-4fec-9df5-b50a85c6cf00"
     kind: spec

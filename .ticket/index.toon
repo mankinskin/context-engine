@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[729]:
+entries[767]:
   - id: "00798e96-3d82-436e-963c-af347e76ede0"
     kind: ticket
     source_path: "memory-viewers/memory-api/.ticket/tickets/00798e96-3d82-436e-963c-af347e76ede0/ticket.toml"
@@ -67,6 +67,19 @@ entries[729]:
         "memory-viewers/viewer-api/.ticket/tickets/01932eb7-54e5-441b-87bc-db3013a0882c/ticket.toml","01932eb7-54e5-441b-87bc-db3013a0882c",related,ticket,"","01932eb7"
     digest: e77d32da134ea1f715d5c6e1610a1b9d61baa32c5beaf2d1e2cde39f7ea72983
     tags[4]: medium,new,ticket,"viewer-api-dioxus"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "01b6fe40-5741-41b5-a73c-e4bd51b49a3f"
+    kind: ticket
+    source_path: ".ticket/tickets/01b6fe40-5741-41b5-a73c-e4bd51b49a3f/ticket.toml"
+    title: "[architecture][contracts] Binary composition root wiring"
+    summary: "Wire contracts in binary composition roots using static typing and remove ad-hoc direct coupling."
+    keywords[49]: acceptance,add,and,architecture,binaries,binary,compose,composition,contracts,coupling,coverage,criteria,dependency,direct,domain,driven,end,exists,for,hoc,implementation,layer,medium,migration,new,one,other,parent,path,production,provide,referenced,remove,root,roots,scope,static,template,test,ticket,trait,trigger,typing,unspecified,using,wire,wiring,with,workflow
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/01b6fe40-5741-41b5-a73c-e4bd51b49a3f/ticket.toml","01b6fe40-5741-41b5-a73c-e4bd51b49a3f",related,ticket,"","01b6fe40"
+    digest: 28cf740a305e8d80f878607a525e5115d6f452c50352d4a78f4bd060379791b8
+    tags[4]: medium,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "02025547-027b-43f7-bcd7-6a212108085f"
     kind: ticket
@@ -366,6 +379,19 @@ entries[729]:
         ".ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml","07836f41-7fa5-4e41-8411-1c7cf8aeee75",related,ticket,"","07836f41"
     digest: c4c4795282387cf07ff9adc27e6c690ee15ace3cce00d52cacb86f182a6b0fcc
     tags[3]: new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "07d4b1b0-bc20-4ba7-98d4-ed09365f0437"
+    kind: ticket
+    source_path: ".ticket/tickets/07d4b1b0-bc20-4ba7-98d4-ed09365f0437/ticket.toml"
+    title: "[skill] One-prompt domain-store scaffold slash command flow"
+    summary: "Implement slash command flow that accepts one prompt and scaffolds a minimal domain store (crate layout, manifests, base APIs, tests, and registration hooks) using generated instructions."
+    keywords[30]: accepts,and,apis,base,command,crate,domain,flow,generated,high,hooks,implement,instructions,layout,manifests,minimal,new,one,prompt,registration,scaffold,scaffolds,skill,slash,store,tests,that,ticket,unspecified,using
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/07d4b1b0-bc20-4ba7-98d4-ed09365f0437/ticket.toml","07d4b1b0-bc20-4ba7-98d4-ed09365f0437",related,ticket,"","07d4b1b0"
+    digest: 7766e3b9b45af5cedc074c8d64f60518b5284c0f1f825c659268d09bfd5c9a7a
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0805fb76-f99b-45a5-87c6-5a8e65bdb2da"
     kind: ticket
@@ -757,6 +783,19 @@ entries[729]:
     digest: aca449a96ee8376e6c9faf78e4328c5aae1431bd4c4c7d094d286b0d38730201
     tags[3]: ready,ticket,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "0f2be510-378a-40eb-a98c-ab516b0ec647"
+    kind: ticket
+    source_path: ".ticket/tickets/0f2be510-378a-40eb-a98c-ab516b0ec647/ticket.toml"
+    title: "[architecture][contracts] IoC contract crates for cross-store interactions"
+    summary: "Define and adopt a hybrid cross-store contract layer so domain crates interact via inversion of control rather than direct domain coupling."
+    keywords[109]: abstraction,acceptance,adapter,add,additional,adopt,and,architecture,are,based,binary,boundaries,candidates,cargo,checks,clearer,compliance,composition,contract,contracts,control,converting,core,coupling,crate,crates,criteria,cross,cycles,cyclic,dag,decisions,define,dependencies,dependency,direct,docs,documented,domain,driven,end,enforced,evidence,exists,extension,for,graph,high,hybrid,implementation,implementations,integration,interact,interactions,introduced,inversion,ioc,layer,least,locked,lookup,metadata,migrate,migrated,migration,new,one,ownership,path,patterns,plan,plus,prevent,projection,provider,proving,query,rather,reference,resolution,resolver,root,roots,shared,showing,small,static,store,template,tests,than,ticket,topology,trait,traits,traversal,trigger,typing,unit,unspecified,uses,using,validation,via,where,wire,wiring,workflow,workflows
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/0f2be510-378a-40eb-a98c-ab516b0ec647/ticket.toml","0f2be510-378a-40eb-a98c-ab516b0ec647",related,ticket,"",0f2be510
+    digest: df2c5290fadd9afa87f941783b855a3e9c8ef27ec29fd30f7227881bbab32662
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "0f33944e-fab7-4d8c-b3bb-3c665d51854f"
     kind: ticket
     source_path: "memory-viewers/memory-api/.ticket/tickets/0f33944e-fab7-4d8c-b3bb-3c665d51854f/ticket.toml"
@@ -782,6 +821,19 @@ entries[729]:
         ".ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274/ticket.toml","0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274",related,ticket,"",0fb5a2e5
     digest: 16c71ef596589bd2aa15d012b219cd02d8097554889aba79f5b1724ec78ba507
     tags[4]: done,high,"repo-workflow-tooling",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0fc7b189-5c6c-4b79-a78d-5df8ad7dcf0c"
+    kind: ticket
+    source_path: ".ticket/tickets/0fc7b189-5c6c-4b79-a78d-5df8ad7dcf0c/ticket.toml"
+    title: "[interview-api] Actionable answer-sheet synthesis and iteration loop"
+    summary: "Design synthesis pipeline that turns interview and survey responses into actionable sheets, supports iterative refinement, and records provenance links back to source responses."
+    keywords[29]: actionable,and,answer,api,back,design,high,interview,into,iteration,iterative,links,loop,new,pipeline,provenance,records,refinement,responses,sheet,sheets,source,supports,survey,synthesis,that,ticket,turns,unspecified
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/0fc7b189-5c6c-4b79-a78d-5df8ad7dcf0c/ticket.toml","0fc7b189-5c6c-4b79-a78d-5df8ad7dcf0c",related,ticket,"",0fc7b189
+    digest: 82d049ea603d1da9e4985f8106808e47053e81e78ee1678b70d66d00ce3a7123
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0feb20f3-205a-4e71-9902-31c8c5bb13eb"
     kind: ticket
@@ -913,6 +965,19 @@ entries[729]:
     digest: e42b60b07755136a00d8a425cb985845a0020c19c22cf57cf5008a47f0d29777
     tags[4]: done,high,ticket,"viewer-api-dioxus"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "11fb9bcf-fcd5-4eff-b380-64b80f4a5c9c"
+    kind: ticket
+    source_path: ".ticket/tickets/11fb9bcf-fcd5-4eff-b380-64b80f4a5c9c/ticket.toml"
+    title: "[audit-api] Cleanup loop UX and automated remediation suggestions"
+    summary: "Design user-facing triage loops, inboxes, and remediation hints for stale/outdated/conflicting rule/spec/ticket entries, including recurring audit cadence."
+    keywords[29]: and,api,audit,automated,cadence,cleanup,conflicting,design,entries,facing,for,high,hints,inboxes,including,loop,loops,new,outdated,recurring,remediation,rule,spec,stale,suggestions,ticket,triage,unspecified,user
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/11fb9bcf-fcd5-4eff-b380-64b80f4a5c9c/ticket.toml","11fb9bcf-fcd5-4eff-b380-64b80f4a5c9c",related,ticket,"",11fb9bcf
+    digest: 2df32043fb86a873f1d4e524b4fbae20e91e7e1fee38c21a160756fb44884045
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "1211b2d8-93f9-4b1a-8973-10ee9937ba3d"
     kind: ticket
     source_path: ".ticket/tickets/1211b2d8-93f9-4b1a-8973-10ee9937ba3d/ticket.toml"
@@ -977,6 +1042,19 @@ entries[729]:
         "memory-viewers/.ticket/tickets/12d3c38b-0172-49a3-9e42-ba2a5a9b8eb4/ticket.toml","12d3c38b-0172-49a3-9e42-ba2a5a9b8eb4",related,ticket,"",12d3c38b
     digest: c4c378cdd11fc10627c996d6a49340f8f587295a20f66795817e28f29d2108fb
     tags[4]: done,high,ticket,"ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "13912e44-fee8-4aa5-b28f-68bbc22af401"
+    kind: ticket
+    source_path: ".ticket/tickets/13912e44-fee8-4aa5-b28f-68bbc22af401/ticket.toml"
+    title: "[architecture][memory-api] Neutral naming migration map"
+    summary: "Create a concrete neutral naming migration map for shared memory-api storage/index/search APIs."
+    keywords[52]: acceptance,alias,and,api,apis,architecture,biased,committed,compatibility,concrete,create,criteria,define,deprecation,document,each,for,has,high,implementation,index,inventory,layers,legacy,map,memory,migration,name,names,naming,neutral,new,only,parent,plan,reduced,referenced,replacement,replacements,rule,scope,search,shared,spec,storage,symbol,ticket,tickets,timing,touchpoints,unspecified,work
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/13912e44-fee8-4aa5-b28f-68bbc22af401/ticket.toml","13912e44-fee8-4aa5-b28f-68bbc22af401",related,ticket,"","13912e44"
+    digest: d70218d92686b9e4ca277e9befbb168dd80050f554c5517666f331c2c3f3b161
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "13a57a83-df99-4031-87e2-844772758ebb"
     kind: ticket
@@ -1537,6 +1615,19 @@ entries[729]:
     digest: f3eec8618a1cce8b7cfdd6c99e7124172883bae7b1149c78c4af8a3fe3bd84c7
     tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "23e81ad8-b67c-49af-97b5-f90f8bb0ae2c"
+    kind: ticket
+    source_path: ".ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml"
+    title: "[rule+skill] Rule-store sources for domain-store scaffolding instructions"
+    summary: "Create canonical rule entries and generation targets for instruction files and slash-command prompt assets that encode architecture-decisions.md and tracker 671d4e47 guidelines."
+    keywords[31]: 671d4e47,and,architecture,assets,canonical,command,create,decisions,domain,encode,entries,files,for,generation,guidelines,high,instruction,instructions,new,prompt,rule,scaffolding,skill,slash,sources,store,targets,that,ticket,tracker,unspecified
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml","23e81ad8-b67c-49af-97b5-f90f8bb0ae2c",related,ticket,"",23e81ad8
+    digest: f759a96796ac9f66013f7a458aa0f30d5c475bece5c4862665c6019085b58fa4
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "2405a83e-e3b5-47ad-8d88-8c12f507d252"
     kind: ticket
     source_path: "memory-viewers/viewer-api/.ticket/tickets/2405a83e-e3b5-47ad-8d88-8c12f507d252/ticket.toml"
@@ -1719,6 +1810,19 @@ entries[729]:
     digest: 205900f3c97472aa72d8415f6745890284812639069af8f8bf4d7a5586207b31
     tags[4]: "context-engine",high,new,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "2b1279bd-c42f-4b0e-8835-d0d645a733ab"
+    kind: ticket
+    source_path: ".ticket/tickets/2b1279bd-c42f-4b0e-8835-d0d645a733ab/ticket.toml"
+    title: "[architecture][memory-api] Neutral storage kernel and API migration"
+    summary: "Refactor memory-api shared storage/index/search APIs to domain-neutral semantics (`entity`, `store`, `workspace`) and isolate ticket-only behavior from shared storage internals."
+    keywords[116]: abstractions,acceptance,across,adapters,against,alias,aliases,allowed,and,api,apis,architecture,bang,behavior,big,call,checks,compatibility,compile,constraints,consume,crates,criteria,crud,current,deprecated,design,directly,docs,domain,during,encode,entity,equivalence,evidence,expose,focused,for,from,gate,guidance,high,implementation,include,index,internals,into,introduce,isolate,keep,kernel,layers,mark,memory,method,migration,mixed,modules,move,must,names,naming,neutral,new,not,notes,old,only,open,operational,operations,out,paths,phase,plan,prove,proving,query,refactor,regressions,remains,removal,required,rule,scan,scans,search,semantics,shaped,shared,sites,smoke,spec,specific,storage,store,stores,support,surface,table,temporarily,temporary,tests,through,ticket,tied,tracker,transition,unspecified,update,using,validation,window,with,workflows,workspace
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/2b1279bd-c42f-4b0e-8835-d0d645a733ab/ticket.toml","2b1279bd-c42f-4b0e-8835-d0d645a733ab",related,ticket,"",2b1279bd
+    digest: 6bbf89da96a2fbad52c20a03ccad04fb0d1352cf42c6f2c361fb03e97725ce3c
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "2b3a6e2e-4911-4b33-a3a9-9ace11f26637"
     kind: ticket
     source_path: "memory-viewers/.ticket/tickets/2b3a6e2e-4911-4b33-a3a9-9ace11f26637/ticket.toml"
@@ -1848,6 +1952,19 @@ entries[729]:
         ".ticket/tickets/2fb3adb0-fa3a-41a6-8fd6-38096635a38b/ticket.toml","2fb3adb0-fa3a-41a6-8fd6-38096635a38b",related,ticket,"",2fb3adb0
     digest: 527c343c6dbdf62ce328233ce8662f55b10b480ce1fc66a3c2a6283f6c02e173
     tags[4]: documentation,done,high,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a"
+    kind: ticket
+    source_path: ".ticket/tickets/2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a/ticket.toml"
+    title: "[validation] Prompt replay matrix for scaffold skill domain coverage"
+    summary: "Build representative prompt matrix (simple, medium, complex, edge-case) and replay harness to validate scaffold skill behavior, compile health, and architecture conformance across domain types."
+    keywords[30]: across,and,architecture,behavior,build,case,compile,complex,conformance,coverage,domain,edge,for,harness,health,high,matrix,medium,new,prompt,replay,representative,scaffold,simple,skill,ticket,types,unspecified,validate,validation
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a/ticket.toml","2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a",related,ticket,"",2ff2c8e8
+    digest: 9f6866e5c14ef5d2f1ead1336722d22cc7e9ef6e7bd4b9bebf7f9e930a6ea3aa
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "301dc3ce-38b6-4b28-bd84-266e33b46c90"
     kind: ticket
@@ -2069,6 +2186,19 @@ entries[729]:
         ".ticket/tickets/37dfe6cc-0d8d-4b85-b1cb-e9c262a9de5f/ticket.toml","37dfe6cc-0d8d-4b85-b1cb-e9c262a9de5f",related,ticket,"",37dfe6cc
     digest: 4ab9fbdda666d869b92be63030027fa895812933e58927ccce7c9034e9d694bf
     tags[4]: "in-implementation",medium,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "37e07148-c327-4530-8251-599c14dca04e"
+    kind: ticket
+    source_path: ".ticket/tickets/37e07148-c327-4530-8251-599c14dca04e/ticket.toml"
+    title: "[architecture][memory-api] Implement neutral shared storage kernel APIs"
+    summary: "Implement neutral shared storage/index/search symbols in memory-api with compatibility aliases."
+    keywords[48]: abstractions,acceptance,add,alias,aliases,and,api,apis,architecture,are,behavior,change,compatibility,criteria,deprecation,downstream,ensure,expose,focused,for,functional,high,implement,index,kernel,layers,legacy,markers,memory,names,neutral,new,operational,pass,present,preserve,remain,schema,scope,search,shared,storage,symbols,table,tests,ticket,unspecified,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/37e07148-c327-4530-8251-599c14dca04e/ticket.toml","37e07148-c327-4530-8251-599c14dca04e",related,ticket,"","37e07148"
+    digest: 6f814b0e87ed2f361ad01b0176cf07816a84a742e5919a39a8263ef7159e36a5
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "385f2521-b318-403b-a4ea-195a47e5c453"
     kind: ticket
@@ -2368,6 +2498,19 @@ entries[729]:
         ".ticket/tickets/43dedd9b-46cd-46c7-96f8-6683ded2cc4d/ticket.toml","43dedd9b-46cd-46c7-96f8-6683ded2cc4d",related,ticket,"",43dedd9b
     digest: "08ec9dc1420ce2726d86849bec2d3d9c0815f5e84e89a997cd141fcb0fff7cdb"
     tags[3]: "context-tasks",done,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "43fc22b3-9b36-4a54-b520-f51000330a46"
+    kind: ticket
+    source_path: ".ticket/tickets/43fc22b3-9b36-4a54-b520-f51000330a46/ticket.toml"
+    title: "[ticket-graph] Tracker: validation-aware graph tooling and audit enforcement"
+    summary: "Coordinate planning and delivery for ticket graph rendering, validation-aware dependency requirements, and audit/board enforcement built on the existing ticket graph and test-api evidence store."
+    keywords[54]: acceptance,after,and,api,area,audit,aware,board,built,canonical,child,cli,contracts,coordinate,cover,creation,criteria,define,delivery,dependency,each,enforcement,evidence,exist,existing,for,graph,health,high,link,model,new,outputs,pass,paths,planning,rendering,requirements,reusable,scope,semantics,spec,specs,state,store,test,the,ticket,tickets,tied,tooling,tracker,unspecified,validation
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/43fc22b3-9b36-4a54-b520-f51000330a46/ticket.toml","43fc22b3-9b36-4a54-b520-f51000330a46",related,ticket,"",43fc22b3
+    digest: d6169b637cd91655843589419598a3e91a4c9977aab255a43255323cb3b44a2b
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4470de7b-8c04-4c06-ae29-af411ade5db5"
     kind: ticket
@@ -3708,6 +3851,19 @@ entries[729]:
     digest: f0bce9daf36334b0f538a367f136e829d0d7cf9aff9fc2b80e2cbfece9d7735c
     tags[4]: done,high,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "65ea4528-af24-4300-8e5f-3b68e54711d0"
+    kind: ticket
+    source_path: ".ticket/tickets/65ea4528-af24-4300-8e5f-3b68e54711d0/ticket.toml"
+    title: "[architecture][contracts] Core shared contract crate"
+    summary: "Define the core shared contract crate for cross-store interaction primitives."
+    keywords[43]: acceptance,across,and,api,architecture,baseline,boundaries,checks,compiles,constraints,contract,contracts,core,crate,criteria,cross,dag,define,dependency,document,documented,domain,domains,establish,for,high,interaction,logic,model,new,ownership,pass,primitives,scope,shared,store,the,ticket,trait,unspecified,used,versioning,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/65ea4528-af24-4300-8e5f-3b68e54711d0/ticket.toml","65ea4528-af24-4300-8e5f-3b68e54711d0",related,ticket,"",65ea4528
+    digest: 7112dae1b7101e7ad818e92ad693f7e163b1f3a0957052dfec93a0eedb07deae
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "665b727c-09b1-43e0-8795-eb67e2758aea"
     kind: ticket
     source_path: ".ticket/tickets/665b727c-09b1-43e0-8795-eb67e2758aea/ticket.toml"
@@ -3733,6 +3889,45 @@ entries[729]:
         ".ticket/tickets/668743ea-497b-46a2-b7f7-f136684acc8c/ticket.toml","668743ea-497b-46a2-b7f7-f136684acc8c",related,ticket,"",668743ea
     digest: 3636867bc98e2921da4d8d0ab99d47c9edf0d47b4ac1dc54da537e6e24f71728
     tags[3]: "context-read",new,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "66fae806-203d-4235-9151-4272eb0bb603"
+    kind: ticket
+    source_path: ".ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml"
+    title: "[scaffold] Rule-generated store bootstrap instructions and slash command skill"
+    summary: "Plan rule-generated instruction and prompt assets plus slash command skill for bootstrapping a minimally functional new domain store from one prompt, aligned with architecture-decisions and cross-sto..."
+    keywords[49]: acceptance,aligned,and,architecture,are,assets,automated,bootstrap,bootstrapping,command,constraints,criteria,cross,decisions,dedicated,domain,end,entries,exist,flow,for,from,functional,generated,generation,high,instruction,instructions,minimally,new,one,plan,planned,plus,prompt,regression,rule,scaffold,skill,slash,source,specified,store,targets,ticket,tickets,unspecified,validation,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml","66fae806-203d-4235-9151-4272eb0bb603",related,ticket,"",66fae806
+    digest: fc8dd38aa25e013d03f72501de892f75dd6aaee52ea66d5456d2a7531e3aa6d5
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe"
+    kind: ticket
+    source_path: ".ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml"
+    title: "[architecture][multi-store] Tracker: cross-store interaction model and migration"
+    summary: "Goal: deliver a workspace-wide, domain-isolated multi-store architecture where each store owns persistence and workflow behavior while cross-store interactions are defined by shared contract interfac..."
+    keywords[143]: acceptance,across,active,adoption,after,aliases,all,and,api,architecture,are,audit,automatic,based,behavior,biased,binary,breaking,can,captures,cause,chain,checks,child,cli,code,compatibility,complete,composition,contract,contracts,coordinate,core,crates,criteria,cross,decisions,defined,defines,deliver,dependency,details,diagnostic,diagnostics,discovery,domain,each,enforce,entity,envelope,error,establish,evidence,examples,expectations,extended,extension,final,for,form,fully,gates,goal,graph,has,health,high,hint,http,hybrid,identity,implementation,incrementally,interaction,interactions,interfaces,ioc,isolated,layer,legacy,local,locked,mcp,memory,message,metadata,migration,missing,mode,model,multi,names,nested,neutral,neutralization,new,owns,pass,peers,persistence,phase,phases,planning,plus,practical,proof,ready,recursive,reference,references,remediation,request,required,retire,rule,schema,scope,shared,ship,small,spec,storage,store,target,ticket,tickets,topology,tracker,unspecified,urn,validation,vectors,vocabulary,where,while,wide,wiring,with,without,workflow,workflows,workspace,workspaces
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml","671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe",related,ticket,"",671d4e47
+    digest: 1cf5e66398f407a7ce0601a2eff5ae0f575ebebb964897e578f273691e003a7d
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "67b6117b-5978-4c89-9cd4-4c8b043f4fba"
+    kind: ticket
+    source_path: ".ticket/tickets/67b6117b-5978-4c89-9cd4-4c8b043f4fba/ticket.toml"
+    title: "[audit-api] Health metric taxonomy and scoring model for store entries"
+    summary: "Define weighted health metrics (relevance, freshness, conflict, validation coverage, feedback sentiment, activity) and scoring thresholds for healthy/unhealthy entries."
+    keywords[29]: activity,and,api,audit,conflict,coverage,define,entries,feedback,for,freshness,health,healthy,high,metric,metrics,model,new,relevance,scoring,sentiment,store,taxonomy,thresholds,ticket,unhealthy,unspecified,validation,weighted
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/67b6117b-5978-4c89-9cd4-4c8b043f4fba/ticket.toml","67b6117b-5978-4c89-9cd4-4c8b043f4fba",related,ticket,"",67b6117b
+    digest: 4b049c0a0669eabe3b6e4a9db1657f7c9d8dc829f6687047dff4348a375d4fa8
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6848ffa2-4e31-4985-beff-cba01af9b7ca"
     kind: ticket
@@ -3941,6 +4136,19 @@ entries[729]:
         "memory-viewers/viewer-api/.ticket/tickets/6bbda148-e144-4dff-92de-dd6584c82bd7/ticket.toml","6bbda148-e144-4dff-92de-dd6584c82bd7",related,ticket,"",6bbda148
     digest: 7e6b9009e60d97387268cede9a2d12140f6c955a00f39ea1acedc17b0262baf1
     tags[4]: high,ready,ticket,"viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6bd67a7a-2a76-4dd7-a897-b4d325476621"
+    kind: ticket
+    source_path: ".ticket/tickets/6bd67a7a-2a76-4dd7-a897-b4d325476621/ticket.toml"
+    title: "[architecture][workspace] Dynamic multi-store discovery and cross-store references"
+    summary: "Implement recursive multi-store workspace discovery and cross-store reference integration with URN-based identities across local and nested workspaces."
+    keywords[106]: above,absent,acceptance,across,added,adds,after,algorithm,and,apis,architecture,are,automatic,based,bootstraps,boundaries,canonical,checks,codified,counters,criteria,cross,decisions,default,define,destructive,deterministic,diagnostic,discovered,discovery,documented,dynamic,empty,ensure,entities,entity,evidence,examples,failures,fixture,for,formatting,fully,high,identities,identity,implement,implementation,index,integrated,integration,introduce,late,later,local,locked,metadata,missing,model,multi,nested,new,one,others,outputs,ownership,parent,parsing,per,plan,practical,present,rebuild,recursive,reference,references,refresh,repeatable,report,requirements,resolution,resolves,root,scan,scenarios,state,status,store,stores,support,surface,target,tests,then,ticket,time,trees,type,unspecified,urn,validation,verify,with,without,workspace,workspaces
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/6bd67a7a-2a76-4dd7-a897-b4d325476621/ticket.toml","6bd67a7a-2a76-4dd7-a897-b4d325476621",related,ticket,"",6bd67a7a
+    digest: c458c3e8bbfd933a8529c7c241c182b94ac263cf65209c5a2fa48f7b57dd806c
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6bebc161-63e6-4177-9958-0e36ffcd92bc"
     kind: ticket
@@ -4228,6 +4436,19 @@ entries[729]:
     digest: f9deffa9f41dc4f0c093eadf007ce11b7f587ed5ef6ea300243e5ce7e8b88f1e
     tags[4]: done,high,ticket,"ticket-http"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "70222986-3325-4d45-892e-31e7f4d09aa6"
+    kind: ticket
+    source_path: ".ticket/tickets/70222986-3325-4d45-892e-31e7f4d09aa6/ticket.toml"
+    title: "[validation] E2E regression harness for domain-store scaffold prompts"
+    summary: "Implement automated end-to-end regression testing for scaffold prompts, validating generated store correctness, compile/test health, and architecture-conformance checks across representative prompt s..."
+    keywords[31]: across,and,architecture,automated,checks,compile,conformance,correctness,domain,e2e,end,for,generated,harness,health,high,implement,new,prompt,prompts,regression,representative,scaffold,store,suites,test,testing,ticket,unspecified,validating,validation
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/70222986-3325-4d45-892e-31e7f4d09aa6/ticket.toml","70222986-3325-4d45-892e-31e7f4d09aa6",related,ticket,"","70222986"
+    digest: bbcb0b7c492bfda9bdc88c136d4038aa1655a740ffda21a6b125026e21702692
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "70d37471-bb9e-4100-b239-c5da156cbe2a"
     kind: ticket
     source_path: ".ticket/tickets/70d37471-bb9e-4100-b239-c5da156cbe2a/ticket.toml"
@@ -4253,6 +4474,19 @@ entries[729]:
         ".ticket/tickets/7132eaae-039c-4ad6-8cfb-29e6694c9ff1/ticket.toml","7132eaae-039c-4ad6-8cfb-29e6694c9ff1",related,ticket,"",7132eaae
     digest: 286712c8fa4e7de49998b3207dbad6a8107b7badc2b7a239eef9a615c60baa44
     tags[4]: "context-editor",done,high,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "726efe80-3dc4-4b2d-9817-fb2b91b74441"
+    kind: ticket
+    source_path: ".ticket/tickets/726efe80-3dc4-4b2d-9817-fb2b91b74441/ticket.toml"
+    title: "[architecture][observability] HTTP extended error envelope adoption"
+    summary: Adopt extended error envelope in HTTP surfaces and trace correlation.
+    keywords[43]: acceptance,actionable,adopt,adoption,align,and,architecture,causal,cause,chain,context,contract,correlation,criteria,ensure,envelope,error,extended,failures,fields,handlers,high,hint,http,include,integration,new,observability,payloads,peer,propagation,relevant,remediation,request,required,scope,spec,surfaces,tests,ticket,trace,unspecified,verify
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/726efe80-3dc4-4b2d-9817-fb2b91b74441/ticket.toml","726efe80-3dc4-4b2d-9817-fb2b91b74441",related,ticket,"",726efe80
+    digest: 8f3c10d30bccb40387dd05baf604ca1c74881c76326683b247fd3eb347e04a98
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "72bad0e5-2f5d-4731-8cc6-8d4b167418dd"
     kind: ticket
@@ -4462,6 +4696,19 @@ entries[729]:
     digest: c54b88e2cbe643903c35a6926ca4f8dfbd006df7aa8dfac7b3890dd3a8af5423
     tags[3]: ready,ticket,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "7639449a-22a9-4bea-9fcf-517810bc9ddf"
+    kind: ticket
+    source_path: ".ticket/tickets/7639449a-22a9-4bea-9fcf-517810bc9ddf/ticket.toml"
+    title: "[interview-api] Session file model and collaborative survey state"
+    summary: "Define and implement the persistent interview session model (files + indexes), editable prompt/response revisions, and multi-user survey participation state with conflict-safe updates."
+    keywords[30]: and,api,collaborative,conflict,define,editable,file,files,high,implement,indexes,interview,model,multi,new,participation,persistent,prompt,response,revisions,safe,session,state,survey,the,ticket,unspecified,updates,user,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/7639449a-22a9-4bea-9fcf-517810bc9ddf/ticket.toml","7639449a-22a9-4bea-9fcf-517810bc9ddf",related,ticket,"",7639449a
+    digest: 4ee6fef142440e3f94cba8491750b19dca93cafdb5a425f62bc060139d402492
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "763f8c13-a4bd-47af-8894-3e95a63fde8d"
     kind: ticket
     source_path: "memory-viewers/viewer-api/.ticket/tickets/763f8c13-a4bd-47af-8894-3e95a63fde8d/ticket.toml"
@@ -4643,6 +4890,19 @@ entries[729]:
         ".ticket/tickets/7db89f25-9395-45b3-a35d-8c5c219067f8/ticket.toml","7db89f25-9395-45b3-a35d-8c5c219067f8",related,ticket,"",7db89f25
     digest: a2abd57f4569924dd920a1daac47f3944bc913def8be5c12b0d8b317026dbd8d
     tags[3]: "in-review",ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7e318b2a-a381-49a1-aee9-18758a4b80fd"
+    kind: ticket
+    source_path: ".ticket/tickets/7e318b2a-a381-49a1-aee9-18758a4b80fd/ticket.toml"
+    title: "[architecture][workspace] Late store onboarding reconciliation"
+    summary: "Support absent-then-present store integration and late onboarding reconciliation."
+    keywords[46]: absent,acceptance,and,appears,architecture,criteria,destructive,diagnostic,discovered,fields,handle,high,include,index,integrated,integration,late,later,level,new,not,onboarding,outputs,pass,per,present,rebuilds,reconcile,reconciliation,references,reports,scan,scope,status,store,stores,support,surface,tests,then,ticket,unspecified,when,without,workspace,yet
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/7e318b2a-a381-49a1-aee9-18758a4b80fd/ticket.toml","7e318b2a-a381-49a1-aee9-18758a4b80fd",related,ticket,"",7e318b2a
+    digest: 39a876862f0e1cb21dfde0fe4bbc0e63bdb52f21c804ead64aa6c01859c5b6e0
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7f0a4dac-37b0-44c8-ba72-4ea0aaabb374"
     kind: ticket
@@ -4826,6 +5086,19 @@ entries[729]:
     digest: dd45d2359c2bb484b54117322e7d02843c8dee6af318a30503b6bfc6f2d83815
     tags[4]: critical,done,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "82d6ada4-ac35-45a7-9df6-7b7501d58e70"
+    kind: ticket
+    source_path: ".ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml"
+    title: "[architecture][workspace] URN cross-store reference model and resolver"
+    summary: "Implement URN-based cross-store reference model and resolver APIs."
+    keywords[39]: acceptance,add,and,api,apis,architecture,based,canonical,crates,criteria,cross,define,entity,for,format,formatter,high,implement,including,inputs,integrate,interfaces,invalid,lookup,model,new,parser,pass,reference,resolver,scope,store,tests,ticket,unspecified,urn,validation,with,workspace
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml","82d6ada4-ac35-45a7-9df6-7b7501d58e70",related,ticket,"",82d6ada4
+    digest: 82adbd88d32640c7d16551e43859b5587c3d292126a94bab182a7e0233745f3b
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "830de529-2818-49fd-a792-3b59dd99a748"
     kind: ticket
     source_path: "memory-viewers/memory-api/.ticket/tickets/830de529-2818-49fd-a792-3b59dd99a748/ticket.toml"
@@ -4838,6 +5111,19 @@ entries[729]:
         "memory-viewers/memory-api/.ticket/tickets/830de529-2818-49fd-a792-3b59dd99a748/ticket.toml","830de529-2818-49fd-a792-3b59dd99a748",related,ticket,"",830de529
     digest: 23343284bbe3c2b6eb508c4f167c0c9dd04fa1917b2a9f5816c87ef3111e1ec1
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "834632eb-7c0f-4e43-b1ca-3793141e25d8"
+    kind: ticket
+    source_path: ".ticket/tickets/834632eb-7c0f-4e43-b1ca-3793141e25d8/ticket.toml"
+    title: "[architecture][observability] CLI and MCP extended error envelope adoption"
+    summary: Adopt extended error envelope in CLI and MCP surfaces.
+    keywords[40]: acceptance,adopt,adoption,and,apply,architecture,backwards,cli,compatibility,corruption,cover,criteria,envelope,error,extended,failures,fields,focused,for,high,include,index,machine,mappings,mcp,new,observability,outputs,preserve,required,rule,scan,schema,scope,spec,surfaces,tests,ticket,unspecified,where
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/834632eb-7c0f-4e43-b1ca-3793141e25d8/ticket.toml","834632eb-7c0f-4e43-b1ca-3793141e25d8",related,ticket,"",834632eb
+    digest: a9ae9706bd490619518eb64ebd58eecde78afbe83fe4dccd2c19cb3da6668c37
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "834fc3eb-589e-4f83-b5cd-501187aa4d5f"
     kind: ticket
@@ -5138,6 +5424,19 @@ entries[729]:
     digest: d90580d020cefc7532b9c08f4a594c1739648c5a39c5dda7f39c477fc398e10c
     tags[3]: new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "8a90a63c-0a07-439f-90e8-9124212b2dc8"
+    kind: ticket
+    source_path: ".ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml"
+    title: "[program][multi-store] Store expansion and operational health program"
+    summary: "Umbrella program for new store domains and operational quality loops extending the cross-store architecture."
+    keywords[73]: acceptance,and,architecture,are,auditing,bootstrapping,clean,conflicting,constraints,continuous,contracts,criteria,cross,define,dependencies,domain,domains,each,editable,entries,expansion,extending,feedback,for,from,generated,handoff,has,health,high,implementation,inbox,instruction,interview,loops,metrics,migration,multi,new,operational,orchestration,planning,program,prompt,quality,reconciliation,rule,scaffolding,search,sessions,single,skill,spec,specs,stale,store,stores,structured,survey,the,ticket,tickets,tracker,umbrella,unhelpful,unspecified,user,validation,vector,vectors,volume,with,workflows
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml","8a90a63c-0a07-439f-90e8-9124212b2dc8",related,ticket,"",8a90a63c
+    digest: f3207d00d1a824b33f1589ad38d29f49bd0457bcd9d386851b6e3d31ca0d083d
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc"
     kind: ticket
     source_path: ".ticket/tickets/8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc/ticket.toml"
@@ -5333,6 +5632,19 @@ entries[729]:
     digest: a3ca091e5675aadf710007402f45e4533bf5f60e3f49f5172d917ba2f770021e
     tags[3]: cancelled,"context-tasks",ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "8dbff37f-699b-4c91-bf65-6516ea6fe609"
+    kind: ticket
+    source_path: ".ticket/tickets/8dbff37f-699b-4c91-bf65-6516ea6fe609/ticket.toml"
+    title: "[audit-api] Workspace graph health and board check-in validation enforcement"
+    summary: "Plan the audit and operator-enforcement layer for validation-aware ticket graphs."
+    keywords[65]: acceptance,and,api,audit,aware,beyond,board,check,checks,convergence,covers,criteria,defines,dependency,depends,derived,duplicating,enforcement,evidence,extend,failed,findings,for,gates,graph,graphs,health,heuristics,high,instead,involving,lacks,layer,links,mapping,missing,new,operator,orphan,paths,plan,prerequisites,readiness,repo,report,required,requirements,reuses,review,risks,scope,severity,spec,state,test,the,ticket,unmet,unspecified,validation,warn,warning,warnings,when,workspace
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/8dbff37f-699b-4c91-bf65-6516ea6fe609/ticket.toml","8dbff37f-699b-4c91-bf65-6516ea6fe609",related,ticket,"",8dbff37f
+    digest: f0ebf425a19f5b9f788b6576984abf9062afc5f4222dec21516ee5383559d652
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "8de2f8e2-43b6-4de1-a9f7-54fc64c2bdab"
     kind: ticket
     source_path: "memory-viewers/viewer-api/.ticket/tickets/8de2f8e2-43b6-4de1-a9f7-54fc64c2bdab/ticket.toml"
@@ -5462,6 +5774,19 @@ entries[729]:
         "memory-viewers/memory-api/.ticket/tickets/91011568-ae0b-4b23-b060-b0c018e1e912/ticket.toml","91011568-ae0b-4b23-b060-b0c018e1e912",related,ticket,"","91011568"
     digest: 303882450462e0907b6be52f89885d85b963b3c90b941a0e4c5382a84a5e8109
     tags[4]: high,"in-implementation",ticket,"ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "913fdd33-77b3-4e40-914a-db6873bf004d"
+    kind: ticket
+    source_path: ".ticket/tickets/913fdd33-77b3-4e40-914a-db6873bf004d/ticket.toml"
+    title: "[interview-api] Interview sessions, survey orchestration, and answer synthesis"
+    summary: "Plan an interview domain store that persists editable interview sessions, supports single-user and multi-user survey flows, and produces actionable synthesized answer sheets."
+    keywords[44]: acceptance,actionable,and,answer,api,are,contract,criteria,domain,editable,executable,exists,expectations,explicit,flow,flows,health,high,interview,into,model,multi,new,orchestration,persists,plan,produces,sessions,sheets,single,spec,split,storage,store,supports,survey,synthesis,synthesized,that,ticket,tickets,unspecified,user,validation
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/913fdd33-77b3-4e40-914a-db6873bf004d/ticket.toml","913fdd33-77b3-4e40-914a-db6873bf004d",related,ticket,"",913fdd33
+    digest: 6110681b4b9ea63b0b439cf3ea84cf840b074b63267e14e6494be0730f905487
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "91e22471-4895-4fcf-bab2-63efd7d9262d"
     kind: ticket
@@ -5775,6 +6100,19 @@ entries[729]:
     digest: 906b5b738ee070393a55657702390acb866994077b207a9cca0e624b18b57d4b
     tags[3]: done,storage,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "999d9316-fc79-4bb1-b629-7cba52eced31"
+    kind: ticket
+    source_path: ".ticket/tickets/999d9316-fc79-4bb1-b629-7cba52eced31/ticket.toml"
+    title: "[architecture][ticket-api] Adopt neutral shared APIs and alias retirement gate"
+    summary: "Migrate ticket-api internal usage to neutral shared APIs and define alias retirement gate."
+    keywords[41]: acceptance,actionable,adopt,alias,aliases,and,api,apis,architecture,compatibility,compiles,criteria,define,exit,for,gate,high,internal,internals,legacy,measurable,migrate,needed,neutral,new,pass,period,phase,recorded,removing,retain,retirement,scope,shared,symbols,tests,ticket,transition,unspecified,usage,where
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/999d9316-fc79-4bb1-b629-7cba52eced31/ticket.toml","999d9316-fc79-4bb1-b629-7cba52eced31",related,ticket,"",999d9316
+    digest: 47245424434710cec578b7c25b2a6cf4124d2b742903ebf8909727fbd3506680
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5"
     kind: ticket
     source_path: "memory-viewers/viewer-api/.ticket/tickets/9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5/ticket.toml"
@@ -5839,6 +6177,19 @@ entries[729]:
         ".ticket/tickets/9c6fd645-3c50-47f2-b9bd-6de323de0ecc/ticket.toml","9c6fd645-3c50-47f2-b9bd-6de323de0ecc",related,ticket,"",9c6fd645
     digest: 81765d97dc6481186b3586cff5d44b1f71061bf775f1c1ad7af28caf10913e98
     tags[4]: done,high,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9c95c1e4-3cdb-428e-b9de-800684651226"
+    kind: ticket
+    source_path: ".ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml"
+    title: "[feedback-api] Event ingestion, metadata normalization, and retention policy"
+    summary: "Define feedback event ingestion for human and privileged-agent authors, normalize metadata, and establish retention/privacy boundaries."
+    keywords[23]: agent,and,api,authors,boundaries,define,establish,event,feedback,for,high,human,ingestion,metadata,new,normalization,normalize,policy,privacy,privileged,retention,ticket,unspecified
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml","9c95c1e4-3cdb-428e-b9de-800684651226",related,ticket,"",9c95c1e4
+    digest: 161d78728551ca0b66072f8ddd19a67ce00c3e69dd53540f6efba4cbbbc0e131
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58"
     kind: ticket
@@ -6373,6 +6724,19 @@ entries[729]:
     digest: 548692e22c76504d8b4a3c083ca9905812c26387c2e16f175136e1d1d6c09b2c
     tags[4]: done,high,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "acefc2ae-e257-4bc8-a4c7-0ec3137e374d"
+    kind: ticket
+    source_path: ".ticket/tickets/acefc2ae-e257-4bc8-a4c7-0ec3137e374d/ticket.toml"
+    title: "[ticket-api] Validation-aware dependency requirements and health model"
+    summary: "Plan how ticket dependencies can declare required validation items whose satisfaction is resolved through test-api evidence rather than ad hoc ticket text."
+    keywords[70]: acceptance,and,api,aware,blocked,can,cases,covers,criteria,current,declare,defines,dependencies,dependency,derive,evidence,extend,failed,failure,flow,from,graph,health,high,hoc,how,identifies,integration,items,level,links,metadata,missing,model,new,next,one,passed,plan,points,rather,records,required,requirement,requirements,resolved,reusable,risk,satisfaction,scope,semantics,shared,signals,spec,stale,states,surface,targeting,test,text,than,through,ticket,unspecified,using,validation,validationexecution,validationspec,whose,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/acefc2ae-e257-4bc8-a4c7-0ec3137e374d/ticket.toml","acefc2ae-e257-4bc8-a4c7-0ec3137e374d",related,ticket,"",acefc2ae
+    digest: 75a34502c8aba4635650edc8798e4e390ab5b0510e2e518fb66da7879122696e
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "ad056493-716c-4c32-b8f6-9b67a25bc52e"
     kind: ticket
     source_path: "memory-viewers/viewer-api/.ticket/tickets/ad056493-716c-4c32-b8f6-9b67a25bc52e/ticket.toml"
@@ -6554,6 +6918,19 @@ entries[729]:
         "memory-viewers/.ticket/tickets/b1592d19-82c4-44b5-8633-8788a202b438/ticket.toml","b1592d19-82c4-44b5-8633-8788a202b438",related,ticket,"",b1592d19
     digest: 38bf1d1cfcf662dcfddd7869884bba73f5ab498649b50f97b3ba8264f442cdb9
     tags[3]: cancelled,ticket,"ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b1e9e744-aeac-474a-91d9-07e3a362dc76"
+    kind: ticket
+    source_path: ".ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml"
+    title: "[feedback-api] Feedback inbox, metadata indexing, and deep search"
+    summary: "Plan a feedback store that ingests human and privileged-agent feedback events, normalizes metadata, and supports deep search and reconciliation at scale."
+    keywords[42]: abuse,acceptance,agent,and,api,are,boundaries,criteria,deep,events,executable,explicit,feedback,high,human,inbox,indexing,ingestion,ingests,into,metadata,model,new,normalizes,plan,planning,privileged,quality,query,reconciliation,scale,schema,search,specified,split,store,supports,that,ticket,tickets,unspecified,work
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml","b1e9e744-aeac-474a-91d9-07e3a362dc76",related,ticket,"",b1e9e744
+    digest: cfa95951b9c6a6fd3ddbd0c9e8d13dc7f0400a2f2b81d515c08d3fc85cd4cb07
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72"
     kind: ticket
@@ -6880,6 +7257,19 @@ entries[729]:
     digest: 898e88bb3316a5ab5b90f7ca42a2c7e1809b10da3785d205ab6bea5d96d35183
     tags[4]: "context-read",done,high,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "b7b84c10-8dc5-4087-87ad-6fe27ebbcd45"
+    kind: ticket
+    source_path: ".ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml"
+    title: "[feedback-api] High-scale search, clustering, and reconciliation workflows"
+    summary: "Plan and implement deep query/search capabilities and operator reconciliation flows for large feedback corpora, including dedupe, sentiment facets, and routing."
+    keywords[27]: and,api,capabilities,clustering,corpora,dedupe,deep,facets,feedback,flows,for,high,implement,including,large,new,operator,plan,query,reconciliation,routing,scale,search,sentiment,ticket,unspecified,workflows
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml","b7b84c10-8dc5-4087-87ad-6fe27ebbcd45",related,ticket,"",b7b84c10
+    digest: 254bc01e9701b88edb31e9ecb3ae69bd9d7b38858e03dd720c271ecb7faee8b9
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "b7f8e991-2db0-4499-869c-c41bf92ff0da"
     kind: ticket
     source_path: ".ticket/tickets/b7f8e991-2db0-4499-869c-c41bf92ff0da/ticket.toml"
@@ -7022,6 +7412,19 @@ entries[729]:
         "memory-viewers/viewer-api/.ticket/tickets/bce0d2fb-8ac3-4be3-af42-47f5b6928caa/ticket.toml","bce0d2fb-8ac3-4be3-af42-47f5b6928caa",related,ticket,"",bce0d2fb
     digest: 652d61cc6ed8cce2b6ee0d01a98e56545de9ac95fd634745607a3df3c337895b
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "bd1c7cc0-2850-418d-b701-981b95c587ee"
+    kind: ticket
+    source_path: ".ticket/tickets/bd1c7cc0-2850-418d-b701-981b95c587ee/ticket.toml"
+    title: "[audit-api] Continuous store health scoring and cleanup loops"
+    summary: "Plan continuous auditing to detect stale, conflicting, or low-value entries across spec/rule/ticket stores using activity, validation, and feedback signals."
+    keywords[45]: acceptance,across,activity,and,api,are,audit,auditing,cleanup,conflicting,continuous,criteria,detect,entries,feedback,for,gating,health,high,include,loops,low,metric,model,new,operator,plan,rollout,rule,scoring,signals,spec,specified,stale,store,stores,taxonomy,ticket,tickets,triage,unspecified,using,validation,value,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/bd1c7cc0-2850-418d-b701-981b95c587ee/ticket.toml","bd1c7cc0-2850-418d-b701-981b95c587ee",related,ticket,"",bd1c7cc0
+    digest: e5ab30755276f6f16f5261f1000f8f29838d243028f2c4fa0989ac187fc7dbbb
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "be1a3de7-f44f-496d-b4c6-b4f8a120dc97"
     kind: ticket
@@ -7353,13 +7756,13 @@ entries[729]:
     source_path: ".ticket/tickets/c5e9bb39-d784-4d0c-8de1-3885013cddce/ticket.toml"
     title: "[memory-index] Ticket store index generator with git hook integration"
     summary: "Build a generator that reads the ticket store (ticket-api) and emits a committed markdown index co-located in `.ticket/README.md` along with its TOON sidecar at `.ticket/index.toon`. The purpose is t..."
-    keywords[131]: 0dba399a,acceptance,active,agent,agents,all,along,and,api,are,back,bodies,budget,build,canonical,central,cli,command,commit,committed,compact,completes,component,conform,consumable,contentkind,criteria,decisions,description,design,digest,does,each,emit,emits,entry,exceeded,extend,extracted,fall,fallback,files,folder,from,full,generated,generator,git,give,goals,grouped,groups,high,hook,humans,implement,"in-implementation",includes,index,indexentry,indexref,input,instruction,integration,its,latency,located,markdown,measurement,memory,must,non,not,only,output,outputs,outside,path,plus,pointing,post,pre,priority,produces,profile,profiled,purpose,raw,readme,reads,recorded,references,regenerates,resolved,running,same,scanning,schema,scope,semantic,short,sidecar,source,stable,staged,state,store,subcommand,summaries,summary,surface,that,the,them,third,threshold,ticket,"ticket-api",tickets,title,toml,toon,unchanged,under,view,when,wire,with,within,without,workspace
-    scope: "state=in-implementation, component=ticket-api"
+    keywords[131]: 0dba399a,acceptance,active,agent,agents,all,along,and,api,are,back,bodies,budget,build,canonical,central,cli,command,commit,committed,compact,completes,component,conform,consumable,contentkind,criteria,decisions,description,design,digest,does,each,emit,emits,entry,exceeded,extend,extracted,fall,fallback,files,folder,from,full,generated,generator,git,give,goals,grouped,groups,high,hook,humans,implement,"in-review",includes,index,indexentry,indexref,input,instruction,integration,its,latency,located,markdown,measurement,memory,must,non,not,only,output,outputs,outside,path,plus,pointing,post,pre,priority,produces,profile,profiled,purpose,raw,readme,reads,recorded,references,regenerates,resolved,running,same,scanning,schema,scope,semantic,short,sidecar,source,stable,staged,state,store,subcommand,summaries,summary,surface,that,the,them,third,threshold,ticket,"ticket-api",tickets,title,toml,toon,unchanged,under,view,when,wire,with,within,without,workspace
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/c5e9bb39-d784-4d0c-8de1-3885013cddce/ticket.toml","c5e9bb39-d784-4d0c-8de1-3885013cddce",related,ticket,"",c5e9bb39
-    digest: ed7c95fc00257d4d64c6239b5b805fa87d7b67dd74b87eb13208cdeb563031a9
-    tags[4]: high,"in-implementation",ticket,"ticket-api"
+    digest: "02b1bbcf5b99a6e69b6d6132292d925e7660ca39f20e14b0bba851a53d1857bd"
+    tags[4]: high,"in-review",ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c617cee6-3182-47db-a7cf-15cccbc02b6d"
     kind: ticket
@@ -7457,12 +7860,12 @@ entries[729]:
     source_path: ".ticket/tickets/c785a6f6-57d3-46d1-9a0e-36e1a4b74a47/ticket.toml"
     title: "[context-stack] Generate first-level child READMEs with parent links"
     summary: "Even once the `context-stack` root README is generated, the internal README tree still fails because its first-level child READMEs do not link back to the parent and are not managed as a coherent rep..."
-    keywords[126]: acceptance,across,adopt,agent,and,any,api,are,assuming,assumptions,back,because,block,can,check,child,children,coherent,command,config,context,coverage,covering,criteria,debug,deeper,deps,doc,docs,driven,each,even,exe,exists,explicit,extend,external,fails,first,for,forcing,from,full,generate,generated,high,include,includes,insert,internal,internally,into,introduced,its,justlog,level,link,linking,links,local,macros,managed,missing,navigable,navigation,needed,new,ngrams,not,once,one,only,packages,parent,part,petgraph,plan,problem,prove,read,readme,readmes,references,regenerate,remaining,repo,"repo-guidance",repository,representative,resulting,rollout,root,rule,rules,same,schema,scope,search,set,shared,stack,start,still,submodule,supplied,surface,surfaces,sync,target,targets,test,that,the,through,ticket,trace,tree,trees,types,validation,verify,where,with,without,workspace,yaml
+    keywords[123]: acceptance,across,adopt,agent,and,any,api,are,assuming,assumptions,back,because,block,can,check,child,children,coherent,command,config,context,coverage,covering,criteria,debug,deeper,doc,docs,driven,each,even,exe,exists,explicit,extend,external,fails,first,for,forcing,from,full,generate,generated,high,include,includes,insert,internal,internally,into,introduced,its,level,link,linking,links,local,macros,managed,missing,navigable,navigation,needed,new,ngrams,not,once,one,only,packages,parent,part,plan,problem,prove,read,readme,readmes,references,regenerate,remaining,repo,"repo-guidance",repository,representative,resulting,rollout,root,rule,rules,same,schema,scope,search,set,shared,stack,start,still,submodule,supplied,surface,surfaces,sync,target,targets,test,that,the,through,ticket,trace,tree,trees,types,validation,verify,where,with,without,workspace,yaml
     scope: "state=new, component=repo-guidance"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/c785a6f6-57d3-46d1-9a0e-36e1a4b74a47/ticket.toml","c785a6f6-57d3-46d1-9a0e-36e1a4b74a47",related,ticket,"",c785a6f6
-    digest: ec96b2e2c8a5e71652795def542cbbf9e73675b229eb8002bf1167507371c244
+    digest: fcba839dde466e037175d93aef9e696480ba7069c7a751b3dcfb55c537ec09e0
     tags[4]: high,new,"repo-guidance",ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c79e2630-3d49-454b-998f-fb52c24303f4"
@@ -7698,6 +8101,19 @@ entries[729]:
         ".ticket/tickets/d02afc1f-7e0c-483f-a70d-86c7b1e088ad/ticket.toml","d02afc1f-7e0c-483f-a70d-86c7b1e088ad",related,ticket,"",d02afc1f
     digest: 0cf1f95daa399e4137890f50ef2cb9a2f05c49af65ca8207b89ffceffeb4bbb4
     tags[4]: done,high,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d03530c6-52e4-42d3-8d57-e750ce73c8d4"
+    kind: ticket
+    source_path: ".ticket/tickets/d03530c6-52e4-42d3-8d57-e750ce73c8d4/ticket.toml"
+    title: "[architecture][observability] Unified traceable error channels across stores"
+    summary: "Standardize error tracing and user-facing diagnostics across store CLIs, MCP servers, and HTTP handlers using one extended envelope contract."
+    keywords[116]: acceptance,across,actionable,adapters,add,align,and,api,apis,architecture,asserting,automation,available,cause,chain,channels,cli,clis,code,context,contextual,contract,corruption,criteria,cross,debugging,decision,define,details,diagnostics,domain,enough,envelope,error,evidence,expose,extended,facing,failures,fields,for,guidelines,handlers,helpers,high,hint,hints,http,human,implement,implementation,include,includes,index,locked,logs,machine,mapper,mapping,mcp,memory,message,messages,metadata,multi,new,next,observability,one,operation,output,outputs,path,peer,plan,preserve,preserving,proving,reconciliation,remediation,request,rollout,rule,sample,scan,schema,scope,serialization,servers,setups,spec,stable,standardize,steps,store,stores,surfaces,table,target,tests,ticket,traceable,traces,tracing,translation,unified,unspecified,user,using,validation,visibility,when,while,with,wording,workspace
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/d03530c6-52e4-42d3-8d57-e750ce73c8d4/ticket.toml","d03530c6-52e4-42d3-8d57-e750ce73c8d4",related,ticket,"",d03530c6
+    digest: af60ad1289ecf872c30dd90d11ea181a59f24f7a7ac998a6a1853b117f8223d9
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d075e565-3463-410f-82ee-fb82f34cffc9"
     kind: ticket
@@ -8102,6 +8518,32 @@ entries[729]:
     digest: 80e0f62008b6f41b30cf6c27d7f5e4a5881de56e43534003bbf3ec5977f256ca
     tags[4]: done,high,"rule-api",ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "d86c66a9-ebe1-4b13-a3a4-87f4246b3062"
+    kind: ticket
+    source_path: ".ticket/tickets/d86c66a9-ebe1-4b13-a3a4-87f4246b3062/ticket.toml"
+    title: "[architecture][contracts] Domain extension contracts and first provider"
+    summary: Define domain extension contract crates and implement first provider/consumer pair.
+    keywords[41]: acceptance,and,applies,architecture,are,boundaries,clear,consumer,contract,contracts,crate,crates,create,criteria,cycle,define,dependency,documented,domain,extension,first,for,high,implement,introduced,least,new,one,ownership,pair,path,provider,scope,tested,ticket,traits,trigger,unspecified,validate,where,wired
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/d86c66a9-ebe1-4b13-a3a4-87f4246b3062/ticket.toml","d86c66a9-ebe1-4b13-a3a4-87f4246b3062",related,ticket,"",d86c66a9
+    digest: 65dd5c44f4a233d4813d7f35e61e6e814fa0a909e24afd929b5f5dce82071e86
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d8b5cfd0-8516-4dbe-84da-be112f6e5a57"
+    kind: ticket
+    source_path: ".ticket/tickets/d8b5cfd0-8516-4dbe-84da-be112f6e5a57/ticket.toml"
+    title: "[architecture][observability] Extended error envelope schema and mapping rules"
+    summary: "Define extended cross-channel error envelope schema and mapping rules."
+    keywords[51]: acceptance,adoption,and,architecture,are,cause,chain,channel,cli,code,consumers,context,contract,corruption,criteria,cross,define,details,documented,envelope,error,examples,extended,fields,for,high,hint,http,machine,mapped,mapping,mcp,message,new,observability,policy,referenced,remediation,request,required,rules,schema,scope,serialization,specify,stability,ticket,tickets,unspecified,versioning,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/d8b5cfd0-8516-4dbe-84da-be112f6e5a57/ticket.toml","d8b5cfd0-8516-4dbe-84da-be112f6e5a57",related,ticket,"",d8b5cfd0
+    digest: 63a6a39c6f0f338269cb8fbfde55e14c85a92085bd8b290f03863c24feb1ba20
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "d8d18128-656e-4a13-9983-946d6af33c27"
     kind: ticket
     source_path: ".ticket/tickets/d8d18128-656e-4a13-9983-946d6af33c27/ticket.toml"
@@ -8336,6 +8778,19 @@ entries[729]:
     digest: f595b7a95fea697e154e33080c6593cd72b342cbe6ce69b86473bd0e3b7ebb1a
     tags[3]: cancelled,ticket,watcher
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "dedac9f5-0d4d-4ad0-8a7e-4acd361c273e"
+    kind: ticket
+    source_path: ".ticket/tickets/dedac9f5-0d4d-4ad0-8a7e-4acd361c273e/ticket.toml"
+    title: "[validation] Rule-target generation drift checks for scaffold guidance assets"
+    summary: "Automate checks that rule-source entries and generated instruction/prompt outputs for domain-store scaffolding remain in sync, with stable snapshots and actionable diff reporting."
+    keywords[34]: actionable,and,assets,automate,checks,diff,domain,drift,entries,for,generated,generation,guidance,high,instruction,new,outputs,prompt,remain,reporting,rule,scaffold,scaffolding,snapshots,source,stable,store,sync,target,that,ticket,unspecified,validation,with
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/dedac9f5-0d4d-4ad0-8a7e-4acd361c273e/ticket.toml","dedac9f5-0d4d-4ad0-8a7e-4acd361c273e",related,ticket,"",dedac9f5
+    digest: b362b19531e9fca8cd4c351538482fd1c345d162ab6f4da8476c4ef99d23a1c3
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "dee7de7a-4af0-468e-b779-309192e2e4db"
     kind: ticket
     source_path: "memory-viewers/memory-api/.ticket/tickets/dee7de7a-4af0-468e-b779-309192e2e4db/ticket.toml"
@@ -8452,6 +8907,19 @@ entries[729]:
         ".ticket/tickets/e2189e9d-8ea7-4747-bda9-51e573ba51ca/ticket.toml","e2189e9d-8ea7-4747-bda9-51e573ba51ca",related,ticket,"",e2189e9d
     digest: 40d7654b3f3c7b3364ca63b2194a5747c53d665742852bc754070f66e081e013
     tags[4]: done,high,"session-api",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e2768479-24d6-4f42-bdbe-ac509167dc62"
+    kind: ticket
+    source_path: ".ticket/tickets/e2768479-24d6-4f42-bdbe-ac509167dc62/ticket.toml"
+    title: "[architecture][rule-spec] Adopt neutral shared APIs in rule-api and spec-api"
+    summary: "Migrate rule-api and spec-api to consume neutral memory-api shared APIs."
+    keywords[48]: acceptance,adopt,against,and,api,apis,architecture,behavior,biased,calls,compatibility,compile,consume,crates,create,criteria,dependence,direct,domains,flows,for,high,keep,legacy,memory,migrate,neutral,new,parity,pass,remains,remove,replace,rule,scan,scope,search,shared,spec,surface,symbols,tests,these,ticket,unnecessary,unspecified,update,use
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/e2768479-24d6-4f42-bdbe-ac509167dc62/ticket.toml","e2768479-24d6-4f42-bdbe-ac509167dc62",related,ticket,"",e2768479
+    digest: 955917d85bdb835ba18f95977724e5b1aa13b9d2b71bbdccb8012aabec155089
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e29e24ba-1f7e-43b3-97bd-c20d53b76df8"
     kind: ticket
@@ -8999,6 +9467,19 @@ entries[729]:
     digest: cda28fb82b50642cf3328feaf0b39a40d2aef10ed385f98594471f8af01dd96b
     tags[4]: medium,ready,"spec-cli",ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "f3305925-7217-4ff3-8c4e-820ebc1e6de5"
+    kind: ticket
+    source_path: ".ticket/tickets/f3305925-7217-4ff3-8c4e-820ebc1e6de5/ticket.toml"
+    title: "[ticket-cli] Graph rendering and closure-aware dependency display"
+    summary: "Plan a reusable graph-rendering primitive for ticket and related CLI surfaces, including ASCII and Mermaid outputs and closure-aware expansion over dependency subgraphs."
+    keywords[72]: acceptance,all,and,arbitrary,ascii,aware,bridge,can,cli,closure,command,covers,criteria,dag,defines,dependency,deterministic,directed,display,docs,draw,edges,embedded,expands,expansion,explainability,exported,for,formats,generic,graph,high,human,identifies,include,including,library,machine,mermaid,new,nodes,ordering,output,outputs,over,ownership,plan,primitive,related,render,renderer,rendering,requested,requirements,responsibilities,reusable,scope,semantics,set,spec,specs,stability,subgraphs,surfaces,that,the,ticket,tickets,transitive,transport,unspecified,validation
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/f3305925-7217-4ff3-8c4e-820ebc1e6de5/ticket.toml","f3305925-7217-4ff3-8c4e-820ebc1e6de5",related,ticket,"",f3305925
+    digest: a034e16aea90fac59771c66d053d0723a112e746bade5f0990f1848ad4fe6a15
+    tags[4]: high,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "f345b954-7b4b-4d90-84cf-c6d7099dfa4f"
     kind: ticket
     source_path: ".ticket/tickets/f345b954-7b4b-4d90-84cf-c6d7099dfa4f/ticket.toml"
@@ -9271,6 +9752,19 @@ entries[729]:
         ".ticket/tickets/f9f46954-0a11-4450-a8a9-f3be6ec969a1/ticket.toml","f9f46954-0a11-4450-a8a9-f3be6ec969a1",related,ticket,"",f9f46954
     digest: "04792ca0739235db24e62c6979320fb22579097a49ae6809d202a03a312372ad"
     tags[4]: "context-engine","in-implementation",medium,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "fa3e0a51-0caa-4a33-bfe2-1b173feaa979"
+    kind: ticket
+    source_path: ".ticket/tickets/fa3e0a51-0caa-4a33-bfe2-1b173feaa979/ticket.toml"
+    title: "[architecture][workspace] Recursive automatic store discovery"
+    summary: Implement fully automatic recursive store discovery across local and nested workspaces.
+    keywords[43]: acceptance,across,and,architecture,automatic,behavior,criteria,deduplication,define,discover,discovered,discovery,documented,duplicate,fixtures,for,fully,high,implement,indexing,known,limits,local,loop,markers,nested,new,pass,persist,reconciliation,recursive,roots,safe,scope,semantics,store,stores,tests,ticket,traversal,unspecified,workspace,workspaces
+    scope: "state=new, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/fa3e0a51-0caa-4a33-bfe2-1b173feaa979/ticket.toml","fa3e0a51-0caa-4a33-bfe2-1b173feaa979",related,ticket,"",fa3e0a51
+    digest: c1967dc4fe99a7161fca4e63d50e0768de0b8474cec20fff99fa1c4589749e57
+    tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fbb5a87d-44b5-4a92-8c6c-79f8302dcba5"
     kind: ticket
