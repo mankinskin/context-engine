@@ -94,6 +94,7 @@ Environment:
 
 Examples:
   ./install-tools.sh
+    ./install-tools.sh spec-cli ticket-cli
     ./install-tools.sh --tool viewer-ctl --tool trunk
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
     ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
@@ -152,6 +153,8 @@ append_csv_tools() {
 }
 
 selected_tools=()
+installed_tools=()
+failed_tools=()
 force_install=1
 dry_run=0
 
@@ -175,7 +178,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_tools=()
-            append_csv_tools "viewer-ctl,trunk,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
+            append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
             shift
             ;;
         --list)
@@ -227,6 +230,7 @@ install_one() {
     local bin
     local command
     local post_command=()
+    local failed=0
 
     path=$(tool_path "$tool")
     bin=$(tool_bin "$tool")
@@ -252,22 +256,77 @@ install_one() {
     fi
 
     if [[ $dry_run -eq 1 ]]; then
+        installed_tools+=("$tool")
         return 0
     fi
 
-    (
+    if ! (
         cd "$repo_root"
         "${command[@]}"
-    )
+    ); then
+        failed=1
+    fi
 
-    if [[ ${#post_command[@]} -gt 0 ]]; then
-        (
+    if [[ $failed -eq 0 && ${#post_command[@]} -gt 0 ]]; then
+        if ! (
             cd "$repo_root"
             "${post_command[@]}"
-        )
+        ); then
+            failed=1
+        fi
     fi
+
+    if [[ $failed -eq 0 ]]; then
+        installed_tools+=("$tool")
+        return 0
+    fi
+
+    failed_tools+=("$tool")
+    printf 'error: install failed for %s\n' "$tool" >&2
+    return 1
 }
 
 for tool in "${selected_tools[@]}"; do
-    install_one "$tool"
+    install_one "$tool" || true
 done
+
+print_joined_tools() {
+    local first=1
+    local tool
+
+    for tool in "$@"; do
+        if [[ $first -eq 1 ]]; then
+            printf '%s' "$tool"
+            first=0
+        else
+            printf ', %s' "$tool"
+        fi
+    done
+}
+
+printf '\nInstall summary: requested=%d, succeeded=%d, failed=%d\n' \
+    "${#selected_tools[@]}" "${#installed_tools[@]}" "${#failed_tools[@]}"
+
+if [[ ${#installed_tools[@]} -gt 0 ]]; then
+    printf 'Succeeded: '
+    print_joined_tools "${installed_tools[@]}"
+    printf '\n'
+fi
+
+if [[ ${#failed_tools[@]} -gt 0 ]]; then
+    printf 'Failed: '
+    print_joined_tools "${failed_tools[@]}"
+    printf '\n\n'
+    printf 'Retry failed installs with:\n'
+    printf '  ./install-tools.sh'
+    if [[ $force_install -eq 0 ]]; then
+        printf ' --no-force'
+    fi
+    for tool in "${failed_tools[@]}"; do
+        printf ' %q' "$tool"
+    done
+    printf '\n\n'
+    printf 'For more options, run:\n'
+    printf '  ./install-tools.sh --help\n'
+    exit 1
+fi
