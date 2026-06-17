@@ -1,0 +1,1 @@
+Define feedback event ingestion for human and privileged-agent authors, normalize metadata, and establish retention/privacy boundaries.
