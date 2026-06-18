@@ -1,6 +1,6 @@
 # Problem
 
-User-facing installation documentation is not validated continuously from a clean environment. The current repo has install instructions for the CLI tools in `memory-viewers/memory-api/README.md`, but there is no Docker-based clean-room test strategy for installation, deinstallation, or documentation drift. There is also no canonical install contract in `.spec` that keeps executable tests, specification language, and generated README rule content synchronized.
+User-facing installation documentation is not validated continuously from a clean environment. The current repo has install instructions for the CLI tools in `memory-api/README.md`, but there is no Docker-based clean-room test strategy for installation, deinstallation, or documentation drift. There is also no canonical install contract in `.spec` that keeps executable tests, specification language, and generated README rule content synchronized.
 
 # Scope
 
@@ -34,7 +34,7 @@ The design should cover:
 
 | ID | Surface | Status | Environment | Install flow under test | Deinstall / cleanup flow under test | Required assertions |
 | --- | --- | --- | --- | --- | --- | --- |
-| VIEW-01 | `viewer-ctl` binary | Required design decision; implementation may be deferred behind CLI completion | Clean Linux Docker image with pinned Rust toolchain plus frontend prerequisites | `cargo install --path memory-viewers/viewer-api/viewer-ctl --bin viewer-ctl` or the documented equivalent | `cargo uninstall viewer-ctl` | `viewer-ctl --help` succeeds; binary can drive viewer lifecycle commands |
+| VIEW-01 | `viewer-ctl` binary | Required design decision; implementation may be deferred behind CLI completion | Clean Linux Docker image with pinned Rust toolchain plus frontend prerequisites | `cargo install --path viewer-api/viewer-ctl --bin viewer-ctl` or the documented equivalent | `cargo uninstall viewer-ctl` | `viewer-ctl --help` succeeds; binary can drive viewer lifecycle commands |
 | VIEW-02 | Viewer server install lifecycle | Follow-up after CLI matrix is stable | Clean Linux Docker image with frontend build deps | `viewer-ctl install doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer` | No first-class uninstall command exists today; cleanup is manual removal of installed artifacts and stopped processes | Installed viewer artifacts exist where `viewer-ctl` expects them; install command is repeatable |
 | VIEW-03 | Viewer start/prepare lifecycle | Follow-up after install lifecycle is covered | Clean Linux Docker image with frontend build deps and available ports | `viewer-ctl prepare <viewer>` and `viewer-ctl start <viewer>` for one representative viewer first, then matrix expansion | `viewer-ctl stop <viewer>` and workspace cleanup | Viewer starts from a clean environment and advertises a reachable port or installed static dir |
 | VIEW-04 | Viewer deinstall ergonomics | Explicit non-goal for first implementation; design follow-up required | N/A until uninstall surface exists | None in first implementation | Manual artifact removal only until `viewer-ctl` exposes uninstall/remove support | Design documents the current gap and whether to add an uninstall command or keep deinstall checks out of scope |
@@ -43,8 +43,8 @@ The design should cover:
 
 1. The CLI matrix is mandatory for the first implementation and is the gating path for CI.
 2. Viewer install coverage is split from CLI coverage because `viewer-ctl` has install/start/stop/prepare commands but no explicit uninstall command today.
-3. The canonical install contract must live in install-focused `.spec` entries under `memory-viewers/memory-api/.spec/specs/**`.
-4. The generated install section in `memory-viewers/memory-api/README.md` must remain sourced from `.rule` entries and synchronized with the same install contract used by the Docker scenarios.
+3. The canonical install contract must live in install-focused `.spec` entries under `memory-api/.spec/specs/**`.
+4. The generated install section in `memory-api/README.md` must remain sourced from `.rule` entries and synchronized with the same install contract used by the Docker scenarios.
 5. The executable Docker scenarios must validate the documented commands directly or consume generated fixtures derived from the same `.spec` contract rather than maintaining a separate handwritten matrix.
 
 # Acceptance Criteria

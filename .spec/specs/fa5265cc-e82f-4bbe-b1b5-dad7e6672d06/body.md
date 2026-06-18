@@ -16,8 +16,8 @@ The built-in `tracker-improvement` ticket schema includes an optional `effort` f
 - Surfaced `effort` in CLI, HTTP, and MCP next/list payloads plus board recommendation output.
 
 # Validation
-- `cargo test --manifest-path memory-viewers/memory-api/crates/ticket-api/Cargo.toml sort_candidates_prefers_lower_effort_before_newer_tickets`
-- `cargo test --manifest-path memory-viewers/memory-api/crates/ticket-api/Cargo.toml parse_effort_accepts_numeric_token_budgets`
-- `cargo test --manifest-path memory-viewers/memory-api/tools/cli/ticket-cli/Cargo.toml integration_board_cli -- --nocapture`
-- `cargo test --manifest-path memory-viewers/memory-api/tools/http/ticket-http/Cargo.toml listing -- --nocapture`
-- `cargo test --manifest-path memory-viewers/memory-api/tools/mcp/ticket-mcp/Cargo.toml next_tickets -- --nocapture`
+- `cargo test --manifest-path memory-api/crates/ticket-api/Cargo.toml sort_candidates_prefers_lower_effort_before_newer_tickets`
+- `cargo test --manifest-path memory-api/crates/ticket-api/Cargo.toml parse_effort_accepts_numeric_token_budgets`
+- `cargo test --manifest-path memory-api/tools/cli/ticket-cli/Cargo.toml integration_board_cli -- --nocapture`
+- `cargo test --manifest-path memory-api/tools/http/ticket-http/Cargo.toml listing -- --nocapture`
+- `cargo test --manifest-path memory-api/tools/mcp/ticket-mcp/Cargo.toml next_tickets -- --nocapture`

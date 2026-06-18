@@ -18,10 +18,10 @@ Current MCP update flows are too verbose and too rigid:
 ## References
 - Last-turn failure mode came from MCP ticket update usage where unchanged state/field placeholders were sent unnecessarily.
 - Existing minimal-output normalization ticket: `20b6a09a` — omit default workspace/schema metadata from ticket outputs
-- Ticket MCP update surface: `memory-viewers/memory-api/tools/mcp/ticket-mcp/**`
-- Spec MCP update surface: `memory-viewers/memory-api/tools/mcp/spec-mcp/**`
-- Rule MCP update surface: `memory-viewers/memory-api/tools/mcp/rule-mcp/**`
-- Existing MCP tool contract patterns: `memory-viewers/memory-api/tools/mcp/audit-mcp/src/server.rs`, `memory-viewers/memory-api/tools/mcp/rule-mcp/src/server.rs`
+- Ticket MCP update surface: `memory-api/tools/mcp/ticket-mcp/**`
+- Spec MCP update surface: `memory-api/tools/mcp/spec-mcp/**`
+- Rule MCP update surface: `memory-api/tools/mcp/rule-mcp/**`
+- Existing MCP tool contract patterns: `memory-api/tools/mcp/audit-mcp/src/server.rs`, `memory-api/tools/mcp/rule-mcp/src/server.rs`
 - Token-efficiency guidance: `.agents/instructions/token-efficiency.instructions.md`
 
 ## Scope

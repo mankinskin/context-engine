@@ -30,7 +30,7 @@ That error does not tell the user what went wrong or how to recover. At the same
 - `ticket get <id>` from the repo root either succeeds for nested-root tickets or reports the correct root and retry syntax.
 - The failure mode is explicit and does not expose a raw OS path error for this case.
 - `search`, `list`, and `next` JSON results include root/workspace metadata for each returned ticket.
-- Tests cover at least one nested-root scenario like `memory-viewers/viewer-api/.ticket/`.
+- Tests cover at least one nested-root scenario like `viewer-api/.ticket/`.
 - Canonical spec / docs define the metadata contract and recovery flow.
 - Manual validation checklist covers repo-root recovery for a nested ticket.
 
@@ -39,4 +39,4 @@ That error does not tell the user what went wrong or how to recover. At the same
 - `tools/ticket-cli/`
 - `crates/ticket-api/`
 - `tools/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

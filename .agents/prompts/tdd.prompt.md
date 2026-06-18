@@ -9,7 +9,7 @@ agent: "agent"
 
 Drive the requested work with the smallest useful red-green-refactor loop available in this repository.
 
-Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), [test-api](../../memory-viewers/memory-api/crates/test-api/src/lib.rs), and [log-api](../../memory-viewers/memory-api/crates/log-api/src/lib.rs).
+Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [test-api](../../memory-api/crates/test-api/src/lib.rs), and [log-api](../../memory-api/crates/log-api/src/lib.rs).
 
 ## Workflow
 

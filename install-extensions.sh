@@ -19,7 +19,7 @@ extension_names=(
 
 extension_path() {
     case "$1" in
-        ticket-vscode) printf '%s\n' "memory-viewers/memory-api/tools/ticket-vscode" ;;
+        ticket-vscode) printf '%s\n' "memory-api/tools/ticket-vscode" ;;
         *)
             printf 'error: unknown extension: %s\n' "$1" >&2
             exit 1

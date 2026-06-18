@@ -21,9 +21,9 @@ Validation status:
 - `cargo run --manifest-path ../memory-api/tools/cli/ticket-cli/Cargo.toml -- --json health 936d38d6-a238-4cb9-b00a-1b2a4b65dc04` from `memory-viewers/viewer-api` now returns zero findings,
 - `cargo run --manifest-path ../memory-api/tools/cli/ticket-cli/Cargo.toml -- --json get 936d38d6-a238-4cb9-b00a-1b2a4b65dc04` from `memory-viewers/viewer-api` now succeeds,
 - `cargo run --manifest-path ../memory-api/tools/cli/ticket-cli/Cargo.toml -- --json health 4d9293ab-b7a8-4113-b80a-bfe39297bad2` from `memory-viewers/viewer-api` now returns zero findings,
-- `cargo test --manifest-path memory-viewers/memory-api/crates/ticket-api/Cargo.toml recovers_ticket_paths_from_relative_index_entries` passed,
-- `cargo check --manifest-path memory-viewers/memory-api/tools/http/ticket-http/Cargo.toml` passed,
-- `cargo check --manifest-path memory-viewers/memory-api/tools/mcp/ticket-mcp/Cargo.toml` passed,
+- `cargo test --manifest-path memory-api/crates/ticket-api/Cargo.toml recovers_ticket_paths_from_relative_index_entries` passed,
+- `cargo check --manifest-path memory-api/tools/http/ticket-http/Cargo.toml` passed,
+- `cargo check --manifest-path memory-api/tools/mcp/ticket-mcp/Cargo.toml` passed,
 - `cargo run --manifest-path ../memory-api/tools/cli/ticket-cli/Cargo.toml -- --json scan --force` from `memory-viewers/viewer-api` reconciled 78 tickets and kept the repros green afterward.
 
 Documentation status:

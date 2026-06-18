@@ -40,4 +40,4 @@ This makes the filter impossible to trust for prefix- or substring-based ticket 
 - `tools/ticket-cli/`
 - `crates/ticket-api/`
 - `tools/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

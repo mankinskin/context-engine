@@ -14,8 +14,8 @@ context-engine/          ← root repo
 
 Always commit deepest-first:
 
-1. Commit in `memory-viewers/memory-api/` when it has local changes.
-2. Commit in `memory-viewers/viewer-api/` when it has local changes.
+1. Commit in `memory-api/` when it has local changes.
+2. Commit in `viewer-api/` when it has local changes.
 3. Update the submodule pointer in `memory-viewers/` and commit there.
 4. Update the submodule pointer in the root repo and commit there.
 5. Commit in `context-stack/` when it has local changes (independent of memory-viewers).

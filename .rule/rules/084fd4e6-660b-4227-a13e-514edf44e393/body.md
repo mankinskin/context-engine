@@ -9,7 +9,7 @@ agent: "agent"
 
 Create a compact handoff prompt that a new session can use to resume a specific implementation track quickly without rereading the whole conversation.
 
-Reference [AGENTS](../../AGENTS.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md), and [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [spec-cli](../../memory-api/tools/cli/spec-cli/README.md).
 
 ## Workflow
 

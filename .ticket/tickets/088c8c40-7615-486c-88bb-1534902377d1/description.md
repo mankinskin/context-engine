@@ -21,13 +21,13 @@ Adopt the shared README schema in `memory-api` and add parent-linked README targ
 
 ## Acceptance Criteria
 
-- `memory-viewers/memory-api/README.md` uses the shared README schema.
+- `memory-api/README.md` uses the shared README schema.
 - The in-scope generated tool READMEs include parent links to `memory-api/README.md`.
 - `sync-targets --check` passes from the `memory-api` workspace root.
 - The workspace no longer fails due to shared-schema loader behavior.
 
 ## Validation
 
-- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api explain-target --config memory-viewers/memory-api/rule-targets.yaml --target memory-api-readme`
-- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --config memory-viewers/memory-api/rule-targets.yaml`
-- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --check --config memory-viewers/memory-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api explain-target --config memory-api/rule-targets.yaml --target memory-api-readme`
+- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --config memory-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --check --config memory-api/rule-targets.yaml`

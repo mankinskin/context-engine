@@ -10,7 +10,7 @@ Migrate `viewer-api` to the shared README schema and extend its generated child 
 
 This spec covers:
 
-- adoption of the shared schema for `memory-viewers/viewer-api/README.md`
+- adoption of the shared schema for `viewer-api/README.md`
 - parent-linked generated README targets for `viewer-ctl`, `viewer-api`, and `viewer-api/frontend/dioxus`
 - preservation of the existing frontend and lifecycle command-doc references
 

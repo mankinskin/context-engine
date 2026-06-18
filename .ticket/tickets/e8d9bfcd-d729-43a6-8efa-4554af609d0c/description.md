@@ -23,8 +23,8 @@ Update Graph3D component documentation and examples to reflect the four graph im
    - Include troubleshooting guide for common integration issues
 
 **Files to update:**
-- `memory-viewers/viewer-api/viewer-api/frontend/dioxus/README.md`
-- `memory-viewers/viewer-api/viewer-api/README.md`
+- `viewer-api/viewer-api/frontend/dioxus/README.md`
+- `viewer-api/viewer-api/README.md`
 - Graph3D component spec sections
 - Any existing integration documentation
 

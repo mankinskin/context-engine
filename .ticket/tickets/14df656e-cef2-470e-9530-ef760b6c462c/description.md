@@ -30,6 +30,6 @@ That means the system can only be validated at CLI and MCP layers. For a workflo
 
 - `memory-viewers/ticket-viewer/src/`
 - `memory-viewers/ticket-viewer/frontend/dioxus/`
-- `memory-viewers/memory-api/tools/ticket-vscode/`
-- `memory-viewers/memory-api/tools/mcp/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/tools/ticket-vscode/`
+- `memory-api/tools/mcp/ticket-mcp/`
+- `memory-api/.spec/`

@@ -105,4 +105,4 @@ At least one focused fixture/test per domain proving identical source inputs yie
 - Sibling spec: generated-context/thin-generator-architecture (`bf217ce5`)
 - Schema ticket: [0dba399a](.ticket/tickets/0dba399a-4691-4173-b921-17e5e6f6ebb8/ticket.toml)
 - Generator tickets: `c5e9bb39`, `b9757ba7`, `9336a096`, `855a1e5d`, `c2409055`
-- Current code: `memory-viewers/memory-api/crates/memory-api/src/index_generator/` (placeholder normalization to be upgraded)
+- Current code: `memory-api/crates/memory-api/src/index_generator/` (placeholder normalization to be upgraded)

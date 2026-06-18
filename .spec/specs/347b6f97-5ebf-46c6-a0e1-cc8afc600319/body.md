@@ -16,11 +16,11 @@ Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tool
 	- `memory-viewers/.rule/rules/397b0447-135e-4d35-ad05-bcc69047d2c0/body.md`
 	- `AGENTS.md`
 	- `memory-viewers/AGENTS.md`
-	- `memory-viewers/memory-api/AGENTS.md`
-	- `memory-viewers/viewer-api/AGENTS.md`
+	- `memory-api/AGENTS.md`
+	- `viewer-api/AGENTS.md`
 	- `.agents/instructions/frontend.instructions.md`
 - Validation:
 	- `get_errors` on the touched instruction files: no errors.
-	- `git --no-pager diff -- AGENTS.md memory-viewers/AGENTS.md memory-viewers/memory-api/AGENTS.md memory-viewers/viewer-api/AGENTS.md .agents/instructions/frontend.instructions.md`
+	- `git --no-pager diff -- AGENTS.md memory-viewers/AGENTS.md memory-api/AGENTS.md viewer-api/AGENTS.md .agents/instructions/frontend.instructions.md`
 	- `./target/debug/rule.exe sync-targets --config rule-targets.yaml --json`
 	- `./target/debug/rule.exe sync-targets --config memory-viewers/rule-targets.yaml --json`

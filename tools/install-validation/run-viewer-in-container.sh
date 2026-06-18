@@ -21,7 +21,7 @@ fail() {
 find_install_contract_dir() {
     local dir
 
-    for dir in "$repo_root/memory-viewers/memory-api/.spec/specs"/*; do
+    for dir in "$repo_root/memory-api/.spec/specs"/*; do
         [[ -f "$dir/spec.toml" ]] || continue
         if grep -Fq "slug = \"$CONTRACT_SLUG\"" "$dir/spec.toml"; then
             printf '%s\n' "$dir"

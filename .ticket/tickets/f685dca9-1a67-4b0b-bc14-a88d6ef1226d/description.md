@@ -2,9 +2,9 @@
 Prevent reactive re-renders (e.g. SSE `ticket.upsert`, hover changes) from resetting an in-progress drag or camera interaction.
 
 ## Scope
-File: `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` (`sync_render_state`, mod.rs:604)
+File: `viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` (`sync_render_state`, mod.rs:604)
 
-Problem: node drag mutates `state.base_layout` to the dragged coordinates (`memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/interaction/handlers.rs:363`) while `props.layout` still holds the original cache coordinates. On any re-render mid-interaction, the `state.base_layout != *layout` branch resets `state.layout`/`target_layout` from props and sets `dirty_layout`, snapping back the drag.
+Problem: node drag mutates `state.base_layout` to the dragged coordinates (`viewer-api/viewer-api/frontend/dioxus/src/graph3d/interaction/handlers.rs:363`) while `props.layout` still holds the original cache coordinates. On any re-render mid-interaction, the `state.base_layout != *layout` branch resets `state.layout`/`target_layout` from props and sets `dirty_layout`, snapping back the drag.
 
 Change:
 - Track an "interaction active" flag (drag/orbit/pan in progress) in `RenderState`.

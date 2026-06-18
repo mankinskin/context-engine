@@ -94,7 +94,7 @@ extra_assets = ["memory-viewers/spec-viewer/frontend/dioxus/public"]
 [[extension]]
 name = "ticket-vscode"
 kind = "vscode"
-source_dir = "memory-viewers/memory-api/tools/ticket-vscode"
+source_dir = "memory-api/tools/ticket-vscode"
 package_json = "package.json"
 build_cmd = ["npm", "run", "compile"]
 

@@ -9,7 +9,7 @@ agent: "agent"
 
 Create an interview with the user about a specific topic so the specification book can be updated with clearer requirements, goals, and acceptance criteria.
 
-Reference [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), [spec-mcp](../../memory-viewers/memory-api/tools/mcp/spec-mcp/README.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), and [ticket-mcp](../../memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md).
+Reference [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [spec-mcp](../../memory-api/tools/mcp/spec-mcp/README.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), and [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md).
 
 ## Workflow
 

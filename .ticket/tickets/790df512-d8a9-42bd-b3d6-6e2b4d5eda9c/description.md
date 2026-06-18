@@ -57,9 +57,9 @@ The spec defines:
 
 # Likely Surfaces
 
-- `memory-viewers/memory-api/.spec/`
-- `memory-viewers/memory-api/tools/cli/ticket-cli/`
-- `memory-viewers/memory-api/tools/mcp/ticket-mcp/`
-- `memory-viewers/memory-api/tools/http/ticket-http/`
-- `memory-viewers/memory-api/crates/ticket-api/`
-- `memory-viewers/memory-api/README.md`
+- `memory-api/.spec/`
+- `memory-api/tools/cli/ticket-cli/`
+- `memory-api/tools/mcp/ticket-mcp/`
+- `memory-api/tools/http/ticket-http/`
+- `memory-api/crates/ticket-api/`
+- `memory-api/README.md`

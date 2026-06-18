@@ -178,12 +178,12 @@ if staged_matches '^(memory-viewers/rule-targets\.yaml|memory-viewers/\.rule/.*|
     check_rule_targets 'memory-viewers/rule-targets.yaml'
 fi
 
-if staged_matches '^(memory-viewers/memory-api/rule-targets\.yaml|memory-viewers/memory-api/\.rule/.*|memory-viewers/memory-api/README\.md)$'; then
-    check_rule_targets 'memory-viewers/memory-api/rule-targets.yaml'
+if staged_matches '^(memory-api/rule-targets\.yaml|memory-api/\.rule/.*|memory-api/README\.md)$'; then
+    check_rule_targets 'memory-api/rule-targets.yaml'
 fi
 
-if staged_matches '^(memory-viewers/viewer-api/rule-targets\.yaml|memory-viewers/viewer-api/\.rule/.*|memory-viewers/viewer-api/README\.md)$'; then
-    check_rule_targets 'memory-viewers/viewer-api/rule-targets.yaml'
+if staged_matches '^(viewer-api/rule-targets\.yaml|viewer-api/\.rule/.*|viewer-api/README\.md)$'; then
+    check_rule_targets 'viewer-api/rule-targets.yaml'
 fi
 
 exit 0

@@ -46,4 +46,4 @@ These are small inconsistencies individually, but together they force every inte
 - `tools/spec-cli/`
 - `crates/ticket-api/`
 - `crates/spec-api/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

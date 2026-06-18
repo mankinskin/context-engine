@@ -83,7 +83,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2 slug=cancelled/lease digest=f5856a1550eb -->
 #### [2a1fa2f2] [bootstrap] implement lease lifecycle with stale recovery
 - summary: Status:** BLOCKED (requires Phase 1 CRUD stable)
-- ref: `memory-viewers/memory-api/.ticket/tickets/2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2/ticket.toml`
+- ref: `memory-api/.ticket/tickets/2a1fa2f2-56ce-45cc-a5d4-915d90e6b7a2/ticket.toml`
 
 
 ### Component: log-viewer-leptos
@@ -115,13 +115,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=b458cba7-54b1-45d8-8c86-17b920416b8b slug=cancelled/ticket-http digest=6e13164d19a5 -->
 #### [b458cba7] API: Batch mutation endpoint for transactional multi-command execution
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/b458cba7-54b1-45d8-8c86-17b920416b8b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b458cba7-54b1-45d8-8c86-17b920416b8b/ticket.toml`
 
 <!-- ticket-index:entry id=3fd32109-7122-4fdf-80f2-b741db5d3b30 slug=cancelled/ticket-http digest=218c34e62944 -->
 #### [3fd32109] [ticket-http][ticket-viewer] Expose workspace graph payload for focused full-graph navigation
 - priority: `high`
 - summary: Provide infrastructure for a ticket-viewer graph mode that can keep the whole workspace graph visible while focusing the selected ticket.
-- ref: `memory-viewers/memory-api/.ticket/tickets/3fd32109-7122-4fdf-80f2-b741db5d3b30/ticket.toml`
+- ref: `memory-api/.ticket/tickets/3fd32109-7122-4fdf-80f2-b741db5d3b30/ticket.toml`
 
 
 ### Component: ticket-viewer
@@ -149,25 +149,25 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [2dcc66b5] [ticket-viewer] Build integrated ticket document panel
 - priority: `high`
 - summary: Replace the split metadata/content treatment with a single compact ticket document area in the main layout.
-- ref: `memory-viewers/memory-api/.ticket/tickets/2dcc66b5-c061-45fa-a55f-63b731727bb6/ticket.toml`
+- ref: `memory-api/.ticket/tickets/2dcc66b5-c061-45fa-a55f-63b731727bb6/ticket.toml`
 
 <!-- ticket-index:entry id=379ff931-7e0a-4069-a1d7-86cc3ef73e9e slug=cancelled/ticket-viewer digest=972d8c4f8b42 -->
 #### [379ff931] [ticket-viewer] Fix graph layout defaults and isometric settings
 - priority: `high`
 - summary: Fix graph layout defaults and settings so dependency hierarchy reads cleanly from top to bottom on a 2D plane optimized for isometric viewing.
-- ref: `memory-viewers/memory-api/.ticket/tickets/379ff931-7e0a-4069-a1d7-86cc3ef73e9e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/379ff931-7e0a-4069-a1d7-86cc3ef73e9e/ticket.toml`
 
 <!-- ticket-index:entry id=3526cce3-c934-4c37-b7a8-c7c0979f308d slug=cancelled/ticket-viewer digest=70bed52c970c -->
 #### [3526cce3] [ticket-viewer] Keep full workspace graph visible with focused navigation
 - priority: `high`
 - summary: Change the ticket-viewer graph mode so the full graph stays visible while the selected ticket becomes the active focus anchor.
-- ref: `memory-viewers/memory-api/.ticket/tickets/3526cce3-c934-4c37-b7a8-c7c0979f308d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/3526cce3-c934-4c37-b7a8-c7c0979f308d/ticket.toml`
 
 <!-- ticket-index:entry id=0d2e5a7d-f76b-474a-8991-b3a56ea73ac5 slug=cancelled/ticket-viewer digest=434ff2e93095 -->
 #### [0d2e5a7d] [ticket-viewer][ticket-http][viewer-api] Improve main layout ticket documents and focused full-graph navigation
 - priority: `high`
 - summary: Upgrade the ticket-viewer main layout so ticket details render as a compact integrated document and the graph view becomes a focused full-workspace navigation surface with better layout, settings, an...
-- ref: `memory-viewers/memory-api/.ticket/tickets/0d2e5a7d-f76b-474a-8991-b3a56ea73ac5/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0d2e5a7d-f76b-474a-8991-b3a56ea73ac5/ticket.toml`
 
 
 ### Component: unspecified
@@ -209,22 +209,22 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=ca0f6ccc-545d-45df-bbbb-74a3daf0d18c slug=cancelled/viewer-api digest=352df8dc96ee -->
 #### [ca0f6ccc] Arch: Extract viewer-api-leptos shared crate for all Leptos viewers
 - summary: The log-viewer Leptos frontend currently lives as a monolith in `tools/viewer/log-viewer/frontend-leptos/`. Shared UI primitives (ResizeHandle, TreeView, TabBar, CodeViewer, ThemeSettings, WgpuOverla...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ca0f6ccc-545d-45df-bbbb-74a3daf0d18c/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ca0f6ccc-545d-45df-bbbb-74a3daf0d18c/ticket.toml`
 
 <!-- ticket-index:entry id=7f41940d-617a-495d-aad8-5a19111bdab9 slug=cancelled/viewer-api digest=346e11c59702 -->
 #### [7f41940d] Epic: Leptos Viewer Platform — port viewer-api + all viewers to Leptos/Rust
-- ref: `memory-viewers/viewer-api/.ticket/tickets/7f41940d-617a-495d-aad8-5a19111bdab9/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/7f41940d-617a-495d-aad8-5a19111bdab9/ticket.toml`
 
 <!-- ticket-index:entry id=7b33f98e-9572-4ceb-8379-189621e4ae74 slug=cancelled/viewer-api digest=c584693164b3 -->
 #### [7b33f98e] [viewer-api] Extract a reusable interactive chip button for Dioxus explorer filters
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/7b33f98e-9572-4ceb-8379-189621e4ae74/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/7b33f98e-9572-4ceb-8379-189621e4ae74/ticket.toml`
 
 <!-- ticket-index:entry id=d3fb343c-1fea-47b1-8137-5ac7a37a95e1 slug=cancelled/viewer-api digest=7555b7c3583d -->
 #### [d3fb343c] [viewer-api][ticket-viewer] Add multi-level graph node detail rendering
 - priority: `high`
 - summary: Introduce multiple graph node detail levels so zoomed-out views stay legible and zoomed-in views can show rich ticket content.
-- ref: `memory-viewers/memory-api/.ticket/tickets/d3fb343c-1fea-47b1-8137-5ac7a37a95e1/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d3fb343c-1fea-47b1-8137-5ac7a37a95e1/ticket.toml`
 
 
 ### Component: watcher
@@ -254,7 +254,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [a762448e] [audit-api] Require every ticket to participate in dependency graph
 - priority: `high`
 - summary: Add an audit validation rule that flags tickets with neither outgoing depends_on edges nor incoming dependees so every ticket participates in the ticket graph. For legitimately standalone work, creat...
-- ref: `memory-viewers/memory-api/.ticket/tickets/a762448e-464c-43da-95b8-e49eb07814ed/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a762448e-464c-43da-95b8-e49eb07814ed/ticket.toml`
 
 
 ### Component: cli
@@ -591,7 +591,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [609099ac] [doc-api] Support cargo metadata outputs as docs workspace inputs
 - priority: `high`
 - summary: Add `cargo metadata` output support to the new docs surface so `doc-api` can use Cargo's workspace and package graph as a docs workspace input.
-- ref: `memory-viewers/memory-api/.ticket/tickets/609099ac-c5b5-4fe2-8072-a7b19ff8d75c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/609099ac-c5b5-4fe2-8072-a7b19ff8d75c/ticket.toml`
 
 
 ### Component: doc-http
@@ -600,7 +600,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [4e99c7dd] [doc-http] Support cargo doc generated HTML and JSON outputs
 - priority: `high`
 - summary: Add support for generated `cargo doc` outputs so the docs family can register, describe, and serve Rust documentation HTML and rustdoc JSON artifacts.
-- ref: `memory-viewers/memory-api/.ticket/tickets/4e99c7dd-6e1b-4bce-a8c9-67e5182a4dc3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4e99c7dd-6e1b-4bce-a8c9-67e5182a4dc3/ticket.toml`
 
 
 ### Component: doc-viewer
@@ -609,7 +609,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [391fcd15] [doc-viewer] Rewrite doc-viewer as a Dioxus viewer over doc-http
 - priority: `high`
 - summary: Implement a concrete doc-viewer migration path that replaces the current Preact-first shell with a Dioxus frontend built on `viewer-api-dioxus` and backed by `doc-http` for its server-facing document...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/391fcd15-0da6-4b39-86f3-19afca688377/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/391fcd15-0da6-4b39-86f3-19afca688377/ticket.toml`
 
 
 ### Component: documentation
@@ -624,7 +624,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4 slug=done/history digest=13136a32287a -->
 #### [77f1eb5c] [bootstrap] wire history, diff, and revert end-to-end
-- ref: `memory-viewers/memory-api/.ticket/tickets/77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4/ticket.toml`
+- ref: `memory-api/.ticket/tickets/77f1eb5c-dc38-4221-89e9-2bdf2b8d3ca4/ticket.toml`
 
 
 ### Component: instructions
@@ -641,13 +641,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [8affb65d] [memory-api] Add shared store bootstrap open_or_init helpers
 - priority: `high`
 - summary: `ticket-viewer` needed a viewer-local workaround to start from a checkout where
-- ref: `memory-viewers/memory-api/.ticket/tickets/8affb65d-605b-4225-819a-af951e0bd318/ticket.toml`
+- ref: `memory-api/.ticket/tickets/8affb65d-605b-4225-819a-af951e0bd318/ticket.toml`
 
 <!-- ticket-index:entry id=6124971a-0775-455f-a7b8-840766a43ce3 slug=done/memory-api digest=e633e0d27df8 -->
 #### [6124971a] [memory-api] Canonicalize local store root resolution
 - priority: `high`
 - summary: Implemented shared workspace/store root normalization for ticket/spec/rule stores, validated ticket create target roots so repo/store paths resolve into .ticket/tickets, removed the ticket workspace ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/6124971a-0775-455f-a7b8-840766a43ce3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/6124971a-0775-455f-a7b8-840766a43ce3/ticket.toml`
 
 <!-- ticket-index:entry id=7f7fe4a8-a1d6-44b4-baf9-9500f6db40a5 slug=done/memory-api digest=67637f4a5e0f -->
 #### [7f7fe4a8] [memory-index] Define domain digest input contract for generated index entries
@@ -665,13 +665,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [d5722e8e] [spec][P0.5] memory-api — EntityStore convenience facade
 - priority: `high`
 - summary: Add an `EntityStore` struct to `memory-api` that composes `RedbIndexStore`, `EntityFs`, and `TantivySearchIndex` into a single convenient type. This gives downstream crates (spec-api, ticket-api) a u...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d5722e8e-4932-4ccc-9cee-480ada710202/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d5722e8e-4932-4ccc-9cee-480ada710202/ticket.toml`
 
 <!-- ticket-index:entry id=e0b3e9a8-bd43-472a-8222-f8c5e3321dbd slug=done/memory-api digest=83f9155aa2ce -->
 #### [e0b3e9a8] [spec][P0] Extract memory-api crate — generic entity storage, index, search, schema engine
 - priority: `critical`
 - summary: Extract ~75% of ticket-api into a generic `memory-api` crate that provides filesystem-backed entity storage with schema validation, indexing, search, and graph edges. Both ticket-api and the new spec...
-- ref: `memory-viewers/memory-api/.ticket/tickets/e0b3e9a8-bd43-472a-8222-f8c5e3321dbd/ticket.toml`
+- ref: `memory-api/.ticket/tickets/e0b3e9a8-bd43-472a-8222-f8c5e3321dbd/ticket.toml`
 
 
 ### Component: repo-guidance
@@ -806,79 +806,79 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [af7ee01c] Add explain and preview tooling for rule target composition
 - priority: `high`
 - summary: The current generation flow does not explain why a file contains the entries it does. That makes target construction difficult to review, debug, and evolve.
-- ref: `memory-viewers/memory-api/.ticket/tickets/af7ee01c-d649-4ed2-898c-d4f2e148f00f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/af7ee01c-d649-4ed2-898c-d4f2e148f00f/ticket.toml`
 
 <!-- ticket-index:entry id=48b1cefb-dcc5-4cd4-ac41-568e57c97aca slug=done/rule-api digest=100f85d51eed -->
 #### [48b1cefb] Add rule-api tools to edit and generate agent markdown
 - priority: `high`
 - summary: A canonical `rule-api` store is not enough by itself. The team needs tools to import duplicated markdown, edit canonical rule entries, and generate repo-local files so manual file editing is no longe...
-- ref: `memory-viewers/memory-api/.ticket/tickets/48b1cefb-dcc5-4cd4-ac41-568e57c97aca/ticket.toml`
+- ref: `memory-api/.ticket/tickets/48b1cefb-dcc5-4cd4-ac41-568e57c97aca/ticket.toml`
 
 <!-- ticket-index:entry id=88800b2e-74f5-4d65-958a-1423d18072e3 slug=done/rule-api digest=a77578378b60 -->
 #### [88800b2e] Attach ratings and feedback to rule entries
 - priority: `high`
 - summary: The current markdown files do not provide a structured, uniform way for agents to record whether a rule entry was helpful, outdated, conflicting, or in need of revision.
-- ref: `memory-viewers/memory-api/.ticket/tickets/88800b2e-74f5-4d65-958a-1423d18072e3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/88800b2e-74f5-4d65-958a-1423d18072e3/ticket.toml`
 
 <!-- ticket-index:entry id=dee7de7a-4af0-468e-b779-309192e2e4db slug=done/rule-api digest=a44f8bb2964d -->
 #### [dee7de7a] Create rule-api storage model and stable rule IDs
 - priority: `high`
 - summary: We need a concrete `rule-api` domain on top of `memory-api` storage primitives so canonical rule entries can be stored, indexed, searched, versioned, rendered into markdown, and annotated with rating...
-- ref: `memory-viewers/memory-api/.ticket/tickets/dee7de7a-4af0-468e-b779-309192e2e4db/ticket.toml`
+- ref: `memory-api/.ticket/tickets/dee7de7a-4af0-468e-b779-309192e2e4db/ticket.toml`
 
 <!-- ticket-index:entry id=18eb59ee-05f6-4a03-b522-438b67556141 slug=done/rule-api digest=70e5eababa74 -->
 #### [18eb59ee] Design hierarchical rule target schema
 - priority: `high`
 - summary: `RenderTarget` currently acts as a flat filter plus output path. That is not expressive enough to describe a document outline, per-section composition, or explicit ordering within a file.
-- ref: `memory-viewers/memory-api/.ticket/tickets/18eb59ee-05f6-4a03-b522-438b67556141/ticket.toml`
+- ref: `memory-api/.ticket/tickets/18eb59ee-05f6-4a03-b522-438b67556141/ticket.toml`
 
 <!-- ticket-index:entry id=84ee1a9b-e0e8-4990-a9c7-af0e7b336d0e slug=done/rule-api digest=883647334a63 -->
 #### [84ee1a9b] Implement deterministic hierarchical rule target evaluation
 - priority: `high`
 - summary: Even with a better schema, the current generation path still assumes one file-wide filter and one flat ordered list of rule entries. The evaluator needs to understand a hierarchical target tree and r...
-- ref: `memory-viewers/memory-api/.ticket/tickets/84ee1a9b-e0e8-4990-a9c7-af0e7b336d0e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/84ee1a9b-e0e8-4990-a9c7-af0e7b336d0e/ticket.toml`
 
 <!-- ticket-index:entry id=050c5441-1d3a-46bc-9748-cfb7030a93bd slug=done/rule-api digest=ae0a11086d92 -->
 #### [050c5441] Implement nested rule workspaces across submodule repositories
 - priority: `high`
 - summary: `rule-api` currently operates on one workspace root and one target config per invocation. That is enough for the top-level `context-engine` workflow, but it does not let `memory-viewers/`, `memory-ap...
-- ref: `memory-viewers/memory-api/.ticket/tickets/050c5441-1d3a-46bc-9748-cfb7030a93bd/ticket.toml`
+- ref: `memory-api/.ticket/tickets/050c5441-1d3a-46bc-9748-cfb7030a93bd/ticket.toml`
 
 <!-- ticket-index:entry id=c809ae33-a4fa-4e5f-b920-5d269466a11c slug=done/rule-api digest=97207c82b933 -->
 #### [c809ae33] Improve rule target construction for hierarchical document outlines
 - priority: `high`
 - summary: The current `rule-targets.toml` model builds each output file from one flat filter. That keeps the implementation small, but it makes file composition hard to reason about, encourages repeating rule ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/c809ae33-a4fa-4e5f-b920-5d269466a11c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c809ae33-a4fa-4e5f-b920-5d269466a11c/ticket.toml`
 
 <!-- ticket-index:entry id=454405a2-a37e-4be6-b7a7-b96008afa974 slug=done/rule-api digest=10f11f16ef05 -->
 #### [454405a2] Migrate duplicated agent docs into generated rule-api outputs
 - priority: `high`
 - summary: The existing `AGENTS.md` and `.github` markdown files are duplicated across context-engine, memory-viewers, memory-api, and viewer-api. Shared text is currently owned by copy-paste instead of by a ca...
-- ref: `memory-viewers/memory-api/.ticket/tickets/454405a2-a37e-4be6-b7a7-b96008afa974/ticket.toml`
+- ref: `memory-api/.ticket/tickets/454405a2-a37e-4be6-b7a7-b96008afa974/ticket.toml`
 
 <!-- ticket-index:entry id=f76169f7-239d-4993-a0a2-0709414acb7f slug=done/rule-api digest=ea0faf9640f5 -->
 #### [f76169f7] Preserve existing line endings in generated outputs
 - priority: `medium`
 - summary: Implemented shared generated-output newline preparation in rule-api so rewrites adapt to the existing file's newline sequence while new files stay canonical LF. Wired the behavior into rule-cli and r...
-- ref: `memory-viewers/memory-api/.ticket/tickets/f76169f7-239d-4993-a0a2-0709414acb7f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f76169f7-239d-4993-a0a2-0709414acb7f/ticket.toml`
 
 <!-- ticket-index:entry id=e057932b-aaa8-43f5-be33-91dbf7399057 slug=done/rule-api digest=4d8e4007878d -->
 #### [e057932b] [rule-api] Backfill existing rule workspaces to body.md storage
 - priority: `high`
 - summary: Once `rule-api` can understand the new storage contract, the repository still has 543 existing rule folders spread across four workspaces that need to be brought into the new layout. Leaving them mix...
-- ref: `memory-viewers/memory-api/.ticket/tickets/e057932b-aaa8-43f5-be33-91dbf7399057/ticket.toml`
+- ref: `memory-api/.ticket/tickets/e057932b-aaa8-43f5-be33-91dbf7399057/ticket.toml`
 
 <!-- ticket-index:entry id=d8581db8-ab3b-4445-8f1b-1b5dbf801b5e slug=done/rule-api digest=80e0f62008b6 -->
 #### [d8581db8] [rule-api] Define body.md rule storage contract and migration plan
 - priority: `high`
 - summary: `rule-api` currently stores canonical rule body text in two places:
-- ref: `memory-viewers/memory-api/.ticket/tickets/d8581db8-ab3b-4445-8f1b-1b5dbf801b5e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d8581db8-ab3b-4445-8f1b-1b5dbf801b5e/ticket.toml`
 
 <!-- ticket-index:entry id=e395bad6-c70c-4957-80da-412491304c84 slug=done/rule-api digest=de0d8cde130d -->
 #### [e395bad6] [rule-api] Implement canonical body.md storage with legacy rule compatibility
 - priority: `high`
 - summary: Even after the desired `body.md` contract is clear, `rule-api` still depends on shared storage helpers that hardcode `description.md`, and the rule schema still requires a manifest-level `body` field...
-- ref: `memory-viewers/memory-api/.ticket/tickets/e395bad6-c70c-4957-80da-412491304c84/ticket.toml`
+- ref: `memory-api/.ticket/tickets/e395bad6-c70c-4957-80da-412491304c84/ticket.toml`
 
 
 ### Component: session-api
@@ -887,7 +887,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [959c94bd] [session-api] Add hook ingestion and read/query support
 - priority: `high`
 - summary: Implement the next `session-api` batch in the nested `memory-api` workspace by making transcript persistence append only and adding the first read/query plus hook-facing capture APIs.
-- ref: `memory-viewers/memory-api/.ticket/tickets/959c94bd-4a42-47d6-bee4-a12332a23b52/ticket.toml`
+- ref: `memory-api/.ticket/tickets/959c94bd-4a42-47d6-bee4-a12332a23b52/ticket.toml`
 
 <!-- ticket-index:entry id=f76b0fa9-d880-45da-b039-b483e904ee2f slug=done/session-api digest=d330ca154756 -->
 #### [f76b0fa9] [session-api] Add session-cli and session-mcp for session subcommands
@@ -899,7 +899,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [c8f79641] [session-api] Persist session captures to filesystem store
 - priority: `high`
 - summary: Implement the next `session-api` batch in the nested `memory-api` workspace by turning the current store plan into a real filesystem write path.
-- ref: `memory-viewers/memory-api/.ticket/tickets/c8f79641-6f99-4401-9b08-ad960a8d785c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c8f79641-6f99-4401-9b08-ad960a8d785c/ticket.toml`
 
 <!-- ticket-index:entry id=e663f9e9-ac52-4c0e-8e07-d17c8a15b48d slug=done/session-api digest=e47192ef4337 -->
 #### [e663f9e9] [session-api] Wire VS Code Copilot stop-hook session capture
@@ -920,25 +920,25 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [09641443] Add spec-local target mapping for generated spec artifacts
 - priority: `high`
 - summary: `spec-api` has generated artifact write paths, but a spec folder has no explicit way to declare which `rule-api` target should produce `body.md` or any named section file. If that mapping is left imp...
-- ref: `memory-viewers/memory-api/.ticket/tickets/09641443-a8f2-479d-85cb-ea44a963595b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/09641443-a8f2-479d-85cb-ea44a963595b/ticket.toml`
 
 <!-- ticket-index:entry id=a5fe4c58-f59c-4d97-8ee6-3447724b5fac slug=done/spec-api digest=f20478c8d60e -->
 #### [a5fe4c58] Adopt rule targets for generated spec artifacts
 - priority: `high`
 - summary: The shared generated-markdown builder and `spec-api` generated body/section update paths now exist, but there is still no end-to-end workflow for a spec to declare that `body.md` or `sections/*.md` s...
-- ref: `memory-viewers/memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml`
 
 <!-- ticket-index:entry id=f4b0be64-a2f5-4cb5-a476-b2b921d6ff02 slug=done/spec-api digest=dee64b2d72f0 -->
 #### [f4b0be64] Generate spec documents from canonical snippets via shared builder
 - priority: `high`
 - summary: `rule-api` already knows how to collect ordered snippet content from a database-backed store, render generated markdown outputs, and rewrite files without losing the current newline convention. `spec...
-- ref: `memory-viewers/memory-api/.ticket/tickets/f4b0be64-a2f5-4cb5-a476-b2b921d6ff02/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f4b0be64-a2f5-4cb5-a476-b2b921d6ff02/ticket.toml`
 
 <!-- ticket-index:entry id=7f869c33-15ff-4959-8161-731844eef21b slug=done/spec-api digest=6fcb1dcfc3a2 -->
 #### [7f869c33] Pilot migration for rule-target-backed spec artifacts
 - priority: `high`
 - summary: The proposed rule-target-backed spec workflow is still theoretical until at least one real spec stops duplicating canonical prose and proves the migration path end to end.
-- ref: `memory-viewers/memory-api/.ticket/tickets/7f869c33-15ff-4959-8161-731844eef21b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/7f869c33-15ff-4959-8161-731844eef21b/ticket.toml`
 
 <!-- ticket-index:entry id=87a35ccb-d91c-4ce8-93b3-e150bb5afe1d slug=done/spec-api digest=78ae0c9182cc -->
 #### [87a35ccb] [rule-cli][rule-mcp] Route spec-doc targets through spec-owned generation
@@ -949,49 +949,49 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [55a1b302] [spec][P1] spec-api code references — symbol-level links to implementation files with line ranges
 - priority: `high`
 - summary: Implement the `CodeRef` system that links spec features to exact symbols in the implementation code with file paths and line ranges.
-- ref: `memory-viewers/memory-api/.ticket/tickets/55a1b302-9b33-4389-8962-65362b9b3eb0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/55a1b302-9b33-4389-8962-65362b9b3eb0/ticket.toml`
 
 <!-- ticket-index:entry id=dc0df24e-075c-4147-b96c-3b26b428b0a2 slug=done/spec-api digest=ca08fd254f96 -->
 #### [dc0df24e] [spec][P1] spec-api crate — umbrella ticket (manifest, slugs, folders, schema, code refs, storage)
 - priority: `high`
 - summary: This is the parent ticket for the spec-api crate. It tracks the execution order and dependencies of all P1 sub-tickets.
-- ref: `memory-viewers/memory-api/.ticket/tickets/dc0df24e-075c-4147-b96c-3b26b428b0a2/ticket.toml`
+- ref: `memory-api/.ticket/tickets/dc0df24e-075c-4147-b96c-3b26b428b0a2/ticket.toml`
 
 <!-- ticket-index:entry id=4b6dc9d5-4932-4573-8635-d477804538ac slug=done/spec-api digest=da3d65d353e2 -->
 #### [4b6dc9d5] [spec][P1] spec-api schema — draft/reviewed/approved/implemented/verified state machine
 - priority: `high`
 - summary: Define the specification type schema with a full lifecycle from draft to verified implementation.
-- ref: `memory-viewers/memory-api/.ticket/tickets/4b6dc9d5-4932-4573-8635-d477804538ac/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4b6dc9d5-4932-4573-8635-d477804538ac/ticket.toml`
 
 <!-- ticket-index:entry id=ab47648c-d1f8-4ad5-a652-08ef97f76ccd slug=done/spec-api digest=0592bc22f010 -->
 #### [ab47648c] [spec][P1] spec-api storage — SpecStore on memory-api EntityStore with parent-child hierarchy
 - priority: `high`
 - summary: Build `SpecStore` on top of `memory_api::EntityStore` adding spec-specific features: parent-child hierarchy, slug uniqueness, multi-file folder support, and section management.
-- ref: `memory-viewers/memory-api/.ticket/tickets/ab47648c-d1f8-4ad5-a652-08ef97f76ccd/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ab47648c-d1f8-4ad5-a652-08ef97f76ccd/ticket.toml`
 
 <!-- ticket-index:entry id=ad531f63-124b-4edd-b2b3-1f8a35173649 slug=done/spec-api digest=cf667d8eb6d1 -->
 #### [ad531f63] [spec][P1a] spec-api crate scaffold + SpecManifest model
 - priority: `high`
 - summary: Create the `crates/spec-api/` crate with its Cargo.toml and define the SpecManifest model using the same `extra: BTreeMap<String, Value>` pattern as EntityManifest/TicketManifest.
-- ref: `memory-viewers/memory-api/.ticket/tickets/ad531f63-124b-4edd-b2b3-1f8a35173649/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ad531f63-124b-4edd-b2b3-1f8a35173649/ticket.toml`
 
 <!-- ticket-index:entry id=90c88ead-86cc-4aba-ac36-85e7355bdcce slug=done/spec-api digest=f8bb03417ce9 -->
 #### [90c88ead] [spec][P1b] spec-api slug system — validation, uniqueness, resolution
 - priority: `high`
 - summary: Implement the slug validation and resolution system for specs. Slugs are hierarchical, human-readable identifiers (e.g. `ticket-api/storage/store`) that provide a user-friendly alternative to UUIDs.
-- ref: `memory-viewers/memory-api/.ticket/tickets/90c88ead-86cc-4aba-ac36-85e7355bdcce/ticket.toml`
+- ref: `memory-api/.ticket/tickets/90c88ead-86cc-4aba-ac36-85e7355bdcce/ticket.toml`
 
 <!-- ticket-index:entry id=614f5f2a-3e86-412a-b4f0-d36f73935907 slug=done/spec-api digest=89fef4dba2a2 -->
 #### [614f5f2a] [spec][P1c] spec-api multi-file folder structure
 - priority: `high`
 - summary: Extend the EntityFs pattern to support the multi-file spec folder layout. Each spec lives in a `<scan_root>/<uuid>/` directory with a defined set of files.
-- ref: `memory-viewers/memory-api/.ticket/tickets/614f5f2a-3e86-412a-b4f0-d36f73935907/ticket.toml`
+- ref: `memory-api/.ticket/tickets/614f5f2a-3e86-412a-b4f0-d36f73935907/ticket.toml`
 
 <!-- ticket-index:entry id=d12e6ca5-a83f-41c6-b612-219d4c2e82e3 slug=done/spec-api digest=c5e339841a32 -->
 #### [d12e6ca5] [spec][P3] Spec creation — bootstrap specs for existing interfaces from code analysis
 - priority: `high`
 - summary: Build tooling to analyze existing Rust crate source code and generate initial spec files documenting the current implementation. This is for interfaces that are already implemented but not yet docume...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d12e6ca5-a83f-41c6-b612-219d4c2e82e3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d12e6ca5-a83f-41c6-b612-219d4c2e82e3/ticket.toml`
 
 
 ### Component: spec-cli
@@ -1000,13 +1000,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [b2ef1de1] Add spec sync-generated orchestration for rule-target-backed artifacts
 - priority: `high`
 - summary: Even with generated body/section APIs, there is no supported command that evaluates the declared rule targets for a spec and updates the spec store consistently. Running `rule-api` generation directl...
-- ref: `memory-viewers/memory-api/.ticket/tickets/b2ef1de1-5801-47c6-97c6-e3c5cd8d7dae/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b2ef1de1-5801-47c6-97c6-e3c5cd8d7dae/ticket.toml`
 
 <!-- ticket-index:entry id=090b6db9-f88e-418b-888e-94641d347432 slug=done/spec-cli digest=66ff556a5e94 -->
 #### [090b6db9] [spec][P2] spec-cli — CRUD, search, hierarchy, health commands
 - priority: `high`
 - summary: Create a `spec` CLI binary with CRUD, search, hierarchy navigation, and health check commands.
-- ref: `memory-viewers/memory-api/.ticket/tickets/090b6db9-f88e-418b-888e-94641d347432/ticket.toml`
+- ref: `memory-api/.ticket/tickets/090b6db9-f88e-418b-888e-94641d347432/ticket.toml`
 
 
 ### Component: spec-http
@@ -1015,7 +1015,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [fc18c607] [spec][P2] spec-http — HTTP endpoints for spec-api (alongside ticket-http)
 - priority: `medium`
 - summary: Add HTTP endpoints for spec-api, either as part of ticket-http or as a separate spec-http crate. Routes follow the same pattern as ticket-http.
-- ref: `memory-viewers/memory-api/.ticket/tickets/fc18c607-2147-4481-8a44-19bdc754f366/ticket.toml`
+- ref: `memory-api/.ticket/tickets/fc18c607-2147-4481-8a44-19bdc754f366/ticket.toml`
 
 
 ### Component: spec-mcp
@@ -1024,7 +1024,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [fbb5a87d] [spec][P2] spec-mcp — MCP tool surface for spec-api
 - priority: `high`
 - summary: Create MCP tools for spec-api, following the same pattern as ticket-mcp. Tools for creating, reading, updating, searching, and generating skills from specs.
-- ref: `memory-viewers/memory-api/.ticket/tickets/fbb5a87d-44b5-4a92-8c6c-79f8302dcba5/ticket.toml`
+- ref: `memory-api/.ticket/tickets/fbb5a87d-44b5-4a92-8c6c-79f8302dcba5/ticket.toml`
 
 
 ### Component: spec-viewer
@@ -1046,33 +1046,33 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=995c5394-e892-4b33-870b-f53c2cff9e05 slug=done/storage digest=906b5b738ee0 -->
 #### [995c5394] Impl: FsWatcher background daemon loop — auto-reconcile on FS events
-- ref: `memory-viewers/memory-api/.ticket/tickets/995c5394-e892-4b33-870b-f53c2cff9e05/ticket.toml`
+- ref: `memory-api/.ticket/tickets/995c5394-e892-4b33-870b-f53c2cff9e05/ticket.toml`
 
 <!-- ticket-index:entry id=02a79934-3782-4840-bfb6-caec08ee00c7 slug=done/storage digest=dbd4f570b624 -->
 #### [02a79934] Impl: enforce explicit index_root for exec/exec-batch agent protocol
-- ref: `memory-viewers/memory-api/.ticket/tickets/02a79934-3782-4840-bfb6-caec08ee00c7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/02a79934-3782-4840-bfb6-caec08ee00c7/ticket.toml`
 
 <!-- ticket-index:entry id=62c04e04-e976-4464-b7c9-f31bda78c0d5 slug=done/storage digest=5b84d08e7f4e -->
 #### [62c04e04] Impl: expose integrate_orphan(path) as public API + wire to reconciler
-- ref: `memory-viewers/memory-api/.ticket/tickets/62c04e04-e976-4464-b7c9-f31bda78c0d5/ticket.toml`
+- ref: `memory-api/.ticket/tickets/62c04e04-e976-4464-b7c9-f31bda78c0d5/ticket.toml`
 
 <!-- ticket-index:entry id=834fc3eb-589e-4f83-b5cd-501187aa4d5f slug=done/storage digest=f64aa569af73 -->
 #### [834fc3eb] Impl: fix exec --batch — true rollback semantics on first failure
-- ref: `memory-viewers/memory-api/.ticket/tickets/834fc3eb-589e-4f83-b5cd-501187aa4d5f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/834fc3eb-589e-4f83-b5cd-501187aa4d5f/ticket.toml`
 
 <!-- ticket-index:entry id=ec355bad-85cc-4ceb-8d3f-57222934e871 slug=done/storage digest=ec7401d6717a -->
 #### [ec355bad] Impl: fix scan --reindex — clear stale Tantivy entries before rebuild
-- ref: `memory-viewers/memory-api/.ticket/tickets/ec355bad-85cc-4ceb-8d3f-57222934e871/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ec355bad-85cc-4ceb-8d3f-57222934e871/ticket.toml`
 
 <!-- ticket-index:entry id=9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58 slug=done/storage digest=adfb1ffc9422 -->
 #### [9d0258de] [bootstrap] define backup and restore procedure for index plus history
 - summary: The `.ticket/` directory has two distinct layers:
-- ref: `memory-viewers/memory-api/.ticket/tickets/9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58/ticket.toml`
+- ref: `memory-api/.ticket/tickets/9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58/ticket.toml`
 
 <!-- ticket-index:entry id=4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1 slug=done/storage digest=fa5c79e9a466 -->
 #### [4f2d2a5e] [bootstrap] wire create/get/update/list/delete to storage backend
 - summary: Status:** READY (Phase 0 formally closed)
-- ref: `memory-viewers/memory-api/.ticket/tickets/4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1/ticket.toml`
 
 
 ### Component: ticket-api
@@ -1080,59 +1080,59 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=261e7567-e234-43d5-881b-c481e34131f8 slug=done/ticket-api digest=98684c471f3e -->
 #### [261e7567] API: Add author field to ticket history revisions in ticket-api
 - priority: `medium`
-- ref: `memory-viewers/memory-api/.ticket/tickets/261e7567-e234-43d5-881b-c481e34131f8/ticket.toml`
+- ref: `memory-api/.ticket/tickets/261e7567-e234-43d5-881b-c481e34131f8/ticket.toml`
 
 <!-- ticket-index:entry id=09c5e822-740c-453e-91ae-07d01d897e15 slug=done/ticket-api digest=790d54048393 -->
 #### [09c5e822] Bug: scan --force does not prune orphan entries from redb index
 - priority: `medium`
-- ref: `memory-viewers/memory-api/.ticket/tickets/09c5e822-740c-453e-91ae-07d01d897e15/ticket.toml`
+- ref: `memory-api/.ticket/tickets/09c5e822-740c-453e-91ae-07d01d897e15/ticket.toml`
 
 <!-- ticket-index:entry id=b88b1fc0-eabe-444e-8511-e3467a699849 slug=done/ticket-api digest=83abade9a662 -->
 #### [b88b1fc0] Phase 1: Add schema fields (doc_category, tags, workflow_stage, priority, source_agent_files, bug_validity, phase)
 - summary: Add 7 new fields to `crates/ticket-api/schemas/tracker-improvement.toml` to replace 30+ ad-hoc fields with structured, filterable schema fields.
-- ref: `memory-viewers/memory-api/.ticket/tickets/b88b1fc0-eabe-444e-8511-e3467a699849/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b88b1fc0-eabe-444e-8511-e3467a699849/ticket.toml`
 
 <!-- ticket-index:entry id=1600e55e-1def-4e84-9f09-7b866b8ac99a slug=done/ticket-api digest=f842a30874e4 -->
 #### [1600e55e] Phase 2: Copy plan descriptions into open plan tickets
 - summary: For each open ticket that has a matching agent plan file but no `description.md`, copy the primary plan file as the ticket's description and set structured metadata fields.
-- ref: `memory-viewers/memory-api/.ticket/tickets/1600e55e-1def-4e84-9f09-7b866b8ac99a/ticket.toml`
+- ref: `memory-api/.ticket/tickets/1600e55e-1def-4e84-9f09-7b866b8ac99a/ticket.toml`
 
 <!-- ticket-index:entry id=a2ebab34-3001-4fec-8454-1f74421c3049 slug=done/ticket-api digest=a1d847203f75 -->
 #### [a2ebab34] Phase 3: Attach interview files as ticket assets
 - summary: Copy interview files into `assets/interviews/` for their parent plan tickets. Interviews are supplementary to plans and should not be standalone tickets.
-- ref: `memory-viewers/memory-api/.ticket/tickets/a2ebab34-3001-4fec-8454-1f74421c3049/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a2ebab34-3001-4fec-8454-1f74421c3049/ticket.toml`
 
 <!-- ticket-index:entry id=56d080d3-011b-4eea-86a2-bb528b2d683f slug=done/ticket-api digest=6d6fb4b54160 -->
 #### [56d080d3] Phase 4: Copy descriptions for bootstrap tickets
 - summary: Copy research phase docs as descriptions for the 13 bootstrap tickets that lack them. Set `doc_category=research`, `workflow_stage=plan`.
-- ref: `memory-viewers/memory-api/.ticket/tickets/56d080d3-011b-4eea-86a2-bb528b2d683f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/56d080d3-011b-4eea-86a2-bb528b2d683f/ticket.toml`
 
 <!-- ticket-index:entry id=b682a57c-8c5c-4763-af50-1c70cff2df46 slug=done/ticket-api digest=ba684c39d710 -->
 #### [b682a57c] Phase 5: Enrich bug tickets with bug_validity and reproduction tracking
 - summary: Enrich bug tickets with structured validity tracking and reproduction status, replacing the informal confidence emoji system.
-- ref: `memory-viewers/memory-api/.ticket/tickets/b682a57c-8c5c-4763-af50-1c70cff2df46/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b682a57c-8c5c-4763-af50-1c70cff2df46/ticket.toml`
 
 <!-- ticket-index:entry id=5afd39bf-276c-4b3a-a1e4-f9b3b6643483 slug=done/ticket-api digest=7fcb7a40c9a2 -->
 #### [5afd39bf] Phase 6: Cleanup stale tickets and deduplicate
 - summary: Clean up the ticket store by cancelling stale tickets whose agent files were deleted, merging duplicates, and ensuring all tickets with descriptions have `doc_category` set.
-- ref: `memory-viewers/memory-api/.ticket/tickets/5afd39bf-276c-4b3a-a1e4-f9b3b6643483/ticket.toml`
+- ref: `memory-api/.ticket/tickets/5afd39bf-276c-4b3a-a1e4-f9b3b6643483/ticket.toml`
 
 <!-- ticket-index:entry id=6bb1e3fd-646d-424c-a216-826cf5f06867 slug=done/ticket-api digest=fdbfd2fc42f2 -->
 #### [6bb1e3fd] Plan: Migrate agent files into ticket system — schema improvements + content migration
 - summary: Migrate the 201 agent documentation files from `agents/` into the ticket system as structured, filterable ticket content. Add schema fields so all tickets can be queried by category, tags, workflow s...
-- ref: `memory-viewers/memory-api/.ticket/tickets/6bb1e3fd-646d-424c-a216-826cf5f06867/ticket.toml`
+- ref: `memory-api/.ticket/tickets/6bb1e3fd-646d-424c-a216-826cf5f06867/ticket.toml`
 
 <!-- ticket-index:entry id=82652305-ab94-4270-847c-a5209c2dcd44 slug=done/ticket-api digest=dd45d2359c2b -->
 #### [82652305] [spec][P0] Refactor ticket-api to depend on memory-api
 - priority: `critical`
 - summary: After memory-api is extracted, refactor ticket-api to be a thin domain layer on top of memory-api, keeping only ticket-specific logic.
-- ref: `memory-viewers/memory-api/.ticket/tickets/82652305-ab94-4270-847c-a5209c2dcd44/ticket.toml`
+- ref: `memory-api/.ticket/tickets/82652305-ab94-4270-847c-a5209c2dcd44/ticket.toml`
 
 <!-- ticket-index:entry id=429f6f1d-6429-4601-bfac-b572fdb4dbff slug=done/ticket-api digest=d763aa35bb34 -->
 #### [429f6f1d] [ticket-api] Child workspaces surface parent dependency entries
 - priority: `high`
 - summary: >Backend ancestor dependency/graph visibility and workspace-aware refs validated; ready for review.
-- ref: `memory-viewers/memory-api/.ticket/tickets/429f6f1d-6429-4601-bfac-b572fdb4dbff/ticket.toml`
+- ref: `memory-api/.ticket/tickets/429f6f1d-6429-4601-bfac-b572fdb4dbff/ticket.toml`
 
 <!-- ticket-index:entry id=3b6a2a26-bd4e-44ce-ba15-41594b809b9a slug=done/ticket-api digest=c618c5822a2f -->
 #### [3b6a2a26] [ticket-api] Derive blocker and unlock trees with frontier leaf metrics
@@ -1156,7 +1156,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [deeeb26d] [ticket-api] Persist dependency edges in tracked ticket files
 - priority: `high`
 - summary: `ticket link` and `ticket unlink` currently mutate dependency edges only in the ignored `.ticket/tickets.db` SQLite index.
-- ref: `memory-viewers/memory-api/.ticket/tickets/deeeb26d-cb73-46c5-bf2a-1778caa7f82a/ticket.toml`
+- ref: `memory-api/.ticket/tickets/deeeb26d-cb73-46c5-bf2a-1778caa7f82a/ticket.toml`
 
 <!-- ticket-index:entry id=dd2947da-d4d2-4c8a-9a9a-3633060ff4c5 slug=done/ticket-api digest=f4b8498bffc3 -->
 #### [dd2947da] [ticket-api] Reconcile aggregate scan, prune, and search visibility
@@ -1174,7 +1174,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [d1f9f390] [ticket-api][ticket-cli][ticket-mcp] Redesign best-next ranking around dependency convergence
 - priority: `high`
 - summary: `ticket next`, `ticket board show`, and `ticket-mcp next_tickets` currently use the dependees-first contract documented in the current best-next spec: candidate workflow progress, then priority, then...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d1f9f390-dda0-4762-a14c-9ce339abc393/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d1f9f390-dda0-4762-a14c-9ce339abc393/ticket.toml`
 
 <!-- ticket-index:entry id=c031aeb0-f374-4d57-9d46-2463dfa8571d slug=done/ticket-api digest=cf1e688e9cff -->
 #### [c031aeb0] [ticket-api][ticket-cli][ticket-mcp][ticket-http] Define minimal workflow and health core plus adapter responsibilities
@@ -1210,7 +1210,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [11450369] [ticket-cli] Render board show recommendations as pretty cards
 - priority: `high`
 - summary: Render recommendation lists with the same compact pretty-card layout anywhere the CLI shows human-readable next-work candidates.
-- ref: `memory-viewers/memory-api/.ticket/tickets/11450369-0d45-4922-988f-49bc88fd4079/ticket.toml`
+- ref: `memory-api/.ticket/tickets/11450369-0d45-4922-988f-49bc88fd4079/ticket.toml`
 
 <!-- ticket-index:entry id=6484d4b7-e24b-4c13-999c-d0b00928d97c slug=done/ticket-api digest=5d0d8e5daefc -->
 #### [6484d4b7] [ticket-cli][ticket-http][ticket-mcp] Build larger-integration parity routine for workflow and health surfaces
@@ -1222,18 +1222,18 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [2d85467b] [ticket-system] Add dependees to next-ticket ordering
 - priority: `high`
 - summary: Add an incoming-dependees ranking key to best-next ticket selection. Compute dependees as the count of depends_on edges whose target is the candidate ticket. Keep workflow progress first and priority...
-- ref: `memory-viewers/memory-api/.ticket/tickets/2d85467b-23a3-4a70-a376-70ef5370d9f8/ticket.toml`
+- ref: `memory-api/.ticket/tickets/2d85467b-23a3-4a70-a376-70ef5370d9f8/ticket.toml`
 
 <!-- ticket-index:entry id=77629631-8076-4fca-9640-316583ff290c slug=done/ticket-api digest=2d32d655fe1b -->
 #### [77629631] [ticket-system] Expose ordering keys on priority-sorted outputs
 - priority: `high`
 - summary: Expose the full best-next ordering metadata anywhere the CLI surfaces the priority-sorted board recommendation list. Preserve dependees and created_at when board show rewraps next candidates, and ren...
-- ref: `memory-viewers/memory-api/.ticket/tickets/77629631-8076-4fca-9640-316583ff290c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/77629631-8076-4fca-9640-316583ff290c/ticket.toml`
 
 <!-- ticket-index:entry id=a62f28bd-8600-473f-a831-de4736ffc219 slug=done/ticket-api digest=d2091bd4545f -->
 #### [a62f28bd] [ticket-system] Per-ticket workflow paths: required_states field
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/a62f28bd-8600-473f-a831-de4736ffc219/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a62f28bd-8600-473f-a831-de4736ffc219/ticket.toml`
 
 
 ### Component: ticket-api,ticket-cli
@@ -1255,37 +1255,37 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [6f8bcf0a] Plan: ticket attach — asset file management for tickets
 - priority: `medium`
 - summary: Tickets can have an `assets/` directory for supplementary files (interview transcripts,
-- ref: `memory-viewers/memory-api/.ticket/tickets/6f8bcf0a-c5e3-423c-b3cd-190a5bb0b18f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/6f8bcf0a-c5e3-423c-b3cd-190a5bb0b18f/ticket.toml`
 
 <!-- ticket-index:entry id=b0056fa6-bdb3-40a6-acfb-9c96dd1ca82f slug=done/ticket-cli digest=92dbfb9cd739 -->
 #### [b0056fa6] Plan: ticket audit — store health check and statistics
 - priority: `medium`
 - summary: After the migration, a 90-line Python script was needed to audit the ticket store:
-- ref: `memory-viewers/memory-api/.ticket/tickets/b0056fa6-bdb3-40a6-acfb-9c96dd1ca82f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b0056fa6-bdb3-40a6-acfb-9c96dd1ca82f/ticket.toml`
 
 <!-- ticket-index:entry id=b11cde49-100f-4443-95d9-6d9c30d21622 slug=done/ticket-cli digest=b85d523ac653 -->
 #### [b11cde49] Plan: ticket batch-update — bulk field updates with filter
 - priority: `medium`
 - summary: The existing `batch` command takes NDJSON `TaskCommand` objects, which is powerful
-- ref: `memory-viewers/memory-api/.ticket/tickets/b11cde49-100f-4443-95d9-6d9c30d21622/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b11cde49-100f-4443-95d9-6d9c30d21622/ticket.toml`
 
 <!-- ticket-index:entry id=f77ff07e-c250-4740-8da8-8cf065564f8a slug=done/ticket-cli digest=4b2459dd52bb -->
 #### [f77ff07e] Plan: ticket close / state fast-forward — skip intermediate states
 - priority: `high`
 - summary: The tracker-improvement schema has 11 states with a strict transition chain:
-- ref: `memory-viewers/memory-api/.ticket/tickets/f77ff07e-c250-4740-8da8-8cf065564f8a/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f77ff07e-c250-4740-8da8-8cf065564f8a/ticket.toml`
 
 <!-- ticket-index:entry id=0c660fde-39ed-4d59-9ddf-f9d98c2b7740 slug=done/ticket-cli digest=52ecfd208c28 -->
 #### [0c660fde] Plan: ticket list --include-deleted — visibility into soft-deleted tickets
 - priority: `high`
 - summary: Soft-deleted tickets (`deleted = true`) are completely invisible to the CLI:
-- ref: `memory-viewers/memory-api/.ticket/tickets/0c660fde-39ed-4d59-9ddf-f9d98c2b7740/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0c660fde-39ed-4d59-9ddf-f9d98c2b7740/ticket.toml`
 
 <!-- ticket-index:entry id=a48475e3-42fc-44f6-88b2-0f4a86930a31 slug=done/ticket-cli digest=140368917393 -->
 #### [a48475e3] Plan: ticket list --where — structured field-value filtering
 - priority: `high`
 - summary: `ticket list` currently supports `--state` and `--type` filters only.
-- ref: `memory-viewers/memory-api/.ticket/tickets/a48475e3-42fc-44f6-88b2-0f4a86930a31/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a48475e3-42fc-44f6-88b2-0f4a86930a31/ticket.toml`
 
 <!-- ticket-index:entry id=d39e9e08-5104-461b-83ff-bd4361e967d9 slug=done/ticket-cli digest=5fc71c9f4ab9 -->
 #### [d39e9e08] [ticket-cli] Add blockers command and nested tree rendering
@@ -1297,7 +1297,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [40282486] [ticket-cli] Add reverse-dependency follow-up queries for next and unblocked-by
 - priority: `high`
 - summary: Users can ask which tickets were unblocked by finishing a dependency, but the current CLI requires a manual topgraph plus per-ticket health fan-out to answer that question.
-- ref: `memory-viewers/memory-api/.ticket/tickets/40282486-bd98-4f3b-8bb5-96cfe853e247/ticket.toml`
+- ref: `memory-api/.ticket/tickets/40282486-bd98-4f3b-8bb5-96cfe853e247/ticket.toml`
 
 <!-- ticket-index:entry id=8de93812-3a8c-4937-9f09-05a9a9b86309 slug=done/ticket-cli digest=5ae851523a53 -->
 #### [8de93812] [ticket-cli] Canonicalize board subcommand option naming
@@ -1313,7 +1313,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=129d4f4e-7db8-4c3b-87d5-de8ed12c0b09 slug=done/ticket-cli digest=2b4eabc69131 -->
 #### [129d4f4e] [ticket-system] Next command: sort by workflow progress
 - priority: `medium`
-- ref: `memory-viewers/memory-api/.ticket/tickets/129d4f4e-7db8-4c3b-87d5-de8ed12c0b09/ticket.toml`
+- ref: `memory-api/.ticket/tickets/129d4f4e-7db8-4c3b-87d5-de8ed12c0b09/ticket.toml`
 
 
 ### Component: ticket-http
@@ -1321,38 +1321,38 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=8034efd8-e165-4798-afe1-3445026345d9 slug=done/ticket-http digest=19f42e4bd345 -->
 #### [8034efd8] API: Batch mutation endpoint for transactional multi-command execution
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/8034efd8-e165-4798-afe1-3445026345d9/ticket.toml`
+- ref: `memory-api/.ticket/tickets/8034efd8-e165-4798-afe1-3445026345d9/ticket.toml`
 
 <!-- ticket-index:entry id=15871ee6-8e6b-40a0-8293-46d31deae3e8 slug=done/ticket-http digest=ce93bc6bb96f -->
 #### [15871ee6] API: Edge mutation endpoints — add and remove edges
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/15871ee6-8e6b-40a0-8293-46d31deae3e8/ticket.toml`
+- ref: `memory-api/.ticket/tickets/15871ee6-8e6b-40a0-8293-46d31deae3e8/ticket.toml`
 
 <!-- ticket-index:entry id=3fda11c3-978b-4f7c-9ee1-934a97debb12 slug=done/ticket-http digest=09607044e609 -->
 #### [3fda11c3] API: History and revert endpoints
 - priority: `medium`
-- ref: `memory-viewers/memory-api/.ticket/tickets/3fda11c3-978b-4f7c-9ee1-934a97debb12/ticket.toml`
+- ref: `memory-api/.ticket/tickets/3fda11c3-978b-4f7c-9ee1-934a97debb12/ticket.toml`
 
 <!-- ticket-index:entry id=189a6068-7ccc-4daf-808e-6b0b82e97ef5 slug=done/ticket-http digest=64a23dd7d198 -->
 #### [189a6068] API: Schema endpoint — types, states, transitions, fields
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/189a6068-7ccc-4daf-808e-6b0b82e97ef5/ticket.toml`
+- ref: `memory-api/.ticket/tickets/189a6068-7ccc-4daf-808e-6b0b82e97ef5/ticket.toml`
 
 <!-- ticket-index:entry id=69abd1c7-15a9-4d56-8156-0f09ff90783f slug=done/ticket-http digest=e38881392ee4 -->
 #### [69abd1c7] API: Ticket mutation endpoints — create, update, close, cancel, delete
 - priority: `critical`
-- ref: `memory-viewers/memory-api/.ticket/tickets/69abd1c7-15a9-4d56-8156-0f09ff90783f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/69abd1c7-15a9-4d56-8156-0f09ff90783f/ticket.toml`
 
 <!-- ticket-index:entry id=d3a8b66a-8efc-493e-9993-3b5a68b0a7f7 slug=done/ticket-http digest=e5e030c917bc -->
 #### [d3a8b66a] Impl: Add created_at to TicketSummary HTTP response
 - summary: Add `created_at` field to the `TicketSummary` struct in the ticket-http handler so the frontend can sort tickets by creation date.
-- ref: `memory-viewers/memory-api/.ticket/tickets/d3a8b66a-8efc-493e-9993-3b5a68b0a7f7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d3a8b66a-8efc-493e-9993-3b5a68b0a7f7/ticket.toml`
 
 <!-- ticket-index:entry id=700b9763-17f8-436e-ace0-45b88bedd1d7 slug=done/ticket-http digest=f9deffa9f41d -->
 #### [700b9763] [ticket-http] Design: workspace-aware ticket references for child-workspace frontend endpoints
 - priority: `high`
 - summary: >Validated workspace-aware HTTP contract and ancestor-owned ref behavior; ready for review.
-- ref: `memory-viewers/memory-api/.ticket/tickets/700b9763-17f8-436e-ace0-45b88bedd1d7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/700b9763-17f8-436e-ace0-45b88bedd1d7/ticket.toml`
 
 <!-- ticket-index:entry id=10cf2a19-356c-4e69-b0f3-b930d68dc0ce slug=done/ticket-http digest=4782d78fb596 -->
 #### [10cf2a19] [ticket-http] Expose workflow trees and actionable ordering metadata
@@ -1390,7 +1390,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [58fe9f39] Plan: ticket-mcp write tools — update, close, and batch operations via MCP
 - priority: `high`
 - summary: The ticket-mcp server currently exposes only read-only tools:
-- ref: `memory-viewers/memory-api/.ticket/tickets/58fe9f39-50c2-4e1c-8bdc-336ed5d6da6e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/58fe9f39-50c2-4e1c-8bdc-336ed5d6da6e/ticket.toml`
 
 
 ### Component: ticket-viewer
@@ -1539,7 +1539,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [b00b945b] [ticket-viewer] Fix list-driven content panel selection sync
 - priority: `high`
 - summary: Opening a different ticket from the sidebar could leave the content panel showing the previous ticket body because the content component kept its state across list-driven selection changes.
-- ref: `memory-viewers/memory-api/.ticket/tickets/b00b945b-045f-4124-9c69-ea15346b144f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b00b945b-045f-4124-9c69-ea15346b144f/ticket.toml`
 
 <!-- ticket-index:entry id=80631f3c-4a75-491e-876a-8bf2a5e0ab4f slug=done/ticket-viewer digest=623a5b49385c -->
 #### [80631f3c] [ticket-viewer] Move Playwright E2E ownership into memory-viewers
@@ -1563,13 +1563,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [eeda4039] [ticket-viewer][viewer-api] Add kanban table graph layout mode
 - priority: `high`
 - summary: The current default graph layouts are tuned for planar hierarchy views, but they do not present ticket dependency trees in a way that matches ticket workflow review. Dense ticket sets with mixed stat...
-- ref: `memory-viewers/memory-api/.ticket/tickets/eeda4039-d82d-4573-9d79-0bc89e152a76/ticket.toml`
+- ref: `memory-api/.ticket/tickets/eeda4039-d82d-4573-9d79-0bc89e152a76/ticket.toml`
 
 <!-- ticket-index:entry id=d1d38010-08b8-4a06-ad2b-0bbed453c941 slug=done/ticket-viewer digest=73953bc68ff9 -->
 #### [d1d38010] [ticket-viewer][viewer-api] Preserve graph layout and camera across same-graph refreshes
 - priority: `high`
 - summary: The shared Graph3D surface preserves dragged node positions only until the next same-graph re-render. Once the ticket-viewer reuses the same workspace graph payload or changes node focus, the shared ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d1d38010-08b8-4a06-ad2b-0bbed453c941/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d1d38010-08b8-4a06-ad2b-0bbed453c941/ticket.toml`
 
 
 ### Component: ticket-vscode
@@ -1578,25 +1578,25 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [0b231549] [spec][vscode] Write specification for ticket-vscode extension
 - priority: `high`
 - summary: Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`tools/ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe...
-- ref: `memory-viewers/memory-api/.ticket/tickets/0b231549-d029-4465-997e-0ba4d5e0529e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0b231549-d029-4465-997e-0ba4d5e0529e/ticket.toml`
 
 <!-- ticket-index:entry id=362448d4-ccf1-4b9d-90f3-d4577da83a65 slug=done/ticket-vscode digest=fe5fc8400049 -->
 #### [362448d4] [ticket-vscode] Add dual-host packaging, bundling, and extension test harnesses
 - priority: `high`
 - summary: Package the ported extension so it activates in both the desktop/remote Node host and the web extension host, and add the harnesses that validate both.
-- ref: `memory-viewers/memory-api/.ticket/tickets/362448d4-ccf1-4b9d-90f3-d4577da83a65/ticket.toml`
+- ref: `memory-api/.ticket/tickets/362448d4-ccf1-4b9d-90f3-d4577da83a65/ticket.toml`
 
 <!-- ticket-index:entry id=011563c2-59e7-48f1-a61f-d8fdc80d2f6e slug=done/ticket-vscode digest=b6cc51af61a7 -->
 #### [011563c2] [ticket-vscode] Extract portable Rust core for ticket/domain logic
 - priority: `high`
 - summary: Move deterministic, serializable logic out of the current TypeScript extension into a new Rust core that is compiled to WASM and driven by host-provided data.
-- ref: `memory-viewers/memory-api/.ticket/tickets/011563c2-59e7-48f1-a61f-d8fdc80d2f6e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/011563c2-59e7-48f1-a61f-d8fdc80d2f6e/ticket.toml`
 
 <!-- ticket-index:entry id=93f7e422-1e41-4145-b8ba-0dcf7fc730ac slug=done/ticket-vscode digest=0b09b8a8c1be -->
 #### [93f7e422] [ticket-vscode] Freeze Rust/WASM architecture spec and feature matrix
 - priority: `high`
 - summary: Use the new planning spec `ticket-vscode/rust-wasm-port` as the canonical design surface for the migration.
-- ref: `memory-viewers/memory-api/.ticket/tickets/93f7e422-1e41-4145-b8ba-0dcf7fc730ac/ticket.toml`
+- ref: `memory-api/.ticket/tickets/93f7e422-1e41-4145-b8ba-0dcf7fc730ac/ticket.toml`
 
 <!-- ticket-index:entry id=8735fa5d-0550-40f1-9ee8-7b83a44a7fd1 slug=done/ticket-vscode digest=20334d246d75 -->
 #### [8735fa5d] [ticket-vscode] Prefer PATH ticket-viewer before debug fallback
@@ -1608,49 +1608,49 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [14047b99] [ticket-vscode] Prove dual-host WASM activation
 - priority: `high`
 - summary: Build a narrow architecture spike that proves a Rust/WASM module can be loaded by both VS Code extension hosts used by this port.
-- ref: `memory-viewers/memory-api/.ticket/tickets/14047b99-41d6-4899-bec6-4a919bffcc2d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/14047b99-41d6-4899-bec6-4a919bffcc2d/ticket.toml`
 
 <!-- ticket-index:entry id=bfafde19-ddf7-47ef-966e-a1135be4efd6 slug=done/ticket-vscode digest=8dea2e68be92 -->
 #### [bfafde19] [ticket-vscode] Replace Node-bound behaviors with host capability adapters
 - priority: `high`
 - summary: Refactor the extension host layer so runtime-specific behavior is isolated behind explicit capabilities instead of being embedded throughout `extensionSupport.ts`, `extensionCommands.ts`, and `ticket...
-- ref: `memory-viewers/memory-api/.ticket/tickets/bfafde19-ddf7-47ef-966e-a1135be4efd6/ticket.toml`
+- ref: `memory-api/.ticket/tickets/bfafde19-ddf7-47ef-966e-a1135be4efd6/ticket.toml`
 
 <!-- ticket-index:entry id=4842a2bd-e94d-4066-801e-8883cbc18cab slug=done/ticket-vscode digest=60a1d1be1d7b -->
 #### [4842a2bd] ticket-vscode: Auto-detect .ticket workspace from open VS Code folders
 - priority: `high`
 - summary: The ticket-vscode extension currently resolves the ticket workspace through a hardcoded chain:
-- ref: `memory-viewers/memory-api/.ticket/tickets/4842a2bd-e94d-4066-801e-8883cbc18cab/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4842a2bd-e94d-4066-801e-8883cbc18cab/ticket.toml`
 
 <!-- ticket-index:entry id=dbca2bab-77bb-4f58-8460-3714f3d07004 slug=done/ticket-vscode digest=934ed00dda6b -->
 #### [dbca2bab] ticket-vscode: Auto-start ticket-viewer server on extension activation
 - priority: `medium`
 - summary: Currently, users must manually click the ▶ button in the Tickets sidebar or run the "Start Ticket Viewer Server" command before the tree view can display tickets. If the server is not running, the tr...
-- ref: `memory-viewers/memory-api/.ticket/tickets/dbca2bab-77bb-4f58-8460-3714f3d07004/ticket.toml`
+- ref: `memory-api/.ticket/tickets/dbca2bab-77bb-4f58-8460-3714f3d07004/ticket.toml`
 
 <!-- ticket-index:entry id=576c5f77-b261-42aa-a3f0-fd2f9597520e slug=done/ticket-vscode digest=39228223e142 -->
 #### [576c5f77] ticket-vscode: Navigate to ticket URL in Simple Browser on click
 - priority: `medium`
 - summary: When a user clicks a ticket in the tree view, the current behavior opens the ticket-viewer root URL and copies the ticket ID to the clipboard. The user must then manually paste and search for the tic...
-- ref: `memory-viewers/memory-api/.ticket/tickets/576c5f77-b261-42aa-a3f0-fd2f9597520e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/576c5f77-b261-42aa-a3f0-fd2f9597520e/ticket.toml`
 
 <!-- ticket-index:entry id=5b330dd5-2dcc-4460-b468-43ff4c35bfba slug=done/ticket-vscode digest=965dafd88e96 -->
 #### [5b330dd5] ticket-vscode: Open clicked tickets in viewer and expose Copy ID in context menu
 - priority: `medium`
 - summary: The current `ticket-vscode` tree click behavior still routes through `ticket-viewer.openTicket`, which prefers opening `description.md` when the local ticket folder exists. That means clicking a tick...
-- ref: `memory-viewers/memory-api/.ticket/tickets/5b330dd5-2dcc-4460-b468-43ff4c35bfba/ticket.toml`
+- ref: `memory-api/.ticket/tickets/5b330dd5-2dcc-4460-b468-43ff4c35bfba/ticket.toml`
 
 <!-- ticket-index:entry id=a7d6ba2d-ea15-498f-9195-6ee775ea69a4 slug=done/ticket-vscode digest=4eccde7ea8ab -->
 #### [a7d6ba2d] ticket-vscode: Replace native tooltip with debounced webview panel beside sidebar
 - priority: `high`
 - summary: The current hover tooltip on ticket tree items appears too quickly (VS Code's default ~500ms) and is positioned by VS Code at the cursor, which can obscure the tree view. Users want a more relaxed ho...
-- ref: `memory-viewers/memory-api/.ticket/tickets/a7d6ba2d-ea15-498f-9195-6ee775ea69a4/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a7d6ba2d-ea15-498f-9195-6ee775ea69a4/ticket.toml`
 
 <!-- ticket-index:entry id=207b70d9-de61-4de4-af80-69732ff5b892 slug=done/ticket-vscode digest=0bcd8fef97ca -->
 #### [207b70d9] ticket-vscode: Show ticket description in hover tooltip
 - priority: `medium`
 - summary: Currently, hovering over a ticket in the tree view shows only basic metadata: title, ID, state, and type. The ticket description (which contains context, acceptance criteria, and implementation detai...
-- ref: `memory-viewers/memory-api/.ticket/tickets/207b70d9-de61-4de4-af80-69732ff5b892/ticket.toml`
+- ref: `memory-api/.ticket/tickets/207b70d9-de61-4de4-af80-69732ff5b892/ticket.toml`
 
 
 ### Component: ticket-workflow
@@ -1695,7 +1695,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=b2392ff7-6b7f-4b48-99b7-adf1142a3fc0 slug=done/unspecified digest=44aef20e99dd -->
 #### [b2392ff7] Add repository QA MCP audit tool
 - summary: Add a single-endpoint Rust tool for agents to audit repository quality and track findings in a synchronized local database.
-- ref: `memory-viewers/memory-api/.ticket/tickets/b2392ff7-6b7f-4b48-99b7-adf1142a3fc0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b2392ff7-6b7f-4b48-99b7-adf1142a3fc0/ticket.toml`
 
 <!-- ticket-index:entry id=4c937720-4e35-4db6-bce7-608fdad5b6c5 slug=done/unspecified digest=f213adaa6c71 -->
 #### [4c937720] Add reviews prompt for ranked in-review ticket review
@@ -1782,7 +1782,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=bce0d2fb-8ac3-4be3-af42-47f5b6928caa slug=done/unspecified digest=652d61cc6ed8 -->
 #### [bce0d2fb] Impl: Extract HypergraphViewCore to viewer-api as primary graph component
-- ref: `memory-viewers/viewer-api/.ticket/tickets/bce0d2fb-8ac3-4be3-af42-47f5b6928caa/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/bce0d2fb-8ac3-4be3-af42-47f5b6928caa/ticket.toml`
 
 <!-- ticket-index:entry id=367335ee-22bd-4cde-aa6a-312e80702c19 slug=done/unspecified digest=a9c73e500cf6 -->
 #### [367335ee] Impl: URL hash routing for ticket-viewer (workspace + ticket ID)
@@ -1971,67 +1971,67 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [854f0e8f] [Board] Draftboard — workspace WIP coordination for concurrent agents
 - priority: `high`
 - summary: Provide a workspace-global, short-term "daily planning board" that tracks the current state of all active work across concurrent agent sessions. The draftboard fills the gap between ephemeral user pr...
-- ref: `memory-viewers/memory-api/.ticket/tickets/854f0e8f-c881-48a5-a8bc-a6f7ac3092a9/ticket.toml`
+- ref: `memory-api/.ticket/tickets/854f0e8f-c881-48a5-a8bc-a6f7ac3092a9/ticket.toml`
 
 <!-- ticket-index:entry id=74160bb8-ac9c-4fd6-82e4-2e392d96e48b slug=done/unspecified digest=ad6276ecd576 -->
 #### [74160bb8] [Board] Integrate draftboard state into next and status commands
 - priority: `medium`
 - summary: Make the existing `ticket next` and `ticket status` commands draftboard-aware so that agents receive board context automatically, without needing to call `board show` separately. This is the integrat...
-- ref: `memory-viewers/memory-api/.ticket/tickets/74160bb8-ac9c-4fd6-82e4-2e392d96e48b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/74160bb8-ac9c-4fd6-82e4-2e392d96e48b/ticket.toml`
 
 <!-- ticket-index:entry id=b72b0a40-496e-43d0-a5b3-ec358d85802b slug=done/unspecified digest=1501118b669d -->
 #### [b72b0a40] [Board] ticket-api: Cleanup, file ops, reconciliation, claim deprecation
 - priority: `high`
 - summary: Add the operational maintenance layer to the draftboard in `crates/ticket-api/`. This builds on the core board storage (types, tables, check-in/out/heartbeat/show/configure) established by `0db86ac1`...
-- ref: `memory-viewers/memory-api/.ticket/tickets/b72b0a40-496e-43d0-a5b3-ec358d85802b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b72b0a40-496e-43d0-a5b3-ec358d85802b/ticket.toml`
 
 <!-- ticket-index:entry id=0db86ac1-45ca-49a6-abc7-dd30b5adbee7 slug=done/unspecified digest=25f1ffc64c36 -->
 #### [0db86ac1] [Board] ticket-api: Core board storage — types, tables, CRUD
 - priority: `high`
 - summary: Implement the foundational draftboard data layer in `crates/ticket-api/`. This ticket covers core types, redb tables, and the primary board operations (check-in, check-out, heartbeat, show, configure...
-- ref: `memory-viewers/memory-api/.ticket/tickets/0db86ac1-45ca-49a6-abc7-dd30b5adbee7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0db86ac1-45ca-49a6-abc7-dd30b5adbee7/ticket.toml`
 
 <!-- ticket-index:entry id=bcc111c6-5034-4259-b8cd-3a4dacf3113a slug=done/unspecified digest=b12d9793947e -->
 #### [bcc111c6] [Board] ticket-cli: board subcommand family (show, check-in, check-out, heartbeat, clean)
 - priority: `medium`
 - summary: Expose all draftboard operations as `ticket board <subcommand>` in the CLI. This is the primary human and agent interface for draftboard coordination. All subcommands follow the existing CLI conventi...
-- ref: `memory-viewers/memory-api/.ticket/tickets/bcc111c6-5034-4259-b8cd-3a4dacf3113a/ticket.toml`
+- ref: `memory-api/.ticket/tickets/bcc111c6-5034-4259-b8cd-3a4dacf3113a/ticket.toml`
 
 <!-- ticket-index:entry id=ec52f7cb-7c5e-4854-84d3-80618167762d slug=done/unspecified digest=2ef79e204bf0 -->
 #### [ec52f7cb] [Board] ticket-mcp: Board tool endpoints for agent coordination
 - priority: `medium`
 - summary: Expose the draftboard as MCP tools so that agent sessions can coordinate through the MCP protocol without shelling out to the CLI. This is the primary machine interface for agent-to-board interaction...
-- ref: `memory-viewers/memory-api/.ticket/tickets/ec52f7cb-7c5e-4854-84d3-80618167762d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ec52f7cb-7c5e-4854-84d3-80618167762d/ticket.toml`
 
 <!-- ticket-index:entry id=8aff39cb-2480-4610-9593-2e4e6d96d265 slug=done/unspecified digest=34dcabed96a4 -->
 #### [8aff39cb] [Board][Design] Draftboard data model, API contract, and CLI/MCP surface
 - priority: `high`
 - summary: Produce the implementation-ready contract for the draftboard system: data model, store API, CLI subcommand surface, and MCP tool definitions. This design must be approved before any implementation be...
-- ref: `memory-viewers/memory-api/.ticket/tickets/8aff39cb-2480-4610-9593-2e4e6d96d265/ticket.toml`
+- ref: `memory-api/.ticket/tickets/8aff39cb-2480-4610-9593-2e4e6d96d265/ticket.toml`
 
 <!-- ticket-index:entry id=84ceb9ce-ce68-4473-ac11-9724a20283ce slug=done/unspecified digest=0841446d83b1 -->
 #### [84ceb9ce] [Board][Design] Entry identity, resume flow, and synchronization invariants
 - priority: `high`
 - summary: Close the remaining correctness gaps around what a draftboard entry actually represents, how an agent resumes existing work, and how board state stays synchronized with leases and ticket state transi...
-- ref: `memory-viewers/memory-api/.ticket/tickets/84ceb9ce-ce68-4473-ac11-9724a20283ce/ticket.toml`
+- ref: `memory-api/.ticket/tickets/84ceb9ce-ce68-4473-ac11-9724a20283ce/ticket.toml`
 
 <!-- ticket-index:entry id=c3143e3c-2d16-447a-9062-14305a31b786 slug=done/unspecified digest=244e1970a43d -->
 #### [c3143e3c] [Board][Design] Stale-entry review, cleanup approval, and conflict resolution workflow
 - priority: `high`
 - summary: Define the human-in-the-loop workflow for stale entries, explicit cleanup, and file ownership conflicts.
-- ref: `memory-viewers/memory-api/.ticket/tickets/c3143e3c-2d16-447a-9062-14305a31b786/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c3143e3c-2d16-447a-9062-14305a31b786/ticket.toml`
 
 <!-- ticket-index:entry id=4c29acf5-df06-44b5-9f1a-890d574b7e75 slug=done/unspecified digest=d0e631180e29 -->
 #### [4c29acf5] [Board][Docs] Add board workflow guidance to .github agent files
 - priority: `medium`
 - summary: The Draftboard feature (epic 854f0e8f) is now fully implemented across all
-- ref: `memory-viewers/memory-api/.ticket/tickets/4c29acf5-df06-44b5-9f1a-890d574b7e75/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4c29acf5-df06-44b5-9f1a-890d574b7e75/ticket.toml`
 
 <!-- ticket-index:entry id=be38e809-781f-498c-915e-afaca1d1d3e0 slug=done/unspecified digest=af90d6e62bae -->
 #### [be38e809] [Board][Validation] Concurrent check-in, crash recovery, and cross-interface consistency
 - priority: `medium`
 - summary: Validate that the draftboard behaves correctly under the failure modes and concurrency patterns it is explicitly meant to manage.
-- ref: `memory-viewers/memory-api/.ticket/tickets/be38e809-781f-498c-915e-afaca1d1d3e0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/be38e809-781f-498c-915e-afaca1d1d3e0/ticket.toml`
 
 <!-- ticket-index:entry id=c179ef57-6866-451d-ba7f-f7923ad1374b slug=done/unspecified digest=707c689fe677 -->
 #### [c179ef57] [LOG-5a] Scaffold log-viewer-dioxus crate with trunk build and API client
@@ -2074,7 +2074,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=830de529-2818-49fd-a792-3b59dd99a748 slug=done/unspecified digest=23343284bbe3 -->
 #### [830de529] [spec-api] Normalize spec create target roots into .spec/specs
 - summary: Fix spec creation target-root handling so spec entities are always created inside the canonical .spec/specs store when the caller passes a workspace root, the .spec store root, or a path inside that ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/830de529-2818-49fd-a792-3b59dd99a748/ticket.toml`
+- ref: `memory-api/.ticket/tickets/830de529-2818-49fd-a792-3b59dd99a748/ticket.toml`
 
 <!-- ticket-index:entry id=0b6e1bf3-2478-40a5-a619-085d8691835a slug=done/unspecified digest=3f8096cb7cbe -->
 #### [0b6e1bf3] [spec-api][rules] Define blackbox contract and authoring guidance for expectation-oriented specs
@@ -2196,28 +2196,28 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=b005a8fe-9971-4e59-a3df-171f81b6d3f7 slug=done/unspecified digest=228a7948bde5 -->
 #### [b005a8fe] [viewer-api][P1] Visual primitives: Breadcrumbs, Overlay/Modal, MetaHeader+Chip, Card/CardGrid
 - summary: Add foundational visual primitives to `viewer-api-dioxus` that doc-viewer relies on but spec-viewer currently lacks.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b005a8fe-9971-4e59-a3df-171f81b6d3f7/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b005a8fe-9971-4e59-a3df-171f81b6d3f7/ticket.toml`
 
 <!-- ticket-index:entry id=da16dada-e245-4fdd-868a-c3691e6c351a slug=done/unspecified digest=930c7250b2de -->
 #### [da16dada] [viewer-api][P2] State containers: TabsStore, PathCodec/url_path, Prefetcher
 - summary: Add reusable state containers to `viewer-api-dioxus` for cross-cutting viewer concerns.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/da16dada-e245-4fdd-868a-c3691e6c351a/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/da16dada-e245-4fdd-868a-c3691e6c351a/ticket.toml`
 
 <!-- ticket-index:entry id=8bf5edd2-4fe6-4580-ac87-73843f0206f0 slug=done/unspecified digest=109de115c12b -->
 #### [8bf5edd2] [viewer-api][P3] Widget extensions: TreeNode rich tooltip, mobile sidebar audit, HeaderActions
 - summary: Extend the existing shared widgets with capabilities doc-viewer uses but Dioxus viewers cannot express today.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/8bf5edd2-4fe6-4580-ac87-73843f0206f0/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/8bf5edd2-4fe6-4580-ac87-73843f0206f0/ticket.toml`
 
 <!-- ticket-index:entry id=b4127011-4e08-47bc-ac73-3d3761f29587 slug=done/unspecified digest=61709ed4ec76 -->
 #### [b4127011] [viewer-api][P4] FilterPanel shell with JQ presets and results list
 - summary: Port doc-viewer's filter panel (basic dropdown filters + JQ presets + custom JQ input + results list) to a generic Dioxus shell.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b4127011-4e08-47bc-ac73-3d3761f29587/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b4127011-4e08-47bc-ac73-3d3761f29587/ticket.toml`
 
 <!-- ticket-index:entry id=5bf1951a-dce4-4efb-80d6-89fe4fa01573 slug=done/unspecified digest=808bd96eb904 -->
 #### [5bf1951a] ticket-vscode: Fix tree view state grouping — show only same-state tickets per folder with dependency hierarchy
 - priority: `high`
 - summary: The current `buildStateGroups()` in `ticketProvider.ts` extends each state folder
-- ref: `memory-viewers/memory-api/.ticket/tickets/5bf1951a-dce4-4efb-80d6-89fe4fa01573/ticket.toml`
+- ref: `memory-api/.ticket/tickets/5bf1951a-dce4-4efb-80d6-89fe4fa01573/ticket.toml`
 
 
 ### Component: viewer-api
@@ -2225,75 +2225,75 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=1789cdfa-cd7e-45c4-a683-815b80c39970 slug=done/viewer-api digest=09ccda339cc7 -->
 #### [1789cdfa] Feature: Extract WgpuOverlay/effects to viewer-api and GPU dependency graph in ticket-viewer
 - summary: Extract the entire GPU rendering pipeline from log-viewer into viewer-api as shared infrastructure, then use it to build a GPU-rendered dependency graph in ticket-viewer.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/1789cdfa-cd7e-45c4-a683-815b80c39970/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/1789cdfa-cd7e-45c4-a683-815b80c39970/ticket.toml`
 
 <!-- ticket-index:entry id=d7971816-6f84-419e-abd8-0f84d5f7b82f slug=done/viewer-api digest=725c14813b87 -->
 #### [d7971816] Feature: Sortable FileTree with generic sorting header
 - summary: Add a generic sorting header to the shared `FileTree` component in `viewer-api/frontend` and integrate it in ticket-viewer.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/d7971816-6f84-419e-abd8-0f84d5f7b82f/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/d7971816-6f84-419e-abd8-0f84d5f7b82f/ticket.toml`
 
 <!-- ticket-index:entry id=c826869a-d40c-425d-ba5c-4003c222cfde slug=done/viewer-api digest=ac308384f5c0 -->
 #### [c826869a] Impl: Extract generic Graph3DView component to viewer-api
 - summary: Extract a fully self-contained `Graph3DView` component into `viewer-api/frontend`. This is not a thin wrapper — it owns camera, layout, interaction, animation, and GPU rendering. Log-viewer only adds...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/c826869a-d40c-425d-ba5c-4003c222cfde/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/c826869a-d40c-425d-ba5c-4003c222cfde/ticket.toml`
 
 <!-- ticket-index:entry id=b3d250d5-dd28-44e6-aaf4-47bee9dea56e slug=done/viewer-api digest=54e661ee0e3b -->
 #### [b3d250d5] Impl: Move WgpuOverlay + shaders + effects to viewer-api
 - summary: Move the WgpuOverlay component, WGSL shaders, effects, and 3D math utilities from `log-viewer/frontend/src/` to `viewer-api/frontend/src/` so they become shared infrastructure. Also moves the SVG Gra...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b3d250d5-dd28-44e6-aaf4-47bee9dea56e/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b3d250d5-dd28-44e6-aaf4-47bee9dea56e/ticket.toml`
 
 <!-- ticket-index:entry id=a1259318-f992-44e3-9cdf-0ea4c224f6f3 slug=done/viewer-api digest=83562e4d534b -->
 #### [a1259318] Impl: viewer-api extraction for shared tree/file/graph server primitives
 - summary: Wave 1 / Track E** | Component: `viewer-api`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/a1259318-f992-44e3-9cdf-0ea4c224f6f3/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/a1259318-f992-44e3-9cdf-0ea4c224f6f3/ticket.toml`
 
 <!-- ticket-index:entry id=a39f7805-c6bd-47d3-9b1b-fa29215bdf9e slug=done/viewer-api digest=4aa96438b973 -->
 #### [a39f7805] Plan: Graph edge visual polish -- lighting, focus colors, and particles
 - priority: `medium`
 - summary: tags: `#plan` `#viewer-api` `#graph` `#ux` `#rendering` `#webgpu` `#lighting` `#particles`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/a39f7805-c6bd-47d3-9b1b-fa29215bdf9e/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/a39f7805-c6bd-47d3-9b1b-fa29215bdf9e/ticket.toml`
 
 <!-- ticket-index:entry id=21a2e8f4-4bd8-4436-be52-c2c4a07bb692 slug=done/viewer-api digest=615853f38eab -->
 #### [21a2e8f4] [viewer-api] Adopt rich tree tooltips in Dioxus spec-viewer and doc-viewer
 - priority: `high`
 - summary: Adopt the existing shared `TreeNode::tooltip_render` capability in current Dioxus tree consumers so the shared tree surface actually exposes richer doc-viewer-style metadata.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/21a2e8f4-4bd8-4436-be52-c2c4a07bb692/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/21a2e8f4-4bd8-4436-be52-c2c4a07bb692/ticket.toml`
 
 <!-- ticket-index:entry id=4d9293ab-b7a8-4113-b80a-bfe39297bad2 slug=done/viewer-api digest=7115085e78e4 -->
 #### [4d9293ab] [viewer-api] Adopt shared TabsStore in Dioxus doc-viewer
 - priority: `high`
 - summary: Replace the Dioxus doc-viewer's ad-hoc tab-state signals with the existing shared `viewer_api_dioxus::TabsStore<OpenArtifactTab>` so the frontend actually consumes the tab-state primitive that alread...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/4d9293ab-b7a8-4113-b80a-bfe39297bad2/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/4d9293ab-b7a8-4113-b80a-bfe39297bad2/ticket.toml`
 
 <!-- ticket-index:entry id=c6bf5b7a-f822-44bb-8d2b-86c966031ca6 slug=done/viewer-api digest=7ba75bb2324a -->
 #### [c6bf5b7a] [viewer-api] Enlarge Graph3D directed edge arrow tips
 - priority: `medium`
-- summary: The shared Graph3D edge overlay in `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` renders directed-edge arrow markers that are too small to read comfortably in ticket-viewe...
+- summary: The shared Graph3D edge overlay in `viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` renders directed-edge arrow markers that are too small to read comfortably in ticket-viewe...
 - ref: `.ticket/tickets/c6bf5b7a-f822-44bb-8d2b-86c966031ca6/ticket.toml`
 
 <!-- ticket-index:entry id=763f8c13-a4bd-47af-8894-3e95a63fde8d slug=done/viewer-api digest=dec71667dd6a -->
 #### [763f8c13] [viewer-api] Extract a reusable Dioxus explorer shell around FileTree
 - priority: `high`
 - summary: Extract a reusable Dioxus explorer shell around FileTree so viewers stop duplicating sidebar search and tree-control chrome.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/763f8c13-a4bd-47af-8894-3e95a63fde8d/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/763f8c13-a4bd-47af-8894-3e95a63fde8d/ticket.toml`
 
 <!-- ticket-index:entry id=735502cd-3aec-4772-b2a8-2184aaaf3c21 slug=done/viewer-api digest=850d5effc166 -->
 #### [735502cd] [viewer-api] Extract a reusable interactive chip button for Dioxus explorer filters
 - priority: `high`
 - summary: Extract a shared clickable chip button in viewer-api so explorer filter/state toggles stop duplicating button markup and state wiring across FileTree and ticket-viewer.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/735502cd-3aec-4772-b2a8-2184aaaf3c21/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/735502cd-3aec-4772-b2a8-2184aaaf3c21/ticket.toml`
 
 <!-- ticket-index:entry id=fecbd4d8-b863-4821-bd7d-d6bd16f9356c slug=done/viewer-api digest=6dc7591dce81 -->
 #### [fecbd4d8] [viewer-api] Preserve frontend build diagnostics in viewer-ctl failures
 - priority: `medium`
 - summary: `viewer-ctl prepare <viewer>` shells out to `trunk` and other frontend build
-- ref: `memory-viewers/viewer-api/.ticket/tickets/fecbd4d8-b863-4821-bd7d-d6bd16f9356c/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/fecbd4d8-b863-4821-bd7d-d6bd16f9356c/ticket.toml`
 
 <!-- ticket-index:entry id=9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5 slug=done/viewer-api digest=ba761cd3b2b9 -->
 #### [9a81d3e5] [viewer-api] Reuse the shared toggle contract for Dioxus explorer sort controls
 - priority: `high`
 - summary: Reuse the shared toggle button contract for FileTree sort controls so explorer sort rows stop duplicating active/inactive button markup.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5/ticket.toml`
 
 
 ### Component: viewer-api-dioxus
@@ -2301,52 +2301,52 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=7346feae-045f-4da9-bf1c-47535132ffa1 slug=done/viewer-api-dioxus digest=2bafdee963f4 -->
 #### [7346feae] Arch: viewer-api-dioxus crate scaffold and build system
 - priority: `critical`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/7346feae-045f-4da9-bf1c-47535132ffa1/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/7346feae-045f-4da9-bf1c-47535132ffa1/ticket.toml`
 
 <!-- ticket-index:entry id=512986e0-9f0e-483c-8201-5c316bffdeb2 slug=done/viewer-api-dioxus digest=fcd6c5b07112 -->
 #### [512986e0] Feature: Theme settings UI panel with live preview
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/512986e0-9f0e-483c-8201-5c316bffdeb2/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/512986e0-9f0e-483c-8201-5c316bffdeb2/ticket.toml`
 
 <!-- ticket-index:entry id=2405a83e-e3b5-47ad-8d88-8c12f507d252 slug=done/viewer-api-dioxus digest=3455ce23a295 -->
 #### [2405a83e] Port: CSS stylesheets — base, layout, buttons, tabs, tree, code-viewer
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/2405a83e-e3b5-47ad-8d88-8c12f507d252/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/2405a83e-e3b5-47ad-8d88-8c12f507d252/ticket.toml`
 
 <!-- ticket-index:entry id=7330aa36-102d-452c-b61d-6f4c8651b422 slug=done/viewer-api-dioxus digest=f15910faea05 -->
 #### [7330aa36] Port: CodeViewer and FileContentViewer
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/7330aa36-102d-452c-b61d-6f4c8651b422/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/7330aa36-102d-452c-b61d-6f4c8651b422/ticket.toml`
 
 <!-- ticket-index:entry id=b3f9878d-5839-4a87-989c-aa3101ee38aa slug=done/viewer-api-dioxus digest=1d42f156d670 -->
 #### [b3f9878d] Port: Layout components — Header, Layout, Sidebar, Panel, GlassPanel
 - priority: `critical`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b3f9878d-5839-4a87-989c-aa3101ee38aa/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b3f9878d-5839-4a87-989c-aa3101ee38aa/ticket.toml`
 
 <!-- ticket-index:entry id=9dec4f23-4e92-4c14-b085-b9f625589228 slug=done/viewer-api-dioxus digest=fbb30e5d077b -->
 #### [9dec4f23] Port: ResizeHandle with rAF-batched drag
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/9dec4f23-4e92-4c14-b085-b9f625589228/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/9dec4f23-4e92-4c14-b085-b9f625589228/ticket.toml`
 
 <!-- ticket-index:entry id=11f77899-6def-4140-b6bf-e84035a9264e slug=done/viewer-api-dioxus digest=e42b60b07755 -->
 #### [11f77899] Port: TabBar, Spinner, Icons
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/11f77899-6def-4140-b6bf-e84035a9264e/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/11f77899-6def-4140-b6bf-e84035a9264e/ticket.toml`
 
 <!-- ticket-index:entry id=46864375-0923-420c-b9db-67ce23056e52 slug=done/viewer-api-dioxus digest=df183c88080e -->
 #### [46864375] Port: Theme system — ThemeStore, CSS variables, presets, save/load
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/46864375-0923-420c-b9db-67ce23056e52/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/46864375-0923-420c-b9db-67ce23056e52/ticket.toml`
 
 <!-- ticket-index:entry id=31739fc3-bb79-4b56-8dd6-ea789340ac8a slug=done/viewer-api-dioxus digest=cc31d32fb94c -->
 #### [31739fc3] Port: TreeView and FileTree with sort/filter
 - priority: `critical`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/31739fc3-bb79-4b56-8dd6-ea789340ac8a/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/31739fc3-bb79-4b56-8dd6-ea789340ac8a/ticket.toml`
 
 <!-- ticket-index:entry id=503eecc9-c8d6-4932-93df-e40018805818 slug=done/viewer-api-dioxus digest=b0d193b7106f -->
 #### [503eecc9] Port: URL state management and session utilities
 - priority: `medium`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/503eecc9-c8d6-4932-93df-e40018805818/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/503eecc9-c8d6-4932-93df-e40018805818/ticket.toml`
 
 <!-- ticket-index:entry id=5f668df8-82e8-4d3c-b3a7-95052a04d688 slug=done/viewer-api-dioxus digest=866bac583f74 -->
 #### [5f668df8] [ticket-viewer][spec-viewer] Bug: theme settings action does not open the modal
@@ -2360,7 +2360,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=29897f92-59bf-45f9-b963-caa7bfad71c8 slug=done/viewer-api-leptos digest=f1d7875ea6c6 -->
 #### [29897f92] Feature: UI polish — tab bar, sidebar, and resizable panels
 - summary: The Leptos frontend has a minimal tab bar (20px, uppercase, no icons) and a flat sidebar (220px, no tree indentation, no resize). The TS version has a polished tab bar (32px, icons, active accents), ...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/29897f92-59bf-45f9-b963-caa7bfad71c8/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/29897f92-59bf-45f9-b963-caa7bfad71c8/ticket.toml`
 
 
 ### Component: viewer-tools
@@ -2462,7 +2462,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [e6e09d6f] [memory-api][ticket-cli][spec-cli][rule-cli] Normalize nested workspace option semantics
 - priority: `high`
 - summary: Shared nested-workspace resolution exists in progress, but review found that spec now overloads workspace-root for store selection, refs validation, and bootstrap source relativization while rule sti...
-- ref: `memory-viewers/memory-api/.ticket/tickets/e6e09d6f-a41c-49f7-bc6a-c6d8e822598b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/e6e09d6f-a41c-49f7-bc6a-c6d8e822598b/ticket.toml`
 
 <!-- ticket-index:entry id=ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b slug=in-implementation/memory-api digest=569430b4fcbc -->
 #### [ef0ebf38] [memory-api][ticket-cli][spec-cli][rule-cli] Unify child-workspace resolution across CLI tools
@@ -2491,7 +2491,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [f15d9e8b] Build rule-api for generated agent instruction docs
 - priority: `high`
 - summary: Agent-facing markdown guidance is duplicated across context-engine, memory-viewers, memory-api, and viewer-api. The duplicated files are currently copy-pasted and several are byte-identical. This cre...
-- ref: `memory-viewers/memory-api/.ticket/tickets/f15d9e8b-72d2-44d9-965d-9fecbbc02d7f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f15d9e8b-72d2-44d9-965d-9fecbbc02d7f/ticket.toml`
 
 
 ### Component: spec-api
@@ -2506,7 +2506,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [13a57a83] [spec][P8] Bootstrap: write spec files for the spec system itself
 - priority: `high`
 - summary: Author the canonical specification database covering the spec-system crates
-- ref: `memory-viewers/memory-api/.ticket/tickets/13a57a83-df99-4031-87e2-844772758ebb/ticket.toml`
+- ref: `memory-api/.ticket/tickets/13a57a83-df99-4031-87e2-844772758ebb/ticket.toml`
 
 
 ### Component: ticket-cli
@@ -2514,7 +2514,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=91011568-ae0b-4b23-b060-b0c018e1e912 slug=in-implementation/ticket-cli digest=303882450462 -->
 #### [91011568] [ticket-cli][ticket-mcp] Expose authoritative ticket folder paths in query output
 - priority: `high`
-- ref: `memory-viewers/memory-api/.ticket/tickets/91011568-ae0b-4b23-b060-b0c018e1e912/ticket.toml`
+- ref: `memory-api/.ticket/tickets/91011568-ae0b-4b23-b060-b0c018e1e912/ticket.toml`
 
 
 ### Component: ticket-http
@@ -2529,7 +2529,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [cccf5d99] [ticket-http][ticket-viewer] Bug: query results ignore active state filter
 - priority: `high`
 - summary: The ticket explorer currently fails to honor the active state filter once the user types a search query.
-- ref: `memory-viewers/memory-api/.ticket/tickets/cccf5d99-d7e9-43e6-8aea-90480ad3cf0d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/cccf5d99-d7e9-43e6-8aea-90480ad3cf0d/ticket.toml`
 
 
 ### Component: ticket-viewer
@@ -2574,7 +2574,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [4629b9d9] [ticket-viewer] Migrate list/detail/search flows to workspace-aware ticket references
 - priority: `high`
 - summary: >Frontend migration is in progress; root-route mixed-workspace history/files flow is validated and asset follow-up investigation continues.
-- ref: `memory-viewers/memory-api/.ticket/tickets/4629b9d9-3bd0-4ef6-82b6-d6e609c16cac/ticket.toml`
+- ref: `memory-api/.ticket/tickets/4629b9d9-3bd0-4ef6-82b6-d6e609c16cac/ticket.toml`
 
 <!-- ticket-index:entry id=929bc26a-5296-4d64-b1b2-2ec580c0659c slug=in-implementation/ticket-viewer digest=8c6ea691dc92 -->
 #### [929bc26a] [ticket-viewer][viewer-api] Make graph framing panel-aware and keep nodes behind UI panels
@@ -2601,7 +2601,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [6de424b0] [ticket-vscode] Validate Rust/WASM parity across desktop, web, and remote hosts
 - priority: `high`
 - summary: This ticket closes the track by validating the implemented port against the spec and the current user-visible workflows.
-- ref: `memory-viewers/memory-api/.ticket/tickets/6de424b0-68ec-43c7-9d70-eb8d17305ab3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/6de424b0-68ec-43c7-9d70-eb8d17305ab3/ticket.toml`
 
 
 ### Component: unspecified
@@ -2633,13 +2633,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [35a6d14b] Epic: Dioxus Viewer Platform — viewer-api-dioxus + ticket-viewer Dioxus frontend
 - priority: `critical`
 - summary: Port the viewer-api frontend library and ticket-viewer SPA from TypeScript/Preact to Rust/Dioxus 0.7, compiled to WASM via `trunk` (Trunk WASM bundler). Adds full ticket mutation capabilities powered...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/35a6d14b-25b0-4b24-b59f-d0d733cacd20/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/35a6d14b-25b0-4b24-b59f-d0d733cacd20/ticket.toml`
 
 <!-- ticket-index:entry id=bb1c32f5-5275-4e4f-85ae-a0fba09c522a slug=in-implementation/viewer-api digest=b0e4b04918e6 -->
 #### [bb1c32f5] [viewer-api] Extract a reusable Dioxus page header shell
 - priority: `high`
 - summary: Extract a reusable Dioxus page-header shell in viewer-api-dioxus so viewer routes stop composing ad-hoc header behavior inline.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/bb1c32f5-5275-4e4f-85ae-a0fba09c522a/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/bb1c32f5-5275-4e4f-85ae-a0fba09c522a/ticket.toml`
 
 <!-- ticket-index:entry id=322ba030-160c-41d3-8a12-42936ae92858 slug=in-implementation/viewer-api digest=2543f1e386ae -->
 #### [322ba030] [viewer-api][ticket-viewer] Add multi-level graph node detail rendering
@@ -2665,7 +2665,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=dbd048a0-08b4-458d-b860-29b8ce5119e3 slug=in-implementation/viewer-api-dioxus digest=677e7cde4c08 -->
 #### [dbd048a0] Feature: WgpuOverlay — full-screen GPU compositor with DOM capture and particle effects
 - priority: `high`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/dbd048a0-08b4-458d-b860-29b8ce5119e3/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/dbd048a0-08b4-458d-b860-29b8ce5119e3/ticket.toml`
 
 
 ## State: in-review
@@ -3302,7 +3302,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=ee43f72e-53ef-4937-8216-92e17f185d85 slug=new/search digest=07cae98ebcc6 -->
 #### [ee43f72e] [bootstrap] implement unified query execution on real indexes
 - summary: Support fast query and highlighting across:
-- ref: `memory-viewers/memory-api/.ticket/tickets/ee43f72e-53ef-4937-8216-92e17f185d85/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ee43f72e-53ef-4937-8216-92e17f185d85/ticket.toml`
 
 
 ### Component: session-api
@@ -3332,7 +3332,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [29bf9628] [spec-api] Add direct feedback on spec entities with integration tests
 - priority: `high`
 - summary: Agents can now attach ratings and notes to canonical rule entries, but they still cannot attach feedback directly to native `spec-api` entities. Today the only supported workaround is to resolve a ge...
-- ref: `memory-viewers/memory-api/.ticket/tickets/29bf9628-1dc5-4bb4-ae00-b7410dd52db5/ticket.toml`
+- ref: `memory-api/.ticket/tickets/29bf9628-1dc5-4bb4-ae00-b7410dd52db5/ticket.toml`
 
 <!-- ticket-index:entry id=f22d5297-3f60-4161-bf90-1eb56f3ced5d slug=new/spec-api digest=bfa52529ae73 -->
 #### [f22d5297] [spec] spec-api: list canonical component entities
@@ -3343,7 +3343,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [0f33944e] [spec][P3] spec-api: edge management (parent_of, linked, depends_on)
 - priority: `high`
 - summary: `spec-api`'s schema declares three edge kinds (`parent_of`, `linked`,
-- ref: `memory-viewers/memory-api/.ticket/tickets/0f33944e-fab7-4d8c-b3bb-3c665d51854f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0f33944e-fab7-4d8c-b3bb-3c665d51854f/ticket.toml`
 
 
 ### Component: spec-system
@@ -3352,7 +3352,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [ee3864e1] Epic: Specification System — memory-api extraction, spec-api, tooling, and skill generation
 - priority: `critical`
 - summary: Build a complete specification and documentation management system that:
-- ref: `memory-viewers/memory-api/.ticket/tickets/ee3864e1-7f9a-4804-bff0-8d861f4549da/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ee3864e1-7f9a-4804-bff0-8d861f4549da/ticket.toml`
 
 
 ### Component: spec-viewer
@@ -3370,7 +3370,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [79b0ad85] [spec][vscode] Design and implement spec-vscode VS Code extension
 - priority: `high`
 - summary: Design and implement `spec-vscode` — a VS Code extension that surfaces the spec store in the sidebar, mirroring the patterns established by `ticket-vscode`. The extension allows developers to browse,...
-- ref: `memory-viewers/memory-api/.ticket/tickets/79b0ad85-c57d-4237-bc59-281fa1ad57f8/ticket.toml`
+- ref: `memory-api/.ticket/tickets/79b0ad85-c57d-4237-bc59-281fa1ad57f8/ticket.toml`
 
 
 ### Component: test-api
@@ -3551,19 +3551,19 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=53f471a3-8a55-40ca-8f86-5da3b15aa25e slug=new/unspecified digest=fad4636fdc6e -->
 #### [53f471a3] Project tracker: audit quality backlog
 - summary: Project tracker for the audit quality backlog: hardening repository quality audits so ticket/spec/graph health produce more actionable signal.
-- ref: `memory-viewers/memory-api/.ticket/tickets/53f471a3-8a55-40ca-8f86-5da3b15aa25e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/53f471a3-8a55-40ca-8f86-5da3b15aa25e/ticket.toml`
 
 <!-- ticket-index:entry id=186caf8a-bbbf-426f-8fc3-2f7882a8a550 slug=new/unspecified digest=6efb87704be0 -->
 #### [186caf8a] Project tracker: board workflow rollout
-- ref: `memory-viewers/memory-api/.ticket/tickets/186caf8a-bbbf-426f-8fc3-2f7882a8a550/ticket.toml`
+- ref: `memory-api/.ticket/tickets/186caf8a-bbbf-426f-8fc3-2f7882a8a550/ticket.toml`
 
 <!-- ticket-index:entry id=72bad0e5-2f5d-4731-8cc6-8d4b167418dd slug=new/unspecified digest=4cef4e39a627 -->
 #### [72bad0e5] Project tracker: bootstrap executor backlog
-- ref: `memory-viewers/memory-api/.ticket/tickets/72bad0e5-2f5d-4731-8cc6-8d4b167418dd/ticket.toml`
+- ref: `memory-api/.ticket/tickets/72bad0e5-2f5d-4731-8cc6-8d4b167418dd/ticket.toml`
 
 <!-- ticket-index:entry id=02a3a2a7-1e70-4d25-a86c-17a36e5dd5e1 slug=new/unspecified digest=51c5a735c000 -->
 #### [02a3a2a7] Project tracker: cargo doc workspace support
-- ref: `memory-viewers/memory-api/.ticket/tickets/02a3a2a7-1e70-4d25-a86c-17a36e5dd5e1/ticket.toml`
+- ref: `memory-api/.ticket/tickets/02a3a2a7-1e70-4d25-a86c-17a36e5dd5e1/ticket.toml`
 
 <!-- ticket-index:entry id=be47f545-c72a-43bd-a804-dd9665ce8faa slug=new/unspecified digest=13d593549e7c -->
 #### [be47f545] Project tracker: doc validation and install workflow redesign
@@ -3577,12 +3577,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=a76c72e6-0bb9-48ef-be43-37c72ad89002 slug=new/unspecified digest=a6c323a6206c -->
 #### [a76c72e6] Project tracker: rule-api hierarchy and documentation pipeline
-- ref: `memory-viewers/memory-api/.ticket/tickets/a76c72e6-0bb9-48ef-be43-37c72ad89002/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a76c72e6-0bb9-48ef-be43-37c72ad89002/ticket.toml`
 
 <!-- ticket-index:entry id=0af903c0-4f97-4773-b277-51dcf278b1f0 slug=new/unspecified digest=8556760602b7 -->
 #### [0af903c0] Project tracker: ticket API and mutation surfaces
 - summary: Group ticket-api, ticket-http, and ticket-mcp mutation and storage-surface work under a single parent so related graph, mutation, and round-trip issues share a coherent backlog home.
-- ref: `memory-viewers/memory-api/.ticket/tickets/0af903c0-4f97-4773-b277-51dcf278b1f0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0af903c0-4f97-4773-b277-51dcf278b1f0/ticket.toml`
 
 <!-- ticket-index:entry id=40ba5a15-df3c-42f2-8825-bd43bd66fce7 slug=new/unspecified digest=c0b0fb4c2e34 -->
 #### [40ba5a15] Project tracker: ticket CLI and next-work backlog
@@ -3591,15 +3591,15 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=171eb277-3270-4d52-8283-10cf3dd939b9 slug=new/unspecified digest=e354a93833fc -->
 #### [171eb277] Project tracker: ticket UX surfaces backlog
-- ref: `memory-viewers/memory-api/.ticket/tickets/171eb277-3270-4d52-8283-10cf3dd939b9/ticket.toml`
+- ref: `memory-api/.ticket/tickets/171eb277-3270-4d52-8283-10cf3dd939b9/ticket.toml`
 
 <!-- ticket-index:entry id=79efa73e-62d8-4c91-b0b5-b1ad79262efa slug=new/unspecified digest=215c8ac7d31d -->
 #### [79efa73e] Project tracker: ticket metadata and content pipeline
-- ref: `memory-viewers/memory-api/.ticket/tickets/79efa73e-62d8-4c91-b0b5-b1ad79262efa/ticket.toml`
+- ref: `memory-api/.ticket/tickets/79efa73e-62d8-4c91-b0b5-b1ad79262efa/ticket.toml`
 
 <!-- ticket-index:entry id=026401a0-e099-4d8b-840d-2d6b3bb456f3 slug=new/unspecified digest=aa542759db3c -->
 #### [026401a0] Project tracker: ticket query filter correctness
-- ref: `memory-viewers/memory-api/.ticket/tickets/026401a0-e099-4d8b-840d-2d6b3bb456f3/ticket.toml`
+- ref: `memory-api/.ticket/tickets/026401a0-e099-4d8b-840d-2d6b3bb456f3/ticket.toml`
 
 <!-- ticket-index:entry id=9df4ef26-5168-4bbb-adf4-7f0e4f7ae3cf slug=new/unspecified digest=3cb04c50d0fc -->
 #### [9df4ef26] Project tracker: ticket/spec/rule operator workflow and discoverability
@@ -3608,7 +3608,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 <!-- ticket-index:entry id=f93f2266-7f97-4f31-a548-706c7a7e8c4a slug=new/unspecified digest=39f73e451041 -->
 #### [f93f2266] Project tracker: viewer logging rollout
-- ref: `memory-viewers/memory-api/.ticket/tickets/f93f2266-7f97-4f31-a548-706c7a7e8c4a/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f93f2266-7f97-4f31-a548-706c7a7e8c4a/ticket.toml`
 
 <!-- ticket-index:entry id=afcf2759-9c91-433c-b62c-ae8adcb0cdd5 slug=new/unspecified digest=a3e69a61064d -->
 #### [afcf2759] Project tracker: workflow traceability redesign
@@ -3638,12 +3638,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=3b1345eb-9983-4567-a3ab-c2e00c7cec1e slug=new/unspecified digest=f5b157ef322e -->
 #### [3b1345eb] [LOG-1c] viewer-ctl: add --log-dir and --log-level flags to start/restart
 - summary: There is no way to control the log directory or level for a viewer server launched via `viewer-ctl start` without modifying the binary's default env vars by hand. Operators cannot redirect logs to a ...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/3b1345eb-9983-4567-a3ab-c2e00c7cec1e/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/3b1345eb-9983-4567-a3ab-c2e00c7cec1e/ticket.toml`
 
 <!-- ticket-index:entry id=12197242-b7b4-4212-83a8-4b0b65a4bd7b slug=new/unspecified digest=21baf71a4cb7 -->
 #### [12197242] [LOG-2a] Audit and normalise context-* tracing field names for log-viewer compatibility
 - summary: The `crates/context-{insert,read,search,trace}` crates emit `tracing` spans and events but field names, targets, and event shapes are not uniform. The log-viewer parser (`crates/context-api/src/log_p...
-- ref: `memory-viewers/memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml`
 
 <!-- ticket-index:entry id=5b4330f6-f1d0-4e80-8a3e-296f557c5a99 slug=new/unspecified digest=160b76a4906e -->
 #### [5b4330f6] [LOG-2b] Add context-trace JSON format compatibility test against log-viewer parser
@@ -3851,7 +3851,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=a6fd15f6-f9c3-407a-af99-3febee5b2557 slug=new/unspecified digest=8f10bf6adc8d -->
 #### [a6fd15f6] [doc-viewer][P6] (Deferred) Migrate doc-viewer onto shared viewer-api
 - summary: Optional / deferred.** Once the Dioxus shared crate is stable and proven in spec-viewer, expose its components to doc-viewer (Preact/TS) via thin TypeScript bindings or a wasm-bindgen surface, elimin...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/a6fd15f6-f9c3-407a-af99-3febee5b2557/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/a6fd15f6-f9c3-407a-af99-3febee5b2557/ticket.toml`
 
 <!-- ticket-index:entry id=9c95c1e4-3cdb-428e-b9de-800684651226 slug=new/unspecified digest=161d78728551 -->
 #### [9c95c1e4] [feedback-api] Event ingestion, metadata normalization, and retention policy
@@ -4091,19 +4091,19 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=936d38d6-a238-4cb9-b00a-1b2a4b65dc04 slug=new/unspecified digest=b70f4bba3bf2 -->
 #### [936d38d6] [viewer-api] Port doc-viewer features to shared Dioxus viewer-api
 - summary: Track the remaining Dioxus adoption work needed after the shared doc-viewer-inspired primitives landed in `viewer-api-dioxus`, so current viewers reuse the shared shells and stores instead of carryin...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/936d38d6-a238-4cb9-b00a-1b2a4b65dc04/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/936d38d6-a238-4cb9-b00a-1b2a4b65dc04/ticket.toml`
 
 <!-- ticket-index:entry id=8f349d96-a307-400b-a90e-3aceb2250166 slug=new/unspecified digest=c6c79abab73b -->
 #### [8f349d96] viewer-api-dioxus: ship WASM tracing logs to a server file sink
 - priority: `low`
 - summary: Build on the structured-tracing parent ticket: add a tracing `Layer` that batches log records and POSTs them to a server endpoint (e.g. `POST /api/client-log`) which appends them to a per-session JSO...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml`
 
 <!-- ticket-index:entry id=b480632a-8605-4b5b-a4e8-f2988b2565a0 slug=new/unspecified digest=d1d023c24644 -->
 #### [b480632a] viewer-api-dioxus: structured tracing for WASM frontend
 - priority: `medium`
 - summary: Replace ad-hoc `web_sys::console::log_1!()` calls in the Dioxus WASM frontend (viewer-api, spec-viewer, ticket-viewer) with structured tracing.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml`
 
 
 ### Component: viewer-api
@@ -4111,43 +4111,43 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=81a6a595-7426-478d-9487-17142dcfa8a0 slug=new/viewer-api digest=9b56efaa5dfc -->
 #### [81a6a595] Plan: Context API phase 4.1 — viewer-api + log-viewer as thin frontend layers
 - summary: tags: `#context-api` `#phase4.1` `#refactor` `#viewer-api` `#log-viewer` `#context-http` `#frontend`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/81a6a595-7426-478d-9487-17142dcfa8a0/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/81a6a595-7426-478d-9487-17142dcfa8a0/ticket.toml`
 
 <!-- ticket-index:entry id=301dc3ce-38b6-4b28-bd84-266e33b46c90 slug=new/viewer-api digest=bdfcf7fec586 -->
 #### [301dc3ce] Plan: DOM 3D integration for graph viewer
 - summary: tags: `#plan` `#rendering` `#3d` `#webgpu` `#dom`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/301dc3ce-38b6-4b28-bd84-266e33b46c90/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/301dc3ce-38b6-4b28-bd84-266e33b46c90/ticket.toml`
 
 <!-- ticket-index:entry id=ee7aa0cd-04ae-423e-83be-6edf58eeaf41 slug=new/viewer-api digest=fca0e5270461 -->
 #### [ee7aa0cd] Plan: nesting view mode for graph viewer
 - summary: Date:** 2026-03-07
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ee7aa0cd-04ae-423e-83be-6edf58eeaf41/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ee7aa0cd-04ae-423e-83be-6edf58eeaf41/ticket.toml`
 
 <!-- ticket-index:entry id=608bb106-f22d-4bb4-bbde-d87ec33fd6e6 slug=new/viewer-api digest=6e5d5c6bf3c8 -->
 #### [608bb106] Plan: search visualisation in graph viewer
 - summary: tags: `#plan` `#visualization` `#search` `#logging` `#frontend`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/608bb106-f22d-4bb4-bbde-d87ec33fd6e6/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/608bb106-f22d-4bb4-bbde-d87ec33fd6e6/ticket.toml`
 
 <!-- ticket-index:entry id=20c4d807-042f-4c4b-a683-3d84658094c3 slug=new/viewer-api digest=d7fc22156370 -->
 #### [20c4d807] Plan: viewer refactoring and mobile support — HypergraphView extraction
 - summary: Date:** 2026-03-04
-- ref: `memory-viewers/viewer-api/.ticket/tickets/20c4d807-042f-4c4b-a683-3d84658094c3/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/20c4d807-042f-4c4b-a683-3d84658094c3/ticket.toml`
 
 <!-- ticket-index:entry id=68912b00-e189-4dc1-8124-ca41d9aab953 slug=new/viewer-api digest=d37bc395eb44 -->
 #### [68912b00] Plan: viewer tools features (2026-03-01 batch)
 - summary: Date:** 2026-03-01
-- ref: `memory-viewers/viewer-api/.ticket/tickets/68912b00-e189-4dc1-8124-ca41d9aab953/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/68912b00-e189-4dc1-8124-ca41d9aab953/ticket.toml`
 
 <!-- ticket-index:entry id=97c757b1-3c58-4b54-ab4b-35b7d0ea9ece slug=new/viewer-api digest=ac8ce70e994c -->
 #### [97c757b1] Plan: viewer-api refactoring — extract shared server infrastructure
 - summary: tags: `#plan` `#refactoring` `#tools` `#viewer-api`
-- ref: `memory-viewers/viewer-api/.ticket/tickets/97c757b1-3c58-4b54-ab4b-35b7d0ea9ece/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/97c757b1-3c58-4b54-ab4b-35b7d0ea9ece/ticket.toml`
 
 <!-- ticket-index:entry id=d1e4ab96-52e1-4b80-ad7c-bfff459d3fac slug=new/viewer-api digest=14bfcc5d28af -->
 #### [d1e4ab96] [viewer-api] Converge shared Dioxus viewer shells across frontends
 - priority: `high`
 - summary: Converge the duplicated Dioxus viewer shell patterns across the current frontend implementations so each viewer stays thin and generic behavior lives in viewer-api.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/d1e4ab96-52e1-4b80-ad7c-bfff459d3fac/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/d1e4ab96-52e1-4b80-ad7c-bfff459d3fac/ticket.toml`
 
 <!-- ticket-index:entry id=08c86dbd-72b8-446b-a930-30ef3352d604 slug=new/viewer-api digest=61799d8e7845 -->
 #### [08c86dbd] [viewer-api] Create comprehensive E2E test suite for graph improvements
@@ -4171,7 +4171,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [4e0dc8fb] [viewer-api][ticket-viewer][design] viewer-wide keyboard support model
 - priority: `medium`
 - summary: Design a viewer-wide keyboard interaction model for the Dioxus viewer stack without bundling it into the immediate explorer fixes.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/4e0dc8fb-18fa-4be1-a43d-37008d0453e3/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/4e0dc8fb-18fa-4be1-a43d-37008d0453e3/ticket.toml`
 
 
 ### Component: viewer-api-dioxus
@@ -4180,13 +4180,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [01932eb7] Feature: tiling + tabbed panel system replacing flat Sidebar/Panel primitives
 - priority: `medium`
 - summary: The current `viewer-api-dioxus::components::layout::{Sidebar, Panel}` primitives are flat: each viewer hardcodes a single left `Sidebar` + one optional right `Panel`. There is no support for:
-- ref: `memory-viewers/viewer-api/.ticket/tickets/01932eb7-54e5-441b-87bc-db3013a0882c/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/01932eb7-54e5-441b-87bc-db3013a0882c/ticket.toml`
 
 <!-- ticket-index:entry id=92964ada-4ab5-4fe1-ab29-5bfd55583ad2 slug=new/viewer-api-dioxus digest=0d35689bd70a -->
 #### [92964ada] Refactor: extract viewer-theme and viewer-widgets crates from viewer-api-dioxus
 - priority: `medium`
 - summary: `viewer-api-dioxus` currently bundles three logically distinct concerns:
-- ref: `memory-viewers/viewer-api/.ticket/tickets/92964ada-4ab5-4fe1-ab29-5bfd55583ad2/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/92964ada-4ab5-4fe1-ab29-5bfd55583ad2/ticket.toml`
 
 
 ## State: on-hold
@@ -4266,7 +4266,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=5d320d7e-f974-4d52-9e25-8265bf7a42cf slug=ready/documentation-tooling digest=1fad466d66a9 -->
 #### [5d320d7e] Design reproducible Docker validation for install and deinstall docs
 - priority: `high`
-- summary: User-facing installation documentation is not validated continuously from a clean environment. The current repo has install instructions for the CLI tools in `memory-viewers/memory-api/README.md`, bu...
+- summary: User-facing installation documentation is not validated continuously from a clean environment. The current repo has install instructions for the CLI tools in `memory-api/README.md`, bu...
 - ref: `.ticket/tickets/5d320d7e-f974-4d52-9e25-8265bf7a42cf/ticket.toml`
 
 <!-- ticket-index:entry id=e0c136dd-8bdf-40f6-a39c-29f9e88167d6 slug=ready/documentation-tooling digest=022ed87d25b3 -->
@@ -4281,7 +4281,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16 slug=ready/history digest=d51d9f1efaeb -->
 #### [f5d7e9a2] [bootstrap][T6] verify merge and completion linkage with assignment chain
 - summary: After validation passes (T4), the ticket advances through release gates toward merge. The merge record must be fully traceable: it must include the worker assignment_id, the validator assignment_id, ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f5d7e9a2-ab3c-4d5e-9f5a-6b7c8d9eaf16/ticket.toml`
 
 
 ### Component: lease
@@ -4289,17 +4289,17 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61 slug=ready/lease digest=3f9bf47e5711 -->
 #### [a8d6c1d2] [bootstrap][T1] startup and auth bootstrap for host executor
 - summary: The host executor is a Rust service process (`ticket host-executor`) that workers authenticate against to claim tickets, run inference, and report progress. Per the Phase 1.5 design, the executor can...
-- ref: `memory-viewers/memory-api/.ticket/tickets/a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a8d6c1d2-2b64-4d9a-9f1d-1e2a3b4c5d61/ticket.toml`
 
 <!-- ticket-index:entry id=c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83 slug=ready/lease digest=5172e265bdc5 -->
 #### [c2a4b6d8] [bootstrap][T3] validate ticket lifecycle happy path under executor
 - summary: Once a worker is authenticated (T1) and context-verified (T2), it proceeds through the core ticket mutation lifecycle: claim → implement → attach evidence → unclaim. Every event in this lifecycle mus...
-- ref: `memory-viewers/memory-api/.ticket/tickets/c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c2a4b6d8-7e9f-4a1b-8c2d-3e4f5a6b7c83/ticket.toml`
 
 <!-- ticket-index:entry id=d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94 slug=ready/lease digest=66b2a4b588df -->
 #### [d3b5c7e9] [bootstrap][T4] implement validator handoff with separation-of-duties
 - summary: After a worker completes implementation (T3), the ticket moves to `validating` state. A second agent — the **validator** — is dispatched by the coordinator with a different identity to independently ...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94/ticket.toml`
 
 
 ### Component: memory-api
@@ -4308,7 +4308,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [b03be2d5] [spec][P5] Cross-entity edges — spec depends_on ticket, ticket implements spec
 - priority: `medium`
 - summary: Extend memory-api's edge system to support edges between entities of different types (spec ↔ ticket). Currently edges are within a single entity store; this enables cross-store relationships.
-- ref: `memory-viewers/memory-api/.ticket/tickets/b03be2d5-5293-4dc7-ad11-cca2dbf32c8b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/b03be2d5-5293-4dc7-ad11-cca2dbf32c8b/ticket.toml`
 
 
 ### Component: rule-api
@@ -4316,14 +4316,14 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=d0ccdb06-db44-464f-846e-9d58c1320fd0 slug=ready/rule-api digest=464976e6472f -->
 #### [d0ccdb06] Complete memory-api rule-api specs and test links
 - priority: `high`
-- summary: Nested rule work and repo-local README generation need a committed spec set in `memory-viewers/memory-api/.spec` with maintained code references and validation hooks. Initial planning specs now exist...
-- ref: `memory-viewers/memory-api/.ticket/tickets/d0ccdb06-db44-464f-846e-9d58c1320fd0/ticket.toml`
+- summary: Nested rule work and repo-local README generation need a committed spec set in `memory-api/.spec` with maintained code references and validation hooks. Initial planning specs now exist...
+- ref: `memory-api/.ticket/tickets/d0ccdb06-db44-464f-846e-9d58c1320fd0/ticket.toml`
 
 <!-- ticket-index:entry id=7cffac6b-7dca-4134-8c0f-7dbedcd0cbbd slug=ready/rule-api digest=d6ded4413d74 -->
 #### [7cffac6b] Generate memory-api README from repo-local rules
 - priority: `high`
 - summary: `memory-api` does not yet have a repo-local `.rule` workspace or a local `rule-targets.yaml`, so its `README.md` remains a manually maintained file instead of a generated target owned by the repo tha...
-- ref: `memory-viewers/memory-api/.ticket/tickets/7cffac6b-7dca-4134-8c0f-7dbedcd0cbbd/ticket.toml`
+- ref: `memory-api/.ticket/tickets/7cffac6b-7dca-4134-8c0f-7dbedcd0cbbd/ticket.toml`
 
 
 ### Component: spec-api
@@ -4332,85 +4332,85 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [00798e96] [spec][P3] Spec creation — planned feature specs with acceptance criteria templates
 - priority: `medium`
 - summary: Create specification files for features that are planned but not yet implemented. These specs serve as the design document and acceptance criteria definition.
-- ref: `memory-viewers/memory-api/.ticket/tickets/00798e96-3d82-436e-963c-af347e76ede0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/00798e96-3d82-436e-963c-af347e76ede0/ticket.toml`
 
 <!-- ticket-index:entry id=ffc578f7-8a18-4536-9a8c-023d42b98d3e slug=ready/spec-api digest=3937860b82b1 -->
 #### [ffc578f7] [spec][P3] Spec-to-code sync — detect and update references after file moves
 - priority: `medium`
 - summary: Detect when implementation files are moved/renamed and automatically update spec code references.
-- ref: `memory-viewers/memory-api/.ticket/tickets/ffc578f7-8a18-4536-9a8c-023d42b98d3e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ffc578f7-8a18-4536-9a8c-023d42b98d3e/ticket.toml`
 
 <!-- ticket-index:entry id=80e25216-7ba9-4fd9-bc80-3311f1d2a604 slug=ready/spec-api digest=8448bb26a061 -->
 #### [80e25216] [spec][P3] Spec-to-code sync — update specs after implementation changes
 - priority: `high`
 - summary: Detect when implementation code changes and update spec code references and feature status accordingly.
-- ref: `memory-viewers/memory-api/.ticket/tickets/80e25216-7ba9-4fd9-bc80-3311f1d2a604/ticket.toml`
+- ref: `memory-api/.ticket/tickets/80e25216-7ba9-4fd9-bc80-3311f1d2a604/ticket.toml`
 
 <!-- ticket-index:entry id=c4c9e9d4-8831-4135-98a7-0b64031ffe52 slug=ready/spec-api digest=78903c83f3b7 -->
 #### [c4c9e9d4] [spec][P4] Feature tracking — record feature completeness and bug status per spec
 - priority: `medium`
 - summary: Track per-spec feature completeness: which features are implemented, planned, blocked, or have known bugs.
-- ref: `memory-viewers/memory-api/.ticket/tickets/c4c9e9d4-8831-4135-98a7-0b64031ffe52/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c4c9e9d4-8831-4135-98a7-0b64031ffe52/ticket.toml`
 
 <!-- ticket-index:entry id=6c00ef55-1531-4494-9bf2-00184740a3b0 slug=ready/spec-api digest=6401f65626f3 -->
 #### [6c00ef55] [spec][P4] Skill generation — master index and cross-references
 - priority: `medium`
 - summary: Generate a master `docs/skills/INDEX.md` that serves as the entry point for all generated skill files, with coverage statistics and cross-references.
-- ref: `memory-viewers/memory-api/.ticket/tickets/6c00ef55-1531-4494-9bf2-00184740a3b0/ticket.toml`
+- ref: `memory-api/.ticket/tickets/6c00ef55-1531-4494-9bf2-00184740a3b0/ticket.toml`
 
 <!-- ticket-index:entry id=eddf5d2e-e1b6-4ec9-b88f-d50bd192b194 slug=ready/spec-api digest=f461052b6fd0 -->
 #### [eddf5d2e] [spec][P4] Skill generation — per-crate and per-domain SKILL.md files from spec data
 - priority: `high`
 - summary: Build a skill file generation engine that reads spec data from the SpecStore and produces structured SKILL.md files for AI coding agents.
-- ref: `memory-viewers/memory-api/.ticket/tickets/eddf5d2e-e1b6-4ec9-b88f-d50bd192b194/ticket.toml`
+- ref: `memory-api/.ticket/tickets/eddf5d2e-e1b6-4ec9-b88f-d50bd192b194/ticket.toml`
 
 <!-- ticket-index:entry id=ad5fb72b-548c-4215-88a6-eacde7a42d4d slug=ready/spec-api digest=e3ccbe2fdff5 -->
 #### [ad5fb72b] [spec][P4] Spec health check — completeness, staleness, broken references, coverage
 - priority: `medium`
 - summary: Validate spec store integrity including completeness, staleness, broken references, and coverage metrics.
-- ref: `memory-viewers/memory-api/.ticket/tickets/ad5fb72b-548c-4215-88a6-eacde7a42d4d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ad5fb72b-548c-4215-88a6-eacde7a42d4d/ticket.toml`
 
 <!-- ticket-index:entry id=45671e0e-24d6-4f51-b216-07e80f2ff302 slug=ready/spec-api digest=336311df73c1 -->
 #### [45671e0e] [spec][P4] Test generation — Rust test stubs and test matrix from spec acceptance criteria
 - priority: `medium`
 - summary: Generate Rust test stubs for uncovered spec features and a test matrix checklist linking existing tests to spec acceptance criteria.
-- ref: `memory-viewers/memory-api/.ticket/tickets/45671e0e-24d6-4f51-b216-07e80f2ff302/ticket.toml`
+- ref: `memory-api/.ticket/tickets/45671e0e-24d6-4f51-b216-07e80f2ff302/ticket.toml`
 
 <!-- ticket-index:entry id=f00291a3-bd61-469e-a737-c44cb3911e3b slug=ready/spec-api digest=d2e7b1235309 -->
 #### [f00291a3] [spec][P5] Ticket integration — link specs to tickets, track refinement/validation/bugfix work
 - priority: `medium`
 - summary: Link specs to tickets bidirectionally. When a ticket implements a spec feature, or a bug is found against a spec, the relationship is tracked.
-- ref: `memory-viewers/memory-api/.ticket/tickets/f00291a3-bd61-469e-a737-c44cb3911e3b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f00291a3-bd61-469e-a737-c44cb3911e3b/ticket.toml`
 
 <!-- ticket-index:entry id=7802faa3-5d79-4ec9-9f26-143bca62149c slug=ready/spec-api digest=99c5d23daec9 -->
 #### [7802faa3] [spec][P6] Hierarchical DAG — parent-child spec relationships, no duplication
 - priority: `medium`
 - summary: Implement parent-child spec relationships as a DAG (no duplication of specification content). Each spec declares its parent; the system builds a tree with cross-references via edges.
-- ref: `memory-viewers/memory-api/.ticket/tickets/7802faa3-5d79-4ec9-9f26-143bca62149c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/7802faa3-5d79-4ec9-9f26-143bca62149c/ticket.toml`
 
 <!-- ticket-index:entry id=d72d5114-2521-4d02-9ca1-7f0bee8d470d slug=ready/spec-api digest=1326ccfda4c3 -->
 #### [d72d5114] [spec][P6] Spec search — full-text search with field predicates
 - priority: `medium`
 - summary: Full-text search across all specs using Tantivy, with field predicates matching the ticket search pattern.
-- ref: `memory-viewers/memory-api/.ticket/tickets/d72d5114-2521-4d02-9ca1-7f0bee8d470d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d72d5114-2521-4d02-9ca1-7f0bee8d470d/ticket.toml`
 
 <!-- ticket-index:entry id=a7b2a89c-6562-468c-a129-ad4883e5cf6e slug=ready/spec-api digest=9df4849eef09 -->
 #### [a7b2a89c] [spec][P6] Table of contents — auto-generated TOC index of all specs
 - priority: `medium`
 - summary: Auto-generate a table of contents index showing all specs organized by component and hierarchy.
-- ref: `memory-viewers/memory-api/.ticket/tickets/a7b2a89c-6562-468c-a129-ad4883e5cf6e/ticket.toml`
+- ref: `memory-api/.ticket/tickets/a7b2a89c-6562-468c-a129-ad4883e5cf6e/ticket.toml`
 
 <!-- ticket-index:entry id=9242a906-cba9-43a4-b45e-942465379a7b slug=ready/spec-api digest=9146478d7e2c -->
 #### [9242a906] [spec][P8] Bootstrap: write spec files for ticket-api interfaces
 - priority: `high`
 - summary: Write comprehensive spec files documenting the ticket-api crate's full API surface, storage layer, schema system, and edge system.
-- ref: `memory-viewers/memory-api/.ticket/tickets/9242a906-cba9-43a4-b45e-942465379a7b/ticket.toml`
+- ref: `memory-api/.ticket/tickets/9242a906-cba9-43a4-b45e-942465379a7b/ticket.toml`
 
 <!-- ticket-index:entry id=c617cee6-3182-47db-a7cf-15cccbc02b6d slug=ready/spec-api digest=36942d1dd4b8 -->
 #### [c617cee6] [spec][P8] Generate initial skill files for all ticket system tools
 - priority: `high`
 - summary: Use the skill generation engine to produce the first set of SKILL.md files covering all ticket system tools.
-- ref: `memory-viewers/memory-api/.ticket/tickets/c617cee6-3182-47db-a7cf-15cccbc02b6d/ticket.toml`
+- ref: `memory-api/.ticket/tickets/c617cee6-3182-47db-a7cf-15cccbc02b6d/ticket.toml`
 
 
 ### Component: spec-cli
@@ -4419,7 +4419,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [f2c1ebc2] [spec][P8] Bootstrap: write spec files for ticket-cli interface
 - priority: `medium`
 - summary: Write specs for the ticket-cli crate documenting the CLI command surface, argument parsing, output formatting, and batch execution. Covers all commands: create, get, update, delete, list, search, lin...
-- ref: `memory-viewers/memory-api/.ticket/tickets/f2c1ebc2-aaee-4a93-895b-56284b549840/ticket.toml`
+- ref: `memory-api/.ticket/tickets/f2c1ebc2-aaee-4a93-895b-56284b549840/ticket.toml`
 
 
 ### Component: spec-editor
@@ -4437,7 +4437,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [1b19e979] [spec][P8] Bootstrap: write spec files for ticket-http interface
 - priority: `medium`
 - summary: Write specs for the ticket-http crate documenting all HTTP endpoints, request/response formats, middleware, SSE streaming, auth, and error handling.
-- ref: `memory-viewers/memory-api/.ticket/tickets/1b19e979-f2a0-4803-bc97-15ffd8f7ab72/ticket.toml`
+- ref: `memory-api/.ticket/tickets/1b19e979-f2a0-4803-bc97-15ffd8f7ab72/ticket.toml`
 
 
 ### Component: spec-mcp
@@ -4446,7 +4446,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [10a26c64] [spec][P8] Bootstrap: write spec files for ticket-mcp interface
 - priority: `medium`
 - summary: Write specs for the ticket-mcp crate documenting all MCP tools, their input schemas, output formats, and error handling.
-- ref: `memory-viewers/memory-api/.ticket/tickets/10a26c64-402b-45e2-8333-2c471d0c0170/ticket.toml`
+- ref: `memory-api/.ticket/tickets/10a26c64-402b-45e2-8333-2c471d0c0170/ticket.toml`
 
 
 ### Component: spec-vscode
@@ -4455,13 +4455,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [7f0a4dac] [spec][P7] spec-vscode — VS Code extension for browsing specs with rich HTML viewer
 - priority: `low`
 - summary: VS Code extension for browsing specification files with rich HTML rendering, navigation links, and code reference jump-to-source.
-- ref: `memory-viewers/memory-api/.ticket/tickets/7f0a4dac-37b0-44c8-ba72-4ea0aaabb374/ticket.toml`
+- ref: `memory-api/.ticket/tickets/7f0a4dac-37b0-44c8-ba72-4ea0aaabb374/ticket.toml`
 
 <!-- ticket-index:entry id=321f4ec7-03df-4e14-9734-a6af76ace55f slug=ready/spec-vscode digest=8d2889c07c13 -->
 #### [321f4ec7] [spec][P8] Bootstrap: write spec files for ticket-vscode interface
 - priority: `low`
 - summary: Write specs for the ticket-vscode extension documenting the tree view provider, webview panel, API client, and VS Code extension lifecycle.
-- ref: `memory-viewers/memory-api/.ticket/tickets/321f4ec7-03df-4e14-9734-a6af76ace55f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/321f4ec7-03df-4e14-9734-a6af76ace55f/ticket.toml`
 
 
 ### Component: ticket-http
@@ -4470,13 +4470,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [181ed793] [ticket-http] Add /api/next endpoint for best-next ranking
 - priority: `high`
 - summary: There is no dedicated `GET /api/next` route in the current ticket HTTP router. HTTP consumers that want ranked best-next results have to reconstruct them manually by combining `GET /api/tickets` with...
-- ref: `memory-viewers/memory-api/.ticket/tickets/181ed793-481d-4d46-b059-0eda891365d7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/181ed793-481d-4d46-b059-0eda891365d7/ticket.toml`
 
 <!-- ticket-index:entry id=5012f293-e871-4e4a-af40-c27b3bd967fb slug=ready/ticket-http digest=c74aede6aa6a -->
 #### [5012f293] [ticket-http][ticket-api][ticket-viewer] Track: child-workspace ticket reference rollout
 - priority: `high`
 - summary: The child-workspace ticket-reference rollout is now split into three well-scoped tickets, but there is no parent tracker that captures the full implementation sequence, the shared goal, or the cross-...
-- ref: `memory-viewers/memory-api/.ticket/tickets/5012f293-e871-4e4a-af40-c27b3bd967fb/ticket.toml`
+- ref: `memory-api/.ticket/tickets/5012f293-e871-4e4a-af40-c27b3bd967fb/ticket.toml`
 
 
 ### Component: ticket-viewer
@@ -4493,8 +4493,8 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=6d07d610-75c1-448a-afd5-6ae15098ca21 slug=ready/ticket-vscode digest=faa27559f457 -->
 #### [6d07d610] [ticket-vscode] Rust/WASM port track
 - priority: `high`
-- summary: Port `memory-viewers/memory-api/tools/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
-- ref: `memory-viewers/memory-api/.ticket/tickets/6d07d610-75c1-448a-afd5-6ae15098ca21/ticket.toml`
+- summary: Port `memory-api/tools/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
+- ref: `memory-api/.ticket/tickets/6d07d610-75c1-448a-afd5-6ae15098ca21/ticket.toml`
 
 
 ### Component: unspecified
@@ -4510,127 +4510,127 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [6bbda148] [viewer-ctl] Implement uninstall command for managed viewers
 - priority: `high`
 - summary: The install contract now validates `viewer-ctl install` for all managed viewers, but `viewer-ctl` still has no first-class uninstall/remove command. That leaves `VIEW-04` as a manual gap in the insta...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/6bbda148-e144-4dff-92de-dd6584c82bd7/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/6bbda148-e144-4dff-92de-dd6584c82bd7/ticket.toml`
 
 <!-- ticket-index:entry id=ba0fd25e-c23b-48a4-934c-a30542f6fca9 slug=ready/viewer-api digest=2868618f0693 -->
 #### [ba0fd25e] demo-viewer: README + viewer-api docs cross-references
 - summary: Add a top-level note in `tools/viewer/viewer-api/README.md` linking to
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ba0fd25e-c23b-48a4-934c-a30542f6fca9/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ba0fd25e-c23b-48a4-934c-a30542f6fca9/ticket.toml`
 
 <!-- ticket-index:entry id=b83b1002-41ba-4eb7-9f1a-c20cbf49137b slug=ready/viewer-api digest=52fe5f3c72c0 -->
 #### [b83b1002] demo-viewer: e2e harness + WebGPU launch profile + helpers
 - summary: Add the demo-viewer e2e harness so per-feature tickets only need to
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b83b1002-41ba-4eb7-9f1a-c20cbf49137b/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b83b1002-41ba-4eb7-9f1a-c20cbf49137b/ticket.toml`
 
 <!-- ticket-index:entry id=76378ed1-f50d-43d9-9414-04cfc3232a00 slug=ready/viewer-api digest=c54b88e2cbe6 -->
 #### [76378ed1] demo-viewer: feature page — auth middleware
 - summary: Implement the demo page that showcases the `viewer-api/auth-middleware` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/76378ed1-f50d-43d9-9414-04cfc3232a00/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/76378ed1-f50d-43d9-9414-04cfc3232a00/ticket.toml`
 
 <!-- ticket-index:entry id=db1cccef-6712-4702-ae58-fe23dacc029f slug=ready/viewer-api digest=5adab3327b7c -->
 #### [db1cccef] demo-viewer: feature page — client log
 - summary: Implement the demo page that showcases the `viewer-api/client-log` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/db1cccef-6712-4702-ae58-fe23dacc029f/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/db1cccef-6712-4702-ae58-fe23dacc029f/ticket.toml`
 
 <!-- ticket-index:entry id=e737092d-6083-4bf8-ba0e-1ac22d7c521b slug=ready/viewer-api digest=9321703add12 -->
 #### [e737092d] demo-viewer: feature page — code viewer
 - summary: Implement the demo page that showcases the `viewer-api/components/code-viewer` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/e737092d-6083-4bf8-ba0e-1ac22d7c521b/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/e737092d-6083-4bf8-ba0e-1ac22d7c521b/ticket.toml`
 
 <!-- ticket-index:entry id=b543e4ad-7ac4-4fd0-abb7-59a725affa64 slug=ready/viewer-api digest=0651ad6f2f35 -->
 #### [b543e4ad] demo-viewer: feature page — dev proxy
 - summary: Implement the demo page that showcases the `viewer-api/dev-proxy` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b543e4ad-7ac4-4fd0-abb7-59a725affa64/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b543e4ad-7ac4-4fd0-abb7-59a725affa64/ticket.toml`
 
 <!-- ticket-index:entry id=42bd0dc8-cc28-46b3-9535-2d1207b18ae6 slug=ready/viewer-api digest=87dc6f5c2b52 -->
 #### [42bd0dc8] demo-viewer: feature page — graph3d (WebGPU)
 - summary: Implement the demo page that showcases the `viewer-api/components/graph3d` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/42bd0dc8-cc28-46b3-9535-2d1207b18ae6/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/42bd0dc8-cc28-46b3-9535-2d1207b18ae6/ticket.toml`
 
 <!-- ticket-index:entry id=6006ec27-babd-4656-9eca-78bdd5eb5b47 slug=ready/viewer-api digest=6ae424245474 -->
 #### [6006ec27] demo-viewer: feature page — icons spinner
 - summary: Implement the demo page that showcases the `viewer-api/components/icons-spinner` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/6006ec27-babd-4656-9eca-78bdd5eb5b47/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/6006ec27-babd-4656-9eca-78bdd5eb5b47/ticket.toml`
 
 <!-- ticket-index:entry id=fc0282b5-844c-4101-9391-c926ffdaf1d7 slug=ready/viewer-api digest=71baba43d177 -->
 #### [fc0282b5] demo-viewer: feature page — layout
 - summary: Implement the demo page that showcases the `viewer-api/components/layout` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/fc0282b5-844c-4101-9391-c926ffdaf1d7/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/fc0282b5-844c-4101-9391-c926ffdaf1d7/ticket.toml`
 
 <!-- ticket-index:entry id=02025547-027b-43f7-bcd7-6a212108085f slug=ready/viewer-api digest=29f840f3e38e -->
 #### [02025547] demo-viewer: feature page — pagination query
 - summary: Implement the demo page that showcases the `viewer-api/pagination-query` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/02025547-027b-43f7-bcd7-6a212108085f/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/02025547-027b-43f7-bcd7-6a212108085f/ticket.toml`
 
 <!-- ticket-index:entry id=8de2f8e2-43b6-4de1-a9f7-54fc64c2bdab slug=ready/viewer-api digest=0f2f2b48ea77 -->
 #### [8de2f8e2] demo-viewer: feature page — server infra
 - summary: Implement the demo page that showcases the `viewer-api/server-infra` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/8de2f8e2-43b6-4de1-a9f7-54fc64c2bdab/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/8de2f8e2-43b6-4de1-a9f7-54fc64c2bdab/ticket.toml`
 
 <!-- ticket-index:entry id=ed8252fc-371d-4134-a981-5af988c4241a slug=ready/viewer-api digest=1ef83a9b4ba5 -->
 #### [ed8252fc] demo-viewer: feature page — session
 - summary: Implement the demo page that showcases the `viewer-api/session` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ed8252fc-371d-4134-a981-5af988c4241a/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ed8252fc-371d-4134-a981-5af988c4241a/ticket.toml`
 
 <!-- ticket-index:entry id=48530193-0637-4709-8239-e8f3e1cc0eba slug=ready/viewer-api digest=108032f1d0fc -->
 #### [48530193] demo-viewer: feature page — source
 - summary: Implement the demo page that showcases the `viewer-api/source` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/48530193-0637-4709-8239-e8f3e1cc0eba/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/48530193-0637-4709-8239-e8f3e1cc0eba/ticket.toml`
 
 <!-- ticket-index:entry id=258ed497-b5ca-4622-96a3-6f1ea210e7bb slug=ready/viewer-api digest=553008fec1ed -->
 #### [258ed497] demo-viewer: feature page — sse
 - summary: Implement the demo page that showcases the `viewer-api/sse` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/258ed497-b5ca-4622-96a3-6f1ea210e7bb/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/258ed497-b5ca-4622-96a3-6f1ea210e7bb/ticket.toml`
 
 <!-- ticket-index:entry id=1efec195-f8b4-4571-b073-806cac0b66ce slug=ready/viewer-api digest=a4f69b7a7eac -->
 #### [1efec195] demo-viewer: feature page — store primitives
 - summary: Implement the demo page that showcases the `viewer-api/store-primitives` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/1efec195-f8b4-4571-b073-806cac0b66ce/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/1efec195-f8b4-4571-b073-806cac0b66ce/ticket.toml`
 
 <!-- ticket-index:entry id=0eef1873-0626-4a87-93bc-51d182808e16 slug=ready/viewer-api digest=aca449a96ee8 -->
 #### [0eef1873] demo-viewer: feature page — tab bar
 - summary: Implement the demo page that showcases the `viewer-api/components/tab-bar` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/0eef1873-0626-4a87-93bc-51d182808e16/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/0eef1873-0626-4a87-93bc-51d182808e16/ticket.toml`
 
 <!-- ticket-index:entry id=6f924445-ea9c-46e9-b051-b5aab6b798fa slug=ready/viewer-api digest=11e782fdeb06 -->
 #### [6f924445] demo-viewer: feature page — theme settings
 - summary: Implement the demo page that showcases the `viewer-api/theme-settings` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/6f924445-ea9c-46e9-b051-b5aab6b798fa/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/6f924445-ea9c-46e9-b051-b5aab6b798fa/ticket.toml`
 
 <!-- ticket-index:entry id=8d0e9879-5e42-449f-90a6-0060dbde112f slug=ready/viewer-api digest=53983fd56ca8 -->
 #### [8d0e9879] demo-viewer: feature page — tracing
 - summary: Implement the demo page that showcases the WASM-tracing pipeline
-- ref: `memory-viewers/viewer-api/.ticket/tickets/8d0e9879-5e42-449f-90a6-0060dbde112f/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/8d0e9879-5e42-449f-90a6-0060dbde112f/ticket.toml`
 
 <!-- ticket-index:entry id=ad056493-716c-4c32-b8f6-9b67a25bc52e slug=ready/viewer-api digest=d167d924949d -->
 #### [ad056493] demo-viewer: feature page — tracing
 - summary: Implement the demo page that showcases the WASM-tracing pipeline
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ad056493-716c-4c32-b8f6-9b67a25bc52e/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ad056493-716c-4c32-b8f6-9b67a25bc52e/ticket.toml`
 
 <!-- ticket-index:entry id=3df77f25-0f1c-4c1c-a2a8-e9c885f275db slug=ready/viewer-api digest=e83cd3cd7358 -->
 #### [3df77f25] demo-viewer: feature page — tree view
 - summary: Implement the demo page that showcases the `viewer-api/components/tree-view` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/3df77f25-0f1c-4c1c-a2a8-e9c885f275db/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/3df77f25-0f1c-4c1c-a2a8-e9c885f275db/ticket.toml`
 
 <!-- ticket-index:entry id=9d7d97bb-fc65-4374-8de8-f22bd2a05c18 slug=ready/viewer-api digest=85ad804e0517 -->
 #### [9d7d97bb] demo-viewer: feature page — wgpu overlay (WebGPU)
 - summary: Implement the demo page that showcases the `viewer-api/effects/wgpu-overlay` feature surface.
-- ref: `memory-viewers/viewer-api/.ticket/tickets/9d7d97bb-fc65-4374-8de8-f22bd2a05c18/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/9d7d97bb-fc65-4374-8de8-f22bd2a05c18/ticket.toml`
 
 <!-- ticket-index:entry id=ee2b9e6d-e093-41df-9838-d6ab7dfde0fa slug=ready/viewer-api digest=7e979df9fd0c -->
 #### [ee2b9e6d] demo-viewer: manual validation epic (signs off `verified` on the umbrella spec)
 - summary: Final sign-off ticket. Closing this ticket transitions the umbrella spec
-- ref: `memory-viewers/viewer-api/.ticket/tickets/ee2b9e6d-e093-41df-9838-d6ab7dfde0fa/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/ee2b9e6d-e093-41df-9838-d6ab7dfde0fa/ticket.toml`
 
 <!-- ticket-index:entry id=b779c650-0775-4e4f-a692-3eaaa939a910 slug=ready/viewer-api digest=1ca6d42965e0 -->
 #### [b779c650] demo-viewer: scaffold bin crate + Dioxus SPA
 - summary: Create the demo-viewer crate skeleton inside the `viewer-api` workspace
-- ref: `memory-viewers/viewer-api/.ticket/tickets/b779c650-0775-4e4f-a692-3eaaa939a910/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/b779c650-0775-4e4f-a692-3eaaa939a910/ticket.toml`
 
 <!-- ticket-index:entry id=5d9e331b-dc18-444b-af45-90a14d096847 slug=ready/viewer-api digest=dbacd5704860 -->
 #### [5d9e331b] demo-viewer: viewer-ctl integration + nav generator
 - summary: Add a `[viewers.demo-viewer]` entry to `viewer-ctl.toml` (port 3099,
-- ref: `memory-viewers/viewer-api/.ticket/tickets/5d9e331b-dc18-444b-af45-90a14d096847/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/5d9e331b-dc18-444b-af45-90a14d096847/ticket.toml`
 
 
 ### Component: viewer-api-dioxus
@@ -4639,13 +4639,13 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [f00204fc] Bug: ticket-viewer theme inconsistency — --panel-bg hardcoded dark, breaks light themes
 - priority: `high`
 - summary: `viewer-api-dioxus` defines two parallel surface palettes in `public/css/variables.css`:
-- ref: `memory-viewers/viewer-api/.ticket/tickets/f00204fc-f33f-4cd6-9b5f-395071f4e118/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/f00204fc-f33f-4cd6-9b5f-395071f4e118/ticket.toml`
 
 <!-- ticket-index:entry id=dc83b7b4-4b0f-4732-9163-488ef0c6bcc4 slug=ready/viewer-api-dioxus digest=74032b2ec4f0 -->
 #### [dc83b7b4] UI: transparent context-adaptive header & sidebar action buttons (IconButton + Chip)
 - priority: `medium`
 - summary: The action buttons in the ticket-viewer header (`🎨 Theme settings`, `☑ Batch`, `+ New Ticket`) are styled inline in `routes.rs` with three different background tokens (`var(--bg-secondary)`, `var(--a...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/dc83b7b4-4b0f-4732-9163-488ef0c6bcc4/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/dc83b7b4-4b0f-4732-9163-488ef0c6bcc4/ticket.toml`
 
 
 ### Component: viewer-api-leptos
@@ -4653,7 +4653,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=92d5223b-05a4-4b80-ae6a-f5f5d45db2fc slug=ready/viewer-api-leptos digest=4fa835d23d8f -->
 #### [92d5223b] Feature: Complete theme system — colors, effects, presets, CSS variables
 - summary: The Leptos frontend has a minimal theme system: 5 hardcoded presets, a simple button grid in a Settings tab, GPU-only uniforms with no CSS variable injection, and no color editing. The TS version has...
-- ref: `memory-viewers/viewer-api/.ticket/tickets/92d5223b-05a4-4b80-ae6a-f5f5d45db2fc/ticket.toml`
+- ref: `viewer-api/.ticket/tickets/92d5223b-05a4-4b80-ae6a-f5f5d45db2fc/ticket.toml`
 
 
 ### Component: watcher

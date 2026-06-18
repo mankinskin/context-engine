@@ -32,7 +32,7 @@ This follow-on work should turn those building blocks into one more complete que
 
 Contract: spec 08aa283e (ticket-query/expressive-query-and-ordering).
 
-Implemented in memory-viewers/memory-api/crates/memory-api/src/model/query.rs:
+Implemented in memory-api/crates/memory-api/src/model/query.rs:
 - Added CompareOp enum (Eq/Contains/Gt/Gte/Lt/Lte/Range/Exists).
 - Added ValueExpr::Empty marker for the existence predicate.
 - Added Expr::Compare { key, op, value }; kept Expr::Field as the canonical Eq/Range form for backward compatibility (existing parser output and tests unchanged).
@@ -40,11 +40,11 @@ Implemented in memory-viewers/memory-api/crates/memory-api/src/model/query.rs:
 - normalize_field_path: dotted dynamic addressing x.<type>.<field> normalizes to the canonical flat x_<type>_<field> key before strict validation.
 - tokenize: now bracket-aware so unquoted [a TO b] ranges keep their embedded space in one token.
 
-In memory-viewers/memory-api/crates/memory-api/src/storage/search.rs:
+In memory-api/crates/memory-api/src/storage/search.rs:
 - expr_to_query handles the new Expr::Compare arm: Contains reuses the substring regex query; Exists matches documents with a non-empty indexed field; ordering comparisons (Gt/Gte/Lt/Lte) and unresolved deep fields degrade to AllQuery (never silently drop candidates) pending fast-field evaluation in a later slice.
 - field_expr_to_query handles ValueExpr::Empty.
 
-Tests: memory-viewers/memory-api/tools/cli/ticket-cli/tests/contracts_query_parser.rs extended with 9 new cases (contains aliases, longest-prefix comparisons, exists, negated-exists, range stays Field::Range, dotted->flat normalization, strict-mode dotted validation, missing-value error, plain-equality backward-compat). 16/16 pass.
+Tests: memory-api/tools/cli/ticket-cli/tests/contracts_query_parser.rs extended with 9 new cases (contains aliases, longest-prefix comparisons, exists, negated-exists, range stays Field::Range, dotted->flat normalization, strict-mode dotted validation, missing-value error, plain-equality backward-compat). 16/16 pass.
 
 Validation run:
 - cargo test -p ticket-cli --test contracts_query_parser -> 16 passed
@@ -66,9 +66,9 @@ Validation run:
 
 # Likely Surfaces
 
-- memory-viewers/memory-api/crates/memory-api/
-- memory-viewers/memory-api/crates/ticket-api/
-- memory-viewers/memory-api/tools/cli/ticket-cli/
-- memory-viewers/memory-api/tools/mcp/ticket-mcp/
-- memory-viewers/memory-api/tools/http/ticket-http/
-- related tests under memory-viewers/memory-api/**/tests/
+- memory-api/crates/memory-api/
+- memory-api/crates/ticket-api/
+- memory-api/tools/cli/ticket-cli/
+- memory-api/tools/mcp/ticket-mcp/
+- memory-api/tools/http/ticket-http/
+- related tests under memory-api/**/tests/

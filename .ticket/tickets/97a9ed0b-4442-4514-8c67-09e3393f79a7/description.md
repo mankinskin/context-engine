@@ -2,7 +2,7 @@
 Remove the redundant per-frame work in `render_frame` that thrashes layout and inflates the rAF callback, causing DOM node cards to lag behind GPU edges.
 
 ## Scope
-File: `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/render.rs`
+File: `viewer-api/viewer-api/frontend/dioxus/src/graph3d/render.rs`
 
 Changes:
 - Compute the view-projection matrix ONCE in `render_frame` and pass it into `position_dom_nodes` (render.rs:570), `position_dom_layout_anchors` (render.rs:388), and `position_dom_edges` (render.rs:724) instead of each recomputing it.

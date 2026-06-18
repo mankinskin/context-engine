@@ -11,7 +11,7 @@ browser-run validation to produce real evidence artifacts.
 
 ## Acceptance Criteria
 
-- [ ] `wasm-pack test --chrome --headless memory-viewers/viewer-api/viewer-api/frontend/dioxus`
+- [ ] `wasm-pack test --chrome --headless viewer-api/viewer-api/frontend/dioxus`
       runs the two benches and prints per-iter µs for `bench_perspective_projection`
       and `bench_look_at_view_matrix`.
 - [ ] A viewer is served from a `--features profile-browser` trunk build and the
@@ -26,9 +26,9 @@ browser-run validation to produce real evidence artifacts.
 
 ```bash
 # wasm benches
-wasm-pack test --chrome --headless memory-viewers/viewer-api/viewer-api/frontend/dioxus
+wasm-pack test --chrome --headless viewer-api/viewer-api/frontend/dioxus
 # profiling trace (serve with feature first)
-cd memory-viewers/viewer-api/viewer-api/frontend/dioxus && trunk serve --features profile-browser
+cd viewer-api/viewer-api/frontend/dioxus && trunk serve --features profile-browser
 ```
 
 ## Files

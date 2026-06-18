@@ -34,7 +34,7 @@ and native `cargo check` both pass with 0 errors.
 
 ## Notes / blockers
 
-- The `memory-viewers/viewer-api/.ticket` store is currently missing its
+- The `viewer-api/.ticket` store is currently missing its
   `tickets.db` (only `-wal`/`-shm` present) so this tracker lives in the root
   `.ticket` store. If viewer-api-scoped tickets are desired later, repair that
   store first (`ticket scan --force` after restoring `tickets.db`).

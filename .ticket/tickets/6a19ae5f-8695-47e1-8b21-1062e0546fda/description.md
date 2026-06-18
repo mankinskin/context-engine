@@ -9,13 +9,13 @@ WASM benches in `tests/graph3d_bench.rs` only cover the render math).
 
 - `context-stack/context-read`, `context-search`, `context-insert`,
   `context-trace` — index build, query, and traversal hot paths.
-- `memory-viewers/memory-api/crates/ticket-api` and `crates/spec-api` —
+- `memory-api/crates/ticket-api` and `crates/spec-api` —
   graph subgraph/topgraph/health and Tantivy search.
 
 ## Existing infrastructure to reuse / extend
 
 - `context-stack/context-read/benches/grammar.rs` (Criterion already wired).
-- `memory-viewers/memory-api/crates/ticket-api/benches/graph_ops.rs`
+- `memory-api/crates/ticket-api/benches/graph_ops.rs`
   (Criterion already wired) — extend rather than duplicate.
 
 ## Acceptance Criteria

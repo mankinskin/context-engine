@@ -48,5 +48,5 @@ That fragmentation makes ticket review and operator tooling slower than it shoul
 - `tools/ticket-mcp/`
 - `crates/ticket-api/`
 - `memory-viewers/ticket-viewer/`
-- `memory-viewers/memory-api/tools/ticket-vscode/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/tools/ticket-vscode/`
+- `memory-api/.spec/`

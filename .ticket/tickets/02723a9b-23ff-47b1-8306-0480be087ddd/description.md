@@ -2,7 +2,7 @@
 
 Two ticket discovery paths are still unreliable for nested child workspaces.
 
-1. From the repo root, `ticket search "Persist"` does not find `deeeb26d-cb73-46c5-bf2a-1778caa7f82a`, even though that ticket exists on disk under `memory-viewers/memory-api/.ticket` and is immediately discoverable when `--index-root memory-viewers/memory-api/.ticket` is supplied.
+1. From the repo root, `ticket search "Persist"` does not find `deeeb26d-cb73-46c5-bf2a-1778caa7f82a`, even though that ticket exists on disk under `memory-api/.ticket` and is immediately discoverable when `--index-root memory-api/.ticket` is supplied.
 2. In the running ticket-viewer root route, clicking the `in-review` state chip before the initial unfiltered list settles can leave the sidebar showing the stale full list because the earlier response overwrites the later filtered response.
 
 # Goal

@@ -46,4 +46,4 @@ That is technically correct behavior but poor operator UX.
 - `tools/ticket-cli/`
 - `tools/ticket-mcp/`
 - `.agents/instructions/ticket-system.instructions.md`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

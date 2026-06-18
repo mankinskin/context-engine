@@ -169,7 +169,7 @@ Always set `ticket_ids` on executions so the evidence can be queried back from t
 
 Instead of pasting verbose results into the ticket description, add a concise pointer:
 
-- the store root (e.g. `memory-viewers/memory-api/.test/default/`),
+- the store root (e.g. `memory-api/.test/default/`),
 - the validation spec ids and execution ids, and
 - the `test ... list --ticket <id>` query that reproduces the evidence.
 

@@ -1,7 +1,7 @@
 Plan and scaffold a bounded first `session-api` slice under `memory-viewers/memory-api` for saving Copilot chat sessions into a memory-api-backed store.
 
 # Implemented Slice
-- Added a new workspace member at `memory-viewers/memory-api/crates/session-api`.
+- Added a new workspace member at `memory-api/crates/session-api`.
 - Added typed models for `SessionRecord`, `SessionTurn`, `SessionMetadata`, and `SessionLinks`.
 - Added hook-ingest models for `CopilotHookPayload`, `CopilotHookMessage`, and `SessionCaptureRequest`.
 - Added deterministic store-layout planning with `SessionStoreConfig`, `SessionStorePaths`, and `SessionStorePlan`.
@@ -13,7 +13,7 @@ Plan and scaffold a bounded first `session-api` slice under `memory-viewers/memo
 - Covered behaviors: serde round-trip for the session record, hook payload to session record mapping, deterministic store path planning, and invalid path-segment rejection.
 
 # Evidence Trail
-- DocEvidenceRecord candidates: `Cargo.toml`, `memory-viewers/memory-api/crates/session-api/Cargo.toml`, and the new crate source files under `memory-viewers/memory-api/crates/session-api/src/`.
+- DocEvidenceRecord candidates: `Cargo.toml`, `memory-api/crates/session-api/Cargo.toml`, and the new crate source files under `memory-api/crates/session-api/src/`.
 - ValidationLogCapture / ValidationLogRetrieval: `cargo test -p session-api` output captured in the current session terminal.
 - The linked spec records the crate boundary, related tickets, generated guidance surfaces, and the passing validation commands.
 

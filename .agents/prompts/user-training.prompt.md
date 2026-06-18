@@ -9,7 +9,7 @@ agent: "agent"
 
 Work with the user to shape new work they want to finish, then guide them through the repository workflow from discovery to ticketing, specification, validation, and review.
 
-Reference [AGENTS](../../AGENTS.md), [tickets prompt](./tickets.prompt.md), [spec prompt](./spec.prompt.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), and [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [tickets prompt](./tickets.prompt.md), [spec prompt](./spec.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), and [spec-cli](../../memory-api/tools/cli/spec-cli/README.md).
 
 ## Workflow
 

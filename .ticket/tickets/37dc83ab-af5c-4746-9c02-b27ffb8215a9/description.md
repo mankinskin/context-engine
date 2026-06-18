@@ -23,7 +23,7 @@ Not a Tantivy 0.22.1 defect — a stale **on-disk schema** mismatch. The current
 
 `open_or_create_index` reuses the existing on-disk schema when the directory is non-empty, so the Tantivy fast-field writer's `fast_field_names` vector is sized to 5. Writing a document that references field id 5/6 indexes past the end → `index out of bounds: the len is 5 but the index is 5` panic on the background indexing thread (`fastfield/writer.rs:137`).
 
-Confirmed on disk: root `.spec/search_index/meta.json` had 5 field entries; `memory-viewers/memory-api/.spec` had 7.
+Confirmed on disk: root `.spec/search_index/meta.json` had 5 field entries; `memory-api/.spec` had 7.
 
 A reactive self-heal already existed in `EntityStore::scan` (catch rebuild-worthy error → `reset_dir` → retry), and it did rebuild the index — but only **after** the panic message was already emitted on the detached Tantivy worker thread, violating the "completes without panicking" criterion.
 

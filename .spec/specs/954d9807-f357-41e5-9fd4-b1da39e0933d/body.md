@@ -20,7 +20,7 @@ The four principles owned at the context-engine root apply across every nested w
 ## Related tickets
 
 - [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)
-- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-viewers/memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)
+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)
 
 <!-- spec-api:entry id=a1e06151-c860-46c1-8139-d0e88c66a598 slug=context-engine/recurring-principles/recurring-cross-cutting-principles/related-specs/l19 -->
 ## Related specs

@@ -89,4 +89,4 @@ The existing `memory-api/src/index_generator/*` modules are the "before" state. 
 - Schema ticket: [0dba399a](.ticket/tickets/0dba399a-4691-4173-b921-17e5e6f6ebb8/ticket.toml)
 - Sidecar ticket: [e7a0ee3c](.ticket/tickets/e7a0ee3c-dc2f-42dd-8c02-5070a747c156/ticket.toml)
 - Downstream generator tickets: `9336a096`, `b9757ba7`, `c2409055`, `855a1e5d`, `a72e3aca`, `c5e9bb39`
-- Current code under migration: `memory-viewers/memory-api/crates/memory-api/src/index_generator/`
+- Current code under migration: `memory-api/crates/memory-api/src/index_generator/`

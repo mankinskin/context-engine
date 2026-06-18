@@ -10,7 +10,7 @@ Migrate `memory-api` from bespoke README target structure to the shared schema a
 
 This spec covers:
 
-- adoption of the shared schema for `memory-viewers/memory-api/README.md`
+- adoption of the shared schema for `memory-api/README.md`
 - parent-linked generated README targets for the in-scope CLI, MCP, and HTTP tool surfaces
 - preservation of direct command-doc references during the migration
 

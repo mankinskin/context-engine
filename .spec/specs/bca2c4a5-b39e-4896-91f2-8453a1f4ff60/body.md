@@ -76,7 +76,7 @@ The shared `viewer-api/frontend/dioxus/src/graph3d/` component already contains 
 
 # Code References
 
-- `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/` (shared component)
+- `viewer-api/viewer-api/frontend/dioxus/src/graph3d/` (shared component)
 - `memory-viewers/spec-viewer/frontend/dioxus/src/components/spec_graph/page.rs`
 - `tools/viewer/log-viewer/frontend/dioxus/src/app.rs`
 - `memory-viewers/ticket-viewer/frontend/dioxus/src/graph3d.rs` (reference implementation)

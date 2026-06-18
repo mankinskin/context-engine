@@ -39,4 +39,4 @@ The tool needs a first-class way to answer: why is this ticket not in `next`?
 - `tools/ticket-cli/`
 - `crates/ticket-api/`
 - `tools/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

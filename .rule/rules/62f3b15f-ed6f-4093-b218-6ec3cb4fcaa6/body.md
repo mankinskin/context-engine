@@ -10,11 +10,11 @@ agent: "agent"
 Create a single new ticket from the user's current slash-command request using the ticket-api flow.
 Follow the repository workflow: ticket first, spec second, implementation later.
 
-Reference [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md) and [ticket-mcp](../../memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md).
+Reference [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md) and [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md).
 
 Install or build the ticket tools when needed:
 - Build the CLI in this workspace with `cargo build -p ticket-cli --bin ticket` and use `./target/debug/ticket.exe`.
-- Install the CLI onto your Cargo bin path with `cargo install --path memory-viewers/memory-api/tools/cli/ticket-cli --bin ticket`.
+- Install the CLI onto your Cargo bin path with `cargo install --path memory-api/tools/cli/ticket-cli --bin ticket`.
 - Run the MCP server with `cargo run -p ticket-mcp` when MCP access needs to be configured locally.
 
 Workflow:

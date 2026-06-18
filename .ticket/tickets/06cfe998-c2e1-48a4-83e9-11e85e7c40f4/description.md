@@ -8,9 +8,9 @@ The current `peek` implementation is monolithic in `tools/cli/peek-cli/src/main.
 - Current monolithic CLI: `tools/cli/peek-cli/src/main.rs`
 - Current CLI docs: `tools/cli/peek-cli/README.md`
 - Current workspace member wiring: `Cargo.toml`
-- Existing adapter pattern reference: `memory-viewers/memory-api/.rule/rules/4c0b0086-4846-4688-ba01-6e905b842185/body.md`
-- MCP implementation reference: `memory-viewers/memory-api/tools/mcp/audit-mcp/src/server.rs`
-- Rich named-tool MCP reference: `memory-viewers/memory-api/tools/mcp/rule-mcp/src/server.rs`
+- Existing adapter pattern reference: `memory-api/.rule/rules/4c0b0086-4846-4688-ba01-6e905b842185/body.md`
+- MCP implementation reference: `memory-api/tools/mcp/audit-mcp/src/server.rs`
+- Rich named-tool MCP reference: `memory-api/tools/mcp/rule-mcp/src/server.rs`
 - Single execute-tool MCP reference: `context-stack/tools/mcp/context-mcp/src/server.rs`
 
 ## Scope

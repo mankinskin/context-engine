@@ -32,5 +32,5 @@ Implement shared README schema inheritance, node extension behavior, required-bl
 
 - `cargo test -p rule-api readme_schema_ -- --nocapture`
 - `cargo build -p rule-cli`
-- `./target/debug/rule.exe explain-target --config memory-viewers/memory-api/rule-targets.yaml --target memory-api-readme`
-- `./target/debug/rule.exe sync-targets --check --config memory-viewers/memory-api/rule-targets.yaml --workspace-root memory-viewers/memory-api`
+- `./target/debug/rule.exe explain-target --config memory-api/rule-targets.yaml --target memory-api-readme`
+- `./target/debug/rule.exe sync-targets --check --config memory-api/rule-targets.yaml --workspace-root memory-viewers/memory-api`

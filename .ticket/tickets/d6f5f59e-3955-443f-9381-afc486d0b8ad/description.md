@@ -3,7 +3,7 @@ Create generated workflow prompts and agents from canonical rule entries, then p
 # Completed Batch
 - Added rule-target coverage for the requested workflow prompts and agents.
 - Created canonical `.rule` entries and generated the new prompt and agent files.
-- Added the first `session-api` scaffold crate under `memory-viewers/memory-api/crates/session-api`.
+- Added the first `session-api` scaffold crate under `memory-api/crates/session-api`.
 - Updated the shared spec with ticket traceability, generated-doc references, and validation results.
 
 # Validation
@@ -12,7 +12,7 @@ Create generated workflow prompts and agents from canonical rule entries, then p
 
 # Evidence Trail
 - Generated doc surfaces: `.agents/prompts/*` additions and `.agents/agents/*` additions from this batch.
-- Source/doc surfaces: `Cargo.toml`, `rule-targets/30-github-prompts.yaml`, `rule-targets/45-agents-agents.yaml`, and the new `memory-viewers/memory-api/crates/session-api` crate.
+- Source/doc surfaces: `Cargo.toml`, `rule-targets/30-github-prompts.yaml`, `rule-targets/45-agents-agents.yaml`, and the new `memory-api/crates/session-api` crate.
 - Validation logs: rule CLI JSON output plus `cargo test -p session-api` terminal output.
 
 # Follow-up

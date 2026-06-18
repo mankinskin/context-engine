@@ -48,8 +48,8 @@ Generate the requested workflow prompt and agent files from canonical rule-api e
   - `.agents/agents/implement.agent.md`
 
 ## Session-Api Scaffold
-- Added the new workspace member `memory-viewers/memory-api/crates/session-api` in the root workspace manifest.
-- Added the new crate manifest `memory-viewers/memory-api/crates/session-api/Cargo.toml`.
+- Added the new workspace member `memory-api/crates/session-api` in the root workspace manifest.
+- Added the new crate manifest `memory-api/crates/session-api/Cargo.toml`.
 - Added `src/lib.rs`, `src/error.rs`, `src/model.rs`, `src/hook.rs`, and `src/store.rs`.
 - Defined the first typed mapping from Copilot hook payloads into stored session records and deterministic manifest/transcript paths.
 - Kept persistence writes and higher-level ingestion surfaces as explicit follow-up work.

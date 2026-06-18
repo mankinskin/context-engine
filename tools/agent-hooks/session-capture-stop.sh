@@ -38,7 +38,7 @@ if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
 fi
 
 WORKSPACE_SLUG=$(basename "$PWD")
-MANIFEST_PATH="memory-viewers/memory-api/crates/session-api/Cargo.toml"
+MANIFEST_PATH="memory-api/crates/session-api/Cargo.toml"
 
 if [[ -n "$CARGO_BIN" ]] && ! "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- \
     --transcript-path "$TRANSCRIPT_PATH" \

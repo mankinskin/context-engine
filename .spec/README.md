@@ -46,7 +46,7 @@ Add generated agent guidance for spec-system work so spec creation and updates c
 - slug: `audit`
 - scope: system
 - tags: audit, draft, root, scope:system
-- ref: `memory-viewers/memory-api/.spec/specs/0c3f11d3-2475-470c-a191-beedd2c8e53c/spec.toml`
+- ref: `memory-api/.spec/specs/0c3f11d3-2475-470c-a191-beedd2c8e53c/spec.toml`
 
 ## audit-api
 
@@ -75,7 +75,7 @@ Spec, rule, and ticket stores accumulate stale, conflicting, and low-value entri
 
 - slug: `audit-api/ticket-dependency-topology-validation`
 - tags: audit-api, draft, root
-- ref: `memory-viewers/memory-api/.spec/specs/a6318461-3a06-4d6d-aabb-7e06c33f4e1b/spec.toml`
+- ref: `memory-api/.spec/specs/a6318461-3a06-4d6d-aabb-7e06c33f4e1b/spec.toml`
 
 ## context-engine
 
@@ -388,7 +388,7 @@ This branch captures the most confident specification material currently
 - slug: `doc-api`
 - scope: public
 - tags: doc-api, draft, root, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/spec.toml`
+- ref: `memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/spec.toml`
 
 ## feedback-api
 
@@ -423,7 +423,7 @@ Source: `crates/memory-api/src/storage/board.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e/spec.toml`
+- ref: `memory-api/.spec/specs/0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e/spec.toml`
 
 <!-- spec-index:entry id=12045379-ce22-416b-8a5e-31d560c35992 slug=memory-api/model/filesystem digest=cbe29a3bcfbb -->
 ### filesystem
@@ -434,7 +434,7 @@ Source: `crates/memory-api/src/model/filesystem.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/12045379-ce22-416b-8a5e-31d560c35992/spec.toml`
+- ref: `memory-api/.spec/specs/12045379-ce22-416b-8a5e-31d560c35992/spec.toml`
 
 <!-- spec-index:entry id=121a0e79-a212-40af-8041-83c1ea11f029 slug=memory-api/storage/indexed digest=12172a5ac480 -->
 ### indexed
@@ -445,7 +445,7 @@ Source: `crates/memory-api/src/storage/indexed.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/121a0e79-a212-40af-8041-83c1ea11f029/spec.toml`
+- ref: `memory-api/.spec/specs/121a0e79-a212-40af-8041-83c1ea11f029/spec.toml`
 
 <!-- spec-index:entry id=2594c83e-12e3-49d9-a5b7-abe7122e5f52 slug=memory-api/storage/entity-store digest=c5ea44804026 -->
 ### entity_store
@@ -456,7 +456,7 @@ Source: `crates/memory-api/src/storage/entity_store.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/2594c83e-12e3-49d9-a5b7-abe7122e5f52/spec.toml`
+- ref: `memory-api/.spec/specs/2594c83e-12e3-49d9-a5b7-abe7122e5f52/spec.toml`
 
 <!-- spec-index:entry id=267acfdc-7df4-4090-9f17-7d6d71232814 slug=memory-api/model/entity digest=0ef7329ad980 -->
 ### entity
@@ -467,7 +467,7 @@ Source: `crates/memory-api/src/model/entity.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/267acfdc-7df4-4090-9f17-7d6d71232814/spec.toml`
+- ref: `memory-api/.spec/specs/267acfdc-7df4-4090-9f17-7d6d71232814/spec.toml`
 
 <!-- spec-index:entry id=3235e977-b12a-4981-aa09-6edf218bb97d slug=memory-api/model/schema digest=1d29c3e323f0 -->
 ### schema
@@ -478,7 +478,7 @@ Source: `crates/memory-api/src/model/schema.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/3235e977-b12a-4981-aa09-6edf218bb97d/spec.toml`
+- ref: `memory-api/.spec/specs/3235e977-b12a-4981-aa09-6edf218bb97d/spec.toml`
 
 <!-- spec-index:entry id=449fe68a-541c-4804-bbfd-476af783f80c slug=generated-context/digest-input-contract digest=9438d05156ed -->
 ### Domain digest input contract for generated index entries
@@ -500,7 +500,7 @@ Source: `crates/memory-api/src/error.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/4a16fea7-5af5-477f-835d-6c0c94216bfe/spec.toml`
+- ref: `memory-api/.spec/specs/4a16fea7-5af5-477f-835d-6c0c94216bfe/spec.toml`
 
 <!-- spec-index:entry id=4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c slug=repo-guidance/readmes/memory-api-adoption digest=be13abf8e5e0 -->
 ### memory-api README schema adoption
@@ -553,7 +553,7 @@ Bootstrapped from source analysis.
 - scope: public
 - children (19): `ticket-query/expressive-query-and-ordering`, `memory-api/storage/board`, `memory-api/model/filesystem`, `memory-api/storage/indexed`, `memory-api/storage/entity-store`, `memory-api/model/entity`, `memory-api/model/schema`, `memory-api/error`, `memory-api/storage/index`, `memory-api/model/query`, `memory-api/workspace`, `memory-api/storage/store-bootstrap-open`, `memory-api/model/schema-registry`, `memory-api/model/edge`, `ticket-cli/board-option-naming`, `memory-api/model/manifest-format`, `memory-api/storage/entity-fs`, `memory-api/storage/search`, `memory-api/storage/schema`
 - tags: draft, memory-api, root, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml`
+- ref: `memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml`
 
 <!-- spec-index:entry id=86b37a8b-4798-4cfe-971e-d53bb842ae80 slug=memory-api/storage/index digest=1b88108c229d -->
 ### index
@@ -564,7 +564,7 @@ Source: `crates/memory-api/src/storage/index.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/86b37a8b-4798-4cfe-971e-d53bb842ae80/spec.toml`
+- ref: `memory-api/.spec/specs/86b37a8b-4798-4cfe-971e-d53bb842ae80/spec.toml`
 
 <!-- spec-index:entry id=9109f12a-cc02-47ae-948f-98008b6c167d slug=generated-context/rendering-pipeline-integration digest=8855a57171ff -->
 ### Shared rendering pipeline integration for generated store indexes
@@ -586,7 +586,7 @@ Source: `crates/memory-api/src/model/query.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/9c33e0fa-2a18-45ba-a837-a04d71638944/spec.toml`
+- ref: `memory-api/.spec/specs/9c33e0fa-2a18-45ba-a837-a04d71638944/spec.toml`
 
 <!-- spec-index:entry id=ae5ef697-0ee5-4f74-9dca-2cb268290dae slug=memory-api/workspace digest=4d9d32ae8d78 -->
 ### workspace
@@ -598,7 +598,7 @@ Source: `crates/memory-api/src/workspace.rs`
 - parent: `memory-api`
 - children (3): `ticket-api/workflow/unblocked-by-discovery`, `ticket-api/workspaces/ancestor-dependency-visibility`, `ticket-api/workflow/best-next-ordering`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml`
+- ref: `memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml`
 
 <!-- spec-index:entry id=b9129cf5-ddad-49f5-9dd0-60fdb72ee306 slug=memory-api/storage/store-bootstrap-open digest=9dd96ee8aef1 -->
 ### store bootstrap open
@@ -609,7 +609,7 @@ The local memory-api store wrappers currently expose two low-level entry points:
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/b9129cf5-ddad-49f5-9dd0-60fdb72ee306/spec.toml`
+- ref: `memory-api/.spec/specs/b9129cf5-ddad-49f5-9dd0-60fdb72ee306/spec.toml`
 
 <!-- spec-index:entry id=bb77b62c-bb18-4274-8ba2-7543f6d81ff5 slug=memory-api/model/schema-registry digest=bae14915971c -->
 ### schema_registry
@@ -620,7 +620,7 @@ Source: `crates/memory-api/src/model/schema_registry.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/bb77b62c-bb18-4274-8ba2-7543f6d81ff5/spec.toml`
+- ref: `memory-api/.spec/specs/bb77b62c-bb18-4274-8ba2-7543f6d81ff5/spec.toml`
 
 <!-- spec-index:entry id=be7d7ae7-bb1f-4438-813d-f69f17d65cf6 slug=memory-api/install-contracts/cli-and-viewer-installation digest=d623c938a8b0 -->
 ### CLI and Viewer Installation Contract _(root)_
@@ -630,7 +630,7 @@ This spec defines the canonical installation contract for the `memory-api` opera
 - slug: `memory-api/install-contracts/cli-and-viewer-installation`
 - scope: public
 - tags: draft, memory-api, root, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/be7d7ae7-bb1f-4438-813d-f69f17d65cf6/spec.toml`
+- ref: `memory-api/.spec/specs/be7d7ae7-bb1f-4438-813d-f69f17d65cf6/spec.toml`
 
 <!-- spec-index:entry id=bf217ce5-8890-4749-9a2d-deffb6d0f4dd slug=generated-context/thin-generator-architecture digest=d789ec0c4865 -->
 ### Domain-owned thin generator architecture for store indexes
@@ -674,7 +674,7 @@ Source: `crates/memory-api/src/model/edge.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/d3dea825-4850-4a95-a03d-4884ce85a232/spec.toml`
+- ref: `memory-api/.spec/specs/d3dea825-4850-4a95-a03d-4884ce85a232/spec.toml`
 
 <!-- spec-index:entry id=de14117a-df7b-4f2a-87b8-55074ade0487 slug=memory-api/model/manifest-format digest=bad558034568 -->
 ### manifest_format
@@ -685,7 +685,7 @@ Source: `crates/memory-api/src/model/manifest_format.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/de14117a-df7b-4f2a-87b8-55074ade0487/spec.toml`
+- ref: `memory-api/.spec/specs/de14117a-df7b-4f2a-87b8-55074ade0487/spec.toml`
 
 <!-- spec-index:entry id=f081e8f4-7d28-4505-9faf-85c65b033b44 slug=memory-api/storage/entity-fs digest=8be3e3ac2de9 -->
 ### entity_fs
@@ -696,7 +696,7 @@ Source: `crates/memory-api/src/storage/entity_fs.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml`
+- ref: `memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml`
 
 <!-- spec-index:entry id=f156fa16-7910-4c98-b69c-f848073dba00 slug=memory-api/storage/search digest=506819504d14 -->
 ### search
@@ -707,7 +707,7 @@ Source: `crates/memory-api/src/storage/search.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml`
+- ref: `memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml`
 
 <!-- spec-index:entry id=f9c32554-9884-41c4-8b5b-d1d32b37e341 slug=memory-api/recurring-principles digest=c0211a8c9e3c -->
 ### memory-api recurring principles _(root)_
@@ -717,7 +717,7 @@ Source: `crates/memory-api/src/storage/search.rs`
 - slug: `memory-api/recurring-principles`
 - scope: public
 - tags: draft, memory-api, root, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/spec.toml`
+- ref: `memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/spec.toml`
 
 <!-- spec-index:entry id=fded16bb-1a4b-4dd9-a610-c26459d19403 slug=memory-api/storage/schema digest=c15b2b3b9c77 -->
 ### schema
@@ -728,7 +728,7 @@ Source: `crates/memory-api/src/storage/schema.rs`
 - scope: public
 - parent: `memory-api`
 - tags: draft, memory-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml`
+- ref: `memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml`
 
 ## memory-viewers
 
@@ -750,7 +750,7 @@ Adopt the shared README schema in the aggregate `memory-viewers` repo root and n
 
 - slug: `probe/spec`
 - tags: draft, probe, root
-- ref: `memory-viewers/memory-api/.spec/specs/a67fdd95-a5c7-44f4-a861-8b427f1923cd/spec.toml`
+- ref: `memory-api/.spec/specs/a67fdd95-a5c7-44f4-a861-8b427f1923cd/spec.toml`
 
 ## repo-guidance
 
@@ -820,7 +820,7 @@ Source:
 - slug: `rule-api/store`
 - scope: public
 - tags: draft, root, rule-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/0e9beee3-9974-48df-ad22-a79504c438af/spec.toml`
+- ref: `memory-api/.spec/specs/0e9beee3-9974-48df-ad22-a79504c438af/spec.toml`
 
 <!-- spec-index:entry id=3b96ec1c-4e99-48f4-86e5-a36ba24b827a slug=rule-api/workspaces/memory-api-readme-generation digest=efd9a3af655d -->
 ### memory-api Rule Workspace and README Generation
@@ -831,7 +831,7 @@ Source:
 - scope: public
 - parent: `rule-api/workspaces`
 - tags: draft, rule-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml`
+- ref: `memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml`
 
 <!-- spec-index:entry id=5de125ad-eb0c-4bcb-8e6d-175df1ba33a6 slug=rule-api/workspaces/nested-resolution digest=46319357f3b1 -->
 ### Nested Workspace Discovery and Target Resolution
@@ -842,7 +842,7 @@ Nested rule workspaces should extend the existing `rule-api` store and target mo
 - scope: public
 - parent: `rule-api/workspaces`
 - tags: draft, rule-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml`
+- ref: `memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml`
 
 <!-- spec-index:entry id=cde871d1-d390-454e-ae0b-94b152baca15 slug=repo-guidance/readmes/shared-schema digest=c411feb0f86c -->
 ### Shared README schema and validation
@@ -864,7 +864,7 @@ Add a shared README schema layer to `rule-api` so repository README targets can 
 - scope: public
 - children (2): `rule-api/workspaces/memory-api-readme-generation`, `rule-api/workspaces/nested-resolution`
 - tags: draft, root, rule-api, scope:public
-- ref: `memory-viewers/memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml`
+- ref: `memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml`
 
 ## scaffold
 
@@ -897,7 +897,7 @@ Extend `session-api` so repeated Copilot hook captures preserve transcript histo
 - slug: `memory-api/session-api/hook-ingestion-read-query`
 - scope: internal
 - tags: draft, root, scope:internal, session-api
-- ref: `memory-viewers/memory-api/.spec/specs/36fd7849-65eb-405e-8cc5-70440f0cb7c2/spec.toml`
+- ref: `memory-api/.spec/specs/36fd7849-65eb-405e-8cc5-70440f0cb7c2/spec.toml`
 
 <!-- spec-index:entry id=823b22cf-c0dc-46c6-a03d-00cdd3c4c83a slug=memory-api/session-api/persistence-writer digest=783349e035b9 -->
 ### session-api persistence writer _(root)_
@@ -907,7 +907,7 @@ Persist `session-api` capture requests into a deterministic filesystem layout th
 - slug: `memory-api/session-api/persistence-writer`
 - scope: internal
 - tags: draft, root, scope:internal, session-api
-- ref: `memory-viewers/memory-api/.spec/specs/823b22cf-c0dc-46c6-a03d-00cdd3c4c83a/spec.toml`
+- ref: `memory-api/.spec/specs/823b22cf-c0dc-46c6-a03d-00cdd3c4c83a/spec.toml`
 
 ## spec-api
 
@@ -920,7 +920,7 @@ Persist `session-api` capture requests into a deterministic filesystem layout th
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/spec.toml`
+- ref: `memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/spec.toml`
 
 <!-- spec-index:entry id=226ff55f-eebf-43b8-aa1e-5abf81b99101 slug=spec-api/manifest digest=6e9a97d53bff -->
 ### manifest
@@ -931,7 +931,7 @@ Source: `crates/spec-api/src/manifest.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml`
+- ref: `memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml`
 
 <!-- spec-index:entry id=32eaa05c-cef6-4a3b-b506-b5a5410a4674 slug=spec-api/code-ref digest=4926172b435c -->
 ### code_ref
@@ -942,7 +942,7 @@ Source: `crates/spec-api/src/code_ref.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/32eaa05c-cef6-4a3b-b506-b5a5410a4674/spec.toml`
+- ref: `memory-api/.spec/specs/32eaa05c-cef6-4a3b-b506-b5a5410a4674/spec.toml`
 
 <!-- spec-index:entry id=351389c0-0873-4c3c-bc46-3551459ba1cd slug=spec-api/store digest=ee4292e9c739 -->
 ### store
@@ -953,7 +953,7 @@ Source: `crates/spec-api/src/store.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml`
+- ref: `memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml`
 
 <!-- spec-index:entry id=597de059-859d-4aae-89ad-bfe2d84462c0 slug=spec-api/default-schema digest=02b6427ae7d6 -->
 ### default_schema
@@ -964,7 +964,7 @@ Source: `crates/spec-api/src/default_schema.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml`
+- ref: `memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml`
 
 <!-- spec-index:entry id=83094beb-d315-4b16-b132-3ae22a528422 slug=spec-api/error digest=a50577891c31 -->
 ### error
@@ -975,7 +975,7 @@ Source: `crates/spec-api/src/error.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml`
+- ref: `memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml`
 
 <!-- spec-index:entry id=86877b97-2df6-46b5-923d-a9e608655fed slug=spec-api digest=720199458597 -->
 ### spec-api _(root)_
@@ -986,7 +986,7 @@ Bootstrapped from source analysis.
 - scope: public
 - children (7): `spec-api/generated-documents`, `spec-api/manifest`, `spec-api/code-ref`, `spec-api/store`, `spec-api/default-schema`, `spec-api/error`, `spec-api/slug`
 - tags: draft, root, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml`
+- ref: `memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml`
 
 <!-- spec-index:entry id=b0b3c0c6-168f-4b00-93b2-e06ce506855a slug=spec-api/slug digest=82c12b0596cd -->
 ### slug
@@ -997,7 +997,7 @@ Source: `crates/spec-api/src/slug.rs`
 - scope: public
 - parent: `spec-api`
 - tags: draft, scope:public, spec-api
-- ref: `memory-viewers/memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml`
+- ref: `memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml`
 
 ## spec-cli
 
@@ -1010,7 +1010,7 @@ Bootstrapped from source analysis.
 - scope: public
 - children (2): `spec-cli/cli/commands/bootstrap`, `spec-cli/cli`
 - tags: draft, root, scope:public, spec-cli
-- ref: `memory-viewers/memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml`
+- ref: `memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml`
 
 <!-- spec-index:entry id=91b5b5fe-0046-424c-b5e5-3fb961f4d940 slug=spec-cli/cli/args digest=2f7a3e5ba610 -->
 ### args
@@ -1021,7 +1021,7 @@ Source: `tools/cli/spec-cli/src/cli/args.rs`
 - scope: public
 - parent: `spec-cli/cli`
 - tags: draft, scope:public, spec-cli
-- ref: `memory-viewers/memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml`
+- ref: `memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml`
 
 <!-- spec-index:entry id=ec1013ff-2d5f-4860-8d25-64acb6c60587 slug=spec-cli/cli/commands/bootstrap digest=3767899b1677 -->
 ### bootstrap
@@ -1032,7 +1032,7 @@ Source: `tools/cli/spec-cli/src/cli/commands/bootstrap.rs`
 - scope: public
 - parent: `spec-cli`
 - tags: draft, scope:public, spec-cli
-- ref: `memory-viewers/memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml`
+- ref: `memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml`
 
 <!-- spec-index:entry id=ee36710b-1725-436a-a5fc-1e5a7d27f6bb slug=spec-cli/cli digest=1af70957d27c -->
 ### cli
@@ -1044,7 +1044,7 @@ Source: `tools/cli/spec-cli/src/cli.rs`
 - parent: `spec-cli`
 - children (1): `spec-cli/cli/args`
 - tags: draft, scope:public, spec-cli
-- ref: `memory-viewers/memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml`
+- ref: `memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml`
 
 ## spec-editor
 
@@ -1114,7 +1114,7 @@ Source: `tools/http/spec-http/src/routes.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/067c60c2-6be0-4f51-bbd3-80dcd29b9d35/spec.toml`
+- ref: `memory-api/.spec/specs/067c60c2-6be0-4f51-bbd3-80dcd29b9d35/spec.toml`
 
 <!-- spec-index:entry id=0df82e71-79ef-48ec-8459-43b4693d4543 slug=spec-http/handlers/tree digest=a2d48121a300 -->
 ### tree
@@ -1125,7 +1125,7 @@ Source: `tools/http/spec-http/src/handlers/tree.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/0df82e71-79ef-48ec-8459-43b4693d4543/spec.toml`
+- ref: `memory-api/.spec/specs/0df82e71-79ef-48ec-8459-43b4693d4543/spec.toml`
 
 <!-- spec-index:entry id=0f684a90-6abe-4028-a9f1-5d2d6322f1b9 slug=spec-http/state digest=86f5c3eb9dee -->
 ### state
@@ -1136,7 +1136,7 @@ Source: `tools/http/spec-http/src/state.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml`
+- ref: `memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml`
 
 <!-- spec-index:entry id=26f51d64-3bf7-4907-ae9d-2f006bb7d1fa slug=spec-http/error digest=e453e3e26d90 -->
 ### error
@@ -1147,7 +1147,7 @@ Source: `tools/http/spec-http/src/error.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/26f51d64-3bf7-4907-ae9d-2f006bb7d1fa/spec.toml`
+- ref: `memory-api/.spec/specs/26f51d64-3bf7-4907-ae9d-2f006bb7d1fa/spec.toml`
 
 <!-- spec-index:entry id=4482f2d0-131c-4ea0-91c0-f0bde198eedd slug=spec-http/handlers/sections digest=928c9eefbc46 -->
 ### sections
@@ -1158,7 +1158,7 @@ Source: `tools/http/spec-http/src/handlers/sections.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml`
+- ref: `memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml`
 
 <!-- spec-index:entry id=717be077-49f6-49bc-8221-ea5105ba5ff3 slug=spec-http/handlers/health digest=34da3915acce -->
 ### health
@@ -1169,7 +1169,7 @@ Source: `tools/http/spec-http/src/handlers/health.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml`
+- ref: `memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml`
 
 <!-- spec-index:entry id=77ca6056-180d-4e88-a76a-dcf8ff280c7a slug=spec-http/handlers/specs digest=c1938a76e701 -->
 ### specs
@@ -1180,7 +1180,7 @@ Source: `tools/http/spec-http/src/handlers/specs.rs`
 - scope: public
 - parent: `spec-http`
 - tags: draft, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml`
+- ref: `memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml`
 
 <!-- spec-index:entry id=db5c02e5-31f5-4a40-bf9c-2227eab412b2 slug=spec-http digest=d48eef023697 -->
 ### spec-http _(root)_
@@ -1191,7 +1191,7 @@ Bootstrapped from source analysis.
 - scope: public
 - children (7): `spec-http/routes`, `spec-http/handlers/tree`, `spec-http/state`, `spec-http/error`, `spec-http/handlers/sections`, `spec-http/handlers/health`, `spec-http/handlers/specs`
 - tags: draft, root, scope:public, spec-http
-- ref: `memory-viewers/memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml`
+- ref: `memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml`
 
 ## spec-mcp
 
@@ -1204,7 +1204,7 @@ Bootstrapped from source analysis.
 - scope: public
 - children (1): `spec-mcp/server`
 - tags: draft, root, scope:public, spec-mcp
-- ref: `memory-viewers/memory-api/.spec/specs/4066c5a3-3e04-4eeb-81a2-91fb8e53cc94/spec.toml`
+- ref: `memory-api/.spec/specs/4066c5a3-3e04-4eeb-81a2-91fb8e53cc94/spec.toml`
 
 <!-- spec-index:entry id=d4831fdc-9790-4a26-ac32-d675bb6a7792 slug=spec-mcp/server digest=a1023d62fdb0 -->
 ### server
@@ -1215,7 +1215,7 @@ Source: `tools/mcp/spec-mcp/src/server.rs`
 - scope: public
 - parent: `spec-mcp`
 - tags: draft, scope:public, spec-mcp
-- ref: `memory-viewers/memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml`
+- ref: `memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml`
 
 ## spec-viewer
 
@@ -1285,7 +1285,7 @@ Child ticket workspaces need a way to surface ancestor-owned ticket entries when
 - scope: public
 - parent: `memory-api/workspace`
 - tags: draft, scope:public, ticket-api
-- ref: `memory-viewers/memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml`
+- ref: `memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml`
 
 <!-- spec-index:entry id=1d62442b-61dc-4eeb-9b7c-e933f84470f2 slug=ticket-api/state-transition-path-unification digest=5b35c0813650 -->
 ### ticket-api state transition path unification _(root)_
@@ -1306,7 +1306,7 @@ The current best-next contract is deterministic but shallow: default next discov
 - scope: public
 - children (1): `ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering`
 - tags: draft, root, scope:public, ticket-api
-- ref: `memory-viewers/memory-api/.spec/specs/4bd3cd3f-5851-4d9e-b499-978cb7b53275/spec.toml`
+- ref: `memory-api/.spec/specs/4bd3cd3f-5851-4d9e-b499-978cb7b53275/spec.toml`
 
 <!-- spec-index:entry id=9074b2ef-c8fe-4bb0-a987-87063078c1ff slug=ticket-api/workflow/cross-surface-contract-parity-and-validation digest=6d91ee5d9723 -->
 ### Workflow and health parity for ticket interfaces _(root)_
@@ -1346,7 +1346,7 @@ The current workflow surface has two strong but separate pieces:
 - scope: public
 - parent: `ticket-api/workflow/graph-aware-best-next`
 - tags: draft, scope:public, ticket-api
-- ref: `memory-viewers/memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml`
+- ref: `memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml`
 
 <!-- spec-index:entry id=e09cb882-4146-47c5-b14e-ad35a8f53173 slug=ticket-api/storage/file-backed-edge-persistence digest=b5166b730b6f -->
 ### Persist dependency edges in tracked ticket files _(root)_
@@ -1356,7 +1356,7 @@ Dependency edges created through `ticket link` and removed through `ticket unlin
 - slug: `ticket-api/storage/file-backed-edge-persistence`
 - scope: internal
 - tags: draft, root, scope:internal, ticket-api
-- ref: `memory-viewers/memory-api/.spec/specs/e09cb882-4146-47c5-b14e-ad35a8f53173/spec.toml`
+- ref: `memory-api/.spec/specs/e09cb882-4146-47c5-b14e-ad35a8f53173/spec.toml`
 
 <!-- spec-index:entry id=ec22fe34-2d24-4dc5-a067-85121bed3655 slug=ticket-api/workflow/best-next-ordering digest=c72d90485612 -->
 ### Cross-interface best-next ordering
@@ -1367,7 +1367,7 @@ Best-next-ticket discovery must remain consistent anywhere the repository surfac
 - scope: public
 - parent: `memory-api/workspace`
 - tags: draft, scope:public, ticket-api
-- ref: `memory-viewers/memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml`
+- ref: `memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml`
 
 <!-- spec-index:entry id=fa5265cc-e82f-4bbe-b1b5-dad7e6672d06 slug=ticket-api/model/tracker-improvement-effort-field digest=531ab06c13e4 -->
 ### Tracker-improvement effort field _(root)_
@@ -1390,7 +1390,7 @@ The ticket CLI needs first-class reverse-dependency workflow support: `ticket un
 - scope: public
 - parent: `memory-api/workspace`
 - tags: draft, scope:public, ticket-cli
-- ref: `memory-viewers/memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml`
+- ref: `memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml`
 
 <!-- spec-index:entry id=42e8d710-2199-4178-9ab3-dea8d61bfc4a slug=ticket-cli/graph-rendering-and-closure-aware-dependency-display digest=3eee9ade04b1 -->
 ### ticket-cli: graph rendering and closure-aware dependency display _(root)_
@@ -1410,7 +1410,7 @@ The ticket graph is queryable, but operators still have to mentally reconstruct 
 - scope: public
 - parent: `memory-api`
 - tags: draft, scope:public, ticket-cli
-- ref: `memory-viewers/memory-api/.spec/specs/ddac3853-65b3-4b6b-b216-81e78e250bb1/spec.toml`
+- ref: `memory-api/.spec/specs/ddac3853-65b3-4b6b-b216-81e78e250bb1/spec.toml`
 
 ## ticket-http
 
@@ -1422,7 +1422,7 @@ Canonical contract for the ticket list API consumed by the Dioxus ticket-viewer 
 - slug: `ticket-http/api/tickets`
 - scope: public
 - tags: draft, root, scope:public, ticket-http
-- ref: `memory-viewers/memory-api/.spec/specs/5bd4fd1a-cd0e-4893-9d83-452cd5b533bb/spec.toml`
+- ref: `memory-api/.spec/specs/5bd4fd1a-cd0e-4893-9d83-452cd5b533bb/spec.toml`
 
 ## ticket-query
 
@@ -1435,7 +1435,7 @@ Ticket discovery is split across several partial query mechanisms with
 - scope: public
 - parent: `memory-api`
 - tags: draft, scope:public, ticket-query
-- ref: `memory-viewers/memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/spec.toml`
+- ref: `memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/spec.toml`
 
 ## ticket-viewer
 
@@ -1499,17 +1499,17 @@ The `ticket-vscode` extension (VS Code package id: `ticket-viewer`, v0.1.0) surf
 - slug: `ticket-vscode`
 - scope: component
 - tags: reviewed, root, scope:component, ticket-vscode
-- ref: `memory-viewers/memory-api/.spec/specs/5d17db06-c8a0-46bd-a22e-8a783643d7a8/spec.toml`
+- ref: `memory-api/.spec/specs/5d17db06-c8a0-46bd-a22e-8a783643d7a8/spec.toml`
 
 <!-- spec-index:entry id=a592900c-f513-4ec2-8dd2-53dbd04aac7b slug=ticket-vscode/rust-wasm-port digest=d8001c4b1863 -->
 ### ticket-vscode Rust/WASM port _(root)_
 
-Port `memory-viewers/memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM cor…
+Port `memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM cor…
 
 - slug: `ticket-vscode/rust-wasm-port`
 - scope: internal
 - tags: reviewed, root, scope:internal, ticket-vscode
-- ref: `memory-viewers/memory-api/.spec/specs/a592900c-f513-4ec2-8dd2-53dbd04aac7b/spec.toml`
+- ref: `memory-api/.spec/specs/a592900c-f513-4ec2-8dd2-53dbd04aac7b/spec.toml`
 
 ## viewer-api
 
@@ -1522,7 +1522,7 @@ Canonical specification for `viewer-api::source` — the safe source-file
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/04a264ca-5dd6-44d4-ab5a-165822d85079/spec.toml`
+- ref: `viewer-api/.spec/specs/04a264ca-5dd6-44d4-ab5a-165822d85079/spec.toml`
 
 <!-- spec-index:entry id=2e56d63e-c53a-45a0-a984-088b3f9da19a slug=viewer-api/keyboard-interaction-model digest=db04cfd27d92 -->
 ### viewer-api: keyboard interaction model
@@ -1533,7 +1533,7 @@ Draft cross-viewer interaction contract for keyboard ownership, shortcut precede
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/2e56d63e-c53a-45a0-a984-088b3f9da19a/spec.toml`
+- ref: `viewer-api/.spec/specs/2e56d63e-c53a-45a0-a984-088b3f9da19a/spec.toml`
 
 <!-- spec-index:entry id=348e17f7-23a8-4e11-bbb3-224cf0bbe9d6 slug=viewer-api/components/tab-bar digest=aea777ff9bcf -->
 ### viewer-api: TabBar
@@ -1544,7 +1544,7 @@ Canonical specification for the shared `TabBar` Dioxus component
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/348e17f7-23a8-4e11-bbb3-224cf0bbe9d6/spec.toml`
+- ref: `viewer-api/.spec/specs/348e17f7-23a8-4e11-bbb3-224cf0bbe9d6/spec.toml`
 
 <!-- spec-index:entry id=36ebdecb-0b9e-47be-9f44-fe575aa6ad6f slug=viewer-api/theme-settings digest=01e43ac71335 -->
 ### viewer-api: theme settings (canonical) _(root)_
@@ -1554,7 +1554,7 @@ Canonical UX and behavior specification for the **shared theme-settings panel** 
 - slug: `viewer-api/theme-settings`
 - scope: public
 - tags: draft, root, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/36ebdecb-0b9e-47be-9f44-fe575aa6ad6f/spec.toml`
+- ref: `viewer-api/.spec/specs/36ebdecb-0b9e-47be-9f44-fe575aa6ad6f/spec.toml`
 
 <!-- spec-index:entry id=479e226a-b4ef-4e30-ade0-ebdabbf956ed slug=viewer-api/tracing/file-sink digest=af7dd1a4b14b -->
 ### viewer-api: WASM tracing file sink
@@ -1565,7 +1565,7 @@ Specification for shipping `tracing` records emitted by the Dioxus WASM
 - scope: public
 - parent: `viewer-api/tracing`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml`
+- ref: `viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml`
 
 <!-- spec-index:entry id=4c3b62b4-1198-4ce2-9ef6-df530f38297e slug=viewer-api/demo-viewer digest=8b44e26f369d -->
 ### viewer-api: demo-viewer _(root)_
@@ -1576,7 +1576,7 @@ The **demo-viewer** is a reference application that lives inside the `viewer-api
 - scope: public
 - children (17): `viewer-api/source`, `viewer-api/keyboard-interaction-model`, `viewer-api/components/tab-bar`, `viewer-api/components/graph3d`, `viewer-api/session`, `viewer-api/auth-middleware`, `viewer-api/sse`, `viewer-api/server-infra`, `viewer-api/components/icons-spinner`, `viewer-api/components/tree-view`, `viewer-api/components/layout`, `viewer-api/dev-proxy`, `viewer-api/store-primitives`, `viewer-api/client-log`, `viewer-api/pagination-query`, `viewer-api/components/code-viewer`, `viewer-api/effects/wgpu-overlay`
 - tags: draft, root, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml`
+- ref: `viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml`
 
 <!-- spec-index:entry id=4f14356f-c4bd-4554-be1e-35361de241da slug=viewer-api/components/graph3d digest=31f84a37c715 -->
 ### viewer-api: Graph3D
@@ -1587,7 +1587,7 @@ Canonical specification for the shared 3D dependency-graph Dioxus component
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml`
+- ref: `viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml`
 
 <!-- spec-index:entry id=51c69e48-c8a1-4d45-b050-e06671fe7d71 slug=viewer-api/session digest=5c2f07a3d17b -->
 ### viewer-api: session
@@ -1598,7 +1598,7 @@ Canonical specification for `viewer-api::session` — the lightweight server
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/51c69e48-c8a1-4d45-b050-e06671fe7d71/spec.toml`
+- ref: `viewer-api/.spec/specs/51c69e48-c8a1-4d45-b050-e06671fe7d71/spec.toml`
 
 <!-- spec-index:entry id=52521803-fd21-4b40-a4e5-6801b823d59d slug=viewer-api/auth-middleware digest=488fad23c218 -->
 ### viewer-api: auth + middleware + error
@@ -1609,7 +1609,7 @@ Canonical specification for the `viewer-api::auth`, `viewer-api::middleware`,
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/52521803-fd21-4b40-a4e5-6801b823d59d/spec.toml`
+- ref: `viewer-api/.spec/specs/52521803-fd21-4b40-a4e5-6801b823d59d/spec.toml`
 
 <!-- spec-index:entry id=54800731-e07f-4fb2-8802-fd7d2acc8c05 slug=viewer-api/sse digest=e172e979f225 -->
 ### viewer-api: SSE streaming
@@ -1620,7 +1620,7 @@ Canonical specification for `viewer-api::sse` — the server-sent-events
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/54800731-e07f-4fb2-8802-fd7d2acc8c05/spec.toml`
+- ref: `viewer-api/.spec/specs/54800731-e07f-4fb2-8802-fd7d2acc8c05/spec.toml`
 
 <!-- spec-index:entry id=59979a95-a4cb-4aa3-9a79-486b029532a3 slug=viewer-api/server-infra digest=5985515b0c41 -->
 ### viewer-api: server-infra
@@ -1631,7 +1631,7 @@ Canonical specification for the **HTTP server bootstrap** primitives exported
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/59979a95-a4cb-4aa3-9a79-486b029532a3/spec.toml`
+- ref: `viewer-api/.spec/specs/59979a95-a4cb-4aa3-9a79-486b029532a3/spec.toml`
 
 <!-- spec-index:entry id=5f9a1652-943f-4d98-8812-a4f7ca1d5e61 slug=repo-guidance/readmes/viewer-api-adoption digest=adfa4475fac6 -->
 ### viewer-api README schema adoption
@@ -1652,7 +1652,7 @@ Migrate `viewer-api` to the shared README schema and extend its generated child 
 - slug: `viewer-api/recurring-principles`
 - scope: public
 - tags: draft, root, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/spec.toml`
+- ref: `viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/spec.toml`
 
 <!-- spec-index:entry id=7b43dfd1-39aa-4585-b5fe-dc57c6d57eba slug=viewer-api/components/icons-spinner digest=6b80373c006e -->
 ### viewer-api: icons + Spinner
@@ -1663,7 +1663,7 @@ Canonical specification for the shared icon set and `Spinner` Dioxus
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/7b43dfd1-39aa-4585-b5fe-dc57c6d57eba/spec.toml`
+- ref: `viewer-api/.spec/specs/7b43dfd1-39aa-4585-b5fe-dc57c6d57eba/spec.toml`
 
 <!-- spec-index:entry id=88c88341-5f9c-4e59-87c7-9176e4afc26a slug=temp-review-probe digest=f9d34b193f38 -->
 ### temp _(root)_
@@ -1681,7 +1681,7 @@ Canonical specification for the shared `TreeView` Dioxus component
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml`
+- ref: `viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml`
 
 <!-- spec-index:entry id=b06c9df8-2866-433a-af73-ae9b1f4a0f0a slug=viewer-api/tracing digest=888e8ea6d6c4 -->
 ### viewer-api: structured tracing for WASM frontend _(root)_
@@ -1692,7 +1692,7 @@ Specification for replacing ad-hoc `web_sys::console::log_1!()` calls in the
 - scope: public
 - children (1): `viewer-api/tracing/file-sink`
 - tags: draft, root, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml`
+- ref: `viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml`
 
 <!-- spec-index:entry id=b3362691-09a0-4028-8daa-13b4c4102c15 slug=viewer-api/components/layout digest=d2018177e283 -->
 ### viewer-api: layout components
@@ -1703,7 +1703,7 @@ Canonical specification for the shared **page-shell** Dioxus components
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/b3362691-09a0-4028-8daa-13b4c4102c15/spec.toml`
+- ref: `viewer-api/.spec/specs/b3362691-09a0-4028-8daa-13b4c4102c15/spec.toml`
 
 <!-- spec-index:entry id=b748e117-a847-474d-92ee-b58723cee612 slug=viewer-api/dev-proxy digest=70295e90bb1f -->
 ### viewer-api: dev proxy
@@ -1714,7 +1714,7 @@ Canonical specification for `viewer-api::dev_proxy` — the optional
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/b748e117-a847-474d-92ee-b58723cee612/spec.toml`
+- ref: `viewer-api/.spec/specs/b748e117-a847-474d-92ee-b58723cee612/spec.toml`
 
 <!-- spec-index:entry id=baaa35ff-4eb6-4288-b4d3-257311b98aa4 slug=viewer-api/store-primitives digest=4f0bf160fbaa -->
 ### viewer-api: store primitives
@@ -1725,7 +1725,7 @@ Canonical specification for the shared client-side store helpers under
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/baaa35ff-4eb6-4288-b4d3-257311b98aa4/spec.toml`
+- ref: `viewer-api/.spec/specs/baaa35ff-4eb6-4288-b4d3-257311b98aa4/spec.toml`
 
 <!-- spec-index:entry id=bca2c4a5-b39e-4896-91f2-8453a1f4ff60 slug=viewer-api/graph-improvements-generalization digest=ac19c9b20cfc -->
 ### Generalize graph improvements across all memory-viewers _(root)_
@@ -1746,7 +1746,7 @@ Canonical specification for `viewer-api::client_log` — the server endpoint
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/c6e3cc79-a2de-49f1-9c99-effe1b64a873/spec.toml`
+- ref: `viewer-api/.spec/specs/c6e3cc79-a2de-49f1-9c99-effe1b64a873/spec.toml`
 
 <!-- spec-index:entry id=c9b40e5d-1239-4ad6-99b1-0b759a9c4c49 slug=viewer-api/pagination-query digest=d67b72609eff -->
 ### viewer-api: pagination + query helpers
@@ -1757,7 +1757,7 @@ Canonical specification for `viewer-api::pagination` and `viewer-api::query`
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml`
+- ref: `viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml`
 
 <!-- spec-index:entry id=d8c6114b-1188-4bc4-a8fb-dbfd3b1816ee slug=probe digest=81667b44a148 -->
 ### probe _(root)_
@@ -1775,7 +1775,7 @@ Canonical specification for the shared code/file display Dioxus components
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml`
+- ref: `viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml`
 
 <!-- spec-index:entry id=f153483c-f984-4564-94ac-36234b5cbe3f slug=viewer-api/effects/wgpu-overlay digest=fd4c82fa87a8 -->
 ### viewer-api: WebGPU overlay
@@ -1786,7 +1786,7 @@ Canonical specification for the WebGPU overlay subsystem under
 - scope: public
 - parent: `viewer-api/demo-viewer`
 - tags: draft, scope:public, viewer-api
-- ref: `memory-viewers/viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml`
+- ref: `viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml`
 
 ## viewer-ctl
 
@@ -1799,7 +1799,7 @@ A task is an ordered list of shell command invocations. Tasks are the
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml`
+- ref: `viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml`
 
 <!-- spec-index:entry id=351e65fe-0629-4a0f-9c19-27dabb36b72f slug=viewer-ctl/lifecycle/server digest=c8851508c8ab -->
 ### server lifecycle
@@ -1810,7 +1810,7 @@ Servers are long-running Rust binaries that bind a TCP port. viewer-ctl owns
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/351e65fe-0629-4a0f-9c19-27dabb36b72f/spec.toml`
+- ref: `viewer-api/.spec/specs/351e65fe-0629-4a0f-9c19-27dabb36b72f/spec.toml`
 
 <!-- spec-index:entry id=3fa36e9e-b097-4566-90e4-7d5f8053cd55 slug=viewer-ctl/config digest=225fd185aec6 -->
 ### configuration
@@ -1821,7 +1821,7 @@ The component registry that drives viewer-ctl is a single TOML file at the
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/3fa36e9e-b097-4566-90e4-7d5f8053cd55/spec.toml`
+- ref: `viewer-api/.spec/specs/3fa36e9e-b097-4566-90e4-7d5f8053cd55/spec.toml`
 
 <!-- spec-index:entry id=4dafde12-e894-43d7-aa65-cda9a072be27 slug=viewer-ctl/cli digest=c6442bc3f712 -->
 ### command-line interface
@@ -1832,7 +1832,7 @@ The viewer-ctl command-line interface is defined by `clap` in `src/cli.rs`.
 - scope: public
 - parent: `viewer-ctl`
 - tags: draft, scope:public, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/4dafde12-e894-43d7-aa65-cda9a072be27/spec.toml`
+- ref: `viewer-api/.spec/specs/4dafde12-e894-43d7-aa65-cda9a072be27/spec.toml`
 
 <!-- spec-index:entry id=86bb3a01-ef29-4c7b-905b-9582a0d75f40 slug=viewer-ctl/process-management digest=ebea197637c5 -->
 ### process management
@@ -1843,7 +1843,7 @@ viewer-ctl needs to find and terminate processes that occupy a TCP port.
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/86bb3a01-ef29-4c7b-905b-9582a0d75f40/spec.toml`
+- ref: `viewer-api/.spec/specs/86bb3a01-ef29-4c7b-905b-9582a0d75f40/spec.toml`
 
 <!-- spec-index:entry id=afe17aef-793e-419f-93c1-568bf10a2955 slug=viewer-ctl/install-layout digest=c28cc725b08e -->
 ### install layout
@@ -1854,7 +1854,7 @@ viewer-ctl installs three classes of artifacts. The layout is fixed and
 - scope: public
 - parent: `viewer-ctl`
 - tags: draft, scope:public, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml`
+- ref: `viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml`
 
 <!-- spec-index:entry id=b568bb7a-6726-46ac-bb78-fbc1858da4b8 slug=viewer-ctl/lifecycle/extension digest=0fcc6d360373 -->
 ### extension lifecycle
@@ -1865,7 +1865,7 @@ VS Code extensions are TypeScript projects compiled to `out/`. viewer-ctl
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml`
+- ref: `viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml`
 
 <!-- spec-index:entry id=b7ac0b69-ed06-473a-8fbe-0058a769bf40 slug=viewer-ctl digest=b4adbba58493 -->
 ### viewer-ctl _(root)_
@@ -1876,7 +1876,7 @@ VS Code extensions are TypeScript projects compiled to `out/`. viewer-ctl
 - scope: system
 - children (8): `viewer-ctl/lifecycle/task`, `viewer-ctl/lifecycle/server`, `viewer-ctl/config`, `viewer-ctl/cli`, `viewer-ctl/process-management`, `viewer-ctl/install-layout`, `viewer-ctl/lifecycle/extension`, `viewer-ctl/lifecycle/frontend`
 - tags: draft, root, scope:system, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml`
+- ref: `viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml`
 
 <!-- spec-index:entry id=c23166c7-2315-4b89-9160-cde7df3086e6 slug=viewer-ctl/lifecycle/frontend digest=a376da77bec7 -->
 ### frontend lifecycle
@@ -1887,4 +1887,4 @@ Frontends are static-asset bundles produced by `trunk` (Dioxus/WASM) or
 - scope: internal
 - parent: `viewer-ctl`
 - tags: draft, scope:internal, viewer-ctl
-- ref: `memory-viewers/viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml`
+- ref: `viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml`

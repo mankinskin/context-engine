@@ -39,7 +39,7 @@ Authored the canonical contract spec in the memory-api spec store:
 
 - spec id: 08aa283e-34ee-47d4-83bc-4c4311a9c85f
 - slug: ticket-query/expressive-query-and-ordering
-- store path: memory-viewers/memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/
+- store path: memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/
 
 The spec locks: the select -> order -> truncate pipeline; the predicate AST extension (CompareOp = Eq/Contains/Gt/Gte/Lt/Lte/Range/Exists, FieldPath deep addressing); comparison token grammar (key:~, key:>, key:>=, key:<, key:<=, key:[a TO b], key:?); type-aware comparison (temporal/numeric/ordinal-enum/string); null/existence rules; explicit ordering (multi-key lexicographic, direction, deterministic id tie-break); and the composition rule that explicit order is authoritative on list/search but only a secondary tie-breaker after the authoritative workflow comparator on next/board/MCP/HTTP workflow surfaces. Transport-safe canonical string form defined for CLI/MCP/HTTP. Validation matrix defined across parser, storage/search, adapter parity, and workflow composition.
 
@@ -47,10 +47,10 @@ spec health 08aa283e reports 0 issues; spec is searchable in the memory-api stor
 
 # Likely Surfaces
 
-- memory-viewers/memory-api/.spec/
-- memory-viewers/memory-api/crates/memory-api/src/model/query.rs
-- memory-viewers/memory-api/crates/memory-api/src/storage/search.rs
-- memory-viewers/memory-api/crates/ticket-api/
-- memory-viewers/memory-api/tools/cli/ticket-cli/
-- memory-viewers/memory-api/tools/mcp/ticket-mcp/
-- memory-viewers/memory-api/tools/http/ticket-http/
+- memory-api/.spec/
+- memory-api/crates/memory-api/src/model/query.rs
+- memory-api/crates/memory-api/src/storage/search.rs
+- memory-api/crates/ticket-api/
+- memory-api/tools/cli/ticket-cli/
+- memory-api/tools/mcp/ticket-mcp/
+- memory-api/tools/http/ticket-http/

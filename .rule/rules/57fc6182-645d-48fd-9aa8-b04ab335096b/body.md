@@ -9,11 +9,11 @@ agent: "agent"
 
 Create a new rule target from the user's current slash-command request and use the rule-api flow to generate its output.
 
-Reference [rule-cli](../../memory-viewers/memory-api/tools/cli/rule-cli/README.md), [rule-mcp](../../memory-viewers/memory-api/tools/mcp/rule-mcp/README.md), and [rule-targets.yaml](../../rule-targets.yaml).
+Reference [rule-cli](../../memory-api/tools/cli/rule-cli/README.md), [rule-mcp](../../memory-api/tools/mcp/rule-mcp/README.md), and [rule-targets.yaml](../../rule-targets.yaml).
 
 Install or build the rule tools when needed:
 - Build the CLI in this workspace with `cargo build -p rule-cli --bin rule` and use `./target/debug/rule.exe`.
-- Install the CLI onto your Cargo bin path with `cargo install --path memory-viewers/memory-api/tools/cli/rule-cli --bin rule`.
+- Install the CLI onto your Cargo bin path with `cargo install --path memory-api/tools/cli/rule-cli --bin rule`.
 - Run the MCP server with `cargo run -p rule-mcp` when MCP access needs to be configured locally.
 
 Workflow:

@@ -9,7 +9,7 @@ agent: "agent"
 
 Work on the next iteration by following the repository workflow around actionable tickets, focused implementation slices, validation, and evidence tracking.
 
-Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md), [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), and [audit-cli](../../memory-viewers/memory-api/tools/cli/audit-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), and [audit-cli](../../memory-api/tools/cli/audit-cli/README.md).
 
 ## Workflow
 

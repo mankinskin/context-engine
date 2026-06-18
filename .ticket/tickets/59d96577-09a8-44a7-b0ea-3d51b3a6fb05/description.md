@@ -5,7 +5,7 @@ Spec workflows are not root-aware enough across nested `.spec` stores.
 During this session, all meaningful spec work had to be driven through explicit shell context switches and explicit executable/index-root wiring such as:
 
 - repo-root `.spec/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`
 
 Direct MCP spec usage stayed at zero while the session still issued 30 spec CLI commands, which is a strong signal that the current targeting model is too awkward for real multi-root work.
 
@@ -33,7 +33,7 @@ Direct MCP spec usage stayed at zero while the session still issued 30 spec CLI 
 # Regression Validation Requirements
 
 - **Specification / docs:** define spec-root selection semantics and the output fields that describe active scope/root.
-- **CLI:** add integration coverage for repo-root and nested-root invocation, including a nested store like `memory-viewers/memory-api/.spec/`.
+- **CLI:** add integration coverage for repo-root and nested-root invocation, including a nested store like `memory-api/.spec/`.
 - **MCP:** add parity coverage for the same root-targeting semantics.
 - **Frontends / tools:** any spec-viewer or agent-facing spec tooling that loads from nested stores must consume backend root metadata instead of assuming cwd.
 - **Manual validation:** reproduce the May 21 spec flow in both root and nested stores without manual executable-path or cwd spelunking.
@@ -51,5 +51,5 @@ Direct MCP spec usage stayed at zero while the session still issued 30 spec CLI 
 - `tools/spec-cli/`
 - `tools/spec-mcp/`
 - `crates/spec-api/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`
 - `README.md`

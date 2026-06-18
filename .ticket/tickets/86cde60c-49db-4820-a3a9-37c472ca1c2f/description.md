@@ -41,4 +41,4 @@ That made `search` and `next` harder to interpret and forced manual reading of `
 - `crates/ticket-api/`
 - `tools/ticket-cli/`
 - `tools/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
+- `memory-api/.spec/`

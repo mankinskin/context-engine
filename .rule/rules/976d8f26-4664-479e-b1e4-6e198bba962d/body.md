@@ -9,7 +9,7 @@ agent: "agent"
 
 Help the user orient in the current checkout or bootstrap a fresh one without skipping the repository workflow.
 
-Reference [README](../../README.md), [AGENTS](../../AGENTS.md), [rule-cli](../../memory-viewers/memory-api/tools/cli/rule-cli/README.md), [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [audit-cli](../../memory-viewers/memory-api/tools/cli/audit-cli/README.md), and [viewer-ctl](../../memory-viewers/viewer-api/viewer-ctl/README.md).
+Reference [README](../../README.md), [AGENTS](../../AGENTS.md), [rule-cli](../../memory-api/tools/cli/rule-cli/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [audit-cli](../../memory-api/tools/cli/audit-cli/README.md), and [viewer-ctl](../../viewer-api/viewer-ctl/README.md).
 
 ## Workflow
 

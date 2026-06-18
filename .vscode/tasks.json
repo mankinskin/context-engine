@@ -114,7 +114,7 @@
       "type": "shell",
       "command": "npm run compile",
       "options": {
-        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
       },
       "group": "build",
       "presentation": {
@@ -129,7 +129,7 @@
       "command": "npm run watch",
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
       },
       "presentation": {
         "reveal": "silent",

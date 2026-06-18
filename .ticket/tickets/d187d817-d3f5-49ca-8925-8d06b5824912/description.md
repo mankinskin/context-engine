@@ -12,4 +12,4 @@ Validation:
 - passed `rtk cargo test -p spec-cli dispatch_structured_contract_fields_accept_toon_files -- --nocapture`
 - passed `rtk cargo test -p spec-cli --test toon_output init_supports_toon_output -- --nocapture`
 - passed `rtk cargo test -p audit-cli cli_supports_toon_output -- --nocapture`
-- blocked `rtk cargo test -p rule-cli --test toon_output init_supports_toon_output -- --nocapture` due existing upstream `rule-api` compile errors in `memory-viewers/memory-api/crates/rule-api/src/targets.rs` (`expected String, found Option<String>`).
+- blocked `rtk cargo test -p rule-cli --test toon_output init_supports_toon_output -- --nocapture` due existing upstream `rule-api` compile errors in `memory-api/crates/rule-api/src/targets.rs` (`expected String, found Option<String>`).

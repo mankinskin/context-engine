@@ -38,10 +38,10 @@ Without a coordinated contract and validation matrix, each child fix can pass lo
 
 # Likely Surfaces
 
-- `memory-viewers/memory-api/.spec/`
-- `memory-viewers/memory-api/tools/cli/ticket-cli/`
-- `memory-viewers/memory-api/tools/mcp/ticket-mcp/`
+- `memory-api/.spec/`
+- `memory-api/tools/cli/ticket-cli/`
+- `memory-api/tools/mcp/ticket-mcp/`
 - `memory-viewers/ticket-viewer/`
-- `memory-viewers/memory-api/tools/ticket-vscode/`
+- `memory-api/tools/ticket-vscode/`
 - `.agents/instructions/ticket-system.instructions.md`
-- `memory-viewers/memory-api/README.md`
+- `memory-api/README.md`

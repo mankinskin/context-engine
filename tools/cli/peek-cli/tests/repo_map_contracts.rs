@@ -24,7 +24,7 @@ fn repo_map_generation_writes_root_toon_file() {
 resolver = "2"
 members = [
   "tools/cli/peek-cli",
-  "memory-viewers/viewer-api/viewer-api",
+  "viewer-api/viewer-api",
 ]
 "#,
     );
@@ -36,7 +36,7 @@ version = "0.1.0"
 "#,
     );
     write_file(
-        &root.join("memory-viewers/viewer-api/viewer-api/Cargo.toml"),
+        &root.join("viewer-api/viewer-api/Cargo.toml"),
         r#"[package]
 name = "viewer-api"
 version = "0.1.0"
@@ -146,7 +146,7 @@ fn repo_map_toon_text_supports_jq_queries() {
                                 {
                                     "name": "viewer-api",
                                     "kind": "dir",
-                                    "path": "crates/memory-viewers/viewer-api/viewer-api",
+                                    "path": "crates/viewer-api/viewer-api",
                                     "note": "crate=viewer-api"
                                 }
                             ]

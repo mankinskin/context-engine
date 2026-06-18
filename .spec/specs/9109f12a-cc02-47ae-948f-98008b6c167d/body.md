@@ -86,5 +86,5 @@ Because `render_markdown_file` is generic over snippets + config, future structu
 - Depends-on spec: generated-context/thin-generator-architecture (`bf217ce5`)
 - Sibling specs: `generated-context/digest-input-contract`, `generated-context/git-hook-automation`
 - Sidecar ticket: [e7a0ee3c](.ticket/tickets/e7a0ee3c-dc2f-42dd-8c02-5070a747c156/ticket.toml)
-- Shared renderer: `memory-viewers/memory-api/crates/memory-api/src/generated_markdown.rs`
-- Existing consumers: `memory-viewers/memory-api/crates/rule-api/src/render.rs`, `memory-viewers/memory-api/crates/spec-api/src/store.rs`
+- Shared renderer: `memory-api/crates/memory-api/src/generated_markdown.rs`
+- Existing consumers: `memory-api/crates/rule-api/src/render.rs`, `memory-api/crates/spec-api/src/store.rs`

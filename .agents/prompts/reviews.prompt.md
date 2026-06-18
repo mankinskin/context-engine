@@ -9,7 +9,7 @@ agent: "agent"
 
 Use this workflow to review the highest-ranked tickets currently in `in-review`.
 
-Reference [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-viewers/memory-api/tools/mcp/ticket-mcp/README.md), [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), [spec-mcp](../../memory-viewers/memory-api/tools/mcp/spec-mcp/README.md), [audit-cli](../../memory-viewers/memory-api/tools/cli/audit-cli/README.md), and [audit-mcp](../../memory-viewers/memory-api/tools/mcp/audit-mcp/README.md).
+Reference [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [spec-mcp](../../memory-api/tools/mcp/spec-mcp/README.md), [audit-cli](../../memory-api/tools/cli/audit-cli/README.md), and [audit-mcp](../../memory-api/tools/mcp/audit-mcp/README.md).
 
 ## Limit Handling
 

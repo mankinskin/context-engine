@@ -6,7 +6,7 @@ In this repository, relevant tickets lived under multiple ticket roots:
 
 - `.ticket/`
 - `memory-viewers/.ticket/`
-- `memory-viewers/viewer-api/.ticket/`
+- `viewer-api/.ticket/`
 
 Running `ticket board show --json` from the repo root reported a clear board and recommended unrelated work (`crane-cli`) while I was asking for the next tickets for the doc-viewer codebase. The output did not make the active ticket root or scan-root scope obvious, so the command looked authoritative while answering the wrong question.
 
@@ -21,7 +21,7 @@ Running `ticket board show --json` from the repo root reported a clear board and
 # Regression Validation Requirements
 
 - **Specification / docs:** update the canonical next-workflow contract and operator-facing docs to define root discovery, explicit scope selection, and output fields for active scope metadata.
-- **CLI:** add integration coverage for repo-root and nested-root invocation from `.ticket/`, `memory-viewers/.ticket/`, and `memory-viewers/viewer-api/.ticket/`.
+- **CLI:** add integration coverage for repo-root and nested-root invocation from `.ticket/`, `memory-viewers/.ticket/`, and `viewer-api/.ticket/`.
 - **MCP:** add parity coverage so `next_tickets` and related discovery responses expose the same scope semantics.
 - **Frontends:** any ticket-viewer / ticket-vscode next-work surface must display the active scope/root label from backend data rather than reconstructing it client-side.
 - **Manual validation:** include the original doc-viewer scenario, executed from repo root and nested roots, and confirm the selected scope and recommended tickets agree.
@@ -41,5 +41,5 @@ Running `ticket board show --json` from the repo root reported a clear board and
 - `crates/ticket-api/`
 - `tools/ticket-cli/`
 - `tools/ticket-mcp/`
-- `memory-viewers/memory-api/.spec/`
-- `memory-viewers/memory-api/README.md`
+- `memory-api/.spec/`
+- `memory-api/README.md`

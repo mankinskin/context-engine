@@ -6,7 +6,7 @@ so behavior stays consistent as the profiling/bench work changes hot paths.
 
 ## Surfaces
 
-- CLI: `memory-viewers/memory-api/tools/cli/ticket-cli`,
+- CLI: `memory-api/tools/cli/ticket-cli`,
   `tools/cli/spec-cli`.
 - HTTP: `tools/http/ticket-http`, `tools/http/spec-http`.
 - MCP: `tools/mcp/ticket-mcp`, `tools/mcp/spec-mcp`.

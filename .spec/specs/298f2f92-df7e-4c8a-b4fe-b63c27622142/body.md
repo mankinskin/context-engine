@@ -49,8 +49,8 @@ This work builds on the workflow-architecture direction already captured in:
 - [workflow validation metadata and default tool behavior](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md)
 - [workflow documentation validation via doc-api and doc-cli](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md)
 - [cross-store workflow traceability metadata](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md)
-- [doc-api family plan](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/body.md)
-- [spec-api generated documents](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)
+- [doc-api family plan](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/body.md)
+- [spec-api generated documents](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)
 
 It is intentionally compatible with the current file-oriented spec shell in the first slice; the initial change is to the definition and native metadata contract, not necessarily to the markdown file layout.
 

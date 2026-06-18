@@ -20,12 +20,12 @@ Adopt the shared README schema in `viewer-api` and add parent-linked README targ
 
 ## Acceptance Criteria
 
-- `memory-viewers/viewer-api/README.md` uses the shared README schema.
+- `viewer-api/README.md` uses the shared README schema.
 - The in-scope generated child READMEs include parent links to `viewer-api/README.md`.
 - `sync-targets --check` passes from the `viewer-api` workspace root.
 
 ## Validation
 
-- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api explain-target --config memory-viewers/viewer-api/rule-targets.yaml --target viewer-api-readme`
-- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --config memory-viewers/viewer-api/rule-targets.yaml`
-- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --check --config memory-viewers/viewer-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api explain-target --config viewer-api/rule-targets.yaml --target viewer-api-readme`
+- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --config viewer-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --check --config viewer-api/rule-targets.yaml`

@@ -27,8 +27,8 @@ Your job is to commit all pending changes correctly: regenerating generated outp
 
 ## Submodule commit order
 
-1. `memory-viewers/memory-api/` — if dirty
-2. `memory-viewers/viewer-api/` — if dirty
+1. `memory-api/` — if dirty
+2. `viewer-api/` — if dirty
 3. `memory-viewers/` — update pointers for memory-api and viewer-api
 4. `context-stack/` — if dirty (independent path)
 5. root repo — update pointer for memory-viewers and context-stack

@@ -9,7 +9,7 @@ agent: "agent"
 
 Continue the next iteration of work in the same manner as the repository workflow: actionable ticket first, minimal slice second, validation immediately after, and explicit evidence tracking.
 
-Reference [ticket-next](./ticket-next.prompt.md), [ticket-cli](../../memory-viewers/memory-api/tools/cli/ticket-cli/README.md), [spec-cli](../../memory-viewers/memory-api/tools/cli/spec-cli/README.md), and [audit-cli](../../memory-viewers/memory-api/tools/cli/audit-cli/README.md).
+Reference [ticket-next](./ticket-next.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), and [audit-cli](../../memory-api/tools/cli/audit-cli/README.md).
 
 ## Workflow
 

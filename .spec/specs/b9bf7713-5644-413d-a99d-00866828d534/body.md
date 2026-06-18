@@ -41,7 +41,7 @@ This rollout spec coordinates four delivery branches:
 This rollout builds on the nested import and repo-local generation work already captured in:
 
 - [nested rule-target imports and themed fragments](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/47465a64-0c5f-4ddc-8d38-018048090af2/body.md)
-- [memory-api local README generation](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/body.md)
+- [memory-api local README generation](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/body.md)
 
 It does not require the larger `doc-api` family to ship first.
 

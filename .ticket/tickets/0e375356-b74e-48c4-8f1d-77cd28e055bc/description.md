@@ -34,10 +34,10 @@ This implementation should build on the selector specification ticket and align 
 
 # Likely Surfaces
 
-- `memory-viewers/memory-api/crates/ticket-api/`
-- `memory-viewers/memory-api/tools/cli/ticket-cli/`
-- `memory-viewers/memory-api/tools/mcp/ticket-mcp/`
-- `memory-viewers/memory-api/tools/http/ticket-http/`
-- `memory-viewers/memory-api/tools/cli/ticket-cli/tests/`
-- `memory-viewers/memory-api/tools/mcp/ticket-mcp/tests/`
-- `memory-viewers/memory-api/tools/http/ticket-http/src/serve/handlers/workflow.rs`
+- `memory-api/crates/ticket-api/`
+- `memory-api/tools/cli/ticket-cli/`
+- `memory-api/tools/mcp/ticket-mcp/`
+- `memory-api/tools/http/ticket-http/`
+- `memory-api/tools/cli/ticket-cli/tests/`
+- `memory-api/tools/mcp/ticket-mcp/tests/`
+- `memory-api/tools/http/ticket-http/src/serve/handlers/workflow.rs`

@@ -3,7 +3,7 @@
 `peek --grep <pattern>` outputs bare line numbers only, with no preview of the matched line text:
 
 ```
-$ peek memory-viewers/memory-api/crates/memory-api/src/storage/entity_store.rs --grep "pub fn"
+$ peek memory-api/crates/memory-api/src/storage/entity_store.rs --grep "pub fn"
 61
 69
 94

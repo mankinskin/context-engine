@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-import { gotoAndWaitForViewer } from '../../../../../memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared/managed-viewers';
-import { DOC_VIEWER } from '../../../../../memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared/managed-viewers';
+import { gotoAndWaitForViewer } from '../../../../../viewer-api/viewer-api/frontend/dioxus/e2e/shared/managed-viewers';
+import { DOC_VIEWER } from '../../../../../viewer-api/viewer-api/frontend/dioxus/e2e/shared/managed-viewers';
 
 test.describe('doc-viewer generated docs', () => {
   test('loads generated rustdoc HTML from the managed doc-http routes', async ({ page }) => {

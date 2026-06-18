@@ -23,6 +23,6 @@ Make the repository-root README surfaces navigable and consistent enough to iter
 ## Validation
 
 - `rule sync-targets --config memory-viewers/rule-targets.yaml --workspace-root memory-viewers`
-- `rule sync-targets --config memory-viewers/memory-api/rule-targets.yaml --workspace-root memory-viewers/memory-api`
-- `rule sync-targets --config memory-viewers/viewer-api/rule-targets.yaml --workspace-root memory-viewers/viewer-api`
+- `rule sync-targets --config memory-api/rule-targets.yaml --workspace-root memory-viewers/memory-api`
+- `rule sync-targets --config viewer-api/rule-targets.yaml --workspace-root memory-viewers/viewer-api`
 - Manual sanity read of `README.md` and `context-stack/README.md` after editing.

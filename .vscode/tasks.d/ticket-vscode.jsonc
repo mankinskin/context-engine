@@ -2,7 +2,7 @@
 // VS Code Extension — ticket-vscode
 // ──────────────────────────────────────────────────────────────────────────
 // Compile/watch tasks for the TypeScript extension that ships in
-// `memory-viewers/memory-api/tools/ticket-vscode/`. The Extension Host launch config in launch.json
+// `memory-api/tools/ticket-vscode/`. The Extension Host launch config in launch.json
 // uses `ticket-vscode: compile` as its preLaunchTask.
 {
   "tasks": [
@@ -12,7 +12,7 @@
       "type": "shell",
       "command": "npm run compile",
       "options": {
-        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
       },
       "group": "build",
       "presentation": { "reveal": "silent", "panel": "shared" },
@@ -26,7 +26,7 @@
       "command": "npm run watch",
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
       },
       "presentation": {
         "reveal": "silent",
@@ -42,7 +42,7 @@
       "type": "shell",
       "command": "npm run install:vsix",
       "options": {
-        "cwd": "${workspaceFolder}/memory-viewers/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
       },
       "presentation": { "reveal": "always", "panel": "shared" }
     }

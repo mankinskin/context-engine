@@ -29,16 +29,16 @@ tool_names=(
 
 tool_path() {
     case "$1" in
-        viewer-ctl) printf '%s\n' "memory-viewers/viewer-api/viewer-ctl" ;;
+        viewer-ctl) printf '%s\n' "viewer-api/viewer-ctl" ;;
         trunk) printf '%s\n' "" ;;
         doc-viewer) printf '%s\n' "tools/viewer/doc-viewer" ;;
         log-viewer) printf '%s\n' "tools/viewer/log-viewer" ;;
         spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
         ticket-viewer) printf '%s\n' "memory-viewers/ticket-viewer" ;;
-        ticket-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/ticket-cli" ;;
-        spec-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/spec-cli" ;;
-        audit-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/audit-cli" ;;
-        rule-cli) printf '%s\n' "memory-viewers/memory-api/tools/cli/rule-cli" ;;
+        ticket-cli) printf '%s\n' "memory-api/tools/cli/ticket-cli" ;;
+        spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
+        audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
+        rule-cli) printf '%s\n' "memory-api/tools/cli/rule-cli" ;;
         cargo-llvm-cov) printf '%s\n' "" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2

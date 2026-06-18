@@ -25,7 +25,7 @@ Any change to a server interface or to a frontend feature must be verified in an
 End-to-end Playwright suites cover the browser-facing surface:
 
 <!-- spec-api:entry id=f9783545-b05f-415e-bd4d-20c3600244dd slug=context-engine/recurring-principles/browser-validation/browser-validation-contract/tests/l21 -->
-- Shared managed-viewer suites under `memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
+- Shared managed-viewer suites under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
 - Spec-viewer release suite at `memory-viewers/spec-viewer/frontend/dioxus/` (`npm run test:e2e:release`).
 - Ticket-viewer release suite at `memory-viewers/ticket-viewer/frontend/dioxus/` (`npm run test:e2e:release`).
 - Doc-viewer and log-viewer keep local Playwright wrappers under `tools/viewer/doc-viewer/e2e/` and `tools/viewer/log-viewer/e2e/` that import the shared suites.

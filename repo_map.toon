@@ -77,44 +77,44 @@ crates:
           children[2]:
             - name: crates
               kind: dir
-              path: "crates/memory-viewers/memory-api/crates"
+              path: "crates/memory-api/crates"
               children[9]{name,kind,path,note}:
-                "audit-api",dir,"crates/memory-viewers/memory-api/crates/audit-api","crate=audit-api"
-                "doc-api",dir,"crates/memory-viewers/memory-api/crates/doc-api","crate=doc-api"
-                "log-api",dir,"crates/memory-viewers/memory-api/crates/log-api","crate=log-api"
-                "memory-api",dir,"crates/memory-viewers/memory-api/crates/memory-api","crate=memory-api"
-                "rule-api",dir,"crates/memory-viewers/memory-api/crates/rule-api","crate=rule-api"
-                "session-api",dir,"crates/memory-viewers/memory-api/crates/session-api","crate=session-api"
-                "spec-api",dir,"crates/memory-viewers/memory-api/crates/spec-api","crate=spec-api"
-                "test-api",dir,"crates/memory-viewers/memory-api/crates/test-api","crate=test-api"
-                "ticket-api",dir,"crates/memory-viewers/memory-api/crates/ticket-api","crate=ticket-api"
+                "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
+                "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
+                "log-api",dir,"crates/memory-api/crates/log-api","crate=log-api"
+                "memory-api",dir,"crates/memory-api/crates/memory-api","crate=memory-api"
+                "rule-api",dir,"crates/memory-api/crates/rule-api","crate=rule-api"
+                "session-api",dir,"crates/memory-api/crates/session-api","crate=session-api"
+                "spec-api",dir,"crates/memory-api/crates/spec-api","crate=spec-api"
+                "test-api",dir,"crates/memory-api/crates/test-api","crate=test-api"
+                "ticket-api",dir,"crates/memory-api/crates/ticket-api","crate=ticket-api"
             - name: tools
               kind: dir
-              path: "crates/memory-viewers/memory-api/tools"
+              path: "crates/memory-api/tools"
               children[3]:
                 - name: cli
                   kind: dir
-                  path: "crates/memory-viewers/memory-api/tools/cli"
+                  path: "crates/memory-api/tools/cli"
                   children[4]{name,kind,path,note}:
-                    "audit-cli",dir,"crates/memory-viewers/memory-api/tools/cli/audit-cli","crate=audit-cli"
-                    "rule-cli",dir,"crates/memory-viewers/memory-api/tools/cli/rule-cli","crate=rule-cli"
-                    "spec-cli",dir,"crates/memory-viewers/memory-api/tools/cli/spec-cli","crate=spec-cli"
-                    "ticket-cli",dir,"crates/memory-viewers/memory-api/tools/cli/ticket-cli","crate=ticket-cli"
+                    "audit-cli",dir,"crates/memory-api/tools/cli/audit-cli","crate=audit-cli"
+                    "rule-cli",dir,"crates/memory-api/tools/cli/rule-cli","crate=rule-cli"
+                    "spec-cli",dir,"crates/memory-api/tools/cli/spec-cli","crate=spec-cli"
+                    "ticket-cli",dir,"crates/memory-api/tools/cli/ticket-cli","crate=ticket-cli"
                 - name: http
                   kind: dir
-                  path: "crates/memory-viewers/memory-api/tools/http"
+                  path: "crates/memory-api/tools/http"
                   children[3]{name,kind,path,note}:
-                    "doc-http",dir,"crates/memory-viewers/memory-api/tools/http/doc-http","crate=doc-http"
-                    "spec-http",dir,"crates/memory-viewers/memory-api/tools/http/spec-http","crate=spec-http"
-                    "ticket-http",dir,"crates/memory-viewers/memory-api/tools/http/ticket-http","crate=ticket-http"
+                    "doc-http",dir,"crates/memory-api/tools/http/doc-http","crate=doc-http"
+                    "spec-http",dir,"crates/memory-api/tools/http/spec-http","crate=spec-http"
+                    "ticket-http",dir,"crates/memory-api/tools/http/ticket-http","crate=ticket-http"
                 - name: mcp
                   kind: dir
-                  path: "crates/memory-viewers/memory-api/tools/mcp"
+                  path: "crates/memory-api/tools/mcp"
                   children[4]{name,kind,path,note}:
-                    "audit-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
-                    "rule-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
-                    "spec-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
-                    "ticket-mcp",dir,"crates/memory-viewers/memory-api/tools/mcp/ticket-mcp","crate=ticket-mcp"
+                    "audit-mcp",dir,"crates/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
+                    "rule-mcp",dir,"crates/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
+                    "spec-mcp",dir,"crates/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
+                    "ticket-mcp",dir,"crates/memory-api/tools/mcp/ticket-mcp","crate=ticket-mcp"
         - name: "spec-viewer"
           kind: dir
           path: "crates/memory-viewers/spec-viewer"
@@ -141,17 +141,17 @@ crates:
           children[2]:
             - name: "viewer-api"
               kind: dir
-              path: "crates/memory-viewers/viewer-api/viewer-api"
+              path: "crates/viewer-api/viewer-api"
               note: "crate=viewer-api"
               children[1]:
                 - name: frontend
                   kind: dir
-                  path: "crates/memory-viewers/viewer-api/viewer-api/frontend"
+                  path: "crates/viewer-api/viewer-api/frontend"
                   children[1]{name,kind,path,note}:
-                    dioxus,dir,"crates/memory-viewers/viewer-api/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
+                    dioxus,dir,"crates/viewer-api/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
             - name: "viewer-ctl"
               kind: dir
-              path: "crates/memory-viewers/viewer-api/viewer-ctl"
+              path: "crates/viewer-api/viewer-ctl"
               note: "crate=viewer-ctl"
     - name: tools
       kind: dir

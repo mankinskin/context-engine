@@ -29,5 +29,5 @@ Add a repo-level completeness check or audit flow that validates the shared READ
 - `./target/debug/rule.exe sync-targets --check --config rule-targets.yaml --workspace-root .`
 - `./target/debug/rule.exe --workspace-root context-stack sync-targets --check --config context-stack/rule-targets.yaml`
 - `./target/debug/rule.exe --workspace-root memory-viewers sync-targets --check --config memory-viewers/rule-targets.yaml`
-- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --check --config memory-viewers/memory-api/rule-targets.yaml`
-- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --check --config memory-viewers/viewer-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/memory-api sync-targets --check --config memory-api/rule-targets.yaml`
+- `./target/debug/rule.exe --workspace-root memory-viewers/viewer-api sync-targets --check --config viewer-api/rule-targets.yaml`

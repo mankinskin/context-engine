@@ -1,4 +1,4 @@
-The shared Graph3D edge overlay in `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` renders directed-edge arrow markers that are too small to read comfortably in ticket-viewer and other viewer-api graph consumers.
+The shared Graph3D edge overlay in `viewer-api/viewer-api/frontend/dioxus/src/graph3d/mod.rs` renders directed-edge arrow markers that are too small to read comfortably in ticket-viewer and other viewer-api graph consumers.
 
 Acceptance criteria:
 1. Shared Graph3D directed edge arrow tips are visibly larger in the viewer-api graph view and ticket-viewer graph view.

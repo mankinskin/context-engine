@@ -8,7 +8,7 @@ The desired workflow architecture relies on existing memory-system tools being t
 
 # Scope
 
-- add a `memory-viewers/memory-api/tools/cli/doc-cli` crate
+- add a `memory-api/tools/cli/doc-cli` crate
 - expose the core `doc-api` operations needed for documentation inspection and workflow-driven validation
 - keep the CLI thin over `doc-api`
 - support the workflow metadata behaviors needed by the rewritten documentation validation spec

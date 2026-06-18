@@ -131,7 +131,7 @@ The Playwright suites validate that each viewer **actually works in Chromium** â
 no console errors, no missing assets, and the UI renders after hydration.
 
 Shared managed-viewer suites now live under
-`memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared`.
+`viewer-api/viewer-api/frontend/dioxus/e2e/shared`.
 The spec/doc/log entrypoints start their own managed viewer servers through
 `viewer-ctl`; ticket-viewer release coverage remains separate.
 

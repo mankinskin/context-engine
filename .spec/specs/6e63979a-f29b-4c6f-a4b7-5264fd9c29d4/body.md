@@ -18,10 +18,10 @@ Add a compact TOON machine-readable format alongside existing JSON output across
 # Traceability
 - Implementation ticket: [d187d817 Add TOON input and output support](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/d187d817-d3f5-49ca-8925-8d06b5824912/ticket.toml)
 - Updated docs:
-  - [ticket-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/tools/cli/ticket-cli/README.md)
-  - [spec-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/tools/cli/spec-cli/README.md)
-  - [rule-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/tools/cli/rule-cli/README.md)
-  - [audit-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/tools/cli/audit-cli/README.md)
+  - [ticket-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/tools/cli/ticket-cli/README.md)
+  - [spec-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/tools/cli/spec-cli/README.md)
+  - [rule-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/tools/cli/rule-cli/README.md)
+  - [audit-cli README](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/tools/cli/audit-cli/README.md)
   - [repo RTK guidance](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.github/copilot-instructions.md)
 
 # Validation
@@ -36,4 +36,4 @@ Add a compact TOON machine-readable format alongside existing JSON output across
 - ValidationSpec: audit-cli TOON success output for `run`.
 - ValidationExecution: passed `cargo test -p audit-cli cli_supports_toon_output -- --nocapture`.
 - ValidationSpec: rule-cli TOON success output for `init`.
-- ValidationExecution: blocked `cargo test -p rule-cli --test toon_output init_supports_toon_output -- --nocapture` by pre-existing compile errors in `memory-viewers/memory-api/crates/rule-api/src/targets.rs` (`Option<String>` vs `String` mismatches at lines 409, 410, 422, 472, and 473).
+- ValidationExecution: blocked `cargo test -p rule-cli --test toon_output init_supports_toon_output -- --nocapture` by pre-existing compile errors in `memory-api/crates/rule-api/src/targets.rs` (`Option<String>` vs `String` mismatches at lines 409, 410, 422, 472, and 473).

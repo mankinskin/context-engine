@@ -9,8 +9,8 @@ The pre-commit hook at `.githooks/pre-commit` runs automatically when `git confi
 | `.vscode/tasks.json`, `.vscode/tasks.d/*.jsonc` | Regenerate tasks from part-files; reject drift |
 | `rule-targets.yaml`, `.rule/**`, `AGENTS.md`, `.github/copilot-instructions.md`, `.agents/instructions/*.instructions.md` | `rule sync-targets --config rule-targets.yaml --check` |
 | `memory-viewers/rule-targets.yaml`, `memory-viewers/.rule/**`, `memory-viewers/README.md` | `rule sync-targets --config memory-viewers/rule-targets.yaml --check` |
-| `memory-viewers/memory-api/rule-targets.yaml`, `memory-viewers/memory-api/.rule/**`, `memory-viewers/memory-api/README.md` | `rule sync-targets --config memory-viewers/memory-api/rule-targets.yaml --check` |
-| `memory-viewers/viewer-api/rule-targets.yaml`, `memory-viewers/viewer-api/.rule/**`, `memory-viewers/viewer-api/README.md` | `rule sync-targets --config memory-viewers/viewer-api/rule-targets.yaml --check` |
+| `memory-api/rule-targets.yaml`, `memory-api/.rule/**`, `memory-api/README.md` | `rule sync-targets --config memory-api/rule-targets.yaml --check` |
+| `viewer-api/rule-targets.yaml`, `viewer-api/.rule/**`, `viewer-api/README.md` | `rule sync-targets --config viewer-api/rule-targets.yaml --check` |
 
 ### Resolving pre-commit failures
 

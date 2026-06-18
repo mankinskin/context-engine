@@ -30,8 +30,8 @@ context-stack child READMEs:
 
 memory-viewers child READMEs:
 
-- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md)
-- [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md)
+- [memory-api/README.md](memory-api/README.md)
+- [viewer-api/README.md](viewer-api/README.md)
 
 ## Installable Tools
 
@@ -41,11 +41,11 @@ The companion installer in [install-deps.sh](install-deps.sh) installs repo-wide
 
 The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:
 
-- [memory-viewers/memory-api/tools/ticket-vscode/package.json](memory-viewers/memory-api/tools/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
+- [memory-api/tools/ticket-vscode/package.json](memory-api/tools/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
 
 - [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
-- [memory-viewers/viewer-api/README.md](memory-viewers/viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
-- [memory-viewers/memory-api/README.md](memory-viewers/memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
+- [viewer-api/README.md](viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
+- [memory-api/README.md](memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
 - [tools/viewer/doc-viewer/README.md](tools/viewer/doc-viewer/README.md) covers the `doc-viewer` binary.
 - [tools/viewer/log-viewer/README.md](tools/viewer/log-viewer/README.md) covers the `log-viewer` binary.
 

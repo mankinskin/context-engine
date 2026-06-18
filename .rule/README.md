@@ -571,9 +571,9 @@ Any change to a server interface or to a frontend feature must be verified in an
 - ref: `.rule/rules/ef02dffa-16e2-42ec-9ea1-8494cbf63a33/rule.toml`
 
 <!-- rule-catalog:entry id=f9783545-b05f-415e-bd4d-20c3600244dd slug=context-engine/recurring-principles/browser-validation/browser-validation-contract/tests/l21 digest=59765738f45c -->
-### Shared managed-viewer suites under `memory-viewers/viewer-api/viewer-api/fronten
+### Shared managed-viewer suites under `viewer-api/viewer-api/fronten
 
-Shared managed-viewer suites under `memory-viewers/viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
+Shared managed-viewer suites under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
 
 - slug: `context-engine/recurring-principles/browser-validation/browser-validation-contract/tests/l21`
 - section: `browser-validation-contract/tests`
@@ -866,7 +866,7 @@ Your Objective:
 - slug: `memory-api/agents/roast/roast-agent/l3`
 - section: `roast-agent`
 - tags: agents, draft, memory-api, roast, roast-agent
-- ref: `memory-viewers/memory-api/.rule/rules/2339c389-a63b-4134-b5ac-856ef1628cc0/rule.toml`
+- ref: `memory-api/.rule/rules/2339c389-a63b-4134-b5ac-856ef1628cc0/rule.toml`
 
 <!-- rule-catalog:entry id=30dc5130-aba3-422b-a4a2-7e2dbd9e0463 slug=memory-api/agents/ticket-refinement/scope/required-workflow/l36 digest=0dbd96d4ab5f -->
 ### 2. Clarify with interview questions
@@ -876,7 +876,7 @@ Your Objective:
 - slug: `memory-api/agents/ticket-refinement/scope/required-workflow/l36`
 - section: `scope/required-workflow`
 - tags: agents, draft, memory-api, required-workflow, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/30dc5130-aba3-422b-a4a2-7e2dbd9e0463/rule.toml`
+- ref: `memory-api/.rule/rules/30dc5130-aba3-422b-a4a2-7e2dbd9e0463/rule.toml`
 
 <!-- rule-catalog:entry id=3bf63d3d-ce03-414d-960a-181fb1a3b38d slug=memory-api/agents/ticket-refinement/scope/output-format/validation/l71 digest=6e5a8bb645c6 -->
 ### Validation
@@ -886,7 +886,7 @@ State transition checks:
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/validation/l71`
 - section: `scope/output-format/validation`
 - tags: agents, draft, memory-api, output-format, scope, ticket-refinement, validation
-- ref: `memory-viewers/memory-api/.rule/rules/3bf63d3d-ce03-414d-960a-181fb1a3b38d/rule.toml`
+- ref: `memory-api/.rule/rules/3bf63d3d-ce03-414d-960a-181fb1a3b38d/rule.toml`
 
 <!-- rule-catalog:entry id=48f9c5b2-f999-4e8c-bed0-481801f4f644 slug=memory-api/agents/ticket-refinement/scope/required-workflow/l45 digest=f48f2770cb03 -->
 ### 4. Plan execution
@@ -896,7 +896,7 @@ State transition checks:
 - slug: `memory-api/agents/ticket-refinement/scope/required-workflow/l45`
 - section: `scope/required-workflow`
 - tags: agents, draft, memory-api, required-workflow, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/48f9c5b2-f999-4e8c-bed0-481801f4f644/rule.toml`
+- ref: `memory-api/.rule/rules/48f9c5b2-f999-4e8c-bed0-481801f4f644/rule.toml`
 
 <!-- rule-catalog:entry id=519b9564-93be-4c7a-9bcd-a51f6014b932 slug=memory-api/agents/roast/roast-agent/l13 digest=97e86fef6c2f -->
 ### Sharp-witted, hilarious, and completely irreverent.
@@ -906,7 +906,7 @@ Sharp-witted, hilarious, and completely irreverent.
 - slug: `memory-api/agents/roast/roast-agent/l13`
 - section: `roast-agent`
 - tags: agents, draft, memory-api, roast, roast-agent
-- ref: `memory-viewers/memory-api/.rule/rules/519b9564-93be-4c7a-9bcd-a51f6014b932/rule.toml`
+- ref: `memory-api/.rule/rules/519b9564-93be-4c7a-9bcd-a51f6014b932/rule.toml`
 
 <!-- rule-catalog:entry id=5335cbfb-c529-4e25-b41c-90105d07b326 slug=memory-api/agents/ticket-refinement/scope/required-workflow/l40 digest=6df9716ffca4 -->
 ### 3. Create or update tickets
@@ -916,7 +916,7 @@ Sharp-witted, hilarious, and completely irreverent.
 - slug: `memory-api/agents/ticket-refinement/scope/required-workflow/l40`
 - section: `scope/required-workflow`
 - tags: agents, draft, memory-api, required-workflow, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/5335cbfb-c529-4e25-b41c-90105d07b326/rule.toml`
+- ref: `memory-api/.rule/rules/5335cbfb-c529-4e25-b41c-90105d07b326/rule.toml`
 
 <!-- rule-catalog:entry id=536bea1a-add3-484e-b6b3-ca74c6c5680f slug=memory-api/agents/ticket-refinement/scope/output-format/interview-findings/l63 digest=57ad318c190d -->
 ### Interview Findings
@@ -926,7 +926,7 @@ Confirmed requirements:
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/interview-findings/l63`
 - section: `scope/output-format/interview-findings`
 - tags: agents, draft, interview-findings, memory-api, output-format, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/536bea1a-add3-484e-b6b3-ca74c6c5680f/rule.toml`
+- ref: `memory-api/.rule/rules/536bea1a-add3-484e-b6b3-ca74c6c5680f/rule.toml`
 
 <!-- rule-catalog:entry id=554241c0-9f79-4a85-82c2-90119a8100cb slug=memory-api/agents/ticket-refinement/scope/l13 digest=0b3dca8c9728 -->
 ### Scope
@@ -936,7 +936,7 @@ Create new tickets from issues or requested work.
 - slug: `memory-api/agents/ticket-refinement/scope/l13`
 - section: `scope`
 - tags: agents, draft, memory-api, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/554241c0-9f79-4a85-82c2-90119a8100cb/rule.toml`
+- ref: `memory-api/.rule/rules/554241c0-9f79-4a85-82c2-90119a8100cb/rule.toml`
 
 <!-- rule-catalog:entry id=5c3a6a76-a93a-4657-8d8a-51732ba18abc slug=memory-api/agents/ticket-refinement/scope/required-workflow/l28 digest=f61811407ce5 -->
 ### Required Workflow
@@ -946,7 +946,7 @@ Create new tickets from issues or requested work.
 - slug: `memory-api/agents/ticket-refinement/scope/required-workflow/l28`
 - section: `scope/required-workflow`
 - tags: agents, draft, memory-api, required-workflow, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/5c3a6a76-a93a-4657-8d8a-51732ba18abc/rule.toml`
+- ref: `memory-api/.rule/rules/5c3a6a76-a93a-4657-8d8a-51732ba18abc/rule.toml`
 
 <!-- rule-catalog:entry id=5c8a7820-fddd-4c04-bd76-4d551b9cd7ab slug=memory-api/agents/ticket-refinement/scope/output-format/ticket-actions/l58 digest=948eeb9acf70 -->
 ### Ticket Actions
@@ -956,7 +956,7 @@ Created:
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/ticket-actions/l58`
 - section: `scope/output-format/ticket-actions`
 - tags: agents, draft, memory-api, output-format, scope, ticket-actions, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/5c8a7820-fddd-4c04-bd76-4d551b9cd7ab/rule.toml`
+- ref: `memory-api/.rule/rules/5c8a7820-fddd-4c04-bd76-4d551b9cd7ab/rule.toml`
 
 <!-- rule-catalog:entry id=7954b0c9-59d4-430a-a665-dd57f9f61f64 slug=memory-api/agents/roast/roast-agent/l11 digest=bade4b2d35d7 -->
 ### The Tone:
@@ -966,7 +966,7 @@ The Tone:
 - slug: `memory-api/agents/roast/roast-agent/l11`
 - section: `roast-agent`
 - tags: agents, draft, memory-api, roast, roast-agent
-- ref: `memory-viewers/memory-api/.rule/rules/7954b0c9-59d4-430a-a665-dd57f9f61f64/rule.toml`
+- ref: `memory-api/.rule/rules/7954b0c9-59d4-430a-a665-dd57f9f61f64/rule.toml`
 
 <!-- rule-catalog:entry id=81631329-566a-4a5f-81dc-54b54b7fe2d2 slug=memory-api/agents/roast/roast-agent/l5 digest=789559127583 -->
 ### Mock unnecessarily complex logic and over-engineering.
@@ -976,7 +976,7 @@ Mock unnecessarily complex logic and over-engineering.
 - slug: `memory-api/agents/roast/roast-agent/l5`
 - section: `roast-agent`
 - tags: agents, draft, memory-api, roast, roast-agent
-- ref: `memory-viewers/memory-api/.rule/rules/81631329-566a-4a5f-81dc-54b54b7fe2d2/rule.toml`
+- ref: `memory-api/.rule/rules/81631329-566a-4a5f-81dc-54b54b7fe2d2/rule.toml`
 
 <!-- rule-catalog:entry id=89026c44-0e5c-41ce-bcb5-2bc8baf539c6 slug=memory-api/agents/ticket-refinement/scope/constraints/l20 digest=de75f20f5cb3 -->
 ### Constraints
@@ -986,7 +986,7 @@ Do not implement code changes unless explicitly asked.
 - slug: `memory-api/agents/ticket-refinement/scope/constraints/l20`
 - section: `scope/constraints`
 - tags: agents, constraints, draft, memory-api, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/89026c44-0e5c-41ce-bcb5-2bc8baf539c6/rule.toml`
+- ref: `memory-api/.rule/rules/89026c44-0e5c-41ce-bcb5-2bc8baf539c6/rule.toml`
 
 <!-- rule-catalog:entry id=9b8874fd-8de7-4637-8705-a3cf961bd801 slug=memory-api/agents/ticket-refinement/scope/output-format/plan/l67 digest=df7072a9da9a -->
 ### Plan
@@ -996,7 +996,7 @@ Implementation steps:
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/plan/l67`
 - section: `scope/output-format/plan`
 - tags: agents, draft, memory-api, output-format, plan, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/9b8874fd-8de7-4637-8705-a3cf961bd801/rule.toml`
+- ref: `memory-api/.rule/rules/9b8874fd-8de7-4637-8705-a3cf961bd801/rule.toml`
 
 <!-- rule-catalog:entry id=9fdda8b3-3c67-4091-9cc8-2fe7e7eeb811 slug=memory-api/agents/roast/roast-agent/l1 digest=9be01a4a8786 -->
 ### You are an elitist, hyper-cynical Senior Software Architect with a black belt in
@@ -1006,7 +1006,7 @@ You are an elitist, hyper-cynical Senior Software Architect with a black belt in
 - slug: `memory-api/agents/roast/roast-agent/l1`
 - section: `roast-agent`
 - tags: agents, draft, memory-api, roast, roast-agent
-- ref: `memory-viewers/memory-api/.rule/rules/9fdda8b3-3c67-4091-9cc8-2fe7e7eeb811/rule.toml`
+- ref: `memory-api/.rule/rules/9fdda8b3-3c67-4091-9cc8-2fe7e7eeb811/rule.toml`
 
 <!-- rule-catalog:entry id=a63b6987-bdf1-44e1-be66-c60d8fba52e6 slug=memory-api/agents/ticket-refinement/scope/required-workflow/l49 digest=879d751e282b -->
 ### 5. Validate consistency
@@ -1016,7 +1016,7 @@ You are an elitist, hyper-cynical Senior Software Architect with a black belt in
 - slug: `memory-api/agents/ticket-refinement/scope/required-workflow/l49`
 - section: `scope/required-workflow`
 - tags: agents, draft, memory-api, required-workflow, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/a63b6987-bdf1-44e1-be66-c60d8fba52e6/rule.toml`
+- ref: `memory-api/.rule/rules/a63b6987-bdf1-44e1-be66-c60d8fba52e6/rule.toml`
 
 <!-- rule-catalog:entry id=ba8e789e-d830-474e-bcb5-2387a665c7b4 slug=memory-api/agents/ticket-refinement/ticket-refinement-agent/l11 digest=77121d689619 -->
 ### Your job is to create high-quality tickets, review existing tickets, and update 
@@ -1026,7 +1026,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - slug: `memory-api/agents/ticket-refinement/ticket-refinement-agent/l11`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, memory-api, ticket-refinement, ticket-refinement-agent
-- ref: `memory-viewers/memory-api/.rule/rules/ba8e789e-d830-474e-bcb5-2387a665c7b4/rule.toml`
+- ref: `memory-api/.rule/rules/ba8e789e-d830-474e-bcb5-2387a665c7b4/rule.toml`
 
 <!-- rule-catalog:entry id=c8fa816c-44a9-4679-8416-869005475d9b slug=memory-api/agents/ticket-refinement/scope/output-format/l54 digest=f65b0d70c76f -->
 ### Output Format
@@ -1036,7 +1036,7 @@ Return a structured refinement report:
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/l54`
 - section: `scope/output-format`
 - tags: agents, draft, memory-api, output-format, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/c8fa816c-44a9-4679-8416-869005475d9b/rule.toml`
+- ref: `memory-api/.rule/rules/c8fa816c-44a9-4679-8416-869005475d9b/rule.toml`
 
 <!-- rule-catalog:entry id=cf6556a2-1451-46f4-91f6-cc1392279841 slug=memory-api/agents/ticket-refinement/ticket-refinement-agent/l1 digest=f1d777196406 -->
 ### memory-api/agents/ticket-refinement/ticket-refinement-agent/l1
@@ -1046,7 +1046,7 @@ name: "Ticket Refinement Agent"
 - slug: `memory-api/agents/ticket-refinement/ticket-refinement-agent/l1`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, memory-api, ticket-refinement, ticket-refinement-agent
-- ref: `memory-viewers/memory-api/.rule/rules/cf6556a2-1451-46f4-91f6-cc1392279841/rule.toml`
+- ref: `memory-api/.rule/rules/cf6556a2-1451-46f4-91f6-cc1392279841/rule.toml`
 
 <!-- rule-catalog:entry id=e35670c9-fb3a-47e2-9c4c-174c6d52eb5d slug=memory-api/agents/ticket-refinement/scope/output-format/next-recommended-action/l76 digest=3f86f0039315 -->
 ### Next Recommended Action
@@ -1056,7 +1056,7 @@ Single next step for the user/assignee.
 - slug: `memory-api/agents/ticket-refinement/scope/output-format/next-recommended-action/l76`
 - section: `scope/output-format/next-recommended-action`
 - tags: agents, draft, memory-api, next-recommended-action, output-format, scope, ticket-refinement
-- ref: `memory-viewers/memory-api/.rule/rules/e35670c9-fb3a-47e2-9c4c-174c6d52eb5d/rule.toml`
+- ref: `memory-api/.rule/rules/e35670c9-fb3a-47e2-9c4c-174c6d52eb5d/rule.toml`
 
 <!-- rule-catalog:entry id=ef0d615d-f894-4002-83db-2527ca54fc66 slug=memory-api/agents/ticket-refinement/ticket-refinement-agent/l9 digest=277c44a1a14b -->
 ### You are a ticket refinement specialist for the context-engine ticket system.
@@ -1066,7 +1066,7 @@ You are a ticket refinement specialist for the context-engine ticket system.
 - slug: `memory-api/agents/ticket-refinement/ticket-refinement-agent/l9`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, memory-api, ticket-refinement, ticket-refinement-agent
-- ref: `memory-viewers/memory-api/.rule/rules/ef0d615d-f894-4002-83db-2527ca54fc66/rule.toml`
+- ref: `memory-api/.rule/rules/ef0d615d-f894-4002-83db-2527ca54fc66/rule.toml`
 
 ## memory-api/readme
 
@@ -1078,7 +1078,7 @@ CLI interface for `audit-api`.
 - slug: `memory-api/readme/tools/cli/audit-cli/l1`
 - section: `tools/cli/audit-cli/readme`
 - tags: audit-cli, cli, draft, memory-api, readme, tools
-- ref: `memory-viewers/memory-api/.rule/rules/011df0af-b945-434a-b681-a3949de76ec0/rule.toml`
+- ref: `memory-api/.rule/rules/011df0af-b945-434a-b681-a3949de76ec0/rule.toml`
 
 <!-- rule-catalog:entry id=3525d8dd-0fd9-4af2-bd43-480fa58ea3cd slug=memory-api/readme/tools/mcp/ticket-mcp/l1 digest=cda1408421df -->
 ### ticket-mcp
@@ -1089,7 +1089,7 @@ MCP server for `ticket-api`.
 - section: `tools/mcp/ticket-mcp/readme`
 - tags: draft, mcp, memory-api, readme, ticket-mcp, tools
 - feedback: helpful 1 / mixed 0 / not-helpful 0
-- ref: `memory-viewers/memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/rule.toml`
+- ref: `memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/rule.toml`
 
 <!-- rule-catalog:entry id=4a232bc0-bd5c-4930-b005-e939669f90d2 slug=memory-api/readme/memory-api/usage-guide/l11 digest=cde1ded12b8a -->
 ### Usage Guide
@@ -1099,7 +1099,7 @@ flowchart LR
 - slug: `memory-api/readme/memory-api/usage-guide/l11`
 - section: `memory-api/usage-guide`
 - tags: draft, memory-api, readme, usage-guide
-- ref: `memory-viewers/memory-api/.rule/rules/4a232bc0-bd5c-4930-b005-e939669f90d2/rule.toml`
+- ref: `memory-api/.rule/rules/4a232bc0-bd5c-4930-b005-e939669f90d2/rule.toml`
 
 <!-- rule-catalog:entry id=63c7a664-ba17-478a-8fd8-32b325c64ad1 slug=memory-api/readme/tools/mcp/audit-mcp/l1 digest=be5507538414 -->
 ### audit-mcp
@@ -1109,7 +1109,7 @@ MCP server for `audit-api`.
 - slug: `memory-api/readme/tools/mcp/audit-mcp/l1`
 - section: `tools/mcp/audit-mcp/readme`
 - tags: audit-mcp, draft, mcp, memory-api, readme, tools
-- ref: `memory-viewers/memory-api/.rule/rules/63c7a664-ba17-478a-8fd8-32b325c64ad1/rule.toml`
+- ref: `memory-api/.rule/rules/63c7a664-ba17-478a-8fd8-32b325c64ad1/rule.toml`
 
 <!-- rule-catalog:entry id=71ffe450-aad5-4c26-af4f-d5d4cfcd8d8f slug=memory-api/readme/tools/cli/ticket-cli/l1 digest=fc8d9cb049bd -->
 ### ticket-cli
@@ -1119,7 +1119,7 @@ CLI interface for `ticket-api`.
 - slug: `memory-api/readme/tools/cli/ticket-cli/l1`
 - section: `tools/cli/ticket-cli/readme`
 - tags: cli, draft, memory-api, readme, ticket-cli, tools
-- ref: `memory-viewers/memory-api/.rule/rules/71ffe450-aad5-4c26-af4f-d5d4cfcd8d8f/rule.toml`
+- ref: `memory-api/.rule/rules/71ffe450-aad5-4c26-af4f-d5d4cfcd8d8f/rule.toml`
 
 <!-- rule-catalog:entry id=778633a4-db2b-4624-b295-5ea87b47363d slug=memory-api/readme/tools/http/ticket-http/l1 digest=bada9420b242 -->
 ### ticket-http
@@ -1129,7 +1129,7 @@ HTTP interface for `ticket-api`.
 - slug: `memory-api/readme/tools/http/ticket-http/l1`
 - section: `tools/http/ticket-http/readme`
 - tags: draft, http, memory-api, readme, ticket-http, tools
-- ref: `memory-viewers/memory-api/.rule/rules/778633a4-db2b-4624-b295-5ea87b47363d/rule.toml`
+- ref: `memory-api/.rule/rules/778633a4-db2b-4624-b295-5ea87b47363d/rule.toml`
 
 <!-- rule-catalog:entry id=7bc8b184-2c17-4c90-a616-0a1e1d066cee slug=memory-api/readme/memory-api/user-stories/l5 digest=44d3db793c19 -->
 ### User Stories
@@ -1139,7 +1139,7 @@ The current repository visual below summarizes the main memory-api tool and crat
 - slug: `memory-api/readme/memory-api/user-stories/l5`
 - section: `memory-api/user-stories`
 - tags: draft, memory-api, readme, user-stories
-- ref: `memory-viewers/memory-api/.rule/rules/7bc8b184-2c17-4c90-a616-0a1e1d066cee/rule.toml`
+- ref: `memory-api/.rule/rules/7bc8b184-2c17-4c90-a616-0a1e1d066cee/rule.toml`
 
 <!-- rule-catalog:entry id=84278ede-0aaa-4382-83db-e6ee5d80106c slug=memory-api/readme/memory-api/crate-groups/l18 digest=4e1b56f1da36 -->
 ### Crate Groups
@@ -1149,7 +1149,7 @@ From the `context-engine` repo root, the shared installer can run the same four 
 - slug: `memory-api/readme/memory-api/crate-groups/l18`
 - section: `memory-api/crate-groups`
 - tags: crate-groups, draft, memory-api, readme
-- ref: `memory-viewers/memory-api/.rule/rules/84278ede-0aaa-4382-83db-e6ee5d80106c/rule.toml`
+- ref: `memory-api/.rule/rules/84278ede-0aaa-4382-83db-e6ee5d80106c/rule.toml`
 
 <!-- rule-catalog:entry id=986d5653-8f63-44bd-9ee0-ad917d06bd74 slug=memory-api/readme/tools/http/spec-http/l1 digest=0a51cf37aefe -->
 ### spec-http
@@ -1159,7 +1159,7 @@ HTTP interface for `spec-api`.
 - slug: `memory-api/readme/tools/http/spec-http/l1`
 - section: `tools/http/spec-http/readme`
 - tags: draft, http, memory-api, readme, spec-http, tools
-- ref: `memory-viewers/memory-api/.rule/rules/986d5653-8f63-44bd-9ee0-ad917d06bd74/rule.toml`
+- ref: `memory-api/.rule/rules/986d5653-8f63-44bd-9ee0-ad917d06bd74/rule.toml`
 
 <!-- rule-catalog:entry id=b841bfc7-f180-459c-8a5f-b182710cd4ec slug=memory-api/readme/tools/cli/rule-cli/l1 digest=d65f89307fbf -->
 ### rule-cli
@@ -1169,7 +1169,7 @@ CLI interface for `rule-api`.
 - slug: `memory-api/readme/tools/cli/rule-cli/l1`
 - section: `tools/cli/rule-cli/readme`
 - tags: cli, draft, memory-api, readme, rule-cli, tools
-- ref: `memory-viewers/memory-api/.rule/rules/b841bfc7-f180-459c-8a5f-b182710cd4ec/rule.toml`
+- ref: `memory-api/.rule/rules/b841bfc7-f180-459c-8a5f-b182710cd4ec/rule.toml`
 
 <!-- rule-catalog:entry id=b8535c8a-4097-4042-8f2a-745123d269ee slug=memory-api/readme/tools/parent-readme/l1 digest=abfc48ae9d96 -->
 ### Parent README
@@ -1179,7 +1179,7 @@ Back to [memory-api/README.md](../../../README.md).
 - slug: `memory-api/readme/tools/parent-readme/l1`
 - section: `tools/readme/parent-readme`
 - tags: draft, memory-api, parent-readme, readme, tools
-- ref: `memory-viewers/memory-api/.rule/rules/b8535c8a-4097-4042-8f2a-745123d269ee/rule.toml`
+- ref: `memory-api/.rule/rules/b8535c8a-4097-4042-8f2a-745123d269ee/rule.toml`
 
 <!-- rule-catalog:entry id=df2d4ede-7992-4ae0-9ca5-8afc654bbdd0 slug=memory-api/readme/tools/cli/spec-cli/l1 digest=c7ac8c7e8b67 -->
 ### spec-cli
@@ -1189,7 +1189,7 @@ CLI interface for `spec-api`.
 - slug: `memory-api/readme/tools/cli/spec-cli/l1`
 - section: `tools/cli/spec-cli/readme`
 - tags: cli, draft, memory-api, readme, spec-cli, tools
-- ref: `memory-viewers/memory-api/.rule/rules/df2d4ede-7992-4ae0-9ca5-8afc654bbdd0/rule.toml`
+- ref: `memory-api/.rule/rules/df2d4ede-7992-4ae0-9ca5-8afc654bbdd0/rule.toml`
 
 <!-- rule-catalog:entry id=df860347-773a-4489-b37e-b110000b09d7 slug=memory-api/readme/tools/mcp/spec-mcp/l1 digest=3773cfb0808e -->
 ### spec-mcp
@@ -1199,7 +1199,7 @@ MCP server for `spec-api`.
 - slug: `memory-api/readme/tools/mcp/spec-mcp/l1`
 - section: `tools/mcp/spec-mcp/readme`
 - tags: draft, mcp, memory-api, readme, spec-mcp, tools
-- ref: `memory-viewers/memory-api/.rule/rules/df860347-773a-4489-b37e-b110000b09d7/rule.toml`
+- ref: `memory-api/.rule/rules/df860347-773a-4489-b37e-b110000b09d7/rule.toml`
 
 <!-- rule-catalog:entry id=e78d2627-7daf-464d-8ae7-786677823b4d slug=memory-api/readme/memory-api/tooling-and-validation/l26 digest=9f3b24251ea0 -->
 ### Tooling and Validation
@@ -1209,7 +1209,7 @@ Favor the nearest executable check for the surface you are changing.
 - slug: `memory-api/readme/memory-api/tooling-and-validation/l26`
 - section: `memory-api/tooling-and-validation`
 - tags: draft, memory-api, readme, tooling-and-validation
-- ref: `memory-viewers/memory-api/.rule/rules/e78d2627-7daf-464d-8ae7-786677823b4d/rule.toml`
+- ref: `memory-api/.rule/rules/e78d2627-7daf-464d-8ae7-786677823b4d/rule.toml`
 
 <!-- rule-catalog:entry id=e87ee013-86d4-4819-ac79-b76442ee11c8 slug=memory-api/readme/tools/mcp/rule-mcp/l1 digest=1de61a7dee7c -->
 ### rule-mcp
@@ -1219,7 +1219,7 @@ MCP server for `rule-api`.
 - slug: `memory-api/readme/tools/mcp/rule-mcp/l1`
 - section: `tools/mcp/rule-mcp/readme`
 - tags: draft, mcp, memory-api, readme, rule-mcp, tools
-- ref: `memory-viewers/memory-api/.rule/rules/e87ee013-86d4-4819-ac79-b76442ee11c8/rule.toml`
+- ref: `memory-api/.rule/rules/e87ee013-86d4-4819-ac79-b76442ee11c8/rule.toml`
 
 <!-- rule-catalog:entry id=eaa176c7-4d98-4f0f-aea6-97ab1a2f72a4 slug=memory-api/readme/memory-api/l1 digest=9354ef9c30d2 -->
 ### memory-api
@@ -1229,7 +1229,7 @@ memory-api is the repository that exposes the core crates and operator surfaces 
 - slug: `memory-api/readme/memory-api/l1`
 - section: `memory-api`
 - tags: draft, memory-api, readme
-- ref: `memory-viewers/memory-api/.rule/rules/eaa176c7-4d98-4f0f-aea6-97ab1a2f72a4/rule.toml`
+- ref: `memory-api/.rule/rules/eaa176c7-4d98-4f0f-aea6-97ab1a2f72a4/rule.toml`
 
 <!-- rule-catalog:entry id=ef3bb49c-2d6d-4a2b-9b22-c0fe9d9a63d1 slug=memory-api/readme/memory-api/workspace-summary/l33 digest=cf90d4c52950 -->
 ### Workspace Summary
@@ -1239,7 +1239,7 @@ memory-api is the repository that owns the shared storage foundation and the ope
 - slug: `memory-api/readme/memory-api/workspace-summary/l33`
 - section: `memory-api/workspace-summary`
 - tags: draft, memory-api, readme, workspace-summary
-- ref: `memory-viewers/memory-api/.rule/rules/ef3bb49c-2d6d-4a2b-9b22-c0fe9d9a63d1/rule.toml`
+- ref: `memory-api/.rule/rules/ef3bb49c-2d6d-4a2b-9b22-c0fe9d9a63d1/rule.toml`
 
 ## memory-api/recurring-principles
 
@@ -1251,7 +1251,7 @@ Adding fields is allowed.
 - slug: `memory-api/recurring-principles/json-machine-surface/json-machine-surface/stability/l19`
 - section: `json-machine-surface/stability`
 - tags: draft, json-machine-surface, memory-api, recurring-principles, stability
-- ref: `memory-viewers/memory-api/.rule/rules/04879e9c-aa58-4c55-a4cd-f01676403f2c/rule.toml`
+- ref: `memory-api/.rule/rules/04879e9c-aa58-4c55-a4cd-f01676403f2c/rule.toml`
 
 <!-- rule-catalog:entry id=053d49f3-f93a-428c-b1be-504e45d2e2e2 slug=memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/what-lives-in-x-api/l5 digest=f284b11b86d9 -->
 ### What lives in `<x>-api`
@@ -1261,7 +1261,7 @@ Entity types, field definitions, and the `required_states` schema.
 - slug: `memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/what-lives-in-x-api/l5`
 - section: `x-api-crate-owns-the-model/what-lives-in-x-api`
 - tags: api-crate-owns-model, draft, memory-api, recurring-principles, what-lives-in-x-api, x-api-crate-owns-the-model
-- ref: `memory-viewers/memory-api/.rule/rules/053d49f3-f93a-428c-b1be-504e45d2e2e2/rule.toml`
+- ref: `memory-api/.rule/rules/053d49f3-f93a-428c-b1be-504e45d2e2e2/rule.toml`
 
 <!-- rule-catalog:entry id=06c286d6-83f7-46ad-b1a5-a4d7336b8d6f slug=memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/l1 digest=c47b880fc43b -->
 ### Nested workspace resolution
@@ -1271,7 +1271,7 @@ A repository may contain multiple `memory-api` workspaces (for example the conte
 - slug: `memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/l1`
 - section: `nested-workspace-resolution`
 - tags: draft, memory-api, nested-workspace-resolution, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/06c286d6-83f7-46ad-b1a5-a4d7336b8d6f/rule.toml`
+- ref: `memory-api/.rule/rules/06c286d6-83f7-46ad-b1a5-a4d7336b8d6f/rule.toml`
 
 <!-- rule-catalog:entry id=091f1918-3f0b-44d0-bff0-323dd8fb03ae slug=memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/non-duplication-rule/l20 digest=01ea62cbb9d6 -->
 ### Non-duplication rule
@@ -1281,7 +1281,7 @@ Adapters must not re-implement model behaviour. If a CLI or MCP tool needs to en
 - slug: `memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/non-duplication-rule/l20`
 - section: `x-api-crate-owns-the-model/non-duplication-rule`
 - tags: api-crate-owns-model, draft, memory-api, non-duplication-rule, recurring-principles, x-api-crate-owns-the-model
-- ref: `memory-viewers/memory-api/.rule/rules/091f1918-3f0b-44d0-bff0-323dd8fb03ae/rule.toml`
+- ref: `memory-api/.rule/rules/091f1918-3f0b-44d0-bff0-323dd8fb03ae/rule.toml`
 
 <!-- rule-catalog:entry id=2d133b3a-d255-4543-8132-c5bbfb14bf0d slug=memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/rejected-inputs/l17 digest=bf66d65963a9 -->
 ### The rejection produces a `code: invalid_request` error envelope with a `message`
@@ -1291,7 +1291,7 @@ The rejection produces a `code: invalid_request` error envelope with a `message`
 - slug: `memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/rejected-inputs/l17`
 - section: `concrete-workspace-identifiers/rejected-inputs`
 - tags: concrete-workspace-identifiers, draft, memory-api, recurring-principles, rejected-inputs, workspace-identifiers
-- ref: `memory-viewers/memory-api/.rule/rules/2d133b3a-d255-4543-8132-c5bbfb14bf0d/rule.toml`
+- ref: `memory-api/.rule/rules/2d133b3a-d255-4543-8132-c5bbfb14bf0d/rule.toml`
 
 <!-- rule-catalog:entry id=30e77f04-1d48-4e27-82dd-864b9a92d9c4 slug=memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/l1 digest=b1194e20e83a -->
 ### Concrete workspace identifiers
@@ -1301,7 +1301,7 @@ The rejection produces a `code: invalid_request` error envelope with a `message`
 - slug: `memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/l1`
 - section: `concrete-workspace-identifiers`
 - tags: concrete-workspace-identifiers, draft, memory-api, recurring-principles, workspace-identifiers
-- ref: `memory-viewers/memory-api/.rule/rules/30e77f04-1d48-4e27-82dd-864b9a92d9c4/rule.toml`
+- ref: `memory-api/.rule/rules/30e77f04-1d48-4e27-82dd-864b9a92d9c4/rule.toml`
 
 <!-- rule-catalog:entry id=32f4d829-eaad-48d7-9678-e71d8b81a215 slug=memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/edge-index-not-tantivy/l11 digest=1ad9c9f7daa4 -->
 ### Edge index, not Tantivy
@@ -1311,7 +1311,7 @@ Edge lookups (forward, reverse, transitive closure) are served by the typed edge
 - slug: `memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/edge-index-not-tantivy/l11`
 - section: `depends-on-is-the-only-blocking-edge/edge-index-not-tantivy`
 - tags: depends-on-is-the-only-blocking-edge, depends-on-only-blocking-edge, draft, edge-index-not-tantivy, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/32f4d829-eaad-48d7-9678-e71d8b81a215/rule.toml`
+- ref: `memory-api/.rule/rules/32f4d829-eaad-48d7-9678-e71d8b81a215/rule.toml`
 
 <!-- rule-catalog:entry id=331bac7c-1622-4690-a6a3-19a722070e49 slug=memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/edge-taxonomy/l5 digest=f2e110d23512 -->
 ### Edge taxonomy
@@ -1321,7 +1321,7 @@ Edge lookups (forward, reverse, transitive closure) are served by the typed edge
 - slug: `memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/edge-taxonomy/l5`
 - section: `depends-on-is-the-only-blocking-edge/edge-taxonomy`
 - tags: depends-on-is-the-only-blocking-edge, depends-on-only-blocking-edge, draft, edge-taxonomy, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/331bac7c-1622-4690-a6a3-19a722070e49/rule.toml`
+- ref: `memory-api/.rule/rules/331bac7c-1622-4690-a6a3-19a722070e49/rule.toml`
 
 <!-- rule-catalog:entry id=3ed1f3b8-4ef3-4a21-841c-f2c0339a360a slug=memory-api/recurring-principles/json-machine-surface/json-machine-surface/stable-envelope/l5 digest=7a8a2b0755b7 -->
 ### Stable envelope
@@ -1331,7 +1331,7 @@ JSON output is always a single envelope object. The top-level keys are `payload`
 - slug: `memory-api/recurring-principles/json-machine-surface/json-machine-surface/stable-envelope/l5`
 - section: `json-machine-surface/stable-envelope`
 - tags: draft, json-machine-surface, memory-api, recurring-principles, stable-envelope
-- ref: `memory-viewers/memory-api/.rule/rules/3ed1f3b8-4ef3-4a21-841c-f2c0339a360a/rule.toml`
+- ref: `memory-api/.rule/rules/3ed1f3b8-4ef3-4a21-841c-f2c0339a360a/rule.toml`
 
 <!-- rule-catalog:entry id=47a022ef-6211-4e49-80b7-58578f92e472 slug=memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/l1 digest=d48a6c050110 -->
 ### Typed error envelopes
@@ -1341,7 +1341,7 @@ Every failure from a `memory-api` CLI, MCP tool, or HTTP handler is rendered as 
 - slug: `memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/l1`
 - section: `typed-error-envelopes`
 - tags: draft, memory-api, recurring-principles, typed-error-envelopes
-- ref: `memory-viewers/memory-api/.rule/rules/47a022ef-6211-4e49-80b7-58578f92e472/rule.toml`
+- ref: `memory-api/.rule/rules/47a022ef-6211-4e49-80b7-58578f92e472/rule.toml`
 
 <!-- rule-catalog:entry id=4b104cd8-ea68-4ef4-bc38-c2e35d3cb4f5 slug=memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/health-behaviour/l15 digest=8edb0f4e7f89 -->
 ### Health behaviour
@@ -1351,7 +1351,7 @@ Every failure from a `memory-api` CLI, MCP tool, or HTTP handler is rendered as 
 - slug: `memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/health-behaviour/l15`
 - section: `depends-on-is-the-only-blocking-edge/health-behaviour`
 - tags: depends-on-is-the-only-blocking-edge, depends-on-only-blocking-edge, draft, health-behaviour, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/4b104cd8-ea68-4ef4-bc38-c2e35d3cb4f5/rule.toml`
+- ref: `memory-api/.rule/rules/4b104cd8-ea68-4ef4-bc38-c2e35d3cb4f5/rule.toml`
 
 <!-- rule-catalog:entry id=4c0b0086-4846-4688-ba01-6e905b842185 slug=memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/what-lives-in-the-adapter-crates/l13 digest=8c39728bd080 -->
 ### What lives in the adapter crates
@@ -1361,7 +1361,7 @@ Every failure from a `memory-api` CLI, MCP tool, or HTTP handler is rendered as 
 - slug: `memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/what-lives-in-the-adapter-crates/l13`
 - section: `x-api-crate-owns-the-model/what-lives-in-the-adapter-crates`
 - tags: api-crate-owns-model, draft, memory-api, recurring-principles, what-lives-in-the-adapter-crates, x-api-crate-owns-the-model
-- ref: `memory-viewers/memory-api/.rule/rules/4c0b0086-4846-4688-ba01-6e905b842185/rule.toml`
+- ref: `memory-api/.rule/rules/4c0b0086-4846-4688-ba01-6e905b842185/rule.toml`
 
 <!-- rule-catalog:entry id=4c14f55b-4255-4b91-ada3-d060ea835cfd slug=memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/l1 digest=58f7b511c528 -->
 ### Append-only history with materialized index
@@ -1371,7 +1371,7 @@ Every `memory-api` store keeps an append-only `history.ndjson` per entity as the
 - slug: `memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/l1`
 - section: `append-only-history-with-materialized-index`
 - tags: append-only-history-materialized-index, append-only-history-with-materialized-index, draft, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/4c14f55b-4255-4b91-ada3-d060ea835cfd/rule.toml`
+- ref: `memory-api/.rule/rules/4c14f55b-4255-4b91-ada3-d060ea835cfd/rule.toml`
 
 <!-- rule-catalog:entry id=5253e1df-d8d3-4174-8037-6e088ac58e7c slug=memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/resolver-contract/l5 digest=679eb740d50d -->
 ### Resolver contract
@@ -1381,7 +1381,7 @@ Every `memory-api` store keeps an append-only `history.ndjson` per entity as the
 - slug: `memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/resolver-contract/l5`
 - section: `concrete-workspace-identifiers/resolver-contract`
 - tags: concrete-workspace-identifiers, draft, memory-api, recurring-principles, resolver-contract, workspace-identifiers
-- ref: `memory-viewers/memory-api/.rule/rules/5253e1df-d8d3-4174-8037-6e088ac58e7c/rule.toml`
+- ref: `memory-api/.rule/rules/5253e1df-d8d3-4174-8037-6e088ac58e7c/rule.toml`
 
 <!-- rule-catalog:entry id=5e08d966-4985-4790-87c8-482ba22d83fb slug=memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/parent-child-configuration/l11 digest=f7e65443501a -->
 ### Parent–child configuration
@@ -1391,7 +1391,7 @@ Parent workspaces declare their child stores in `rule-targets.yaml` (`imports:`)
 - slug: `memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/parent-child-configuration/l11`
 - section: `nested-workspace-resolution/parent-child-configuration`
 - tags: draft, memory-api, nested-workspace-resolution, parent-child-configuration, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/5e08d966-4985-4790-87c8-482ba22d83fb/rule.toml`
+- ref: `memory-api/.rule/rules/5e08d966-4985-4790-87c8-482ba22d83fb/rule.toml`
 
 <!-- rule-catalog:entry id=64f91988-d190-4753-8c61-cd8e0515491f slug=memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/where-envelopes-appear/l21 digest=4f732c385005 -->
 ### Where envelopes appear
@@ -1401,7 +1401,7 @@ CLIs with `--json` emit the envelope as their entire stdout payload on success o
 - slug: `memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/where-envelopes-appear/l21`
 - section: `typed-error-envelopes/where-envelopes-appear`
 - tags: draft, memory-api, recurring-principles, typed-error-envelopes, where-envelopes-appear
-- ref: `memory-viewers/memory-api/.rule/rules/64f91988-d190-4753-8c61-cd8e0515491f/rule.toml`
+- ref: `memory-api/.rule/rules/64f91988-d190-4753-8c61-cd8e0515491f/rule.toml`
 
 <!-- rule-catalog:entry id=6524f366-dbc2-40f9-84b9-72d948c66de8 slug=memory-api/recurring-principles/json-machine-surface/json-machine-surface/l1 digest=1c29cfea33b3 -->
 ### --json machine surface
@@ -1411,7 +1411,7 @@ The `--json` flag on every `memory-api` CLI selects a stable machine surface. To
 - slug: `memory-api/recurring-principles/json-machine-surface/json-machine-surface/l1`
 - section: `json-machine-surface`
 - tags: draft, json-machine-surface, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/6524f366-dbc2-40f9-84b9-72d948c66de8/rule.toml`
+- ref: `memory-api/.rule/rules/6524f366-dbc2-40f9-84b9-72d948c66de8/rule.toml`
 
 <!-- rule-catalog:entry id=680662fa-c5ce-464b-93e6-4fae449ab598 slug=memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/envelope-shape/l5 digest=14dac1a09517 -->
 ### Envelope shape
@@ -1421,7 +1421,7 @@ The `--json` flag on every `memory-api` CLI selects a stable machine surface. To
 - slug: `memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/envelope-shape/l5`
 - section: `typed-error-envelopes/envelope-shape`
 - tags: draft, envelope-shape, memory-api, recurring-principles, typed-error-envelopes
-- ref: `memory-viewers/memory-api/.rule/rules/680662fa-c5ce-464b-93e6-4fae449ab598/rule.toml`
+- ref: `memory-api/.rule/rules/680662fa-c5ce-464b-93e6-4fae449ab598/rule.toml`
 
 <!-- rule-catalog:entry id=6965bd9b-be61-438d-b1f0-38401922051a slug=memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/failure-modes/l11 digest=320616b96c2c -->
 ### Failure modes
@@ -1431,7 +1431,7 @@ Inputs shorter than the minimum prefix length are rejected with `code: invalid_r
 - slug: `memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/failure-modes/l11`
 - section: `shared-id-prefix-resolver/failure-modes`
 - tags: draft, failure-modes, memory-api, recurring-principles, shared-id-prefix-resolver
-- ref: `memory-viewers/memory-api/.rule/rules/6965bd9b-be61-438d-b1f0-38401922051a/rule.toml`
+- ref: `memory-api/.rule/rules/6965bd9b-be61-438d-b1f0-38401922051a/rule.toml`
 
 <!-- rule-catalog:entry id=74d940e6-88b0-4c20-be70-72cdd9db2b89 slug=memory-api/recurring-principles/memory-api-recurring-principles/related-tickets/l19 digest=e9829b303baf -->
 ### Related tickets
@@ -1441,7 +1441,7 @@ Inputs shorter than the minimum prefix length are rejected with `code: invalid_r
 - slug: `memory-api/recurring-principles/memory-api-recurring-principles/related-tickets/l19`
 - section: `memory-api-recurring-principles/related-tickets`
 - tags: draft, memory-api, memory-api-recurring-principles, recurring-principles, related-tickets
-- ref: `memory-viewers/memory-api/.rule/rules/74d940e6-88b0-4c20-be70-72cdd9db2b89/rule.toml`
+- ref: `memory-api/.rule/rules/74d940e6-88b0-4c20-be70-72cdd9db2b89/rule.toml`
 
 <!-- rule-catalog:entry id=76027bee-ca0b-46f6-a2b7-0a97b32433d1 slug=memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/l1 digest=a955d5a57e20 -->
 ### Shared id/prefix resolver
@@ -1451,7 +1451,7 @@ All `memory-api` stores share one id-or-prefix resolver. Whether the caller is `
 - slug: `memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/l1`
 - section: `shared-id-prefix-resolver`
 - tags: draft, memory-api, recurring-principles, shared-id-prefix-resolver
-- ref: `memory-viewers/memory-api/.rule/rules/76027bee-ca0b-46f6-a2b7-0a97b32433d1/rule.toml`
+- ref: `memory-api/.rule/rules/76027bee-ca0b-46f6-a2b7-0a97b32433d1/rule.toml`
 
 <!-- rule-catalog:entry id=78901a63-64f2-4ea6-a164-2352cd434068 slug=memory-api/recurring-principles/json-machine-surface/json-machine-surface/stability/l15 digest=a0ea00cff536 -->
 ### Stability
@@ -1461,7 +1461,7 @@ The envelope shape is part of the public contract:
 - slug: `memory-api/recurring-principles/json-machine-surface/json-machine-surface/stability/l15`
 - section: `json-machine-surface/stability`
 - tags: draft, json-machine-surface, memory-api, recurring-principles, stability
-- ref: `memory-viewers/memory-api/.rule/rules/78901a63-64f2-4ea6-a164-2352cd434068/rule.toml`
+- ref: `memory-api/.rule/rules/78901a63-64f2-4ea6-a164-2352cd434068/rule.toml`
 
 <!-- rule-catalog:entry id=7a00552c-63d4-48c9-916d-8bf870dacbda slug=memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/why-this-matters/l17 digest=4d5702ace9b5 -->
 ### Why this matters
@@ -1471,7 +1471,7 @@ Without a shared resolver, every CLI/MCP/HTTP surface drifts in subtle ways (dif
 - slug: `memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/why-this-matters/l17`
 - section: `shared-id-prefix-resolver/why-this-matters`
 - tags: draft, memory-api, recurring-principles, shared-id-prefix-resolver, why-this-matters
-- ref: `memory-viewers/memory-api/.rule/rules/7a00552c-63d4-48c9-916d-8bf870dacbda/rule.toml`
+- ref: `memory-api/.rule/rules/7a00552c-63d4-48c9-916d-8bf870dacbda/rule.toml`
 
 <!-- rule-catalog:entry id=8a92308a-a962-4d26-be51-f3d076865791 slug=memory-api/recurring-principles/memory-api-recurring-principles/l5 digest=7e267dbf15ff -->
 ### Each principle is its own section so a `rule scan` materialises one canonical en
@@ -1481,7 +1481,7 @@ Each principle is its own section so a `rule scan` materialises one canonical en
 - slug: `memory-api/recurring-principles/memory-api-recurring-principles/l5`
 - section: `memory-api-recurring-principles`
 - tags: draft, memory-api, memory-api-recurring-principles, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/8a92308a-a962-4d26-be51-f3d076865791/rule.toml`
+- ref: `memory-api/.rule/rules/8a92308a-a962-4d26-be51-f3d076865791/rule.toml`
 
 <!-- rule-catalog:entry id=8b8a609a-638b-4c6b-8d42-3c4740720476 slug=memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/implications-for-callers/l17 digest=85531f91385a -->
 ### Implications for callers
@@ -1491,7 +1491,7 @@ Time travel and audit queries are served by replaying history, not by querying t
 - slug: `memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/implications-for-callers/l17`
 - section: `append-only-history-with-materialized-index/implications-for-callers`
 - tags: append-only-history-materialized-index, append-only-history-with-materialized-index, draft, implications-for-callers, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/8b8a609a-638b-4c6b-8d42-3c4740720476/rule.toml`
+- ref: `memory-api/.rule/rules/8b8a609a-638b-4c6b-8d42-3c4740720476/rule.toml`
 
 <!-- rule-catalog:entry id=8d66b5bd-e444-4c93-aa2c-b136c79d2aaa slug=memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/one-way-semantics/l11 digest=e56bc163050b -->
 ### One-way semantics
@@ -1501,7 +1501,7 @@ Forward transitions are linear (`new → ready → in-implementation → in-revi
 - slug: `memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/one-way-semantics/l11`
 - section: `required-states-one-way-state-machine/one-way-semantics`
 - tags: draft, memory-api, one-way-semantics, recurring-principles, required-states-one-way, required-states-one-way-state-machine
-- ref: `memory-viewers/memory-api/.rule/rules/8d66b5bd-e444-4c93-aa2c-b136c79d2aaa/rule.toml`
+- ref: `memory-api/.rule/rules/8d66b5bd-e444-4c93-aa2c-b136c79d2aaa/rule.toml`
 
 <!-- rule-catalog:entry id=8ec75a50-bace-4f90-bae8-e6d16c8bc461 slug=memory-api/recurring-principles/memory-api-recurring-principles/l1 digest=da8a82db2b1f -->
 ### memory-api recurring principles
@@ -1511,7 +1511,7 @@ This spec captures the cross-cutting design principles that recur across `memory
 - slug: `memory-api/recurring-principles/memory-api-recurring-principles/l1`
 - section: `memory-api-recurring-principles`
 - tags: draft, memory-api, memory-api-recurring-principles, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/8ec75a50-bace-4f90-bae8-e6d16c8bc461/rule.toml`
+- ref: `memory-api/.rule/rules/8ec75a50-bace-4f90-bae8-e6d16c8bc461/rule.toml`
 
 <!-- rule-catalog:entry id=8f20a478-00af-4fa8-a429-625918c6317a slug=memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/envelope-shape/l16 digest=dc93f59df1ca -->
 ### `code` is one of a small enumerated set (`invalid_request`, `not_found`, `confli
@@ -1521,7 +1521,7 @@ This spec captures the cross-cutting design principles that recur across `memory
 - slug: `memory-api/recurring-principles/typed-error-envelopes/typed-error-envelopes/envelope-shape/l16`
 - section: `typed-error-envelopes/envelope-shape`
 - tags: draft, envelope-shape, memory-api, recurring-principles, typed-error-envelopes
-- ref: `memory-viewers/memory-api/.rule/rules/8f20a478-00af-4fa8-a429-625918c6317a/rule.toml`
+- ref: `memory-api/.rule/rules/8f20a478-00af-4fa8-a429-625918c6317a/rule.toml`
 
 <!-- rule-catalog:entry id=99154b43-c58b-43aa-b349-6d9831240d42 slug=memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/health-interaction/l17 digest=0a4dffc71f27 -->
 ### Health interaction
@@ -1531,7 +1531,7 @@ Health checks read the schema and report `actionable-with-deps`, `missing-requir
 - slug: `memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/health-interaction/l17`
 - section: `required-states-one-way-state-machine/health-interaction`
 - tags: draft, health-interaction, memory-api, recurring-principles, required-states-one-way, required-states-one-way-state-machine
-- ref: `memory-viewers/memory-api/.rule/rules/99154b43-c58b-43aa-b349-6d9831240d42/rule.toml`
+- ref: `memory-api/.rule/rules/99154b43-c58b-43aa-b349-6d9831240d42/rule.toml`
 
 <!-- rule-catalog:entry id=9a6a7d88-194e-46f7-b608-9494a3f691c6 slug=memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/resolution-rules/l5 digest=7d2393efbc57 -->
 ### Resolution rules
@@ -1541,7 +1541,7 @@ Health checks read the schema and report `actionable-with-deps`, `missing-requir
 - slug: `memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/resolution-rules/l5`
 - section: `nested-workspace-resolution/resolution-rules`
 - tags: draft, memory-api, nested-workspace-resolution, recurring-principles, resolution-rules
-- ref: `memory-viewers/memory-api/.rule/rules/9a6a7d88-194e-46f7-b608-9494a3f691c6/rule.toml`
+- ref: `memory-api/.rule/rules/9a6a7d88-194e-46f7-b608-9494a3f691c6/rule.toml`
 
 <!-- rule-catalog:entry id=9f4cd7be-30c7-4771-adc4-7af1023a6752 slug=memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/l1 digest=539342c36d5a -->
 ### <x>-api crate owns the model
@@ -1551,7 +1551,7 @@ For each store domain (`ticket-api`, `spec-api`, `rule-api`, `doc-api`, `audit-a
 - slug: `memory-api/recurring-principles/api-crate-owns-model/x-api-crate-owns-the-model/l1`
 - section: `x-api-crate-owns-the-model`
 - tags: api-crate-owns-model, draft, memory-api, recurring-principles, x-api-crate-owns-the-model
-- ref: `memory-viewers/memory-api/.rule/rules/9f4cd7be-30c7-4771-adc4-7af1023a6752/rule.toml`
+- ref: `memory-api/.rule/rules/9f4cd7be-30c7-4771-adc4-7af1023a6752/rule.toml`
 
 <!-- rule-catalog:entry id=b35856fb-f3b5-4673-b7ba-b5af240b4fb2 slug=memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/rejected-inputs/l11 digest=f1dcd3ec5745 -->
 ### Rejected inputs
@@ -1561,7 +1561,7 @@ The literal string `default` (legacy alias).
 - slug: `memory-api/recurring-principles/workspace-identifiers/concrete-workspace-identifiers/rejected-inputs/l11`
 - section: `concrete-workspace-identifiers/rejected-inputs`
 - tags: concrete-workspace-identifiers, draft, memory-api, recurring-principles, rejected-inputs, workspace-identifiers
-- ref: `memory-viewers/memory-api/.rule/rules/b35856fb-f3b5-4673-b7ba-b5af240b4fb2/rule.toml`
+- ref: `memory-api/.rule/rules/b35856fb-f3b5-4673-b7ba-b5af240b4fb2/rule.toml`
 
 <!-- rule-catalog:entry id=bc7d546e-e0f4-47b0-a80a-6c7fedc3917a slug=memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/schema-declaration/l5 digest=4aebc9b9890d -->
 ### Schema declaration
@@ -1571,7 +1571,7 @@ Each type's TOML schema lists the allowed states in order and, for each state, t
 - slug: `memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/schema-declaration/l5`
 - section: `required-states-one-way-state-machine/schema-declaration`
 - tags: draft, memory-api, recurring-principles, required-states-one-way, required-states-one-way-state-machine, schema-declaration
-- ref: `memory-viewers/memory-api/.rule/rules/bc7d546e-e0f4-47b0-a80a-6c7fedc3917a/rule.toml`
+- ref: `memory-api/.rule/rules/bc7d546e-e0f4-47b0-a80a-6c7fedc3917a/rule.toml`
 
 <!-- rule-catalog:entry id=c5295e96-8703-43dc-92fe-4633ecd4269b slug=memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/why-one-owning-root/l17 digest=a5bdd2863fc0 -->
 ### Why one owning root
@@ -1581,7 +1581,7 @@ The store's append-only history and materialised index belong to exactly one wor
 - slug: `memory-api/recurring-principles/nested-workspace-resolution/nested-workspace-resolution/why-one-owning-root/l17`
 - section: `nested-workspace-resolution/why-one-owning-root`
 - tags: draft, memory-api, nested-workspace-resolution, recurring-principles, why-one-owning-root
-- ref: `memory-viewers/memory-api/.rule/rules/c5295e96-8703-43dc-92fe-4633ecd4269b/rule.toml`
+- ref: `memory-api/.rule/rules/c5295e96-8703-43dc-92fe-4633ecd4269b/rule.toml`
 
 <!-- rule-catalog:entry id=c749eef4-2c3d-4652-8356-52a3f8a0b22c slug=memory-api/recurring-principles/json-machine-surface/json-machine-surface/payload-conventions/l9 digest=173f898fa57c -->
 ### Payload conventions
@@ -1591,7 +1591,7 @@ List responses use `payload.items: [ ... ]` plus `payload.count` and, when appli
 - slug: `memory-api/recurring-principles/json-machine-surface/json-machine-surface/payload-conventions/l9`
 - section: `json-machine-surface/payload-conventions`
 - tags: draft, json-machine-surface, memory-api, payload-conventions, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/c749eef4-2c3d-4652-8356-52a3f8a0b22c/rule.toml`
+- ref: `memory-api/.rule/rules/c749eef4-2c3d-4652-8356-52a3f8a0b22c/rule.toml`
 
 <!-- rule-catalog:entry id=d0c3db9e-2ec0-47f8-ad43-b618664631ee slug=memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/l1 digest=11dced8ee8db -->
 ### `depends_on` is the only blocking edge
@@ -1601,7 +1601,7 @@ In `ticket-api` and `spec-api`, a ticket or spec is considered actionable only i
 - slug: `memory-api/recurring-principles/depends-on-only-blocking-edge/depends-on-is-the-only-blocking-edge/l1`
 - section: `depends-on-is-the-only-blocking-edge`
 - tags: depends-on-is-the-only-blocking-edge, depends-on-only-blocking-edge, draft, memory-api, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/d0c3db9e-2ec0-47f8-ad43-b618664631ee/rule.toml`
+- ref: `memory-api/.rule/rules/d0c3db9e-2ec0-47f8-ad43-b618664631ee/rule.toml`
 
 <!-- rule-catalog:entry id=e3204d91-244e-4a84-bd9d-1949a158b66a slug=memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/write-path/l5 digest=c636db706b7b -->
 ### Write path
@@ -1611,7 +1611,7 @@ In `ticket-api` and `spec-api`, a ticket or spec is considered actionable only i
 - slug: `memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/write-path/l5`
 - section: `append-only-history-with-materialized-index/write-path`
 - tags: append-only-history-materialized-index, append-only-history-with-materialized-index, draft, memory-api, recurring-principles, write-path
-- ref: `memory-viewers/memory-api/.rule/rules/e3204d91-244e-4a84-bd9d-1949a158b66a/rule.toml`
+- ref: `memory-api/.rule/rules/e3204d91-244e-4a84-bd9d-1949a158b66a/rule.toml`
 
 <!-- rule-catalog:entry id=e44fa332-6828-4ea1-a944-e0f9345a0bca slug=memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/inputs-accepted/l5 digest=f75f7874e9cc -->
 ### Inputs accepted
@@ -1621,7 +1621,7 @@ A full canonical UUID (lower-case, hyphenated): always matches exactly one entit
 - slug: `memory-api/recurring-principles/shared-id-prefix-resolver/shared-id-prefix-resolver/inputs-accepted/l5`
 - section: `shared-id-prefix-resolver/inputs-accepted`
 - tags: draft, inputs-accepted, memory-api, recurring-principles, shared-id-prefix-resolver
-- ref: `memory-viewers/memory-api/.rule/rules/e44fa332-6828-4ea1-a944-e0f9345a0bca/rule.toml`
+- ref: `memory-api/.rule/rules/e44fa332-6828-4ea1-a944-e0f9345a0bca/rule.toml`
 
 <!-- rule-catalog:entry id=e5d98399-7cd0-4d04-8df7-f73d0ffdf1a5 slug=memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/l1 digest=94c00f68ec2c -->
 ### Required-states one-way state machine
@@ -1631,7 +1631,7 @@ Ticket and spec types declare their state machine through `required_states` in t
 - slug: `memory-api/recurring-principles/required-states-one-way/required-states-one-way-state-machine/l1`
 - section: `required-states-one-way-state-machine`
 - tags: draft, memory-api, recurring-principles, required-states-one-way, required-states-one-way-state-machine
-- ref: `memory-viewers/memory-api/.rule/rules/e5d98399-7cd0-4d04-8df7-f73d0ffdf1a5/rule.toml`
+- ref: `memory-api/.rule/rules/e5d98399-7cd0-4d04-8df7-f73d0ffdf1a5/rule.toml`
 
 <!-- rule-catalog:entry id=e9aaea46-54ef-4814-970d-ee23894ca6dc slug=memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/recovery-and-rebuild/l11 digest=0a3b589fca12 -->
 ### Recovery and rebuild
@@ -1641,7 +1641,7 @@ The materialised index can be deleted at any time. `<x> scan` (or `<x> scan --fo
 - slug: `memory-api/recurring-principles/append-only-history-materialized-index/append-only-history-with-materialized-index/recovery-and-rebuild/l11`
 - section: `append-only-history-with-materialized-index/recovery-and-rebuild`
 - tags: append-only-history-materialized-index, append-only-history-with-materialized-index, draft, memory-api, recovery-and-rebuild, recurring-principles
-- ref: `memory-viewers/memory-api/.rule/rules/e9aaea46-54ef-4814-970d-ee23894ca6dc/rule.toml`
+- ref: `memory-api/.rule/rules/e9aaea46-54ef-4814-970d-ee23894ca6dc/rule.toml`
 
 <!-- rule-catalog:entry id=f2d4d117-cee4-4749-b542-43ea435c50f2 slug=memory-api/recurring-principles/memory-api-recurring-principles/related-specs/l24 digest=70b10ef5fe92 -->
 ### Related specs
@@ -1651,7 +1651,7 @@ The materialised index can be deleted at any time. `<x> scan` (or `<x> scan --fo
 - slug: `memory-api/recurring-principles/memory-api-recurring-principles/related-specs/l24`
 - section: `memory-api-recurring-principles/related-specs`
 - tags: draft, memory-api, memory-api-recurring-principles, recurring-principles, related-specs
-- ref: `memory-viewers/memory-api/.rule/rules/f2d4d117-cee4-4749-b542-43ea435c50f2/rule.toml`
+- ref: `memory-api/.rule/rules/f2d4d117-cee4-4749-b542-43ea435c50f2/rule.toml`
 
 <!-- rule-catalog:entry id=fd8cf21d-0c9e-4036-a7d0-347c42b66642 slug=memory-api/recurring-principles/memory-api-recurring-principles/sections/l7 digest=6ec0b869c6bb -->
 ### Sections
@@ -1661,7 +1661,7 @@ The materialised index can be deleted at any time. `<x> scan` (or `<x> scan --fo
 - slug: `memory-api/recurring-principles/memory-api-recurring-principles/sections/l7`
 - section: `memory-api-recurring-principles/sections`
 - tags: draft, memory-api, memory-api-recurring-principles, recurring-principles, sections
-- ref: `memory-viewers/memory-api/.rule/rules/fd8cf21d-0c9e-4036-a7d0-347c42b66642/rule.toml`
+- ref: `memory-api/.rule/rules/fd8cf21d-0c9e-4036-a7d0-347c42b66642/rule.toml`
 
 ## memory-viewers/agents
 
@@ -1959,7 +1959,7 @@ If public behavior or docs changed, update the docs and run doc validation workf
 - slug: `shared/agent-rules/quality-gates/l65`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/0183c0d9-0992-47af-9763-872c5037dbe3/rule.toml`
+- ref: `viewer-api/.rule/rules/0183c0d9-0992-47af-9763-872c5037dbe3/rule.toml`
 
 <!-- rule-catalog:entry id=04f14e9e-a1ba-43c0-ad51-1041e23b8016 slug=shared/agent-rules/discovery-protocol-before-editing/l28 digest=bdb52aa2a581 -->
 ### Use static references as support:
@@ -1979,7 +1979,7 @@ Use static references as support:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l21`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/115ff3b8-0253-428b-ba11-c23f79422d3a/rule.toml`
+- ref: `viewer-api/.rule/rules/115ff3b8-0253-428b-ba11-c23f79422d3a/rule.toml`
 
 <!-- rule-catalog:entry id=176359c8-3364-4bf6-ba39-bee981d3abc5 slug=shared/agent-rules/l1 digest=15ce16ae70e9 -->
 ### Agent Rules
@@ -1989,7 +1989,7 @@ Global working rules for this repository. Keep this file small and stable.
 - slug: `shared/agent-rules/l1`
 - section: `agent-rules`
 - tags: agent-rules, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/176359c8-3364-4bf6-ba39-bee981d3abc5/rule.toml`
+- ref: `viewer-api/.rule/rules/176359c8-3364-4bf6-ba39-bee981d3abc5/rule.toml`
 
 <!-- rule-catalog:entry id=2180fedc-fb0f-4900-9411-e8a2c9534b2d slug=shared/agent-rules/operating-principles/l5 digest=099860a15854 -->
 ### Operating Principles
@@ -1999,7 +1999,7 @@ Gather context before coding. Do not guess.
 - slug: `shared/agent-rules/operating-principles/l5`
 - section: `agent-rules/operating-principles`
 - tags: agent-rules, draft, operating-principles, shared
-- ref: `memory-viewers/memory-api/.rule/rules/2180fedc-fb0f-4900-9411-e8a2c9534b2d/rule.toml`
+- ref: `memory-api/.rule/rules/2180fedc-fb0f-4900-9411-e8a2c9534b2d/rule.toml`
 
 <!-- rule-catalog:entry id=2bdbe25d-faa0-4ff3-ae99-684929d9d5c4 slug=shared/agent-rules/quality-gates/l61 digest=c178249809cc -->
 ### ```rust
@@ -2009,7 +2009,7 @@ let _tracing = init_test_tracing!(&graph);
 - slug: `shared/agent-rules/quality-gates/l61`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/2bdbe25d-faa0-4ff3-ae99-684929d9d5c4/rule.toml`
+- ref: `viewer-api/.rule/rules/2bdbe25d-faa0-4ff3-ae99-684929d9d5c4/rule.toml`
 
 <!-- rule-catalog:entry id=2d4b9e94-86e5-4abc-9d46-ad74c183b9f0 slug=shared/agent-rules/quality-gates/l65 digest=d2e0f5627079 -->
 ### If public behavior or docs changed, update the docs and run doc validation workf
@@ -2019,7 +2019,7 @@ If public behavior or docs changed, update the docs and run doc validation workf
 - slug: `shared/agent-rules/quality-gates/l65`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/memory-api/.rule/rules/2d4b9e94-86e5-4abc-9d46-ad74c183b9f0/rule.toml`
+- ref: `memory-api/.rule/rules/2d4b9e94-86e5-4abc-9d46-ad74c183b9f0/rule.toml`
 
 <!-- rule-catalog:entry id=34054485-a4ff-47bf-b331-df68701cb967 slug=shared/agent-rules/quality-gates/l61 digest=91ce64217562 -->
 ### ```rust
@@ -2029,7 +2029,7 @@ let _tracing = init_test_tracing!(&graph);
 - slug: `shared/agent-rules/quality-gates/l61`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/memory-api/.rule/rules/34054485-a4ff-47bf-b331-df68701cb967/rule.toml`
+- ref: `memory-api/.rule/rules/34054485-a4ff-47bf-b331-df68701cb967/rule.toml`
 
 <!-- rule-catalog:entry id=397b0447-135e-4d35-ad05-bcc69047d2c0 slug=shared/agent-rules/quality-gates/l42 digest=f290e4012c05 -->
 ### Quality Gates
@@ -2059,7 +2059,7 @@ Global working rules for this repository. Keep this file small and stable.
 - slug: `shared/agent-rules/l1`
 - section: `agent-rules`
 - tags: agent-rules, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/42ffd955-ebdf-44b4-9092-bcf5c7b07a29/rule.toml`
+- ref: `memory-api/.rule/rules/42ffd955-ebdf-44b4-9092-bcf5c7b07a29/rule.toml`
 
 <!-- rule-catalog:entry id=48ac3bab-a50d-40a7-9c8e-a452ae4c7f87 slug=shared/agent-rules/feedback-workflow/l70 digest=24e59d205e74 -->
 ### Feedback Workflow
@@ -2069,7 +2069,7 @@ Record feedback on canonical rule entries today. `spec-api` entries do not yet e
 - slug: `shared/agent-rules/feedback-workflow/l70`
 - section: `agent-rules/feedback-workflow`
 - tags: agent-rules, draft, feedback-workflow, shared
-- ref: `memory-viewers/memory-api/.rule/rules/48ac3bab-a50d-40a7-9c8e-a452ae4c7f87/rule.toml`
+- ref: `memory-api/.rule/rules/48ac3bab-a50d-40a7-9c8e-a452ae4c7f87/rule.toml`
 
 <!-- rule-catalog:entry id=4aca810e-2378-4f35-b1fb-7e61f38fbeff slug=shared/agent-rules/fallback-mode-when-mcp-is-unavailable/l86 digest=1ab61f497cb8 -->
 ### Fallback Mode (When MCP Is Unavailable)
@@ -2079,7 +2079,7 @@ Docs fallback: search/read local docs directly.
 - slug: `shared/agent-rules/fallback-mode-when-mcp-is-unavailable/l86`
 - section: `agent-rules/fallback-mode-when-mcp-is-unavailable`
 - tags: agent-rules, draft, fallback-mode-when-mcp-is-unavailable, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/4aca810e-2378-4f35-b1fb-7e61f38fbeff/rule.toml`
+- ref: `viewer-api/.rule/rules/4aca810e-2378-4f35-b1fb-7e61f38fbeff/rule.toml`
 
 <!-- rule-catalog:entry id=4f6e76bb-90d4-4d90-9e06-ca03d134ae67 slug=shared/agent-rules/escalation-rules/l80 digest=75292c362eaa -->
 ### Escalation Rules
@@ -2089,7 +2089,7 @@ If blocked by ambiguity after focused research (10-15 minutes), ask the user.
 - slug: `shared/agent-rules/escalation-rules/l80`
 - section: `agent-rules/escalation-rules`
 - tags: agent-rules, draft, escalation-rules, shared
-- ref: `memory-viewers/memory-api/.rule/rules/4f6e76bb-90d4-4d90-9e06-ca03d134ae67/rule.toml`
+- ref: `memory-api/.rule/rules/4f6e76bb-90d4-4d90-9e06-ca03d134ae67/rule.toml`
 
 <!-- rule-catalog:entry id=6e037f1d-b9cc-4ed4-aefc-a50b16ef122d slug=shared/agent-rules/fallback-mode-when-mcp-is-unavailable/l65 digest=3a65d68ea93e -->
 ### Fallback Mode (When MCP Is Unavailable)
@@ -2129,7 +2129,7 @@ Keep terminal output, file reads, and structural exploration bounded to avoid un
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l21`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/7748871f-4c8b-4529-bb18-ca39b9bbad60/rule.toml`
+- ref: `memory-api/.rule/rules/7748871f-4c8b-4529-bb18-ca39b9bbad60/rule.toml`
 
 <!-- rule-catalog:entry id=7f34807e-0342-4ed9-904d-0336d42d4f69 slug=shared/agent-rules/discovery-protocol-before-editing/l17 digest=b3f9d9fd153f -->
 ### Discovery Protocol (Before Editing)
@@ -2139,7 +2139,7 @@ Use live sources first:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l17`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/7f34807e-0342-4ed9-904d-0336d42d4f69/rule.toml`
+- ref: `viewer-api/.rule/rules/7f34807e-0342-4ed9-904d-0336d42d4f69/rule.toml`
 
 <!-- rule-catalog:entry id=84fa9769-cff9-4d89-9068-5ff8ed283d30 slug=shared/agent-rules/task-routing/l34 digest=e0f51690f7c4 -->
 ### Task Routing
@@ -2159,7 +2159,7 @@ Any requested implementation or behavior change: create or update the tracking t
 - slug: `shared/agent-rules/task-routing/l37`
 - section: `agent-rules/task-routing`
 - tags: agent-rules, draft, shared, task-routing
-- ref: `memory-viewers/viewer-api/.rule/rules/88bb04cb-fe6d-4935-8654-bef9406c5d82/rule.toml`
+- ref: `viewer-api/.rule/rules/88bb04cb-fe6d-4935-8654-bef9406c5d82/rule.toml`
 
 <!-- rule-catalog:entry id=a172249f-b82b-45ea-86a9-4826beec7cc1 slug=shared/agent-rules/quality-gates/l55 digest=dd52107f124d -->
 ### If public behavior or docs changed, run doc validation workflows.
@@ -2179,7 +2179,7 @@ API patterns and gotchas: `CHEAT_SHEET.md`
 - slug: `shared/agent-rules/canonical-sources/l93`
 - section: `agent-rules/canonical-sources`
 - tags: agent-rules, canonical-sources, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/a3e94032-b6e0-44cc-857b-ca12b9647736/rule.toml`
+- ref: `memory-api/.rule/rules/a3e94032-b6e0-44cc-857b-ca12b9647736/rule.toml`
 
 <!-- rule-catalog:entry id=a417ac53-f26b-467c-8461-a9db76fcd474 slug=shared/agent-rules/operating-principles/l5 digest=1864df939f9a -->
 ### Operating Principles
@@ -2189,7 +2189,7 @@ Gather context before coding. Do not guess.
 - slug: `shared/agent-rules/operating-principles/l5`
 - section: `agent-rules/operating-principles`
 - tags: agent-rules, draft, operating-principles, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/a417ac53-f26b-467c-8461-a9db76fcd474/rule.toml`
+- ref: `viewer-api/.rule/rules/a417ac53-f26b-467c-8461-a9db76fcd474/rule.toml`
 
 <!-- rule-catalog:entry id=abdc5a30-a69d-41fe-8069-8049107bc0d7 slug=shared/agent-rules/discovery-protocol-before-editing/l33 digest=21225ce96f1c -->
 ### 1. `CHEAT_SHEET.md` for type-level gotchas and common patterns.
@@ -2199,7 +2199,7 @@ Gather context before coding. Do not guess.
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l33`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/abdc5a30-a69d-41fe-8069-8049107bc0d7/rule.toml`
+- ref: `viewer-api/.rule/rules/abdc5a30-a69d-41fe-8069-8049107bc0d7/rule.toml`
 
 <!-- rule-catalog:entry id=acd60e9f-71fe-4b9e-9a7f-66fbd262f631 slug=shared/agent-rules/feedback-workflow/l58 digest=caadec6788b4 -->
 ### Feedback Workflow
@@ -2219,7 +2219,7 @@ Use static references as support:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l31`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/affc5c5a-5594-43b1-938d-61e4e8f23059/rule.toml`
+- ref: `viewer-api/.rule/rules/affc5c5a-5594-43b1-938d-61e4e8f23059/rule.toml`
 
 <!-- rule-catalog:entry id=b295a195-616b-4bd0-9181-2d0ae0295965 slug=shared/agent-rules/quality-gates/l51 digest=518b41eb8a9d -->
 ### ```rust
@@ -2239,7 +2239,7 @@ Relevant validation must pass before completion. If a required check repeatedly 
 - slug: `shared/agent-rules/quality-gates/l46`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/memory-api/.rule/rules/b6d18ba3-b1e6-471d-93c9-ff3d99e412b0/rule.toml`
+- ref: `memory-api/.rule/rules/b6d18ba3-b1e6-471d-93c9-ff3d99e412b0/rule.toml`
 
 <!-- rule-catalog:entry id=be5a071c-73c8-4b46-967c-d0e80b58391b slug=shared/agent-rules/canonical-sources/l72 digest=9282f88f007c -->
 ### Canonical Sources
@@ -2269,7 +2269,7 @@ Use static references as support:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l31`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/c5496169-4b66-441d-b6b0-3ac35f707ddf/rule.toml`
+- ref: `memory-api/.rule/rules/c5496169-4b66-441d-b6b0-3ac35f707ddf/rule.toml`
 
 <!-- rule-catalog:entry id=c8dfa4df-fd57-44e0-97f6-3368aa039ee0 slug=shared/agent-rules/discovery-protocol-before-editing/l33 digest=01e2eb9f0421 -->
 ### 1. `CHEAT_SHEET.md` for type-level gotchas and common patterns.
@@ -2279,7 +2279,7 @@ Use static references as support:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l33`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/c8dfa4df-fd57-44e0-97f6-3368aa039ee0/rule.toml`
+- ref: `memory-api/.rule/rules/c8dfa4df-fd57-44e0-97f6-3368aa039ee0/rule.toml`
 
 <!-- rule-catalog:entry id=cec6d88f-4d8f-4e65-8d1d-77be678b06c5 slug=shared/agent-rules/quality-gates/l46 digest=150986e9df10 -->
 ### Quality Gates
@@ -2289,7 +2289,7 @@ Relevant validation must pass before completion. If a required check repeatedly 
 - slug: `shared/agent-rules/quality-gates/l46`
 - section: `agent-rules/quality-gates`
 - tags: agent-rules, draft, quality-gates, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/cec6d88f-4d8f-4e65-8d1d-77be678b06c5/rule.toml`
+- ref: `viewer-api/.rule/rules/cec6d88f-4d8f-4e65-8d1d-77be678b06c5/rule.toml`
 
 <!-- rule-catalog:entry id=dada11d6-d36e-464f-92cf-f0a50e3d7aec slug=shared/agent-rules/escalation-rules/l59 digest=929b18503a24 -->
 ### Escalation Rules
@@ -2309,7 +2309,7 @@ Use live sources first:
 - slug: `shared/agent-rules/discovery-protocol-before-editing/l17`
 - section: `agent-rules/discovery-protocol-before-editing`
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
-- ref: `memory-viewers/memory-api/.rule/rules/dc2138dd-5d82-4508-929d-05a1ddf4c58c/rule.toml`
+- ref: `memory-api/.rule/rules/dc2138dd-5d82-4508-929d-05a1ddf4c58c/rule.toml`
 
 <!-- rule-catalog:entry id=e87186d5-1b9c-4f5b-a4a8-41f471842057 slug=shared/agent-rules/canonical-sources/l93 digest=71692b72f3c7 -->
 ### Canonical Sources
@@ -2319,7 +2319,7 @@ API patterns and gotchas: `CHEAT_SHEET.md`
 - slug: `shared/agent-rules/canonical-sources/l93`
 - section: `agent-rules/canonical-sources`
 - tags: agent-rules, canonical-sources, draft, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/e87186d5-1b9c-4f5b-a4a8-41f471842057/rule.toml`
+- ref: `viewer-api/.rule/rules/e87186d5-1b9c-4f5b-a4a8-41f471842057/rule.toml`
 
 <!-- rule-catalog:entry id=e8a0002c-d749-4cba-8f9d-cb451f7a5108 slug=shared/agent-rules/feedback-workflow/l70 digest=4afc60c02f4f -->
 ### Feedback Workflow
@@ -2329,7 +2329,7 @@ Record feedback on canonical rule entries today. `spec-api` entries do not yet e
 - slug: `shared/agent-rules/feedback-workflow/l70`
 - section: `agent-rules/feedback-workflow`
 - tags: agent-rules, draft, feedback-workflow, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/e8a0002c-d749-4cba-8f9d-cb451f7a5108/rule.toml`
+- ref: `viewer-api/.rule/rules/e8a0002c-d749-4cba-8f9d-cb451f7a5108/rule.toml`
 
 <!-- rule-catalog:entry id=eaf1888b-8daf-4606-b036-aae4df30f164 slug=shared/agent-rules/escalation-rules/l80 digest=abab06ad0f19 -->
 ### Escalation Rules
@@ -2339,7 +2339,7 @@ If blocked by ambiguity after focused research (10-15 minutes), ask the user.
 - slug: `shared/agent-rules/escalation-rules/l80`
 - section: `agent-rules/escalation-rules`
 - tags: agent-rules, draft, escalation-rules, shared
-- ref: `memory-viewers/viewer-api/.rule/rules/eaf1888b-8daf-4606-b036-aae4df30f164/rule.toml`
+- ref: `viewer-api/.rule/rules/eaf1888b-8daf-4606-b036-aae4df30f164/rule.toml`
 
 <!-- rule-catalog:entry id=f7a6ba7b-81ef-40bb-ae98-49658dc3e337 slug=shared/agent-rules/fallback-mode-when-mcp-is-unavailable/l86 digest=59e863c656f2 -->
 ### Fallback Mode (When MCP Is Unavailable)
@@ -2349,7 +2349,7 @@ Docs fallback: search/read local docs directly.
 - slug: `shared/agent-rules/fallback-mode-when-mcp-is-unavailable/l86`
 - section: `agent-rules/fallback-mode-when-mcp-is-unavailable`
 - tags: agent-rules, draft, fallback-mode-when-mcp-is-unavailable, shared
-- ref: `memory-viewers/memory-api/.rule/rules/f7a6ba7b-81ef-40bb-ae98-49658dc3e337/rule.toml`
+- ref: `memory-api/.rule/rules/f7a6ba7b-81ef-40bb-ae98-49658dc3e337/rule.toml`
 
 <!-- rule-catalog:entry id=f8026abd-d873-4ea6-8d23-d4fe6d8fec40 slug=shared/agent-rules/discovery-protocol-before-editing/l18 digest=dcf17be3004b -->
 ### 1. Documentation: use doc-viewer MCP tools to locate relevant module docs.
@@ -2369,7 +2369,7 @@ Any requested implementation or behavior change: create or update the tracking t
 - slug: `shared/agent-rules/task-routing/l37`
 - section: `agent-rules/task-routing`
 - tags: agent-rules, draft, shared, task-routing
-- ref: `memory-viewers/memory-api/.rule/rules/facb3afd-0074-455b-8065-e54e1309399c/rule.toml`
+- ref: `memory-api/.rule/rules/facb3afd-0074-455b-8065-e54e1309399c/rule.toml`
 
 ## shared/cline-rules
 
@@ -5168,17 +5168,17 @@ A `spec-api` generation adapter may source its snippets from canonical rule-like
 - slug: `spec-api/generated-documents/summary/proposed-model/spec-document-generation/l36`
 - section: `summary/proposed-model/spec-document-generation`
 - tags: draft, generated-documents, proposed-model, spec-api, spec-document-generation, summary
-- ref: `memory-viewers/memory-api/.rule/rules/0ff22ee2-e5a5-4ecf-9f3b-299dba241074/rule.toml`
+- ref: `memory-api/.rule/rules/0ff22ee2-e5a5-4ecf-9f3b-299dba241074/rule.toml`
 
 <!-- rule-catalog:entry id=152dcba7-8bca-4231-b7e5-1970de77b539 slug=spec-api/generated-documents/summary/related-tickets/l119 digest=83187a84c900 -->
 ### Related tickets
 
-[f4b0be64 Generate spec documents from canonical snippets via shared builder](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-viewers/memory-api/.ticket/tickets/f4b0be64-a…
+[f4b0be64 Generate spec documents from canonical snippets via shared builder](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/f4b0be64-a…
 
 - slug: `spec-api/generated-documents/summary/related-tickets/l119`
 - section: `summary/related-tickets`
 - tags: draft, generated-documents, related-tickets, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/152dcba7-8bca-4231-b7e5-1970de77b539/rule.toml`
+- ref: `memory-api/.rule/rules/152dcba7-8bca-4231-b7e5-1970de77b539/rule.toml`
 
 <!-- rule-catalog:entry id=16786c84-4e99-4041-8292-a962d907c541 slug=spec-api/generated-documents/summary/l1 digest=41f4945455ec -->
 ### Summary
@@ -5188,7 +5188,7 @@ A `spec-api` generation adapter may source its snippets from canonical rule-like
 - slug: `spec-api/generated-documents/summary/l1`
 - section: `summary`
 - tags: draft, generated-documents, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/16786c84-4e99-4041-8292-a962d907c541/rule.toml`
+- ref: `memory-api/.rule/rules/16786c84-4e99-4041-8292-a962d907c541/rule.toml`
 
 <!-- rule-catalog:entry id=21c67de3-06bb-42ca-8819-b82ef2e4a531 slug=spec-api/generated-documents/summary/acceptance-criteria/l48 digest=df7fcd2afe58 -->
 ### Acceptance criteria
@@ -5198,7 +5198,7 @@ A shared document-builder abstraction is documented as the common generation pat
 - slug: `spec-api/generated-documents/summary/acceptance-criteria/l48`
 - section: `summary/acceptance-criteria`
 - tags: acceptance-criteria, draft, generated-documents, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/21c67de3-06bb-42ca-8819-b82ef2e4a531/rule.toml`
+- ref: `memory-api/.rule/rules/21c67de3-06bb-42ca-8819-b82ef2e4a531/rule.toml`
 
 <!-- rule-catalog:entry id=23dff709-4a4f-4a53-b767-4feb9e32c4bf slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/l60 digest=743b21fd334f -->
 ### A spec-local descriptor, `generated.toml`, maps `body.md` and named `sections/*.
@@ -5208,7 +5208,7 @@ A spec-local descriptor, `generated.toml`, maps `body.md` and named `sections/*.
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/l60`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts`
 - tags: draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/23dff709-4a4f-4a53-b767-4feb9e32c4bf/rule.toml`
+- ref: `memory-api/.rule/rules/23dff709-4a4f-4a53-b767-4feb9e32c4bf/rule.toml`
 
 <!-- rule-catalog:entry id=2c4f3957-5377-4cf0-9050-512c7a26f2f7 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/l56 digest=1f9b7b9ca6b0 -->
 ### Next slice: rule-target-backed spec artifacts
@@ -5218,7 +5218,7 @@ The next planned slice should let a spec consume `rule-api` target outputs witho
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/l56`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts`
 - tags: draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/2c4f3957-5377-4cf0-9050-512c7a26f2f7/rule.toml`
+- ref: `memory-api/.rule/rules/2c4f3957-5377-4cf0-9050-512c7a26f2f7/rule.toml`
 
 <!-- rule-catalog:entry id=42953cc1-9983-4074-885b-eec548816864 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/planned-acceptance-criteria-for-the-next-slice/l98 digest=96bd67f55656 -->
 ### Planned acceptance criteria for the next slice
@@ -5228,7 +5228,7 @@ Specs can declare generated `body.md` and named section artifacts through an exp
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/planned-acceptance-criteria-for-the-next-slice/l98`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/planned-acceptance-criteria-for-the-next-slice`
 - tags: draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, planned-acceptance-criteria-for-the-next-slice, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/42953cc1-9983-4074-885b-eec548816864/rule.toml`
+- ref: `memory-api/.rule/rules/42953cc1-9983-4074-885b-eec548816864/rule.toml`
 
 <!-- rule-catalog:entry id=42ad6525-7fe1-4739-9d63-58e3efafe12e slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l65 digest=78750e7d009f -->
 ### Descriptor contract
@@ -5238,7 +5238,7 @@ The implemented descriptor format is a spec-local `generated.toml` file with one
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l65`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/42ad6525-7fe1-4739-9d63-58e3efafe12e/rule.toml`
+- ref: `memory-api/.rule/rules/42ad6525-7fe1-4739-9d63-58e3efafe12e/rule.toml`
 
 <!-- rule-catalog:entry id=65204c60-650a-4f69-9fe5-852434df3dc4 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l83 digest=9e3aa5b27c4c -->
 ### The descriptor is intentionally artifact-oriented rather than rule-filter-orient
@@ -5248,7 +5248,7 @@ The descriptor is intentionally artifact-oriented rather than rule-filter-orient
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l83`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/65204c60-650a-4f69-9fe5-852434df3dc4/rule.toml`
+- ref: `memory-api/.rule/rules/65204c60-650a-4f69-9fe5-852434df3dc4/rule.toml`
 
 <!-- rule-catalog:entry id=6a994ba9-2014-4984-9a18-7283353802e8 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation/l89 digest=2fb9ec1cf9a3 -->
 ### Descriptor validation
@@ -5258,7 +5258,7 @@ The current descriptor implementation rejects:
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation/l89`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation`
 - tags: descriptor-validation, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/6a994ba9-2014-4984-9a18-7283353802e8/rule.toml`
+- ref: `memory-api/.rule/rules/6a994ba9-2014-4984-9a18-7283353802e8/rule.toml`
 
 <!-- rule-catalog:entry id=7c113526-c4e7-42d4-8c61-b3c0905cbb9c slug=spec-api/generated-documents/summary/problem/l9 digest=423752368e04 -->
 ### hierarchical target configuration
@@ -5268,7 +5268,7 @@ hierarchical target configuration
 - slug: `spec-api/generated-documents/summary/problem/l9`
 - section: `summary/problem`
 - tags: draft, generated-documents, problem, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/7c113526-c4e7-42d4-8c61-b3c0905cbb9c/rule.toml`
+- ref: `memory-api/.rule/rules/7c113526-c4e7-42d4-8c61-b3c0905cbb9c/rule.toml`
 
 <!-- rule-catalog:entry id=7e6f64bb-5b78-47fc-9b26-e1f3fb787d20 slug=spec-api/generated-documents/summary/proposed-model/domain-adapters/l30 digest=df9e271bc07a -->
 ### Domain adapters
@@ -5278,7 +5278,7 @@ hierarchical target configuration
 - slug: `spec-api/generated-documents/summary/proposed-model/domain-adapters/l30`
 - section: `summary/proposed-model/domain-adapters`
 - tags: domain-adapters, draft, generated-documents, proposed-model, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/7e6f64bb-5b78-47fc-9b26-e1f3fb787d20/rule.toml`
+- ref: `memory-api/.rule/rules/7e6f64bb-5b78-47fc-9b26-e1f3fb787d20/rule.toml`
 
 <!-- rule-catalog:entry id=7f4e668c-3037-4d51-9954-bead0f4eb25e slug=spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l28 digest=c45460aa0466 -->
 ### This layer should be generic over the domain adapter that supplies snippet recor
@@ -5288,7 +5288,7 @@ This layer should be generic over the domain adapter that supplies snippet recor
 - slug: `spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l28`
 - section: `summary/proposed-model/shared-builder-seam`
 - tags: draft, generated-documents, proposed-model, shared-builder-seam, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/7f4e668c-3037-4d51-9954-bead0f4eb25e/rule.toml`
+- ref: `memory-api/.rule/rules/7f4e668c-3037-4d51-9954-bead0f4eb25e/rule.toml`
 
 <!-- rule-catalog:entry id=91b389d0-a9c9-458c-8aa8-d51627b629c7 slug=spec-api/generated-documents/summary/problem/l5 digest=52dfd57f0220 -->
 ### Problem
@@ -5298,7 +5298,7 @@ Today the document-generation path lives almost entirely in `rule-api`:
 - slug: `spec-api/generated-documents/summary/problem/l5`
 - section: `summary/problem`
 - tags: draft, generated-documents, problem, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/91b389d0-a9c9-458c-8aa8-d51627b629c7/rule.toml`
+- ref: `memory-api/.rule/rules/91b389d0-a9c9-458c-8aa8-d51627b629c7/rule.toml`
 
 <!-- rule-catalog:entry id=97647246-e24e-48f8-970c-8e2e464f2346 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/implementation-status/l105 digest=d1121e03dbab -->
 ### Implementation status
@@ -5308,7 +5308,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/implementation-status/l105`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/implementation-status`
 - tags: draft, generated-documents, implementation-status, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/97647246-e24e-48f8-970c-8e2e464f2346/rule.toml`
+- ref: `memory-api/.rule/rules/97647246-e24e-48f8-970c-8e2e464f2346/rule.toml`
 
 <!-- rule-catalog:entry id=9a3f38e6-177a-46ea-9243-f6c2646dd072 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l85 digest=5af61f74e66b -->
 ### `spec-api` stores and validates the mapping from a spec artifact to a target nam
@@ -5318,7 +5318,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l85`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/9a3f38e6-177a-46ea-9243-f6c2646dd072/rule.toml`
+- ref: `memory-api/.rule/rules/9a3f38e6-177a-46ea-9243-f6c2646dd072/rule.toml`
 
 <!-- rule-catalog:entry id=a281bc55-4795-4c5b-be04-f7e7bcc477a0 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l78 digest=7045e45bc410 -->
 ### [sections.design]
@@ -5328,7 +5328,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l78`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/a281bc55-4795-4c5b-be04-f7e7bcc477a0/rule.toml`
+- ref: `memory-api/.rule/rules/a281bc55-4795-4c5b-be04-f7e7bcc477a0/rule.toml`
 
 <!-- rule-catalog:entry id=a59e9e3c-dfbd-45ba-a3ba-5c91d7a17dde slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l69 digest=453cb85b9c0d -->
 ### ```toml
@@ -5338,7 +5338,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l69`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/a59e9e3c-dfbd-45ba-a3ba-5c91d7a17dde/rule.toml`
+- ref: `memory-api/.rule/rules/a59e9e3c-dfbd-45ba-a3ba-5c91d7a17dde/rule.toml`
 
 <!-- rule-catalog:entry id=ac096ea4-df1c-40f6-9fdf-35ea461b6a69 slug=spec-api/generated-documents/summary/related-specs/l127 digest=b7fb0fba12d9 -->
 ### Related specs
@@ -5348,7 +5348,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/related-specs/l127`
 - section: `summary/related-specs`
 - tags: draft, generated-documents, related-specs, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/ac096ea4-df1c-40f6-9fdf-35ea461b6a69/rule.toml`
+- ref: `memory-api/.rule/rules/ac096ea4-df1c-40f6-9fdf-35ea461b6a69/rule.toml`
 
 <!-- rule-catalog:entry id=aeeb9889-1972-4b3e-8cdd-50f64bcc5b6b slug=spec-api/generated-documents/summary/problem/l16 digest=ba3f4a58b6fc -->
 ### `spec-api` only offers direct folder CRUD over `spec.toml`, `body.md`, and `sect
@@ -5358,7 +5358,7 @@ The `spec-cli` orchestration slice is now implemented behind `spec sync-generate
 - slug: `spec-api/generated-documents/summary/problem/l16`
 - section: `summary/problem`
 - tags: draft, generated-documents, problem, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/aeeb9889-1972-4b3e-8cdd-50f64bcc5b6b/rule.toml`
+- ref: `memory-api/.rule/rules/aeeb9889-1972-4b3e-8cdd-50f64bcc5b6b/rule.toml`
 
 <!-- rule-catalog:entry id=b92abfc0-7b4b-4815-b64c-05a8e1d34009 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/implementation-status/l109 digest=dc732738b71f -->
 ### This pilot spec maps `body.md` and `sections/migration-workflow.md` through `gen
@@ -5368,7 +5368,7 @@ This pilot spec maps `body.md` and `sections/migration-workflow.md` through `gen
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/implementation-status/l109`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/implementation-status`
 - tags: draft, generated-documents, implementation-status, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/b92abfc0-7b4b-4815-b64c-05a8e1d34009/rule.toml`
+- ref: `memory-api/.rule/rules/b92abfc0-7b4b-4815-b64c-05a8e1d34009/rule.toml`
 
 <!-- rule-catalog:entry id=bfcc40c9-422f-4048-b26b-21d8c22129b0 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/validation-status/l114 digest=0fcc4681ff13 -->
 ### Validation status
@@ -5378,7 +5378,7 @@ Passing: `cargo test -p spec-cli sync_generated -- --nocapture`
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/validation-status/l114`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/validation-status`
 - tags: draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary, validation-status
-- ref: `memory-viewers/memory-api/.rule/rules/bfcc40c9-422f-4048-b26b-21d8c22129b0/rule.toml`
+- ref: `memory-api/.rule/rules/bfcc40c9-422f-4048-b26b-21d8c22129b0/rule.toml`
 
 <!-- rule-catalog:entry id=c25c3b1c-5615-4dd5-aaa2-c39ea6bbac50 slug=spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l24 digest=7b02b9353912 -->
 ### rendering of generated outputs from ordered snippet blocks
@@ -5388,7 +5388,7 @@ rendering of generated outputs from ordered snippet blocks
 - slug: `spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l24`
 - section: `summary/proposed-model/shared-builder-seam`
 - tags: draft, generated-documents, proposed-model, shared-builder-seam, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/c25c3b1c-5615-4dd5-aaa2-c39ea6bbac50/rule.toml`
+- ref: `memory-api/.rule/rules/c25c3b1c-5615-4dd5-aaa2-c39ea6bbac50/rule.toml`
 
 <!-- rule-catalog:entry id=c765faa0-cec1-4196-8757-38b4de8d181b slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l74 digest=3e5255238989 -->
 ### [sections.requirements]
@@ -5398,7 +5398,7 @@ rendering of generated outputs from ordered snippet blocks
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract/l74`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-contract`
 - tags: descriptor-contract, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/c765faa0-cec1-4196-8757-38b4de8d181b/rule.toml`
+- ref: `memory-api/.rule/rules/c765faa0-cec1-4196-8757-38b4de8d181b/rule.toml`
 
 <!-- rule-catalog:entry id=c7803a26-fb05-46c2-a8a9-4681e645a988 slug=spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation/l93 digest=24e2af01b516 -->
 ### missing or blank `config` values
@@ -5408,7 +5408,7 @@ missing or blank `config` values
 - slug: `spec-api/generated-documents/summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation/l93`
 - section: `summary/next-slice-rule-target-backed-spec-artifacts/descriptor-validation`
 - tags: descriptor-validation, draft, generated-documents, next-slice-rule-target-backed-spec-artifacts, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/c7803a26-fb05-46c2-a8a9-4681e645a988/rule.toml`
+- ref: `memory-api/.rule/rules/c7803a26-fb05-46c2-a8a9-4681e645a988/rule.toml`
 
 <!-- rule-catalog:entry id=c92cfd00-ffaf-4951-8e65-da75a56163a6 slug=spec-api/generated-documents/summary/proposed-model/spec-document-generation/l40 digest=8100fbe4161c -->
 ### The current implementation covers both `body.md` generation and named `sections/
@@ -5418,17 +5418,17 @@ The current implementation covers both `body.md` generation and named `sections/
 - slug: `spec-api/generated-documents/summary/proposed-model/spec-document-generation/l40`
 - section: `summary/proposed-model/spec-document-generation`
 - tags: draft, generated-documents, proposed-model, spec-api, spec-document-generation, summary
-- ref: `memory-viewers/memory-api/.rule/rules/c92cfd00-ffaf-4951-8e65-da75a56163a6/rule.toml`
+- ref: `memory-api/.rule/rules/c92cfd00-ffaf-4951-8e65-da75a56163a6/rule.toml`
 
 <!-- rule-catalog:entry id=cf4a19a7-6fc9-4d1a-920a-7e9734bf02fc slug=spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l20 digest=77dcd1fc1e46 -->
 ### Shared builder seam
 
-Introduce a shared builder layer under `memory-viewers/memory-api/crates/` that owns:
+Introduce a shared builder layer under `memory-api/crates/` that owns:
 
 - slug: `spec-api/generated-documents/summary/proposed-model/shared-builder-seam/l20`
 - section: `summary/proposed-model/shared-builder-seam`
 - tags: draft, generated-documents, proposed-model, shared-builder-seam, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/cf4a19a7-6fc9-4d1a-920a-7e9734bf02fc/rule.toml`
+- ref: `memory-api/.rule/rules/cf4a19a7-6fc9-4d1a-920a-7e9734bf02fc/rule.toml`
 
 <!-- rule-catalog:entry id=f8b3cea0-fb0b-455c-bf1f-806b695482f1 slug=spec-api/generated-documents/summary/non-goals/l42 digest=52c5756c90aa -->
 ### Non-goals
@@ -5438,7 +5438,7 @@ Replacing authored `spec.toml` metadata with generated content.
 - slug: `spec-api/generated-documents/summary/non-goals/l42`
 - section: `summary/non-goals`
 - tags: draft, generated-documents, non-goals, spec-api, summary
-- ref: `memory-viewers/memory-api/.rule/rules/f8b3cea0-fb0b-455c-bf1f-806b695482f1/rule.toml`
+- ref: `memory-api/.rule/rules/f8b3cea0-fb0b-455c-bf1f-806b695482f1/rule.toml`
 
 <!-- rule-catalog:entry id=fba0b27a-3856-42f7-88ae-f2abd053cae9 slug=spec-api/generated-documents/migration-workflow/l1 digest=a194b134b459 -->
 ### Migration workflow
@@ -5448,7 +5448,7 @@ This pilot keeps authored `spec.toml` metadata local while canonical prose lives
 - slug: `spec-api/generated-documents/migration-workflow/l1`
 - section: `migration-workflow`
 - tags: draft, generated-documents, migration-workflow, spec-api
-- ref: `memory-viewers/memory-api/.rule/rules/fba0b27a-3856-42f7-88ae-f2abd053cae9/rule.toml`
+- ref: `memory-api/.rule/rules/fba0b27a-3856-42f7-88ae-f2abd053cae9/rule.toml`
 
 ## spec-viewer/theme-settings
 
@@ -5485,7 +5485,7 @@ The spec-viewer's theme settings panel **MUST** conform to the canonical spec
 <!-- rule-catalog:entry id=e687195a-467a-4175-886a-c6c9040cadee slug=spec-viewer/theme-settings/spec-viewer-theme-settings/implementation-pointers/l31 digest=ea9b96a7f3b7 -->
 ### Implementation pointers
 
-Panel lives in `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/components/theme_settings.rs`
+Panel lives in `viewer-api/viewer-api/frontend/dioxus/src/components/theme_settings.rs`
 
 - slug: `spec-viewer/theme-settings/spec-viewer-theme-settings/implementation-pointers/l31`
 - section: `spec-viewer-theme-settings/implementation-pointers`
@@ -5527,7 +5527,7 @@ The ticket-viewer is fully GPU-accelerated by default — the 3D graph view, gla
 <!-- rule-catalog:entry id=b95c38f7-7cd6-47d5-9ecf-d13645e0bf29 slug=ticket-viewer/theme-settings/ticket-viewer-theme-settings/implementation-pointers/l31 digest=d192ba0ebe91 -->
 ### Implementation pointers
 
-Panel lives in `memory-viewers/viewer-api/viewer-api/frontend/dioxus/src/components/theme_settings.rs`
+Panel lives in `viewer-api/viewer-api/frontend/dioxus/src/components/theme_settings.rs`
 
 - slug: `ticket-viewer/theme-settings/ticket-viewer-theme-settings/implementation-pointers/l31`
 - section: `ticket-viewer-theme-settings/implementation-pointers`
@@ -5544,7 +5544,7 @@ name: "Ticket Refinement Agent"
 - slug: `viewer-api/agents/ticket-refinement/ticket-refinement-agent/l1`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, ticket-refinement, ticket-refinement-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/076aa4ad-4e4b-4e87-b527-4165b2ef43d0/rule.toml`
+- ref: `viewer-api/.rule/rules/076aa4ad-4e4b-4e87-b527-4165b2ef43d0/rule.toml`
 
 <!-- rule-catalog:entry id=1c4a7b99-0636-4251-a660-8b05f3e20311 slug=viewer-api/agents/roast/roast-agent/l5 digest=2c095ab46595 -->
 ### Mock unnecessarily complex logic and over-engineering.
@@ -5554,7 +5554,7 @@ Mock unnecessarily complex logic and over-engineering.
 - slug: `viewer-api/agents/roast/roast-agent/l5`
 - section: `roast-agent`
 - tags: agents, draft, roast, roast-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/1c4a7b99-0636-4251-a660-8b05f3e20311/rule.toml`
+- ref: `viewer-api/.rule/rules/1c4a7b99-0636-4251-a660-8b05f3e20311/rule.toml`
 
 <!-- rule-catalog:entry id=210dfbf3-6c4e-4c55-9387-ea786cff459d slug=viewer-api/agents/roast/roast-agent/l13 digest=6f75d26a82b6 -->
 ### Sharp-witted, hilarious, and completely irreverent.
@@ -5564,7 +5564,7 @@ Sharp-witted, hilarious, and completely irreverent.
 - slug: `viewer-api/agents/roast/roast-agent/l13`
 - section: `roast-agent`
 - tags: agents, draft, roast, roast-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/210dfbf3-6c4e-4c55-9387-ea786cff459d/rule.toml`
+- ref: `viewer-api/.rule/rules/210dfbf3-6c4e-4c55-9387-ea786cff459d/rule.toml`
 
 <!-- rule-catalog:entry id=2994ce46-7a59-43c0-bdf2-105fe2b08db8 slug=viewer-api/agents/ticket-refinement/scope/output-format/validation/l71 digest=df669177156d -->
 ### Validation
@@ -5574,7 +5574,7 @@ State transition checks:
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/validation/l71`
 - section: `scope/output-format/validation`
 - tags: agents, draft, output-format, scope, ticket-refinement, validation, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/2994ce46-7a59-43c0-bdf2-105fe2b08db8/rule.toml`
+- ref: `viewer-api/.rule/rules/2994ce46-7a59-43c0-bdf2-105fe2b08db8/rule.toml`
 
 <!-- rule-catalog:entry id=2e490cca-886e-4bb3-a2fc-df80c6357def slug=viewer-api/agents/roast/roast-agent/l3 digest=8b89c0276e94 -->
 ### Your Objective:
@@ -5584,7 +5584,7 @@ Your Objective:
 - slug: `viewer-api/agents/roast/roast-agent/l3`
 - section: `roast-agent`
 - tags: agents, draft, roast, roast-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/2e490cca-886e-4bb3-a2fc-df80c6357def/rule.toml`
+- ref: `viewer-api/.rule/rules/2e490cca-886e-4bb3-a2fc-df80c6357def/rule.toml`
 
 <!-- rule-catalog:entry id=357728a2-7806-49c6-8aa7-023bf412a0ed slug=viewer-api/agents/ticket-refinement/scope/required-workflow/l28 digest=3db05e3e7abe -->
 ### Required Workflow
@@ -5594,7 +5594,7 @@ Your Objective:
 - slug: `viewer-api/agents/ticket-refinement/scope/required-workflow/l28`
 - section: `scope/required-workflow`
 - tags: agents, draft, required-workflow, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/357728a2-7806-49c6-8aa7-023bf412a0ed/rule.toml`
+- ref: `viewer-api/.rule/rules/357728a2-7806-49c6-8aa7-023bf412a0ed/rule.toml`
 
 <!-- rule-catalog:entry id=39c42850-2fa3-4af8-957a-42002b8aa7b8 slug=viewer-api/agents/ticket-refinement/scope/output-format/l54 digest=a0334982d307 -->
 ### Output Format
@@ -5604,7 +5604,7 @@ Return a structured refinement report:
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/l54`
 - section: `scope/output-format`
 - tags: agents, draft, output-format, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/39c42850-2fa3-4af8-957a-42002b8aa7b8/rule.toml`
+- ref: `viewer-api/.rule/rules/39c42850-2fa3-4af8-957a-42002b8aa7b8/rule.toml`
 
 <!-- rule-catalog:entry id=44378881-683d-4b67-bbd5-14c42efd396a slug=viewer-api/agents/ticket-refinement/scope/output-format/interview-findings/l63 digest=e244a9e5d236 -->
 ### Interview Findings
@@ -5614,7 +5614,7 @@ Confirmed requirements:
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/interview-findings/l63`
 - section: `scope/output-format/interview-findings`
 - tags: agents, draft, interview-findings, output-format, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/44378881-683d-4b67-bbd5-14c42efd396a/rule.toml`
+- ref: `viewer-api/.rule/rules/44378881-683d-4b67-bbd5-14c42efd396a/rule.toml`
 
 <!-- rule-catalog:entry id=4df9a87b-d091-4ce7-bd5b-7c6d5dd5c8f4 slug=viewer-api/agents/ticket-refinement/ticket-refinement-agent/l9 digest=cdac8f649bbf -->
 ### You are a ticket refinement specialist for the context-engine ticket system.
@@ -5624,7 +5624,7 @@ You are a ticket refinement specialist for the context-engine ticket system.
 - slug: `viewer-api/agents/ticket-refinement/ticket-refinement-agent/l9`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, ticket-refinement, ticket-refinement-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/4df9a87b-d091-4ce7-bd5b-7c6d5dd5c8f4/rule.toml`
+- ref: `viewer-api/.rule/rules/4df9a87b-d091-4ce7-bd5b-7c6d5dd5c8f4/rule.toml`
 
 <!-- rule-catalog:entry id=5e10d7d5-e76f-4ab1-b242-243cc298f5dc slug=viewer-api/agents/ticket-refinement/scope/required-workflow/l36 digest=1be038795d7e -->
 ### 2. Clarify with interview questions
@@ -5634,7 +5634,7 @@ You are a ticket refinement specialist for the context-engine ticket system.
 - slug: `viewer-api/agents/ticket-refinement/scope/required-workflow/l36`
 - section: `scope/required-workflow`
 - tags: agents, draft, required-workflow, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/5e10d7d5-e76f-4ab1-b242-243cc298f5dc/rule.toml`
+- ref: `viewer-api/.rule/rules/5e10d7d5-e76f-4ab1-b242-243cc298f5dc/rule.toml`
 
 <!-- rule-catalog:entry id=5fa6e0d5-2ac6-4fdd-9e5e-7811afcc4a88 slug=viewer-api/agents/ticket-refinement/scope/required-workflow/l49 digest=0e4491fbdf08 -->
 ### 5. Validate consistency
@@ -5644,7 +5644,7 @@ You are a ticket refinement specialist for the context-engine ticket system.
 - slug: `viewer-api/agents/ticket-refinement/scope/required-workflow/l49`
 - section: `scope/required-workflow`
 - tags: agents, draft, required-workflow, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/5fa6e0d5-2ac6-4fdd-9e5e-7811afcc4a88/rule.toml`
+- ref: `viewer-api/.rule/rules/5fa6e0d5-2ac6-4fdd-9e5e-7811afcc4a88/rule.toml`
 
 <!-- rule-catalog:entry id=78e54840-808f-421a-88b5-cd8f64dd3e24 slug=viewer-api/agents/ticket-refinement/ticket-refinement-agent/l11 digest=df93a329a76f -->
 ### Your job is to create high-quality tickets, review existing tickets, and update 
@@ -5654,7 +5654,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - slug: `viewer-api/agents/ticket-refinement/ticket-refinement-agent/l11`
 - section: `ticket-refinement-agent`
 - tags: agents, draft, ticket-refinement, ticket-refinement-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/78e54840-808f-421a-88b5-cd8f64dd3e24/rule.toml`
+- ref: `viewer-api/.rule/rules/78e54840-808f-421a-88b5-cd8f64dd3e24/rule.toml`
 
 <!-- rule-catalog:entry id=8d934fec-c604-4b16-af0e-f7cfb763f559 slug=viewer-api/agents/ticket-refinement/scope/l13 digest=0f90d50ec1be -->
 ### Scope
@@ -5664,7 +5664,7 @@ Create new tickets from issues or requested work.
 - slug: `viewer-api/agents/ticket-refinement/scope/l13`
 - section: `scope`
 - tags: agents, draft, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/8d934fec-c604-4b16-af0e-f7cfb763f559/rule.toml`
+- ref: `viewer-api/.rule/rules/8d934fec-c604-4b16-af0e-f7cfb763f559/rule.toml`
 
 <!-- rule-catalog:entry id=9d05fbdb-cc68-49ef-9f5e-e366a53b98a8 slug=viewer-api/agents/ticket-refinement/scope/output-format/plan/l67 digest=adaf45d107e5 -->
 ### Plan
@@ -5674,7 +5674,7 @@ Implementation steps:
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/plan/l67`
 - section: `scope/output-format/plan`
 - tags: agents, draft, output-format, plan, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/9d05fbdb-cc68-49ef-9f5e-e366a53b98a8/rule.toml`
+- ref: `viewer-api/.rule/rules/9d05fbdb-cc68-49ef-9f5e-e366a53b98a8/rule.toml`
 
 <!-- rule-catalog:entry id=a529df45-ba1d-43f9-aa22-f570c1c4ba63 slug=viewer-api/agents/ticket-refinement/scope/output-format/ticket-actions/l58 digest=9f30f255f273 -->
 ### Ticket Actions
@@ -5684,7 +5684,7 @@ Created:
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/ticket-actions/l58`
 - section: `scope/output-format/ticket-actions`
 - tags: agents, draft, output-format, scope, ticket-actions, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/a529df45-ba1d-43f9-aa22-f570c1c4ba63/rule.toml`
+- ref: `viewer-api/.rule/rules/a529df45-ba1d-43f9-aa22-f570c1c4ba63/rule.toml`
 
 <!-- rule-catalog:entry id=a6e0c55d-ed13-4dec-8c3c-e6ee12350c2b slug=viewer-api/agents/roast/roast-agent/l1 digest=2a2e21e7cde2 -->
 ### You are an elitist, hyper-cynical Senior Software Architect with a black belt in
@@ -5694,7 +5694,7 @@ You are an elitist, hyper-cynical Senior Software Architect with a black belt in
 - slug: `viewer-api/agents/roast/roast-agent/l1`
 - section: `roast-agent`
 - tags: agents, draft, roast, roast-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/a6e0c55d-ed13-4dec-8c3c-e6ee12350c2b/rule.toml`
+- ref: `viewer-api/.rule/rules/a6e0c55d-ed13-4dec-8c3c-e6ee12350c2b/rule.toml`
 
 <!-- rule-catalog:entry id=c0901baf-4ad1-4720-b057-ae93a0a70da4 slug=viewer-api/agents/ticket-refinement/scope/constraints/l20 digest=a7bc3aeb72c1 -->
 ### Constraints
@@ -5704,7 +5704,7 @@ Do not implement code changes unless explicitly asked.
 - slug: `viewer-api/agents/ticket-refinement/scope/constraints/l20`
 - section: `scope/constraints`
 - tags: agents, constraints, draft, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/c0901baf-4ad1-4720-b057-ae93a0a70da4/rule.toml`
+- ref: `viewer-api/.rule/rules/c0901baf-4ad1-4720-b057-ae93a0a70da4/rule.toml`
 
 <!-- rule-catalog:entry id=dac86626-05e6-43db-a961-6a2c44542a1b slug=viewer-api/agents/roast/roast-agent/l11 digest=eb9a77870ca2 -->
 ### The Tone:
@@ -5714,7 +5714,7 @@ The Tone:
 - slug: `viewer-api/agents/roast/roast-agent/l11`
 - section: `roast-agent`
 - tags: agents, draft, roast, roast-agent, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/dac86626-05e6-43db-a961-6a2c44542a1b/rule.toml`
+- ref: `viewer-api/.rule/rules/dac86626-05e6-43db-a961-6a2c44542a1b/rule.toml`
 
 <!-- rule-catalog:entry id=db0c0479-cdb0-4e75-af67-4bf429e1575a slug=viewer-api/agents/ticket-refinement/scope/output-format/next-recommended-action/l76 digest=76a036edcc0b -->
 ### Next Recommended Action
@@ -5724,7 +5724,7 @@ Single next step for the user/assignee.
 - slug: `viewer-api/agents/ticket-refinement/scope/output-format/next-recommended-action/l76`
 - section: `scope/output-format/next-recommended-action`
 - tags: agents, draft, next-recommended-action, output-format, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/db0c0479-cdb0-4e75-af67-4bf429e1575a/rule.toml`
+- ref: `viewer-api/.rule/rules/db0c0479-cdb0-4e75-af67-4bf429e1575a/rule.toml`
 
 <!-- rule-catalog:entry id=fa663fd5-6c3a-4d02-ac39-a92ce32ccdc4 slug=viewer-api/agents/ticket-refinement/scope/required-workflow/l40 digest=96d75fc7af18 -->
 ### 3. Create or update tickets
@@ -5734,7 +5734,7 @@ Single next step for the user/assignee.
 - slug: `viewer-api/agents/ticket-refinement/scope/required-workflow/l40`
 - section: `scope/required-workflow`
 - tags: agents, draft, required-workflow, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/fa663fd5-6c3a-4d02-ac39-a92ce32ccdc4/rule.toml`
+- ref: `viewer-api/.rule/rules/fa663fd5-6c3a-4d02-ac39-a92ce32ccdc4/rule.toml`
 
 <!-- rule-catalog:entry id=fd964ca8-8aad-4ef6-9010-ee7effd24e0c slug=viewer-api/agents/ticket-refinement/scope/required-workflow/l45 digest=20e21064c3cc -->
 ### 4. Plan execution
@@ -5744,7 +5744,7 @@ Single next step for the user/assignee.
 - slug: `viewer-api/agents/ticket-refinement/scope/required-workflow/l45`
 - section: `scope/required-workflow`
 - tags: agents, draft, required-workflow, scope, ticket-refinement, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/fd964ca8-8aad-4ef6-9010-ee7effd24e0c/rule.toml`
+- ref: `viewer-api/.rule/rules/fd964ca8-8aad-4ef6-9010-ee7effd24e0c/rule.toml`
 
 ## viewer-api/readme
 
@@ -5756,7 +5756,7 @@ Back to [viewer-api/README.md](../README.md).
 - slug: `viewer-api/readme/packages/viewer-api/parent-readme/l1`
 - section: `packages/viewer-api/parent-readme`
 - tags: draft, packages, parent-readme, readme, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/52957157-2693-43c6-911d-a7d4ff3e6eff/rule.toml`
+- ref: `viewer-api/.rule/rules/52957157-2693-43c6-911d-a7d4ff3e6eff/rule.toml`
 
 <!-- rule-catalog:entry id=9219c18d-fb96-46e5-9b16-bd7dca1b921d slug=viewer-api/readme/packages/viewer-ctl/parent-readme/l1 digest=2aa64a4bbded -->
 ### Parent README
@@ -5766,7 +5766,7 @@ Back to [viewer-api/README.md](../README.md).
 - slug: `viewer-api/readme/packages/viewer-ctl/parent-readme/l1`
 - section: `packages/viewer-ctl/parent-readme`
 - tags: draft, packages, parent-readme, readme, viewer-api, viewer-ctl
-- ref: `memory-viewers/viewer-api/.rule/rules/9219c18d-fb96-46e5-9b16-bd7dca1b921d/rule.toml`
+- ref: `viewer-api/.rule/rules/9219c18d-fb96-46e5-9b16-bd7dca1b921d/rule.toml`
 
 <!-- rule-catalog:entry id=95e98368-f9d8-473b-9d70-522353021299 slug=viewer-api/readme/viewer-api/usage-guide/l11 digest=9fe54fc5240a -->
 ### Usage Guide
@@ -5776,7 +5776,7 @@ flowchart LR
 - slug: `viewer-api/readme/viewer-api/usage-guide/l11`
 - section: `viewer-api/usage-guide`
 - tags: draft, readme, usage-guide, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/95e98368-f9d8-473b-9d70-522353021299/rule.toml`
+- ref: `viewer-api/.rule/rules/95e98368-f9d8-473b-9d70-522353021299/rule.toml`
 
 <!-- rule-catalog:entry id=a78a4731-08d5-44f1-ab93-a3ed4653e96e slug=viewer-api/readme/viewer-api/user-stories/l5 digest=c0cda2945299 -->
 ### User Stories
@@ -5786,7 +5786,7 @@ The current repository visual below summarizes the three main package surfaces i
 - slug: `viewer-api/readme/viewer-api/user-stories/l5`
 - section: `viewer-api/user-stories`
 - tags: draft, readme, user-stories, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/a78a4731-08d5-44f1-ab93-a3ed4653e96e/rule.toml`
+- ref: `viewer-api/.rule/rules/a78a4731-08d5-44f1-ab93-a3ed4653e96e/rule.toml`
 
 <!-- rule-catalog:entry id=abc1f741-93f4-40b3-a8c9-304f553bbf22 slug=viewer-api/readme/viewer-api/workspace-summary/l18 digest=d23151003ecb -->
 ### Workspace Summary
@@ -5796,7 +5796,7 @@ From the `context-engine` repo root, install the lifecycle manager and WASM fron
 - slug: `viewer-api/readme/viewer-api/workspace-summary/l18`
 - section: `viewer-api/workspace-summary`
 - tags: draft, readme, viewer-api, workspace-summary
-- ref: `memory-viewers/viewer-api/.rule/rules/abc1f741-93f4-40b3-a8c9-304f553bbf22/rule.toml`
+- ref: `viewer-api/.rule/rules/abc1f741-93f4-40b3-a8c9-304f553bbf22/rule.toml`
 
 <!-- rule-catalog:entry id=ce31b774-2b17-4916-8d84-85dc8bf6e078 slug=viewer-api/readme/viewer-api/l1 digest=dc7f53438ad7 -->
 ### viewer-api
@@ -5806,7 +5806,7 @@ viewer-api is the shared runtime repository for viewer servers, viewer lifecycle
 - slug: `viewer-api/readme/viewer-api/l1`
 - section: `viewer-api`
 - tags: draft, readme, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/ce31b774-2b17-4916-8d84-85dc8bf6e078/rule.toml`
+- ref: `viewer-api/.rule/rules/ce31b774-2b17-4916-8d84-85dc8bf6e078/rule.toml`
 
 <!-- rule-catalog:entry id=e8378c2c-f10d-4a24-a77d-e32464261cfc slug=viewer-api/readme/packages/viewer-api-dioxus/parent-readme/l1 digest=f603fb6fa242 -->
 ### Parent README
@@ -5816,7 +5816,7 @@ Back to [viewer-api/README.md](../../README.md).
 - slug: `viewer-api/readme/packages/viewer-api-dioxus/parent-readme/l1`
 - section: `packages/viewer-api-dioxus/parent-readme`
 - tags: draft, packages, parent-readme, readme, viewer-api, viewer-api-dioxus
-- ref: `memory-viewers/viewer-api/.rule/rules/e8378c2c-f10d-4a24-a77d-e32464261cfc/rule.toml`
+- ref: `viewer-api/.rule/rules/e8378c2c-f10d-4a24-a77d-e32464261cfc/rule.toml`
 
 <!-- rule-catalog:entry id=f796a0b0-33f6-4428-9647-071f3f98b352 slug=viewer-api/readme/tools/viewer-ctl/l1 digest=3e5b1a6a67e3 -->
 ### viewer-ctl
@@ -5826,7 +5826,7 @@ CLI lifecycle manager for viewer servers and their linked frontend bundles.
 - slug: `viewer-api/readme/tools/viewer-ctl/l1`
 - section: `tools/viewer-ctl/readme`
 - tags: draft, readme, tools, viewer-api, viewer-ctl
-- ref: `memory-viewers/viewer-api/.rule/rules/f796a0b0-33f6-4428-9647-071f3f98b352/rule.toml`
+- ref: `viewer-api/.rule/rules/f796a0b0-33f6-4428-9647-071f3f98b352/rule.toml`
 
 ## viewer-api/recurring-principles
 
@@ -5838,7 +5838,7 @@ Port allocation, locking, and environment composition live in one place; ad-hoc 
 - slug: `viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/why-a-single-boundary/l12`
 - section: `viewer-ctl-lifecycle-boundary/why-a-single-boundary`
 - tags: draft, recurring-principles, viewer-api, viewer-ctl-lifecycle-boundary, why-a-single-boundary
-- ref: `memory-viewers/viewer-api/.rule/rules/13eda740-0268-4225-b187-c2bd445115ef/rule.toml`
+- ref: `viewer-api/.rule/rules/13eda740-0268-4225-b187-c2bd445115ef/rule.toml`
 
 <!-- rule-catalog:entry id=23023c33-a6f5-49b5-bf74-a886eed3268b slug=viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/constraints/l18 digest=442cdb729613 -->
 ### Constraints
@@ -5848,7 +5848,7 @@ Never invoke `cargo run --bin <viewer>` directly for day-to-day work. Use `viewe
 - slug: `viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/constraints/l18`
 - section: `viewer-ctl-lifecycle-boundary/constraints`
 - tags: constraints, draft, recurring-principles, viewer-api, viewer-ctl-lifecycle-boundary
-- ref: `memory-viewers/viewer-api/.rule/rules/23023c33-a6f5-49b5-bf74-a886eed3268b/rule.toml`
+- ref: `viewer-api/.rule/rules/23023c33-a6f5-49b5-bf74-a886eed3268b/rule.toml`
 
 <!-- rule-catalog:entry id=2ac29fd5-cc16-43f1-86c7-9a2e2b6f83c7 slug=viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/single-source/l18 digest=e2ff6a93829b -->
 ### Single source
@@ -5858,7 +5858,7 @@ Per-viewer crates must not duplicate the contract types or re-implement the shar
 - slug: `viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/single-source/l18`
 - section: `public-surface-contracts/single-source`
 - tags: draft, public-surface-contracts, recurring-principles, single-source, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/2ac29fd5-cc16-43f1-86c7-9a2e2b6f83c7/rule.toml`
+- ref: `viewer-api/.rule/rules/2ac29fd5-cc16-43f1-86c7-9a2e2b6f83c7/rule.toml`
 
 <!-- rule-catalog:entry id=35ebb9ec-1962-46ca-a25d-988e42806632 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/l5 digest=b0f592a58735 -->
 ### Each principle is its own section so a `rule scan` materialises one canonical en
@@ -5868,7 +5868,7 @@ Each principle is its own section so a `rule scan` materialises one canonical en
 - slug: `viewer-api/recurring-principles/viewer-api-recurring-principles/l5`
 - section: `viewer-api-recurring-principles`
 - tags: draft, recurring-principles, viewer-api, viewer-api-recurring-principles
-- ref: `memory-viewers/viewer-api/.rule/rules/35ebb9ec-1962-46ca-a25d-988e42806632/rule.toml`
+- ref: `viewer-api/.rule/rules/35ebb9ec-1962-46ca-a25d-988e42806632/rule.toml`
 
 <!-- rule-catalog:entry id=44b36863-054f-4770-8469-a0502c2ed030 slug=viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/l1 digest=c4e7f21ac961 -->
 ### viewer-ctl lifecycle boundary
@@ -5878,7 +5878,7 @@ Each principle is its own section so a `rule scan` materialises one canonical en
 - slug: `viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/l1`
 - section: `viewer-ctl-lifecycle-boundary`
 - tags: draft, recurring-principles, viewer-api, viewer-ctl-lifecycle-boundary
-- ref: `memory-viewers/viewer-api/.rule/rules/44b36863-054f-4770-8469-a0502c2ed030/rule.toml`
+- ref: `viewer-api/.rule/rules/44b36863-054f-4770-8469-a0502c2ed030/rule.toml`
 
 <!-- rule-catalog:entry id=5d2accaf-c570-4235-a219-c61e1116e071 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/sections/l7 digest=3c4cf89054b1 -->
 ### Sections
@@ -5888,7 +5888,7 @@ Each principle is its own section so a `rule scan` materialises one canonical en
 - slug: `viewer-api/recurring-principles/viewer-api-recurring-principles/sections/l7`
 - section: `viewer-api-recurring-principles/sections`
 - tags: draft, recurring-principles, sections, viewer-api, viewer-api-recurring-principles
-- ref: `memory-viewers/viewer-api/.rule/rules/5d2accaf-c570-4235-a219-c61e1116e071/rule.toml`
+- ref: `viewer-api/.rule/rules/5d2accaf-c570-4235-a219-c61e1116e071/rule.toml`
 
 <!-- rule-catalog:entry id=5fb89c68-fd49-4baa-8693-b3c04b603f30 slug=viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/owned-surfaces/l5 digest=154f2cf36271 -->
 ### Owned surfaces
@@ -5898,7 +5898,7 @@ The HTTP routes registered by `viewer-api/viewer-api` and re-exposed by each vie
 - slug: `viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/owned-surfaces/l5`
 - section: `public-surface-contracts/owned-surfaces`
 - tags: draft, owned-surfaces, public-surface-contracts, recurring-principles, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/5fb89c68-fd49-4baa-8693-b3c04b603f30/rule.toml`
+- ref: `viewer-api/.rule/rules/5fb89c68-fd49-4baa-8693-b3c04b603f30/rule.toml`
 
 <!-- rule-catalog:entry id=62e1317d-a4a1-405b-8113-686594c927cb slug=viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/l1 digest=0bc5543ea965 -->
 ### Public surface contracts
@@ -5908,7 +5908,7 @@ Every viewer exposes a versioned public contract through `viewer-api` (HTTP rout
 - slug: `viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/l1`
 - section: `public-surface-contracts`
 - tags: draft, public-surface-contracts, recurring-principles, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/62e1317d-a4a1-405b-8113-686594c927cb/rule.toml`
+- ref: `viewer-api/.rule/rules/62e1317d-a4a1-405b-8113-686594c927cb/rule.toml`
 
 <!-- rule-catalog:entry id=6980beef-8d68-4a5b-901e-db262aaf8b2f slug=viewer-api/recurring-principles/viewer-api-recurring-principles/related-specs/l17 digest=f90d90d8416b -->
 ### Related specs
@@ -5918,7 +5918,7 @@ Every viewer exposes a versioned public contract through `viewer-api` (HTTP rout
 - slug: `viewer-api/recurring-principles/viewer-api-recurring-principles/related-specs/l17`
 - section: `viewer-api-recurring-principles/related-specs`
 - tags: draft, recurring-principles, related-specs, viewer-api, viewer-api-recurring-principles
-- ref: `memory-viewers/viewer-api/.rule/rules/6980beef-8d68-4a5b-901e-db262aaf8b2f/rule.toml`
+- ref: `viewer-api/.rule/rules/6980beef-8d68-4a5b-901e-db262aaf8b2f/rule.toml`
 
 <!-- rule-catalog:entry id=8219b071-c541-4dc1-a034-e083d9361ce3 slug=viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/versioning-rules/l12 digest=6e50893ccb76 -->
 ### Versioning rules
@@ -5928,7 +5928,7 @@ Additive changes (new routes, new GraphQL fields, new frontend props with defaul
 - slug: `viewer-api/recurring-principles/public-surface-contracts/public-surface-contracts/versioning-rules/l12`
 - section: `public-surface-contracts/versioning-rules`
 - tags: draft, public-surface-contracts, recurring-principles, versioning-rules, viewer-api
-- ref: `memory-viewers/viewer-api/.rule/rules/8219b071-c541-4dc1-a034-e083d9361ce3/rule.toml`
+- ref: `viewer-api/.rule/rules/8219b071-c541-4dc1-a034-e083d9361ce3/rule.toml`
 
 <!-- rule-catalog:entry id=925ea219-ff23-45cf-9ced-de2a23c3bac5 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/related-tickets/l12 digest=67695121a3e4 -->
 ### Related tickets
@@ -5938,7 +5938,7 @@ Additive changes (new routes, new GraphQL fields, new frontend props with defaul
 - slug: `viewer-api/recurring-principles/viewer-api-recurring-principles/related-tickets/l12`
 - section: `viewer-api-recurring-principles/related-tickets`
 - tags: draft, recurring-principles, related-tickets, viewer-api, viewer-api-recurring-principles
-- ref: `memory-viewers/viewer-api/.rule/rules/925ea219-ff23-45cf-9ced-de2a23c3bac5/rule.toml`
+- ref: `viewer-api/.rule/rules/925ea219-ff23-45cf-9ced-de2a23c3bac5/rule.toml`
 
 <!-- rule-catalog:entry id=ae807056-f806-4cf9-b3c1-460da0c34eb6 slug=viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/supported-commands/l5 digest=f69b60c833d8 -->
 ### Supported commands
@@ -5948,7 +5948,7 @@ Additive changes (new routes, new GraphQL fields, new frontend props with defaul
 - slug: `viewer-api/recurring-principles/viewer-ctl-lifecycle-boundary/viewer-ctl-lifecycle-boundary/supported-commands/l5`
 - section: `viewer-ctl-lifecycle-boundary/supported-commands`
 - tags: draft, recurring-principles, supported-commands, viewer-api, viewer-ctl-lifecycle-boundary
-- ref: `memory-viewers/viewer-api/.rule/rules/ae807056-f806-4cf9-b3c1-460da0c34eb6/rule.toml`
+- ref: `viewer-api/.rule/rules/ae807056-f806-4cf9-b3c1-460da0c34eb6/rule.toml`
 
 <!-- rule-catalog:entry id=b2c53031-caef-4f2b-b911-a242a564b40b slug=viewer-api/recurring-principles/viewer-api-recurring-principles/l1 digest=4bb06b6070d5 -->
 ### viewer-api recurring principles
@@ -5958,4 +5958,4 @@ This spec captures the cross-cutting design principles that recur across `viewer
 - slug: `viewer-api/recurring-principles/viewer-api-recurring-principles/l1`
 - section: `viewer-api-recurring-principles`
 - tags: draft, recurring-principles, viewer-api, viewer-api-recurring-principles
-- ref: `memory-viewers/viewer-api/.rule/rules/b2c53031-caef-4f2b-b911-a242a564b40b/rule.toml`
+- ref: `viewer-api/.rule/rules/b2c53031-caef-4f2b-b911-a242a564b40b/rule.toml`
