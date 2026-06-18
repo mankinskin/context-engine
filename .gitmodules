@@ -1,8 +1,16 @@
 [submodule "memory-viewers"]
 	path = memory-viewers
-	url = ../memory-viewers
+	url = https://github.com/mankinskin/memory-viewers
 	branch = main
 [submodule "context-stack"]
 	path = context-stack
-	url = ../context-stack
+	url = https://github.com/mankinskin/context-stack
+	branch = main
+[submodule "memory-api"]
+	path = memory-api
+	url = https://github.com/mankinskin/memory-api
+	branch = main
+[submodule "viewer-api"]
+	path = viewer-api
+	url = https://github.com/mankinskin/viewer-api
 	branch = main
