@@ -1,7 +1,7 @@
 ---
 name: "Implement Agent"
 description: "Use for surgical implementation once the target slice is clear and ready to change."
-tools: [vscode/memory, vscode/runCommand, execute, read, edit, search, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, vscode/toolSearch, execute, read, agent, edit, search, 'context-mcp/*', 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, ms-azuretools.vscode-containers/containerToolsConfig, todo]
 argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementation scope."
 user-invocable: true
 ---

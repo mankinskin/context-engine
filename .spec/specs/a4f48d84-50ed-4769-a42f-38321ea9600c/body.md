@@ -70,6 +70,11 @@ The target architecture is:
 
 - `./target/debug/spec.exe scan --force --index-root .spec --json`
 
+<!-- spec-api:entry id=585044f0-abf8-47f8-9edc-246611285d2f slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/validation-results/l57 -->
+## Validation results
+
+- `./target/debug/spec.exe scan --force --index-root .spec --json`
+
 <!-- spec-api:entry id=83897081-f97d-4bde-bd51-e72e19848f2b slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/traceability/l61 -->
 ## Traceability
 

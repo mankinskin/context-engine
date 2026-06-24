@@ -1,7 +1,7 @@
 ---
 name: "Research Agent"
 description: "Use for focused repository research before ticketing, spec updates, or implementation."
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, search, web, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, vscode/toolSearch, execute, read, agent, edit, search, 'context-mcp/*', 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, ms-azuretools.vscode-containers/containerToolsConfig, todo]
 argument-hint: "Topic, code path, feature, or ticket scope to investigate."
 user-invocable: true
 ---

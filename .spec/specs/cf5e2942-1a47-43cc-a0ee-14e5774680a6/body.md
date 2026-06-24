@@ -63,6 +63,11 @@ The target architecture is:
 - Existing wrapper-oriented documentation commands do not define the target architecture.
 - Current command prototypes may inform migration helpers, but the long-term storage and identity model belongs in `doc-api`.
 
+<!-- spec-api:entry id=d5c96929-b63e-4104-a8da-7c16621bceb8 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/validation-results/l55 -->
+## Validation results
+
+- `./target/debug/spec.exe scan --force --index-root .spec --json`
+
 <!-- spec-api:entry id=d3ff6d67-f2d7-4670-94c1-170b717f3ba3 slug=context-engine/workflow-shared/validation-results -->
 ## Validation results
 

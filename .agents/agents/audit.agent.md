@@ -1,7 +1,7 @@
 ---
 name: "Audit Agent"
 description: "Use for honest repository audits, findings-first reviews, and automated validation triage."
-tools: [vscode/memory, vscode/runCommand, execute, read, search, web, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/toolSearch, execute, read, agent, search, web, browser, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Path, feature, ticket, or scope to audit."
 user-invocable: true
 ---

@@ -1,7 +1,7 @@
 ---
 name: "Interview Agent"
 description: "Use for requirement interviews that refine specs, tickets, and acceptance criteria before implementation."
-tools: [vscode/memory, vscode/askQuestions, vscode/runCommand, execute, read, search, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, vscode/toolSearch, execute, read, agent, edit, search, 'context-mcp/*', 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, ms-azuretools.vscode-containers/containerToolsConfig, todo]
 argument-hint: "Topic, feature, or ticket scope that needs clarification."
 user-invocable: true
 ---
