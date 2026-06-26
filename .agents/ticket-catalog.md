@@ -3,8 +3,7 @@
 # Ticket Catalog
 
 The full ticket catalog is generated at `.ticket/README.md`
-(machine-readable sidecar: `.ticket/index.toon`). Use it before
-scanning raw `.ticket/tickets/` entries.
+(machine-readable sidecar: `.ticket/index.toon`).
 
 - Total tickets: 767
 - States: cancelled (39), done (364), in-implementation (42), in-review (50), new (200), on-hold (1), ready (71)

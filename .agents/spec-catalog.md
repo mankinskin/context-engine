@@ -4,8 +4,7 @@
 
 The full specification catalog is generated at `.spec/README.md`
 (machine-readable sidecar with parent/child relations:
-`.spec/index.toon`). Browse it before scanning raw `.spec/`
-entry files.
+`.spec/index.toon`).
 
 - Total specs: 172
 - Root specs (no parent): 71
