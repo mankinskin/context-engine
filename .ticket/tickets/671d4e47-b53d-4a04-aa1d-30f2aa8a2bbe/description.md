@@ -23,3 +23,11 @@ Acceptance criteria:
 - architecture spec captures final decisions, phase gates, and practical examples
 - each child ticket defines validation evidence expectations
 - all tickets pass health checks with no missing required planning metadata
+
+## Cross-store prerequisite — consolidation via move tooling (recorded textually; edges cannot cross stores)
+The hard-link cross-store reference work has a prerequisite that lives in the **memory-api** store and therefore cannot be graph-edged from this `default`-store tracker:
+- move tooling: memory-api `505b2cd4` "Deliver safe cross-workspace ticket move for git-backed stores" (+ children) — delivers safe, journaled, ref-relinking moves.
+- cleanup migration: memory-api `7599ed31` "Migrate misplaced context-engine-workspace tickets into the memory-api store" — depends_on `505b2cd4`; consolidates the misplaced `default`-store entities (session-bootstrap, URN, feedback-api tickets) into memory-api so intra-store hard edges become possible.
+- the memory-api hard-link tickets `b03be2d5` / `f00291a3` now depend_on `7599ed31`.
+
+OPEN DECISION (see Phase C): once entities are consolidated into one store via the move tooling, evaluate whether full cross-store URN references are still required, or whether intra-store edges + a thin URN facade suffice. Resolve before committing Phase C scope.
