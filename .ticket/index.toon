@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[838]:
+entries[855]:
   - id: "00798e96-3d82-436e-963c-af347e76ede0"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/00798e96-3d82-436e-963c-af347e76ede0/ticket.toml"
@@ -372,13 +372,13 @@ entries[838]:
     source_path: ".ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml"
     title: "[ticket-cli] Make get/search/list workspace-aware across nested roots"
     summary: "`ticket get <id>` was not workspace-aware and failed with a raw path error when the ticket lived under a different ticket root."
-    keywords[160]: able,acceptance,across,add,and,angegebenen,any,api,aware,backend,behavior,belongs,can,canonical,case,checklist,cli,command,consumers,contract,correct,cover,coverage,covering,covers,crates,criteria,cross,das,define,den,did,different,discoverable,doc,docs,document,does,each,either,enough,ensure,error,explicit,expose,fail,failed,failure,failures,fields,finden,flow,for,from,frontend,frontends,get,guidance,hiding,how,http,human,ids,include,index,instead,integration,json,kann,least,like,likely,list,lived,lookup,make,manual,mcp,memory,message,metadata,mismatch,mode,multi,nested,new,next,nicht,not,observed,one,parity,path,pfad,plus,problem,provide,raw,readable,recover,recovery,registered,regression,repo,reports,requirements,rerun,resolve,results,retry,returned,returning,returns,root,roots,running,same,scenario,scope,search,should,show,spec,specification,spelunking,storage,stores,succeeds,such,surface,surfaces,syntax,system,tell,tests,that,the,this,ticket,tickets,time,tools,under,unspecified,use,user,validation,verify,viewer,vscode,was,went,what,when,where,which,with,without,workspace,wrong
-    scope: "state=new, component=unspecified"
+    keywords[160]: able,acceptance,across,add,and,angegebenen,any,api,aware,backend,behavior,belongs,can,canonical,case,checklist,cli,command,consumers,contract,correct,cover,coverage,covering,covers,crates,criteria,cross,das,define,den,did,different,discoverable,doc,docs,document,does,each,either,enough,ensure,error,explicit,expose,fail,failed,failure,failures,fields,finden,flow,for,from,frontend,frontends,get,guidance,hiding,how,http,human,ids,"in-review",include,index,instead,integration,json,kann,least,like,likely,list,lived,lookup,make,manual,mcp,memory,message,metadata,mismatch,mode,multi,nested,next,nicht,not,observed,one,parity,path,pfad,plus,problem,provide,raw,readable,recover,recovery,registered,regression,repo,reports,requirements,rerun,resolve,results,retry,returned,returning,returns,root,roots,running,same,scenario,scope,search,should,show,spec,specification,spelunking,storage,stores,succeeds,such,surface,surfaces,syntax,system,tell,tests,that,the,this,ticket,tickets,time,tools,under,unspecified,use,user,validation,verify,viewer,vscode,was,went,what,when,where,which,with,without,workspace,wrong
+    scope: "state=in-review, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml","07836f41-7fa5-4e41-8411-1c7cf8aeee75",related,ticket,"","07836f41"
-    digest: 2327d8587a6ebf62a67f733574d139a30d509312a3a86803a687bc909bbbd358
-    tags[3]: new,ticket,unspecified
+    digest: e19a15a6db3f7972901513736e8bada87111967e3ff8ed3a948097d535a81dce
+    tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "07d4b1b0-bc20-4ba7-98d4-ed09365f0437"
     kind: ticket
@@ -1100,13 +1100,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/13e9ce28-ff35-4898-8dda-6d333dc1f222/ticket.toml"
     title: "[ticket-api] Cross-workspace move + automatic reference re-linking for store entries"
     summary: "Provide a first-class, safe operation to move a ticket from one `memory-api` workspace store to another and automatically preserve the references that can be preserved safely, while refusing unsuppor..."
-    keywords[245]: 22cd3001,373a3317,3a26572a,44abe1d4,505b2cd4,"53176121",694d74b4,84d19fab,acceptance,active,add,after,allow,allowing,already,and,another,any,api,apply,arbitrary,are,assuming,assumption,atomicity,automatic,automatically,backed,based,batch,bc691249,become,before,best,blocks,board,boundary,can,cannot,child,cite,claims,class,cli,closed,consumer,contract,cover,created,criteria,cross,da27c074,dc70628a,decision,default,deferred,deliberately,deliver,dependencies,design,destination,downstream,dry,duplicate,each,eb6033a8,edges,effort,end,endpoint,enforce,entities,entity,entries,every,execution,exists,explicit,expose,fail,files,final,first,flow,focused,folder,follow,for,from,gaps,generalizing,git,goal,goals,guidance,hand,handling,high,historical,http,implementation,implementing,"in-review",inbound,instead,into,invisible,involving,journal,journaled,keyed,layer,leases,linked,linking,live,lives,local,mcp,memory,migrate,model,move,moved,moves,moving,multiple,must,new,non,now,occurs,off,old,one,only,operation,ordered,other,outbound,over,ownership,owning,owns,partial,partially,pass,path,plan,planner,planning,plus,preflight,preserve,preserved,proven,provide,rather,recorded,recovery,reference,references,refusing,reindex,reject,rejected,relink,relocating,remain,remains,reminder,repo,research,resolve,resolved,resolver,resumable,rewrite,rewrites,rewritten,rollback,rollbackable,root,rows,rule,run,safe,safely,safety,same,says,scan,scope,separated,shared,showed,sibling,source,spec,specs,stable,stale,storage,store,stores,strand,support,supported,target,text,than,that,the,there,therefore,this,those,ticket,"ticket-api",tickets,topologies,topology,tracked,tracker,transaction,under,unless,unsupported,until,update,updates,uuid,uuids,validate,validation,visibility,visible,when,while,why,wins,with,workspace,worktree,would
-    scope: "state=in-review, component=ticket-api"
+    keywords[245]: 22cd3001,373a3317,3a26572a,44abe1d4,505b2cd4,"53176121",694d74b4,84d19fab,acceptance,active,add,after,allow,allowing,already,and,another,any,api,apply,arbitrary,are,assuming,assumption,atomicity,automatic,automatically,backed,based,batch,bc691249,become,before,best,blocks,board,boundary,can,cannot,child,cite,claims,class,cli,closed,consumer,contract,cover,created,criteria,cross,da27c074,dc70628a,decision,default,deferred,deliberately,deliver,dependencies,design,destination,done,downstream,dry,duplicate,each,eb6033a8,edges,effort,end,endpoint,enforce,entities,entity,entries,every,execution,exists,explicit,expose,fail,files,final,first,flow,focused,folder,follow,for,from,gaps,generalizing,git,goal,goals,guidance,hand,handling,high,historical,http,implementation,implementing,inbound,instead,into,invisible,involving,journal,journaled,keyed,layer,leases,linked,linking,live,lives,local,mcp,memory,migrate,model,move,moved,moves,moving,multiple,must,new,non,now,occurs,off,old,one,only,operation,ordered,other,outbound,over,ownership,owning,owns,partial,partially,pass,path,plan,planner,planning,plus,preflight,preserve,preserved,proven,provide,rather,recorded,recovery,reference,references,refusing,reindex,reject,rejected,relink,relocating,remain,remains,reminder,repo,research,resolve,resolved,resolver,resumable,rewrite,rewrites,rewritten,rollback,rollbackable,root,rows,rule,run,safe,safely,safety,same,says,scan,scope,separated,shared,showed,sibling,source,spec,specs,stable,stale,storage,store,stores,strand,support,supported,target,text,than,that,the,there,therefore,this,those,ticket,"ticket-api",tickets,topologies,topology,tracked,tracker,transaction,under,unless,unsupported,until,update,updates,uuid,uuids,validate,validation,visibility,visible,when,while,why,wins,with,workspace,worktree,would
+    scope: "state=done, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/13e9ce28-ff35-4898-8dda-6d333dc1f222/ticket.toml","13e9ce28-ff35-4898-8dda-6d333dc1f222",related,ticket,"",13e9ce28
-    digest: 7231963466abf23f1b26ef583bd76258c19650a1ec6172bc6477e28b81937db2
-    tags[4]: high,"in-review",ticket,"ticket-api"
+    digest: 5d38acbbfc6395356424c815a2bec85dfed57c61273f13418aa92ba1ab777f20
+    tags[4]: done,high,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "14047b99-41d6-4899-bec6-4a919bffcc2d"
     kind: ticket
@@ -1334,13 +1334,13 @@ entries[838]:
     source_path: ".ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml"
     title: "[ticket-api] Allow bidirectional ticket state transitions by default"
     summary: Ticket state transitions should work in both directions by default using the same state transition interface. We should not require every schema to spell out reverse edges when the validator can trea...
-    keywords[70]: acceptance,accepts,adding,allow,and,api,are,backward,bidirectional,both,can,connected,coverage,criteria,declared,default,directions,each,edge,edges,every,existing,explicitly,focused,"in-review",interface,least,machine,make,movement,not,one,otherwise,out,path,problem,proves,public,regression,rejects,require,resolution,reverse,same,says,schema,scope,should,spell,state,states,still,store,that,the,through,ticket,transition,transitions,treat,unless,unspecified,update,usable,using,validation,validator,when,without,work
-    scope: "state=in-review, component=unspecified"
+    keywords[70]: acceptance,accepts,adding,allow,and,api,are,backward,bidirectional,both,can,connected,coverage,criteria,declared,default,directions,done,each,edge,edges,every,existing,explicitly,focused,interface,least,machine,make,movement,not,one,otherwise,out,path,problem,proves,public,regression,rejects,require,resolution,reverse,same,says,schema,scope,should,spell,state,states,still,store,that,the,through,ticket,transition,transitions,treat,unless,unspecified,update,usable,using,validation,validator,when,without,work
+    scope: "state=done, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml","185419e0-bea4-4c7b-abda-1e92193f32e7",related,ticket,"","185419e0"
-    digest: 2990745a96c8ba8caa74cc8220a1e8d8da22add44d68ba8551e46f89a57d386a
-    tags[3]: "in-review",ticket,unspecified
+    digest: 3afc40f19cb4da7b5885e16fa06a2e13abdc448ddaa249e4e5afdc431948da44
+    tags[3]: done,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "186caf8a-bbbf-426f-8fc3-2f7882a8a550"
     kind: ticket
@@ -1589,6 +1589,19 @@ entries[838]:
     digest: 799170adc7b7ab36189d762ffeb680baca6d823ad32c6eb09fffd2715b255981
     tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "1fd0c182-f4b4-486b-b757-fe47e3238e43"
+    kind: ticket
+    source_path: ".ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml"
+    title: "[rule-mcp][rule-http] Workspace-resolution parity — nested-root awareness + pure transport"
+    summary: "Follow-up after the ticket-domain first run. Adopt the shared memory-api resolver + pure-transport pattern for the rule transports."
+    keywords[73]: acceptance,adopt,after,all,and,any,api,audit,awareness,bring,cli,code,commands,consume,criteria,delegates,depends,descendant,discover,discovery,domain,ef0ebf38,entries,first,follow,for,from,fully,http,identically,input,its,logic,mcp,medium,memory,moved,nested,new,off,parent,parity,pattern,per,private,proven,pure,read,recursive,regression,remains,resolution,resolve,resolver,retains,root,rule,"rule-api",run,same,scope,shared,stores,test,the,ticket,transport,transports,traversal,validatable,verify,was,workspace
+    scope: "state=new, component=rule-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml","1fd0c182-f4b4-486b-b757-fe47e3238e43",related,ticket,"",1fd0c182
+    digest: 6751bf0c01119cee26b0226d6dd19c0e56e54b2ade0ed80e09353b9266c89967
+    tags[4]: medium,new,"rule-api",ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "207b70d9-de61-4de4-af80-69732ff5b892"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/207b70d9-de61-4de4-af80-69732ff5b892/ticket.toml"
@@ -1672,13 +1685,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/22cd3001-0127-4a27-8834-721250ff39ff/ticket.toml"
     title: "[ticket-api] Enforce board safety and migrate historical board rows during ticket moves"
     summary: "Handle board-state references safely during a ticket move so live ownership is never silently lost."
-    keywords[79]: acceptance,active,after,and,any,api,audit,before,block,board,chosen,claim,clear,context,criteria,destination,diagnostics,does,during,enforce,file,follow,for,goal,hand,handle,has,historical,history,how,implement,inactive,into,lease,live,lost,mark,medium,migrate,migrated,move,moved,moves,mutation,needed,never,new,not,off,old,operator,orphaned,ownership,policy,preserve,prevents,references,remain,remove,retain,retrying,rows,safely,safety,scope,silently,source,stale,starts,state,store,successful,surface,telling,the,them,ticket,"ticket-api",when
-    scope: "state=new, component=ticket-api"
+    keywords[79]: acceptance,active,after,and,any,api,audit,before,block,board,chosen,claim,clear,context,criteria,destination,diagnostics,does,during,enforce,file,follow,for,goal,hand,handle,has,historical,history,how,implement,"in-review",inactive,into,lease,live,lost,mark,medium,migrate,migrated,move,moved,moves,mutation,needed,never,not,off,old,operator,orphaned,ownership,policy,preserve,prevents,references,remain,remove,retain,retrying,rows,safely,safety,scope,silently,source,stale,starts,state,store,successful,surface,telling,the,them,ticket,"ticket-api",when
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/22cd3001-0127-4a27-8834-721250ff39ff/ticket.toml","22cd3001-0127-4a27-8834-721250ff39ff",related,ticket,"",22cd3001
-    digest: 685241a90f904a446337f5cbfad347851549c0c09e83428704167ef53613fc84
-    tags[4]: medium,new,ticket,"ticket-api"
+    digest: 43a6f34b9a5230771bdcac8237dc1ae9e658401c915f53d6dc55e71290918dea
+    tags[4]: "in-review",medium,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "22dc5dfc-ac5d-46e0-979e-1f38ac4ce6c7"
     kind: ticket
@@ -1796,6 +1809,19 @@ entries[838]:
         ".ticket/tickets/2750018f-ed82-4a3a-9347-1fc47e9658c8/ticket.toml","2750018f-ed82-4a3a-9347-1fc47e9658c8",related,ticket,"",2750018f
     digest: 9e4a070e0bda3110b52b28770c4e294c6b99fbf5e96c5c43530c92552ce9f4f5
     tags[4]: done,high,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "27558fde-37b0-43eb-86c6-cfbe2d99a0b8"
+    kind: ticket
+    source_path: ".ticket/tickets/27558fde-37b0-43eb-86c6-cfbe2d99a0b8/ticket.toml"
+    title: "[ticket-mcp][ticket-http] Workspace-resolution parity — nested-root awareness + pure transport (first run)"
+    summary: "The **first** parity run. Establishes the shared-resolver adoption + pure-transport audit pattern that the spec/rule/audit domains will reuse."
+    keywords[124]: "2026",7f4aaa05,accept,acceptance,across,adoption,aggregates,all,and,api,applies,audit,awareness,become,behavior,can,carries,case,child,cli,code,consume,context,criteria,default,define,depends,descendant,discover,discovery,dispatch,does,domain,domains,duplication,ef0ebf38,effectively,engine,establishes,expose,exposes,first,fix,focused,for,from,get,groundwork,helper,here,hidden,hides,high,hoist,http,identically,inconsistently,index,input,into,level,limited,list,live,logic,matching,mcp,memory,nested,new,not,one,only,other,parent,parity,parse,path,pattern,policy,problem,pure,regression,removed,reproduced,reproducing,resolution,resolve,resolver,reuse,reused,root,rule,run,same,scope,search,selection,selector,share,shared,should,skip,spec,store,stores,support,target,targeting,test,that,the,three,ticket,"ticket-api",tickets,transport,transports,traversal,unit,validatable,will,workspace,workspaces
+    scope: "state=new, component=ticket-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/27558fde-37b0-43eb-86c6-cfbe2d99a0b8/ticket.toml","27558fde-37b0-43eb-86c6-cfbe2d99a0b8",related,ticket,"",27558fde
+    digest: 2c02a56b2eda6ae64db2aaba938f3e23facd99ef2cf20f9001a7ef579d3fd49d
+    tags[4]: high,new,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2772fe5d-3f29-4116-82fe-bf611ea54c58"
     kind: ticket
@@ -2231,13 +2257,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/373a3317-4dfd-456a-a86e-523f4e7692f0/ticket.toml"
     title: "[ticket-http] Add ticket move endpoint for workspace relocation"
     summary: "Expose the move capability over HTTP for remote tooling and UI-driven workflows."
-    keywords[76]: accept,acceptance,active,add,already,and,api,apply,backed,blocker,blockers,board,callers,can,capability,claims,cli,criteria,dirty,does,driven,dry,duplicate,endpoint,example,expose,for,git,goal,http,identifiers,implemented,journal,logic,mcp,medium,mode,move,new,not,over,planner,plans,post,preserve,preview,primitive,reasons,recovery,relocation,remote,responses,return,root,route,run,same,scope,should,status,storage,structured,supported,target,the,ticket,"ticket-http",tickets,tooling,topologies,typed,unsupported,used,workflows,workspace,worktrees
-    scope: "state=new, component=ticket-http"
+    keywords[76]: accept,acceptance,active,add,already,and,api,apply,backed,blocker,blockers,board,callers,can,capability,claims,cli,criteria,dirty,does,driven,dry,duplicate,endpoint,example,expose,for,git,goal,http,identifiers,implemented,"in-review",journal,logic,mcp,medium,mode,move,not,over,planner,plans,post,preserve,preview,primitive,reasons,recovery,relocation,remote,responses,return,root,route,run,same,scope,should,status,storage,structured,supported,target,the,ticket,"ticket-http",tickets,tooling,topologies,typed,unsupported,used,workflows,workspace,worktrees
+    scope: "state=in-review, component=ticket-http"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/373a3317-4dfd-456a-a86e-523f4e7692f0/ticket.toml","373a3317-4dfd-456a-a86e-523f4e7692f0",related,ticket,"",373a3317
-    digest: 683dce61c96aa201d76338f53beebf419bef398fe05ea7f676d7eeb4f4a08f28
-    tags[4]: medium,new,ticket,"ticket-http"
+    digest: "074f7326e70d52a70091ee132750e1c55e81d3aaed7722bbb956f0cd063e2330"
+    tags[4]: "in-review",medium,ticket,"ticket-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "379ff931-7e0a-4069-a1d7-86cc3ef73e9e"
     kind: ticket
@@ -2317,6 +2343,19 @@ entries[838]:
     digest: cda7e1f6c490bcdd65d8eef731902a47d3b73278dc40dbb8d425ad64b3ea5e6e
     tags[4]: "doc-viewer",done,high,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "39239e48-828a-41d8-a697-9cf02e980da9"
+    kind: ticket
+    source_path: ".ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml"
+    title: "[memory-api] Transport-layer workspace-resolution parity (tracker)"
+    summary: "Make workspace resolution a generic memory-api capability consumed identically by every transport (cli, mcp, http) across every entity domain, and keep transports pure (parse + dispatch only). Fix th..."
+    keywords[118]: "07836f41",1fd0c182,27558fde,5318aedd,59d96577,632974d1,7599ed31,across,adopt,adoption,all,and,api,are,argument,audit,bug,candidate,capability,carries,child,children,cleanup,cli,consumed,cover,depends,descendant,discovery,dispatch,domain,domains,done,duplicate,each,ef0ebf38,entity,establishes,every,execution,first,fix,focused,follow,for,foundation,generic,goal,helper,high,hoist,http,identically,implementation,into,invisible,keep,layer,lives,logic,make,mcp,memory,"memory-api",migration,misplaced,nested,new,non,note,now,one,only,order,over,parity,parse,parsing,pattern,per,placement,policy,principle,proven,pure,recurses,recursive,recursively,reproduced,resolution,resolve,resolver,root,rule,run,search,see,shared,skip,spec,store,stores,tests,the,through,ticket,tools,tracker,transport,transports,traversal,via,when,where,with,works,workspace,workspaces
+    scope: "state=new, component=memory-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml","39239e48-828a-41d8-a697-9cf02e980da9",related,ticket,"","39239e48"
+    digest: db06937369b874191e9fc35a029678750a54d1d285a416eb33d570bff7b82276
+    tags[4]: high,"memory-api",new,ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "397fa45b-a0bd-43d2-b430-2dfa44d80c5c"
     kind: ticket
     source_path: "memory-viewers/.ticket/tickets/397fa45b-a0bd-43d2-b430-2dfa44d80c5c/ticket.toml"
@@ -2348,13 +2387,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/3a26572a-5e1a-4a57-aefa-9b342886a5ca/ticket.toml"
     title: "[ticket-api] Rewrite repo path references that cite the moved ticket folder"
     summary: "Automatically update repo-local text references that cite the moved ticket's old folder path so specs, tests, and docs do not point at a stale store location after the move."
-    keywords[86]: about,acceptance,after,all,and,api,are,automatically,based,binary,cite,contents,criteria,distinguishes,docs,edges,every,file,files,folder,follow,for,from,git,goal,handled,implement,itself,journal,keyed,local,location,manual,medium,move,moved,new,not,old,pass,path,point,preflight,previous,rather,records,reference,references,repo,report,reports,restores,rewrite,rewrites,rewritten,rollback,rules,same,scans,scope,silently,skipping,specs,stale,storage,store,target,tests,text,than,that,the,them,they,this,ticket,"ticket-api",tracked,unsupported,untracked,update,updated,uuid,visibility,when,worktree
-    scope: "state=new, component=ticket-api"
+    keywords[87]: about,acceptance,after,all,and,api,are,automatically,based,binary,cite,contents,criteria,distinguishes,docs,edges,every,file,files,folder,follow,for,from,git,goal,handled,implement,"in-review",itself,journal,keyed,local,location,manual,medium,move,moved,new,not,old,pass,path,point,preflight,previous,rather,records,reference,references,repo,report,reports,restores,rewrite,rewrites,rewritten,rollback,rules,same,scans,scope,silently,skipping,specs,stale,storage,store,target,tests,text,than,that,the,them,they,this,ticket,"ticket-api",tracked,unsupported,untracked,update,updated,uuid,visibility,when,worktree
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/3a26572a-5e1a-4a57-aefa-9b342886a5ca/ticket.toml","3a26572a-5e1a-4a57-aefa-9b342886a5ca",related,ticket,"",3a26572a
-    digest: 78f6cb57152c854e3d1c0c8ae39d0d6fa3663f1a64adb9d592bc1c186e2e64a5
-    tags[4]: medium,new,ticket,"ticket-api"
+    digest: 7c1430e9048b53166ff54cc8e1aff2bc11a29d2f1b50a20f4e3caf41f7ecf8d5
+    tags[4]: "in-review",medium,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3a5df74c-2192-4187-b048-3f6285f20db4"
     kind: ticket
@@ -2368,6 +2407,19 @@ entries[838]:
         ".ticket/tickets/3a5df74c-2192-4187-b048-3f6285f20db4/ticket.toml","3a5df74c-2192-4187-b048-3f6285f20db4",related,ticket,"",3a5df74c
     digest: 187edfd1704783893a1791bdb2fb3dce5159b20560571af7975ebdc886c6832e
     tags[4]: high,new,ticket,"ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3afaab37-b228-4051-bc46-618db4e0b82b"
+    kind: ticket
+    source_path: ".ticket/tickets/3afaab37-b228-4051-bc46-618db4e0b82b/ticket.toml"
+    title: "[ticket-api][bug] update_ticket resets state to `new` on field/description patch; transition_states silently no-ops"
+    summary: "High — silently corrupts ticket lifecycle state. Any agent that edits a ticket's `description` or `fields` via the update API loses the ticket's current state (reset to `new`), and the documented mul..."
+    keywords[201]: absent,acceptance,adapter,add,advance,advanced,affected,agent,all,and,any,api,applied,applies,apply,array,assert,asserting,before,behind,bootstrap,both,bug,but,bypass,call,called,cancelled,cannot,cause,change,changed,cli,combined,confirm,confirmation,confirming,correctly,corrupts,create,criteria,current,currently,dead,default,derives,description,discarding,documented,does,done,drives,during,edit,edits,either,element,endpoint,enforces,equals,equivalent,error,expected,explicit,exposed,field,fields,final,fix,for,from,full,get,handler,handling,high,hit,honored,http,implementation,improvement,inherit,initial,investigation,just,last,layer,least,leaving,lifecycle,likely,loses,machine,manual,map,mcp,multi,must,never,new,non,not,note,notes,object,observed,one,only,operation,ops,overwrites,parameter,parity,parses,patch,patched,path,persisted,planning,preferred,preservation,preserved,preserving,prior,raised,rather,reach,ready,reconstructs,record,regressed,regression,rejected,repeatedly,repro,reproduction,request,required,reset,resets,response,resulting,return,returned,returns,review,root,same,separate,sequence,session,severity,shared,shows,silently,single,state,states,step,still,success,surface,symptom,test,tests,than,that,the,then,this,three,through,ticket,title,tracker,transition,transport,transports,trigger,type,unchanged,unspecified,unsupported,update,use,validatable,validation,verification,verify,via,visiting,was,when,while,with,without,work,workaround,working,works,workspace
+    scope: "state=cancelled, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/3afaab37-b228-4051-bc46-618db4e0b82b/ticket.toml","3afaab37-b228-4051-bc46-618db4e0b82b",related,ticket,"",3afaab37
+    digest: 1db9822ae405918ea200a199c7a200c3ec10c97be5c39f701aba0fffe9a3bcef
+    tags[4]: cancelled,high,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3b1345eb-9983-4567-a3ab-c2e00c7cec1e"
     kind: ticket
@@ -2589,6 +2641,19 @@ entries[838]:
         "viewer-api/.ticket/tickets/4102096d-cdba-4001-9fa2-266511b4f353/ticket.toml","4102096d-cdba-4001-9fa2-266511b4f353",related,ticket,"",4102096d
     digest: a14614a06f6a9dbf80f4cd61a132e735ea4d53d912f1037b91546ae05acbe8b7
     tags[4]: critical,new,ticket,"viewer-api-dioxus"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "412964a3-e1c3-47da-94ad-268ff20441c0"
+    kind: ticket
+    source_path: ".ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml"
+    title: "[session-api] Runtime session-context model (pinned_entities, init/pin/unpin)"
+    summary: "Extend `session-api` (`memory-api/crates/session-api`) from a write/archive store into a read/runtime store."
+    keywords[108]: 709f067a,82d6ada4,add,adrs,alongside,and,api,archive,are,baked,bodies,breaking,byte,capture,chat,cognitive,context,core,crates,create,creates,cross,current,decisions,depends,design,dir,each,emits,empty,entities,entity,event,events,extend,f8b447b7,feedback,flush,focused,from,frozen,full,general,generic,headers,idempotent,identical,incl,init,into,json,keep,later,load,memory,mode,model,mutating,mutation,never,one,only,ops,output,path,per,persistence,pin,pinned,pins,proving,read,ready,reason,refs,regression,relation,render,resolver,resume,returns,runtime,schema,scope,session,short,slug,spec,store,stored,stores,tests,the,ticket,title,transcript,turns,type,unit,unpin,unspecified,urn,urns,usage,view,without,workspace,write
+    scope: "state=ready, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml","412964a3-e1c3-47da-94ad-268ff20441c0",related,ticket,"",412964a3
+    digest: 687679e511f06ca3687d9060bb0c22b63aa78e6a25958e0ec94e3c13506795bd
+    tags[3]: ready,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4143b314-357d-400b-b2b7-9bf588a98d90"
     kind: ticket
@@ -3232,13 +3297,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/505b2cd4-f21d-4e8d-8e6a-ae06a5b69854/ticket.toml"
     title: "[ticket-api] Deliver safe cross-workspace ticket move for git-backed stores"
     summary: "Implement a safe, reviewable `ticket move` capability for git-backed `memory-api` workspaces that relocates a ticket into a different workspace store and preserves correctness of the owning store, re..."
-    keywords[161]: 13e9ce28,44abe1d4,above,acceptance,active,after,all,and,any,api,arbitrary,are,assumption,atomicity,backed,based,become,blocked,board,boundary,capability,child,chosen,cite,claims,cli,closed,complete,consumer,contract,correctness,criteria,cross,deliver,delivered,destination,different,docs,edges,edits,entities,every,execution,exists,fail,file,files,folder,follows,for,from,generalize,git,goal,handling,high,historical,http,implement,implementing,inbound,instead,into,invisible,involving,its,journaled,keyed,leases,linked,live,may,mcp,memory,migrated,model,move,moved,moving,must,new,not,old,only,outbound,owning,part,partially,path,permit,planning,policy,post,preflight,preserves,proven,recovery,reference,references,refuses,reindex,relationship,relocates,remain,remains,reminder,restore,resumable,reviewable,rewrite,rewritten,rollback,rows,safe,safety,same,scheme,scope,semantics,source,spec,specs,stale,status,stays,step,storage,store,stores,support,surfaces,target,tests,text,that,the,they,this,ticket,"ticket-api",tickets,tool,topologies,topology,tracked,tracker,transaction,unblocked,under,unsupported,until,use,uuid,validation,visible,when,with,workspace,workspaces,worktree,would
-    scope: "state=new, component=ticket-api"
+    keywords[161]: 13e9ce28,44abe1d4,above,acceptance,active,after,all,and,any,api,arbitrary,are,assumption,atomicity,backed,based,become,blocked,board,boundary,capability,child,chosen,cite,claims,cli,closed,complete,consumer,contract,correctness,criteria,cross,deliver,delivered,destination,different,docs,edges,edits,entities,every,execution,exists,fail,file,files,folder,follows,for,from,generalize,git,goal,handling,high,historical,http,implement,implementing,"in-review",inbound,instead,into,invisible,involving,its,journaled,keyed,leases,linked,live,may,mcp,memory,migrated,model,move,moved,moving,must,not,old,only,outbound,owning,part,partially,path,permit,planning,policy,post,preflight,preserves,proven,recovery,reference,references,refuses,reindex,relationship,relocates,remain,remains,reminder,restore,resumable,reviewable,rewrite,rewritten,rollback,rows,safe,safety,same,scheme,scope,semantics,source,spec,specs,stale,status,stays,step,storage,store,stores,support,surfaces,target,tests,text,that,the,they,this,ticket,"ticket-api",tickets,tool,topologies,topology,tracked,tracker,transaction,unblocked,under,unsupported,until,use,uuid,validation,visible,when,with,workspace,workspaces,worktree,would
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/505b2cd4-f21d-4e8d-8e6a-ae06a5b69854/ticket.toml","505b2cd4-f21d-4e8d-8e6a-ae06a5b69854",related,ticket,"",505b2cd4
-    digest: 974eed3abff7478e8a91ae129ec8913cbd1058a216c8622fd9e7242ab0c17497
-    tags[4]: high,new,ticket,"ticket-api"
+    digest: e8881c53141b9188e645f9d8f4b4e7402e7697e1de0d2b7c0726ab56dedc3873
+    tags[4]: high,"in-review",ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5070c6b3-a37a-47fa-8dcf-69f805c1a2d2"
     kind: ticket
@@ -3401,13 +3466,26 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/53176121-eb55-4aa9-a1d6-5075db1c163b/ticket.toml"
     title: "[ticket-cli] Add `ticket move` CLI with dry-run and recovery guidance"
     summary: "Expose the move planner and executor through `ticket-cli` so operators can preview, apply, resume, and roll back a move from the command line."
-    keywords[78]: acceptance,add,and,apply,around,back,behavior,blockers,can,cleanliness,cli,command,compact,concrete,contract,criteria,dry,equivalent,example,execute,executor,expose,flag,for,from,git,goal,guidance,high,instructions,inventing,journal,layer,line,move,mutating,nested,new,normalized,off,one,operators,option,path,plan,planner,preview,primitive,print,rather,reasons,recovery,references,resume,roll,rollback,root,roots,run,scope,shaped,shared,should,storage,supported,than,the,through,ticket,"ticket-cli",topology,touched,unsupported,uses,using,with,without,workspace
-    scope: "state=new, component=ticket-cli"
+    keywords[78]: acceptance,add,and,apply,around,back,behavior,blockers,can,cleanliness,cli,command,compact,concrete,contract,criteria,dry,equivalent,example,execute,executor,expose,flag,for,from,git,goal,guidance,high,"in-review",instructions,inventing,journal,layer,line,move,mutating,nested,normalized,off,one,operators,option,path,plan,planner,preview,primitive,print,rather,reasons,recovery,references,resume,roll,rollback,root,roots,run,scope,shaped,shared,should,storage,supported,than,the,through,ticket,"ticket-cli",topology,touched,unsupported,uses,using,with,without,workspace
+    scope: "state=in-review, component=ticket-cli"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/53176121-eb55-4aa9-a1d6-5075db1c163b/ticket.toml","53176121-eb55-4aa9-a1d6-5075db1c163b",related,ticket,"","53176121"
-    digest: 1129634c38b315ae36669f5d00c2565200aaf78757a5e0070afd4ff2568ffd95
-    tags[4]: high,new,ticket,"ticket-cli"
+    digest: 91c7e4e679ba927200de5cd04f3a2094dd08571223dcd9565b80d458f9f7b1e8
+    tags[4]: high,"in-review",ticket,"ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5318aedd-5188-4bfa-ad7d-a6d76e3243f1"
+    kind: ticket
+    source_path: ".ticket/tickets/5318aedd-5188-4bfa-ad7d-a6d76e3243f1/ticket.toml"
+    title: "[spec-mcp][spec-http] Workspace-resolution parity — nested-root awareness + pure transport"
+    summary: "Follow-up after the ticket-domain first run. Adopt the same shared memory-api resolver + pure-transport pattern for the spec transports."
+    keywords[75]: 59d96577,acceptance,adopt,after,all,and,any,api,audit,awareness,cli,code,comes,complete,consume,coordinate,criteria,depends,discover,discovery,domain,extend,fallback,first,follow,for,from,get,http,identically,implementation,input,list,logic,mcp,medium,memory,nested,new,only,parent,parity,path,pattern,per,proven,pure,recursive,refs,regression,remains,remove,removed,resolution,resolve,resolver,root,run,same,scope,search,shared,spec,"spec-api",specs,stores,test,the,ticket,transport,transports,validatable,validate,with,workspace
+    scope: "state=new, component=spec-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/5318aedd-5188-4bfa-ad7d-a6d76e3243f1/ticket.toml","5318aedd-5188-4bfa-ad7d-a6d76e3243f1",related,ticket,"",5318aedd
+    digest: 7ec21dd45ef25a69b5d566e4056ea73d15b51803c019cf3d939f6b947335f263
+    tags[4]: medium,new,"spec-api",ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "53a6d689-7d31-40ce-b807-4314285b4bfd"
     kind: ticket
@@ -3583,13 +3661,13 @@ entries[838]:
     source_path: ".ticket/tickets/59d96577-09a8-44a7-b0ea-3d51b3a6fb05/ticket.toml"
     title: "[spec-cli][spec-mcp] Make spec workflows root-aware across nested .spec stores"
     summary: "Spec workflows are not root-aware enough across nested `.spec` stores."
-    keywords[160]: accept,acceptance,across,active,add,agent,all,and,any,api,are,assembled,assuming,aware,awkward,backend,between,both,building,can,chains,cli,clients,commands,consume,context,cover,coverage,covered,crates,create,criteria,current,cwd,define,depended,describe,direct,docs,document,documented,driven,during,enough,evidence,exe,executable,executions,explicit,explicitly,facing,fields,flow,flows,for,from,frontends,get,had,hand,health,including,index,infer,instead,integration,intended,invocation,invocations,issued,json,least,like,likely,list,loads,make,manual,matches,may,mcp,meaningful,memory,metadata,model,multi,must,names,nested,new,not,operations,operator,output,parity,path,problem,read,readme,real,refs,regression,repeat,repeatedly,repo,reproduce,requirements,restate,retry,return,root,same,scope,search,selection,selector,semantics,session,shell,signal,spec,specification,spelunking,stayed,still,store,stores,strong,such,surfaces,switch,switches,syntax,targeting,test,that,the,this,through,ticket,too,tool,tooling,tools,unspecified,update,usage,used,user,validate,validation,viewer,which,while,wiring,without,work,workflows,workspace,zero
-    scope: "state=new, component=unspecified"
+    keywords[160]: accept,acceptance,across,active,add,agent,all,and,any,api,are,assembled,assuming,aware,awkward,backend,between,both,building,can,chains,cli,clients,commands,consume,context,cover,coverage,covered,crates,create,criteria,current,cwd,define,depended,describe,direct,docs,document,documented,driven,during,enough,evidence,exe,executable,executions,explicit,explicitly,facing,fields,flow,flows,for,from,frontends,get,had,hand,health,"in-review",including,index,infer,instead,integration,intended,invocation,invocations,issued,json,least,like,likely,list,loads,make,manual,matches,may,mcp,meaningful,memory,metadata,model,multi,must,names,nested,not,operations,operator,output,parity,path,problem,read,readme,real,refs,regression,repeat,repeatedly,repo,reproduce,requirements,restate,retry,return,root,same,scope,search,selection,selector,semantics,session,shell,signal,spec,specification,spelunking,stayed,still,store,stores,strong,such,surfaces,switch,switches,syntax,targeting,test,that,the,this,through,ticket,too,tool,tooling,tools,unspecified,update,usage,used,user,validate,validation,viewer,which,while,wiring,without,work,workflows,workspace,zero
+    scope: "state=in-review, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/59d96577-09a8-44a7-b0ea-3d51b3a6fb05/ticket.toml","59d96577-09a8-44a7-b0ea-3d51b3a6fb05",related,ticket,"",59d96577
-    digest: 3ed8c57fd8c3a57ae0554563dddaf865ba29e76b833db8ac2cc776dd2d56f7b5
-    tags[3]: new,ticket,unspecified
+    digest: ad9a06427cea1b606d81ef51da312343711df1df70f3531a5bd62f97fa863a12
+    tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5a4c2e4d-e7d9-4138-8f25-c699942f739a"
     kind: ticket
@@ -4059,6 +4137,19 @@ entries[838]:
     digest: 4ca4df08362f7aefb3ef9d5b88d552acd29eb34c804d5d4a0c5ce26bd2792129
     tags[3]: ready,ticket,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "632974d1-ce70-446a-b210-068840041116"
+    kind: ticket
+    source_path: ".ticket/tickets/632974d1-ce70-446a-b210-068840041116/ticket.toml"
+    title: "[audit-mcp][audit-http] Workspace-resolution parity — nested-root awareness + pure transport"
+    summary: "Follow-up after the ticket-domain first run. Adopt the shared memory-api resolver + pure-transport pattern for the audit transports."
+    keywords[66]: absent,acceptance,adopt,after,all,any,api,audit,"audit-api",awareness,carries,cli,code,commands,consistently,consume,criteria,depends,discovery,domain,each,first,follow,for,from,hoist,http,identically,input,into,logic,mcp,medium,memory,nested,new,parent,parity,pattern,per,present,private,proven,pure,read,recursive,regression,remains,resolution,resolve,resolver,root,run,same,scope,selection,shared,store,stores,test,the,ticket,transport,transports,validatable,workspace
+    scope: "state=new, component=audit-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/632974d1-ce70-446a-b210-068840041116/ticket.toml","632974d1-ce70-446a-b210-068840041116",related,ticket,"",632974d1
+    digest: a22dec2cfee68922b103bfffccdaded612a7af0ab48853b88c3a721b0fe62edd
+    tags[4]: "audit-api",medium,new,ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "635b7e37-8bed-4622-a38d-ef87bb08f46c"
     kind: ticket
     source_path: ".ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml"
@@ -4220,12 +4311,12 @@ entries[838]:
     source_path: ".ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml"
     title: "[architecture][multi-store] Tracker: cross-store interaction model and migration"
     summary: "Goal: deliver a workspace-wide, domain-isolated multi-store architecture where each store owns persistence and workflow behavior while cross-store interactions are defined by shared contract interfac..."
-    keywords[143]: acceptance,across,active,adoption,after,aliases,all,and,api,architecture,are,audit,automatic,based,behavior,biased,binary,breaking,can,captures,cause,chain,checks,child,cli,code,compatibility,complete,composition,contract,contracts,coordinate,core,crates,criteria,cross,decisions,defined,defines,deliver,dependency,details,diagnostic,diagnostics,discovery,domain,each,enforce,entity,envelope,error,establish,evidence,examples,expectations,extended,extension,final,for,form,fully,gates,goal,graph,has,health,high,hint,http,hybrid,identity,implementation,incrementally,interaction,interactions,interfaces,ioc,isolated,layer,legacy,local,locked,mcp,memory,message,metadata,migration,missing,mode,model,multi,names,nested,neutral,neutralization,new,owns,pass,peers,persistence,phase,phases,planning,plus,practical,proof,ready,recursive,reference,references,remediation,request,required,retire,rule,schema,scope,shared,ship,small,spec,storage,store,target,ticket,tickets,topology,tracker,unspecified,urn,validation,vectors,vocabulary,where,while,wide,wiring,with,without,workflow,workflows,workspace,workspaces
+    keywords[210]: 505b2cd4,7599ed31,acceptance,across,active,adoption,after,aliases,all,and,api,architecture,are,audit,automatic,b03be2d5,backed,based,become,before,behavior,biased,binary,bootstrap,breaking,can,cannot,captures,cause,chain,checks,child,children,cleanup,cli,code,committing,compatibility,complete,composition,consolidated,consolidates,consolidation,context,contract,contracts,coordinate,core,crates,criteria,cross,decision,decisions,default,defined,defines,deliver,delivers,depend,dependency,depends,details,diagnostic,diagnostics,discovery,domain,each,edged,edges,enforce,engine,entities,entity,envelope,error,establish,evaluate,evidence,examples,expectations,extended,extension,f00291a3,facade,feedback,final,for,form,from,full,fully,gates,git,goal,graph,hard,has,health,high,hint,http,hybrid,identity,implementation,incrementally,interaction,interactions,interfaces,into,intra,ioc,isolated,journaled,layer,legacy,link,lives,local,locked,mcp,memory,message,metadata,migrate,migration,misplaced,missing,mode,model,move,moves,multi,names,nested,neutral,neutralization,new,now,once,one,open,owns,pass,peers,persistence,phase,phases,planning,plus,possible,practical,prerequisite,proof,ready,recorded,recursive,ref,reference,references,relinking,remediation,request,required,resolve,retire,rule,safe,schema,scope,see,session,shared,ship,small,spec,still,storage,store,stores,suffice,target,textually,that,the,therefore,thin,this,ticket,tickets,tooling,topology,tracker,unspecified,urn,validation,vectors,via,vocabulary,where,whether,while,wide,wiring,with,without,work,workflow,workflows,workspace,workspaces
     scope: "state=new, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml","671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe",related,ticket,"",671d4e47
-    digest: 1cf5e66398f407a7ce0601a2eff5ae0f575ebebb964897e578f273691e003a7d
+    digest: ada2f2b99a2e70edc9cba4939038640a403415f8559a141b7d5a87561755c41c
     tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "67b6117b-5978-4c89-9cd4-4c8b043f4fba"
@@ -4409,6 +4500,19 @@ entries[838]:
         ".ticket/tickets/6a19ae5f-8695-47e1-8b21-1062e0546fda/ticket.toml","6a19ae5f-8695-47e1-8b21-1062e0546fda",related,ticket,"",6a19ae5f
     digest: 5eb2984f1ccd3037fd9274f8cb96714c9f46174cbf53d91aa7d46dd9aa7808bf
     tags[4]: medium,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6b2dc497-188c-44f5-9106-bf35deecb7a1"
+    kind: ticket
+    source_path: ".ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml"
+    title: "[session-api] Add init/pin/unpin/view to session-cli and session-mcp"
+    summary: "Expose the runtime session-context operations through CLI and MCP, headers-only (D6)."
+    keywords[78]: 412964a3,709f067a,add,agents,alongside,and,api,bodies,bootstrap,cascade,check,cli,context,d8f76965,depends,end,entities,entity,existing,expose,f8b447b7,feedback,fetch,for,frozen,full,generic,get,headers,helpful,honor,init,json,lookup,matching,mcp,memory,mixed,model,not,note,only,operations,optional,peek,per,pin,pinned,query,rating,ready,results,resume,return,returns,round,runtime,safe,schema,scope,session,short,spec,structured,surface,surfaces,tests,the,through,ticket,tools,toon,trip,unpin,unspecified,usage,via,view
+    scope: "state=ready, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml","6b2dc497-188c-44f5-9106-bf35deecb7a1",related,ticket,"",6b2dc497
+    digest: e44dac38b7544f32d48b71b0e4cf35f94e6a42307a43f7e48435d1c5b895dc87
+    tags[3]: ready,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6b51228e-1686-41fc-ac0c-7e19f58d657f"
     kind: ticket
@@ -4969,6 +5073,19 @@ entries[838]:
     digest: 82227f01ef419c02771191c704a56ce7c473ee6ae51d0bf0f6a0e20ccb9e5c23
     tags[4]: "in-review",medium,ticket,"ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "7599ed31-598e-458e-8651-9bfe6c57ffd9"
+    kind: ticket
+    source_path: "memory-api/.ticket/tickets/7599ed31-598e-458e-8651-9bfe6c57ffd9/ticket.toml"
+    title: "[ticket-store][cleanup] Migrate misplaced context-engine-workspace tickets into the memory-api store"
+    summary: "Every entity must live in the **lowest-level store that contains all of the code the entity is concerned with**:"
+    keywords[246]: "07836f41",13e9ce28,"185419e0",22cd3001,"39239e48",3a1ec9f8,3a26572a,412964a3,4f86d3d2,505b2cd4,59d96577,671d4e47,6b2dc497,6bd67a7a,82d6ada4,8a90a63c,9c95c1e4,acceptable,acceptance,active,afa00b5c,affected,after,agent,all,also,ancestor,and,any,api,architecture,are,audit,audited,automatic,b03be2d5,b1e9e744,b4a8dc5e,b7b84c10,backed,because,before,being,between,bidirectional,blindly,blocks,board,bootstrap,broken,but,c2d6a14a,c7542933,can,candidate,candidates,cannot,capture,cascade,check,checks,children,cleanup,cli,cluster,code,common,concerned,concerns,confirm,consolidate,contains,context,core,crates,criteria,cross,currently,d8f76965,dangling,default,definition,deliver,delivered,depend,depends,design,direction,directly,discovery,docs,documented,domain,draw,dry,each,edge,edges,ef0ebf38,effba966,effort,engine,entirely,entities,entity,epic,every,everything,expansion,exposes,f00291a3,feedback,first,flight,folders,for,gate,genuinely,git,graph,hard,health,high,history,holds,implementation,ins,integration,into,intra,its,journaled,justified,level,link,linked,linking,links,lists,live,located,lower,lowest,machine,many,mcp,memory,migrate,migration,misplaced,misplacement,model,more,move,moved,moves,moving,multi,must,new,not,one,only,operational,orphaned,owning,owns,parent,parity,pass,path,paths,placement,plan,planner,pollutes,post,preflight,preserve,preserved,previously,principle,product,production,program,reference,references,relocate,relocates,remain,repo,requirements,resolution,reversible,review,rewrite,rewritten,root,rule,rules,run,runtime,safe,safety,server,session,single,spans,spec,specs,split,stack,state,stay,stays,still,store,stores,such,supported,target,than,that,the,their,these,this,ticket,"ticket-api",tickets,tooling,top,touches,tracked,tracker,transitions,transport,urn,use,validated,viewer,whose,why,with,work,workspace
+    scope: "state=new, component=ticket-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        "memory-api/.ticket/tickets/7599ed31-598e-458e-8651-9bfe6c57ffd9/ticket.toml","7599ed31-598e-458e-8651-9bfe6c57ffd9",related,ticket,"",7599ed31
+    digest: 2913ab9ebabc6e638788443974bbd81c5525eb03a873389a8bd4f7e5e3e5969d
+    tags[4]: high,new,ticket,"ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "75b12c5a-a0cf-4810-b5b6-a65319dc95a7"
     kind: ticket
     source_path: ".ticket/tickets/75b12c5a-a0cf-4810-b5b6-a65319dc95a7/ticket.toml"
@@ -5307,6 +5424,19 @@ entries[838]:
     digest: 39d3029d437b79158e369b81bc72d2b390a8b8a998cd70889121e23be823435a
     tags[3]: cancelled,ticket,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "7f4aaa05-584a-42a8-a06f-d0b263ad929e"
+    kind: ticket
+    source_path: "memory-api/.ticket/tickets/7f4aaa05-584a-42a8-a06f-d0b263ad929e/ticket.toml"
+    title: "[ticket-api][bug] update_ticket resets state to new on field/description patch; transition_states silently no-ops"
+    summary: "Fixed the state machine regression in ticket-api `update()` function where:"
+    keywords[127]: 7f4aaa05,acceptance,added,all,and,api,applies,automatically,behavior,benefit,bug,but,call,cases,cause,cli,clone,code,combined,correctly,crates,criteria,current,description,discarded,done,edit,element,enforced,enforcement,ensures,entirely,errors,existing,field,fields,files,fix,fixed,function,handle,handlers,high,honored,http,ignored,implemented,indexed,inherit,last,layer,listing,logic,machine,mcp,meant,memory,met,modified,multi,neither,new,none,not,now,one,ops,parameter,parity,pass,patch,patching,path,preservation,preserve,preserved,preserves,provided,raise,regression,required,resets,root,schema,serve,setting,shared,signatures,silently,solution,src,state,states,step,still,storage,store,summary,symptom,target,tests,the,this,three,ticket,"ticket-api",tickets,tools,transition,transitions,transport,transports,update,upsert,use,validation,vec,verified,verifies,was,when,where,with,without,work,working,works
+    scope: "state=done, component=ticket-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        "memory-api/.ticket/tickets/7f4aaa05-584a-42a8-a06f-d0b263ad929e/ticket.toml","7f4aaa05-584a-42a8-a06f-d0b263ad929e",related,ticket,"",7f4aaa05
+    digest: 1bf195f536a9f8193257a781a684ed004d927cca09d515b7dea289c274b6010e
+    tags[4]: done,high,ticket,"ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "7f7fe4a8-a1d6-44b4-baf9-9500f6db40a5"
     kind: ticket
     source_path: ".ticket/tickets/7f7fe4a8-a1d6-44b4-baf9-9500f6db40a5/ticket.toml"
@@ -5533,13 +5663,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/84d19fab-9086-4eb2-9d1b-f6bbbae62ceb/ticket.toml"
     title: "[ticket-mcp] Expose ticket move planning and execution over MCP"
     summary: "Expose the move capability to MCP clients so agents can dry-run and apply safe workspace moves without shelling out to the CLI."
-    keywords[71]: acceptance,add,agents,and,apply,blockers,board,callers,can,capability,cli,clients,closed,criteria,data,dry,error,execute,execution,expose,fail,fields,for,from,full,goal,journal,mcp,medium,move,moves,new,out,over,path,payloads,plan,planning,preflight,preserve,primitive,reasons,receive,recover,reference,references,resume,return,rewrites,rollback,run,safe,scope,separately,shared,shelling,source,status,storage,store,structured,surfaced,target,the,ticket,"ticket-mcp",tools,touched,using,without,workspace
-    scope: "state=new, component=ticket-mcp"
+    keywords[71]: acceptance,add,agents,and,apply,blockers,board,callers,can,capability,cli,clients,closed,criteria,data,dry,error,execute,execution,expose,fail,fields,for,from,full,goal,"in-review",journal,mcp,medium,move,moves,out,over,path,payloads,plan,planning,preflight,preserve,primitive,reasons,receive,recover,reference,references,resume,return,rewrites,rollback,run,safe,scope,separately,shared,shelling,source,status,storage,store,structured,surfaced,target,the,ticket,"ticket-mcp",tools,touched,using,without,workspace
+    scope: "state=in-review, component=ticket-mcp"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/84d19fab-9086-4eb2-9d1b-f6bbbae62ceb/ticket.toml","84d19fab-9086-4eb2-9d1b-f6bbbae62ceb",related,ticket,"",84d19fab
-    digest: ec0426581e51e14d6f91cc9df4cab6dfb22b4b955c26bdc0310e52d16960927a
-    tags[4]: medium,new,ticket,"ticket-mcp"
+    digest: 5c2505f2c5359f44f7329b33658e35932b0ed5b68829fb5b849cbc67fb1e3d10
+    tags[4]: "in-review",medium,ticket,"ticket-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "84ee1a9b-e0e8-4990-a9c7-af0e7b336d0e"
     kind: ticket
@@ -6638,12 +6768,12 @@ entries[838]:
     source_path: ".ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml"
     title: "[feedback-api] Event ingestion, metadata normalization, and retention policy"
     summary: "Define feedback event ingestion for human and privileged-agent authors, normalize metadata, and establish retention/privacy boundaries."
-    keywords[23]: agent,and,api,authors,boundaries,define,establish,event,feedback,for,high,human,ingestion,metadata,new,normalization,normalize,policy,privacy,privileged,retention,ticket,unspecified
+    keywords[93]: 29bf9628,412964a3,accept,agent,aggregate,and,api,are,authors,before,begins,bootstrap,bootstrapping,boundaries,cancelled,checked,compile,consumers,count,curation,define,direct,effba966,emitted,entities,entity,epic,establish,event,events,expose,extension,f8b447b7,facing,feedback,folded,for,frequency,from,hard,helpful,high,human,implementation,ingestion,keyed,land,last,leave,low,memory,metadata,mixed,must,new,normalization,normalize,not,note,now,one,optional,per,persist,pin,point,policy,privacy,privileged,query,rated,rating,requirements,retention,rule,runtime,scope,session,spec,store,subsume,surfaces,the,these,ticket,unresolved,unspecified,urn,usage,used,user,wire,workspace
     scope: "state=new, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml","9c95c1e4-3cdb-428e-b9de-800684651226",related,ticket,"",9c95c1e4
-    digest: 161d78728551ca0b66072f8ddd19a67ce00c3e69dd53540f6efba4cbbbc0e131
+    digest: 13560f4fdd4f5400e93c244882d2484a462c52eb94ea0eee23c3bf1e77eb8271
     tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9d0258de-bf87-4b7e-b8f0-e78f4fdf0b58"
@@ -7348,6 +7478,19 @@ entries[838]:
     digest: 7880ff66846d7f8b4437504cfd3207c9dd5678421c7aabd9cb0150b72ec56bd8
     tags[4]: done,high,"rule-api",ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "afa00b5c-c736-4d75-b157-d3e9ce90d819"
+    kind: ticket
+    source_path: ".ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml"
+    title: "[session-bootstrap][design] Define bootstrap contract, session_context schema, and ADRs"
+    summary: "Planning/design ticket for the [session-bootstrap] epic. Produces the specs and the resolved decisions."
+    keywords[126]: 709f067a,71b81a55,8c880efc,a28a88db,above,acceptable,adrs,agent,always,and,api,applyto,are,attach,authored,auto,bodies,bootstrap,bootstrapper,bootstrapping,bootstraps,capture,carried,cascade,chat,children,client,confirm,consolidation,context,contract,counting,create,cross,curation,current,decide,decisions,define,design,dir,discoverable,done,dynamic,edges,empty,entities,entity,entries,epic,every,exact,explicitly,fda5c915,feedback,fetched,flush,for,freeze,frozen,gathering,general,generic,glob,hard,headers,identity,implementation,"in-implementation",init,instructions,linked,loading,memory,minimal,mode,model,not,only,parent,per,pin,pinned,pins,plan,planning,prerequisite,prerequisites,produces,ratings,redesign,references,remaining,removal,remove,rendering,resolved,reviewed,risk,rule,rules,runtime,schema,scope,see,selective,session,shape,side,spec,specs,status,store,the,their,ticket,today,tracking,unblocked,unspecified,urn,urns,usage,via,when,work
+    scope: "state=in-implementation, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml","afa00b5c-c736-4d75-b157-d3e9ce90d819",related,ticket,"",afa00b5c
+    digest: 0d714d4f6bf5eaacf95b63ddb14734f8468356d2095f7620e89a792659de8081
+    tags[3]: "in-implementation",ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "afcf2759-9c91-433c-b62c-ae8adcb0cdd5"
     kind: ticket
     source_path: ".ticket/tickets/afcf2759-9c91-433c-b62c-ae8adcb0cdd5/ticket.toml"
@@ -7457,12 +7600,12 @@ entries[838]:
     source_path: ".ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml"
     title: "[feedback-api] Feedback inbox, metadata indexing, and deep search"
     summary: "Plan a feedback store that ingests human and privileged-agent feedback events, normalizes metadata, and supports deep search and reconciliation at scale."
-    keywords[42]: abuse,acceptance,agent,and,api,are,boundaries,criteria,deep,events,executable,explicit,feedback,high,human,inbox,indexing,ingestion,ingests,into,metadata,model,new,normalizes,plan,planning,privileged,quality,query,reconciliation,scale,schema,search,specified,split,store,supports,that,ticket,tickets,unspecified,work
+    keywords[170]: 29bf9628,6bd67a7a,71b81a55,82d6ada4,9c95c1e4,abuse,acceptance,addressed,addressing,agent,agents,aggregate,already,and,api,are,been,before,bolted,bootstrap,bootstrapping,boundaries,built,cancelled,checked,child,class,cleanup,cold,compile,consumer,contract,coordinate,count,counting,coverage,criteria,curation,deep,default,delivered,depends,describes,downstream,effba966,emitted,entities,entity,entry,epic,event,events,executable,exists,explicit,expose,extension,f8b447b7,facing,feed,feedback,first,folded,for,frequency,full,generic,has,helpful,here,high,hot,human,implementation,inbox,indexing,ingestion,ingests,into,keyed,last,later,leave,low,memory,metadata,mixed,model,must,needs,new,normalizes,not,notably,note,now,obsolete,one,optional,owned,owner,parallel,part,per,pinned,pinning,pins,plan,planning,point,prior,privileged,program,quality,query,rate,rated,ratings,reconciliation,record,references,reflected,requirements,resolver,responding,rule,rules,scale,schema,scheme,search,separate,separately,session,shaped,share,should,signal,signals,single,spec,specified,specs,split,starts,store,subsumed,supports,surface,surfaces,that,the,there,these,this,ticket,tickets,unresolved,unspecified,urn,urns,usage,used,user,value,whenever,wire,with,work,workspace
     scope: "state=new, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml","b1e9e744-aeac-474a-91d9-07e3a362dc76",related,ticket,"",b1e9e744
-    digest: cfa95951b9c6a6fd3ddbd0c9e8d13dc7f0400a2f2b81d515c08d3fc85cd4cb07
+    digest: d0c4d92950442e7f0d870ad749428066dbbf60a483c226e5a6b1fe23e485e8e8
     tags[4]: high,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72"
@@ -7659,6 +7802,19 @@ entries[838]:
         "viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml","b480632a-8605-4b5b-a4e8-f2988b2565a0",related,ticket,"",b480632a
     digest: 892ac9cbee60a0ae0a1b2e0a7fd7f2c1a4229b9336f589144600fe287c39d251
     tags[4]: medium,new,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    kind: ticket
+    source_path: ".ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml"
+    title: "[session-bootstrap][rules] Minimal bootstrapper + selective instruction loading"
+    summary: "Operationalizes decision **D7**: stop force-loading static guidance; make it discoverable and agent-rendered."
+    keywords[140]: "132","180","239","447","500",6b2dc497,a28a88db,accepting,agent,all,always,and,api,applyto,are,author,becomes,bodies,bootstrap,bootstrapper,but,canonical,cascade,check,cli,code,commit,confirm,content,convert,converted,copilot,decision,default,demand,depends,design,deterministic,discoverable,drives,duplication,efficiency,entries,every,fetched,files,filters,fix,focused,for,force,frozen,gathers,generated,generating,globs,guaranteed,guidance,has,headers,individual,init,instruction,instructions,into,its,keep,knows,lines,load,loaded,loading,longer,make,may,mcp,means,mechanism,memory,minimal,narrow,narrowing,not,only,operationalizes,other,out,own,path,per,pin,pinned,pins,provide,pulled,reachable,ready,redesign,remaining,remains,remove,removing,render,rendered,rendering,renders,risk,rule,rules,scope,scopes,search,searchable,selective,session,set,side,spec,static,stays,stop,surface,surfaces,sync,system,target,targets,that,the,them,ticket,token,tokens,tools,turn,universal,unspecified,via,view,whatever
+    scope: "state=ready, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml","b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6",related,ticket,"",b4a8dc5e
+    digest: a6c3c6e788e4c1a90099af55858b6c84bdd1753c8bcf6d7fe7d40762fedddb3b
+    tags[3]: ready,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b4f444ee-4858-4d13-8cdb-690a33115611"
     kind: ticket
@@ -7951,13 +8107,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e/ticket.toml"
     title: "[ticket-api] Add journaled storage-layer execution for cross-workspace ticket moves"
     summary: "Execute a supported move safely at the storage layer, with resumable journal state and rollback when a step fails."
-    keywords[101]: acceptance,acquires,add,after,and,api,are,available,aware,back,can,captures,capturing,criteria,cross,disappears,does,engine,enough,execute,execution,explain,failed,fails,file,files,folder,for,from,git,goal,happened,high,implement,indexes,interrupted,into,journal,journaled,layer,leaving,level,lock,locks,move,moved,movement,moves,mutation,new,next,not,own,owned,owns,partially,persists,plan,primitive,reconciled,recovery,reindexes,relocates,resolves,resumable,resume,resumed,reusable,rollback,rolled,run,safely,scans,scope,set,source,state,step,steps,storage,store,stores,supported,supports,surfaces,target,that,the,this,ticket,"ticket-api",touched,transport,two,using,validates,what,when,with,without,workspace
-    scope: "state=new, component=ticket-api"
+    keywords[101]: acceptance,acquires,add,after,and,api,are,available,aware,back,can,captures,capturing,criteria,cross,disappears,does,engine,enough,execute,execution,explain,failed,fails,file,files,folder,for,from,git,goal,happened,high,implement,"in-review",indexes,interrupted,into,journal,journaled,layer,leaving,level,lock,locks,move,moved,movement,moves,mutation,next,not,own,owned,owns,partially,persists,plan,primitive,reconciled,recovery,reindexes,relocates,resolves,resumable,resume,resumed,reusable,rollback,rolled,run,safely,scans,scope,set,source,state,step,steps,storage,store,stores,supported,supports,surfaces,target,that,the,this,ticket,"ticket-api",touched,transport,two,using,validates,what,when,with,without,workspace
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e/ticket.toml","bc691249-5a2d-409e-8e7b-2602d80cf61e",related,ticket,"",bc691249
-    digest: ec05ac9c22aef6584e1f07284474d9fff6a90d71a654616ac341303f220f8611
-    tags[4]: high,new,ticket,"ticket-api"
+    digest: 70470cc5cc08d09ad74445e5af7d648ec002ff1ae01e5e46fd944f5dee056af7
+    tags[4]: high,"in-review",ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bcc111c6-5034-4259-b8cd-3a4dacf3113a"
     kind: ticket
@@ -8466,6 +8622,19 @@ entries[838]:
     digest: 1bdea200ef89157b53d0d47c82c4dba3304728ffb17ffad94c9d0a509a357dae
     tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "c7542933-3052-45c8-99e6-3e09f40cc9b9"
+    kind: ticket
+    source_path: ".ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml"
+    title: "[feedback-api] Core curation surface — URN usage counting + entity ratings (bootstrap gate)"
+    summary: "This is the **minimal, self-contained core** of the feedback-api program that session bootstrapping gates on — NOT the full program. It exists so the session-bootstrap epic can depend on a small, shi..."
+    keywords[145]: 412964a3,71b81a55,7599ed31,abuse,across,agent,aggregate,and,api,author,b1e9e744,bootstrap,bootstrapping,boundary,broader,build,can,candidate,checked,child,cleanup,cluster,clustering,compile,compiles,contained,context,contract,controls,core,correct,count,counting,created,curation,currently,deferred,depend,dependency,depends,domain,done,edged,effba966,engine,entities,entity,epic,event,events,exists,explicitly,extension,feedback,"feedback-api",for,frequency,full,gate,gates,generically,governance,graph,growth,heavyweight,helpful,high,implements,incident,index,instead,into,keyed,kinds,last,latency,low,memory,migration,milestone,minimal,mixed,new,not,note,now,one,only,optional,parent,per,pin,placement,point,policy,privacy,privileged,program,queries,query,rated,rating,ratings,reconciliation,record,redaction,relationship,relocation,results,retention,return,rule,runtime,scale,scope,search,see,self,session,shippable,slices,slos,small,spec,store,surface,surfaces,tests,that,the,this,ticket,top,two,unit,unresolved,urn,urns,usage,used,user,when,wire,with,workspace
+    scope: "state=new, component=feedback-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml","c7542933-3052-45c8-99e6-3e09f40cc9b9",related,ticket,"",c7542933
+    digest: 3ed97d8fe0f1df8ca9b63293c48db3b364f724285c87e3b68dd9f438ec9a127d
+    tags[4]: "feedback-api",high,new,ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "c7659e24-3687-4581-bc4c-54bfc7e19267"
     kind: ticket
     source_path: ".ticket/tickets/c7659e24-3687-4581-bc4c-54bfc7e19267/ticket.toml"
@@ -8835,13 +9004,13 @@ entries[838]:
     source_path: ".ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/ticket.toml"
     title: "[ticket-store] Relocate misplaced ticket and spec directories"
     summary: ""
-    keywords[9]: and,directories,done,misplaced,relocate,spec,store,ticket,unspecified
-    scope: "state=done, component=unspecified"
+    keywords[9]: and,directories,"in-review",misplaced,relocate,spec,store,ticket,unspecified
+    scope: "state=in-review, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/ticket.toml","d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110",related,ticket,"",d1770bd5
-    digest: 5a022195e637b4a8c064aefa62f6c4d5b2b83d4dcf1fa755eaac3dd8b79b5039
-    tags[3]: done,ticket,unspecified
+    digest: 4995c614e7545b6def8e291b5534dc1d0e8ddaf0f29490a8ade0b9bdc1e5190d
+    tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d187d817-d3f5-49ca-8925-8d06b5824912"
     kind: ticket
@@ -9259,6 +9428,19 @@ entries[838]:
     digest: 1ae3d1c0ae58a2d02151445869f0685ffa3c65640bd2349e6abf96ec085da5f6
     tags[4]: low,new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+    kind: ticket
+    source_path: ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml"
+    title: "[session-api] Cascade context gathering from rules/specs/tickets"
+    summary: "Given a `ticket_id` at `session_init`, proactively gather selective context from rules, specs, and tickets across stores by following **hard ID links only** (D5), resolved as URNs."
+    keywords[145]: 412964a3,6bd67a7a,82d6ada4,above,acceptance,across,actually,after,and,api,are,attach,attachment,auto,b03be2d5,before,builds,cannot,cascade,concrete,context,create,criteria,cross,default,degrade,depends,diagnostic,discovery,does,each,edge,edged,edges,emit,emits,entities,entity,event,exact,exist,exposes,f00291a3,failure,fda5c915,finalize,first,follow,following,follows,forms,free,from,fully,gather,gathering,given,gracefully,graph,hard,implementation,init,integration,intentionally,into,kinds,lands,link,links,matches,memory,missing,model,multi,must,not,note,only,path,per,persists,pin,pinned,pinning,point,proactively,provisional,ready,real,reason,recorded,references,refine,refinement,related,replace,repo,required,resolve,resolved,resolver,return,robust,rule,rules,runtime,scope,scoped,search,selective,semantic,session,set,shape,spec,specs,start,store,stores,structured,suggestion,suggestions,text,textually,that,the,then,these,this,ticket,tickets,today,traceability,undefined,unresolved,unspecified,until,urn,urns,usage,vague,via,with,work,yet
+    scope: "state=ready, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml","d8f76965-1ff3-4a0a-bb24-773b9637fae4",related,ticket,"",d8f76965
+    digest: ffc5bfa9610cd0c4b2f7833a3dd64e84fd386194d73494712016df9818bcf672
+    tags[3]: ready,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "da16dada-e245-4fdd-868a-c3691e6c351a"
     kind: ticket
     source_path: "viewer-api/.ticket/tickets/da16dada-e245-4fdd-868a-c3691e6c351a/ticket.toml"
@@ -9277,13 +9459,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/da27c074-8c9e-4613-b8b9-bf02c72b50f7/ticket.toml"
     title: "[ticket-api] Validate cross-workspace ticket move flows end to end"
     summary: Prove the move contract with focused automated coverage and one real consumer scenario before using the tool on `694d74b4`.
-    keywords[95]: 44abe1d4,694d74b4,acceptance,active,add,after,and,api,automated,before,begins,blocker,board,both,cli,consumer,contract,cover,coverage,criteria,cross,delivered,destination,dirty,end,every,evidence,exercised,failure,file,flight,flows,focused,for,from,git,goal,high,http,injected,integration,journal,least,mcp,mid,move,movement,nested,new,one,over,owns,parent,primitive,prove,real,reference,references,rejected,rejection,remains,reminder,resume,rollback,root,scenario,scope,shape,shared,sibling,smoke,stale,still,store,strand,sufficient,supported,tests,that,the,ticket,"ticket-api",tool,topologies,tracked,unblock,unrelated,using,validate,visible,when,with,workspace,worktree,would
-    scope: "state=new, component=ticket-api"
+    keywords[95]: 44abe1d4,694d74b4,acceptance,active,add,after,and,api,automated,before,begins,blocker,board,both,cli,consumer,contract,cover,coverage,criteria,cross,delivered,destination,dirty,end,every,evidence,exercised,failure,file,flight,flows,focused,for,from,git,goal,high,http,"in-review",injected,integration,journal,least,mcp,mid,move,movement,nested,one,over,owns,parent,primitive,prove,real,reference,references,rejected,rejection,remains,reminder,resume,rollback,root,scenario,scope,shape,shared,sibling,smoke,stale,still,store,strand,sufficient,supported,tests,that,the,ticket,"ticket-api",tool,topologies,tracked,unblock,unrelated,using,validate,visible,when,with,workspace,worktree,would
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/da27c074-8c9e-4613-b8b9-bf02c72b50f7/ticket.toml","da27c074-8c9e-4613-b8b9-bf02c72b50f7",related,ticket,"",da27c074
-    digest: ec7504218ab08790a93776526a29639af589f76c1a89cfb8467d4b1402f45075
-    tags[4]: high,new,ticket,"ticket-api"
+    digest: db1cc57b4cb9d72d5ed5829675cd21290da4baea8a8e01c4b96c25ed68d36c46
+    tags[4]: high,"in-review",ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "db1cccef-6712-4702-ae58-fe23dacc029f"
     kind: ticket
@@ -9381,13 +9563,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/dc70628a-3a84-4441-ad46-f59b7757e1f7/ticket.toml"
     title: "[ticket-api][spec] Extend workspace-ownership specs with move/relink contract"
     summary: "Update the existing `memory-api` recurring-principles specs for `nested-workspace-resolution` and `workspace-identifiers` so the move operation has an explicit contract before implementation lands."
-    keywords[117]: acceptance,active,add,after,and,any,api,are,backed,become,before,block,board,boundary,cite,claims,closed,contract,covering,creating,criteria,describe,destination,dirty,docs,duplicate,exact,execution,existing,expectations,explicit,extend,fail,fails,failure,flight,folder,for,from,git,goal,has,high,historical,identifiers,implementation,"in-review",include,invisible,involving,journaled,lands,links,memory,mid,migrate,modes,move,moved,moves,must,names,nested,normalization,old,once,only,operation,ownership,path,principles,rather,recovery,recurring,reference,rejected,rejection,related,relink,report,requirements,resolution,rewrite,root,rows,rule,rules,scope,sections,source,spec,specs,stale,store,support,surfaces,target,tests,than,that,the,ticket,"ticket-api",tickets,tool,topologies,unrelated,unsupported,update,updated,use,visibility,when,with,workspace,worktrees,would
-    scope: "state=in-review, component=ticket-api"
+    keywords[117]: acceptance,active,add,after,and,any,api,are,backed,become,before,block,board,boundary,cite,claims,closed,contract,covering,creating,criteria,describe,destination,dirty,docs,done,duplicate,exact,execution,existing,expectations,explicit,extend,fail,fails,failure,flight,folder,for,from,git,goal,has,high,historical,identifiers,implementation,include,invisible,involving,journaled,lands,links,memory,mid,migrate,modes,move,moved,moves,must,names,nested,normalization,old,once,only,operation,ownership,path,principles,rather,recovery,recurring,reference,rejected,rejection,related,relink,report,requirements,resolution,rewrite,root,rows,rule,rules,scope,sections,source,spec,specs,stale,store,support,surfaces,target,tests,than,that,the,ticket,"ticket-api",tickets,tool,topologies,unrelated,unsupported,update,updated,use,visibility,when,with,workspace,worktrees,would
+    scope: "state=done, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/dc70628a-3a84-4441-ad46-f59b7757e1f7/ticket.toml","dc70628a-3a84-4441-ad46-f59b7757e1f7",related,ticket,"",dc70628a
-    digest: 311e9242b3833087f74fbad56918c8a7d006fe06015f773c25f51e4b7d1ffd4e
-    tags[4]: high,"in-review",ticket,"ticket-api"
+    digest: e13b15268d00548cece5f43bc6ae0be1c68d907b3782e40a5de984f7d9112f29
+    tags[4]: done,high,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "dc83b7b4-4b0f-4732-9163-488ef0c6bcc4"
     kind: ticket
@@ -9870,6 +10052,19 @@ entries[838]:
     digest: fdf4c5e3c68d1e1b98cfb2fbddcc45ce361fbc2cfcd36fdf1e5139adf188ef49
     tags[4]: medium,new,ticket,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "e9c7a153-c1ef-444d-b1fb-3e4d57bab7ff"
+    kind: ticket
+    source_path: ".ticket/tickets/e9c7a153-c1ef-444d-b1fb-3e4d57bab7ff/ticket.toml"
+    title: throwaway bidi validation
+    summary: ""
+    keywords[6]: bidi,cancelled,throwaway,ticket,unspecified,validation
+    scope: "state=cancelled, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/e9c7a153-c1ef-444d-b1fb-3e4d57bab7ff/ticket.toml","e9c7a153-c1ef-444d-b1fb-3e4d57bab7ff",related,ticket,"",e9c7a153
+    digest: 9df17debd2751d0b5c0dad00b64a2a95ab02f731494074903c5b009c4d2c0933
+    tags[3]: cancelled,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "eaa42703-11f8-42dc-8c18-aec48101ed5e"
     kind: ticket
     source_path: ".ticket/tickets/eaa42703-11f8-42dc-8c18-aec48101ed5e/ticket.toml"
@@ -9901,13 +10096,13 @@ entries[838]:
     source_path: "memory-api/.ticket/tickets/eb6033a8-f15b-4024-952e-5c86dc108939/ticket.toml"
     title: "[ticket-api] Add move preflight planner and destination-visibility validation"
     summary: "Build the read-only planning layer for `ticket move` that decides whether a move is supported and enumerates every object the execution phase would touch."
-    keywords[113]: acceptance,active,add,after,and,any,api,are,based,before,block,board,both,build,clean,cli,computes,concrete,criteria,cross,decides,destination,detects,docs,dry,edited,entries,enumerates,evaluates,every,execution,exposes,files,folder,for,from,git,goal,high,http,ids,implement,inbound,involving,layer,leases,local,mcp,move,moved,moves,mutation,new,object,occurs,old,only,outbound,path,phase,plan,planner,planning,preflight,read,reason,reference,references,rejected,remains,remote,repo,report,reports,resolves,returns,reusable,roots,run,same,scope,should,sibling,source,specs,stale,store,strand,supported,surfaces,target,tests,that,the,ticket,"ticket-api",touch,touched,tracked,transport,unsupported,usable,uuid,validation,verifies,visibility,visible,whether,with,workspace,worktree,would,wrappers
-    scope: "state=new, component=ticket-api"
+    keywords[113]: acceptance,active,add,after,and,any,api,are,based,before,block,board,both,build,clean,cli,computes,concrete,criteria,cross,decides,destination,detects,docs,dry,edited,entries,enumerates,evaluates,every,execution,exposes,files,folder,for,from,git,goal,high,http,ids,implement,"in-review",inbound,involving,layer,leases,local,mcp,move,moved,moves,mutation,object,occurs,old,only,outbound,path,phase,plan,planner,planning,preflight,read,reason,reference,references,rejected,remains,remote,repo,report,reports,resolves,returns,reusable,roots,run,same,scope,should,sibling,source,specs,stale,store,strand,supported,surfaces,target,tests,that,the,ticket,"ticket-api",touch,touched,tracked,transport,unsupported,usable,uuid,validation,verifies,visibility,visible,whether,with,workspace,worktree,would,wrappers
+    scope: "state=in-review, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "memory-api/.ticket/tickets/eb6033a8-f15b-4024-952e-5c86dc108939/ticket.toml","eb6033a8-f15b-4024-952e-5c86dc108939",related,ticket,"",eb6033a8
-    digest: 6a4e484006f3b45692fc3ec661a07ef288f0df4490c0e25c6315c76c249a8694
-    tags[4]: high,new,ticket,"ticket-api"
+    digest: 59c39f0ea64dff19af874c35f1952cdbb3ee6e1ed57b4585dec5ebc0ecbd8f47
+    tags[4]: high,"in-review",ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec355bad-85cc-4ceb-8d3f-57222934e871"
     kind: ticket
@@ -10155,6 +10350,19 @@ entries[838]:
         ".ticket/tickets/ef50db70-90e6-4de4-bcb0-fa364664a6cf/ticket.toml","ef50db70-90e6-4de4-bcb0-fa364664a6cf",related,ticket,"",ef50db70
     digest: "08ce9d330c7a4f19ec88c3c8063917ecec4f17e8d3a11cf01b1007597e430632"
     tags[4]: high,new,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "effba966-f0a8-4d7d-b289-b7feba826cf8"
+    kind: ticket
+    source_path: ".ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml"
+    title: "[session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign"
+    summary: "Tracking ticket for redesigning the agent workflow from always-on static metacognition into just-in-time, session-scoped context curation. Source: `DESIGN_SESSION_BOOTSTRAPPING.md`. Contract: spec `m..."
+    keywords[141]: 29bf9628,412964a3,671d4e47,6b2dc497,6bd67a7a,82d6ada4,8c880efc,add,afa00b5c,agent,all,always,and,api,are,auto,b03be2d5,b4a8dc5e,before,bootstrap,bootstrapper,bootstrapping,both,boundary,cannot,capability,carried,cascade,children,cli,client,closes,consumer,context,contract,core,counting,create,cross,curation,d8f76965,decisions,default,dep,depends,design,dir,discovery,done,dynamic,edge,edged,edges,endpoints,entity,epic,f00291a3,f8b447b7,feedback,first,flush,for,from,gathering,generic,graph,hard,headers,"in-implementation",init,instructions,integration,into,item,itself,just,key,link,linked,live,mcp,memory,metacognition,mode,model,multi,one,only,per,pin,prerequisites,primary,progress,reach,redesign,redesigning,reference,references,remove,rendering,resolved,resolver,resolves,resume,risk,roadmap,robust,routing,rule,runtime,scoped,sequenced,session,ships,side,source,spec,static,store,surfaces,textual,textually,that,the,this,those,ticket,tickets,time,tracked,tracker,tracking,umbrella,unspecified,until,urn,usage,when,within,workflow,workspace
+    scope: "state=in-implementation, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml","effba966-f0a8-4d7d-b289-b7feba826cf8",related,ticket,"",effba966
+    digest: b72da120ddee17ac69b1445d052bd062998fdf6dd40a56df2f6fd61ddd32e85a
+    tags[3]: "in-implementation",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f00204fc-f33f-4cd6-9b5f-395071f4e118"
     kind: ticket
@@ -10597,6 +10805,19 @@ entries[838]:
         ".ticket/tickets/f8afe331-41e2-4563-ad6a-456837afb1f8/ticket.toml","f8afe331-41e2-4563-ad6a-456837afb1f8",related,ticket,"",f8afe331
     digest: a649990d996582a6661ebf69474f78dd17ebcede73404e9c0341a66fdf796495
     tags[3]: "context-trace",new,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f8b447b7-aa3d-498d-8900-672c6c8ba064"
+    kind: ticket
+    source_path: ".ticket/tickets/f8b447b7-aa3d-498d-8900-672c6c8ba064/ticket.toml"
+    title: "[memory-api][curation] Generic entity usage counting & feedback ratings"
+    summary: "Prerequisite for the [session-bootstrap] epic. Provides the generic, entity-type-agnostic curation primitive that session bootstrapping feeds."
+    keywords[136]: 29bf9628,71b81a55,able,across,addressed,agent,agents,aggregate,agnostic,aligns,and,api,b1e9e744,before,behind,block,bootstrap,bootstrapping,broader,but,can,cancelled,checked,compile,compiles,concrete,count,counter,counting,curate,curation,detect,direct,does,done,each,emitted,entities,entity,entityref,entries,entry,epic,event,events,existing,exists,expose,extension,feedback,feeds,for,fragmented,frequency,future,generic,generically,governance,heavyweight,helpful,independent,informs,ingestion,last,leave,low,memory,mixed,model,must,not,note,notes,now,obsolete,one,optional,out,per,pin,pinned,pinning,planned,planning,point,prerequisite,primitive,program,provides,query,rate,rated,ratings,record,relationship,required,responding,reuses,rule,rules,scope,search,separate,separately,session,shape,slo,spec,specs,store,subsume,surface,tests,that,the,them,this,ticket,today,type,unifies,unresolved,unspecified,urn,urns,usage,used,useful,user,value,when,why,wire,wiring,with,workspace
+    scope: "state=cancelled, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/f8b447b7-aa3d-498d-8900-672c6c8ba064/ticket.toml","f8b447b7-aa3d-498d-8900-672c6c8ba064",related,ticket,"",f8b447b7
+    digest: 856f2e7fd8499148082bb7d990aa9a4732fbe0ab4723acd43b2c7264aa517dc5
+    tags[3]: cancelled,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f8dfcd09-0e29-4ee6-a61f-de64aed1098f"
     kind: ticket
