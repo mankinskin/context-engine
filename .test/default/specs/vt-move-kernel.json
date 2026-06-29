@@ -1,0 +1,11 @@
+{
+  "id": "vt-move-kernel",
+  "title": "Domain-neutral move kernel: ticket + spec adapters over shared kernel",
+  "command": "cargo test -p ticket-api -p spec-api -p memory-api",
+  "detail": "Validates the generic move kernel (memory-api::storage::move_kernel) via the ticket-api adapter (10 move_planner/move_execution unit tests + e2e_fixture_move) and the spec-api SpecMoveDomain adapter (move_domain reuse test), proving DRY reuse across two domains.",
+  "links": {
+    "ticket_ids": [
+      "0a510279-5482-4c4f-8cb5-fad3baa57427"
+    ]
+  }
+}

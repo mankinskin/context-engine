@@ -1,0 +1,12 @@
+{
+  "id": "exec-vt-move-kernel-20260628",
+  "validation_spec_id": "vt-move-kernel",
+  "outcome": "passed",
+  "executed_at": "2026-06-28T18:50:33.077948100Z",
+  "detail": "All move suites green: ticket-api move_planner (3) + move_execution (7) unit tests, e2e_fixture_move (1), and spec-api move_domain reuse (1) pass. memory-api/spec-api/ticket-api full suites pass with no regressions. Kernel extracted to memory-api::storage::move_kernel with MoveDomain trait; ticket-api and spec-api implement it with no duplicated move logic.",
+  "links": {
+    "ticket_ids": [
+      "0a510279-5482-4c4f-8cb5-fad3baa57427"
+    ]
+  }
+}
