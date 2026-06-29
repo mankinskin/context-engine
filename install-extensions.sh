@@ -17,6 +17,15 @@ extension_names=(
     ticket-vscode
 )
 
+declare -A extension_expected_file=()
+extension_expected_file[ticket-vscode]="out/api.js"
+
+declare -A extension_install_file=()
+extension_install_file[ticket-vscode]="out/api.js"
+
+declare -A extension_id=()
+extension_id[ticket-vscode]="context-engine.ticket-viewer"
+
 extension_path() {
     case "$1" in
         ticket-vscode) printf '%s\n' "memory-api/tools/ticket-vscode" ;;
@@ -111,7 +120,44 @@ append_csv_extensions() {
 selected_extensions=()
 installed_extensions=()
 failed_extensions=()
+skipped_extensions=()
 dry_run=0
+
+sha256_of_file() {
+    local path=$1
+    if [[ ! -f "$path" ]]; then
+        return 1
+    fi
+
+    sha256sum "$path" | awk '{print $1}'
+}
+
+resolve_installed_extension_dir() {
+    local extension=$1
+    local publisher_and_name=${extension_id[$extension]:-}
+    local extensions_root=${HOME}/.vscode/extensions
+
+    if [[ -z "$publisher_and_name" ]]; then
+        return 1
+    fi
+
+    if [[ ! -d "$extensions_root" ]]; then
+        return 1
+    fi
+
+    local matches=()
+    local candidate
+    for candidate in "$extensions_root"/"$publisher_and_name"-*; do
+        [[ -d "$candidate" ]] || continue
+        matches+=("$candidate")
+    done
+
+    if [[ ${#matches[@]} -eq 0 ]]; then
+        return 1
+    fi
+
+    printf '%s\n' "${matches[@]}" | sort | tail -n 1
+}
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -179,6 +225,42 @@ for extension in "${selected_extensions[@]}"; do
     extension_dir=$(extension_path "$extension")
     full_dir="$repo_root/$extension_dir"
     failed=0
+    expected_rel_file=${extension_expected_file[$extension]:-}
+    installed_rel_file=${extension_install_file[$extension]:-}
+    expected_file=""
+    expected_hash=""
+    pre_installed_hash=""
+    post_installed_hash=""
+    installed_dir=""
+    installed_file=""
+
+    if [[ -z "$expected_rel_file" || -z "$installed_rel_file" ]]; then
+        printf 'error: missing verification file mapping for extension %s\n' "$extension" >&2
+        failed_extensions+=("$extension")
+        continue
+    fi
+
+    expected_file="$full_dir/$expected_rel_file"
+
+    if [[ ! -f "$expected_file" ]]; then
+        printf 'error: expected workspace binary not found for %s: %s\n' "$extension" "$expected_file" >&2
+        failed_extensions+=("$extension")
+        continue
+    fi
+
+    expected_hash=$(sha256_of_file "$expected_file") || {
+        printf 'error: failed to hash expected workspace binary for %s: %s\n' "$extension" "$expected_file" >&2
+        failed_extensions+=("$extension")
+        continue
+    }
+
+    installed_dir=$(resolve_installed_extension_dir "$extension" || true)
+    if [[ -n "$installed_dir" ]]; then
+        installed_file="$installed_dir/$installed_rel_file"
+        if [[ -f "$installed_file" ]]; then
+            pre_installed_hash=$(sha256_of_file "$installed_file" || true)
+        fi
+    fi
 
     if [[ ! -d "$full_dir" ]]; then
         printf 'error: extension directory not found: %s\n' "$full_dir" >&2
@@ -187,6 +269,12 @@ for extension in "${selected_extensions[@]}"; do
     fi
 
     printf '==> %s (%s)\n' "$extension" "$extension_dir"
+
+    if [[ -n "$pre_installed_hash" && "$pre_installed_hash" == "$expected_hash" ]]; then
+        printf '    installed binary already matches workspace build (%s); skipping install\n' "$expected_rel_file"
+        skipped_extensions+=("$extension")
+        continue
+    fi
 
     if [[ ! -d "$full_dir/node_modules" ]]; then
         if [[ $dry_run -eq 1 ]]; then
@@ -217,12 +305,46 @@ for extension in "${selected_extensions[@]}"; do
     fi
 
     if [[ $failed -eq 0 ]]; then
+        installed_dir=$(resolve_installed_extension_dir "$extension" || true)
+        if [[ -z "$installed_dir" ]]; then
+            printf 'error: could not locate installed extension directory for %s after install\n' "$extension" >&2
+            failed=1
+        else
+            installed_file="$installed_dir/$installed_rel_file"
+            if [[ ! -f "$installed_file" ]]; then
+                printf 'error: installed binary missing after install for %s: %s\n' "$extension" "$installed_file" >&2
+                failed=1
+            else
+                post_installed_hash=$(sha256_of_file "$installed_file" || true)
+                if [[ -z "$post_installed_hash" ]]; then
+                    printf 'error: failed to hash installed binary for %s: %s\n' "$extension" "$installed_file" >&2
+                    failed=1
+                elif [[ "$post_installed_hash" != "$expected_hash" ]]; then
+                    printf 'error: installed binary hash mismatch for %s\n' "$extension" >&2
+                    printf '       expected (%s): %s\n' "$expected_rel_file" "$expected_hash" >&2
+                    printf '       installed(%s): %s\n' "$installed_rel_file" "$post_installed_hash" >&2
+                    failed=1
+                else
+                    printf '    verified installed binary hash matches workspace build (%s)\n' "$expected_rel_file"
+                fi
+            fi
+        fi
+    fi
+
+    if [[ $failed -eq 0 ]]; then
         installed_extensions+=("$extension")
     else
         failed_extensions+=("$extension")
         printf 'error: install failed for extension %s\n' "$extension" >&2
     fi
 done
+
+if [[ ${#skipped_extensions[@]} -gt 0 ]]; then
+    printf 'installer: skipped %d extension(s); binary already current:\n' "${#skipped_extensions[@]}"
+    for extension in "${skipped_extensions[@]}"; do
+        printf '  - %s\n' "$extension"
+    done
+fi
 
 if ! installer_print_summary "${#selected_extensions[@]}" installed_extensions failed_extensions "./install-extensions.sh" "./install-extensions.sh --help"; then
     exit 1
