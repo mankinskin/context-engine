@@ -3,4 +3,7 @@
 exclude_paths = [
   "crates/deps/",
   "crates/context-stack/deps/",
+  "target/",
+  ".audit/",
+  ".agents/audit-catalog.md",
 ]
