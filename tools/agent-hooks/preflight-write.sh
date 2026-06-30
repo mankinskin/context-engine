@@ -5,7 +5,8 @@
 # a file is written or modified by an agent tool.
 #
 # Triggered by the PreToolUse hook for file-write tools:
-#   create_file, replace_string_in_file, edit_notebook_file
+#   create_file, replace_string_in_file, multi_replace_string_in_file,
+#   edit_notebook_file, apply_patch
 #
 # Reads JSON from stdin (hook payload) and extracts the file path.
 # Exits 0 to allow the write, exits non-zero to block it.
@@ -52,34 +53,6 @@ else
     INPUT="{}"
 fi
 
-# Extract the file path from the hook payload.
-FILE_PATH="$(echo "$INPUT" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-# try common locations
-for key in ('filePath', 'file_path', 'path'):
-    v = data.get('tool_input', {}).get(key)
-    if v:
-        print(v)
-        sys.exit(0)
-    # top-level
-    v = data.get(key)
-    if v:
-        print(v)
-        sys.exit(0)
-# replacements array
-reps = data.get('tool_input', {}).get('replacements', [])
-if reps and reps[0].get('filePath'):
-    print(reps[0]['filePath'])
-    sys.exit(0)
-print('')
-" 2>/dev/null || true)"
-
-if [[ -z "$FILE_PATH" ]]; then
-    # Cannot extract path — allow write without checking.
-    exit 0
-fi
-
 TOOL_NAME="$(echo "$INPUT" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
@@ -88,18 +61,75 @@ print(data.get('tool_name', data.get('toolName', '')))
 
 # Only gate on file-write tools.
 case "$TOOL_NAME" in
-    create_file|replace_string_in_file|edit_notebook_file|multi_replace_string_in_file) ;;
+    create_file|replace_string_in_file|edit_notebook_file|multi_replace_string_in_file|apply_patch) ;;
     *) exit 0 ;;
 esac
 
-# Normalise path to relative form.
+# Extract file paths from the hook payload.
+FILE_PATHS_RAW="$(echo "$INPUT" | python3 -c "
+import json, re, sys
+
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    print("")
+    raise SystemExit(0)
+
+tool_name = data.get('tool_name') or data.get('toolName') or ''
+tool_input = data.get('tool_input', {}) or {}
+
+seen = set()
+
+def emit(value):
+    if isinstance(value, str):
+        value = value.strip()
+        if value and value not in seen:
+            seen.add(value)
+            print(value)
+
+for key in ('filePath', 'file_path', 'path'):
+    emit(tool_input.get(key))
+    emit(data.get(key))
+
+reps = tool_input.get('replacements', [])
+if isinstance(reps, list):
+    for rep in reps:
+        if isinstance(rep, dict):
+            for key in ('filePath', 'file_path', 'path'):
+                emit(rep.get(key))
+
+if tool_name == 'apply_patch':
+    patch = tool_input.get('input') or data.get('input') or ''
+    if isinstance(patch, str):
+        for line in patch.splitlines():
+            m = re.match(r'^\*\*\*\s+(?:Add|Update|Delete)\s+File:\s+(.+?)\s*$', line)
+            if not m:
+                continue
+            path = m.group(1).strip()
+            if '->' in path:
+                path = path.split('->')[-1].strip()
+            emit(path)
+" 2>/dev/null || true)"
+
+if [[ -z "$FILE_PATHS_RAW" ]]; then
+    # Cannot extract path(s) — allow write without checking.
+    exit 0
+fi
+
+normalize_path() {
+    local p="$1"
+    p="${p//\\//}"
+    if [[ "$p" =~ ^[A-Za-z]:/ ]]; then
+        local drive
+        drive="${p:0:1}"
+        p="/${drive,,}${p:2}"
+    fi
+    echo "$p"
+}
+
+# Normalise paths to relative form.
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-REL_PATH="${FILE_PATH#$REPO_ROOT/}"
-
-EXT="${FILE_PATH##*.}"
-EXT="${EXT,,}"  # lowercase
-
-log_info "checking $REL_PATH ($EXT)"
+REPO_ROOT="$(normalize_path "$REPO_ROOT")"
 
 # ── Rust: cargo check ──────────────────────────────────────────────────────
 check_rust() {
@@ -198,15 +228,36 @@ check_typescript() {
 }
 
 # ── Dispatch ───────────────────────────────────────────────────────────────
-case "$EXT" in
-    rs)   check_rust  "$FILE_PATH" ;;
-    py)   check_python "$FILE_PATH" ;;
-    sh)   check_shell "$FILE_PATH" ;;
-    toml) check_toml  "$FILE_PATH" ;;
-    ts|tsx) check_typescript "$FILE_PATH" ;;
-    *)
-        log_info "no pre-flight check for .$EXT files"
-        ;;
-esac
+status=0
+while IFS= read -r raw_path; do
+    [[ -z "$raw_path" ]] && continue
+
+    FILE_PATH="$(normalize_path "$raw_path")"
+    if [[ "$FILE_PATH" == "$REPO_ROOT"/* ]]; then
+        REL_PATH="${FILE_PATH#$REPO_ROOT/}"
+    else
+        REL_PATH="$FILE_PATH"
+    fi
+
+    EXT="${FILE_PATH##*.}"
+    EXT="${EXT,,}"  # lowercase
+
+    log_info "checking $REL_PATH ($EXT)"
+
+    case "$EXT" in
+        rs)   check_rust  "$FILE_PATH" || status=1 ;;
+        py)   check_python "$FILE_PATH" || status=1 ;;
+        sh)   check_shell "$FILE_PATH" || status=1 ;;
+        toml) check_toml  "$FILE_PATH" || status=1 ;;
+        ts|tsx) check_typescript "$FILE_PATH" || status=1 ;;
+        *)
+            log_info "no pre-flight check for .$EXT files"
+            ;;
+    esac
+done <<< "$FILE_PATHS_RAW"
+
+if [[ $status -ne 0 ]]; then
+    exit 1
+fi
 
 exit 0
