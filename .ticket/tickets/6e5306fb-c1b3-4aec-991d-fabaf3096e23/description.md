@@ -30,3 +30,11 @@ Without a real pilot, the architecture will stay theoretical and the repository 
 
 - Focused validation for the pilot workflow spec and pilot README-rollout spec.
 - A pilot checklist capturing the remaining inventory and migration mapping for the follow-on migration ticket.
+
+## Session handoff findings — 2026-06-30
+
+- Review confirmed the pilot artifacts exist in the spec store and the rewritten root specs carry native expectation/evidence manifest fields.
+- Health checks on the inspected pilot/root specs were clean.
+- The blocker is evidence alignment, not missing contract fields: validation-store query returned zero executions linked to this ticket.
+- The rollout review also found related evidence-plan text still written in future tense on the explicit-init owning spec, which means the pilot is not yet backed by recorded native evidence links end to end.
+- Next action: record or link the native `.test` / `.log` executions and the derived audit evidence for the pilot artifacts, then re-check this ticket and the umbrella rollout ticket together.

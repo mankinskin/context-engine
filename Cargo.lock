@@ -620,6 +620,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "toon-format",
+ "uuid",
 ]
 
 [[package]]
@@ -627,12 +628,15 @@ name = "audit-mcp"
 version = "0.1.0"
 dependencies = [
  "audit-api",
+ "memory-api",
  "rmcp",
  "serde",
  "serde_json",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -5719,7 +5723,9 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+ "tempfile",
  "test-api",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -5943,6 +5949,44 @@ dependencies = [
  "toml",
  "toon-format",
  "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "memory-fixtures"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml",
+]
+
+[[package]]
+name = "memory-matrix"
+version = "0.1.0"
+dependencies = [
+ "audit-api",
+ "axum",
+ "chrono",
+ "criterion",
+ "log-api",
+ "memory-api",
+ "memory-fixtures",
+ "pretty_assertions",
+ "rule-api",
+ "rule-cli",
+ "serde_json",
+ "session-api",
+ "spec-api",
+ "spec-cli",
+ "tempfile",
+ "test-api",
+ "ticket-api",
+ "ticket-cli",
+ "ticket-http",
+ "tokio",
+ "tower 0.5.3",
  "uuid",
 ]
 
@@ -8031,6 +8075,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "toon-format",
+ "uuid",
 ]
 
 [[package]]
@@ -8047,6 +8092,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -8517,6 +8563,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+ "uuid",
 ]
 
 [[package]]
@@ -8533,6 +8580,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "toon-format",
+ "uuid",
 ]
 
 [[package]]
@@ -8549,6 +8597,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -9004,6 +9053,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "memory-api",
+ "memory-fixtures",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -9551,6 +9601,8 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+ "toml",
+ "toon-format",
 ]
 
 [[package]]
@@ -9559,6 +9611,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
+ "log-api",
  "memory-api",
  "pretty_assertions",
  "serde",
@@ -9642,6 +9695,7 @@ dependencies = [
  "criterion",
  "fs4 0.11.1",
  "memory-api",
+ "memory-fixtures",
  "notify",
  "pretty_assertions",
  "reqwest",
