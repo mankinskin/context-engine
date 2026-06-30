@@ -15,3 +15,14 @@ Validation:
 
 Remaining work:
 - decide whether the handoff prompts should mention any repo-local session query tooling beyond the existing Stop-hook persistence path
+
+Follow-up slice on 2026-06-30:
+- tightened `/handoff` canonical guidance so the generated paragraph carries current-session findings, decisions, blockers, suggested next steps, entity references, and first validation checks
+- added explicit session summarizer and agent orchestrator framing
+- reduced generic workflow restatement by telling the handoff to leave reusable procedure in referenced instructions unless a session-specific exception matters
+- updated the owning spec contract and traceability paths for the handoff workflow prompt
+
+Validation:
+- passed `cargo run -p rule-cli --bin rule -- generate-target --config rule-targets/30-agents-prompts.yaml --target context-engine-prompt-handoff --check`
+- passed `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets/30-agents-prompts.yaml --check`
+- blocked: `cargo run -p spec-cli --bin spec -- health 9e04ff58 --toon` could not execute `spec.exe` due to Windows application-control policy, os error 4551
