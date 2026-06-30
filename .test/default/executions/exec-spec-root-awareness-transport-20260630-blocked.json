@@ -1,0 +1,20 @@
+{
+  "id": "exec-spec-root-awareness-transport-20260630-blocked",
+  "validation_spec_id": "vt-spec-root-awareness-transport",
+  "outcome": "blocked",
+  "executed_at": "2026-06-30T13:21:41.382527100Z",
+  "detail": "Command `cargo test --manifest-path Cargo.toml -p spec-api -p spec-cli -p spec-mcp -p spec-http` compiled all targets and ran tests, but failed when launching `spec-cli` bin test target due to Windows App Control policy: os error 4551 (\"Eine Anwendungssteuerungsrichtlinie hat diese Datei blockiert\"). Package-level summary before block: 92 passed; spill log: ~/AppData/Local/rtk/tee/1782825585_cargo_test.log",
+  "links": {
+    "ticket_ids": [
+      "59d96577-09a8-44a7-b0ea-3d51b3a6fb05",
+      "6e5306fb-c1b3-4aec-991d-fabaf3096e23"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/cli/spec-cli/src/cli/commands/refs.rs",
+    "domain": "spec-tooling",
+    "operation": "windows-transport-slice",
+    "transport": "cli",
+    "run_id": "run-20260630-spec-root-awareness"
+  }
+}

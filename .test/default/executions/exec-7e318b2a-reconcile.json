@@ -1,0 +1,12 @@
+{
+  "id": "exec-7e318b2a-reconcile",
+  "validation_spec_id": "vt-store-reconcile",
+  "outcome": "passed",
+  "executed_at": "2026-06-29T01:18:16.222677400Z",
+  "detail": "cargo test -p memory-api discovery:: — 6 passed; absent-then-present onboards without rebuild, newly added store reported discovered, summarize counters correct",
+  "links": {
+    "ticket_ids": [
+      "7e318b2a-a381-49a1-aee9-18758a4b80fd"
+    ]
+  }
+}

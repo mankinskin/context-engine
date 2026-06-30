@@ -2,7 +2,25 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[172]:
+entries[181]:
+  - id: "00000000-0000-0000-0000-0000000000b1"
+    kind: spec
+    source_path: "memory-api/test-fixtures/memory-workspace-fixture/.spec/specs/00000000-0000-0000-0000-0000000000b1/spec.toml"
+    title: Root fixture spec
+    summary: ""
+    keywords[3]: fixture,root,spec
+    digest: 8c9ebc7515f2633399ccfd15913613c809e16540ebbec362d2a1641cd71a23b0
+    tags[4]: draft,fixture,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "00000000-0000-0000-0000-0000000000b2"
+    kind: spec
+    source_path: "memory-api/test-fixtures/memory-workspace-fixture/submodule-b/.spec/specs/00000000-0000-0000-0000-0000000000b2/spec.toml"
+    title: Submodule B fixture spec
+    summary: ""
+    keywords[3]: fixture,spec,submodule
+    digest: 32400c22ca02051dbc3f126c3e7a912ec803e9d13008ad8f33a8457bbe676b8f
+    tags[4]: draft,fixture,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "01f7eae8-555d-46e2-bb54-0e0bf2b2da90"
     kind: spec
     source_path: "viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml"
@@ -16,7 +34,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5336a74c9d0d6a5a9581bb16f26d377b13853031f784008a8d80687d83617429
+    digest: c31e96f5a04284b9b45fabab2d45d94e05d2a36e84160307c3056745d91d3090
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0386c4d0-15c4-4561-a33f-63b881c852c5"
@@ -32,7 +50,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9c85b3d8fb8e4906c7ecf95e12a049150e6fb98311dadc773506400909a42982
+    digest: dec79d8bcd091aae2d9c719ddc8454d27ca4f8b26800ccebceeaa73acf3ca415
     tags[3]: draft,"scope:public","ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "04a264ca-5dd6-44d4-ab5a-165822d85079"
@@ -48,7 +66,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 55a6980dd73ef0565847670fe5ad49ad4a4ac45ded160efaa6f0a2cec6f4a511
+    digest: f877caa7193ee6eead991ca0f33d056266ddb151810c383bbeab31508033810a
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "067c60c2-6be0-4f51-bbd3-80dcd29b9d35"
@@ -64,7 +82,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 2d5c1c48f9384c6ebd826c8a797ea59fbaddb672638f4bfb7ef396cc87ce1b98
+    digest: 8368c040bf0a00c6a3aeca606bb9220132afec2a392b75eb5df21e4739ef00b4
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "08aa283e-34ee-47d4-83bc-4c4311a9c85f"
@@ -81,7 +99,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e7139b541064a8fb0aa1643f9ad148ac88913c1187735c6e2ae0b49ebf91f862
+    digest: 76786ef788a51fdaa83908680e1299f81acb2dbfad462d6a33b9c58a87f9b13b
     tags[3]: draft,"scope:public","ticket-query"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "09f96d83-4795-4f19-9259-64ad0d452387"
@@ -108,7 +126,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 83e0ccd69f195872239fdb132b58f8a3b2e53abfab9980ac4ecd807287e5a54f
+    digest: 910e8ac31f637b7bb0bcdd5daff56dd304471373f50dc6e6d25b9bdab841e4da
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0c141c86-957c-4b93-b86e-f50a05e84763"
@@ -140,7 +158,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c08c75538c0a6e04b8f83e919922005890b980141c0b1f6bb0183f117fad94b0
+    digest: 43b8ad4dde72aa7bb1f52ce3cc193770062a77bf8ee53720bf53a1abc89f17ed
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0c3f11d3-2475-470c-a191-beedd2c8e53c"
@@ -149,7 +167,7 @@ entries[172]:
     title: audit
     summary: "`audit` is the repository quality audit tool for this workspace. Its code is split across three layers:"
     keywords[1]: audit
-    digest: 3e43998120c56b3fe6d876c7849e25690c54f69ac9f97891ee799f3127346c6b
+    digest: d28f38a00c3f15ebbd357b61f55636493f60938f4fb37e5eff7acad1db5b5cb6
     tags[4]: audit,draft,root,"scope:system"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0df82e71-79ef-48ec-8459-43b4693d4543"
@@ -165,7 +183,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: a2d48121a300536e1551d7106e1d9be0424e300b22dac5def6a3be4acf9ac31e
+    digest: 55e56d3b5bdaa3758338cc93ab7c5c90649b1ca524e3b8ec7787bf82282e75bf
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0e9beee3-9974-48df-ad22-a79504c438af"
@@ -175,7 +193,7 @@ entries[172]:
     summary: "Source:"
     keywords[1]: store
     non_goals: "Renaming ticket or other non-rule entity description files. Changing target composition rules beyond the source of hydrated rule body content. Removing compatibility for legacy rule folders before the repository backfill is complete."
-    digest: "095c43e3a4ca9877c99becd27208d0a09db581cc012ac28a643bb483e46a4026"
+    digest: f85b2a05ce3ec1556540a5ba05926eae8b0049e40bf2afe5c8a9a52ac34a2883
     tags[4]: draft,root,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0f684a90-6abe-4028-a9f1-5d2d6322f1b9"
@@ -191,7 +209,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 86f5c3eb9deec327f5d063d87806e6e406699f9e6bcdb8c9a8a76933cbafb656
+    digest: 7b10f9800605fe42ede38f2ae810036805fe55a1d66815ae8568b6e50e3f1c37
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "12045379-ce22-416b-8a5e-31d560c35992"
@@ -207,7 +225,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: cbe29a3bcfbb3d437df6c1208f6edcf780313cd3d87f0badb6d0a3ca3218cd14
+    digest: b0856c7df3dc644a63ac0bc8142433ba54b100a1c0483d37ce0dbe042d7931f4
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "121a0e79-a212-40af-8041-83c1ea11f029"
@@ -223,7 +241,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 12172a5ac48034c6a06b42adba73c6649f55f588c9388c15a52ed108074d7a81
+    digest: 54baacf12624ddc8e069626bc283a96a92e4ce5b2777a3cf5dc76cf3ef776fe6
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
@@ -294,7 +312,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 17ec5d8ab4a2a8110eff15490079ae8e06dc7e709d9cbdbb5611a18eb9b6935b
+    digest: e7c6893727490877e0c52c906a2ab17a9d45778ec07d23fc40b83aa884c722e4
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "1d62442b-61dc-4eeb-9b7c-e933f84470f2"
@@ -317,7 +335,7 @@ entries[172]:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml","ec1013ff-2d5f-4860-8d25-64acb6c60587",child,spec,""
         "memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml","ee36710b-1725-436a-a5fc-1e5a7d27f6bb",child,spec,""
-    digest: 44294971c91a6fcfda9ff2d859d3fa02da20251e00ea0c1268af2439753713cc
+    digest: b8466a1c3b21f8bd75e78d1ae9e18fc90e17463087303264e8939dbb1b7c71cd
     tags[4]: draft,root,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "226ff55f-eebf-43b8-aa1e-5abf81b99101"
@@ -333,7 +351,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 6e9a97d53bffd0d164e46a34ca3e6b2d4760b21bce5437c243c7faced6cf0909
+    digest: 9a43b98ea675464dacd4fbf551450c2632ffd0f7d08903b3a18c85b71d4bf8fb
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "227df77c-c047-4a96-bab3-57b6cda0773d"
@@ -352,7 +370,7 @@ entries[172]:
     summary: "`memory-api` should gain a `docs` domain so humans and agents can navigate repository structure through the same family pattern already used for rules, specs, tickets, and audits. The first primitive…"
     keywords[1]: "doc-api"
     scope: "This spec defines a new `doc-api` family with matching transport layers:"
-    digest: cb6cffe00adde1bce41d92e5f694c739bcbe2f15ab376b788564438305614960
+    digest: 950905a6053433e68a5c0aeae9d1a6b88c3ef20f782bd9a27a045c2428f120d0
     tags[4]: "doc-api",draft,root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2594c83e-12e3-49d9-a5b7-abe7122e5f52"
@@ -368,7 +386,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c5ea44804026858a2f4b72bde82c2a9f93ee0c7edacc720e72dc1e96055f9aef
+    digest: c523059bec7cb2576b9502cc8bffa17170c8daa5ec244526601fe978a5b75b2f
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "267acfdc-7df4-4090-9f17-7d6d71232814"
@@ -384,7 +402,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 0ef7329ad980682e5dd759d82937f5b39a6761268a73a8b5f20e28a051eabe96
+    digest: 1be77ee67dda25c40c40411462c7fc9414f505953e00e16042bd2805dda297ac
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "26f51d64-3bf7-4907-ae9d-2f006bb7d1fa"
@@ -400,7 +418,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e453e3e26d905da73199997a8ed7d2ae6431315bd2ea0a1e9e2ee63331e3894f
+    digest: 6f8caba4c9d5f20357b2da984581e0d7d23feade1c3d179827d76907e250678c
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2860a8db-0c4e-4e94-984a-c10a72a67ffc"
@@ -437,7 +455,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: db04cfd27d927b813d7a87b87b6d0d820ba5800cf0f055c7368769fbd26e9da3
+    digest: 1c6c810f567a0a3645129fd331c180de1a92b561139eab4f7c1aee49649c0722
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3235e977-b12a-4981-aa09-6edf218bb97d"
@@ -453,7 +471,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1d29c3e323f0b76669251bfef4974e61624062dea95e74332e892cebe71f729f
+    digest: 3e23d0ab8c65c235f8e9249daf3780c3bea21f6a6d51cb40760111b46de24055
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "32eaa05c-cef6-4a3b-b506-b5a5410a4674"
@@ -469,7 +487,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4926172b435c61723f9376aec77f128a59879c04eb1e26abf21cba40061dfab8
+    digest: 1df48c541b508c671f17bab15ae49c2075699fcff9c49906ab5df03a8cc878fb
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "33e731c2-a0cf-41f7-bd7c-2df6c4545bf3"
@@ -503,7 +521,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: aea777ff9bcf6de44ffb246e9935b392e31370b3e0f6afaddf8c4f7546614236
+    digest: 3a64f9e67515916c0f340e435fbbafdffc2f3da73b00559e69179c576106806d
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "351389c0-0873-4c3c-bc46-3551459ba1cd"
@@ -519,7 +537,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: ee4292e9c7396236716fa92bfb12a2515122a9b85da230017b83ef21d8f366ad
+    digest: e3994b416442f071f9c30913b909e441d3a185472cff12e8e4fa5719ccdd70f0
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "351e65fe-0629-4a0f-9c19-27dabb36b72f"
@@ -535,7 +553,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c8851508c8ab635e48b9c6f53de73e83e06a84b044e60e327c398fcde43fdd8c
+    digest: 3c98c4fa49616a64f2eeeeff0296c92c178c3513da97783e173992aad2611484
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "36ebdecb-0b9e-47be-9f44-fe575aa6ad6f"
@@ -544,7 +562,7 @@ entries[172]:
     title: "viewer-api: theme settings (canonical)"
     summary: "Canonical UX and behavior specification for the **shared theme-settings panel** used by every Dioxus viewer (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). The reference implementation …"
     keywords[4]: canonical,settings,theme,"viewer-api"
-    digest: "01e43ac71335c997feca80a89879cf07a28db7037137cf114bd4aa10cbec4d25"
+    digest: de4e23d6d6bf4bd4b88d906f4343ed22dfe5cb5880ee97f05a231a74f81c414e
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "36fd7849-65eb-405e-8cc5-70440f0cb7c2"
@@ -555,7 +573,7 @@ entries[172]:
     keywords[5]: hook,ingestion,query,read,"session-api"
     scope: make repeated session captures append only at the transcript layer keep the existing session manifest path and session directory layout add read APIs that reconstruct stored sessions from manifest plus transcript files add a small query surface for listing and filtering stored s…
     non_goals: "a CLI, MCP, or HTTP endpoint for session ingestion a database index for sessions pagination or ranking beyond a small in-memory query filter hook installation scripts or editor integration"
-    digest: 1a40a694efab89df6898117c7d777f3c657dd3044e6bd770fc5f3928961b4944
+    digest: cce5d8f774b1fc8e6a9b250f4d7d7615610c7f2b3ad173f9616877a386ea63c9
     tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "38e337c2-cdda-4488-9aa7-b47a300563b0"
@@ -583,7 +601,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: efd9a3af655d1f0c1da0530a4503e80cd17c28dd503be98682fe69ddcd142bd2
+    digest: 2119b92204da8e0b5c2ae45744f3ced653778184812512af6f8e2b9cf2c9f87c
     tags[3]: draft,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
@@ -631,7 +649,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 225fd185aec6adab0825ddb9c372675f42b4ab8f8b2d4b01f4de8d5733b29034
+    digest: 8abfc6b8120aca90ecdff9d39d5d4a8fff66af6a49b1f087bd6f64bfd82ff51b
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4066c5a3-3e04-4eeb-81a2-91fb8e53cc94"
@@ -643,7 +661,7 @@ entries[172]:
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml","d4831fdc-9790-4a26-ac32-d675bb6a7792",child,spec,""
-    digest: af1a831e005f1eec0e31b6d37ef429e384f965fe30612e3d4b575c4004a32f3d
+    digest: 9e3cdfdc7221f4d9f66809e72a6ecec1514a51148ffea3f4e90e6fc1768b2908
     tags[4]: draft,root,"scope:public","spec-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "42e8d710-2199-4178-9ab3-dea8d61bfc4a"
@@ -668,7 +686,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 928c9eefbc4696bf9df2991fc20e3840846945294b3045593cd42e71abafff26
+    digest: 4f982658f17ba32893cf2a321179285baa847156e3461b9419165d49f39cbcd2
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "449fe68a-541c-4804-bbfd-476af783f80c"
@@ -711,7 +729,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: af7dd1a4b14b555a3bbe0176689faf8a768d74af98bfe9afcd97c9e05c6181d4
+    digest: 0df710ecee8b0e82ea07111fbb168b60e0cb054f9decd0213f5173dea62650f2
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4a16fea7-5af5-477f-835d-6c0c94216bfe"
@@ -727,7 +745,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "032cb1be270b7b0e6b1110899ac13554a142735577bfdb77fcb8b40a1c7dd358"
+    digest: 938ee43a2d8bd7802a2cc8588ed0ea42aab660882dab7edb445ba63aab1e10ac
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4aa3cbc9-4d95-41ea-8fc3-f4b46eb3483e"
@@ -748,7 +766,7 @@ entries[172]:
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml","d702ed9e-f75c-4727-8f05-1b2b244ec74f",child,spec,""
-    digest: d8517bf1ee1689c55db4a217348084f09d7131d88ea6dd9c480d569b813c85ba
+    digest: b97571f234d914eb7c5f6062f0466be2a226a172d3a7fe3970ffe1c4aa6fec70
     tags[4]: draft,root,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
@@ -777,7 +795,7 @@ entries[172]:
         "viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml","c9b40e5d-1239-4ad6-99b1-0b759a9c4c49",child,spec,""
         "viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml","df67eee9-08a0-4a6e-b1ff-b483599d232d",child,spec,""
         "viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml","f153483c-f984-4564-94ac-36234b5cbe3f",child,spec,""
-    digest: 8b44e26f369d2ba2d0578e5810e065bca87e3687dca92e859ceb0cee31fdac14
+    digest: "04e614853f784db1eeaa890b6044084ea7754608a69943ddbd2115c5bdbd68a6"
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4dafde12-e894-43d7-aa65-cda9a072be27"
@@ -793,7 +811,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c6442bc3f7125996341c1387122f10f9fc641ff4253c73f0deb88f70498b70a6
+    digest: f02b9ce0967df37b957ca98fe7c29818826cdf74974167ed0b9770497067d9f1
     tags[3]: draft,"scope:public","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4f14356f-c4bd-4554-be1e-35361de241da"
@@ -809,7 +827,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 31f84a37c71591754257560097f0d8cd89f270ef9f5898800ef560d02b2da27b
+    digest: 3baa481fcecaa7c9d8c7818a42be3338a5b2a58e998a950fa29c009a243725df
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c"
@@ -842,7 +860,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5c2f07a3d17b1c9d53ce995298485ac1e975e492cdc900169d2f6e74702da2ad
+    digest: b0ce73cc3c814c826de0788ad7c7d623555f1c525235af5fa2a8104590fbe03b
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "52521803-fd21-4b40-a4e5-6801b823d59d"
@@ -858,7 +876,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 488fad23c21867e251e1885a357bf53a043969f8030d989c7639da5535b26299
+    digest: c989ee2d8a35a2e34cc6fb6868362629e82ac704a0ba43913b57adfc1d22292c
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "53c70cae-731b-41b5-bd1a-1de9a98eb36f"
@@ -892,7 +910,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e172e979f225930db9031e75686ec4ef09dea1c56bbaf1aa10ac8dbfe7dbe132
+    digest: 447d29d7bc261ed56e4e3152281e6ac2ec47652544d7a2892b794fab65109ddb
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5650b307-8408-4ca0-922f-c515dd0bfa27"
@@ -937,7 +955,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "02b6427ae7d6929dd6762c0a36b37a9f4301a5ad4df5286112ccbf0b4402e22b"
+    digest: 3282cedc30f2682b60756c1608d20bfa8f710440f123b8a66ed0c4d4cd6e8891
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "59979a95-a4cb-4aa3-9a79-486b029532a3"
@@ -953,7 +971,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5985515b0c411fe7c8d64c61050e848d004d2d8d5d370902af0708dded956031
+    digest: 20a7e109873b41b9fda382d8ba503096c93d256ef1289e9742c470b265655e0d
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5b404022-6a67-4395-90e0-1e4282fd83b4"
@@ -980,7 +998,7 @@ entries[172]:
     title: "ticket-http: ticket list endpoint"
     summary: "Canonical contract for the ticket list API consumed by the Dioxus ticket-viewer explorer and related ticket-picking surfaces."
     keywords[5]: endpoint,list,ticket,"ticket-http",tickets
-    digest: 8ea3d9d200f237772b540a80ecef0285752526b4aee9bf317b49beac3edb6c1e
+    digest: 4831955fe39a90d1f9c8cd6be286e2052ea245755e621a166311260134204bb1
     tags[4]: draft,root,"scope:public","ticket-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5c8b350c-3bd1-4103-ab49-3fb7aea33126"
@@ -998,7 +1016,7 @@ entries[172]:
     title: "ticket-vscode Extension"
     summary: "The `ticket-vscode` extension (VS Code package id: `ticket-viewer`, v0.1.0) surfaces the ticket graph from a running `ticket-viewer` Axum/Dioxus server directly inside VS Code's activity bar. It allo…"
     keywords[4]: extension,ticket,"ticket-vscode",vscode
-    digest: c361c7f945d0dfccce221bad91a5148851034d2ec892950010d1b112678a2cd4
+    digest: e40735b420c922f3b67609311662b6f20aa1a4af1c6a84458487bf60276c8911
     tags[4]: reviewed,root,"scope:component","ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5de125ad-eb0c-4bcb-8e6d-175df1ba33a6"
@@ -1014,7 +1032,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 46319357f3b1d274bf8fb14033ac8fed9de992a140d7df84a13ce2bc5c8a407d
+    digest: e8c84cf7d90e8b0893fc7de8e6e242735739ed0cac494cdb2d4d2ec2078822e0
     tags[3]: draft,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5f9a1652-943f-4d98-8812-a4f7ca1d5e61"
@@ -1106,6 +1124,24 @@ entries[172]:
     digest: a1ba6b40accda899b8d07808dc18922595deb6c24754cbdb6111396124ecb686
     tags[4]: draft,"memory-api",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "709f067a-21b6-41b6-8879-3cacef4bacaf"
+    kind: spec
+    source_path: ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/spec.toml"
+    title: "Runtime session-context model (pinned entities, init/pin/unpin/view)"
+    summary: "Extend `session-api` (`memory-api/crates/session-api`) with a runtime \"cognitive workspace\": a `session_context.json` document and core operations to create/resume it, pin/unpin entities (as cross-st…"
+    keywords[8]: context,entities,init/pin/unpin/view,model,pinned,runtime,session,"session-context"
+    scope: "Add a `session_context.json` document persisted under the session directory, alongside the existing `session.json`/`transcript.json`. Core operations on `SessionStoreConfig`: `init_context(session_id)` — **load-or-create**; creates the session directory if absent; idempotent (re…"
+    non_goals: "The cascade auto-pin logic (separate child spec). CLI/MCP surfaces (separate child spec; this spec is the core lib contract they call). The usage/feedback storage backend itself — this slice **emits** usage events into the generic memory-api usage/feedback model; it does not imp…"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: ca9ae86a4b1f0a20156b9d139b35b8a3c41412c413151420b2de42e625af8253
+    tags[3]: draft,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "717be077-49f6-49bc-8221-ea5105ba5ff3"
     kind: spec
     source_path: "memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml"
@@ -1119,8 +1155,26 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 34da3915accefa6c1c2897b60a8cb92d6a0143789719da11853a464bf987db7a
+    digest: 79dcfc2c94cec619707f0f7a84864f13b65646c7a4fd92bac73a668aef71fa5a
     tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "71b81a55-f5dd-4cbd-b739-40df6bc5d3fc"
+    kind: spec
+    source_path: ".spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/spec.toml"
+    title: "Entity usage counting and feedback ratings (feedback-api curation surface)"
+    summary: "Define the **bootstrap-facing curation surface** of the feedback-api program: a URN-addressed, entity-type-agnostic usage-counting and feedback-rating capability that session bootstrapping feeds. Eac…"
+    keywords[8]: counting,curation,entity,feedback,"feedback-api",ratings,surface,usage
+    scope: "A `EntityRef` (URN-addressed `ce://<workspace>/<store>/<entity>`) usage + feedback model delivered by the feedback-api program, independent of the concrete store. Usage counting:** record a usage event for an entity URN (emitted on each session pin). Expose an aggregate count an…"
+    non_goals: "The feedback-api program's heavyweight ingestion-at-scale / search-clustering / SLO / abuse-governance slices (tracked separately under b1e9e744's other children). UI/dashboards for curation. Ticket-entity feedback wiring (extension point only)."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 798b1a502ab3fa2e1cd96fd8a5b39d22ed71162fda04d0c48243bbe2ae4c48ab
+    tags[3]: draft,"feedback-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "77ca6056-180d-4e88-a76a-dcf8ff280c7a"
     kind: spec
@@ -1135,7 +1189,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c1938a76e701224404c82c974a9dcb3158a35fe528c081f94af1c7cf2af39166
+    digest: 92820ea1642000f1dbd68530dd6d7583d3ccb37c4a575ecea6e844bb031b168a
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
@@ -1159,7 +1213,7 @@ entries[172]:
     title: "viewer-api recurring principles"
     summary: "<!-- spec-api:file generated=true -->"
     keywords[3]: principles,recurring,"viewer-api"
-    digest: d057b8d05b71e55e01c6a7f968d80a5a108291297ed14dbf3368e82b69b7322a
+    digest: 72b789665d6b384551bd7f2b3c1520b03325398476129a06d421dc99e4a637fa
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7b0ad285-c7df-4b19-a9d7-a11e71bab2ba"
@@ -1184,7 +1238,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 6b80373c006e9d3cef914e8ffcf554146008521ff07283102ada94b21b6bca24
+    digest: 12cedf8349e12dfc44ddefdd32b0fe7ec51de080f49fe4c85b90950034b9b7f0
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7e9131d1-6c7a-4e59-9208-5990079040d5"
@@ -1242,7 +1296,7 @@ entries[172]:
         "memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml","f081e8f4-7d28-4505-9faf-85c65b033b44",child,spec,""
         "memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml","f156fa16-7910-4c98-b69c-f848073dba00",child,spec,""
         "memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml","fded16bb-1a4b-4dd9-a610-c26459d19403",child,spec,""
-    digest: 5aca386722a6470b5be125cf3787cd6f9aadcd3a3f95ce4fed8ac9350424c2f3
+    digest: 1cce0ea606a6dd4e75b7a6826c0e04a656b6c0c6b01d1c1bfc07f2c0413cbc76
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "823b22cf-c0dc-46c6-a03d-00cdd3c4c83a"
@@ -1253,7 +1307,7 @@ entries[172]:
     keywords[3]: persistence,"session-api",writer
     scope: "keep the existing `SessionCaptureRequest -> SessionRecord -> SessionStorePlan` flow add the first write path that materializes the planned session directory and JSON files serialize a session manifest and transcript payload in a stable, readable format return explicit IO and ser…"
     non_goals: "watcher-based ingestion CLI, MCP, or HTTP session capture commands query or search APIs over persisted sessions schema migration or retention logic beyond the planned file layout"
-    digest: 783349e035b9a852e6961f3b032a52558b14bdd98b731f41aced5fd36b1af36f
+    digest: d51215a4ea38a4b006ec6661ddfc8b756daba64dcb623149e49bc7bd6079d633
     tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "83094beb-d315-4b16-b132-3ae22a528422"
@@ -1269,7 +1323,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: a50577891c3150061bb02830994a151ea2ec25948ed2ed17edb19858f0677a5d
+    digest: 2c40b5002c69c6c6779c57408fef215249b2781c3ef2dac80bb4157d98087a1f
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86877b97-2df6-46b5-923d-a9e608655fed"
@@ -1287,7 +1341,7 @@ entries[172]:
         "memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml","597de059-859d-4aae-89ad-bfe2d84462c0",child,spec,""
         "memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml","83094beb-d315-4b16-b132-3ae22a528422",child,spec,""
         "memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml","b0b3c0c6-168f-4b00-93b2-e06ce506855a",child,spec,""
-    digest: 720199458597a5a44008b5beb038472d93be6b5d95e2de7a87bfca46c0e013a1
+    digest: 8d96f93651b83d3cfc7abd65877fe07de9d7bf20599a9f7619f8bb7b94b504fe
     tags[4]: draft,root,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86b37a8b-4798-4cfe-971e-d53bb842ae80"
@@ -1303,7 +1357,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1b88108c229d31d56696f6330394e0cd62681a79b89b28443c15d4befbec98c2
+    digest: c1d00a8d7fa3ff2fd6a1b070040bb29cd418717c2bd373990a7c582d47e99ff8
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86bb3a01-ef29-4c7b-905b-9582a0d75f40"
@@ -1319,7 +1373,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: ebea197637c5d3c36577b8883d644795ab30fcd14ccc6605ad8d8ba950dcabd9
+    digest: 3336598cb68633718d96260b21802b99d7a9811977e49ca14f70bfe5f1c82f3e
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "88c88341-5f9c-4e59-87c7-9176e4afc26a"
@@ -1355,6 +1409,23 @@ entries[172]:
     keywords[9]: detail,document,focused,"full-graph",graph,integrated,ticket,"ticket-viewer",view
     digest: c016b5351bd83b1c04163338f143ecd5a5b168132757111806753db1d3af6364
     tags[4]: draft,root,"scope:public","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+    kind: spec
+    source_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+    title: "Dynamic session bootstrapping and just-in-time context routing"
+    summary: "Turn `session-api` from a capture/archive-only store into a runtime \"cognitive workspace\" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) acro…"
+    keywords[6]: bootstrapping,context,dynamic,"just-in-time",routing,session
+    scope: "Runtime session contract: `session_context.json` holding `pinned_entities` for tickets, specs, and rules as URNs with `relation`/`reason`, plus timestamps. Bootstrap surface: `session_init`, `session_pin`, `session_unpin`, `session_view` (core lib + CLI + MCP), all headers-only.…"
+    non_goals: "Replacing or rewriting the existing capture/transcript/worktree workflow. Semantic auto-pinning of vague matches (agent-driven only). A server-resident, stateful MCP process (assume the server may restart between turns). Building the full heavyweight `feedback-api` ingestion/sea…"
+    relations:
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/spec.toml","709f067a-21b6-41b6-8879-3cacef4bacaf",child,spec,""
+        ".spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/spec.toml","71b81a55-f5dd-4cbd-b739-40df6bc5d3fc",child,spec,""
+        ".spec/specs/a28a88db-2b41-49d2-897c-6dbcdb313255/spec.toml","a28a88db-2b41-49d2-897c-6dbcdb313255",child,spec,""
+        ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml","fda5c915-5c37-432f-acf1-8b20c6219fdc",child,spec,""
+    digest: "00540fe5ba6ddad4d59335eed149b35f228366641655f14943c1dd3b4f82592b"
+    tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "904871fa-0b97-4484-9540-f2926e32476f"
     kind: spec
@@ -1413,7 +1484,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 2f7a3e5ba610c8b1ad762acc3ae10b41c51cba0518e6eeeeaab6972fdd0e4d06
+    digest: 1fbafb7677e2ecad25f41853fdc89698eade8f9e85b27c1f786a13f3838c34d5
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "92112188-8acd-4573-bb22-f784fcf371ca"
@@ -1508,7 +1579,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5c59f3d82bd19151eb1a8e45f1dfbbc834ac0d48b1265d29c920715b000e948e
+    digest: 140a1d8b15d7d06c9352e1354b8cebd13a4acdf4e06f9e8414dc2fada0f61664
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9c3ec5a5-0e1e-4061-b66a-16006611f671"
@@ -1560,8 +1631,26 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 72b1e2674127a4fdbc2c7d66c087434d32374d13dd9def72088f112b1f8696fb
+    digest: 9dbe732f42457fb9af04b473921eb71c06d330aa7c5f9f48889bfa26f655e6d0
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    kind: spec
+    source_path: ".spec/specs/a28a88db-2b41-49d2-897c-6dbcdb313255/spec.toml"
+    title: Minimal bootstrapper and selective rule loading
+    summary: "Remove the always-on generated instruction load and replace it with a minimal **bootstrapper** plus **discoverable, pinnable** rule entries that each agent renders into its own per-session instructio…"
+    keywords[5]: bootstrapper,loading,minimal,rule,selective
+    scope: "Author a minimal **bootstrapper instruction** (<500 tokens) that knows only the search + session tools and drives `session_init` → cascade → pin → agent-side render. Stop generating the always-on `applyTo: \"**\"` instruction bodies as per-turn content. Convert their content into …"
+    non_goals: Changing the canonical rule store format beyond discoverability metadata. Implementing the session pin mechanism (owned by the runtime + CLI/MCP specs); this spec consumes it.
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: d4459e061e5a6a78551c2ba3a95c1a5befd08ae0cbe8973e308416b9add65b40
+    tags[3]: draft,"rule-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a4f48d84-50ed-4769-a42f-38321ea9600c"
     kind: spec
@@ -1581,9 +1670,9 @@ entries[172]:
     kind: spec
     source_path: "memory-api/.spec/specs/a592900c-f513-4ec2-8dd2-53dbd04aac7b/spec.toml"
     title: "ticket-vscode Rust/WASM port"
-    summary: "Port `memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM cor…"
+    summary: "Port `memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM core, shipping bot…"
     keywords[5]: port,rust,rust/wasm,"ticket-vscode",wasm
-    digest: d8001c4b186358056f0efd7b5c7a17e6b43bbb3954d1e9d9c4d73fe68c76f2ee
+    digest: 8e239afc8aa07e297984fbbb67ebc43ce79c883d71b91d19e9eaeb1d89e6b4b0
     tags[4]: reviewed,root,"scope:internal","ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a595eb0c-f9f1-4e29-a425-120df5334f7d"
@@ -1601,7 +1690,7 @@ entries[172]:
     title: "audit-api ticket dependency topology validation"
     summary: "`audit-api` should flag orphan tickets so every active ticket participates"
     keywords[5]: "audit-api",dependency,ticket,topology,validation
-    digest: bc04ece565a3a7dd2803c8b76edd52aedb911ad57d66c1c5ff567aae3937dbf2
+    digest: 5515721354cc0bfdf34f8921f50f27c66a663c20e12e90c1f5bf6bb1ffdaecb5
     tags[3]: "audit-api",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a67fdd95-a5c7-44f4-a861-8b427f1923cd"
@@ -1610,7 +1699,7 @@ entries[172]:
     title: Probe Spec
     summary: ""
     keywords[2]: probe,spec
-    digest: ec03ced99f5a2e65b78b4e803d3e1fc74285c6e9e1a30d4d3d2204a10585acc8
+    digest: a514360f90ac5a3103e4f01afc37db6189abc6be991488d1305d0cf5bf4b688f
     tags[3]: draft,probe,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
@@ -1630,8 +1719,19 @@ entries[172]:
         "memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml","0386c4d0-15c4-4561-a33f-63b881c852c5",child,spec,""
         "memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml","0b1888f2-7e59-45fb-95d8-1bf14ff7747f",child,spec,""
         "memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml","ec22fe34-2d24-4dc5-a067-85121bed3655",child,spec,""
-    digest: 4d9d32ae8d78c702d10bc02b84b6d156994f10acc3f2258ef05a4f892d10df96
+    digest: b10c18847dc79823407fd919737af0431947806e9b400e3d123bdd39d619646d
     tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "afcaccc9-5577-4556-ab6f-cfbe7a77e430"
+    kind: spec
+    source_path: "memory-api/.spec/specs/afcaccc9-5577-4556-ab6f-cfbe7a77e430/spec.toml"
+    title: "ticket-api cross-workspace move contract"
+    summary: "Define the authoritative contract for ticket cross-workspace move behavior over the shared memory-api move kernel."
+    keywords[6]: contract,cross,"cross-workspace",move,"ticket-api",workspace
+    scope: "Ticket entity moves between git-backed workspace stores in one worktree. Preflight visibility checks for inbound and outbound references. Journaled execution, resume, and rollback semantics. Fail-closed board policy for active and stale claims. Surface parity expectations for CL…"
+    non_goals: "Cross-worktree moves. Cross-store transaction semantics. Multi-entity batch move."
+    digest: "03608b210ac69f019f91121668111b456c7444dba8c114ca0181c777e12ad020"
+    tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "afe17aef-793e-419f-93c1-568bf10a2955"
     kind: spec
@@ -1646,7 +1746,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c28cc725b08ec4a237160b583d5ed96066f0b729454314020696cc27b31dce5f
+    digest: "041c71c1424fb1ec8eac7a42e5447a2bd48ea8debe2030a05cda7b153fa998a1"
     tags[3]: draft,"scope:public","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b06c9df8-2866-433a-af73-ae9b1f4a0f0a"
@@ -1658,7 +1758,7 @@ entries[172]:
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml","479e226a-b4ef-4e30-ade0-ebdabbf956ed",child,spec,""
-    digest: 888e8ea6d6c4edae65438a70b973b1a9fdbf0c77cdac3dbdd24eed4529f6bf45
+    digest: "0437ad4ca993edee2b2b51ce34129c2788bff33834a76bd4c6688c1defc4720c"
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b0b3c0c6-168f-4b00-93b2-e06ce506855a"
@@ -1674,7 +1774,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 82c12b0596cd96cbaadbcfa8076545d0026fb3fff2d6ee5ce57bf5caec5e434f
+    digest: dfd356925792f41c83a513ffe445748159162b670a52c9fe9e072cc5ad2807c9
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b3362691-09a0-4028-8daa-13b4c4102c15"
@@ -1690,7 +1790,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: d2018177e283f25a4f33089e8a940541d142aa9e4266ce4f13ce247432d68cb7
+    digest: c79a24de7f92f390d519f2f4707a9a22a1a62b775b2b737d8c5457390fec0d0f
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b4d038e0-ade9-459b-8ba3-92fd81d80e6a"
@@ -1715,7 +1815,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 0fcc6d360373ec662971ecbc51b7448f416ce7c7cfe84b83ee98bd2850eea770
+    digest: e477c05470139b592791379017ca264991dbb73493263ae7580e284c9b91603b
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b748e117-a847-474d-92ee-b58723cee612"
@@ -1731,7 +1831,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 70295e90bb1fb1f31efa2b3401316fc17013dd167ec5195eb4ea204535e5c9f7
+    digest: ff81dfb39c3fba1d16c3939a09355157cfa275a7d65cf92381086ca06aec194b
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
@@ -1751,7 +1851,7 @@ entries[172]:
         "viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml","afe17aef-793e-419f-93c1-568bf10a2955",child,spec,""
         "viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml","b568bb7a-6726-46ac-bb78-fbc1858da4b8",child,spec,""
         "viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml","c23166c7-2315-4b89-9160-cde7df3086e6",child,spec,""
-    digest: b4adbba5849369bf81f67dadb73086b2946155614350c4eb8857987adc5280d3
+    digest: 9077cd035d9f5981c7751fba8e57fbfb6a7a675a0e54f65aabdca5ac109d0155
     tags[4]: draft,root,"scope:system","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b8ddb54c-8939-4bbd-a3b3-2e469caa09da"
@@ -1777,7 +1877,7 @@ entries[172]:
     title: store bootstrap open
     summary: "The local memory-api store wrappers currently expose two low-level entry points:"
     keywords[3]: bootstrap,open,store
-    non_goals: "silently changing strict `open(...)` semantics for all callers forcing a scan on every successful `open_or_init(...)` call when the index is already present changing workspace-root resolution rules for `.ticket`, `.spec`, or `.rule`"
+    non_goals: "silently changing strict `open(...)` semantics for all callers forcing a scan on every successful `open_or_init(...)` call when the index is already present auto-creating missing `.ticket`, `.spec`, `.rule`, `.test`, or `.log` roots from read-only or server-start entry points ch…"
     relations:
       parent:
         canonical_path: "memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
@@ -1785,7 +1885,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9dd96ee8aef1e8e0af1fba16c05fa2d1f1e12849777ba5792171b8d0a5c7965b
+    digest: c19963401ee1f19e6905411a867858fde8581d0131ef5b10a70bd3b0a926cc26
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b9bf7713-5644-413d-a99d-00866828d534"
@@ -1817,7 +1917,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4f0bf160fbaafd493aa3fd66e02f462512e7700b8437c45b6a0381264cbf2d39
+    digest: 2061279675cdd2b36e660d40efa56caaaa45aef718fab35c3a38dd9d8bf22613
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bb77b62c-bb18-4274-8ba2-7543f6d81ff5"
@@ -1833,7 +1933,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: bae14915971ce6a1e8409e9ddad6119ccdd8cd1ee51a5638f795806dffe9171d
+    digest: 5cdb90baf50193deb4ecc527b73c6c0e8e71ef070f468375ff8beb0a894fb4a3
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bbd92962-33f4-4b9e-b301-f4ce9909c135"
@@ -1877,8 +1977,19 @@ entries[172]:
     title: CLI and Viewer Installation Contract
     summary: "This spec defines the canonical installation contract for the `memory-api` operator surfaces that are exposed to users through generated README documentation. The goal is to keep one synchronized ins…"
     keywords[3]: contract,installation,viewer
-    digest: d623c938a8b062042c7fcbeb2bf10d44931bbe46b27ef505e6a3c29d38685bca
+    digest: 47f8ea7014a3f50261a8d4b67d8ffd93c3e37f64df68e3973e1e6fe04290b661
     tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "beed5b3c-b645-4c80-8eaa-e76978822ef3"
+    kind: spec
+    source_path: "memory-api/.spec/specs/beed5b3c-b645-4c80-8eaa-e76978822ef3/spec.toml"
+    title: Representative Fixture Population
+    summary: "The shared memory workspace fixture provides deterministic, representative data for every in-scope memory domain so matrix tests, benchmark matrices, transport tests, and backfill workflows exercise …"
+    keywords[3]: fixture,population,representative
+    scope: "Populate root and nested worktree fixture stores with many internally consistent entities for tickets, specs, rules, sessions, tests, logs, docs, and audit inputs where the domain has a local store surface. Include cross-store references such as tickets to specs, validation exec…"
+    non_goals: "Adding new storage capabilities for domains that are intentionally read-only or append-only. Replacing focused unit tests for each domain. Defining final CI profile selection; that belongs to the later test-profile ticket."
+    digest: a92efee3da2e94e5ab0edf5710bc14bb1d231623dd296a691dd0598a3aac5b74
+    tags[4]: draft,"memory-fixtures",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bf217ce5-8890-4749-9a2d-deffb6d0f4dd"
     kind: spec
@@ -1928,7 +2039,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: a376da77bec7a00f28748e2aaef857e823bccd22f619c8af5c5105ee46706300
+    digest: 0e9fd5f55a4e330b2454d7d95d04fb7c51bfff917dda6436a48c30a148d60e5f
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0"
@@ -1996,7 +2107,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c48c17a479b6cbbbe385437aa410c95a2286e2bac0db0c6baaed91543247001d
+    digest: 12b3db0a12deef65f1a9b31886ffc73d0aeb3a09b7b7093f2cfb3f3688fd2270
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c6feacef-a06e-4769-a4cf-5c557be50f7d"
@@ -2025,7 +2136,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: d67b72609effe1538cbde7df9fab7a26a70831af46a544ac13963ae05be00c07
+    digest: 9169853652fc8e1965aee65aec6d3770a768f05b37638e3dc64d78f3f878221d
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "cbac783c-e3a1-4a31-ac11-a539b39164c5"
@@ -2102,7 +2213,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 66e865cf3037dac234c57637469bb9a7f283d1d760c8c39396c94dfc4c581045
+    digest: 66cc5d17989bbc9f0657e4cf7ff5edfebeb573a6cf0d595945d6aedcf007226e
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d4831fdc-9790-4a26-ac32-d675bb6a7792"
@@ -2118,7 +2229,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: a1023d62fdb015e8266f80543c4ec8c8303ead2da73556266a31c73e9cbf2710
+    digest: e64bc234da0f160b4aecf31684715a43359772084aad4b876e0508eeb0405196
     tags[3]: draft,"scope:public","spec-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d702ed9e-f75c-4727-8f05-1b2b244ec74f"
@@ -2134,7 +2245,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e801fe811f1e63e6cf9fe7d7cab733b01b0cf6ade0477500e117a7fe5f2937f1
+    digest: 719dff81e5e458a72d191e7becff7a2e6232c6b91c06baf7715471ce1f657d51
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
@@ -2175,7 +2286,7 @@ entries[172]:
         "memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml","4482f2d0-131c-4ea0-91c0-f0bde198eedd",child,spec,""
         "memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml","717be077-49f6-49bc-8221-ea5105ba5ff3",child,spec,""
         "memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml","77ca6056-180d-4e88-a76a-dcf8ff280c7a",child,spec,""
-    digest: d48eef023697040faf0e2149da188009892cf6c4f3a618bc9baf4ba3517e08d8
+    digest: 1f06c53a217a9dff7c0dff06b3f0140d7176cb8242fb484195fde489c1597fa2
     tags[4]: draft,root,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ddac3853-65b3-4b6b-b216-81e78e250bb1"
@@ -2191,7 +2302,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 26d87dfc86423fc8de7327de71ffeab947d62f9aaa5064547323254f4130fd69
+    digest: beaf07cfb007a24cef2d1fe7a4a705978a36cd68605149bff294c90d328b27a6
     tags[3]: draft,"scope:public","ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "de14117a-df7b-4f2a-87b8-55074ade0487"
@@ -2207,7 +2318,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: bad55803456891598f98612daaee2657274e5ba59f9aa4b0c12037f9e7c0e535
+    digest: 1c93d1d6e6c52931ff4c8ad6f913dfd56d05ec6bc666ba63b5689e3d941ce672
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "df67eee9-08a0-4a6e-b1ff-b483599d232d"
@@ -2223,7 +2334,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: be93132b2f4f4dbaf0c66cef5f30c3bc7c899cad35cf403a5451205988a766dc
+    digest: 976d99c54e446477a59a9411c6b87c1f42a0613f1f70fadbff221d5e81a7202b
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e0913182-7a5e-4c8f-a750-799afd58baae"
@@ -2248,7 +2359,7 @@ entries[172]:
     title: Persist dependency edges in tracked ticket files
     summary: "Dependency edges created through `ticket link` and removed through `ticket unlink` must survive a rebuild from the tracked ticket store, not only the ignored SQLite index."
     keywords[10]: backed,dependency,edge,edges,file,files,persist,persistence,ticket,tracked
-    digest: b5166b730b6f4e3ac97840be020695adb9da4c4f520386def180c02141e87fef
+    digest: d2cdeb2f3486370be04024f67c12935b121c11fa8b72c2d1615f4fa4dfbd7194
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e101aa4a-f5c1-413b-abb4-f4360c0a1123"
@@ -2296,7 +2407,7 @@ entries[172]:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml","3b96ec1c-4e99-48f4-86e5-a36ba24b827a",child,spec,""
         "memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml","5de125ad-eb0c-4bcb-8e6d-175df1ba33a6",child,spec,""
-    digest: e76b6ba303d75bed9eb98914622f12b727737968a400685635f99750e7c58951
+    digest: 3af5daf54c539e72d32e256587ed2caf0ed8593adbc0cfdf0f9b196f317140a2
     tags[4]: draft,root,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec1013ff-2d5f-4860-8d25-64acb6c60587"
@@ -2312,7 +2423,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3767899b1677d0d93fa375fa7f6f1d52e0f8a4c539357d374f98c3a6686a9e6b
+    digest: "00273dfb688fe3234457797985cab418f2c4c7ac83dfc7f9ed2b69df6bceed67"
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec22fe34-2d24-4dc5-a067-85121bed3655"
@@ -2328,7 +2439,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c72d904856128985c30e325ebc1068db51a3972c61cb75bfa2393f37d6ebf7fd
+    digest: 0f96e1409baa3300c23ac9f58a828678e13747f962b8a91a7dca442074b5cd61
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ee36710b-1725-436a-a5fc-1e5a7d27f6bb"
@@ -2345,7 +2456,7 @@ entries[172]:
         digest: ""
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml","91b5b5fe-0046-424c-b5e5-3fb961f4d940",child,spec,""
-    digest: 1af70957d27c89cd12d1054cc3a122440d08d794b712b5e1d5aa88d65ce81ffa
+    digest: 7a87b2498c3d0254edcd7dd79097103b0c5f2a39887a44d9017db01e04b8a69a
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f081e8f4-7d28-4505-9faf-85c65b033b44"
@@ -2361,7 +2472,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 8be3e3ac2de99281857396a8c894bec793c1ef53a32ca7425e5aba22beaeac8f
+    digest: 31c1dbc2aef0eabff8497b4b802f1267246837be4522d6fbc7360e3c75efccb2
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f153483c-f984-4564-94ac-36234b5cbe3f"
@@ -2377,7 +2488,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: fd4c82fa87a8dd46251cfa8ec5fd9e7532dde8c5aeb13130023f366db77486af
+    digest: f582edb40c2630e02f7560de4f719bc33429b65a4dc0fb2d18fa2980552c4d88
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f156fa16-7910-4c98-b69c-f848073dba00"
@@ -2393,7 +2504,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 506819504d14395bd496adf8d34dc3524d472d759394ac2111f95113c671e3b8
+    digest: 4ca2a7c26fd11ef455ca1c3c4ee794f268cfc4caec5683b70e18ed7f8d7ed108
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f9c32554-9884-41c4-8b5b-d1d32b37e341"
@@ -2402,7 +2513,7 @@ entries[172]:
     title: "memory-api recurring principles"
     summary: "<!-- spec-api:file generated=true -->"
     keywords[3]: "memory-api",principles,recurring
-    digest: c0211a8c9e3ca500f225215c97da13d9933c613cf3b7c3ead464a5319535861d
+    digest: 29c136ad9068b8d734a0af8ee82c2c8cd548304f46ec665c1020754c7e617036
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fa5265cc-e82f-4bbe-b1b5-dad7e6672d06"
@@ -2423,6 +2534,24 @@ entries[172]:
     digest: 7e18d0af4427875fa1faef3c4b7e15d53f3b1752786602afb1c13efbcbb7ed95
     tags[3]: "context-engine",draft,root
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "fda5c915-5c37-432f-acf1-8b20c6219fdc"
+    kind: spec
+    source_path: ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml"
+    title: "Cascade context gathering via hard cross-store links"
+    summary: "Define the cascade that, at `session_init(ticket_id)`, proactively gathers selective context by following **hard ID links** from the ticket to directly related specs, rules, and tickets across stores…"
+    keywords[6]: cascade,context,"cross-store",gathering,hard,links
+    scope: "Input: a ticket URN/id at `session_init`. Follow **hard ID links only** (D5): ticket→spec via spec↔ticket cross-entity edges; ticket→ticket via `depends_on` edges; rule→ticket/spec via explicit scoped attachment. Emit each as an auto-pin **suggestion** with a `reason`. Resolve e…"
+    non_goals: "Semantic auto-pinning of vague matches (agent-driven, out of scope). Creating the hard-link edges themselves (owned by the cross-entity-edge tickets in the memory-api store). Implementing the URN resolver (owned by the cross-store reference tickets)."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 91206dad4b98ae67fc8313a4e23f03f6b127837660319ab00ef0fbb3c0205fa1
+    tags[3]: draft,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "fded16bb-1a4b-4dd9-a610-c26459d19403"
     kind: spec
     source_path: "memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml"
@@ -2436,7 +2565,7 @@ entries[172]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c15b2b3b9c774846afc46fc1133a39dcdfb26c79a89522792b414d25a1b9a012
+    digest: fd3f9dea7a365a9663bdb51958a18a3584b24cab9c03f3392d89aa964483911d
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ffb89723-178b-435b-8591-c639d3c7d5dd"

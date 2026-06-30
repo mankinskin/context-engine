@@ -1,0 +1,12 @@
+{
+  "id": "exec-fa3e0a51-discovery",
+  "validation_spec_id": "vt-store-discovery",
+  "outcome": "passed",
+  "executed_at": "2026-06-29T01:16:42.504410700Z",
+  "detail": "cargo test -p memory-api discovery:: — 4 passed (nested tagged-by-kind, prune heavy dirs + no store recursion, dedup, empty tree)",
+  "links": {
+    "ticket_ids": [
+      "fa3e0a51-0caa-4a33-bfe2-1b173feaa979"
+    ]
+  }
+}

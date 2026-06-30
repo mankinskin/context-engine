@@ -1,0 +1,12 @@
+{
+  "id": "vt-spec-root-awareness-transport",
+  "title": "Spec root-awareness Windows transport validation",
+  "command": "cargo test --manifest-path Cargo.toml -p spec-api -p spec-cli -p spec-mcp -p spec-http",
+  "detail": "Validates root-aware spec transport slice on Windows; includes spec-cli refs payload normalization and package-level pass/fail evidence.",
+  "links": {
+    "ticket_ids": [
+      "59d96577-09a8-44a7-b0ea-3d51b3a6fb05",
+      "6e5306fb-c1b3-4aec-991d-fabaf3096e23"
+    ]
+  }
+}

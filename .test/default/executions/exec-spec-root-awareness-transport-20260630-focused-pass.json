@@ -1,0 +1,20 @@
+{
+  "id": "exec-spec-root-awareness-transport-20260630-focused-pass",
+  "validation_spec_id": "vt-spec-root-awareness-transport",
+  "outcome": "passed",
+  "executed_at": "2026-06-30T13:21:41.414273200Z",
+  "detail": "Focused reruns after refs normalization fix passed: `cargo test --manifest-path Cargo.toml -p spec-api -p spec-mcp -p spec-http` => 95 passed; `cargo test --manifest-path /c/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/spec-cli/Cargo.toml --lib --tests` => 33 passed; targeted refs tests `render_workspace_root_for_payload*` => 2 passed.",
+  "links": {
+    "ticket_ids": [
+      "59d96577-09a8-44a7-b0ea-3d51b3a6fb05",
+      "6e5306fb-c1b3-4aec-991d-fabaf3096e23"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/cli/spec-cli/src/cli/commands/refs.rs",
+    "domain": "spec-tooling",
+    "operation": "windows-transport-slice",
+    "transport": "cli",
+    "run_id": "run-20260630-spec-root-awareness"
+  }
+}

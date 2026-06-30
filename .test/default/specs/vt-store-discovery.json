@@ -1,0 +1,10 @@
+{
+  "id": "vt-store-discovery",
+  "title": "Recursive multi-store discovery: nested, dedup, loop-safe, pruned",
+  "command": "cargo test -p memory-api discovery::",
+  "links": {
+    "ticket_ids": [
+      "fa3e0a51-0caa-4a33-bfe2-1b173feaa979"
+    ]
+  }
+}

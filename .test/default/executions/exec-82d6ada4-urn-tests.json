@@ -1,0 +1,12 @@
+{
+  "id": "exec-82d6ada4-urn-tests",
+  "validation_spec_id": "vt-urn-model",
+  "outcome": "passed",
+  "executed_at": "2026-06-29T01:12:13.565256200Z",
+  "detail": "cargo test -p memory-api urn:: — 9 passed (parse/format roundtrip all store kinds, invalid scheme/segments/workspace/store/uuid, serde roundtrip)",
+  "links": {
+    "ticket_ids": [
+      "82d6ada4-ac35-45a7-9df6-7b7501d58e70"
+    ]
+  }
+}

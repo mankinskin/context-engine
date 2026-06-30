@@ -1,0 +1,10 @@
+{
+  "id": "vt-store-reconcile",
+  "title": "Late onboarding reconciliation: absent/discovered/integrated counters",
+  "command": "cargo test -p memory-api discovery::",
+  "links": {
+    "ticket_ids": [
+      "7e318b2a-a381-49a1-aee9-18758a4b80fd"
+    ]
+  }
+}
