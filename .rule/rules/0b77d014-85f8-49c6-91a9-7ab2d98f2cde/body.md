@@ -1,6 +1,6 @@
 ## Pre-commit Hook
 
-The pre-commit hook at `.githooks/pre-commit` runs automatically when `git config core.hooksPath .github/hooks` is set.
+The pre-commit hook at `.githooks/pre-commit` runs automatically when `git config core.hooksPath .githooks` is set.
 
 ### What it checks
 
