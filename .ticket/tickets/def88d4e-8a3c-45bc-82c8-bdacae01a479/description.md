@@ -2,6 +2,8 @@
 
 Provide every viewer-api tool and context-* crate with consistent, queryable, structured logging.
 
+This epic also owns the memory-system observability track for `memory-api` domain crates and CLI/MCP/HTTP transports. The detailed contract lives in spec `aa769a27` (`memory-api/observability/runtime-logging`) and tracker `73b2cd22`.
+
 ## Motivation
 
 Currently:
@@ -11,6 +13,7 @@ Currently:
 - The log-viewer Preact frontend has no Dioxus port (inconsistent with ticket-viewer/spec-viewer)
 - No Mermaid diagram or CLI table rendering exists for log data
 - Browser (WASM) logs are not correlated with server logs
+- `memory-api` domain crates and transports initialize tracing unevenly and do not yet register runtime log sessions in `log-api`
 
 ## Goals
 
@@ -21,6 +24,7 @@ Currently:
 5. **Log-to-Mermaid** — convert a log session (spans + events) to a sequence diagram
 6. **Log-to-CLI table** — render a filtered log view as an ASCII/Markdown table for terminal use
 7. **Log-viewer Dioxus frontend** — port the Preact log-viewer SPA to Rust/Dioxus (aligns with the Dioxus Viewer Platform epic)
+8. **Memory-system runtime diagnostics** — shared tracing initialization and log-api runtime session metadata for memory-domain crates and CLI/MCP/HTTP transports
 
 ## Track Breakdown
 
@@ -56,12 +60,18 @@ Port the Preact log-viewer SPA to Dioxus WASM.
 - `[LOG-5b]` Port log browser UI (file tree, entry list, search bar, stats)
 - `[LOG-5c]` Add live-tail view (SSE-backed, reuse viewer-api SSE infrastructure)
 
+### Track 6 — memory-api Runtime Diagnostics (1 tracker)
+Define and implement the DRY tracing/log-api architecture for memory-domain crates and transports.
+
+- `[memory-api] Shared tracing and log-api runtime diagnostics` (`73b2cd22`) — shared initialization, runtime log session metadata, domain instrumentation map, transport correlation, live indexing/search, and documentation
+
 ## Dependency Order
 
 ```
 Track 1 (file sinks) → Track 2 (schema) → Track 3 (search)
 Track 3 → Track 4 (rendering)
 Track 1 → Track 5 (Dioxus frontend needs live log files)
+Track 1/2 → Track 6 (reuse existing file-sink and schema work without duplicating tracing infrastructure)
 ```
 
 ## Done Condition
@@ -73,3 +83,4 @@ All tracks complete. Every tool writes structured JSONL logs to `target/logs/` a
 - `35a6d14b` — Epic: Dioxus Viewer Platform (Track 5 aligns with that epic's architecture)
 - `b480632a` — viewer-api-dioxus: structured tracing for WASM frontend (Track 1 dependency)
 - `8f349d96` — viewer-api-dioxus: ship WASM tracing logs to server file sink (Track 1 dependency)
+- `73b2cd22` — memory-api shared tracing and log-api runtime diagnostics (Track 6)
