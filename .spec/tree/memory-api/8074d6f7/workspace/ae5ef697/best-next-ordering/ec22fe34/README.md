@@ -20,5 +20,5 @@ Best-next-ticket discovery must remain consistent anywhere the repository surfac
 ## Navigation
 
 - Parent: [memory-api/workspace](../../README.md)
-- Siblings: [ticket-api/workflow/unblocked-by-discovery](../../unblocked-by-discovery/0386c4d0/README.md), [ticket-api/workspaces/ancestor-dependency-visibility](../../ancestor-dependency-visibility/0b1888f2/README.md)
+- Siblings: [memory-api/workspace/path-normalization-kernel](../../path-normalization-kernel/b4833ecc/README.md), [ticket-api/workflow/unblocked-by-discovery](../../unblocked-by-discovery/0386c4d0/README.md), [ticket-api/workspaces/ancestor-dependency-visibility](../../ancestor-dependency-visibility/0b1888f2/README.md)
 - Children: _(none)_

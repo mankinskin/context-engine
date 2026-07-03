@@ -20,5 +20,5 @@ A child workspace can resolve dependency endpoints owned by an ancestor workspac
 ## Navigation
 
 - Parent: [memory-api/workspace](../../README.md)
-- Siblings: [ticket-api/workflow/best-next-ordering](../../best-next-ordering/ec22fe34/README.md), [ticket-api/workflow/unblocked-by-discovery](../../unblocked-by-discovery/0386c4d0/README.md)
+- Siblings: [memory-api/workspace/path-normalization-kernel](../../path-normalization-kernel/b4833ecc/README.md), [ticket-api/workflow/best-next-ordering](../../best-next-ordering/ec22fe34/README.md), [ticket-api/workflow/unblocked-by-discovery](../../unblocked-by-discovery/0386c4d0/README.md)
 - Children: _(none)_

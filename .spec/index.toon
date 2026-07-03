@@ -2,7 +2,16 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[181]:
+entries[185]:
+  - id: "00000000-0000-0000-0000-0000000000a2"
+    kind: spec
+    source_path: "memory-api/test-fixtures/memory-workspace-fixture/submodule-a/.spec/specs/00000000-0000-0000-0000-0000000000a2/spec.toml"
+    title: Submodule A fixture spec
+    summary: ""
+    keywords[3]: fixture,spec,submodule
+    digest: 49a11183c0a79ecaa6f07a1dff5205894e622f55cb9a99950e63aafa3da8f56b
+    tags[4]: draft,fixture,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "00000000-0000-0000-0000-0000000000b1"
     kind: spec
     source_path: "memory-api/test-fixtures/memory-workspace-fixture/.spec/specs/00000000-0000-0000-0000-0000000000b1/spec.toml"
@@ -1176,6 +1185,15 @@ entries[181]:
     digest: 798b1a502ab3fa2e1cd96fd8a5b39d22ed71162fda04d0c48243bbe2ae4c48ab
     tags[3]: draft,"feedback-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "76da5f2d-cea9-49d9-b223-730a0c2a5d6b"
+    kind: spec
+    source_path: "memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/spec.toml"
+    title: "Transport-layer e2e matrix and benchmark strategy"
+    summary: "This spec drafts the design for a real transport matrix covering CLI, HTTP, and MCP surfaces across the in-scope memory-api domains."
+    keywords[6]: benchmark,layer,matrix,strategy,transport,"transport-layer"
+    digest: 266278f76fbedfc8a5551a80aac395c0d086a0109366f5144a97ad6c739c29fb
+    tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "77ca6056-180d-4e88-a76a-dcf8ff280c7a"
     kind: spec
     source_path: "memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml"
@@ -1702,6 +1720,17 @@ entries[181]:
     digest: a514360f90ac5a3103e4f01afc37db6189abc6be991488d1305d0cf5bf4b688f
     tags[3]: draft,probe,root
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "aa769a27-2721-4b9d-880c-5c4e2f8136a7"
+    kind: spec
+    source_path: ".spec/specs/aa769a27-2721-4b9d-880c-5c4e2f8136a7/spec.toml"
+    title: "Memory-system observability and log-api runtime diagnostics"
+    summary: "Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal op…"
+    keywords[6]: diagnostics,"log-api",logging,"memory-system",observability,runtime
+    scope: "This spec covers the architecture and rollout requirements for:"
+    non_goals: "Replacing `tracing` with a custom logging facade. Duplicating separate tracing initialization code in every binary. Requiring the unfinished `log-api` store before file logging provides value. Treating trace logs as the durable source of truth for reversible state changes. Captu…"
+    digest: f7f355fc999390fca5ddfb8eab4044e2e75c5fd6f4209a149832320db831459f
+    tags[4]: draft,"memory-api",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
     kind: spec
     source_path: "memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
@@ -1715,9 +1744,10 @@ entries[181]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-      children[3]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml","0386c4d0-15c4-4561-a33f-63b881c852c5",child,spec,""
         "memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml","0b1888f2-7e59-45fb-95d8-1bf14ff7747f",child,spec,""
+        "memory-api/.spec/specs/b4833ecc-78b6-4406-9a03-9834d211f0ae/spec.toml","b4833ecc-78b6-4406-9a03-9834d211f0ae",child,spec,""
         "memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml","ec22fe34-2d24-4dc5-a067-85121bed3655",child,spec,""
     digest: b10c18847dc79823407fd919737af0431947806e9b400e3d123bdd39d619646d
     tags[3]: draft,"memory-api","scope:public"
@@ -1792,6 +1822,24 @@ entries[181]:
         digest: ""
     digest: c79a24de7f92f390d519f2f4707a9a22a1a62b775b2b737d8c5457390fec0d0f
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b4833ecc-78b6-4406-9a03-9834d211f0ae"
+    kind: spec
+    source_path: "memory-api/.spec/specs/b4833ecc-78b6-4406-9a03-9834d211f0ae/spec.toml"
+    title: path normalization kernel
+    summary: "Establish one resilient, memory-api-owned path normalization utility kernel that emits Unix-style path strings for transport/UI while preserving typed path safety for filesystem operations, with dete…"
+    keywords[3]: kernel,normalization,path
+    scope: "Define one kernel API in `crates/memory-api/src/workspace.rs` (or sibling module) that all CLI/MCP/HTTP path payload surfaces consume. Normalize Windows inputs including: drive-letter (`C:\\repo\\x`) Git Bash (`/c/repo/x`) verbatim drive (`\\\\?\\C:\\repo\\x`) UNC (`\\\\server\\share\\x`) …"
+    non_goals: "No change to storage layout (`.ticket`, `.spec`, `.rule`) semantics. No cross-store move workflow redesign (already covered by done ticket `21e6c015`). No transport schema redesign beyond path-field value normalization and explicit error payloads where strict mode is opted in."
+    relations:
+      parent:
+        canonical_path: "memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
+        entry_id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 523e906202281a7988fa53ace13f4d30c8085562782ba799a6a3fe749f64ba76
+    tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b4d038e0-ade9-459b-8ba3-92fd81d80e6a"
     kind: spec

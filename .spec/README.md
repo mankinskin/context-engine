@@ -61,6 +61,7 @@
 
 ## fixture
 - [fixture/root](./tree/root/00000000/README.md)
+- [fixture/submodule-a](./tree/submodule-a/00000000/README.md)
 - [fixture/submodule-b](./tree/submodule-b/00000000/README.md)
 
 ## interview-api
@@ -86,6 +87,7 @@
   - [memory-api/storage/search](./tree/memory-api/8074d6f7/search/f156fa16/README.md)
   - [memory-api/storage/store-bootstrap-open](./tree/memory-api/8074d6f7/store-bootstrap-open/b9129cf5/README.md)
   - [memory-api/workspace](./tree/memory-api/8074d6f7/workspace/ae5ef697/README.md)
+    - [memory-api/workspace/path-normalization-kernel](./tree/memory-api/8074d6f7/workspace/ae5ef697/path-normalization-kernel/b4833ecc/README.md)
     - [ticket-api/workflow/best-next-ordering](./tree/memory-api/8074d6f7/workspace/ae5ef697/best-next-ordering/ec22fe34/README.md)
     - [ticket-api/workflow/unblocked-by-discovery](./tree/memory-api/8074d6f7/workspace/ae5ef697/unblocked-by-discovery/0386c4d0/README.md)
     - [ticket-api/workspaces/ancestor-dependency-visibility](./tree/memory-api/8074d6f7/workspace/ae5ef697/ancestor-dependency-visibility/0b1888f2/README.md)
@@ -93,7 +95,9 @@
   - [ticket-query/expressive-query-and-ordering](./tree/memory-api/8074d6f7/expressive-query-and-ordering/08aa283e/README.md)
 - [memory-api/cli/toon-format-support](./tree/toon-format-support/6e63979a/README.md)
 - [memory-api/install-contracts/cli-and-viewer-installation](./tree/cli-and-viewer-installation/be7d7ae7/README.md)
+- [memory-api/observability/runtime-logging](./tree/runtime-logging/aa769a27/README.md)
 - [memory-api/recurring-principles](./tree/recurring-principles/f9c32554/README.md)
+- [test/transport-layer-e2e-matrix](./tree/transport-layer-e2e-matrix/76da5f2d/README.md)
 
 ## memory-fixtures
 - [memory-fixtures/representative-population](./tree/representative-population/beed5b3c/README.md)

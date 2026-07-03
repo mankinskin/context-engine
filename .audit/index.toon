@@ -1,0 +1,142 @@
+version: 1
+domain: audit_finding
+store_path: .audit
+generated_at: "1970-01-01T00:00:00Z"
+entries[8]:
+  - id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+    kind: workspace_summary
+    source_path: .audit/index.toon
+    title: Audit summary — 133 high
+    summary: "534 findings in 7 categories: 133 high, 401 medium, 0 low"
+    keywords[2]: audit,summary
+    relations:
+      children[7]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        .audit/index.toon,"80eac049-04af-57e9-b2aa-78090db4dc28",child,audit_finding,""
+        .audit/index.toon,"f7c9b3e3-7aab-5f9d-8c85-7309932fbcd5",child,audit_finding,""
+        .audit/index.toon,"6d5095ea-5315-5c70-b772-18dc014888d8",child,audit_finding,""
+        .audit/index.toon,"65342dc5-74b6-5445-ab6c-c743a873484f",child,audit_finding,""
+        .audit/index.toon,"cdbee6f1-cc93-56e3-9a66-b858db89bf4e",child,audit_finding,""
+        .audit/index.toon,"be7a5196-4a2c-56d7-a4a6-10d3ce2ee1bf",child,audit_finding,""
+        .audit/index.toon,"95b2a91c-3b07-5c18-affb-49c3cd8cd80c",child,audit_finding,""
+    digest: 6d81028d3756213d124a53f012e4b35ad23acc21def853b7d6e3b2a6df58bd0f
+    tags[2]: audit,summary
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "65342dc5-74b6-5445-ab6c-c743a873484f"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] file_length: 175 findings"
+    summary: "48 high, 127 medium, 0 low"
+    keywords[2]: audit,file_length
+    scope: "context-stack/context-api/src/types.rs has 1082 lines, exceeding the 400 line limit."
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: 1bcb88883fc59c8bcd92675ebbd15a51413c23d21f02e2a1259a6fca6d0f4959
+    tags[3]: "audit-finding",file_length,high
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6d5095ea-5315-5c70-b772-18dc014888d8"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] coverage: 1 finding"
+    summary: "1 high, 0 medium, 0 low"
+    keywords[2]: audit,coverage
+    scope: "cargo llvm-cov failed, so coverage metrics could not be collected."
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: b35d5347b9ba33133543ddaef6c155d765bbd4e9953817a682ead4fffcbfc56a
+    tags[3]: "audit-finding",coverage,high
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "80eac049-04af-57e9-b2aa-78090db4dc28"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] compiler_check: 1 finding"
+    summary: "1 high, 0 medium, 0 low"
+    keywords[2]: audit,compiler_check
+    scope: "cargo check failed, so warning counts may be incomplete."
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: e3e0bc042c7c41508ede7f29e7d04d64b864a30ed8558c9f6f72d721b6436e22
+    tags[3]: "audit-finding",compiler_check,high
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "95b2a91c-3b07-5c18-affb-49c3cd8cd80c"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] ticket_graph: 250 findings"
+    summary: "56 high, 194 medium, 0 low"
+    keywords[2]: audit,ticket_graph
+    scope: "[memory-api][cli][mcp] Require explicit workspace for entity creation is not linked into the depends_on graph."
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: 411f0cc461f37091a260d7140e396144ca1ebdf3985a8e41fcfdbdf2268b16e0
+    tags[3]: "audit-finding",high,ticket_graph
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "be7a5196-4a2c-56d7-a4a6-10d3ce2ee1bf"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] test_execution: 1 finding"
+    summary: "1 high, 0 medium, 0 low"
+    keywords[2]: audit,test_execution
+    scope: cargo test failed before structured test results could be collected.
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: 0d5885466425af4402de2ea9becf472df71100c42073353f01490dacbce5bcb8
+    tags[3]: "audit-finding",high,test_execution
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "cdbee6f1-cc93-56e3-9a66-b858db89bf4e"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] static_complexity: 105 findings"
+    summary: "25 high, 80 medium, 0 low"
+    keywords[2]: audit,static_complexity
+    scope: "command_name in context-stack/context-api/src/commands/command.rs has cyclomatic complexity 41, exceeding the limit of 12."
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: cbfb15fc423bbfbe57da4c0f71b8eed5520265e6905e81071543e518b3843d3f
+    tags[3]: "audit-finding",high,static_complexity
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f7c9b3e3-7aab-5f9d-8c85-7309932fbcd5"
+    kind: audit_finding
+    source_path: .audit/index.toon
+    title: "[high] compiler_warning: 1 finding"
+    summary: "1 high, 0 medium, 0 low"
+    keywords[2]: audit,compiler_warning
+    scope: cargo check reported 330 compiler warnings.
+    relations:
+      parent:
+        canonical_path: .audit/index.toon
+        entry_id: "574b6cd5-9563-527c-b83c-fe9300fa1eb0"
+        relation_kind: parent
+        content_kind: workspace_summary
+        digest: ""
+    digest: 87b349c7cbff37330ba3119919db511f3cd7aef19e74ce3a82632b7ee5d20fad
+    tags[3]: "audit-finding",compiler_warning,high
+    generated_at: "1970-01-01T00:00:00Z"
