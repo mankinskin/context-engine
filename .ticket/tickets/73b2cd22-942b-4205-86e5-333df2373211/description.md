@@ -2,52 +2,91 @@
 
 ## Problem
 
-The existing unified logging epic covers viewer/context logging, but `memory-api` domain crates and their CLI/MCP/HTTP transports still have uneven tracing setup and sparse instrumentation. Long-running HTTP servers, MCP tools, validation runs, benchmarks, and agent sessions need logs that can be filtered, searched, tailed while active, and linked back to tickets/specs/tests/sessions.
+The existing unified logging epic covers viewer/context logging, but `memory-api` domain crates and their CLI/MCP/HTTP transports still have uneven tracing setup and sparse instrumentation. Long-running HTTP servers, MCP tools, validation runs, benchmarks, graph operations, journals, and agent sessions need logs that can be filtered, searched, tailed while active, and linked back to tickets/specs/tests/sessions.
 
-## Scope
+The design must also incorporate operation journaling. `memory-api` already proves the pattern through the cross-store move kernel (`MovePlan`, `MoveJournal`, `resume_move`, `rollback_move`), while `context-stack` graph operations already emit replay-oriented `GraphOpEvent` visualization data. The full solution should unify these concepts without mixing their responsibilities.
 
-Implement the architecture described by spec `aa769a27` (`memory-api/observability/runtime-logging`) in staged slices:
+## Viability assessment
 
-1. Shared logging facility
-   - Choose the owning crate boundary (`log-api` or a small shared crate) and add one initialization/configuration API for memory-system binaries and test/bench harnesses.
-   - Support stdout/stderr plus rolling JSONL file sinks, `EnvFilter` directives, non-blocking guards, environment/TOML config, and optional log-api metadata registration.
-   - Replace ad hoc `tracing_subscriber::fmt()` setup in memory-api CLI/MCP/HTTP tools.
+The requirements are viable if the architecture keeps three artifacts distinct:
 
-2. Runtime log-api model
-   - Extend `log-api` beyond validation-only captures with runtime log session metadata.
-   - Track component, transport, operation/tool/route, workspace/store roots, process/run ids, active/completed state, file locator, format, rotation policy, active filters, and cross-store links.
-   - Preserve validation-log links by modeling validation logs as a specialization of runtime log sessions.
+- **Trace logs**: runtime observation, timings, spans, levels, errors, and structured fields.
+- **Operation journals**: deterministic preflight/apply/resume/rollback/replay ledgers for state-changing or replayable operations.
+- **Visualization events**: UI replay streams such as context-stack graph operation events, linked to logs and journals by operation id.
 
-3. Domain instrumentation map
-   - Audit memory-domain crates and define major operation spans/events for store discovery, scan/index reconciliation, CRUD/query flows, graph/dependency traversal, board updates, move preflight/apply/rollback/resume, validation evidence, and log capture/indexing.
-   - Add consistent snake_case fields and level semantics (`error`, `warn`, `info`, `debug`, `trace`).
+The most reliable shape is DRY but layered:
 
-4. Transport instrumentation
-   - Add request/tool lifecycle spans for HTTP and MCP transports and command lifecycle spans for CLI surfaces.
-   - Correlate transport ids with domain-operation spans and log session metadata.
+1. A shared tracing initializer handles sinks, filters, guards, and log-api registration.
+2. `log-api` owns runtime log-session metadata, active indexing/search, and cross-store links.
+3. A generic operation-journal contract grows from the existing move kernel semantics.
+4. Context-stack graph replay gets a schema that can be viewed in log-viewer and linked back to logs/journals.
+5. Memory-domain crates add instrumentation only after field names, journal expectations, and privacy rules are settled.
 
-5. Live indexing/search
-   - Add incremental log-api indexing for active JSONL files using byte offsets and partial-record tolerance.
-   - Search/filter by metadata, level, target/module, span name, operation, request id, run id, ticket/spec/test/session links, time range, arbitrary structured fields, and text/regex predicates.
-   - Expose shared behavior through CLI, MCP, and HTTP with compact output suitable for agents.
+## Key risks
 
-6. Documentation and validation
-   - Document configuration, field naming, privacy rules, and examples for tests, benchmarks, long-running servers, and agent sessions.
-   - Add tests for shared initialization, metadata persistence, link filtering, active-file incremental indexing, and transport/domain correlation.
+- Treating logs as rollback journals would make recovery unreliable.
+- Putting shared tracing in the wrong crate can create dependency cycles.
+- High-volume graph `trace` events can overwhelm live indexing without filters, sampling, and retention policy.
+- Machine-local paths and request payloads can leak sensitive data unless redaction rules are explicit.
+- Graph replay needs deterministic deltas and schema versioning; snapshots alone are useful for UI replay but weak for validation.
+- Long-running servers must retain non-blocking logging guards and flush on shutdown.
+
+## Open decisions
+
+- Shared runtime owner: `log-api`, `memory-api`, or a small dependency-light crate?
+- Journal storage layout: `.log`, domain-local stores, or a dedicated `.journal` area?
+- Schema envelope: one versioned envelope for logs, journals, and graph replay, or separate versions linked by ids?
+- Reversibility policy: which operations are rollbackable versus replay-only/manual-recovery?
+- Context-stack boundary: canonical graph replay in `context-api`, `log-api`, or both through metadata references?
+- Retention and sampling defaults for active server logs and high-volume graph traces.
+- Privacy/redaction rules for paths, payloads, ids, and benchmark/profile captures.
+
+## Roadmap
+
+Phase 0: resolve architecture boundaries
+
+- [84673399](.ticket/tickets/84673399-75e6-4f36-8a17-4c666001e530/ticket.toml) `[observability] Resolve logging, journaling, and replay architecture boundaries`
+
+Phase 1: define core schemas and shared runtime
+
+- [d3349747](.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/ticket.toml) `[log-api] Add runtime log session model and cross-store links`
+- [6c859ac3](.ticket/tickets/6c859ac3-14c9-4d9d-b428-5b0cca03e23a/ticket.toml) `[journal] Define generic operation journal schema and store contract`
+- [756fed27](.ticket/tickets/756fed27-96b3-4572-a986-a4f70986984a/ticket.toml) `[memory-api] Extract shared tracing initialization for all transports`
+
+Phase 2: adapt proven journaling and graph replay
+
+- [35cd05c1](.ticket/tickets/35cd05c1-45f7-4d65-b943-7c000570928f/ticket.toml) `[journal] Adapt move kernel journals to the generic operation-journal envelope`
+- [1dffcf23](.ticket/tickets/1dffcf23-8a95-4f45-8163-27e4e58048c7/ticket.toml) `[context-stack] Define replayable graph-operation journal format for log-viewer`
+
+Phase 3: instrument domains and transports
+
+- [2e41c96d](.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/ticket.toml) `[memory-api] Create domain instrumentation and journaling coverage map`
+- [3041d7e3](.ticket/tickets/3041d7e3-2b34-4597-b354-e0aa6ffb0459/ticket.toml) `[transports] Correlate CLI/MCP/HTTP spans with log sessions and journals`
+
+Phase 4: indexing, benchmark evidence, and validation
+
+- [aa94d02e](.ticket/tickets/aa94d02e-9620-4db6-9974-36699cd56537/ticket.toml) `[log-api] Add live indexing and search for active logs and journals`
+- [ff6637f5](.ticket/tickets/ff6637f5-01f6-46c3-b727-e1a19ee0f202/ticket.toml) `[benchmarks] Capture profiling timings through logs and journals`
+- [bce26d30](.ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml) `[docs-tests] Validate unified logging and journaling architecture end to end`
+
+## Related evidence and design anchors
+
+- Spec: `.spec/specs/aa769a27-2721-4b9d-880c-5c4e2f8136a7`
+- Existing logging epic: `.ticket/tickets/def88d4e-8a3c-45bc-82c8-bdacae01a479`
+- Context per-command tracing plan: `.ticket/tickets/61f78a57-6896-4ad7-9daa-0e9e805aa397`
+- Move kernel spec: `memory-api/.spec/specs/afcaccc9-5577-4556-ab6f-cfbe7a77e430`
+- Move kernel implementation ticket: `memory-api/.ticket/tickets/0a510279-5482-4c4f-8dda-6d333dc1f222`
+- Journaled move execution ticket: `memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e`
+- Benchmarking/profiling plan: `.spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469`
 
 ## Acceptance criteria
 
 - One DRY tracing initialization path is used by memory-api CLI, MCP, HTTP, tests, benchmarks, and long-running servers.
 - `log-api` can register, list, retrieve, link, and search runtime log sessions, while keeping validation-log captures compatible.
-- Memory-domain crates have a documented instrumentation map and initial implementation coverage for their major internal operations.
-- HTTP/MCP/CLI transports correlate lifecycle spans with domain operations and log sessions.
+- Operation journaling has a generic schema and store contract that can represent move journals, graph replay streams, and future memory-store operations.
+- Context-stack graph operations have a replayable format usable by log-viewer.
+- Memory-domain crates have a documented instrumentation and journaling coverage map.
+- HTTP/MCP/CLI transports correlate lifecycle spans with domain operations, log sessions, and journal ids.
 - Structured JSONL logs can be tailed/indexed while the producing process is still running.
-- Search/filter APIs support both metadata and structured-entry queries with compact CLI/MCP output.
+- Search/filter APIs support metadata, structured-entry, journal, graph-operation, and benchmark/profile queries with compact CLI/MCP output.
 - Existing viewer/context logging work is linked rather than duplicated.
-
-## Related work
-
-- Spec: `.spec/specs/aa769a27-2721-4b9d-880c-5c4e2f8136a7`
-- Existing logging epic: `.ticket/tickets/def88d4e-8a3c-45bc-82c8-bdacae01a479`
-- Context per-command tracing plan: `.ticket/tickets/61f78a57-6896-4ad7-9daa-0e9e805aa397`
-- Workflow validation metadata spec: `.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c`
