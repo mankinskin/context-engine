@@ -62,12 +62,17 @@ Phase 3: instrument domains and transports
 
 - [2e41c96d](.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/ticket.toml) `[memory-api] Create domain instrumentation and journaling coverage map`
 - [3041d7e3](.ticket/tickets/3041d7e3-2b34-4597-b354-e0aa6ffb0459/ticket.toml) `[transports] Correlate CLI/MCP/HTTP spans with log sessions and journals`
+- [cc78d33d](.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml) `[memory-matrix] Capture subprocess failure bundles for transport-cell diagnostics`
 
 Phase 4: indexing, benchmark evidence, and validation
 
 - [aa94d02e](.ticket/tickets/aa94d02e-9620-4db6-9974-36699cd56537/ticket.toml) `[log-api] Add live indexing and search for active logs and journals`
 - [ff6637f5](.ticket/tickets/ff6637f5-01f6-46c3-b727-e1a19ee0f202/ticket.toml) `[benchmarks] Capture profiling timings through logs and journals`
 - [bce26d30](.ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml) `[docs-tests] Validate unified logging and journaling architecture end to end`
+
+Matrix subprocess failure triage gap status:
+
+- Covered by [cc78d33d](.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml), which adds explicit failure-bundle capture (process invocation context, output tails, error class, and linkage ids) for fast MCP/HTTP transport debugging.
 
 ## Related evidence and design anchors
 
