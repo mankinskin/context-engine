@@ -2,25 +2,18 @@
 
 ## Audit Status
 
-<!-- audit-index:entry id=574b6cd5-9563-527c-b83c-fe9300fa1eb0 digest=6d81028d3756 -->
-### Audit summary — 133 high
+<!-- audit-index:entry id=574b6cd5-9563-527c-b83c-fe9300fa1eb0 digest=37bf3db989a0 -->
+### Audit summary — 131 high
 
-534 findings in 7 categories: 133 high, 401 medium, 0 low
+534 findings in 6 categories: 131 high, 403 medium, 0 low
 
 - source files: 1486
-- total lines: 310521
+- total lines: 310527
 - ref: `.audit/index.toon`
 
 ## Findings by Category
 
-<!-- audit-index:entry id=80eac049-04af-57e9-b2aa-78090db4dc28 digest=e3e0bc042c7c -->
-### [high] compiler_check: 1 finding
-
-- findings: 1 (1 high, 0 medium, 0 low)
-- category: `compiler_check`
-- ref: `.audit/index.toon`
-
-<!-- audit-index:entry id=f7c9b3e3-7aab-5f9d-8c85-7309932fbcd5 digest=87b349c7cbff -->
+<!-- audit-index:entry id=f7c9b3e3-7aab-5f9d-8c85-7309932fbcd5 digest=19eb297b64df -->
 ### [high] compiler_warning: 1 finding
 
 - findings: 1 (1 high, 0 medium, 0 low)
@@ -55,9 +48,9 @@
 - category: `test_execution`
 - ref: `.audit/index.toon`
 
-<!-- audit-index:entry id=95b2a91c-3b07-5c18-affb-49c3cd8cd80c digest=411f0cc461f3 -->
-### [high] ticket_graph: 250 findings
+<!-- audit-index:entry id=95b2a91c-3b07-5c18-affb-49c3cd8cd80c digest=b253220c6fa4 -->
+### [high] ticket_graph: 251 findings
 
-- findings: 250 (56 high, 194 medium, 0 low)
+- findings: 251 (55 high, 196 medium, 0 low)
 - category: `ticket_graph`
 - ref: `.audit/index.toon`
