@@ -19,3 +19,15 @@ Build a generator that reads the audit-api and emits a compact markdown summary 
 
 ## Resolved design decisions
 - D5: committed to git. D8: TOON sidecar. D2: profiled git hook / on-demand. D1: `.agents/` hook + `.audit/` workspace index.
+
+## Review Pushback 2026-07-03
+
+Pushed back from `in-review` to `in-implementation` because the digest-stability/current-output acceptance criterion is not met.
+
+Validation run:
+
+- Failed: `rtk cargo run --manifest-path memory-api/tools/cli/audit-cli/Cargo.toml -- store-index --check`
+- Error: `audit store-index is out of date; regenerate and re-stage: .audit/README.md, .audit/index.toon`
+- Validation spec recorded: `vt-review-audit-store-index-check-20260703`.
+
+Required before review: regenerate the audit store index outputs, ensure `.agents/audit-catalog.md` remains synchronized, then rerun `audit store-index --check` to `drift:false`.

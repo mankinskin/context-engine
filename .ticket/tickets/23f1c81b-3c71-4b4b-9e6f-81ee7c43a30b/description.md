@@ -5,21 +5,17 @@ HTTP read probes against a configured workspace path with no on-disk `.ticket` r
 ## Implemented Reproducer
 
 - Added: `memory-api/tools/http/ticket-http/tests/no_auto_init_missing_workspace.rs`
-- New test builds an app with `WorkspaceRegistry::single(<missing .ticket path>)` and probes:
+- The test builds an app with `WorkspaceRegistry::single(<missing .ticket path>)` and probes:
   - `GET /api/workspaces`
   - `GET /api/tickets?workspace=<canonical>&limit=10`
-- Contract assertion: both probes must leave `.ticket` absent; ticket listing should return `404` for missing workspace instead of implicitly creating/opening it.
+- Contract assertion: both probes leave `.ticket` absent; ticket listing returns `404` for the missing workspace instead of implicitly creating/opening it.
 
-## Validation
+## Review Validation 2026-07-03
 
-- Command: `cargo test --manifest-path tools/http/ticket-http/Cargo.toml --test no_auto_init_missing_workspace -- --nocapture`
-- Result: **failing (expected reproducer)**
-- Failure evidence: `left: 200 right: 404` at `no_auto_init_missing_workspace.rs:66`.
+- Passing: `rtk cargo test --manifest-path memory-api/tools/http/ticket-http/Cargo.toml --test no_auto_init_missing_workspace -- --nocapture`
+- Result: `1 passed`.
+- Validation spec recorded: `vt-review-ticket-http-no-auto-init-20260703`.
 
-## Blocker Summary
+## Review Decision
 
-Current behavior returns `200` for `/api/tickets` in this missing-store fixture path, indicating implicit initialization/open behavior remains in the HTTP workspace-resolution path.
-
-## Next Step
-
-Adjust HTTP workspace store resolution to strict-open semantics for read-only probes in missing-store scenarios, then re-run this test to green.
+Acceptance criteria are met. The earlier expected-failing reproducer is now green and confirms no-auto-init behavior for the missing workspace read probes.

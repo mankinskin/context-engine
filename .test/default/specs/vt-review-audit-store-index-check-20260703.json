@@ -1,0 +1,15 @@
+{
+  "id": "vt-review-audit-store-index-check-20260703",
+  "title": "Review audit store-index drift check",
+  "command": "cargo run --manifest-path memory-api/tools/cli/audit-cli/Cargo.toml -- store-index --check",
+  "detail": "Generated audit README/index.toon/agent catalog drift check.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "audit-index-digest-stable",
+      "audit-index-generated-artifacts-current"
+    ],
+    "ticket_ids": [
+      "855a1e5d-d998-4caf-b60c-d75a13ca3264"
+    ]
+  }
+}

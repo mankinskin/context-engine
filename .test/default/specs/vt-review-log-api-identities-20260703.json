@@ -1,0 +1,16 @@
+{
+  "id": "vt-review-log-api-identities-20260703",
+  "title": "Review log-api validation-log identities",
+  "command": "cargo test --manifest-path memory-api/crates/log-api/Cargo.toml",
+  "detail": "Focused tests for validation log capture/retrieval identities linked from test-api executions.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "log-api-identities",
+      "log-api-test-execution-links",
+      "log-api-retrieval"
+    ],
+    "ticket_ids": [
+      "0805fb76-f99b-45a5-87c6-5a8e65bdb2da"
+    ]
+  }
+}

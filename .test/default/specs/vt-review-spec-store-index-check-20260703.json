@@ -1,0 +1,15 @@
+{
+  "id": "vt-review-spec-store-index-check-20260703",
+  "title": "Review spec store-index drift check",
+  "command": "cargo run --manifest-path memory-api/tools/cli/spec-cli/Cargo.toml -- store-index --check",
+  "detail": "Generated spec hierarchy README/tree/index.toon drift check.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "spec-index-digest-stable",
+      "spec-index-generated-artifacts-current"
+    ],
+    "ticket_ids": [
+      "b9757ba7-3b2c-4f92-919d-f3c443ceb69c"
+    ]
+  }
+}

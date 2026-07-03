@@ -8,7 +8,7 @@ Extend `session-api` (`memory-api/crates/session-api`) from a write/archive stor
 - **D4 persistence:** flush `session_context.json` per mutation.
 - **D6 headers-only:** `render_view` returns short headers (urn, type, title|slug, relation, reason), never full bodies.
 - **D8 no mode:** no `current_mode`; general chat = empty pins.
-- **D9 usage:** each `pin` emits one usage event into the generic memory-api usage/feedback model.
+- **D9 usage:** each `pin` emits one usage event into the feedback-api CORE curation model.
 
 ## Scope
 - Add `session_context.json` alongside `session.json`/`transcript.json` without breaking the capture/archive path.
@@ -18,7 +18,7 @@ Extend `session-api` (`memory-api/crates/session-api`) from a write/archive stor
 ## Depends on
 - Design ticket (schema/ADRs frozen).
 - [82d6ada4 URN cross-store resolver] — context stores entity refs as URNs.
-- [f8b447b7 generic entity usage + feedback] — pin emits usage events.
+- [c7542933 feedback-api CORE curation surface] — pin emits usage events.
 
 ## Spec
 `memory-api/session-api/runtime-session-context` (709f067a).

@@ -1,0 +1,16 @@
+{
+  "id": "vt-review-doc-api-identities-20260703",
+  "title": "Review doc-api documentation evidence identities",
+  "command": "cargo test --manifest-path memory-api/crates/doc-api/Cargo.toml",
+  "detail": "Focused tests for authored-doc checks, generated-guidance checks, manual verification, coverage gaps, and link metadata.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "doc-api-evidence-kinds",
+      "doc-api-link-metadata",
+      "doc-api-coverage-gaps"
+    ],
+    "ticket_ids": [
+      "87001cb8-46c4-4921-a336-dc0cf0c1f66a"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "vt-review-ticket-http-no-auto-init-20260703",
+  "title": "Review ticket-http no-auto-init missing workspace E2E",
+  "command": "cargo test --manifest-path memory-api/tools/http/ticket-http/Cargo.toml --test no_auto_init_missing_workspace -- --nocapture",
+  "detail": "HTTP E2E proving workspace read probes do not auto-create a missing .ticket root and /api/tickets returns 404.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "ticket-http-no-auto-init",
+      "ticket-http-missing-workspace-404"
+    ],
+    "ticket_ids": [
+      "23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b"
+    ]
+  }
+}

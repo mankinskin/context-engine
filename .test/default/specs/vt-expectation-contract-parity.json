@@ -1,0 +1,13 @@
+{
+  "id": "vt-expectation-contract-parity",
+  "title": "Expectation contract model-to-transport parity",
+  "command": "cargo test -p spec-api -p spec-cli -p spec-mcp -p spec-http",
+  "detail": "Validates the native expectation/acceptance/evidence model and CLI/MCP/HTTP transport parity slice for the spec expectation-contract spine.",
+  "links": {
+    "ticket_ids": [
+      "c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d",
+      "c666f0b3-f1e6-4073-852f-e494bf5c1272",
+      "b744bcf5-05a5-4601-bbe1-caae9d42ea5f"
+    ]
+  }
+}

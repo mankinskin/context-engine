@@ -46,11 +46,11 @@ This spec covers:
 
 This work builds on the workflow-architecture direction already captured in:
 
-- [workflow validation metadata and default tool behavior](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md)
-- [workflow documentation validation via doc-api and doc-cli](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md)
-- [cross-store workflow traceability metadata](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md)
-- [doc-api family plan](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/body.md)
-- [spec-api generated documents](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)
+- [workflow validation metadata and default tool behavior](C:/Users/linus/git/graph_app/context-engine/.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md)
+- [workflow documentation validation via doc-api and doc-cli](C:/Users/linus/git/graph_app/context-engine/.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md)
+- [cross-store workflow traceability metadata](C:/Users/linus/git/graph_app/context-engine/.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md)
+- [doc-api family plan](C:/Users/linus/git/graph_app/context-engine/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/body.md)
+- [spec-api generated documents](C:/Users/linus/git/graph_app/context-engine/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)
 
 It is intentionally compatible with the current file-oriented spec shell in the first slice; the initial change is to the definition and native metadata contract, not necessarily to the markdown file layout.
 
@@ -74,16 +74,16 @@ It is intentionally compatible with the current file-oriented spec shell in the 
 
 ## Traceability
 
-- [bc19467f Expectation-oriented spec contract rollout](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/bc19467f-b4d4-48c3-be92-b551d4fe6679/ticket.toml)
-- [b744bcf5 Expectation-oriented spec contract and model](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/b744bcf5-05a5-4601-bbe1-caae9d42ea5f/ticket.toml)
-- [0b6e1bf3 Define blackbox contract and authoring guidance for expectation-oriented specs](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/0b6e1bf3-2478-40a5-a619-085d8691835a/ticket.toml)
-- [c73d4a6b Add native expectation, acceptance, and evidence fields](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d/ticket.toml)
-- [c666f0b3 Expose expectation and evidence parity across transports](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/c666f0b3-f1e6-4073-852f-e494bf5c1272/ticket.toml)
-- [aaa90ee6 Store-owned spec evidence integration](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/aaa90ee6-1358-41ad-b19e-61abdc3f1dc2/ticket.toml)
-- [618f6ce4 Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/618f6ce4-e7b3-48f2-9c9e-840247a119da/ticket.toml)
-- [87001cb8 Add documentation-validation evidence identities for spec fulfillment](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/87001cb8-46c4-4921-a336-dc0cf0c1f66a/ticket.toml)
-- [86bf3da2 Bootstrap validation specification and execution identities for spec fulfillment](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/86bf3da2-b6cc-4fc7-898d-044403283550/ticket.toml)
-- [0805fb76 Bootstrap validation-log identities for spec fulfillment](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/0805fb76-f99b-45a5-87c6-5a8e65bdb2da/ticket.toml)
-- [635b7e37 Derive spec fulfillment rollups from store-owned evidence](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml)
-- [6e5306fb Pilot expectation-oriented spec contract on one workflow spec and one README-rollout spec](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/6e5306fb-c1b3-4aec-991d-fabaf3096e23/ticket.toml)
-- [577df498 Homogeneously migrate remaining expectation-oriented specs and tickets](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/577df498-d468-448f-afc1-3e35e48e5f12/ticket.toml)
+- [bc19467f Expectation-oriented spec contract rollout](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/bc19467f-b4d4-48c3-be92-b551d4fe6679/ticket.toml)
+- [b744bcf5 Expectation-oriented spec contract and model](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b744bcf5-05a5-4601-bbe1-caae9d42ea5f/ticket.toml)
+- [0b6e1bf3 Define blackbox contract and authoring guidance for expectation-oriented specs](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/0b6e1bf3-2478-40a5-a619-085d8691835a/ticket.toml)
+- [c73d4a6b Add native expectation, acceptance, and evidence fields](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d/ticket.toml)
+- [c666f0b3 Expose expectation and evidence parity across transports](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c666f0b3-f1e6-4073-852f-e494bf5c1272/ticket.toml)
+- [aaa90ee6 Store-owned spec evidence integration](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/aaa90ee6-1358-41ad-b19e-61abdc3f1dc2/ticket.toml)
+- [618f6ce4 Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/618f6ce4-e7b3-48f2-9c9e-840247a119da/ticket.toml)
+- [87001cb8 Add documentation-validation evidence identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/87001cb8-46c4-4921-a336-dc0cf0c1f66a/ticket.toml)
+- [86bf3da2 Bootstrap validation specification and execution identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/86bf3da2-b6cc-4fc7-898d-044403283550/ticket.toml)
+- [0805fb76 Bootstrap validation-log identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/0805fb76-f99b-45a5-87c6-5a8e65bdb2da/ticket.toml)
+- [635b7e37 Derive spec fulfillment rollups from store-owned evidence](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml)
+- [6e5306fb Pilot expectation-oriented spec contract on one workflow spec and one README-rollout spec](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6e5306fb-c1b3-4aec-991d-fabaf3096e23/ticket.toml)
+- [577df498 Homogeneously migrate remaining expectation-oriented specs and tickets](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/577df498-d468-448f-afc1-3e35e48e5f12/ticket.toml)

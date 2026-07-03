@@ -1,0 +1,15 @@
+{
+  "id": "vt-workflow-migration-evidence-readiness",
+  "title": "Workflow migration evidence readiness",
+  "command": "ticket/test/spec evidence review for expectation-contract workflow chain",
+  "detail": "Review gate for workflow rollout tickets: verifies child evidence-store bootstrap state, native validation execution links, and migrated spec traceability before closing workflow migration trackers.",
+  "links": {
+    "ticket_ids": [
+      "bc19467f-b4d4-48c3-be92-b551d4fe6679",
+      "6e5306fb-c1b3-4aec-991d-fabaf3096e23",
+      "577df498-d468-448f-afc1-3e35e48e5f12",
+      "aaa90ee6-1358-41ad-b19e-61abdc3f1dc2",
+      "618f6ce4-e7b3-48f2-9c9e-840247a119da"
+    ]
+  }
+}

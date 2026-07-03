@@ -1,0 +1,16 @@
+{
+  "id": "vt-review-test-api-identities-20260703",
+  "title": "Review test-api validation identities",
+  "command": "cargo test --manifest-path memory-api/crates/test-api/Cargo.toml",
+  "detail": "Focused tests for validation specs, executions, outcomes, link metadata, and store behavior.",
+  "links": {
+    "acceptance_criterion_ids": [
+      "test-api-identities",
+      "test-api-link-metadata",
+      "test-api-workspace-integration"
+    ],
+    "ticket_ids": [
+      "86bf3da2-b6cc-4fc7-898d-044403283550"
+    ]
+  }
+}
