@@ -4,6 +4,8 @@ Generated: 2026-06-28
 
 Selection rule: include only root-store entities with an unambiguous child-owner signal from component and/or title tags.
 
+Post-snapshot placement lock: later observability/logging coordination tickets that span `memory-api`, `log-api`, and `context-stack` stay in the root `context-engine` workspace as the lowest common ancestor. Do not add `73b2cd22`, `84673399`, `bce26d30`, `ff6637f5`, or `1dffcf23` to the child-store move set; instead, keep linking their lower-crate specialized tickets from the parent workspace trackers.
+
 ## Move summary
 - memory-api: 50 tickets, 15 specs
 - memory-viewers: 17 tickets, 2 specs
@@ -13,6 +15,8 @@ Selection rule: include only root-store entities with an unambiguous child-owner
 ## Move to memory-api
 
 ### Tickets
+- 1fd0c182-f4b4-486b-b757-fe47e3238e43 | [rule-mcp][rule-http] Workspace-resolution parity — nested-root awareness + pure transport | .ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml
+- 23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b | [ticket-http] Add no-auto-init E2E for missing .ticket workspace | .ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b/ticket.toml
 - 07836f41-7fa5-4e41-8411-1c7cf8aeee75 | [ticket-cli] Make get/search/list workspace-aware across nested roots | .ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml
 - 0e375356-b74e-48c4-8f1d-77cd28e055bc | [ticket-api][ticket-cli][ticket-mcp][ticket-http] Implement scoped selectors for board and next | .ticket/tickets/0e375356-b74e-48c4-8f1d-77cd28e055bc/ticket.toml
 - 10cf2a19-356c-4e69-b0f3-b930d68dc0ce | [ticket-http] Expose workflow trees and actionable ordering metadata | .ticket/tickets/10cf2a19-356c-4e69-b0f3-b930d68dc0ce/ticket.toml
@@ -22,6 +26,10 @@ Selection rule: include only root-store entities with an unambiguous child-owner
 - 33565741-c3ce-4697-91d3-092a803aaac0 | [ticket-system] Instruction updates: mandatory review gate and diligent state progression | .ticket/tickets/33565741-c3ce-4697-91d3-092a803aaac0/ticket.toml
 - 385f2521-b318-403b-a4ea-195a47e5c453 | [ticket-api] Unify multi-step state transitions across update and close flows | .ticket/tickets/385f2521-b318-403b-a4ea-195a47e5c453/ticket.toml
 - 39239e48-828a-41d8-a697-9cf02e980da9 | [memory-api] Transport-layer workspace-resolution parity (tracker) | .ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml
+- 50307cce-5a93-4668-9481-a3af5985ea1b | [ticket-vscode] Cover no-.ticket server launch without implicit init | .ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b/ticket.toml
+- 51e2210c-829b-4f7f-865e-99d120d8fd7d | [memory-matrix] Add missing-store explicit-init policy coverage | .ticket/tickets/51e2210c-829b-4f7f-865e-99d120d8fd7d/ticket.toml
+- 5318aedd-5188-4bfa-ad7d-a6d76e3243f1 | [spec-mcp][spec-http] Workspace-resolution parity — nested-root awareness + pure transport | .ticket/tickets/5318aedd-5188-4bfa-ad7d-a6d76e3243f1/ticket.toml
+- 632974d1-ce70-446a-b210-068840041116 | [audit-mcp][audit-http] Workspace-resolution parity — nested-root awareness + pure transport | .ticket/tickets/632974d1-ce70-446a-b210-068840041116/ticket.toml
 - 3a5df74c-2192-4187-b048-3f6285f20db4 | [memory-index] Ticket index: one-line entries, state-ordered, collapsible state headers, clickable manifest links | .ticket/tickets/3a5df74c-2192-4187-b048-3f6285f20db4/ticket.toml
 - 3afaab37-b228-4051-bc46-618db4e0b82b | [ticket-api][bug] update_ticket resets state to `new` on field/description patch; transition_states silently no-ops | .ticket/tickets/3afaab37-b228-4051-bc46-618db4e0b82b/ticket.toml
 - 3b6a2a26-bd4e-44ce-ba15-41594b809b9a | [ticket-api] Derive blocker and unlock trees with frontier leaf metrics | .ticket/tickets/3b6a2a26-bd4e-44ce-ba15-41594b809b9a/ticket.toml
@@ -45,6 +53,7 @@ Selection rule: include only root-store entities with an unambiguous child-owner
 - 8de93812-3a8c-4937-9f09-05a9a9b86309 | [ticket-cli] Canonicalize board subcommand option naming | .ticket/tickets/8de93812-3a8c-4937-9f09-05a9a9b86309/ticket.toml
 - 9491f6b7-c11b-4d94-aed6-f5c6ea004e8a | [session-api] Plan and scaffold Copilot chat-session capture in memory-api | .ticket/tickets/9491f6b7-c11b-4d94-aed6-f5c6ea004e8a/ticket.toml
 - 999d9316-fc79-4bb1-b629-7cba52eced31 | [architecture][ticket-api] Adopt neutral shared APIs and alias retirement gate | .ticket/tickets/999d9316-fc79-4bb1-b629-7cba52eced31/ticket.toml
+- a9514081-35c2-4162-b62d-3baf4a14ec8b | [spec] Define explicit-init-only memory store contract | .ticket/tickets/a9514081-35c2-4162-b62d-3baf4a14ec8b/ticket.toml
 - 9acf1ef1-a7fb-40af-8a7a-4df89ac9a93f | [ticket-api] Allow reverse ticket state transitions through schema | .ticket/tickets/9acf1ef1-a7fb-40af-8a7a-4df89ac9a93f/ticket.toml
 - a3cc8e3e-7cb9-413c-a4df-966df77859d5 | [ticket-system] Undo support: revert last update via --undo flag | .ticket/tickets/a3cc8e3e-7cb9-413c-a4df-966df77859d5/ticket.toml
 - a4c31280-66d3-44a3-9a5d-13d4fbde1bfe | [ticket-api] Fix health false positives for description and resolved dependencies | .ticket/tickets/a4c31280-66d3-44a3-9a5d-13d4fbde1bfe/ticket.toml
@@ -59,7 +68,12 @@ Selection rule: include only root-store entities with an unambiguous child-owner
 - d74412e4-1d0e-4679-8725-e5da6f266fe9 | [ticket-api][ticket-cli] Blueprint blocker trees and recently-unblocked workflow ordering | .ticket/tickets/d74412e4-1d0e-4679-8725-e5da6f266fe9/ticket.toml
 - dd2947da-d4d2-4c8a-9a9a-3633060ff4c5 | [ticket-api] Reconcile aggregate scan, prune, and search visibility | .ticket/tickets/dd2947da-d4d2-4c8a-9a9a-3633060ff4c5/ticket.toml
 - def7fa82-6f4a-4354-b52d-ae7ea9623648 | [ticket-cli][ticket-mcp] Make stale board entries directly check-outable | .ticket/tickets/def7fa82-6f4a-4354-b52d-ae7ea9623648/ticket.toml
+- e3961a54-ea4c-4ce6-aee9-da67a15bf2c7 | [memory-api] Path normalization kernel design + UNC/verbatim regression guard tests | .ticket/tickets/e3961a54-ea4c-4ce6-aee9-da67a15bf2c7/ticket.toml
+- e6bdafbe-3538-47a3-8837-1f8e74fb13e8 | [memory-api] Track explicit-init-only store creation validation | .ticket/tickets/e6bdafbe-3538-47a3-8837-1f8e74fb13e8/ticket.toml
+- e83264db-e634-4c7c-811d-4413a1e3416a | [ticket-vscode] Prevent aborted list tickets request after server start | .ticket/tickets/e83264db-e634-4c7c-811d-4413a1e3416a/ticket.toml
+- e8e3ef17-313f-4cb7-aa9c-6447a18d36a3 | [memory-api] Implement path normalization kernel and migrate CLI/MCP/HTTP path surfaces | .ticket/tickets/e8e3ef17-313f-4cb7-aa9c-6447a18d36a3/ticket.toml
 - ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b | [memory-api][ticket-cli][spec-cli][rule-cli] Unify child-workspace resolution across CLI tools | .ticket/tickets/ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b/ticket.toml
+- cc78d33d-1744-4945-bb77-f0fd1142568e | [memory-matrix] Subprocess failure bundle capture for transport cells | .ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml
 - f2285a55-91d1-48ad-9af7-e8c55ce9bd4d | [spec] spec-api <-> ticket-api: link component entities and detect drift | .ticket/tickets/f2285a55-91d1-48ad-9af7-e8c55ce9bd4d/ticket.toml
 - f3305925-7217-4ff3-8c4e-820ebc1e6de5 | [ticket-cli] Graph rendering and closure-aware dependency display | .ticket/tickets/f3305925-7217-4ff3-8c4e-820ebc1e6de5/ticket.toml
 - fcf9eb04-394e-4b1b-acf2-4da54f3d3f6c | [ticket-http] Remove special default workspace naming and replace opaque server errors | .ticket/tickets/fcf9eb04-394e-4b1b-acf2-4da54f3d3f6c/ticket.toml
