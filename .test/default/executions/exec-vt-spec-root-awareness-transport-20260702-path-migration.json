@@ -1,0 +1,19 @@
+{
+  "id": "exec-vt-spec-root-awareness-transport-20260702-path-migration",
+  "validation_spec_id": "vt-spec-root-awareness-transport",
+  "outcome": "blocked",
+  "executed_at": "2026-07-02T11:08:56.645052Z",
+  "detail": "Completed broader validation after migrating ticket-cli/session-cli/ticket-mcp/session-mcp path surfaces to strict normalization kernel. Passed: cargo test -p ticket-cli (118 passed), cargo test -p session-cli (8 passed), cargo test -p session-mcp (3 passed), cargo test -p memory-api workspace:: (33 passed). Blocker: cargo test -p ticket-mcp fails to execute integration_update_mcp binary with Windows elevation error 740 (\"Der angeforderte Vorgang erfordert erhöhte Rechte\"). Reproduced with cargo test -p ticket-mcp --test integration_update_mcp.",
+  "links": {
+    "spec_ids": [
+      "b4833ecc-78b6-4406-9a03-9834d211f0ae"
+    ],
+    "ticket_ids": [
+      "e8e3ef17-313f-4cb7-aa9c-6447a18d36a3"
+    ]
+  },
+  "provenance": {
+    "transport": "cli",
+    "run_id": "run-20260702-path-migration"
+  }
+}
