@@ -1,0 +1,27 @@
+{
+  "id": "exec-vt-workflow-migration-evidence-readiness-20260703-final",
+  "validation_spec_id": "vt-workflow-migration-evidence-readiness",
+  "outcome": "passed",
+  "executed_at": "2026-07-03T13:15:00Z",
+  "detail": "Final terminal-state confirmation (supersedes the stale detail on exec-vt-workflow-migration-evidence-readiness-20260703-refresh, which still claimed the five parents were \"back in in-review\"). As of 2026-07-03T13:12Z all five workflow-migration parents are DONE: 618f6ce4, aaa90ee6, 6e5306fb, 577df498, bc19467f. All dependency blockers are done: evidence-store children 87001cb8, 86bf3da2, 0805fb76, 635b7e37 and model tickets b744bcf5, c73d4a6b. Health check rooted at 618f6ce4 returns 0 findings. Board is clean of the chain (only unrelated 94a51f30 active; 0 stale). Each of the five parents has at least one linked passing native execution (this readiness execution family). Spec 298f2f92 body.md contains NO SECOND_CHECKOUT references and every traceability + related-spec link resolves under C:/Users/linus/git/graph_app/context-engine (this workspace). Conclusion: no closure action remains — the chain is already terminal — and the prior blocked/in-review framing is stale. No new blocking gap identified.",
+  "links": {
+    "spec_ids": [
+      "298f2f92-df7e-4c8a-b4fe-b63c27622142"
+    ],
+    "ticket_ids": [
+      "bc19467f-b4d4-48c3-be92-b551d4fe6679",
+      "6e5306fb-c1b3-4aec-991d-fabaf3096e23",
+      "577df498-d468-448f-afc1-3e35e48e5f12",
+      "aaa90ee6-1358-41ad-b19e-61abdc3f1dc2",
+      "618f6ce4-e7b3-48f2-9c9e-840247a119da"
+    ]
+  },
+  "provenance": {
+    "source_path": ".spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md",
+    "test_id": "workflow-migration-readiness-final-20260703",
+    "domain": "workflow",
+    "operation": "migration-evidence-readiness-final",
+    "transport": "mcp",
+    "run_id": "run-20260703-workflow-migration-readiness-final"
+  }
+}
