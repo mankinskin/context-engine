@@ -1,7 +1,7 @@
 id = "416ebd52-447d-44e4-a4ad-23162d37e0b1"
 created_at = "2026-05-21T16:58:44.850495900+00:00"
 title = "[ticket-http] Return only authoritative resolved hits in workspace-aware search"
-state = "in-implementation"
+state = "in-review"
 acceptance_criteria = "Unresolved Tantivy-only hits are dropped instead of synthesized; deleted tickets never reappear through the query branch; mixed-workspace results preserve authoritative owner workspace and follow-up path information; negative fixtures prove that stale Tantivy-only docs, deleted tickets, and wrong local paths cannot escape as fallback ghost summaries; focused ticket-http commands pass for unresolved-hit, authoritative-owner, deleted-hit, and reversible-follow-up fixtures"
 component = "ticket-http"
 depends_on = ["91011568-ae0b-4b23-b060-b0c018e1e912", "cb562da4-a873-4537-9301-b800b2ab660d"]

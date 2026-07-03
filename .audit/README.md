@@ -2,10 +2,10 @@
 
 ## Audit Status
 
-<!-- audit-index:entry id=574b6cd5-9563-527c-b83c-fe9300fa1eb0 digest=37bf3db989a0 -->
-### Audit summary — 131 high
+<!-- audit-index:entry id=574b6cd5-9563-527c-b83c-fe9300fa1eb0 digest=206de65ceacb -->
+### Audit summary — 133 high
 
-534 findings in 6 categories: 131 high, 403 medium, 0 low
+536 findings in 6 categories: 133 high, 403 medium, 0 low
 
 - source files: 1486
 - total lines: 310527
@@ -48,9 +48,9 @@
 - category: `test_execution`
 - ref: `.audit/index.toon`
 
-<!-- audit-index:entry id=95b2a91c-3b07-5c18-affb-49c3cd8cd80c digest=b253220c6fa4 -->
-### [high] ticket_graph: 251 findings
+<!-- audit-index:entry id=95b2a91c-3b07-5c18-affb-49c3cd8cd80c digest=aa579ca7329a -->
+### [high] ticket_graph: 253 findings
 
-- findings: 251 (55 high, 196 medium, 0 low)
+- findings: 253 (57 high, 196 medium, 0 low)
 - category: `ticket_graph`
 - ref: `.audit/index.toon`
