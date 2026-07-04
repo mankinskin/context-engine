@@ -14,7 +14,7 @@ This spec defines the planning baseline for consolidating that behavior into tic
 
 # Non-Goals
 
-- Consolidated ticket detail/context read parity. That remains adjacent follow-up work under [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml).
+- Consolidated ticket detail/context read parity. That remains adjacent follow-up work under [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml).
 - Viewer UX changes.
 - Reworking ticket lifecycle semantics unrelated to workflow and health parity.
 - Replacing transport-specific envelopes where those differences are intentional and documented.

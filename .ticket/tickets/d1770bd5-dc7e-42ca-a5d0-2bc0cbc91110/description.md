@@ -38,7 +38,7 @@ Post-snapshot placement lock: later observability/logging coordination tickets t
 - 4a48b371-7dc0-4bf2-badb-747a8f00a0fc | [ticket-api][ticket-cli][ticket-mcp][ticket-http] Unify board-aware next filtering across workflow surfaces | .ticket/tickets/4a48b371-7dc0-4bf2-badb-747a8f00a0fc/ticket.toml
 - 5ad5ab28-6c81-4916-9574-d2c470e03a31 | [ticket-api][audit-api] Strengthen canonical ticket health validation | .ticket/tickets/5ad5ab28-6c81-4916-9574-d2c470e03a31/ticket.toml
 - 5ad77aba-c7f7-4058-854e-dd0412746c7c | [ticket-mcp][spec-mcp][rule-api] Add self-describing capability catalog and help surfaces | .ticket/tickets/5ad77aba-c7f7-4058-854e-dd0412746c7c/ticket.toml
-- 61cb6557-e559-4eae-8e59-ea0d520a3bee | [ticket-cli][ticket-mcp] Add consolidated ticket detail/context read surface | .ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml
+- 61cb6557-e559-4eae-8e59-ea0d520a3bee | [ticket-cli][ticket-mcp] Add consolidated ticket detail/context read surface | memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml
 - 61cbc31f-c66d-46bf-807e-0d4236e04c9e | [ticket-cli] Explain why tickets are absent from next | .ticket/tickets/61cbc31f-c66d-46bf-807e-0d4236e04c9e/ticket.toml
 - 6484d4b7-e24b-4c13-999c-d0b00928d97c | [ticket-cli][ticket-http][ticket-mcp] Build larger-integration parity routine for workflow and health surfaces | .ticket/tickets/6484d4b7-e24b-4c13-999c-d0b00928d97c/ticket.toml
 - 6848ffa2-4e31-4985-beff-cba01af9b7ca | [ticket-system] Add effort field for token-budget estimates | .ticket/tickets/6848ffa2-4e31-4985-beff-cba01af9b7ca/ticket.toml

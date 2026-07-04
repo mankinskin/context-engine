@@ -4447,7 +4447,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=61cb6557-e559-4eae-8e59-ea0d520a3bee slug=new/unspecified digest=29d8b3416f32 -->
 #### [61cb6557] [ticket-cli][ticket-mcp] Add consolidated ticket detail/context read surface
 - summary: Reviewing a ticket currently requires chaining multiple read surfaces.
-- ref: `.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml`
+- ref: `memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml`
 
 <!-- ticket-index:entry id=8bb97b73-9dbc-43ee-9939-46b3ddf2612f slug=new/unspecified digest=2d369822aa7b -->
 #### [8bb97b73] [ticket-cli][ticket-mcp] Explain invalid state transitions with allowed next states
