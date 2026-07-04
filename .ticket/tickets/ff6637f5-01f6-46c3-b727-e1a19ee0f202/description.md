@@ -69,7 +69,7 @@ Keep this benchmark/profiling coordination ticket in the root `context-engine` w
 
 ## Validation checklist
 
-- [ ] Report includes distribution metrics (`p50`, `p95`, `p99`) for each target operation.
-- [ ] Report includes standardized run metadata: `run_id`, `fixture_profile`, `change_count`, `reindex_mode`, `workspace_scope`.
-- [ ] Evidence links resolve to ticket/spec/journal artifacts for at least one full benchmark run.
-- [ ] Replay payload remains deterministic and excludes profiling-only timing fields.
+- [x] Report includes distribution metrics (`p50`, `p95`, `p99`) for each target operation.
+- [x] Report includes standardized run metadata: `run_id`, `fixture_profile`, `change_count`, `reindex_mode`, `workspace_scope`.
+- [x] Evidence links resolve to ticket/spec/journal artifacts for at least one full benchmark run.
+- [x] Replay payload remains deterministic and excludes profiling-only timing fields.

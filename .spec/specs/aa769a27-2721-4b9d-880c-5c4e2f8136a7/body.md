@@ -85,6 +85,34 @@ Not every journal is rollbackable. The journal schema must represent reversibili
 - `rollbackable`: can mechanically restore previous state
 - `manual_recovery`: requires human follow-up but records enough context to guide it
 
+### OperationJournal envelope (v1)
+
+`OperationJournal` v1 is the canonical schema envelope for generalized journals and must be able to represent existing `MoveJournal` recovery data without loss.
+
+Required top-level fields:
+
+- `journal_id`, `operation_id`, `run_id`, optional `session_id`
+- `schema_version` (initial value `operation-journal/v1`)
+- `operation_kind` and `component`
+- `preflight` block: inputs, blockers, warnings, and readiness state
+- `steps[]`: stable `step_id`, planned mutation metadata, deterministic affected entities/files, optional inverse operation data for rollback-capable operations
+- `phases[]`: ordered phase transitions with phase key and lifecycle state
+- `reversibility`: one of `replayable`, `rollbackable`, `manual_recovery`
+- `recovery`: resume/rollback guidance and failure context
+- `links`: trace session ids, ticket/spec/doc/test/benchmark references, graph operation ids
+
+Modeling requirements:
+
+- Existing move apply/resume/rollback journals must map to this envelope without dropping inverse/recovery metadata.
+- Non-mutating graph/search journals and rollbackable mutation journals must both be representable using the same envelope.
+- Trace logs are linked diagnostics only; they are never a substitute rollback ledger.
+
+### Storage and index ownership decision
+
+- Journal artifacts are stored under `.log/<workspace_slug>/journals/` as JSON documents keyed by `journal_id`.
+- `log-api` owns metadata indexing and query surfaces for journal records, including cross-store links and lifecycle filters.
+- Domain stores continue to own domain state mutation logic; journal metadata storage/index ownership does not transfer mutation authority to `log-api`.
+
 ## Log sessions and metadata
 
 A log file should be represented as a log session with stable metadata, not just an anonymous path. Required metadata includes:
@@ -306,6 +334,7 @@ Primary risks:
 - Privacy: what fields are always redacted or hashed by the shared facility?
 
 These governance decisions are resolved by the profiling metadata retention and redaction policy section above and must be treated as the default contract for new observability work.
+The journal storage/index decision and schema envelope version are resolved by the OperationJournal envelope (v1) and storage decision sections above.
 
 # Acceptance Criteria
 
@@ -336,3 +365,6 @@ These governance decisions are resolved by the profiling metadata retention and 
 - Retention/redaction governance ticket: `.ticket/tickets/72b3545c-ceb9-4cb2-a8d4-c146fc9b460a`
 - Deterministic replay boundary ticket: `.ticket/tickets/8b1eab26-389b-4125-86ec-886c9d48702b`
 - Phase taxonomy contract ticket: `.ticket/tickets/1c56033e-5c30-46bd-a0bd-2209b8841876`
+- Operation journal schema/store contract ticket: `.ticket/tickets/6c859ac3-14c9-4d9d-b428-5b0cca03e23a`
+- Profiling metadata and percentile evidence ticket: `.ticket/tickets/de8719bf-a58a-41d1-891e-2b87894e6c02`
+- Profile evidence linkage validation ticket: `.ticket/tickets/87ff70d7-36a8-453d-9ce2-3fec830b163f`
