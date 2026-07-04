@@ -29,7 +29,7 @@ An agent starting on a ticket should not have to manually rediscover the spec it
 
 # Traceability
 - Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-- Ticket: [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
+- Ticket: [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
 - Builds on: `memory-api/session-api/runtime-session-context`
 
 # Validation

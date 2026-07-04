@@ -32,7 +32,7 @@ There is no signal for which store entities are actually useful. Rule-entry feed
 
 # Traceability
 - Owned by: feedback-api program ([b1e9e744](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)); ingestion ([9c95c1e4](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)).
-- Consumed by: session-bootstrap runtime ([412964a3](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)) — pins emit usage events; end-of-session ratings use this model.
+- Consumed by: session-bootstrap runtime ([412964a3](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)) — pins emit usage events; end-of-session ratings use this model.
 - Parent: `memory-api/session-api/dynamic-session-bootstrapping`
 
 # Validation

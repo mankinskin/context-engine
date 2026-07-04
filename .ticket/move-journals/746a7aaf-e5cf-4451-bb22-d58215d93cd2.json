@@ -1,0 +1,102 @@
+{
+  "id": "746a7aaf-e5cf-4451-bb22-d58215d93cd2",
+  "entity_id": "d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+  "phase": "Validated",
+  "created_at": "2026-07-04T16:17:26.477237100Z",
+  "updated_at": "2026-07-04T16:17:26.930693200Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 4 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-d8f76965-1ff3-4a0a-bb24-773b9637fae4.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-d8f76965-1ff3-4a0a-bb24-773b9637fae4.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/body.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/body.md",
+      "replacements": [
+        {
+          "before": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        },
+        {
+          "before": ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/body.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/body.md",
+      "replacements": [
+        {
+          "before": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        },
+        {
+          "before": ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/body.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/body.md",
+      "replacements": [
+        {
+          "before": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        },
+        {
+          "before": ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/CROSS_STORE_REFERENCE_TICKETS.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": "CROSS_STORE_REFERENCE_TICKETS.md",
+      "replacements": [
+        {
+          "before": ".ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4",
+          "after": "memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 109,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 1,
+    "scan_source_ms": 173,
+    "scan_target_ms": 139,
+    "validate_move_ms": 25
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

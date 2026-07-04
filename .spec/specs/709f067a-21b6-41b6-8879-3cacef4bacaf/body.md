@@ -48,9 +48,9 @@ Notes: no `current_mode` (D8). Entity references are URNs (D2). A general-chat s
 
 # Traceability
 - Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-- Ticket: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
+- Ticket: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
 - Depends on (cross-store): [82d6ada4 URN resolver](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml)
-- Consumed by: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml), [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
+- Consumed by: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml), [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
 
 # Validation
 - ValidationSpec: focused `session-api` unit tests for context create/resume/pin/unpin/view, usage emission, and capture-path regression.

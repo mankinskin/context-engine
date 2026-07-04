@@ -2738,7 +2738,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=afa00b5c-c736-4d75-b157-d3e9ce90d819 slug=in-implementation/unspecified digest=0d714d4f6bf5 -->
 #### [afa00b5c] [session-bootstrap][design] Define bootstrap contract, session_context schema, and ADRs
 - summary: Planning/design ticket for the [session-bootstrap] epic. Produces the specs and the resolved decisions.
-- ref: `.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml`
+- ref: `memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml`
 
 <!-- ticket-index:entry id=effba966-f0a8-4d7d-b289-b7feba826cf8 slug=in-implementation/unspecified digest=b72da120ddee -->
 #### [effba966] [session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign

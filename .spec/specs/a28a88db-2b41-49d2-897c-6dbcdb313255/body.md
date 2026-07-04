@@ -24,7 +24,7 @@ Only a minimal bootstrapper instruction stays always-on. All other guidance beco
 - Implementing the session pin mechanism (owned by the runtime + CLI/MCP specs); this spec consumes it.
 
 # Dependencies
-- Consumes the pin/view surfaces: [6b2dc497 init/pin/unpin/view](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml).
+- Consumes the pin/view surfaces: [6b2dc497 init/pin/unpin/view](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml).
 
 # Acceptance Criteria (test-validatable)
 1. After the change, the always-on instruction surface is the bootstrapper only; a test asserts the generated always-on set excludes the four converted files' bodies. *(generation/output test)*
@@ -35,7 +35,7 @@ Only a minimal bootstrapper instruction stays always-on. All other guidance beco
 
 # Traceability
 - Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-- Ticket: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
+- Ticket: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
 
 # Validation
 - ValidationSpec: rule-generation output tests + `rule_search` discoverability tests + agent-side render unit test.

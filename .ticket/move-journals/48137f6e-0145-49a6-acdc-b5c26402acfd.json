@@ -1,0 +1,58 @@
+{
+  "id": "48137f6e-0145-49a6-acdc-b5c26402acfd",
+  "entity_id": "412964a3-e1c3-47da-94ad-268ff20441c0",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0",
+  "phase": "Validated",
+  "created_at": "2026-07-04T16:13:28.773249200Z",
+  "updated_at": "2026-07-04T16:16:30.454326100Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "recorded 3 manual path-reference follow-ups",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-412964a3-e1c3-47da-94ad-268ff20441c0.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-412964a3-e1c3-47da-94ad-268ff20441c0.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/body.md",
+      "reason": "no rewrite candidate matched file content"
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/body.md",
+      "reason": "no rewrite candidate matched file content"
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/body.md",
+      "reason": "no rewrite candidate matched file content"
+    }
+  ],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 0,
+    "migrate_board_history_ms": 12,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 21,
+    "scan_target_ms": 21,
+    "validate_move_ms": 23
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

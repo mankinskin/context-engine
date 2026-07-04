@@ -44,12 +44,12 @@ Today every turn drags ~1,190 lines (~8-10k tokens) of always-on guidance (four 
 5. Cross-store entity references are stored and resolved as URNs.
 
 # Traceability
-- Epic: [effba966 session-bootstrap epic](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml)
-- Design/owner: [afa00b5c bootstrap contract & ADRs](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml)
-- Runtime model: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
-- Cascade: [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
-- CLI/MCP: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml)
-- Rule rendering: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
+- Epic: [effba966 session-bootstrap epic](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml)
+- Design/owner: [afa00b5c bootstrap contract & ADRs](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml)
+- Runtime model: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
+- Cascade: [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
+- CLI/MCP: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml)
+- Rule rendering: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
 
 # Related Specs
 - `memory-api/session-api/persistence-writer` (existing capture write path that must stay intact)

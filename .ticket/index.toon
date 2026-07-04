@@ -7480,14 +7480,14 @@ entries[855]:
     generated_at: "1970-01-01T00:00:00Z"
   - id: "afa00b5c-c736-4d75-b157-d3e9ce90d819"
     kind: ticket
-    source_path: ".ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml"
+    source_path: "memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml"
     title: "[session-bootstrap][design] Define bootstrap contract, session_context schema, and ADRs"
     summary: "Planning/design ticket for the [session-bootstrap] epic. Produces the specs and the resolved decisions."
     keywords[126]: 709f067a,71b81a55,8c880efc,a28a88db,above,acceptable,adrs,agent,always,and,api,applyto,are,attach,authored,auto,bodies,bootstrap,bootstrapper,bootstrapping,bootstraps,capture,carried,cascade,chat,children,client,confirm,consolidation,context,contract,counting,create,cross,curation,current,decide,decisions,define,design,dir,discoverable,done,dynamic,edges,empty,entities,entity,entries,epic,every,exact,explicitly,fda5c915,feedback,fetched,flush,for,freeze,frozen,gathering,general,generic,glob,hard,headers,identity,implementation,"in-implementation",init,instructions,linked,loading,memory,minimal,mode,model,not,only,parent,per,pin,pinned,pins,plan,planning,prerequisite,prerequisites,produces,ratings,redesign,references,remaining,removal,remove,rendering,resolved,reviewed,risk,rule,rules,runtime,schema,scope,see,selective,session,shape,side,spec,specs,status,store,the,their,ticket,today,tracking,unblocked,unspecified,urn,urns,usage,via,when,work
     scope: "state=in-implementation, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
-        ".ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml","afa00b5c-c736-4d75-b157-d3e9ce90d819",related,ticket,"",afa00b5c
+        "memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml","afa00b5c-c736-4d75-b157-d3e9ce90d819",related,ticket,"",afa00b5c
     digest: 0d714d4f6bf5eaacf95b63ddb14734f8468356d2095f7620e89a792659de8081
     tags[3]: "in-implementation",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"

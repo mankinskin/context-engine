@@ -25,5 +25,5 @@ Related enablers I found that support the same cross-store/hard-link direction:
 
 Direct connection to your epic:
 
-1. [effba966 [session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign](.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml)
-2. [d8f76965 [session-api] Cascade context gathering from rules/specs/tickets](.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
+1. [effba966 [session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign](memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml)
+2. [d8f76965 [session-api] Cascade context gathering from rules/specs/tickets](memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
