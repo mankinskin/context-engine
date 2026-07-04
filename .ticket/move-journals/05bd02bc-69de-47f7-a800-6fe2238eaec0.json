@@ -1,0 +1,44 @@
+{
+  "id": "05bd02bc-69de-47f7-a800-6fe2238eaec0",
+  "entity_id": "40ba5a15-df3c-42f2-8825-bd43bd66fce7",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/40ba5a15-df3c-42f2-8825-bd43bd66fce7",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/40ba5a15-df3c-42f2-8825-bd43bd66fce7",
+  "phase": "Validated",
+  "created_at": "2026-07-04T20:23:00.426689500Z",
+  "updated_at": "2026-07-04T20:23:00.669252600Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-40ba5a15-df3c-42f2-8825-bd43bd66fce7.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-40ba5a15-df3c-42f2-8825-bd43bd66fce7.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 13,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 104,
+    "scan_target_ms": 94,
+    "validate_move_ms": 26
+  },
+  "failure": null,
+  "next_recovery_step": null
+}
