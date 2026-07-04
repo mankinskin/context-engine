@@ -1,0 +1,6 @@
+{
+  "id": "vt-perf-move-health",
+  "title": "E2E Move and Health store-performance validation",
+  "command": "cargo test -p ticket-api --test e2e_perf_move_health -- --nocapture",
+  "links": {}
+}
