@@ -4482,7 +4482,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=51671748-8933-4955-9bf4-7bdea961df40 slug=new/unspecified digest=a749e08a2489 -->
 #### [51671748] [ticket-workflow] Harden best-next-ticket discovery across spec, CLI, MCP, and frontends
 - summary: We now have several issue slices for board / next discovery, but no ticket owns the full contract for finding the best next ticket to implement.
-- ref: `.ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml`
+- ref: `memory-api/.ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml`
 
 <!-- ticket-index:entry id=70222986-3325-4d45-892e-31e7f4d09aa6 slug=new/unspecified digest=bbcb0b7c492b -->
 #### [70222986] [validation] E2E regression harness for domain-store scaffold prompts

@@ -3359,14 +3359,14 @@ entries[855]:
     generated_at: "1970-01-01T00:00:00Z"
   - id: "51671748-8933-4955-9bf4-7bdea961df40"
     kind: ticket
-    source_path: ".ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml"
+    source_path: "memory-api/.ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml"
     title: "[ticket-workflow] Harden best-next-ticket discovery across spec, CLI, MCP, and frontends"
     summary: "We now have several issue slices for board / next discovery, but no ticket owns the full contract for finding the best next ticket to implement."
     keywords[174]: "07836f41",61cbc31f,68a08b34,68e3c713,86cde60c,about,above,absent,acceptance,across,actionable,add,agents,and,api,are,artifact,attached,automated,aware,behavior,best,board,but,can,canonical,centered,checklist,child,class,classification,cli,close,complete,contract,coordinate,coordinated,coverage,criteria,cross,deferred,define,discovery,distinguish,doc,docs,does,each,end,epic,exists,explain,expose,failures,field,filter,finding,finds,first,fix,follow,for,fragmented,from,frontend,frontends,full,get,handling,harden,has,have,high,hoc,how,implement,including,instructions,integration,interface,issue,json,level,likely,linked,list,locally,make,manual,matching,matrix,mcp,memory,meta,metadata,misleads,mostly,multi,names,narrow,nested,new,next,not,now,omission,only,operator,originally,owns,parent,partial,pass,passes,path,playwright,prefix,problem,queries,ranking,rather,readme,reasons,regression,release,reusable,root,roots,routine,same,scenario,scope,search,selection,semantics,several,slices,spanning,spec,specification,still,substring,surface,surfaced,surfaces,system,test,tests,than,that,the,this,ticket,tickets,today,tools,unspecified,until,use,user,users,using,validation,viewer,viewers,vscode,while,why,without,work,workflow,workspace,workspaces,yet
     scope: "state=new, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
-        ".ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml","51671748-8933-4955-9bf4-7bdea961df40",related,ticket,"","51671748"
+        "memory-api/.ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml","51671748-8933-4955-9bf4-7bdea961df40",related,ticket,"","51671748"
     digest: a749e08a248917d0fef09e91f20b6ba4c5cea798838025a29a4590865666b5e4
     tags[3]: new,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
