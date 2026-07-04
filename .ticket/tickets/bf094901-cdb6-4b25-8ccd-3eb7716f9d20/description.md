@@ -43,7 +43,7 @@ Representative before/after deltas on the same perf fixture:
 
 ## Remaining behavior to watch
 
-- `rebuild_workflow_facts_ms` is now the dominant remaining scan cost on the perf fixture. That is outside the scan/search write hot path fixed here and may need a follow-up ticket if further reduction is required.
+- `rebuild_workflow_facts_ms` is now the dominant remaining scan cost on the perf fixture. That is outside the scan/search write hot path fixed here and now has dedicated follow-up planning tickets.
 
 ## Acceptance criteria status
 
@@ -56,3 +56,8 @@ Representative before/after deltas on the same perf fixture:
 ## Traceability
 
 - Spec: `memory-api/store-scan-move-hot-path-performance` (`0adfbd09-15c7-46ee-be24-03da0564833d`)
+- Remaining-work tracker: `C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/cadf78e8-a243-4d1c-8c1b-451978bb05ea/ticket.toml`
+- Follow-up child tickets:
+  - `C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/3e4718af-3fd3-40a4-ac89-d298c99c806a/ticket.toml`
+  - `C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/875919d5-558c-46a8-a83f-02a6756a1e0e/ticket.toml`
+  - `C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/013b57bd-2e8c-4d4d-87c8-6f8687a195c8/ticket.toml`
