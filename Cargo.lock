@@ -3679,6 +3679,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "doc-api",
+ "memory-api",
  "serde",
  "serde_json",
  "tempfile",
@@ -3687,7 +3688,6 @@ dependencies = [
  "tower 0.5.3",
  "tower-http",
  "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -5949,6 +5949,8 @@ dependencies = [
  "toml",
  "toon-format",
  "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
  "uuid",
 ]
 
@@ -9712,6 +9714,7 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
+ "tracing-subscriber",
  "url",
  "uuid",
 ]
@@ -9746,6 +9749,7 @@ dependencies = [
  "axum",
  "chrono",
  "futures-util",
+ "memory-api",
  "rmcp",
  "serde",
  "serde_json",
@@ -9756,8 +9760,6 @@ dependencies = [
  "tokio",
  "tower 0.5.3",
  "tracing",
- "tracing-appender",
- "tracing-subscriber",
  "uuid",
 ]
 
@@ -9766,6 +9768,7 @@ name = "ticket-mcp"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "memory-api",
  "rmcp",
  "serde",
  "serde_json",
@@ -9773,7 +9776,6 @@ dependencies = [
  "ticket-api",
  "tokio",
  "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 
