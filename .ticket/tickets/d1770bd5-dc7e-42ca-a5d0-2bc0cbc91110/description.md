@@ -68,7 +68,7 @@ Post-snapshot placement lock: later observability/logging coordination tickets t
 - d74412e4-1d0e-4679-8725-e5da6f266fe9 | [ticket-api][ticket-cli] Blueprint blocker trees and recently-unblocked workflow ordering | .ticket/tickets/d74412e4-1d0e-4679-8725-e5da6f266fe9/ticket.toml
 - dd2947da-d4d2-4c8a-9a9a-3633060ff4c5 | [ticket-api] Reconcile aggregate scan, prune, and search visibility | .ticket/tickets/dd2947da-d4d2-4c8a-9a9a-3633060ff4c5/ticket.toml
 - def7fa82-6f4a-4354-b52d-ae7ea9623648 | [ticket-cli][ticket-mcp] Make stale board entries directly check-outable | .ticket/tickets/def7fa82-6f4a-4354-b52d-ae7ea9623648/ticket.toml
-- e3961a54-ea4c-4ce6-aee9-da67a15bf2c7 | [memory-api] Path normalization kernel design + UNC/verbatim regression guard tests | .ticket/tickets/e3961a54-ea4c-4ce6-aee9-da67a15bf2c7/ticket.toml
+- e3961a54-ea4c-4ce6-aee9-da67a15bf2c7 | [memory-api] Path normalization kernel design + UNC/verbatim regression guard tests | memory-api/.ticket/tickets/e3961a54-ea4c-4ce6-aee9-da67a15bf2c7/ticket.toml
 - e6bdafbe-3538-47a3-8837-1f8e74fb13e8 | [memory-api] Track explicit-init-only store creation validation | .ticket/tickets/e6bdafbe-3538-47a3-8837-1f8e74fb13e8/ticket.toml
 - e83264db-e634-4c7c-811d-4413a1e3416a | [ticket-vscode] Prevent aborted list tickets request after server start | memory-api/.ticket/tickets/e83264db-e634-4c7c-811d-4413a1e3416a/ticket.toml
 - e8e3ef17-313f-4cb7-aa9c-6447a18d36a3 | [memory-api] Implement path normalization kernel and migrate CLI/MCP/HTTP path surfaces | .ticket/tickets/e8e3ef17-313f-4cb7-aa9c-6447a18d36a3/ticket.toml
