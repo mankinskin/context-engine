@@ -1,0 +1,52 @@
+{
+  "id": "23a63721-5d2e-419f-a741-f09eda491610",
+  "entity_id": "185419e0-bea4-4c7b-abda-1e92193f32e7",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7",
+  "phase": "Validated",
+  "created_at": "2026-07-04T00:17:48.882284700Z",
+  "updated_at": "2026-07-04T00:20:54.309968400Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 3 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-185419e0-bea4-4c7b-abda-1e92193f32e7.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-185419e0-bea4-4c7b-abda-1e92193f32e7.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.ticket/README.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".ticket/README.md"
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.ticket/index.toon",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".ticket/index.toon"
+    },
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md"
+    }
+  ],
+  "manual_followups": [],
+  "failure": null,
+  "next_recovery_step": null
+}

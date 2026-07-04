@@ -21,7 +21,7 @@ Post-snapshot placement lock: later observability/logging coordination tickets t
 - 0e375356-b74e-48c4-8f1d-77cd28e055bc | [ticket-api][ticket-cli][ticket-mcp][ticket-http] Implement scoped selectors for board and next | .ticket/tickets/0e375356-b74e-48c4-8f1d-77cd28e055bc/ticket.toml
 - 10cf2a19-356c-4e69-b0f3-b930d68dc0ce | [ticket-http] Expose workflow trees and actionable ordering metadata | .ticket/tickets/10cf2a19-356c-4e69-b0f3-b930d68dc0ce/ticket.toml
 - 15837e16-8755-4eb1-8b36-6c4453899e46 | [ticket-cli][ticket-mcp] Integrate recent-unblock ordering into workflow surfaces | .ticket/tickets/15837e16-8755-4eb1-8b36-6c4453899e46/ticket.toml
-- 185419e0-bea4-4c7b-abda-1e92193f32e7 | [ticket-api] Allow bidirectional ticket state transitions by default | .ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml
+- 185419e0-bea4-4c7b-abda-1e92193f32e7 | [ticket-api] Allow bidirectional ticket state transitions by default | memory-api/.ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml
 - 27558fde-37b0-43eb-86c6-cfbe2d99a0b8 | [ticket-mcp][ticket-http] Workspace-resolution parity — nested-root awareness + pure transport (first run) | .ticket/tickets/27558fde-37b0-43eb-86c6-cfbe2d99a0b8/ticket.toml
 - 33565741-c3ce-4697-91d3-092a803aaac0 | [ticket-system] Instruction updates: mandatory review gate and diligent state progression | .ticket/tickets/33565741-c3ce-4697-91d3-092a803aaac0/ticket.toml
 - 385f2521-b318-403b-a4ea-195a47e5c453 | [ticket-api] Unify multi-step state transitions across update and close flows | .ticket/tickets/385f2521-b318-403b-a4ea-195a47e5c453/ticket.toml
@@ -70,7 +70,7 @@ Post-snapshot placement lock: later observability/logging coordination tickets t
 - def7fa82-6f4a-4354-b52d-ae7ea9623648 | [ticket-cli][ticket-mcp] Make stale board entries directly check-outable | .ticket/tickets/def7fa82-6f4a-4354-b52d-ae7ea9623648/ticket.toml
 - e3961a54-ea4c-4ce6-aee9-da67a15bf2c7 | [memory-api] Path normalization kernel design + UNC/verbatim regression guard tests | .ticket/tickets/e3961a54-ea4c-4ce6-aee9-da67a15bf2c7/ticket.toml
 - e6bdafbe-3538-47a3-8837-1f8e74fb13e8 | [memory-api] Track explicit-init-only store creation validation | .ticket/tickets/e6bdafbe-3538-47a3-8837-1f8e74fb13e8/ticket.toml
-- e83264db-e634-4c7c-811d-4413a1e3416a | [ticket-vscode] Prevent aborted list tickets request after server start | .ticket/tickets/e83264db-e634-4c7c-811d-4413a1e3416a/ticket.toml
+- e83264db-e634-4c7c-811d-4413a1e3416a | [ticket-vscode] Prevent aborted list tickets request after server start | memory-api/.ticket/tickets/e83264db-e634-4c7c-811d-4413a1e3416a/ticket.toml
 - e8e3ef17-313f-4cb7-aa9c-6447a18d36a3 | [memory-api] Implement path normalization kernel and migrate CLI/MCP/HTTP path surfaces | .ticket/tickets/e8e3ef17-313f-4cb7-aa9c-6447a18d36a3/ticket.toml
 - ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b | [memory-api][ticket-cli][spec-cli][rule-cli] Unify child-workspace resolution across CLI tools | .ticket/tickets/ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b/ticket.toml
 - cc78d33d-1744-4945-bb77-f0fd1142568e | [memory-matrix] Subprocess failure bundle capture for transport cells | .ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml
