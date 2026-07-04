@@ -101,6 +101,36 @@ A log file should be represented as a log session with stable metadata, not just
 
 `log-api` should evolve from validation-only captures into a general runtime-log store that can still specialize validation logs through links to `test-api` executions.
 
+## Cross-store correlation-id contract
+
+The observability contract uses four canonical identifiers to correlate transport spans, logs, journals, replay streams, and benchmark evidence without coupling deterministic replay payloads to profiling-only fields.
+
+| Field | Semantics | Producer | Consumers | Cardinality/lifecycle |
+|---|---|---|---|---|
+| `operation_id` | Stable id for one logical operation execution (`scan`, `move_apply`, `search`, replay apply). | Operation orchestrator in memory/context domain code. | Transport spans, log session metadata, operation journals, graph replay streams. | One per operation attempt. New value on retry/resume attempt unless resume policy explicitly preserves lineage with `journal_id`. |
+| `run_id` | Correlates all operations and transports in one benchmark/test/agent session or process run. | Transport/session bootstrap layer (CLI/MCP/HTTP/test/bench harness). | Log session index, benchmark reports, validation evidence links, cross-operation analytics. | One per run/session boundary. Reused across many `operation_id` values in the same run. |
+| `journal_id` | Durable identity of an operation journal ledger record. | Journal store on preflight/create. | Resume/rollback/replay flows, log metadata linkage, evidence queries. | One per journal artifact, stable across apply/resume/rollback events for that journal. |
+| `session_id` | External or user-facing session identity (agent session, validation execution session, viewer session). | Session manager / workflow layer. | Ticket/spec/test/log cross-store references, agent handoff correlation. | One per session scope, may span multiple runs depending on workflow policy. |
+
+### Required-field matrix by subsystem
+
+| Surface | Required ids | Notes |
+|---|---|---|
+| CLI command span/session metadata | `run_id`, `operation_id` | Attach `session_id` when invoked under managed agent/session workflow. |
+| MCP tool lifecycle spans | `run_id`, `operation_id`, `session_id` | `session_id` should map to tool session or orchestrator session. |
+| HTTP request spans | `run_id`, `operation_id` | If request/session cookie exists, map to `session_id`. |
+| Operation journal envelopes | `journal_id`, `operation_id`, `run_id` | `session_id` optional unless operation is session-scoped. |
+| Log session metadata rows | `run_id` | Include `operation_id` and `journal_id` when session is operation-bound. |
+| Graph replay event streams | `operation_id`, `run_id` | Add `journal_id` when replay stream is derived from a journaled operation. |
+| Benchmark evidence/report rows | `run_id`, `operation_id` | Include `session_id` when benchmark is tied to managed validation sessions. |
+
+### Failure and absence handling
+
+- Missing required identifiers in a required surface are validation failures for that surface and must be reported as explicit gaps in ticket/spec evidence.
+- Fallback id generation is allowed only at transport/session boundaries; downstream layers must not silently invent replacement ids when an upstream required id is absent.
+- Replay payloads must keep deterministic state fields timing-free. Correlation ids are allowed in replay/journal envelopes because they are identity metadata, not timing/profile measurements.
+- Resume/rollback flows may keep `journal_id` stable while rotating `operation_id` for each execution attempt, but the relationship must be recorded in journal phase metadata.
+
 ## Instrumentation contract
 
 Domain crates should instrument major internal operations with structured spans/events, including:
@@ -209,3 +239,5 @@ Primary risks:
 - Related journaled move execution ticket: `memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e`
 - Related workflow validation spec: `.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c`
 - Related benchmarking/profiling plan: `.spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469`
+- Correlation-id contract implementation ticket: `.ticket/tickets/529844ac-f7e5-4265-b087-5bd2b597155f`
+- Profiling evidence checklist tracker: `.ticket/tickets/ff6637f5-01f6-46c3-b727-e1a19ee0f202`
