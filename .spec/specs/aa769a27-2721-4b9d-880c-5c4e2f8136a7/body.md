@@ -115,6 +115,10 @@ Domain crates should instrument major internal operations with structured spans/
 - benchmark/profiling run boundaries and measured durations
 - transport dispatch, request/tool lifecycle, status codes, durations, and error classification
 
+Returned profiling artifacts such as `phase_timings_ms`, root-entry count maps, and benchmark summaries remain useful as deterministic test/bench evidence, but they are not a substitute for tracing. When an operation already measures internal phases for reports or journals, the same phase boundaries should also emit tracing spans or completion events so transport logs, log-api indexing, and future correlation tooling can observe the work without parsing return values.
+
+For profile-sensitive store operations such as `open_or_init`, `scan`, and journaled move apply/resume/rollback, prefer one outer `info` span per operation, nested `debug` spans/events per phase or root, stable completion events with counts and elapsed timing fields, and reserve per-record details for `trace` level only.
+
 Granularity should be level-based:
 
 - `error`: operation failed or state may be inconsistent

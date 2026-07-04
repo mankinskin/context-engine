@@ -1,0 +1,7 @@
+id = "efdcbb83-b198-4444-ba92-df39079d3004"
+created_at = "2026-07-04T03:45:14.307714900+00:00"
+title = "[rule-api] Add structured tracing for RuleStore runtime operations"
+state = "in-review"
+type = "tracker-improvement"
+validation_status = "focused-passed"
+validation_summary = "Added structured tracing to RuleStore open/init/open_or_init/scan/reindex/slug-index/resolve_id flows. Focused validation passed for open_or_init_bootstraps_manifest_only_local_store and open_or_init_reindexes_legacy_description_body_content. Broader cargo test -p rule-api still reports two unrelated pre-existing target-config parser failures: load_render_target_config_preserves_domain_tree_target_order and load_render_target_config_supports_file_folder_tree_structure."

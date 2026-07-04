@@ -1,0 +1,1 @@
+Starting RuleStore tracing implementation: add structured spans/events for open/init/open_or_init/scan and rule-body/slug reindex flows, then validate targeted rule-api tests.
