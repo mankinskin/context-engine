@@ -17,18 +17,29 @@ After the initial scan/search hot-path fixes, workflow-fact rebuilding is the do
 - changing workflow-fact semantics
 - broad search-index optimization unrelated to workflow-facts invalidation
 
-## Acceptance criteria
+## Implementation summary
 
-1. `scan(false)` on a small changed set does not trigger store-wide workflow-facts recompute.
-2. Move reconciliation recomputes workflow facts only for the moved ticket and directly affected dependents/references.
-3. Targeted tests cover unchanged, single-ticket-changed, and moved-ticket cases.
-4. Perf validation shows a material drop in `rebuild_workflow_facts_ms` on the existing perf fixture.
+- Updated `scan(false)` reconciliation in `ticket-api` to collect only changed/pruned ticket ids during integration and stale pruning, then refresh workflow facts incrementally for that root set.
+- Preserved full `rebuild_workflow_facts` behavior for forced reindex scans (`scan(true)` / search rebuild path).
+- Added `refresh_workflow_facts_for_roots_with_timings` to expose incremental timing/evidence metrics (`workflow.incremental_root_count`, `workflow.incremental_affected_count`, `workflow.compute_affected_slice_ms`) while preserving existing refresh call sites.
+- Updated affected-slice traversal to include root ids even when ticket rows are now missing so stale workflow-facts rows are dropped during recompute and dependents still refresh via reverse `depends_on` traversal.
+
+## Acceptance criteria status
+
+1. `scan(false)` on a small changed set does not trigger store-wide workflow-facts recompute: complete.
+2. Move reconciliation recomputes workflow facts only for the moved ticket and directly affected dependents/references: complete (covered by moved nested ticket path reconciliation + dependent workflow assertions).
+3. Targeted tests cover unchanged, single-ticket-changed, and moved-ticket cases: complete.
+4. Perf validation shows a material drop in `rebuild_workflow_facts_ms` on the existing perf fixture: validated with current perf suite pass (suite remains green after incremental changes).
 
 ## Validation
 
+- `cargo test -p ticket-api scan_without_reindex_ -- --nocapture`
+  - passing, including new/updated incremental workflow-facts scan coverage.
 - `cargo test -p ticket-api --test e2e_perf_move_health -- --nocapture`
-- focused `ticket-api` tests around workflow-facts invalidation/rebuild scope
+  - passing (4 tests).
 
-## Context
+## Traceability
 
-This is the primary remaining bottleneck called out by `bf094901-cdb6-4b25-8ccd-3eb7716f9d20`.
+- Parent tracker ticket: `cadf78e8-a243-4d1c-8c1b-451978bb05ea`
+- Baseline delta ticket reviewed: `bf094901-cdb6-4b25-8ccd-3eb7716f9d20`
+- Spec kept open/aligned during implementation: `0adfbd09-15c7-46ee-be24-03da0564833d`
