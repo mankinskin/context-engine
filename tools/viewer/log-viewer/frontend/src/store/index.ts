@@ -3,7 +3,7 @@
 
 import { signal, computed } from '@preact/signals';
 import { createUrlStateManager } from '@context-engine/viewer-api-frontend';
-import type { LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph } from '../types';
+import type { GraphReplayEnvelope, LogFile, LogEntry, ViewTab, LogLevel, EventType, LogStats, HypergraphSnapshot, SearchStateEvent, VizPathGraph } from '../types';
 import * as api from '../api';
 
 // Per-file state interface
@@ -152,20 +152,51 @@ interface IndexedGraphOp {
   event: SearchStateEvent;
 }
 
+export function replayEnvelopeToGraphOp(data: GraphReplayEnvelope): SearchStateEvent | null {
+  if (data.schema_version !== 'graph-replay/v1' || !data.step) {
+    return null;
+  }
+
+  return {
+    step: data.step.step,
+    op_type: data.op_type,
+    transition: data.step.transition,
+    location: data.step.location,
+    query: data.step.query,
+    description: data.step.description,
+    path_id: data.path_id,
+    path_graph: data.step.path_graph,
+    graph_mutation: data.step.graph_mutation,
+  } as SearchStateEvent;
+}
+
 const _graphOpEventsIndexed = computed((): IndexedGraphOp[] => {
   const allEntries = entries.value;
   const events: IndexedGraphOp[] = [];
   for (let i = 0; i < allEntries.length; i++) {
     const entry = allEntries[i]!;
-    // graph_op events: detected by presence of the graph_op field
-    // (the message now contains a human-readable description)
-    if (entry.fields?.graph_op) {
+    // graph_op is legacy/default event format.
+    // graph_replay/v1 is normalized into SearchStateEvent for UI playback.
+    if (entry.fields?.graph_op || entry.fields?.graph_replay) {
       try {
-        const data = typeof entry.fields.graph_op === 'string'
-          ? JSON.parse(entry.fields.graph_op)
-          : entry.fields.graph_op;
-        if (data && typeof data.step === 'number') {
-          events.push({ entryIdx: i, event: data as SearchStateEvent });
+        if (entry.fields?.graph_op) {
+          const data = typeof entry.fields.graph_op === 'string'
+            ? JSON.parse(entry.fields.graph_op)
+            : entry.fields.graph_op;
+          if (data && typeof data.step === 'number') {
+            events.push({ entryIdx: i, event: data as SearchStateEvent });
+            continue;
+          }
+        }
+
+        if (entry.fields?.graph_replay) {
+          const replay = typeof entry.fields.graph_replay === 'string'
+            ? JSON.parse(entry.fields.graph_replay)
+            : entry.fields.graph_replay;
+          const normalized = replayEnvelopeToGraphOp(replay as GraphReplayEnvelope);
+          if (normalized && typeof normalized.step === 'number') {
+            events.push({ entryIdx: i, event: normalized });
+          }
         }
       } catch {
         // skip invalid JSON

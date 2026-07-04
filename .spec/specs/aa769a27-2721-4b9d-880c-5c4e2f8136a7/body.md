@@ -290,6 +290,64 @@ The graph journaling design should define a replayable format that can:
 - link each graph replay stream to a trace log session and, when relevant, an operation journal
 - support benchmark/profiling timing without polluting the replay state
 
+### Graph replay stream format v1
+
+The canonical replay artifact is `GraphReplayStream` with envelope version `graph-replay/v1`.
+
+Top-level envelope fields:
+
+- `schema_version`: fixed string `graph-replay/v1`
+- `stream_id`: stable id for one replay stream artifact
+- `operation_id`, `run_id`, optional `journal_id`, optional `session_id`
+- `operation_kind`: `search`, `read`, `insert`, `update`, `delete`, or future extension
+- `component`: context subsystem name (for example `context-search`, `context-insert`)
+- `path_id`: logical path/traversal identity when applicable
+- `started_at`, optional `ended_at`
+- `steps[]`: ordered deterministic replay steps
+- `links`: trace/log/session/spec/ticket/test/benchmark cross-store links
+
+Step shape (`steps[]`):
+
+- `step_index` (monotonic, zero-based)
+- `transition_kind` (maps to existing `Transition` semantics)
+- `event_kind`: `observation` or `mutation`
+- `delta` (deterministic graph delta payload when available)
+- optional `snapshot_ref` (reference to bounded snapshot payload)
+- `entity_refs` (stable ids for affected graph entities)
+
+Deterministic requirements:
+
+- Replay ordering is defined only by `step_index`; wall-clock timestamps are advisory.
+- `delta`, `transition_kind`, and `entity_refs` must be sufficient to reproduce graph state progression for the same input.
+- Timing and percentile metrics are excluded from `steps[]` and carried only in profile evidence linked by `operation_id` and `run_id`.
+
+### Observation-only vs mutation-capable streams
+
+- Observation-only operations (`search`/`read`) are replayable but not rollbackable and may omit `journal_id`.
+- Mutation-capable operations (`insert`/`update`/`delete`) require `journal_id` whenever an operation journal exists.
+- For mutation streams, each replay step must preserve reversible context through either:
+	- direct linkage to rollback-capable `OperationJournal` steps, or
+	- explicit `manual_recovery` classification when rollback is not available.
+
+### Snapshot-vs-delta policy
+
+- Deltas are authoritative for deterministic replay.
+- Snapshots are optional acceleration aids for UI and validation checkpoints.
+- Snapshots must not replace missing deltas for mutation-capable streams.
+- When both are present, consumers apply `delta` in step order and treat snapshots as consistency checkpoints.
+
+### Storage and ownership decision
+
+- Canonical replay stream ownership lives in context-stack/context-api emitters because they own graph semantics.
+- `log-api` owns indexing, metadata search, and cross-store linkage for replay streams.
+- `log-api` may materialize derived indexes or cached projections but must not become the semantic source of truth for replay content.
+
+### Transport and viewer contract
+
+- HTTP, MCP, and CLI surfaces expose replay streams by reference (`stream_id`, `operation_id`, `run_id`) and optional inline bounded step windows.
+- log-viewer replay must work from either trace-derived stream events or stored replay artifacts when both carry matching ids.
+- Any new replay field must include a compatibility note and remain queryable through legacy readers for one compatibility window.
+
 ## Live indexing and search
 
 The first implementation can write JSONL files immediately. `log-api` should then add indexing/search that can operate on completed and active log files by tracking offsets and partial ingestion state.
@@ -322,6 +380,101 @@ Primary risks:
 - File paths, request payloads, and benchmark traces can leak sensitive or unstable machine-local data if redaction rules are not explicit.
 - Replaying mutable graph operations requires deterministic deltas and schema versioning; snapshots alone are useful for visualization but weak for validation.
 - Long-running servers need guard ownership and shutdown flushing; leaking guards or losing them can drop logs.
+
+# First-Pass Domain Coverage Map
+
+This first pass defines crate-by-crate instrumentation ownership, stable target prefixes, required summary fields, and journal expectations so follow-on implementation tickets can instrument without inventing field names.
+
+| Crate | Major operation families | Span/event target prefix | Required summary fields (snake_case) | Journal requirement |
+|---|---|---|---|---|
+| `memory-api` | store open/init, scan/reconcile, move preflight/apply/resume/rollback | `memory_api.runtime` and `memory_api.move` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `workspace_root`, `store_root`, `step_count`, `elapsed_ms`, `status` | rollbackable journal for move flows; replayable journal for non-mutating planning |
+| `ticket-api` | CRUD/query, dependency graph/subgraph/topgraph, health/next, board check-in/heartbeat/check-out, move flows | `ticket_api.store`, `ticket_api.graph`, `ticket_api.board`, `ticket_api.move` | `operation_id`, `run_id`, `journal_id`, `ticket_id`, `dependency_count`, `dependee_count`, `edge_count`, `elapsed_ms`, `status` | rollbackable journal for cross-workspace move; log-only for CRUD/query/graph reads |
+| `spec-api` | CRUD/query, section add/delete/get/list, refs validate, move flows | `spec_api.store`, `spec_api.sections`, `spec_api.refs`, `spec_api.move` | `operation_id`, `run_id`, `journal_id`, `spec_id`, `section_count`, `ref_count`, `elapsed_ms`, `status` | rollbackable journal for move; log-only for read/update paths |
+| `doc-api` | CRUD/query, import/index sync, move flows | `doc_api.store`, `doc_api.index`, `doc_api.move` | `operation_id`, `run_id`, `journal_id`, `doc_id`, `entry_count`, `elapsed_ms`, `status` | rollbackable journal for move; replayable/manual_recovery journal for bulk import where needed |
+| `rule-api` | CRUD/query, rule sync-targets generation, move flows, feedback recording | `rule_api.store`, `rule_api.sync`, `rule_api.move`, `rule_api.feedback` | `operation_id`, `run_id`, `journal_id`, `rule_id`, `target_count`, `generated_file_count`, `elapsed_ms`, `status` | rollbackable journal for move; manual_recovery journal for sync side effects outside store |
+| `audit-api` | audit run creation, evidence ingest/query, move flows | `audit_api.store`, `audit_api.run`, `audit_api.move` | `operation_id`, `run_id`, `journal_id`, `audit_run_id`, `finding_count`, `elapsed_ms`, `status` | replayable journal for ingest pipelines; rollbackable for move |
+| `session-api` | session create/update/list/get, predecessor linkage, move flows | `session_api.store`, `session_api.lifecycle`, `session_api.move` | `operation_id`, `run_id`, `journal_id`, `session_id`, `predecessor_session_id`, `elapsed_ms`, `status` | log-only for session lifecycle; rollbackable for move |
+| `test-api` | validation spec/execution record/get/list, provenance links, move flows | `test_api.store`, `test_api.validation`, `test_api.move` | `operation_id`, `run_id`, `journal_id`, `validation_spec_id`, `execution_id`, `outcome`, `elapsed_ms`, `status` | replayable journal for evidence ingestion batches; rollbackable for move |
+| `log-api` | runtime log session record/get/list/filter, operation-journal metadata index/query/tail | `log_api.session`, `log_api.journal`, `log_api.index` | `operation_id`, `run_id`, `journal_id`, `session_id`, `component`, `transport`, `offset`, `entry_count`, `elapsed_ms`, `status` | log-only for session metadata; replayable journal metadata envelope for indexed journals |
+
+## High-volume filtering and sampling guidance (first pass)
+
+- Emit one `info` completion event per operation with stable summary fields; never sample away completion events.
+- Keep per-record loops at `trace` level only and gate with target-specific filters.
+- Prefer aggregate counters on `debug` (`entry_count`, `edge_count`, `step_count`) over per-item identifiers.
+- For graph and reconcile workloads, sample only `trace` details and preserve deterministic ordering metadata in journals.
+- Hash or normalize user-controlled high-cardinality values before `info`/`debug` emission.
+- Use `phase_key` consistently for profile rollups; keep percentile timing outputs in profiling artifacts, not deterministic journals.
+
+## Per-operation baseline matrix (pass 2)
+
+This matrix expands the first-pass crate map into operation-level defaults for span target naming, completion event shape, and journal class.
+
+| Crate | Operation | Target prefix | Completion event | Required fields | Journal class |
+|---|---|---|---|---|---|
+| `memory-api` | `open_or_init` | `memory_api.runtime.open_or_init` | `memory_api_open_or_init_complete` | `operation_id`, `run_id`, `phase_key`, `workspace_root`, `store_root`, `elapsed_ms`, `status` | log-only |
+| `memory-api` | `scan` and reconcile | `memory_api.runtime.scan` | `memory_api_scan_complete` | `operation_id`, `run_id`, `phase_key`, `entry_count`, `edge_count`, `elapsed_ms`, `status` | log-only |
+| `memory-api` | `move_apply` | `memory_api.move.apply` | `memory_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `step_count`, `elapsed_ms`, `status` | rollbackable |
+| `memory-api` | `move_resume` and `move_rollback` | `memory_api.move.resume` and `memory_api.move.rollback` | `memory_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `step_count`, `elapsed_ms`, `status` | rollbackable |
+| `ticket-api` | `create/get/update/list/search` | `ticket_api.store.crud` | `ticket_api_crud_complete` | `operation_id`, `run_id`, `ticket_id`, `result_count`, `elapsed_ms`, `status` | log-only |
+| `ticket-api` | `subgraph/topgraph/health/next` | `ticket_api.graph.query` | `ticket_api_graph_query_complete` | `operation_id`, `run_id`, `node_count`, `edge_count`, `elapsed_ms`, `status` | log-only |
+| `ticket-api` | `board_check_in/heartbeat/check_out` | `ticket_api.board.lifecycle` | `ticket_api_board_lifecycle_complete` | `operation_id`, `run_id`, `ticket_id`, `entry_id`, `elapsed_ms`, `status` | log-only |
+| `ticket-api` | `move_preflight/apply/resume/rollback` | `ticket_api.move.lifecycle` | `ticket_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `ticket_id`, `elapsed_ms`, `status` | rollbackable |
+| `spec-api` | `create/get/update/list/search` | `spec_api.store.crud` | `spec_api_crud_complete` | `operation_id`, `run_id`, `spec_id`, `result_count`, `elapsed_ms`, `status` | log-only |
+| `spec-api` | `section_add/section_delete/section_get/section_list` | `spec_api.sections.lifecycle` | `spec_api_sections_complete` | `operation_id`, `run_id`, `spec_id`, `section_count`, `elapsed_ms`, `status` | log-only |
+| `spec-api` | `refs_validate` | `spec_api.refs.validate` | `spec_api_refs_validate_complete` | `operation_id`, `run_id`, `spec_id`, `ref_count`, `invalid_ref_count`, `elapsed_ms`, `status` | log-only |
+| `spec-api` | `move_preflight/apply/resume/rollback` | `spec_api.move.lifecycle` | `spec_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `spec_id`, `elapsed_ms`, `status` | rollbackable |
+| `doc-api` | `create/get/update/list/search` | `doc_api.store.crud` | `doc_api_crud_complete` | `operation_id`, `run_id`, `doc_id`, `result_count`, `elapsed_ms`, `status` | log-only |
+| `doc-api` | `import/index_sync` | `doc_api.index.sync` | `doc_api_index_sync_complete` | `operation_id`, `run_id`, `entry_count`, `phase_key`, `elapsed_ms`, `status` | replayable or manual_recovery |
+| `doc-api` | `move_preflight/apply/resume/rollback` | `doc_api.move.lifecycle` | `doc_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `doc_id`, `elapsed_ms`, `status` | rollbackable |
+| `rule-api` | `create/get/update/list/search` | `rule_api.store.crud` | `rule_api_crud_complete` | `operation_id`, `run_id`, `rule_id`, `result_count`, `elapsed_ms`, `status` | log-only |
+| `rule-api` | `sync_targets` | `rule_api.sync.targets` | `rule_api_sync_complete` | `operation_id`, `run_id`, `generated_file_count`, `target_count`, `elapsed_ms`, `status` | manual_recovery |
+| `rule-api` | `move_preflight/apply/resume/rollback` | `rule_api.move.lifecycle` | `rule_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `rule_id`, `elapsed_ms`, `status` | rollbackable |
+| `audit-api` | `record_run/list_runs/get_run` | `audit_api.run.lifecycle` | `audit_api_run_complete` | `operation_id`, `run_id`, `audit_run_id`, `finding_count`, `elapsed_ms`, `status` | log-only |
+| `audit-api` | `ingest/query_evidence` | `audit_api.evidence.index` | `audit_api_evidence_complete` | `operation_id`, `run_id`, `entry_count`, `result_count`, `elapsed_ms`, `status` | replayable |
+| `session-api` | `create/get/update/list` | `session_api.store.lifecycle` | `session_api_lifecycle_complete` | `operation_id`, `run_id`, `session_id`, `predecessor_session_id`, `elapsed_ms`, `status` | log-only |
+| `session-api` | `move_preflight/apply/resume/rollback` | `session_api.move.lifecycle` | `session_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `session_id`, `elapsed_ms`, `status` | rollbackable |
+| `test-api` | `record_spec/get_spec/list_specs` | `test_api.validation.specs` | `test_api_validation_specs_complete` | `operation_id`, `run_id`, `validation_spec_id`, `result_count`, `elapsed_ms`, `status` | log-only |
+| `test-api` | `record_execution/get_execution/list_executions` | `test_api.validation.executions` | `test_api_validation_executions_complete` | `operation_id`, `run_id`, `execution_id`, `outcome`, `result_count`, `elapsed_ms`, `status` | replayable |
+| `test-api` | `move_preflight/apply/resume/rollback` | `test_api.move.lifecycle` | `test_api_move_complete` | `operation_id`, `run_id`, `journal_id`, `phase_key`, `validation_spec_id`, `elapsed_ms`, `status` | rollbackable |
+| `log-api` | `record/get/list_runtime_session` | `log_api.session.lifecycle` | `log_api_session_complete` | `operation_id`, `run_id`, `session_id`, `component`, `transport`, `elapsed_ms`, `status` | log-only |
+| `log-api` | `record/get/list journal metadata` | `log_api.journal.index` | `log_api_journal_index_complete` | `operation_id`, `run_id`, `journal_id`, `operation_kind`, `entry_count`, `elapsed_ms`, `status` | replayable metadata |
+| `log-api` | `tail/index/filter/search` | `log_api.index.query` | `log_api_query_complete` | `operation_id`, `run_id`, `offset`, `result_count`, `elapsed_ms`, `status` | log-only |
+
+### Cross-crate event naming and field contract
+
+- Completion events use `<crate>_<operation>_complete` and must include `status` and `elapsed_ms`.
+- Failure events use `<crate>_<operation>_failed` and include `error_kind` plus correlation fields.
+- Mutation-capable operations that emit `journal_id` must also emit `operation_id` and `run_id` on the same completion event.
+- `phase_key` is required for profiled multi-phase operations and should use the canonical taxonomy defined earlier in this spec.
+- Field names remain stable snake_case; if a rename is required, emit old and new fields during one compatibility window.
+
+## Event drift reconciliation (current emissions -> canonical contract)
+
+This mapping records currently emitted event names and the canonical names they should converge to. It is normative for migration planning and avoids one-off renames by transport.
+
+| Surface | Current event name(s) | Canonical target name | Migration note |
+|---|---|---|---|
+| ticket move (CLI) | `ticket_cli_move_complete` | `ticket_api_move_complete` | Emit both during compatibility window; retire CLI-specific name after downstream query migration. |
+| ticket move (HTTP) | `ticket_http_move_complete` | `ticket_api_move_complete` | Keep HTTP route metadata fields; normalize event family name. |
+| ticket move (MCP) | `ticket_mcp_move_preflight_complete`, `ticket_mcp_move_apply_complete`, `ticket_mcp_move_resume_complete`, `ticket_mcp_move_rollback_complete` | `ticket_api_move_complete` with `phase_key` | Preserve mode in `phase_key` (`move.preflight_validate`, `move.apply_steps`, `move.resume`, `move.rollback`). |
+| ticket store open/init | `ticket_store_open_profiled_complete`, `ticket_store_init_profiled_complete`, `ticket_store_open_or_init_complete`, `ticket_store_open_internal_complete` | `ticket_api_store_open_or_init_complete` | Keep profiled timing fields but converge to one family name plus `phase_key`. |
+| ticket store scan/reconcile | `ticket_store_scan_complete`, `ticket_store_scan_once_complete`, `ticket_store_phase_complete`, `ticket_reconcile_once_complete` | `ticket_api_scan_complete` and `ticket_api_reconcile_complete` | Separate scan and reconcile families; map legacy phase labels into canonical `phase_key`. |
+| ticket reconcile failures | `ticket_reconcile_pending_paths_full_scan_failed`, `ticket_reconcile_pending_paths_orphan_failed` | `ticket_api_reconcile_failed` | Preserve failure subtype in `error_kind`. |
+| spec store lifecycle | `spec_store_open_complete`, `spec_store_init_complete`, `spec_store_open_or_init_complete` | `spec_api_store_open_or_init_complete` | Use single lifecycle family with operation-specific `phase_key`. |
+| spec store scan/index | `spec_store_scan_complete`, `spec_store_rebuild_slug_index_complete` | `spec_api_scan_complete` and `spec_api_index_complete` | Keep index counts and result counts unchanged; rename family only. |
+| spec id resolution | `spec_store_resolve_id_complete` | `spec_api_resolve_id_complete` | Direct rename with no field contract change. |
+| ticket-http dotted failures | `ticket.validation_failed`, `internal.task_failed` | `ticket_api_request_failed` | Continue exposing HTTP response classes; normalize event name and carry subtype in `error_kind`. |
+| doc-http dotted failure | `doc.artifact_read_failed` | `doc_api_artifact_read_failed` | Direct rename to snake_case family. |
+
+### Compatibility-window policy
+
+- Compatibility window length: two released milestones or 30 days of merged default-branch runtime coverage, whichever is longer.
+- During compatibility window, emit both legacy and canonical event names for renamed families.
+- Canonical event payload is source of truth for new tooling; legacy payload may be reduced but must preserve correlation fields.
+- Required preserved fields during dual-emit: `operation_id`, `run_id`, optional `journal_id`, `status`, `elapsed_ms`, and `error_kind` for failures.
+- Removal gate for legacy names: all dependent dashboards, log queries, validation specs, and benchmark/report parsers reference canonical names.
+- Deprecation evidence must be linked from the owning ticket before removing legacy event names.
 
 # Open Decisions
 

@@ -83,6 +83,12 @@ Phase 4: indexing, benchmark evidence, and validation
 Matrix subprocess failure triage gap status:
 
 - Covered by [cc78d33d](.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml), which adds explicit failure-bundle capture (process invocation context, output tails, error class, and linkage ids) for fast MCP/HTTP transport debugging.
+- Improvement pass (2026-07-04): expanded deterministic confidence with subprocess spawn-failure coverage, parse/decode guard tests, sentinel-id mismatch checks, env-selector whitelist redaction assertions, bounded tail checks, and persisted execution/run-id correlation assertions.
+
+Blocker coordination snapshot for this track:
+
+- [60a2a388](memory-viewers/.ticket/tickets/60a2a388-c8b6-4e25-a80a-0ba686f11bf9/ticket.toml) remains `new` and continues to gate file-logging parity for viewer surfaces.
+- [12197242](memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml) remains `new` and continues to gate full field-name normalization compatibility in downstream log-viewer flows.
 
 ## Related evidence and design anchors
 

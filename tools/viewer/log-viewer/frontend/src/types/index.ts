@@ -77,6 +77,28 @@ export interface FlowEdge {
 // Legacy alias for backwards compatibility
 export type SearchStateEvent = import("@context-engine/types").GraphOpEvent;
 
+// Forward-compatible replay envelope emitted by context-trace.
+export interface GraphReplayStep {
+    step: number;
+    transition: import("@context-engine/types").Transition;
+    location: import("@context-engine/types").LocationInfo;
+    query: import("@context-engine/types").QueryInfo;
+    description: string;
+    path_graph: import("@context-engine/types").VizPathGraph;
+    graph_mutation?: unknown;
+}
+
+export interface GraphReplayEnvelope {
+    schema_version: string;
+    operation_id: string;
+    path_id: string;
+    op_type: import("@context-engine/types").OperationType;
+    run_id?: string;
+    session_id?: string;
+    journal_id?: string;
+    step: GraphReplayStep;
+}
+
 export interface LogStats {
     levelCounts: Record<LogLevel, number>;
     typeCounts: Record<EventType, number>;

@@ -38,11 +38,32 @@ Integrate with existing runtime log session and transport correlation work so bu
   - or `cargo test -p memory-matrix --test matrix every_cell_records_an_execution_with_duration -- --nocapture`
 - Confirm failure evidence is retrievable by correlation id and includes linked log session + test execution metadata.
 
+Improvement-pass deterministic checks:
+
+- `cargo test -p memory-matrix subprocess_probe_persists_full_failure_bundle_fields -- --nocapture`
+- `cargo test -p memory-matrix subprocess_spawn_probe_reports_spawn_failure_bundle -- --nocapture`
+- `cargo test -p memory-matrix mcp::tests:: -- --nocapture`
+
+These checks now cover additional deterministic angles:
+
+- sentinel mismatch validation (`protocol_sentinel_mismatch`) via unit-level id guard assertions
+- parse/decode failure handling (`parse_decode_error`) for invalid MCP tool text payloads
+- spawn/read failure classification boundaries (`spawn_failure`, `non_zero_exit`, `unexpected_eof`, `io_read_failure`)
+- env-selector redaction by whitelist and bounded output-tail assertions
+- execution correlation tightening: persisted execution provenance `run_id` equals bundle `correlation.run_id`
+
 ## Dependencies
 
 - [3041d7e3](.ticket/tickets/3041d7e3-2b34-4597-b354-e0aa6ffb0459/ticket.toml) transport correlation fields
 - [d3349747](.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/ticket.toml) runtime log session metadata
 - [bce26d30](.ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml) validation/documentation matrix
+
+Blocker coordination reviewed in this pass:
+
+- [60a2a388](memory-viewers/.ticket/tickets/60a2a388-c8b6-4e25-a80a-0ba686f11bf9/ticket.toml) `[LOG-1b] doc-viewer + spec-viewer: wire init_tracing_full with file logging` (state: `new`)
+- [12197242](memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml) `[LOG-2a] tracing field-name normalization for log-viewer compatibility` (state: `new`)
+
+No new dependency edge was added in this pass because existing `depends_on` coverage already captures runtime-correlation prerequisites (`3041d7e3`, `d3349747`) and the reviewed blockers remain cross-workspace coordination items.
 
 ## Non-goals
 
