@@ -102,7 +102,7 @@ Post-snapshot placement lock: later observability/logging coordination tickets t
 - 06a194e8-d883-45a4-9693-6a4b9123ec5a | Port: doc-viewer Leptos frontend | .ticket/tickets/06a194e8-d883-45a4-9693-6a4b9123ec5a/ticket.toml
 - 06e00e0b-42ce-4a74-aea2-392302dd68f7 | [log-viewer] Integrate GraphOpEvent replay with 3D graph visualization | .ticket/tickets/06e00e0b-42ce-4a74-aea2-392302dd68f7/ticket.toml
 - 0866e27f-ae67-4eb0-9199-00650317e7c3 | [ticket-viewer] Fix asset follow-up file selection and owning-workspace fetch | .ticket/tickets/0866e27f-ae67-4eb0-9199-00650317e7c3/ticket.toml
-- 14df656e-cef2-470e-9530-ef760b6c462c | [ticket-viewer][ticket-vscode] Surface the next-work workflow in frontends | .ticket/tickets/14df656e-cef2-470e-9530-ef760b6c462c/ticket.toml
+- 14df656e-cef2-470e-9530-ef760b6c462c | [ticket-viewer][ticket-vscode] Surface the next-work workflow in frontends | memory-api/.ticket/tickets/14df656e-cef2-470e-9530-ef760b6c462c/ticket.toml
 - 178b4091-53c9-45ae-b975-890a23b5f25d | [ticket-viewer] Normalize release E2E suite to workspace-aware assumptions | .ticket/tickets/178b4091-53c9-45ae-b975-890a23b5f25d/ticket.toml
 - 1e119a99-375a-479b-80ce-98cb63d92436 | [ticket-viewer] Update graph SSE subscription to listen for ticket.upsert events | .ticket/tickets/1e119a99-375a-479b-80ce-98cb63d92436/ticket.toml
 - 4a9b49fd-58e0-404c-a120-47ef277dcf9f | [ticket-viewer] Keep filtered explorer state authoritative under live refresh | .ticket/tickets/4a9b49fd-58e0-404c-a120-47ef277dcf9f/ticket.toml
