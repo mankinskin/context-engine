@@ -131,6 +131,96 @@ The observability contract uses four canonical identifiers to correlate transpor
 - Replay payloads must keep deterministic state fields timing-free. Correlation ids are allowed in replay/journal envelopes because they are identity metadata, not timing/profile measurements.
 - Resume/rollback flows may keep `journal_id` stable while rotating `operation_id` for each execution attempt, but the relationship must be recorded in journal phase metadata.
 
+## Profiling metadata retention and redaction policy
+
+This policy governs runtime trace/log metadata and profiling evidence artifacts produced by CLI, MCP, HTTP, test, benchmark, and agent-session workflows.
+
+### Retention and rotation defaults
+
+- Active transport log files use rolling JSONL with size-based rotation enabled by default.
+- Default retention window for routine diagnostic logs is 14 days; local development may shorten this window, but shared CI or validation evidence should not be retained for less than 7 days.
+- Benchmark and validation evidence bundles linked from tickets/specs must retain at least one representative passing run per checklist item until the owning tracker is closed.
+- Sampling applies only to high-volume `trace` details; `info`/`warn`/`error` lifecycle events and completion summaries are never sampled away.
+- Rotation and retention must preserve log-session metadata rows so references from tickets/specs/journals remain resolvable even when underlying raw files are pruned.
+
+### Redaction and privacy rules
+
+- Redact or hash machine-local absolute paths before they are persisted in shared artifacts unless path precision is explicitly required for debugging.
+- Never persist secrets or raw credentials in tracing fields, journal metadata, or benchmark evidence.
+- Request/response payload bodies are excluded by default; if temporarily enabled for incident debugging, they must be scope-limited and excluded from long-term retained evidence.
+- High-cardinality identifiers from user-controlled input must be normalized or hashed in `info`/`debug` fields; raw values are allowed only under targeted `trace` filters during short-lived debugging windows.
+- Ticket/spec/test links remain first-class metadata and are not redacted; they are required for traceability.
+
+### Governance and evidence obligations
+
+- Each profiling-oriented ticket must document the effective retention and redaction settings used for its captured evidence.
+- `ff6637f5` checklist evidence must include confirmation that retained artifacts honor this policy while preserving required run metadata and replay boundaries.
+- Deviations from defaults (longer retention, disabled sampling, expanded field capture) require explicit ticket/spec notes and an expiry or rollback plan.
+
+## Deterministic replay versus profiling evidence boundary
+
+Replay and rollback correctness depends on separating deterministic state artifacts from diagnostic timing/profiling artifacts.
+
+### Deterministic replay artifacts (allowed content)
+
+- Operation and graph replay envelopes may include stable identity and ordering metadata such as `operation_id`, `journal_id`, `run_id`, step index, phase label, transition type, and deterministic entity references.
+- Journal steps may include deterministic pre/post state descriptors, planned mutations, and reversible inverse metadata where rollback is supported.
+- Validation-relevant counts that are deterministic for the same input and operation ordering may be included.
+
+### Profiling-only artifacts (must stay out of replay payloads)
+
+- Wall-clock timings (`*_ms`, duration histograms, percentiles such as `p50/p95/p99`).
+- CPU/memory/system-load measurements and host-specific telemetry.
+- Sampling-rate diagnostics and high-volume trace-only detail events used for performance analysis.
+
+These profiling values belong in trace/log metadata, benchmark artifacts, and profile evidence records, not in deterministic replay journals.
+
+### Boundary enforcement rules
+
+- Replay/journal schemas must reject profiling-only timing fields in deterministic state sections.
+- Any timing value needed for diagnostics must be emitted on linked log/profile surfaces keyed by correlation ids, not embedded into replay-critical payload state.
+- Resume and rollback logic must derive behavior from deterministic journal state only; profile metadata may annotate but never drive mutation decisions.
+- Evidence used for `ff6637f5` checklist closure must show that replay payload snapshots remain timing-free while linked profiling artifacts carry timing/percentile outputs.
+
+## Canonical profiling and tracing phase taxonomy
+
+All profiling-sensitive operations must emit phase keys from this canonical taxonomy so logs, journals, benchmark evidence, and validation checks can be compared across crates and transports.
+
+### Phase-key naming contract
+
+- Phase keys are lowercase snake_case and stable across releases unless an explicit migration note is recorded.
+- Keys represent operation structure, not implementation detail names that may churn.
+- When an operation does not execute a phase, the phase is omitted (do not emit synthetic zero-duration phases).
+
+### Canonical phase keys by operation family
+
+| Operation family | Canonical phase keys |
+|---|---|
+| `open_or_init` | `open_or_init.bootstrap`, `open_or_init.workspace_resolve`, `open_or_init.store_open`, `open_or_init.scan_roots`, `open_or_init.reconcile` |
+| `scan` | `scan.discover_roots`, `scan.read_entries`, `scan.integrate_index`, `scan.compute_workflow_facts`, `scan.finalize` |
+| Integration path | `integration.manifest_parse`, `integration.index_upsert`, `integration.edge_write`, `integration.description_read`, `integration.search_upsert` |
+| Workflow recompute | `workflow.fetch_dependency_edges`, `workflow.fetch_dependency_tickets`, `workflow.compute_unresolved`, `workflow.write_facts` |
+| Move apply/resume/rollback | `move.preflight_validate`, `move.lock`, `move.apply_steps`, `move.validate`, `move.resume`, `move.rollback`, `move.complete` |
+| Graph replay | `graph.load_stream`, `graph.apply_delta`, `graph.snapshot_optional`, `graph.emit_visualization`, `graph.complete` |
+
+### Required fields per phase emission
+
+Each phase completion event/span must include:
+
+- `phase_key` (canonical key from table above)
+- `operation_id`, `run_id` (and `journal_id` when journal-backed)
+- `component` and `operation_kind`
+- `elapsed_ms` for profile evidence surfaces
+- deterministic count fields when applicable (for example `entry_count`, `edge_count`, `step_count`)
+
+Timing distributions (`p50/p95/p99`) are reported in benchmark/profile artifacts aggregated by `phase_key`; they are not replay payload fields.
+
+### Validation and compatibility rules
+
+- New instrumentation must map to existing canonical keys where possible; introducing a new key requires spec/ticket traceability notes.
+- Deprecated keys must keep a compatibility window where old and new keys are both queryable in log search/index surfaces.
+- `ff6637f5` checklist evidence should include at least one run demonstrating phase-key alignment for integration and workflow recompute families.
+
 ## Instrumentation contract
 
 Domain crates should instrument major internal operations with structured spans/events, including:
@@ -215,6 +305,8 @@ Primary risks:
 - Retention: what default retention, rotation, and sampling policies apply to active server logs and graph trace streams?
 - Privacy: what fields are always redacted or hashed by the shared facility?
 
+These governance decisions are resolved by the profiling metadata retention and redaction policy section above and must be treated as the default contract for new observability work.
+
 # Acceptance Criteria
 
 - A single shared initialization/configuration path exists for memory-api CLI, MCP, HTTP, tests, benchmarks, and long-running servers; new transports do not hand-roll subscribers.
@@ -241,3 +333,6 @@ Primary risks:
 - Related benchmarking/profiling plan: `.spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469`
 - Correlation-id contract implementation ticket: `.ticket/tickets/529844ac-f7e5-4265-b087-5bd2b597155f`
 - Profiling evidence checklist tracker: `.ticket/tickets/ff6637f5-01f6-46c3-b727-e1a19ee0f202`
+- Retention/redaction governance ticket: `.ticket/tickets/72b3545c-ceb9-4cb2-a8d4-c146fc9b460a`
+- Deterministic replay boundary ticket: `.ticket/tickets/8b1eab26-389b-4125-86ec-886c9d48702b`
+- Phase taxonomy contract ticket: `.ticket/tickets/1c56033e-5c30-46bd-a0bd-2209b8841876`
