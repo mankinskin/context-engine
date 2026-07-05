@@ -75,7 +75,7 @@ Wave sequencing matters: Wave 1 provides stable identifiers and signal semantics
 
 - [8a90a63c [program][multi-store] Store expansion and operational health program](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml)
 - [913fdd33 [interview-api] Interview sessions, survey orchestration, and answer synthesis](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/913fdd33-77b3-4e40-914a-db6873bf004d/ticket.toml)
-- [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)
+- [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)
 - [bd1c7cc0 [audit-api] Continuous store health scoring and cleanup loops](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/bd1c7cc0-2850-418d-b701-981b95c587ee/ticket.toml)
 - [66fae806 [scaffold] Rule-generated store bootstrap instructions and slash command skill](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml)
 - [671d4e47 [architecture][multi-store] Tracker: cross-store interaction model and migration](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml)

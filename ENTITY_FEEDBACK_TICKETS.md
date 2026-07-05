@@ -7,12 +7,12 @@ Found. I searched ticket content and expanded dependency subgraphs around feedba
 4. f15d9e8b Build rule-api for generated agent instruction docs (in-implementation, includes feedback loop surfaces)
 
 2. Feedback store expansion (broad feedback ingestion/search)
-1. [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml) (new)
-2. [3a1ec9f8 [feedback-api] Search latency and index growth SLOs](.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml) (new)
-3. [4f86d3d2 [feedback-api] Privileged feedback governance and abuse-boundary enforcement](.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml) (new)
-4. [9c95c1e4 [feedback-api] Event ingestion, metadata normalization, and retention policy](.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml) (new)
-5. [b7b84c10 [feedback-api] High-scale search, clustering, and reconciliation workflows](.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml) (new)
-6. [c2d6a14a [feedback-api] Retention, redaction, and privacy incident controls](.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml) (new)
+1. [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml) (new)
+2. [3a1ec9f8 [feedback-api] Search latency and index growth SLOs](memory-api/.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml) (new)
+3. [4f86d3d2 [feedback-api] Privileged feedback governance and abuse-boundary enforcement](memory-api/.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml) (new)
+4. [9c95c1e4 [feedback-api] Event ingestion, metadata normalization, and retention policy](memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml) (new)
+5. [b7b84c10 [feedback-api] High-scale search, clustering, and reconciliation workflows](memory-api/.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml) (new)
+6. [c2d6a14a [feedback-api] Retention, redaction, and privacy incident controls](memory-api/.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml) (new)
 
 3. Quality rating and curation loops (cross-store health scoring)
 1. [bd1c7cc0 [audit-api] Continuous store health scoring and cleanup loops](.ticket/tickets/bd1c7cc0-2850-418d-b701-981b95c587ee/ticket.toml) (new)

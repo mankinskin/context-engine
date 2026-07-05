@@ -33,7 +33,7 @@ This spec defines the planning baseline for consolidating that behavior into tic
 - Shared selector work: [0e375356 Implement scoped selectors for board and next](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/0e375356-b74e-48c4-8f1d-77cd28e055bc/ticket.toml)
 - Minimal core plus adapter boundary cleanup: [c031aeb0 Define minimal workflow and health core plus adapter responsibilities](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/c031aeb0-f374-4d57-9d46-2463dfa8571d/ticket.toml)
 - Larger-integration parity routine: [6484d4b7 Build larger-integration parity routine for workflow and health surfaces](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/6484d4b7-e24b-4c13-999c-d0b00928d97c/ticket.toml)
-- Supporting reference for authoritative workspace and path metadata: [07836f41 Make get/search/list workspace-aware across nested roots](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml)
+- Supporting reference for authoritative workspace and path metadata: [07836f41 Make get/search/list workspace-aware across nested roots](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml)
 
 # Implementation Order
 

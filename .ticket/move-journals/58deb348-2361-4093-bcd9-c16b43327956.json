@@ -1,0 +1,57 @@
+{
+  "id": "58deb348-2361-4093-bcd9-c16b43327956",
+  "entity_id": "23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b",
+  "phase": "Validated",
+  "created_at": "2026-07-05T10:36:22.145355100Z",
+  "updated_at": "2026-07-05T10:36:22.402960Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 1 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md",
+      "replacements": [
+        {
+          "before": ".ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b",
+          "after": "memory-api/.ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 13,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 107,
+    "scan_target_ms": 108,
+    "validate_move_ms": 23
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

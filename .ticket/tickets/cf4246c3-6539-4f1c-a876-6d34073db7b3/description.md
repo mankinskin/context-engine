@@ -24,7 +24,7 @@ Turn the current workflow and health surface inconsistency diagnosis into one co
 
 # Supporting References
 
-- [07836f41 Make get/search/list workspace-aware across nested roots](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml) remains relevant where authoritative workspace and path metadata affect parity-critical read behavior, but it is not on the critical path unless selector rollout exposes path-metadata gaps.
+- [07836f41 Make get/search/list workspace-aware across nested roots](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml) remains relevant where authoritative workspace and path metadata affect parity-critical read behavior, but it is not on the critical path unless selector rollout exposes path-metadata gaps.
 - [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml) is related follow-up work, but it is not required for this workflow and health convergence track.
 
 # Implementation Order

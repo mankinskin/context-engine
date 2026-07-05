@@ -69,12 +69,12 @@ User and agent feedback is fragmented, hard to query at scale, and not consisten
 
 ## Traceability
 
-- [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)
-- [9c95c1e4 [feedback-api] Event ingestion, metadata normalization, and retention policy](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)
-- [b7b84c10 [feedback-api] High-scale search, clustering, and reconciliation workflows](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml)
-- [4f86d3d2 [feedback-api] Privileged feedback governance and abuse-boundary enforcement](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml)
-- [c2d6a14a [feedback-api] Retention, redaction, and privacy incident controls](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml)
-- [3a1ec9f8 [feedback-api] Search latency and index growth SLOs](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml)
+- [b1e9e744 [feedback-api] Feedback inbox, metadata indexing, and deep search](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)
+- [9c95c1e4 [feedback-api] Event ingestion, metadata normalization, and retention policy](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)
+- [b7b84c10 [feedback-api] High-scale search, clustering, and reconciliation workflows](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml)
+- [4f86d3d2 [feedback-api] Privileged feedback governance and abuse-boundary enforcement](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml)
+- [c2d6a14a [feedback-api] Retention, redaction, and privacy incident controls](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml)
+- [3a1ec9f8 [feedback-api] Search latency and index growth SLOs](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml)
 
 ## Validation
 

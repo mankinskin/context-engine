@@ -1,0 +1,57 @@
+{
+  "id": "fde982dd-6663-4230-b299-9b5702bf4931",
+  "entity_id": "50307cce-5a93-4668-9481-a3af5985ea1b",
+  "source_store_root": "C:/Users/linus/git/graph_app/context-engine/.ticket",
+  "target_store_root": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket",
+  "source_entity_path": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b",
+  "destination_entity_path": "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b",
+  "phase": "Validated",
+  "created_at": "2026-07-05T10:36:55.237530500Z",
+  "updated_at": "2026-07-05T10:36:55.492502300Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 1 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/entity-50307cce-5a93-4668-9481-a3af5985ea1b.lock",
+    "C:/Users/linus/git/graph_app/context-engine/.ticket/move-locks/store.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/entity-50307cce-5a93-4668-9481-a3af5985ea1b.lock",
+    "C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md",
+      "repo_root": "C:/Users/linus/git/graph_app/context-engine",
+      "repo_relative_path": ".ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/description.md",
+      "replacements": [
+        {
+          "before": ".ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b",
+          "after": "memory-api/.ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 0,
+    "migrate_board_history_ms": 13,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 108,
+    "scan_target_ms": 106,
+    "validate_move_ms": 22
+  },
+  "failure": null,
+  "next_recovery_step": null
+}
