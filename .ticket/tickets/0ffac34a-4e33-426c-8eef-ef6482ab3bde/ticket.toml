@@ -1,7 +1,7 @@
 id = "0ffac34a-4e33-426c-8eef-ef6482ab3bde"
 created_at = "2026-05-12T10:51:38.445524900+00:00"
 title = "Implement Docker harness for documented install and deinstall flows"
-state = "in-implementation"
+state = "ready"
 acceptance_criteria = "Implement a reproducible Docker harness plus synchronized .spec contract entries and README generation rules for documented install and deinstall flows."
 component = "documentation-tooling"
 depends_on = ["5d320d7e-f974-4d52-9e25-8265bf7a42cf"]
