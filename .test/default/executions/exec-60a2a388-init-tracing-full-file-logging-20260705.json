@@ -1,0 +1,22 @@
+{
+  "id": "exec-60a2a388-init-tracing-full-file-logging-20260705",
+  "validation_spec_id": "vt-log-1b-init-tracing-full-file-logging",
+  "outcome": "passed",
+  "executed_at": "2026-07-05T10:56:20.424763500Z",
+  "duration_ms": 28400,
+  "detail": "Validated init_tracing_full wiring for doc-viewer and spec-viewer with LOG_LEVEL/LOG_DIR-aware config and default target/logs paths. Evidence: cargo check --manifest-path tools/viewer/doc-viewer/Cargo.toml; cargo check --manifest-path memory-viewers/spec-viewer/Cargo.toml; launched both binaries on custom ports and observed runtime log lines 'File logging enabled to .../target/logs/doc-viewer.log' and '.../target/logs/spec-viewer.log'; confirmed files target/logs/doc-viewer.log.2026-07-05 and target/logs/spec-viewer.log.2026-07-05 exist.",
+  "links": {
+    "ticket_ids": [
+      "60a2a388-c8b6-4e25-a80a-0ba686f11bf9",
+      "73b2cd22-942b-4205-86e5-333df2373211"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/viewer/doc-viewer/src/main.rs",
+    "test_id": "startup-file-logging-smoke",
+    "domain": "viewer",
+    "operation": "init-tracing-full-file-logging",
+    "transport": "cli",
+    "run_id": "ticket-60a2a388-implementation-20260705"
+  }
+}

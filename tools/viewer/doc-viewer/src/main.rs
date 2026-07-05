@@ -61,13 +61,28 @@ use mcp::DocsServer;
 
 /// Initialize tracing with optional file output
 fn init_tracing() {
-    // Use WORKSPACE_ROOT or fall back to compile-time path
-    let log_dir = std::env::var("WORKSPACE_ROOT")
-        .map(|root| PathBuf::from(root).join("tools/doc-viewer/logs"))
+    let workspace_root = std::env::var("WORKSPACE_ROOT")
+        .map(PathBuf::from)
         .unwrap_or_else(|_| {
-            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logs")
+            let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            manifest_dir
+                .parent() // viewer/
+                .and_then(|p| p.parent()) // tools/
+                .and_then(|p| p.parent()) // context-engine/
+                .map(|p| p.to_path_buf())
+                .unwrap_or(manifest_dir)
         });
-    let config = TracingConfig::from_env("doc-viewer", log_dir);
+
+    let default_log_dir = workspace_root.join("target").join("logs");
+    let log_dir = std::env::var("LOG_DIR")
+        .map(PathBuf::from)
+        .unwrap_or(default_log_dir);
+    let level = std::env::var("LOG_LEVEL")
+        .unwrap_or_else(|_| "info".to_string());
+
+    let config = TracingConfig::default()
+        .with_level(level)
+        .with_file_logging(log_dir, "doc-viewer");
     init_tracing_full(&config);
 }
 
