@@ -66,7 +66,7 @@ Phase 3: instrument domains and transports
 
 - [2e41c96d](.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/ticket.toml) `[memory-api] Create domain instrumentation and journaling coverage map`
 - [3041d7e3](.ticket/tickets/3041d7e3-2b34-4597-b354-e0aa6ffb0459/ticket.toml) `[transports] Correlate CLI/MCP/HTTP spans with log sessions and journals`
-- [cc78d33d](.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml) `[memory-matrix] Capture subprocess failure bundles for transport-cell diagnostics`
+- [cc78d33d](memory-api/.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml) `[memory-matrix] Capture subprocess failure bundles for transport-cell diagnostics`
 
 Phase 4: indexing, benchmark evidence, and validation
 
@@ -82,7 +82,7 @@ Phase 4: indexing, benchmark evidence, and validation
 
 Matrix subprocess failure triage gap status:
 
-- Covered by [cc78d33d](.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml), which adds explicit failure-bundle capture (process invocation context, output tails, error class, and linkage ids) for fast MCP/HTTP transport debugging.
+- Covered by [cc78d33d](memory-api/.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml), which adds explicit failure-bundle capture (process invocation context, output tails, error class, and linkage ids) for fast MCP/HTTP transport debugging.
 - Improvement pass (2026-07-04): expanded deterministic confidence with subprocess spawn-failure coverage, parse/decode guard tests, sentinel-id mismatch checks, env-selector whitelist redaction assertions, bounded tail checks, and persisted execution/run-id correlation assertions.
 
 Blocker coordination snapshot for this track:

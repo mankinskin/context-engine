@@ -1,0 +1,22 @@
+{
+  "id": "exec-8ad77570-log-session-linkage-20260705",
+  "validation_spec_id": "vt-memory-matrix-subprocess-log-session-linkage",
+  "outcome": "passed",
+  "executed_at": "2026-07-05T10:25:56.574623200Z",
+  "duration_ms": 4860,
+  "detail": "Validated memory-matrix subprocess failure bundles now carry non-empty linkage.log_session_ids when runtime sessions are available. Commands: cargo test -p memory-matrix subprocess_probe_persists_full_failure_bundle_fields -- --nocapture (pass), cargo test -p memory-matrix subprocess_spawn_probe_reports_spawn_failure_bundle -- --nocapture (pass), cargo test -p memory-matrix mcp::tests:: -- --nocapture (pass).",
+  "links": {
+    "ticket_ids": [
+      "8ad77570-6dbe-4647-9d58-bf324a82b4fc",
+      "cc78d33d-1744-4945-bb77-f0fd1142568e"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/memory-matrix/tests/matrix.rs",
+    "test_id": "subprocess_probe_persists_full_failure_bundle_fields",
+    "domain": "memory-matrix",
+    "operation": "subprocess-failure-bundle-linkage",
+    "transport": "in-process",
+    "run_id": "ticket-8ad77570-improvement-pass-20260705"
+  }
+}

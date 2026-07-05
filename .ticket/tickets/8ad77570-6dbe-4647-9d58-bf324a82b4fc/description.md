@@ -13,7 +13,7 @@ Close the remaining observability gap where subprocess failure bundles still emi
 
 ## Dependencies and Coordination
 
-- Depends on root observability tracker child [cc78d33d](../.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml) for baseline failure-bundle shape.
+- Depends on root observability tracker child [cc78d33d](../memory-api/.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml) for baseline failure-bundle shape.
 - Cross-workspace coordination blockers:
   - `memory-viewers/.ticket/tickets/60a2a388-c8b6-4e25-a80a-0ba686f11bf9/ticket.toml` ([LOG-1b] init_tracing_full file-logging wiring)
   - `memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml` ([LOG-2a] tracing field-name normalization)
