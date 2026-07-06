@@ -30,11 +30,11 @@ Batch-2 scope = static_complexity findings under the ROOT `tools/` directory (ex
 ## Baseline (2026-07-06, copilot-opus48)
 Baseline artifact: target/tmp/batch2_tools_audit_before.json
 Root-tools static_complexity findings: 29 (all cyclomatic_complexity). Full row set:
-- tools/cli/peek-cli/src/main.rs :: validate_inspection (13)
+- tools/cli/peek-cli/src/main.rs :: validate_inspection (13)  [DONE chunk 5]
 - tools/dungeon-crawler/src/enemy.rs :: random_enemy (25)
 - tools/dungeon-crawler/src/game.rs :: handle_explore_cmd (38), handle_combat_cmd (32), look (13), do_talk (17), do_buy (16)
 - tools/dungeon-crawler/src/world.rs :: ensure_generated (14), draw_map (17)
-- tools/peek-api/src/lib.rs :: skeletonize_rust (35)
+- tools/peek-api/src/lib.rs :: skeletonize_rust (35)  [DONE chunk 5]
 - tools/viewer/doc-viewer/src/http.rs :: scan_crate_source_files (19), query_docs (16)  [DONE chunk 4]
 - tools/viewer/doc-viewer/src/main.rs :: main (19)  [DONE chunk 4]
 - tools/viewer/doc-viewer/src/markdown_ast.rs :: node_to_json (35), collect_text (23)  [DONE chunk 1]
@@ -89,14 +89,23 @@ Validation: `cargo test -p doc-viewer` → 37 passed, 0 failed.
 Audit delta: root-tools static_complexity 18 → 12 (all 6 remaining doc-viewer findings resolved, 0 new after follow-up trims of main→13→OK and validate_agent_docs→15→OK). Overall static_complexity 70 → 53; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk4_after.json
 doc-viewer crate is now fully clear of static_complexity findings.
 
+## Checkpoint commit chunk 4 (2026-07-06, user) — DONE
+Chunk-4 source refactors committed as a997348 (refactor(doc-viewer): extract chunk-4 helpers to clear static complexity; 4 files, +426/-379). Ticket evidence committed separately as 21c0981 (chore(tickets): record d1ef4001 chunk-4 completion and chunk-5 plan). Repo + context-stack submodule verified clean; ticket remains in-implementation.
+
+## Chunk 5 — peek (2026-07-06, copilot-opus48) — DONE
+Files changed: tools/peek-api/src/lib.rs, tools/cli/peek-cli/src/main.rs
+Changes (all behavior-preserving helper extractions):
+- peek-api skeletonize_rust (35): extracted the large structural-prefix boolean chain into a free fn is_structural_rust_line(trimmed) backed by a PREFIXES slice + iter().any(); loop body unchanged.
+- peek-cli validate_inspection (13): extracted the multi-flag `is_some()` OR chain into free fn has_bounded_inspection_flags(args).
+Validation: `cargo test -p peek-api -p peek-cli` → 6 passed (3 peek-api unit + 3 repo_map_contracts), 0 failed.
+Audit delta: root-tools static_complexity 12 → 10 (both peek findings resolved, 0 new). Overall static_complexity 53 → 51; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk5_after.json
+
 # Next Unresolved Action
-Continue with chunk 5. Remaining root-tools count: 12. Remaining clusters (none in doc-viewer):
+Continue with chunk 6. Remaining root-tools count: 10. Remaining clusters (none in doc-viewer or peek):
 - tools/viewer/log-viewer/frontend/dioxus/src/app.rs (1): App (14)
 - tools/viewer/log-viewer/src/handlers.rs (1): search_log (14)
-- tools/cli/peek-cli/src/main.rs (1): validate_inspection (13)
-- tools/peek-api/src/lib.rs (1): skeletonize_rust (35)
 - tools/dungeon-crawler (8): enemy.rs random_enemy (25); game.rs handle_explore_cmd (38), handle_combat_cmd (32), look (13), do_talk (17), do_buy (16); world.rs ensure_generated (14), draw_map (17)
-Suggested chunk 5: log-viewer (app.rs + handlers.rs = 2) or peek (peek-cli + peek-api = 2) as a cohesive small chunk; dungeon-crawler (8) as its own larger chunk. Checkpoint commit for chunk 4 recommended before chunk 5.
+Suggested chunk 6: log-viewer (app.rs + handlers.rs = 2) as a cohesive small chunk; dungeon-crawler (8) as its own larger chunk (may need splitting into 2 sub-chunks given game.rs volume). Checkpoint commit for chunk 5 recommended before chunk 6.
 
 # Handoff Notes
-Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 12 (17 resolved across chunks 1-4); doc-viewer crate fully green for tests (37 passed) and fully clear of static_complexity findings. Chunk-4 source changes (http.rs, main.rs, mcp/mod.rs, schema.rs) are uncommitted pending checkpoint.
+Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 10 (19 resolved across chunks 1-5); doc-viewer + peek crates fully clear of static_complexity findings. Chunk-5 source changes (tools/peek-api/src/lib.rs, tools/cli/peek-cli/src/main.rs) are uncommitted pending checkpoint.
