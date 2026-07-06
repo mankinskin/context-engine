@@ -50,6 +50,41 @@ pub fn to_unix_path(path: &std::path::Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }
 
+fn is_invalid_filename(name: &str) -> bool {
+    name.contains("..") || name.contains('/') || name.contains('\\')
+}
+
+fn entry_matches_query(
+    entry: &LogEntry,
+    regex: &regex::Regex,
+    level_filter: Option<&str>,
+) -> bool {
+    if let Some(filter) = level_filter {
+        if !entry.level.eq_ignore_ascii_case(filter) {
+            return false;
+        }
+    }
+
+    regex.is_match(&entry.message)
+        || regex.is_match(&entry.raw)
+        || regex.is_match(&entry.event_type)
+        || regex.is_match(&entry.level)
+        || entry
+            .span_name
+            .as_ref()
+            .map(|s| regex.is_match(s))
+            .unwrap_or(false)
+        || entry
+            .file
+            .as_ref()
+            .map(|f| regex.is_match(f))
+            .unwrap_or(false)
+        || entry
+            .fields
+            .iter()
+            .any(|(k, v)| regex.is_match(k) || regex.is_match(&v.to_string()))
+}
+
 /// Get session configuration
 pub async fn get_session(
     State(state): State<AppState>,
@@ -212,7 +247,7 @@ pub async fn get_log(
     debug!(file = %name, "Getting log file content");
 
     // Validate filename (prevent path traversal)
-    if name.contains("..") || name.contains('/') || name.contains('\\') {
+    if is_invalid_filename(&name) {
         warn!(file = %name, "Invalid filename - path traversal attempt");
         return Err((
             StatusCode::BAD_REQUEST,
@@ -264,7 +299,7 @@ pub async fn search_log(
     debug!(file = %name, query = %query.q, level = ?query.level, limit = ?query.limit, "Searching log file");
 
     // Validate filename
-    if name.contains("..") || name.contains('/') || name.contains('\\') {
+    if is_invalid_filename(&name) {
         warn!(file = %name, "Invalid filename - path traversal attempt");
         return Err((
             StatusCode::BAD_REQUEST,
@@ -305,30 +340,7 @@ pub async fn search_log(
     let mut matches: Vec<LogEntry> = entries
         .into_iter()
         .filter(|entry| {
-            // Check level filter
-            if let Some(ref level_filter) = query.level {
-                if !entry.level.eq_ignore_ascii_case(level_filter) {
-                    return false;
-                }
-            }
-            // Check query match against multiple fields
-            regex.is_match(&entry.message)
-                || regex.is_match(&entry.raw)
-                || regex.is_match(&entry.event_type)
-                || regex.is_match(&entry.level)
-                || entry
-                    .span_name
-                    .as_ref()
-                    .map(|s| regex.is_match(s))
-                    .unwrap_or(false)
-                || entry
-                    .file
-                    .as_ref()
-                    .map(|f| regex.is_match(f))
-                    .unwrap_or(false)
-                || entry.fields.iter().any(|(k, v)| {
-                    regex.is_match(k) || regex.is_match(&v.to_string())
-                })
+            entry_matches_query(entry, &regex, query.level.as_deref())
         })
         .collect();
 
@@ -364,7 +376,7 @@ pub async fn query_log(
     debug!(file = %name, jq = %params.jq, limit = ?params.limit, "JQ query on log file");
 
     // Validate filename
-    if name.contains("..") || name.contains('/') || name.contains('\\') {
+    if is_invalid_filename(&name) {
         warn!(file = %name, "Invalid filename - path traversal attempt");
         return Err((
             StatusCode::BAD_REQUEST,

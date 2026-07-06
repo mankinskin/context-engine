@@ -267,8 +267,164 @@ fn file_matches_category(
     }
 }
 
+fn render_source_panel(current_state: Option<FileViewState>) -> Element {
+    rsx! {
+        div {
+            class: "log-source-panel",
+            if let Some(state) = current_state {
+                if state.code_content.is_empty() {
+                    GlassPanel {
+                        title: "Source",
+                        div {
+                            class: "empty-state",
+                            "Select a log entry with source info to open code context."
+                        }
+                    }
+                } else {
+                    FileContentViewer {
+                        content: state.code_content,
+                        filename: state.code_file.unwrap_or_else(|| "source.rs".to_string()),
+                        language: state.code_language,
+                        highlighted_line: state.selected_line,
+                    }
+                }
+            } else {
+                GlassPanel {
+                    title: "Source",
+                    div {
+                        class: "empty-state",
+                        "No file selected."
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn restore_existing_file_state(
+    file_states: Signal<HashMap<String, FileViewState>>,
+    mut current_file: Signal<Option<String>>,
+    mut active_tab: Signal<String>,
+    mut search_input: Signal<String>,
+    mut jq_input: Signal<String>,
+    mut status_message: Signal<String>,
+    name: &str,
+    route_tab: Option<String>,
+) -> bool {
+    if let Some(existing) = file_states.read().get(name).cloned() {
+        let tab = route_tab.unwrap_or(existing.active_tab);
+        current_file.set(Some(name.to_string()));
+        active_tab.set(tab.clone());
+        search_input.set(existing.search_query);
+        jq_input.set(existing.jq_filter);
+        status_message.set(format!(
+            "Loaded {name} ({} entries)",
+            existing.visible_entries.len()
+        ));
+        update_hash(name, &tab);
+        return true;
+    }
+    false
+}
+
+fn spawn_load_file_task(
+    backend: HttpLogViewerBackend,
+    name: String,
+    route_tab: Option<String>,
+    mut file_states: Signal<HashMap<String, FileViewState>>,
+    mut current_file: Signal<Option<String>>,
+    mut active_tab: Signal<String>,
+    mut search_input: Signal<String>,
+    mut jq_input: Signal<String>,
+    mut is_loading: Signal<bool>,
+    mut status_message: Signal<String>,
+    mut error_message: Signal<Option<String>>,
+) {
+    spawn(async move {
+        is_loading.set(true);
+        error_message.set(None);
+        status_message.set(format!("Loading {name}..."));
+
+        let result = backend.get_log(&name).await;
+        match result {
+            Ok(data) => {
+                let signatures =
+                    backend.get_signatures(&name).await.unwrap_or_default();
+                let first_source =
+                    data.entries.iter().find(|entry| entry.file.is_some());
+
+                let mut state = FileViewState::with_entries(data.entries.clone());
+                state.signatures = signatures;
+                state.active_tab =
+                    route_tab.unwrap_or_else(|| "logs".to_string());
+
+                if let Some(entry) = first_source {
+                    if let Some(path) = &entry.file {
+                        if let Ok(src) = backend.get_source_file(path).await {
+                            state.code_file = Some(path.clone());
+                            state.code_content = src.content;
+                            state.code_language = Some(src.language);
+                            state.selected_line =
+                                entry.source_line.map(|v| v as usize);
+                        }
+                    }
+                }
+
+                file_states.with_mut(|states| {
+                    states.insert(name.clone(), state.clone());
+                });
+                current_file.set(Some(name.clone()));
+                active_tab.set(state.active_tab.clone());
+                search_input.set(state.search_query.clone());
+                jq_input.set(state.jq_filter.clone());
+                update_hash(&name, &state.active_tab);
+                status_message.set(format!(
+                    "Loaded {name} ({} entries)",
+                    state.visible_entries.len()
+                ));
+            },
+            Err(err) => {
+                error_message.set(Some(err.to_string()));
+                status_message.set("Error loading file".to_string());
+            },
+        }
+
+        is_loading.set(false);
+    });
+}
+
+fn spawn_refresh_all_task(
+    backend: HttpLogViewerBackend,
+    mut log_files: Signal<Vec<LogFileInfo>>,
+    mut is_loading: Signal<bool>,
+    mut error_message: Signal<Option<String>>,
+    mut status_message: Signal<String>,
+) {
+    spawn(async move {
+        is_loading.set(true);
+        error_message.set(None);
+        match backend.list_logs().await {
+            Ok(files) => {
+                let count = files.len();
+                log_files.set(files);
+                status_message.set(format!("Found {count} log files"));
+            },
+            Err(err) => {
+                error_message.set(Some(err.to_string()));
+                status_message.set("Error loading files".to_string());
+            },
+        }
+        is_loading.set(false);
+    });
+}
+
 #[component]
 pub fn App() -> Element {
+    rsx! { AppInner {} }
+}
+
+#[component]
+fn AppInner() -> Element {
     let backend = use_signal(HttpLogViewerBackend::default);
     let mut initialized = use_signal(|| false);
 
@@ -276,7 +432,7 @@ pub fn App() -> Element {
     let mut file_states = use_signal(HashMap::<String, FileViewState>::new);
     let mut active_category = use_signal(|| Option::<String>::None);
 
-    let mut current_file = use_signal(|| Option::<String>::None);
+    let current_file = use_signal(|| Option::<String>::None);
     let mut active_tab = use_signal(|| "logs".to_string());
     let is_loading = use_signal(|| false);
     let mut status_message = use_signal(|| "Ready".to_string());
@@ -295,117 +451,47 @@ pub fn App() -> Element {
         set_gpu_overlay_enabled(*fx_enabled.read());
     });
 
-    let mut load_file = {
+    let load_file = {
         move |name: String, route_tab: Option<String>| {
-            if let Some(existing) = file_states.read().get(&name).cloned() {
-                let tab = route_tab.unwrap_or(existing.active_tab);
-                current_file.set(Some(name.clone()));
-                active_tab.set(tab.clone());
-                search_input.set(existing.search_query);
-                jq_input.set(existing.jq_filter);
-                status_message.set(format!(
-                    "Loaded {name} ({} entries)",
-                    existing.visible_entries.len()
-                ));
-                update_hash(&name, &tab);
+            if restore_existing_file_state(
+                file_states,
+                current_file,
+                active_tab,
+                search_input,
+                jq_input,
+                status_message,
+                &name,
+                route_tab.clone(),
+            ) {
                 return;
             }
-
-            let mut file_states = file_states;
-            let mut current_file = current_file;
-            let mut active_tab = active_tab;
-            let mut search_input = search_input;
-            let mut jq_input = jq_input;
-            let mut is_loading = is_loading;
-            let mut status_message = status_message;
-            let mut error_message = error_message;
             let backend = backend.read().clone();
-
-            spawn(async move {
-                is_loading.set(true);
-                error_message.set(None);
-                status_message.set(format!("Loading {name}..."));
-
-                let result = backend.get_log(&name).await;
-                match result {
-                    Ok(data) => {
-                        let signatures = backend
-                            .get_signatures(&name)
-                            .await
-                            .unwrap_or_default();
-                        let first_source = data
-                            .entries
-                            .iter()
-                            .find(|entry| entry.file.is_some());
-
-                        let mut state =
-                            FileViewState::with_entries(data.entries.clone());
-                        state.signatures = signatures;
-                        state.active_tab =
-                            route_tab.unwrap_or_else(|| "logs".to_string());
-
-                        if let Some(entry) = first_source {
-                            if let Some(path) = &entry.file {
-                                if let Ok(src) =
-                                    backend.get_source_file(path).await
-                                {
-                                    state.code_file = Some(path.clone());
-                                    state.code_content = src.content;
-                                    state.code_language = Some(src.language);
-                                    state.selected_line =
-                                        entry.source_line.map(|v| v as usize);
-                                }
-                            }
-                        }
-
-                        file_states.with_mut(|states| {
-                            states.insert(name.clone(), state.clone());
-                        });
-                        current_file.set(Some(name.clone()));
-                        active_tab.set(state.active_tab.clone());
-                        search_input.set(state.search_query.clone());
-                        jq_input.set(state.jq_filter.clone());
-                        update_hash(&name, &state.active_tab);
-                        status_message.set(format!(
-                            "Loaded {name} ({} entries)",
-                            state.visible_entries.len()
-                        ));
-                    },
-                    Err(err) => {
-                        error_message.set(Some(err.to_string()));
-                        status_message.set("Error loading file".to_string());
-                    },
-                }
-
-                is_loading.set(false);
-            });
+            spawn_load_file_task(
+                backend,
+                name,
+                route_tab,
+                file_states,
+                current_file,
+                active_tab,
+                search_input,
+                jq_input,
+                is_loading,
+                status_message,
+                error_message,
+            );
         }
     };
 
     let refresh_all = {
         move || {
             let backend = backend.read().clone();
-            let mut log_files = log_files;
-            let mut is_loading = is_loading;
-            let mut error_message = error_message;
-            let mut status_message = status_message;
-
-            spawn(async move {
-                is_loading.set(true);
-                error_message.set(None);
-                match backend.list_logs().await {
-                    Ok(files) => {
-                        let count = files.len();
-                        log_files.set(files);
-                        status_message.set(format!("Found {count} log files"));
-                    },
-                    Err(err) => {
-                        error_message.set(Some(err.to_string()));
-                        status_message.set("Error loading files".to_string());
-                    },
-                }
-                is_loading.set(false);
-            });
+            spawn_refresh_all_task(
+                backend,
+                log_files,
+                is_loading,
+                error_message,
+                status_message,
+            );
         }
     };
 
@@ -914,35 +1000,7 @@ pub fn App() -> Element {
                         }
                     }
 
-                    div {
-                        class: "log-source-panel",
-                        if let Some(state) = current_state {
-                            if state.code_content.is_empty() {
-                                GlassPanel {
-                                    title: "Source",
-                                    div {
-                                        class: "empty-state",
-                                        "Select a log entry with source info to open code context."
-                                    }
-                                }
-                            } else {
-                                FileContentViewer {
-                                    content: state.code_content,
-                                    filename: state.code_file.unwrap_or_else(|| "source.rs".to_string()),
-                                    language: state.code_language,
-                                    highlighted_line: state.selected_line,
-                                }
-                            }
-                        } else {
-                            GlassPanel {
-                                title: "Source",
-                                div {
-                                    class: "empty-state",
-                                    "No file selected."
-                                }
-                            }
-                        }
-                    }
+                    {render_source_panel(current_state.clone())}
                 }
 
                 Overlay {
