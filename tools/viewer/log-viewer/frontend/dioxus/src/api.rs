@@ -63,6 +63,9 @@ impl From<serde_json::Error> for ApiError {
 }
 
 #[allow(async_fn_in_trait)]
+// Keep these endpoints in the shared frontend backend contract even when
+// some viewers do not use every operation yet.
+#[allow(dead_code)]
 pub trait LogViewerBackend {
     async fn list_logs(&self) -> ApiResult<Vec<LogFileInfo>>;
     async fn get_log(
@@ -140,6 +143,8 @@ impl HttpLogViewerBackend {
         response.json().await.map_err(ApiError::Network)
     }
 
+    // Retained for upcoming JSON write flows (session/config updates).
+    #[allow(dead_code)]
     async fn send_request_json<T>(
         &self,
         request: Request,
@@ -161,6 +166,8 @@ impl HttpLogViewerBackend {
         request
     }
 
+    // Retained for upcoming JSON write flows (session/config updates).
+    #[allow(dead_code)]
     fn attach_headers(
         mut request: RequestBuilder,
         headers: Vec<(String, String)>,
@@ -171,6 +178,8 @@ impl HttpLogViewerBackend {
         request
     }
 
+    // Retained for upcoming JSON write flows (session/config updates).
+    #[allow(dead_code)]
     async fn post_json<B, T>(
         &self,
         path: &str,

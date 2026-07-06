@@ -213,6 +213,8 @@ fn parse_route(hash: &str) -> Option<(String, String)> {
     Some((file, "logs".to_string()))
 }
 
+// This helper is only invoked from wasm hash updates.
+#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 fn build_route(
     file: &str,
     tab: &str,

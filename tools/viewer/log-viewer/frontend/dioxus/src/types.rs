@@ -69,6 +69,7 @@ pub struct SourceFileResponse {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SourceSnippet {
     pub path: String,
     pub content: String,
@@ -81,6 +82,7 @@ pub struct SourceSnippet {
 pub type Signatures = HashMap<String, serde_json::Value>;
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SessionConfig {
     pub session_id: String,
     pub verbose: bool,
@@ -88,12 +90,14 @@ pub struct SessionConfig {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SessionConfigUpdate {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verbose: Option<bool>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SpanSummary {
     pub name: String,
     pub count: usize,
@@ -101,6 +105,7 @@ pub struct SpanSummary {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct LogAnalysis {
     pub total_entries: usize,
     #[serde(default)]
