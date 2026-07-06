@@ -24,3 +24,38 @@ Resolve the current ticket_graph batch for viewer-api .ticket store and reduce 5
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.
+
+# Execution Log (2026-07-06)
+
+## Deterministic Baseline Reconciliation
+- `rtk ./target/debug/ticket.exe scan --workspace viewer-api --force --toon`
+- `rtk ./target/debug/ticket.exe health --workspace viewer-api --all --toon`
+- `rtk cargo run -p audit-cli --bin audit -- --json summary --by category viewer-api`
+
+Baseline observed for this slice is `ticket_graph=53` (drift from title snapshot `50`).
+
+Initial split:
+- orphan: 18
+- convergence: 35
+
+## Micro-Chunk 1 (orphan set, 10 tickets)
+- Created tracker in viewer-api store:
+	- `4d9df9df-24c3-4378-bb06-ed86f0b3de6a`
+	- title: `[audit-roadmap][ticket_graph][batch-3][chunk-1] viewer-api orphan micro-chunk (10)`
+- Linked 10 orphan tickets with `depends_on` edges from tracker to child tickets.
+
+Commands:
+- `rtk ./target/debug/ticket.exe create --workspace viewer-api --title "[audit-roadmap][ticket_graph][batch-3][chunk-1] viewer-api orphan micro-chunk (10)" --type tracker-improvement --json`
+- `rtk ./target/debug/ticket.exe link --workspace viewer-api --from <chunk-1-tracker> --to <child-id> --kind depends_on --reason "batch-3 chunk-1 orphan cleanup" --json`
+
+## Post-Chunk 1 Delta
+After reconciliation and re-audit:
+- viewer-api `ticket_graph`: `53 -> 43` (delta `-10`)
+- root `ticket_graph`: `70` (post-chunk checkpoint)
+
+Post-chunk split:
+- orphan: 8
+- convergence: 35
+
+Immediate next action:
+- Run orphan micro-chunk 2 for remaining 8 orphan IDs, then handle convergence residuals in deterministic slices.
