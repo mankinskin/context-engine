@@ -40,8 +40,8 @@ Initial split:
 
 ## Micro-Chunk 1 (orphan set, 10 tickets)
 - Created tracker in viewer-api store:
-	- `4d9df9df-24c3-4378-bb06-ed86f0b3de6a`
-	- title: `[audit-roadmap][ticket_graph][batch-3][chunk-1] viewer-api orphan micro-chunk (10)`
+  - `4d9df9df-24c3-4378-bb06-ed86f0b3de6a`
+  - title: `[audit-roadmap][ticket_graph][batch-3][chunk-1] viewer-api orphan micro-chunk (10)`
 - Linked 10 orphan tickets with `depends_on` edges from tracker to child tickets.
 
 Commands:
@@ -57,5 +57,81 @@ Post-chunk split:
 - orphan: 8
 - convergence: 35
 
-Immediate next action:
-- Run orphan micro-chunk 2 for remaining 8 orphan IDs, then handle convergence residuals in deterministic slices.
+## Micro-Chunk 2 (remaining orphan set, 8 tickets)
+- Canonical chunk-2 tracker created:
+  - `a4b554a0-d038-4606-9cc0-076f7d7ccd6b`
+  - title: `[audit-roadmap][ticket_graph][batch-3][chunk-2] viewer-api orphan micro-chunk (8)`
+- Linked remaining 8 orphan ticket IDs under the canonical tracker with `depends_on` edges.
+- A duplicate chunk-2 tracker (`93a81f7a-d334-481b-bbd9-a8e5f3b1e9a2`) was created during an earlier interrupted shell run; reconciled by linking duplicate -> canonical and chaining chunk-1 -> canonical chunk-2 for explicit topology continuity.
+
+Commands:
+- `rtk ./target/debug/ticket.exe create --workspace viewer-api --title "[audit-roadmap][ticket_graph][batch-3][chunk-2] viewer-api orphan micro-chunk (8)" --type tracker-improvement --json`
+- `rtk ./target/debug/ticket.exe link --workspace viewer-api --from a4b554a0-d038-4606-9cc0-076f7d7ccd6b --to <child-id> --kind depends_on --reason "batch-3 chunk-2 orphan cleanup" --json`
+- `rtk ./target/debug/ticket.exe link --workspace viewer-api --from 93a81f7a-d334-481b-bbd9-a8e5f3b1e9a2 --to a4b554a0-d038-4606-9cc0-076f7d7ccd6b --kind depends_on --reason "superseded duplicate chunk-2 tracker now points to canonical chunk-2 ticket" --json`
+- `rtk ./target/debug/ticket.exe link --workspace viewer-api --from 4d9df9df-24c3-4378-bb06-ed86f0b3de6a --to a4b554a0-d038-4606-9cc0-076f7d7ccd6b --kind depends_on --reason "batch-3 orphan chunk sequencing: chunk-1 tracker depends on chunk-2 tracker" --json`
+
+## Post-Chunk 2 Delta (final)
+After reconciliation and re-audit:
+- viewer-api `ticket_graph`: `43 -> 35` (delta `-8`)
+- viewer-api split: orphan `0`, convergence `35`
+- root `ticket_graph`: `70` (unchanged at this checkpoint)
+
+## Immediate Next Action
+- Start convergence remediation slices for the remaining 35 viewer-api dependency-convergence findings.
+- Keep deterministic loop per slice: `scan --force` -> `health --all` -> `audit run viewer-api` -> record delta.
+
+## Convergence Slice 1 (state alignment on dominant dependency)
+Pre-slice baseline (fresh):
+- viewer-api split: orphan `0`, convergence `35`
+- all 35 convergence rows shared dependency ticket `35a6d14b-25b0-4b24-b59f-d0d733cacd20`
+
+State diagnostics before fix:
+- dependency `35a6d14b...` state: `in-implementation`
+- dependent states in convergence set: `ready=20`, `new=15`
+
+Action:
+- Rolled back dependency ticket one step with undo:
+  - `rtk ./target/debug/ticket.exe update --workspace viewer-api 35a6d14b-25b0-4b24-b59f-d0d733cacd20 --undo --toon`
+- Resulting dependency state: `ready`
+
+Deterministic validation loop:
+- `rtk ./target/debug/ticket.exe scan --workspace viewer-api --force --toon`
+- `rtk ./target/debug/ticket.exe health --workspace viewer-api --all --toon`
+- `rtk cargo run -p audit-cli --bin audit -- --json run viewer-api`
+- `rtk ./target/debug/ticket.exe scan --workspace . --force --toon`
+- `rtk cargo run -p audit-cli --bin audit -- --json run .`
+
+Post-slice-1 delta:
+- viewer-api `ticket_graph`: `35 -> 15` (delta `-20`)
+- viewer-api split after slice-1: orphan `0`, convergence `15`
+- root checkpoint after slice-1: `ticket_graph total=45`, `orphan=28`, `convergence=17`
+
+Next action:
+- Convergence slice 2 should target the remaining `15` rows (same dependency chain) and record before/after deltas with the same deterministic loop.
+
+## Convergence Slice 2 (final state alignment on same dependency chain)
+Pre-slice baseline (fresh):
+- viewer-api split: orphan `0`, convergence `15`
+- all 15 convergence rows still depended on `35a6d14b-25b0-4b24-b59f-d0d733cacd20`
+
+Correction note:
+- An initial `--undo` attempt moved `35a6d14b...` back to `in-implementation` and temporarily increased convergence.
+- Resolved by using history + revert to a known `new` revision:
+  - `rtk ./target/debug/ticket.exe history --workspace viewer-api 35a6d14b-25b0-4b24-b59f-d0d733cacd20 --json`
+  - `rtk ./target/debug/ticket.exe revert --workspace viewer-api 35a6d14b-25b0-4b24-b59f-d0d733cacd20 --to 7 --json`
+
+Deterministic validation loop:
+- `rtk ./target/debug/ticket.exe scan --workspace viewer-api --force --toon`
+- `rtk ./target/debug/ticket.exe health --workspace viewer-api --all --toon`
+- `rtk cargo run -p audit-cli --bin audit -- --json run viewer-api`
+- `rtk ./target/debug/ticket.exe scan --workspace . --force --toon`
+- `rtk cargo run -p audit-cli --bin audit -- --json run .`
+
+Post-slice-2 delta:
+- viewer-api `ticket_graph`: `15 -> 0` (delta `-15`)
+- viewer-api split after slice-2: orphan `0`, convergence `0`
+- root checkpoint after slice-2: `ticket_graph total=29`, `orphan=28`, `convergence=1`
+
+Batch-3 status signal:
+- viewer-api batch-3 scope is fully remediated (`ticket_graph=0` for viewer-api store).
+- Remaining root `ticket_graph` findings are outside this batch scope.
