@@ -29,3 +29,6 @@ Continue inside `context-read` / `context-trace`:
 
 ### Current acceptance note
 The original public integration reproduction is now green, but the ticket should remain open until the underlying repeated-overlap engine failures are resolved and the related ignored tests can be re-enabled.
+
+### Scope note for batch-2 (`f2d8f807`)
+This ticket is an acknowledged blocker dependency and is intentionally out of scope for the current public execution-surface pass.

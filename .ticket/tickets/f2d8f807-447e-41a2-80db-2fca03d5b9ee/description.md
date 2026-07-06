@@ -34,17 +34,23 @@ Replaced the initial truncated workspace failure with concrete, executable block
   → **all pass**.
 
 ## Current blocking state after rerunning `cargo test --tests --workspace`
-Workspace test execution is now blocked on two **context-cli integration** failures that map to already-documented context-stack engine work:
+The public command/API surface is now reviewable and green for this pass.
 
-1. `integration::dedup_tests::dedup_atoms_not_duplicated`
-- Panic site: `context-trace/src/graph/vertex/data/children.rs:80`
-- Symptom: `Pattern vertex has no children ...`
-- Diagnosis: follows the documented **RC-1** `insert_sequence` outer-loop gap. The public `insert_text` path still delegates to `insert_sequence`, which still delegates straight to `ReadCtx::read_sequence` and does not perform the intended cursor-advancing `insert_next_match` loop for multi-token writes.
+Passing now:
+- `cargo test -p context-api`
+- `cargo test -p context-cli --test cli_integration` (`53 passed / 0 failed / 22 ignored`)
 
-2. `integration::edge_case_tests::edge_repeated_single_char`
-- Panic site: `context-trace/src/graph/vertex/data/core.rs:111`
-- Symptom: pattern width mismatch for repeated-char input `"aaaa"`.
-- Diagnosis: dedicated **RC-3** repeated/overlap bug.
+Remaining failures are isolated to deeper `context-read` engine tests:
+- `tests::linear::repetition_aabbaabb`
+- `tests::ngrams_validation::validate_mixed_pattern`
+- `tests::overlapping::complex_abcabababcaba`
+- `tests::read::read_infix1`
+- `tests::read::read_infix2`
+- `tests::read::read_multiple_overlaps1`
+- `tests::read::read_repeating_known1`
+- `tests::read::sync_read_text2`
+
+These are no longer wrapper/dispatch/public-surface failures. They belong to the `context-read` overlap/decomposition redesign scope.
 
 ## Validation evidence
 Commands run successfully this session:
@@ -58,15 +64,18 @@ Current failing command:
 - `cargo test --tests --workspace`
 
 Current remaining failures from that command:
-- `-p context-cli --test cli_integration integration::dedup_tests::dedup_atoms_not_duplicated`
-- `-p context-cli --test cli_integration integration::edge_case_tests::edge_repeated_single_char`
+- `-p context-read` engine tests listed above
 
 # Linked blockers
 - `978ce8a5` — active RC-1 expansion-loop redesign / insert_sequence outer-loop plan.
 - `f41f08a8` — RC-3 repeated-single-char width-mismatch bug.
 
+# Scope boundary
+- Out of scope for this ticket pass: deeper `context-stack` redesign work in `context-read`/`context-trace`.
+- In scope and complete for this pass: public execution surface fixes (wrapper/command/dispatch/audit output seams) and blocker isolation.
+
 # Acceptance status
 - Concrete test_execution failures captured and reduced to explicit underlying blockers. ✓
 - Fixed local command/tooling failures that masked the real engine issue. ✓
 - Remaining failures now linked to explicit blocker tickets. ✓
-- Batch not ready for `in-review` yet because `cargo test --tests --workspace` still fails on the linked RC-1 / RC-3 context-stack issues. ✗
+- Batch remains in implementation while linked context-read engine blockers are unresolved. ✗
