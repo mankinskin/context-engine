@@ -298,6 +298,39 @@ fn skeletonize(path: &Path, lines: &[String]) -> Result<String, PeekError> {
     }
 }
 
+fn is_structural_rust_line(trimmed: &str) -> bool {
+    const PREFIXES: &[&str] = &[
+        "///",
+        "//!",
+        "#[",
+        "#!",
+        "use ",
+        "pub use ",
+        "mod ",
+        "pub mod ",
+        "pub struct",
+        "struct ",
+        "pub enum",
+        "enum ",
+        "pub type",
+        "type ",
+        "pub trait",
+        "trait ",
+        "pub const",
+        "const ",
+        "pub static",
+        "static ",
+        "impl ",
+        "pub impl",
+        "pub fn",
+        "fn ",
+        "async fn",
+        "pub async fn",
+        "extern ",
+    ];
+    trimmed.is_empty() || PREFIXES.iter().any(|prefix| trimmed.starts_with(prefix))
+}
+
 fn skeletonize_rust(lines: &[String]) -> String {
     let mut depth: i64 = 0;
     let mut collapse_start_depth: Option<i64> = None;
@@ -306,34 +339,7 @@ fn skeletonize_rust(lines: &[String]) -> String {
     for (index, line) in lines.iter().enumerate() {
         let line_no = index + 1;
         let trimmed = line.trim();
-        let is_structural = trimmed.is_empty()
-            || trimmed.starts_with("///")
-            || trimmed.starts_with("//!")
-            || trimmed.starts_with("#[")
-            || trimmed.starts_with("#!")
-            || trimmed.starts_with("use ")
-            || trimmed.starts_with("pub use ")
-            || trimmed.starts_with("mod ")
-            || trimmed.starts_with("pub mod ")
-            || trimmed.starts_with("pub struct")
-            || trimmed.starts_with("struct ")
-            || trimmed.starts_with("pub enum")
-            || trimmed.starts_with("enum ")
-            || trimmed.starts_with("pub type")
-            || trimmed.starts_with("type ")
-            || trimmed.starts_with("pub trait")
-            || trimmed.starts_with("trait ")
-            || trimmed.starts_with("pub const")
-            || trimmed.starts_with("const ")
-            || trimmed.starts_with("pub static")
-            || trimmed.starts_with("static ")
-            || trimmed.starts_with("impl ")
-            || trimmed.starts_with("pub impl")
-            || trimmed.starts_with("pub fn")
-            || trimmed.starts_with("fn ")
-            || trimmed.starts_with("async fn")
-            || trimmed.starts_with("pub async fn")
-            || trimmed.starts_with("extern ");
+        let is_structural = is_structural_rust_line(trimmed);
 
         let open = line.chars().filter(|&ch| ch == '{').count() as i64;
         let close = line.chars().filter(|&ch| ch == '}').count() as i64;

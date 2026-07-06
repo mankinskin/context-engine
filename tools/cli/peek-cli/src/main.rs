@@ -250,16 +250,18 @@ fn validate_repo_map(args: &Args) -> Result<(), PeekError> {
     Ok(())
 }
 
+fn has_bounded_inspection_flags(args: &Args) -> bool {
+    args.start.is_some()
+        || args.end.is_some()
+        || args.window.is_some()
+        || args.head.is_some()
+        || args.tail.is_some()
+        || args.grep.is_some()
+        || args.count
+}
+
 fn validate_inspection(args: &Args) -> Result<(), PeekError> {
-    if args.all
-        && (args.start.is_some()
-            || args.end.is_some()
-            || args.window.is_some()
-            || args.head.is_some()
-            || args.tail.is_some()
-            || args.grep.is_some()
-            || args.count)
-    {
+    if args.all && has_bounded_inspection_flags(args) {
         return Err(PeekError::InvalidRequest(
             "--all cannot be combined with bounded inspection flags".to_string(),
         ));
