@@ -8,8 +8,14 @@ Goal:
 Reduce the paired complexity findings in CLI output helpers while preserving current human-readable formatting.
 
 Validation:
-- rtk cargo check -p context-cli
-- subtree audit refresh for context-stack static_complexity
+- Passed: rtk cargo check -p context-cli
+- Passed: rtk audit --json run . > ../target/tmp/sc1_context_cli_output_after.json
+- Audit result: output.rs static_complexity findings 2 -> 0 in ../target/tmp/sc1_context_cli_output_after.json
+
+Implementation summary:
+- Grouped print_command_result by result family so the top-level dispatcher no longer carries every variant branch directly.
+- Extracted focused graph-diff section helpers so shared/exclusive vertex rendering and summary printing are split into smaller units.
+- Preserved existing CLI output text and ordering.
 
 Parent context:
 Batch 1c9e7b3e reduced from 38 to 17 findings before splitting this residual cluster.
