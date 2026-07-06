@@ -154,66 +154,77 @@ impl CrateDocsManager {
             };
 
             for entry in entries {
-                let entry = match entry {
-                    Ok(e) => e,
-                    Err(e) => {
-                        result.diagnostics.push(format!(
-                            "Failed to read entry in {}: {}",
-                            unix_path(crates_dir),
-                            e
-                        ));
-                        continue;
-                    },
-                };
-                let path = entry.path();
-
-                if !path.is_dir() {
-                    continue;
-                }
-
-                let name = path
-                    .file_name()
-                    .and_then(|n| n.to_str())
-                    .unwrap_or_default()
-                    .to_string();
-
-                // Skip if we already have a crate with this name (first directory wins)
-                if result.crates.iter().any(|c| c.name == name) {
-                    continue;
-                }
-
-                let docs_path = path.join("agents").join("docs");
-                let index_path = docs_path.join("index.yaml");
-
-                if !docs_path.exists() || !index_path.exists() {
-                    continue; // Silently skip directories without docs
-                }
-
-                match parse_crate_index(&index_path) {
-                    Ok(meta) => {
-                        let readme_path = docs_path.join("README.md");
-                        result.crates.push(CrateSummary {
-                            name: meta.name,
-                            version: meta.version,
-                            description: meta.description,
-                            module_count: meta.modules.len(),
-                            has_readme: readme_path.exists(),
-                            crate_path: unix_path(&path),
-                            docs_path: unix_path(&docs_path),
-                        });
-                    },
-                    Err(e) => {
-                        result.diagnostics.push(format!(
-                            "{}: YAML parse error - {}",
-                            name, e
-                        ));
-                    },
-                }
+                self.collect_crate_entry(entry, crates_dir, &mut result);
             }
         }
 
         result.crates.sort_by(|a, b| a.name.cmp(&b.name));
         Ok(result)
+    }
+
+    /// Process a single directory entry while discovering crates, pushing a
+    /// [`CrateSummary`] or a diagnostic message into `result`.
+    fn collect_crate_entry(
+        &self,
+        entry: std::io::Result<fs::DirEntry>,
+        crates_dir: &Path,
+        result: &mut CrateDiscoveryResult,
+    ) {
+        let entry = match entry {
+            Ok(e) => e,
+            Err(e) => {
+                result.diagnostics.push(format!(
+                    "Failed to read entry in {}: {}",
+                    unix_path(crates_dir),
+                    e
+                ));
+                return;
+            },
+        };
+        let path = entry.path();
+
+        if !path.is_dir() {
+            return;
+        }
+
+        let name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or_default()
+            .to_string();
+
+        // Skip if we already have a crate with this name (first directory wins)
+        if result.crates.iter().any(|c| c.name == name) {
+            return;
+        }
+
+        let docs_path = path.join("agents").join("docs");
+        let index_path = docs_path.join("index.yaml");
+
+        if !docs_path.exists() || !index_path.exists() {
+            return; // Silently skip directories without docs
+        }
+
+        match parse_crate_index(&index_path) {
+            Ok(meta) => {
+                let readme_path = docs_path.join("README.md");
+                result.crates.push(CrateSummary {
+                    name: meta.name,
+                    version: meta.version,
+                    description: meta.description,
+                    module_count: meta.modules.len(),
+                    has_readme: readme_path.exists(),
+                    crate_path: unix_path(&path),
+                    docs_path: unix_path(&docs_path),
+                });
+            },
+            Err(e) => {
+                result.diagnostics.push(format!(
+                    "{}: YAML parse error - {}",
+                    name, e
+                ));
+            },
+        }
     }
 
     /// Discover all context-* crates (simplified, no diagnostics)
@@ -577,6 +588,39 @@ impl CrateDocsManager {
         Ok(unix_path(&docs_path))
     }
 
+    /// Apply `set` / `add` / `remove` source-file mutations to an index's
+    /// `source_files` list, recording a human-readable change per mutation.
+    fn apply_source_file_updates(
+        source_files: &mut Vec<String>,
+        set: Option<Vec<String>>,
+        add: Option<Vec<String>>,
+        remove: Option<Vec<String>>,
+        changes: &mut Vec<String>,
+    ) {
+        if let Some(files) = set {
+            *source_files = files;
+            changes.push("Set source_files".to_string());
+        }
+        if let Some(files) = add {
+            for f in files {
+                if !source_files.contains(&f) {
+                    source_files.push(f.clone());
+                    changes.push(format!("Added source file: {}", f));
+                }
+            }
+        }
+        if let Some(files) = remove {
+            for f in &files {
+                if let Some(pos) =
+                    source_files.iter().position(|x| x == f)
+                {
+                    source_files.remove(pos);
+                    changes.push(format!("Removed source file: {}", f));
+                }
+            }
+        }
+    }
+
     /// Update specific fields in a crate or module's index.yaml
     ///
     /// This allows programmatic updates to source_files and other metadata
@@ -647,29 +691,13 @@ impl CrateDocsManager {
                 .map(|f| normalize_path_str(&f))
                 .collect();
 
-            // Handle source_files updates
-            if let Some(files) = source_files {
-                meta.source_files = files;
-                changes.push("Set source_files".to_string());
-            }
-            if let Some(files) = add_source_files {
-                for f in files {
-                    if !meta.source_files.contains(&f) {
-                        meta.source_files.push(f.clone());
-                        changes.push(format!("Added source file: {}", f));
-                    }
-                }
-            }
-            if let Some(files) = remove_source_files {
-                for f in &files {
-                    if let Some(pos) =
-                        meta.source_files.iter().position(|x| x == f)
-                    {
-                        meta.source_files.remove(pos);
-                        changes.push(format!("Removed source file: {}", f));
-                    }
-                }
-            }
+            Self::apply_source_file_updates(
+                &mut meta.source_files,
+                source_files,
+                add_source_files,
+                remove_source_files,
+                &mut changes,
+            );
 
             let yaml = serde_yaml::to_string(&meta).map_err(|e| {
                 ToolError::InvalidInput(format!(
@@ -690,29 +718,13 @@ impl CrateDocsManager {
                 .map(|f| normalize_path_str(&f))
                 .collect();
 
-            // Handle source_files updates
-            if let Some(files) = source_files {
-                meta.source_files = files;
-                changes.push("Set source_files".to_string());
-            }
-            if let Some(files) = add_source_files {
-                for f in files {
-                    if !meta.source_files.contains(&f) {
-                        meta.source_files.push(f.clone());
-                        changes.push(format!("Added source file: {}", f));
-                    }
-                }
-            }
-            if let Some(files) = remove_source_files {
-                for f in &files {
-                    if let Some(pos) =
-                        meta.source_files.iter().position(|x| x == f)
-                    {
-                        meta.source_files.remove(pos);
-                        changes.push(format!("Removed source file: {}", f));
-                    }
-                }
-            }
+            Self::apply_source_file_updates(
+                &mut meta.source_files,
+                source_files,
+                add_source_files,
+                remove_source_files,
+                &mut changes,
+            );
 
             let yaml = serde_yaml::to_string(&meta).map_err(|e| {
                 ToolError::InvalidInput(format!(
@@ -755,100 +767,119 @@ impl CrateDocsManager {
                 }
             }
 
-            let docs_path = PathBuf::from(&crate_summary.docs_path);
+            self.search_within_crate(
+                &crate_summary,
+                &regex,
+                search_types,
+                search_content,
+                &mut results,
+            );
+        }
 
-            // Search crate-level
-            if let Ok(meta) = parse_crate_index(&docs_path.join("index.yaml")) {
-                // Search description
-                if regex_matches(&meta.description, &regex) {
-                    results.push(CrateSearchResult {
-                        crate_name: crate_summary.name.clone(),
-                        module_path: String::new(),
-                        match_type: "crate".to_string(),
-                        name: meta.name.clone(),
-                        description: Some(meta.description.clone()),
-                        context: None,
-                    });
-                }
+        Ok(results)
+    }
 
-                // Search exported items
-                if search_types {
-                    if let Some(exported) = &meta.exported_items {
-                        results.extend(self.search_type_entries(
-                            &exported.types,
-                            &regex,
-                            &crate_summary.name,
-                            "",
-                            "type",
-                        ));
-                        results.extend(self.search_type_entries(
-                            &exported.traits,
-                            &regex,
-                            &crate_summary.name,
-                            "",
-                            "trait",
-                        ));
-                        results.extend(self.search_type_entries(
-                            &exported.macros,
-                            &regex,
-                            &crate_summary.name,
-                            "",
-                            "macro",
-                        ));
-                    }
-                }
+    /// Search a single crate's index, exported items, modules, and README,
+    /// appending any matches to `results`.
+    fn search_within_crate(
+        &self,
+        crate_summary: &CrateSummary,
+        regex: &Option<Regex>,
+        search_types: bool,
+        search_content: bool,
+        results: &mut Vec<CrateSearchResult>,
+    ) {
+        let docs_path = PathBuf::from(&crate_summary.docs_path);
 
-                // Search modules recursively
-                for module_ref in &meta.modules {
-                    let searchable = format!(
-                        "{} {}",
-                        module_ref.name, module_ref.description
-                    );
-                    if regex_matches(&searchable, &regex) {
-                        results.push(CrateSearchResult {
-                            crate_name: crate_summary.name.clone(),
-                            module_path: module_ref.path.clone(),
-                            match_type: "module".to_string(),
-                            name: module_ref.name.clone(),
-                            description: Some(module_ref.description.clone()),
-                            context: None,
-                        });
-                    }
+        // Search crate-level
+        if let Ok(meta) = parse_crate_index(&docs_path.join("index.yaml")) {
+            // Search description
+            if regex_matches(&meta.description, regex) {
+                results.push(CrateSearchResult {
+                    crate_name: crate_summary.name.clone(),
+                    module_path: String::new(),
+                    match_type: "crate".to_string(),
+                    name: meta.name.clone(),
+                    description: Some(meta.description.clone()),
+                    context: None,
+                });
+            }
 
-                    // Search within module
-                    let module_path = docs_path.join(&module_ref.path);
-                    results.extend(self.search_module(
-                        &module_path,
-                        &regex,
+            // Search exported items
+            if search_types {
+                if let Some(exported) = &meta.exported_items {
+                    results.extend(self.search_type_entries(
+                        &exported.types,
+                        regex,
                         &crate_summary.name,
-                        &module_ref.path,
-                        search_types,
-                        search_content,
+                        "",
+                        "type",
+                    ));
+                    results.extend(self.search_type_entries(
+                        &exported.traits,
+                        regex,
+                        &crate_summary.name,
+                        "",
+                        "trait",
+                    ));
+                    results.extend(self.search_type_entries(
+                        &exported.macros,
+                        regex,
+                        &crate_summary.name,
+                        "",
+                        "macro",
                     ));
                 }
             }
 
-            // Search README content
-            if search_content {
-                let readme_path = docs_path.join("README.md");
-                if let Ok(content) = read_markdown_file(&readme_path) {
-                    if let Some(context) =
-                        self.find_context_in_content(&content, &regex)
-                    {
-                        results.push(CrateSearchResult {
-                            crate_name: crate_summary.name.clone(),
-                            module_path: String::new(),
-                            match_type: "content".to_string(),
-                            name: "README.md".to_string(),
-                            description: None,
-                            context: Some(context),
-                        });
-                    }
+            // Search modules recursively
+            for module_ref in &meta.modules {
+                let searchable = format!(
+                    "{} {}",
+                    module_ref.name, module_ref.description
+                );
+                if regex_matches(&searchable, regex) {
+                    results.push(CrateSearchResult {
+                        crate_name: crate_summary.name.clone(),
+                        module_path: module_ref.path.clone(),
+                        match_type: "module".to_string(),
+                        name: module_ref.name.clone(),
+                        description: Some(module_ref.description.clone()),
+                        context: None,
+                    });
                 }
+
+                // Search within module
+                let module_path = docs_path.join(&module_ref.path);
+                results.extend(self.search_module(
+                    &module_path,
+                    regex,
+                    &crate_summary.name,
+                    &module_ref.path,
+                    search_types,
+                    search_content,
+                ));
             }
         }
 
-        Ok(results)
+        // Search README content
+        if search_content {
+            let readme_path = docs_path.join("README.md");
+            if let Ok(content) = read_markdown_file(&readme_path) {
+                if let Some(context) =
+                    self.find_context_in_content(&content, regex)
+                {
+                    results.push(CrateSearchResult {
+                        crate_name: crate_summary.name.clone(),
+                        module_path: String::new(),
+                        match_type: "content".to_string(),
+                        name: "README.md".to_string(),
+                        description: None,
+                        context: Some(context),
+                    });
+                }
+            }
+        }
     }
 
     fn search_type_entries(
@@ -1428,19 +1459,8 @@ impl CrateDocsManager {
         };
 
         // Get source files to analyze
-        let source_files: Vec<String> = if module_path.is_some() {
-            if let Ok(meta) = parse_module_index(&index_path) {
-                meta.source_files
-            } else {
-                Vec::new()
-            }
-        } else {
-            if let Ok(meta) = parse_crate_index(&index_path) {
-                meta.source_files
-            } else {
-                Vec::new()
-            }
-        };
+        let source_files =
+            Self::gather_sync_source_files(&index_path, module_path);
 
         if source_files.is_empty() {
             result
@@ -1450,43 +1470,10 @@ impl CrateDocsManager {
         }
 
         // Analyze each source file
-        for source_file in &source_files {
-            let file_path = crate_path.join(source_file);
-            if !file_path.exists() {
-                result
-                    .errors
-                    .push(format!("Source file not found: {}", source_file));
-                continue;
-            }
-
-            result.files_analyzed.push(source_file.clone());
-
-            match fs::read_to_string(&file_path) {
-                Ok(content) => {
-                    self.analyze_rust_source(
-                        &content,
-                        source_file,
-                        &mut result,
-                    );
-                },
-                Err(e) => {
-                    result
-                        .errors
-                        .push(format!("Failed to read {}: {}", source_file, e));
-                },
-            }
-        }
+        self.analyze_sync_source_files(&crate_path, &source_files, &mut result);
 
         // Compare with existing documentation and generate suggestions
-        if module_path.is_some() {
-            if let Ok(meta) = parse_module_index(&index_path) {
-                self.compare_module_docs(&meta, &mut result);
-            }
-        } else {
-            if let Ok(meta) = parse_crate_index(&index_path) {
-                self.compare_crate_docs(&meta, &mut result);
-            }
-        }
+        self.compare_sync_docs(&index_path, module_path, &mut result);
 
         // Update last_synced timestamp if requested
         if update_timestamp {
@@ -1520,6 +1507,70 @@ impl CrateDocsManager {
         }
 
         Ok(result)
+    }
+
+    /// Read the configured `source_files` list from a crate or module index.
+    fn gather_sync_source_files(
+        index_path: &Path,
+        module_path: Option<&str>,
+    ) -> Vec<String> {
+        if module_path.is_some() {
+            parse_module_index(index_path)
+                .map(|meta| meta.source_files)
+                .unwrap_or_default()
+        } else {
+            parse_crate_index(index_path)
+                .map(|meta| meta.source_files)
+                .unwrap_or_default()
+        }
+    }
+
+    /// Analyze each configured source file, recording public items or errors.
+    fn analyze_sync_source_files(
+        &self,
+        crate_path: &Path,
+        source_files: &[String],
+        result: &mut SyncAnalysisResult,
+    ) {
+        for source_file in source_files {
+            let file_path = crate_path.join(source_file);
+            if !file_path.exists() {
+                result
+                    .errors
+                    .push(format!("Source file not found: {}", source_file));
+                continue;
+            }
+
+            result.files_analyzed.push(source_file.clone());
+
+            match fs::read_to_string(&file_path) {
+                Ok(content) => {
+                    self.analyze_rust_source(&content, source_file, result);
+                },
+                Err(e) => {
+                    result
+                        .errors
+                        .push(format!("Failed to read {}: {}", source_file, e));
+                },
+            }
+        }
+    }
+
+    /// Compare analyzed source items against the documented index and push
+    /// add/remove suggestions.
+    fn compare_sync_docs(
+        &self,
+        index_path: &Path,
+        module_path: Option<&str>,
+        result: &mut SyncAnalysisResult,
+    ) {
+        if module_path.is_some() {
+            if let Ok(meta) = parse_module_index(index_path) {
+                self.compare_module_docs(&meta, result);
+            }
+        } else if let Ok(meta) = parse_crate_index(index_path) {
+            self.compare_crate_docs(&meta, result);
+        }
     }
 
     /// Simple Rust source analysis using regex patterns
@@ -1582,6 +1633,51 @@ impl CrateDocsManager {
         }
     }
 
+    /// Push "add" suggestions for source items missing from the docs.
+    fn push_missing_doc_suggestions(
+        source_items: &[String],
+        documented: &[String],
+        item_kind: &str,
+        first_file: &str,
+        suggestions: &mut Vec<SyncSuggestion>,
+    ) {
+        for name in source_items {
+            if !documented.contains(name) {
+                suggestions.push(SyncSuggestion {
+                    change_type: "add".to_string(),
+                    item_kind: item_kind.to_string(),
+                    item_name: name.clone(),
+                    description: None,
+                    source_file: first_file.to_string(),
+                    line_number: None,
+                });
+            }
+        }
+    }
+
+    /// Push "remove" suggestions for documented items missing from source.
+    fn push_stale_doc_suggestions(
+        documented: &[String],
+        source_items: &[String],
+        item_kind: &str,
+        suggestions: &mut Vec<SyncSuggestion>,
+    ) {
+        for name in documented {
+            if !source_items.contains(name) {
+                suggestions.push(SyncSuggestion {
+                    change_type: "remove".to_string(),
+                    item_kind: item_kind.to_string(),
+                    item_name: name.clone(),
+                    description: Some(
+                        "Not found in analyzed source files".to_string(),
+                    ),
+                    source_file: String::new(),
+                    line_number: None,
+                });
+            }
+        }
+    }
+
     fn compare_crate_docs(
         &self,
         meta: &CrateMetadata,
@@ -1601,103 +1697,51 @@ impl CrateDocsManager {
                 .extend(exported.macros.iter().map(|t| t.name.clone()));
         }
 
-        // Find types in source but not documented
-        for type_name in &result.public_types {
-            if !documented_types.contains(type_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "add".to_string(),
-                    item_kind: "type".to_string(),
-                    item_name: type_name.clone(),
-                    description: None,
-                    source_file: result
-                        .files_analyzed
-                        .first()
-                        .cloned()
-                        .unwrap_or_default(),
-                    line_number: None,
-                });
-            }
-        }
+        let first_file =
+            result.files_analyzed.first().cloned().unwrap_or_default();
 
-        for trait_name in &result.public_traits {
-            if !documented_traits.contains(trait_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "add".to_string(),
-                    item_kind: "trait".to_string(),
-                    item_name: trait_name.clone(),
-                    description: None,
-                    source_file: result
-                        .files_analyzed
-                        .first()
-                        .cloned()
-                        .unwrap_or_default(),
-                    line_number: None,
-                });
-            }
-        }
-
-        for macro_name in &result.public_macros {
-            if !documented_macros.contains(macro_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "add".to_string(),
-                    item_kind: "macro".to_string(),
-                    item_name: macro_name.clone(),
-                    description: None,
-                    source_file: result
-                        .files_analyzed
-                        .first()
-                        .cloned()
-                        .unwrap_or_default(),
-                    line_number: None,
-                });
-            }
-        }
+        // Find items in source but not documented
+        Self::push_missing_doc_suggestions(
+            &result.public_types,
+            &documented_types,
+            "type",
+            &first_file,
+            &mut result.suggestions,
+        );
+        Self::push_missing_doc_suggestions(
+            &result.public_traits,
+            &documented_traits,
+            "trait",
+            &first_file,
+            &mut result.suggestions,
+        );
+        Self::push_missing_doc_suggestions(
+            &result.public_macros,
+            &documented_macros,
+            "macro",
+            &first_file,
+            &mut result.suggestions,
+        );
 
         // Find documented items that don't exist in source (potential removals)
-        for type_name in &documented_types {
-            if !result.public_types.contains(type_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "remove".to_string(),
-                    item_kind: "type".to_string(),
-                    item_name: type_name.clone(),
-                    description: Some(
-                        "Not found in analyzed source files".to_string(),
-                    ),
-                    source_file: String::new(),
-                    line_number: None,
-                });
-            }
-        }
-
-        for trait_name in &documented_traits {
-            if !result.public_traits.contains(trait_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "remove".to_string(),
-                    item_kind: "trait".to_string(),
-                    item_name: trait_name.clone(),
-                    description: Some(
-                        "Not found in analyzed source files".to_string(),
-                    ),
-                    source_file: String::new(),
-                    line_number: None,
-                });
-            }
-        }
-
-        for macro_name in &documented_macros {
-            if !result.public_macros.contains(macro_name) {
-                result.suggestions.push(SyncSuggestion {
-                    change_type: "remove".to_string(),
-                    item_kind: "macro".to_string(),
-                    item_name: macro_name.clone(),
-                    description: Some(
-                        "Not found in analyzed source files".to_string(),
-                    ),
-                    source_file: String::new(),
-                    line_number: None,
-                });
-            }
-        }
+        Self::push_stale_doc_suggestions(
+            &documented_types,
+            &result.public_types,
+            "type",
+            &mut result.suggestions,
+        );
+        Self::push_stale_doc_suggestions(
+            &documented_traits,
+            &result.public_traits,
+            "trait",
+            &mut result.suggestions,
+        );
+        Self::push_stale_doc_suggestions(
+            &documented_macros,
+            &result.public_macros,
+            "macro",
+            &mut result.suggestions,
+        );
     }
 
     fn compare_module_docs(

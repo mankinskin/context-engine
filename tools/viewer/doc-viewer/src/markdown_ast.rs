@@ -40,6 +40,10 @@ pub fn parse_markdown_to_json(content: &str) -> Result<Value, String> {
 }
 
 /// Convert an mdast node to JSON value.
+///
+/// The `match` over the mdast variants is split across several helpers so no
+/// single function exceeds the cyclomatic-complexity budget. Each helper
+/// handles a category of nodes and delegates the remainder to the next.
 fn node_to_json(node: &markdown::mdast::Node) -> Value {
     use markdown::mdast::Node;
 
@@ -97,6 +101,15 @@ fn node_to_json(node: &markdown::mdast::Node) -> Value {
             "children": bq.children.iter().map(node_to_json).collect::<Vec<_>>()
         }),
 
+        other => node_to_json_inline(other),
+    }
+}
+
+/// Inline formatting nodes; delegates remaining variants to `node_to_json_refs`.
+fn node_to_json_inline(node: &markdown::mdast::Node) -> Value {
+    use markdown::mdast::Node;
+
+    match node {
         Node::Link(link) => json!({
             "type": "link",
             "url": link.url,
@@ -139,6 +152,15 @@ fn node_to_json(node: &markdown::mdast::Node) -> Value {
             "value": html.value
         }),
 
+        other => node_to_json_refs(other),
+    }
+}
+
+/// Table, footnote, and reference nodes; delegates the rest to `node_to_json_ext`.
+fn node_to_json_refs(node: &markdown::mdast::Node) -> Value {
+    use markdown::mdast::Node;
+
+    match node {
         // Tables (GFM)
         Node::Table(t) => json!({
             "type": "table",
@@ -195,6 +217,15 @@ fn node_to_json(node: &markdown::mdast::Node) -> Value {
             "referenceKind": format!("{:?}", ir.reference_kind).to_lowercase()
         }),
 
+        other => node_to_json_ext(other),
+    }
+}
+
+/// Frontmatter, math, and MDX extension nodes.
+fn node_to_json_ext(node: &markdown::mdast::Node) -> Value {
+    use markdown::mdast::Node;
+
+    match node {
         // YAML frontmatter
         Node::Yaml(y) => json!({
             "type": "yaml",
@@ -246,6 +277,8 @@ fn node_to_json(node: &markdown::mdast::Node) -> Value {
             "type": "mdxjsEsm",
             "value": esm.value
         }),
+
+        _ => json!({ "type": "unknown" }),
     }
 }
 
@@ -291,6 +324,15 @@ fn collect_text(node: &markdown::mdast::Node) -> String {
             .map(collect_text)
             .collect::<Vec<_>>()
             .join("\n"),
+        other => collect_text_rest(other),
+    }
+}
+
+#[allow(dead_code)]
+fn collect_text_rest(node: &markdown::mdast::Node) -> String {
+    use markdown::mdast::Node;
+
+    match node {
         Node::List(l) => l
             .children
             .iter()
@@ -327,6 +369,15 @@ fn collect_text(node: &markdown::mdast::Node) -> String {
             .map(collect_text)
             .collect::<Vec<_>>()
             .join(""),
+        other => collect_text_more(other),
+    }
+}
+
+#[allow(dead_code)]
+fn collect_text_more(node: &markdown::mdast::Node) -> String {
+    use markdown::mdast::Node;
+
+    match node {
         Node::Table(t) => t
             .children
             .iter()

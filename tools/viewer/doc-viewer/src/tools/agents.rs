@@ -40,7 +40,10 @@ use serde::{
 };
 use std::{
     fs,
-    path::PathBuf,
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
 /// Documentation manager handling all operations.
@@ -213,10 +216,11 @@ impl DocsManager {
             DocType::Analysis,
         ] {
             let dir = self.agents_dir.join(doc_type.directory());
+            let category = doc_type.directory().to_string();
             if !dir.exists() {
                 report.issues.push(ValidationIssue {
-                    file: doc_type.directory().to_string(),
-                    category: doc_type.directory().to_string(),
+                    file: category.clone(),
+                    category: category.clone(),
                     issue: "Directory does not exist".to_string(),
                     severity: IssueSeverity::Warning,
                 });
@@ -228,7 +232,7 @@ impl DocsManager {
             if !index_path.exists() {
                 report.issues.push(ValidationIssue {
                     file: "INDEX.md".to_string(),
-                    category: doc_type.directory().to_string(),
+                    category: category.clone(),
                     issue: "Missing INDEX.md file".to_string(),
                     severity: IssueSeverity::Error,
                 });
@@ -236,199 +240,253 @@ impl DocsManager {
 
             for entry in fs::read_dir(&dir)? {
                 let entry = entry?;
-                let path = entry.path();
-                let filename = path
-                    .file_name()
-                    .and_then(|n| n.to_str())
-                    .unwrap_or_default();
-
-                if filename == "INDEX.md" || !filename.ends_with(".md") {
-                    continue;
-                }
-
-                let category = doc_type.directory().to_string();
-
-                // Check naming convention (YYYYMMDD_ prefix)
-                if parse_filename(filename).is_none() {
-                    report.issues.push(ValidationIssue {
-                        file: filename.to_string(),
-                        category: category.clone(),
-                        issue: "Invalid filename format - expected YYYYMMDD_NAME.md".to_string(),
-                        severity: IssueSeverity::Error,
-                    });
-                }
-
-                // Check file content
-                let content = fs::read_to_string(&path)?;
-
-                // Check frontmatter exists
-                if !content.starts_with("---") {
-                    report.issues.push(ValidationIssue {
-                        file: filename.to_string(),
-                        category: category.clone(),
-                        issue: "Missing frontmatter (should start with ---)"
-                            .to_string(),
-                        severity: IssueSeverity::Error,
-                    });
-                } else {
-                    // Parse and validate frontmatter
-                    if let Some(fm) = parse_frontmatter(&content) {
-                        // Check tags exist
-                        if fm.tags.is_empty() {
-                            report.issues.push(ValidationIssue {
-                                file: filename.to_string(),
-                                category: category.clone(),
-                                issue: "No tags defined in frontmatter"
-                                    .to_string(),
-                                severity: IssueSeverity::Warning,
-                            });
-                        }
-
-                        // Plans should have status
-                        if doc_type == DocType::Plan && fm.status.is_none() {
-                            report.issues.push(ValidationIssue {
-                                file: filename.to_string(),
-                                category: category.clone(),
-                                issue: "Plan document missing status field"
-                                    .to_string(),
-                                severity: IssueSeverity::Warning,
-                            });
-                        }
-                    } else {
-                        report.issues.push(ValidationIssue {
-                            file: filename.to_string(),
-                            category: category.clone(),
-                            issue: "Could not parse frontmatter".to_string(),
-                            severity: IssueSeverity::Warning,
-                        });
-                    }
-                }
-
-                // Check for H1 title
-                if parse_title(&content).is_none() {
-                    report.issues.push(ValidationIssue {
-                        file: filename.to_string(),
-                        category: category.clone(),
-                        issue: "Missing H1 title (# Title)".to_string(),
-                        severity: IssueSeverity::Warning,
-                    });
-                }
-
-                report.documents_checked += 1;
+                self.validate_document_file(
+                    &entry.path(),
+                    &category,
+                    doc_type == DocType::Plan,
+                    &mut report,
+                )?;
             }
 
-            // Validate INDEX.md content
-            if index_path.exists() {
-                let category = doc_type.directory().to_string();
-                if let Ok(index_content) = fs::read_to_string(&index_path) {
-                    // Collect all document filenames in directory
-                    let mut doc_files: Vec<String> = Vec::new();
-                    if let Ok(entries) = fs::read_dir(&dir) {
-                        for entry in entries.flatten() {
-                            let fname =
-                                entry.file_name().to_string_lossy().to_string();
-                            if fname.ends_with(".md") && fname != "INDEX.md" {
-                                doc_files.push(fname);
-                            }
-                        }
-                    }
+            self.validate_index_file(
+                &dir,
+                &index_path,
+                &category,
+                &mut report,
+            );
+        }
 
-                    // Check each document is mentioned in INDEX
-                    for doc_file in &doc_files {
-                        if !index_content.contains(doc_file) {
-                            report.issues.push(ValidationIssue {
-                                file: "INDEX.md".to_string(),
-                                category: category.clone(),
-                                issue: format!(
-                                    "Document '{}' not listed in INDEX",
-                                    doc_file
-                                ),
-                                severity: IssueSeverity::Warning,
-                            });
-                        }
-                    }
+        Ok(report)
+    }
 
-                    // Check for stale entries in INDEX (files mentioned but don't exist)
-                    // Look for patterns like "### YYYYMMDD_*.md" or "| YYYYMMDD | filename.md |"
-                    let filename_pattern =
-                        regex::Regex::new(r"\d{8}_[A-Za-z0-9_-]+\.md").unwrap();
-                    for caps in filename_pattern.find_iter(&index_content) {
-                        let mentioned_file = caps.as_str();
-                        if !doc_files.contains(&mentioned_file.to_string()) {
-                            report.issues.push(ValidationIssue {
-                                file: "INDEX.md".to_string(),
-                                category: category.clone(),
-                                issue: format!(
-                                    "Stale entry '{}' - file does not exist",
-                                    mentioned_file
-                                ),
-                                severity: IssueSeverity::Error,
-                            });
-                        }
-                    }
+    /// Validate a single markdown document (naming, frontmatter, title).
+    fn validate_document_file(
+        &self,
+        path: &Path,
+        category: &str,
+        is_plan: bool,
+        report: &mut ValidationReport,
+    ) -> ToolResult<()> {
+        let filename = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or_default();
 
-                    // Check INDEX has H1 title
-                    if parse_title(&index_content).is_none() {
-                        report.issues.push(ValidationIssue {
-                            file: "INDEX.md".to_string(),
-                            category: category.clone(),
-                            issue: "INDEX.md missing H1 title".to_string(),
-                            severity: IssueSeverity::Warning,
-                        });
-                    }
+        if filename == "INDEX.md" || !filename.ends_with(".md") {
+            return Ok(());
+        }
 
-                    // Check INDEX uses minimal table format
-                    // Should have a table with columns: Date | File | Summary
-                    let has_doc_table = index_content
-                        .contains("| Date | File | Summary |")
-                        || index_content.contains("|------|------|");
+        // Check naming convention (YYYYMMDD_ prefix)
+        if parse_filename(filename).is_none() {
+            report.issues.push(ValidationIssue {
+                file: filename.to_string(),
+                category: category.to_string(),
+                issue: "Invalid filename format - expected YYYYMMDD_NAME.md"
+                    .to_string(),
+                severity: IssueSeverity::Error,
+            });
+        }
 
-                    if !has_doc_table {
-                        report.issues.push(ValidationIssue {
-                            file: "INDEX.md".to_string(),
-                            category: category.clone(),
-                            issue: "INDEX.md should use minimal table format: | Date | File | Summary |".to_string(),
-                            severity: IssueSeverity::Warning,
-                        });
-                    }
+        // Check file content
+        let content = fs::read_to_string(path)?;
 
-                    // Check for verbose formatting patterns that should be avoided
-                    let verbose_patterns = [
-                        "**What it provides:**",
-                        "**Key locations:**",
-                        "**Solves:**",
-                        "**Benefits:**",
-                        "**Technique:**",
-                        "**Tags:** `#", // Tags should be in document, not INDEX
-                    ];
+        // Check frontmatter exists
+        if !content.starts_with("---") {
+            report.issues.push(ValidationIssue {
+                file: filename.to_string(),
+                category: category.to_string(),
+                issue: "Missing frontmatter (should start with ---)"
+                    .to_string(),
+                severity: IssueSeverity::Error,
+            });
+        } else if let Some(fm) = parse_frontmatter(&content) {
+            // Check tags exist
+            if fm.tags.is_empty() {
+                report.issues.push(ValidationIssue {
+                    file: filename.to_string(),
+                    category: category.to_string(),
+                    issue: "No tags defined in frontmatter".to_string(),
+                    severity: IssueSeverity::Warning,
+                });
+            }
 
-                    for pattern in verbose_patterns {
-                        if index_content.contains(pattern) {
-                            report.issues.push(ValidationIssue {
-                                file: "INDEX.md".to_string(),
-                                category: category.clone(),
-                                issue: format!("INDEX.md too verbose - remove '{}' sections (use table format)", pattern),
-                                severity: IssueSeverity::Warning,
-                            });
-                        }
-                    }
+            // Plans should have status
+            if is_plan && fm.status.is_none() {
+                report.issues.push(ValidationIssue {
+                    file: filename.to_string(),
+                    category: category.to_string(),
+                    issue: "Plan document missing status field".to_string(),
+                    severity: IssueSeverity::Warning,
+                });
+            }
+        } else {
+            report.issues.push(ValidationIssue {
+                file: filename.to_string(),
+                category: category.to_string(),
+                issue: "Could not parse frontmatter".to_string(),
+                severity: IssueSeverity::Warning,
+            });
+        }
 
-                    // Check for excessive line count (INDEX should be concise)
-                    let line_count = index_content.lines().count();
-                    let expected_max = 20 + (doc_files.len() * 2); // Header + 2 lines per doc max
-                    if line_count > expected_max {
-                        report.issues.push(ValidationIssue {
-                            file: "INDEX.md".to_string(),
-                            category: category.clone(),
-                            issue: format!("INDEX.md too long ({} lines, expected <{}). Use minimal table format.", line_count, expected_max),
-                            severity: IssueSeverity::Warning,
-                        });
-                    }
+        // Check for H1 title
+        if parse_title(&content).is_none() {
+            report.issues.push(ValidationIssue {
+                file: filename.to_string(),
+                category: category.to_string(),
+                issue: "Missing H1 title (# Title)".to_string(),
+                severity: IssueSeverity::Warning,
+            });
+        }
+
+        report.documents_checked += 1;
+        Ok(())
+    }
+
+    /// Validate a category's INDEX.md against the documents on disk.
+    fn validate_index_file(
+        &self,
+        dir: &Path,
+        index_path: &Path,
+        category: &str,
+        report: &mut ValidationReport,
+    ) {
+        if !index_path.exists() {
+            return;
+        }
+        let index_content = match fs::read_to_string(index_path) {
+            Ok(c) => c,
+            Err(_) => return,
+        };
+
+        // Collect all document filenames in directory
+        let mut doc_files: Vec<String> = Vec::new();
+        if let Ok(entries) = fs::read_dir(dir) {
+            for entry in entries.flatten() {
+                let fname = entry.file_name().to_string_lossy().to_string();
+                if fname.ends_with(".md") && fname != "INDEX.md" {
+                    doc_files.push(fname);
                 }
             }
         }
 
-        Ok(report)
+        Self::validate_index_coverage(
+            &index_content,
+            &doc_files,
+            category,
+            report,
+        );
+        Self::validate_index_format(
+            &index_content,
+            &doc_files,
+            category,
+            report,
+        );
+    }
+
+    /// Check that every document is listed and no stale entries remain.
+    fn validate_index_coverage(
+        index_content: &str,
+        doc_files: &[String],
+        category: &str,
+        report: &mut ValidationReport,
+    ) {
+        // Check each document is mentioned in INDEX
+        for doc_file in doc_files {
+            if !index_content.contains(doc_file) {
+                report.issues.push(ValidationIssue {
+                    file: "INDEX.md".to_string(),
+                    category: category.to_string(),
+                    issue: format!(
+                        "Document '{}' not listed in INDEX",
+                        doc_file
+                    ),
+                    severity: IssueSeverity::Warning,
+                });
+            }
+        }
+
+        // Check for stale entries in INDEX (files mentioned but don't exist)
+        let filename_pattern =
+            regex::Regex::new(r"\d{8}_[A-Za-z0-9_-]+\.md").unwrap();
+        for caps in filename_pattern.find_iter(index_content) {
+            let mentioned_file = caps.as_str();
+            if !doc_files.contains(&mentioned_file.to_string()) {
+                report.issues.push(ValidationIssue {
+                    file: "INDEX.md".to_string(),
+                    category: category.to_string(),
+                    issue: format!(
+                        "Stale entry '{}' - file does not exist",
+                        mentioned_file
+                    ),
+                    severity: IssueSeverity::Error,
+                });
+            }
+        }
+    }
+
+    /// Check INDEX formatting conventions (title, table, verbosity, length).
+    fn validate_index_format(
+        index_content: &str,
+        doc_files: &[String],
+        category: &str,
+        report: &mut ValidationReport,
+    ) {
+        // Check INDEX has H1 title
+        if parse_title(index_content).is_none() {
+            report.issues.push(ValidationIssue {
+                file: "INDEX.md".to_string(),
+                category: category.to_string(),
+                issue: "INDEX.md missing H1 title".to_string(),
+                severity: IssueSeverity::Warning,
+            });
+        }
+
+        // Check INDEX uses minimal table format
+        let has_doc_table = index_content
+            .contains("| Date | File | Summary |")
+            || index_content.contains("|------|------|");
+
+        if !has_doc_table {
+            report.issues.push(ValidationIssue {
+                file: "INDEX.md".to_string(),
+                category: category.to_string(),
+                issue: "INDEX.md should use minimal table format: | Date | File | Summary |".to_string(),
+                severity: IssueSeverity::Warning,
+            });
+        }
+
+        // Check for verbose formatting patterns that should be avoided
+        let verbose_patterns = [
+            "**What it provides:**",
+            "**Key locations:**",
+            "**Solves:**",
+            "**Benefits:**",
+            "**Technique:**",
+            "**Tags:** `#", // Tags should be in document, not INDEX
+        ];
+
+        for pattern in verbose_patterns {
+            if index_content.contains(pattern) {
+                report.issues.push(ValidationIssue {
+                    file: "INDEX.md".to_string(),
+                    category: category.to_string(),
+                    issue: format!("INDEX.md too verbose - remove '{}' sections (use table format)", pattern),
+                    severity: IssueSeverity::Warning,
+                });
+            }
+        }
+
+        // Check for excessive line count (INDEX should be concise)
+        let line_count = index_content.lines().count();
+        let expected_max = 20 + (doc_files.len() * 2); // Header + 2 lines per doc max
+        if line_count > expected_max {
+            report.issues.push(ValidationIssue {
+                file: "INDEX.md".to_string(),
+                category: category.to_string(),
+                issue: format!("INDEX.md too long ({} lines, expected <{}). Use minimal table format.", line_count, expected_max),
+                severity: IssueSeverity::Warning,
+            });
+        }
     }
 
     fn find_document(
@@ -818,90 +876,105 @@ impl DocsManager {
 
             for entry in fs::read_dir(&dir)? {
                 let entry = entry?;
-                let path = entry.path();
-                let filename = path
-                    .file_name()
-                    .and_then(|n| n.to_str())
-                    .unwrap_or_default();
-
-                // Skip non-md files and INDEX.md
-                if !filename.ends_with(".md") || filename == "INDEX.md" {
-                    continue;
-                }
-
-                result.processed += 1;
-
-                let content = match fs::read_to_string(&path) {
-                    Ok(c) => c,
-                    Err(e) => {
-                        result.errors.push(format!("{}: {}", filename, e));
-                        continue;
-                    },
-                };
-
-                // Check if frontmatter exists
-                if content.trim_start().starts_with("---") {
-                    if let Some(_) = parse_frontmatter(&content) {
-                        result.skipped += 1;
-                        continue;
-                    }
-                }
-
-                // Needs frontmatter - infer metadata
-                let (date, _name) =
-                    parse_filename(filename).unwrap_or_else(|| {
-                        (
-                            "00000000".to_string(),
-                            filename.trim_end_matches(".md").to_string(),
-                        )
-                    });
-
-                let title = parse_title(&content)
-                    .unwrap_or_else(|| filename.to_string());
-
-                // Try to extract summary from first paragraph
-                let summary = extract_summary(&content).unwrap_or_default();
-
-                // Infer tags from filename and content
-                let tags = infer_tags(filename, &content, dt);
-
-                let meta = DocMetadata {
-                    doc_type: dt,
-                    date: date.clone(),
-                    filename: filename.to_string(),
-                    tags: tags.clone(),
-                    summary: summary.clone(),
-                    status: if dt == DocType::Plan {
-                        Some(PlanStatus::Design)
-                    } else {
-                        None
-                    },
-                    title: title.clone(),
-                };
-
-                let frontmatter = generate_frontmatter(&meta);
-                let new_content =
-                    format!("{}\n\n{}", frontmatter, content.trim_start());
-
-                result.changes.push(FrontmatterChange {
-                    filename: filename.to_string(),
-                    doc_type: dt.directory().to_string(),
-                    inferred_tags: tags,
-                    inferred_summary: summary,
-                });
-
-                if !dry_run {
-                    if let Err(e) = fs::write(&path, new_content) {
-                        result.errors.push(format!("{}: {}", filename, e));
-                        continue;
-                    }
-                }
-
-                result.updated += 1;
+                self.process_frontmatter_file(
+                    &entry.path(),
+                    dt,
+                    dry_run,
+                    &mut result,
+                )?;
             }
         }
 
         Ok(result)
+    }
+
+    /// Add inferred frontmatter to a single document if it is missing.
+    fn process_frontmatter_file(
+        &self,
+        path: &Path,
+        dt: DocType,
+        dry_run: bool,
+        result: &mut AddFrontmatterResult,
+    ) -> ToolResult<()> {
+        let filename = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or_default();
+
+        // Skip non-md files and INDEX.md
+        if !filename.ends_with(".md") || filename == "INDEX.md" {
+            return Ok(());
+        }
+
+        result.processed += 1;
+
+        let content = match fs::read_to_string(path) {
+            Ok(c) => c,
+            Err(e) => {
+                result.errors.push(format!("{}: {}", filename, e));
+                return Ok(());
+            },
+        };
+
+        // Check if frontmatter exists
+        if content.trim_start().starts_with("---")
+            && parse_frontmatter(&content).is_some()
+        {
+            result.skipped += 1;
+            return Ok(());
+        }
+
+        // Needs frontmatter - infer metadata
+        let (date, _name) = parse_filename(filename).unwrap_or_else(|| {
+            (
+                "00000000".to_string(),
+                filename.trim_end_matches(".md").to_string(),
+            )
+        });
+
+        let title =
+            parse_title(&content).unwrap_or_else(|| filename.to_string());
+
+        // Try to extract summary from first paragraph
+        let summary = extract_summary(&content).unwrap_or_default();
+
+        // Infer tags from filename and content
+        let tags = infer_tags(filename, &content, dt);
+
+        let meta = DocMetadata {
+            doc_type: dt,
+            date: date.clone(),
+            filename: filename.to_string(),
+            tags: tags.clone(),
+            summary: summary.clone(),
+            status: if dt == DocType::Plan {
+                Some(PlanStatus::Design)
+            } else {
+                None
+            },
+            title: title.clone(),
+        };
+
+        let frontmatter = generate_frontmatter(&meta);
+        let new_content =
+            format!("{}\n\n{}", frontmatter, content.trim_start());
+
+        result.changes.push(FrontmatterChange {
+            filename: filename.to_string(),
+            doc_type: dt.directory().to_string(),
+            inferred_tags: tags,
+            inferred_summary: summary,
+        });
+
+        if !dry_run {
+            if let Err(e) = fs::write(path, new_content) {
+                result.errors.push(format!("{}: {}", filename, e));
+                return Ok(());
+            }
+        }
+
+        result.updated += 1;
+        Ok(())
     }
 
     /// Get a health dashboard summarizing documentation status
@@ -929,40 +1002,13 @@ impl DocsManager {
             DocType::BugReport,
             DocType::Analysis,
         ] {
-            let docs = self.list_documents(doc_type).unwrap_or_default();
-            let count = docs.len();
-            dashboard.total_documents += count;
-
-            // Count frontmatter
-            let dir = self.agents_dir.join(doc_type.directory());
-            let mut fm_count = 0;
-            let mut old_count = 0;
-
-            for doc in &docs {
-                let path = dir.join(&doc.filename);
-                if let Ok(content) = fs::read_to_string(&path) {
-                    if content.trim_start().starts_with("---") {
-                        if let Some(_) = parse_frontmatter(&content) {
-                            fm_count += 1;
-                            docs_with_frontmatter += 1;
-                        }
-                    }
-                }
-
-                let today = chrono::Local::now().format("%Y%m%d").to_string();
-                if calculate_age_days(&doc.date, &today) > 30 {
-                    old_count += 1;
-                    dashboard.old_documents += 1;
-                }
-            }
+            let cat = self
+                .tally_category_health(doc_type, &mut docs_with_frontmatter);
+            dashboard.total_documents += cat.total;
+            dashboard.old_documents += cat.old;
 
             if detailed {
-                dashboard.categories.push(CategoryHealth {
-                    name: doc_type.directory().to_string(),
-                    total: count,
-                    with_frontmatter: fm_count,
-                    old: old_count,
-                });
+                dashboard.categories.push(cat);
             }
         }
 
@@ -986,11 +1032,62 @@ impl DocsManager {
 
         Ok(dashboard)
     }
+
+    /// Tally document counts, frontmatter coverage, and age for one category.
+    fn tally_category_health(
+        &self,
+        doc_type: DocType,
+        docs_with_frontmatter: &mut usize,
+    ) -> CategoryHealth {
+        let docs = self.list_documents(doc_type).unwrap_or_default();
+        let count = docs.len();
+        let dir = self.agents_dir.join(doc_type.directory());
+        let today = chrono::Local::now().format("%Y%m%d").to_string();
+        let mut fm_count = 0;
+        let mut old_count = 0;
+
+        for doc in &docs {
+            let path = dir.join(&doc.filename);
+            if let Ok(content) = fs::read_to_string(&path) {
+                if content.trim_start().starts_with("---")
+                    && parse_frontmatter(&content).is_some()
+                {
+                    fm_count += 1;
+                    *docs_with_frontmatter += 1;
+                }
+            }
+
+            if calculate_age_days(&doc.date, &today) > 30 {
+                old_count += 1;
+            }
+        }
+
+        CategoryHealth {
+            name: doc_type.directory().to_string(),
+            total: count,
+            with_frontmatter: fm_count,
+            old: old_count,
+        }
+    }
 }
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
+
+/// Pick a status icon from an "ok" / "warning" threshold pair.
+fn status_icon(
+    ok: bool,
+    warn: bool,
+) -> &'static str {
+    if ok {
+        "✅"
+    } else if warn {
+        "⚠️"
+    } else {
+        "❌"
+    }
+}
 
 /// Calculate age in days between two YYYYMMDD dates
 fn calculate_age_days(
@@ -1430,37 +1527,24 @@ impl HealthDashboard {
         md.push_str("| Metric | Value | Status |\n");
         md.push_str("|--------|-------|--------|\n");
 
-        let fm_status = if self.frontmatter_coverage >= 90.0 {
-            "✅"
-        } else if self.frontmatter_coverage >= 50.0 {
-            "⚠️"
-        } else {
-            "❌"
-        };
+        let fm_status = status_icon(
+            self.frontmatter_coverage >= 90.0,
+            self.frontmatter_coverage >= 50.0,
+        );
         md.push_str(&format!(
             "| Frontmatter Coverage | {:.1}% | {} |\n",
             self.frontmatter_coverage, fm_status
         ));
 
-        let idx_status = if self.index_sync_issues == 0 {
-            "✅"
-        } else if self.index_sync_issues <= 5 {
-            "⚠️"
-        } else {
-            "❌"
-        };
+        let idx_status =
+            status_icon(self.index_sync_issues == 0, self.index_sync_issues <= 5);
         md.push_str(&format!(
             "| INDEX Sync Issues | {} | {} |\n",
             self.index_sync_issues, idx_status
         ));
 
-        let name_status = if self.naming_issues == 0 {
-            "✅"
-        } else if self.naming_issues <= 3 {
-            "⚠️"
-        } else {
-            "❌"
-        };
+        let name_status =
+            status_icon(self.naming_issues == 0, self.naming_issues <= 3);
         md.push_str(&format!(
             "| Naming Issues | {} | {} |\n",
             self.naming_issues, name_status
