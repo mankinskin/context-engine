@@ -108,12 +108,29 @@ Changes (all behavior-preserving helper extractions):
 Validation: `cargo test -p log-viewer` → 51 passed, 0 failed.
 Audit delta: root-tools static_complexity 10 → 8 (both log-viewer findings resolved, 0 new). Overall static_complexity 51 → 49; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk6_after.json
 
+## Chunk 7A — dungeon-crawler enemy+world (2026-07-07, copilot-gpt53-codex) — DONE
+Files changed: tools/dungeon-crawler/src/enemy.rs, tools/dungeon-crawler/src/world.rs, tools/dungeon-crawler/src/map_render.rs, tools/dungeon-crawler/src/main.rs
+Changes (all behavior-preserving helper extractions / file split):
+- enemy.rs random_enemy (25): extracted pool-based selection helpers (pick_from_pool, random_tier_one, random_mid_tier_enemy) and converted random_enemy to thin tier dispatcher.
+- world.rs ensure_generated (14): split into discover_new_rooms + populate_room and kept ensure_generated as orchestration.
+- world.rs draw_map (17): moved rendering helpers + draw_map implementation to new module map_render.rs; world.rs now re-exports draw_map via crate::map_render to preserve call sites.
+- Added map_render module in main.rs.
+Validation: `cargo test -p dungeon-crawler` → 0 tests, compile pass, 0 failed.
+Audit delta: root-tools static_complexity 8 → 5 (enemy.rs + world.rs findings resolved, 0 new after final split); overall static_complexity 49 → 46; file_length unchanged after moving draw_map out of world.rs. After artifact: target/tmp/batch2_tools_audit_chunk7a_after.json
+
+## Chunk 7B — dungeon-crawler game (2026-07-07, copilot-gpt53-codex) — DONE
+Files changed: tools/dungeon-crawler/src/game.rs
+Changes (all behavior-preserving helper extractions):
+- Replaced high-branch handle_explore_cmd and handle_combat_cmd internals with helper-dispatch decomposition (built-in/info/action handlers, prefixed command groups, command_result_in_combat + apply_combat_result orchestration).
+- Extracted look helpers (print_enemy_presence, print_npc_presence, print_room_items).
+- Extracted NPC/shop helpers for talk and buy paths (take_npc_for_interaction, maybe_grant_hermit_gift, print_npc_interaction_hint, take_trader_npc, parse_buy_index, restore_trader).
+- Split combat result side-effects into on_enemy_died and on_player_fled.
+Validation: `cargo test -p dungeon-crawler` → 0 tests, compile pass, 0 failed.
+Audit delta: root-tools static_complexity 5 → 0 (all remaining game.rs findings resolved); overall static_complexity 46 → 41; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk7b_after.json
+
 # Next Unresolved Action
-Continue with chunk 7 (dungeon-crawler cluster). Remaining root-tools count: 8.
-- tools/dungeon-crawler/src/enemy.rs: random_enemy (25)
-- tools/dungeon-crawler/src/game.rs: handle_explore_cmd (38), handle_combat_cmd (32), look (13), do_talk (17), do_buy (16)
-- tools/dungeon-crawler/src/world.rs: ensure_generated (14), draw_map (17)
-Suggested chunk 7 split: 7A = enemy.rs + world.rs (3 findings), 7B = game.rs command handlers (5 findings). Chunk-6 source + ticket updates are currently uncommitted and form a clean checkpoint boundary.
+Batch-2 static_complexity tool scope is fully cleared (root-tools 29 → 0).
+Next action: checkpoint chunk-7 source and ticket evidence commits, then move ticket d1ef4001 to in-review for final tracker-level validation and close readiness.
 
 # Handoff Notes
-Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 8 (21 resolved across chunks 1-6); doc-viewer + peek + log-viewer clusters are now clear of static_complexity findings. Chunk-6 source changes (tools/viewer/log-viewer/src/handlers.rs, tools/viewer/log-viewer/frontend/dioxus/src/app.rs) plus this ticket description update are uncommitted pending checkpoint.
+Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 0 (all 29 findings resolved across chunks 1-7); doc-viewer + peek + log-viewer + dungeon-crawler clusters are now clear of static_complexity findings in root tools scope. Chunk-7 source changes plus this ticket description update are uncommitted pending checkpoint.
