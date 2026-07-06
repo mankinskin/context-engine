@@ -47,6 +47,17 @@ use crate::{
     },
 };
 
+/// Convert a markdown-producing tool result into a `CallToolResult`,
+/// rendering errors as an error content payload.
+fn markdown_or_error(result: tools::ToolResult<String>) -> CallToolResult {
+    match result {
+        Ok(md) => CallToolResult::success(vec![Content::text(md)]),
+        Err(e) => {
+            CallToolResult::error(vec![Content::text(format!("Error: {}", e))])
+        },
+    }
+}
+
 /// MCP Server for documentation management.
 #[derive(Clone)]
 pub struct DocsServer {
@@ -436,6 +447,17 @@ Search options:
 
         // Search agent docs
         md.push_str("## Agent Documentation\n\n");
+        self.append_agent_doc_search(&input, &mut md);
+
+        // Search crate docs
+        md.push_str("\n\n## Crate Documentation\n\n");
+        self.append_crate_doc_search(&input, &mut md);
+
+        Ok(CallToolResult::success(vec![Content::text(md)]))
+    }
+
+    /// Append agent-documentation search results to `md`.
+    fn append_agent_doc_search(&self, input: &SearchInput, md: &mut String) {
         let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
         let filter = tools::ListFilter {
             tag: input.tag.clone(),
@@ -459,38 +481,40 @@ Search options:
                 Err(e) =>
                     md.push_str(&format!("Error searching agent docs: {}\n", e)),
             }
-        } else {
-            match self.manager.search_docs(
-                Some(&input.query),
-                input.tag.as_deref(),
-                false,
-                doc_type,
-            ) {
-                Ok(results) =>
-                    if results.is_empty() {
-                        md.push_str("No matches found.\n");
-                    } else {
-                        md.push_str(&format!(
-                            "**{} matches found**\n\n",
-                            results.len()
-                        ));
-                        md.push_str("| File | Summary | Tags |\n");
-                        md.push_str("|------|---------|------|\n");
-                        for r in &results {
-                            let tags = r.tags.join(", ");
-                            md.push_str(&format!(
-                                "| {} | {} | {} |\n",
-                                r.filename, r.summary, tags
-                            ));
-                        }
-                    },
-                Err(e) =>
-                    md.push_str(&format!("Error searching agent docs: {}\n", e)),
-            }
+            return;
         }
 
-        // Search crate docs
-        md.push_str("\n\n## Crate Documentation\n\n");
+        match self.manager.search_docs(
+            Some(&input.query),
+            input.tag.as_deref(),
+            false,
+            doc_type,
+        ) {
+            Ok(results) =>
+                if results.is_empty() {
+                    md.push_str("No matches found.\n");
+                } else {
+                    md.push_str(&format!(
+                        "**{} matches found**\n\n",
+                        results.len()
+                    ));
+                    md.push_str("| File | Summary | Tags |\n");
+                    md.push_str("|------|---------|------|\n");
+                    for r in &results {
+                        let tags = r.tags.join(", ");
+                        md.push_str(&format!(
+                            "| {} | {} | {} |\n",
+                            r.filename, r.summary, tags
+                        ));
+                    }
+                },
+            Err(e) =>
+                md.push_str(&format!("Error searching agent docs: {}\n", e)),
+        }
+    }
+
+    /// Append crate-documentation search results to `md`.
+    fn append_crate_doc_search(&self, input: &SearchInput, md: &mut String) {
         match self.crate_manager.search_crate_docs(
             &input.query,
             input.crate_filter.as_deref(),
@@ -521,9 +545,8 @@ Search options:
                 },
             Err(e) => md.push_str(&format!("Error: {}\n", e)),
         }
-
-        Ok(CallToolResult::success(vec![Content::text(md)]))
     }
+
 
     // ============================================================
     // VALIDATE - Maintenance and validation operations
@@ -549,138 +572,154 @@ Actions:
         &self,
         Parameters(input): Parameters<ValidateInput>,
     ) -> Result<CallToolResult, McpError> {
-        match (&input.target, &input.action) {
-            // Agent docs actions
-            (ValidateTarget::AgentDocs, ValidateAction::Validate) => {
-                match self.manager.validate() {
-                    Ok(report) => Ok(CallToolResult::success(vec![Content::text(
-                        report.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::AgentDocs, ValidateAction::Health) => {
-                match self.manager.health_dashboard(input.detailed) {
-                    Ok(dashboard) => Ok(CallToolResult::success(vec![Content::text(
-                        dashboard.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::AgentDocs, ValidateAction::RegenerateIndex) => {
-                let doc_type = input.doc_type.as_ref()
-                    .and_then(|s| parse_doc_type(s))
-                    .ok_or_else(|| {
-                        McpError::invalid_params(
-                            "doc_type required for regenerate_index",
-                            None,
-                        )
-                    })?;
+        match input.target {
+            ValidateTarget::AgentDocs => self.validate_agent_docs(&input),
+            ValidateTarget::CrateDocs => self.validate_crate_docs_target(&input),
+            ValidateTarget::All => self.validate_all_target(&input),
+        }
+    }
 
-                match self.manager.update_index(doc_type) {
-                    Ok(path) => Ok(CallToolResult::success(vec![Content::text(format!(
-                        "Regenerated INDEX at: {}",
-                        path
-                    ))])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::AgentDocs, ValidateAction::AddFrontmatter) => {
-                let doc_type = match input.doc_type.as_deref() {
-                    None | Some("all") => None,
-                    Some(dt_str) => match parse_doc_type(dt_str) {
-                        Some(dt) => Some(dt),
-                        None => return Ok(CallToolResult::error(vec![Content::text(
-                            format!("Invalid doc_type: {}. Use guide, plan, implemented, bug-report, analysis, or all", dt_str)
-                        )])),
-                    }
-                };
-                
-                match self.manager.add_frontmatter(doc_type, input.dry_run) {
-                    Ok(report) => Ok(CallToolResult::success(vec![Content::text(
-                        report.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::AgentDocs, ValidateAction::ReviewNeeded) => {
-                match self.manager.get_docs_needing_review(input.max_age_days) {
+    /// Handle `validate` actions scoped to agent documentation.
+    fn validate_agent_docs(
+        &self,
+        input: &ValidateInput,
+    ) -> Result<CallToolResult, McpError> {
+        match input.action {
+            ValidateAction::Validate => Ok(markdown_or_error(
+                self.manager.validate().map(|r| r.to_markdown()),
+            )),
+            ValidateAction::Health => Ok(markdown_or_error(
+                self.manager
+                    .health_dashboard(input.detailed)
+                    .map(|r| r.to_markdown()),
+            )),
+            ValidateAction::RegenerateIndex => self.regenerate_index_action(input),
+            ValidateAction::AddFrontmatter => self.add_frontmatter_action(input),
+            ValidateAction::ReviewNeeded => {
+                Ok(match self.manager.get_docs_needing_review(input.max_age_days) {
                     Ok(docs) => {
-                        let json = serde_json::to_string_pretty(&docs).unwrap_or_default();
-                        Ok(CallToolResult::success(vec![Content::text(json)]))
+                        let json =
+                            serde_json::to_string_pretty(&docs).unwrap_or_default();
+                        CallToolResult::success(vec![Content::text(json)])
                     },
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
+                    Err(e) => CallToolResult::error(vec![Content::text(format!(
                         "Error: {}",
                         e
-                    ))])),
-                }
-            }
+                    ))]),
+                })
+            },
+            ValidateAction::CheckStale | ValidateAction::Sync => {
+                Ok(CallToolResult::error(vec![Content::text(
+                    "check_stale and sync actions are only valid for crate_docs target",
+                )]))
+            },
+        }
+    }
 
-            // Crate docs actions
-            (ValidateTarget::CrateDocs, ValidateAction::Validate) => {
-                match self.crate_manager.validate_crate_docs(input.crate_filter.as_deref()) {
-                    Ok(report) => Ok(CallToolResult::success(vec![Content::text(
-                        report.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::CrateDocs, ValidateAction::CheckStale) => {
-                match self.crate_manager.check_stale_docs(
-                    input.crate_filter.as_deref(),
-                    input.stale_threshold_days,
-                    input.very_stale_threshold_days,
-                ) {
-                    Ok(report) => Ok(CallToolResult::success(vec![Content::text(
-                        report.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-            (ValidateTarget::CrateDocs, ValidateAction::Sync) => {
+    /// Regenerate an agent-docs INDEX for the requested doc type.
+    fn regenerate_index_action(
+        &self,
+        input: &ValidateInput,
+    ) -> Result<CallToolResult, McpError> {
+        let doc_type = input
+            .doc_type
+            .as_ref()
+            .and_then(|s| parse_doc_type(s))
+            .ok_or_else(|| {
+                McpError::invalid_params(
+                    "doc_type required for regenerate_index",
+                    None,
+                )
+            })?;
+        Ok(match self.manager.update_index(doc_type) {
+            Ok(path) => CallToolResult::success(vec![Content::text(format!(
+                "Regenerated INDEX at: {}",
+                path
+            ))]),
+            Err(e) => CallToolResult::error(vec![Content::text(format!(
+                "Error: {}",
+                e
+            ))]),
+        })
+    }
+
+    /// Add frontmatter to agent docs missing it for the requested doc type.
+    fn add_frontmatter_action(
+        &self,
+        input: &ValidateInput,
+    ) -> Result<CallToolResult, McpError> {
+        let doc_type = match input.doc_type.as_deref() {
+            None | Some("all") => None,
+            Some(dt_str) => match parse_doc_type(dt_str) {
+                Some(dt) => Some(dt),
+                None => return Ok(CallToolResult::error(vec![Content::text(
+                    format!("Invalid doc_type: {}. Use guide, plan, implemented, bug-report, analysis, or all", dt_str)
+                )])),
+            },
+        };
+        Ok(markdown_or_error(
+            self.manager
+                .add_frontmatter(doc_type, input.dry_run)
+                .map(|r| r.to_markdown()),
+        ))
+    }
+
+    /// Handle `validate` actions scoped to crate documentation.
+    fn validate_crate_docs_target(
+        &self,
+        input: &ValidateInput,
+    ) -> Result<CallToolResult, McpError> {
+        match input.action {
+            ValidateAction::Validate => Ok(markdown_or_error(
+                self.crate_manager
+                    .validate_crate_docs(input.crate_filter.as_deref())
+                    .map(|r| r.to_markdown()),
+            )),
+            ValidateAction::CheckStale => Ok(markdown_or_error(
+                self.crate_manager
+                    .check_stale_docs(
+                        input.crate_filter.as_deref(),
+                        input.stale_threshold_days,
+                        input.very_stale_threshold_days,
+                    )
+                    .map(|r| r.to_markdown()),
+            )),
+            ValidateAction::Sync => {
                 let crate_name = input.crate_filter.as_ref().ok_or_else(|| {
                     McpError::invalid_params(
                         "crate_filter required for sync action",
                         None,
                     )
                 })?;
+                Ok(markdown_or_error(
+                    self.crate_manager
+                        .sync_crate_docs(
+                            crate_name,
+                            input.module_path.as_deref(),
+                            input.update_timestamp,
+                            input.summary_only,
+                        )
+                        .map(|r| r.to_markdown()),
+                ))
+            },
+            ValidateAction::Health
+            | ValidateAction::RegenerateIndex
+            | ValidateAction::AddFrontmatter
+            | ValidateAction::ReviewNeeded => {
+                Ok(CallToolResult::error(vec![Content::text(
+                    "health, regenerate_index, add_frontmatter, and review_needed actions are only valid for agent_docs target",
+                )]))
+            },
+        }
+    }
 
-                match self.crate_manager.sync_crate_docs(
-                    crate_name,
-                    input.module_path.as_deref(),
-                    input.update_timestamp,
-                    input.summary_only,
-                ) {
-                    Ok(result) => Ok(CallToolResult::success(vec![Content::text(
-                        result.to_markdown(),
-                    )])),
-                    Err(e) => Ok(CallToolResult::error(vec![Content::text(format!(
-                        "Error: {}",
-                        e
-                    ))])),
-                }
-            }
-
-            // All targets
-            (ValidateTarget::All, ValidateAction::Validate) => {
+    /// Handle `validate` actions scoped to all documentation targets.
+    fn validate_all_target(
+        &self,
+        input: &ValidateInput,
+    ) -> Result<CallToolResult, McpError> {
+        match input.action {
+            ValidateAction::Validate => {
                 let mut md = String::from("# Validation Report\n\n");
 
                 md.push_str("## Agent Documentation\n\n");
@@ -696,8 +735,8 @@ Actions:
                 }
 
                 Ok(CallToolResult::success(vec![Content::text(md)]))
-            }
-            (ValidateTarget::All, ValidateAction::Health) => {
+            },
+            ValidateAction::Health => {
                 let mut md = String::from("# Health Dashboard\n\n");
 
                 md.push_str("## Agent Documentation\n\n");
@@ -710,38 +749,26 @@ Actions:
                 md.push_str("\n\n## Crate Documentation\n\n");
                 match self.crate_manager.validate_crate_docs(None) {
                     Ok(report) => {
-                        md.push_str(&format!("**{} crates checked, {} modules checked**\n", 
-                            report.crates_checked, report.modules_checked));
-                        md.push_str(&format!("**Issues found:** {}\n", report.issues.len()));
-                    }
+                        md.push_str(&format!(
+                            "**{} crates checked, {} modules checked**\n",
+                            report.crates_checked, report.modules_checked
+                        ));
+                        md.push_str(&format!(
+                            "**Issues found:** {}\n",
+                            report.issues.len()
+                        ));
+                    },
                     Err(e) => md.push_str(&format!("Error: {}\n", e)),
                 }
 
                 Ok(CallToolResult::success(vec![Content::text(md)]))
-            }
-
-            // Invalid combinations
-            (ValidateTarget::AgentDocs, ValidateAction::CheckStale) |
-            (ValidateTarget::AgentDocs, ValidateAction::Sync) => {
-                Ok(CallToolResult::error(vec![Content::text(
-                    "check_stale and sync actions are only valid for crate_docs target"
-                )]))
-            }
-            (ValidateTarget::CrateDocs, ValidateAction::Health) |
-            (ValidateTarget::CrateDocs, ValidateAction::RegenerateIndex) |
-            (ValidateTarget::CrateDocs, ValidateAction::AddFrontmatter) |
-            (ValidateTarget::CrateDocs, ValidateAction::ReviewNeeded) => {
-                Ok(CallToolResult::error(vec![Content::text(
-                    "health, regenerate_index, add_frontmatter, and review_needed actions are only valid for agent_docs target"
-                )]))
-            }
-            (ValidateTarget::All, _) => {
-                Ok(CallToolResult::error(vec![Content::text(
-                    "Only validate and health actions are supported for 'all' target"
-                )]))
-            }
+            },
+            _ => Ok(CallToolResult::error(vec![Content::text(
+                "Only validate and health actions are supported for 'all' target",
+            )])),
         }
     }
+
 
     // ============================================================
     // CREATE - Create new documentation

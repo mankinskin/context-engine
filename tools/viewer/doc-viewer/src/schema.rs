@@ -667,84 +667,92 @@ impl SyncAnalysisResult {
             self.files_analyzed.len()
         ));
 
-        if !self.errors.is_empty() {
-            out.push_str("## Errors\n\n");
-            for err in &self.errors {
-                out.push_str(&format!("- {}\n", err));
-            }
-            out.push('\n');
-        }
-
-        // Show summary if available
-        if let Some(summary) = &self.summary {
-            out.push_str("## Summary\n\n");
-            out.push_str(&format!(
-                "- **Types found:** {}\n- **Traits found:** {}\n- **Macros found:** {}\n- **To add:** {}\n- **To remove:** {}\n\n",
-                summary.types_found, summary.traits_found, summary.macros_found,
-                summary.to_add, summary.to_remove
-            ));
-        }
-
-        // Found items (only if not empty - omitted in summary mode)
-        if !self.public_types.is_empty()
-            || !self.public_traits.is_empty()
-            || !self.public_macros.is_empty()
-        {
-            out.push_str("## Public Items Found\n\n");
-            if !self.public_types.is_empty() {
-                out.push_str(&format!(
-                    "**Types ({}):** {}\n\n",
-                    self.public_types.len(),
-                    self.public_types.join(", ")
-                ));
-            }
-            if !self.public_traits.is_empty() {
-                out.push_str(&format!(
-                    "**Traits ({}):** {}\n\n",
-                    self.public_traits.len(),
-                    self.public_traits.join(", ")
-                ));
-            }
-            if !self.public_macros.is_empty() {
-                out.push_str(&format!(
-                    "**Macros ({}):** {}\n\n",
-                    self.public_macros.len(),
-                    self.public_macros.join(", ")
-                ));
-            }
-        }
-
-        // Suggestions
-        if !self.suggestions.is_empty() {
-            out.push_str("## Suggested Changes\n\n");
-            out.push_str("| Action | Kind | Name | Source |\n");
-            out.push_str("|--------|------|------|--------|\n");
-            for sug in &self.suggestions {
-                let action_icon = match sug.change_type.as_str() {
-                    "add" => "➕",
-                    "update" => "🔄",
-                    "remove" => "➖",
-                    _ => "❓",
-                };
-                let source = match sug.line_number {
-                    Some(ln) => format!("{}:{}", sug.source_file, ln),
-                    None => sug.source_file.clone(),
-                };
-                out.push_str(&format!(
-                    "| {} {} | {} | `{}` | {} |\n",
-                    action_icon,
-                    sug.change_type,
-                    sug.item_kind,
-                    sug.item_name,
-                    source
-                ));
-            }
-        } else {
-            out.push_str(
-                "✅ No suggested changes - documentation appears up to date.\n",
-            );
-        }
+        self.push_errors_section(&mut out);
+        self.push_summary_section(&mut out);
+        self.push_public_items_section(&mut out);
+        self.push_suggestions_section(&mut out);
 
         out
     }
+
+    fn push_errors_section(&self, out: &mut String) {
+        if self.errors.is_empty() {
+            return;
+        }
+        out.push_str("## Errors\n\n");
+        for err in &self.errors {
+            out.push_str(&format!("- {}\n", err));
+        }
+        out.push('\n');
+    }
+
+    fn push_summary_section(&self, out: &mut String) {
+        let Some(summary) = &self.summary else {
+            return;
+        };
+        out.push_str("## Summary\n\n");
+        out.push_str(&format!(
+            "- **Types found:** {}\n- **Traits found:** {}\n- **Macros found:** {}\n- **To add:** {}\n- **To remove:** {}\n\n",
+            summary.types_found, summary.traits_found, summary.macros_found,
+            summary.to_add, summary.to_remove
+        ));
+    }
+
+    fn push_public_items_section(&self, out: &mut String) {
+        if self.public_types.is_empty()
+            && self.public_traits.is_empty()
+            && self.public_macros.is_empty()
+        {
+            return;
+        }
+        out.push_str("## Public Items Found\n\n");
+        push_public_item_group(out, "Types", &self.public_types);
+        push_public_item_group(out, "Traits", &self.public_traits);
+        push_public_item_group(out, "Macros", &self.public_macros);
+    }
+
+    fn push_suggestions_section(&self, out: &mut String) {
+        if self.suggestions.is_empty() {
+            out.push_str(
+                "✅ No suggested changes - documentation appears up to date.\n",
+            );
+            return;
+        }
+        out.push_str("## Suggested Changes\n\n");
+        out.push_str("| Action | Kind | Name | Source |\n");
+        out.push_str("|--------|------|------|--------|\n");
+        for sug in &self.suggestions {
+            let action_icon = match sug.change_type.as_str() {
+                "add" => "➕",
+                "update" => "🔄",
+                "remove" => "➖",
+                _ => "❓",
+            };
+            let source = match sug.line_number {
+                Some(ln) => format!("{}:{}", sug.source_file, ln),
+                None => sug.source_file.clone(),
+            };
+            out.push_str(&format!(
+                "| {} {} | {} | `{}` | {} |\n",
+                action_icon,
+                sug.change_type,
+                sug.item_kind,
+                sug.item_name,
+                source
+            ));
+        }
+    }
+}
+
+/// Append a `**Label (n):** a, b, c` line for a non-empty public-item group.
+fn push_public_item_group(out: &mut String, label: &str, items: &[String]) {
+    if items.is_empty() {
+        return;
+    }
+    out.push_str(&format!(
+        "**{} ({}):** {}\n\n",
+        label,
+        items.len(),
+        items.join(", ")
+    ));
 }

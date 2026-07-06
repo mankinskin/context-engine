@@ -541,64 +541,51 @@ fn scan_crate_source_files(
     };
 
     // Scan src/ directory for .rs files (only direct children, not recursive)
-    if src_dir.exists() && src_dir.is_dir() {
-        if let Ok(entries) = std::fs::read_dir(&src_dir) {
-            for entry in entries.filter_map(|e| e.ok()) {
-                let path = entry.path();
-                if path.is_file() {
-                    if let Some(ext) = path.extension() {
-                        if ext == "rs" {
-                            let rel_path = path
-                                .strip_prefix(crate_dir)
-                                .map(|p| {
-                                    normalize_path_str(&p.to_string_lossy())
-                                })
-                                .unwrap_or_default();
-                            let abs_path = unix_path(&path);
-                            let vscode_uri = to_vscode_file_uri(&path);
-                            files.push(SourceFileLinkResponse {
-                                rel_path,
-                                abs_path,
-                                vscode_uri,
-                            });
-                        }
-                    }
-                }
-            }
-        }
-    }
+    scan_dir_by_extension(&src_dir, crate_dir, &["rs"], &mut files);
 
     // Scan agents/docs/ directory for .yaml and .md files
-    if docs_dir.exists() && docs_dir.is_dir() {
-        if let Ok(entries) = std::fs::read_dir(&docs_dir) {
-            for entry in entries.filter_map(|e| e.ok()) {
-                let path = entry.path();
-                if path.is_file() {
-                    if let Some(ext) = path.extension() {
-                        if ext == "yaml" || ext == "yml" || ext == "md" {
-                            let rel_path = path
-                                .strip_prefix(crate_dir)
-                                .map(|p| {
-                                    normalize_path_str(&p.to_string_lossy())
-                                })
-                                .unwrap_or_default();
-                            let abs_path = unix_path(&path);
-                            let vscode_uri = to_vscode_file_uri(&path);
-                            files.push(SourceFileLinkResponse {
-                                rel_path,
-                                abs_path,
-                                vscode_uri,
-                            });
-                        }
-                    }
-                }
-            }
-        }
-    }
+    scan_dir_by_extension(&docs_dir, crate_dir, &["yaml", "yml", "md"], &mut files);
 
     // Sort files by name
     files.sort_by(|a, b| a.rel_path.cmp(&b.rel_path));
     files
+}
+
+/// Push `SourceFileLinkResponse` entries for direct-child files in `dir`
+/// whose extension matches one of `exts`. Paths are relativized to `crate_dir`.
+fn scan_dir_by_extension(
+    dir: &std::path::Path,
+    crate_dir: &std::path::Path,
+    exts: &[&str],
+    files: &mut Vec<SourceFileLinkResponse>,
+) {
+    if !(dir.exists() && dir.is_dir()) {
+        return;
+    }
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for entry in entries.filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Some(ext) = path.extension() else {
+            continue;
+        };
+        if !exts.iter().any(|e| ext == *e) {
+            continue;
+        }
+        let rel_path = path
+            .strip_prefix(crate_dir)
+            .map(|p| normalize_path_str(&p.to_string_lossy()))
+            .unwrap_or_default();
+        files.push(SourceFileLinkResponse {
+            rel_path,
+            abs_path: unix_path(&path),
+            vscode_uri: to_vscode_file_uri(&path),
+        });
+    }
 }
 
 // === Helpers ===
@@ -652,38 +639,7 @@ async fn query_docs(
 
     for dt in doc_types {
         match state.docs_manager.list_documents_filtered(dt, &filter) {
-            Ok(docs) => {
-                for d in docs {
-                    // Convert doc to JSON value for JQ query
-                    let mut doc_json = serde_json::json!({
-                        "doc_type": dt.directory(),
-                        "filename": d.filename,
-                        "title": d.title,
-                        "date": d.date,
-                        "summary": d.summary,
-                        "tags": d.tags,
-                        "status": d.status.map(|s| s.to_string()),
-                    });
-
-                    // Optionally include parsed markdown content
-                    if params.include_content {
-                        if let Ok(result) = state
-                            .docs_manager
-                            .read_document(&d.filename, DetailLevel::Full)
-                        {
-                            if let Some(body) = &result.body {
-                                if let Ok(ast) =
-                                    markdown_ast::parse_markdown_to_json(body)
-                                {
-                                    doc_json["content"] = ast;
-                                }
-                            }
-                        }
-                    }
-
-                    all_docs.push(doc_json);
-                }
-            },
+            Ok(docs) => collect_query_docs(&state, dt, docs, params.include_content, &mut all_docs),
             Err(e) =>
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
@@ -717,6 +673,46 @@ async fn query_docs(
             }),
         )),
     }
+}
+
+/// Convert listed documents of one `DocType` into JSON values for JQ querying,
+/// optionally including parsed markdown content, appending to `all_docs`.
+fn collect_query_docs(
+    state: &HttpState,
+    dt: DocType,
+    docs: Vec<crate::tools::agents::DocSummary>,
+    include_content: bool,
+    all_docs: &mut Vec<Value>,
+) {
+    for d in docs {
+        let mut doc_json = serde_json::json!({
+            "doc_type": dt.directory(),
+            "filename": d.filename,
+            "title": d.title,
+            "date": d.date,
+            "summary": d.summary,
+            "tags": d.tags,
+            "status": d.status.map(|s| s.to_string()),
+        });
+
+        if include_content {
+            if let Some(ast) = read_doc_content_ast(state, &d.filename) {
+                doc_json["content"] = ast;
+            }
+        }
+
+        all_docs.push(doc_json);
+    }
+}
+
+/// Read a document body and parse it into a markdown-AST JSON value.
+fn read_doc_content_ast(state: &HttpState, filename: &str) -> Option<Value> {
+    let result = state
+        .docs_manager
+        .read_document(filename, DetailLevel::Full)
+        .ok()?;
+    let body = result.body.as_ref()?;
+    markdown_ast::parse_markdown_to_json(body).ok()
 }
 
 /// GET /api/docs/:filename/ast - Get markdown AST for a document
