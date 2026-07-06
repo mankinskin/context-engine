@@ -100,12 +100,20 @@ Changes (all behavior-preserving helper extractions):
 Validation: `cargo test -p peek-api -p peek-cli` → 6 passed (3 peek-api unit + 3 repo_map_contracts), 0 failed.
 Audit delta: root-tools static_complexity 12 → 10 (both peek findings resolved, 0 new). Overall static_complexity 53 → 51; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk5_after.json
 
+## Chunk 6 — log-viewer (2026-07-06, copilot-gpt53-codex) — DONE
+Files changed: tools/viewer/log-viewer/src/handlers.rs, tools/viewer/log-viewer/frontend/dioxus/src/app.rs
+Changes (all behavior-preserving helper extractions):
+- handlers.rs search_log (14): extracted is_invalid_filename and entry_matches_query helper fns; search_log now delegates level+field matching through entry_matches_query and reuses filename validation helper.
+- app.rs App (14): extracted branch-heavy load/refresh flows into restore_existing_file_state, spawn_load_file_task, and spawn_refresh_all_task; extracted source panel rendering into render_source_panel; App remains thin wrapper and AppInner now delegates async control flow through helpers.
+Validation: `cargo test -p log-viewer` → 51 passed, 0 failed.
+Audit delta: root-tools static_complexity 10 → 8 (both log-viewer findings resolved, 0 new). Overall static_complexity 51 → 49; no other category regressed (file_length 183→183). After artifact: target/tmp/batch2_tools_audit_chunk6_after.json
+
 # Next Unresolved Action
-Continue with chunk 6. Remaining root-tools count: 10. Remaining clusters (none in doc-viewer or peek):
-- tools/viewer/log-viewer/frontend/dioxus/src/app.rs (1): App (14)
-- tools/viewer/log-viewer/src/handlers.rs (1): search_log (14)
-- tools/dungeon-crawler (8): enemy.rs random_enemy (25); game.rs handle_explore_cmd (38), handle_combat_cmd (32), look (13), do_talk (17), do_buy (16); world.rs ensure_generated (14), draw_map (17)
-Suggested chunk 6: log-viewer (app.rs + handlers.rs = 2) as a cohesive small chunk; dungeon-crawler (8) as its own larger chunk (may need splitting into 2 sub-chunks given game.rs volume). Checkpoint commit for chunk 5 recommended before chunk 6.
+Continue with chunk 7 (dungeon-crawler cluster). Remaining root-tools count: 8.
+- tools/dungeon-crawler/src/enemy.rs: random_enemy (25)
+- tools/dungeon-crawler/src/game.rs: handle_explore_cmd (38), handle_combat_cmd (32), look (13), do_talk (17), do_buy (16)
+- tools/dungeon-crawler/src/world.rs: ensure_generated (14), draw_map (17)
+Suggested chunk 7 split: 7A = enemy.rs + world.rs (3 findings), 7B = game.rs command handlers (5 findings). Chunk-6 source + ticket updates are currently uncommitted and form a clean checkpoint boundary.
 
 # Handoff Notes
-Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 10 (19 resolved across chunks 1-5); doc-viewer + peek crates fully clear of static_complexity findings. Chunk-5 source changes (tools/peek-api/src/lib.rs, tools/cli/peek-cli/src/main.rs) are uncommitted pending checkpoint.
+Board check-in: copilot-opus48 on this ticket (heartbeat refreshed). Authoritative restart source is this description (session-store history not populated for this track). Governing tracker: 5f9542bf (root), depends on this batch; batch-3 (memory-api) e179f11a is blocked behind this. Cumulative: batch-2 tools 29 → 8 (21 resolved across chunks 1-6); doc-viewer + peek + log-viewer clusters are now clear of static_complexity findings. Chunk-6 source changes (tools/viewer/log-viewer/src/handlers.rs, tools/viewer/log-viewer/frontend/dioxus/src/app.rs) plus this ticket description update are uncommitted pending checkpoint.
