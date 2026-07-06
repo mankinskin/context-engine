@@ -19,7 +19,10 @@ use crate::{
         Spell,
         Stat,
     },
-    npc::NpcKind,
+    npc::{
+        Npc,
+        NpcKind,
+    },
     player::Player,
     world::{
         self,
@@ -108,92 +111,403 @@ impl Game {
 
     // ── Explore Commands ────────────────────────────────────────────────
 
-    fn handle_explore_cmd(
+    fn handle_move_command(
         &mut self,
         cmd: &str,
-    ) {
+    ) -> bool {
         match cmd {
             "n" | "north" => self.do_move("north"),
             "s" | "south" => self.do_move("south"),
             "e" | "east" => self.do_move("east"),
             "w" | "west" => self.do_move("west"),
+            _ => return false,
+        }
+        true
+    }
+
+    fn handle_explore_info_command(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        match cmd {
             "look" | "l" => self.look(),
             "map" | "m" => {
                 let vd = self.player.view_distance;
                 println!("{}", draw_map(&self.map, self.player.pos, vd));
             },
+            "inv" | "inventory" | "i" => self.show_inventory(),
+            "stats" | "st" => self.show_stats(),
+            "spells" => self.show_spells(),
+            "help" | "h" | "?" => self.show_help(),
+            _ => return false,
+        }
+        true
+    }
+
+    fn handle_explore_action_command(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        match cmd {
             "rest" | "r" => self.do_rest(),
             "fight" | "attack" => self.start_combat(),
             "talk" => self.do_talk(),
             "trade" => self.do_trade(),
             "heal" => self.do_npc_heal(),
             "upgrade" => self.do_upgrade(),
-            "inv" | "inventory" | "i" => self.show_inventory(),
-            "stats" | "st" => self.show_stats(),
-            "spells" => self.show_spells(),
-            "help" | "h" | "?" => self.show_help(),
             "quit" | "q" => {
                 println!("Thanks for playing!");
                 self.running = false;
             },
+            _ => return false,
+        }
+        true
+    }
+
+    fn handle_explore_builtin(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        self.handle_move_command(cmd)
+            || self.handle_explore_info_command(cmd)
+            || self.handle_explore_action_command(cmd)
+    }
+
+    fn handle_out_of_combat_cast(
+        &mut self,
+        spell_name: &str,
+    ) {
+        if spell_name == "heal"
+            && self.player.known_spells.contains(&Spell::Heal)
+        {
+            if self.player.mana >= Spell::Heal.mana_cost() {
+                self.player.mana -= Spell::Heal.mana_cost();
+                let wis = self.player.effective_stat(&Stat::Wisdom);
+                let heal = self.rng.gen_range(10 + wis..=20 + wis * 2);
+                let actual = heal.min(self.player.max_hp - self.player.hp);
+                self.player.hp += actual;
+                println!(
+                    "You cast Heal! Restored {} HP. (HP: {}/{})",
+                    actual, self.player.hp, self.player.max_hp
+                );
+            } else {
+                println!(
+                    "Not enough mana! (Need {}, have {})",
+                    Spell::Heal.mana_cost(),
+                    self.player.mana
+                );
+            }
+            return;
+        }
+        println!("You can only cast Heal outside of combat.");
+    }
+
+    fn handle_inventory_prefixed_command(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        if let Some(rest) = cmd.strip_prefix("take ") {
+            self.do_take_named(rest);
+            return true;
+        }
+        if cmd == "take" || cmd == "get" {
+            self.do_take_first();
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("drop ") {
+            self.do_drop(rest);
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("use ") {
+            self.do_use(rest);
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("equip ") {
+            self.do_equip(rest);
+            return true;
+        }
+        false
+    }
+
+    fn handle_equipment_shortcuts(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        match cmd {
+            "unequip weapon" | "unequip w" => self.do_unequip_weapon(),
+            "unequip armor" | "unequip a" => self.do_unequip_armor(),
+            "unequip backpack" | "unequip b" => self.do_unequip_backpack(),
+            _ => return false,
+        }
+        true
+    }
+
+    fn handle_progression_prefixed_command(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        if let Some(rest) = cmd.strip_prefix("allocate ") {
+            self.do_allocate(rest);
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("buy ") {
+            self.do_buy(rest);
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("sell ") {
+            self.do_sell(rest);
+            return true;
+        }
+        if let Some(rest) = cmd.strip_prefix("cast ") {
+            self.handle_out_of_combat_cast(rest);
+            return true;
+        }
+        false
+    }
+
+    fn handle_explore_extended(
+        &mut self,
+        cmd: &str,
+    ) -> bool {
+        self.handle_inventory_prefixed_command(cmd)
+            || self.handle_equipment_shortcuts(cmd)
+            || self.handle_progression_prefixed_command(cmd)
+    }
+
+    fn handle_explore_cmd(
+        &mut self,
+        cmd: &str,
+    ) {
+        if self.handle_explore_builtin(cmd) {
+            return;
+        }
+        if self.handle_explore_extended(cmd) {
+            return;
+        }
+        println!("Unknown command. Type 'help'.");
+    }
+
+    // ── Combat Commands ─────────────────────────────────────────────────
+
+    fn use_item_in_combat(
+        &mut self,
+        enemy: &mut Enemy,
+        item_name: &str,
+    ) -> CombatResult {
+        let Some(idx) = self.player.inventory.find_by_name(item_name) else {
+            return CombatResult::Continue("You don't have that item.".into());
+        };
+        let Some(msg) = self.player.use_potion(idx) else {
+            return CombatResult::Continue(
+                "Can't use that item in combat.".into(),
+            );
+        };
+
+        let mut full_msg = format!("  {}", msg);
+        let raw_dmg = enemy.attack_damage(&mut self.rng);
+        let actual = (raw_dmg - self.player.total_defense()).max(1);
+        if self.rng.gen::<f32>() < self.player.dodge_chance() {
+            full_msg += &format!("\n  {} attacks but you dodge!", enemy.name);
+        } else {
+            self.player.hp -= actual;
+            full_msg += &format!(
+                "\n  {} hits you for {} dmg! (HP: {})",
+                enemy.name,
+                actual,
+                self.player.hp.max(0)
+            );
+        }
+        if self.player.hp <= 0 {
+            return CombatResult::PlayerDied(
+                full_msg + "\n  You have fallen... GAME OVER.",
+            );
+        }
+        self.player.tick_buffs();
+        CombatResult::Continue(full_msg)
+    }
+
+    fn command_result_in_combat(
+        &mut self,
+        enemy: &mut Enemy,
+        cmd: &str,
+    ) -> Option<CombatResult> {
+        match cmd {
+            "attack" | "a" | "fight" | "hit" => Some(combat::player_attack(
+                &mut self.player,
+                enemy,
+                &mut self.rng,
+            )),
+            "flee" | "run" => {
+                Some(combat::try_flee(&self.player, enemy, &mut self.rng))
+            },
+            _ if cmd.starts_with("cast ") => {
+                let spell_name = cmd.strip_prefix("cast ").unwrap();
+                Some(match Spell::from_str(spell_name) {
+                    Some(spell) => combat::player_cast(
+                        &mut self.player,
+                        enemy,
+                        &spell,
+                        &mut self.rng,
+                    ),
+                    None => CombatResult::Continue(
+                        "Unknown spell. Type 'spells' to see known spells."
+                            .into(),
+                    ),
+                })
+            },
+            _ if cmd.starts_with("use ") => {
+                let item_name = cmd.strip_prefix("use ").unwrap();
+                Some(self.use_item_in_combat(enemy, item_name))
+            },
+            "inv" | "inventory" | "i" => {
+                self.show_inventory();
+                None
+            },
+            "spells" => {
+                self.show_spells();
+                None
+            },
+            "stats" | "st" => {
+                self.show_stats();
+                None
+            },
+            "help" | "h" | "?" => {
+                println!("Combat: attack, cast <spell>, use <potion>, flee, inv, spells, stats");
+                None
+            },
             _ => {
-                if let Some(rest) = cmd.strip_prefix("take ") {
-                    self.do_take_named(rest);
-                } else if cmd == "take" || cmd == "get" {
-                    self.do_take_first();
-                } else if let Some(rest) = cmd.strip_prefix("drop ") {
-                    self.do_drop(rest);
-                } else if let Some(rest) = cmd.strip_prefix("use ") {
-                    self.do_use(rest);
-                } else if let Some(rest) = cmd.strip_prefix("equip ") {
-                    self.do_equip(rest);
-                } else if cmd == "unequip weapon" || cmd == "unequip w" {
-                    self.do_unequip_weapon();
-                } else if cmd == "unequip armor" || cmd == "unequip a" {
-                    self.do_unequip_armor();
-                } else if cmd == "unequip backpack" || cmd == "unequip b" {
-                    self.do_unequip_backpack();
-                } else if let Some(rest) = cmd.strip_prefix("allocate ") {
-                    self.do_allocate(rest);
-                } else if let Some(rest) = cmd.strip_prefix("buy ") {
-                    self.do_buy(rest);
-                } else if let Some(rest) = cmd.strip_prefix("sell ") {
-                    self.do_sell(rest);
-                } else if let Some(rest) = cmd.strip_prefix("cast ") {
-                    // Cast heal outside combat
-                    if rest == "heal"
-                        && self.player.known_spells.contains(&Spell::Heal)
-                    {
-                        if self.player.mana >= Spell::Heal.mana_cost() {
-                            self.player.mana -= Spell::Heal.mana_cost();
-                            let wis = self.player.effective_stat(&Stat::Wisdom);
-                            let heal =
-                                self.rng.gen_range(10 + wis..=20 + wis * 2);
-                            let actual =
-                                heal.min(self.player.max_hp - self.player.hp);
-                            self.player.hp += actual;
-                            println!(
-                                "You cast Heal! Restored {} HP. (HP: {}/{})",
-                                actual, self.player.hp, self.player.max_hp
-                            );
-                        } else {
-                            println!(
-                                "Not enough mana! (Need {}, have {})",
-                                Spell::Heal.mana_cost(),
-                                self.player.mana
-                            );
-                        }
-                    } else {
-                        println!("You can only cast Heal outside of combat.");
-                    }
-                } else {
-                    println!("Unknown command. Type 'help'.");
-                }
+                println!(
+                    "In combat! Use: attack, cast <spell>, use <potion>, flee"
+                );
+                None
             },
         }
     }
 
-    // ── Combat Commands ─────────────────────────────────────────────────
+    fn on_enemy_died(
+        &mut self,
+        msg: String,
+        xp: u32,
+        coins: u32,
+    ) {
+        println!("{}", msg);
+        self.player.xp += xp;
+        self.player.coins += coins;
+
+        let was_boss = self.combat_target.as_ref().map_or(false, |e| e.is_boss);
+        self.combat_target = None;
+
+        if was_boss {
+            let loot = items::dragon_hoard(&mut self.rng);
+            let pos = self.player.pos;
+            if let Some(room) = self.map.rooms.get_mut(&pos) {
+                for item in loot {
+                    println!("  The dragon dropped: {}!", item.name);
+                    room.items.push(item);
+                }
+            }
+        } else if self.rng.gen_bool(0.3) {
+            let loot = items::random_ground_loot(&mut self.rng);
+            let pos = self.player.pos;
+            if let Some(room) = self.map.rooms.get_mut(&pos) {
+                println!("  Dropped: {}!", loot.name);
+                room.items.push(loot);
+            }
+        }
+
+        while self.player.check_level_up() {
+            println!(
+                "\n  *** LEVEL UP! You are now level {}! ***",
+                self.player.level
+            );
+            println!(
+                "  +5 max HP, +3 max mana, +3 skill points. Fully restored!"
+            );
+        }
+
+        if was_boss && self.player.pos == self.map.exit_pos {
+            self.won = true;
+            self.running = false;
+        }
+
+        self.show_status();
+    }
+
+    fn on_player_fled(&mut self, msg: String) {
+        println!("{}", msg);
+        if let Some(enemy) = self.combat_target.take() {
+            let pos = self.player.pos;
+            if let Some(room) = self.map.rooms.get_mut(&pos) {
+                room.enemy = Some(enemy);
+            }
+        }
+    }
+
+    fn apply_combat_result(
+        &mut self,
+        result: CombatResult,
+    ) {
+        match result {
+            CombatResult::Continue(msg) => {
+                println!("{}", msg);
+                self.show_combat_status();
+            },
+            CombatResult::EnemyDied { msg, xp, coins } =>
+                self.on_enemy_died(msg, xp, coins),
+            CombatResult::PlayerDied(msg) => {
+                println!("{}", msg);
+                self.combat_target = None;
+                self.running = false;
+            },
+            CombatResult::Fled(msg) => self.on_player_fled(msg),
+        }
+    }
+    fn take_trader_npc(
+        &mut self,
+        pos: world::Pos,
+    ) -> Option<Npc> {
+        let room = match self.map.rooms.get_mut(&pos) {
+            Some(r) => r,
+            None => {
+                println!("No one to trade with.");
+                return None;
+            },
+        };
+        match room.npc.take() {
+            Some(n) if n.kind == NpcKind::Merchant || n.kind == NpcKind::Sage => {
+                Some(n)
+            },
+            Some(n) => {
+                room.npc = Some(n);
+                println!("This NPC doesn't sell items.");
+                None
+            },
+            None => {
+                println!("No one to trade with.");
+                None
+            },
+        }
+    }
+
+    fn restore_trader(
+        map: &mut world::Map,
+        pos: world::Pos,
+        npc: Npc,
+    ) {
+        if let Some(room) = map.rooms.get_mut(&pos) {
+            room.npc = Some(npc);
+        }
+    }
+
+    fn parse_buy_index(
+        arg: &str,
+        npc: &Npc,
+    ) -> Option<usize> {
+        match arg.parse::<usize>() {
+            Ok(n) if n > 0 && n <= npc.shop.len() => Some(n - 1),
+            _ => None,
+        }
+    }
 
     fn handle_combat_cmd(
         &mut self,
@@ -206,158 +520,10 @@ impl Game {
         // Safety: we only access enemy through this pointer while combat_target is Some
         let enemy = unsafe { &mut *enemy };
 
-        let result = match cmd {
-            "attack" | "a" | "fight" | "hit" =>
-                combat::player_attack(&mut self.player, enemy, &mut self.rng),
-            "flee" | "run" =>
-                combat::try_flee(&self.player, enemy, &mut self.rng),
-            _ if cmd.starts_with("cast ") => {
-                let spell_name = cmd.strip_prefix("cast ").unwrap();
-                match Spell::from_str(spell_name) {
-                    Some(spell) => combat::player_cast(
-                        &mut self.player,
-                        enemy,
-                        &spell,
-                        &mut self.rng,
-                    ),
-                    None => CombatResult::Continue(
-                        "Unknown spell. Type 'spells' to see known spells."
-                            .into(),
-                    ),
-                }
-            },
-            _ if cmd.starts_with("use ") => {
-                let item_name = cmd.strip_prefix("use ").unwrap();
-                if let Some(idx) = self.player.inventory.find_by_name(item_name)
-                {
-                    if let Some(msg) = self.player.use_potion(idx) {
-                        // Using a potion costs your turn, enemy attacks
-                        let mut full_msg = format!("  {}", msg);
-                        // Enemy still attacks
-                        let raw_dmg = enemy.attack_damage(&mut self.rng);
-                        let actual =
-                            (raw_dmg - self.player.total_defense()).max(1);
-                        if self.rng.gen::<f32>() < self.player.dodge_chance() {
-                            full_msg += &format!(
-                                "\n  {} attacks but you dodge!",
-                                enemy.name
-                            );
-                        } else {
-                            self.player.hp -= actual;
-                            full_msg += &format!(
-                                "\n  {} hits you for {} dmg! (HP: {})",
-                                enemy.name,
-                                actual,
-                                self.player.hp.max(0)
-                            );
-                        }
-                        if self.player.hp <= 0 {
-                            CombatResult::PlayerDied(
-                                full_msg + "\n  You have fallen... GAME OVER.",
-                            )
-                        } else {
-                            self.player.tick_buffs();
-                            CombatResult::Continue(full_msg)
-                        }
-                    } else {
-                        CombatResult::Continue(
-                            "Can't use that item in combat.".into(),
-                        )
-                    }
-                } else {
-                    CombatResult::Continue("You don't have that item.".into())
-                }
-            },
-            "inv" | "inventory" | "i" => {
-                self.show_inventory();
-                return;
-            },
-            "spells" => {
-                self.show_spells();
-                return;
-            },
-            "stats" | "st" => {
-                self.show_stats();
-                return;
-            },
-            "help" | "h" | "?" => {
-                println!("Combat: attack, cast <spell>, use <potion>, flee, inv, spells, stats");
-                return;
-            },
-            _ => {
-                println!(
-                    "In combat! Use: attack, cast <spell>, use <potion>, flee"
-                );
-                return;
-            },
+        let Some(result) = self.command_result_in_combat(enemy, cmd) else {
+            return;
         };
-
-        match result {
-            CombatResult::Continue(msg) => {
-                println!("{}", msg);
-                self.show_combat_status();
-            },
-            CombatResult::EnemyDied { msg, xp, coins } => {
-                println!("{}", msg);
-                self.player.xp += xp;
-                self.player.coins += coins;
-
-                let was_boss =
-                    self.combat_target.as_ref().map_or(false, |e| e.is_boss);
-                self.combat_target = None;
-
-                // Drop loot
-                if was_boss {
-                    let loot = items::dragon_hoard(&mut self.rng);
-                    let pos = self.player.pos;
-                    if let Some(room) = self.map.rooms.get_mut(&pos) {
-                        for item in loot {
-                            println!("  The dragon dropped: {}!", item.name);
-                            room.items.push(item);
-                        }
-                    }
-                } else if self.rng.gen_bool(0.3) {
-                    let loot = items::random_ground_loot(&mut self.rng);
-                    let pos = self.player.pos;
-                    if let Some(room) = self.map.rooms.get_mut(&pos) {
-                        println!("  Dropped: {}!", loot.name);
-                        room.items.push(loot);
-                    }
-                }
-
-                // Level up check
-                while self.player.check_level_up() {
-                    println!(
-                        "\n  *** LEVEL UP! You are now level {}! ***",
-                        self.player.level
-                    );
-                    println!("  +5 max HP, +3 max mana, +3 skill points. Fully restored!");
-                }
-
-                // Check win condition
-                if was_boss && self.player.pos == self.map.exit_pos {
-                    self.won = true;
-                    self.running = false;
-                }
-
-                self.show_status();
-            },
-            CombatResult::PlayerDied(msg) => {
-                println!("{}", msg);
-                self.combat_target = None;
-                self.running = false;
-            },
-            CombatResult::Fled(msg) => {
-                println!("{}", msg);
-                // Put enemy back in room
-                if let Some(enemy) = self.combat_target.take() {
-                    let pos = self.player.pos;
-                    if let Some(room) = self.map.rooms.get_mut(&pos) {
-                        room.enemy = Some(enemy);
-                    }
-                }
-            },
-        }
+        self.apply_combat_result(result);
     }
 
     // ── Movement ────────────────────────────────────────────────────────
@@ -433,6 +599,53 @@ impl Game {
 
     // ── Look ────────────────────────────────────────────────────────────
 
+    fn print_enemy_presence(
+        &self,
+        enemy: &Enemy,
+    ) {
+        if self.player.enemies_revealed {
+            println!(
+                "  !! {} (HP:{}/{} ATK:{}-{} DEF:{})",
+                enemy.name,
+                enemy.hp,
+                enemy.max_hp,
+                enemy.min_dmg,
+                enemy.max_dmg,
+                enemy.defense
+            );
+            return;
+        }
+        println!("  !! A {} is here!", enemy.name);
+    }
+
+    fn print_npc_presence(
+        &self,
+        kind: &NpcKind,
+        name: &str,
+    ) {
+        let kind_label = match kind {
+            NpcKind::Merchant => "Merchant",
+            NpcKind::Sage => "Sage",
+            NpcKind::Healer => "Healer",
+            NpcKind::Blacksmith => "Blacksmith",
+            NpcKind::Hermit => "Hermit",
+        };
+        println!("  {} the {} is here.", name, kind_label);
+    }
+
+    fn print_room_items(
+        &self,
+        room: &world::Room,
+    ) {
+        if room.items.is_empty() {
+            return;
+        }
+        println!("  Items on the ground:");
+        for (i, item) in room.items.iter().enumerate() {
+            println!("    {}. {} ({})", i + 1, item.name, item.short_desc());
+        }
+    }
+
     fn look(&self) {
         let pos = self.player.pos;
         let room = match self.map.rooms.get(&pos) {
@@ -444,43 +657,12 @@ impl Game {
         println!("{}", room.description);
 
         if let Some(enemy) = &room.enemy {
-            if self.player.enemies_revealed {
-                println!(
-                    "  !! {} (HP:{}/{} ATK:{}-{} DEF:{})",
-                    enemy.name,
-                    enemy.hp,
-                    enemy.max_hp,
-                    enemy.min_dmg,
-                    enemy.max_dmg,
-                    enemy.defense
-                );
-            } else {
-                println!("  !! A {} is here!", enemy.name);
-            }
+            self.print_enemy_presence(enemy);
         }
-
         if let Some(npc) = &room.npc {
-            let kind = match &npc.kind {
-                NpcKind::Merchant => "Merchant",
-                NpcKind::Sage => "Sage",
-                NpcKind::Healer => "Healer",
-                NpcKind::Blacksmith => "Blacksmith",
-                NpcKind::Hermit => "Hermit",
-            };
-            println!("  {} the {} is here.", npc.name, kind);
+            self.print_npc_presence(&npc.kind, &npc.name);
         }
-
-        if !room.items.is_empty() {
-            println!("  Items on the ground:");
-            for (i, item) in room.items.iter().enumerate() {
-                println!(
-                    "    {}. {} ({})",
-                    i + 1,
-                    item.name,
-                    item.short_desc()
-                );
-            }
-        }
+        self.print_room_items(room);
 
         let exits = self.map.exits(pos);
         println!("  Exits: {}", exits.join(", "));
@@ -955,56 +1137,52 @@ impl Game {
 
     // ── NPC Interaction ─────────────────────────────────────────────────
 
-    fn do_talk(&mut self) {
-        let pos = self.player.pos;
-        // Take NPC out to avoid borrow issues
-        let mut npc = {
-            let room = match self.map.rooms.get_mut(&pos) {
-                Some(r) => r,
-                None => {
-                    println!("No one here to talk to.");
-                    return;
-                },
-            };
-            match room.npc.take() {
-                Some(n) => n,
-                None => {
-                    println!("No one here to talk to.");
-                    return;
-                },
-            }
+    fn take_npc_for_interaction(
+        &mut self,
+        pos: world::Pos,
+    ) -> Option<Npc> {
+        let room = match self.map.rooms.get_mut(&pos) {
+            Some(r) => r,
+            None => {
+                println!("No one here to talk to.");
+                return None;
+            },
         };
+        let Some(npc) = room.npc.take() else {
+            println!("No one here to talk to.");
+            return None;
+        };
+        Some(npc)
+    }
 
-        if !npc.talked {
-            for line in &npc.dialogue {
-                println!("  \"{}\"", line);
-            }
-            npc.talked = true;
-
-            // Hermit gives a free gift on first talk
-            if npc.kind == NpcKind::Hermit && !npc.gave_gift {
-                let gift = items::random_ground_loot(&mut self.rng);
-                println!("\n  {} gives you: {}!", npc.name, gift.name);
-                let strength = self.player.effective_stat(&Stat::Strength);
-                match self.player.inventory.can_add(&gift, strength) {
-                    Ok(()) => self.player.inventory.items.push(gift),
-                    Err(_) => {
-                        println!("  (Inventory full! Dropped on the ground.)");
-                        if let Some(room) = self.map.rooms.get_mut(&pos) {
-                            room.items.push(gift);
-                        }
-                    },
-                }
-                npc.gave_gift = true;
-            }
-        } else {
-            let line =
-                npc.dialogue.last().cloned().unwrap_or_else(|| "...".into());
-            println!("  \"{}\"", line);
+    fn maybe_grant_hermit_gift(
+        &mut self,
+        npc: &mut Npc,
+        pos: world::Pos,
+    ) {
+        if npc.kind != NpcKind::Hermit || npc.gave_gift {
+            return;
         }
+        let gift = items::random_ground_loot(&mut self.rng);
+        println!("\n  {} gives you: {}!", npc.name, gift.name);
+        let strength = self.player.effective_stat(&Stat::Strength);
+        match self.player.inventory.can_add(&gift, strength) {
+            Ok(()) => self.player.inventory.items.push(gift),
+            Err(_) => {
+                println!("  (Inventory full! Dropped on the ground.)");
+                if let Some(room) = self.map.rooms.get_mut(&pos) {
+                    room.items.push(gift);
+                }
+            },
+        }
+        npc.gave_gift = true;
+    }
 
-        // Hints based on NPC kind
-        match npc.kind {
+    fn print_npc_interaction_hint(
+        &self,
+        kind: &NpcKind,
+    ) {
+        match kind {
             NpcKind::Merchant | NpcKind::Sage =>
                 println!("  (Use 'trade' to buy/sell)"),
             NpcKind::Healer =>
@@ -1013,6 +1191,27 @@ impl Game {
                 println!("  (Use 'upgrade' to improve your weapon)"),
             _ => {},
         }
+    }
+
+    fn do_talk(&mut self) {
+        let pos = self.player.pos;
+        let Some(mut npc) = self.take_npc_for_interaction(pos) else {
+            return;
+        };
+
+        if !npc.talked {
+            for line in &npc.dialogue {
+                println!("  \"{}\"", line);
+            }
+            npc.talked = true;
+            self.maybe_grant_hermit_gift(&mut npc, pos);
+        } else {
+            let line =
+                npc.dialogue.last().cloned().unwrap_or_else(|| "...".into());
+            println!("  \"{}\"", line);
+        }
+
+        self.print_npc_interaction_hint(&npc.kind);
 
         // Put NPC back
         if let Some(room) = self.map.rooms.get_mut(&pos) {
@@ -1062,41 +1261,14 @@ impl Game {
         arg: &str,
     ) {
         let pos = self.player.pos;
-        // Take NPC out
-        let mut npc = {
-            let room = match self.map.rooms.get_mut(&pos) {
-                Some(r) => r,
-                None => {
-                    println!("No one to trade with.");
-                    return;
-                },
-            };
-            match room.npc.take() {
-                Some(n)
-                    if n.kind == NpcKind::Merchant
-                        || n.kind == NpcKind::Sage =>
-                    n,
-                Some(n) => {
-                    room.npc = Some(n);
-                    println!("This NPC doesn't sell items.");
-                    return;
-                },
-                None => {
-                    println!("No one to trade with.");
-                    return;
-                },
-            }
+        let Some(mut npc) = self.take_trader_npc(pos) else {
+            return;
         };
 
-        let index = match arg.parse::<usize>() {
-            Ok(n) if n > 0 && n <= npc.shop.len() => n - 1,
-            _ => {
-                println!("Invalid. Use 'buy <number>' (see 'trade' for list).");
-                if let Some(room) = self.map.rooms.get_mut(&pos) {
-                    room.npc = Some(npc);
-                }
-                return;
-            },
+        let Some(index) = Self::parse_buy_index(arg, &npc) else {
+            println!("Invalid. Use 'buy <number>' (see 'trade' for list).");
+            Self::restore_trader(&mut self.map, pos, npc);
+            return;
         };
 
         let item = &npc.shop[index];
@@ -1105,18 +1277,14 @@ impl Game {
                 "Not enough coins! Need {}, have {}.",
                 item.value, self.player.coins
             );
-            if let Some(room) = self.map.rooms.get_mut(&pos) {
-                room.npc = Some(npc);
-            }
+            Self::restore_trader(&mut self.map, pos, npc);
             return;
         }
 
         let strength = self.player.effective_stat(&Stat::Strength);
         if let Err(reason) = self.player.inventory.can_add(item, strength) {
             println!("Can't carry it: {}.", reason);
-            if let Some(room) = self.map.rooms.get_mut(&pos) {
-                room.npc = Some(npc);
-            }
+            Self::restore_trader(&mut self.map, pos, npc);
             return;
         }
 
@@ -1129,9 +1297,7 @@ impl Game {
         self.player.inventory.items.push(item);
 
         // Put NPC back
-        if let Some(room) = self.map.rooms.get_mut(&pos) {
-            room.npc = Some(npc);
-        }
+        Self::restore_trader(&mut self.map, pos, npc);
     }
 
     fn do_sell(

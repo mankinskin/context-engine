@@ -2,6 +2,7 @@ mod combat;
 mod enemy;
 mod game;
 mod items;
+mod map_render;
 mod npc;
 mod player;
 mod world;

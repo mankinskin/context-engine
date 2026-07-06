@@ -87,6 +87,38 @@ pub fn dragon() -> Enemy {
     e
 }
 
+type EnemyFactory = fn() -> Enemy;
+
+fn pick_from_pool(
+    rng: &mut impl Rng,
+    pool: [EnemyFactory; 3],
+) -> Enemy {
+    let idx = rng.gen_range(0..pool.len());
+    pool[idx]()
+}
+
+fn random_tier_one(rng: &mut impl Rng) -> Enemy {
+    if rng.gen_bool(0.5) {
+        giant_rat()
+    } else {
+        goblin()
+    }
+}
+
+fn random_mid_tier_enemy(
+    tier: u32,
+    rng: &mut impl Rng,
+) -> Enemy {
+    match tier {
+        2 => pick_from_pool(rng, [goblin, skeleton, giant_rat]),
+        3 => pick_from_pool(rng, [skeleton, orc, goblin]),
+        4 => pick_from_pool(rng, [orc, troll, skeleton]),
+        5 => pick_from_pool(rng, [troll, wraith, orc]),
+        6 => pick_from_pool(rng, [wraith, dark_mage, troll]),
+        _ => dark_mage(),
+    }
+}
+
 /// Random enemy based on difficulty tier (0-7)
 pub fn random_enemy(
     tier: u32,
@@ -94,52 +126,7 @@ pub fn random_enemy(
 ) -> Enemy {
     match tier {
         0 => giant_rat(),
-        1 =>
-            if rng.gen_bool(0.5) {
-                giant_rat()
-            } else {
-                goblin()
-            },
-        2 => {
-            let r: u32 = rng.gen_range(0..3);
-            match r {
-                0 => goblin(),
-                1 => skeleton(),
-                _ => giant_rat(),
-            }
-        },
-        3 => {
-            let r: u32 = rng.gen_range(0..3);
-            match r {
-                0 => skeleton(),
-                1 => orc(),
-                _ => goblin(),
-            }
-        },
-        4 => {
-            let r: u32 = rng.gen_range(0..3);
-            match r {
-                0 => orc(),
-                1 => troll(),
-                _ => skeleton(),
-            }
-        },
-        5 => {
-            let r: u32 = rng.gen_range(0..3);
-            match r {
-                0 => troll(),
-                1 => wraith(),
-                _ => orc(),
-            }
-        },
-        6 => {
-            let r: u32 = rng.gen_range(0..3);
-            match r {
-                0 => wraith(),
-                1 => dark_mage(),
-                _ => troll(),
-            }
-        },
-        _ => dark_mage(),
+        1 => random_tier_one(rng),
+        _ => random_mid_tier_enemy(tier, rng),
     }
 }

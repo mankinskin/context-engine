@@ -84,14 +84,11 @@ impl Map {
         (d / 4).min(7)
     }
 
-    /// Ensure all positions within `radius` of `center` have been decided.
-    /// New rooms get populated with enemies, NPCs, and items.
-    pub fn ensure_generated(
+    fn discover_new_rooms(
         &mut self,
         center: Pos,
         radius: i32,
-        rng: &mut impl Rng,
-    ) {
+    ) -> Vec<Pos> {
         let mut new_rooms: Vec<Pos> = Vec::new();
 
         for dr in -radius..=radius {
@@ -104,7 +101,7 @@ impl Map {
                 if self.room_should_exist(pos) {
                     let desc = ROOM_DESCS
                         [self.pos_hash(pos) as usize % ROOM_DESCS.len()]
-                    .to_string();
+                        .to_string();
                     self.rooms.insert(
                         pos,
                         Room {
@@ -120,33 +117,52 @@ impl Map {
             }
         }
 
-        // Populate new rooms (skip origin and exit — those are pre-built)
-        for pos in new_rooms {
-            if pos == (0, 0) || pos == self.exit_pos {
-                continue;
-            }
-            let h = self.pos_hash(pos);
-            let tier = Self::tier_at(pos);
+        new_rooms
+    }
 
-            // NPC ~12%
-            if (h >> 8) % 100 < 12 {
-                if let Some(room) = self.rooms.get_mut(&pos) {
-                    room.npc = Some(npc::random_npc(rng));
-                }
-                continue; // NPC rooms don't also get enemies
+    fn populate_room(
+        &mut self,
+        pos: Pos,
+        rng: &mut impl Rng,
+    ) {
+        if pos == (0, 0) || pos == self.exit_pos {
+            return;
+        }
+
+        let h = self.pos_hash(pos);
+        let tier = Self::tier_at(pos);
+
+        if (h >> 8) % 100 < 12 {
+            if let Some(room) = self.rooms.get_mut(&pos) {
+                room.npc = Some(npc::random_npc(rng));
             }
-            // Enemy ~40%
-            if (h >> 16) % 100 < 40 {
-                if let Some(room) = self.rooms.get_mut(&pos) {
-                    room.enemy = Some(enemy::random_enemy(tier, rng));
-                }
+            return;
+        }
+
+        if (h >> 16) % 100 < 40 {
+            if let Some(room) = self.rooms.get_mut(&pos) {
+                room.enemy = Some(enemy::random_enemy(tier, rng));
             }
-            // Items ~25%
-            if (h >> 24) % 100 < 25 {
-                if let Some(room) = self.rooms.get_mut(&pos) {
-                    room.items.push(items::random_ground_loot(rng));
-                }
+        }
+
+        if (h >> 24) % 100 < 25 {
+            if let Some(room) = self.rooms.get_mut(&pos) {
+                room.items.push(items::random_ground_loot(rng));
             }
+        }
+    }
+
+    /// Ensure all positions within `radius` of `center` have been decided.
+    /// New rooms get populated with enemies, NPCs, and items.
+    pub fn ensure_generated(
+        &mut self,
+        center: Pos,
+        radius: i32,
+        rng: &mut impl Rng,
+    ) {
+        let new_rooms = self.discover_new_rooms(center, radius);
+        for pos in new_rooms {
+            self.populate_room(pos, rng);
         }
     }
 
@@ -217,6 +233,7 @@ impl Map {
         }
     }
 }
+pub use crate::map_render::draw_map;
 
 // ── Room Descriptions ───────────────────────────────────────────────────
 
@@ -292,88 +309,3 @@ pub fn generate_dungeon(rng: &mut impl Rng) -> Map {
 }
 
 // ── Map Display ─────────────────────────────────────────────────────────
-
-/// Draw the map as ASCII art showing only rooms within `view_dist` of the player.
-pub fn draw_map(
-    map: &Map,
-    player_pos: Pos,
-    view_dist: i32,
-) -> String {
-    let mut lines = Vec::new();
-
-    let min_r = player_pos.0 - view_dist;
-    let max_r = player_pos.0 + view_dist;
-    let min_c = player_pos.1 - view_dist;
-    let max_c = player_pos.1 + view_dist;
-
-    let width = (max_c - min_c + 1) as usize;
-
-    // Top border
-    let mut top = "+".to_string();
-    for _ in 0..width {
-        top += "---+";
-    }
-    lines.push(top);
-
-    for r in min_r..=max_r {
-        let mut row_mid = "|".to_string();
-        let mut row_bot = "+".to_string();
-
-        for c in min_c..=max_c {
-            let pos: Pos = (r, c);
-            // Cell content
-            let cell = if pos == player_pos {
-                " @ "
-            } else if let Some(room) = map.rooms.get(&pos) {
-                if !room.visited {
-                    " # "
-                } else if pos == map.exit_pos {
-                    " X "
-                } else if room.enemy.is_some() {
-                    " E "
-                } else if room.npc.is_some() {
-                    " N "
-                } else if !room.items.is_empty() {
-                    " ? "
-                } else {
-                    "   "
-                }
-            } else {
-                "///".into()
-            };
-
-            // Right wall: open passage if both cells have rooms
-            let right = if c < max_c
-                && map.rooms.contains_key(&pos)
-                && map.rooms.contains_key(&(r, c + 1))
-            {
-                " "
-            } else {
-                "|"
-            };
-            row_mid += cell;
-            row_mid += right;
-
-            // Bottom wall
-            let bot = if r < max_r
-                && map.rooms.contains_key(&pos)
-                && map.rooms.contains_key(&(r + 1, c))
-            {
-                "   "
-            } else {
-                "---"
-            };
-            row_bot += bot;
-            row_bot += "+";
-        }
-
-        lines.push(row_mid);
-        lines.push(row_bot);
-    }
-
-    lines.push(String::new());
-    lines.push(
-        "@ You  X Exit  E Enemy  N NPC  ? Item  # Unexplored  /// Wall".into(),
-    );
-    lines.join("\n")
-}
