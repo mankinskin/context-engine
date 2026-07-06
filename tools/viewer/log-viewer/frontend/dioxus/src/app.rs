@@ -270,15 +270,15 @@ pub fn App() -> Element {
     let backend = use_signal(HttpLogViewerBackend::default);
     let mut initialized = use_signal(|| false);
 
-    let mut log_files = use_signal(Vec::<LogFileInfo>::new);
+    let log_files = use_signal(Vec::<LogFileInfo>::new);
     let mut file_states = use_signal(HashMap::<String, FileViewState>::new);
     let mut active_category = use_signal(|| Option::<String>::None);
 
     let mut current_file = use_signal(|| Option::<String>::None);
     let mut active_tab = use_signal(|| "logs".to_string());
-    let mut is_loading = use_signal(|| false);
+    let is_loading = use_signal(|| false);
     let mut status_message = use_signal(|| "Ready".to_string());
-    let mut error_message = use_signal(|| Option::<String>::None);
+    let error_message = use_signal(|| Option::<String>::None);
 
     let mut search_input = use_signal(String::new);
     let mut jq_input = use_signal(String::new);
