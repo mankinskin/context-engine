@@ -1,7 +1,7 @@
 ---
 name: "Spec Agent"
 description: "Use when creating new specs, updating existing specs, or refining specification traceability across tickets, tests, validation evidence, and related specs."
-tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, vscode/toolSearch, execute, read, agent, edit, search, 'context-mcp/*', 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, ms-azuretools.vscode-containers/containerToolsConfig, todo]
+tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, edit, search, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Spec scope, feature, behavior change, or spec id/slug to create or refine."
 user-invocable: true
 ---

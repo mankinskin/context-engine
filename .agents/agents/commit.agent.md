@@ -1,7 +1,7 @@
 ---
 name: "Commit Agent"
 description: "Use when committing changes across the repo or submodules. Handles pre-commit hooks, rule sync, generated file regeneration, submodule pointer updates, and conventional commit messages."
-tools: [vscode/runCommand, vscode/vscodeAPI, vscode/toolSearch, execute, read, agent, edit, search, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, todo]
+tools: [vscode/memory, vscode/runCommand, execute, read, edit, search, todo]
 argument-hint: "Optional commit message prefix or scope hint."
 user-invocable: true
 ---
