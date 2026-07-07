@@ -37,3 +37,8 @@ Drive the full 2026-07-05 audit baseline from 551 findings toward near-zero thro
   Control: always compare against this baseline and latest full report.
 - Risk: regressions while splitting large files.
   Control: compile and test gate after each split set.
+
+# 2026-07-07 linked resolution note
+- Retro-cleanup hardening completed under `528af270` and linked stream `e7c593dd`.
+- Removed stale retro/deleted dependency edges and reconciled scan state.
+- Memory-api workspace policy + empty UUID artifact pruning landed; memory-api force scan now reports zero diagnostics for the prior residual class.
