@@ -63,9 +63,23 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
 - Delta vs chunk2: 23 -> 20 (resolved 3, added 0)
   - resolved: dispatch_store_command_graph, dispatch_store_command_ops, test-cli dispatch
 
+## Chunk 4b (core low-risk routing/parser/store updates)
+- Edited:
+  - memory-api/crates/memory-matrix/src/matrix.rs
+  - memory-api/crates/memory-api/src/model/query.rs
+  - memory-api/crates/rule-api/src/store.rs
+- Narrow validation:
+  - cargo check -p memory-api -p rule-api -p memory-matrix
+  - cargo test -p rule-api update
+  - cargo test -p memory-api query
+  - cargo test -p memory-matrix dispatch
+- Post artifact: target/tmp/batch3_memory_api_chunk4b_after.json
+- Delta vs chunk3: 20 -> 17 (resolved 3, added 0)
+  - resolved: matrix dispatch, parse_field_value, rule-api update
+
 ## Category Regression Check
-- Compared full findings by category (baseline vs chunk3):
-  - static_complexity: 41 -> 33 (-8)
+- Compared full findings by category (baseline vs chunk4b):
+  - static_complexity: 41 -> 30 (-11)
   - all other categories unchanged
   - increases: none
 
@@ -74,8 +88,8 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
 
 ## Remaining Work
-- memory-api static_complexity remaining in this batch: 20
-- Next suggested chunk: memory-api/crates/memory-api/src/storage/move_kernel.rs (2 findings) and memory-api/crates/memory-matrix/src/mcp.rs (2 findings).
+- memory-api static_complexity remaining in this batch: 17
+- Next suggested chunk: memory-api/crates/spec-api/src/store_index.rs (1 finding), then memory-api/crates/memory-matrix/src/mcp.rs (2 findings), then memory-api/crates/memory-api/src/storage/move_kernel.rs (2 findings).
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.
