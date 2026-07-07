@@ -109,16 +109,50 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
 - Post artifact: target/tmp/batch3_memory_api_chunk6a_after.json
 - Delta vs chunk5b (memory-api static_complexity only): 15 -> 13 (resolved 2, added 0)
   - resolved: dispatch_ticket_mcp, dispatch_spec_mcp
-- Remaining high-priority hotspot in planned sequence:
-  - memory-api/crates/memory-api/src/storage/move_kernel.rs (plan_move, execute_or_resume)
+
+## Chunk 6b (move-kernel preflight/execution helper split)
+- Edited:
+  - memory-api/crates/memory-api/src/storage/move_kernel.rs
+- Narrow validation:
+  - cargo check -p memory-api
+  - cargo test -p memory-api storage::move_kernel
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6b_after.json
+- Delta vs chunk6a (memory-api static_complexity, crates+tools normalized): 13 -> 11 (resolved 2, added 0)
+  - resolved: plan_move, execute_or_resume
+  - remaining in move_kernel.rs: none
+
+## Chunk 6c (ticket-api store update helper split)
+- Edited:
+  - memory-api/crates/ticket-api/src/storage/store.rs
+- Narrow validation:
+  - cargo check -p ticket-api
+  - cargo test -p ticket-api update -- --nocapture
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6c_after.json
+- Delta vs chunk6b (memory-api static_complexity, crates+tools normalized): 11 -> 10 (resolved 1, added 0)
+  - resolved: update in ticket-api/src/storage/store.rs
+  - remaining in ticket-api/src/storage/store.rs: none
+
+## Chunk 6d (session-api transcript hook helper split)
+- Edited:
+  - memory-api/crates/session-api/src/hook.rs
+- Narrow validation:
+  - cargo check -p session-api
+  - cargo test -p session-api transcript_reader -- --nocapture
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6d_after.json
+- Delta vs chunk6c (memory-api static_complexity, crates+tools normalized): 10 -> 9 (resolved 1, added 0)
+  - resolved: copilot_payload_from_transcript_reader_with_path
+  - remaining in session-api/src/hook.rs: none
 
 ## Ticket Health Sanity
 - Ran earlier in this session: ./target/debug/ticket.exe health --workspace . --all --toon
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
 
 ## Remaining Work
-- memory-api static_complexity remaining in this batch: 13
-- Next suggested chunk: memory-api/crates/memory-api/src/storage/move_kernel.rs (2 findings), then memory-api/crates/ticket-api/src/storage/store.rs (1 finding), then memory-api/crates/session-api/src/hook.rs (1 finding).
+- memory-api static_complexity remaining in this batch: 9
+- Next suggested chunk: remaining crates/tools hotspots from chunk6d artifact (likely audit-api trials, log-api/test-api stores, spec-api manifest, and ticket-cli/rule-cli hotspots).
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.
