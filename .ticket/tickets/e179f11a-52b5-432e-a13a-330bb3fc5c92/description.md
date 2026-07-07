@@ -146,13 +146,36 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
   - resolved: copilot_payload_from_transcript_reader_with_path
   - remaining in session-api/src/hook.rs: none
 
+## Chunk 6e (log-api runtime-session query matcher split)
+- Edited:
+  - memory-api/crates/log-api/src/store.rs
+- Behavior preserved:
+  - Same query semantics for status/transport/component/run_id and all traceability link filters.
+- Extracted helpers:
+  - matches_runtime_session_query
+  - matches_runtime_session_core
+  - matches_runtime_session_traceability
+  - matches_runtime_session_primary_links
+  - matches_runtime_session_secondary_links
+- Narrow validation:
+  - rtk cargo check -p log-api
+  - rtk cargo test -p log-api lists_runtime_sessions_with_filters -- --nocapture
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6e_after.json
+- Delta vs chunk6d (memory-api static_complexity, crates+tools normalized with memory-api/ prefix normalization): 9 -> 8 (resolved 1, added 0)
+  - resolved: crates/log-api/src/store.rs:136
+  - added: none
+
 ## Ticket Health Sanity
 - Ran earlier in this session: ./target/debug/ticket.exe health --workspace . --all --toon
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
 
 ## Remaining Work
-- memory-api static_complexity remaining in this batch: 9
-- Next suggested chunk: remaining crates/tools hotspots from chunk6d artifact (likely audit-api trials, log-api/test-api stores, spec-api manifest, and ticket-cli/rule-cli hotspots).
+- memory-api static_complexity remaining in this batch: 8
+- Next suggested chunk: one low-risk helper split in either:
+  - crates/test-api/src/store.rs
+  - crates/audit-api/src/trials/spec_fulfillment.rs
+  - tools/cli/ticket-cli/src/cli/commands/lifecycle.rs
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.

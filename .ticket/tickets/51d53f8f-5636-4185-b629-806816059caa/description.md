@@ -8,7 +8,7 @@ Add a `WorkspacePolicy` type parsed from `.ticket/workspace-policy.toml`, with d
 
 ```toml
 include_descendants = true      # default
-include_ancestors   = false     # safer default
+include_ancestors   = true      # safer default
 deny_external_paths = true      # hard security boundary
 ignore_workspaces   = ["glob-or-relative-path", ...]
 include_overrides   = ["glob-or-relative-path", ...]
