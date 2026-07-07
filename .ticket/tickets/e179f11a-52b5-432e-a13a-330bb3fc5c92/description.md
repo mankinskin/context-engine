@@ -166,16 +166,95 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
   - resolved: crates/log-api/src/store.rs:136
   - added: none
 
+## Chunk 6f (ticket-cli move mode/helper split)
+- Edited:
+  - memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs
+- Behavior preserved:
+  - Same mode validation and output envelopes for resume, rollback, plan, and execute.
+- Extracted:
+  - MoveMode
+  - resolve_move_mode
+  - validate_move_mode_args
+  - parse_move_journal_uuid
+  - handle_move_resume
+  - handle_move_rollback
+- Narrow validation:
+  - rtk cargo check --manifest-path memory-api/tools/cli/ticket-cli/Cargo.toml
+  - rtk cargo test --manifest-path memory-api/tools/cli/ticket-cli/Cargo.toml cmd_move_dry_run_returns_preflight_plan -- --nocapture
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6f_after.json
+- Delta vs chunk6e (memory-api static_complexity, crates+tools normalized): 8 -> 7 (resolved 1, added 0)
+  - resolved: tools/cli/ticket-cli/src/cli/commands/lifecycle.rs:71
+  - added: none
+
+## Chunk 6g (test-api execution query helper split)
+- Edited:
+  - memory-api/crates/test-api/src/store.rs
+- Behavior preserved:
+  - Same execution query filtering semantics for identity, duration, and provenance filters.
+  - Same sort semantics for newest-first and slowest-first.
+- Extracted:
+  - matches_execution_query
+  - matches_execution_identity_filters
+  - matches_execution_duration_filters
+  - matches_execution_provenance_filters
+  - sort_executions
+- Narrow validation:
+  - rtk cargo check -p test-api
+  - rtk cargo test -p test-api lists_executions_filtered_by_ticket_and_outcome -- --nocapture
+- Post artifact:
+  - target/tmp/batch3_memory_api_chunk6g_after.json
+- Delta vs chunk6f (memory-api static_complexity, crates+tools normalized): 7 -> 6 (resolved 1, added 0)
+  - resolved: crates/test-api/src/store.rs:137
+  - added: none
+
+## Remaining Chunk Map (planned from chunk6g baseline)
+1. Chunk 6h-a: tools/cli/ticket-cli/src/cli.rs:253
+2. Chunk 6h-b: tools/cli/ticket-cli/src/cli/human_output.rs:11
+3. Chunk 6h-c: crates/audit-api/src/trials/spec_fulfillment.rs:32
+4. Chunk 6h-d: tools/cli/rule-cli/src/cli/rendering.rs:252
+5. Chunk 6h-e: crates/spec-api/src/manifest.rs:357
+6. Chunk 6i: crates/audit-api/src/trials/ticket_graph.rs:66
+
+## Chunk 6h/6i execution (completed all remaining mapped hotspots)
+- Edited:
+  - memory-api/tools/cli/ticket-cli/src/cli.rs
+  - memory-api/tools/cli/ticket-cli/src/cli/human_output.rs
+  - memory-api/crates/audit-api/src/trials/spec_fulfillment.rs
+  - memory-api/tools/cli/rule-cli/src/cli/rendering.rs
+  - memory-api/crates/spec-api/src/manifest.rs
+  - memory-api/crates/audit-api/src/trials/ticket_graph.rs
+  - memory-api/tools/cli/ticket-cli/src/cli/batch/dispatch.rs
+- Behavior preserved:
+  - ticket-cli command naming/output routing semantics preserved.
+  - rule-cli sync target safety checks and generated-target bookkeeping preserved.
+  - spec health/audit trial decision and finding semantics preserved.
+- Narrow validation:
+  - rtk cargo check -p ticket-cli -p rule-cli -p spec-api -p audit-api
+  - rtk cargo test -p ticket-cli human_output -- --nocapture
+  - rtk cargo test -p spec-api health_issues -- --nocapture
+  - rtk cargo test -p audit-api spec_fulfillment -- --nocapture
+  - rtk cargo test -p audit-api ticket_graph -- --nocapture
+- Post artifacts:
+  - target/tmp/batch3_memory_api_chunk6h_after.json
+  - target/tmp/batch3_memory_api_chunk6i_after.json
+- Delta vs chunk6g (memory-api static_complexity, crates+tools normalized): 6 -> 0 (resolved 6, added 0)
+  - resolved:
+    - crates/audit-api/src/trials/spec_fulfillment.rs:32
+    - crates/audit-api/src/trials/ticket_graph.rs:66
+    - crates/spec-api/src/manifest.rs:357
+    - tools/cli/rule-cli/src/cli/rendering.rs:252
+    - tools/cli/ticket-cli/src/cli.rs:253
+    - tools/cli/ticket-cli/src/cli/human_output.rs:11
+  - added: none
+
 ## Ticket Health Sanity
 - Ran earlier in this session: ./target/debug/ticket.exe health --workspace . --all --toon
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
 
 ## Remaining Work
-- memory-api static_complexity remaining in this batch: 8
-- Next suggested chunk: one low-risk helper split in either:
-  - crates/test-api/src/store.rs
-  - crates/audit-api/src/trials/spec_fulfillment.rs
-  - tools/cli/ticket-cli/src/cli/commands/lifecycle.rs
+- memory-api static_complexity remaining in this batch: 0
+- All mapped chunks completed in this session.
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.
