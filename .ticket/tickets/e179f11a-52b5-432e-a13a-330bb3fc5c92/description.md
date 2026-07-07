@@ -99,13 +99,26 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
 - ticket_graph: 3 -> 6 (+3, pre-existing/parallel drift outside this batch scope)
 - all other categories unchanged
 
+## Chunk 6a (memory-matrix MCP dispatch helper split)
+- Edited:
+  - memory-api/crates/memory-matrix/src/mcp.rs
+- Narrow validation:
+  - cargo test -p memory-matrix ticket_get_mcp_cell_is_wired_and_passes -- --nocapture
+  - cargo test -p memory-matrix ticket_update_mcp_cell_is_wired_and_passes -- --nocapture
+  - cargo test -p memory-matrix spec_scan_mcp_cell_is_wired_and_passes -- --nocapture
+- Post artifact: target/tmp/batch3_memory_api_chunk6a_after.json
+- Delta vs chunk5b (memory-api static_complexity only): 15 -> 13 (resolved 2, added 0)
+  - resolved: dispatch_ticket_mcp, dispatch_spec_mcp
+- Remaining high-priority hotspot in planned sequence:
+  - memory-api/crates/memory-api/src/storage/move_kernel.rs (plan_move, execute_or_resume)
+
 ## Ticket Health Sanity
 - Ran earlier in this session: ./target/debug/ticket.exe health --workspace . --all --toon
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
 
 ## Remaining Work
-- memory-api static_complexity remaining in this batch: 17
-- Next suggested chunk: memory-api/crates/spec-api/src/store_index.rs (1 finding), then memory-api/crates/memory-matrix/src/mcp.rs (2 findings), then memory-api/crates/memory-api/src/storage/move_kernel.rs (2 findings).
+- memory-api static_complexity remaining in this batch: 13
+- Next suggested chunk: memory-api/crates/memory-api/src/storage/move_kernel.rs (2 findings), then memory-api/crates/ticket-api/src/storage/store.rs (1 finding), then memory-api/crates/session-api/src/hook.rs (1 finding).
 
 # Handoff Notes
 Record exact commands run, resulting counts, and files changed so the next session can continue without rediscovery.
