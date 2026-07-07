@@ -83,6 +83,22 @@ Resolve the current static_complexity batch for memory-api and reduce 28 finding
   - all other categories unchanged
   - increases: none
 
+## Chunk 5b (spec index tree + matrix transport test predicate)
+- Edited:
+  - memory-api/crates/spec-api/src/store_index.rs
+  - memory-api/crates/memory-matrix/tests/matrix.rs
+- Narrow validation:
+  - cargo test -p spec-api store_index -- --nocapture
+  - cargo test -p memory-matrix unwired_transports_are_explicitly_blocked_with_reason -- --nocapture
+- Post artifact: target/tmp/batch3_memory_api_chunk5b_after.json
+- Delta vs chunk4b: 17 -> 15 (resolved 2, added 0)
+  - resolved: render_tree_entry_page, unwired_transports_are_explicitly_blocked_with_reason
+
+## Category Regression Check (chunk4b -> chunk5b)
+- static_complexity: 30 -> 28 (-2)
+- ticket_graph: 3 -> 6 (+3, pre-existing/parallel drift outside this batch scope)
+- all other categories unchanged
+
 ## Ticket Health Sanity
 - Ran earlier in this session: ./target/debug/ticket.exe health --workspace . --all --toon
 - Result: store-wide warnings exist (mostly missing effort/description on other tickets); no blocker discovered for this batch execution flow.
