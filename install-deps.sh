@@ -16,6 +16,8 @@ source "$common_install_helpers"
 dependency_names=(
     ripgrep
     rtk
+  trunk
+  cargo-llvm-cov
 )
 
 print_supported_dependencies() {
@@ -84,15 +86,17 @@ Options:
 Supported dependencies:
   ripgrep
   rtk
+  trunk
+  cargo-llvm-cov
 
 Environment:
   INSTALL_DEPS             Comma-separated dependency list used when none are passed.
 
 Examples:
   ./install-deps.sh
-  ./install-deps.sh ripgrep rtk
+  ./install-deps.sh ripgrep rtk trunk
   ./install-deps.sh --dependency ripgrep
-  ./install-deps.sh --dependencies "ripgrep,rtk"
+  ./install-deps.sh --dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
   ./install-deps.sh --dry-run
 EOF
 }
@@ -122,7 +126,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_dependencies=()
-            append_csv_dependencies "ripgrep,rtk"
+            append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
             shift
             ;;
         --list)
@@ -161,12 +165,14 @@ if [[ ${#selected_dependencies[@]} -eq 0 && -n "${INSTALL_DEPS:-}" ]]; then
 fi
 
 if [[ ${#selected_dependencies[@]} -eq 0 ]]; then
-    append_csv_dependencies "ripgrep,rtk"
+    append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
 fi
 
 install_one() {
     local dependency=$1
     local command=()
+    local post_command=()
+    local failed=0
 
     case "$dependency" in
         ripgrep)
@@ -174,6 +180,13 @@ install_one() {
             ;;
         rtk)
             command=(cargo install --git https://github.com/rtk-ai/rtk --quiet --force)
+            ;;
+        trunk)
+            command=(cargo install trunk --quiet --force)
+            ;;
+        cargo-llvm-cov)
+            command=(cargo install cargo-llvm-cov --quiet --force)
+            post_command=(rustup component add llvm-tools-preview)
             ;;
         *)
             printf 'error: unsupported dependency: %s\n' "$dependency" >&2
@@ -184,16 +197,32 @@ install_one() {
 
     printf '==> %s\n' "$dependency"
     printf '    %s\n' "${command[*]}"
+    if [[ ${#post_command[@]} -gt 0 ]]; then
+        printf '    %s\n' "${post_command[*]}"
+    fi
 
     if [[ $dry_run -eq 1 ]]; then
         installed_dependencies+=("$dependency")
         return 0
     fi
 
-    if (
+    if ! (
         cd "$repo_root"
         run_filtered_command "$dependency" "${command[@]}"
     ); then
+        failed=1
+    fi
+
+    if [[ $failed -eq 0 && ${#post_command[@]} -gt 0 ]]; then
+        if ! (
+            cd "$repo_root"
+            run_filtered_command "$dependency (post)" "${post_command[@]}"
+        ); then
+            failed=1
+        fi
+    fi
+
+    if [[ $failed -eq 0 ]]; then
         installed_dependencies+=("$dependency")
         return 0
     fi

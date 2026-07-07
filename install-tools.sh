@@ -15,7 +15,6 @@ source "$common_install_helpers"
 
 tool_names=(
     viewer-ctl
-    trunk
     doc-viewer
     log-viewer
     spec-viewer
@@ -24,13 +23,11 @@ tool_names=(
     spec-cli
     audit-cli
     rule-cli
-    cargo-llvm-cov
 )
 
 tool_path() {
     case "$1" in
         viewer-ctl) printf '%s\n' "viewer-api/viewer-ctl" ;;
-        trunk) printf '%s\n' "" ;;
         doc-viewer) printf '%s\n' "tools/viewer/doc-viewer" ;;
         log-viewer) printf '%s\n' "tools/viewer/log-viewer" ;;
         spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
@@ -39,7 +36,6 @@ tool_path() {
         spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
         audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
         rule-cli) printf '%s\n' "memory-api/tools/cli/rule-cli" ;;
-        cargo-llvm-cov) printf '%s\n' "" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -50,7 +46,6 @@ tool_path() {
 tool_bin() {
     case "$1" in
         viewer-ctl) printf '%s\n' "viewer-ctl" ;;
-        trunk) printf '%s\n' "trunk" ;;
         doc-viewer) printf '%s\n' "doc-viewer" ;;
         log-viewer) printf '%s\n' "log-viewer" ;;
         spec-viewer) printf '%s\n' "spec-viewer" ;;
@@ -59,7 +54,6 @@ tool_bin() {
         spec-cli) printf '%s\n' "spec" ;;
         audit-cli) printf '%s\n' "audit" ;;
         rule-cli) printf '%s\n' "rule" ;;
-        cargo-llvm-cov) printf '%s\n' "cargo-llvm-cov" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -73,8 +67,8 @@ Usage: ./install-tools.sh [options] [tool ...]
 
 Install selected workspace tools with cargo install --path.
 
-Workspace crates use `cargo install --path`; external toolchain commands such as
-`trunk` use `cargo install <crate>`.
+This script installs only deliverables built from this repository. External
+toolchain dependencies are handled by ./install-deps.sh.
 
 Options:
   --tool <name>       Install one tool; repeatable.
@@ -87,27 +81,24 @@ Options:
 
 Supported tools:
   viewer-ctl
-    trunk
-    doc-viewer
-    log-viewer
-    spec-viewer
-    ticket-viewer
+  doc-viewer
+  log-viewer
+  spec-viewer
+  ticket-viewer
   ticket-cli
   spec-cli
   audit-cli
   rule-cli
-    cargo-llvm-cov
 
 Environment:
   INSTALL_TOOLS       Comma-separated tool list used when no tools are passed.
 
 Examples:
   ./install-tools.sh
-    ./install-tools.sh spec-cli ticket-cli
-    ./install-tools.sh --tool viewer-ctl --tool trunk
+  ./install-tools.sh spec-cli ticket-cli
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
-    ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
-    ./install-tools.sh --tool audit-cli --tool cargo-llvm-cov
+  ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
+  ./install-tools.sh --tool audit-cli --tool rule-cli
   INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
 EOF
 }
@@ -187,7 +178,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_tools=()
-            append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
+            append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli"
             shift
             ;;
         --list)
@@ -230,7 +221,7 @@ if [[ ${#selected_tools[@]} -eq 0 && -n "${INSTALL_TOOLS:-}" ]]; then
 fi
 
 if [[ ${#selected_tools[@]} -eq 0 ]]; then
-    append_csv_tools "viewer-ctl,trunk,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli,cargo-llvm-cov"
+    append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli"
 fi
 
 install_one() {
@@ -238,17 +229,12 @@ install_one() {
     local path
     local bin
     local command
-    local post_command=()
     local failed=0
 
     path=$(tool_path "$tool")
     bin=$(tool_bin "$tool")
 
-    if [[ -n "$path" ]]; then
-        command=(cargo install --path "$path" --bin "$bin")
-    else
-        command=(cargo install "$bin")
-    fi
+    command=(cargo install --path "$path" --bin "$bin")
 
     command+=(--quiet)
 
@@ -256,15 +242,8 @@ install_one() {
         command+=(--force)
     fi
 
-    if [[ "$tool" == "cargo-llvm-cov" ]]; then
-        post_command=(rustup component add llvm-tools-preview)
-    fi
-
     printf '==> %s\n' "$tool"
     printf '    %s\n' "${command[*]}"
-    if [[ ${#post_command[@]} -gt 0 ]]; then
-        printf '    %s\n' "${post_command[*]}"
-    fi
 
     if [[ $dry_run -eq 1 ]]; then
         installed_tools+=("$tool")
@@ -276,15 +255,6 @@ install_one() {
         run_filtered_command "$tool" "${command[@]}"
     ); then
         failed=1
-    fi
-
-    if [[ $failed -eq 0 && ${#post_command[@]} -gt 0 ]]; then
-        if ! (
-            cd "$repo_root"
-            run_filtered_command "$tool (post)" "${post_command[@]}"
-        ); then
-            failed=1
-        fi
     fi
 
     if [[ $failed -eq 0 ]]; then
