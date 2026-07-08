@@ -1,7 +1,7 @@
 id = "47cc50db-8efa-4945-87fe-d30fe1f6bc61"
 created_at = "2026-07-08T21:10:32.332706100+00:00"
 title = "Implement upstream tool-result guards and compact prompt views"
-state = "ready"
+state = "in-review"
 component = "session-workflow"
 description = "## Goal\nBuild coded support that reduces what GitHub Copilot sends or reuses in model-facing context by guarding tool results upstream and emitting compact prompt-facing state views.\n\n## Scope\n- classify model-facing tool results into retain, summarize, reference-only, and drop-from-prompt\n- suppress duplicate tool lifecycle wrappers, repeated unchanged state checks, and routine retry narration\n- preserve artifact pointers for long outputs instead of inlining spill-file contents\n- expose compact bootstrap and handoff oriented state views that keep durable findings without replaying raw workflow chatter\n\n## Important boundary\n- `session-api` capture hooks remain diagnostic visibility only\n- this ticket targets upstream request shaping and prompt-facing compaction, not post-hoc transcript storage changes\n\n## Inputs\n- spec: `.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7`\n- immediate workflow guidance ticket: `.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16`\n\n## Acceptance notes\n- model-facing session state keeps durable findings and drops raw boilerplate by default\n- long artifacts remain addressable via pointers and bounded extraction\n- duplicate suppression is deterministic and test-covered\n- the implementation demonstrably improves upstream prompt compactness rather than only archival transcript readability"
 effort = "large"
