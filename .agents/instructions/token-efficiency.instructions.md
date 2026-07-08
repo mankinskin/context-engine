@@ -1,11 +1,13 @@
 ---
 description: "Use when editing agent workflow guidance, CLI output handling, or file inspection patterns. Covers compact-by-default output, TOON vs JSON, bounded inspection, and differential patching."
-applyTo: "**"
+applyTo: "AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**"
 ---
 
 ## Token-Efficient Agent Workflow
 
 These rules apply during every session to keep token consumption bounded and debuggability intact.
+
+The primary objective is to reduce what reaches the model API in the first place. Post-hoc transcript capture is diagnostic only; it does not make the current request cheaper.
 
 ### Compact-by-Default Output
 
@@ -62,6 +64,48 @@ peek path/to/file.rs --all
 When the required line coordinates are unknown, use `grep_search`, `semantic_search`, or `peek --grep` to locate the target region first, then read a bounded window around it.
 
 Full-file reads should become the exception. The `--all` flag is intentionally named to make the cost visible in command history.
+
+### Session Artifact Reading
+
+When the task involves prior sessions, transcript inspection, handoff recovery, or Copilot chat artifacts, follow [session-optimization instructions](./session-optimization.instructions.md).
+
+Rules:
+- Do not read raw session transcript files into the model prompt by default.
+- Prefer the smallest durable artifact first: ticket, spec, handoff, validation note, or compact session summary.
+- Treat raw transcript JSON, event streams, and chat-session resource payloads as `reference-only` unless a bounded slice is required to answer one specific question.
+- Do not replay raw `toolRequests`, empty `reasoningText`, duplicated tool lifecycle events, or full spill-file bodies when a one-line summary or targeted extraction is sufficient.
+- When you need evidence from a prior session, normalize it to: scope, finding, outcome, blocker, and pointer.
+
+### Routine Action Discipline
+
+Do not spend reasoning budget on actions whose next step is already obvious from the current local hypothesis.
+
+Examples:
+- If the touched slice has one relevant test, run it instead of narrating why that is probably the right test.
+- If a command failed because of cwd drift, rerun it from the correct directory instead of exploring multiple explanations.
+- If the correct tool is already loaded and known, call it instead of searching for it again.
+
+Rules:
+- Prefer direct execution over explanatory self-talk for routine operations.
+- Avoid repeating unchanged state checks such as `git status`, board reads, or ticket fetches unless a write or external change occurred.
+- After a long command spills output, inspect the spill artifact directly instead of re-running the command.
+- Convert retries into one-line findings in subsequent summaries.
+
+### Tool Result Guarding
+
+Before the model reasons over tool output, reduce it to the smallest useful form.
+
+Rules:
+- Keep commands, test runs, and searches in a normalized tuple: scope, command, result, blocker, pointer.
+- Use grep, bounded reads, and targeted extraction before exposing raw output to the model.
+- When a tool emits a large structured payload, extract the needed fields first and discard the rest.
+- Do not pass duplicated tool arguments or repeated lifecycle wrappers forward as context.
+
+Compact extraction pattern:
+
+```text
+artifact -> bounded search -> extracted finding -> prompt summary
+```
 
 ### Differential Patching
 

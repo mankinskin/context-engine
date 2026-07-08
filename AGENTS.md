@@ -120,15 +120,42 @@ let _tracing = init_test_tracing!(&graph);
 - Path-specific rules: `.agents/instructions/*.instructions.md`
 - Cline adapter surface: `.clinerules/`
 
+<!-- rule-api:entry id=7a21f7ef-b76b-4cef-8a7b-7727958088cd slug=shared/agent-rules/instruction-precedence-and-exceptions/l74 -->
+## Instruction Precedence and Exceptions
+
+When guidance overlaps, apply instructions in this order and document any explicit exception used for the current task.
+
+| Priority | Source | How to apply |
+|---|---|---|
+| 1 | System + safety policy | Always mandatory; cannot be overridden by repository guidance. |
+| 2 | Developer/session instructions | Treat as global execution contract for this session. |
+| 3 | AGENTS.md global rules | Baseline repository behavior. |
+| 4 | Path-scoped instruction files | Apply only when `applyTo` matches touched files. |
+| 5 | Prompt/task-specific directives | Use for ticket-local implementation details. |
+
+Exception handling rules:
+- Prefer the most specific matching guidance over broader guidance.
+- If two rules conflict at the same specificity, follow the newer or explicitly scoped one and record the conflict in ticket notes.
+- If a path-scoped rule conflicts with AGENTS.md global guidance, follow the path-scoped rule for that file scope and keep AGENTS.md as default elsewhere.
+- If an instruction conflicts with platform/tooling constraints, apply the safest feasible behavior and note the limitation in the ticket/spec summary.
+- Never resolve conflicts by silently ignoring one side; capture the chosen precedence and rationale in the active ticket description.
+
+Formatting conflict policy (canonical):
+- When referencing workspace files, paths, or line citations in responses, use markdown links (for example `[AGENTS.md](AGENTS.md#L1)`) as the canonical format.
+- Do not wrap file references in backticks when the linkified-file policy is active.
+- If another instruction requests backtick-wrapped file references, the linkified-file policy takes precedence for file/path citations.
+
 <!-- rule-api:entry id=7606b9be-c328-4b0c-aeac-c0b0824aee5c slug=shared/agent-rules/token-efficient-output/l72 -->
 ## Token-Efficient Output
 
 Keep terminal output, file reads, and structural exploration bounded to avoid unnecessary token consumption.
 
+- **Model-bound context first**: optimize what reaches the model API before tokens are spent; transcript capture after the fact is diagnostic only.
 - **Compact by default**: prefer `--toon` over `--json`; prefix commands with `rtk` for automatic filtering.
 - **Bounded file reads**: use the root `repo_map.toon` and interface skeletons before opening source files; read targeted line windows instead of whole files.
 - **Differential patching**: use `replace_string_in_file` with context lines instead of full-file rewrites.
 - **Long output handling**: when `rtk` or the compact-terminal MCP tool truncates output, inspect the transient file via bounded read/search before replaying the command.
+- **Routine-action discipline**: do not spend reasoning budget narrating obvious next tool calls, unchanged state checks, or simple retries.
 - **TOON vs JSON**: use `--toon` for tool-to-tool pipelines; use `--json` only when piping to external tools (jq, Python). Never request JSON and discard most of it.
 
 Full guidance: `.agents/instructions/token-efficiency.instructions.md`

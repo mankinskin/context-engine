@@ -9,7 +9,7 @@ agent: "agent"
 
 Help the user orient in the current checkout or bootstrap a fresh one without skipping the repository workflow.
 
-Reference [README](../../README.md), [AGENTS](../../AGENTS.md), [rule-cli](../../memory-api/tools/cli/rule-cli/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [audit-cli](../../memory-api/tools/cli/audit-cli/README.md), and [viewer-ctl](../../viewer-api/viewer-ctl/README.md).
+Reference [README](../../README.md), [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [rule-cli](../../memory-api/tools/cli/rule-cli/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [audit-cli](../../memory-api/tools/cli/audit-cli/README.md), and [viewer-ctl](../../viewer-api/viewer-ctl/README.md).
 
 ## Workflow
 
@@ -28,8 +28,12 @@ Reference [README](../../README.md), [AGENTS](../../AGENTS.md), [rule-cli](../..
 - rule-backed generated guidance
 - documentation and log viewers
 - focused validation and audit tooling
-5. Prefer concrete commands and paths over generic setup advice.
-6. Ask one concise clarification only when the desired setup mode is still ambiguous after a focused inspection.
+5. When prior session artifacts matter, treat them as diagnostic evidence for improving future prompt quality:
+- start from tickets, specs, handoffs, and validation summaries before reading transcripts
+- extract durable findings, blockers, and next actions instead of replaying raw tool chatter
+- emphasize upstream tool-result compression and routine-action discipline as the real cost levers
+6. Prefer concrete commands and paths over generic setup advice.
+7. Ask one concise clarification only when the desired setup mode is still ambiguous after a focused inspection.
 
 ## Response
 

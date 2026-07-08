@@ -9,7 +9,7 @@ agent: "agent"
 
 Create a compact handoff prompt for a new session and formalize the handoff track through the ticket workflow when needed.
 
-Reference [AGENTS](../../AGENTS.md), [ticket](./ticket.prompt.md), [tickets](./tickets.prompt.md), [ticket-next](./ticket-next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [rule-target](./rule-target.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), and [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md).
+Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [ticket](./ticket.prompt.md), [tickets](./tickets.prompt.md), [ticket-next](./ticket-next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [rule-target](./rule-target.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), and [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md).
 
 ## Workflow
 
@@ -27,7 +27,10 @@ Reference [AGENTS](../../AGENTS.md), [ticket](./ticket.prompt.md), [tickets](./t
 - preserve canonical ticket paths and references
 7. In the handoff paragraph, mention the ticket or tracker references that the next session should open first, plus any board check-in, check-out, or stale-entry issue that must be resolved before implementation resumes.
 8. When persisted `session-api` history captured by the Stop hook materially improves the restart path, reference that history alongside the ticket and board pointers rather than restating the whole prior conversation.
-9. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.
+9. Treat transcript history as diagnostic evidence for future prompt quality rather than as a prompt payload to replay:
+- prefer concise findings about repeated tool chatter, oversized outputs, and routine-action reasoning
+- keep the next-session handoff focused on the durable work state and the next concrete action
+10. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.
 
 ## Response
 

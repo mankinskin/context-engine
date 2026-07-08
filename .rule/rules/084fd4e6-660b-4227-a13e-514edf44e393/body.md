@@ -9,7 +9,7 @@ agent: "agent"
 
 Create a compact handoff prompt that a new session can use to resume a specific implementation track quickly. Carry over the current session's hard-won context: decisions, findings, blockers, suggested next steps, and entity references that would be expensive or error-prone to rediscover.
 
-Reference [AGENTS](../../AGENTS.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [spec-cli](../../memory-api/tools/cli/spec-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [spec-cli](../../memory-api/tools/cli/spec-cli/README.md).
 
 Act as a session summarizer and agent orchestrator: summarize the current session's useful state, then shape it into the first prompt the next agent should receive.
 
@@ -24,7 +24,10 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 - board ownership, expected check-in or check-out actions, related active or previous sessions
 - persisted `session-api` history captured by the Stop hook
 3. Prefer authoritative references over summaries, but briefly explain why each referenced item matters so the next agent can act without reconstructing the conversation.
-4. Keep reusable workflow noise out of the handoff paragraph. Do not restate ordinary ticket/spec workflow, tool manuals, or generic validation doctrine unless a specific exception, blocker, or required command from this session matters.
+4. Treat persisted session history as diagnostic evidence, not default prompt material:
+- prefer durable findings, blockers, and next actions over raw transcript replay
+- mention upstream request-shaping issues such as repeated state checks, oversized tool output, or routine-action reasoning when they matter to the restart path
+- keep large transcript or log artifacts as pointers with a short reason they matter
 5. Keep reusable workflow noise out of the handoff paragraph. Do not restate ordinary ticket/spec workflow, tool manuals, or generic validation doctrine unless a specific exception, blocker, or required command from this session matters.
 6. If the current track is unclear, abort the handoff and ask for clarifying questions.
 
@@ -39,4 +42,5 @@ Return:
 - the next actions in execution order
 - a definition of done
 - any board or persisted-session note that materially affects the restart path
+- any transcript artifact pointer only when the artifact cannot be reduced to a durable finding in the handoff itself
 - the instruction to start with the first next action
