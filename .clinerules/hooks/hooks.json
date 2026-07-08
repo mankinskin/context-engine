@@ -31,7 +31,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/session-capture-stop.sh",
+        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-stop-hook -- --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
