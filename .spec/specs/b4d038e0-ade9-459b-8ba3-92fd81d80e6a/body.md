@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has been proven, is failing, is blocked, or is merely in progress. That leaves `ticket next`, health, audit, and board flows unable to reason about dependency evidence with one canonical model.
+
+## Behavior Story
+
+`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has been proven, is failing, is blocked, or is merely in progress. That leaves `ticket next`, health, audit, and board flows unable to reason about dependency evidence with one canonical model.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Problem
 
 `depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has been proven, is failing, is blocked, or is merely in progress. That leaves `ticket next`, health, audit, and board flows unable to reason about dependency evidence with one canonical model.

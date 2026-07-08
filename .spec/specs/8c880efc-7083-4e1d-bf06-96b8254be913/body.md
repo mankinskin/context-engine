@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
+
+## Behavior Story
+
+Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Goal
 Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
 

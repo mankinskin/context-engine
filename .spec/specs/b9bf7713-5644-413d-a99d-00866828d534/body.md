@@ -1,3 +1,38 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-backed structure, one parent/child navigation contract, and one validation story.
+
+## Behavior Story
+
+Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-backed structure, one parent/child navigation contract, and one validation story.
+
+## Provided Surface Contracts
+
+- All in-scope repositories use one rule-backed README schema for repo roots and first-level child trees.
+- Parent and child README navigation remains repo-internal and is generated mechanically.
+- README completeness is enforced by mechanical validation instead of manual review.
+
+## Required Validation
+
+- Contract clause validation: The root, manual, generated, and audit branches form one coherent README generation program.
+- Contract clause validation: Parent and child README blocks are generated with repo-internal navigation semantics only.
+- Contract clause validation: The rollout uses rule explain-target, rule sync-targets, and rule sync-targets --check as the validation path.
+- The scope, intended behavior, and acceptance criteria define the shared README generation contract and rollout boundaries.
+- The rollout documents a workspace-scoped mechanical validation path for README completeness.
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Summary
 
 Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-backed structure, one parent/child navigation contract, and one validation story.

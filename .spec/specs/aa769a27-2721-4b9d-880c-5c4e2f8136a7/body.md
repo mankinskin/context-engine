@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal operations can be traced consistently with the Rust `tracing` ecosystem.
+
+## Behavior Story
+
+Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal operations can be traced consistently with the Rust `tracing` ecosystem.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Goal
 
 Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal operations can be traced consistently with the Rust `tracing` ecosystem.

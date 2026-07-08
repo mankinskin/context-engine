@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent guidance.
+
+## Behavior Story
+
+Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent guidance.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 ## Overview
 
 Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent guidance.

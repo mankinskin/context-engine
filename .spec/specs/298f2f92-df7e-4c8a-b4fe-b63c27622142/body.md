@@ -1,89 +1,80 @@
+<!-- aligned-structure:v1 -->
+
 # Summary
 
-Define an expectation-oriented specification contract for this repository so specs capture intended system properties plus explicit acceptance and evidence requirements, while tickets carry problem statements, current-state notes, rollout sequencing, and implementation details.
+Define the repository's default specification contract around the behavior a component promises, not around workflow narration. A spec is the compact system anchor for intended behavior, consumer-visible contracts, and the validation required to keep those contracts true.
 
-## Motivation
+## Behavior Story
 
-The current spec workflow combines two different responsibilities in one document shape:
+Define the repository's default specification contract around the behavior a component promises, not around workflow narration. A spec is the compact system anchor for intended behavior, consumer-visible contracts, and the validation required to keep those contracts true.
 
-- the product or architecture contract that should remain stable enough to evaluate
-- the implementation and migration narrative that changes as work is discovered
+## Provided Surface Contracts
 
-That overlap was visible again in the recent README-rollout specs, which read more like rollout plans than expectations. The underlying architecture already points toward store-owned workflow metadata in `spec-api`, `doc-api`, future `test-api`, future `log-api`, and derived reporting in `audit-api`, but the repository does not yet have one coherent implementation track that turns that direction into the default spec contract.
+- The spec store anchors desired component behavior as a compact contract instead of a workflow-heavy narrative.
+- Each spec states the provided surface contracts that consumers may rely on.
+- New behavior is described through required validation steps in multiple compatible forms: executable checks, natural-language contract clauses, and code or schema references when available.
+- Specs prefer entity references and context rendering over embedding fully expanded entity contents.
+- CLI, MCP, HTTP, and viewer surfaces render or expand the same stored contract instead of redefining it.
 
-## Scope
+## Required Validation
 
-This spec covers:
+- Contract clause validation: The canonical contract defines a spec in terms of a short behavior story, provided surface contracts, executable validation requirements, and related implementation tickets.
+- Contract clause validation: Workflow instructions, rollout notes, blockers, and housekeeping guidance are kept out of the spec contract itself unless they directly change the promised behavior.
+- Contract clause validation: Guidance for new features requires validation triangulation across executable checks, natural-language contract text, and code or schema references when those references exist.
+- Contract clause validation: Specs rely on entity references and context rendering for expandable background knowledge instead of duplicating full entity payloads in the spec body.
+- Contract clause validation: All tool surfaces treat the stored spec as the canonical contract and only adapt or render it for their transport.
+- The canonical spec body and the guidance surfaces describe the same behavior-first spec contract and responsibilities.
+- Focused validation confirms the updated spec entry and guidance surfaces remain structurally sound after the overhaul.
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
 
-- redefining the meaning of a spec around expected properties, acceptance clauses, and evidence requirements
-- extending `spec-api` so those semantics are first-class store data rather than markdown folklore
-- exposing the richer contract consistently through `spec-cli`, `spec-mcp`, and `spec-http`
-- integrating store-owned documentation, validation, and log evidence with spec fulfillment
-- reporting derived fulfillment status through `audit-api`
-- piloting the new contract and migrating the affected specs and tickets homogeneously
+## Related Implementation Tickets
 
-## Intended Behavior
+- c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/37d7fac3-cc7d-44b9-b6e1-f199fca8e901/ticket.toml
+- ticket id: 37d7fac3-cc7d-44b9-b6e1-f199fca8e901
 
-- The first implementation slice may keep the current spec body and section format while redefining what the spec means.
-- A spec documents intended properties of the system and the executable or manual acceptance criteria that determine whether those properties are satisfied, blocked, or missed.
-- Problem statements, current-state analysis, rollout sequencing, blockers, and implementation notes belong in tickets rather than in the spec contract.
-- `spec-api` owns native metadata for expected properties, acceptance clauses, evidence requirements, and fulfillment state.
-- `doc-api` owns documentation-validation records, manual verification steps, and explicit documentation coverage gaps.
-- A future `test-api` owns validation specifications, executions, and outcomes such as `passed`, `failed`, and `blocked`.
-- A future `log-api` owns validation-log capture and retrieval linked to validation executions.
-- `audit-api` derives repository-level fulfillment rollups from store-owned metadata rather than becoming the source of truth itself.
-- The migration from the current mixed model is performed homogeneously across the affected specs and tickets so contract, plan, current state, and evidence no longer drift between artifacts.
+## Background Knowledge References
 
-## Assumptions To Prove
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
 
-- The current spec body and section format can remain in place for the first slice while the contract definition changes underneath it.
-- First-class expectation and evidence metadata can be added to `spec-api` without breaking existing authored bodies, sections, or generated spec artifacts.
-- Extending `doc-api` and bootstrapping minimal `test-api` and `log-api` models is sufficient to prove one end-to-end fulfillment slice.
-- `audit-api` can compute useful derived rollups from store-owned metadata without introducing a second authoritative artifact store.
-- One pilot workflow spec plus one pilot README-rollout spec is enough to prove the homogeneous migration mapping before broader adoption proceeds.
+## Legacy Content (Preserved)
 
-## Relationship To Existing Specs
+# Summary
 
-This work builds on the workflow-architecture direction already captured in:
+Define the repository's default specification contract around the behavior a component promises, not around workflow narration. A spec is the compact system anchor for intended behavior, consumer-visible contracts, and the validation required to keep those contracts true.
 
-- [workflow validation metadata and default tool behavior](C:/Users/linus/git/graph_app/context-engine/.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md)
-- [workflow documentation validation via doc-api and doc-cli](C:/Users/linus/git/graph_app/context-engine/.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md)
-- [cross-store workflow traceability metadata](C:/Users/linus/git/graph_app/context-engine/.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md)
-- [doc-api family plan](C:/Users/linus/git/graph_app/context-engine/memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/body.md)
-- [spec-api generated documents](C:/Users/linus/git/graph_app/context-engine/memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)
+## Required Shape
 
-It is intentionally compatible with the current file-oriented spec shell in the first slice; the initial change is to the definition and native metadata contract, not necessarily to the markdown file layout.
+Each spec encapsulates:
 
-## Test Strategy
+- the short story of the behavior
+- the provided surface contracts that consumers can rely on
+- the required validation steps and executable tests or checks that prove those contracts
+- the related implementation tickets
 
-1. Add failing blackbox tests and authoring guidance checks that define the observable expectation-oriented spec contract.
-2. Extend `spec-api` until the store, health, and query behavior can represent the richer contract natively.
-3. Add transport parity tests for CLI, MCP, and HTTP surfaces.
-4. Extend `doc-api`, bootstrap minimal `test-api` and `log-api` models, and add derived `audit-api` rollups over the resulting metadata.
-5. Run a pilot migration on one workflow spec and one README-rollout spec, then run a bounded follow-on tracker over the fixed remaining inventory.
+Specs may link entities and background knowledge by reference. They do not need to inline fully expanded entity contents when context rendering can resolve the latest database state.
 
-## Acceptance Criteria
+## Authoring Rules
 
-- The repository defines specs primarily in terms of expected properties, acceptance clauses, and evidence requirements rather than problem statements and rollout prose.
-- The first slice can use the current spec body and section format while enforcing the new contract definition.
-- `spec-api` exposes native metadata for expected properties, acceptance clauses, evidence requirements, and fulfillment state.
-- `spec-cli`, `spec-mcp`, and `spec-http` expose the richer contract consistently.
-- `doc-api`, future `test-api`, and future `log-api` provide store-owned evidence links that can satisfy or block spec acceptance clauses.
-- `audit-api` reports derived satisfied, blocked, and missed fulfillment status from authoritative store-owned metadata.
-- At least one workflow spec and one README-rollout spec are migrated successfully, and a follow-on tracker applies one documented homogeneous mapping to the broader affected specs and tickets.
+- Keep rollout plans, migration notes, blockers, operator checklists, and housekeeping instructions in tickets or workflow guidance unless they directly change the promised behavior.
+- When describing a new feature, triangulate the target behavior in as many compatible forms as possible:
+  - executable validation steps and commands
+  - natural-language contract clauses
+  - code, schema, API, or other structural references when available
+- Keep the spec short enough to review as a contract. Link outward for implementation detail, evidence history, and background knowledge.
 
-## Traceability
+## Provided Contracts
 
-- [bc19467f Expectation-oriented spec contract rollout](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/bc19467f-b4d4-48c3-be92-b551d4fe6679/ticket.toml)
-- [b744bcf5 Expectation-oriented spec contract and model](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b744bcf5-05a5-4601-bbe1-caae9d42ea5f/ticket.toml)
-- [0b6e1bf3 Define blackbox contract and authoring guidance for expectation-oriented specs](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/0b6e1bf3-2478-40a5-a619-085d8691835a/ticket.toml)
-- [c73d4a6b Add native expectation, acceptance, and evidence fields](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d/ticket.toml)
-- [c666f0b3 Expose expectation and evidence parity across transports](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c666f0b3-f1e6-4073-852f-e494bf5c1272/ticket.toml)
-- [aaa90ee6 Store-owned spec evidence integration](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/aaa90ee6-1358-41ad-b19e-61abdc3f1dc2/ticket.toml)
-- [618f6ce4 Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/618f6ce4-e7b3-48f2-9c9e-840247a119da/ticket.toml)
-- [87001cb8 Add documentation-validation evidence identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/87001cb8-46c4-4921-a336-dc0cf0c1f66a/ticket.toml)
-- [86bf3da2 Bootstrap validation specification and execution identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/86bf3da2-b6cc-4fc7-898d-044403283550/ticket.toml)
-- [0805fb76 Bootstrap validation-log identities for spec fulfillment](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/0805fb76-f99b-45a5-87c6-5a8e65bdb2da/ticket.toml)
-- [635b7e37 Derive spec fulfillment rollups from store-owned evidence](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml)
-- [6e5306fb Pilot expectation-oriented spec contract on one workflow spec and one README-rollout spec](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6e5306fb-c1b3-4aec-991d-fabaf3096e23/ticket.toml)
-- [577df498 Homogeneously migrate remaining expectation-oriented specs and tickets](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/577df498-d468-448f-afc1-3e35e48e5f12/ticket.toml)
+- Consumers can treat the spec store as the canonical anchor for desired behavior.
+- CLI, MCP, HTTP, and viewer surfaces may render or expand the contract, but they do not redefine it.
+- Entity references plus the latest database state are authoritative for expanding supporting detail.
+
+## Validation Expectations
+
+- Every contract clause should map to at least one required validation step when feasible.
+- Validation may mix executable tests, focused manual checks, and schema or code reference checks, but the spec must say what proves the contract.
+- Missing or failing evidence should be representable without rewriting the contract itself.
+
+## Related Work
+
+- Related implementation and follow-up work lives in linked tickets.
+- Housekeeping facilities belong to the spec system and validation stores, not to the narrative content of each spec.

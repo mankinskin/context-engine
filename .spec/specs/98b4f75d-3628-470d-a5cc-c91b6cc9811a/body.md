@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+The current ticket-viewer graph still centers its presentation around rich DOM ticket cards, limited focus falloff, and a mostly 3D/isometric camera model. That makes dense graphs expensive to render, visually noisy around the app panels, and awkward for presentation-oriented selection flows.
+
+## Behavior Story
+
+The current ticket-viewer graph still centers its presentation around rich DOM ticket cards, limited focus falloff, and a mostly 3D/isometric camera model. That makes dense graphs expensive to render, visually noisy around the app panels, and awkward for presentation-oriented selection flows.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Problem
 
 The current ticket-viewer graph still centers its presentation around rich DOM ticket cards, limited focus falloff, and a mostly 3D/isometric camera model. That makes dense graphs expensive to render, visually noisy around the app panels, and awkward for presentation-oriented selection flows.

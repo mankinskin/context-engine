@@ -1,3 +1,31 @@
+<!-- aligned-structure:v1 -->
+
+# Summary
+
+Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into actionable decision sheets.
+
+## Behavior Story
+
+Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into actionable decision sheets.
+
+## Provided Surface Contracts
+
+- Define provided contracts for this behavior slice.
+
+## Required Validation
+
+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+
+## Related Implementation Tickets
+
+- No related implementation ticket is linked yet.
+
+## Background Knowledge References
+
+- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+
+## Legacy Content (Preserved)
+
 # Problem
 
 Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into actionable decision sheets.
