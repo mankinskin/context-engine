@@ -1,5 +1,5 @@
 # Session Objective
-Resolve the current file_length batch for memory-api and reduce 90 findings from the baseline.
+Resolve the current file_length batch for memory-api and reduce findings from the baseline.
 
 # Scope Guardrails
 - Stay inside memory-api unless a blocker requires a dependency fix outside scope.
@@ -16,6 +16,19 @@ Resolve the current file_length batch for memory-api and reduce 90 findings from
 - Full category summary: cargo run -p audit-cli --bin audit -- --json summary --by category .
 - Full baseline refresh when needed: cargo run -p audit-cli --bin audit -- --json run .
 - Ticket health sanity: ./target/debug/ticket.exe health --workspace . --all --toon
+
+# Progress Log (2026-07-08)
+- Baseline at start of this session: file_length=185, total_findings=210.
+- Chunk 1: split helpers out of `memory-api/crates/audit-api/src/index.rs` into `memory-api/crates/audit-api/src/index_helpers.rs`.
+  - Result: `index.rs` line count 438 -> 350; specific file_length finding cleared.
+  - Validation: cargo check -p audit-api (pass).
+- Chunk 2: split move JSON helpers and tests from `memory-api/tools/mcp/audit-mcp/src/server.rs` into `server_move_json.rs` and `server_tests.rs`.
+  - Result: `server.rs` line count 485 -> 378; specific file_length finding cleared.
+  - Validation: cargo test -p audit-mcp --lib (pass).
+- Chunk 3: split tests from `memory-api/crates/test-api/src/lib.rs` into `memory-api/crates/test-api/src/lib_tests.rs`.
+  - Result: `lib.rs` line count 422 -> 276; specific file_length finding cleared.
+  - Validation: cargo test -p test-api --lib (pass).
+- Current audit summary after chunk 3: file_length=182, total_findings=207.
 
 # Acceptance Criteria
 - Findings in this batch are resolved or have explicit blocker tickets linked.
