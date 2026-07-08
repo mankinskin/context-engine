@@ -32,7 +32,11 @@ tools/log-viewer/demo-logs/
 .context-engine/
 .audit/
 .repo-qa/
-.session/
+.session/*
+!.session/sessions/
+!.session/sessions/default/
+!.session/sessions/default/**
+.session/hook-logs/
 packages/
 
 # Spec/ticket store binary indexes (only the spec/ticket folders are tracked)
