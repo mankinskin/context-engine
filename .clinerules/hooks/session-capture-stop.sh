@@ -14,7 +14,7 @@ fi
 WORKSPACE_SLUG=$(basename "$PWD")
 MANIFEST_PATH="memory-api/crates/session-api/Cargo.toml"
 
-if ! cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- \
+if ! cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook -- \
     --transcript-path "$TRANSCRIPT_PATH" \
     --workspace-slug "$WORKSPACE_SLUG" \
     --trigger stop >/dev/null; then

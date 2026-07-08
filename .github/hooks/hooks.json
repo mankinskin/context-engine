@@ -3,7 +3,7 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-stop-hook -- --from-hook-stdin",
+        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-capture-hook -- --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
@@ -37,7 +37,7 @@
       },
       {
         "type": "command",
-        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-stop-hook -- --from-hook-stdin",
+        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-capture-hook -- --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
@@ -45,14 +45,14 @@
     "Stop": [
       {
         "type": "command",
-        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-stop-hook -- --from-hook-stdin",
+        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-capture-hook -- --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
     ],
     "SessionEnd": [
       {
-        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-stop-hook -- --from-hook-stdin",
+        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-capture-hook -- --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }

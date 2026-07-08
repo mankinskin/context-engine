@@ -70,4 +70,4 @@ if [[ -n "${SESSION_CAPTURE_STORE_ROOT:-}" ]]; then
     HOOK_ARGS=(--store-root "$SESSION_CAPTURE_STORE_ROOT" "${HOOK_ARGS[@]}")
 fi
 
-printf '%s' "$INPUT" | "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-stop-hook -- "${HOOK_ARGS[@]}"
+printf '%s' "$INPUT" | "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook -- "${HOOK_ARGS[@]}"
