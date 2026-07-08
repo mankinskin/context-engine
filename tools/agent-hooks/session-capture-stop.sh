@@ -8,17 +8,27 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-TRACE_LOG_PATH="${SESSION_CAPTURE_TRACE_LOG:-$REPO_ROOT/.session/hook-logs/session-capture-stop.log}"
-
-mkdir -p "$(dirname "$TRACE_LOG_PATH")" 2>/dev/null || true
+DEFAULT_SESSION_ROOT="$REPO_ROOT/.session/sessions"
+TRACE_LOG_PATH=""
 
 log_trace() {
     local level="$1"
     local message="$2"
-    printf '%s [%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$level" "$message" >>"$TRACE_LOG_PATH" 2>/dev/null || true
+    local target_log="${TRACE_LOG_PATH:-${SESSION_CAPTURE_TRACE_LOG:-$DEFAULT_SESSION_ROOT/unknown/session-capture-stop.log}}"
+    mkdir -p "$(dirname "$target_log")" 2>/dev/null || true
+    printf '%s [%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$level" "$message" >>"$target_log" 2>/dev/null || true
 }
 
-log_trace "INFO" "hook start pwd=$PWD"
+sanitize_session_id_for_filename() {
+    local raw="$1"
+    raw="${raw//[^A-Za-z0-9._-]/_}"
+    raw="${raw#_}"
+    raw="${raw%_}"
+    if [[ -z "$raw" ]]; then
+        raw="unknown"
+    fi
+    echo "$raw"
+}
 
 normalize_path() {
     local p="$1"
@@ -137,6 +147,25 @@ else
     SESSION_ID="unknown"
     WORKSPACE_SLUG="default"
 fi
+
+# Prefer explicit override; otherwise write one log file per session.
+if [[ -n "${SESSION_CAPTURE_TRACE_LOG:-}" ]]; then
+    TRACE_LOG_PATH="$SESSION_CAPTURE_TRACE_LOG"
+else
+    SESSION_LOG_ID="$SESSION_ID"
+    if [[ -z "$SESSION_LOG_ID" || "$SESSION_LOG_ID" == "unknown" || "$SESSION_LOG_ID" == "null" ]]; then
+        session_from_name="$(basename "$TRANSCRIPT_PATH")"
+        session_from_name="${session_from_name%.jsonl}"
+        if [[ -n "$session_from_name" && "$session_from_name" != "$TRANSCRIPT_PATH" ]]; then
+            SESSION_LOG_ID="$session_from_name"
+        fi
+    fi
+    SESSION_LOG_ID="$(sanitize_session_id_for_filename "$SESSION_LOG_ID")"
+    TRACE_LOG_PATH="$DEFAULT_SESSION_ROOT/$SESSION_LOG_ID/session-capture-stop.log"
+fi
+
+log_trace "INFO" "hook start pwd=$PWD"
+log_trace "INFO" "selected trace log path=$TRACE_LOG_PATH"
 
 if [[ -n "$TRANSCRIPT_PATH" ]]; then
     if command -v cygpath >/dev/null 2>&1; then
