@@ -1,5 +1,13 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/session-capture-stop.sh",
+        "cwd": ".",
+        "timeout": 120
+      }
+    ],
     "PreToolUse": [
       {
         "type": "command",
@@ -26,11 +34,24 @@
         "command": "bash tools/agent-hooks/terminal-pwd.sh",
         "cwd": ".",
         "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/session-capture-stop.sh",
+        "cwd": ".",
+        "timeout": 120
       }
     ],
     "Stop": [
       {
         "type": "command",
+        "command": "bash tools/agent-hooks/session-capture-stop.sh",
+        "cwd": ".",
+        "timeout": 120
+      }
+    ],
+    "SessionEnd": [
+      {
         "command": "bash tools/agent-hooks/session-capture-stop.sh",
         "cwd": ".",
         "timeout": 120
