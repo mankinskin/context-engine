@@ -26,6 +26,10 @@ Define the contract for reducing model-bound Copilot context through upstream to
 
 - [.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml)
 - [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)
+- [.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml](.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml)
+- [.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml](.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml)
+- [.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml](.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml)
+- [.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml](.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml)
 
 ## Background Knowledge References
 
@@ -87,6 +91,16 @@ This spec covers upstream request-shaping policy and future prompt-facing compac
 - Session `0f3721db-cf5e-4ad3-a939-1fa797dd1b67`: `run_in_terminal` and `read_file` repetition consumed more transcript volume than user intent.
 - Session `b4096169-3e47-4180-a502-d6bdd366aabd`: repeated board and terminal orchestration created large prompt overhead.
 - Session `38095e95-c056-478a-8fe4-2b0a80f34573`: repeated reads, searches, and status re-checks inflated context with limited durable value.
+- 2026-07-09 validation pass for follow-up implementation slice under [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml):
+	- `cargo test -p session-api` (added representative fixture-style coverage in `memory-api/crates/session-api/src/peek.rs` for retry-variant suppression, duplicate lifecycle-wrapper suppression, normalized repeated status-check suppression, and pointer-vs-inline payload classification)
+	- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml` (expanded integration fixture assertions in `memory-api/tools/cli/session-cli/tests/cli.rs` for dropped/summarized/reference-only counts and reason tags)
+
+# Suppression Rule Rationale (2026-07-09 hardening)
+
+- Retry boilerplate variants (`retrying`, `rerunning`, `one more attempt`) are dropped when they remain short assistant narration, preventing repeated operational chatter from re-entering prompt context.
+- Duplicate assistant lifecycle wrappers are dropped when they are short command-orchestration narration with equivalent normalized action fingerprints.
+- Repeated state-check outputs remain normalized before dedupe so whitespace/casing variants collapse deterministically.
+- Oversized inline payloads are summarized (not pointer-classified) unless an explicit spill/resource pointer is present; pointer outputs remain reference-only.
 
 # Follow-up Implementation Slices
 

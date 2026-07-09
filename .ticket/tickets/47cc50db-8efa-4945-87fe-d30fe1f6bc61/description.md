@@ -20,3 +20,16 @@ Build coded support that reduces what GitHub Copilot sends or reuses in model-fa
 - long artifacts remain addressable via pointers and bounded extraction
 - duplicate suppression is deterministic and test-covered
 - the implementation demonstrably improves upstream prompt compactness rather than only archival transcript readability
+
+## Validation evidence (2026-07-09)
+- `cargo test -p session-api` passed after adding representative fixture-style cases in `memory-api/crates/session-api/src/peek.rs` for:
+	- repeated terminal/status checks (normalized dedupe)
+	- duplicate lifecycle wrapper narration suppression
+	- retry narration variant suppression
+	- spill-pointer reference-only classification vs oversized inline blob summarization
+- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml` passed after expanding `memory-api/tools/cli/session-cli/tests/cli.rs` prompt-pack fixture assertions for dropped/summarized/reference-only counts and reason markers.
+
+## Rule rationale
+- Keep `session-api` transcript capture diagnostic-only.
+- Perform compactness controls before prompt reuse with deterministic guards.
+- Preserve pointer-addressability for large artifacts while avoiding default inline payload expansion.
