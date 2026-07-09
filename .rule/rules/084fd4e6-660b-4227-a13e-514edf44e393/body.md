@@ -29,18 +29,36 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 - mention upstream request-shaping issues such as repeated state checks, oversized tool output, or routine-action reasoning when they matter to the restart path
 - keep large transcript or log artifacts as pointers with a short reason they matter
 5. Keep reusable workflow noise out of the handoff paragraph. Do not restate ordinary ticket/spec workflow, tool manuals, or generic validation doctrine unless a specific exception, blocker, or required command from this session matters.
-6. If the current track is unclear, abort the handoff and ask for clarifying questions.
+6. Ticket references are strict:
+- use exact full ticket UUIDs for all ticket mentions in the handoff
+- do not invent shorthand-only identifiers without resolvable canonical ids
+- if shorthand labels are used for readability (for example `CH1`, `T2`, `epic`, `child-a`), include an explicit ticket legend that maps each shorthand label to the exact full UUID and canonical title
+7. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:
+- include a `Shorthand And Placeholder Legend` section immediately after the opening paragraph heading
+- list every shorthand token or placeholder used anywhere in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)
+- map each shorthand to its authoritative entity id/title/path
+- if no shorthand or placeholders are used, explicitly say `None used.`
+8. If the current track is unclear, abort the handoff and ask for clarifying questions.
 
 ## Response
 
 Return:
+- the full handoff response inside a fenced plain-text block using `~~~text` and closing `~~~` so copied output preserves literal markdown links
 - clear sections with small paragraph headings
 - a short introduction/overview in one paragraph
 - findings, decisions, blockers, and suggested goals in structured lists
-- key entities (tickets, specs, logs, sessions, rules, ...) as relative links with a short reason each matters
-- one epic ticket if avaliable or alternatively a long-horizon goal we are working towards
+- key entities (tickets, specs, logs, sessions, rules, ...) as markdown links with a short reason each matters
+- all file references must use markdown links with forward slashes only
+- for files in the current directory, use `./`-prefixed links (for example `[./AGENTS.md](./AGENTS.md)`)
+- do not emit bare file paths or Windows-style backslashes
+- strict ticket references using full UUIDs
+- a `Shorthand And Placeholder Legend` section near the top that defines all shorthand and placeholders used later in the handoff, or `None used.` when none are introduced
+- a ticket legend section mapping any shorthand labels used in the handoff to exact full UUID + canonical ticket title
+- one epic ticket if available or alternatively a long-horizon goal we are working towards
 - the next actions in execution order
+- a completion status section for follow-up handoffs covering each next action (`not-started`, `in-progress`, `completed`, or `blocked`) with a short note
 - a definition of done
 - any board or persisted-session note that materially affects the restart path
 - any transcript artifact pointer only when the artifact cannot be reduced to a durable finding in the handoff itself
-- the instruction to start with the first next action
+- no unresolved references: every shorthand, ticket id, spec id, session id, rule id, or file mentioned in findings/decisions/blockers/next actions is defined in the legend sections or linked in key entities
+- the instruction to execute the next actions in order and continue until all are completed or explicitly blocked

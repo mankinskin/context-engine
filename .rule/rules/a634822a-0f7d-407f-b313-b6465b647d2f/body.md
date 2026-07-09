@@ -30,13 +30,30 @@ Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../inst
 9. Treat transcript history as diagnostic evidence for future prompt quality rather than as a prompt payload to replay:
 - prefer concise findings about repeated tool chatter, oversized outputs, and routine-action reasoning
 - keep the next-session handoff focused on the durable work state and the next concrete action
-10. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.
+10. Ticket references are strict:
+- use exact full ticket UUIDs for all ticket mentions in the handoff output
+- do not use shorthand-only ticket references unless they are resolved in a legend
+- if shorthand labels are used for readability, include an explicit ticket legend mapping shorthand label -> full UUID + canonical ticket title
+11. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:
+- include a `Shorthand And Placeholder Legend` section near the top
+- define every shorthand token and placeholder used later in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)
+- if none are used, explicitly say `None used.`
+12. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.
 
 ## Response
 
 Return:
+- the full handoff response inside a fenced plain-text block using `~~~text` and closing `~~~` so copied output preserves literal markdown links
 - the short handoff prompt in one paragraph
-- created or matched tickets, rendered as canonical ticket links when available
+- created or matched tickets, rendered as canonical markdown links when available
+- all file references must use markdown links with forward slashes only
+- for files in the current directory, use `./`-prefixed links (for example `[./AGENTS.md](./AGENTS.md)`)
+- do not emit bare file paths or Windows-style backslashes
+- strict ticket references using full UUIDs
+- a `Shorthand And Placeholder Legend` section near the top that defines all shorthand/placeholders used later in the handoff, or `None used.` when none are introduced
+- a ticket legend section mapping any shorthand labels used in the handoff to exact full UUID + canonical ticket title
 - whether a tracker ticket was needed and why
 - any board or persisted-session note that affects how the next session should resume
-- the single next action for the new session
+- the ordered next-action list for the new session with the instruction to continue until all actions are completed or explicitly blocked
+- a follow-up completion status section covering each action (`not-started`, `in-progress`, `completed`, or `blocked`) with a short blocker or outcome note
+- no unresolved references: every shorthand, ticket id, spec id, session id, rule id, or file mentioned in the handoff body is defined in the legend sections or linked in key entities
