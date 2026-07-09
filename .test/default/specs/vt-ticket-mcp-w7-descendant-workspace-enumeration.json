@@ -1,0 +1,11 @@
+{
+  "id": "vt-ticket-mcp-w7-descendant-workspace-enumeration",
+  "title": "W7 list_workspaces descendant store enumeration checks",
+  "command": "cargo test -p memory-api workspace:: && cargo test -p ticket-mcp list_workspaces -- --nocapture",
+  "detail": "Validates list_workspaces enumerates discovered descendant stores for viewer domain selection without breaking default aggregated reads.",
+  "links": {
+    "ticket_ids": [
+      "d893ed4c-a6a2-4fe4-94c5-175d4da13a9b"
+    ]
+  }
+}

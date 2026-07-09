@@ -10,11 +10,23 @@ The current ticket-viewer graph still centers its presentation around rich DOM t
 
 ## Provided Surface Contracts
 
-- Define provided contracts for this behavior slice.
+- Ticket-viewer graph data flow supports loading a workspace-scale graph into a client-side cache while rendering only a bounded neighbourhood around the active selection.
+- Bounded neighbourhood rendering is parameterized by configurable graph-distance/focus rules and avoids full-graph visual overload.
+- Selection changes recompute the rendered neighbourhood from cache without network refetch.
+- Graph focus behavior preserves predictable selection semantics: selected node remains emphasized, immediate neighbours retain higher emphasis, and low-relevance nodes degrade by explicit focus bands.
+- Node rendering follows an ordered level-of-detail ladder (`point/sphere -> icon -> label -> compact -> full`) driven by projected size, focus, and visibility budget.
+- The shared Graph3D renderer remains extensible and performant for focus, LOD tiers, and cache-bounded neighbourhood rendering, with reusable extension points for additional viewers.
+- Optional fixed 2D presentation mode remains available with matching 2D framing behavior and consistent selection/focus expectations.
 
 ## Required Validation
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- Playwright release coverage validates bounded neighbourhood rendering from cached full-graph data and confirms selection changes do not trigger graph refetches.
+- Playwright release coverage validates focus-band behavior (selected node, immediate neighbours, wider context, low-focus falloff) and outside-click deselection behavior.
+- Playwright release coverage validates ordered LOD transitions, including one-tier hover promotion and camera-mode-appropriate low-tier glyphs.
+- Playwright release coverage validates optional fixed 2D mode switching and parity of core focus/selection interactions between 2D and 3D modes.
+- Focused renderer performance validation documents graph-size baselines, frame stability, and regression thresholds for cache-bounded neighbourhood updates.
+- Extension-point documentation validation confirms renderer integration points remain consumable for non-ticket viewers (rule/audit/demo).
+- Ticket traceability for this spec is maintained through W2 `e978d833-bbaa-4cb8-8c1a-52a282a079d9` and W6 `e0d8ccef-49d8-4446-bd63-78626a4163dc`.
 
 ## Related Implementation Tickets
 

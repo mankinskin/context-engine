@@ -1,0 +1,15 @@
+{
+  "id": "vt-viewer-api-w6-graph3d-perf-extensibility",
+  "title": "W6 Graph3D performance and extension-point checks",
+  "command": "cargo test --manifest-path viewer-api/viewer-api/frontend/dioxus/Cargo.toml graph3d -- --nocapture && cd memory-viewers/ticket-viewer/frontend/dioxus && npm run test:e2e:release -- graph-detail-sidebar.spec.ts",
+  "detail": "Validates Graph3D performance baseline for focus/LOD/neighbourhood workloads and preserves extension contracts for additional viewers.",
+  "links": {
+    "spec_ids": [
+      "98b4f75d-3628-470d-a5cc-c91b6cc9811a",
+      "4f14356f-c4bd-4554-be1e-35361de241da"
+    ],
+    "ticket_ids": [
+      "e0d8ccef-49d8-4446-bd63-78626a4163dc"
+    ]
+  }
+}

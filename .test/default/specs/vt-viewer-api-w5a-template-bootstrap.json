@@ -1,0 +1,14 @@
+{
+  "id": "vt-viewer-api-w5a-template-bootstrap",
+  "title": "W5a minimal viewer-template bootstrap checks",
+  "command": "cargo check --manifest-path viewer-api/viewer-api/Cargo.toml && cd viewer-api/viewer-api/frontend/dioxus && npm run test",
+  "detail": "Validates template bootstrap compiles, serves baseline shell, and wires default viewer-api component surfaces.",
+  "links": {
+    "spec_ids": [
+      "012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6"
+    ],
+    "ticket_ids": [
+      "0d995e82-26b8-4f71-afc0-f5de75d5a468"
+    ]
+  }
+}

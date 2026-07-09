@@ -1,0 +1,14 @@
+{
+  "id": "vt-ticket-viewer-w4-neighbour-retarget-navigation",
+  "title": "W4 clickable parent/child neighbour retarget navigation",
+  "command": "cd memory-viewers/ticket-viewer/frontend/dioxus && npm run test:e2e:release -- graph-detail-sidebar.spec.ts",
+  "detail": "Validates parent/child neighbour list rendering, clickable retargeting, and cache-driven focus updates without graph refetch.",
+  "links": {
+    "spec_ids": [
+      "8c4d51ef-c0b6-437d-bc14-672b0802cef2"
+    ],
+    "ticket_ids": [
+      "1b0dbe8a-1828-41e7-b33f-4a066c3622bf"
+    ]
+  }
+}

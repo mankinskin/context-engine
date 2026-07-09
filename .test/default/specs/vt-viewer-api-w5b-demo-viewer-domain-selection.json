@@ -1,0 +1,11 @@
+{
+  "id": "vt-viewer-api-w5b-demo-viewer-domain-selection",
+  "title": "W5b demo-viewer component exercise with domain selection",
+  "command": "cargo check --manifest-path viewer-api/viewer-api/Cargo.toml && cd viewer-api/viewer-api/frontend/dioxus && npm run test:e2e:release",
+  "detail": "Validates demo-viewer renders shared components and supports root-level domain selection using discovered workspaces.",
+  "links": {
+    "ticket_ids": [
+      "966a7714-0bf4-443b-b778-8e0f383f99d8"
+    ]
+  }
+}
