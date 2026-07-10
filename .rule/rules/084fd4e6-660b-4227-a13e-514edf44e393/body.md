@@ -34,11 +34,10 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 - use exact full ticket UUIDs for all ticket mentions in the handoff
 - do not invent shorthand-only identifiers without resolvable canonical ids
 - if shorthand labels are used for readability (for example `CH1`, `T2`, `epic`, `child-a`), include an explicit ticket legend that maps each shorthand label to the exact full UUID and canonical title
-7. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:
-- include a `Shorthand And Placeholder Legend` section immediately after the opening paragraph heading
+7. Shorthand and placeholder declarations must appear at the top of the handoff output before the overview, if any are used:
+- include a `Shorthand And Placeholder Legend` section immediately after the opening paragraph heading, if any shorthands are used
 - list every shorthand token or placeholder used anywhere in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)
 - map each shorthand to its authoritative entity id/title/path
-- if no shorthand or placeholders are used, explicitly say `None used.`
 8. If the current track is unclear, abort the handoff and ask for clarifying questions.
 
 ## Response
@@ -53,7 +52,7 @@ Return:
 - for files in the current directory, use `./`-prefixed links (for example `[./AGENTS.md](./AGENTS.md)`)
 - do not emit bare file paths or Windows-style backslashes
 - strict ticket references using full UUIDs
-- a `Shorthand And Placeholder Legend` section near the top that defines all shorthand and placeholders used later in the handoff, or `None used.` when none are introduced
+- a `Shorthand And Placeholder Legend` section near the top that defines all shorthand and placeholders used later in the handoff, if any
 - a ticket legend section mapping any shorthand labels used in the handoff to exact full UUID + canonical ticket title
 - one epic ticket if available or alternatively a long-horizon goal we are working towards
 - the next actions in execution order

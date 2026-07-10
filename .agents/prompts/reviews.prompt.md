@@ -5,6 +5,10 @@ argument-hint: "[limit=5|infinite|endlessly|until no more]"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=016417ac-fcfc-41f6-a781-4138b0a2294c slug=context-engine/prompts/reviews/l1 -->
+
 # Review In-Review Tickets
 
 Use this workflow to review the highest-ranked tickets currently in `in-review`.

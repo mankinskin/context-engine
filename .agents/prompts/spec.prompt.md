@@ -5,6 +5,10 @@ argument-hint: "<your content>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=0719f0c1-9036-4983-912c-599de3a37d23 slug=context-engine/prompts/spec/l1 -->
+
 # Create or Update Draft Spec Entry
 
 Create or update a draft spec entry from the user's current slash-command request.

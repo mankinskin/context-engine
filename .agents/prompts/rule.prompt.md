@@ -5,6 +5,10 @@ argument-hint: "<your content>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=7a0b5a71-7e8a-4def-963c-e796aa1ded08 slug=context-engine/prompts/rule/l1 -->
+
 # Create Canonical Rule Entry
 
 Create a new canonical rule entry from the user's current slash-command request.

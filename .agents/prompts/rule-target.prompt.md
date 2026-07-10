@@ -5,6 +5,10 @@ argument-hint: "<your content>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=57fc6182-645d-48fd-9aa8-b04ab335096b slug=context-engine/prompts/rule-target/l1 -->
+
 # Create Rule Target
 
 Create a new rule target from the user's current slash-command request and use the rule-api flow to generate its output.

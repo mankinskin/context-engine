@@ -5,6 +5,10 @@ argument-hint: "[ticket-id|track|current]"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=a634822a-0f7d-407f-b313-b6465b647d2f slug=context-engine/prompts/handoff-tickets/l1 -->
+
 # Handoff Tickets
 
 Create a compact handoff prompt for a new session and formalize the handoff track through the ticket workflow when needed.

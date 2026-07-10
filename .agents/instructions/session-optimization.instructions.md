@@ -3,6 +3,10 @@ description: "Use when optimizing model-bound Copilot context, tool-result compr
 applyTo: ".agents/instructions/token-efficiency.instructions.md,.agents/prompts/*.prompt.md,.spec/**,.ticket/**"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=fe912923-78fc-4f59-b893-b4e6131d4937 slug=context-engine/instructions/session-optimization/l1 -->
+
 ## Session Optimization Guidance
 
 This guidance focuses on reducing what GitHub Copilot sends to the model API before tokens are spent.

@@ -5,6 +5,10 @@ argument-hint: "[message]"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=f52de457-4d85-49cf-9aae-109a8f348101 slug=shared/commit-prompt/l1 -->
+
 # Commit Changes
 
 Commit all pending changes across the root repo and submodules following the repository's commit conventions.

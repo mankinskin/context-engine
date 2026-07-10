@@ -5,6 +5,10 @@ argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementat
 agent: "Implement Agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=6e652560-810e-4719-8f92-36634c87a54c slug=shared/implement-prompt/l1 -->
+
 # Implement
 
 Make the smallest correct change that satisfies the requested behavior, validate it immediately, and return a concise evidence-backed summary.

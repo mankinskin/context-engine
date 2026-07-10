@@ -5,6 +5,10 @@ argument-hint: "[fresh-checkout|current-workspace|tools]"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=976d8f26-4664-479e-b1e4-6e198bba962d slug=context-engine/prompts/memory-setup/l1 -->
+
 # Memory Setup
 
 Help the user orient in the current checkout or bootstrap a fresh one without skipping the repository workflow.

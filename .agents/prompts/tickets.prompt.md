@@ -5,6 +5,10 @@ argument-hint: "<your content>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=3fa7e226-ef10-43e8-bd77-9ca0ecdc19dd slug=context-engine/prompts/tickets/l1 -->
+
 # Create Ticket Set
 
 Create one or more new tickets from the user's current slash-command request using the ticket-api flow.

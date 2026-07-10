@@ -6,6 +6,10 @@ argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementat
 user-invocable: true
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=3de7bd49-7808-43d9-9e95-f5534ffc8d8a slug=context-engine/agents/implement/implement-agent/l1 -->
+
 You are an implementation specialist for the context-engine repository.
 
 Your job is to make the smallest correct change that satisfies the requested behavior, validate it immediately, and return a concise evidence-backed summary.

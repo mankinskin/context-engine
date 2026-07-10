@@ -5,6 +5,10 @@ argument-hint: "<ticket, behavior, or slice>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=9a49f487-82fb-480e-8c7b-f9efff0089bc slug=context-engine/prompts/tdd/l1 -->
+
 # Test-Driven Development
 
 Drive the requested work with the smallest useful red-green-refactor loop available in this repository.

@@ -3,6 +3,10 @@ description: "Use when editing agent workflow guidance, CLI output handling, or 
 applyTo: "AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=4135e465-dc19-4966-892c-b232e062346b slug=context-engine/instructions/token-efficiency/l1 -->
+
 ## Token-Efficient Agent Workflow
 
 These rules apply during every session to keep token consumption bounded and debuggability intact.

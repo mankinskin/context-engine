@@ -5,6 +5,10 @@ argument-hint: "<goal or work idea>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=205e682a-f52b-4624-abe1-2affc6f20217 slug=context-engine/prompts/user-training/l1 -->
+
 # User Training
 
 Work with the user to shape new work they want to finish, then guide them through the repository workflow from discovery to ticketing, specification, validation, and review.

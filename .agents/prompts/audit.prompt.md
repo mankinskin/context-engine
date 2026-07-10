@@ -5,6 +5,10 @@ argument-hint: "[scope or path]"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=61f490b3-7565-4aa6-a673-4644ed98fd56 slug=context-engine/prompts/audit/l1 -->
+
 # Automated Audit
 
 Run automated audit tooling for the requested scope, gather the strongest supporting validation, and return findings first.

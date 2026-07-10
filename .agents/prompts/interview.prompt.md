@@ -5,6 +5,10 @@ argument-hint: "<topic>"
 agent: "agent"
 ---
 
+<!-- rule-api:file generated=true -->
+
+<!-- rule-api:entry id=1de5c74b-1946-42ec-8b25-b097a62cb3ab slug=context-engine/prompts/interview/l1 -->
+
 # Specification Interview
 
 Create an interview with the user about a specific topic so the specification book can be updated with clearer requirements, goals, and acceptance criteria.
