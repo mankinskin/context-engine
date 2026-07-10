@@ -51,6 +51,8 @@ This is the common floor, not a promise that every artifact type stores identica
 - `memory-api/crates/test-api/src/lib.rs`
 - `memory-api/crates/test-api/src/benchmark.rs`
 - `memory-api/crates/log-api/src/store.rs`
+- `memory-api/crates/memory-api/src/storage/move_kernel_types.rs`
+- `memory-api/crates/memory-api/src/storage/move_kernel/internal.rs`
 - root tracker `73b2cd22-942b-4205-86e5-333df2373211`
 - completed runtime-session ticket `d3349747-b2f2-4dd4-b73c-dc016fec80d6`
 
@@ -67,16 +69,26 @@ Enforced interoperability edges landed so far (persistence-boundary enforcement,
 1. Validation executions — `test-api` `record_execution` rejects missing operation/run/traceability (`store::tests::record_execution_rejects_missing_interoperability_contract_fields`).
 2. Benchmark records — `test-api` `record_benchmark` rejects missing run grouping/traceability (`store::tests::record_benchmark_rejects_missing_interoperability_contract_fields`).
 3. Log captures — `log-api` `record_capture` rejects missing execution back-link (`store::tests::record_capture_rejects_missing_execution_back_link`); memory-matrix log producer updated to comply.
-4. Runtime sessions (this slice) — `log-api` `RuntimeLogSession::validate_interoperability_contract` added and enforced at `record_runtime_session`, mirroring the capture edge. A session missing operation/run_id/correlation links is now rejected at persistence and never written to disk. The real producer path `memory-matrix/src/runner.rs::correlated_runtime_log_session_ids` already sets operation, run_id, and validation-execution links, so it stays compliant.
+4. Runtime sessions — `log-api` `RuntimeLogSession::validate_interoperability_contract` added and enforced at `record_runtime_session`, mirroring the capture edge. A session missing operation/run_id/correlation links is now rejected at persistence and never written to disk. The real producer path `memory-matrix/src/runner.rs::correlated_runtime_log_session_ids` already sets operation, run_id, and validation-execution links, so it stays compliant.
+5. Journal-backed operations (this slice) — `memory-api` `MoveJournal::validate_interoperability_contract` added and enforced at the `persist_journal` persistence boundary (`memory-api/crates/memory-api/src/storage/move_kernel/internal.rs`). A journal missing authoritative journal identity, authoritative operation identity, deterministic mutation payload ownership (source/target store roots and source/destination entity paths), or replay/rollback lineage (`steps`) is rejected and never written to disk. Outward links to tests or logs stay optional so journal authority never moves elsewhere. The real `execute_or_resume` path constructs journals with a fresh id, the plan's `entity_id`, the four plan paths, and lineage steps, so it stays compliant; existing move/resume/rollback suites still pass.
 
 ### Tests for the runtime-session edge
 - `log-api` `store::tests::record_runtime_session_rejects_missing_interoperability_links` — persistence rejection + confirms nothing is written (`get_runtime_session` reports `RuntimeSessionNotFound`).
 - `log-api` `tests::runtime_session_interoperability_contract_requires_correlation_links` — extended to assert `validate_interoperability_contract` returns `LogError::InteroperabilityContract`.
 - `log-api` `tests::runtime_sessions_round_trip_through_serde` — asserts a compliant session validates `Ok`.
 
+### Tests for the journal edge
+- `memory-api` `storage::move_kernel::move_kernel_types::interoperability_contract_tests::compliant_journal_satisfies_interoperability_contract` — a fully-formed journal validates `Ok` with no gaps.
+- `memory-api` `...interoperability_contract_tests::nil_operation_identity_violates_interoperability_contract` — a nil `entity_id` fails with the `MoveJournal::INTEROP_CONTRACT_MARKER` marker in `MoveError::Domain`.
+- `memory-api` `...interoperability_contract_tests::missing_mutation_payload_ownership_violates_contract` — empty store-root / entity-path fields are reported as gaps and rejected.
+- `memory-api` `storage::move_kernel::internal::persist_journal_contract_tests::persist_journal_rejects_non_compliant_journal_and_writes_nothing` — persistence-boundary rejection confirms the journal file is never written.
+- `memory-api` `...persist_journal_contract_tests::persist_journal_writes_compliant_journal` — a compliant journal persists to disk.
+
 ### Validation
-`cargo test -p test-api -p log-api -p memory-matrix` — passing (log-api 15 tests, memory-matrix + test-api all green). Run from workspace root (`context-engine`); the root `Cargo.toml` owns these crates.
+- `cargo test -p test-api -p log-api -p memory-matrix` — passing (log-api 15 tests, memory-matrix + test-api all green). Run from workspace root (`context-engine`); the root `Cargo.toml` owns these crates.
+- `cargo test -p memory-api` (journal edge) — the 5 new contract tests pass; existing move-kernel execution/resume/rollback suites pass.
+- Pre-existing, unrelated failure: `ticket-api` `storage::move_planner::tests::preflight_reports_invisible_reference_visibility_and_path_refs` fails with a ticket-store `NotFound` during preflight setup. Confirmed present on the committed baseline with the journal edge stashed, so it is not a regression from this work; it does not touch `persist_journal`.
 
 ### Remaining
-- Journal-backed operation lineage enforcement (authoritative journal identity + replay/rollback) is not yet enforced at a persistence boundary — next candidate edge.
-- No blocker on shared tracing initialization or the generic journal envelope observed for the landed edges.
+- All five artifact classes (validation executions, benchmark records, log captures, runtime sessions, journal-backed operations) now enforce their interoperability contract at a persistence boundary. The layered contract is complete.
+- No blocker on shared tracing initialization or the generic journal envelope observed for any landed edge.
