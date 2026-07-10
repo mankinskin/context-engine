@@ -1,0 +1,17 @@
+{
+  "id": "exec-vt-ticket-viewer-wasm-build-regression-20260710-trunk-release-pass",
+  "validation_spec_id": "vt-ticket-viewer-wasm-build-regression",
+  "outcome": "passed",
+  "executed_at": "2026-07-10T16:23:19.711635300Z",
+  "detail": "After adding memory-viewers/viewer-api as a git submodule (github.com/mankinskin/viewer-api @ 47e0aa45, matching the root viewer-api pin), the full canonical frontend build `viewer-ctl prepare ticket-viewer` (trunk build --release --features profile-browser) succeeds with EXIT 0: \"frontend built\" + \"frontend installed\" to ~/.context-engine/static/ticket-viewer. This resolves the prior environment blocker (missing shared CSS assets / empty memory-viewers/viewer-api) and end-to-end validates the wasm build-regression fix. Browser verification is now unblocked.",
+  "links": {
+    "ticket_ids": [
+      "f2d19fdc-9d3a-4eb0-ad62-cc42ded75541",
+      "a34d9891-5cd3-403c-8576-f3a55a50047e",
+      "c892904f-6aff-4892-baf1-1f832837cde5"
+    ]
+  },
+  "provenance": {
+    "transport": "cli"
+  }
+}
