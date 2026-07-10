@@ -1,0 +1,1001 @@
+{
+  "session_id": "bd055707-d03f-4fb6-9862-d8ed54e94caa",
+  "captured_at": "2026-07-08T19:14:42.923Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "review the entire system prompt and instructions you have been given. do not read any files actively. I just need to understand which files you are _forced_ to read and what we need to improve on them",
+      "captured_at": "2026-07-08T18:51:19.427Z",
+      "event_meta": {
+        "event_id": "c009467d-d970-4486-882e-d7ce25958f41",
+        "parent_event_id": "69b18ce5-e2e7-4d69-ac8e-9d1a64dff259",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "user",
+      "content": "review the entire system prompt and instructions you have been given. do not read any files actively. I just need to understand which files you are _forced_ to read and what we need to improve on them",
+      "captured_at": "2026-07-08T18:51:24.725Z",
+      "event_meta": {
+        "event_id": "af9ac89a-af84-457d-ad76-fca23345b929",
+        "parent_event_id": "baa95d52-c5f2-4587-864a-d7950e4ca94d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "I’ll inspect only the prompt-provided instructions already in context, identify which files are mandatory to read versus conditional, and then list concrete improvements to those instruction files without opening any workspace files.What is actually forced is mostly conditional, not absolute.\n\n**Forced Read Rules**\n- If an instruction file applies to the task and its content is not already present in prompt context, I am required to read it before proceeding.\n- If the file content is already included (as attachments or prompt text), I am not required to re-read it from disk.\n- I must not eagerly load all instruction files up front; only relevant ones.\n\n**In This Session (Given What’s Already Embedded)**\nNo additional file reads are forced right now, because the key global instructions were already provided inline:\n- [.agents/instructions/commit.instructions.md](.agents/instructions/commit.instructions.md)\n- [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md)\n- [.agents/instructions/ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)\n- [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)\n- [AGENTS.md](AGENTS.md)\n- [.github/copilot-instructions.md](.github/copilot-instructions.md)\n\nIf I were to edit specific areas, these would become additionally forced (if not already embedded):\n- Audit paths: [.agents/instructions/audit.instructions.md](.agents/instructions/audit.instructions.md)\n- Frontend paths: [.agents/instructions/frontend.instructions.md](.agents/instructions/frontend.instructions.md)\n- Context HTTP paths: [.agents/instructions/context-http.instructions.md](.agents/instructions/context-http.instructions.md)\n- Core context crates: [.agents/instructions/core-crates.instructions.md](.agents/instructions/core-crates.instructions.md)\n- Viewer tools: [.agents/instructions/viewer-api-tools.instructions.md](.agents/instructions/viewer-api-tools.instructions.md)\n- Tests/benches: [.agents/instructions/tests.instructions.md](.agents/instructions/tests.instructions.md)\n\n**What To Improve**\n- Remove duplicated content in [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md). It repeats major sections verbatim.\n- Resolve formatting-rule conflicts between “use backticks for filenames” and “never use backticks; always markdown links.” Keep one canonical rule.\n- Narrow overly broad applyTo patterns (`**`) in:\n  - [commit.instructions.md](.agents/instructions/commit.instructions.md)\n  - [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md)\n  - [ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)\n  - [token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)\n  This would reduce accidental over-application for tiny/non-code tasks.\n- Clarify “must create/update ticket/spec before implementation” exceptions for micro-fixes, read-only requests, and advisory-only responses.\n- Clarify cadence constraints like “update every 20s” so they are best-effort, not hard real-time requirements.\n- Consolidate output-formatting rules into one place to avoid contradictions across global prompt, AGENTS, and instruction files.\n- Add a short precedence section (System > Developer > Repo AGENTS > Path instructions > Prompt attachments) inside [AGENTS.md](AGENTS.md) so conflicts are deterministic.\n\nIf you want, I can next produce a minimal “instruction cleanup patch plan” that lists exact edits per file, without applying any changes.",
+      "captured_at": "2026-07-08T18:51:40.414Z",
+      "event_meta": {
+        "event_id": "e5db0cee-36a7-4d5d-97c4-8d9c9beb7112",
+        "parent_event_id": "f33e0f03-339f-46c9-a191-472ac254c884",
+        "event_type": "assistant.message",
+        "message_id": "ee015dff-2f5c-46d1-8c96-97369e7974dc",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "> **In This Session (Given What’s Already Embedded)**\r\nNo additional file reads are forced right now, because the key global instructions were already provided inline:\r\n- commit.instructions.md\r\n- spec-system.instructions.md\r\n- ticket-system.instructions.md\r\n- token-efficiency.instructions.md\r\n- AGENTS.md\r\n- copilot-instructions.md\r\n\r\nthese are very long files. are they embedded in your system prompt entirely?",
+      "captured_at": "2026-07-08T18:56:41.433Z",
+      "event_meta": {
+        "event_id": "3cf073d1-beaa-4627-85d1-3a6aa86c3e7a",
+        "parent_event_id": "ee394bf8-f6ee-4827-a74e-40f4af719fa4",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Yes, in this session those six were included directly in the prompt context I received, not fetched from disk during our exchange.\n\nTwo important nuances:\n1. “Embedded” means embedded for this conversation only. It is not guaranteed across future turns/sessions.\n2. I only know exactly what was included in the prompt payload. If a file were truncated before being sent to me, I would only see that truncated version. In this case, they appeared as full attachments in context.",
+      "captured_at": "2026-07-08T18:56:49.717Z",
+      "event_meta": {
+        "event_id": "0356ab88-bc21-49bf-97dc-23258f020bbd",
+        "parent_event_id": "5533431d-a819-4d75-968c-dfa1fdc3352f",
+        "event_type": "assistant.message",
+        "message_id": "6c61dfc9-44ed-4e2f-af54-3705db902bc7",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "user",
+      "content": "yes",
+      "captured_at": "2026-07-08T18:57:02.799Z",
+      "event_meta": {
+        "event_id": "2dae37ef-b946-4113-a2a5-4e6052f3b1c5",
+        "parent_event_id": "1e2f2ef5-045f-4aa7-81f2-c4569517ab5d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Perfect. Here is a minimal, no-edit-yet cleanup plan you can apply.\n\n1. [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md)\n- Remove the duplicated second half of the document (the repeated sections starting again at “Scope”).\n- Keep one canonical copy of:\n  - Scope\n  - Design Constraints\n  - Spec Quality obligations\n  - Authoring workflow\n  - Workflow expectations\n- Tighten wording so “always create/update spec” becomes conditional:\n  - required only when requirements/behavior/acceptance criteria change\n  - not required for pure refactors, formatting, or no-behavior fixes\n- Add one short “Not Required” subsection with those exceptions.\n\n2. [ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)\n- Change frontmatter applyTo from global to the explicit paths already listed in the body:\n  - crates/ticket-api/**\n  - tools/ticket-cli/**\n  - tools/ticket-http/**\n  - tools/ticket-mcp/**\n  - tools/ticket-viewer/**\n- Move repo-wide “standing obligations” that are not ticket-specific into [AGENTS.md](AGENTS.md), then keep this file ticket-focused.\n- Trim repeated or overlapping command examples so one canonical example exists per workflow step.\n\n3. [token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)\n- Keep guidance strong but make tool-specific mandates conditional:\n  - “prefer rtk when available” instead of “always prefix”\n- Add fallback line for environments where rtk or peek are missing.\n- Remove overlap with [AGENTS.md](AGENTS.md) by keeping only token-efficiency specifics here, and leaving high-level principles in AGENTS.\n\n4. [commit.instructions.md](.agents/instructions/commit.instructions.md)\n- Keep content, but narrow applyTo from global to files and situations where commit behavior matters, or explicitly mark it as “invoked only during commit/branch/submodule operations.”\n- Add a short “When Not Applicable” line:\n  - read-only analysis\n  - code explanation\n  - no-commit sessions\n- Keep pre-commit and submodule sections, but reduce duplication between “commit order” and “commit workflow.”\n\n5. [AGENTS.md](AGENTS.md)\n- Add a short “Instruction Precedence” section to resolve conflicts deterministically.\n- Add one “Exception Matrix” section for:\n  - read-only requests\n  - micro-fixes\n  - no-behavior-change edits\n  - advisory-only responses\n- Keep this as the single place for cross-cutting rules; path files should stay path-specific.\n\n6. [.github/copilot-instructions.md](.github/copilot-instructions.md)\n- Remove duplicated operational guidance that already exists elsewhere, or convert it to a pointer-only file.\n- Keep it minimal as intended: source of truth pointers + optional setup links.\n\n7. Cross-file consistency pass\n- Resolve the formatting conflict between:\n  - “use backticks for filenames/symbols”\n  - “never use backticks; always markdown links”\n- Pick one standard and apply it consistently across:\n  - [AGENTS.md](AGENTS.md)\n  - [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md)\n  - [.agents/instructions/ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)\n  - [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)\n  - [.agents/instructions/commit.instructions.md](.agents/instructions/commit.instructions.md)\n\nSuggested execution order\n1. Deduplicate [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md).\n2. Add precedence and exception matrix in [AGENTS.md](AGENTS.md).\n3. Narrow applyTo in ticket/token/commit instruction files.\n4. Run a final consistency sweep for terminology and formatting rules.\n\nIf you want, I can now turn this into exact patch text per file (still without applying), so you can review line-by-line before any edits.",
+      "captured_at": "2026-07-08T18:58:01.003Z",
+      "event_meta": {
+        "event_id": "e749769a-c3c8-465d-b5ea-9773e45a5378",
+        "parent_event_id": "c3a64cca-755e-4cbf-83f5-df2a9293bd0c",
+        "event_type": "assistant.message",
+        "message_id": "a4bcd5d0-ab8c-4652-9d8b-14f6bbe9beb4",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "user",
+      "content": "can you assume why they were forcibly embedded? we want to avoid this for general conversations like this. you were not asked to commit anything, specify anything or create any tickets. we want to limit the absolute policy rules to an absolute minimum.",
+      "captured_at": "2026-07-08T18:59:29.610Z",
+      "event_meta": {
+        "event_id": "b42a338e-8e16-428c-ba0f-a50d7de6ce6a",
+        "parent_event_id": "e6b7b894-6c37-4065-a09f-515d60f7ddaa",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Yes. The most likely reason they were embedded is not your question content, but your instruction topology.\n\nWhat probably caused it:\n1. Several instruction files are scoped with applyTo: **, which marks them as globally relevant for every turn.\n2. Your harness appears to preload “high-priority repo guidance” (AGENTS plus selected instruction files) to avoid non-compliance.\n3. You have overlapping source-of-truth layers (AGENTS, copilot instructions, instruction files), so the orchestrator likely inlines multiple copies to be safe.\n4. At least one file contains duplicated sections, which inflates payload further.\n\nIf your goal is minimal policy for general conversations, this is the right direction:\n\n1. Create a tiny always-on core (strictly minimal):\n- Safety policy\n- Tool safety (no destructive commands without explicit request)\n- One-line style defaults\n\n2. Remove applyTo: ** from workflow-heavy files:\n- commit/spec/ticket/token-efficiency should be path-scoped or mode-scoped, not global.\n\n3. Add an explicit “chat-only mode” rule:\n- If user is asking analysis/discussion and not requesting edits/runs/ticket actions, do not load workflow/process instructions.\n\n4. Gate heavy instructions behind intent triggers:\n- Only load commit rules when commit/stage/push is requested.\n- Only load spec/ticket rules when ticket/spec operations are requested.\n- Only load token-efficiency details when tooling/file-inspection is being used.\n\n5. Deduplicate and compress instruction files:\n- Remove repeated blocks\n- Move long examples to optional references\n- Keep normative rules short and declarative\n\n6. Prefer lazy loading over embedding:\n- Include only a short index in system prompt\n- Read full instruction file only when task/path actually requires it\n\nIf you want, I can draft a concrete “minimal-policy profile” (exact YAML/frontmatter + trigger matrix) you can apply to your instruction set.",
+      "captured_at": "2026-07-08T19:00:06.919Z",
+      "event_meta": {
+        "event_id": "f63573b5-f4e4-4910-a66e-5568c6b95480",
+        "parent_event_id": "5552d597-64a6-428b-9bf0-24d0f5207f8d",
+        "event_type": "assistant.message",
+        "message_id": "ed6e0a49-5733-4630-a5e0-193cc5d750b0",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "user",
+      "content": "create a ticket plan with full dependency tracking for the entire task",
+      "captured_at": "2026-07-08T19:00:10.143Z",
+      "event_meta": {
+        "event_id": "ab7572ab-0b9e-4f63-840d-b233f3608256",
+        "parent_event_id": "1f81616d-9474-4970-813f-140337c0da9d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’ll create this directly in the ticket system as a dependency graph: first I’ll inspect the current board and ticket CLI shape, then I’ll add a root tracker plus child tickets and explicit `depends_on` links so the plan is fully traceable.",
+      "captured_at": "2026-07-08T19:00:52.845Z",
+      "event_meta": {
+        "event_id": "054a4721-e457-4cb6-88ea-31a53d301594",
+        "parent_event_id": "06c4b215-2d2a-41a0-8356-c561a34cfea4",
+        "event_type": "assistant.message",
+        "message_id": "f7ecce65-5fa8-4f3c-b4da-5a3df7024c83",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_m6AFOTR7oEKDxmitqoWSin1K",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Check current draftboard state before planning work.",
+              "goal": "Inspect active WIP and ownership",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Fp1ASpoSNfKJuTxKD2VRR5ys",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe --help",
+              "explanation": "Inspect available ticket CLI commands to create and link plan tickets correctly.",
+              "goal": "Confirm ticket CLI syntax",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I confirmed the CLI supports full graph operations; next I’ll search for existing instruction-cleanup tickets so we avoid duplicates before creating new dependency-linked plan tickets.",
+      "captured_at": "2026-07-08T19:01:05.565Z",
+      "event_meta": {
+        "event_id": "18fafa1e-7221-45b9-bbcc-ab155f27a5d7",
+        "parent_event_id": "7481fdd4-bedd-4c1c-b7c9-93be9652a4cf",
+        "event_type": "assistant.message",
+        "message_id": "456187d9-43b1-49f7-8c57-fb602a53f9ea",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_l19XikDZO7ISV9Rg1cYEWWwu",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"instruction cleanup\" --toon",
+              "explanation": "Look for existing tickets matching instruction cleanup work.",
+              "goal": "Avoid duplicate planning tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9brCEvLQchxET5nwt5pDTBc0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"spec-system instructions\" --toon",
+              "explanation": "Search for tickets covering spec-system instruction deduplication.",
+              "goal": "Check for existing scope overlap",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_UdKKNGetIg4DOmgMxj3U94fp",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"token-efficiency instructions\" --toon",
+              "explanation": "Search for tickets focused on token-efficiency instruction updates.",
+              "goal": "Detect existing related tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "user",
+      "content": "what is the syntax for applyTo ? what is it matching on? can you update the instruction files to at least be more selective?",
+      "captured_at": "2026-07-08T19:01:17.165Z",
+      "event_meta": {
+        "event_id": "eb8cb5dc-bb53-4b94-8bea-54f0610065e2",
+        "parent_event_id": "9a083d24-adb7-402a-973b-472c655002cd",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Search found overlap with existing instruction-related tickets, so I’ll inspect those specific tickets and then build a single tracker plan that either reuses them or creates scoped child tickets for uncovered work.",
+      "captured_at": "2026-07-08T19:01:18.371Z",
+      "event_meta": {
+        "event_id": "f5aaaa5a-5860-4302-8856-8b569bb36882",
+        "parent_event_id": "c64a9f63-eeb1-4e90-b21b-2c8d91f96a2c",
+        "event_type": "assistant.message",
+        "message_id": "18b56a50-64d7-490d-8511-958758da283c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YbMPZbR9gOy6ruqAwKnVkrea",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get f227c217-6fda-452e-ae35-4208eb3974f5 --toon",
+              "explanation": "Inspect existing token-efficiency guidance ticket details for potential reuse.",
+              "goal": "Decide reuse vs new ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PF0HemSZu1K9EEKgE2v8zWyH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get f18e6885-c193-4159-82c5-d164e470437b --toon",
+              "explanation": "Inspect existing spec-system guidance ticket details for overlap.",
+              "goal": "Avoid duplicate work items",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mpMkYqzjCYeI6kMwMRowvjjt",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6 --toon",
+              "explanation": "Inspect bootstrap/selective instruction loading ticket for relation to this task.",
+              "goal": "Map cross-ticket dependencies",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "I found related existing tickets, so I’ll now create a dedicated tracker plus child tickets for your full instruction-cleanup scope, and I’ll wire explicit dependency edges including links to existing overlapping tickets to avoid duplicate work.",
+      "captured_at": "2026-07-08T19:01:36.840Z",
+      "event_meta": {
+        "event_id": "f8ef55f3-a43b-480a-bb45-337e6c5c39cb",
+        "parent_event_id": "c5a6723e-ebbc-4844-b097-7e8dfb210d7a",
+        "event_type": "assistant.message",
+        "message_id": "5bd9af67-c6d7-4fef-9011-5f3e8c187d06",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ncbVJngyhAxYb2X6C5FzwKiJ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --help",
+              "explanation": "Check create command flags before creating the dependency plan tickets.",
+              "goal": "Confirm ticket creation syntax",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I’m locking in the dependency model now: a single tracker ticket will depend on each concrete workstream ticket, and selected workstreams will also depend on pre-existing related tickets already in the store.",
+      "captured_at": "2026-07-08T19:01:46.260Z",
+      "event_meta": {
+        "event_id": "ab1b8640-ea86-41a0-b7a0-8ff6a1f7816b",
+        "parent_event_id": "e77dc52c-1598-43a1-9fc3-725f75f8ee2e",
+        "event_type": "assistant.message",
+        "message_id": "47522880-2bd0-471f-ae63-ed29134eaa68",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pvh03hDMB8secWmejo7VZsAN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe link --help",
+              "explanation": "Confirm link command syntax for dependency edges.",
+              "goal": "Use correct link flags",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_c9fzsqVkuGRg6mqo5OmXltuJ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe list --where \"title~instruction cleanup\" --toon",
+              "explanation": "Double-check no exact existing tracker duplicates the requested plan.",
+              "goal": "Avoid creating duplicate top-level plan",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "I’m going to make a focused pass on the instruction frontmatter only: I’ll narrow each broad `applyTo: \"**\"` to path-specific globs so these files stop loading for unrelated chat turns, then I’ll summarize the exact new matching behavior.",
+      "captured_at": "2026-07-08T19:01:59.994Z",
+      "event_meta": {
+        "event_id": "fee22bc4-ba9f-426e-b954-d3cd12627126",
+        "parent_event_id": "7461e1aa-88b0-49bf-9f72-7d893c49730f",
+        "event_type": "assistant.message",
+        "message_id": "7aa0f938-4c0c-4260-b618-22ea6ed2b0d7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3KtFOwr4AXr3PYYLUfJxM362",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Narrow global applyTo patterns in instruction files to reduce unconditional loading and make applicability path-specific.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.agents/instructions/spec-system.instructions.md\n@@\n description: \"Use when creating or updating specs. Covers spec discovery, authoring workflow, and traceability expectations across tickets, tests, validation, and related specs.\"\n-applyTo: \"**\"\n+applyTo: \".spec/**,**/.spec/**,**/*spec*.md,memory-viewers/spec-viewer/**\"\n ---\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.agents/instructions/ticket-system.instructions.md\n@@\n description: \"Use when editing ticket system crates/tools. Covers state transitions, storage/search boundaries, and workflow expectations.\"\n-applyTo: \"**\"\n+applyTo: \"crates/ticket-api/**,tools/ticket-cli/**,tools/ticket-http/**,tools/ticket-mcp/**,tools/ticket-viewer/**,.ticket/**,**/.ticket/**,**/ticket*.toml,**/*ticket*.md,memory-viewers/ticket-viewer/**\"\n ---\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.agents/instructions/token-efficiency.instructions.md\n@@\n description: \"Use when editing agent workflow guidance, CLI output handling, or file inspection patterns. Covers compact-by-default output, TOON vs JSON, bounded inspection, and differential patching.\"\n-applyTo: \"**\"\n+applyTo: \"AGENTS.md,.github/copilot-instructions.md,.agents/**/*.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**\"\n ---\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit.instructions.md\n@@\n description: \"Use when committing changes across the repo or any submodule. Covers pre-commit hooks, rule sync, submodule structure, generated files, and commit message conventions.\"\n-applyTo: \"**\"\n+applyTo: \".git/**,.gitmodules,rule-targets.yaml,rule-targets/**,AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,.clinerules/**,repo_map.toon,memory-viewers/README.md,memory-viewers/rule-targets.yaml,memory-viewers/rule-targets/**,memory-api/README.md,memory-api/rule-targets.yaml,memory-api/rule-targets/**,viewer-api/README.md,viewer-api/rule-targets.yaml,viewer-api/rule-targets/**\"\n ---\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I’ve applied the selective `applyTo` changes to four high-impact files; next I’ll quickly verify frontmatter shape is intact and then explain exact `applyTo` matching semantics and the practical impact on prompt loading.",
+      "captured_at": "2026-07-08T19:02:06.414Z",
+      "event_meta": {
+        "event_id": "c4509f80-d939-4226-beb5-48af2e33db0b",
+        "parent_event_id": "44a6b796-e2ee-483a-b3c0-4fc2370f5255",
+        "event_type": "assistant.message",
+        "message_id": "e40db6c6-b32a-4c6f-8f61-515f82486abf",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RBXaNnBDDqYz2baR9HBeF1vV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/spec-system.instructions.md",
+              "startLine": 1,
+              "endLine": 12
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_axQktK4iJBrbLtB69SN2vHEP",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/ticket-system.instructions.md",
+              "startLine": 1,
+              "endLine": 12
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1TX0lDrJKc0yNh14jBiWCqJc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/token-efficiency.instructions.md",
+              "startLine": 1,
+              "endLine": 12
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vi1vZShQl6kCHyxx4v4X8jif",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit.instructions.md",
+              "startLine": 1,
+              "endLine": 12
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Yes. I updated them to be more selective.\n\n`applyTo` syntax and matching:\n1. It is a comma-separated list of glob patterns in frontmatter.\n2. It matches workspace-relative file paths.\n3. Common glob behavior:\n- `*` matches within one path segment.\n- `**` matches across directories.\n- Literal file names match exact paths.\n4. A rule applies when any listed pattern matches the file(s) relevant to the current task.\n\nWhat I changed:\n- [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md#L3)\n  - from: `**`\n  - to: `.spec/**,**/.spec/**,**/*spec*.md,memory-viewers/spec-viewer/**`\n- [ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md#L3)\n  - from: `**`\n  - to: `crates/ticket-api/**,tools/ticket-cli/**,tools/ticket-http/**,tools/ticket-mcp/**,tools/ticket-viewer/**,.ticket/**,**/.ticket/**,**/ticket*.toml,**/*ticket*.md,memory-viewers/ticket-viewer/**`\n- [token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md#L3)\n  - from: `**`\n  - to: `AGENTS.md,.github/copilot-instructions.md,.agents/**/*.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**`\n- [commit.instructions.md](.agents/instructions/commit.instructions.md#L3)\n  - from: `**`\n  - to a commit/rule/submodule-focused path set only.\n\nImpact:\n1. These four instruction files should no longer be globally applicable to every chat turn.\n2. They’ll be loaded mainly when touching their targeted files/areas.\n3. General conversations not involving specs/tickets/commit plumbing should receive much less policy bulk.\n\nOne caveat:\n- If your orchestrator force-includes certain files regardless of `applyTo` (for example always inlining `AGENTS.md`), this improves matcher behavior but not that explicit preload behavior. You’d need bootstrap/prompt loader changes for that layer.\n\nIf you want, next I can do a second pass to tighten the remaining instruction files and produce a small “core vs conditional” matrix for your prompt loader.",
+      "captured_at": "2026-07-08T19:02:16.076Z",
+      "event_meta": {
+        "event_id": "67f29d35-0305-4fc9-a88d-eadb6df96def",
+        "parent_event_id": "99ffa85d-cb7a-4b87-805f-4436c18ee0ff",
+        "event_type": "assistant.message",
+        "message_id": "5de0299d-2ebf-431d-82aa-96e8a172e1b0",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "Short answer on syntax first:\n\n`applyTo` is a glob matcher over workspace-relative file paths.\n- It supports comma-separated glob patterns in one string.\n- A file “matches” if it matches any one of the patterns.\n- Typical forms:\n  - `dir/**` for recursive subtree\n  - `**/*.md` for extension match anywhere\n  - exact file path like `AGENTS.md`\n- It is used to decide whether an instruction file is relevant for the current task/file scope.\n\nWhat I changed just now (more selective loading):\n- Updated [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md)\n  - from `**`\n  - to `.spec/**,**/.spec/**,**/*spec*.md,memory-viewers/spec-viewer/**`\n- Updated [.agents/instructions/ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md)\n  - from `**`\n  - to `crates/ticket-api/**,tools/ticket-cli/**,tools/ticket-http/**,tools/ticket-mcp/**,tools/ticket-viewer/**,.ticket/**,**/.ticket/**,**/ticket*.toml,**/*ticket*.md,memory-viewers/ticket-viewer/**`\n- Updated [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)\n  - from `**`\n  - to `AGENTS.md,.github/copilot-instructions.md,.agents/**/*.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**`\n- Updated [.agents/instructions/commit.instructions.md](.agents/instructions/commit.instructions.md)\n  - from `**`\n  - to a focused set around git/rule/agent-managed files and known generated targets\n\nImpact:\n- General chat turns that do not touch ticket/spec/commit/token-efficiency file scopes are much less likely to pull these long instruction files.\n- You keep the same guidance when actually editing relevant paths.\n\nOne caveat:\n- Some orchestrators still preload certain “global” files (like `AGENTS.md`) regardless of `applyTo`. This change reduces path-based loading pressure, but preloading behavior may still need a bootstrap policy change in your runner.\n\nIf you want, I can do one more pass to make `commit.instructions.md` even tighter by removing `AGENTS.md` and `.github/copilot-instructions.md` from its `applyTo` so commit guidance only activates during explicit repo-operation file touches.",
+      "captured_at": "2026-07-08T19:02:22.025Z",
+      "event_meta": {
+        "event_id": "91f762bf-ccd9-4136-8227-1fad226fd863",
+        "parent_event_id": "1d7adafb-d45d-4873-88a5-4d93640249b0",
+        "event_type": "assistant.message",
+        "message_id": "4820a64b-0399-414f-bbb6-267a4184f275",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "user",
+      "content": "yes, do that.",
+      "captured_at": "2026-07-08T19:04:14.412Z",
+      "event_meta": {
+        "event_id": "eb11055a-1027-472d-a705-f5d8130b815e",
+        "parent_event_id": "869afdeb-0500-4d78-afcc-72be2c1ec56c",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "I’ll tighten `commit.instructions.md` now by removing the two global-ish path entries you called out, and I’ll quickly load the relevant instruction content first so the edit stays compliant with the repo’s own instruction rules.",
+      "captured_at": "2026-07-08T19:04:25.395Z",
+      "event_meta": {
+        "event_id": "646ffbab-0c31-4df4-b1fa-7cc826526261",
+        "parent_event_id": "7b2c530e-c12f-44fd-8b1a-a3d03aac6d2b",
+        "event_type": "assistant.message",
+        "message_id": "50ea4706-b45b-485e-bdca-e30a54ab6eef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_n2wWzCiupt8NUHEAgBCmFBCY",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit.instructions.md",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_6Pf282Tl3ccc8wTEdU9sllbe",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/token-efficiency.instructions.md",
+              "startLine": 1,
+              "endLine": 140
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "I’m making the single frontmatter change now: removing `AGENTS.md` and `.github/copilot-instructions.md` from `commit.instructions.md` so commit guidance activates only for explicit commit/rule-target surfaces.",
+      "captured_at": "2026-07-08T19:04:34.460Z",
+      "event_meta": {
+        "event_id": "42325178-0b14-4418-9661-7ef2a618beca",
+        "parent_event_id": "2b0a3b22-28c9-4079-8188-f0a69f2e3e86",
+        "event_type": "assistant.message",
+        "message_id": "2caefeb5-f480-436b-9024-68e3748226ea",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_4SKUwPsNH4nunz1f6lIVOydf",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Tighten commit instruction applicability by removing broad root-level instruction surfaces from applyTo.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit.instructions.md\n@@\n description: \"Use when committing changes across the repo or any submodule. Covers pre-commit hooks, rule sync, submodule structure, generated files, and commit message conventions.\"\n-applyTo: \".git/**,.gitmodules,rule-targets.yaml,rule-targets/**,AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,.clinerules/**,repo_map.toon,memory-viewers/README.md,memory-viewers/rule-targets.yaml,memory-viewers/rule-targets/**,memory-api/README.md,memory-api/rule-targets.yaml,memory-api/rule-targets/**,viewer-api/README.md,viewer-api/rule-targets.yaml,viewer-api/rule-targets/**\"\n+applyTo: \".git/**,.gitmodules,rule-targets.yaml,rule-targets/**,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,.clinerules/**,repo_map.toon,memory-viewers/README.md,memory-viewers/rule-targets.yaml,memory-viewers/rule-targets/**,memory-api/README.md,memory-api/rule-targets.yaml,memory-api/rule-targets/**,viewer-api/README.md,viewer-api/rule-targets.yaml,viewer-api/rule-targets/**\"\n ---\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "Done. I tightened the scope exactly as requested.\n\nUpdated:\n- [​.agents/instructions/commit.instructions.md](.agents/instructions/commit.instructions.md#L3)\n\nChange made:\n- Removed `AGENTS.md` and `.github/copilot-instructions.md` from `applyTo`.\n\nNew `applyTo` now targets commit/rule-related surfaces only:\n- git metadata and submodule pointers\n- rule-target configs and generated rule surfaces\n- agent instruction/prompt/agent files\n- known generated READMEs and rule-target trees\n- `repo_map.toon`\n\nWhy this helps:\n- General conversation turns are less likely to pull commit workflow guidance unless the touched files are truly in commit-governed scope.\n\nIf you want, I can do one more hardening pass to make [​.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md) stop matching all `.agents/**/*.md` and instead match only the specific files where that guidance is authored.",
+      "captured_at": "2026-07-08T19:04:40.837Z",
+      "event_meta": {
+        "event_id": "8371c1fa-a04b-43c4-8dce-f9f57d0de79a",
+        "parent_event_id": "85313df2-35fa-4669-adbb-6837d7df4eb6",
+        "event_type": "assistant.message",
+        "message_id": "63b14956-ed1e-4f2d-8bbb-60edf80feada",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "user",
+      "content": "something happened. you need to review the tickets you created and continue where you left off until you can hand off the ticket set",
+      "captured_at": "2026-07-08T19:06:00.076Z",
+      "event_meta": {
+        "event_id": "b154dc4a-ddac-4e64-be59-15740729cca0",
+        "parent_event_id": "9d9c1bdc-b02d-4323-91b9-ad9585346560",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "I’m going to audit the tracker and child tickets I created, then I’ll rebuild any missing dependency edges and finish with a clean handoff-ready graph summary.",
+      "captured_at": "2026-07-08T19:06:14.564Z",
+      "event_meta": {
+        "event_id": "6d57ea50-0fb9-49cb-809d-40c6cdeccef7",
+        "parent_event_id": "6ee86325-6816-4a7d-8c35-fc6dec0524ea",
+        "event_type": "assistant.message",
+        "message_id": "4b543a97-2dc5-47ab-8097-5717b00aba7b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_M9f38Y9weU9S2g4nB1zlZELf",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Fetch the root tracker ticket to verify it exists and its current state.",
+              "goal": "Validate root tracker ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_fX4fO3pDS41h6tombVqvaKb6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . ba9dc70e-dc59-4ccb-b7dc-088d6a6201ba --toon",
+              "explanation": "Fetch child ticket 1 for verification.",
+              "goal": "Validate child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VJSnVIT9kpGWvjhEEWrYyxu9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . 3894481d-c823-42a1-ace1-0d23e61cea70 --toon",
+              "explanation": "Fetch child ticket 2 for verification.",
+              "goal": "Validate child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_nHX3uq4FPq25V2Zvdov0rk17",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . db04d478-216a-4bfc-a104-f4cd907371e8 --toon",
+              "explanation": "Fetch child ticket 3 for verification.",
+              "goal": "Validate child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_CZN9WYSJuA3xBMTYEvuogfYS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . e2eed7cf-423e-40b1-a261-cead621acd27 --toon",
+              "explanation": "Fetch child ticket 4 for verification.",
+              "goal": "Validate child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dwN0iPLDz83R5ykZz48qiLSv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . c271875a-bba4-4e38-a995-6d21b0c0fd90 --toon",
+              "explanation": "Fetch child ticket 5 for verification.",
+              "goal": "Validate child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yAkKI4kRCdlgiyIpUoEA9KVo",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe links --workspace . --all --toon",
+              "explanation": "List all edges so we can confirm whether the new plan graph was linked.",
+              "goal": "Audit dependency edges",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "The tickets exist but the graph is likely incomplete; next I’ll attach the missing `depends_on` edges and validate the final dependency tree from the tracker root.",
+      "captured_at": "2026-07-08T19:06:42.462Z",
+      "event_meta": {
+        "event_id": "a49f397b-a5a9-4d76-8b24-9fe317198437",
+        "parent_event_id": "5c2e82cb-65e5-4a66-8a4d-932dad2f2d5e",
+        "event_type": "assistant.message",
+        "message_id": "d5ecd5a0-6c0b-4a2f-ae2f-fdea518e0679",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_aqee5ZVDxfgtS5sBk0QQNAQ2",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe links --help",
+              "explanation": "Check links command options so we can query and verify only the relevant graph edges.",
+              "goal": "Determine precise link inspection commands",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RCLlfN5oy1nTb6JrwqNY8ZAx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe subgraph --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Inspect current dependency tree for the tracker ticket before adding edges.",
+              "goal": "Confirm current graph baseline",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "I’m applying the full dependency graph now (root-to-children plus intra-plan sequencing and cross-ticket links), then I’ll verify with `subgraph` and `blockers` so it is handoff-ready.",
+      "captured_at": "2026-07-08T19:07:19.718Z",
+      "event_meta": {
+        "event_id": "7cf4326d-2066-4c9e-b634-b1114e41814f",
+        "parent_event_id": "f1801c1a-c616-4e1c-9dbc-eea263fd8694",
+        "event_type": "assistant.message",
+        "message_id": "b5a5da57-ccf2-44a9-994e-7d4f97db18ee",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wCMZfabceIgETyN6rldWjRys",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cat <<'EOF' | rtk ./target/debug/ticket.exe batch --workspace . --toon\n# Root tracker depends on each workstream\naction\nEOF",
+              "explanation": "Attempt batch submission scaffold before sending final dependency commands.",
+              "goal": "Prepare transactional dependency update",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "The graph commands succeeded but returned large outputs; I’ll read the saved summaries now and extract the exact blocker tree and execution order for your handoff.",
+      "captured_at": "2026-07-08T19:08:43.105Z",
+      "event_meta": {
+        "event_id": "a3c41e75-48df-41d9-9ffd-f3a99af144ea",
+        "parent_event_id": "37568d63-6e7a-457e-9764-b5a49edd558d",
+        "event_type": "assistant.message",
+        "message_id": "2f6ae375-b5f9-405c-94f0-aaac578dff0f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_E8myWmCIGQVPBXs2ihM4F3a7",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\2d8fdea1-0279-4b78-a40d-297e6b72e4c3\\call_nA8oyqDVs24fA0tlm6xjMqa3__vscode-1783521498477\\content.txt",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_25uG22SxFjSTsCBiP2XvBPbF",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\2d8fdea1-0279-4b78-a40d-297e6b72e4c3\\call_BLoKiO5Xgs0cgZ2wC4hTrLUO__vscode-1783521498478\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qAb4tnPbfZljMNNJSXkbIZD0",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\2d8fdea1-0279-4b78-a40d-297e6b72e4c3\\call_6uPa5qXWrv3IRkiuJ6bxCbII__vscode-1783521498479\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "I’ve validated the dependency graph; I’ll now move this ticket set from `new` to `ready` so it is explicitly handoffable and immediately actionable by other agents.",
+      "captured_at": "2026-07-08T19:09:20.894Z",
+      "event_meta": {
+        "event_id": "6b65e0ba-f0a8-4481-895d-6af64e10d6c5",
+        "parent_event_id": "c327e30e-bb25-4eba-8178-89ae6dc07e89",
+        "event_type": "assistant.message",
+        "message_id": "d4530aed-5225-46a1-a797-a4a2e3a0d826",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_O5QUaNKfP1i56uG9HRByMHvm",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cat <<'EOF' | rtk ./target/debug/ticket.exe batch --workspace . --toon\nupdate e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --to-state ready\nupdate ba9dc70e-dc59-4ccb-b7dc-088d6a6201ba --to-state ready\nupdate 3894481d-c823-42a1-ace1-0d23e61cea70 --to-state ready\nupdate db04d478-216a-4bfc-a104-f4cd907371e8 --to-state ready\nupdate e2eed7cf-423e-40b1-a261-cead621acd27 --to-state ready\nupdate c271875a-bba4-4e38-a995-6d21b0c0fd90 --to-state ready\nEOF",
+              "explanation": "Transition the instruction-governance tracker and all child tickets to ready for handoff.",
+              "goal": "Mark plan ticket set handoff-ready",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "I found the issue: child tickets were created with type `task`, which this workspace can create but cannot update due missing schema; I’ll recreate those five children with valid default typing, rewire dependencies, and retire the broken ones so handoff is clean.",
+      "captured_at": "2026-07-08T19:09:44.494Z",
+      "event_meta": {
+        "event_id": "70462506-11e7-4939-8a00-62707dd25d30",
+        "parent_event_id": "3b8867b8-da5e-42f6-9d7d-3ba9c2f25ccc",
+        "event_type": "assistant.message",
+        "message_id": "b26b593d-79a1-467a-8025-ee0090b8545d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_InaFVNMwINqGo1E1yQARX0Xt",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[instruction-governance] Deduplicate spec-system.instructions and add explicit exceptions\" --toon",
+              "explanation": "Create replacement child ticket without unsupported custom type.",
+              "goal": "Create valid child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_fOKNk7vLe1OSvdqL31zhbTYY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[instruction-governance] Add instruction precedence + exception matrix in AGENTS.md\" --toon",
+              "explanation": "Create replacement child ticket without unsupported custom type.",
+              "goal": "Create valid child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_F9aPDVuhSJBSNqk0bTIRmaz0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[instruction-governance] Narrow over-broad applyTo patterns in instruction files\" --toon",
+              "explanation": "Create replacement child ticket without unsupported custom type.",
+              "goal": "Create valid child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rLaSnXhyDHk5E2jF1o0ha5LH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[instruction-governance] Resolve formatting-rule conflict (backticks vs linkified paths)\" --toon",
+              "explanation": "Create replacement child ticket without unsupported custom type.",
+              "goal": "Create valid child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jGGinCN5MDy7I90MtaDkVHaz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[instruction-governance] Consolidate duplicated instruction guidance and keep pointer surfaces minimal\" --toon",
+              "explanation": "Create replacement child ticket without unsupported custom type.",
+              "goal": "Create valid child ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "I’ve repaired the schema issue and finalized states; I’ll do one last verification of the root subgraph/next set and then provide a concise handoff packet with exact ticket IDs and run order.",
+      "captured_at": "2026-07-08T19:10:35.881Z",
+      "event_meta": {
+        "event_id": "b2e29e31-e62d-420e-9639-847c74f3488c",
+        "parent_event_id": "91678486-25b3-4616-bb18-12fcce86eb52",
+        "event_type": "assistant.message",
+        "message_id": "7b48d9bb-5cf3-4f0b-90e9-1852b70825c7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hLA4ILs7sQIuqGewkdINDAYg",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe subgraph --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Final verification of the cleaned dependency graph after replacement tickets.",
+              "goal": "Confirm handoff graph",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5m2W2FOK8XOoS8frPGBV2sIg",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe next --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Final check of actionable ticket order within the tracker scope.",
+              "goal": "Produce handoff execution sequence",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IZG0wFp7FW10VNc39akV75oi",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe blockers --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Final blocker tree snapshot for handoff notes.",
+              "goal": "Capture blocker dependencies",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "I’m doing one final cleanup for handoff clarity: I’ll try to remove the five obsolete typed child tickets so only the valid replacement set remains in search results.",
+      "captured_at": "2026-07-08T19:11:47.733Z",
+      "event_meta": {
+        "event_id": "92b06a65-7791-48a3-af74-d68bd3f9c3fb",
+        "parent_event_id": "a4d2fc2b-1b70-436c-93ce-f0a2ffd3f588",
+        "event_type": "assistant.message",
+        "message_id": "9473c4c8-174d-4310-9cec-e8678000f79f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IKjokhxqJXgw1i70Y2KYRpzO",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cat <<'EOF' | rtk ./target/debug/ticket.exe batch --workspace . --toon\ndelete ba9dc70e-dc59-4ccb-b7dc-088d6a6201ba\ndelete 3894481d-c823-42a1-ace1-0d23e61cea70\ndelete db04d478-216a-4bfc-a104-f4cd907371e8\ndelete e2eed7cf-423e-40b1-a261-cead621acd27\ndelete c271875a-bba4-4e38-a995-6d21b0c0fd90\nEOF",
+              "explanation": "Delete obsolete task-typed tickets that cannot be updated and were replaced by valid tickets.",
+              "goal": "Leave a clean handoff ticket set",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "Cleanup completed; I’ll do a final graph check on the tracker after deletion, then hand you the exact ready tickets and execution order.",
+      "captured_at": "2026-07-08T19:11:52.586Z",
+      "event_meta": {
+        "event_id": "a078cc1e-0aeb-4818-aeb2-e852a2be45c6",
+        "parent_event_id": "9a088611-4f79-42e0-a5ac-3271443137f5",
+        "event_type": "assistant.message",
+        "message_id": "fbde7863-2390-4073-9770-d590b6819bea",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_O1fmGba0a3YA8HCVTPejcPT2",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe subgraph --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Verify tracker graph after deleting obsolete tickets.",
+              "goal": "Confirm final handoff graph integrity",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qTe1Q6FE2f82ma1qAMf6Jge3",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe next --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Re-check actionable order after cleanup.",
+              "goal": "Finalize handoff sequence",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "Ticket set is now repaired, dependency-complete, and handoff-ready.\n\nWhat happened and what I fixed:\n1. The first child set was created with type task, which this workspace could create but not update (schema mismatch on update).\n2. I recreated all five children as valid default-type tickets.\n3. I rewired the full dependency graph to the replacement tickets.\n4. I removed all edges from the broken tickets.\n5. I deleted the obsolete broken tickets.\n6. I moved the tracker and replacement children to ready.\n\nFinal handoff tracker:\n1. e1d8be15-0542-4804-bb0f-6a4b4fb4b073\nTitle: [instruction-governance] Tracker: instruction-system cleanup and conflict resolution\nState: ready\n\nActive child tickets (use these only):\n1. 18e7a4d1-6ac3-402a-be3f-9f588795f006\nTitle: Narrow over-broad applyTo patterns in instruction files\nState: ready\n2. 30606247-06cd-4246-905b-bad49d2dd289\nTitle: Add instruction precedence + exception matrix in AGENTS.md\nState: ready\n3. f19dcafa-8349-4375-96ab-401a7d0eb17c\nTitle: Deduplicate spec-system.instructions and add explicit exceptions\nState: ready\n4. cf7f79a6-6011-4060-811d-a3831de4c3b7\nTitle: Resolve formatting-rule conflict (backticks vs linkified paths)\nState: ready\nDepends on: 18e7a4d1, 30606247\n5. e416e4e8-cab2-41ad-9fcf-63da5f444e0a\nTitle: Consolidate duplicated instruction guidance and keep pointer surfaces minimal\nState: ready\nDepends on: 18e7a4d1, 30606247, f19dcafa, cf7f79a6\n\nLinked context tickets (non-blocking informational links):\n1. f18e6885-c193-4159-82c5-d164e470437b\n2. f227c217-6fda-452e-ae35-4208eb3974f5\n3. b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6\n\nRecommended execution order for assignees:\n1. 18e7a4d1\n2. 30606247\n3. f19dcafa\n4. cf7f79a6\n5. e416e4e8\n\nThis ticket set can now be handed off as-is.",
+      "captured_at": "2026-07-08T19:12:58.913Z",
+      "event_meta": {
+        "event_id": "49a4616d-d0cc-48ec-8dab-c2335d219973",
+        "parent_event_id": "479c27a3-a5a3-4715-b91a-71bf5d379bb9",
+        "event_type": "assistant.message",
+        "message_id": "862b65ff-943a-44df-94a9-956b32aa8ee0",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "user",
+      "content": "/handoff-tickets",
+      "captured_at": "2026-07-08T19:14:23.146Z",
+      "event_meta": {
+        "event_id": "218c836b-cd71-457c-afd0-e69996a5ae05",
+        "parent_event_id": "5873e803-fc1b-43aa-b62b-f7eecc6505a2",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "user",
+      "content": "/handoff",
+      "captured_at": "2026-07-08T19:14:32.797Z",
+      "event_meta": {
+        "event_id": "632f1e1d-1a93-407a-a000-d015a5b76e3b",
+        "parent_event_id": "c57c03ca-bbdb-492d-8133-590d3228681a",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "I’ll gather a fresh snapshot of the tracker, blockers, and board state so the handoff is accurate and restart-ready, then I’ll produce the compact prompt in the requested format.",
+      "captured_at": "2026-07-08T19:14:42.923Z",
+      "event_meta": {
+        "event_id": "0f5f6e8a-b5a4-4978-841c-25cf7b18c61a",
+        "parent_event_id": "f8b0613d-f5bd-4933-bd55-d75f61236afe",
+        "event_type": "assistant.message",
+        "message_id": "640ed3dd-93e5-401c-a0a2-b66414302236",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FMquEK71mlgeGT0NLfvyyC1C",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --workspace . --toon",
+              "explanation": "Capture current board ownership and WIP state for handoff notes.",
+              "goal": "Collect board context",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MsryHu8SAZ8wXqpr0SYMYyVK",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe next --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Capture actionable order for the instruction-governance tracker.",
+              "goal": "Collect next actions",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_By139qpWrw6r6LGYVdoKqFqX",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe blockers --workspace . e1d8be15-0542-4804-bb0f-6a4b4fb4b073 --toon",
+              "explanation": "Capture blocker tree for dependency-aware handoff.",
+              "goal": "Collect blocker context",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    }
+  ]
+}

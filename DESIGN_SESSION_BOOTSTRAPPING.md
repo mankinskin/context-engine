@@ -78,3 +78,27 @@ Bevor du den Code in Rust umsetzt, müssen drei strategische Weichen gestellt we
 ------------------------------
 ## Fazit für den Entwickler
 Um dieses System zu bauen, musst du die bereits in Rust validierte SessionStore-Logik von einem reinen Schreib/Archiv-Pfad zu einem Lese/Laufzeit-Pfad erweitern. Sobald die MCP-Endpoints stehen, wird das System radikal billiger im Tokenverbrauch, extrem schnell in der Auffassungsgabe und verhält sich endlich wie ein menschlicher Senior-Entwickler: Erst das Problem analysieren, dann das passende Handbuch aufschlagen, dann den Code anfassen.
+
+------------------------------
+## 5. Phase 1: Policy-First Reduktion ohne riskante Semantikänderung
+
+Bevor tiefere Rust- oder MCP-Erweiterungen gebaut werden, sollte das System die offensichtlich wertlosen Prompt-Bestandteile mit hoher Sicherheit unterdrücken.
+
+Wichtig: Der `session-api` Capture-Hook läuft nach der Übertragung der Tokens an Copilot. Er ist damit ein Beobachtungs- und Analysewerkzeug, aber nicht der Mechanismus zur Senkung der Kosten des aktuellen Requests.
+
+### Sofortmaßnahmen
+
+* Session-Artefakte nicht roh in den Prompt injizieren. Erst Hand-off, Ticket, Spec und Validierungsstatus lesen.
+* Tool-Ergebnisse vor der Modell-Inferenz komprimieren, statt sie erst nachträglich im Transcript zu analysieren.
+* `toolRequests`, leere oder rein explorative `reasoningText`-Blöcke und doppelte Tool-Lifecycle-Events standardmäßig als `drop-from-prompt` behandeln.
+* Lange Terminal- oder Log-Ausgaben nur als Pointer plus extrahiertem Befund weiterreichen.
+* Wiederholte Statusabfragen (`git status`, Board-Reads, Ticket-Reads, `pwd`) nur als normalisierte Ergebniszeile in den Session-Kontext übernehmen.
+* Offensichtliche Routine-Aktionen ohne zusätzliche Metabegründung ausführen: relevanten Test laufen lassen, cwd korrigieren, bekannten Tool-Call direkt absetzen.
+
+### Erwarteter Effekt
+
+Diese erste Stufe ändert nicht die Rohdatenhaltung der `session-api`, reduziert aber sofort den Bootstrap- und Handoff-Ballast für nachfolgende Sitzungen. Die Session-Historie bleibt als Evidenz erhalten, wird jedoch nicht mehr mit denselben operativen Hilfspayloads in jede neue Inferenz geschoben.
+
+### Anschlussarbeit
+
+Die nachfolgende Implementierungsphase sollte Tool-Guards, kompakte Prompt-Views und deduplizierte Status-Zusammenfassungen erzeugen, die genau diese Upstream-Policy in Code gießen.

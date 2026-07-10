@@ -53,6 +53,10 @@ Persist VS Code Copilot session state through `session-api` using periodic captu
 - Ticket: `.ticket/tickets/c991d769-27b4-4567-b9d1-95173af02c5a/`
 - Ticket: `.ticket/tickets/5c7296f6-533f-47d9-8fe8-ffd4c80d8ca8/`
 - Ticket: `memory-api/.ticket/tickets/b3155a94-230e-416b-be0e-5948d6d2193a/`
+- Ticket: `.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/`
+- Ticket: `.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/`
+- Ticket: `.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/`
+- Ticket: `.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/`
 - Prior spec: `.spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/`
 - This spec: `.spec/specs/09f96d83-4795-4f19-9259-64ad0d452387/`
 

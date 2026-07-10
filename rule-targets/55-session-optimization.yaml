@@ -1,0 +1,21 @@
+defaults:
+  repo_scope: context-engine
+folders:
+- name: .agents
+  folders:
+  - name: instructions
+    files:
+    - name: token-efficiency.instructions.md
+      target:
+        name: context-engine-instruction-token-efficiency
+        path_scope: .agents/instructions/token-efficiency.instructions.md
+        nodes:
+        - name: token-efficiency-instructions
+          section: token-efficiency-instructions
+    - name: session-optimization.instructions.md
+      target:
+        name: context-engine-instruction-session-optimization
+        path_scope: .agents/instructions/session-optimization.instructions.md
+        nodes:
+        - name: session-optimization-instructions
+          section: session-optimization-instructions

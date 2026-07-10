@@ -1,0 +1,605 @@
+{
+  "session_id": "bf467003-b3c9-4868-87f0-a0c6b5382138",
+  "captured_at": "2026-07-08T23:18:32.966Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "**Checkpoint**\r\n\r\nI committed the remaining session-optimization slice as `cf120567` with message `chore(session-workflow): close guidance pass and queue follow-up`.\r\n\r\nThat commit contains:\r\n- the generated handoff guidance update in handoff-tickets.prompt.md\r\n- the completed guidance ticket state and description in ticket.toml and description.md\r\n- the follow-up implementation ticket state and description in ticket.toml and description.md\r\n\r\nThe completed ticket ticket.toml is now `done`. The follow-up implementation ticket ticket.toml is now `ready`.\r\n\r\n**Handoff**\r\n\r\nThe session-optimization policy and prompt work is complete and checkpointed. The architecture boundary is now explicit in the spec and tickets: `session-api` capture is diagnostic only, while real cost reduction must happen upstream through tool-result guards, duplicate suppression, artifact-pointer packing, and compact prompt-facing state views. The next session should continue from ticket.toml and the owning spec at body.md, starting with a concrete design for how model-facing tool outputs are normalized into `retain`, `summarize`, `reference-only`, and `drop-from-prompt` before reuse.\r\n\r\n**Key Entities**\r\n\r\n- ticket.toml: primary follow-up implementation ticket for upstream tool-result guards and compact prompt views\r\n- body.md: contract for upstream request shaping, prompt-facing compaction, and the corrected diagnostic boundary\r\n- session-optimization.instructions.md: canonical guidance for upstream request shaping, routine-action discipline, and transcript analysis as evidence only\r\n- token-efficiency.instructions.md: workflow rules for bounded reads, tool-result guarding, and routine-action discipline\r\n- memory-setup.prompt.md: bootstrap prompt now points agents toward upstream optimization rather than transcript replay\r\n- handoff.prompt.md: handoff prompt now treats session history as diagnostic evidence instead of default prompt material\r\n- handoff-tickets.prompt.md: handoff-plus-ticket prompt now reinforces the same boundary and was part of the final commit\r\n- 55-session-optimization.yaml: focused rule target map added for this skillset\r\n\r\n**Findings**\r\n\r\n- The most important correction was architectural, not mechanical: transcripts reveal waste, but they do not reduce the cost of the request that already hit Copilot.\r\n- The immediate high-confidence savings come from upstream behavior: compressing tool results, avoiding routine-action reasoning, suppressing repeated unchanged state checks, and keeping large artifacts as pointers.\r\n- The follow-up implementation ticket is correctly scoped now; it no longer frames the work as transcript compaction alone.\r\n\r\n**Blockers**\r\n\r\n- No blocker remains on the completed guidance pass.\r\n- The workspace is still dirty with unrelated changes outside this track, including other spec body repairs, unrelated ticket churn, session captures, and dirty memory-api and viewer-api submodules. Those should not be staged with the next session-optimization implementation work.\r\n\r\n**Long-Horizon Goal**\r\n\r\nReduce model-bound Copilot context before tokens are spent, while keeping raw session artifacts available as diagnostic evidence and bounded-retrieval pointers.\r\n\r\n**Next Actions**\r\n\r\n1. Open ticket.toml and body.md.\r\n2. Define the concrete shape of a tool-result guard record for terminal output, repeated state checks, retries, and large structured payloads.\r\n3. Identify the exact implementation surface that should own prompt-facing compaction behavior before Copilot reuses context.\r\n4. Add deterministic tests using representative captured-session patterns so upstream suppression rules are measurable and stable.\r\n5. Keep the next commit isolated from the unrelated dirty spec, ticket, session, and submodule changes already present in the workspace.\r\n\r\n**Definition Of Done**\r\n\r\n- A coded upstream compaction layer exists for model-facing tool results.\r\n- Repeated state checks, retry narration, and oversized raw outputs are suppressed or summarized before reuse.\r\n- Large artifacts remain accessible through pointers and bounded extraction.\r\n- Validation proves the implementation improves upstream prompt compactness rather than only making archived transcripts easier to inspect.\r\n\r\n**Board And Workspace Note**\r\n\r\nThere is active unrelated work in the workspace, including a checked-in spec-repair track on ticket `690578c4-1c47-430b-9258-4edaa0a82d73`. The next session should avoid claiming or staging those files unless it is explicitly switching tracks.\r\n\r\nRun until all tasks are complete",
+      "captured_at": "2026-07-08T23:02:53.701Z",
+      "event_meta": {
+        "event_id": "e142827e-726e-40e7-a82a-aeb467a45458",
+        "parent_event_id": "e06a71d8-ccf0-46f2-a180-e9a657637166",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m continuing from your handoff by locating the exact follow-up ticket and owning spec files, then I’ll implement the upstream compaction layer with tests while keeping changes isolated from unrelated dirty work. I’ll first map the touched files from commit `cf120567` and verify board ownership before editing.",
+      "captured_at": "2026-07-08T23:03:03.137Z",
+      "event_meta": {
+        "event_id": "734c2e46-ff0e-4cfb-826b-9d6b884773dd",
+        "parent_event_id": "eaa49098-2853-4ad2-bca9-4368504c8ab2",
+        "event_type": "assistant.message",
+        "message_id": "f98568dd-7daf-4bc6-a16a-bba575b02b6e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_sBXJ4M5XMGS5htk0FHG0JMR7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --name-only --pretty=format: cf120567",
+              "explanation": "List files changed in the handoff commit to identify follow-up ticket and spec paths.",
+              "goal": "Find relevant files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kF75NEIQ91JCHziPtLLsbJTC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --workspace . --toon",
+              "explanation": "Check current board state and ownership before making edits.",
+              "goal": "Verify active work and avoid conflicts",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RSkY0OKvqvxK2JmkCZ6cSpKA",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect current workspace dirtiness to avoid staging unrelated files.",
+              "goal": "Assess working tree state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "I found the exact ticket IDs from your commit and confirmed the board is clear. Next I’m reading both ticket records to identify the `ready` implementation ticket and its linked spec so I can code directly against that scope.",
+      "captured_at": "2026-07-08T23:03:19.784Z",
+      "event_meta": {
+        "event_id": "36db8380-fcb7-4a9f-aeef-24183845a4e3",
+        "parent_event_id": "fb5579ef-248d-4681-9773-84679a19052a",
+        "event_type": "assistant.message",
+        "message_id": "0a03ada0-57ca-4128-92b0-9f80c23533d9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BQeh5DY0v6gfIFPaKh3yKABf",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . 1c1ebfd1-4478-401f-a9ad-efcc2ff53b16 --toon",
+              "explanation": "Inspect first ticket from commit to determine its state and references.",
+              "goal": "Identify completed vs follow-up ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gIhyfQ1ITVlcGvprabwjx3xT",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . 47cc50db-8efa-4945-87fe-d30fe1f6bc61 --toon",
+              "explanation": "Inspect second ticket from commit to determine its state and linked spec.",
+              "goal": "Identify follow-up implementation ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve identified the `ready` implementation ticket as `47cc50db...` and will now move it into active execution, check in on the board, then read the owning spec to anchor the code changes to the correct implementation surface.",
+      "captured_at": "2026-07-08T23:03:29.739Z",
+      "event_meta": {
+        "event_id": "4cdf451a-f0ee-4e3b-bc6b-2121f46c6f74",
+        "parent_event_id": "fb63e449-018a-4bae-a64b-68a7b23c05de",
+        "event_type": "assistant.message",
+        "message_id": "f08e3631-e41d-4865-a807-3909673ec474",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_a7HoBscsfY5vcbdExpWMzgZ9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe update --workspace . 47cc50db-8efa-4945-87fe-d30fe1f6bc61 --to-state in-implementation --toon",
+              "explanation": "Advance the follow-up ticket to in-implementation before coding.",
+              "goal": "Keep ticket state current",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_i14t0IM7kknwBOybJ8J1KF3Q",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board check-in 47cc50db-8efa-4945-87fe-d30fe1f6bc61 --agent copilot-gpt-5-3-codex --intent \"implement upstream tool-result guard and compact prompt views\" --ttl-secs 3600 --toon",
+              "explanation": "Claim active ownership for the follow-up ticket on the draftboard.",
+              "goal": "Coordinate active work",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ccgQuxo6rJ6cTzX5ap1K8Ods",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe get f5e0df47-d0ec-4456-b268-689f2a41ecd7 --workspace . --toon",
+              "explanation": "Read the owning spec for implementation constraints and acceptance criteria.",
+              "goal": "Load contract details",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Ticket state and board ownership are now active. I’m inspecting the spec body and scanning the codebase for the session-context packing implementation surface so I can add the guard logic and tests in the right module.",
+      "captured_at": "2026-07-08T23:03:49.496Z",
+      "event_meta": {
+        "event_id": "7fd14288-a50d-4ba0-b8f0-6469ee237485",
+        "parent_event_id": "264c0624-8e30-4e84-b938-0dd48b117019",
+        "event_type": "assistant.message",
+        "message_id": "9b749fa5-98b6-43c2-ab01-fcc88e7878bf",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_mgK2vFJ0A0xpQQyEsQRsKAmy",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\f5e0df47-d0ec-4456-b268-689f2a41ecd7\\body.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IwExdOzGo0kwPz2ww9jXYOSQ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"session context|context packing|bootstrap|handoff|tool-result|reference-only|drop-from-prompt|summarize|retain|session-api|artifact pointer|spill\" .",
+              "explanation": "Search for existing implementation points and terms related to session context compaction.",
+              "goal": "Locate implementation surface",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7bkuHFKKM0IKuh8ruP53gPRF",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"chat-session-resources|workspaceStorage|copilot-chat|session\" tools .agents .github",
+              "explanation": "Find code or scripts that handle captured sessions and prompt bootstrap resources.",
+              "goal": "Locate session processing code",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I found the spec contract and it aligns with your boundary. I’m now extracting the targeted search hits to pinpoint where to implement an actual compaction layer rather than more guidance text.",
+      "captured_at": "2026-07-08T23:03:57.282Z",
+      "event_meta": {
+        "event_id": "5365bbf5-d3e4-4532-abaa-23709623b102",
+        "parent_event_id": "d4b06bdc-6e87-4774-ad6b-0b1b0e0b2888",
+        "event_type": "assistant.message",
+        "message_id": "51a9ce79-7d1f-4c3f-9c3d-1914c123cabd",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_e1eYC8PtawUrpKTOOftWbbxI",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\bf467003-b3c9-4868-87f0-a0c6b5382138\\call_IwExdOzGo0kwPz2ww9jXYOSQ__vscode-1783521499645\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tm1VWZENYYHBscFDIMiFdloJ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\bf467003-b3c9-4868-87f0-a0c6b5382138\\call_7bkuHFKKM0IKuh8ruP53gPRF__vscode-1783521499646\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’ve narrowed the likely code surface to `session-api` and hook/tooling modules. Next I’m reading the hit list and then opening the highest-signal source files to implement guard classification and compact view generation.",
+      "captured_at": "2026-07-08T23:04:07.545Z",
+      "event_meta": {
+        "event_id": "1b734944-767e-4f20-b4f2-c5e486778612",
+        "parent_event_id": "928c807a-6b4b-4ad1-9e9b-19eb29d12ca8",
+        "event_type": "assistant.message",
+        "message_id": "3bac52d9-2012-441c-beee-d02bf1279f30",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3ZwsB9bgy07bDmtQccFOmpGL",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\bf467003-b3c9-4868-87f0-a0c6b5382138\\call_6kTnjlUuRqkmpYo1Ghjv947b__vscode-1783521499650\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I found the executable surface in `memory-api/tools/cli/session-cli`, which already exposes `peek` operations. I’m inspecting that CLI and store API now so the new guard classifications and compact view can be added end-to-end.",
+      "captured_at": "2026-07-08T23:04:30.227Z",
+      "event_meta": {
+        "event_id": "288d3d66-c14d-4950-81b3-537ba511aa7c",
+        "parent_event_id": "6751bf6e-cfa0-4efb-8806-d65b371d19ab",
+        "event_type": "assistant.message",
+        "message_id": "c9165376-57cf-4413-95ef-3fe8b61b2533",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_90C3vCEZpbaiccRPqdLsdERl",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\lib.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZI70GovfiHBc2iba895x42el",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\bin\\session.rs",
+              "startLine": 1,
+              "endLine": 420
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dSOhe2mXQnQ7REe0zw1dy0Zr",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\store.rs",
+              "startLine": 340,
+              "endLine": 520
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I’ve identified the right implementation path: extend `session-api` peek transforms with a new prompt-pack view that performs deterministic retain/summarize/reference-only/drop decisions and duplicate suppression, then expose it through `session-cli` with tests. I’m applying that core code change now.",
+      "captured_at": "2026-07-08T23:05:53.755Z",
+      "event_meta": {
+        "event_id": "be40bd00-ccbe-4c51-b7ac-e948652e59e8",
+        "parent_event_id": "9e152830-83a7-4c5e-897e-f07031ebb4e8",
+        "event_type": "assistant.message",
+        "message_id": "baf5b820-2a25-4db2-b891-3a96f6d2e190",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HZK0Jxuyy1TVrQXDHsmolRuE",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add prompt-facing compaction structures and deterministic guard classification to session-api peek module with tests.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\peek.rs\n@@\n use serde::{\n     Deserialize,\n     Serialize,\n };\n+use std::collections::HashMap;\n@@\n pub const DEFAULT_SKELETON_PREVIEW_CHARS: usize = 120;\n+/// Default content length after which turns are summarized.\n+pub const DEFAULT_PROMPT_SUMMARIZE_THRESHOLD_CHARS: usize = 600;\n@@\n pub struct SessionSkeleton {\n@@\n     pub entries: Vec<SessionSkeletonEntry>,\n }\n+\n+/// Classification for whether a turn should reach model-facing prompt context.\n+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n+#[serde(rename_all = \"kebab-case\")]\n+pub enum PromptInclusion {\n+    Retain,\n+    Summarize,\n+    ReferenceOnly,\n+    DropFromPrompt,\n+}\n+\n+/// A compact prompt-facing entry produced by guard classification.\n+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n+pub struct SessionPromptPackEntry {\n+    pub sequence: usize,\n+    pub role: SessionRole,\n+    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n+    pub tool_name: Option<String>,\n+    pub inclusion: PromptInclusion,\n+    pub reason: String,\n+    pub preview: String,\n+    pub content_len: usize,\n+    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n+    pub reference_pointer: Option<String>,\n+}\n+\n+/// Prompt-facing compact session view after applying guard classification.\n+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n+pub struct SessionPromptPack {\n+    pub session_id: String,\n+    pub total_turns: usize,\n+    pub retained_turns: usize,\n+    pub summarized_turns: usize,\n+    pub reference_only_turns: usize,\n+    pub dropped_turns: usize,\n+    #[serde(default, skip_serializing_if = \"Vec::is_empty\")]\n+    pub entries: Vec<SessionPromptPackEntry>,\n+}\n+\n+/// Options used by prompt-pack classification.\n+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]\n+pub struct PromptPackOptions {\n+    pub preview_chars: usize,\n+    pub summarize_threshold_chars: usize,\n+}\n+\n+impl Default for PromptPackOptions {\n+    fn default() -> Self {\n+        Self {\n+            preview_chars: DEFAULT_SKELETON_PREVIEW_CHARS,\n+            summarize_threshold_chars: DEFAULT_PROMPT_SUMMARIZE_THRESHOLD_CHARS,\n+        }\n+    }\n+}\n@@\n pub fn peek_skeleton(\n@@\n     SessionSkeleton {\n         session_id: record.session_id.clone(),\n         total_turns: record.turns.len(),\n         entries,\n     }\n }\n+\n+/// Build a compact prompt-facing view of `record` by classifying each turn as\n+/// retain/summarize/reference-only/drop-from-prompt.\n+///\n+/// The resulting `entries` vector contains only non-dropped items.\n+pub fn peek_prompt_pack(\n+    record: &SessionRecord,\n+    options: PromptPackOptions,\n+) -> SessionPromptPack {\n+    let mut entries = Vec::new();\n+    let mut retain = 0;\n+    let mut summarize = 0;\n+    let mut reference_only = 0;\n+    let mut dropped = 0;\n+    let mut seen_signatures: HashMap<String, usize> = HashMap::new();\n+\n+    for turn in &record.turns {\n+        let content_len = turn.content.chars().count();\n+        let normalized = normalize_for_signature(&turn.content);\n+        let signature = format!(\n+            \"{:?}|{}|{}\",\n+            turn.role,\n+            turn.tool_name.as_deref().unwrap_or(\"\"),\n+            normalized\n+        );\n+\n+        if content_len == 0 {\n+            dropped += 1;\n+            continue;\n+        }\n+\n+        if is_routine_retry_narration(turn, &normalized) {\n+            dropped += 1;\n+            continue;\n+        }\n+\n+        if let Some(previous_sequence) = seen_signatures.get(&signature) {\n+            if is_repeated_state_check(turn) || turn.role == SessionRole::Tool {\n+                let _ = previous_sequence;\n+                dropped += 1;\n+                continue;\n+            }\n+        }\n+\n+        seen_signatures.insert(signature, turn.sequence);\n+\n+        let preview = preview_line(&turn.content, options.preview_chars);\n+        let reference_pointer = extract_reference_pointer(&turn.content);\n+        let (inclusion, reason) = if reference_pointer.is_some() {\n+            (\n+                PromptInclusion::ReferenceOnly,\n+                \"artifact-pointer-detected\".to_string(),\n+            )\n+        } else if content_len > options.summarize_threshold_chars {\n+            (\n+                PromptInclusion::Summarize,\n+                \"oversized-content\".to_string(),\n+            )\n+        } else {\n+            (PromptInclusion::Retain, \"durable-content\".to_string())\n+        };\n+\n+        match inclusion {\n+            PromptInclusion::Retain => retain += 1,\n+            PromptInclusion::Summarize => summarize += 1,\n+            PromptInclusion::ReferenceOnly => reference_only += 1,\n+            PromptInclusion::DropFromPrompt => dropped += 1,\n+        }\n+\n+        entries.push(SessionPromptPackEntry {\n+            sequence: turn.sequence,\n+            role: turn.role.clone(),\n+            tool_name: turn.tool_name.clone(),\n+            inclusion,\n+            reason,\n+            preview,\n+            content_len,\n+            reference_pointer,\n+        });\n+    }\n+\n+    SessionPromptPack {\n+        session_id: record.session_id.clone(),\n+        total_turns: record.turns.len(),\n+        retained_turns: retain,\n+        summarized_turns: summarize,\n+        reference_only_turns: reference_only,\n+        dropped_turns: dropped,\n+        entries,\n+    }\n+}\n@@\n fn preview_line(\n@@\n     preview\n }\n+\n+fn normalize_for_signature(content: &str) -> String {\n+    let mut normalized = String::with_capacity(content.len().min(512));\n+    let mut saw_space = false;\n+\n+    for ch in content.chars() {\n+        if ch.is_whitespace() {\n+            if !saw_space {\n+                normalized.push(' ');\n+                saw_space = true;\n+            }\n+            continue;\n+        }\n+        saw_space = false;\n+        normalized.push(ch.to_ascii_lowercase());\n+        if normalized.len() >= 512 {\n+            break;\n+        }\n+    }\n+\n+    normalized.trim().to_string()\n+}\n+\n+fn is_repeated_state_check(turn: &SessionTurn) -> bool {\n+    matches!(\n+        turn.tool_name.as_deref(),\n+        Some(\n+            \"run_in_terminal\"\n+                | \"get_terminal_output\"\n+                | \"terminal_last_command\"\n+                | \"file_search\"\n+                | \"grep_search\"\n+                | \"list_dir\"\n+                | \"get_changed_files\"\n+                | \"get_errors\"\n+        )\n+    )\n+}\n+\n+fn is_routine_retry_narration(\n+    turn: &SessionTurn,\n+    normalized_content: &str,\n+) -> bool {\n+    if turn.role != SessionRole::Assistant {\n+        return false;\n+    }\n+\n+    if normalized_content.len() > 220 {\n+        return false;\n+    }\n+\n+    let retry_markers = [\n+        \"retry\",\n+        \"re-run\",\n+        \"rerun\",\n+        \"try again\",\n+        \"run again\",\n+        \"checking again\",\n+    ];\n+\n+    retry_markers\n+        .iter()\n+        .any(|marker| normalized_content.contains(marker))\n+}\n+\n+fn extract_reference_pointer(content: &str) -> Option<String> {\n+    for line in content.lines() {\n+        let trimmed = line.trim();\n+        if let Some((_, right)) = trimmed.split_once(\"saved to:\") {\n+            let pointer = right.trim();\n+            if !pointer.is_empty() {\n+                return Some(pointer.to_string());\n+            }\n+        }\n+        if let Some((_, right)) = trimmed.split_once(\"content at:\") {\n+            let pointer = right.trim();\n+            if !pointer.is_empty() {\n+                return Some(pointer.to_string());\n+            }\n+        }\n+    }\n+\n+    if content.contains(\"chat-session-resources\") {\n+        return Some(\"chat-session-resource-pointer\".to_string());\n+    }\n+\n+    if content.contains(\".session/sessions/\") {\n+        return Some(\"session-store-pointer\".to_string());\n+    }\n+\n+    None\n+}\n@@\n     fn peek_skeleton_truncates_long_previews() {\n         let long = \"x\".repeat(50);\n         let record = record_with(vec![turn(0, SessionRole::User, &long)]);\n@@\n         assert_eq!(skeleton.entries[0].preview.chars().count(), 11); // 10 + ellipsis\n         assert!(skeleton.entries[0].preview.ends_with('\\u{2026}'));\n     }\n+\n+    #[test]\n+    fn prompt_pack_drops_repeated_state_checks() {\n+        let mut first = turn(0, SessionRole::Tool, \"status output\");\n+        first.tool_name = Some(\"run_in_terminal\".to_string());\n+        let mut second = turn(1, SessionRole::Tool, \"status output\");\n+        second.tool_name = Some(\"run_in_terminal\".to_string());\n+        let record = record_with(vec![first, second]);\n+\n+        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n+\n+        assert_eq!(pack.total_turns, 2);\n+        assert_eq!(pack.entries.len(), 1);\n+        assert_eq!(pack.dropped_turns, 1);\n+        assert_eq!(pack.retained_turns, 1);\n+    }\n+\n+    #[test]\n+    fn prompt_pack_marks_spill_paths_as_reference_only() {\n+        let mut tool = turn(\n+            0,\n+            SessionRole::Tool,\n+            \"Large tool result written to file. Use the read_file tool to access the content at: /tmp/output.txt\",\n+        );\n+        tool.tool_name = Some(\"run_in_terminal\".to_string());\n+        let record = record_with(vec![tool]);\n+\n+        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n+\n+        assert_eq!(pack.reference_only_turns, 1);\n+        assert_eq!(pack.entries[0].inclusion, PromptInclusion::ReferenceOnly);\n+        assert_eq!(\n+            pack.entries[0].reference_pointer.as_deref(),\n+            Some(\"/tmp/output.txt\")\n+        );\n+    }\n+\n+    #[test]\n+    fn prompt_pack_summarizes_oversized_content() {\n+        let record = record_with(vec![turn(\n+            0,\n+            SessionRole::Assistant,\n+            &\"x\".repeat(800),\n+        )]);\n+\n+        let pack = peek_prompt_pack(\n+            &record,\n+            PromptPackOptions {\n+                preview_chars: 40,\n+                summarize_threshold_chars: 120,\n+            },\n+        );\n+\n+        assert_eq!(pack.summarized_turns, 1);\n+        assert_eq!(pack.entries[0].inclusion, PromptInclusion::Summarize);\n+    }\n+\n+    #[test]\n+    fn prompt_pack_drops_routine_retry_narration() {\n+        let record = record_with(vec![turn(\n+            0,\n+            SessionRole::Assistant,\n+            \"I will retry the same command and check again.\",\n+        )]);\n+\n+        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n+\n+        assert_eq!(pack.entries.len(), 0);\n+        assert_eq!(pack.dropped_turns, 1);\n+    }\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Core API changes are in place. I’m wiring a new `peek-prompt-pack` CLI command now so the compaction behavior is usable and testable from the existing workflow surface.",
+      "captured_at": "2026-07-08T23:06:09.477Z",
+      "event_meta": {
+        "event_id": "e9d1af37-f16e-4bf6-aeea-51949b1ac566",
+        "parent_event_id": "7a534be1-4d88-4407-9ccf-2ecf53194930",
+        "event_type": "assistant.message",
+        "message_id": "f2e38301-84fe-42bf-ae69-800f2c907c21",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_picNMCRH7BlsEcH6O55XWmTQ",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add session-cli command to expose prompt-pack compaction view.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\lib.rs\n@@\n use session_api::{\n+    DEFAULT_PROMPT_SUMMARIZE_THRESHOLD_CHARS,\n     DEFAULT_SKELETON_PREVIEW_CHARS,\n+    PromptPackOptions,\n     SessionError,\n     SessionQuery,\n     SessionStoreConfig,\n@@\n     /// Peek a body-stripped skeleton of a session transcript.\n     PeekSkeleton(PeekSkeletonArgs),\n+    /// Peek a prompt-facing compact view of a session transcript.\n+    PeekPromptPack(PeekPromptPackArgs),\n }\n@@\n pub struct PeekSkeletonArgs {\n@@\n     #[arg(long, default_value_t = DEFAULT_SKELETON_PREVIEW_CHARS)]\n     pub preview_chars: usize,\n }\n+\n+#[derive(Debug, Args)]\n+pub struct PeekPromptPackArgs {\n+    /// Session id to peek.\n+    #[arg(long)]\n+    pub session_id: String,\n+    /// Maximum preview characters retained per included turn.\n+    #[arg(long, default_value_t = DEFAULT_SKELETON_PREVIEW_CHARS)]\n+    pub preview_chars: usize,\n+    /// Content-length threshold above which entries are summarized.\n+    #[arg(long, default_value_t = DEFAULT_PROMPT_SUMMARIZE_THRESHOLD_CHARS)]\n+    pub summarize_threshold_chars: usize,\n+}\n@@\n         SessionCommand::PeekSkeleton(args) => {\n             let skeleton =\n                 config.peek_skeleton(&args.session_id, args.preview_chars)?;\n             to_value(&skeleton)\n         },\n+        SessionCommand::PeekPromptPack(args) => {\n+            let pack = config.peek_prompt_pack(\n+                &args.session_id,\n+                PromptPackOptions {\n+                    preview_chars: args.preview_chars,\n+                    summarize_threshold_chars: args\n+                        .summarize_threshold_chars,\n+                },\n+            )?;\n+            to_value(&pack)\n+        },\n     }\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "The new compaction API and CLI command are implemented with tests added. I’m running focused Rust tests for `session-api` and `session-cli` now to validate behavior and catch any integration issues.",
+      "captured_at": "2026-07-08T23:06:24.319Z",
+      "event_meta": {
+        "event_id": "b6589e7c-f3ac-4161-b3a9-0dc7c1e9f38d",
+        "parent_event_id": "357d28fb-f504-48c5-a1fe-e778d16e8288",
+        "event_type": "assistant.message",
+        "message_id": "6100b60e-b733-433a-af0b-eb6ebfe7b595",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_oieB9sppiNcGxVGU6vYXxwiI",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo test -p session-api",
+              "explanation": "Run session-api tests after adding prompt-pack compaction logic.",
+              "goal": "Validate session-api changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YTiS0NHiitiSOFp5DbiOhqc1",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml",
+              "explanation": "Run session-cli tests after adding peek-prompt-pack command.",
+              "goal": "Validate CLI integration",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Implementation and tests are passing, so I’m finalizing workflow state: moving the ticket to `in-review` and checking out of the board entry to leave a clean handoff point.",
+      "captured_at": "2026-07-08T23:06:53.639Z",
+      "event_meta": {
+        "event_id": "21676fe8-3579-4a74-aabd-e90bde335f6c",
+        "parent_event_id": "ed51e9d8-587c-4049-86b9-9c9d9809fed6",
+        "event_type": "assistant.message",
+        "message_id": "eba7e135-d232-44a9-ad00-169479e4fa59",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wWxS9UrGQ3PLjBoRYiYxBGVW",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe update --workspace . 47cc50db-8efa-4945-87fe-d30fe1f6bc61 --to-state in-review --toon",
+              "explanation": "Advance the implementation ticket to in-review after passing validation.",
+              "goal": "Maintain correct ticket lifecycle",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_y2SkKfiRESBxnrhMdvtORfxt",
+            "name": "mcp_rmcp5_board_check_out",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "ticket_id": "47cc50db-8efa-4945-87fe-d30fe1f6bc61",
+              "agent_id": "copilot-gpt-5-3-codex",
+              "reason": "implemented prompt-pack guard layer and passing session-api/session-cli tests"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Implemented the follow-up session-optimization slice end-to-end and advanced the ticket workflow.\n\nWhat I changed\n1. Added a coded prompt-compaction layer with deterministic guard categories in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs#L59).\n2. Introduced prompt inclusion classes and compact output types:\n[PromptInclusion and prompt-pack types](memory-api/crates/session-api/src/peek.rs#L59),\n[peek_prompt_pack classifier](memory-api/crates/session-api/src/peek.rs#L164),\n[deterministic suppression heuristics](memory-api/crates/session-api/src/peek.rs#L284).\n3. Wired prompt-pack into store API:\n[store integration](memory-api/crates/session-api/src/store.rs#L411),\n[public exports](memory-api/crates/session-api/src/lib.rs#L29).\n4. Exposed it through session-cli as a new command:\n[peek-prompt-pack command and args](memory-api/tools/cli/session-cli/src/lib.rs#L77),\n[dispatch wiring](memory-api/tools/cli/session-cli/src/lib.rs#L281).\n5. Added deterministic tests for suppression and classification:\n[session-api prompt-pack tests](memory-api/crates/session-api/src/peek.rs#L479),\n[session-cli integration test](memory-api/tools/cli/session-cli/tests/cli.rs#L214).\n\nBehavior now covered\n1. Classifies turns into retain, summarize, reference-only, and drop-from-prompt.\n2. Suppresses repeated unchanged tool/state checks deterministically.\n3. Suppresses routine retry narration.\n4. Converts spill/artifact-heavy outputs into reference-only entries with pointers.\n5. Summarizes oversized content before prompt-facing reuse.\n\nValidation\n1. cargo test -p session-api passed: 44 passed.\n2. cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml passed: 9 passed.\n3. VS Code diagnostics checked for all touched files: no errors.\n\nTicket and board workflow updates\n1. Moved follow-up ticket to in-review:\n[.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml).\n2. Checked out board entry with completion reason for this track.\n\nNotes on workspace isolation\n1. Kept work scoped to session-api and session-cli surfaces plus the target ticket state transition.\n2. Unrelated dirty spec/ticket/submodule work was not touched.\n\nNatural next step\n1. If you want, I can prepare a clean commit plan limited to the session-optimization files in memory-api plus the single ticket state file, without staging unrelated workspace changes.",
+      "captured_at": "2026-07-08T23:07:22.692Z",
+      "event_meta": {
+        "event_id": "aa5dd1ce-e0fa-40c0-aac0-0340e0baf46a",
+        "parent_event_id": "340319f0-74f4-4cdf-bc8b-1ecc52d4fb16",
+        "event_type": "assistant.message",
+        "message_id": "e81a2aad-7073-482b-9979-055355b3f38b",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "user",
+      "content": "/handoff commit and prepare the follow up session",
+      "captured_at": "2026-07-08T23:16:59.107Z",
+      "event_meta": {
+        "event_id": "1e92ab70-3734-4cea-931e-4b0e88f8de02",
+        "parent_event_id": "7128ad1f-f632-4bb6-9f09-87434b062c02",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "I’ll handle this as two steps: first create an isolated commit for the follow-up implementation slice, then generate a compact next-session handoff prompt with strict ticket UUID references and restart actions. I’m checking exact changed files now so I only include this track.",
+      "captured_at": "2026-07-08T23:17:12.922Z",
+      "event_meta": {
+        "event_id": "bff66af5-1f52-4cdf-9e66-4dc131259ee0",
+        "parent_event_id": "23b5797e-585b-46b5-b4a2-f3e00e8b0a21",
+        "event_type": "assistant.message",
+        "message_id": "8ae6910e-e6aa-42f0-9e64-bdf8bf24edd5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_emOTxpCeit0l0eCzH0BVQINj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect root repo changes to isolate track-specific files for commit and handoff.",
+              "goal": "Get root working tree status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_P8nNaB1OaqTBLVa7Zs33e2Bs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short",
+              "explanation": "Inspect memory-api submodule changes where implementation code was added.",
+              "goal": "Get submodule working tree status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KGnvHC4DNyfsjNSLJXVSb9pI",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . 47cc50db-8efa-4945-87fe-d30fe1f6bc61 --toon",
+              "explanation": "Confirm follow-up ticket state and path for handoff references.",
+              "goal": "Capture current ticket status",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I found unrelated dirty edits inside `memory-api`, so I’ll commit only the five implementation files from this track in the submodule, then make a separate root commit for the `memory-api` pointer plus this ticket’s `in-review` state files.",
+      "captured_at": "2026-07-08T23:17:25.236Z",
+      "event_meta": {
+        "event_id": "5013e2aa-a5ea-4e3d-8f8f-b94abef4de88",
+        "parent_event_id": "f201ddb2-99e9-44f4-aaf1-894b33203ec5",
+        "event_type": "assistant.message",
+        "message_id": "25f309b9-fb0a-4d40-89a9-0293033162da",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pWd8pkLHnT8VMOhmdtyK5WEi",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api add crates/session-api/src/lib.rs crates/session-api/src/peek.rs crates/session-api/src/store.rs tools/cli/session-cli/src/lib.rs tools/cli/session-cli/tests/cli.rs && rtk git -C memory-api commit -m \"feat(session-api): add prompt-pack guard classification and CLI view\"",
+              "explanation": "Stage and commit only the implementation files for this track inside memory-api.",
+              "goal": "Create isolated submodule commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_v4DYqDnKYQPhYydPMdQ0mCtR",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api rev-parse --short HEAD",
+              "explanation": "Capture new memory-api commit hash for handoff context.",
+              "goal": "Record submodule checkpoint hash",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "Submodule commit is done (`def55ed`). I’m now creating a root-level checkpoint commit that only records the `memory-api` pointer update plus ticket `47cc50db-8efa-4945-87fe-d30fe1f6bc61` state/history changes, leaving all unrelated dirty files untouched.",
+      "captured_at": "2026-07-08T23:17:35.443Z",
+      "event_meta": {
+        "event_id": "a2de281f-d6e5-4a7f-9630-e3c8620b19d8",
+        "parent_event_id": "529ef086-8ee9-4f99-9290-9d8ae63f0431",
+        "event_type": "assistant.message",
+        "message_id": "9cab0bfa-e7d7-4863-8677-8c29134a3ff0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_teipvKPEVXv6ScGsmC4EdaPs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git add memory-api .ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml .ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/history.ndjson && rtk git commit -m \"chore(session-workflow): checkpoint prompt-pack implementation for review\"",
+              "explanation": "Create an isolated root commit for this track only: submodule pointer + follow-up ticket in-review state.",
+              "goal": "Checkpoint follow-up session work cleanly",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I’ve completed both commits (`def55ed` in `memory-api`, `e00fff7` at root). I’ll gather final state snapshots (board, tickets, spec) and then output the handoff prompt in the exact structure you requested.",
+      "captured_at": "2026-07-08T23:17:43.356Z",
+      "event_meta": {
+        "event_id": "64d0ad65-7352-48ce-9445-fdcbdb8d18ed",
+        "parent_event_id": "0ee7a8b6-b227-4894-b86d-83708564927c",
+        "event_type": "assistant.message",
+        "message_id": "eade5d71-8720-41b4-9b04-e6f5e4680378",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_026QAhYWPQlGqCm483Urlnjm",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --workspace . --toon",
+              "explanation": "Confirm board status for restart instructions in handoff.",
+              "goal": "Capture board note",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zLmD7Z2pN19E6KrayNoU63ay",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get --workspace . 1c1ebfd1-4478-401f-a9ad-efcc2ff53b16 --toon",
+              "explanation": "Confirm completed guidance ticket state for context linkage.",
+              "goal": "Capture prerequisite ticket status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rEQksKIWsXQjNOoblND5b6Vq",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe get f5e0df47-d0ec-4456-b268-689f2a41ecd7 --workspace . --toon",
+              "explanation": "Confirm owning spec metadata for handoff references.",
+              "goal": "Capture spec anchor",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "**Overview**  \nCheckpoint and follow-up-session prep are complete for the session-optimization implementation track. I created an isolated implementation commit in `memory-api` and a root checkpoint commit that only advances the target ticket state plus submodule pointer, while leaving unrelated dirty spec/ticket/session/submodule work untouched.\n\n**Commit Result**  \n1. `memory-api` commit: `def55ed`  \n2. root commit: `e00fff7`\n\n**What Was Committed**  \n1. `def55ed` in `memory-api` includes:\n- [memory-api/crates/session-api/src/lib.rs](memory-api/crates/session-api/src/lib.rs)\n- [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs)\n- [memory-api/crates/session-api/src/store.rs](memory-api/crates/session-api/src/store.rs)\n- [memory-api/tools/cli/session-cli/src/lib.rs](memory-api/tools/cli/session-cli/src/lib.rs)\n- [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs)\n\n2. `e00fff7` in root includes:\n- [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\n- [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/history.ndjson](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/history.ndjson)\n- [memory-api](memory-api)\n\n**Handoff Prompt (for next session)**\n\n### Track\nContinue the session-context compaction implementation for upstream model-facing context shaping under ticket `47cc50db-8efa-4945-87fe-d30fe1f6bc61`, with the architectural boundary preserved: `session-api` capture is diagnostic only; cost reduction must happen before reuse in prompt context.\n\n### Intro\nThis track already shipped the first coded layer: prompt-pack classification (`retain`, `summarize`, `reference-only`, `drop-from-prompt`) plus deterministic suppression and CLI exposure. The next session should validate and harden behavior against representative captured-session patterns, then align spec/ticket evidence to move from `in-review` toward done.\n\n### Findings\n1. Upstream compaction behavior is now coded in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs) and surfaced through [memory-api/tools/cli/session-cli/src/lib.rs](memory-api/tools/cli/session-cli/src/lib.rs).  \n2. Deterministic rules currently handle repeated state-check suppression, routine retry narration suppression, oversized payload summarization, and artifact-pointer reference-only mapping.  \n3. Validation for this slice passed earlier in-session:\n- `cargo test -p session-api`\n- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml`\n\n### Decisions\n1. Preserve strict boundary: transcript persistence remains evidence-only, not optimization mechanism.  \n2. Keep compaction at prompt-facing/session view transforms, not by mutating archival transcript history.  \n3. Commit isolation was enforced due large unrelated workspace dirtiness.\n\n### Blockers\n1. No functional blocker on this track.  \n2. Workspace remains dirty with unrelated tracks and dirty submodules (`memory-viewers`, `viewer-api`), so staging must stay path-scoped.\n\n### Epic / Long-Horizon Goal\nReduce model-bound Copilot context before token spend by enforcing deterministic upstream compaction and pointer-based artifact access, while keeping raw session artifacts as diagnostic evidence.\n\n### Suggested Next Actions (execute in order)\n1. Open and verify current contract anchors:\n- [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\n- [.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md)\n\n2. Add representative-pattern tests (captured-session-style fixtures) to ensure suppression is stable across:\n- repeated terminal/status checks\n- duplicate lifecycle wrappers\n- retry narration variants\n- spill-file pointer outputs vs inline blobs\n\n3. Run first validation check immediately after any test additions:\n- `cargo test -p session-api`  \nThen run:\n- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml`\n\n4. If behavior changes are required, patch only the same five implementation files unless scope explicitly expands.  \n\n5. Update ticket/spec evidence links and rationale for any new suppression rules, then move ticket state accordingly.\n\n### Completion Status\n1. Implement prompt-pack guard classification: `completed` (initial version shipped in `def55ed`)  \n2. Deterministic suppression coverage expansion with representative fixtures: `not-started`  \n3. Contract/evidence sync in spec + ticket for final closeout: `in-progress`  \n4. Final review/close path for ticket `47cc50db-8efa-4945-87fe-d30fe1f6bc61`: `not-started`\n\n### Definition Of Done\n1. Prompt-facing compaction layer is deterministic and fixture-backed for representative session patterns.  \n2. Repeated unchanged checks, retry boilerplate, and oversized payloads are suppressed/summarized before prompt reuse.  \n3. Large artifacts remain pointer-addressable with bounded retrieval, not inlined by default.  \n4. Validation demonstrates upstream prompt compactness improvement, not just transcript readability.  \n5. Ticket `47cc50db-8efa-4945-87fe-d30fe1f6bc61` is ready to close with updated evidence.\n\n### Key Entities (with why they matter)\n1. [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs): core guard classification and suppression logic.  \n2. [memory-api/crates/session-api/src/store.rs](memory-api/crates/session-api/src/store.rs): store-level prompt-pack exposure.  \n3. [memory-api/tools/cli/session-cli/src/lib.rs](memory-api/tools/cli/session-cli/src/lib.rs): operational CLI surface (`peek-prompt-pack`).  \n4. [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs): CLI-level behavior assertions.  \n5. [.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md): contract boundary and acceptance clauses.  \n6. [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml): owning implementation ticket now in-review.  \n7. [.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml): completed guidance prerequisite ticket.  \n8. [.agents/instructions/session-optimization.instructions.md](.agents/instructions/session-optimization.instructions.md): canonical boundary and policy guidance.  \n9. [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md): compact-by-default operational discipline.\n\n### Ticket Legend\n1. `47cc50db` -> `47cc50db-8efa-4945-87fe-d30fe1f6bc61`  \n2. `1c1ebfd1` -> `1c1ebfd1-4478-401f-a9ad-efcc2ff53b16`\n\n### Board / Persisted Session Note\n1. Board is clear (`active_count: 0`, `stale_count: 0`), no check-in ownership conflicts currently.  \n2. Persisted `.session/sessions/...` artifacts exist and remain diagnostic pointers only; do not inline transcript payloads into restart prompt unless a bounded slice is required to answer a specific question.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.",
+      "captured_at": "2026-07-08T23:18:32.966Z",
+      "event_meta": {
+        "event_id": "68063380-4ff7-4bde-94a8-208568966438",
+        "parent_event_id": "80f05fc1-76c6-436b-9eee-437c3b32062b",
+        "event_type": "assistant.message",
+        "message_id": "1ac39b1e-eeb2-46c9-9390-c8aa63890847",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

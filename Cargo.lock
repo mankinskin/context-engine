@@ -612,11 +612,13 @@ version = "0.1.0"
 dependencies = [
  "assert_cmd",
  "audit-api",
+ "chrono",
  "clap",
  "memory-api",
  "predicates",
  "rusqlite",
  "serde_json",
+ "session-api",
  "tempfile",
  "thiserror 2.0.18",
  "toon-format",

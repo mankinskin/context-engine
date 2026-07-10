@@ -9,7 +9,7 @@ agent: "agent"
 
 Create a compact handoff prompt that a new session can use to resume a specific implementation track quickly. Carry over the current session's hard-won context: decisions, findings, blockers, suggested next steps, and entity references that would be expensive or error-prone to rediscover.
 
-Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [spec-cli](../../memory-api/tools/cli/spec-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [ticket-next](./ticket-next.prompt.md), [next](./next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), and [audit-cli](../../memory-api/tools/cli/audit-cli/README.md).
 
 Act as a session summarizer and agent orchestrator: summarize the current session's useful state, then shape it into the first prompt the next agent should receive.
 
@@ -20,7 +20,8 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 - target working directory to start from
 - findings, decisions, and motivations from the current session
 - concrete long-horizon goal, suggested next steps, including the first concrete action and first validation check
-- entity references: tickets, specs, rule ids, sessions, audits, generated files, source files, logs, validation evidence, and blockers
+	- entity references: tickets, specs, rule ids, sessions, audits, generated files, source files, logs, validation evidence, and blockers
+	- session-audit selectors, schema-versioned session artifacts, and report fields when the handoff track depends on persisted session evidence
 - board ownership, expected check-in or check-out actions, related active or previous sessions
 - persisted `session-api` history captured by the Stop hook
 3. Prefer authoritative references over summaries, but briefly explain why each referenced item matters so the next agent can act without reconstructing the conversation.

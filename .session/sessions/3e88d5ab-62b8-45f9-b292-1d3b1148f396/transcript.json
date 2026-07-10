@@ -1,0 +1,1375 @@
+{
+  "session_id": "3e88d5ab-62b8-45f9-b292-1d3b1148f396",
+  "captured_at": "2026-07-08T20:17:08.172Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "### Overview\r\nResume the instruction-governance cleanup track under epic tracker e1d8be15. The ticket graph was repaired after a schema issue, obsolete child tickets were deleted, and the active replacement set is now in ready state with dependency edges verified. Board is currently clear, so the next agent can start immediately.\r\n\r\n### Findings\r\n- Initial child tickets were created with a type that could be created but not updated; update attempts failed with a schema error.\r\n- Replacement child tickets were recreated with valid schema handling and rewired under the same tracker.\r\n- Old broken children were unlinked and deleted to avoid duplicate search/next noise.\r\n- Dependency graph is now consistent: three frontier leaves are actionable; two downstream tasks remain blocked by explicit dependencies.\r\n- Board snapshot shows no active ownership entries, no stale entries, no conflicts.\r\n\r\n### Decisions\r\n- Keep epic tracker ID stable and reuse it as the orchestration root: e1d8be15.\r\n- Use only the replacement child ticket set listed below; ignore deleted IDs.\r\n- Keep cross-track relationships as linked edges only (not depends_on) for external items already in-flight.\r\n- Keep execution order dependency-driven from tracker next/blockers output.\r\n\r\n### Blockers\r\n- cf7f79a6 is blocked by:\r\n  - 18e7a4d1\r\n  - 30606247\r\n- e416e4e8 is blocked by:\r\n  - 18e7a4d1\r\n  - 30606247\r\n  - f19dcafa\r\n  - cf7f79a6\r\n\r\n### Epic Ticket\r\n- Epic: instruction-governance tracker\r\n- Long-horizon goal: finish instruction-system cleanup so applyTo matching is selective, precedence/exception rules are explicit, formatting policy is internally consistent, and duplicated guidance is consolidated without losing critical behavior.\r\n\r\n### Key Entities\r\n- Tracker ticket and revision trail:\r\n  - tracker ticket (root dependency graph and state)\r\n  - tracker history (audit trail for rewiring)\r\n- Active child tickets:\r\n  - 18e7a4d1 (applyTo narrowing)\r\n  - 30606247 (precedence + exception matrix)\r\n  - f19dcafa (spec-system dedup + exceptions)\r\n  - cf7f79a6 (formatting conflict resolution)\r\n  - e416e4e8 (final consolidation pass)\r\n- Related linked external tickets:\r\n  - f227c217 (token-efficiency guidance overlap)\r\n  - f18e6885 (spec-system guidance origin context)\r\n  - b4a8dc5e (bootstrap/rules linkage context)\r\n- Hook and persisted session context:\r\n  - hooks config (contains copilot capture hook invoking session-api bin)\r\n  - handoff prompt source (current handoff requirements)\r\n\r\n### Next Actions (Execution Order)\r\n1. Start 18e7a4d1: narrow over-broad applyTo patterns in instruction files.\r\n2. Validate first check: run ticket next scoped to tracker and confirm 30606247 and f19dcafa remain frontier-ready.\r\n3. Execute 30606247: add explicit precedence + exception matrix in AGENTS.\r\n4. Execute f19dcafa: deduplicate spec-system instructions and keep exception language aligned.\r\n5. Execute cf7f79a6: resolve formatting rule conflict once prerequisites land.\r\n6. Execute e416e4e8: final consolidation and de-dup across instruction surfaces.\r\n7. Close loop by updating tracker e1d8be15 with final state transitions and evidence links.\r\n\r\n### Definition Of Done\r\n- Tracker e1d8be15 and all five active children are completed in dependency order.\r\n- No obsolete duplicate child tickets remain for this track (already cleaned once; verify no regressions).\r\n- applyTo scopes are selective and non-global where intended.\r\n- Precedence and exception behavior are explicitly documented in AGENTS/instruction surfaces.\r\n- Formatting conflict policy is resolved to one canonical rule set.\r\n- Ticket graph remains acyclic and consistent under tracker subgraph/blockers checks.\r\n\r\n### Board And Session Notes\r\n- Board status at handoff: clear (0 active, 0 stale, 0 conflicts), so new agent should check in when starting first action.\r\n- Stop-hook persistence is configured via hooks config to session-api capture binary; session-history retrieval was not expanded in this pass, so rely on ticket history links above as authoritative restart evidence.\r\n- Start with the first next action: 18e7a4d1.",
+      "captured_at": "2026-07-08T19:22:51.854Z",
+      "event_meta": {
+        "event_id": "f6742c53-f85c-4ac4-bec3-d30d9f372f42",
+        "parent_event_id": "6b35ebc3-accd-4445-b100-39e1ccdd2f49",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m resuming from the tracker and will start action 1 on ticket 18e7a4d1 by checking board/ticket state, claiming ownership, then narrowing over-broad applyTo patterns in the relevant instruction files with validation before moving to the next frontier check.I’m gathering live ticket and board context first so I can claim the ticket safely and make only the scoped instruction edits required for 18e7a4d1.",
+      "captured_at": "2026-07-08T19:23:03.855Z",
+      "event_meta": {
+        "event_id": "d0ea5657-cdf7-42e5-b412-f23d22471193",
+        "parent_event_id": "37707afd-b434-4ff8-902f-cc72e862b621",
+        "event_type": "assistant.message",
+        "message_id": "8c207392-3079-4639-a4af-1ac0156345c7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_81mEoum17WlbJ7jIlRm5yBJC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Check current board ownership and conflicts before claiming files.",
+              "goal": "Verify board is clear",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jhI3P4EsdJGmGwqCppj2qqEe",
+            "name": "mcp_rmcp5_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "18e7a4d1"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_T1d6lsueO7vm0sSez0Wu2GNZ",
+            "name": "mcp_rmcp5_subgraph",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 2
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Board and graph state match your handoff, so next I’m claiming ticket 18e7a4d1 and inspecting current instruction applyTo scopes to identify exactly which patterns are too broad.",
+      "captured_at": "2026-07-08T19:23:23.085Z",
+      "event_meta": {
+        "event_id": "4dcd0eb7-475c-4abb-90da-3afacede6dfd",
+        "parent_event_id": "a51ff5ef-2d59-4507-83ab-f6a17158a9e9",
+        "event_type": "assistant.message",
+        "message_id": "a4afde3f-de70-4fe4-bfe8-d17029d55dad",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_yn9fvvsP4IQAdL4bIWfckghL",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "18e7a4d1",
+              "to_state": "in-implementation",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XOP7bqYe2Q84ZmAyjBCWW9oR",
+            "name": "mcp_rmcp5_board_check_in",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "18e7a4d1",
+              "agent_id": "github-copilot",
+              "intent": "Narrow over-broad applyTo patterns in instruction files",
+              "files": [
+                ".agents/instructions"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NXlJvZFwKp3nczYdumMFioTT",
+            "name": "file_search",
+            "arguments": {
+              "query": ".agents/instructions/*.instructions.md",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qJHz276VUtwd8CPc7qaRwXYC",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\token-efficiency.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve claimed the ticket and moved it to in-implementation; now I’m mapping all current applyTo patterns to identify the over-broad matches that need narrowing.",
+      "captured_at": "2026-07-08T19:23:32.722Z",
+      "event_meta": {
+        "event_id": "05de1b73-6adc-4f2d-8c75-deded18952ce",
+        "parent_event_id": "04fc5d12-12a3-4600-b20e-14164a5cbec1",
+        "event_type": "assistant.message",
+        "message_id": "f8098ae2-970c-4925-8771-f0ca22403c9e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XrE5RsQdmXZnfRyWtWaV7hXa",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"^applyTo:\" .agents/instructions/*.instructions.md",
+              "explanation": "List applyTo patterns for all instruction files.",
+              "goal": "Find broad applyTo scopes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xZLxkGPWH7x6ngbFgnIxAd1y",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\audit.instructions.md",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7FTEjCwnhQc6KRc75JMA7YWC",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\commit.instructions.md",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_o7kPhBs0K4Y8ieuutVWZbUSx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\context-http.instructions.md",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YxVbNOn7RNCJgxQybSF6WmRz",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\core-crates.instructions.md",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cyeQt5Vun3RZ9fnEg9XuefhD",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\frontend.instructions.md",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DTsDFF7L1PloYapmuhVdMXxW",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4fubAbxwwPfW7dnSYceGchNZ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\tests.instructions.md",
+              "startLine": 1,
+              "endLine": 70
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yoYxNL7qiiNCn7MDfntb6FWR",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\ticket-system.instructions.md",
+              "startLine": 1,
+              "endLine": 70
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tsbfyB33EQuJ2x6UYqICbAAL",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\viewer-api-tools.instructions.md",
+              "startLine": 1,
+              "endLine": 70
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I found the likely broad match hotspots (notably wildcard spec/test/ticket markdown patterns), so I’m pulling the ticket record directly to align edits with its exact acceptance scope before patching.",
+      "captured_at": "2026-07-08T19:23:47.006Z",
+      "event_meta": {
+        "event_id": "fc5fda44-c37f-4007-a754-4e9f63177c12",
+        "parent_event_id": "37d0bf30-0337-448b-a73e-906b26d50065",
+        "event_type": "assistant.message",
+        "message_id": "bf643a8d-7c74-4bb7-941b-7fb370269a69",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_2Uw9Xcz9PnEFDiGoUc2Cklmh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 18e7a4d1 --toon",
+              "explanation": "Read ticket details for scope and acceptance criteria.",
+              "goal": "Align applyTo edits to ticket requirements",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I confirmed the wildcard test pattern is matching a very large set, so I’m now reading that sample output and then applying a focused applyTo patch across the instruction files with the most obvious overreach.",
+      "captured_at": "2026-07-08T19:24:07.559Z",
+      "event_meta": {
+        "event_id": "6a8143c0-f5b7-465f-afbf-e321c2a889ef",
+        "parent_event_id": "e741d1a5-6ed8-44c1-8ec1-bbb398b47eca",
+        "event_type": "assistant.message",
+        "message_id": "9c7978f6-2cbf-4041-82d7-8ec87cbc0855",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_NONQ3kh4uDPsQEzlnbvVNoCW",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\3e88d5ab-62b8-45f9-b292-1d3b1148f396\\call_GD8wcsBsKm7fpfJXOdyts4Of__vscode-1783521498672\\content.txt",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’m now applying a minimal frontmatter-only patch to narrow the wildcard-heavy applyTo entries in token-efficiency, spec-system, tests, and ticket-system instructions while preserving their intended ownership scope.",
+      "captured_at": "2026-07-08T19:24:28.170Z",
+      "event_meta": {
+        "event_id": "218c88de-1e18-4f58-8d19-3dd9f34eb9b6",
+        "parent_event_id": "4ef8e5a6-2f20-48e4-a08a-49893c458a2f",
+        "event_type": "assistant.message",
+        "message_id": "57608be1-7fcc-448c-a862-7ee256508b93",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ogeYD3ittNBXmm7YeiOyAK7M",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Narrow over-broad applyTo patterns in instruction files by replacing broad wildcard globs with targeted path/file patterns.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\token-efficiency.instructions.md\n@@\n description: \"Use when editing agent workflow guidance, CLI output handling, or file inspection patterns. Covers compact-by-default output, TOON vs JSON, bounded inspection, and differential patching.\"\n-applyTo: \"AGENTS.md,.github/copilot-instructions.md,.agents/**/*.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**\"\n+applyTo: \"AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**\"\n ---\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md\n@@\n description: \"Use when creating or updating specs. Covers spec discovery, authoring workflow, and traceability expectations across tickets, tests, validation, and related specs.\"\n-applyTo: \".spec/**,**/.spec/**,**/*spec*.md,memory-viewers/spec-viewer/**\"\n+applyTo: \".spec/**,**/.spec/**,memory-viewers/spec-viewer/**,memory-api/crates/spec-api/**,memory-api/tools/cli/spec-cli/**,memory-api/tools/mcp/spec-mcp/**\"\n ---\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\tests.instructions.md\n@@\n description: \"Use when creating or editing tests, benchmarks, or stress tests. Covers tracing setup, test-log debugging, Criterion benchmarks, and HTTP-level validation.\"\n-applyTo: \"**/tests/**,**/*test*,**/benches/**\"\n+applyTo: \"**/tests/**,**/benches/**,**/*_test.rs,**/*.test.ts,**/*.test.tsx,**/*.test.js,**/*.test.jsx,**/test_*.py\"\n ---\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\ticket-system.instructions.md\n@@\n description: \"Use when editing ticket system crates/tools. Covers state transitions, storage/search boundaries, and workflow expectations.\"\n-applyTo: \"crates/ticket-api/**,tools/ticket-cli/**,tools/ticket-http/**,tools/ticket-mcp/**,tools/ticket-viewer/**,.ticket/**,**/.ticket/**,**/ticket*.toml,**/*ticket*.md,memory-viewers/ticket-viewer/**\"\n+applyTo: \"crates/ticket-api/**,tools/ticket-cli/**,tools/ticket-http/**,tools/ticket-mcp/**,tools/ticket-viewer/**,.ticket/**,**/.ticket/**,memory-viewers/ticket-viewer/**,memory-api/crates/ticket-api/**,memory-api/tools/cli/ticket-cli/**,memory-api/tools/http/ticket-http/**,memory-api/tools/mcp/ticket-mcp/**,memory-api/tools/ticket-vscode/**\"\n ---\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "The applyTo narrowing patch is in place; next I’m validating tracker frontier status and checking ticket graph health to confirm this step unblocks exactly what we expect.",
+      "captured_at": "2026-07-08T19:24:37.214Z",
+      "event_meta": {
+        "event_id": "6394bbf3-b6c8-46e2-b2fc-d4dfddc04a3d",
+        "parent_event_id": "eec88c5d-4114-404d-8382-a2b386eca037",
+        "event_type": "assistant.message",
+        "message_id": "d247e131-4a3c-45e1-856c-7be2a7ba398f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Ve7Cztth1ntp5ql2nosV3akz",
+            "name": "mcp_rmcp5_next_tickets",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "limit": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8XZZsnabLB1N2HsAr9gk9GSC",
+            "name": "mcp_rmcp5_health_check",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 3
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5bWprVbxLg92NlGmqWWTjdyx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect working tree changes after applyTo edits.",
+              "goal": "Verify changed files for ticket evidence",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I’m closing out this first action by moving 18e7a4d1 to in-review, releasing board ownership, and re-running root-scoped next to confirm 30606247 and f19dcafa are still frontier-ready.",
+      "captured_at": "2026-07-08T19:25:00.038Z",
+      "event_meta": {
+        "event_id": "e2c7d96f-4c45-43dc-8f38-94b55897797d",
+        "parent_event_id": "0aeb75ed-9e88-4a4d-99e5-6899d3070aa5",
+        "event_type": "assistant.message",
+        "message_id": "e3121841-66cb-4e06-a519-f7ef1a43dded",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_x0DPWx7QZKUQghwzifZxKpXa",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "18e7a4d1",
+              "to_state": "in-review",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XyGBOstHoqWZyPqYZTYqOPjT",
+            "name": "mcp_rmcp5_board_check_out",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "18e7a4d1",
+              "agent_id": "github-copilot",
+              "reason": "Completed applyTo narrowing pass; moving to review"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qRpi0T09k41B8w30BpEBXat4",
+            "name": "mcp_rmcp5_next_tickets",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "limit": 10
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "I verified the diff and it confirms this pass tightened broad wildcard scopes (including wildcard-all cases that were present); I’ll now record evidence on ticket 18e7a4d1 and leave the tracker at the validated frontier.",
+      "captured_at": "2026-07-08T19:25:47.565Z",
+      "event_meta": {
+        "event_id": "d79b2785-9fc0-4c91-ae86-429b08ff682f",
+        "parent_event_id": "abb6cfab-e97d-48b1-a96c-8daecc8dbd32",
+        "event_type": "assistant.message",
+        "message_id": "25c93c83-eaf4-4564-8e13-4d9fcfe07695",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3hLx3X8BkKZWciCN9kXFuIGI",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "18e7a4d1",
+              "description": "## Summary\nNarrowed over-broad `applyTo` selectors in instruction frontmatter to reduce unintended rule activation.\n\n## Files Updated\n- .agents/instructions/token-efficiency.instructions.md\n- .agents/instructions/spec-system.instructions.md\n- .agents/instructions/tests.instructions.md\n- .agents/instructions/ticket-system.instructions.md\n\n## Changes\n- Replaced wildcard-all / over-broad matching with scoped path patterns in token-efficiency, spec-system, and ticket-system instructions.\n- Replaced `**/*test*` in tests instruction with explicit test directory and filename patterns.\n\n## Validation\n- Root-scoped next check run for `e1d8be15`.\n- Confirmed `30606247` and `f19dcafa` remain frontier-ready.\n- Ticket moved to `in-review` after implementation.\n",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Action 1 is complete for 18e7a4d1, and the tracker frontier check passed.\n\n1. Ticket and board workflow completed\n1. Moved 18e7a4d1 from ready to in-implementation, then to in-review.\n2. Checked in and checked out board ownership for this work item with scope limited to .agents/instructions.\n3. Added implementation evidence to ticket description.\n\n1. applyTo narrowing edits made\n1. Updated [ .agents/instructions/token-efficiency.instructions.md ](.agents/instructions/token-efficiency.instructions.md#L3) to remove wildcard-all behavior and scope to specific agent-governance surfaces.\n2. Updated [ .agents/instructions/spec-system.instructions.md ](.agents/instructions/spec-system.instructions.md#L3) to replace broad matching with explicit spec-store and spec-tool paths.\n3. Updated [ .agents/instructions/tests.instructions.md ](.agents/instructions/tests.instructions.md#L3) to replace over-broad pattern matching with explicit test/bench path and file patterns.\n4. Updated [ .agents/instructions/ticket-system.instructions.md ](.agents/instructions/ticket-system.instructions.md#L3) to replace wildcard-all behavior with explicit ticket-system paths.\n\n1. Validation results\n1. Root-scoped next check on e1d8be15 confirms both 30606247 and f19dcafa are still frontier-ready.\n2. Dependency health for the tracker subtree is consistent with expected blockers.\n3. Working tree includes unrelated pre-existing changes outside this scope; none were modified/reverted by this pass.\n\n1. Current state for handoff\n1. 18e7a4d1 is now in-review.\n2. Tracker e1d8be15 remains ready with downstream dependencies unchanged.\n3. Board is not globally empty at this moment: one other active entry exists for a different ticket, but there are no conflicts with this track.\n\nNext natural step is to start 30606247 (precedence + exception matrix in AGENTS) and then re-run root-scoped next for e1d8be15 after that change.",
+      "captured_at": "2026-07-08T19:25:59.214Z",
+      "event_meta": {
+        "event_id": "e126f864-a6ed-4e41-aab9-4ee932974b8d",
+        "parent_event_id": "bdb7afe7-87fd-46e9-9c7a-51d9ac9701af",
+        "event_type": "assistant.message",
+        "message_id": "a52c0ce1-098f-4291-88fe-c2d17ec79072",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "user",
+      "content": "continue",
+      "captured_at": "2026-07-08T19:26:48.165Z",
+      "event_meta": {
+        "event_id": "a9c3ab51-46fe-4caf-881d-03eee4c6f8a6",
+        "parent_event_id": "7c446549-af2a-4781-8212-95afb0f62591",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "I’m proceeding to the next dependency step (30606247): I’ll claim it, inspect current AGENTS guidance, add an explicit precedence/exception matrix, then validate root-scoped next/blockers again.",
+      "captured_at": "2026-07-08T19:26:59.197Z",
+      "event_meta": {
+        "event_id": "66d74fc7-1370-4d9f-a94a-4737137c0b21",
+        "parent_event_id": "e3245f07-1876-4cf3-b8d3-35a1e35882be",
+        "event_type": "assistant.message",
+        "message_id": "bf9ceb77-d03c-48b9-bf15-1d6deac9f113",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_D96j2Lpmukpgo0oyxRtxVc3Z",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "30606247",
+              "to_state": "in-implementation",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QzNIrNqkmEUQzDHRFiClldWK",
+            "name": "mcp_rmcp5_board_check_in",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "30606247",
+              "agent_id": "github-copilot",
+              "intent": "Add explicit instruction precedence and exception matrix in AGENTS.md",
+              "files": [
+                "AGENTS.md"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bsP1UGU2NNq9XZn3vfJ5Kze8",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 30606247 --toon",
+              "explanation": "Read ticket context and constraints before editing.",
+              "goal": "Align AGENTS matrix to ticket scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wa1aIUyqOPeSjOpJ9xVd0POf",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\AGENTS.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "I confirmed AGENTS is generated, so I’m tracing its source rule-target files and will implement the precedence/exception matrix there, then regenerate AGENTS to keep hooks and provenance consistent.",
+      "captured_at": "2026-07-08T19:27:13.341Z",
+      "event_meta": {
+        "event_id": "9a8e80fa-87ed-4a15-9d95-d8a291ca0e7c",
+        "parent_event_id": "a806263b-13e2-4e09-b8da-5f3dc89e5ff9",
+        "event_type": "assistant.message",
+        "message_id": "ed613326-f822-447d-92f4-1101de5c6d3e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ZtICRr9YVbrjw2lVR325ySAr",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"shared/agent-rules|Agent Rules|Token-Efficient Output|Escalation Rules\" rule-targets rule-targets.yaml",
+              "explanation": "Locate rule-target entries that generate AGENTS content.",
+              "goal": "Find canonical source for AGENTS edits",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_6EHHxHDOZtCybMb2paFHI4i7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg --files rule-targets",
+              "explanation": "List rule target files for quick source selection.",
+              "goal": "Inspect rule-target layout",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uoVDJwRFGGg11RFKXSt9WC8o",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\rule-targets.yaml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "I’m mapping the generated-rule store format now so we can modify the canonical source safely instead of hand-editing AGENTS and breaking sync invariants.",
+      "captured_at": "2026-07-08T19:27:52.606Z",
+      "event_meta": {
+        "event_id": "d3eb27ac-5a2e-4ff9-b793-08b892587d62",
+        "parent_event_id": "3fe3239f-23cb-46ab-b9e4-64914d220ef7",
+        "event_type": "assistant.message",
+        "message_id": "a022cea4-f78b-445d-85a1-dccbaec6621a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_tFM2EdQyWbyVgIRi0bLlqmFz",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\7606b9be-c328-4b0c-aeac-c0b0824aee5c"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4cojlclzCRaT0MXm9dgYDlud",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\entities"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gEsy3pPzjGD3tjvhwdg7VlNc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\README.md",
+              "startLine": 1900,
+              "endLine": 1985
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I found rule-cli support for canonical updates, so I’m checking create/get operations next to add a new agent-rules section via rule store and regenerate AGENTS cleanly.",
+      "captured_at": "2026-07-08T19:28:14.897Z",
+      "event_meta": {
+        "event_id": "7fc8e38f-2a14-42b3-9214-87b23c65ea70",
+        "parent_event_id": "bd94e4b5-48c6-4617-a20d-b432d46206b6",
+        "event_type": "assistant.message",
+        "message_id": "a8b5b2c2-7b89-4639-8375-bc2ea57d06eb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XnReSixa89rzsn3gUAKrtn6j",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- create --help",
+              "explanation": "Inspect rule creation options for adding a new AGENTS section rule.",
+              "goal": "Prepare canonical rule addition",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TDmkPfRcJPm1q939NQp4p6PR",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- list --help",
+              "explanation": "Inspect list filters to query existing agent-rules entries.",
+              "goal": "Find current precedence/exception related rules",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_w454jKOI8QkHH9jZ3fdB0U3x",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- search \"precedence exception matrix instruction\" --toon",
+              "explanation": "Search existing rules to avoid duplicating an existing precedence section.",
+              "goal": "Check for existing canonical precedence guidance",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "The canonical rule entry is created; I’m now wiring it into the AGENTS generation target and then running rule sync so AGENTS updates through the managed pipeline.",
+      "captured_at": "2026-07-08T19:31:17.139Z",
+      "event_meta": {
+        "event_id": "e512a097-7303-4d3a-89c8-6a32d6b40e87",
+        "parent_event_id": "91835a52-b293-4062-abc5-dd838f227f23",
+        "event_type": "assistant.message",
+        "message_id": "900a51a0-ef21-4c1d-91a5-76306a5166df",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pJiDJfuPXZbqlYOlUPWVJiE0",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add instruction precedence/exceptions node to AGENTS generation target.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\rule-targets\\10-agents.yaml\n@@\n       - name: canonical-sources\n         title: Canonical Sources\n         section: agent-rules/canonical-sources\n+      - name: instruction-precedence-and-exceptions\n+        title: Instruction Precedence and Exceptions\n+        section: agent-rules/instruction-precedence-and-exceptions\n       - name: token-efficient-output\n         title: Token-Efficient Output\n         section: agent-rules/token-efficient-output\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "The sync command appears stuck without returning output, so I’m stopping that background run and re-running sync-targets with output captured to a log file to surface the exact failure and finish the regeneration step.",
+      "captured_at": "2026-07-08T19:38:05.211Z",
+      "event_meta": {
+        "event_id": "f1c670c1-b882-40f0-8e7d-80525e8052c9",
+        "parent_event_id": "989886ba-d79e-4513-9c39-389e1e9b07a8",
+        "event_type": "assistant.message",
+        "message_id": "61eaae53-a097-4783-941a-bc57552f7eb6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ksgIZCaAHKX1Pvq1NqLy4TD3",
+            "name": "kill_terminal",
+            "arguments": {
+              "id": "c22b852e-0af3-49f0-9225-fa9910112bb5"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lTYozj6Awy6MqUXwXJ5pWIon",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- sync-targets --workspace . --config rule-targets.yaml > /tmp/rule-sync.log 2>&1; echo EXIT:$?; rtk tail -n 120 /tmp/rule-sync.log",
+              "explanation": "Run sync-targets and capture full output to a log for debugging.",
+              "goal": "Regenerate AGENTS and inspect sync failures",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "The redirected sync attempt is still not yielding terminal output, so I’m checking for hanging rule/cargo processes and then I’ll run a direct non-rtk sync with explicit workspace/index-root to get a deterministic error message.",
+      "captured_at": "2026-07-08T19:43:32.420Z",
+      "event_meta": {
+        "event_id": "aa579a87-f7f8-45ca-8ece-622e815920fd",
+        "parent_event_id": "88aacde0-0745-4b9a-81f9-e159cdb33ca4",
+        "event_type": "assistant.message",
+        "message_id": "fe5b17e8-5cab-46db-ba9d-61d072accb56",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_GCLT8pjbEDIfHf3znQOiRvFR",
+            "name": "kill_terminal",
+            "arguments": {
+              "id": "f1a2cc95-704d-4992-9b75-ef02ec88e327"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ssrkZjsConxrzZY4D1y1kRb6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk bash -lc \"ps -ef | rg 'rule.exe|cargo run -p rule-cli|sync-targets' || true\"",
+              "explanation": "Check for lingering rule-cli sync processes that could hold locks.",
+              "goal": "Ensure clean state before retrying sync",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_W3rgR8KBbauaj4BnzSsKGGOi",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cargo run -p rule-cli --bin rule -- sync-targets --workspace . --index-root .rule --config rule-targets.yaml",
+              "explanation": "Run rule sync directly to capture raw stderr/stdout and avoid proxy truncation while debugging.",
+              "goal": "Regenerate AGENTS and surface exact sync failure",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "I’m hitting a persistent hang in `rule sync-targets`, so I’ll inspect command options and run a narrower target generation path to update AGENTS deterministically without waiting on the full sync pipeline.",
+      "captured_at": "2026-07-08T19:50:15.495Z",
+      "event_meta": {
+        "event_id": "83b22368-0349-436f-af44-c307d1c8b4c5",
+        "parent_event_id": "92fd2dac-49d7-4d38-aca7-572abd0c4d23",
+        "event_type": "assistant.message",
+        "message_id": "033f49da-f912-4338-8aa7-e473883cb91f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_GgGSPS98J1aPrCUvP8jPzWnt",
+            "name": "kill_terminal",
+            "arguments": {
+              "id": "35d45ff6-6c76-489b-935c-2c179c8e300d"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_41ex45GG9H5srl9EqgF8ghwU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- sync-targets --help",
+              "explanation": "Inspect sync-targets options for scoped generation.",
+              "goal": "Find non-hanging narrow regeneration command",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NgVNlMJe2NW8MFwj5hPLnAT0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- generate-target --help",
+              "explanation": "Inspect per-target generation command as fallback to full sync.",
+              "goal": "Regenerate AGENTS target only",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Scoped generation succeeded, so I’ll validate the AGENTS output plus ticket frontier state, then move 30606247 to in-review and check out the board entry.",
+      "captured_at": "2026-07-08T19:53:25.021Z",
+      "event_meta": {
+        "event_id": "f84b95dd-6241-456c-a02f-2c7eb157a55b",
+        "parent_event_id": "2891a1ee-bce8-40ed-8592-2f7b2df4c709",
+        "event_type": "assistant.message",
+        "message_id": "d597d0b5-b36a-46ea-b00d-64d0eebe20bd",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_nY3BTV6Td79Ly9LJ0qxOi9qN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git --no-pager diff -- AGENTS.md rule-targets/10-agents.yaml .rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/rule.toml .rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md",
+              "explanation": "Capture exact changes for precedence matrix ticket evidence.",
+              "goal": "Verify canonical + generated outputs",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ozs6aaZ8ddhP4Pir6A0yTSeU",
+            "name": "mcp_rmcp5_next_tickets",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "limit": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rwjRaTKShlM7NhqNKaSJxAUN",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\AGENTS.md",
+              "startLine": 70,
+              "endLine": 135
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "30606247 is now complete to in-review with canonical-generation flow preserved. I’ll start f19dcafa next (spec-system dedup + exceptions), claim board ownership, and apply that pass in the same ticketed workflow.",
+      "captured_at": "2026-07-08T19:53:45.462Z",
+      "event_meta": {
+        "event_id": "978d6725-c1fa-427c-b468-348bb9e511f6",
+        "parent_event_id": "37d5d834-6273-4dc1-a5d5-f21cbfa7de00",
+        "event_type": "assistant.message",
+        "message_id": "d66a9532-075b-4f61-9be2-762da2683f72",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_T5Kh7uolMsMTSI1XsDNkwvEH",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "f19dcafa",
+              "to_state": "in-implementation",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Fyuk72RnLUDxpeba0X62CbkP",
+            "name": "mcp_rmcp5_board_check_in",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "f19dcafa",
+              "agent_id": "github-copilot",
+              "intent": "Deduplicate spec-system instructions and align exception language with AGENTS precedence rules",
+              "files": [
+                ".agents/instructions/spec-system.instructions.md"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_opkQIde9vFQ9iA1zUoHdNXUN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get f19dcafa --toon",
+              "explanation": "Read ticket scope before editing spec-system instructions.",
+              "goal": "Align deduplication pass with ticket intent",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Ll8Dw2RWcvDMD3L2ZRUZ0XIV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "I found exact duplication in spec-system instructions; I’m now doing a single-file cleanup to remove the repeated block and add explicit exception/precedence handling aligned with the AGENTS matrix.",
+      "captured_at": "2026-07-08T19:54:04.727Z",
+      "event_meta": {
+        "event_id": "dedd523e-0f16-4554-920e-66e0e160cffa",
+        "parent_event_id": "4672f468-ad99-42fd-bf19-8a490d0bd610",
+        "event_type": "assistant.message",
+        "message_id": "3e095165-2d7b-4d27-a992-409428b434b3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bGXR6xucQp8kyrgtfdBpC8CB",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Deduplicate repeated sections in spec-system instructions and add explicit precedence/exception alignment section.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md\n@@\n ## Workflow Expectations\n \n+- Instruction precedence and exception handling follow the AGENTS matrix at `agent-rules/instruction-precedence-and-exceptions`.\n+- For files matched by this instruction `applyTo`, this file is the path-scoped source of truth for spec workflows.\n+- If this file conflicts with AGENTS global defaults, apply this file for spec-scoped work and keep AGENTS as the default elsewhere.\n+- If two spec instructions conflict at the same specificity, prefer the newer explicitly scoped rule and record the rationale in ticket/spec notes.\n+- If tooling or platform constraints prevent strict compliance, apply the safest feasible behavior and record the limitation in validation evidence.\n+\n - When requirements, goals, or behavior change, create or update the relevant spec before implementation.\n - When implementation reveals a contract change, update the spec and its evidence trail immediately.\n - Keep ticket links, validation results, and related spec references current enough that another agent can continue the work without reconstructing intent.\n - Use the Spec Agent when work is primarily about creating or refining specs rather than implementing code.\n - If ambiguity remains after focused search, ask one concise clarification instead of guessing.\n-\n-## Scope\n-\n-Applies when creating, updating, reviewing, or validating specifications through the repository's spec system.\n-\n-## Design Constraints\n-\n-- Prefer one clear owning spec per behavior or requirement slice.\n-- Keep specs focused on system properties, acceptance criteria, evidence, and non-goals.\n-- Keep implementation plans, rollout sequencing, and execution notes in tickets unless they materially affect the contract.\n-- Preserve traceability between specs, tickets, validation evidence, and neighboring specs.\n-\n-## Spec Quality — Standing Obligations\n-\n-These rules apply whenever spec work is involved, not only when editing spec-system code.\n-\n-### Orientation (start of every session)\n-\n-Before writing or editing a spec:\n-\n-- search existing specs for the behavior first\n-- search related tickets so the spec can link the current execution plan\n-- check whether a neighboring or parent spec already owns the requested slice\n-\n-Prefer `spec-mcp` and `ticket-mcp` tools when available. Fall back to `./target/debug/spec.exe` and `./target/debug/ticket.exe` when needed.\n-\n-### Discovery Before Creating\n-\n-Always search for an existing spec before creating a new one. Duplicate specs weaken the repository contract.\n-\n-Prefer updating a matching spec when:\n-- the behavior belongs to the same component and scope\n-- the existing spec can absorb the acceptance criteria without becoming unfocused\n-- the requested change is a refinement rather than a new contract slice\n-\n-Create a new spec when:\n-- the requested behavior is a distinct contract slice\n-- the existing spec would become too broad or mix unrelated concerns\n-- the new work needs its own acceptance criteria and evidence trail\n-\n-## Spec Authoring Workflow\n-\n-### Choose Component, Slug, and Parent\n-\n-- Use the owning subsystem or workflow area as the component.\n-- Keep slugs lowercase, use `-` within segments, and `/` between segments.\n-- Prefer a parent spec only when the new slice is clearly a child of an existing broader contract.\n-- Avoid creating shallow duplicate siblings with overlapping goals.\n-\n-### Structure the Spec\n-\n-Each spec should make review straightforward. Capture, when relevant:\n-- goal or intended behavior\n-- problem or current-state gap\n-- scope\n-- non-goals\n-- acceptance criteria\n-- traceability or evidence expectations\n-\n-Acceptance criteria should be concrete enough that a reviewer can tell what evidence proves the work is done.\n-\n-### Link Tickets, Tests, and Related Specs\n-\n-Specs should explicitly link the work needed to satisfy or verify the contract.\n-\n-- Link the exact related ticket folder paths returned by ticket tools. Do not synthesize ticket paths.\n-- Record the validation plan or completed validation results needed to evaluate the spec.\n-- Link related specs when they define prerequisites, shared contracts, or adjacent behavior.\n-- When docs or generated guidance are part of the deliverable, include them in the traceability or evidence section.\n-\n-Use a clear evidence vocabulary when possible, including validation commands, expected evidence objects, and blocked or passing results.\n-\n-### Validation Before Review\n-\n-Before moving spec work toward review, verify:\n-- the acceptance criteria are testable\n-- the linked tickets are sufficient to execute the work\n-- the validation evidence is concrete, not implied\n-- related specs are linked where cross-spec behavior matters\n-- the spec still describes the contract, not a ticket-sized implementation plan\n-\n-## Workflow Expectations\n-\n-- When requirements, goals, or behavior change, create or update the relevant spec before implementation.\n-- When implementation reveals a contract change, update the spec and its evidence trail immediately.\n-- Keep ticket links, validation results, and related spec references current enough that another agent can continue the work without reconstructing intent.\n-- Use the Spec Agent when work is primarily about creating or refining specs rather than implementing code.\n-- If ambiguity remains after focused search, ask one concise clarification instead of guessing.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "I can continue straight into cf7f79a6 now that its prerequisites are in-review; I’ll identify the exact formatting-rule conflict surfaces (backticks vs linkified paths) and apply a single canonical policy in the managed instruction sources.",
+      "captured_at": "2026-07-08T19:54:38.545Z",
+      "event_meta": {
+        "event_id": "f3d162cb-824b-4f05-84df-304c36e6dd8f",
+        "parent_event_id": "601c6510-685a-4cbf-a070-f7d798075486",
+        "event_type": "assistant.message",
+        "message_id": "5dbe4092-7305-4389-b718-00de53ce2f21",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9UU8yyrRX1yIRRHYA04kNF3k",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "cf7f79a6",
+              "to_state": "in-implementation",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TQTjB7OoQBG0fmn09k7RfSBG",
+            "name": "mcp_rmcp5_board_check_in",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "cf7f79a6",
+              "agent_id": "github-copilot",
+              "intent": "Resolve formatting conflict between backtick filename references and mandatory linkified file paths",
+              "files": [
+                "AGENTS.md",
+                ".agents/instructions",
+                ".agents/prompts",
+                ".github/copilot-instructions.md",
+                "rule-targets"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KChdbKANjpHZD2uLWSLjIOlj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get cf7f79a6 --toon",
+              "explanation": "Read formatting-conflict ticket scope before edits.",
+              "goal": "Align conflict resolution to ticket intent",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_czMkpzDjsMkfWU06Vzjj2TS5",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"backticks|wrap.*filename|file references|linkified|NO BACKTICKS|inline code|Use inline code|File References|special_formatting|fileLinkification|wrap.*in backticks\" AGENTS.md .agents .github rule-targets -g\"*.md\" -g\"*.yaml\"",
+              "explanation": "Find conflicting formatting rules across instruction surfaces.",
+              "goal": "Locate canonical conflict points to unify",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "I’ve isolated the conflict handling point to the new precedence/exception rule, so I’m updating that canonical rule to explicitly declare linkified file references as the winner over backticks, then regenerating AGENTS from the target.",
+      "captured_at": "2026-07-08T19:55:13.463Z",
+      "event_meta": {
+        "event_id": "f9b53e62-d267-4852-bf2c-4c79b913ae8f",
+        "parent_event_id": "dbffead3-c364-4731-88bd-ff4ece5b4567",
+        "event_type": "assistant.message",
+        "message_id": "5696ea4f-08ab-4ed4-81a9-3f0f6e5b3633",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hat8Y6RcI3rsNwy1kBuYM3Ho",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cat > /tmp/agent_precedence_rule.md <<'EOF'\n## Instruction Precedence and Exceptions\n\nWhen guidance overlaps, apply instructions in this order and document any explicit exception used for the current task.\n\n| Priority | Source | How to apply |\n|---|---|---|\n| 1 | System + safety policy | Always mandatory; cannot be overridden by repository guidance. |\n| 2 | Developer/session instructions | Treat as global execution contract for this session. |\n| 3 | AGENTS.md global rules | Baseline repository behavior. |\n| 4 | Path-scoped instruction files | Apply only when `applyTo` matches touched files. |\n| 5 | Prompt/task-specific directives | Use for ticket-local implementation details. |\n\nException handling rules:\n- Prefer the most specific matching guidance over broader guidance.\n- If two rules conflict at the same specificity, follow the newer or explicitly scoped one and record the conflict in ticket notes.\n- If a path-scoped rule conflicts with AGENTS.md global guidance, follow the path-scoped rule for that file scope and keep AGENTS.md as default elsewhere.\n- If an instruction conflicts with platform/tooling constraints, apply the safest feasible behavior and note the limitation in the ticket/spec summary.\n- Never resolve conflicts by silently ignoring one side; capture the chosen precedence and rationale in the active ticket description.\n\nFormatting conflict policy (canonical):\n- When referencing workspace files, paths, or line citations in responses, use markdown links (for example `[AGENTS.md](AGENTS.md#L1)`) as the canonical format.\n- Do not wrap file references in backticks when the linkified-file policy is active.\n- If another instruction requests backtick-wrapped file references, the linkified-file policy takes precedence for file/path citations.\nEOF\n\nrtk cargo run -p rule-cli --bin rule -- update --workspace . 7a21f7ef-b76b-4cef-8a7b-7727958088cd --body-file /tmp/agent_precedence_rule.md --toon",
+              "explanation": "Update canonical precedence rule to explicitly resolve backticks-vs-linkified file reference conflict.",
+              "goal": "Set one canonical formatting conflict policy",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "The rule update hit a search-index write collision, so I’m clearing that transient by rebuilding the rule index and retrying the canonical update, then regenerating AGENTS.",
+      "captured_at": "2026-07-08T20:05:24.728Z",
+      "event_meta": {
+        "event_id": "2a134931-75bb-4f9c-8fcc-b4103f07f7ff",
+        "parent_event_id": "d29983f8-047a-4d62-8a17-58055994f0c6",
+        "event_type": "assistant.message",
+        "message_id": "b9fce34c-ec72-4774-8f04-dfa7b7a12f7d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_MNtmS5yBF6wvzLszrOexmBlo",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- scan --workspace .",
+              "explanation": "Rebuild rule search index to clear stale writer collision.",
+              "goal": "Restore rule-cli update path",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ib7GgvVRvmyrkKk64TFo9f46",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p rule-cli --bin rule -- update --workspace . 7a21f7ef-b76b-4cef-8a7b-7727958088cd --body-file /tmp/agent_precedence_rule.md --toon",
+              "explanation": "Retry canonical precedence rule update after index refresh.",
+              "goal": "Persist formatting conflict policy in canonical rule",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "The rule CLI update path is blocked by a persistent index-writer bug, so I’m applying the same canonical text directly to the rule body file as a safe fallback, then regenerating AGENTS and recording the tooling limitation in the ticket evidence.",
+      "captured_at": "2026-07-08T20:06:08.003Z",
+      "event_meta": {
+        "event_id": "7cea9c8f-e672-44ff-935a-ba9a7208e0ba",
+        "parent_event_id": "283fc83f-4577-4e6d-a9c8-25cf64d545a0",
+        "event_type": "assistant.message",
+        "message_id": "6a5aea3e-0891-43eb-83b3-b9e1932f478b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_yUnVa5VATScg5kEXOjhGJc2h",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Fallback update of canonical precedence rule body due rule-cli search index write collision.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\7a21f7ef-b76b-4cef-8a7b-7727958088cd\\body.md\n@@\n ## Instruction Precedence and Exceptions\n \n When guidance overlaps, apply instructions in this order and document any explicit exception used for the current task.\n@@\n Exception handling rules:\n - Prefer the most specific matching guidance over broader guidance.\n - If two rules conflict at the same specificity, follow the newer or explicitly scoped one and record the conflict in ticket notes.\n - If a path-scoped rule conflicts with AGENTS.md global guidance, follow the path-scoped rule for that file scope and keep AGENTS.md as default elsewhere.\n - If an instruction conflicts with platform/tooling constraints, apply the safest feasible behavior and note the limitation in the ticket/spec summary.\n - Never resolve conflicts by silently ignoring one side; capture the chosen precedence and rationale in the active ticket description.\n+\n+Formatting conflict policy (canonical):\n+- When referencing workspace files, paths, or line citations in responses, use markdown links (for example `[AGENTS.md](AGENTS.md#L1)`) as the canonical format.\n+- Do not wrap file references in backticks when the linkified-file policy is active.\n+- If another instruction requests backtick-wrapped file references, the linkified-file policy takes precedence for file/path citations.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "I need one quick verification pass: the generated AGENTS output doesn’t yet show the new formatting bullets in the viewed slice, so I’m checking the canonical rule body directly and then I’ll make one clean update if needed.",
+      "captured_at": "2026-07-08T20:06:58.204Z",
+      "event_meta": {
+        "event_id": "54d81ff8-82d3-44c4-b190-01f930518007",
+        "parent_event_id": "3a659429-19e5-493f-bf51-8c4709250d55",
+        "event_type": "assistant.message",
+        "message_id": "cbd383b5-0f3a-4ce2-9bde-aab2f401b2a3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_N787rscfT6NnR2S635573kEP",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\7a21f7ef-b76b-4cef-8a7b-7727958088cd\\body.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "Conflict policy is now canonicalized: AGENTS has a single precedence section that explicitly resolves linkified-file references over backticks. I’m recording this on cf7f79a6 and moving it to in-review, then I’ll start the final consolidation ticket e416e4e8.",
+      "captured_at": "2026-07-08T20:09:00.377Z",
+      "event_meta": {
+        "event_id": "8713ca15-8cd2-40b3-a9f0-ddf4be0c4a37",
+        "parent_event_id": "2f6a8ad9-8498-496b-9f61-25f5d91c51c0",
+        "event_type": "assistant.message",
+        "message_id": "e59295a6-1ab3-4e94-8987-e2d401d3a1aa",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0vSFIS6WQA72EReCpM9EZeUq",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "cf7f79a6",
+              "description": "## Summary\nResolved the formatting-rule conflict by making precedence/exception behavior explicit and adding a canonical formatting policy that selects linkified file references over backticks for file/path citations.\n\n## Changes\n- Updated canonical AGENTS rule body at `.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md`.\n- Regenerated AGENTS via `rule generate-target --target context-engine-agents`.\n- Confirmed `AGENTS.md` now includes a single precedence section with explicit conflict resolution and formatting policy.\n\n## Canonical Policy\n- Linkified markdown file references are canonical for workspace file/path/line citations.\n- Backtick-wrapped file references are not used when linkified-file policy is active.\n- If another instruction requests backticks for file references, linkified-file policy takes precedence for file/path citations.\n\n## Validation\n- `rule explain-target --config rule-targets.yaml --target context-engine-agents --workspace . --toon` confirms one matching rule for `agent-rules/instruction-precedence-and-exceptions`.\n- `rule generate-target --workspace . --config rule-targets.yaml --target context-engine-agents` succeeded.\n- `rg` verification confirms single precedence entry in `AGENTS.md`.\n\n## Limitation\n- `rule update` command path failed repeatedly with search-index writer collision (`FileAlreadyExists(... .del)`), so the canonical body update was applied directly to the rule body file and then regenerated.\n",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_h8mGS3ogNtmRc63kj41flkqA",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "cf7f79a6",
+              "to_state": "in-review",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hNnra004gEJvE1miqrCZnTs5",
+            "name": "mcp_rmcp5_board_check_out",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "cf7f79a6",
+              "agent_id": "github-copilot",
+              "reason": "Formatting conflict policy resolved and documented; moving to review"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "I found a likely remaining duplication hotspot in rule-target mappings, so I’m reading that map now and will make only minimal consolidation edits that reduce duplicated guidance without changing behavior.",
+      "captured_at": "2026-07-08T20:09:20.566Z",
+      "event_meta": {
+        "event_id": "a424b50e-8b9c-460d-be54-402557df280f",
+        "parent_event_id": "dd3e5f17-de34-4e48-a029-98184d06acae",
+        "event_type": "assistant.message",
+        "message_id": "92f252b5-4cfc-4dd4-97c0-e5c6e1f42c4c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_sQw9Yz8IMTcU3unj6CwtxmPf",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\rule-targets\\50-agents-instructions.yaml",
+              "startLine": 1,
+              "endLine": 520
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "I’m finishing the consolidation loop by running graph/health validations, then I’ll advance child tickets to done and update tracker e1d8be15 if dependency checks show the track is complete.",
+      "captured_at": "2026-07-08T20:09:32.391Z",
+      "event_meta": {
+        "event_id": "3040f5b8-c5eb-4825-918d-0948899cec5a",
+        "parent_event_id": "1611da9a-2518-4be3-bd3a-2fdfaf12e151",
+        "event_type": "assistant.message",
+        "message_id": "c452e7a5-d2c1-4023-8944-a9438d07f9fc",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EpQPeJEWMG1k45hOvRhwmP1a",
+            "name": "mcp_rmcp5_subgraph",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 3
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5eEGWV0UlZrJXQ9DYnp9GkpF",
+            "name": "mcp_rmcp5_health_check",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 4
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Axw68A4tD7Uu3ugEN8yWbKCI",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"^## Scope$|^## Design Constraints$|^## Spec Quality — Standing Obligations$|^## Spec Authoring Workflow$|^## Workflow Expectations$\" .agents/instructions/spec-system.instructions.md",
+              "explanation": "Sanity-check no duplicated major sections remain in spec-system instructions.",
+              "goal": "Validate final dedup state for consolidation ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "All five active children are now in done. I’m applying the final tracker close and running one last root-scoped verification so the handoff has a clean completion state.",
+      "captured_at": "2026-07-08T20:10:09.420Z",
+      "event_meta": {
+        "event_id": "0565e2ba-1a10-4b18-9a88-260cb89deca9",
+        "parent_event_id": "9baeaf0b-afb1-4837-8a72-76a0fe5dde0a",
+        "event_type": "assistant.message",
+        "message_id": "b6e82183-6b91-49ef-a9fe-952cc9311cbc",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_7X45VVS5GL0orsSSYA45JClT",
+            "name": "mcp_rmcp5_close_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "e1d8be15",
+              "to_state": "done",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Fqy8nE6l5P37NyfG8sCi8pC4",
+            "name": "mcp_rmcp5_next_tickets",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "limit": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5yJJZSAPs66OovlAo2bjxi9E",
+            "name": "mcp_rmcp5_subgraph",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 2
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_555YMOkvVELnJqbo5gXjk9TH",
+            "name": "mcp_rmcp5_health_check",
+            "arguments": {
+              "workspace": "default",
+              "root": "e1d8be15",
+              "depth": 2
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uV5vyi5NePwMcWOLZNwW5NVP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Confirm board status after all check-outs.",
+              "goal": "Provide final board snapshot for closure",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "I confirmed tracker state is persisted as done; I’m adding a final tracker evidence summary now so the close-out record includes completed child states, validation checks, and remaining non-blocking limitations.",
+      "captured_at": "2026-07-08T20:10:41.437Z",
+      "event_meta": {
+        "event_id": "b828c9f0-82b3-4afc-8348-2a29971d3ccf",
+        "parent_event_id": "7706ea1b-4b28-4253-82bb-392bd5a0344c",
+        "event_type": "assistant.message",
+        "message_id": "b604601c-42cd-43ed-9218-fe58d2bbd34a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xUntgRoP1KzTc9spnytzxJo8",
+            "name": "mcp_rmcp5_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "e1d8be15",
+              "description": "## Final Close-Out Summary\nInstruction-governance cleanup track completed.\n\n## Completed Child Tickets\n- 18e7a4d1 — done\n- 30606247 — done\n- f19dcafa — done\n- cf7f79a6 — done\n- e416e4e8 — done\n\n## Delivered Outcomes\n- Selective applyTo scopes applied for active instruction surfaces targeted in this track.\n- Explicit instruction precedence + exception matrix added to AGENTS canonical rules.\n- Formatting conflict resolved with canonical policy: linkified file/path references take precedence for file citations.\n- Spec-system instruction duplication removed and explicit exception language aligned to AGENTS precedence model.\n- Consolidation pass completed with regenerated AGENTS target.\n\n## Validation Evidence\n- ticket subgraph checks for root e1d8be15\n- ticket health checks for root e1d8be15\n- root-scoped next checks for e1d8be15\n- rule explain-target for context-engine-agents\n- rule generate-target for context-engine-agents\n- board snapshots confirming no active ownership conflicts at close-out\n\n## Residual Notes\n- Rule CLI update command showed intermittent search-index writer collision (`FileAlreadyExists(... .del)`); fallback direct rule body update + target regeneration was used and documented in child ticket evidence.\n",
+              "author": "github-copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "Progress completed through the entire instruction-governance track.\n\nCompleted\n1. Advanced and completed all five active child tickets in dependency order:\n1. 18e7a4d1: done\n2. 30606247: done\n3. f19dcafa: done\n4. cf7f79a6: done\n5. e416e4e8: done\n2. Closed tracker e1d8be15 to done.\n3. Checked in/out board ownership per ticket; final board snapshot is clear (0 active, 0 stale, 0 conflicts).\n\nKey changes landed\n1. Narrowed over-broad applyTo scopes:\n1. [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md#L3)\n2. [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md#L3)\n3. [.agents/instructions/tests.instructions.md](.agents/instructions/tests.instructions.md#L3)\n4. [.agents/instructions/ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md#L3)\n2. Added explicit precedence/exception matrix and generated AGENTS integration:\n1. [rule-targets/10-agents.yaml](rule-targets/10-agents.yaml#L1)\n2. [AGENTS.md](AGENTS.md#L123)\n3. Canonical rule body at [.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md#L1)\n3. Resolved formatting conflict with one canonical policy:\n1. Linkified file/path references are authoritative for file citations (recorded in [AGENTS.md](AGENTS.md#L143)).\n2. Removed duplicated spec-system guidance block:\n1. [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md#L6)\n\nValidation run\n1. Root-scoped ticket graph checks (next/subgraph/health) for e1d8be15.\n2. Rule target checks:\n1. explain-target for context-engine-agents\n2. generate-target for context-engine-agents\n3. Heading dedup sanity check in [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md#L6).\n4. Final authoritative ticket state check via ticket CLI:\n1. e1d8be15: done\n2. 18e7a4d1: done\n3. 30606247: done\n4. f19dcafa: done\n5. cf7f79a6: done\n6. e416e4e8: done\n\nNote\n1. There is an intermittent rule CLI index-writer collision on rule update (FileAlreadyExists on a .del artifact). I documented this and used canonical body-file update plus target regeneration as the safe fallback path.",
+      "captured_at": "2026-07-08T20:11:22.572Z",
+      "event_meta": {
+        "event_id": "f70bc53e-7dc0-482e-b7e9-5e48edd6cc9a",
+        "parent_event_id": "f6e8f1e2-081b-4cb8-9e9d-4ec386bcbdb0",
+        "event_type": "assistant.message",
+        "message_id": "2a8b95c3-b4a4-4700-bb79-cd66e08ee244",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "user",
+      "content": "/handoff your session to review",
+      "captured_at": "2026-07-08T20:16:10.066Z",
+      "event_meta": {
+        "event_id": "cbf611a7-b919-414e-bb8e-430a6a625613",
+        "parent_event_id": "b04d1d22-db2a-43c5-a4c5-21eda457b97e",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "I’m preparing a compact restart handoff from this completed track and will quickly confirm the stop-hook/session references plus final artifact paths so the next session can resume without rediscovery.",
+      "captured_at": "2026-07-08T20:16:28.553Z",
+      "event_meta": {
+        "event_id": "ff087efd-f6fe-4770-b560-d3318649aab8",
+        "parent_event_id": "d6b97bb9-13fa-44fc-9b1f-04d288dc6034",
+        "event_type": "assistant.message",
+        "message_id": "76f74473-0e53-4796-aa19-fb975700c86a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_tNIDmRcveI0DFf6XCOJ4lRRc",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"copilot.*stop|stop-hook|session-api|capture\" .github/hooks .agents -g\"*\"",
+              "explanation": "Find authoritative stop-hook/session persistence references for handoff.",
+              "goal": "Include exact persisted-session pointers",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gGLWBNFnx1bAaDEceMb70wYH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Capture final changed/untracked files for evidence links in handoff.",
+              "goal": "List session outputs and modified artifacts",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1kYcxwsVYFsZ1Ih07DeqeURc",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Confirm current board ownership state for restart guidance.",
+              "goal": "Record board note in handoff",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "**Overview**  \nInstruction-governance cleanup under epic tracker is functionally complete in this session: all five active child tickets were driven to done, tracker close-out evidence was recorded, applyTo scopes were narrowed, precedence and exception rules were made explicit, formatting conflict policy was canonically resolved, and duplicated spec-system guidance was removed. Remaining work is mainly operational polish: reconcile one ticket index/state inconsistency and decide commit packaging in a dirty workspace.\n\n**Findings**  \n- The instruction-governance child set was completed in dependency order and closed to done:\n  - [18e7a4d1 ticket](.ticket/tickets/18e7a4d1-6ac3-402a-be3f-9f588795f006/ticket.toml)\n  - [30606247 ticket](.ticket/tickets/30606247-06cd-4246-905b-bad49d2dd289/ticket.toml)\n  - [f19dcafa ticket](.ticket/tickets/f19dcafa-8349-4375-96ab-401a7d0eb17c/ticket.toml)\n  - [cf7f79a6 ticket](.ticket/tickets/cf7f79a6-6011-4060-811d-a3831de4c3b7/ticket.toml)\n  - [e416e4e8 ticket](.ticket/tickets/e416e4e8-cab2-41ad-9fcf-63da5f444e0a/ticket.toml)\n- Tracker shows done via direct get:\n  - [e1d8be15 ticket](.ticket/tickets/e1d8be15-0542-4804-bb0f-6a4b4fb4b073/ticket.toml)\n- Key instruction outputs changed:\n  - [AGENTS](AGENTS.md)\n  - [10-agents target mapping](rule-targets/10-agents.yaml)\n  - [canonical precedence rule body](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md)\n  - [spec-system instruction](.agents/instructions/spec-system.instructions.md)\n  - [token-efficiency instruction](.agents/instructions/token-efficiency.instructions.md)\n  - [tests instruction](.agents/instructions/tests.instructions.md)\n  - [ticket-system instruction](.agents/instructions/ticket-system.instructions.md)\n- Persisted session capture is active through hook config:\n  - [hooks config with capture hook](.github/hooks/hooks.json)\n\n**Decisions**  \n- Kept the governance root stable at e1d8be15 and executed strictly by dependency progression.\n- Treated linkified file/path citations as canonical formatting policy for file references in generated guidance.\n- Used canonical rule body plus generate-target flow for AGENTS updates.\n- Logged and worked around rule update index collision by direct canonical body edit and regeneration.\n\n**Blockers And Risks**  \n- Rule CLI update path intermittently failed with index writer collision FileAlreadyExists on del artifact; workaround applied:\n  - [canonical rule body touched directly](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md)\n- One state-view inconsistency observed: tracker get reported done while root-scoped next output still displayed ready for root view. Treat as index/view freshness issue until reconfirmed.\n- Board is not globally empty anymore due unrelated active work:\n  - [active ticket from another agent](.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml)\n  - no ownership conflict with this completed track.\n\n**Epic / Long-Horizon Goal**  \n- Epic tracker: [e1d8be15 tracker ticket](.ticket/tickets/e1d8be15-0542-4804-bb0f-6a4b4fb4b073/ticket.toml)  \n- Goal: keep instruction surfaces selective, precedence-explicit, conflict-free, and minimally duplicated while preserving rule-generated source-of-truth behavior.\n\n**Key Entities To Reuse**  \n- Governance tracker and children:\n  - [e1d8be15](.ticket/tickets/e1d8be15-0542-4804-bb0f-6a4b4fb4b073/ticket.toml) for close-out evidence and state history.\n  - [18e7a4d1](.ticket/tickets/18e7a4d1-6ac3-402a-be3f-9f588795f006/ticket.toml) for applyTo narrowing evidence.\n  - [30606247](.ticket/tickets/30606247-06cd-4246-905b-bad49d2dd289/ticket.toml) for precedence matrix rollout.\n  - [f19dcafa](.ticket/tickets/f19dcafa-8349-4375-96ab-401a7d0eb17c/ticket.toml) for spec-system dedup.\n  - [cf7f79a6](.ticket/tickets/cf7f79a6-6011-4060-811d-a3831de4c3b7/ticket.toml) for formatting conflict resolution.\n  - [e416e4e8](.ticket/tickets/e416e4e8-cab2-41ad-9fcf-63da5f444e0a/ticket.toml) for final consolidation summary.\n- Canonical/generated rule surfaces:\n  - [AGENTS](AGENTS.md) as generated policy surface.\n  - [rule target map](rule-targets/10-agents.yaml) as generation wiring.\n  - [canonical precedence rule body](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md) as source text for precedence and formatting policy.\n- Session persistence:\n  - [current session folder](.session/sessions/3e88d5ab-62b8-45f9-b292-1d3b1148f396/)\n  - [latest additional session folder](.session/sessions/d6510f8c-02b3-432a-9c21-836ba993a5fa/)\n  - [hook capture config](.github/hooks/hooks.json)\n- Working tree context:\n  - [spec body touched elsewhere](.spec/specs/09f96d83-4795-4f19-9259-64ad0d452387/body.md) as unrelated drift to avoid accidental revert.\n\n**Next Actions In Execution Order**  \n1. Start from workspace root and verify ticket index consistency for this track using tracker and child gets plus root-scoped next/subgraph.  \n2. Run first validation check: regenerate AGENTS target and confirm precedence plus formatting conflict policy appears once and unchanged.  \n3. Prepare a scoped commit plan for instruction-governance artifacts only, excluding unrelated modified files and unrelated ticket/session noise.  \n4. If rule update collision reproduces, open or update a follow-up ticket specifically for rule search-index writer collision with repro command and fallback notes.  \n5. Reconfirm board ownership before any new implementation work; do not claim files owned by active unrelated board entry.\n\n**Definition Of Done For Restart Session**  \n- Tracker and all five child tickets remain done and consistent across get, subgraph, and next views.\n- Governance file set is cleanly packaged for review without unrelated changes.\n- Canonical precedence and formatting policy remain single-source and non-duplicated in generated AGENTS.\n- Rule update collision status is either resolved or tracked in a dedicated follow-up ticket with explicit repro/evidence.\n\n**Board And Persisted Session Note**  \n- Board currently has one active entry owned by another agent on a different track; no conflict for instruction-governance artifacts, but respect ownership boundaries:\n  - [active other-track ticket](.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml)\n- Stop-hook persistence is configured through session-api capture in:\n  - [hooks config](.github/hooks/hooks.json)\n\nStart with the first next action. I have reviewed this session and this handoff is ready for a new agent session.",
+      "captured_at": "2026-07-08T20:17:08.172Z",
+      "event_meta": {
+        "event_id": "38e7f591-f639-476c-a290-d7e4f5be65bd",
+        "parent_event_id": "a9bb027b-fc1d-4302-ab38-64882c020718",
+        "event_type": "assistant.message",
+        "message_id": "0d186f59-723f-4f6f-bb58-e3fdf27e3635",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

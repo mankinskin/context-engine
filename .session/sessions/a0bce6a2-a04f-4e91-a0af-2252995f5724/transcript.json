@@ -1,0 +1,685 @@
+{
+  "schema_version": 1,
+  "session_id": "a0bce6a2-a04f-4e91-a0af-2252995f5724",
+  "captured_at": "2026-07-09T17:44:06.641Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "/handoff \r\nWe need to add proper instructions for various common workflows in this repository:\r\n- how to create a new memory based store that is instantly able to perform basic store operations (create, get, delete, update), able to reference entities in other stores or be referenced, able to work in a workspace hierarchy out of the box and validate a schema for its entities.\r\n- how to benchmark tools end to end, to measure their performance and latency/speed under load and set up executable anchors and produce full overviews of metrics and findings\r\n- how to instrument code with tracing and managing generated logs and executions with log-api\r\n\r\nresearch all of these topics superficially and create focussed tracker tickets under a larger policy tracker. each tracker should plan the full implementation plan of new rules and workflow policies, with clear research and validation steps to map out the existing patterns and synthesize the policy for producing durable and executable results. these tickets can require a huge amount of work to be completed. we may need specifications, code adaptations, multiple research/interview rounds or dependencies to other existing plans.\r\n\r\nFor example we may want to introduce a template crate for a minimal store as a test for the minimal setup of a memory store (the basis of all existing memory tools: ticket-api, spec-api, rule-api, session-api, etc)\r\n\r\nOr we may need to completely unify testing/benchmarking in a common library and fixture workspace that is used everywhere. Or we may need to wait for feature completions in log-api to fully use all of the desired features for log analysis and tracability.\r\n\r\nstart with the research and initial ticket bootstrapping and delegate the focussed work to the next session",
+      "captured_at": "2026-07-09T17:23:44.246Z",
+      "event_meta": {
+        "event_id": "ee99c3ba-b29a-42a2-a043-cb86f1226a19",
+        "parent_event_id": "541bfa57-cdbb-42a6-ae58-8712b93fc5fc",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m checking the existing ticket/spec landscape first so the bootstrapping lands in the right place and doesn’t duplicate work.",
+      "captured_at": "2026-07-09T17:23:57.456Z",
+      "event_meta": {
+        "event_id": "f7a40be5-5843-4903-bacf-02114224cde7",
+        "parent_event_id": "c2b908ec-1d95-495b-97b3-eca9bbf462c3",
+        "event_type": "assistant.message",
+        "message_id": "045cb6c3-657d-41f0-a8e4-b360069cc7b9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BEXnT4CnKyxjHc8ceu9QYgkS",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\session-optimization.instructions.md",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eqe6BkqBRALGnExD9FyCR0oc",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Inspect the current draftboard so new ticket work can be coordinated safely.",
+              "goal": "Check board state before bootstrapping tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Efme4KI0u8LLksdfk2aFYsl6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe list --toon --limit 200",
+              "explanation": "List current tickets to spot existing tracker or policy work related to store templates, benchmarking, or tracing.",
+              "goal": "Survey existing tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pHH2t36SPLxPgX3HQ44pCeqj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe list --toon --limit 200",
+              "explanation": "List current specs to avoid creating duplicate planning work for these policy areas.",
+              "goal": "Survey existing specs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "The board is clear. Next I’m narrowing to existing policy, store, benchmark, tracing, and log-related tickets/specs so the new tracker set can be scoped cleanly.",
+      "captured_at": "2026-07-09T17:24:28.183Z",
+      "event_meta": {
+        "event_id": "416ea1eb-21f1-474f-8d08-ac8c6194bbac",
+        "parent_event_id": "a1393069-1749-427c-a6eb-fd41facf0fd7",
+        "event_type": "assistant.message",
+        "message_id": "96ab7934-464a-407f-8bc7-31c6ed418f81",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EC6J4SgAHIzvImffaFNMgXiP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"memory store template\" --toon",
+              "explanation": "Search for existing ticket work about minimal memory store templates or scaffolding.",
+              "goal": "Find related store-bootstrap tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_R58Bud5zRoFsTkUnsG44Po7z",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"benchmark performance latency load tracing log-api policy workflow\" --toon",
+              "explanation": "Search for ticket work covering benchmarking, tracing, and log workflow policy areas.",
+              "goal": "Find related benchmark and tracing tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Lm5bdH0qzVxmbij6lwhzw60u",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe search \"memory store template benchmark tracing log-api workflow policy\" --toon",
+              "explanation": "Search existing specs for overlapping policy or implementation guidance before creating new planning work.",
+              "goal": "Find related specs",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QfGkewqkze9hBzM0MDK1dGoA",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"log-api|session-api|rule-api|spec-api|ticket-api|workspace hierarchy|schema\" crates tools memory-api viewer-api context-stack -S",
+              "explanation": "Scan the repo for authoritative anchors around store patterns, schema validation, and cross-store references.",
+              "goal": "Collect concrete implementation anchors for the new research tickets",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve confirmed there isn’t an obvious existing spec owning these workflow policies. I’m now pulling concrete repo anchors and the ticket CLI shape so the new tracker descriptions can point at real surfaces instead of vague placeholders.",
+      "captured_at": "2026-07-09T17:24:49.986Z",
+      "event_meta": {
+        "event_id": "8422b545-bcc5-4093-8d88-dfa7800cbe7f",
+        "parent_event_id": "a6472090-0b90-4d9b-9603-0df3bdfb84fc",
+        "event_type": "assistant.message",
+        "message_id": "bb643173-cfcc-4c31-be56-e035ae2e0272",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_g56DS18nIbggzLO8KA8Lp3GA",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\a0bce6a2-a04f-4e91-a0af-2252995f5724\\call_QfGkewqkze9hBzM0MDK1dGoA__vscode-1783598786045\\content.txt",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_a6KOx7yK28TZEOe2zdj0t3Ht",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\ticket-cli\\README.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_c7O8XFD4vAKPoh6ajTgItmAE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\spec-cli\\README.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WIR47ASJAIxl165BKmVE4Xr4",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"policy tracker\" --toon",
+              "explanation": "Search for existing policy-style tracker tickets to mirror naming and structure.",
+              "goal": "Find precedent for tracker naming",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I have enough precedent to bootstrap tickets now. I’m doing one more focused read on existing policy-style ticket naming, then I’ll create the tracker set with concrete anchors and explicit next-session research steps.",
+      "captured_at": "2026-07-09T17:24:56.342Z",
+      "event_meta": {
+        "event_id": "1229c1d6-9192-4272-adf3-2a6a27e41dae",
+        "parent_event_id": "583b4b9b-bd75-4328-b2f5-e58df225f04f",
+        "event_type": "assistant.message",
+        "message_id": "ddb02151-9fa3-43cf-b1d5-a5ca457b6b09",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_DujjaeMDdgPpnJCkevkqTvwf",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\a0bce6a2-a04f-4e91-a0af-2252995f5724\\call_WIR47ASJAIxl165BKmVE4Xr4__vscode-1783598786049\\content.txt",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0AgCzRXMqbz9gQCgfJWAkoT3",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe list --toon --query \"policy\" --limit 50",
+              "explanation": "List policy-related tickets to match local naming and scoping conventions.",
+              "goal": "Inspect policy ticket precedents",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gxr4APlWqCT3NLFbVKqHWAy1",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"benchmark harness\" --toon",
+              "explanation": "Look for prior benchmark-harness planning tickets that should be linked or avoided.",
+              "goal": "Check benchmark-harness precedent",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DNDNLpsHjs9rvzlzVFSvSMOC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"log-api\" --toon",
+              "explanation": "Look for existing planning or blockers around log-api that the new tracing workflow tracker should mention.",
+              "goal": "Check log-api precedent",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "There are relevant precedents in `memory-api` for benchmarking and in the root store for log sessions and workspace policy. I’m reading just those anchor tickets now, then I’ll create a root tracker plus three focused child trackers that reference them.",
+      "captured_at": "2026-07-09T17:25:04.462Z",
+      "event_meta": {
+        "event_id": "7e0efdb4-1ef6-41f6-b677-6f6d0a9f1369",
+        "parent_event_id": "807a52ee-edc1-41ab-87be-171e1e1e3667",
+        "event_type": "assistant.message",
+        "message_id": "8716d713-c760-42d0-b0d2-794cd1b88f09",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3jUvlrMV8U0OO7tFwHddBxME",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\a0bce6a2-a04f-4e91-a0af-2252995f5724\\call_DNDNLpsHjs9rvzlzVFSvSMOC__vscode-1783598786053\\content.txt",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hFy2jKMdKpAUjgyJLFgns0nq",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get a0bc8bd8-3fe0-4768-a895-b1bacee42759 --toon",
+              "explanation": "Read the existing unified validation and benchmark tracker for concrete precedent and possible dependency linkage.",
+              "goal": "Inspect benchmark tracker precedent",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XpWuWma0f7Z54xCU0RFEF1CU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get d3349747-b2f2-4dd4-b73c-dc016fec80d6 --toon",
+              "explanation": "Read the completed log-api runtime session ticket so the new tracing workflow tracker can cite the right existing capability.",
+              "goal": "Inspect log-api precedent",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1k8CT7FVyfDyozsMTEYYzzz2",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 39239e48-828a-41d8-a697-9cf02e980da9 --toon",
+              "explanation": "Read the existing workspace-resolution tracker because the new store-bootstrap policy likely depends on those patterns.",
+              "goal": "Inspect workspace-resolution precedent",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’ve got enough anchors. The remaining work is straightforward: create one root policy tracker and three child trackers, each with explicit repo surfaces, research questions, validation expectations, and handoff-ready next actions.",
+      "captured_at": "2026-07-09T17:25:15.994Z",
+      "event_meta": {
+        "event_id": "9616cc2f-e133-4dde-9b98-7ab245329cfe",
+        "parent_event_id": "828c77c6-9c7d-4022-aae0-5424cd10501c",
+        "event_type": "assistant.message",
+        "message_id": "6abd7f8d-666d-45c5-8ad0-910efa425786",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IO3fQOza6QyEvtyLAQFpkyyX",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --help",
+              "explanation": "Inspect the exact create syntax so the tracker tickets can be created cleanly with structured fields and descriptions.",
+              "goal": "Confirm ticket creation flags",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kaell7BKOFiBE31eH93ecH4f",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe add-edge --help",
+              "explanation": "Inspect edge-creation syntax before linking the new tracker and child tickets.",
+              "goal": "Confirm ticket dependency syntax",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yC5kUmBh0WqyaPiaNG1pM3oC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe search \"minimal store\" --toon",
+              "explanation": "Double-check that there is no existing minimal-store spec or roadmap we should reference before creating tickets.",
+              "goal": "Verify minimal-store spec gap",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I found two draft specs that matter enough to reference rather than rediscover later: a domain-store bootstrap spec draft and a transport benchmark strategy draft. I’m reading those plus the exact ticket link syntax, then creating the tracker set.",
+      "captured_at": "2026-07-09T17:25:36.331Z",
+      "event_meta": {
+        "event_id": "34f4c587-8445-43aa-8b60-7310b27a3c39",
+        "parent_event_id": "cfd5aa79-796e-41ff-9b36-fb10b652be05",
+        "event_type": "assistant.message",
+        "message_id": "9ff743b8-38b1-414e-b2b7-e311acc083e6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_PfOVp4Bb9SqijtcLimb65Umg",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe get 9ee9387f-5384-42a9-95c4-ecbad1713030 --toon",
+              "explanation": "Read the draft spec about domain-store bootstrap instructions so the new store-policy tracker can point at it directly.",
+              "goal": "Inspect minimal-store bootstrap spec",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pKm25c2clC7jD9DuYSbqHnz0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe get 76da5f2d-cea9-49d9-b223-730a0c2a5d6b --toon",
+              "explanation": "Read the draft transport benchmark strategy spec so the benchmark-policy tracker can reference the right design seed.",
+              "goal": "Inspect transport benchmark spec",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_B5ThKwQoqzx3DFB4EI1uocie",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe link --help",
+              "explanation": "Inspect the exact dependency-link syntax before wiring the new parent and child trackers together.",
+              "goal": "Confirm ticket link command",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I’m creating the tracker set now. The outcome should be one root policy tracker and three child trackers, all in the root ticket store with enough detail for the next session to start executing immediately.",
+      "captured_at": "2026-07-09T17:26:29.511Z",
+      "event_meta": {
+        "event_id": "b70cefae-40f5-48ae-97dc-26b5fd9863aa",
+        "parent_event_id": "fe5de419-0bea-41e8-9301-54605c6c1474",
+        "event_type": "assistant.message",
+        "message_id": "709abad2-93da-4d5c-b111-e813bd360055",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CVeF7qPSC76clLCcqtvXfmc2",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Objective\nCreate one durable policy track for repository workflows that are currently too expensive to rediscover ad hoc:\n- minimal domain-store bootstrap for new memory-backed stores\n- end-to-end benchmarking and executable performance evidence\n- tracing instrumentation plus log/execution management through `log-api`\n\n## Why\nThe repository already has multiple mature memory-domain stores (`ticket-api`, `spec-api`, `rule-api`, `session-api`) and partially overlapping work on `test-api`, `log-api`, workspace resolution, and transport benchmarks. What is missing is one explicit policy track that turns those patterns into repeatable instructions, templates, validation routines, and durable evidence expectations.\n\n## Scope\nThis tracker owns research and policy synthesis first. It should break the work into focused child trackers and only move into implementation after the current patterns, gaps, and dependencies are mapped.\n\n## Child workstreams\n1. Minimal domain-store bootstrap policy.\n2. End-to-end benchmark and executable-anchor policy.\n3. Tracing instrumentation and log-api execution policy.\n\n## Expected outputs\n- new or updated workflow instructions and slash-command guidance\n- required specs for contract-level behavior before implementation\n- ticket decomposition for concrete code changes, templates, libraries, or migrations\n- validation plan with executable commands and evidence-store expectations\n- explicit dependency map to existing `memory-api`, `test-api`, `log-api`, and workspace-policy work\n\n## Initial validation\nSuccess for this tracker's bootstrap phase means the child trackers exist, each points at concrete repo anchors, and the next session can start the first research step without reconstructing the problem.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy] Tracker: durable store bootstrap, benchmark, and tracing/log guidance\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm \"$tmp\"",
+              "explanation": "Create the root workflow-policy tracker that groups the three requested planning tracks.",
+              "goal": "Bootstrap the root policy tracker",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zJzx3Nf5PiWQM2F1DLuDPeeV",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Goal\nResearch and codify the minimal, repeatable bootstrap policy for creating a new memory-backed store that can immediately perform CRUD, validate entity schemas, participate in workspace hierarchy resolution, and create/reference entities across stores.\n\n## Why this work exists\nCreating a new store today still requires rediscovering patterns scattered across `ticket-api`, `spec-api`, `rule-api`, `session-api`, and workspace-resolution work. We need one policy and eventually one template/test fixture proving the smallest viable setup.\n\n## Research questions\n- What are the actual minimum moving parts for a new store: registry, schema defaults, CRUD storage, index/search bootstrap, CLI/HTTP/MCP surfacing, and health checks?\n- Which capabilities belong in generic `memory-api` primitives versus domain-owned crates?\n- What is the smallest executable template crate or fixture workspace that proves create/get/update/delete out of the box?\n- How should cross-store references and reverse references be modeled so new stores can be linked from tickets/specs/logs/tests without bespoke glue?\n- Which existing workspace-resolution and scan-root rules are mandatory for nested workspaces?\n\n## Starting anchors\n- `memory-api` tracker precedent: `39239e48-828a-41d8-a697-9cf02e980da9` (`Transport-layer workspace-resolution parity (tracker)`)\n- draft spec seed: `9ee9387f-5384-42a9-95c4-ecbad1713030` (`scaffold: rule-generated domain-store bootstrap instructions and slash skill`)\n- schema surfaces found during this session: `memory-api/crates/rule-api/src/default_schema.rs`, `memory-api/tools/http/ticket-http/src/serve/handlers/schema.rs`, `memory-api/tools/cli/ticket-cli/tests/contracts_schema_validation.rs`\n\n## Deliverables\n- comparison matrix across `ticket-api`, `spec-api`, `rule-api`, and `session-api`\n- proposed minimal-store template boundary, including what would be generated versus handwritten\n- list of required specs and child implementation tickets\n- validation recipe proving CRUD, schema validation, cross-store reference handling, and workspace hierarchy behavior\n\n## Validation expectations\nThe next session should be able to produce at least one durable artifact: either a focused spec update or a decomposition into concrete implementation tickets anchored to real crates/tests.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy][memory-store] Research and define minimal domain-store bootstrap policy\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm \"$tmp\"",
+              "explanation": "Create the child tracker for minimal memory-store bootstrap policy and template research.",
+              "goal": "Bootstrap the store-policy child tracker",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZxlbQJibKxcHGaicRJUdE83p",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Goal\nResearch and codify one repository workflow for end-to-end tool benchmarking that measures latency, throughput, and load behavior, records executable anchors, and produces durable metrics/evidence summaries.\n\n## Why this work exists\nBenchmarking work is split across Criterion benches, ad hoc perf harnesses, and newer `test-api` / `log-api` execution capture plans. We need one policy that tells contributors how to define the benchmark surface, run it under load, capture evidence, and summarize results in a reusable way.\n\n## Research questions\n- Which benchmark surfaces should be first-class: CLI, HTTP, MCP, in-process library, viewer/server workflows?\n- How should executable anchors be defined so runs are repeatable and attributable across transports and environments?\n- What should flow into `test-api` executions versus `log-api` artifacts versus benchmark-specific summaries?\n- Should the repository converge on one shared harness/library and fixture workspace for load generation and metrics capture?\n- Where are the current gaps between Criterion, custom perf runners, and transport-layer tests?\n\n## Starting anchors\n- existing benchmark tracker: `a0bc8bd8-3fe0-4768-a895-b1bacee42759` (`[memory-api][test] Unified validation & benchmark surface in test-api (tracker)`)\n- existing completed tickets: `7a524627-bb48-47c8-a3d8-9c8b9303f0f3` (`Validation runner harness — cargo test/bench to executions + log capture`), `d760a9bb-b970-4a97-8e38-fb4d78a5ea10` (`Capture structured tracing for Criterion and Rust perf harnesses`), `ff6637f5-01f6-46c3-b727-e1a19ee0f202` (`Capture profiling timings through logs and journals`)\n- draft spec seed: `76da5f2d-cea9-49d9-b223-730a0c2a5d6b` (`Transport-layer e2e matrix and benchmark strategy`)\n\n## Deliverables\n- benchmark taxonomy and transport matrix\n- recommended shared harness/library and fixture strategy, or explicit reasons not to unify\n- executable-anchor schema for commands, environments, load profiles, and result artifacts\n- follow-up implementation tickets and any required spec updates\n\n## Validation expectations\nThe next session should finish with a concrete benchmark policy outline plus at least one proposed executable anchor shape validated against an existing bench or transport test.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy][benchmarks] Research and define end-to-end benchmark and execution-evidence policy\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm \"$tmp\"",
+              "explanation": "Create the child tracker for benchmark workflow policy and executable evidence design.",
+              "goal": "Bootstrap the benchmark-policy child tracker",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SXqUvgaHJQL8sxYfgcu6WLyH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Goal\nResearch and codify the repository policy for tracing instrumentation, runtime log capture, and managing generated logs plus executions through `log-api`.\n\n## Why this work exists\nTracing, logs, journals, and execution evidence now span `context-*`, `memory-api`, `test-api`, `log-api`, and viewer surfaces. Existing tickets establish parts of the model, but contributors still lack one focused workflow that explains what to instrument, where logs live, how they are indexed, and how validation/runtime executions link back to the generated artifacts.\n\n## Research questions\n- What spans, events, result summaries, and correlation ids are the minimum required instrumentation for domain operations?\n- Which generated artifacts belong in `log-api`, which belong in `test-api`, and which remain transient files or viewer-layer outputs?\n- How should runtime sessions, validation runs, benchmark logs, and operation journals relate across stores?\n- What additional `log-api` or tooling gaps block a full durable workflow today?\n- Which current instructions should become canonical policy once the design is settled?\n\n## Starting anchors\n- existing completed ticket: `d3349747-b2f2-4dd4-b73c-dc016fec80d6` (`[log-api] Add runtime log session model and cross-store links`)\n- active/root-store tickets: `73b2cd22-942b-4205-86e5-333df2373211` (`[memory-api] Shared tracing and log-api runtime diagnostics`), `2e41c96d-fe9f-4cf2-b941-6f0d452f237c` (`[memory-api] Create domain instrumentation and journaling coverage map`)\n- architectural precedent: `84673399-75e6-4f36-8a17-4c666001e530` (`[observability] Resolve logging, journaling, and replay architecture boundaries`)\n- repo anchor surfaced this session: `context-stack/context-api/src/log_parser.rs`\n\n## Deliverables\n- instrumentation policy by operation type and layer\n- artifact ownership matrix for logs, journals, executions, and summaries\n- dependency map for any missing `log-api` features or migrations\n- follow-up specs and implementation tickets for the concrete gaps\n\n## Validation expectations\nThe next session should finish with a draft policy outline tied to real crates/tickets plus an explicit blocker list for anything `log-api` cannot yet support.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy][tracing][log-api] Research and define tracing instrumentation and log execution policy\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm \"$tmp\"",
+              "explanation": "Create the child tracker for tracing and log-api workflow policy research.",
+              "goal": "Bootstrap the tracing-policy child tracker",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "user",
+      "content": "[Terminal 572f6350-eee1-49b4-81ef-cbb55e94fc2b notification: command completed. Use send_to_terminal to send another command or kill_terminal to stop it.]\nTerminal output:\n43:                schema_dir_override,\n49:            schema_dir_override,\n58:    schema_dir_override: Option<&Path>,\n64:    let mut registry = SchemaRegistry::with_builtins();\n65:    if let Some(schema_dir) = schema_dir_override {\n66:        registry.load_dir(schema_dir)?;\n192:fn export_command_schema_payload() -> Result<Value, CliRunError> {\n193:    let schema_json = export_command_schema_json()?;\n194:    let schema: Value = serde_json::from_str(&schema_json)?;\n196:        \"command\": \"export_command_schema\",\n198:        \"schema\": schema,\n199:        \"known_commands\": export_command_schema().commands,\n207:    schema_dir_override: Option<&Path>,\n230:    let store = open_store(&index_root, schema_dir_override)?;\n309:    schema_dir_override: Option<&Path>,\n311:    let mut registry = SchemaRegistry::with_builtins();\n312:    if let Some(schema_dir) = schema_dir_override {\n313:        registry.load_dir(schema_dir)?;\n396:        TicketCommandCli::ExportCommandSchema | TicketCommandCli::Init => {\n\nmemory-api\\tools\\cli\\ticket-cli\\src\\cli\\batch\\dispatch.rs\n128:        TicketCommandCli::ExportCommandSchema => {\n129:            Some(\"'export-command-schema' cannot be used in a batch\")\n\nmemory-api\\tools\\cli\\ticket-cli\\tests\\contracts_command_schema.rs\n3:use ticket_api::contracts::command_schema::{\n4:    COMMAND_SCHEMA_VERSION,\n5:    export_command_schema,\n6:    export_command_schema_json,\n10:fn command_schema_export_is_stable() {\n11:    let schema = export_command_schema();\n13:    assert_eq!(schema.version, COMMAND_SCHEMA_VERSION);\n14:    assert_eq!(schema.command_namespace, \"ticket\");\n15:    assert_eq!(schema.commands.len(), 41);\n16:    assert_eq!(schema.commands[0], \"create\");\n17:    assert!(schema.commands.contains(&\"batch\".to_string()));\n18:    assert!(schema.commands.contains(&\"unblocked_by\".to_string()));\n19:    assert!(schema.commands.contains(&\"task_create\".to_string()));\n20:    assert!(schema.commands.contains(&\"task_get\".to_string()));\n22:        schema\n26:    assert!(schema.commands.contains(&\"ready_overview\".to_string()));\n27:    assert!(schema.commands.contains(&\"status\".to_string()));\n28:    assert!(schema.commands.contains(&\"link\".to_string()));\n29:    assert!(schema.commands.contains(&\"links\".to_string()));\n30:    assert!(schema.commands.contains(&\"workspace_remove\".to_string()));\n32:        schema\n39:fn command_schema_json_is_machine_readable() {\n41:        export_command_schema_json().expect(\"schema export should serialize\");\n45:    assert_eq!(parsed[\"version\"], COMMAND_SCHEMA_VERSION);\n51:fn command_schema_toon_is_machine_readable() {\n54:        .arg(\"export-command-schema\")\n60:        \"ticket --toon export-command-schema failed ({})\\nstdout: {}\\nstderr: {}\",\n72:    assert_eq!(parsed[\"payload\"][\"command\"], \"export_command_schema\");\n75:        parsed[\"payload\"][\"schema\"][\"version\"],\n76:        COMMAND_SCHEMA_VERSION\n79:        parsed[\"payload\"][\"schema\"][\"command_namespace\"],\n82:    assert!(parsed[\"payload\"][\"schema\"][\"commands\"].is_array());\n\nmemory-api\\tools\\cli\\spec-cli\\Cargo.toml\n5:description = \"CLI interface for spec-api: the `spec` command\"\n16:spec-api = { path = \"../../../crates/spec-api\" }\n18:rule-api = { path = \"../../../crates/rule-api\" }\n\nmemory-api\\tools\\cli\\spec-cli\\src\\cli.rs\n261:            \"crates/spec-api\",\n269:                assert_eq!(args.crate_path, PathBuf::from(\"crates/spec-api\"));\n\nmemory-api\\tools\\cli\\rule-cli\\src\\cli\\tests\\tests_generate_targets.rs\n84:        \"## Summary\\nGenerate through spec-api.\\n\",\n120:    assert!(spec_body.starts_with(\"<!-- spec-api:file generated=true -->\"));\n306:    assert!(!rendered.contains(\"rule-api:file generated=true\"));\n\nmemory-api\\tools\\cli\\rule-cli\\README.md\n1:<!-- rule-api:file generated=true -->\n3:<!-- rule-api:entry id=b8535c8a-4097-4042-8f2a-745123d269ee slug=memory-api/readme/tools/parent-readme/l1 -->\n6:<!-- rule-api:entry id=b841bfc7-f180-459c-8a5f-b182710cd4ec slug=memory-api/readme/tools/cli/rule-cli/l1 -->\n9:CLI interface for `rule-api`.\n\nmemory-api\\tools\\cli\\rule-cli\\Cargo.toml\n5:description = \"CLI interface for rule-api: the `rule` command\"\n16:rule-api = { path = \"../../../crates/rule-api\" }\n18:spec-api = { path = \"../../../crates/spec-api\" }\n\nmemory-api\\tools\\cli\\spec-cli\\src\\cli\\commands\\bootstrap.rs\n32:    /// Slug for the spec, e.g. \"ticket-api/storage/store\"\n256:        // Slug: \"ticket-api/storage/store\"\n\nmemory-api\\tools\\cli\\spec-cli\\README.md\n1:<!-- rule-api:file generated=true -->\n3:<!-- rule-api:entry id=b8535c8a-4097-4042-8f2a-745123d269ee slug=memory-api/readme/tools/parent-readme/l1 -->\n6:<!-- rule-api:entry id=df2d4ede-7992-4ae0-9ca5-8afc654bbdd0 slug=memory-api/readme/tools/cli/spec-cli/l1 -->\n9:CLI interface for `spec-api`.\n\nmemory-api\\tools\\cli\\audit-cli\\README.md\n1:<!-- rule-api:file generated=true -->\n3:<!-- rule-api:entry id=b8535c8a-4097-4042-8f2a-745123d269ee slug=memory-api/readme/tools/parent-readme/l1 -->\n6:<!-- rule-api:entry id=011df0af-b945-434a-b681-a3949de76ec0 slug=memory-api/readme/tools/cli/audit-cli/l1 -->\n\nmemory-api\\tools\\cli\\audit-cli\\Cargo.toml\n18:session-api = { path = \"../../../crates/session-api\" }\n\nmemory-api\\tools\\cli\\spec-cli\\src\\cli\\args.rs\n13:    /// Hierarchical slug (e.g. \"ticket-api/storage/store\").\n\nmemory-api\\tools\\cli\\spec-cli\\src\\cli\\commands\\sync_generated_tests.rs\n123:    assert!(body.contains(\"<!-- spec-api:file generated=true -->\"));\n125:    assert!(!body.contains(\"<!-- rule-api:file generated=true -->\"));\n\nmemory-api\\tools\\cli\\audit-cli\\src\\cli_tests.rs\n147:            assert!(value[\"schema_version\"].as_u64().unwrap_or(0) >= 1);\n\nmemory-api\\tools\\cli\\audit-cli\\src\\cli.rs\n606:    lines.push(format!(\"Schema version: {}\", report.schema_version));\n\nmemory-api\\tools\\cli\\rule-cli\\src\\cli\\tests\\tests_commands.rs\n373:    assert!(rendered.starts_with(\"<!-- rule-api:file generated=true -->\\n\\n\"));\n414:    assert!(!rendered.contains(\"rule-api:file generated=true\"));\n415:    assert!(!rendered.contains(\"rule-api:entry id=\"));\n528:    assert!(rendered.starts_with(\"<!-- rule-api:file generated=true -->\"));\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe search \"policy tracker\" --toon\nrequest_id: \"38173442-d8dd-4b97-ba5b-6cdc622ff247\"\npayload:\n  command: search\n  status: ok\n  query: policy tracker\n  count: 20\n  results[20]:\n    - id: \"65d5885b-ec09-450e-b6c8-1607ec3e51c3\"\n      title: \"[workspace-policy] Explicit workspace-policy layer for ticket scan-root discovery\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Tracker: Explicit workspace-policy layer for scan-root discovery\\n\\n## Problem\\n\\nThere is no explicit workspace-policy la…\"\n      score: 16.693435668945313\n    - id: \"72b3545c-ceb9-4cb2-a8d4-c146fc9b460a\"\n      title: \"[observability][governance] Define profiling metadata retention and redaction policy\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nDefine and publish the governance policy for profiling metadata retention, rotation/sampling, and redaction acro…\"\n      score: 15.5925931930542\n    - id: \"528af270-a65c-4311-88ed-7a2e87d468bf\"\n      title: \"[workspace-policy] 7/6 Cleanup retro fixture references + audit boundary rule\"\n      state: \"in-review\"\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# [workspace-policy] 7/6 Fixture boundary cleanup + policy-excluded reference audit guard\\n\\n## Why\\n\\nWorkspace-policy roll…\"\n      score: 15.385838508605957\n    - id: \"53f471a3-8a55-40ca-8f86-5da3b15aa25e\"\n      title: \"Project tracker: audit quality backlog\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"Project tracker for the audit quality backlog: hardening repository quality audits so ticket/spec/graph health produce m…\"\n      score: 14.969625473022461\n    - id: \"39239e48-828a-41d8-a697-9cf02e980da9\"\n      title: \"[memory-api] Transport-layer workspace-resolution parity (tracker)\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# Transport-layer workspace-resolution parity (tracker)\\n\\n## Goal\\nMake workspace resolution a generic memory-api capabili…\"\n      score: 13.281152725219727\n    - id: \"1a2b326d-cf0c-4935-83a7-b80cf0ff0f32\"\n      title: \"[audit-roadmap][ticket_graph] Clear ticket graph findings\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\nEliminate ticket_graph findings by repairing dependency graph hygiene, orphan handling, and lifecycle consistency…\"\n      score: 9.87075424194336\n    - id: \"e1d8be15-0542-4804-bb0f-6a4b4fb4b073\"\n      title: \"[instruction-governance] Tracker: instruction-system cleanup and conflict resolution\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"## Final Close-Out Summary\\nInstruction-governance cleanup track completed.\\n\\n## Completed Child Tickets\\n- 18e7a4d1 — done…\"\n      score: 9.009435653686523\n    - id: \"84673399-75e6-4f36-8a17-4c666001e530\"\n      title: \"[observability] Resolve logging, journaling, and replay architecture boundaries\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nResolve the core architecture decisions for unified logging, operation journaling, and replayable visualization …\"\n      score: 8.917264938354492\n    - id: \"505b2cd4-f21d-4e8d-8e6a-ae06a5b69854\"\n      title: \"[ticket-api] Deliver safe cross-workspace ticket move for git-backed stores\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [ticket-api] Deliver safe cross-workspace ticket move for git-backed stores\\r\\n\\r\\n## Goal\\r\\n\\r\\nImplement a safe, reviewable…\"\n      score: 8.469593048095703\n    - id: \"edde88d6-ac19-4b89-a136-73602596f546\"\n      title: \"[audit-roadmap][2026-07-05] Full repository audit remediation tracker\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Objective\\nDrive the full 2026-07-05 audit baseline from 551 findings toward near-zero through ordered category executi…\"\n      score: 8.34912395477295\n    - id: \"ec9498ee-e7a0-4b93-9543-393ac48c08fa\"\n      title: \"[ticket-api][ticket-http][ticket-viewer] Harden workspace linking and search architecture\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Objective\\r\\n\\r\\nHarden workspace linking and search beyond the immediate bug fixes by closing the remaining design holes …\"\n      score: 8.227946281433105\n    - id: \"d3349747-b2f2-4dd4-b73c-dc016fec80d6\"\n      title: \"[log-api] Add runtime log session model and cross-store links\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nExtend `log-api` beyond validation-only captures so it can represent runtime log sessions for tools, servers, te…\"\n      score: 8.131998062133789\n    - id: \"c991d769-27b4-4567-b9d1-95173af02c5a\"\n      title: \"[audit-roadmap][file_length][batch-1] memory-api (88)\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Session Objective\\nResolve the current file_length batch for memory-api and reduce findings from baseline using strict …\"\n      score: 8.036468505859375\n    - id: \"e416e4e8-cab2-41ad-9fcf-63da5f444e0a\"\n      title: \"[instruction-governance] Consolidate duplicated instruction guidance and keep pointer surfaces minimal\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"## Summary\\nFinal consolidation pass completed for instruction-governance track.\\n\\n## Consolidation Outcomes\\n- `applyTo` s…\"\n      score: 7.905428409576416\n    - id: \"fe81b165-113f-43fc-87c2-dc7f44170152\"\n      title: \"Tracker: context-read final test remediation for context-stack integration\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Objective\\r\\n\\r\\nRemediate the remaining `context-read` crate test failures that block full `context-stack` integration, w…\"\n      score: 7.897905349731445\n    - id: \"0f4b3c5b-c5e9-45c4-968c-a8878f359de8\"\n      title: \"[agent-harness] Unified minimal interface for on-demand chat + long-running agent loops (Rust core, TUI + WASM)\"\n      state: ready\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Unified Agent Harness Tracker\\n\\n## Why this ticket\\nOne cohesive delivery plan that turns existing research and design d…\"\n      score: 7.468727111816406\n    - id: \"fe098673-f7fa-43ba-af66-047578861596\"\n      title: \"[memory-index] Roadmap: sequential implementation of domain-owned store indexes\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"## Goal\\r\\n\\r\\nProvide one canonical roadmap tracker for the memory-index work so implementation proceeds in a single explic…\"\n      score: 7.348723411560059\n    - id: \"46d89aa2-043a-4c94-8213-2f365aa2d517\"\n      title: Add handoff workflow prompts\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session jumpstart handoffs.…\"\n      score: 6.852125644683838\n    - id: \"7599ed31-598e-458e-8651-9bfe6c57ffd9\"\n      title: \"[ticket-store][cleanup] Migrate misplaced context-engine-workspace tickets into the memory-api store\"\n      state: \"in-implementation\"\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# Cleanup migration: relocate misplaced entities into their lowest-owning store\\r\\n\\r\\n## Placement principle (product direc…\"\n      score: 6.622509956359863\n    - id: \"5ad5ab28-6c81-4916-9574-d2c470e03a31\"\n      title: \"[ticket-api][audit-api] Strengthen canonical ticket health validation\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"Improve ticket health audit validation so the repository gets more signal from ticket quality checks, especially for new…\"\n      score: 6.485226631164551\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe list --toon --query \"policy\" --limit 50\ncode: invalid_request\nmessage: \"error: unexpected argument '--query' found\\n\\nUsage: ticket.exe list --toon\\n\\nFor more information, try '--help'.\\n\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe search \"benchmark harness\" --toon\nrequest_id: \"aafb9f93-9149-48c1-b598-5e1812d01837\"\npayload:\n  command: search\n  status: ok\n  query: benchmark harness\n  count: 11\n  results[11]:\n    - id: \"a0bc8bd8-3fe0-4768-a895-b1bacee42759\"\n      title: \"[memory-api][test] Unified validation & benchmark surface in test-api (tracker)\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [memory-api][test] Unified validation & benchmark surface in test-api (tracker)\\r\\n\\r\\n## Goal\\r\\n\\r\\nBuild one extensible, ex…\"\n      score: 16.809457778930664\n    - id: \"03ed4121-ec7e-4d5f-adb4-4d3846af8031\"\n      title: \"[bench] Cross-domain benchmark matrix with per-operation latency budgets\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [bench] Cross-domain benchmark matrix with per-operation latency budgets\\n\\n## Goal\\n\\nProvide Criterion benchmarks for th…\"\n      score: 16.596206665039063\n    - id: \"7a524627-bb48-47c8-a3d8-9c8b9303f0f3\"\n      title: \"[test-api][log-api] Validation runner harness — cargo test/bench to executions + log capture\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test-api][log-api] Validation runner harness — cargo test/bench → executions + log capture\\r\\n\\r\\n## Goal\\r\\n\\r\\nProvide a ru…\"\n      score: 16.11085319519043\n    - id: \"2d59b99c-0205-4bf6-bad9-ecb69a52830a\"\n      title: \"[profiling] CLI/HTTP/MCP throughput/latency benchmarks\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# [profiling] CLI/HTTP/MCP throughput/latency benchmarks\\r\\n\\r\\nChild of tracker `ef3f4a91`. Add transport-level throughput/…\"\n      score: 13.344740867614746\n    - id: \"260e37d7-ae90-43e4-871b-3c18937189ca\"\n      title: \"[test] Audit hygiene for memory-matrix — split lib.rs, fix llvm-cov\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test] Audit hygiene for memory-matrix\\n\\n## Goal\\n\\nClear the audit findings against `memory-matrix` so the crate passes …\"\n      score: 11.206460952758789\n    - id: \"2dada4b7-e5c0-4fe5-be01-df9936659133\"\n      title: \"[test-api][ci] Test profiles + CI lanes — fast-on-push vs. large-on-demand\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test-api][ci] Test profiles + CI lanes — fast-on-push vs. large-on-demand\\n\\n## Goal\\n\\nProvide a **test-profile** mechan…\"\n      score: 9.359092712402344\n    - id: \"d760a9bb-b970-4a97-8e38-fb4d78a5ea10\"\n      title: \"[benchmarks] Capture structured tracing for Criterion and Rust perf harnesses\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"Starting benchmark/perf tracing implementation: inspect ticket-api perf tests and representative Criterion benches, then…\"\n      score: 9.24383544921875\n    - id: \"274c5119-02cb-4306-b017-b998659ea514\"\n      title: \"[test-api] Backfill existing repo test/bench suites into the store\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test-api] Backfill existing repo test/bench suites into the store\\n\\n## Goal\\n\\nIngest the repo's actual `cargo test`/`ca…\"\n      score: 6.640907287597656\n    - id: \"0135d961-c76b-44d2-97d6-c3f08ee7d806\"\n      title: \"[AOH][Impl] End-to-end executor integration and fault-injection suite\"\n      state: cancelled\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Impl: End-to-End Executor Integration and Fault-Injection Suite\\r\\n\\r\\n## Purpose\\r\\n\\r\\nValidate that the full AOH execution …\"\n      score: 6.50956916809082\n    - id: \"668743ea-497b-46a2-b7f7-f136684acc8c\"\n      title: \"Plan: context-read restructure — migrate bands/, delete dead code, rename pipeline/\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"---\\r\\ntags: `#plan` `#context-read` `#architecture` `#restructuring` `#api` `#refactoring`\\r\\nsummary: Restructure context-…\"\n      score: 5.942180633544922\n    - id: \"c01ace60-4794-48fd-a22c-f4745ad2ca3c\"\n      title: \"Plan: end-to-end test registry\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"---\\ntags: `#plan` `#context-trace` `#context-search` `#context-insert` `#algorithm` `#debugging` `#testing` `#api` `#per…\"\n      score: 3.9730606079101563\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe search \"log-api\" --toon\nrequest_id: \"8ec21b4f-9b12-4e30-996f-d572d63b1732\"\npayload:\n  command: search\n  status: ok\n  query: \"log-api\"\n  count: 20\n  results[20]:\n    - id: \"0805fb76-f99b-45a5-87c6-5a8e65bdb2da\"\n      title: \"[log-api] Bootstrap validation-log identities for spec fulfillment\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nBootstrap the first `log-api` entities for validation-log capture and retrieval linked from `test-api` exec…\"\n      score: 9.184542655944824\n    - id: \"501d4932-a48e-4c8a-a4f3-8c31be0bdd23\"\n      title: \"[log-api] Add first-class validation log capture and retrieval\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nAdd a first-class `log-api` for workflow validation log capture, indexing, and retrieval in the memory syst…\"\n      score: 8.951659202575684\n    - id: \"73b2cd22-942b-4205-86e5-333df2373211\"\n      title: \"[memory-api] Shared tracing and log-api runtime diagnostics\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Memory-system observability and log-api runtime diagnostics\\n\\n## Problem\\n\\nThe existing unified logging epic covers view…\"\n      score: 8.890989303588867\n    - id: \"d3349747-b2f2-4dd4-b73c-dc016fec80d6\"\n      title: \"[log-api] Add runtime log session model and cross-store links\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nExtend `log-api` beyond validation-only captures so it can represent runtime log sessions for tools, servers, te…\"\n      score: 8.745311737060547\n    - id: \"618f6ce4-e7b3-48f2-9c9e-840247a119da\"\n      title: \"[workflow] Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nCoordinate the bounded evidence-store bootstrap across `doc-api`, `test-api`, and `log-api` so spec accepta…\"\n      score: 8.320184707641602\n    - id: \"7a524627-bb48-47c8-a3d8-9c8b9303f0f3\"\n      title: \"[test-api][log-api] Validation runner harness — cargo test/bench to executions + log capture\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test-api][log-api] Validation runner harness — cargo test/bench → executions + log capture\\r\\n\\r\\n## Goal\\r\\n\\r\\nProvide a ru…\"\n      score: 8.183358192443848\n    - id: \"a72e3aca-1e95-4fc5-a5b9-701112dcc37e\"\n      title: \"[memory-index] Test store catalog generator\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"Build a generator that reads the test-api and log-api evidence stores and emits a markdown test catalog at `.test/README…\"\n      score: 4.660553932189941\n    - id: \"75e9fef3-b624-4e12-9709-5d800222908c\"\n      title: \"Rewrite workflow validation spec around embedded memory-api behavior\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nRewrite the current workflow validation spec so it describes embedded memory-system behavior instead of a s…\"\n      score: 4.407472610473633\n    - id: \"aa94d02e-9620-4db6-9974-36699cd56537\"\n      title: \"[log-api] Add live indexing and search for active logs and journals\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nAdd incremental indexing/search over active JSONL logs and operation journal metadata.\\n\\n## Scope\\n\\n- Track file o…\"\n      score: 4.173297882080078\n    - id: \"84673399-75e6-4f36-8a17-4c666001e530\"\n      title: \"[observability] Resolve logging, journaling, and replay architecture boundaries\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nResolve the core architecture decisions for unified logging, operation journaling, and replayable visualization …\"\n      score: 4.140739917755127\n    - id: \"26d6353a-6613-48ad-96c5-d4bd8ad5180f\"\n      title: \"[test-cli][log] test/log CLI + audit failed & slow query surface\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\n      snippet: \"# [test-cli][log] test/log CLI + audit \\\"failed & slow\\\" query surface\\r\\n\\r\\n## Goal\\r\\n\\r\\nGive `test-api` and `log-api` a user-…\"\n      score: 3.9444127082824707\n    - id: \"def88d4e-8a3c-45bc-82c8-bdacae01a479\"\n      title: \"Epic: Unified Logging Infrastructure — file sinks, search, Mermaid, table, Dioxus frontend\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Epic: Unified Logging Infrastructure\\r\\n\\r\\nProvide every viewer-api tool and context-* crate with consistent, queryable, …\"\n      score: 3.8960676193237305\n    - id: \"06b4f7d5-eee9-4266-9793-8c18a5bcf745\"\n      title: \"Project tracker: log tooling and viewer migration\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Objective\\r\\n\\r\\nGroup the log schema, log API, and log viewer migration tickets under a single tracker so the subsystem h…\"\n      score: 3.8927910327911377\n    - id: \"aaa90ee6-1358-41ad-b19e-61abdc3f1dc2\"\n      title: \"[workflow] Store-owned spec evidence integration\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nIntegrate store-owned acceptance evidence so specs can be satisfied or blocked by native documentation, val…\"\n      score: 3.840139150619507\n    - id: \"35cd05c1-45f7-4d65-b943-7c000570928f\"\n      title: \"[journal] Adapt move kernel journals to the generic operation-journal envelope\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nBridge the existing domain-neutral move kernel journal to the generalized operation-journal model without breaki…\"\n      score: 3.625601291656494\n    - id: \"ff6637f5-01f6-46c3-b727-e1a19ee0f202\"\n      title: \"[benchmarks] Capture profiling timings through logs and journals\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\r\\n\\r\\nDefine how benchmarks and profiling runs use tracing logs and journal metadata without mixing timing data into…\"\n      score: 3.594306230545044\n    - id: \"bc19467f-b4d4-48c3-be92-b551d4fe6679\"\n      title: \"[workflow] Expectation-oriented spec contract rollout\"\n      state: done\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Summary\\r\\n\\r\\nCoordinate the rollout that redefines specifications around intended properties, acceptance criteria, and s…\"\n      score: 3.5149197578430176\n    - id: \"2e41c96d-fe9f-4cf2-b941-6f0d452f237c\"\n      title: \"[memory-api] Create domain instrumentation and journaling coverage map\"\n      state: \"in-review\"\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nMap major operations across memory-domain crates to required spans, events, result summaries, and journal requir…\"\n      score: 3.494762897491455\n    - id: \"1dffcf23-8a95-4f45-8163-27e4e58048c7\"\n      title: \"[context-stack] Define replayable graph-operation journal format for log-viewer\"\n      state: \"in-review\"\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nDefine a replayable graph-operation format for context-stack operations that fits log-viewer visualizations and …\"\n      score: 3.4126603603363037\n    - id: \"bce26d30-0a79-40b4-812a-c14b4a246de5\"\n      title: \"[docs-tests] Validate unified logging and journaling architecture end to end\"\n      state: new\n      workspace:\n        active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n        store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n        workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\n      snippet: \"# Goal\\n\\nCreate the documentation and validation matrix for the unified logging and journaling design.\\n\\n## Scope\\n\\n- Docum…\"\n      score: 3.2964932918548584\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe get a0bc8bd8-3fe0-4768-a895-b1bacee42759 --toon\nrequest_id: \"1bee0867-5469-4668-857d-e893687a0308\"\npayload:\n  command: get\n  status: ok\n  ticket:\n    id: \"a0bc8bd8-3fe0-4768-a895-b1bacee42759\"\n    path: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759\"\n    created_at: \"2026-06-28T12:41:30.126123200Z\"\n    fields:\n      component: \"test-api\"\n      depends_on[9]: \"03ed4121-ec7e-4d5f-adb4-4d3846af8031\",\"124c6621-b39d-4009-b599-a3e5503d08f6\",\"1bc3982c-e0c2-4b6a-b809-aff4eb78d161\",\"23f4e2eb-e916-401e-b398-9ad59c06c5e3\",\"26d6353a-6613-48ad-96c5-d4bd8ad5180f\",\"2b0f31e5-1067-45e9-93ff-ef273c26020e\",\"751f0e71-a857-484f-a45e-09717f086321\",\"7a524627-bb48-47c8-a3d8-9c8b9303f0f3\",\"90de77b1-7784-4b26-81d1-9039277a9bec\"\n      priority: high\n      risk_level: medium\n      state: new\n      title: \"[memory-api][test] Unified validation & benchmark surface in test-api (tracker)\"\n    workspace:\n      active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n      store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n      workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe get d3349747-b2f2-4dd4-b73c-dc016fec80d6 --toon\nrequest_id: \"09bf021c-630f-479a-a427-5ed58cf63e51\"\npayload:\n  command: get\n  status: ok\n  ticket:\n    id: \"d3349747-b2f2-4dd4-b73c-dc016fec80d6\"\n    path: \"c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6\"\n    created_at: \"2026-07-02T11:22:26.444702700Z\"\n    fields:\n      component: \"log-api\"\n      depends_on[1]: \"84673399-75e6-4f36-8a17-4c666001e530\"\n      effort: 2k tokens\n      priority: high\n      risk_level: medium\n      state: done\n      title: \"[log-api] Add runtime log session model and cross-store links\"\n    workspace:\n      active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n      store_root: \"c:/Users/linus/git/graph_app/context-engine/.ticket\"\n      workspace_root: \"c:/Users/linus/git/graph_app/context-engine\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe get 39239e48-828a-41d8-a697-9cf02e980da9 --toon\nrequest_id: \"f57e0586-cf22-41a1-b551-2c6bd4753e19\"\npayload:\n  command: get\n  status: ok\n  ticket:\n    id: \"39239e48-828a-41d8-a697-9cf02e980da9\"\n    path: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9\"\n    created_at: \"2026-06-27T14:24:25.308684400Z\"\n    fields:\n      component: \"memory-api\"\n      depends_on[4]: \"1fd0c182-f4b4-486b-b757-fe47e3238e43\",\"27558fde-37b0-43eb-86c6-cfbe2d99a0b8\",\"5318aedd-5188-4bfa-ad7d-a6d76e3243f1\",\"632974d1-ce70-446a-b210-068840041116\"\n      effort: \"5000\"\n      priority: high\n      state: new\n      title: \"[memory-api] Transport-layer workspace-resolution parity (tracker)\"\n    workspace:\n      active_index_root: \"C:/Users/linus/git/graph_app/context-engine/.ticket\"\n      store_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api/.ticket\"\n      workspace_root: \"c:/Users/linus/git/graph_app/context-engine/memory-api\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe create --help\nCreate a new ticket\n\nUsage: ticket.exe create [OPTIONS]\n\nOptions:\n      --id <ID>                     \n      --json                        Return machine-readable JSON envelope output\n      --toon                        Return machine-readable TOON envelope output\n      --type <TICKET_TYPE>          \n      --request-id <REQUEST_ID>     Optional request identifier propagated in JSON envelope output\n      --title <TITLE>               \n      --index-root <INDEX_ROOT>     Root directory for the SQLite index and Tantivy search index. Defaults to $TICKET_INDEX_ROOT, then the nearest local .ticket/\n      --state <STATE>               \n      --field <FIELDS>              \n      --workspace <WORKSPACE_ROOT>  Workspace/repo root to normalize to the canonical `.ticket` store. Useful for targeting a nested workspace from an ancestor checkout\n      --body-file <BODY_FILE>       Copy the contents of this file into the ticket as description.md\n      --schema-dir <SCHEMA_DIR>     Directory containing additional ticket type schema TOML files. Each `<type-id>.toml` file overrides or supplements the built-in schemas\n      --dry-run                     Preview mutating commands without writing to storage\n  -h, --help                        Print help\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe add-edge --help\nerror: unrecognized subcommand 'add-edge'\n\nUsage: ticket.exe [OPTIONS] <COMMAND>\n\nFor more information, try '--help'.\n\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/spec.exe search \"minimal store\" --toon\ncommand: search\nstatus: ok\nquery: minimal store\ncount: 16\nitems[16]{id,title,state,type,score,snippet}:\n  \"a28a88db-2b41-49d2-897c-6dbcdb313255\",Minimal bootstrapper and selective rule loading,draft,specification,12.138607025146484,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nRemove the always-on generated instruction load and replace it with a mini…\"\n  \"9ee9387f-5384-42a9-95c4-ecbad1713030\",\"scaffold: rule-generated domain-store bootstrap instructions and slash skill\",draft,specification,9.383392333984375,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nCreating new domain stores repeatedly is slow and inconsistent. Teams need…\"\n  \"38e337c2-cdda-4488-9aa7-b47a300563b0\",\"cross-store workflow traceability metadata\",draft,specification,9.380521774291992,\"<!-- spec-api:file generated=true -->\\r\\n\\r\\n<!-- spec-api:entry id=4195dfd9-f5d8-46b8-aa1f-ccbb436602e2 slug=context-engine…\"\n  \"bf217ce5-8890-4749-9a2d-deffb6d0f4dd\",\"Domain-owned thin generator architecture for store indexes\",draft,specification,9.227944374084473,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nDefine the architecture boundary for store-index generation so each domain…\"\n  \"9074b2ef-c8fe-4bb0-a987-87063078c1ff\",Workflow and health parity for ticket interfaces,draft,specification,7.594113826751709,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nTicket CLI, ticket HTTP, and ticket MCP currently return different workflo…\"\n  \"9c3ec5a5-0e1e-4061-b66a-16006611f671\",Store expansion and operational health program,draft,specification,6.960219860076904,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nCoordinate the next major store vectors (interview, feedback, health audit…\"\n  \"8c880efc-7083-4e1d-bf06-96b8254be913\",\"Dynamic session bootstrapping and just-in-time context routing\",draft,specification,6.815038681030273,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nTurn `session-api` from a capture/archive-only store into a runtime \\\"cogni…\"\n  \"0b1888f2-7e59-45fb-95d8-1bf14ff7747f\",\"Ancestor Workspace Ticket References for Child-Workspace Dependencies\",draft,specification,6.495789527893066,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nChild ticket workspaces need a way to surface ancestor-owned ticket entrie…\"\n  \"96dc0068-d05d-4e61-b785-144272119fa9\",workflow guidance generation and session capture scaffolding,draft,specification,6.3873443603515625,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nGenerate the requested workflow prompt and agent files from canonical rule…\"\n  \"4c3b62b4-1198-4ce2-9ef6-df530f38297e\",\"viewer-api: demo-viewer\",draft,specification,6.019137859344482,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nThe **demo-viewer** is a reference application that lives inside the `view…\"\n  \"a4f48d84-50ed-4769-a42f-38321ea9600c\",workflow validation metadata and default tool behavior,draft,specification,5.635683536529541,\"<!-- spec-api:file generated=true -->\\r\\n\\r\\n<!-- spec-api:entry id=98bbe03a-236c-443b-b9e6-f01a7be717b9 slug=context-engine…\"\n  \"42e8d710-2199-4178-9ab3-dea8d61bfc4a\",\"ticket-cli: graph rendering and closure-aware dependency display\",draft,specification,5.447295188903809,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nThe ticket graph is queryable, but operators still have to mentally recons…\"\n  \"fb968dea-b658-4c0d-b138-266bdd2615f9\",functional v1 sandbox orchestration layer,draft,specification,5.196591854095459,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nDefine the first functional sandbox orchestration slice for this repositor…\"\n  \"a595eb0c-f9f1-4e29-a425-120df5334f7d\",Scoped selector contract for board and next workflow discovery,draft,specification,4.781052589416504,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\n`ticket board show`, `ticket next`, MCP `board_show`/`next_tickets`, and H…\"\n  \"76da5f2d-cea9-49d9-b223-730a0c2a5d6b\",\"Transport-layer e2e matrix and benchmark strategy\",draft,specification,4.60624885559082,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nThis spec drafts the design for a real transport matrix covering CLI, HTTP…\"\n  \"5650b307-8408-4ca0-922f-c515dd0bfa27\",\"ticket-viewer: shell and header actions\",draft,specification,4.388141632080078,\"<!-- aligned-structure:v1 -->\\r\\n\\r\\n# Summary\\r\\n\\r\\nCanonical specification for the ticket-viewer shell-level interaction cont…\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/spec.exe get 9ee9387f-5384-42a9-95c4-ecbad1713030 --toon\ncommand: get\nstatus: ok\nspec:\n  id: \"9ee9387f-5384-42a9-95c4-ecbad1713030\"\n  created_at: \"2026-06-17T15:36:17.540892800Z\"\n  fields:\n    component: scaffold\n    slug: \"scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill\"\n    state: draft\n    title: \"scaffold: rule-generated domain-store bootstrap instructions and slash skill\"\n    type: specification\n  code_refs[0]:\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/spec.exe get 76da5f2d-cea9-49d9-b223-730a0c2a5d6b --toon\ncommand: get\nstatus: ok\nspec:\n  id: \"76da5f2d-cea9-49d9-b223-730a0c2a5d6b\"\n  created_at: \"2026-07-01T01:30:26.815758Z\"\n  fields:\n    component: \"memory-api\"\n    related_tickets[4]: \"memory-api/.ticket/tickets/1bc3982c-e0c2-4b6a-b809-aff4eb78d161/ticket.toml\",\"memory-api/.ticket/tickets/387843e4-815e-4424-97fa-9855a464b5e6/ticket.toml\",\"memory-api/.ticket/tickets/2d59b99c-0205-4bf6-bad9-ecb69a52830a/ticket.toml\",\"memory-api/.ticket/tickets/d8d18128-656e-4a13-9983-946d6af33c27/ticket.toml\"\n    scope: public\n    slug: \"test/transport-layer-e2e-matrix\"\n    state: draft\n    title: \"Transport-layer e2e matrix and benchmark strategy\"\n    type: specification\n  code_refs[0]:\nlinus@nordwind:~/git/graph_app/context-engine$  rtk ./target/debug/ticket.exe link --help\nAdd a directed edge (dependency/link) between two tickets\n\nUsage: ticket.exe link [OPTIONS] --from <FROM> --to <TO> --kind <KIND>\n\nOptions:\n      --from <FROM>                 UUID or 8+ character hex prefix of the source ticket\n      --json                        Return machine-readable JSON envelope output\n      --to <TO>                     UUID or 8+ character hex prefix of the target ticket\n      --toon                        Return machine-readable TOON envelope output\n      --kind <KIND>                 Edge kind (e.g. depends_on, linked)\n      --request-id <REQUEST_ID>     Optional request identifier propagated in JSON envelope output\n      --index-root <INDEX_ROOT>     Root directory for the SQLite index and Tantivy search index. Defaults to $TICKET_INDEX_ROOT, then the nearest local .ticket/\n      --reason <REASON>             Human-readable reason for this edge (optional, stored in response only)\n      --workspace <WORKSPACE_ROOT>  Workspace/repo root to normalize to the canonical `.ticket` store. Useful for targeting a nested workspace from an ancestor checkout\n      --schema-dir <SCHEMA_DIR>     Directory containing additional ticket type schema TOML files. Each `<type-id>.toml` file overrides or supplements the built-in schemas\n      --dry-run                     Preview mutating commands without writing to storage\n  -h, --help                        Print help\nlinus@nordwind:~/git/graph_app/context-engine$ \nlinus@nordwind:~/git/graph_app/context-engine$  tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Objective\nCreate one durable policy track for repository workflows that are currently too expensive to rediscover ad hoc:\n- minimal domain-store bootstrap for new memory-backed stores\n- end-to-end benchmarking and executable performance evidence\n- tracing instrumentation plus log/execution management through `log-api`\n\n## Why\nThe repository already has multiple mature memory-domain stores (`ticket-api`, `spec-api`, `rule-api`, `session-api`) and partially overlapping work on `test-api`, `log-api`, workspace resolution, and transport benchmarks. What is missing is one explicit policy track that turns those patterns into repeatable instructions, templates, validation routines, and durable evidence expectations.\n\n## Scope\nThis tracker owns research and policy synthesis first. It should break the work into focused child trackers and only move into implementation after the current patterns, gaps, and dependencies are mapped.\n\n## Child workstreams\n1. Minimal domain-store bootstrap policy.\n2. End-to-end benchmark and executable-anchor policy.\n3. Tracing instrumentation and log-api execution policy.\n\n## Expected outputs\n- new or updated workflow instructions and slash-command guidance\n- required specs for contract-level behavior before implementation\n- ticket decomposition for concrete code changes, templates, libraries, or migrations\n- validation plan with executable commands and evidence-store expectations\n- explicit dependency map to existing `memory-api`, `test-api`, `log-api`, and workspace-policy work\n\n## Initial validation\nSuccess for this tracker's bootstrap phase means the child trackers exist, each points at concrete repo anchors, and the next session can start the first research step without reconstructing the problem.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy] Tracker: durable store bootstrap, benchmark, and tracing/log guidance\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm \"$tmp\"\nrequest_id: \"5b7b8914-c8f2-4358-8dec-7f19b91a7765\"\npayload:\n  command: create\n  status: ok\n  id: \"6e72756f-11c6-405f-8d74-0ab608172871\"\n  created_at: \"2026-07-09T17:26:51.146230400Z\"\n  title: \"[workflow-policy] Tracker: durable store bootstrap, benchmark, and tracing/log guidance\"\n  state: new\nrm: remove regular file '/tmp/tmp.pXxYqJudnm'? y",
+      "captured_at": "2026-07-09T17:42:20.527Z",
+      "event_meta": {
+        "event_id": "317ff41c-cd9b-41a5-9436-0508cf40bfde",
+        "parent_event_id": "5b1851db-1066-44bf-9a47-1307e68b502e",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "The ticket bootstrap worked, but the shell alias for `rm` is prompting interactively after each create. I’m clearing those prompts, finishing the last child ticket with a non-interactive cleanup, then I’ll wire the tracker hierarchy and assemble the handoff.",
+      "captured_at": "2026-07-09T17:42:30.752Z",
+      "event_meta": {
+        "event_id": "a616f009-0790-4582-a198-a2b16a3e7bb1",
+        "parent_event_id": "10a04b62-db36-47d9-a20c-7343b0e349cd",
+        "event_type": "assistant.message",
+        "message_id": "aada9641-0183-4d94-98a7-6392648596ac",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_7Pzm320i498rIGnKOETK2hEl",
+            "name": "send_to_terminal",
+            "arguments": {
+              "id": "62bb2879-a785-46fb-849d-b345275551a4",
+              "command": "y",
+              "waitForOutput": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_x1DRcmRLBVzsOm8s4oCXnawZ",
+            "name": "get_terminal_output",
+            "arguments": {
+              "id": "057b3b2d-75c5-4105-b5f3-3ce03360e326"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I’ve confirmed the first three creates succeeded. Next I’m clearing the remaining prompt, creating the tracing child, then validating the hierarchy by linking the three child trackers to the root tracker and reading back the result.",
+      "captured_at": "2026-07-09T17:42:47.945Z",
+      "event_meta": {
+        "event_id": "1f5e7518-480c-4f38-a53d-8d69e382b905",
+        "parent_event_id": "e60f81f7-4b7e-4b4f-87c6-781fb94365db",
+        "event_type": "assistant.message",
+        "message_id": "c8b54b65-f393-4ec3-a8cf-0ed15b7bffd8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lva6jECyIYGdtxAeRCVhCG26",
+            "name": "send_to_terminal",
+            "arguments": {
+              "id": "057b3b2d-75c5-4105-b5f3-3ce03360e326",
+              "command": "y",
+              "waitForOutput": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YsLlt5sYUVsbrSZwiQdGzmWE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "tmp=$(mktemp)\ncat > \"$tmp\" <<'EOF'\n# Goal\nResearch and codify the repository policy for tracing instrumentation, runtime log capture, and managing generated logs plus executions through `log-api`.\n\n## Why this work exists\nTracing, logs, journals, and execution evidence now span `context-*`, `memory-api`, `test-api`, `log-api`, and viewer surfaces. Existing tickets establish parts of the model, but contributors still lack one focused workflow that explains what to instrument, where logs live, how they are indexed, and how validation/runtime executions link back to the generated artifacts.\n\n## Research questions\n- What spans, events, result summaries, and correlation ids are the minimum required instrumentation for domain operations?\n- Which generated artifacts belong in `log-api`, which belong in `test-api`, and which remain transient files or viewer-layer outputs?\n- How should runtime sessions, validation runs, benchmark logs, and operation journals relate across stores?\n- What additional `log-api` or tooling gaps block a full durable workflow today?\n- Which current instructions should become canonical policy once the design is settled?\n\n## Starting anchors\n- existing completed ticket: `d3349747-b2f2-4dd4-b73c-dc016fec80d6` (`[log-api] Add runtime log session model and cross-store links`)\n- active/root-store tickets: `73b2cd22-942b-4205-86e5-333df2373211` (`[memory-api] Shared tracing and log-api runtime diagnostics`), `2e41c96d-fe9f-4cf2-b941-6f0d452f237c` (`[memory-api] Create domain instrumentation and journaling coverage map`)\n- architectural precedent: `84673399-75e6-4f36-8a17-4c666001e530` (`[observability] Resolve logging, journaling, and replay architecture boundaries`)\n- repo anchor surfaced this session: `context-stack/context-api/src/log_parser.rs`\n\n## Deliverables\n- instrumentation policy by operation type and layer\n- artifact ownership matrix for logs, journals, executions, and summaries\n- dependency map for any missing `log-api` features or migrations\n- follow-up specs and implementation tickets for the concrete gaps\n\n## Validation expectations\nThe next session should finish with a draft policy outline tied to real crates/tickets plus an explicit blocker list for anything `log-api` cannot yet support.\nEOF\nrtk ./target/debug/ticket.exe create --toon --workspace . --type tracker-improvement --title \"[workflow-policy][tracing][log-api] Research and define tracing instrumentation and log execution policy\" --field priority=high --field component=workflow-policy --field risk_level=high --body-file \"$tmp\"\nrm -f \"$tmp\"",
+              "explanation": "Create the tracing/log-api workflow-policy child tracker without interactive cleanup prompts.",
+              "goal": "Bootstrap the tracing-policy child tracker",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "All four tracker tickets now exist. I’m linking the three focused trackers under the root tracker and reading back the root ticket so the handoff can cite the exact hierarchy and status.",
+      "captured_at": "2026-07-09T17:42:58.163Z",
+      "event_meta": {
+        "event_id": "ab5439f3-96b2-4a8c-8b47-8bbf9cfcf618",
+        "parent_event_id": "839af9a1-5a7c-4aff-83bc-9dd51e395936",
+        "event_type": "assistant.message",
+        "message_id": "cceee5db-a3b2-4657-ae30-fa901cc09bef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eGPbNMiHE8wBDSkBVyxKrBsS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe link --toon --workspace . --from 6e72756f-11c6-405f-8d74-0ab608172871 --to 79dd2d35-267b-4395-8316-0761df45f3c5 --kind depends_on --reason \"Root tracker depends on minimal-store policy research\" && rtk ./target/debug/ticket.exe link --toon --workspace . --from 6e72756f-11c6-405f-8d74-0ab608172871 --to a2c469c4-c62b-444d-81ed-6c936bee8ba3 --kind depends_on --reason \"Root tracker depends on benchmark policy research\" && rtk ./target/debug/ticket.exe link --toon --workspace . --from 6e72756f-11c6-405f-8d74-0ab608172871 --to a71c2da8-0972-4c2d-9754-0a0e06db5272 --kind depends_on --reason \"Root tracker depends on tracing/log policy research\"",
+              "explanation": "Link the root tracker to its three child policy trackers so the dependency graph reflects the intended execution structure.",
+              "goal": "Create parent-child tracker edges",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8GbIlhQ18I1bcILsQnqJc1d6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 6e72756f-11c6-405f-8d74-0ab608172871 --toon",
+              "explanation": "Read back the root tracker after creating it so the hierarchy can be validated and cited in the handoff.",
+              "goal": "Validate root tracker exists",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xrG2YQBSfpe2KbSuOKlB1otD",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 79dd2d35-267b-4395-8316-0761df45f3c5 --toon && rtk ./target/debug/ticket.exe get a2c469c4-c62b-444d-81ed-6c936bee8ba3 --toon && rtk ./target/debug/ticket.exe get a71c2da8-0972-4c2d-9754-0a0e06db5272 --toon",
+              "explanation": "Read back the three child trackers to validate creation and capture exact ids/titles for the handoff.",
+              "goal": "Validate child trackers exist",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "The ticket graph is in place. I’m doing one last file-level validation on the new ticket folders so the handoff can link directly to the durable ticket artifacts instead of only citing ids.",
+      "captured_at": "2026-07-09T17:43:08.721Z",
+      "event_meta": {
+        "event_id": "0621d7ce-0427-4378-ba88-8d9f0b81e3b7",
+        "parent_event_id": "b6386330-f95b-45a9-a23e-8ab42d7fe64d",
+        "event_type": "assistant.message",
+        "message_id": "52210564-5cc1-4b14-81db-27dbed18bee0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fpVN5XJtfn4Pj0pkzPNusol3",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\6e72756f-11c6-405f-8d74-0ab608172871"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PsISOnVmLxBZoygR88Id7Y3Y",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\79dd2d35-267b-4395-8316-0761df45f3c5"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_endVJ0hXJCO250PUW1JiMJhh",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\a2c469c4-c62b-444d-81ed-6c936bee8ba3"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RS6EjG6vEe233ZxS4UewGgOk",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\a71c2da8-0972-4c2d-9754-0a0e06db5272"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "I need a couple of durable links for the draft specs that seed this track. I’m locating their workspace files now so the handoff can point the next session at the exact spec artifacts, not just ids.",
+      "captured_at": "2026-07-09T17:43:17.669Z",
+      "event_meta": {
+        "event_id": "473d120c-1a5a-40b7-a352-2cb2c6e141bf",
+        "parent_event_id": "da0026ab-4e9b-4103-a36f-c5e1e69746ad",
+        "event_type": "assistant.message",
+        "message_id": "9d1cdac8-227f-4436-8a29-7412b7e06241",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3osI67pUaHVUTr6MBduo9hTU",
+            "name": "grep_search",
+            "arguments": {
+              "query": "9ee9387f-5384-42a9-95c4-ecbad1713030",
+              "isRegexp": false,
+              "includePattern": ".spec/**",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_O6iLq7XU47f0dKfGDEi5PN4v",
+            "name": "grep_search",
+            "arguments": {
+              "query": "76da5f2d-cea9-49d9-b223-730a0c2a5d6b",
+              "isRegexp": false,
+              "includePattern": ".spec/**",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_CLuE428GzsLGXWWLq0xpLFC6",
+            "name": "grep_search",
+            "arguments": {
+              "query": "scaffold: rule-generated domain-store bootstrap instructions and slash skill|Transport-layer e2e matrix and benchmark strategy",
+              "isRegexp": true,
+              "includePattern": ".spec/**",
+              "maxResults": 20
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "~~~text\nOverview\n\nStart from the repository root beside [./AGENTS.md](./AGENTS.md). This session did the requested superficial research sweep, identified the main existing anchors for store bootstrap, benchmarking, and tracing/log workflows, then bootstrapped a new repo-level policy tracker with three focused child trackers in the root ticket store so the next session can continue from durable artifacts instead of reconstructing context.\n\nWorking Directory\n\nStart in the repository root: use [./AGENTS.md](./AGENTS.md) and [./.agents/instructions/session-optimization.instructions.md](./.agents/instructions/session-optimization.instructions.md) as the operating guardrails, then work from the new root tracker at [./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md](./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md).\n\nFindings\n\n- There was no single existing workflow-policy tracker covering all three requested areas. The gap is now captured in [./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md](./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md).\n- The minimal-store/bootstrap problem already has a useful draft spec seed and related workspace-resolution precedent, but not a canonical executable policy. The most relevant seeds are [./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml](./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml) and [./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md](./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md).\n- Benchmarking already has meaningful partial work in `memory-api` and draft transport-matrix spec work, but not one repo workflow explaining executable anchors, load profiles, result capture, and evidence summarization. The strongest anchors are [./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md](./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md) and [./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md](./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md).\n- Tracing/log policy has solid architectural precedent and some completed `log-api` work, but still lacks one operator-facing workflow for what to instrument, where artifacts belong, and how executions/logs/journals relate. The strongest anchors are [./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md](./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md), [./.ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/description.md](./.ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/description.md), and [./.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/description.md](./.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/description.md).\n\nDecisions\n\n- The planning work belongs in the root ticket store, not only under `memory-api`, because the requested workflow policies cross repo boundaries and touch root-store tickets, root-store logs, `memory-api`, and shared instructions.\n- The work was intentionally split into one root tracker plus three child trackers so the next session can execute one focused research slice at a time while preserving a single long-horizon umbrella.\n- The first session goal was limited to research anchoring and ticket bootstrapping. No spec edits or code changes were made yet because the highest-value next step is to map existing patterns before deciding whether the repo needs new specs, template crates, shared harnesses, or `log-api` feature work.\n\nBlockers\n\n- There is still no validated minimal-store template or fixture proving out-of-the-box CRUD, schema validation, cross-store references, and workspace hierarchy behavior.\n- Benchmark behavior is still split across Criterion, custom perf/tracing work, and `test-api` execution capture; the policy layer is missing even though several building blocks exist.\n- Full tracing/log workflow policy may be blocked by remaining `log-api` capability gaps; the next session needs to make those blockers explicit instead of assuming the current surfaces are sufficient.\n\nSuggested Goal\n\n- Long-horizon goal: turn store bootstrap, benchmarking, and tracing/logging into durable repository workflows with executable validation and evidence expectations, starting from [./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md](./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md).\n\nKey Entities\n\n- Ticket `6e72756f-11c6-405f-8d74-0ab608172871`: [./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md](./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md)  \n  Root tracker created in this session. It now depends on the three focused research trackers and is the main orchestration surface for follow-up handoffs.\n- Ticket `79dd2d35-267b-4395-8316-0761df45f3c5`: [./.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/description.md](./.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/description.md)  \n  New minimal-store bootstrap policy tracker. Start here first if the next session is taking the most foundational slice.\n- Ticket `a2c469c4-c62b-444d-81ed-6c936bee8ba3`: [./.ticket/tickets/a2c469c4-c62b-444d-81ed-6c936bee8ba3/description.md](./.ticket/tickets/a2c469c4-c62b-444d-81ed-6c936bee8ba3/description.md)  \n  New end-to-end benchmark policy tracker. It points at the existing `test-api` and transport-matrix work instead of starting from scratch.\n- Ticket `a71c2da8-0972-4c2d-9754-0a0e06db5272`: [./.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/description.md](./.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/description.md)  \n  New tracing and `log-api` policy tracker. Use this to reconcile instrumentation expectations with artifact ownership and runtime evidence.\n- Ticket `39239e48-828a-41d8-a697-9cf02e980da9`: [./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md](./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md)  \n  Existing `memory-api` workspace-resolution tracker. It is the clearest current precedent for the “works in a workspace hierarchy out of the box” requirement.\n- Ticket `a0bc8bd8-3fe0-4768-a895-b1bacee42759`: [./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md](./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md)  \n  Existing `test-api` benchmark/validation umbrella. Use it to avoid duplicating harness planning and to decide what should stay in `memory-api` versus repo-level workflow policy.\n- Ticket `d3349747-b2f2-4dd4-b73c-dc016fec80d6`: [./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md](./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md)  \n  Completed `log-api` runtime-session and cross-store link precedent. This is the clearest proof that the new tracing/log policy can build on existing durable modeling work.\n- Spec `9ee9387f-5384-42a9-95c4-ecbad1713030`: [./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml](./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml)  \n  Draft spec seed for store bootstrap instructions and slash-skill generation. It is the most obvious candidate for either reuse or refinement when the minimal-store policy becomes concrete.\n- Spec `76da5f2d-cea9-49d9-b223-730a0c2a5d6b`: [./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md](./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md)  \n  Draft transport-layer benchmark strategy. Use it to anchor the executable-anchor and transport-matrix discussion.\n- Source anchor: [./memory-api/crates/rule-api/src/default_schema.rs](./memory-api/crates/rule-api/src/default_schema.rs)  \n  Concrete example of default schema registration in a domain-owned store.\n- Source anchor: [./memory-api/tools/http/ticket-http/src/serve/handlers/schema.rs](./memory-api/tools/http/ticket-http/src/serve/handlers/schema.rs)  \n  Concrete example of schema exposure over transport.\n- Source anchor: [./memory-api/tools/cli/ticket-cli/tests/contracts_schema_validation.rs](./memory-api/tools/cli/ticket-cli/tests/contracts_schema_validation.rs)  \n  Concrete schema-validation test surface that can inform minimal-store validation policy.\n- Source anchor: [./context-stack/context-api/src/log_parser.rs](./context-stack/context-api/src/log_parser.rs)  \n  Concrete tracing/log parsing anchor surfaced during this session for the tracing/log policy track.\n\nNext Actions\n\n1. Check in on the draft board against ticket `79dd2d35-267b-4395-8316-0761df45f3c5` before starting deeper work, because the board was clear during this handoff and the minimal-store track is the best first slice.\n2. Read [./.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/description.md](./.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/description.md), [./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md](./memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/description.md), and [./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml](./.spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml), then produce a comparison matrix across `ticket-api`, `spec-api`, `rule-api`, and `session-api`.\n3. First validation check: before leaving the minimal-store slice, create one durable artifact that proves the research advanced the state of the repo, either by updating the bootstrap spec seed or by creating one or more concrete implementation tickets anchored to specific crates/tests.\n4. Move to the benchmark slice in [./.ticket/tickets/a2c469c4-c62b-444d-81ed-6c936bee8ba3/description.md](./.ticket/tickets/a2c469c4-c62b-444d-81ed-6c936bee8ba3/description.md), using [./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md](./memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/description.md) and [./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md](./memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/body.md) to define the benchmark taxonomy and the first executable-anchor shape.\n5. Validate the benchmark slice by mapping at least one existing bench or transport test to the proposed executable-anchor shape and capturing the mismatch list that still blocks unification.\n6. Move to the tracing/log slice in [./.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/description.md](./.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/description.md), using [./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md](./.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/description.md), [./.ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/description.md](./.ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/description.md), and [./.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/description.md](./.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/description.md) to produce an artifact-ownership matrix and explicit blocker list.\n7. Update the root tracker at [./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md](./.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/description.md) with the synthesized findings and any newly created child tickets/specs, then continue until all three policy slices are either decomposed into executable follow-up work or explicitly blocked.\n\nCompletion Status\n\n- `completed` Bootstrapped the root workflow-policy tracker and linked it to three focused child trackers.\n- `completed` Collected the main existing repo anchors for minimal-store bootstrap, benchmark strategy, and tracing/log policy.\n- `not-started` Minimal-store comparison matrix and template-boundary decision.\n- `not-started` Benchmark taxonomy, executable-anchor schema, and unification decision.\n- `not-started` Tracing/log artifact-ownership matrix and blocker map.\n- `not-started` Spec updates or follow-up implementation tickets produced from the research.\n- `not-started` Root-tracker synthesis pass after the three focused research slices.\n\nDefinition Of Done\n\n- The minimal-store, benchmark, and tracing/log child trackers each produce durable outputs, not just notes.\n- At least one relevant spec is updated or one or more concrete implementation tickets are created for each slice.\n- The repo ends with explicit workflow policy for bootstrap, benchmarking, and tracing/log evidence management, with executable validation expectations and named blockers where implementation cannot yet proceed.\n\nBoard And Persisted-Session Note\n\n- The draft board was clear when this handoff was generated. The next session should check in before continuing, preferably on ticket `79dd2d35-267b-4395-8316-0761df45f3c5` first.\n- No special transcript artifact needs to be replayed. The durable state to resume from is now in the new ticket descriptions and the linked spec/source anchors above.\n- Execute the next actions in order and continue until all are completed or explicitly blocked.\n~~~",
+      "captured_at": "2026-07-09T17:44:06.641Z",
+      "event_meta": {
+        "event_id": "3f002f77-effb-4e13-9192-9182c18bfcbc",
+        "parent_event_id": "1809df49-ee2f-4425-9b3a-8ee5544d44af",
+        "event_type": "assistant.message",
+        "message_id": "0cf712c5-d73d-47e4-8563-e86bfe22f3b7",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

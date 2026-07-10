@@ -19,6 +19,10 @@ Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, refer
 ## Related Implementation Tickets
 
 - No related implementation ticket is linked yet.
+- [.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml](.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml)
+- [.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml](.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml)
+- [.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml](.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml)
+- [.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml](.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml)
 
 ## Background Knowledge References
 

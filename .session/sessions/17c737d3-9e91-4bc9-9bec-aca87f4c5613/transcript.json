@@ -1,0 +1,1163 @@
+{
+  "schema_version": 1,
+  "session_id": "17c737d3-9e91-4bc9-9bec-aca87f4c5613",
+  "captured_at": "2026-07-10T01:57:00.209Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Overview\r\nThis handoff continues the review/hardening track for upstream prompt-facing session compaction after commits 7605b57 (memory-api) and 2db1334d (root). The implementation contract remains stable and enforced: session capture artifacts are diagnostic evidence only, while cost reduction must happen before prompt reuse through deterministic upstream transforms.\r\n\r\nTrack\r\nPrimary ticket: [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml) (state: done).  \r\nPolicy prerequisite ticket: [./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml) (state: done).  \r\nContract spec: [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md).\r\n\r\nFindings\r\n1. Transcript-driven review found a concrete hook-path defect: sync run_in_terminal completions were over-labeled as ambiguous in synthesized tool.execution_result metadata.\r\n2. The ambiguity defect was fixed in [./memory-api/crates/session-api/src/hook.rs](./memory-api/crates/session-api/src/hook.rs) by requiring explicit ambiguity signals (background/timeout/input-needed markers) rather than inferring ambiguity from missing exit metadata.\r\n3. Regression coverage was expanded in [./memory-api/crates/session-api/src/hook/tests.rs](./memory-api/crates/session-api/src/hook/tests.rs):\r\n- sync completion without explicit ambiguity signals must not emit blocker/lifecycle ambiguity fields\r\n- sync completion with explicit background signal must still emit sync-terminal-state-ambiguous\r\n4. Residual waste still visible in active transcript style: repeated short assistant progress preambles remain a prompt-noise source (partially addressed in prompt-pack, not yet governed by quantitative compactness gates).\r\n\r\nDecisions\r\n1. Keep the boundary from spec unchanged: no optimization claims from transcript persistence alone.\r\n2. Prefer deterministic classifier/event normalization improvements over post-hoc transcript mutation.\r\n3. Treat hook-layer ambiguity markers as high-signal diagnostics only; avoid blocker inflation from normal sync completions.\r\n4. Keep path-scoped edits due heavily dirty workspace state.\r\n\r\nBlockers\r\n1. No functional blocker remains for the fixed ambiguity issue.\r\n2. Operational caution remains: workspace has substantial unrelated dirty state; all future staging/commits must stay path-scoped.\r\n3. Validation gap remains: no quantitative token-delta compactness gate yet.\r\n\r\nEpic Or Long-Horizon Goal\r\nReduce model-bound Copilot context before token spend by combining deterministic suppression, bounded summaries, and pointer-based artifact references, while keeping session artifacts queryable as diagnostics only.\r\n\r\nSuggested Goals\r\n1. Add measurable compactness gates tied to transcript-derived fixtures.\r\n2. Broaden suppression coverage for repetitive short assistant orchestration messages.\r\n3. Add cross-boundary replay fixtures that validate hook -> prompt-pack behavior together.\r\n\r\nKey Entities\r\n1. [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md) - contract anchor for upstream compaction boundary and follow-up slices.\r\n2. [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml) - owning implementation ticket, done with evidence updates.\r\n3. [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md) - updated review evidence including transcript-derived ambiguity finding and fix.\r\n4. [./memory-api/crates/session-api/src/hook.rs](./memory-api/crates/session-api/src/hook.rs) - ambiguity heuristic logic for synthesized tool.execution_result events.\r\n5. [./memory-api/crates/session-api/src/hook/tests.rs](./memory-api/crates/session-api/src/hook/tests.rs) - regression coverage for non-ambiguous vs explicitly ambiguous sync terminal completions.\r\n6. [./memory-api/crates/session-api/src/peek.rs](./memory-api/crates/session-api/src/peek.rs) - prompt-pack suppression/classification surface from prior slice.\r\n7. [./memory-api/tools/cli/session-cli/tests/cli.rs](./memory-api/tools/cli/session-cli/tests/cli.rs) - CLI integration assertions for dropped/summarized/reference-only behavior.\r\n8. [./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e/transcript.json](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e/transcript.json) - reference pattern session used for review comparisons.\r\n9. [./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e/events.json](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e/events.json) - event-level evidence for prior ambiguity/boilerplate patterns.\r\n10. [./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2/transcript.json](./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2/transcript.json) - active review-session transcript containing residual preamble-style noise examples.\r\n11. [./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2/events.json](./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2/events.json) - active review-session event evidence for over-labeling before fix.\r\n12. [./.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml](./.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml) - broader reliability tracker (done) linking related bug slices for context continuity.\r\n\r\nTicket Legend\r\nNo shorthand labels are used in this handoff; all ticket references are full UUIDs.\r\n\r\nNext Actions (Execution Order)\r\n1. Re-open anchors and verify drift status:\r\n- [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md)\r\n- [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\r\n- [./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml)\r\n2. Add quantitative compactness regression fixture(s) from current session artifacts and assert token/size deltas at prompt-pack output boundaries.\r\n3. Add explicit regression coverage for repeated short assistant progress/preamble variants that survive existing lifecycle-wrapper suppression.\r\n4. Add cross-boundary replay test cases in hook-path coverage where event normalization materially affects prompt-pack quality:\r\n- target files: [./memory-api/crates/session-api/src/hook.rs](./memory-api/crates/session-api/src/hook.rs), [./memory-api/crates/session-api/src/hook/tests.rs](./memory-api/crates/session-api/src/hook/tests.rs)\r\n5. First validation check after edits: cargo test -p session-api\r\n6. Second validation check: cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml\r\n7. Update evidence trail in:\r\n- [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md)\r\n- [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md)\r\n8. If newly discovered issues exceed current closure assumptions, open explicit follow-up child ticket(s) with measurable compactness acceptance criteria.\r\n\r\nCompletion Status\r\n1. Anchor re-open and contract confirmation - completed (verified in-session; no boundary drift found).\r\n2. Reviewer transcript analysis for residual waste - completed (reference + active artifacts reviewed).\r\n3. Hook-path ambiguity hardening and regression tests - completed.\r\n4. Required baseline validations (session-api + session-cli) - completed.\r\n5. Quantitative compactness gate implementation - not-started (still a known gap).\r\n6. Additional preamble/noise suppression expansions - not-started (planned next).\r\n7. Cross-boundary replay coverage expansion - not-started (planned next).\r\n8. Evidence updates for this review pass - completed in spec/ticket description.\r\n\r\nDefinition Of Done (Next Session)\r\n1. Residual tool-calling waste from the new session transcript is either suppressed by deterministic logic or documented as a bounded, reproducible gap.\r\n2. Any remaining gap is captured as executable regression tests or explicit blocked evidence with rationale.\r\n3. Coverage includes both prompt-pack and hook/event normalization paths when behavior crosses that boundary.\r\n4. Compactness improvements are quantified with measurable thresholds, not only qualitative examples.\r\n5. Spec and ticket evidence clearly separate upstream prompt-shaping wins from diagnostic transcript capture.\r\n\r\nBoard And Persisted Session Note\r\n1. Board snapshot is clear: active_count 0, stale_count 0, conflict_count 0.\r\n2. Persisted session artifacts under [./.session/sessions](./.session/sessions) are diagnostic pointers; use bounded slices only.\r\n3. Latest visible session directories include:\r\n- [./.session/sessions/5a0fd617-a65c-4c4e-9b33-5c533192a7b5](./.session/sessions/5a0fd617-a65c-4c4e-9b33-5c533192a7b5)\r\n- [./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2](./.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2)\r\n- [./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e)\r\n\r\nInstruction\r\nExecute the next actions in order and continue until all are completed or explicitly blocked.",
+      "captured_at": "2026-07-09T13:32:08.966Z",
+      "event_meta": {
+        "event_id": "6a3625fc-b766-4750-9f6c-6ad656b4215d",
+        "parent_event_id": "607c14ff-4d84-4a05-b257-f7266e5dbfee",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "Executing the ordered next actions now: I’ll first re-open the spec and ticket anchors plus current board state, then implement the three code/test expansions, run the two required test commands, and finally update spec/ticket evidence or open follow-up ticket(s) if anything is blocked.I’m gathering the current anchors and implementation surfaces in parallel so I can verify drift and then patch the right seams without touching unrelated dirty files.",
+      "captured_at": "2026-07-09T13:32:19.723Z",
+      "event_meta": {
+        "event_id": "f65b76ef-72ee-4d57-b1b9-d62c1451dcf5",
+        "parent_event_id": "88f672e4-cc7c-4fa9-a84c-1ea69703ddbb",
+        "event_type": "assistant.message",
+        "message_id": "04c9d52c-b970-40e3-b1d1-f0715698d26b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_n0r3aDXFRS5doHMtT4ESUAyq",
+            "name": "mcp_rmcp5_board_show",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2j1ZyrlATVNC7ABN8TFgQQ3e",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VPba2VPodD2CEM6mLTg9FqKo",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uhuf0RfP1iOwgIq59F2FQuhk",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Anchor drift is confirmed stable and board is clean. Next I’m mapping the remaining planned gaps to existing tickets and code seams so we can implement without violating workflow state rules.",
+      "captured_at": "2026-07-09T13:32:34.953Z",
+      "event_meta": {
+        "event_id": "74016531-7092-4c4e-b385-730fc5083065",
+        "parent_event_id": "ebd817fa-f540-469b-bd0b-9ae0d64f446a",
+        "event_type": "assistant.message",
+        "message_id": "57a6c34f-f3d8-4775-b065-5c8a10ecbc88",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9qupEv4Dso1NFrrZp0AOmXcr",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GFXCrKMOrbAJtU3kbpu2l6ks",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7cPvoUaIzke3UQjLGBeluMj6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DGk4w7cqG0dmBrx6pdEGyaO8",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs",
+              "startLine": 1,
+              "endLine": 420
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JfEOQtSxRXDoFTEDjbJiaEOQ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/hook.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xrvxS2vqRORSNqdofCuGQgsC",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/hook/tests.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Fj3xsHGIIMq7gjmrTJ3H0pvs",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/session-cli/tests/cli.rs",
+              "startLine": 1,
+              "endLine": 340
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve identified where to implement each remaining slice; next I’m checking CLI prompt-pack output seams so quantitative gates can be asserted without broad refactors.",
+      "captured_at": "2026-07-09T13:33:01.636Z",
+      "event_meta": {
+        "event_id": "d71abfd6-497a-4621-8c96-0e8756efc88e",
+        "parent_event_id": "893223c8-11cd-4372-abbe-a87dba2e156a",
+        "event_type": "assistant.message",
+        "message_id": "3c8018f3-a961-47be-beca-9874bc71f384",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_d0I1nB2UIPDPAAWUFcXaI3sp",
+            "name": "grep_search",
+            "arguments": {
+              "query": "peek-prompt-pack|dropped_turns|summarized_turns|reference_only_turns|retain|summarize-threshold|preview-chars",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/session-cli/src/**"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Plan for the implementation pass:\n1. Add quantitative compactness regression fixtures in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs) and [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs) that assert measurable drop ratios and bounded retained counts at prompt-pack boundaries.\n2. Expand suppression coverage for short assistant preamble/progress variants in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs), then lock with explicit tests.\n3. Add cross-boundary replay tests in [memory-api/crates/session-api/src/hook/tests.rs](memory-api/crates/session-api/src/hook/tests.rs) that flow transcript normalization through prompt-pack classification to prove hook changes materially improve downstream compactness.\n4. Run required validations in order:\n   1. cargo test -p session-api\n   2. cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml\n5. Update evidence in [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md) and [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md), and open follow-up ticket only if a remaining gap is blocked.I’m now editing the three code/test targets to add measurable compactness gates, stronger preamble suppression coverage, and hook-to-prompt-pack replay assertions, then I’ll run the two required test commands.",
+      "captured_at": "2026-07-09T13:33:44.789Z",
+      "event_meta": {
+        "event_id": "0ec28a8c-504d-419b-93e7-cbd1540a2496",
+        "parent_event_id": "82110dd0-af11-4e65-82ac-6d427ac79ac7",
+        "event_type": "assistant.message",
+        "message_id": "421eeb98-508d-4a03-944a-7802dbb596d3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_F7bPErBirZGpi4Sro4JAN2Yi",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Expand prompt-pack suppression heuristics and add quantitative compactness tests in session-api peek module.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs\n@@\n fn is_routine_retry_narration(\n     turn: &SessionTurn,\n     normalized_content: &str,\n ) -> bool {\n@@\n     retry_markers\n         .iter()\n         .any(|marker| normalized_content.contains(marker))\n }\n+\n+fn is_short_progress_preamble(\n+    turn: &SessionTurn,\n+    normalized_content: &str,\n+) -> bool {\n+    if turn.role != SessionRole::Assistant {\n+        return false;\n+    }\n+\n+    if normalized_content.is_empty() || normalized_content.len() > 220 {\n+        return false;\n+    }\n+\n+    let has_opening = [\n+        \"i will \",\n+        \"i'll \",\n+        \"i am \",\n+        \"i'm \",\n+        \"im \",\n+        \"let me \",\n+        \"now i \",\n+        \"next i \",\n+        \"next, i \",\n+    ]\n+    .iter()\n+    .any(|prefix| normalized_content.starts_with(prefix));\n+    if !has_opening {\n+        return false;\n+    }\n+\n+    let action_markers = [\n+        \"gather\",\n+        \"check\",\n+        \"inspect\",\n+        \"verify\",\n+        \"search\",\n+        \"read\",\n+        \"review\",\n+        \"run\",\n+        \"validate\",\n+        \"update\",\n+        \"edit\",\n+        \"open\",\n+    ];\n+    if !action_markers\n+        .iter()\n+        .any(|marker| normalized_content.contains(marker))\n+    {\n+        return false;\n+    }\n+\n+    let context_markers = [\n+        \"context\",\n+        \"anchor\",\n+        \"status\",\n+        \"ticket\",\n+        \"spec\",\n+        \"test\",\n+        \"file\",\n+        \"output\",\n+        \"result\",\n+        \"drift\",\n+        \"validation\",\n+        \"coverage\",\n+        \"regression\",\n+        \"tool\",\n+        \"terminal\",\n+    ];\n+\n+    context_markers\n+        .iter()\n+        .any(|marker| normalized_content.contains(marker))\n+}\n@@\n         if is_routine_retry_narration(turn, &normalized) {\n             dropped += 1;\n             continue;\n         }\n+\n+        if is_short_progress_preamble(turn, &normalized) {\n+            dropped += 1;\n+            continue;\n+        }\n@@\n     fn prompt_pack_drops_repeated_state_check_with_normalized_variants() {\n         let mut first = turn(0, SessionRole::Tool, \"Status   output\\n\");\n         first.tool_name = Some(\"run_in_terminal\".to_string());\n         let mut second = turn(1, SessionRole::Tool, \" status output \");\n         second.tool_name = Some(\"run_in_terminal\".to_string());\n@@\n         assert_eq!(pack.entries.len(), 1);\n         assert_eq!(pack.dropped_turns, 1);\n     }\n+\n+    #[test]\n+    fn prompt_pack_drops_short_progress_preamble_variants() {\n+        let record = record_with(vec![\n+            turn(\n+                0,\n+                SessionRole::Assistant,\n+                \"I will gather context and verify ticket drift status.\",\n+            ),\n+            turn(\n+                1,\n+                SessionRole::Assistant,\n+                \"Now I am checking spec and validation anchors.\",\n+            ),\n+            turn(\n+                2,\n+                SessionRole::Assistant,\n+                \"Next I will run tests after these edits.\",\n+            ),\n+            turn(\n+                3,\n+                SessionRole::Assistant,\n+                \"Durable finding: ambiguity markers should require explicit signals.\",\n+            ),\n+        ]);\n+\n+        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n+\n+        assert_eq!(pack.total_turns, 4);\n+        assert_eq!(pack.dropped_turns, 3);\n+        assert_eq!(pack.entries.len(), 1);\n+        assert_eq!(pack.entries[0].reason, \"durable-content\");\n+    }\n+\n+    #[test]\n+    fn prompt_pack_enforces_measurable_compactness_ratio_for_progress_noise() {\n+        let record = record_with(vec![\n+            turn(\n+                0,\n+                SessionRole::User,\n+                \"Harden sync ambiguity labeling and add regression coverage.\",\n+            ),\n+            turn(\n+                1,\n+                SessionRole::Assistant,\n+                \"I will gather context and verify drift across anchors.\",\n+            ),\n+            turn(\n+                2,\n+                SessionRole::Assistant,\n+                \"Now I am checking ticket and spec status before edits.\",\n+            ),\n+            turn(\n+                3,\n+                SessionRole::Assistant,\n+                \"Next I will inspect hook and prompt-pack seams.\",\n+            ),\n+            turn(\n+                4,\n+                SessionRole::Tool,\n+                \"status output\",\n+            ),\n+            turn(\n+                5,\n+                SessionRole::Tool,\n+                \"status output\",\n+            ),\n+            turn(\n+                6,\n+                SessionRole::Assistant,\n+                \"Durable finding: sync completions need explicit ambiguity signals.\",\n+            ),\n+            turn(\n+                7,\n+                SessionRole::Tool,\n+                \"Large tool result written to file. Use the read_file tool to access the content at: /tmp/trace.txt\",\n+            ),\n+            turn(\n+                8,\n+                SessionRole::Assistant,\n+                &format!(\n+                    \"inline payload: {}\",\n+                    \"x\".repeat(700)\n+                ),\n+            ),\n+            turn(\n+                9,\n+                SessionRole::Assistant,\n+                \"Acceptance criterion: regression tests prove blocker inflation is prevented.\",\n+            ),\n+        ]);\n+\n+        let mut record = record;\n+        record.turns[4].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[5].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[7].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[8].tool_name = Some(\"run_in_terminal\".to_string());\n+\n+        let pack = peek_prompt_pack(\n+            &record,\n+            PromptPackOptions {\n+                preview_chars: 80,\n+                summarize_threshold_chars: 120,\n+            },\n+        );\n+\n+        let included = pack.entries.len();\n+        assert_eq!(pack.total_turns, 10);\n+        assert!(pack.dropped_turns >= 4);\n+        assert!(included <= 6);\n+        assert!(pack.reference_only_turns >= 1);\n+        assert!(pack.summarized_turns >= 1);\n+    }\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I’m adding cross-boundary replay coverage in hook tests so transcript normalization and prompt-pack compaction are validated together, not as isolated units.",
+      "captured_at": "2026-07-09T13:35:01.886Z",
+      "event_meta": {
+        "event_id": "6d2ca136-41db-400c-9be0-252eb73afa04",
+        "parent_event_id": "bf1d62b8-dc86-48ed-b595-b9e1f00bb72c",
+        "event_type": "assistant.message",
+        "message_id": "f59f869e-2be3-44b7-9c10-61c3e773aa9c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_mFCxMCrjnJKz6W2102lmwVkN",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add cross-boundary regression test from hook transcript parsing to prompt-pack compaction behavior.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/hook/tests.rs\n@@\n use crate::{\n+    PromptPackOptions,\n     SessionError,\n     SessionRole,\n+    peek_prompt_pack,\n };\n@@\n fn transcript_reader_marks_ambiguous_sync_terminal_with_background_signal() {\n@@\n     assert_eq!(\n         result_event\n             .data_json\n             .as_ref()\n             .and_then(|json| json.get(\"lifecycle_state\"))\n             .and_then(serde_json::Value::as_str),\n         Some(\"background-ambiguous\")\n     );\n }\n+\n+#[test]\n+fn transcript_normalization_and_prompt_pack_replay_stay_consistent() {\n+    let transcript = r#\"{\"id\":\"evt-start\",\"type\":\"session.start\",\"timestamp\":\"2026-06-02T23:06:54.049Z\",\"data\":{\"sessionId\":\"session-cross-boundary\",\"producer\":\"copilot-agent\"}}\n+{\"id\":\"evt-1\",\"type\":\"user.message\",\"timestamp\":\"2026-06-02T23:07:00.000Z\",\"data\":{\"content\":\"Continue hardening prompt compactness\"}}\n+{\"id\":\"evt-2\",\"type\":\"assistant.message\",\"timestamp\":\"2026-06-02T23:07:01.000Z\",\"data\":{\"messageId\":\"m-1\",\"content\":\"I will gather context and verify ticket drift status.\"}}\n+{\"id\":\"evt-3\",\"type\":\"assistant.message\",\"timestamp\":\"2026-06-02T23:07:02.000Z\",\"data\":{\"messageId\":\"m-2\",\"content\":\"Now I am checking spec and validation anchors.\"}}\n+{\"id\":\"evt-4\",\"type\":\"assistant.message\",\"timestamp\":\"2026-06-02T23:07:03.000Z\",\"data\":{\"messageId\":\"m-3\",\"content\":\"Durable finding: hook ambiguity should require explicit signals.\"}}\n+{\"id\":\"evt-5\",\"type\":\"tool.execution_start\",\"timestamp\":\"2026-06-02T23:07:04.000Z\",\"data\":{\"toolCallId\":\"call-rt-3\",\"toolName\":\"run_in_terminal\",\"arguments\":{\"mode\":\"sync\",\"command\":\"cargo test\"}}}\n+{\"id\":\"evt-6\",\"type\":\"tool.execution_complete\",\"timestamp\":\"2026-06-02T23:07:05.000Z\",\"data\":{\"toolCallId\":\"call-rt-3\",\"success\":true}}\"#;\n+\n+    let payload = copilot_payload_from_transcript_reader(\n+        std::io::Cursor::new(transcript),\n+        \"default\",\n+        Some(\"stop\".to_string()),\n+    )\n+    .unwrap();\n+\n+    let result_event = payload\n+        .events\n+        .iter()\n+        .find(|event| event.event_type.as_deref() == Some(\"tool.execution_result\"))\n+        .expect(\"expected synthesized tool.execution_result event\");\n+    assert_eq!(\n+        result_event\n+            .data_json\n+            .as_ref()\n+            .and_then(|json| json.get(\"blocker\"))\n+            .and_then(serde_json::Value::as_str),\n+        None\n+    );\n+\n+    let record = SessionCaptureRequest::copilot(payload)\n+        .into_record()\n+        .expect(\"payload should map into session record\");\n+    let pack = peek_prompt_pack(\n+        &record,\n+        PromptPackOptions {\n+            preview_chars: 80,\n+            summarize_threshold_chars: 120,\n+        },\n+    );\n+\n+    assert_eq!(pack.total_turns, 4);\n+    assert_eq!(pack.dropped_turns, 2);\n+    assert_eq!(pack.entries.len(), 2);\n+    assert!(pack.entries.iter().any(|entry| {\n+        entry.preview.contains(\"Durable finding\")\n+            && entry.reason == \"durable-content\"\n+    }));\n+}\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Delta update: code changes are in place across [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs), [memory-api/crates/session-api/src/hook/tests.rs](memory-api/crates/session-api/src/hook/tests.rs), and [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs). Next I’m running the two required validation commands in order, then I’ll update spec/ticket evidence with exact outcomes.",
+      "captured_at": "2026-07-09T13:35:15.544Z",
+      "event_meta": {
+        "event_id": "16dd48c9-bf02-4815-8a9b-cca17312b746",
+        "parent_event_id": "f4e7c187-f949-4b9d-b661-169c732010ef",
+        "event_type": "assistant.message",
+        "message_id": "af6afb70-2fda-482b-b18e-2d0937a86cc0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Iiz92VFCBuzT0JKMyGJaBrff",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo test -p session-api",
+              "explanation": "Run the session-api test suite after implementing prompt-pack and hook replay coverage changes.",
+              "goal": "Validate session-api changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "One regression failed because the stricter short preamble suppression now drops all three assistant orchestration lines in that test; I’m adjusting the expectation to reflect the new intended behavior, then rerunning validations.",
+      "captured_at": "2026-07-09T13:35:23.826Z",
+      "event_meta": {
+        "event_id": "6883dca8-7dd4-4be2-9a4f-b7518abab84a",
+        "parent_event_id": "66c3c609-9cb5-4877-b999-52185146ed84",
+        "event_type": "assistant.message",
+        "message_id": "d7785bea-99a9-41f1-a505-d0ca70140eb4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_nl4zQNJy4oXElaN2ihSGlrYp",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Update lifecycle-wrapper test expectations to match stricter preamble suppression semantics.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs\n@@\n     fn prompt_pack_drops_duplicate_lifecycle_wrappers() {\n@@\n         let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n \n-        assert_eq!(pack.entries.len(), 1);\n-        assert_eq!(pack.dropped_turns, 2);\n+        assert_eq!(pack.entries.len(), 0);\n+        assert_eq!(pack.dropped_turns, 3);\n     }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Implementation and evidence updates are complete and both required test suites pass. I’m doing a quick changed-file/diff sanity check now to confirm the final handoff references only the intended path-scoped edits.",
+      "captured_at": "2026-07-09T13:36:07.009Z",
+      "event_meta": {
+        "event_id": "84fd68f2-2379-41a2-b8a0-e525d154e18f",
+        "parent_event_id": "804e1314-4c76-4ce8-9b60-bfe960f3f2dc",
+        "event_type": "assistant.message",
+        "message_id": "ae568e94-a817-416f-a17e-45c42b16ab38",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ZCm5FBb3iXyZOcvxcZ1DLCXF",
+            "name": "get_changed_files",
+            "arguments": {
+              "repositoryPath": "c:/Users/linus/git/graph_app/context-engine",
+              "sourceControlState": [
+                "unstaged",
+                "staged"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_p7wtJYt9gfmgpbaVhcll9xSe",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff -- memory-api/crates/session-api/src/peek.rs memory-api/crates/session-api/src/hook/tests.rs memory-api/tools/cli/session-cli/tests/cli.rs .spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md .ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md",
+              "explanation": "Inspect only the edited target files to verify intended path-scoped changes.",
+              "goal": "Review targeted diffs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Completed the ordered next actions end-to-end with path-scoped edits, validations, and evidence updates.\n\n**What I completed**\n1. Re-opened and verified anchors with no contract drift:\n- [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md)\n- [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\n- [./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml)\n2. Added quantitative compactness regression coverage and expanded preamble suppression in:\n- [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs#L198)\n- [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs#L359)\n- [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs#L786)\n- [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs#L819)\n3. Added cross-boundary replay coverage for hook normalization plus prompt-pack behavior in:\n- [memory-api/crates/session-api/src/hook/tests.rs](memory-api/crates/session-api/src/hook/tests.rs#L349)\n4. Added CLI-level quantitative compactness gate assertions in:\n- [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs#L242)\n- [memory-api/tools/cli/session-cli/tests/cli.rs](memory-api/tools/cli/session-cli/tests/cli.rs#L278)\n5. Ran required validations in order:\n- cargo test -p session-api: passed (54 passed)\n- cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml: passed (10 passed)\n6. Updated evidence trail in both required artifacts:\n- [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md#L101)\n- [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md#L32)\n\n**Notes on issues encountered**\n1. One test expectation failed after tightening suppression semantics; I adjusted the expectation in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs) and re-ran all validations successfully.\n2. No functional blockers remain for this slice.\n3. No follow-up child ticket was opened, since all planned actions in this pass completed and validated without unresolved gaps.",
+      "captured_at": "2026-07-09T13:36:40.968Z",
+      "event_meta": {
+        "event_id": "d16ff965-e31e-4574-8079-244ef49c5043",
+        "parent_event_id": "9d1a0673-5b3c-4c48-8d4e-15d76c06a275",
+        "event_type": "assistant.message",
+        "message_id": "de2a192f-470d-4d6c-86d2-d4a4ef18c9e7",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "user",
+      "content": "reviewing your changes I see that you have the wrong idea of the flow of tokens in the system.\r\n\r\nsuppressing anything in the transcript is not going to help us at all! the transcript is only a record of what was sent to the LLM API! you should know this!\r\n\r\nsuppressing preambles is not anything we can do directly, and honestly, it is not something that we want. we do not want to just remove some reasoning steps.\r\n\r\nour main focus are tool calls. and we need to optimize them.\r\n\r\nthe transcripts are only observability logs! you need to remember this",
+      "captured_at": "2026-07-09T15:40:08.741Z",
+      "event_meta": {
+        "event_id": "65d98eb4-19be-4b3e-9d45-b522592725fa",
+        "parent_event_id": "9ba86b5e-71ec-4c6a-929e-8e74b4efc9fd",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I’m checking the exact places where preamble suppression was wired in so I can remove that behavior cleanly and keep the tool-call compaction logic intact.",
+      "captured_at": "2026-07-09T15:40:23.853Z",
+      "event_meta": {
+        "event_id": "e8aa407a-594a-4ae6-ac98-c26ca37a2c98",
+        "parent_event_id": "a50a7cf0-6c60-46f4-bb63-95259cc1f7ab",
+        "event_type": "assistant.message",
+        "message_id": "9e62c282-c51f-4974-b71b-916198916bf1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fUeg5kBb78ZtvyxvGKwCwZfm",
+            "name": "grep_search",
+            "arguments": {
+              "query": "is_short_progress_preamble|prompt_pack_drops_short_progress_preamble_variants|prompt_pack_enforces_measurable_compactness_ratio_for_progress_noise",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/peek.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9R6bvACl22lnmNEfAaoOpotm",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/session-cli/tests/cli.rs",
+              "startLine": 220,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_v7v9JPggtYZG8dVirmMnyvGs",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md",
+              "startLine": 30,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gOEFqdCYoQmkJbz7cFNtBeev",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md",
+              "startLine": 94,
+              "endLine": 125
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "I’ve confirmed the incorrect slice: the only new behavior that violates your stated boundary is the short progress-preamble suppression and the evidence/tests that justify it. I’m removing that behavior and rewriting the quantitative checks so they stay focused on tool-call compaction only.",
+      "captured_at": "2026-07-09T15:40:31.371Z",
+      "event_meta": {
+        "event_id": "07e71a80-b694-4aac-8f11-a4a9bd650281",
+        "parent_event_id": "a62d0a82-f502-4f6f-96eb-a85cd2519cae",
+        "event_type": "assistant.message",
+        "message_id": "5e313ec6-a67a-43e0-884c-9c4b124d92e1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9tfV7X5r9EiM1g2Az99nSyJD",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/hook/tests.rs",
+              "startLine": 320,
+              "endLine": 400
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_oHTMkq6gR01JWrLmgxh7W5AJ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/session-cli/tests/cli.rs",
+              "startLine": 1,
+              "endLine": 140
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_trkIeKtfD7YBob6qFDBm0TZP",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs",
+              "startLine": 760,
+              "endLine": 860
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "I’m removing the assistant-preamble/lifecycle-wrapper suppression that I added, keeping the tool-output compaction intact, and rewriting the tests/evidence so they measure tool-call optimization instead of transcript narration suppression.",
+      "captured_at": "2026-07-09T15:41:08.824Z",
+      "event_meta": {
+        "event_id": "9410074c-a469-4871-8a94-cb9be7738f0e",
+        "parent_event_id": "b92a33d8-34d0-41e1-8b18-d2b2cbe0d8b8",
+        "event_type": "assistant.message",
+        "message_id": "c7080184-eadf-4d25-967a-ffe949a581c4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RFRpGjd7yso3TA0tHnJwtKyr",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Revert assistant-preamble and lifecycle-wrapper suppression additions, keep tool-call-focused compaction, and retarget quantitative tests to tool-output patterns.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs\n@@\n pub fn peek_prompt_pack(\n     record: &SessionRecord,\n     options: PromptPackOptions,\n ) -> SessionPromptPack {\n@@\n     let mut summarize = 0;\n     let mut reference_only = 0;\n     let mut dropped = 0;\n     let mut seen_signatures: HashMap<String, usize> = HashMap::new();\n-    let mut seen_lifecycle_wrappers: HashMap<String, usize> = HashMap::new();\n \n     for turn in &record.turns {\n         let content_len = turn.content.chars().count();\n         let normalized = normalize_for_signature(&turn.content);\n-        let lifecycle_wrapper =\n-            lifecycle_wrapper_fingerprint(turn, &normalized);\n         let signature = format!(\n             \"{:?}|{}|{}\",\n             turn.role,\n             turn.tool_name.as_deref().unwrap_or(\"\"),\n@@\n         if is_routine_retry_narration(turn, &normalized) {\n             dropped += 1;\n             continue;\n         }\n-\n-        if is_short_progress_preamble(turn, &normalized) {\n-            dropped += 1;\n-            continue;\n-        }\n-\n-        if let Some(wrapper) = &lifecycle_wrapper {\n-            if let Some(previous_sequence) =\n-                seen_lifecycle_wrappers.get(wrapper)\n-            {\n-                let _ = previous_sequence;\n-                dropped += 1;\n-                continue;\n-            }\n-        }\n \n         if let Some(previous_sequence) = seen_signatures.get(&signature) {\n             if is_repeated_state_check(turn) || turn.role == SessionRole::Tool {\n                 let _ = previous_sequence;\n                 dropped += 1;\n@@\n         }\n \n         seen_signatures.insert(signature, turn.sequence);\n-        if let Some(wrapper) = lifecycle_wrapper {\n-            seen_lifecycle_wrappers.insert(wrapper, turn.sequence);\n-        }\n \n         let preview = preview_line(&turn.content, options.preview_chars);\n         let reference_pointer = extract_reference_pointer(&turn.content);\n@@\n     let retry_markers = [\n         \"retry\",\n         \"re-run\",\n         \"rerun\",\n-        \"retrying\",\n-        \"rerunning\",\n-        \"rerunning the same\",\n-        \"one more attempt\",\n-        \"let me retry\",\n         \"try again\",\n         \"run again\",\n         \"checking again\",\n     ];\n@@\n-}\n-\n-fn is_short_progress_preamble(\n-    turn: &SessionTurn,\n-    normalized_content: &str,\n-) -> bool {\n-    if turn.role != SessionRole::Assistant {\n-        return false;\n-    }\n-\n-    if normalized_content.is_empty() || normalized_content.len() > 220 {\n-        return false;\n-    }\n-\n-    let has_opening = [\n-        \"i will \",\n-        \"i'll \",\n-        \"i am \",\n-        \"i'm \",\n-        \"im \",\n-        \"let me \",\n-        \"now i \",\n-        \"next i \",\n-        \"next, i \",\n-    ]\n-    .iter()\n-    .any(|prefix| normalized_content.starts_with(prefix));\n-    if !has_opening {\n-        return false;\n-    }\n-\n-    let action_markers = [\n-        \"gather\",\n-        \"check\",\n-        \"inspect\",\n-        \"verify\",\n-        \"search\",\n-        \"read\",\n-        \"review\",\n-        \"run\",\n-        \"validate\",\n-        \"update\",\n-        \"edit\",\n-        \"open\",\n-    ];\n-    if !action_markers\n-        .iter()\n-        .any(|marker| normalized_content.contains(marker))\n-    {\n-        return false;\n-    }\n-\n-    let context_markers = [\n-        \"context\",\n-        \"anchor\",\n-        \"status\",\n-        \"ticket\",\n-        \"spec\",\n-        \"test\",\n-        \"file\",\n-        \"output\",\n-        \"result\",\n-        \"drift\",\n-        \"validation\",\n-        \"coverage\",\n-        \"regression\",\n-        \"tool\",\n-        \"terminal\",\n-    ];\n-\n-    context_markers\n-        .iter()\n-        .any(|marker| normalized_content.contains(marker))\n-}\n-\n-fn lifecycle_wrapper_fingerprint(\n-    turn: &SessionTurn,\n-    normalized_content: &str,\n-) -> Option<String> {\n-    if turn.role != SessionRole::Assistant {\n-        return None;\n-    }\n-\n-    if normalized_content.len() > 220 {\n-        return None;\n-    }\n-\n-    let mut text = normalized_content;\n-    for prefix in [\n-        \"next, \",\n-        \"next \",\n-        \"now \",\n-        \"okay \",\n-        \"ok \",\n-        \"i will \",\n-        \"i'll \",\n-        \"let me \",\n-    ] {\n-        if let Some(rest) = text.strip_prefix(prefix) {\n-            text = rest;\n-        }\n-    }\n-\n-    let action_verbs = [\"run\", \"check\", \"inspect\", \"search\", \"read\"];\n-    if !action_verbs.iter().any(|verb| text.contains(verb)) {\n-        return None;\n-    }\n-\n-    let tool_markers = [\n-        \"command\",\n-        \"terminal\",\n-        \"output\",\n-        \"status\",\n-        \"tool\",\n-        \"file\",\n-        \"run_in_terminal\",\n-        \"get_terminal_output\",\n-        \"file_search\",\n-        \"grep_search\",\n-        \"list_dir\",\n-        \"get_changed_files\",\n-        \"get_errors\",\n-    ];\n-\n-    if !tool_markers.iter().any(|marker| text.contains(marker)) {\n-        return None;\n-    }\n-\n-    Some(text.to_string())\n }\n@@\n     fn prompt_pack_drops_routine_retry_narration() {\n         let record = record_with(vec![turn(\n             0,\n             SessionRole::Assistant,\n             \"I will retry the same command and check again.\",\n@@\n         assert_eq!(pack.entries.len(), 0);\n         assert_eq!(pack.dropped_turns, 1);\n     }\n-\n-    #[test]\n-    fn prompt_pack_drops_retry_narration_variants() {\n-        let record = record_with(vec![\n-            turn(\n-                0,\n-                SessionRole::Assistant,\n-                \"Let me retry that command one more attempt.\",\n-            ),\n-            turn(\n-                1,\n-                SessionRole::Assistant,\n-                \"Retrying now; rerunning the same check.\",\n-            ),\n-        ]);\n-\n-        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n-\n-        assert_eq!(pack.entries.len(), 0);\n-        assert_eq!(pack.dropped_turns, 2);\n-    }\n-\n-    #[test]\n-    fn prompt_pack_drops_duplicate_lifecycle_wrappers() {\n-        let record = record_with(vec![\n-            turn(\n-                0,\n-                SessionRole::Assistant,\n-                \"I will run the command and check terminal status output.\",\n-            ),\n-            turn(\n-                1,\n-                SessionRole::Assistant,\n-                \"Now I will run the command and check terminal status output.\",\n-            ),\n-            turn(\n-                2,\n-                SessionRole::Assistant,\n-                \"I will inspect the file to extract the durable finding.\",\n-            ),\n-        ]);\n-\n-        let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n-\n-        assert_eq!(pack.entries.len(), 0);\n-        assert_eq!(pack.dropped_turns, 3);\n-    }\n@@\n     fn prompt_pack_drops_repeated_state_check_with_normalized_variants() {\n         let mut first = turn(0, SessionRole::Tool, \"Status   output\\n\");\n         first.tool_name = Some(\"run_in_terminal\".to_string());\n         let mut second = turn(1, SessionRole::Tool, \" status output \");\n         second.tool_name = Some(\"run_in_terminal\".to_string());\n@@\n         assert_eq!(pack.entries.len(), 1);\n         assert_eq!(pack.dropped_turns, 1);\n     }\n \n     #[test]\n-    fn prompt_pack_drops_short_progress_preamble_variants() {\n+    fn prompt_pack_retains_short_progress_preamble_variants() {\n         let record = record_with(vec![\n             turn(\n                 0,\n                 SessionRole::Assistant,\n                 \"I will gather context and verify ticket drift status.\",\n@@\n \n         let pack = peek_prompt_pack(&record, PromptPackOptions::default());\n \n         assert_eq!(pack.total_turns, 4);\n-        assert_eq!(pack.dropped_turns, 3);\n-        assert_eq!(pack.entries.len(), 1);\n-        assert_eq!(pack.entries[0].reason, \"durable-content\");\n+        assert_eq!(pack.dropped_turns, 0);\n+        assert_eq!(pack.entries.len(), 4);\n     }\n \n     #[test]\n-    fn prompt_pack_enforces_measurable_compactness_ratio_for_progress_noise() {\n+    fn prompt_pack_enforces_measurable_compactness_ratio_for_tool_output_noise() {\n         let record = record_with(vec![\n             turn(\n                 0,\n                 SessionRole::User,\n                 \"Harden sync ambiguity labeling and add regression coverage.\",\n             ),\n             turn(\n                 1,\n-                SessionRole::Assistant,\n-                \"I will gather context and verify drift across anchors.\",\n+                SessionRole::Tool,\n+                \"status output\",\n             ),\n             turn(\n                 2,\n-                SessionRole::Assistant,\n-                \"Now I am checking ticket and spec status before edits.\",\n+                SessionRole::Tool,\n+                \"status output\",\n             ),\n             turn(\n                 3,\n-                SessionRole::Assistant,\n-                \"Next I will inspect hook and prompt-pack seams.\",\n+                SessionRole::Tool,\n+                \"status output\",\n             ),\n             turn(\n                 4,\n                 SessionRole::Tool,\n-                \"status output\",\n+                \"Large tool result written to file. Use the read_file tool to access the content at: /tmp/trace.txt\",\n             ),\n             turn(\n                 5,\n                 SessionRole::Tool,\n-                \"status output\",\n+                &format!(\"inline payload: {}\", \"x\".repeat(700)),\n             ),\n             turn(\n                 6,\n                 SessionRole::Assistant,\n                 \"Durable finding: sync completions need explicit ambiguity signals.\",\n             ),\n-            turn(\n-                7,\n-                SessionRole::Tool,\n-                \"Large tool result written to file. Use the read_file tool to access the content at: /tmp/trace.txt\",\n-            ),\n-            turn(\n-                8,\n-                SessionRole::Assistant,\n-                &format!(\n-                    \"inline payload: {}\",\n-                    \"x\".repeat(700)\n-                ),\n-            ),\n-            turn(\n-                9,\n-                SessionRole::Assistant,\n-                \"Acceptance criterion: regression tests prove blocker inflation is prevented.\",\n-            ),\n         ]);\n \n         let mut record = record;\n-        record.turns[4].tool_name = Some(\"run_in_terminal\".to_string());\n-        record.turns[5].tool_name = Some(\"run_in_terminal\".to_string());\n-        record.turns[7].tool_name = Some(\"run_in_terminal\".to_string());\n-        record.turns[8].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[1].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[2].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[3].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[4].tool_name = Some(\"run_in_terminal\".to_string());\n+        record.turns[5].tool_name = Some(\"run_in_terminal\".to_string());\n \n         let pack = peek_prompt_pack(\n             &record,\n             PromptPackOptions {\n                 preview_chars: 80,\n@@\n         );\n \n         let included = pack.entries.len();\n-        assert_eq!(pack.total_turns, 10);\n-        assert!(pack.dropped_turns >= 4);\n-        assert!(included <= 6);\n+        assert_eq!(pack.total_turns, 7);\n+        assert!(pack.dropped_turns >= 2);\n+        assert!(included <= 5);\n         assert!(pack.reference_only_turns >= 1);\n         assert!(pack.summarized_turns >= 1);\n     }\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "The behavior change is now reverted in code and docs, but I need one small wording cleanup in the evidence text to match the actual remaining retry logic before I rerun tests.",
+      "captured_at": "2026-07-09T15:41:46.236Z",
+      "event_meta": {
+        "event_id": "70b9340f-17c5-47da-8e8b-29642e41087d",
+        "parent_event_id": "7e216f9e-d6e3-4d0f-9ed3-6d170d63f396",
+        "event_type": "assistant.message",
+        "message_id": "af28e1cd-2598-437f-a5d4-20223e7baf07",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YsoiBc3nXUzmJXcibTiVFSdr",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Align spec and ticket evidence wording with the reverted assistant-suppression scope.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md\n@@\n-- Added cross-boundary replay regression in `memory-api/crates/session-api/src/hook/tests.rs` (`transcript_normalization_and_prompt_pack_replay_stay_consistent`) validating hook normalization plus downstream prompt-pack behavior in one path:\n+- Added cross-boundary replay regression in `memory-api/crates/session-api/src/hook/tests.rs` (`transcript_normalization_and_prompt_pack_tool_result_consistency`) validating hook normalization plus downstream prompt-pack behavior in one path:\n*** Update File: c:/Users/linus/git/graph_app/context-engine/.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md\n@@\n-- Retry boilerplate variants (`retrying`, `rerunning`, `one more attempt`) are dropped when they remain short assistant narration, preventing repeated operational chatter from re-entering prompt context.\n+- Retry boilerplate (`retry`, `re-run`, `rerun`, `try again`, `run again`, `checking again`) remains suppressed when it appears as short assistant narration, preventing repeated operational chatter from re-entering prompt context.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I’ve removed the assistant-preamble suppression path and cleaned the evidence text. Next I’m running the same focused validations again to confirm the restored tool-call-only behavior is green.",
+      "captured_at": "2026-07-09T15:41:51.299Z",
+      "event_meta": {
+        "event_id": "065e3931-fccb-4d07-be68-e0e365426591",
+        "parent_event_id": "bcbd947a-8632-4406-b75b-d519ab16ad08",
+        "event_type": "assistant.message",
+        "message_id": "68704af8-dbef-4ebb-a1b7-e5c18e4d6a8e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_p9OMPCVaCmvZIAcfr0O6GPj9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo test -p session-api",
+              "explanation": "Re-run session-api tests after removing assistant-preamble suppression and retargeting compactness tests to tool outputs.",
+              "goal": "Validate revised tool-call-focused session-api behavior",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "The failing check is local and directly actionable: a newer `SessionRecord` field is required in the test helper. I’m patching that helper to include the schema version and rerunning the same validations.",
+      "captured_at": "2026-07-09T15:41:59.817Z",
+      "event_meta": {
+        "event_id": "aa11cc67-ad4a-464c-81e1-3621cc3a4f79",
+        "parent_event_id": "7af3d957-4fbf-4993-ae05-200bf3b6eef7",
+        "event_type": "assistant.message",
+        "message_id": "0d641500-bdee-4fdd-a49e-74151feaec10",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ijlmpMVZBM3u49Eo0iICWFp8",
+            "name": "grep_search",
+            "arguments": {
+              "query": "SESSION_SCHEMA_VERSION|schema_version",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/**"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qI5LVW882bNeZQT11rs3H5iV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/model.rs",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "The remaining failure is another local test-only schema-version reference in `model.rs`. I’m fixing that import and rerunning the same validation pair; this stays inside the touched `session-api` slice.",
+      "captured_at": "2026-07-09T15:42:24.380Z",
+      "event_meta": {
+        "event_id": "041ed652-0b1f-4b31-a52c-4b5b8e260a11",
+        "parent_event_id": "402516b3-f6af-4e6b-99b1-5c198db7c8d3",
+        "event_type": "assistant.message",
+        "message_id": "f45b4e93-ac0a-4420-a585-180b948db815",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_K0Ln6aUhe7UFfb5QOfav1wYr",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Import SESSION_SCHEMA_VERSION into model.rs tests so session-api test suite compiles cleanly.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/model.rs\n@@\n     use super::{\n         SessionLinks,\n         SessionMetadata,\n         SessionRecord,\n         SessionRole,\n@@\n         SessionTurnEventMeta,\n         SessionWorktreeAllocationMode,\n         SessionWorktreeAssignment,\n         SessionWorktreeStatus,\n     };\n+    use crate::SESSION_SCHEMA_VERSION;\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "The revised validations are green again. I’m doing one quick error scan and then I’ll summarize exactly what I changed, why it matches your clarification, and what remains as the right next optimization focus.",
+      "captured_at": "2026-07-09T15:42:59.198Z",
+      "event_meta": {
+        "event_id": "b73b2b5f-7e8e-4e8c-80d1-59aad0c0db3d",
+        "parent_event_id": "35804907-57b5-4511-b410-c4ce537ce933",
+        "event_type": "assistant.message",
+        "message_id": "73652268-82e8-4d38-8864-8226c4a509df",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_G9yNSKPD3Yu1DiBXr5yTOMAu",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/peek.rs",
+                "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/hook/tests.rs",
+                "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/session-cli/tests/cli.rs",
+                "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/session-api/src/model.rs"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hf5TwoNXJBMSnuXuMExi3u2X",
+            "name": "grep_search",
+            "arguments": {
+              "query": "is_short_progress_preamble|lifecycle_wrapper_fingerprint|prompt_pack_retains_short_progress_preamble_variants|prompt_pack_enforces_measurable_compactness_ratio_for_tool_output_noise",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/peek.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PPz1cmb2dH8vMr5CrNeymiX4",
+            "name": "grep_search",
+            "arguments": {
+              "query": "transcript_normalization_and_prompt_pack_tool_result_consistency",
+              "isRegexp": false,
+              "includePattern": "memory-api/crates/session-api/src/hook/tests.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SgPcF1vbQMeiOA2kEGLzHErG",
+            "name": "grep_search",
+            "arguments": {
+              "query": "tool-heavy fixture|dropped >= 2|included <= 3|repeated short assistant progress preambles",
+              "isRegexp": true,
+              "includePattern": ".ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "You’re right. I had conflated prompt-facing compaction with transcript mutation and overreached into suppressing assistant narration. I corrected that.\n\nThe change now keeps transcripts as observability only and removes the new assistant-preamble/lifecycle-wrapper suppression I added in [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs). Short progress preambles are now retained and the quantitative checks are retargeted to tool-output patterns only: repeated tool-state checks, spill-pointer outputs, and oversized inline tool payloads. I also updated the cross-boundary replay test in [memory-api/crates/session-api/src/hook/tests.rs](memory-api/crates/session-api/src/hook/tests.rs) so it verifies tool-result consistency without depending on narration suppression, and I rewrote the evidence text in [./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/description.md) and [./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/body.md) to reflect that focus. I also fixed the local test helpers in [memory-api/crates/session-api/src/model.rs](memory-api/crates/session-api/src/model.rs) and [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs) so the current schema-versioned `SessionRecord` tests compile cleanly.\n\nValidation is green again: `cargo test -p session-api` passed and `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml` passed. The right next optimization target is the tool-call path itself: structured tool-result normalization, ambiguity markers, repeated tool-state dedupe, and bounded artifact-pointer handling. If you want, I can take the next pass specifically on tightening the tool-call model and test matrix around [memory-api/crates/session-api/src/hook.rs](memory-api/crates/session-api/src/hook.rs) and [memory-api/crates/session-api/src/peek.rs](memory-api/crates/session-api/src/peek.rs).",
+      "captured_at": "2026-07-09T15:43:10.071Z",
+      "event_meta": {
+        "event_id": "6f27e0ab-9a7d-488b-a528-d23a538c8d3f",
+        "parent_event_id": "526d47c7-a0f6-480b-966c-51c818a9e010",
+        "event_type": "assistant.message",
+        "message_id": "de24fab9-00d8-46e8-b2a8-3397cbcef86f",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "user",
+      "content": "/handoff to a full update pass on session optimization guidance and specs to seed out any incorrect suggestions and to fully model the agent harness of guthub copilot and the mcp toolcalling and transcript generation, and then where our tools fit into the model. our tools are mcp servers being called, contributing to session input, aswell as tools reading the generated transcript and auditting the session procedure.",
+      "captured_at": "2026-07-09T16:05:54.083Z",
+      "event_meta": {
+        "event_id": "6ec8a0ed-479c-4a1f-821e-07f6eb022ab8",
+        "parent_event_id": "6b81b54d-61fe-45c7-95b7-c9c05c17c33e",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "I’m collecting the minimum authoritative context for this handoff: active board state, the owning tickets/specs for the session-optimization track, and the repo guidance that shapes how the next session should resume.",
+      "captured_at": "2026-07-09T16:06:02.836Z",
+      "event_meta": {
+        "event_id": "0b4e57c0-652b-430d-99a6-4981afc6a868",
+        "parent_event_id": "d4f4388c-bdac-4b80-ac92-50963ffd24a1",
+        "event_type": "assistant.message",
+        "message_id": "8e5ad031-e217-4a5c-9d2f-d1e975432015",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_qUcpLbNNl0WLANOmxyPHnPKz",
+            "name": "mcp_rmcp5_board_show",
+            "arguments": {
+              "workspace": "default"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9k14e3oVnBCr6G2xzeTJ73jR",
+            "name": "mcp_rmcp5_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "session optimization tool calls transcript agent harness MCP",
+              "limit": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wF4JMebXRCDqGsJbFZ0nfr9p",
+            "name": "mcp_rmcp3_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "session optimization tool calls transcript agent harness MCP",
+              "limit": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7LiT1auofhAalnzojz5098lE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\session-optimization.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "The first pass confirmed there’s no active board claim and no ticket/spec found under those generic keywords. I’m narrowing to the concrete prompt/rule/spec surfaces already in this track so the handoff can point at exact entities instead of a loose summary.",
+      "captured_at": "2026-07-09T16:07:20.411Z",
+      "event_meta": {
+        "event_id": "e3f721fb-14d2-49ea-b891-b199d9bd7789",
+        "parent_event_id": "25814dbf-e124-4f15-bcaa-96a1654a08a1",
+        "event_type": "assistant.message",
+        "message_id": "d7925bf1-c35f-4151-8649-2312b6bae20a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fXdCPlpJtWP6j9sBtBVAXlaJ",
+            "name": "grep_search",
+            "arguments": {
+              "query": "session optimization|prompt compaction|tool-result|tool call|transcript|agent harness|MCP",
+              "isRegexp": true,
+              "includePattern": ".ticket/**",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4SgHlbhXyawU6aUTmIqA2Yqz",
+            "name": "grep_search",
+            "arguments": {
+              "query": "session optimization|prompt compaction|tool-result|tool call|transcript|agent harness|MCP",
+              "isRegexp": true,
+              "includePattern": ".spec/**",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eic5v0SF8VOsAVxjI6T0IWJT",
+            "name": "grep_search",
+            "arguments": {
+              "query": "session optimization|prompt compaction|tool-result|tool call|transcript|agent harness|MCP",
+              "isRegexp": true,
+              "includePattern": ".rule/rules/**",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Aq0eXK7qGzpQBwxpKmyQMbH2",
+            "name": "grep_search",
+            "arguments": {
+              "query": "handoff|session optimization|tool-result|transcript|agent harness|MCP",
+              "isRegexp": true,
+              "includePattern": ".agents/prompts/**",
+              "maxResults": 50
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "I’ve got the anchor spec and one likely ticket from the prior compaction slice, but I still need the authoritative titles and any parent/adjacent tickets for the broader guidance-and-harness pass. Next I’m resolving those exact entities and the currently edited prompt/rule surfaces so the handoff can be concrete.",
+      "captured_at": "2026-07-09T16:07:28.718Z",
+      "event_meta": {
+        "event_id": "b7794708-61c2-4a18-8781-391a299da1ac",
+        "parent_event_id": "234e466c-55d7-46ad-8a68-6daa0c25b622",
+        "event_type": "assistant.message",
+        "message_id": "4f9e851f-e6d7-42ca-9da3-8fd04993ea76",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FJnyphbmfzDIvUek7Fgkp8r8",
+            "name": "mcp_rmcp5_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "token-efficiency",
+              "limit": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Z6LvEdCvP1OWnKB5dbVvawXt",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "47cc50db-8efa-4945-87fe-d30fe1f6bc61"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8NMCHy6q1mhuQLhSCQsY1aKs",
+            "name": "mcp_rmcp3_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "f5e0df47-d0ec-4456-b268-689f2a41ecd7",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AEncy5esyDhlPRIpzVk9BKUU",
+            "name": "get_changed_files",
+            "arguments": {
+              "repositoryPath": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "sourceControlState": [
+                "unstaged",
+                "staged"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rV0d2mulOtaOXWUew0IeAtSx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\084fd4e6-660b-4227-a13e-514edf44e393\\body.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_OzpTNUEZ7CPdUdCe4r5pA46m",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\body.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "I have enough to anchor the handoff, but I still need the exact titles and states for the adjacent tickets that define this broader workstream. I’m resolving those now so the restart prompt can open the right entities first instead of relying on inferred names.",
+      "captured_at": "2026-07-09T16:07:49.950Z",
+      "event_meta": {
+        "event_id": "0a7c06b1-114d-4c72-9048-811a56dcfa76",
+        "parent_event_id": "42063e4f-e2a6-4afd-a39a-13e324eb7f4f",
+        "event_type": "assistant.message",
+        "message_id": "b7d8494a-6605-4dcb-b87b-89320a01dee8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lCwz8Zm4YzgdSd5nTdOdGcwC",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "f227c217-6fda-452e-ae35-4208eb3974f5"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_6Wk88xoJLvUB7fwqYisV7esd",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "1c1ebfd1-4478-401f-a9ad-efcc2ff53b16"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_OezvkkVZnby7gqe52XJ3m3UM",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "1400919a-84b9-49ff-8e8a-92a7d9068594"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2reZdgBXv4ydQqYGm50QyUee",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "0f4b3c5b-c5e9-45c4-968c-a8878f359de8"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bdclZgLqiza5IoZW6tZWbXCD",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\17c737d3-9e91-4bc9-9bec-aca87f4c5613\\call_8NMCHy6q1mhuQLhSCQsY1aKs__vscode-1783598786023\\content.json",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "I’ve got the main owner entities. One last small check: I’m capturing the current local changes in the handoff-policy files so the next session knows there’s unfinished prompt-governance work sitting beside the broader toolcalling/spec update track.",
+      "captured_at": "2026-07-09T16:07:59.219Z",
+      "event_meta": {
+        "event_id": "8e1deae9-489a-4028-bc29-192b55dcfdae",
+        "parent_event_id": "97b3a3cb-f503-458c-b6b0-64911d43bcd3",
+        "event_type": "assistant.message",
+        "message_id": "769b0d63-14c8-49ad-a971-71cb7129acd4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bPqu8JIIV8LMZo89IIy0V90S",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md",
+              "explanation": "Check the current handoff-policy files for uncommitted local changes relevant to the restart path.",
+              "goal": "Capture local handoff-policy worktree state",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ncptsPkscJ85JRursRRfcsFT",
+            "name": "mcp_rmcp3_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "6f286eee-115b-4476-a6fc-9bd6796b5f3f",
+              "full": false
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5wsJbebCLNYOJQkexiexbCr8",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "18e7a4d1-6ac3-402a-be3f-9f588795f006"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ioGs4CQIAcgxnPalZPgd8oid",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "30606247-06cd-4246-905b-bad49d2dd289"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Pcgi0eNsZy4wMFfVrVA3bfLY",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "cf7f79a6-6011-4060-811d-a3831de4c3b7"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_o8odHPTrRM6OGJkEYTXU8w5Q",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "e416e4e8-cab2-41ad-9fcf-63da5f444e0a"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "~~~text\nOverview\n\nThis handoff is for a full update pass on the session-optimization guidance/spec contract and the surrounding mental model for GitHub Copilot agent execution. The next session should not just continue compactness work in isolation; it should reconcile three connected layers into one coherent model: (1) upstream prompt-shaping and tool-result compaction, (2) the planned agent-harness execution architecture, and (3) transcript/event artifacts as diagnostic observability plus audit input. The main correction already established is that transcript suppression is not the cost lever; tool calling and prompt-facing reuse are.\n\nShorthand And Placeholder Legend\n\n- `T-GUIDE` = [f227c217-6fda-452e-ae35-4208eb3974f5 [token-efficiency] Update guidance for compact agent workflows](./.ticket/tickets/f227c217-6fda-452e-ae35-4208eb3974f5/ticket.toml)\n- `T-GUIDE-PREREQ` = [1c1ebfd1-4478-401f-a9ad-efcc2ff53b16 Reduce model-bound Copilot context in bootstrap and handoff flows](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml)\n- `T-IMPL` = [47cc50db-8efa-4945-87fe-d30fe1f6bc61 Implement upstream tool-result guards and compact prompt views](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\n- `T-TOOLS` = [1400919a-84b9-49ff-8e8a-92a7d9068594 [session-optimization] Resolve tool-calling reliability and session evidence gaps](./.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml)\n- `T-HARNESS` = [0f4b3c5b-c5e9-45c4-968c-a8878f359de8 [agent-harness] Unified minimal interface for on-demand chat + long-running agent loops (Rust core, TUI + WASM)](./.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml)\n- `T-APPLYTO` = [18e7a4d1-6ac3-402a-be3f-9f588795f006 [instruction-governance] Narrow over-broad applyTo patterns in instruction files](./.ticket/tickets/18e7a4d1-6ac3-402a-be3f-9f588795f006/ticket.toml)\n- `T-PRECEDENCE` = [30606247-06cd-4246-905b-bad49d2dd289 [instruction-governance] Add instruction precedence + exception matrix in AGENTS.md](./.ticket/tickets/30606247-06cd-4246-905b-bad49d2dd289/ticket.toml)\n- `T-FORMAT` = [cf7f79a6-6011-4060-811d-a3831de4c3b7 [instruction-governance] Resolve formatting-rule conflict (backticks vs linkified paths)](./.ticket/tickets/cf7f79a6-6011-4060-811d-a3831de4c3b7/ticket.toml)\n- `T-CONSOLIDATE` = [e416e4e8-cab2-41ad-9fcf-63da5f444e0a [instruction-governance] Consolidate duplicated instruction guidance and keep pointer surfaces minimal](./.ticket/tickets/e416e4e8-cab2-41ad-9fcf-63da5f444e0a/ticket.toml)\n- `S-PACK` = [f5e0df47-d0ec-4456-b268-689f2a41ecd7 Session Context Packing and Bootstrap Policy](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml)\n- `S-HARNESS` = [6f286eee-115b-4476-a6fc-9bd6796b5f3f Unified Agent Harness: one minimal operator interface for on-demand chat + long-running loops](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml)\n- `R-HANDOFF` = [084fd4e6-660b-4227-a13e-514edf44e393 handoff prompt rule body](./.rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md)\n- `R-HANDOFF-TICKETS` = [a634822a-0f7d-407f-b313-b6465b647d2f handoff-tickets prompt rule body](./.rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md)\n- `R-PRECEDENCE` = [7a21f7ef-b76b-4cef-8a7b-7727958088cd instruction precedence canonical rule body](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md)\n- `SESSION-A` = [a0228f9f-bbac-4c82-b1e6-8a628aa91ec1 persisted session artifacts](./.session/sessions/a0228f9f-bbac-4c82-b1e6-8a628aa91ec1)\n- `SESSION-F` = [fc7ae564-d732-486d-a495-55fdb865397e persisted session artifacts](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e)\n- `<workspace>` = [./](./)\n\nTicket Legend\n\n- `T-GUIDE` -> `f227c217-6fda-452e-ae35-4208eb3974f5` -> `[token-efficiency] Update guidance for compact agent workflows`\n- `T-GUIDE-PREREQ` -> `1c1ebfd1-4478-401f-a9ad-efcc2ff53b16` -> `Reduce model-bound Copilot context in bootstrap and handoff flows`\n- `T-IMPL` -> `47cc50db-8efa-4945-87fe-d30fe1f6bc61` -> `Implement upstream tool-result guards and compact prompt views`\n- `T-TOOLS` -> `1400919a-84b9-49ff-8e8a-92a7d9068594` -> `[session-optimization] Resolve tool-calling reliability and session evidence gaps`\n- `T-HARNESS` -> `0f4b3c5b-c5e9-45c4-968c-a8878f359de8` -> `[agent-harness] Unified minimal interface for on-demand chat + long-running agent loops (Rust core, TUI + WASM)`\n- `T-APPLYTO` -> `18e7a4d1-6ac3-402a-be3f-9f588795f006` -> `[instruction-governance] Narrow over-broad applyTo patterns in instruction files`\n- `T-PRECEDENCE` -> `30606247-06cd-4246-905b-bad49d2dd289` -> `[instruction-governance] Add instruction precedence + exception matrix in AGENTS.md`\n- `T-FORMAT` -> `cf7f79a6-6011-4060-811d-a3831de4c3b7` -> `[instruction-governance] Resolve formatting-rule conflict (backticks vs linkified paths)`\n- `T-CONSOLIDATE` -> `e416e4e8-cab2-41ad-9fcf-63da5f444e0a` -> `[instruction-governance] Consolidate duplicated instruction guidance and keep pointer surfaces minimal`\n\nFindings\n\n- The architectural correction is settled and should not be reopened: transcript/event capture is observability after the fact, not the mechanism that makes the current request cheaper. The authoritative contract is in [S-PACK](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml) and the workflow prerequisite is [T-GUIDE-PREREQ](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml).\n- The first coded upstream compaction layer is complete and validated under [T-IMPL](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml). That slice added deterministic prompt-pack classification and expanded representative suppression coverage in [./memory-api/crates/session-api/src/peek.rs](./memory-api/crates/session-api/src/peek.rs) and [./memory-api/tools/cli/session-cli/tests/cli.rs](./memory-api/tools/cli/session-cli/tests/cli.rs).\n- The broader tool-calling issue inventory already exists in [T-TOOLS](./.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml) and its child bugs. Do not recreate bugs for ambiguous terminal lifecycle, missing structured tool result payloads, or empty assistant-message noise without first checking whether a new transcript finding is genuinely distinct.\n- The agent-harness execution architecture has been refined into a ready implementation graph. The owning tracker is [T-HARNESS](./.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml) and the contract is [S-HARNESS](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml). This matters because the next update pass should explicitly map GitHub Copilot session behavior, MCP toolcalling, and transcript/event generation into that harness model instead of leaving them as implicit assumptions.\n- The instruction-governance cleanup track is already done and materially changed how guidance should be interpreted. The important completed tickets are [T-APPLYTO](./.ticket/tickets/18e7a4d1-6ac3-402a-be3f-9f588795f006/ticket.toml), [T-PRECEDENCE](./.ticket/tickets/30606247-06cd-4246-905b-bad49d2dd289/ticket.toml), [T-FORMAT](./.ticket/tickets/cf7f79a6-6011-4060-811d-a3831de4c3b7/ticket.toml), and [T-CONSOLIDATE](./.ticket/tickets/e416e4e8-cab2-41ad-9fcf-63da5f444e0a/ticket.toml). This means the next session should assume more selective instruction loading and explicit precedence instead of treating every instruction file as globally loaded.\n- There is current uncommitted handoff-policy work in [R-PRECEDENCE](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md). That local change is relevant because it affects the handoff formatting and ambiguity policy that the next session will rely on. It should be reviewed, not silently ignored.\n\nDecisions\n\n- Treat session optimization as a three-surface problem:\n  1. prompt-facing tool-result shaping and duplicate suppression,\n  2. explicit execution/runtime model for an agent harness,\n  3. transcript/event/log artifacts as evidence and audit material only.\n- Use [S-PACK](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml) to define what should be compacted before model reuse, and [S-HARNESS](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml) to define where the session model, lifecycle, tool routing, and event generation belong architecturally.\n- Keep the next pass review-first and model-building first, not implementation-first. The user asked for a full update pass on guidance/specs and a better model of GitHub Copilot plus MCP/toolcalling/transcript generation, so the next agent should refine and align the contract before opening new broad code slices.\n- Use transcript evidence from the reviewer’s own session as the primary source of remaining tool-calling waste, with [SESSION-F](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e) and [SESSION-A](./.session/sessions/a0228f9f-bbac-4c82-b1e6-8a628aa91ec1) as known examples of the patterns to look for.\n\nBlockers\n\n- No board ownership blocker exists right now. Current board snapshot was clear.\n- The biggest restart risk is conceptual drift: confusing transcript observability with the actual optimization boundary, or discussing “Copilot behavior” without explicitly locating whether a behavior belongs to the model prompt, the MCP/tool surface, the harness runtime, or the transcript capture layer.\n- There is heavy unrelated workspace dirt. Do not widen staging scope casually. The next session should either stay read-only on policy/spec work or claim only the exact touched files before editing.\n- Handoff-policy surfaces have local rule-file changes in [R-PRECEDENCE](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md). If the next session updates prompt policy further, it must account for those existing edits rather than overwrite them.\n\nEpic Ticket Or Long-Horizon Goal\n\n- Epic ticket available: [T-HARNESS](./.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml)\n- Long-horizon goal: define one coherent execution model in which GitHub Copilot-style agent behavior, MCP server toolcalling, prompt-facing context packing, transcript/event generation, and audit review all fit together without mixing optimization responsibilities with observability artifacts.\n\nKey Entities\n\n- [T-GUIDE](./.ticket/tickets/f227c217-6fda-452e-ae35-4208eb3974f5/ticket.toml): still in implementation and is the main live ticket for updating compact-workflow guidance.\n- [T-GUIDE-PREREQ](./.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml): completed prerequisite that locked the “upstream request shaping, not transcript suppression” boundary.\n- [T-IMPL](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml): completed first code slice for prompt-pack guard classification; use it as implemented evidence, not as the last word.\n- [T-TOOLS](./.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml): completed tracker for tool-calling reliability/evidence gaps; reviewer should check whether their new transcript findings belong here or represent new gaps.\n- [T-HARNESS](./.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml): ready epic for the explicit Rust-side harness architecture that should own long-running session behavior.\n- [S-PACK](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml): core session-context packing contract.\n- [S-HARNESS](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml): explicit unified harness/operator-interface contract.\n- [./.agents/instructions/session-optimization.instructions.md](./.agents/instructions/session-optimization.instructions.md): canonical guidance that transcript capture is diagnostic only and lists the high-confidence upstream reductions.\n- [./AGENTS.md](./AGENTS.md): current global precedence/quality baseline after instruction-governance cleanup.\n- [R-HANDOFF](./.rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md): canonical handoff-policy source.\n- [R-HANDOFF-TICKETS](./.rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md): canonical handoff-plus-ticket policy source.\n- [R-PRECEDENCE](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md): currently dirty local rule body affecting handoff ambiguity and formatting policy.\n- [SESSION-A](./.session/sessions/a0228f9f-bbac-4c82-b1e6-8a628aa91ec1): earlier persisted session used to derive tool-calling bug tickets and evidence-quality concerns.\n- [SESSION-F](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e): current persisted session containing examples of `tool.execution_result`, ambiguous sync-terminal lifecycle metadata, and handoff-policy iteration.\n\nNext Actions (Execution Order)\n\n1. Open the two owner specs and three key tickets first.\n- [S-PACK](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml)\n- [S-HARNESS](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml)\n- [T-GUIDE](./.ticket/tickets/f227c217-6fda-452e-ae35-4208eb3974f5/ticket.toml)\n- [T-IMPL](./.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)\n- [T-HARNESS](./.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml)\n\n2. Do a model-alignment review before any new code edits.\n- Write down a concrete four-layer model:\n  - GitHub Copilot request assembly and model-facing context,\n  - MCP/tool-call execution surfaces,\n  - harness runtime/session state,\n  - transcript/event/log/audit artifacts.\n- For each observed behavior, assign ownership to exactly one layer first.\n\n3. Review your own current session transcript and event stream for remaining tool-calling waste.\n- Use your latest session under [./.session/sessions](./.session/sessions).\n- Compare patterns against [SESSION-F](./.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e) and [SESSION-A](./.session/sessions/a0228f9f-bbac-4c82-b1e6-8a628aa91ec1).\n- Capture findings in terms of repeated state checks, duplicate lifecycle wrappers, oversized outputs, ambiguous terminal lifecycle, missing result metadata, and any remaining routine-action narration.\n\n4. Systematically test the already-implemented improvements.\n- Run:\n  - cargo test -p session-api\n  - cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml\n- If the reviewer transcript reveals a new pattern not covered by current fixtures, add a focused failing test first in the nearest existing surface:\n  - [./memory-api/crates/session-api/src/peek.rs](./memory-api/crates/session-api/src/peek.rs)\n  - [./memory-api/tools/cli/session-cli/tests/cli.rs](./memory-api/tools/cli/session-cli/tests/cli.rs)\n  - [./memory-api/crates/session-api/src/hook/tests.rs](./memory-api/crates/session-api/src/hook/tests.rs)\n\n5. Identify automation gaps explicitly.\n- Decide whether current validation still misses:\n  - hook/event-path regressions,\n  - ambiguity around `tool.execution_result` semantics,\n  - evidence-quality checks for session artifacts,\n  - quantitative compactness measurements over representative transcripts.\n- Record each missing gate as either a new test case, a spec acceptance-clause refinement, or a follow-up ticket.\n\n6. Update handoff policy if ambiguity remains after the review.\n- Re-check [R-HANDOFF](./.rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md), [R-HANDOFF-TICKETS](./.rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md), and [R-PRECEDENCE](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md).\n- Make sure any new policy explicitly requires:\n  - up-front legend for all shorthand and placeholders,\n  - no unresolved references,\n  - review-oriented next actions when the handoff target is a reviewer rather than an implementer.\n\n7. Suggest the next session-optimization tasks based on evidence, not intuition.\n- Prefer tickets tied to one of these themes:\n  - improved tool execution result modeling,\n  - better sync-terminal completion semantics,\n  - stronger compactness regression metrics,\n  - explicit harness/runtime modeling of tool-call surfaces,\n  - better bootstrap/handoff compact state generation.\n\nFirst Concrete Action\n\n- Start from [./](./), open [S-PACK](./.spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml), [S-HARNESS](./.spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml), and your latest session under [./.session/sessions](./.session/sessions), then write a short ownership map of which layer controls which behavior before running tests.\n\nFirst Validation Check\n\n- Run the current guard validations immediately:\n  - cargo test -p session-api\n  - cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml\n- Then confirm board/workflow cleanliness:\n  - ticket.exe board show --toon\n- Then inspect whether your own session transcript still exhibits unresolved tool-calling issues that should have been suppressed or better summarized.\n\nCompletion Status\n\n- Action 1: not-started\n- Action 2: not-started\n- Action 3: not-started\n- Action 4: not-started\n- Action 5: not-started\n- Action 6: in-progress\n  - Policy already improved to require shorthand/placeholder legends, but remaining local rule work around [R-PRECEDENCE](./.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md) should be reviewed.\n- Action 7: not-started\n\nDefinition Of Done\n\n- The reviewer can explain, with evidence, which remaining issues belong to prompt-shaping, MCP/tool execution, harness runtime, or transcript/audit observability.\n- The reviewer has tested the implemented compaction improvements against both existing automated fixtures and their own live session artifacts.\n- Any remaining gaps in automated validation are identified concretely and tied to exact files/spec clauses/tickets.\n- Next tasks for further session optimization are proposed as explicit, evidence-backed slices rather than general ideas.\n- Handoff policy no longer permits ambiguity around shorthand, placeholders, or unresolved entity references.\n\nBoard And Persisted-Session Notes\n\n- Board was clear when this handoff was prepared.\n- Use persisted session artifacts as bounded evidence only. Do not replay full transcript content into the prompt by default.\n- The workspace contains substantial unrelated dirty and untracked work; keep any new edits tightly scoped and claim files before touching them.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~",
+      "captured_at": "2026-07-09T16:09:06.999Z",
+      "event_meta": {
+        "event_id": "76157127-2548-4404-8044-983d4c29266d",
+        "parent_event_id": "46f524bc-b753-4849-9704-ca99101c2439",
+        "event_type": "assistant.message",
+        "message_id": "19ceb95e-7cc0-42a2-a7cb-e8b0cf2d0f8c",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "user",
+      "content": "compact all related changes including tickets and specs",
+      "captured_at": "2026-07-10T00:05:09.121Z",
+      "event_meta": {
+        "event_id": "3e8c9253-18c8-4588-8a77-5453c8270664",
+        "parent_event_id": "342256ea-88fb-4acd-aef0-dd46d1f78adb",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "I’m going to gather current git changes across the repo and submodules, then stage and commit them in the required order so tickets/specs and related code are compacted into clean commits.I’ll first inventory dirty state in root and nested submodules so we can batch commits without mixing unrelated work.",
+      "captured_at": "2026-07-10T00:05:16.134Z",
+      "event_meta": {
+        "event_id": "be7cd112-a48b-4428-af0f-f679cc9f7c0c",
+        "parent_event_id": "1c3e9134-ba32-48d5-9870-56b91731ec99",
+        "event_type": "assistant.message",
+        "message_id": "78abb7cb-5d02-4ed4-bbb6-446f221e0e47",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_rAxWFb3o3sTFru2Jb3uhREei",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short && echo '--- submodule status ---' && rtk git submodule status && echo '--- recursive dirty scan ---' && rtk git submodule foreach --recursive 'echo \"[$name]\"; rtk git status --short'",
+              "explanation": "Inspect root and submodule working tree changes to plan grouped commits.",
+              "goal": "Discover all related changes before committing",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "I found a large dirty tree: root has ticket/spec/prompt/rule changes plus many new session/ticket folders, and `memory-api` has substantive code/spec updates. Next I’ll isolate the related change sets and commit them in proper order (submodule first, then root pointer/update).",
+      "captured_at": "2026-07-10T00:05:34.300Z",
+      "event_meta": {
+        "event_id": "5def54da-f892-4619-b159-576308dc76a3",
+        "parent_event_id": "a18c4f0a-4027-48a4-849a-8748229f33b9",
+        "event_type": "assistant.message",
+        "message_id": "c5bc9593-5040-428f-a3dc-36a421963a89",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EPjSUog9elafrkHipv9y0iFs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "List root working tree changes for batching commits.",
+              "goal": "See root dirty files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2aS9KJpegnI3oD2wwSsVZhPe",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && rtk git status --short",
+              "explanation": "List memory-api submodule changes to commit first.",
+              "goal": "See submodule dirty files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4ecl1jwU6q9nTcJqBb8nPGMh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd viewer-api && rtk git status --short",
+              "explanation": "Verify viewer-api submodule cleanliness.",
+              "goal": "Check additional submodule state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Status is clear enough to proceed: one real submodule (`memory-api`) is dirty; root has the ticket/spec/rule/session batch. I’ll verify the `viewer-api` path anomaly, then start committing `memory-api` first.",
+      "captured_at": "2026-07-10T00:05:41.393Z",
+      "event_meta": {
+        "event_id": "31c25a06-ec5b-428b-9bd4-04307332a6d5",
+        "parent_event_id": "34291fc0-b760-4aef-9962-cc772b22f44f",
+        "event_type": "assistant.message",
+        "message_id": "640ddda0-df73-4237-b1c0-7d7ae2e2ccc5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bIxFKD7xXaeHqeQdz4NS75o7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ls -ld viewer-api memory-viewers/viewer-api 2>/dev/null || true && rtk git ls-files viewer-api && rtk git config --file .gitmodules --get-regexp path",
+              "explanation": "Check whether viewer-api is a tracked root submodule path or an untracked directory artifact.",
+              "goal": "Resolve viewer-api status anomaly before commits",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "user",
+      "content": "Try Again",
+      "captured_at": "2026-07-10T01:56:11.644Z",
+      "event_meta": {
+        "event_id": "c4fb3545-1c2c-49b3-b402-58532780e388",
+        "parent_event_id": "af034568-9dbc-4e65-b933-d9220dc9dd26",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "I found the shell context had shifted into `memory-api`; I’ll switch back to the root repo and continue commit batching from there to avoid cross-repo confusion.",
+      "captured_at": "2026-07-10T01:56:26.200Z",
+      "event_meta": {
+        "event_id": "6f793e7f-86fd-4401-a177-e383966f71a7",
+        "parent_event_id": "8ae69d4f-8372-46db-a9a8-52dff1f6548a",
+        "event_type": "assistant.message",
+        "message_id": "cc4d164d-fb19-475e-838e-8076c6f904a0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xJ7ZRG4D4OgkSBLd0PuU7tIG",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd .. && pwd && ls -la .gitmodules && cat .gitmodules && ls -ld viewer-api memory-viewers/viewer-api",
+              "explanation": "Return to root and verify declared submodule paths.",
+              "goal": "Use correct repo root for remaining commit operations",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "I hit a shell-state race while parallelizing `cd` calls; I’ll switch to `git -C <path>` checks so each status read is deterministic and independent.",
+      "captured_at": "2026-07-10T01:56:39.191Z",
+      "event_meta": {
+        "event_id": "0e434d3c-006c-4e77-b528-2ed133f010ea",
+        "parent_event_id": "46fe68b0-90be-4416-88bf-1dec6d13a2ed",
+        "event_type": "assistant.message",
+        "message_id": "8b770abb-f3c0-4aea-8ce6-9ed25b7bd28c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CaADdmnQdCfunMRI1ws388zE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "pwd && git -C viewer-api status --short && echo '---' && git -C memory-api status --short && echo '---' && git -C memory-viewers status --short",
+              "explanation": "Use path-scoped git status to avoid cwd drift and confirm each repo's dirty set.",
+              "goal": "Finalize commit plan per repository",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "I’ve confirmed there are related changes in two submodules (`viewer-api` and `memory-api`) plus the root ticket/spec/rule/session surfaces. I’ll commit submodules first, then commit the root batch with updated submodule pointers in one compacted set.",
+      "captured_at": "2026-07-10T01:57:00.209Z",
+      "event_meta": {
+        "event_id": "714d8ef7-3371-4f0a-b042-321f0baacbb8",
+        "parent_event_id": "529ff0f8-93d4-4b2f-b0e8-4f23d2ba96cb",
+        "event_type": "assistant.message",
+        "message_id": "3ad3a36f-87d3-46b1-8ed3-8fe7a49cc733",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_NXvrqTixIgmCaxxqHxl7DgJP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/viewer-api && git add .spec/specs/012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6 && git commit -m \"chore(specs): add operator-interface handoff spec\" && git status --short",
+              "explanation": "Commit related viewer-api spec changes before parent repo pointer updates.",
+              "goal": "Create viewer-api commit for spec additions",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    }
+  ]
+}

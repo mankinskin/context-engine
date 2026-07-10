@@ -2,122 +2,121 @@
 
 # Summary
 
-Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and repository conventions.
+Creating new durable stores is still too dependent on reverse-engineering prior domains. This spec defines one foundational memory-store bootstrap contract for a fully operational store, then layers extension profiles on top so domain-specific behaviors stay powerful without fragmenting the common base.
 
 ## Behavior Story
 
-Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and repository conventions.
+An engineer starting a new durable store should be able to identify the minimum shared store mechanics, the required transport and validation surfaces, and the extension points for richer domain workflows without guessing whether a domain belongs to a different bootstrap family.
 
 ## Provided Surface Contracts
 
-- Define provided contracts for this behavior slice.
+- The repository owns one canonical foundational bootstrap contract for durable stores built on shared `memory-api` store mechanics.
+- `ticket`, `spec`, `rule`, `test`, `log`, and `session` all participate in that foundational contract where they expose durable records, indexes, workspace resolution, and transport-facing query/write behavior.
+- Domain-specific attached artifacts, richer workflow logic, and specialized query semantics belong in extension profiles layered above the foundational store contract.
+- Prompt-driven scaffolding, templates, and slash-skill automation are downstream consumers of this policy and must not invent alternate bootstrap categories.
+
+## Core Bootstrap Profile
+
+The core profile defines the minimum contract for a fully operational generic store:
+
+- durable record storage using shared `memory-api` open/create and workspace-resolution primitives
+- schema or equivalent domain-shape registration sufficient to validate writes and query stable fields
+- transport foundations across the real surfaces the domain claims to support, with CLI and MCP expected by default and HTTP required where the domain already exposes HTTP
+- generic store features: create, get, update, list or search, move or scan where applicable, nested-workspace resolution, and cross-store link fields when the domain interoperates with other durable stores
+- focused validation proving CRUD behavior, schema enforcement, workspace-root discovery, and transport parity instead of compile-only bootstrap checks
+
+## Extension Profile Model
+
+Extension profiles add domain-owned behavior on top of the core profile without redefining the foundational store model:
+
+- workflow and lifecycle semantics such as ticket state machines, review gates, and graph edges
+- richer transport semantics such as HTTP-specific handler contracts or MCP workflow helpers
+- attached artifact families such as runtime log captures, session transcripts, benchmark bundles, or generated outputs
+- specialized query behavior, ranking, audit trails, or replay and journaling models
+
+The design rule is simple: foundational mechanics stay shared; domain meaning stays layered.
+
+## Bootstrap Comparison Matrix
+
+| Domain | Foundational store mechanics | Domain or extension layer | Transport expectation | Validation anchor | Reuse signal |
+| --- | --- | --- | --- | --- | --- |
+| `ticket-api` | Domain store over shared `memory_api` entity storage with built-in schema registration and workspace-aware open paths | Workflow states, dependency graph rules, board coordination, and transport-specific review flows | CLI, MCP, and HTTP are all core for this domain and must stay in parity | `tools/cli/ticket-cli/tests/contracts_schema_validation.rs` plus transport parity work | Richest precedent for shared foundation plus domain workflow layering |
+| `spec-api` | Small shared-store bootstrap with embedded schema registration and minimal wrapper logic | Section handling, traceability rules, and spec review semantics | CLI and MCP are core; HTTP remains required where exposed | `crates/spec-api/tests/schema_test.rs` | Closest example of the smallest viable foundational profile |
+| `rule-api` | Shared-store bootstrap with multi-schema registration and standard workspace behavior | Generated-target workflows, rule search semantics, and repo-specific operator helpers | CLI and MCP are core; HTTP is extension-only if introduced later | `crates/rule-api/src/default_schema.rs` and rule-store tests | Best example of multiple built-in schemas over the same foundation |
+| `test-api` | Durable evidence store over shared memory-store mechanics | Validation, benchmark, and compliance semantics layered onto the same durable base | CLI and MCP are core; HTTP is required only if the domain adds it | `memory-api/crates/test-api/src/lib.rs` and transport validation work | Precedent that generic store mechanics can support evidence-heavy domains |
+| `log-api` | Durable runtime-log metadata and index store over shared foundational patterns | Runtime capture locators, active-log workflows, and query semantics for log artifacts | CLI and MCP are core; HTTP is required only if the domain adds it | runtime-session and log-store validation work | Precedent for a foundational store plus attached artifact content |
+| `session-api` | Foundational durable metadata, indexes, and workspace-aware store mechanics still apply where session records are stored | Session planning, capture layout, transcript artifacts, and hook-driven workflows are extension behavior | CLI and MCP are core; HTTP is required only if the domain adds it | `crates/session-api/src/store_tests.rs` and capture-hook E2E tests | Proof that attached artifacts do not remove a domain from the shared foundational profile |
+
+## Template Boundary Decision
+
+### First template target
+
+The first canonical bootstrap template targets the core foundational profile for a fully operational durable store, not a toy single-transport slice.
+
+### Extension handling rule
+
+The first template must leave explicit hooks for extension profiles so later domains can add workflow engines, attached artifacts, or specialized transports without reworking the base scaffolding.
+
+### Handwritten vs generated boundary
+
+- Handwritten, domain-owned surfaces:
+  - entity schemas or equivalent domain-shape rules
+  - domain query semantics and specialized write invariants
+  - extension-profile behavior such as workflow rules, attached artifact routing, or custom operators
+  - cross-store vocabulary and evidence expectations beyond the shared minimum contract
+- Candidate generated surfaces:
+  - crate skeleton and manifest wiring
+  - default schema or registry module
+  - store open/create shell using shared `memory-api` primitives
+  - CLI and MCP stubs, plus HTTP stub wiring where the selected profile requires HTTP
+  - baseline CRUD, schema-validation, workspace-resolution, and transport-parity tests
 
 ## Required Validation
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- `cargo test --manifest-path memory-api/Cargo.toml -p spec-api`
+- `cargo test --manifest-path memory-api/Cargo.toml -p ticket-cli --test contracts_schema_validation`
+- `cargo test --manifest-path memory-api/Cargo.toml -p session-api`
+- Focused workspace-resolution validation against the `memory-api` resolver path so new stores inherit nested-workspace behavior rather than re-implementing it.
+- At least one bootstrap fixture or template test must prove create, get, update, delete, schema validation, workspace-root discovery, and claimed transport parity out of the box.
 
 ## Related Implementation Tickets
 
-- No related implementation ticket is linked yet.
+- [79dd2d35 [workflow-policy][memory-store] Research and define minimal domain-store bootstrap policy](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/ticket.toml)
+- [e268a1e8 [memory-api][bootstrap] Implement core-profile minimal-store fixture and template smoke path](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/e268a1e8-3f3a-433f-b4a0-d58c590b8d29/ticket.toml)
+- [39239e48 Transport-layer workspace-resolution parity (tracker)](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml)
+- [66fae806 [scaffold] Rule-generated store bootstrap instructions and slash command skill](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml)
 
 ## Background Knowledge References
 
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+- `memory-api/crates/ticket-api/src/model/default_schema.rs`
+- `memory-api/crates/spec-api/src/default_schema.rs`
+- `memory-api/crates/rule-api/src/default_schema.rs`
+- `memory-api/crates/session-api/src/store.rs`
+- `memory-api/crates/memory-api/src/workspace.rs`
+- `memory-api/tools/http/ticket-http/src/serve/handlers/schema.rs`
 
 ## Legacy Content (Preserved)
 
-# Problem
-
-Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and repository conventions.
-
-## Goals
-
-- Encode domain-store bootstrap guidance in canonical rule entries and generated instruction/prompt surfaces.
-- Provide a slash command skill that takes one prompt and scaffolds a minimal domain store.
-- Add automated end-to-end prompt regression tests that verify generated outputs and architecture conformance.
-
-## Required behavior
-
-### Rule-managed source of truth
-- Instruction and prompt artifacts must be generated from rule-store entries.
-- Generated files are not hand-maintained; regeneration is part of validation.
-- Rule entries explicitly encode architecture constraints from `target/tmp/architecture-decisions.md` and `architecture/cross-store-workspace-interaction`.
-
-### Generated asset ownership
-- Canonical source ownership: rule-store entries.
-- Generated targets: slash-skill prompt assets, bootstrap instruction files, and template fragments.
-- Manual edits to generated targets are treated as drift and must fail drift checks.
-
-### Slash command scaffolding flow
-- Single prompt input yields a minimal store scaffold including crate manifest, base models, storage API shell, CLI/MCP/HTTP stubs where applicable, and baseline tests.
-- Output includes contract-crate and composition-root guidance so domain crates remain decoupled and DAG-safe.
-- The flow emits actionable next steps for completing domain-specific logic.
-
-### Prompt contract
-- Required prompt fields: domain name, primary entities, required interfaces, optional external integrations.
-- Prompt parser reports normalized intent and explicit warnings for ambiguous or conflicting instructions.
-- Generated scaffold includes machine-readable manifest of created files and architecture checks performed.
-
-### Architecture conformance checks
-- Generated scaffold must satisfy DAG and layering constraints:
-  - no domain cycles
-  - contract crates remain lightweight
-  - composition root stays in binaries
-- The scaffolder surfaces conformance warnings when prompt intent conflicts with architecture constraints.
-
-### Operational guardrails
-- rollout supports feature-flag staged enablement (off, preview, controlled, general).
-- failed drift/replay/e2e gates trigger deterministic rollback behavior and preserve diagnostic artifacts.
-- operator diagnostics include clear next-step remediation guidance for failed scaffold generations.
-
-### Regression harness
-- A dedicated E2E prompt test suite validates representative prompts and asserts:
-  - generated files compile
-  - baseline tests run
-  - architecture checks pass
-  - generated instructions/prompt outputs are stable or intentionally versioned
-
-## Validation-track decomposition
-
-- Validation track 1: generation-drift checks ensure rule sources and generated instruction/prompt targets remain synchronized.
-- Validation track 2: prompt replay matrix validates scaffold behavior across simple, medium, complex, and edge-case prompt families.
-- Validation track 3: end-to-end harness aggregates compile/test/conformance checks across the replay suite and reports regressions with actionable diffs.
-
-## Rollout gates
-
-1. Drift-gate: source and generated artifacts remain synchronized.
-2. Replay-gate: prompt matrix remains stable across representative prompt classes.
-3. E2E-gate: generated scaffolds compile, tests pass, and architecture checks pass.
-
-Downstream scaffold rollout is blocked if any gate fails.
-
-## Major risks
-
-- prompt ambiguity yielding unusable scaffolds without diagnostics
-- drift between rule-source guidance and generated slash-command behavior
-- regression suite brittleness from unstable output ordering
+The original scaffold and slash-skill idea remains valid, but it now targets the core bootstrap profile plus extension hooks rather than a narrow entity-store-only template.
 
 ## Acceptance criteria
 
-- rule-source and generated-target workflow is explicit and validated
-- slash-command scaffold contract is explicit and architecture-constrained
-- E2E prompt regression tickets and validation requirements are present
-- rollout gating order across drift checks, prompt replay, and full E2E harness is explicit
+- The repository has an explicit core profile for a fully operational foundational store.
+- Extension profiles clearly own domain-specific workflows, attached artifacts, and richer query behavior without redefining the shared base.
+- `test`, `log`, and `session` are treated as foundational-store-based domains where applicable rather than as exclusions from the bootstrap policy.
+- Required bootstrap validation includes schema validation, CRUD, nested-workspace resolution, and claimed transport parity.
+- Follow-up scaffold automation is described as a consumer of the policy, not the policy itself.
 
 ## Traceability
 
+- [79dd2d35 [workflow-policy][memory-store] Research and define minimal domain-store bootstrap policy](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/ticket.toml)
+- [e268a1e8 [memory-api][bootstrap] Implement core-profile minimal-store fixture and template smoke path](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/e268a1e8-3f3a-433f-b4a0-d58c590b8d29/ticket.toml)
+- [39239e48 Transport-layer workspace-resolution parity (tracker)](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml)
 - [66fae806 [scaffold] Rule-generated store bootstrap instructions and slash command skill](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml)
 - [23e81ad8 [rule+skill] Rule-store sources for domain-store scaffolding instructions](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml)
 - [07d4b1b0 [skill] One-prompt domain-store scaffold slash command flow](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/07d4b1b0-bc20-4ba7-98d4-ed09365f0437/ticket.toml)
-- [dedac9f5 [validation] Rule-target generation drift checks for scaffold guidance assets](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/dedac9f5-0d4d-4ad0-8a7e-4acd361c273e/ticket.toml)
-- [2ff2c8e8 [validation] Prompt replay matrix for scaffold skill domain coverage](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a/ticket.toml)
-- [70222986 [validation] E2E regression harness for domain-store scaffold prompts](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/70222986-3325-4d45-892e-31e7f4d09aa6/ticket.toml)
-- [a87dcdf9 [scaffold] Rollout guardrails, feature flags, and rollback protocol](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/a87dcdf9-0638-4c84-a4ed-c8f4d3518e72/ticket.toml)
 
 ## Validation
 
-- rule sync-targets check passes for generated instruction/prompt outputs
-- focused tests for slash-command prompt parsing and scaffold generation
-- drift-check suite validates source-to-generated alignment
-- replay matrix suite validates behavior across prompt classes
-- E2E prompt suite validates compile/test/architecture checks across prompt fixtures
+- Focused package tests for `spec-api`, `ticket-cli`, and `session-api` remain green.
+- Future scaffold generation work must add a template or fixture test that proves CRUD, schema validation, nested workspace discovery, and claimed transport parity without domain-specific patching.

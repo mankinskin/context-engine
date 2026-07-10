@@ -94,13 +94,24 @@ This spec covers upstream request-shaping policy and future prompt-facing compac
 - 2026-07-09 validation pass for follow-up implementation slice under [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml):
 	- `cargo test -p session-api` (added representative fixture-style coverage in `memory-api/crates/session-api/src/peek.rs` for retry-variant suppression, duplicate lifecycle-wrapper suppression, normalized repeated status-check suppression, and pointer-vs-inline payload classification)
 	- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml` (expanded integration fixture assertions in `memory-api/tools/cli/session-cli/tests/cli.rs` for dropped/summarized/reference-only counts and reason tags)
+- 2026-07-09 transcript-driven review pass on `.session/sessions/fc7ae564-d732-486d-a495-55fdb865397e` and `.session/sessions/95c5d8f1-34cd-4cc5-ac34-c7f6fd0d34a2` found systematic false-positive ambiguity labeling on sync `run_in_terminal` completions.
+- 2026-07-09 hook-path hardening updated `memory-api/crates/session-api/src/hook.rs` to require explicit ambiguity signals before emitting `sync-terminal-state-ambiguous`, with new regression tests in `memory-api/crates/session-api/src/hook/tests.rs` and validation reruns:
+	- `cargo test -p session-api`
+	- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml`
+- 2026-07-09 quantitative compactness follow-up added measurable guard fixtures:
+	- `memory-api/crates/session-api/src/peek.rs` now includes compactness-ratio assertions on a tool-heavy fixture (`dropped_turns >= 2`, `included <= 5`) centered on repeated tool-state checks plus pointer-vs-inline payload cases
+	- `memory-api/tools/cli/session-cli/tests/cli.rs` adds `peek_prompt_pack_meets_quantitative_compactness_gate` (`dropped >= 2`, `included <= 3`) to validate counts at the CLI output boundary
+	- `memory-api/crates/session-api/src/hook/tests.rs` adds a cross-boundary replay test (`transcript_normalization_and_prompt_pack_tool_result_consistency`) proving hook normalization and prompt-pack tool-result behavior stay aligned
+	- validation rerun passed:
+		- `cargo test -p session-api`
+		- `cargo test --manifest-path memory-api/tools/cli/session-cli/Cargo.toml`
 
 # Suppression Rule Rationale (2026-07-09 hardening)
 
-- Retry boilerplate variants (`retrying`, `rerunning`, `one more attempt`) are dropped when they remain short assistant narration, preventing repeated operational chatter from re-entering prompt context.
-- Duplicate assistant lifecycle wrappers are dropped when they are short command-orchestration narration with equivalent normalized action fingerprints.
+- Retry boilerplate (`retry`, `re-run`, `rerun`, `try again`, `run again`, `checking again`) remains suppressed when it appears as short assistant narration, preventing repeated operational chatter from re-entering prompt context.
 - Repeated state-check outputs remain normalized before dedupe so whitespace/casing variants collapse deterministically.
 - Oversized inline payloads are summarized (not pointer-classified) unless an explicit spill/resource pointer is present; pointer outputs remain reference-only.
+- Hook-layer `tool.execution_result` ambiguity markers are emitted only when explicit background/timeout/input-needed signals exist, preventing blocker inflation from plain sync success completions.
 
 # Follow-up Implementation Slices
 

@@ -1,0 +1,1338 @@
+{
+  "session_id": "c0fb80cf-adc1-462a-814a-93f00af8b131",
+  "captured_at": "2026-07-08T22:25:20.426Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "I committed the implemented slices as a reviewable set:\r\n\r\n- `700279a` in memory-api: `chore(specs): align behavior-first spec bodies`\r\n- `81a657b` in viewer-api: `chore(specs): align behavior-first spec bodies`\r\n- `bd3c7c0` in memory-viewers: `chore(specs): align behavior-first spec bodies`\r\n- `7fc0f749` in the root repo: `docs(spec-contract): align behavior-first guidance surfaces`\r\n- `788f5378` in the root repo: `chore(specs): align root behavior-first spec store`\r\n- `a5923e8` in the root repo: `chore: update spec-store submodule pointers`\r\n\r\nValidation stayed green after the repair pass: workspace-wide aligned marker coverage is `190/190`, spec health is `190 checked, 0 issues`, both tickets `37d7fac3` and `38bbb8e2` are `done`, and the board is clear. The working tree is still dirty, but only from unrelated ticket/session/design work plus unrelated memory-api code/test changes that I did not stage.\r\n\r\n**Handoff Prompt**\r\nUse this as the next-session prompt for a full review:\r\n\r\n```markdown\r\n### Overview\r\n\r\nResume in `c:/Users/linus/git/graph_app/context-engine` for a full review of the committed behavior-first spec-contract track. The work is now packaged into reviewable commits across the root repo plus the `memory-api`, `viewer-api`, and `memory-viewers` submodules. The validated outcome is restored and preserved: all workspace spec bodies are aligned to the behavior-first marker and full spec health is clean.\r\n\r\n### Long-Horizon Goal\r\n\r\nShip a stable behavior-first spec system where specs act as concise contracts: short behavior story, provided surface contracts, required validation, and linked implementation tickets, with all existing specs migrated and all guidance surfaces aligned.\r\n\r\n### Findings\r\n\r\n- The guidance overhaul landed as root commit `7fc0f749`.\r\n- The root-store migration landed as root commit `788f5378`.\r\n- Submodule migration slices landed as:\r\n  - `memory-api` commit `700279a`\r\n  - `viewer-api` commit `81a657b`\r\n  - `memory-viewers` commit `bd3c7c0`\r\n- The root repo records those SHAs in commit `a5923e8`.\r\n- Restart validation found a real coverage gap in three nested generated bodies and fixed it before commit.\r\n- Final validation result: `190/190` workspace `body.md` files carry `<!-- aligned-structure:v1 -->`.\r\n- Final spec health result: `190` specs checked, `0` issues.\r\n- Ticket state is complete for this track: [37d7fac3 guidance ticket](.ticket/tickets/37d7fac3-cc7d-44b9-b6e1-f199fca8e901/ticket.toml) and [38bbb8e2 migration ticket](.ticket/tickets/38bbb8e2-19d1-4522-8577-dd922e70d6b7/ticket.toml) are both done.\r\n\r\n### Decisions That Matter\r\n\r\n- The canonical contract anchor remains [298f2f92 spec](.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/spec.toml) with its aligned body in [298f2f92 body](.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md).\r\n- Migration preserved legacy content under aligned headers instead of deleting historical prose.\r\n- Validation triangulation remains mandatory in guidance: executable checks, natural-language contract clauses, and code/schema/API references when available.\r\n- Session-policy guidance is now effectively represented by [session-optimization instructions](.agents/instructions/session-optimization.instructions.md); `SESSION_CONTEXT_POLICY.md` was referenced in older prompt text but is not present in this checkout.\r\n\r\n### Blockers And Risks\r\n\r\n- No hard technical blocker remains on the spec-contract track.\r\n- The review risk is commit hygiene, not behavior correctness.\r\n- The root repo is still dirty from unrelated ticket churn, session captures, and design docs.\r\n- `memory-api` is still dirty from unrelated `session-api` and `memory-matrix` work that was intentionally excluded from the spec commit set.\r\n- Do not use remaining dirty state as evidence against the committed spec track without checking whether the file is one of the committed paths.\r\n\r\n### Key Entities\r\n\r\n- [37d7fac3 guidance ticket](.ticket/tickets/37d7fac3-cc7d-44b9-b6e1-f199fca8e901/ticket.toml): authoritative record for the behavior-first guidance overhaul.\r\n- [38bbb8e2 migration ticket](.ticket/tickets/38bbb8e2-19d1-4522-8577-dd922e70d6b7/ticket.toml): authoritative record for full spec-store migration and restart-proof validation.\r\n- [AGENTS.md](AGENTS.md): generated root guidance surface updated by the guidance commit.\r\n- [.agents/instructions/spec-system.instructions.md](.agents/instructions/spec-system.instructions.md): path-scoped spec contract guidance.\r\n- [.agents/instructions/session-optimization.instructions.md](.agents/instructions/session-optimization.instructions.md): current durable session-context policy surface.\r\n- [.agents/prompts/handoff.prompt.md](.agents/prompts/handoff.prompt.md): updated handoff contract used to produce this review prompt.\r\n- [.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md](.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md): canonical behavior-first contract body.\r\n- [memory-api nested repaired body](memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md): one of the restart-found missing marker bodies.\r\n- [memory-viewers repaired body 1](memory-viewers/.spec/specs/6cf1685d-dc05-4022-abbb-efdd8e94af22/body.md): one of the restart-found missing marker bodies.\r\n- [memory-viewers repaired body 2](memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/body.md): one of the restart-found missing marker bodies.\r\n- [.session/sessions/962ef127-ffae-4793-809a-947965fbad19](.session/sessions/962ef127-ffae-4793-809a-947965fbad19): current session artifact pointer if forensic replay is needed; use only as diagnostic evidence, not as prompt payload.\r\n\r\n### Next Actions\r\n\r\n1. Review the commit chain in order:\r\n   - root: `7fc0f749`, `788f5378`, `a5923e8`\r\n   - submodules: `700279a`, `81a657b`, `bd3c7c0`\r\n2. Confirm each commit is slice-pure:\r\n   - guidance commit contains rule sources plus regenerated guidance outputs\r\n   - root spec commit contains root `.spec` plus ticket `38bbb8e2`\r\n   - submodule commits contain only `.spec` migration content\r\n   - pointer commit contains only submodule SHA updates\r\n3. Re-run the two contract checks as review proof:\r\n   - workspace-wide aligned marker coverage\r\n   - full spec health\r\n4. Inspect remaining dirty files and explicitly classify them as out-of-scope review noise unless they intersect the committed files.\r\n5. Capture review findings against the committed chain, not against the unrelated uncommitted workspace dirt.\r\n\r\n### First Concrete Action\r\n\r\nFrom the repo root, inspect the committed chain and scope boundaries first:\r\n\r\n```bash\r\ngit log --oneline -3\r\ngit -C memory-api log --oneline -1\r\ngit -C viewer-api log --oneline -1\r\ngit -C memory-viewers log --oneline -1\r\ngit show --stat 7fc0f749\r\ngit show --stat 788f5378\r\ngit show --stat a5923e8\r\n```\r\n\r\n### First Validation Check\r\n\r\nRun:\r\n\r\n```bash\r\naligned=$(find . -path '*specs*/body.md' -print0 | xargs -0 rg -F -l '<!-- aligned-structure:v1 -->' | wc -l)\r\nbodies=$(find . -path '*specs*/body.md' | wc -l)\r\nprintf 'workspace_body_files=%s workspace_aligned=%s\\n' \"$bodies\" \"$aligned\"\r\n\r\nticket.exe board show --toon\r\n```\r\n\r\nAnd re-run full spec health through the spec store.\r\n\r\nExpected results:\r\n- `workspace_body_files=190 workspace_aligned=190`\r\n- board clear\r\n- spec health: `190 checked, 0 issues`\r\n\r\n### Definition Of Done\r\n\r\n- The reviewer confirms the six commits cleanly represent the two intended slices plus parent pointer updates.\r\n- The reviewer confirms no unrelated session-noise or ticket churn was committed into this track.\r\n- The reviewer re-confirms aligned coverage and spec health.\r\n- Any review findings are attached to the committed chain or follow-up tickets, not left as implicit workspace observations.\r\n\r\n### Board And Persisted-Session Notes\r\n\r\n- The board is clear now; no active entry exists.\r\n- Do not replay `.session` captures as context by default.\r\n- Use persisted session artifacts only when a review question cannot be answered from the committed files, tickets, specs, or validation evidence.\r\n- The root repo and `memory-api` submodule still contain unrelated dirty files after this commit set; treat them as parallel work unless a review finding proves overlap.\r\n\r\nRun until all tasks are complete.\r\n```\r\n\r\nBrief summary: committed the behavior-first guidance and spec migration slices across root and submodules, revalidated the contract state, and prepared a review-oriented handoff prompt that calls out the remaining unrelated dirty workspace state.",
+      "captured_at": "2026-07-08T21:44:58.250Z",
+      "event_meta": {
+        "event_id": "2b33e25e-f862-4461-852f-829f9e9f67db",
+        "parent_event_id": "406854d8-0a62-41af-a670-5417446f470d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m verifying the committed review set directly from the repo and submodules first, then I’ll rerun the two contract checks to separate committed scope from unrelated dirty state.",
+      "captured_at": "2026-07-08T21:45:06.935Z",
+      "event_meta": {
+        "event_id": "e449d7e2-a1ff-4192-8e10-86c92e0f2a1b",
+        "parent_event_id": "58e7c00e-d7b8-44b0-9d70-43d35a3b7905",
+        "event_type": "assistant.message",
+        "message_id": "a7390558-b6fa-45c4-a596-fbc471d1188b",
+        "reasoning_text": "**Executing terminal commands**\n\nI'm thinking about how to run terminal commands with the right prefix for synchronization. Using the multi-tool parallel option could be useful for read-only commands. I should start with a concise preamble sentence before the batch execution. It might be good to check the git status, show boards, and review logs and differences afterward. Keeping everything concise is key, so I’ll make sure to streamline the output!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_L4XY1Mx2XPBIWnBQVaWL9fAS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git log --oneline -3",
+              "explanation": "Show the latest three root commits to confirm the review chain order.",
+              "goal": "Inspect root commit chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lt9IrQ37KkgOG0jEVKLk3KFr",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api log --oneline -1",
+              "explanation": "Show the latest commit in memory-api to confirm the submodule review commit.",
+              "goal": "Inspect memory-api commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TBTxs9l9FqKKM1zcGPGuGRLF",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api log --oneline -1",
+              "explanation": "Show the latest commit in viewer-api to confirm the submodule review commit.",
+              "goal": "Inspect viewer-api commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rQTD414jxI3TOOQI8AdXbWTS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-viewers log --oneline -1",
+              "explanation": "Show the latest commit in memory-viewers to confirm the submodule review commit.",
+              "goal": "Inspect memory-viewers commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0rDcEJjvu63Gp4es1mXDvBVW",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Check the draft board state to confirm no active entries overlap this review.",
+              "goal": "Confirm board is clear",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XjGHI21MmzQnH0E17CtWlupM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect current root working tree state so uncommitted noise can be classified separately from the review commits.",
+              "goal": "Check root dirty state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "The commit anchors and board state match the handoff. Next I’m checking each commit’s file scope and the remaining dirty submodule state to see whether any committed slice picked up unrelated files.",
+      "captured_at": "2026-07-08T21:45:22.485Z",
+      "event_meta": {
+        "event_id": "deffffbd-1782-412a-8c5f-7e76d58897f8",
+        "parent_event_id": "7aa6bb40-c486-44ce-8420-c9705fc1e3f4",
+        "event_type": "assistant.message",
+        "message_id": "93ea0101-67a5-419d-8f07-f0bf08356bcf",
+        "reasoning_text": "**Inspecting commit stats**\n\nI'm focusing on inspecting the stats of commits and possibly checking the submodule's dirty state. I think it might be useful to review diffs for purity, so running `git show --stat` could help, or even just filtering for names. I should also inspect if there’s any dirtiness in the memory API. I'll make sure to evaluate each aspect carefully!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_UY0yg2ufiRUXwrobQ7OeG6p4",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --stat --summary 7fc0f749",
+              "explanation": "Inspect the guidance commit to verify it only contains intended rule and guidance surface changes.",
+              "goal": "Review guidance commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hr3MxZWPThjiwqdTOkgbBpW1",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --stat --summary 788f5378",
+              "explanation": "Inspect the root spec migration commit to verify it only contains the root spec store and ticket changes.",
+              "goal": "Review root spec commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LbAZtiqTZolbIDVDm2PVkTvc",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --stat --summary a5923e8",
+              "explanation": "Inspect the pointer update commit to verify it only records submodule SHA updates.",
+              "goal": "Review pointer commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AjdiqXyfJfOP1f8skqUodYJ6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api show --stat --summary 700279a",
+              "explanation": "Inspect the memory-api spec migration commit to verify it only contains nested spec-store changes.",
+              "goal": "Review memory-api commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GOxQIieOP8FKO7BEoeBiDPMj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api show --stat --summary 81a657b",
+              "explanation": "Inspect the viewer-api spec migration commit to verify it only contains nested spec-store changes.",
+              "goal": "Review viewer-api commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_N9CGlp08xBES1FAL2jx0dfe7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-viewers show --stat --summary bd3c7c0",
+              "explanation": "Inspect the memory-viewers spec migration commit to verify it only contains nested spec-store changes.",
+              "goal": "Review memory-viewers commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lVYsfEfEkZU9NDRtNaMt8Phu",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short",
+              "explanation": "Inspect current uncommitted state inside memory-api so unrelated dirt is classified separately from the committed slice.",
+              "goal": "Check memory-api dirty state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "The submodule commit scopes look clean. I’m narrowing on the only plausible hygiene question now: whether the root guidance commit pulled in any root spec-store content beyond rule/guidance artifacts, while also rerunning the promised contract checks.",
+      "captured_at": "2026-07-08T21:45:37.594Z",
+      "event_meta": {
+        "event_id": "3dd49ac9-e0e1-4512-be6d-fd23a705aae7",
+        "parent_event_id": "f735b549-82ca-482f-8202-5c9b513325e0",
+        "event_type": "assistant.message",
+        "message_id": "8d785587-ca3a-411a-8649-ecc3847d0a1f",
+        "reasoning_text": "**Checking rules and counts**\n\nAlright, I’m looking to inspect names for 7fc0f749 and maybe 084fd under the .rule/rules. I think I could try using a command like `git show --name-only --format` to get that information. I also want to check the completed tickets and see the validation counts. I need to review if the aligned count is really 190, along with spec health being 190 and 0. I'll use some commands to verify all that.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EwMtRv1UTYejBiTKf9gqWKEz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --name-only --format= 7fc0f749",
+              "explanation": "List exact file paths in the guidance commit to check for any non-guidance files mixed into that slice.",
+              "goal": "Check guidance commit purity",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_UmQIQgqhNohtqdsGm7kVtVbe",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "aligned=$(find . -path '*specs*/body.md' -print0 | xargs -0 rg -F -l '<!-- aligned-structure:v1 -->' | wc -l); bodies=$(find . -path '*specs*/body.md' | wc -l); printf 'workspace_body_files=%s workspace_aligned=%s\\n' \"$bodies\" \"$aligned\"",
+              "explanation": "Recompute aligned marker coverage across the workspace as review evidence.",
+              "goal": "Re-run aligned coverage check",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hTvu8smYGm1JaZcQAjgSf73q",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe health --all --toon",
+              "explanation": "Run full spec health from the root store to verify the committed migration remains clean.",
+              "goal": "Re-run spec health",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tazJyCFsdsqZIe8k3xdV6x1r",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 37d7fac3-cc7d-44b9-b6e1-f199fca8e901 --toon",
+              "explanation": "Verify the guidance ticket is done as claimed in the handoff.",
+              "goal": "Check guidance ticket state",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Dxr2YEaaZYrCFgjkPwwEST4g",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 38bbb8e2-19d1-4522-8577-dd922e70d6b7 --toon",
+              "explanation": "Verify the migration ticket is done as claimed in the handoff.",
+              "goal": "Check migration ticket state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "The review checks mostly held, but the coverage command surfaced a real delta: `184/190` markers right now while spec health is still clean. I’m isolating the six missing bodies next so I can tell whether this is review noise, a command artifact, or a post-commit regression outside the committed chain.",
+      "captured_at": "2026-07-08T21:49:44.377Z",
+      "event_meta": {
+        "event_id": "28c579fd-c62e-4281-b385-307c8db0ceab",
+        "parent_event_id": "4061d9d7-c160-403b-9ce0-45d883aea055",
+        "event_type": "assistant.message",
+        "message_id": "01a7b71a-ad3b-4742-bfdf-e535b683ec15",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EAOLLtQikTby0dENONrPLrX1",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "comm -23 <(find . -path '*specs*/body.md' | sort) <(find . -path '*specs*/body.md' -print0 | xargs -0 rg -F -l '<!-- aligned-structure:v1 -->' | sort)",
+              "explanation": "List body files missing the aligned marker to pinpoint the coverage discrepancy.",
+              "goal": "Find unaligned body files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YtANQkUwafK4oY9W1ZNRhsRp",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff --name-only 788f5378..HEAD",
+              "explanation": "Check whether any post-commit root changes touch spec body files after the reviewed commit chain.",
+              "goal": "Compare root changes after review chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SBMKqbdsEwMMkx3eTAZuPZby",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api diff --name-only 700279a..HEAD",
+              "explanation": "Check whether any post-commit memory-api changes touch spec body files after its review commit.",
+              "goal": "Compare memory-api changes after review chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_A9BtI6nQgoaaBLYNm8PnG8p7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api diff --name-only 81a657b..HEAD",
+              "explanation": "Check whether any post-commit viewer-api changes touch spec body files after its review commit.",
+              "goal": "Compare viewer-api changes after review chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_3wQo7Yd8xEpy8j9GFBd87FdK",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-viewers diff --name-only bd3c7c0..HEAD",
+              "explanation": "Check whether any post-commit memory-viewers changes touch spec body files after its review commit.",
+              "goal": "Compare memory-viewers changes after review chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I’ve isolated the discrepancy to six specific spec bodies that still lack the marker in the committed state. I’m reading those files directly now so I can anchor the review finding to concrete paths and lines instead of just the aggregate count.",
+      "captured_at": "2026-07-08T21:50:02.710Z",
+      "event_meta": {
+        "event_id": "37145a27-ec69-4df7-beba-ec9c43fc8d9a",
+        "parent_event_id": "201db6ab-717c-4182-ac52-3a38f9f0f13e",
+        "event_type": "assistant.message",
+        "message_id": "9ab93572-c763-4e70-afb2-ee49a6ee12b5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ZtCkO5CBI77oyzzJau9016DA",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\38e337c2-cdda-4488-9aa7-b47a300563b0\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GSDdbVPcioxvkLC0MEa1K1AK",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\954d9807-f357-41e5-9fd4-b1da39e0933d\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_otOq6jJfgEeFn9rpGZxfOrlb",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\a4f48d84-50ed-4769-a42f-38321ea9600c\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vfpcZgHDIEj1gGnKqq8fNoeJ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\cf5e2942-1a47-43cc-a0ee-14e5774680a6\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dGBLKD24m76vkwZ8BaSgFaQb",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.spec\\specs\\f9c32554-9884-41c4-8b5b-d1d32b37e341\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZO92vkIIZxulj5EVt32y0oiv",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.spec\\specs\\798c9a3c-404a-4842-874d-484edb4209ef\\body.md",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "The six missing files are concrete and all remain in legacy structure with no aligned marker at the top. I’m taking one nearby aligned example now so the finding can distinguish “command quirk” from an actual contract mismatch in the committed content.",
+      "captured_at": "2026-07-08T21:50:06.863Z",
+      "event_meta": {
+        "event_id": "ee6bdf96-05be-493a-9d9a-d76593f440b0",
+        "parent_event_id": "868987bb-7328-47ea-82a7-cbf8a9a448a0",
+        "event_type": "assistant.message",
+        "message_id": "febe0977-ee59-4b99-8a48-f30bd6f48cfc",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_SehSeTxAEjn276axCWHAcKOG",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\298f2f92-df7e-4c8a-b4fe-b63c27622142\\body.md",
+              "startLine": 1,
+              "endLine": 20
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I’ve confirmed the marker format from an aligned root spec. The remaining check is whether those six legacy bodies were simply omitted from the migration commits; if so, that becomes the primary review finding against the committed chain.",
+      "captured_at": "2026-07-08T21:50:13.422Z",
+      "event_meta": {
+        "event_id": "d65b4ca4-5b72-44d8-abeb-24f901ea2c29",
+        "parent_event_id": "33a0ba24-47d8-45fe-9897-34a5855346e2",
+        "event_type": "assistant.message",
+        "message_id": "db551d17-8f4a-43b8-9fec-c5a1a0b57126",
+        "reasoning_text": "**Reviewing commit chain integrity**\n\nI need to check if the commit chain is valid since it lists six files as untouched. There’s a claim of 190/190 files, but I’m calculating 184/190. This discrepancy may invalidate the claim, so I should mention specific commits that omitted these six files. I could find if those files were touched by relevant commits using commands like `git show --name-only` or `git log`. I might also look into submodule commits for any missing file IDs.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bERsg8FBr4dDEkNWtMid9O1M",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --name-only --format= 788f5378 | rg '38e337c2|954d9807|a4f48d84|cf5e2942'",
+              "explanation": "Check whether the missing root spec bodies were included in the root migration commit.",
+              "goal": "Verify root omissions in migration commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_fVbYnWJhHAXoXBDc0MzT3MAx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api show --name-only --format= 700279a | rg 'f9c32554'",
+              "explanation": "Check whether the missing memory-api spec body was included in the memory-api migration commit.",
+              "goal": "Verify memory-api omission in migration commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1YSEiTLuhWH6CO8hYgleiV4Z",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api show --name-only --format= 81a657b | rg '798c9a3c'",
+              "explanation": "Check whether the missing viewer-api spec body was included in the viewer-api migration commit.",
+              "goal": "Verify viewer-api omission in migration commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_veYGdEjgfhWhlSAClZ4OhUdY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git show --name-only --format= 7fc0f749 | rg '^\\.spec/|^memory-api/\\.spec/|^viewer-api/\\.spec/'",
+              "explanation": "Confirm the guidance commit did not mix in spec-store migration files.",
+              "goal": "Reconfirm guidance commit purity",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "**Findings**\n\n1. High: the committed migration chain is incomplete against its own acceptance claim. Re-running the promised coverage check on the current committed state gives `workspace_body_files=190 workspace_aligned=184`, not `190/190`. The six remaining unaligned bodies are [.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md](.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md#L1), [.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md](.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md#L1), [.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md](.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md#L1), [.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md](.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md#L1), [memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md](memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md#L1), and [viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md](viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md#L1). Each still begins with the legacy generated header rather than the aligned marker, unlike the migrated canonical example at [.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md](.spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/body.md#L1). Those six paths do not appear in commits `788f5378`, `700279a`, or `81a657b`, and no later diff after those commits touched them, so this is a defect in the reviewed commit set rather than workspace noise.\n\n**Assumptions**\n\nI’m assuming aligned-marker coverage is a real acceptance criterion because the handoff explicitly treats `190/190` as review proof. `spec.exe health --all --toon` still passes with `190 checked, 0 issues`, which means spec health does not currently enforce this marker requirement.\n\n**Secondary Summary**\n\nAside from that gap, the commit hygiene looks clean. `7fc0f749` is guidance/rule/ticket-only, `788f5378` is root `.spec` plus ticket `38bbb8e2`, `700279a` / `81a657b` / `bd3c7c0` are spec-store-only submodule slices, and `a5923e8` is pointer-only. `ticket.exe board show --toon` is clear, and both [37d7fac3 guidance ticket](.ticket/tickets/37d7fac3-cc7d-44b9-b6e1-f199fca8e901/ticket.toml) and [38bbb8e2 migration ticket](.ticket/tickets/38bbb8e2-19d1-4522-8577-dd922e70d6b7/ticket.toml) are `done`. The remaining dirty root and `memory-api` working tree entries appear out of scope for this review.\n\n1. Add a follow-up migration commit for the six missed bodies, then rerun the coverage check.\n2. Correct the handoff/review note so it reports `184/190` until that follow-up lands.",
+      "captured_at": "2026-07-08T21:50:33.343Z",
+      "event_meta": {
+        "event_id": "c116b712-97ba-467a-a7b6-083b2b830f23",
+        "parent_event_id": "69c9803f-0f2d-44d3-9f58-2b332d688075",
+        "event_type": "assistant.message",
+        "message_id": "976d4dce-cf0c-43fd-a964-1f1cb9ff7005",
+        "reasoning_text": "**Considering file references**\n\nI need to get file line references, starting with line 1. It could be good to mention that there are no post-commit diffs after migration affected them. Citing commit IDs instead of line references might also work in prose. I should include findings with file/line references, maybe even compressing by listing six in flat bullets. There’s an open question about health not enforcing the marker, and I should note that the coverage command captures many files.**Analyzing commit findings**\n\nI’m looking at agents, prompts, and ticket documentation, noting that some files remain dirty while the committed scopes are clean. I might mention there's no finding for hygiene beyond the omission and no workspace dirt evidence in commits. Following the review style, if I only find one thing, I should state \"No other findings\" along with residual risk. I should also clarify that the handoff prompt's coverage of 190/190 isn’t accurate due to missing specs. It seems important to classify severity as high since claimed validation proof is incorrect.**Clarifying formatting rules**\n\nI’m noticing that the formatting rules require absolute filesystem paths, while fileLinkification specifies workspace-relative paths. It seems the proper format for paths is something like path/file.ts, without any backticks. I should focus on using markdown links with workspace-relative paths, like [.spec/specs/.../body.md](.spec/specs/.../body.md#L1), and avoid using backticks for file references. However, including backticks for code or commands is fine. I might also think about mentioning commit hashes and including a verification summary section, but the response should start with findings.**Summarizing migration findings**\n\nI'm checking the migration commits and noticing that they don't fully cover the aligned markers. The current check shows 184 out of 190, which is incomplete. There are six remaining legacy bodies starting with `<!-- spec-api:file generated=true -->` instead of the expected marker. These paths, which aren’t addressed in recent commits, definitely indicate that the committed chain itself is lacking. I think I'll decide on a way to list those six file references clearly.**Clarifying open questions**\n\nI’m assuming that aligned-marker coverage is the acceptance gate since the handoff prompt and validation depend on it. Right now, the `spec health` check is passing, but that tool doesn’t enforce markers. I need to note that commit boundaries are mostly clear and focused. There’s a lingering dirty state that seems out of scope. I’ll include key validation lines to sum it all up. If the user wants, I could prepare a follow-up patch to address the missed bodies, though they asked for a review. I might suggest next steps too!**Planning follow-up actions**\n\nI need to add a follow-up migration commit for the six missed bodies and rerun the coverage command afterward. I also want to amend the handoff or review note to indicate the current status of 184 out of 190 until that fix is in place. I don’t think it’s necessary to mention the amendment in the commit, maybe just focus on the follow-up. I’ll aim to keep everything clear and concise, avoiding nested bullets!",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "user",
+      "content": "perform the follow up systematically",
+      "captured_at": "2026-07-08T22:14:29.750Z",
+      "event_meta": {
+        "event_id": "b3ba54f7-7858-41da-a2ea-55ae1ee63259",
+        "parent_event_id": "ed0b32b4-d69a-4995-bf64-825e587a7dea",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’m anchoring this on the six missing bodies from the review finding, then I’ll claim the files, patch them in one pass, and rerun the same coverage and health checks.",
+      "captured_at": "2026-07-08T22:14:40.576Z",
+      "event_meta": {
+        "event_id": "cc261fb4-54c7-4a52-8fcb-609bb5d04bc1",
+        "parent_event_id": "eb7257ff-d170-40e6-93e7-4333c318ff47",
+        "event_type": "assistant.message",
+        "message_id": "578020f0-4e92-46a4-ab1f-8a662b8f6520",
+        "reasoning_text": "**Evaluating tool options**\n\nI see that the rule suggests preferring MCP when it's available, but I can use the CLI if the tool isn't reachable. It might be easier to use a tool search for MCP tickets and specifications. Instructions recommend using the doc-viewer for documents and the ticket-MCP before duplicating anything. Still, a CLI fallback seems faster. I should look for existing tickets via a behavior-first criteria and maybe inspect ticket 38 for focus. I need to align six specific files with their markers.**Investigating missing bodies**\n\nI'm hypothesizing that these six bodies were missed due to the root and submodule migration scripts only operating on subsets. So, I should look into adding an aligned structure to these six and maybe check the related spec.toml. I need a cost-effective way to confirm this, perhaps by inspecting one missing body and related alignment principles. I might find a script or rule for generating aligned bodies by searching for \"aligned-structure:v1\" patterns. I've identified six types to focus on.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_etKacFHCBh1Ib0mUhf6VFHJY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe search \"aligned behavior-first missing marker follow-up\" --toon",
+              "explanation": "Search for an existing ticket covering the missing aligned-marker follow-up before creating duplicate work.",
+              "goal": "Find existing follow-up ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_srkXallROc1zmTf7fYsfqsy7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Confirm the board is still clear before claiming the files for the follow-up work.",
+              "goal": "Check board state",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gZtUYcmHKm8fjFR5CPy2qNFR",
+            "name": "grep_search",
+            "arguments": {
+              "query": "aligned-structure:v1|Behavior Story|Provided Surface Contracts|Required Validation",
+              "isRegexp": true,
+              "includePattern": "**/body.md",
+              "maxResults": 40
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "There isn’t an existing follow-up ticket, so I’m creating one and claiming the six affected files before I patch the missed bodies.",
+      "captured_at": "2026-07-08T22:14:59.052Z",
+      "event_meta": {
+        "event_id": "3e1c3a59-cca1-47ae-b5d6-ef40a2501ae4",
+        "parent_event_id": "96f581fb-defe-46ff-bc68-2b54bca9053b",
+        "event_type": "assistant.message",
+        "message_id": "80413fa5-7711-4117-b75e-59083a102626",
+        "reasoning_text": "**Creating an update ticket**\n\nI need to create a new ticket because I didn't find any existing ones. After that, I might check the board. There probably won't be a need for a spec change since I’m fixing a migration issue. I’m weighing whether to create a bug or a tracker-improvement ticket—I'll search for existing types first. It might be necessary to link it to an old ticket and consider creating follow-up issues depending on the investigation. I'll also need to generate bodies manually from legacy text by transforming it into an aligned structure.**Inspecting recurring principles and architecture**\n\nI need to inspect examples of aligned recurring principles and architecture. I’ll search for similar slugs because there might be other aligned recurring bodies. It seems the missing root recurring principles could also be unique, so maybe I can derive some manually. For workflow specs, I could map the Goal to Behavior Story and Architecture direction. I should check the entire files—maybe reading around 120 lines each—to ensure I capture enough context for all six. Plus, I need to create a ticket and do a check-in.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Yans0T1VYvpI75pBPz1qAGXC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --title \"[spec-system] Repair six missed aligned behavior-first spec bodies\" --type tracker-improvement --priority high --description \"Follow-up to the behavior-first spec migration review: six spec body files still lack the aligned-structure:v1 marker and aligned section layout, leaving coverage at 184/190 while spec health remains clean. Scope: patch the six identified bodies only, rerun aligned coverage plus spec health, and move the fix through review.\" --toon",
+              "explanation": "Create a dedicated follow-up ticket so the repair work is tracked independently from the already-closed migration ticket.",
+              "goal": "Create follow-up ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KyR3uEtdVkFvS3x9QBZkfCpp",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\38e337c2-cdda-4488-9aa7-b47a300563b0\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WQdCYUP2aX5LBrKjJnsa05cb",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\954d9807-f357-41e5-9fd4-b1da39e0933d\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BQPz9cXT13bOdilvoBZGiUW6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\a4f48d84-50ed-4769-a42f-38321ea9600c\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wdoV0WkCApGUDTQyWWoZtpi5",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\cf5e2942-1a47-43cc-a0ee-14e5774680a6\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zuzEkawOHolFKDjX7yAOSN8e",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.spec\\specs\\f9c32554-9884-41c4-8b5b-d1d32b37e341\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_r5G1MqgHITRUfe44H4gtnfmz",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.spec\\specs\\798c9a3c-404a-4842-874d-484edb4209ef\\body.md",
+              "startLine": 1,
+              "endLine": 160
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "I have the six legacy bodies in full now. Before editing, I’m taking one aligned simple body and one aligned architecture-heavy body as local templates so the fix stays consistent with the migrated contract shape.",
+      "captured_at": "2026-07-08T22:15:08.430Z",
+      "event_meta": {
+        "event_id": "ae0a13a9-5d74-4c38-9b2e-c73b357a9322",
+        "parent_event_id": "243b8bc0-ee78-41b1-b580-46d791f61eb1",
+        "event_type": "assistant.message",
+        "message_id": "6e12adb8-7907-40ba-8b1f-c60670b20ea2",
+        "reasoning_text": "**Creating a ticket**\n\nI need to create a ticket with supported arguments, maybe starting with a minimal version and then updating the priority or description. I’m considering checking CLI usage, though I’m not sure about it. It might also help to read aligned specs or templates for recurring principles. I'll need enough content and hypothesize restructuring it into clear sections: Summary, Behavior Story, Surface Contracts, and Validation. I want to preserve related info and align it with patterns used elsewhere.**Examining legacy content**\n\nI’m thinking about using a simple legacy content example, like the root spec [09f96..]. Then, there might be a need for a more complex spec that includes validation results. I want to read through one aligned root spec and also check out a simpler aligned viewer API to see the differences. This could give me clarity on handling legacy content and improve my understanding of the specs.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HdgeeGGH4Q2MZQm02iABlYTF",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\09f96d83-4795-4f19-9259-64ad0d452387\\body.md",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gLePcg8biTp6X690kxP96WbU",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.spec\\specs\\f153483c-f984-4564-94ac-36234b5cbe3f\\body.md",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XxNMQf0av2cpZexCUI1rcr1C",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --title \"[spec-system] Repair six missed aligned behavior-first spec bodies\" --type tracker-improvement --toon",
+              "explanation": "Create the minimal follow-up ticket using the CLI's supported arguments, then enrich it afterward if needed.",
+              "goal": "Create repair ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "The CLI needs explicit workspace targeting here. I’m creating the repair ticket against the root ticket store, moving it into implementation, and claiming the six files before editing.",
+      "captured_at": "2026-07-08T22:15:14.623Z",
+      "event_meta": {
+        "event_id": "a0c91287-818b-4413-8197-b194c3c7aafe",
+        "parent_event_id": "65abd31e-d224-4a73-9d2b-8d34ded1bfae",
+        "event_type": "assistant.message",
+        "message_id": "8da12d90-946c-4490-b4e1-b3e3992f7009",
+        "reasoning_text": "**Creating workspace and ticket**\n\nI need to create a workspace path and might use the root \".ticket\". I’m thinking of running the create command with --workspace . Since I should check if it's absolute, that may actually work. After creating, I'll need to check in on the board. Updating the ticket type and state to \"in-implementation\" sounds good, along with the description. I wonder if manually editing description.md is better than using the update command. But I guess I could start with minimal setups and update later!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_3CDJ2nHVQ38dLBHXq1672lK9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe create --workspace . --title \"[spec-system] Repair six missed aligned behavior-first spec bodies\" --type tracker-improvement --toon",
+              "explanation": "Create the follow-up repair ticket in the root ticket store with explicit workspace targeting.",
+              "goal": "Create repair ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Jb5QZILq5j62sVSlnrQfUXO4",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk pwd",
+              "explanation": "Confirm the active working directory before board operations and edits.",
+              "goal": "Confirm working directory",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "The repair ticket is in place. Next I’m moving it into implementation, claiming exactly the six files on the board, then I’ll patch those bodies in one bounded edit pass.",
+      "captured_at": "2026-07-08T22:15:20.054Z",
+      "event_meta": {
+        "event_id": "2937cc30-c4a7-474c-ad14-f5852097c7e0",
+        "parent_event_id": "ec4b942f-c4be-40cf-a03b-db101c1c52b7",
+        "event_type": "assistant.message",
+        "message_id": "ea4ef9ee-4a33-4e82-af20-5a849e22f3b3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_jZ7pjgNDRRZjD9wJ4WAZKf8F",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe update 690578c4-1c47-430b-9258-4edaa0a82d73 --workspace . --to-state in-implementation --toon",
+              "explanation": "Advance the follow-up ticket into implementation before making the repair edits.",
+              "goal": "Start repair ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Yy07Owq0gmpP9Hbr6YYqD8GY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board check-in 690578c4-1c47-430b-9258-4edaa0a82d73 --agent copilot --intent \"Repair six missed aligned behavior-first spec bodies and rerun coverage/health\" --file \".spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md\" --file \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md\" --file \".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md\" --file \".spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md\" --file \"memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md\" --file \"viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md\" --ttl-secs 3600 --toon",
+              "explanation": "Claim ownership of the six specific body files on the board so the follow-up stays isolated.",
+              "goal": "Claim repair files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I’ve got enough context to patch the six bodies directly. The repair will normalize each one to the aligned header shape, preserve the original prose under a legacy section, and keep the existing ticket/spec references intact.",
+      "captured_at": "2026-07-08T22:16:38.429Z",
+      "event_meta": {
+        "event_id": "8e6008d5-9755-49a2-9564-4861cc54bd5b",
+        "parent_event_id": "4c51e110-8b14-4016-ad65-94da1171d3c1",
+        "event_type": "assistant.message",
+        "message_id": "c06eb47a-546e-42a6-ac4c-c412babad19e",
+        "reasoning_text": "**Planning markdown updates**\n\nThis task looks manageable, but I want to ensure the markdown link paths are existing and relative within the file. I might leave things as they are but could mention, \"No related implementation ticket is linked yet,\" if it's relevant. Still, there are related tickets to include. I don’t need to update spec.toml, which is good. A potential cheaper approach could be to add a marker and wrap the existing content without much derivation. I'll draft this carefully!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_GIJGytpsCxcMfMohxi3aCTla",
+            "name": "apply_patch",
+            "arguments": {
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\38e337c2-cdda-4488-9aa7-b47a300563b0\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=4195dfd9-f5d8-46b8-aa1f-ccbb436602e2 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/goal/l3 -->\n-## Goal\n-\n-Define first-class, reversible workflow traceability metadata across tickets, specs, documentation, validation specifications and results, and validation logs.\n-\n-<!-- spec-api:entry id=bc3fb8b0-cb2a-44b8-a1f8-cf629fd88173 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/goal/l7 -->\n-The source of truth for workflow links should live in the memory stores and shared libraries themselves, with existing tool surfaces returning those identities directly.\n-\n-<!-- spec-api:entry id=50272e3c-303a-44ff-85e5-aa27f83ce3d8 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/problem/l9 -->\n-## Problem\n-\n-Workflow traceability currently depends on manual path references, and the current prototype moved structured links into wrapper-owned artifact payloads. That is not authoritative enough for the intended architecture and does not make the owning store responsible for identity, lookup, or migration.\n-\n-<!-- spec-api:entry id=c6c6e713-f6f2-4afe-ac09-bf44810e2201 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/scope/l13 -->\n-## Scope\n-\n-Rewrite the first cross-store traceability slice around first-class metadata rather than wrapper-owned artifacts.\n-\n-<!-- spec-api:entry id=3331cbd5-53e7-405a-a57b-ee8f1586e336 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/scope/l17 -->\n-The first implementation slice should:\n-\n-<!-- spec-api:entry id=750f5b93-6419-4b15-9f29-1b38b4d5dba9 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/scope/l19 -->\n-- define a minimal cross-store identity and reference model spanning tickets, specs, docs, future `test-api` records, and future `log-api` records\n-- support linking workflow state from native store metadata rather than from a dedicated wrapper artifact store\n-- be queryable through existing or planned memory-system tool surfaces\n-- preserve current markdown path links as compatibility presentation, not source of truth\n-- describe migration from any existing wrapper-owned link payloads if they need to be retained temporarily\n-\n-<!-- spec-api:entry id=01546d9a-dc74-4a9b-ac2e-a326cc6214e8 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/architecture-direction/l25 -->\n-## Architecture direction\n-\n-The target architecture is:\n-\n-<!-- spec-api:entry id=70b23f62-9967-4715-b0fd-a0a6244615da slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/architecture-direction/l29 -->\n-- each participating store owns the identities of its records and exposes them through shared-library APIs\n-- `ticket-api`, `spec-api`, and `doc-api` can reference or query workflow-linked records directly through native metadata\n-- future `test-api` records and `log-api` records have their own native identifiers and queryable metadata\n-- CLI, MCP, and HTTP surfaces return authoritative identities and can additionally render compatible markdown/path links for humans\n-- wrapper-owned workflow artifact payloads are not authoritative and, if retained temporarily, exist only for migration compatibility\n-\n-<!-- spec-api:entry id=4d121bb2-8946-4e8a-9bc5-ee5b1042b6b1 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/non-goals/l35 -->\n-## Non-goals\n-\n-- migrating every historic markdown path reference in one pass\n-- preserving a wrapper-owned link registry as the canonical source of truth\n-- solving every frontend visualization or query UX in the same change\n-- introducing a cross-product object model broader than the workflow-linked ticket/spec/doc/test/log surfaces needed here\n-\n-<!-- spec-api:entry id=700050bd-fc14-4362-aabc-a65e81e422c0 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/acceptance-criteria/l42 -->\n-## Acceptance criteria\n-\n-- Wrapper-owned workflow artifacts are no longer treated as the authoritative source of workflow links.\n-- First-class reversible identities span tickets, specs, docs, future `test-api` records, and future `log-api` records.\n-- Retrieval is defined through the existing memory-system tools and shared libraries rather than a dedicated workflow wrapper.\n-- Markdown/path references are retained only as compatibility presentation or migration output.\n-- Migration expectations from the current prototype link payloads are documented.\n-\n-<!-- spec-api:entry id=a38bb2f3-07eb-41e2-bfca-c6d91c3fa2cb slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/prototype-status/l50 -->\n-## Prototype status\n-\n-- Existing wrapper-owned link payloads are prototype context only.\n-- Any retained prototype link data must be treated as migration input into store-owned metadata, not as long-term source of truth.\n-\n-<!-- spec-api:entry id=2892c145-154f-43f2-9562-096e7250f103 slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/validation-results/l55 -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=d3ff6d67-f2d7-4670-94c1-170b717f3ba3 slug=context-engine/workflow-shared/validation-results -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=8ed78a60-e315-4594-8256-2a2a30b1998a slug=context-engine/cross-store-workflow-traceability-links/cross-store-workflow-traceability-metadata/traceability/l59 -->\n-## Traceability\n-\n-- [.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274](.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274)\n-- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n-- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Define cross-store workflow traceability as native memory-store metadata instead of wrapper-owned artifact payloads.\n+\n+## Behavior Story\n+\n+Workflow traceability should be owned by the participating stores themselves so tickets, specs, docs, and future validation or log records expose authoritative identities directly through shared-library APIs and normal tool surfaces.\n+\n+## Provided Surface Contracts\n+\n+- The source of truth for workflow links lives in participating stores rather than in wrapper-owned artifacts.\n+- `ticket-api`, `spec-api`, and `doc-api` expose or query workflow-linked records through native metadata.\n+- Future `test-api` and `log-api` records participate through first-class identifiers and queryable metadata.\n+- CLI, MCP, and HTTP surfaces return authoritative identities and may additionally render markdown/path links as compatibility presentation.\n+- Any retained wrapper-owned link payloads are migration input only, not canonical state.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274](.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274)\n+- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n+- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n+\n+## Background Knowledge References\n+\n+- Preserve markdown/path links as compatibility presentation, not source of truth.\n+- Prefer store-owned identities and shared-library query surfaces over wrapper-owned metadata.\n+\n+## Legacy Content (Preserved)\n+\n+## Goal\n+\n+Define first-class, reversible workflow traceability metadata across tickets, specs, documentation, validation specifications and results, and validation logs.\n+\n+The source of truth for workflow links should live in the memory stores and shared libraries themselves, with existing tool surfaces returning those identities directly.\n+\n+## Problem\n+\n+Workflow traceability currently depends on manual path references, and the current prototype moved structured links into wrapper-owned artifact payloads. That is not authoritative enough for the intended architecture and does not make the owning store responsible for identity, lookup, or migration.\n+\n+## Scope\n+\n+Rewrite the first cross-store traceability slice around first-class metadata rather than wrapper-owned artifacts.\n+\n+The first implementation slice should:\n+\n+- define a minimal cross-store identity and reference model spanning tickets, specs, docs, future `test-api` records, and future `log-api` records\n+- support linking workflow state from native store metadata rather than from a dedicated wrapper artifact store\n+- be queryable through existing or planned memory-system tool surfaces\n+- preserve current markdown path links as compatibility presentation, not source of truth\n+- describe migration from any existing wrapper-owned link payloads if they need to be retained temporarily\n+\n+## Architecture direction\n+\n+The target architecture is:\n+\n+- each participating store owns the identities of its records and exposes them through shared-library APIs\n+- `ticket-api`, `spec-api`, and `doc-api` can reference or query workflow-linked records directly through native metadata\n+- future `test-api` records and `log-api` records have their own native identifiers and queryable metadata\n+- CLI, MCP, and HTTP surfaces return authoritative identities and can additionally render compatible markdown/path links for humans\n+- wrapper-owned workflow artifact payloads are not authoritative and, if retained temporarily, exist only for migration compatibility\n+\n+## Non-goals\n+\n+- migrating every historic markdown path reference in one pass\n+- preserving a wrapper-owned link registry as the canonical source of truth\n+- solving every frontend visualization or query UX in the same change\n+- introducing a cross-product object model broader than the workflow-linked ticket/spec/doc/test/log surfaces needed here\n+\n+## Acceptance criteria\n+\n+- Wrapper-owned workflow artifacts are no longer treated as the authoritative source of workflow links.\n+- First-class reversible identities span tickets, specs, docs, future `test-api` records, and future `log-api` records.\n+- Retrieval is defined through the existing memory-system tools and shared libraries rather than a dedicated workflow wrapper.\n+- Markdown/path references are retained only as compatibility presentation or migration output.\n+- Migration expectations from the current prototype link payloads are documented.\n+\n+## Prototype status\n+\n+- Existing wrapper-owned link payloads are prototype context only.\n+- Any retained prototype link data must be treated as migration input into store-owned metadata, not as long-term source of truth.\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Traceability\n+\n+- [.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274](.ticket/tickets/0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274)\n+- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n+- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\954d9807-f357-41e5-9fd4-b1da39e0933d\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=cd7b5d36-428b-4810-a559-6d8a53c1beee slug=context-engine/recurring-principles/recurring-cross-cutting-principles/l1 -->\n-# Recurring cross-cutting principles\n-\n-This spec captures cross-cutting design principles that appear repeatedly across context-engine workspace specs and agent guidance. Each principle has its own section so it can be referenced individually from generated documents and so a `rule scan` produces one canonical rule entry per principle.\n-\n-<!-- spec-api:entry id=a4486f09-e4b9-414e-996e-0dac99aa198a slug=context-engine/recurring-principles/recurring-cross-cutting-principles/l5 -->\n-The four principles owned at the context-engine root apply across every nested workspace (memory-api, viewer-api, doc/log/ticket/spec viewers, audit, context-trace/search/read/insert/api).\n-\n-<!-- spec-api:entry id=a885218e-c6e7-4d10-8c00-fa5d85733cec slug=context-engine/recurring-principles/recurring-cross-cutting-principles/sections/l7 -->\n-## Sections\n-\n-- `browser-validation` — Mandatory external-browser verification for any change to a server interface or frontend feature.\n-- `generated-file-markers` — `*-api:file` and `*-api:entry` provenance markers and byte-stable regeneration.\n-- `traceability-link-format` — Canonical `[<short-id> <title>](<canonical folder>/ticket.toml)` link form for ticket references in chat output and docs.\n-- `validation-evidence` — Specs must link related tickets, updated docs, and passing or blocked validation results before any ticket reaches `in-review`.\n-\n-<!-- spec-api:entry id=661e017f-01ab-4a5f-8f0d-d6d4a9d21acc slug=context-engine/recurring-principles/recurring-cross-cutting-principles/related-tickets/l14 -->\n-## Related tickets\n-\n-- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n-- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n-\n-<!-- spec-api:entry id=a1e06151-c860-46c1-8139-d0e88c66a598 slug=context-engine/recurring-principles/recurring-cross-cutting-principles/related-specs/l19 -->\n-## Related specs\n-\n-- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Capture the recurring cross-cutting principles that apply across the context-engine root workspace and its nested stores and viewers.\n+\n+## Behavior Story\n+\n+The root workspace keeps one canonical home for recurring principles so generated guidance and downstream specs can reference stable cross-cutting rules instead of duplicating them in each subsystem.\n+\n+## Provided Surface Contracts\n+\n+- The root recurring-principles spec is the canonical authority for shared cross-cutting principles across nested workspaces.\n+- Each principle is maintained as its own section so generated guidance can reference it independently.\n+- The root principles currently cover browser validation, generated file provenance markers, ticket link format, and validation evidence expectations.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Background Knowledge References\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+\n+## Legacy Content (Preserved)\n+\n+# Recurring cross-cutting principles\n+\n+This spec captures cross-cutting design principles that appear repeatedly across context-engine workspace specs and agent guidance. Each principle has its own section so it can be referenced individually from generated documents and so a `rule scan` produces one canonical rule entry per principle.\n+\n+The four principles owned at the context-engine root apply across every nested workspace (memory-api, viewer-api, doc/log/ticket/spec viewers, audit, context-trace/search/read/insert/api).\n+\n+## Sections\n+\n+- `browser-validation` — Mandatory external-browser verification for any change to a server interface or frontend feature.\n+- `generated-file-markers` — `*-api:file` and `*-api:entry` provenance markers and byte-stable regeneration.\n+- `traceability-link-format` — Canonical `[<short-id> <title>](<canonical folder>/ticket.toml)` link form for ticket references in chat output and docs.\n+- `validation-evidence` — Specs must link related tickets, updated docs, and passing or blocked validation results before any ticket reaches `in-review`.\n+\n+## Related tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Related specs\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\a4f48d84-50ed-4769-a42f-38321ea9600c\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=98bbe03a-236c-443b-b9e6-f01a7be717b9 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/goal/l3 -->\n-## Goal\n-\n-Define workflow validation as default behavior of the memory-system tool stack rather than as a separate wrapper tool path.\n-\n-<!-- spec-api:entry id=0bcd3223-ae11-4569-95a5-4ce61cc0464e slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/goal/l7 -->\n-Validation specifications, executions, outcomes, blockers, and traceability should live in first-class metadata owned by shared libraries. Existing and future tool surfaces such as `ticket`, `spec`, `doc`, `test`, and `log` should expose that behavior directly.\n-\n-<!-- spec-api:entry id=17e7433c-b673-4c89-9371-4e4798656ec9 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/problem/l9 -->\n-## Problem\n-\n-The repository workflow requires structured validation evidence, but the current prototype introduced a separate repository-local artifact store and wrapper commands. That proves some mechanics, but it makes workflow capture an optional extra step instead of default memory behavior and splits ownership away from the ticket/spec/doc layers.\n-\n-<!-- spec-api:entry id=02369fcf-aeb1-4270-b58b-36c76cac5c5c slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/scope/l13 -->\n-## Scope\n-\n-Rewrite the target architecture for the first embedded workflow slice.\n-\n-<!-- spec-api:entry id=d95e9ebb-cc5d-4730-8c15-0c59695ee441 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/scope/l17 -->\n-The first implementation slice should:\n-\n-<!-- spec-api:entry id=649ed4c1-d201-4e2d-b512-315d6002038f slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/scope/l19 -->\n-- define native workflow validation metadata owned by the shared memory-system APIs\n-- define how validation specifications, executions, outcomes, and blockers are represented without a separate workflow artifact store\n-- make workflow capture part of normal ticket/spec/doc behavior and future `test-api` and `log-api` behavior\n-- define the minimal default configuration knobs that turn workflow capture on for the existing tool surfaces\n-- describe how any wrapper-only prototype logic is absorbed into shared libraries or discarded\n-\n-<!-- spec-api:entry id=17488fe4-6ba7-480b-9dd9-014c75ea9d81 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/architecture-direction/l25 -->\n-## Architecture direction\n-\n-The target architecture is:\n-\n-<!-- spec-api:entry id=b29e9e66-0810-4b8b-97b5-8bce9404916a slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/architecture-direction/l29 -->\n-- `ticket-api` and `spec-api` store workflow-facing metadata and cross-store references directly in their native models\n-- `doc-api` owns documentation-validation metadata and a future `doc-cli` becomes the thin CLI surface for those operations\n-- a future `test-api` owns validation specifications, executions, and outcomes such as `passed`, `failed`, and `blocked`\n-- a future `log-api` owns captured validation logs and retrieval for review/debugging evidence\n-- CLI, MCP, and HTTP surfaces are thin interfaces over shared-library behavior; workflow capture is not a second command path users must remember\n-- any wrapper-only prototype code is migration context, not the product goal\n-\n-<!-- spec-api:entry id=fb596a33-446e-47c6-8efc-5f6b639a57ac slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/non-goals/l36 -->\n-## Non-goals\n-\n-- preserving a dedicated wrapper validation CLI as the long-term public interface\n-- keeping validation state in a separate path-only JSON artifact store\n-- implementing every `test-api`, `log-api`, `doc-cli`, HTTP, and MCP surface in the same change\n-- migrating every existing prototype artifact before the shared metadata model exists\n-\n-<!-- spec-api:entry id=e4e4d43d-d4fb-4fb9-b436-767c45d7f0d1 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/acceptance-criteria/l43 -->\n-## Acceptance criteria\n-\n-- This spec no longer depends on a dedicated wrapper validation CLI or wrapper-owned artifact store.\n-- Validation workflow state is defined as default shared-library behavior across `ticket-api`, `spec-api`, `doc-api`, and future `test-api` / `log-api`.\n-- First-class responsibilities for `test-api` and `log-api` are part of the design, including native identifiers and cross-store links.\n-- Any wrapper-only prototype implementation is explicitly described as migration context rather than target architecture.\n-- Existing CLI, MCP, and HTTP surfaces are treated as the default way users interact with workflow metadata once the shared-library behavior lands.\n-\n-<!-- spec-api:entry id=4327bf9a-1206-4852-8194-0846845736c1 slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/current-state/l51 -->\n-## Current state\n-\n-- Existing wrapper-oriented prototype work is not the product goal.\n-- Data-model ideas may still be retained, but repository-local artifact files are not the intended source of truth.\n-- Prototype-only validation results do not satisfy this rewritten architecture by themselves.\n-\n-<!-- spec-api:entry id=d3ff6d67-f2d7-4670-94c1-170b717f3ba3 slug=context-engine/workflow-shared/validation-results -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=585044f0-abf8-47f8-9edc-246611285d2f slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/validation-results/l57 -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=83897081-f97d-4bde-bd51-e72e19848f2b slug=context-engine/workflow-validation-tool/workflow-validation-metadata-and-default-tool-behavior/traceability/l61 -->\n-## Traceability\n-\n-- [.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c](.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c)\n-- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n-- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n-- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n-- [memory-api/tools/cli/ticket-cli/README.md](memory-api/tools/cli/ticket-cli/README.md)\n-- [memory-api/tools/cli/spec-cli/README.md](memory-api/tools/cli/spec-cli/README.md)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Define workflow validation as default memory-system behavior owned by shared libraries rather than a separate wrapper artifact flow.\n+\n+## Behavior Story\n+\n+Validation specifications, executions, outcomes, blockers, and traceability should be part of the normal `ticket`, `spec`, `doc`, future `test`, and future `log` stack so workflow evidence is captured through the product surfaces users already depend on.\n+\n+## Provided Surface Contracts\n+\n+- Validation workflow state is owned by shared APIs rather than a separate wrapper artifact store.\n+- `ticket-api` and `spec-api` store workflow-facing metadata and cross-store references directly in native models.\n+- `doc-api` owns documentation-validation metadata, and future `test-api` and `log-api` layers own execution and log identities.\n+- CLI, MCP, and HTTP surfaces remain thin interfaces over shared-library workflow behavior.\n+- Wrapper-only prototype code is migration context, not the target architecture.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c](.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c)\n+- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n+- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n+- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n+\n+## Background Knowledge References\n+\n+- [memory-api/tools/cli/ticket-cli/README.md](memory-api/tools/cli/ticket-cli/README.md)\n+- [memory-api/tools/cli/spec-cli/README.md](memory-api/tools/cli/spec-cli/README.md)\n+\n+## Legacy Content (Preserved)\n+\n+## Goal\n+\n+Define workflow validation as default behavior of the memory-system tool stack rather than as a separate wrapper tool path.\n+\n+Validation specifications, executions, outcomes, blockers, and traceability should live in first-class metadata owned by shared libraries. Existing and future tool surfaces such as `ticket`, `spec`, `doc`, `test`, and `log` should expose that behavior directly.\n+\n+## Problem\n+\n+The repository workflow requires structured validation evidence, but the current prototype introduced a separate repository-local artifact store and wrapper commands. That proves some mechanics, but it makes workflow capture an optional extra step instead of default memory behavior and splits ownership away from the ticket/spec/doc layers.\n+\n+## Scope\n+\n+Rewrite the target architecture for the first embedded workflow slice.\n+\n+The first implementation slice should:\n+\n+- define native workflow validation metadata owned by the shared memory-system APIs\n+- define how validation specifications, executions, outcomes, and blockers are represented without a separate workflow artifact store\n+- make workflow capture part of normal ticket/spec/doc behavior and future `test-api` and `log-api` behavior\n+- define the minimal default configuration knobs that turn workflow capture on for the existing tool surfaces\n+- describe how any wrapper-only prototype logic is absorbed into shared libraries or discarded\n+\n+## Architecture direction\n+\n+The target architecture is:\n+\n+- `ticket-api` and `spec-api` store workflow-facing metadata and cross-store references directly in their native models\n+- `doc-api` owns documentation-validation metadata and a future `doc-cli` becomes the thin CLI surface for those operations\n+- a future `test-api` owns validation specifications, executions, and outcomes such as `passed`, `failed`, and `blocked`\n+- a future `log-api` owns captured validation logs and retrieval for review/debugging evidence\n+- CLI, MCP, and HTTP surfaces are thin interfaces over shared-library behavior; workflow capture is not a second command path users must remember\n+- any wrapper-only prototype code is migration context, not the product goal\n+\n+## Non-goals\n+\n+- preserving a dedicated wrapper validation CLI as the long-term public interface\n+- keeping validation state in a separate path-only JSON artifact store\n+- implementing every `test-api`, `log-api`, `doc-cli`, HTTP, and MCP surface in the same change\n+- migrating every existing prototype artifact before the shared metadata model exists\n+\n+## Acceptance criteria\n+\n+- This spec no longer depends on a dedicated wrapper validation CLI or wrapper-owned artifact store.\n+- Validation workflow state is defined as default shared-library behavior across `ticket-api`, `spec-api`, `doc-api`, and future `test-api` / `log-api`.\n+- First-class responsibilities for `test-api` and `log-api` are part of the design, including native identifiers and cross-store links.\n+- Any wrapper-only prototype implementation is explicitly described as migration context rather than target architecture.\n+- Existing CLI, MCP, and HTTP surfaces are treated as the default way users interact with workflow metadata once the shared-library behavior lands.\n+\n+## Current state\n+\n+- Existing wrapper-oriented prototype work is not the product goal.\n+- Data-model ideas may still be retained, but repository-local artifact files are not the intended source of truth.\n+- Prototype-only validation results do not satisfy this rewritten architecture by themselves.\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Traceability\n+\n+- [.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c](.ticket/tickets/75e9fef3-b624-4e12-9709-5d800222908c)\n+- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n+- [.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a](.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a)\n+- [.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23](.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23)\n+- [memory-api/tools/cli/ticket-cli/README.md](memory-api/tools/cli/ticket-cli/README.md)\n+- [memory-api/tools/cli/spec-cli/README.md](memory-api/tools/cli/spec-cli/README.md)\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\cf5e2942-1a47-43cc-a0ee-14e5774680a6\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=f24d7d4e-070e-4a3f-964e-d3e0bf74274f slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/goal/l3 -->\n-## Goal\n-\n-Make documentation validation first-class behavior in the memory-system doc layer rather than a separate wrapper command path.\n-\n-<!-- spec-api:entry id=7545aa31-1435-4642-a2c0-e79ac0a7cc65 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/goal/l7 -->\n-Documentation checks, generated-guidance validation, manual verification, and partial-coverage reporting should live in native metadata owned by `doc-api` and surfaced by a future `doc-cli` plus the normal ticket/spec workflow surfaces.\n-\n-<!-- spec-api:entry id=d1910d40-88e5-4af0-ba8c-d2f634873f6d slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/problem/l9 -->\n-## Problem\n-\n-Documentation updates are required by the repository workflow, but the current spec still routes the solution through wrapper-oriented command flows. That keeps doc validation outside the normal memory-system ownership model and leaves `doc-api` without the workflow responsibilities it should own.\n-\n-<!-- spec-api:entry id=b47b4a8b-f999-4022-9f34-b59f3b20907e slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/scope/l13 -->\n-## Scope\n-\n-Rewrite the first workflow-facing documentation validation slice around `doc-api` and a future `doc-cli`.\n-\n-<!-- spec-api:entry id=8d479e84-5979-4007-b110-3809818b547c slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/scope/l17 -->\n-The first implementation slice should:\n-\n-<!-- spec-api:entry id=5d1af0cd-20dd-438c-aefc-827fc67a4580 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/scope/l19 -->\n-- define native documentation-validation metadata in `doc-api`\n-- support validation records for authored docs, generated guidance surfaces, and manual verification steps\n-- allow unsupported or partial coverage to be reported explicitly in native workflow metadata\n-- define how documentation validation links to tickets, specs, and future `test-api` / `log-api` entities\n-- define `doc-cli` as a thin CLI over `doc-api`, not as a second storage model\n-\n-<!-- spec-api:entry id=c930d7fe-21fd-4929-8b32-0e1e7c1269f0 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/architecture-direction/l25 -->\n-## Architecture direction\n-\n-The target architecture is:\n-\n-<!-- spec-api:entry id=a7b8c0e0-c0ea-4329-a64a-f9b1c44b266f slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/architecture-direction/l29 -->\n-- `doc-api` owns the data model for documentation validation status, manual checks, generated-guidance checks, and coverage gaps\n-- a future `doc-cli` is the primary CLI surface for doc inspection and workflow-driven validation operations\n-- generated-guidance checks such as `rule sync-targets --check` are captured as native documentation-validation records\n-- ticket/spec workflow metadata references documentation-validation state through shared libraries rather than through wrapper-owned artifacts\n-- any wrapper-only documentation commands are treated only as migration context until the doc-owned model lands\n-\n-<!-- spec-api:entry id=51fecef8-b662-439e-a7f8-ed9139542485 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/non-goals/l35 -->\n-## Non-goals\n-\n-- complete parsing or linting coverage for every markdown/doc surface in one pass\n-- replacing existing doc generation flows\n-- keeping a dedicated wrapper documentation command path as the long-term public interface\n-- solving every documentation ownership and rendering problem in the same ticket\n-\n-<!-- spec-api:entry id=269609db-5773-4328-bd62-8a32c80cc756 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/acceptance-criteria/l42 -->\n-## Acceptance criteria\n-\n-- This spec no longer treats a separate wrapper documentation command path as the target surface.\n-- `doc-api` owns documentation-validation metadata and `doc-cli` is defined as the primary CLI surface.\n-- Generated-guidance checks and manual documentation verification are captured in native workflow metadata.\n-- Unsupported or partial documentation coverage is explicit in the doc-owned model.\n-- Any existing wrapper implementation is explicitly described as migration context rather than target architecture.\n-\n-<!-- spec-api:entry id=753b959c-de9e-429d-b331-0540d5841758 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/current-state/l50 -->\n-## Current state\n-\n-- Existing wrapper-oriented documentation commands do not define the target architecture.\n-- Current command prototypes may inform migration helpers, but the long-term storage and identity model belongs in `doc-api`.\n-\n-<!-- spec-api:entry id=d5c96929-b63e-4104-a8da-7c16621bceb8 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/validation-results/l55 -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=d3ff6d67-f2d7-4670-94c1-170b717f3ba3 slug=context-engine/workflow-shared/validation-results -->\n-## Validation results\n-\n-- `./target/debug/spec.exe scan --force --index-root .spec --json`\n-\n-<!-- spec-api:entry id=90fcbe00-a780-46b6-9fca-bd1556d76d99 slug=context-engine/workflow-documentation-validation-tooling/workflow-documentation-validation-via-doc-api-and-doc-cli/traceability/l59 -->\n-## Traceability\n-\n-- [.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5](.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5)\n-- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n-- [memory-api/crates/doc-api/src/lib.rs](memory-api/crates/doc-api/src/lib.rs)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Define documentation validation as a first-class `doc-api` responsibility instead of a separate wrapper command path.\n+\n+## Behavior Story\n+\n+Documentation checks, generated-guidance validation, manual verification, and partial-coverage reporting should live in native `doc-api` metadata so ticket/spec workflow evidence can rely on the same shared ownership model as the rest of the memory-system tool stack.\n+\n+## Provided Surface Contracts\n+\n+- `doc-api` owns documentation-validation status, manual checks, generated-guidance checks, and coverage-gap metadata.\n+- A future `doc-cli` is the primary CLI surface for documentation validation operations.\n+- Generated-guidance checks such as `rule sync-targets --check` are captured as native documentation-validation records.\n+- Ticket/spec workflow metadata references documentation-validation state through shared libraries rather than wrapper-owned artifacts.\n+- Wrapper-only documentation commands are migration context, not target architecture.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5](.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5)\n+- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n+\n+## Background Knowledge References\n+\n+- [memory-api/crates/doc-api/src/lib.rs](memory-api/crates/doc-api/src/lib.rs)\n+\n+## Legacy Content (Preserved)\n+\n+## Goal\n+\n+Make documentation validation first-class behavior in the memory-system doc layer rather than a separate wrapper command path.\n+\n+Documentation checks, generated-guidance validation, manual verification, and partial-coverage reporting should live in native metadata owned by `doc-api` and surfaced by a future `doc-cli` plus the normal ticket/spec workflow surfaces.\n+\n+## Problem\n+\n+Documentation updates are required by the repository workflow, but the current spec still routes the solution through wrapper-oriented command flows. That keeps doc validation outside the normal memory-system ownership model and leaves `doc-api` without the workflow responsibilities it should own.\n+\n+## Scope\n+\n+Rewrite the first workflow-facing documentation validation slice around `doc-api` and a future `doc-cli`.\n+\n+The first implementation slice should:\n+\n+- define native documentation-validation metadata in `doc-api`\n+- support validation records for authored docs, generated guidance surfaces, and manual verification steps\n+- allow unsupported or partial coverage to be reported explicitly in native workflow metadata\n+- define how documentation validation links to tickets, specs, and future `test-api` / `log-api` entities\n+- define `doc-cli` as a thin CLI over `doc-api`, not as a second storage model\n+\n+## Architecture direction\n+\n+The target architecture is:\n+\n+- `doc-api` owns the data model for documentation validation status, manual checks, generated-guidance checks, and coverage gaps\n+- a future `doc-cli` is the primary CLI surface for doc inspection and workflow-driven validation operations\n+- generated-guidance checks such as `rule sync-targets --check` are captured as native documentation-validation records\n+- ticket/spec workflow metadata references documentation-validation state through shared libraries rather than through wrapper-owned artifacts\n+- any wrapper-only documentation commands are treated only as migration context until the doc-owned model lands\n+\n+## Non-goals\n+\n+- complete parsing or linting coverage for every markdown/doc surface in one pass\n+- replacing existing doc generation flows\n+- keeping a dedicated wrapper documentation command path as the long-term public interface\n+- solving every documentation ownership and rendering problem in the same ticket\n+\n+## Acceptance criteria\n+\n+- This spec no longer treats a separate wrapper documentation command path as the target surface.\n+- `doc-api` owns documentation-validation metadata and `doc-cli` is defined as the primary CLI surface.\n+- Generated-guidance checks and manual documentation verification are captured in native workflow metadata.\n+- Unsupported or partial documentation coverage is explicit in the doc-owned model.\n+- Any existing wrapper implementation is explicitly described as migration context rather than target architecture.\n+\n+## Current state\n+\n+- Existing wrapper-oriented documentation commands do not define the target architecture.\n+- Current command prototypes may inform migration helpers, but the long-term storage and identity model belongs in `doc-api`.\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Validation results\n+\n+- `./target/debug/spec.exe scan --force --index-root .spec --json`\n+\n+## Traceability\n+\n+- [.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5](.ticket/tickets/06778dd8-a894-4759-b8fc-f00f6dd21fa5)\n+- [.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876](.ticket/tickets/ad9f6e52-2147-4b25-be2c-9e59dd58a876)\n+- [memory-api/crates/doc-api/src/lib.rs](memory-api/crates/doc-api/src/lib.rs)\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.spec\\specs\\f9c32554-9884-41c4-8b5b-d1d32b37e341\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=8ec75a50-bace-4f90-bae8-e6d16c8bc461 slug=memory-api/recurring-principles/memory-api-recurring-principles/l1 -->\n-# memory-api recurring principles\n-\n-This spec captures the cross-cutting design principles that recur across `memory-api` specs (`rule-api`, `spec-api`, `ticket-api`, `doc-api`, `audit-api`, `mem-api`). They are the canonical authority for how store, CLI, MCP, and HTTP layers in `memory-viewers/memory-api` are expected to behave.\n-\n-<!-- spec-api:entry id=8a92308a-a962-4d26-be51-f3d076865791 slug=memory-api/recurring-principles/memory-api-recurring-principles/l5 -->\n-Each principle is its own section so a `rule scan` materialises one canonical entry per principle and downstream agent guidance can reference them individually.\n-\n-<!-- spec-api:entry id=fd8cf21d-0c9e-4036-a7d0-347c42b66642 slug=memory-api/recurring-principles/memory-api-recurring-principles/sections/l7 -->\n-## Sections\n-\n-- `workspace-identifiers` — `--workspace-root` accepts only concrete checkout paths; `default`, `..`, and synthetic aliases are rejected.\n-- `typed-error-envelopes` — All CLI/MCP/HTTP errors are JSON envelopes with `code`, `message`, and `request_id`.\n-- `json-machine-surface` — `--json` emits a stable envelope; never dump raw `[items]` lists into stdout for machine consumers.\n-- `api-crate-owns-model` — Each `<x>-api` crate owns the canonical model; CLI/MCP/HTTP tools are thin adapters.\n-- `shared-id-prefix-resolver` — Ticket/spec/rule lookups share one id/prefix resolver instead of re-implementing per surface.\n-- `depends-on-only-blocking-edge` — `depends_on` is the only blocking edge; other relations are non-blocking and use the edge index rather than Tantivy.\n-- `append-only-history-materialized-index` — Stores write append-only history files and rebuild a materialized SQLite/Tantivy index from them.\n-- `nested-workspace-resolution` — The workspace resolver normalises any path to a single owning root; parents declare child stores via `imports:`.\n-- `required-states-one-way` — Tickets and specs use a `required_states` schema-gated, one-way state machine.\n-\n-<!-- spec-api:entry id=74d940e6-88b0-4c20-be70-72cdd9db2b89 slug=memory-api/recurring-principles/memory-api-recurring-principles/related-tickets/l19 -->\n-## Related tickets\n-\n-- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n-- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n-\n-<!-- spec-api:entry id=f2d4d117-cee4-4749-b542-43ea435c50f2 slug=memory-api/recurring-principles/memory-api-recurring-principles/related-specs/l24 -->\n-## Related specs\n-\n-- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n-- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Capture the recurring design principles that define how `memory-api` store, CLI, MCP, and HTTP layers are expected to behave.\n+\n+## Behavior Story\n+\n+`memory-api` keeps one canonical recurring-principles spec so downstream stores and tools inherit shared constraints such as workspace resolution, error envelopes, id resolution, history/index behavior, and schema-gated state progression from a stable contract surface.\n+\n+## Provided Surface Contracts\n+\n+- The `memory-api` recurring-principles spec is the canonical authority for shared store and transport behavior across `memory-api` subsystems.\n+- Each principle is maintained as its own section so generated guidance can reference it independently.\n+- The current principles cover workspace identifiers, typed error envelopes, JSON machine output, API ownership, shared id resolution, blocking-edge semantics, materialized indexes, nested workspace resolution, and one-way required states.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Background Knowledge References\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n+\n+## Legacy Content (Preserved)\n+\n+# memory-api recurring principles\n+\n+This spec captures the cross-cutting design principles that recur across `memory-api` specs (`rule-api`, `spec-api`, `ticket-api`, `doc-api`, `audit-api`, `mem-api`). They are the canonical authority for how store, CLI, MCP, and HTTP layers in `memory-viewers/memory-api` are expected to behave.\n+\n+Each principle is its own section so a `rule scan` materialises one canonical entry per principle and downstream agent guidance can reference them individually.\n+\n+## Sections\n+\n+- `workspace-identifiers` — `--workspace-root` accepts only concrete checkout paths; `default`, `..`, and synthetic aliases are rejected.\n+- `typed-error-envelopes` — All CLI/MCP/HTTP errors are JSON envelopes with `code`, `message`, and `request_id`.\n+- `json-machine-surface` — `--json` emits a stable envelope; never dump raw `[items]` lists into stdout for machine consumers.\n+- `api-crate-owns-model` — Each `<x>-api` crate owns the canonical model; CLI/MCP/HTTP tools are thin adapters.\n+- `shared-id-prefix-resolver` — Ticket/spec/rule lookups share one id/prefix resolver instead of re-implementing per surface.\n+- `depends-on-only-blocking-edge` — `depends_on` is the only blocking edge; other relations are non-blocking and use the edge index rather than Tantivy.\n+- `append-only-history-materialized-index` — Stores write append-only history files and rebuild a materialized SQLite/Tantivy index from them.\n+- `nested-workspace-resolution` — The workspace resolver normalises any path to a single owning root; parents declare child stores via `imports:`.\n+- `required-states-one-way` — Tickets and specs use a `required_states` schema-gated, one-way state machine.\n+\n+## Related tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Related specs\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.spec\\specs\\798c9a3c-404a-4842-874d-484edb4209ef\\body.md\n@@\n-<!-- spec-api:file generated=true -->\n-\n-<!-- spec-api:entry id=b2c53031-caef-4f2b-b911-a242a564b40b slug=viewer-api/recurring-principles/viewer-api-recurring-principles/l1 -->\n-# viewer-api recurring principles\n-\n-This spec captures the cross-cutting design principles that recur across `viewer-api` and the managed viewers (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). They are the canonical authority for how the shared viewer surface is expected to behave.\n-\n-<!-- spec-api:entry id=35ebb9ec-1962-46ca-a25d-988e42806632 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/l5 -->\n-Each principle is its own section so a `rule scan` materialises one canonical entry per principle and downstream agent guidance can reference them individually.\n-\n-<!-- spec-api:entry id=5d2accaf-c570-4235-a219-c61e1116e071 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/sections/l7 -->\n-## Sections\n-\n-- `public-surface-contracts` — Every viewer's HTTP, GraphQL, and frontend surface is a versioned public contract owned by `viewer-api`.\n-- `viewer-ctl-lifecycle-boundary` — `viewer-ctl` is the only supported way to start, stop, restart, or prepare a viewer.\n-\n-<!-- spec-api:entry id=925ea219-ff23-45cf-9ced-de2a23c3bac5 slug=viewer-api/recurring-principles/viewer-api-recurring-principles/related-tickets/l12 -->\n-## Related tickets\n-\n-- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n-- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n-\n-<!-- spec-api:entry id=6980beef-8d68-4a5b-901e-db262aaf8b2f slug=viewer-api/recurring-principles/viewer-api-recurring-principles/related-specs/l17 -->\n-## Related specs\n-\n-- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n-- `memory-api/recurring-principles` (`f9c32554-9884-41c4-8b5b-d1d32b37e341` in memory-viewers/memory-api)\n-- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n+<!-- aligned-structure:v1 -->\n+\n+# Summary\n+\n+Capture the recurring principles that define how `viewer-api` and the managed viewers expose and operate their shared public surface.\n+\n+## Behavior Story\n+\n+`viewer-api` keeps one canonical recurring-principles spec so the managed viewers share the same expectations for public surface ownership and lifecycle management rather than drifting into per-viewer conventions.\n+\n+## Provided Surface Contracts\n+\n+- The `viewer-api` recurring-principles spec is the canonical authority for shared viewer-surface behavior.\n+- Each principle is maintained as its own section so generated guidance can reference it independently.\n+- The current principles cover viewer public surface contracts and the `viewer-ctl` lifecycle boundary.\n+\n+## Required Validation\n+\n+- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.\n+\n+## Related Implementation Tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Background Knowledge References\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+- `memory-api/recurring-principles` (`f9c32554-9884-41c4-8b5b-d1d32b37e341` in memory-viewers/memory-api)\n+- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n+\n+## Legacy Content (Preserved)\n+\n+# viewer-api recurring principles\n+\n+This spec captures the cross-cutting design principles that recur across `viewer-api` and the managed viewers (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). They are the canonical authority for how the shared viewer surface is expected to behave.\n+\n+Each principle is its own section so a `rule scan` materialises one canonical entry per principle and downstream agent guidance can reference them individually.\n+\n+## Sections\n+\n+- `public-surface-contracts` — Every viewer's HTTP, GraphQL, and frontend surface is a versioned public contract owned by `viewer-api`.\n+- `viewer-ctl-lifecycle-boundary` — `viewer-ctl` is the only supported way to start, stop, restart, or prepare a viewer.\n+\n+## Related tickets\n+\n+- [f147eb0e Migrate recurring spec principles to canonical rule entries via spec sync-generated](.ticket/tickets/f147eb0e-c758-459b-a956-a1162c3e1af6/ticket.toml)\n+- [a5fe4c58 Adopt rule targets for generated spec artifacts](memory-api/.ticket/tickets/a5fe4c58-f59c-4d97-8ee6-3447724b5fac/ticket.toml)\n+\n+## Related specs\n+\n+- `spec-api/generated-documents` (`1cf68c36-7f64-4d81-b553-1947b978fbe3` in memory-viewers/memory-api)\n+- `memory-api/recurring-principles` (`f9c32554-9884-41c4-8b5b-d1d32b37e341` in memory-viewers/memory-api)\n+- `context-engine/recurring-principles` (`954d9807-f357-41e5-9fd4-b1da39e0933d` at the context-engine root)\n*** End Patch",
+              "explanation": "Align the six missed spec bodies to the behavior-first structure while preserving their legacy content and references."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "The six missed bodies are patched. I’m rerunning the exact two contract checks now before doing anything else: aligned coverage first, then full spec health.",
+      "captured_at": "2026-07-08T22:16:47.095Z",
+      "event_meta": {
+        "event_id": "0b9270dd-a65c-4c97-a89a-843db4f8ce6e",
+        "parent_event_id": "b7b798a2-ad27-4afa-8034-71eaba57130b",
+        "event_type": "assistant.message",
+        "message_id": "1711e145-dcf1-4302-a1c6-c4e083098506",
+        "reasoning_text": "**Validating file health**\n\nI need to validate everything right after the first edit. It would make sense to run an aligned coverage check, and I might want to narrow my focus on specific files. Along with that, checking for errors in those files could be valuable. I should run the coverage check first, as it seems like a good starting point, but noting that compiling with Markdown isn’t really necessary right now.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_kbWvd3StEnH9gzdHYnzCXALz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "aligned=$(find . -path '*specs*/body.md' -print0 | xargs -0 rg -F -l '<!-- aligned-structure:v1 -->' | wc -l); bodies=$(find . -path '*specs*/body.md' | wc -l); printf 'workspace_body_files=%s workspace_aligned=%s\\n' \"$bodies\" \"$aligned\"",
+              "explanation": "Recompute aligned marker coverage immediately after the six-body repair.",
+              "goal": "Validate aligned coverage",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Lh60HuYExACVs9iQP40W3gUF",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/spec.exe health --all --toon",
+              "explanation": "Re-run full spec health immediately after the six-body repair.",
+              "goal": "Validate spec health",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_an2VQFWGPv3DUTqIrwSzHOjy",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\38e337c2-cdda-4488-9aa7-b47a300563b0\\body.md",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\954d9807-f357-41e5-9fd4-b1da39e0933d\\body.md",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\a4f48d84-50ed-4769-a42f-38321ea9600c\\body.md",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\cf5e2942-1a47-43cc-a0ee-14e5774680a6\\body.md",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.spec\\specs\\f9c32554-9884-41c4-8b5b-d1d32b37e341\\body.md",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.spec\\specs\\798c9a3c-404a-4842-874d-484edb4209ef\\body.md"
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "The repair validated cleanly. I’m wrapping the workflow now by moving the follow-up ticket through review, closing it, and releasing the board entry so the state matches the finished work.",
+      "captured_at": "2026-07-08T22:17:13.972Z",
+      "event_meta": {
+        "event_id": "11652791-1a7d-44d8-9bec-bf2ecf6c0422",
+        "parent_event_id": "57eb8a38-474f-4e6d-b3fc-6b7b5641fd87",
+        "event_type": "assistant.message",
+        "message_id": "d9be7cfc-6aa5-4d71-9478-07d6d5743519",
+        "reasoning_text": "**Organizing ticket process**\n\nI probably need to run `git status --short` to check for any touched files, along with ticket files. Linking the new ticket to the parent or migration might be helpful, and I’m considering adding a dependency from a closed ticket. I think I need to close the ticket because the acceptance criteria are met, but I must first update its state to \"in-review.\" I’ll also check the ticket description and ensure I update the state as needed.**Updating ticket status**\n\nI think I’ll update the ticket to “in-review,” close it, and get the necessary details for the board check-out. I’m wondering what might happen if the closing fails due to required states. It’s something to consider, so I’ll keep an eye on that. I'll proceed with my updates, but I should double-check the requirements just in case to avoid any hiccups. Let's see how it goes!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_H3HSbDdn5PRzcMSV0wWsxHXJ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe update 690578c4-1c47-430b-9258-4edaa0a82d73 --workspace . --to-state in-review --toon",
+              "explanation": "Advance the repair ticket into review after the validation checks passed.",
+              "goal": "Move repair ticket to review",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_T3UEOEy28ybl3V4hjpP1LvGL",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect the working tree after the repair so the final summary can distinguish these edits from unrelated dirt.",
+              "goal": "Check working tree after repair",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "The working tree split still looks as expected: the six repaired bodies plus the new follow-up ticket are mixed into the same unrelated dirt that was already present. I’m closing the repair ticket and checking out of the board now.",
+      "captured_at": "2026-07-08T22:17:19.853Z",
+      "event_meta": {
+        "event_id": "9cb7db32-abfe-4a46-9b36-fc99e1fc2536",
+        "parent_event_id": "0d2b1c40-d7bd-4722-baad-6ae6d39ce0dc",
+        "event_type": "assistant.message",
+        "message_id": "15653600-9af7-44ac-9dc6-73c45d49f1d6",
+        "reasoning_text": "**Reviewing API status**\n\nI'm thinking I need to close and check out the board. Also, I should get a ticket and inspect the memory-api and viewer-api status to note our files. It might be useful to mention how our changes are affecting those APIs. I should probably close the ticket now, too, since it seems like everything is coming together.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9w6r9fsYGNbQm17AxZIG6UuT",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe close 690578c4-1c47-430b-9258-4edaa0a82d73 --workspace . --toon",
+              "explanation": "Close the repair ticket now that implementation and validation are complete.",
+              "goal": "Close repair ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KWpEQ4JASKF0y3XFW1vmlURP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board check-out 690578c4-1c47-430b-9258-4edaa0a82d73 --agent copilot --reason \"aligned six missed spec bodies and revalidated coverage and spec health\" --toon",
+              "explanation": "Release board ownership after completing the repair work.",
+              "goal": "Check out of board",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DH9Yd0XqagoDiiv2QNno2uCM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe get 690578c4-1c47-430b-9258-4edaa0a82d73 --workspace . --toon",
+              "explanation": "Fetch the authoritative path and final state for the repair ticket for reporting.",
+              "goal": "Get final repair ticket details",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_6g1tkhANxoUMPchGQRAoiRUO",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Confirm the board is clear again after check-out.",
+              "goal": "Verify clear board",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "The close succeeded and the board is already clear, so the failed check-out was just a stale cleanup step after the ticket reached `done`. I’m doing one final scope check on the files from this follow-up so the handoff stays separated from the unrelated dirt.",
+      "captured_at": "2026-07-08T22:17:34.639Z",
+      "event_meta": {
+        "event_id": "17846939-352a-4af3-9f40-f58ccd9efb86",
+        "parent_event_id": "228b6017-297c-40c6-98ce-22a14cc75bbb",
+        "event_type": "assistant.message",
+        "message_id": "049d4529-956f-4b15-bbd0-8f9043e78cec",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_DEuS1X1kgWT9o6RFIZHNNnDb",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff --name-only -- .spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md .spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md .spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md .ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73",
+              "explanation": "Confirm the exact root-side files changed by this follow-up repair.",
+              "goal": "List root follow-up files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1oJqhwU2rqe9V36Qug0Mg1TU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api diff --name-only -- .spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md",
+              "explanation": "Confirm the exact memory-api file changed by this follow-up repair.",
+              "goal": "List memory-api follow-up files",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HmE5qndUHGeMSKmTNJf7N8Zg",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api diff --name-only -- .spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md",
+              "explanation": "Confirm the exact viewer-api file changed by this follow-up repair.",
+              "goal": "List viewer-api follow-up files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Repaired the six missed behavior-first spec bodies, restored aligned marker coverage to `190/190`, revalidated clean spec health at `190 checked, 0 issues`, and closed the follow-up ticket with the board clear again.",
+      "captured_at": "2026-07-08T22:17:44.169Z",
+      "event_meta": {
+        "event_id": "8d1f012e-e556-48c5-89b8-33601f21c0d6",
+        "parent_event_id": "965d1ab9-25b4-4898-8601-27a8c53ad85b",
+        "event_type": "assistant.message",
+        "message_id": "d9f17166-d34c-43d5-8552-3e89c10ffec1",
+        "reasoning_text": "**Clarifying file paths in git**\n\nI'm considering that the root diff might not show the ticket because it doesn't include untracked files. I think I need to mention the new ticket path that might come from getting it. Running git status could help here, or I could list the directory, but I should ensure the file exists—in this case, it does. I’ll need to format the file references correctly, using workspace-relative links rather than absolute paths, keeping in mind the developer's instructions.**Structuring task completion**\n\nI think I need to include a task_complete call after a brief summary message in the commentary. Actually, it seems like the summary message should come before the tool call. Since the final answer follows the task completion, I definitely want to send the commentary summary first, then call task_complete. After that, I can present the final output. I'll make sure the commentary summary is concise and clear!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_npWANe4TNVpgfUCwcoIN5ut0",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Systematically repaired the six missed aligned behavior-first spec bodies, created and completed a follow-up ticket, reran coverage and spec health successfully, and confirmed the board is clear."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "The follow-up is complete. I aligned the six missed spec bodies at [.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md](.spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md), [.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md](.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md), [.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md](.spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md), [.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md](.spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md), [memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md](memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md), and [viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md](viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md). Each now uses the aligned behavior-first header shape and preserves the prior prose under a legacy section.\n\nValidation is back to the claimed state: `workspace_body_files=190 workspace_aligned=190`, and `spec.exe health --all --toon` reports `190 checked, 0 issues`. I also created and completed the follow-up ticket at [.ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73/ticket.toml](.ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73/ticket.toml). The board is clear again. The remaining workspace dirt is still the unrelated session/ticket/design work plus unrelated `memory-api` code/test changes; this follow-up added only the six body edits and the new ticket.",
+      "captured_at": "2026-07-08T22:17:48.791Z",
+      "event_meta": {
+        "event_id": "9c68da65-735a-4f76-a369-c74daab1c0d1",
+        "parent_event_id": "eb218f73-c41a-4278-8bde-0fd6c7dd437d",
+        "event_type": "assistant.message",
+        "message_id": "62faeda5-43a2-4965-9a36-3cd567c05594",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "user",
+      "content": "commit",
+      "captured_at": "2026-07-08T22:24:21.299Z",
+      "event_meta": {
+        "event_id": "2a1e1d23-6446-4125-9e60-84403e15cdd0",
+        "parent_event_id": "4481dc9d-3144-4b2c-afb4-ab068706c480",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "I’m separating your repair from the existing workspace dirt now: first I’ll inspect the exact changed files in root and the two dirty submodules, then I’ll commit deepest-first and finish with a root pointer update.",
+      "captured_at": "2026-07-08T22:24:29.232Z",
+      "event_meta": {
+        "event_id": "c79c6cad-b7e5-4272-a501-083f02dd756c",
+        "parent_event_id": "3b4fc2e9-6517-422a-9953-e6a2c2a9e1ba",
+        "event_type": "assistant.message",
+        "message_id": "ffb8dfe1-eaf6-4181-95df-f2413b1a048a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FdTPZq3GqmYYLiFEItt2ndJn",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Inspect the root working tree to identify the repair files versus unrelated existing dirt before staging.",
+              "goal": "Check root status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_fCk3S75M4ITApBI5xPYpzzNt",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short",
+              "explanation": "Inspect memory-api so only the repaired spec body is staged there.",
+              "goal": "Check memory-api status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QPcX5rsPckdmYGhuvKS2rALp",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api status --short",
+              "explanation": "Inspect viewer-api so only the repaired spec body is staged there.",
+              "goal": "Check viewer-api status",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "I found one important wrinkle: `memory-api` already has unrelated staged changes in its index. I’m checking the staged sets explicitly now so I can commit only your repair paths without disturbing anyone else’s staged work.",
+      "captured_at": "2026-07-08T22:24:39.466Z",
+      "event_meta": {
+        "event_id": "1c90aaad-fafb-4163-b7dd-a88eb7ac8bb8",
+        "parent_event_id": "a99b4ad1-67fa-4f93-90af-1ca12bbfab18",
+        "event_type": "assistant.message",
+        "message_id": "31d74c3f-3d79-41db-afa5-0e446614ae32",
+        "reasoning_text": "**Considering git commit strategies**\n\nI’m thinking about moving a ticket from new to done, and I need to commit changes in the memory-api, particularly the .spec file. However, I have unrelated staged changes already in the index! I want to avoid committing those. I'm considering using `git restore --staged` to remove the unrelated changes, but I must be cautious not to affect the user's staged changes. It seems committing only specified paths might be the safest approach. I'll need to verify this process.**Evaluating git commit approach**\n\nI’m thinking it might be safer to use a temporary index. I could try using `git add path` followed by `git commit -m -- path` for a cleaner commit process. I also need to remember to update the root pointer after making submodule commits since changes will adjust the pointer. It seems I should do the root commit for the essential files and the ticket first, then handle the pointer update separately while being cautious about unrelated modified and untracked files.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eSVuXTBLQ7pwAU3w64jaC1rD",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff --cached --name-only",
+              "explanation": "Check whether the root index already has staged paths that must be excluded from the repair commits.",
+              "goal": "Inspect root staged set",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lekBUpO3eejgVAfru6O5VqMk",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api diff --cached --name-only",
+              "explanation": "Check whether memory-api already has staged paths beyond the repaired spec body so the commit can avoid them.",
+              "goal": "Inspect memory-api staged set",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5c28frya5yFVf4T73U2FeB1K",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api diff --cached --name-only",
+              "explanation": "Check whether viewer-api already has staged paths beyond the repaired spec body so the commit can avoid them.",
+              "goal": "Inspect viewer-api staged set",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kc5Cswpy939EZdnHiuI92eez",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\690578c4-1c47-430b-9258-4edaa0a82d73"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "I’ve isolated the repair scope cleanly: four root spec bodies plus the new ticket, one `memory-api` body, and one `viewer-api` body. I’m committing those slices now without touching the unrelated staged work in `memory-api` or the other dirty files.",
+      "captured_at": "2026-07-08T22:24:51.765Z",
+      "event_meta": {
+        "event_id": "90cb69bf-9fee-4f8c-a786-0a0bfe078cc8",
+        "parent_event_id": "b8ff5db7-30d7-4c77-9e86-68c05f2757e7",
+        "event_type": "assistant.message",
+        "message_id": "257e3554-b073-484c-bb7b-6cc031440ca2",
+        "reasoning_text": "**Inspecting commit status**\n\nI need to check if the root ticket directory is untracked and only contains history and tickets. The commit path could include the entire directory. Since the root also has modifications to files like handoff.prompt, those might not be related, so I might exclude them. I’m thinking about running a focused validation after each step since overall validation is done. Before finalizing, it could be useful to check the status for the board or ticket. Let's proceed with the commit commands all at once!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ux1wlfVzul4bEzzd6VSYZgJu",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api add .spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md && rtk git -C memory-api commit -m \"chore(specs): repair missed aligned behavior-first body\" -- .spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md",
+              "explanation": "Commit only the repaired memory-api spec body while leaving the unrelated staged work in memory-api untouched.",
+              "goal": "Commit memory-api repair slice",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wcBJQey0XmfDWULzhThFm8BP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api add .spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md && rtk git -C viewer-api commit -m \"chore(specs): repair missed aligned behavior-first body\" -- .spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md",
+              "explanation": "Commit only the repaired viewer-api spec body before updating the root submodule pointers.",
+              "goal": "Commit viewer-api repair slice",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YNYUrU0AMnuVgBnYv6e3kYAM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git add .spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md .spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md .spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md .ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73 && rtk git commit -m \"chore(specs): repair missed aligned behavior-first bodies\" -- .spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md .spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md .spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md .spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md .ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73",
+              "explanation": "Commit the root repair slice containing the four repaired root specs and the follow-up ticket, excluding unrelated dirty files.",
+              "goal": "Commit root repair slice",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "The three content commits landed cleanly. I’m doing the final root pointer commit now and then I’ll verify the remaining dirt is only the pre-existing unrelated work.",
+      "captured_at": "2026-07-08T22:24:58.725Z",
+      "event_meta": {
+        "event_id": "d159d131-50df-4d77-a0d1-e2deca2932ca",
+        "parent_event_id": "15ca9c10-37c3-4f20-a530-9b76cd1c971c",
+        "event_type": "assistant.message",
+        "message_id": "2753e749-504f-417d-ae81-1a55085393a1",
+        "reasoning_text": "**Updating Git pointers**\n\nI need to update the root commit pointers. I should check the status to see if the root submodule pointers have changed. It's possible that the memory-api is no longer dirty, but I still have unrelated changes staged. I want to confirm this with a short status check on Git. I’m curious if the memory-api or viewer-api has an uppercase \"M\" in the changes. Let’s inspect this more closely!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_5OqUHXRZSa1hrynmojsd7pIV",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Check the root working tree after the content commits so the pointer update can be staged precisely.",
+              "goal": "Inspect post-commit root status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BN3lAYGcvboWO2rrcEy3h6xs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api rev-parse --short HEAD && rtk git -C viewer-api rev-parse --short HEAD",
+              "explanation": "Capture the new submodule commit SHAs that the root pointer commit will record.",
+              "goal": "Get submodule commit SHAs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "The root now only needs the two submodule pointers from `dc72a47` and `8bce6d8`. I’m recording that as a separate parent-level commit so the repair chain stays slice-pure.",
+      "captured_at": "2026-07-08T22:25:04.633Z",
+      "event_meta": {
+        "event_id": "9b1e9ecc-77bc-4a50-9e46-6f0127880ece",
+        "parent_event_id": "a6f032b5-94e8-4249-a64b-40710237f156",
+        "event_type": "assistant.message",
+        "message_id": "d9bc7583-b0fc-49e8-aa3b-00097f150ba7",
+        "reasoning_text": "**Committing submodule pointers**\n\nI need to work on commit pointers for the memory-api and viewer-api directories. It seems I could just commit those two. I'll run the command to add them: `git add memory-api viewer-api` and then maybe use a commit message like \"chore: update spec-store submodule pointers.\" I think it's a good idea to focus only on these specific submodule directories in my path specification. That should keep things organized!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CZ5kveiEJKe6E5dEqXUitpV3",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git add memory-api viewer-api && rtk git commit -m \"chore: update spec-store submodule pointers\" -- memory-api viewer-api",
+              "explanation": "Commit only the updated memory-api and viewer-api submodule pointers at the root, keeping the parent pointer change separate from the content repair.",
+              "goal": "Commit root submodule pointer update",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "The repair commit chain is complete. I’m doing one last status pass in root and the two submodules so I can report exactly what remains dirty after these commits.",
+      "captured_at": "2026-07-08T22:25:11.751Z",
+      "event_meta": {
+        "event_id": "40d083c7-1bc9-484b-8ba2-2082c4bb3a69",
+        "parent_event_id": "ff4614b3-744c-4d67-b657-4636297ceb09",
+        "event_type": "assistant.message",
+        "message_id": "1a9e3e76-d662-45f5-9fdd-871e9e0eb1c7",
+        "reasoning_text": "**Verifying git status**\n\nI need to do a final verification, possibly checking the git status, keeping it short for the root. I should also look at the logs and commit hashes. It might be worth mentioning that the memory-api has some unrelated staged changes still. Also, I need to ensure the viewer-api is clean and maybe check the status for both the root and its submodules. Let's make sure everything is in order!",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_y64eSRdBbmDDIezOhBEfaD3R",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Verify the remaining root dirty state after the repair commit chain landed.",
+              "goal": "Final root status check",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_S5qm4vM7gTaqKDpIIfqHxZSU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short",
+              "explanation": "Verify the remaining memory-api dirty state after its repair commit landed.",
+              "goal": "Final memory-api status check",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hfoLDEred82j4C1u3ky1PrAA",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C viewer-api status --short",
+              "explanation": "Verify the remaining viewer-api dirty state after its repair commit landed.",
+              "goal": "Final viewer-api status check",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XIH9pGHBW09BIFbpxLlcGgqW",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git log --oneline -2 && rtk git -C memory-api log --oneline -1 && rtk git -C viewer-api log --oneline -1",
+              "explanation": "Capture the new commit ids for the finished repair chain.",
+              "goal": "Collect final commit ids",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "Committed the repair chain as four isolated commits: `dc72a47` in `memory-api`, `8bce6d8` in `viewer-api`, `0784921` in the root repo for the root spec bodies plus follow-up ticket, and `d856072` in the root repo for the updated submodule pointers. Remaining dirt is still unrelated root ticket/session/design churn plus unrelated staged `memory-api` work; `viewer-api` is clean.",
+      "captured_at": "2026-07-08T22:25:17.429Z",
+      "event_meta": {
+        "event_id": "b7af8028-5651-4d51-b1d3-d93b4d12a890",
+        "parent_event_id": "3a433fc1-0c79-4168-943d-af0ff3e5f7dd",
+        "event_type": "assistant.message",
+        "message_id": "9e10c46b-3961-4464-a4cb-ccafc9683d25",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eABkZwl1Ly9Rh9ntWuCgDqFl",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Committed the aligned spec-body repair systematically as isolated submodule and root commits, then verified the remaining dirty state is unrelated existing work."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Committed as a clean four-commit chain:\n\n`memory-api`: `dc72a47` `chore(specs): repair missed aligned behavior-first body`  \n`viewer-api`: `8bce6d8` `chore(specs): repair missed aligned behavior-first body`  \nroot: `0784921` `chore(specs): repair missed aligned behavior-first bodies`  \nroot: `d856072` `chore: update spec-store submodule pointers`\n\nThe repair stays isolated from the unrelated workspace dirt. `viewer-api` is now clean. The root repo is still dirty only from the pre-existing unrelated prompt/rule/ticket/session/design work, and `memory-api` still has unrelated staged ticket/session test changes that were not included in these commits.",
+      "captured_at": "2026-07-08T22:25:20.426Z",
+      "event_meta": {
+        "event_id": "567f3914-a4dd-4e29-85fa-5f4c0532e33b",
+        "parent_event_id": "98955e16-0537-4045-a04d-702a8ecc80ae",
+        "event_type": "assistant.message",
+        "message_id": "ac2f99b6-0ea2-490a-bdab-79206e763e84",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
