@@ -1,0 +1,12 @@
+{
+  "id": "vt-ticket-viewer-wasm-build-regression",
+  "title": "ticket-viewer wasm32 build compiles under profile-browser",
+  "command": "cargo check --target wasm32-unknown-unknown --features profile-browser",
+  "detail": "Validates that ticket-viewer-dioxus compiles for the wasm32 target with trunk's profile-browser feature set after restoring the wasm-only imports/bindings broken by commit 4bb0961 (dep_graph/page.rs, store.rs). Full trunk bundling + browser verification is separately blocked by an environment gap (empty memory-viewers/viewer-api CSS asset path).",
+  "links": {
+    "ticket_ids": [
+      "f2d19fdc-9d3a-4eb0-ad62-cc42ded75541",
+      "c892904f-6aff-4892-baf1-1f832837cde5"
+    ]
+  }
+}

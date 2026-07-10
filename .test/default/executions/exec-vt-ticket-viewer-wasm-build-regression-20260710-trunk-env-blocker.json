@@ -1,0 +1,17 @@
+{
+  "id": "exec-vt-ticket-viewer-wasm-build-regression-20260710-trunk-env-blocker",
+  "validation_spec_id": "vt-ticket-viewer-wasm-build-regression",
+  "outcome": "blocked",
+  "executed_at": "2026-07-10T15:44:51.977814200Z",
+  "detail": "`viewer-ctl prepare ticket-viewer` (trunk build --release --features profile-browser) fails before browser verification with: \"error getting canonical path for memory-viewers/viewer-api/viewer-api/frontend/dioxus/public/css/variables.css (os error 3)\". Root cause: memory-viewers/viewer-api is an empty, non-gitlinked directory (no memory-viewers/.gitmodules); the shared trunk CSS asset links in index.html target it, while the real CSS lives at root viewer-api/viewer-api/frontend/dioxus/public/css/. `./install-tools.sh` last exited 1. This is an environment/link setup gap, not a code defect. Blocks browser verification for all frontend workstreams (W1, etc.) until repaired.",
+  "links": {
+    "ticket_ids": [
+      "f2d19fdc-9d3a-4eb0-ad62-cc42ded75541",
+      "a34d9891-5cd3-403c-8576-f3a55a50047e",
+      "c892904f-6aff-4892-baf1-1f832837cde5"
+    ]
+  },
+  "provenance": {
+    "transport": "cli"
+  }
+}

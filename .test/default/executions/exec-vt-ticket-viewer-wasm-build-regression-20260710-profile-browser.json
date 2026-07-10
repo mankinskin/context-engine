@@ -1,0 +1,16 @@
+{
+  "id": "exec-vt-ticket-viewer-wasm-build-regression-20260710-profile-browser",
+  "validation_spec_id": "vt-ticket-viewer-wasm-build-regression",
+  "outcome": "passed",
+  "executed_at": "2026-07-10T15:44:52.058883Z",
+  "detail": "`cargo check --target wasm32-unknown-unknown --features profile-browser` finished with EXIT 0 (dev profile, warnings only) after the fix. The pre-fix baseline failed with E0425 (dep_graph/page.rs: nav/on_hover/on_deselect/selected_node_id/hovered_node_id + Navigator/TicketRef/select_node_or_navigate) and E0596 (store.rs open_ticket). Post-fix, none of those errors remain.",
+  "links": {
+    "ticket_ids": [
+      "f2d19fdc-9d3a-4eb0-ad62-cc42ded75541",
+      "c892904f-6aff-4892-baf1-1f832837cde5"
+    ]
+  },
+  "provenance": {
+    "transport": "cli"
+  }
+}
