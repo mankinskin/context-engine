@@ -59,3 +59,24 @@ This is the common floor, not a promise that every artifact type stores identica
 - At least one shared helper or validation path prevents missing minimum links or missing artifact-specific required fields where policy requires them.
 - The chosen contract is exercised by one existing validation or benchmark path and produces durable evidence in the correct stores.
 - The ticket records any remaining blocker from shared tracing initialization or the generic journal envelope explicitly rather than hiding it in caller-specific code.
+
+## Implementation progress
+
+Enforced interoperability edges landed so far (persistence-boundary enforcement, not helper-only):
+
+1. Validation executions — `test-api` `record_execution` rejects missing operation/run/traceability (`store::tests::record_execution_rejects_missing_interoperability_contract_fields`).
+2. Benchmark records — `test-api` `record_benchmark` rejects missing run grouping/traceability (`store::tests::record_benchmark_rejects_missing_interoperability_contract_fields`).
+3. Log captures — `log-api` `record_capture` rejects missing execution back-link (`store::tests::record_capture_rejects_missing_execution_back_link`); memory-matrix log producer updated to comply.
+4. Runtime sessions (this slice) — `log-api` `RuntimeLogSession::validate_interoperability_contract` added and enforced at `record_runtime_session`, mirroring the capture edge. A session missing operation/run_id/correlation links is now rejected at persistence and never written to disk. The real producer path `memory-matrix/src/runner.rs::correlated_runtime_log_session_ids` already sets operation, run_id, and validation-execution links, so it stays compliant.
+
+### Tests for the runtime-session edge
+- `log-api` `store::tests::record_runtime_session_rejects_missing_interoperability_links` — persistence rejection + confirms nothing is written (`get_runtime_session` reports `RuntimeSessionNotFound`).
+- `log-api` `tests::runtime_session_interoperability_contract_requires_correlation_links` — extended to assert `validate_interoperability_contract` returns `LogError::InteroperabilityContract`.
+- `log-api` `tests::runtime_sessions_round_trip_through_serde` — asserts a compliant session validates `Ok`.
+
+### Validation
+`cargo test -p test-api -p log-api -p memory-matrix` — passing (log-api 15 tests, memory-matrix + test-api all green). Run from workspace root (`context-engine`); the root `Cargo.toml` owns these crates.
+
+### Remaining
+- Journal-backed operation lineage enforcement (authoritative journal identity + replay/rollback) is not yet enforced at a persistence boundary — next candidate edge.
+- No blocker on shared tracing initialization or the generic journal envelope observed for the landed edges.
