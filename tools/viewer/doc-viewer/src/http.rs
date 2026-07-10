@@ -544,7 +544,12 @@ fn scan_crate_source_files(
     scan_dir_by_extension(&src_dir, crate_dir, &["rs"], &mut files);
 
     // Scan agents/docs/ directory for .yaml and .md files
-    scan_dir_by_extension(&docs_dir, crate_dir, &["yaml", "yml", "md"], &mut files);
+    scan_dir_by_extension(
+        &docs_dir,
+        crate_dir,
+        &["yaml", "yml", "md"],
+        &mut files,
+    );
 
     // Sort files by name
     files.sort_by(|a, b| a.rel_path.cmp(&b.rel_path));
@@ -639,7 +644,13 @@ async fn query_docs(
 
     for dt in doc_types {
         match state.docs_manager.list_documents_filtered(dt, &filter) {
-            Ok(docs) => collect_query_docs(&state, dt, docs, params.include_content, &mut all_docs),
+            Ok(docs) => collect_query_docs(
+                &state,
+                dt,
+                docs,
+                params.include_content,
+                &mut all_docs,
+            ),
             Err(e) =>
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
@@ -706,7 +717,10 @@ fn collect_query_docs(
 }
 
 /// Read a document body and parse it into a markdown-AST JSON value.
-fn read_doc_content_ast(state: &HttpState, filename: &str) -> Option<Value> {
+fn read_doc_content_ast(
+    state: &HttpState,
+    filename: &str,
+) -> Option<Value> {
     let result = state
         .docs_manager
         .read_document(filename, DetailLevel::Full)

@@ -282,8 +282,10 @@ impl HealthDashboard {
             self.frontmatter_coverage, fm_status
         ));
 
-        let idx_status =
-            status_icon(self.index_sync_issues == 0, self.index_sync_issues <= 5);
+        let idx_status = status_icon(
+            self.index_sync_issues == 0,
+            self.index_sync_issues <= 5,
+        );
         md.push_str(&format!(
             "| INDEX Sync Issues | {} | {} |\n",
             self.index_sync_issues, idx_status

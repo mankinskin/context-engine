@@ -1,13 +1,28 @@
 use std::{
     collections::BTreeMap,
-    fs::{self, File},
-    io::{BufRead, BufReader},
-    path::{Path, PathBuf},
+    fs::{
+        self,
+        File,
+    },
+    io::{
+        BufRead,
+        BufReader,
+    },
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use serde_json::{
+    Value,
+    json,
+};
 use thiserror::Error;
 
 pub const DEFAULT_WINDOW: usize = 40;
@@ -45,10 +60,17 @@ pub struct InspectRequest {
 #[serde(tag = "mode", rename_all = "snake_case")]
 pub enum InspectMode {
     Count,
-    Grep { pattern: String, window: Option<usize> },
+    Grep {
+        pattern: String,
+        window: Option<usize>,
+    },
     All,
-    Head { lines: usize },
-    Tail { lines: usize },
+    Head {
+        lines: usize,
+    },
+    Tail {
+        lines: usize,
+    },
     Range {
         start: usize,
         end: Option<usize>,
@@ -127,12 +149,17 @@ pub fn execute(request: &PeekRequest) -> Result<PeekResponse, PeekError> {
     }
 }
 
-pub fn write_output(text: &str, output: Option<&Path>) -> Result<(), PeekError> {
+pub fn write_output(
+    text: &str,
+    output: Option<&Path>,
+) -> Result<(), PeekError> {
     if let Some(path) = output {
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).map_err(|source| PeekError::CannotCreateDir {
-                path: parent.to_path_buf(),
-                source,
+            fs::create_dir_all(parent).map_err(|source| {
+                PeekError::CannotCreateDir {
+                    path: parent.to_path_buf(),
+                    source,
+                }
             })?;
         }
         fs::write(path, text).map_err(|source| PeekError::CannotWrite {
@@ -155,7 +182,8 @@ fn inspect(request: &InspectRequest) -> Result<PeekResponse, PeekError> {
 
     match &request.mode {
         InspectMode::Count => Ok(PeekResponse::stdout(format!("{total}\n"))),
-        InspectMode::Grep { pattern, window } => grep_lines(&request.path, &lines, total, pattern, *window),
+        InspectMode::Grep { pattern, window } =>
+            grep_lines(&request.path, &lines, total, pattern, *window),
         InspectMode::All => Ok(PeekResponse::stdout(render_all(&lines))),
         InspectMode::Head { lines: count } => {
             let end = (*count).min(total);
@@ -163,10 +191,13 @@ fn inspect(request: &InspectRequest) -> Result<PeekResponse, PeekError> {
         },
         InspectMode::Tail { lines: count } => {
             let start = total.saturating_sub(*count) + 1;
-            Ok(PeekResponse::stdout(render_window(&lines, start, total, total)))
+            Ok(PeekResponse::stdout(render_window(
+                &lines, start, total, total,
+            )))
         },
         InspectMode::Range { start, end, window } => {
-            let rendered = render_requested_range(&lines, total, *start, *end, *window)?;
+            let rendered =
+                render_requested_range(&lines, total, *start, *end, *window)?;
             Ok(PeekResponse::stdout(rendered))
         },
     }
@@ -179,10 +210,11 @@ fn grep_lines(
     pattern: &str,
     window: Option<usize>,
 ) -> Result<PeekResponse, PeekError> {
-    let regex = Regex::new(pattern).map_err(|source| PeekError::InvalidRegex {
-        pattern: pattern.to_string(),
-        source,
-    })?;
+    let regex =
+        Regex::new(pattern).map_err(|source| PeekError::InvalidRegex {
+            pattern: pattern.to_string(),
+            source,
+        })?;
 
     let matches: Vec<usize> = lines
         .iter()
@@ -203,7 +235,9 @@ fn grep_lines(
         let first = matches[0];
         let start = first.saturating_sub(width / 2).max(1);
         let end = (first + width / 2).min(total);
-        return Ok(PeekResponse::stdout(render_window(lines, start, end, total)));
+        return Ok(PeekResponse::stdout(render_window(
+            lines, start, end, total,
+        )));
     }
 
     let mut stdout = String::new();
@@ -274,7 +308,12 @@ fn render_all(lines: &[String]) -> String {
     stdout
 }
 
-fn render_window(lines: &[String], start: usize, end: usize, total: usize) -> String {
+fn render_window(
+    lines: &[String],
+    start: usize,
+    end: usize,
+    total: usize,
+) -> String {
     let start = start.max(1);
     let end = end.min(total);
     let mut stdout = String::new();
@@ -284,7 +323,10 @@ fn render_window(lines: &[String], start: usize, end: usize, total: usize) -> St
     stdout
 }
 
-fn skeletonize(path: &Path, lines: &[String]) -> Result<String, PeekError> {
+fn skeletonize(
+    path: &Path,
+    lines: &[String],
+) -> Result<String, PeekError> {
     let ext = path
         .extension()
         .and_then(|ext| ext.to_str())
@@ -328,7 +370,8 @@ fn is_structural_rust_line(trimmed: &str) -> bool {
         "pub async fn",
         "extern ",
     ];
-    trimmed.is_empty() || PREFIXES.iter().any(|prefix| trimmed.starts_with(prefix))
+    trimmed.is_empty()
+        || PREFIXES.iter().any(|prefix| trimmed.starts_with(prefix))
 }
 
 fn skeletonize_rust(lines: &[String]) -> String {
@@ -434,14 +477,18 @@ struct TreeNode {
 }
 
 pub fn generate_repo_map(root: &Path) -> Result<String, PeekError> {
-    let root = root.canonicalize().map_err(|source| PeekError::CannotResolve {
-        path: root.to_path_buf(),
-        source,
-    })?;
+    let root =
+        root.canonicalize()
+            .map_err(|source| PeekError::CannotResolve {
+                path: root.to_path_buf(),
+                source,
+            })?;
     let cargo_toml = root.join("Cargo.toml");
-    let cargo_text = fs::read_to_string(&cargo_toml).map_err(|source| PeekError::CannotRead {
-        path: cargo_toml.clone(),
-        source,
+    let cargo_text = fs::read_to_string(&cargo_toml).map_err(|source| {
+        PeekError::CannotRead {
+            path: cargo_toml.clone(),
+            source,
+        }
     })?;
 
     let members = parse_workspace_members(&cargo_text);
@@ -519,14 +566,17 @@ pub fn generate_repo_map(root: &Path) -> Result<String, PeekError> {
         ],
     });
 
-    toon_format::encode_default(&repo_map).map_err(|error| PeekError::RepoMapEncode(error.to_string()))
+    toon_format::encode_default(&repo_map)
+        .map_err(|error| PeekError::RepoMapEncode(error.to_string()))
 }
 
 fn skeletonize_directory(root: &Path) -> Result<String, PeekError> {
-    let root = root.canonicalize().map_err(|source| PeekError::CannotResolve {
-        path: root.to_path_buf(),
-        source,
-    })?;
+    let root =
+        root.canonicalize()
+            .map_err(|source| PeekError::CannotResolve {
+                path: root.to_path_buf(),
+                source,
+            })?;
     let mut tree = TreeNode::default();
     collect_directory_tree(&root, &root, &mut tree)?;
 
@@ -540,22 +590,27 @@ fn skeletonize_directory(root: &Path) -> Result<String, PeekError> {
     Ok(lines.join("\n") + "\n")
 }
 
-fn collect_directory_tree(root: &Path, current: &Path, tree: &mut TreeNode) -> Result<(), PeekError> {
+fn collect_directory_tree(
+    root: &Path,
+    current: &Path,
+    tree: &mut TreeNode,
+) -> Result<(), PeekError> {
     let mut entries = read_dir_sorted(current)?;
 
     for entry in entries.drain(..) {
         let path = entry.path();
-        let metadata = entry.metadata().map_err(|source| PeekError::CannotRead {
-            path: path.clone(),
-            source,
-        })?;
-        let name = entry.file_name().to_string_lossy().into_owned();
-        let relative = path
-            .strip_prefix(root)
-            .map_err(|_| PeekError::CannotResolve {
+        let metadata =
+            entry.metadata().map_err(|source| PeekError::CannotRead {
                 path: path.clone(),
-                source: std::io::Error::other("cannot relativize path"),
+                source,
             })?;
+        let name = entry.file_name().to_string_lossy().into_owned();
+        let relative =
+            path.strip_prefix(root)
+                .map_err(|_| PeekError::CannotResolve {
+                    path: path.clone(),
+                    source: std::io::Error::other("cannot relativize path"),
+                })?;
 
         if should_skip_directory_entry(relative, &name, metadata.is_dir()) {
             continue;
@@ -587,7 +642,11 @@ fn read_dir_sorted(path: &Path) -> Result<Vec<fs::DirEntry>, PeekError> {
     Ok(entries)
 }
 
-fn should_skip_directory_entry(relative: &Path, name: &str, is_dir: bool) -> bool {
+fn should_skip_directory_entry(
+    relative: &Path,
+    name: &str,
+    is_dir: bool,
+) -> bool {
     let noisy_names = [
         "target",
         "node_modules",
@@ -603,7 +662,9 @@ fn should_skip_directory_entry(relative: &Path, name: &str, is_dir: bool) -> boo
         return true;
     }
 
-    if name.starts_with('.') && !matches!(name, ".agents" | ".githooks" | ".github" | ".rule") {
+    if name.starts_with('.')
+        && !matches!(name, ".agents" | ".githooks" | ".github" | ".rule")
+    {
         return true;
     }
 
@@ -649,10 +710,11 @@ fn collect_top_level_dirs(root: &Path) -> Result<Vec<String>, PeekError> {
 
     for entry in entries {
         let path = entry.path();
-        let metadata = entry.metadata().map_err(|source| PeekError::CannotRead {
-            path: path.clone(),
-            source,
-        })?;
+        let metadata =
+            entry.metadata().map_err(|source| PeekError::CannotRead {
+                path: path.clone(),
+                source,
+            })?;
         let name = entry.file_name().to_string_lossy().into_owned();
         if metadata.is_dir() && !name.starts_with('.') && name != "target" {
             dirs.push(name);
@@ -662,9 +724,15 @@ fn collect_top_level_dirs(root: &Path) -> Result<Vec<String>, PeekError> {
     Ok(dirs)
 }
 
-fn collect_existing_paths(root: &Path, paths: &[&str]) -> Vec<String> {
-    paths.iter()
-        .filter_map(|path| root.join(path).exists().then(|| path.replace('\\', "/")))
+fn collect_existing_paths(
+    root: &Path,
+    paths: &[&str],
+) -> Vec<String> {
+    paths
+        .iter()
+        .filter_map(|path| {
+            root.join(path).exists().then(|| path.replace('\\', "/"))
+        })
         .collect()
 }
 
@@ -678,16 +746,20 @@ fn collect_agent_files(root: &Path) -> Result<Vec<String>, PeekError> {
 
         for entry in read_dir_sorted(&dir)? {
             let path = entry.path();
-            if entry.metadata().map_err(|source| PeekError::CannotRead {
-                path: path.clone(),
-                source,
-            })?.is_file() {
-                let relative = path
-                    .strip_prefix(root)
-                    .map_err(|_| PeekError::CannotResolve {
+            if entry
+                .metadata()
+                .map_err(|source| PeekError::CannotRead {
+                    path: path.clone(),
+                    source,
+                })?
+                .is_file()
+            {
+                let relative = path.strip_prefix(root).map_err(|_| {
+                    PeekError::CannotResolve {
                         path: path.clone(),
                         source: std::io::Error::other("cannot relativize path"),
-                    })?;
+                    }
+                })?;
                 files.push(to_slash_path(relative));
             }
         }
@@ -704,16 +776,20 @@ fn collect_hook_files(root: &Path) -> Result<Vec<String>, PeekError> {
 
         for entry in read_dir_sorted(&dir)? {
             let path = entry.path();
-            if entry.metadata().map_err(|source| PeekError::CannotRead {
-                path: path.clone(),
-                source,
-            })?.is_file() {
-                let relative = path
-                    .strip_prefix(root)
-                    .map_err(|_| PeekError::CannotResolve {
+            if entry
+                .metadata()
+                .map_err(|source| PeekError::CannotRead {
+                    path: path.clone(),
+                    source,
+                })?
+                .is_file()
+            {
+                let relative = path.strip_prefix(root).map_err(|_| {
+                    PeekError::CannotResolve {
                         path: path.clone(),
                         source: std::io::Error::other("cannot relativize path"),
-                    })?;
+                    }
+                })?;
                 files.push(to_slash_path(relative));
             }
         }
@@ -775,9 +851,11 @@ fn read_crate_name(member_dir: &Path) -> Result<Option<String>, PeekError> {
         return Ok(None);
     }
 
-    let text = fs::read_to_string(&cargo_toml).map_err(|source| PeekError::CannotRead {
-        path: cargo_toml.clone(),
-        source,
+    let text = fs::read_to_string(&cargo_toml).map_err(|source| {
+        PeekError::CannotRead {
+            path: cargo_toml.clone(),
+            source,
+        }
     })?;
     for line in text.lines() {
         let trimmed = line.trim();
@@ -791,7 +869,12 @@ fn read_crate_name(member_dir: &Path) -> Result<Option<String>, PeekError> {
     Ok(None)
 }
 
-fn insert_tree_path(tree: &mut TreeNode, path: &str, note: Option<String>, is_file: bool) {
+fn insert_tree_path(
+    tree: &mut TreeNode,
+    path: &str,
+    note: Option<String>,
+    is_file: bool,
+) {
     let mut current = tree;
     let mut segments = path.split('/').peekable();
     while let Some(segment) = segments.next() {
@@ -811,7 +894,10 @@ fn tree_from_paths(paths: &[String]) -> TreeNode {
     tree
 }
 
-fn render_tree_lines(tree: &TreeNode, indent: usize) -> Vec<String> {
+fn render_tree_lines(
+    tree: &TreeNode,
+    indent: usize,
+) -> Vec<String> {
     let mut lines = Vec::new();
     for (name, child) in &tree.children {
         let mut line = format!("{}{}", "  ".repeat(indent), name);
@@ -827,7 +913,11 @@ fn render_tree_lines(tree: &TreeNode, indent: usize) -> Vec<String> {
     lines
 }
 
-fn tree_to_value(name: &str, tree: &TreeNode, path: &str) -> Value {
+fn tree_to_value(
+    name: &str,
+    tree: &TreeNode,
+    path: &str,
+) -> Value {
     let children: Vec<Value> = tree
         .children
         .iter()
@@ -870,7 +960,10 @@ mod tests {
     use super::*;
     use tempfile::tempdir;
 
-    fn write_file(path: &Path, content: &str) {
+    fn write_file(
+        path: &Path,
+        content: &str,
+    ) {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent).expect("create parent dirs");
         }
@@ -916,7 +1009,10 @@ mod tests {
     fn skeleton_directory_renders_tree() {
         let dir = tempdir().expect("temp dir");
         let root = dir.path().join("workspace");
-        write_file(&root.join("tools/cli/peek-cli/Cargo.toml"), "[package]\nname = \"peek-cli\"\n");
+        write_file(
+            &root.join("tools/cli/peek-cli/Cargo.toml"),
+            "[package]\nname = \"peek-cli\"\n",
+        );
         write_file(&root.join("README.md"), "hello\n");
 
         let response = execute(&PeekRequest::Skeleton { path: root.clone() })

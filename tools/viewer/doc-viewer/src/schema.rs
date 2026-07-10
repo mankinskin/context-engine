@@ -675,7 +675,10 @@ impl SyncAnalysisResult {
         out
     }
 
-    fn push_errors_section(&self, out: &mut String) {
+    fn push_errors_section(
+        &self,
+        out: &mut String,
+    ) {
         if self.errors.is_empty() {
             return;
         }
@@ -686,7 +689,10 @@ impl SyncAnalysisResult {
         out.push('\n');
     }
 
-    fn push_summary_section(&self, out: &mut String) {
+    fn push_summary_section(
+        &self,
+        out: &mut String,
+    ) {
         let Some(summary) = &self.summary else {
             return;
         };
@@ -698,7 +704,10 @@ impl SyncAnalysisResult {
         ));
     }
 
-    fn push_public_items_section(&self, out: &mut String) {
+    fn push_public_items_section(
+        &self,
+        out: &mut String,
+    ) {
         if self.public_types.is_empty()
             && self.public_traits.is_empty()
             && self.public_macros.is_empty()
@@ -711,7 +720,10 @@ impl SyncAnalysisResult {
         push_public_item_group(out, "Macros", &self.public_macros);
     }
 
-    fn push_suggestions_section(&self, out: &mut String) {
+    fn push_suggestions_section(
+        &self,
+        out: &mut String,
+    ) {
         if self.suggestions.is_empty() {
             out.push_str(
                 "✅ No suggested changes - documentation appears up to date.\n",
@@ -745,7 +757,11 @@ impl SyncAnalysisResult {
 }
 
 /// Append a `**Label (n):** a, b, c` line for a non-empty public-item group.
-fn push_public_item_group(out: &mut String, label: &str, items: &[String]) {
+fn push_public_item_group(
+    out: &mut String,
+    label: &str,
+    items: &[String],
+) {
     if items.is_empty() {
         return;
     }

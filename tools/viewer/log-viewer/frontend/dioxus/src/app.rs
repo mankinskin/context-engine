@@ -353,7 +353,8 @@ fn spawn_load_file_task(
                 let first_source =
                     data.entries.iter().find(|entry| entry.file.is_some());
 
-                let mut state = FileViewState::with_entries(data.entries.clone());
+                let mut state =
+                    FileViewState::with_entries(data.entries.clone());
                 state.signatures = signatures;
                 state.active_tab =
                     route_tab.unwrap_or_else(|| "logs".to_string());

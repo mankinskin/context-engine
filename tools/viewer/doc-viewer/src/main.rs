@@ -77,8 +77,8 @@ fn init_tracing() {
     let log_dir = std::env::var("LOG_DIR")
         .map(PathBuf::from)
         .unwrap_or(default_log_dir);
-    let level = std::env::var("LOG_LEVEL")
-        .unwrap_or_else(|_| "info".to_string());
+    let level =
+        std::env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
 
     let config = TracingConfig::default()
         .with_level(level)
@@ -147,7 +147,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 /// Compute the human-readable startup mode label for the selected servers.
-fn startup_mode_label(run_http: bool, run_mcp: bool) -> &'static str {
+fn startup_mode_label(
+    run_http: bool,
+    run_mcp: bool,
+) -> &'static str {
     match (run_http, run_mcp) {
         (true, true) => "HTTP + MCP",
         (true, false) => "HTTP only",
@@ -193,7 +196,10 @@ fn resolve_crates_dirs(workspace_root: &std::path::Path) -> Vec<PathBuf> {
 }
 
 /// Spawn the MCP stdio server on a background task, logging any errors.
-fn spawn_background_mcp_server(agents_dir: PathBuf, crates_dirs: Vec<PathBuf>) {
+fn spawn_background_mcp_server(
+    agents_dir: PathBuf,
+    crates_dirs: Vec<PathBuf>,
+) {
     tokio::spawn(async move {
         let server = DocsServer::new(agents_dir, crates_dirs);
         match server.serve(stdio()).await {

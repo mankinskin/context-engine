@@ -220,10 +220,9 @@ impl CrateDocsManager {
                 });
             },
             Err(e) => {
-                result.diagnostics.push(format!(
-                    "{}: YAML parse error - {}",
-                    name, e
-                ));
+                result
+                    .diagnostics
+                    .push(format!("{}: YAML parse error - {}", name, e));
             },
         }
     }
@@ -612,9 +611,7 @@ impl CrateDocsManager {
         }
         if let Some(files) = remove {
             for f in &files {
-                if let Some(pos) =
-                    source_files.iter().position(|x| x == f)
-                {
+                if let Some(pos) = source_files.iter().position(|x| x == f) {
                     source_files.remove(pos);
                     changes.push(format!("Removed source file: {}", f));
                 }
@@ -835,10 +832,8 @@ impl CrateDocsManager {
 
             // Search modules recursively
             for module_ref in &meta.modules {
-                let searchable = format!(
-                    "{} {}",
-                    module_ref.name, module_ref.description
-                );
+                let searchable =
+                    format!("{} {}", module_ref.name, module_ref.description);
                 if regex_matches(&searchable, regex) {
                     results.push(CrateSearchResult {
                         crate_name: crate_summary.name.clone(),
@@ -1403,7 +1398,6 @@ impl CrateDocsManager {
             StalenessLevel::Unknown => report.unknown_items.push(item),
         }
     }
-
 }
 
 // =============================================================================

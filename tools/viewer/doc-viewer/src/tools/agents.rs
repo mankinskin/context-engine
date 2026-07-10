@@ -248,12 +248,7 @@ impl DocsManager {
                 )?;
             }
 
-            self.validate_index_file(
-                &dir,
-                &index_path,
-                &category,
-                &mut report,
-            );
+            self.validate_index_file(&dir, &index_path, &category, &mut report);
         }
 
         Ok(report)
@@ -442,8 +437,7 @@ impl DocsManager {
         }
 
         // Check INDEX uses minimal table format
-        let has_doc_table = index_content
-            .contains("| Date | File | Summary |")
+        let has_doc_table = index_content.contains("| Date | File | Summary |")
             || index_content.contains("|------|------|");
 
         if !has_doc_table {
@@ -1251,7 +1245,6 @@ fn truncate(
 // =============================================================================
 // Parameter and Result Types
 // =============================================================================
-
 
 #[path = "agents_types.rs"]
 mod agents_types;

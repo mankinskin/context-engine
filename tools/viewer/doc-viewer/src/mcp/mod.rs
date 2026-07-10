@@ -52,9 +52,8 @@ use crate::{
 fn markdown_or_error(result: tools::ToolResult<String>) -> CallToolResult {
     match result {
         Ok(md) => CallToolResult::success(vec![Content::text(md)]),
-        Err(e) => {
-            CallToolResult::error(vec![Content::text(format!("Error: {}", e))])
-        },
+        Err(e) =>
+            CallToolResult::error(vec![Content::text(format!("Error: {}", e))]),
     }
 }
 
@@ -457,7 +456,11 @@ Search options:
     }
 
     /// Append agent-documentation search results to `md`.
-    fn append_agent_doc_search(&self, input: &SearchInput, md: &mut String) {
+    fn append_agent_doc_search(
+        &self,
+        input: &SearchInput,
+        md: &mut String,
+    ) {
         let doc_type = input.doc_type.as_ref().and_then(|s| parse_doc_type(s));
         let filter = tools::ListFilter {
             tag: input.tag.clone(),
@@ -514,7 +517,11 @@ Search options:
     }
 
     /// Append crate-documentation search results to `md`.
-    fn append_crate_doc_search(&self, input: &SearchInput, md: &mut String) {
+    fn append_crate_doc_search(
+        &self,
+        input: &SearchInput,
+        md: &mut String,
+    ) {
         match self.crate_manager.search_crate_docs(
             &input.query,
             input.crate_filter.as_deref(),
@@ -547,7 +554,6 @@ Search options:
         }
     }
 
-
     // ============================================================
     // VALIDATE - Maintenance and validation operations
     // ============================================================
@@ -574,7 +580,8 @@ Actions:
     ) -> Result<CallToolResult, McpError> {
         match input.target {
             ValidateTarget::AgentDocs => self.validate_agent_docs(&input),
-            ValidateTarget::CrateDocs => self.validate_crate_docs_target(&input),
+            ValidateTarget::CrateDocs =>
+                self.validate_crate_docs_target(&input),
             ValidateTarget::All => self.validate_all_target(&input),
         }
     }
@@ -768,7 +775,6 @@ Actions:
             )])),
         }
     }
-
 
     // ============================================================
     // CREATE - Create new documentation

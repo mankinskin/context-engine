@@ -18,7 +18,10 @@ use std::{
     env,
     io::Write,
     path::PathBuf,
-    process::{Command, Stdio},
+    process::{
+        Command,
+        Stdio,
+    },
     time::Duration,
 };
 
@@ -43,7 +46,10 @@ use rmcp::{
     tool_router,
     transport::stdio,
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use uuid::Uuid;
 
 /// Default maximum bytes to return inline. Outputs longer than this are spilled to file.
@@ -128,9 +134,7 @@ enum RunResult {
         spill_file: Option<PathBuf>,
     },
     /// Command could not be launched.
-    LaunchError {
-        message: String,
-    },
+    LaunchError { message: String },
 }
 
 // ── Server ────────────────────────────────────────────────────────────────────
@@ -143,16 +147,18 @@ pub struct CompactTerminalServer {
 
 impl CompactTerminalServer {
     pub fn new(spill_dir: Option<PathBuf>) -> Self {
-        let spill_dir = spill_dir.unwrap_or_else(|| {
-            env::temp_dir().join("compact-terminal-mcp")
-        });
+        let spill_dir = spill_dir
+            .unwrap_or_else(|| env::temp_dir().join("compact-terminal-mcp"));
         Self {
             spill_dir,
             tool_router: Self::tool_router(),
         }
     }
 
-    fn write_spill(&self, content: &str) -> Result<PathBuf, std::io::Error> {
+    fn write_spill(
+        &self,
+        content: &str,
+    ) -> Result<PathBuf, std::io::Error> {
         std::fs::create_dir_all(&self.spill_dir)?;
         let path = self.spill_dir.join(format!("{}.txt", Uuid::new_v4()));
         let mut f = std::fs::File::create(&path)?;
@@ -160,14 +166,19 @@ impl CompactTerminalServer {
         Ok(path)
     }
 
-    fn json_result<T: Serialize>(value: &T) -> Result<CallToolResult, McpError> {
+    fn json_result<T: Serialize>(
+        value: &T
+    ) -> Result<CallToolResult, McpError> {
         let text = serde_json::to_string(value).map_err(|e| {
             McpError::internal_error(format!("serialization: {e}"), None)
         })?;
         Ok(CallToolResult::success(vec![Content::text(text)]))
     }
 
-    async fn run_tool(&self, input: RunInput) -> Result<CallToolResult, McpError> {
+    async fn run_tool(
+        &self,
+        input: RunInput,
+    ) -> Result<CallToolResult, McpError> {
         let inline_limit = input.inline_limit.unwrap_or(DEFAULT_INLINE_LIMIT);
         let timeout_secs = input.timeout_secs.unwrap_or(DEFAULT_TIMEOUT_SECS);
 
@@ -185,10 +196,13 @@ impl CompactTerminalServer {
             Ok(c) => c,
             Err(e) => {
                 let result = RunResult::LaunchError {
-                    message: format!("failed to spawn '{}': {e}", input.command),
+                    message: format!(
+                        "failed to spawn '{}': {e}",
+                        input.command
+                    ),
                 };
                 return Self::json_result(&result);
-            }
+            },
         };
 
         // Wait with timeout using tokio::task::spawn_blocking.
@@ -206,13 +220,13 @@ impl CompactTerminalServer {
                     message: format!("command failed: {e}"),
                 };
                 return Self::json_result(&result);
-            }
+            },
             Ok(Err(e)) => {
                 let result = RunResult::LaunchError {
                     message: format!("task panic: {e}"),
                 };
                 return Self::json_result(&result);
-            }
+            },
             Err(_timeout) => {
                 let result = RunResult::TimedOut {
                     timeout_secs,
@@ -220,7 +234,7 @@ impl CompactTerminalServer {
                     spill_file: None,
                 };
                 return Self::json_result(&result);
-            }
+            },
         };
 
         let elapsed_ms = start.elapsed().as_millis();
@@ -258,24 +272,22 @@ impl CompactTerminalServer {
                     ),
                 };
                 return Self::json_result(&result);
-            }
+            },
         };
 
-        let stdout_preview = stdout
-            .chars()
-            .take(inline_limit / 2)
-            .collect::<String>();
-        let stderr_preview = stderr
-            .chars()
-            .take(inline_limit / 2)
-            .collect::<String>();
+        let stdout_preview =
+            stdout.chars().take(inline_limit / 2).collect::<String>();
+        let stderr_preview =
+            stderr.chars().take(inline_limit / 2).collect::<String>();
 
         let spill_str = spill_file.display().to_string();
         let next_steps = vec![
             format!("peek \"{spill_str}\" --count"),
             format!("peek \"{spill_str}\" --grep \"error\" --window 10"),
             format!("peek \"{spill_str}\" --head 30"),
-            format!("Use read_spill with start/end or grep to inspect targeted sections"),
+            format!(
+                "Use read_spill with start/end or grep to inspect targeted sections"
+            ),
         ];
 
         let result = RunResult::Spilled {
@@ -291,15 +303,21 @@ impl CompactTerminalServer {
         Self::json_result(&result)
     }
 
-    async fn read_spill_tool(&self, input: ReadSpillInput) -> Result<CallToolResult, McpError> {
+    async fn read_spill_tool(
+        &self,
+        input: ReadSpillInput,
+    ) -> Result<CallToolResult, McpError> {
         let content = match std::fs::read_to_string(&input.spill_file) {
             Ok(c) => c,
             Err(e) => {
                 return Err(McpError::invalid_params(
-                    format!("cannot read spill file '{}': {e}", input.spill_file.display()),
+                    format!(
+                        "cannot read spill file '{}': {e}",
+                        input.spill_file.display()
+                    ),
                     None,
                 ));
-            }
+            },
         };
 
         let lines: Vec<&str> = content.lines().collect();
@@ -333,11 +351,16 @@ impl CompactTerminalServer {
 
         // Bounded window mode.
         let start = input.start.unwrap_or(1).max(1);
-        let end = input.end.unwrap_or_else(|| (start + 80).min(total)).min(total);
+        let end = input
+            .end
+            .unwrap_or_else(|| (start + 80).min(total))
+            .min(total);
 
         if start > total {
             return Err(McpError::invalid_params(
-                format!("start={start} exceeds spill file length ({total} lines)"),
+                format!(
+                    "start={start} exceeds spill file length ({total} lines)"
+                ),
                 None,
             ));
         }
@@ -349,8 +372,13 @@ impl CompactTerminalServer {
             .collect::<Vec<_>>()
             .join("\n");
 
-        let header = format!("# spill: {}, lines {start}–{end} of {total}\n", input.spill_file.display());
-        Ok(CallToolResult::success(vec![Content::text(format!("{header}{window}"))]))
+        let header = format!(
+            "# spill: {}, lines {start}–{end} of {total}\n",
+            input.spill_file.display()
+        );
+        Ok(CallToolResult::success(vec![Content::text(format!(
+            "{header}{window}"
+        ))]))
     }
 }
 
@@ -371,7 +399,10 @@ Follow-up pattern for spilled output:
   2. Use read_spill with start/end or grep to inspect targeted sections.
   3. Only re-run the full command if the spill file is insufficient.
 ")]
-    async fn run(&self, Parameters(input): Parameters<RunInput>) -> Result<CallToolResult, McpError> {
+    async fn run(
+        &self,
+        Parameters(input): Parameters<RunInput>,
+    ) -> Result<CallToolResult, McpError> {
         self.run_tool(input).await
     }
 

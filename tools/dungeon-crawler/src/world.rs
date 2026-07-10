@@ -101,7 +101,7 @@ impl Map {
                 if self.room_should_exist(pos) {
                     let desc = ROOM_DESCS
                         [self.pos_hash(pos) as usize % ROOM_DESCS.len()]
-                        .to_string();
+                    .to_string();
                     self.rooms.insert(
                         pos,
                         Room {

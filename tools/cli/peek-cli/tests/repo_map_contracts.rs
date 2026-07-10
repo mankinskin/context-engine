@@ -6,7 +6,10 @@ use std::{
 use tempfile::tempdir;
 use viewer_api::query::JqFilter;
 
-fn write_file(path: &std::path::Path, content: &str) {
+fn write_file(
+    path: &std::path::Path,
+    content: &str,
+) {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).expect("create parent dirs");
     }
@@ -72,8 +75,8 @@ version = "0.1.0"
 
     let rendered = fs::read_to_string(root.join("repo_map.toon"))
         .expect("repo_map.toon should be written at the repo root");
-    let parsed: serde_json::Value =
-        toon_format::decode_default(&rendered).expect("repo_map.toon should decode as TOON");
+    let parsed: serde_json::Value = toon_format::decode_default(&rendered)
+        .expect("repo_map.toon should decode as TOON");
 
     assert_eq!(parsed["format"], "repo_map_toon_v1");
     let workspace_root = parsed["workspace"]["root"]
@@ -91,8 +94,9 @@ version = "0.1.0"
     assert_eq!(parsed["crates"]["name"], "crates");
     assert!(parsed["top_level_dirs"].is_array());
 
-    let crate_filter = JqFilter::compile(r#"select(.note == "crate=peek-cli")"#)
-        .expect("jq filter should compile");
+    let crate_filter =
+        JqFilter::compile(r#"select(.note == "crate=peek-cli")"#)
+            .expect("jq filter should compile");
     let crate_nodes = flatten_json_nodes(&parsed["crates"]);
     let matches: Vec<_> = crate_nodes
         .iter()
@@ -158,7 +162,8 @@ fn repo_map_toon_text_supports_jq_queries() {
     });
     fs::write(
         &repo_map,
-        toon_format::encode_default(&repo_map_value).expect("encode TOON fixture"),
+        toon_format::encode_default(&repo_map_value)
+            .expect("encode TOON fixture"),
     )
     .expect("write repo_map fixture");
 
@@ -212,7 +217,8 @@ fn skeleton_directory_output_stays_queryable() {
         String::from_utf8_lossy(&out.stderr)
     );
 
-    let rendered = String::from_utf8(out.stdout).expect("skeleton output should be utf-8");
+    let rendered =
+        String::from_utf8(out.stdout).expect("skeleton output should be utf-8");
     assert!(rendered.contains("workspace/"));
     assert!(rendered.contains("  tools/"));
     assert!(rendered.contains("    cli/"));

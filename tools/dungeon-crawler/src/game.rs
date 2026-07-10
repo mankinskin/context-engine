@@ -337,9 +337,8 @@ impl Game {
                 enemy,
                 &mut self.rng,
             )),
-            "flee" | "run" => {
-                Some(combat::try_flee(&self.player, enemy, &mut self.rng))
-            },
+            "flee" | "run" =>
+                Some(combat::try_flee(&self.player, enemy, &mut self.rng)),
             _ if cmd.starts_with("cast ") => {
                 let spell_name = cmd.strip_prefix("cast ").unwrap();
                 Some(match Spell::from_str(spell_name) {
@@ -433,7 +432,10 @@ impl Game {
         self.show_status();
     }
 
-    fn on_player_fled(&mut self, msg: String) {
+    fn on_player_fled(
+        &mut self,
+        msg: String,
+    ) {
         println!("{}", msg);
         if let Some(enemy) = self.combat_target.take() {
             let pos = self.player.pos;
@@ -474,9 +476,9 @@ impl Game {
             },
         };
         match room.npc.take() {
-            Some(n) if n.kind == NpcKind::Merchant || n.kind == NpcKind::Sage => {
-                Some(n)
-            },
+            Some(n)
+                if n.kind == NpcKind::Merchant || n.kind == NpcKind::Sage =>
+                Some(n),
             Some(n) => {
                 room.npc = Some(n);
                 println!("This NPC doesn't sell items.");
