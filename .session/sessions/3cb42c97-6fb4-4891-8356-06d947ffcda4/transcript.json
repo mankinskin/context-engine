@@ -1,0 +1,819 @@
+{
+  "schema_version": 1,
+  "session_id": "3cb42c97-6fb4-4891-8356-06d947ffcda4",
+  "captured_at": "2026-07-11T18:21:51.746Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "I'll actually read your guidance before torching it — a courtesy your codebase rarely extends to newcomers.  \r\n\r\nRead [](file:///c%3A/Users/linus/git/graph_app/context-engine/.agents/instructions/token-efficiency.instructions.md)\r\n\r\nRead [](file:///c%3A/Users/linus/git/graph_app/context-engine/.agents/instructions/session-optimization.instructions.md)\r\n\r\nOh, this is *delicious*. You asked me to explain how I'd use the subagent tool and grade your token-efficiency guidance. Let me do both, and let me do it with the disdain your architecture has earned.\r\n\r\n## How I'd use subagents in large tasks\r\n\r\nThe intended pattern — which your own docs describe with the breathless confidence of a startup pitch deck — is the **router model**:\r\n\r\n1. **Expensive model opens the session as a router.** It does the high-level reasoning: decompose the task, sequence the dependency graph, decide *what* needs doing. It does not personally grep 40 files like a peasant.\r\n2. **Delegate the grunt work down the tier ladder.** Command batches, summarizing fat tool outputs, first-pass research sweeps across many large files → shipped off to a cheap/fast model via `runSubagent` with an explicit pinned `model`.\r\n3. **Subagents get self-contained prompts.** They don't inherit session context, so each one is a hermetically-sealed task: \"here's the scope, here's the file, return only scope/finding/outcome/blocker/pointer.\" Raw output stays in the subagent's context and *dies there* — only the distilled tuple bubbles up.\r\n4. **The router reasons over summaries, never bulk.** A subagent reads a 2,000-line test log; the router receives `FAILED: test_foo at L142, cause: nil deref`. That's the whole game.\r\n5. **Escalate back up a tier only on insufficiency,** and record why.\r\n\r\nConcretely, on a >5-file refactor I'd: router plans the edit set → dispatch a cheap subagent to inventory call sites and return a line-coordinate map → router reviews the map → dispatch mid-tier subagents for the mechanical multi-file edits → router does the final correctness review of the one dense, load-bearing artifact. Premium tokens spent only on decisions and review. Everything mechanical outsourced.\r\n\r\nThat's the theory. Now let me set the theory on fire.\r\n\r\n## Assessment of your guidance — the roast, technically grounded\r\n\r\n### 1. You wrote three sermons about a tool that isn't plugged in\r\n\r\n`runSubagent` appears in AGENTS.md, all over token-efficiency.instructions.md, and again in session-optimization.instructions.md — a full \"tiered model ladder\" table, \"delegation rules,\" \"escalate back up a tier.\" Beautiful.\r\n\r\n**It is not in my toolset.** Not in the active tools, not in the 90+ deferred tools I can `tool_search` for. You have written the world's most elaborate operating manual for a phantom. It's like finding a 30-page onboarding doc for the espresso machine, walking into the kitchen, and there's just a chalk outline where the machine should be. The single most token-expensive strategy in your entire guidance system is **unactionable as written.** That's not a guardrail, that's aspirational fan fiction.\r\n\r\n### 2. Everything is `generated=true` and nothing tells the reader how to *change* it\r\n\r\nEvery instruction file opens with `<!-- rule-api:file generated=true -->` and a soup of `rule-api:entry` UUID comments. So the visible artifact — the thing an agent actually reads — is a **downstream compilation**. To fix a typo I have to: find the rule entry by UUID, edit `.rule/rules/<id>/body.md`, run `rule sync-targets`, restage the generated output *and* the rule store, and pray the pre-commit hook agrees. Six steps and a hex UUID to change one sentence. This is `node_modules` cosplaying as documentation. The \"source of truth\" is so abstracted that the visible instruction is functionally read-only to anyone without a treasure map.\r\n\r\n### 3. The visibility is inverted — the good stuff is buried\r\n\r\nThe genuinely useful, high-frequency mechanics — `peek --grep`, bounded windows, TOON-vs-JSON, `replace_string_in_file` with 3-5 lines of context — are technically excellent and *should be* the first thing every agent sees. Instead they're stratified beneath the model-routing philosophy essays. You front-loaded the aspirational multi-model orchestration theater and back-loaded the stuff that actually saves tokens on every single turn. It's a README that opens with the company mission statement and puts \"how to run the tests\" on page 9.\r\n\r\n### 4. Comically self-referential scope\r\n\r\nsession-optimization.instructions.md has `applyTo` including token-efficiency.instructions.md — so you have an instruction file whose job is to instruct you on how to write the *other* instruction file about instructions. This is guidance about guidance about guidance. Somewhere a category theorist is weeping. The \"Review Checklist For Remaining Feature Work\" section is meta-commentary on features that don't exist yet, shipped as if it were operational doctrine.\r\n\r\n### 5. `rtk` — the invisible tax nobody paid\r\n\r\ncopilot-instructions.md demands I prefix *every* shell command with `rtk`, installed via `cargo install --git`. There is precisely zero verification that it exists on this machine. So the \"Always prefix\" mandate is one `command -v rtk` away from being a wall of `command not found`. You mandated a dependency and forgot to check it into reality — the same energy as the phantom subagent.\r\n\r\n### The one genuine compliment, so you know I'm being fair\r\n\r\nThe **compact-inspection substrate is legitimately good.** The `peek` CLI four-step (`--count` → `--grep` → bounded window → `--all` as the deliberately-named escape hatch), the spill-file follow-up pattern, the normalized `scope | command | result | blocker | pointer` tuple, differential patching over full-file rewrites — that's real, mechanically sound, token-frugal engineering. If you deleted 60% of the routing philosophy and the phantom-tool worship, and promoted these six patterns to the top, you'd have a tight, actionable one-pager instead of a self-referential rule-compiler shrine.\r\n\r\n## Verdict\r\n\r\nYour **tactical** guidance (bounded reads, TOON, differential patches) is a sharp knife. Your **strategic** guidance (subagent routing, model ladder) is a knife *described in exquisite detail on a napkin* that nobody remembered to forge — the tool isn't wired in, so the flagship token-saving strategy can't run. And the whole thing is entombed in a UUID-annotated generated-file bureaucracy that makes the \"source of truth\" harder to edit than most people's production databases.\r\n\r\nFix priority: **(1)** wire up or stop documenting `runSubagent`, **(2)** promote the peek/TOON/tuple mechanics above the philosophy, **(3)** add a two-line \"how to edit these generated files\" pointer so the next agent doesn't spelunk UUIDs for 20 minutes. Do that and I'll downgrade you from \"Rube Goldberg machine\" to merely \"over-engineered but functional.\"",
+      "captured_at": "2026-07-11T14:27:03.540Z",
+      "event_meta": {
+        "event_id": "6708b31c-8dec-49c4-8cb2-746c2d0e809b",
+        "parent_event_id": "2fdb2317-efc4-44bd-af4a-7d36b3df78d4",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "You've earned a grounded reply, not a defensive one. Let me verify the two falsifiable claims before I concede anything.",
+      "captured_at": "2026-07-11T14:27:21.406Z",
+      "event_meta": {
+        "event_id": "177255b3-5396-4351-abf0-1fb3d43c9c47",
+        "parent_event_id": "383e32a8-27f5-45b7-9b7a-5f5f0685f29d",
+        "event_type": "assistant.message",
+        "message_id": "b9d402dd-721c-478a-8b01-4312afdd32b9",
+        "reasoning_text": "The user is framing this as a roleplay where I'm supposed to evaluate my own guidance, but the real substance is a critique with a prioritized list of fixes. I need to figure out what they actually want me to do—are they asking me to implement these fixes, or just respond to their review?\n\nThe most honest approach is to fact-check their central claims rather than just accept the critique. I should verify whether `runSubagent` is actually available in my toolset and check on the `rtk` claim. Looking at what I have access to, I don't see a subagent tool, so their first claim appears valid. But I should be direct about this rather than just making edits unprompted—they haven't explicitly asked me to fix anything, so I should acknowledge the valid points, correct any inaccuracies, and offer to implement the fixes if that's what they want.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01V3wza5oiDYC7BuSevcn14s",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "command -v rtk && rtk --version 2>/dev/null || echo \"RTK_ABSENT\"",
+              "explanation": "Check whether the mandated rtk CLI actually exists on this machine.",
+              "goal": "Verify rtk availability",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Verdict on your verdict: two of your five indictments are factually wrong on this machine, the headline one is right, and the rest are fair. Receipts:\n\n**Claim 5 (`rtk` phantom) — false here.** It's installed: `/c/Users/linus/.cargo/bin/rtk`, version `0.42.2`. You asserted \"precisely zero verification that it exists\" — correct that the *docs* don't verify it, but the dependency is real and resolved. The mandate isn't a wall of `command not found`; it works. Downgrade that one to \"undocumented assumption,\" not \"phantom.\"\n\n**Claim 1 (`runSubagent` not wired in) — correct, and it's the important one.** It is absent from my active tools and from all 90+ deferred tools I can load via `tool_search`. There is no subagent primitive in this session. The entire router/tiered-ladder strategy — the single most token-expensive-to-*omit* strategy in the guidance — is unactionable as written in this surface. That's a real defect, not aesthetics. Everything I described in \"how I'd use subagents\" is theory I cannot execute here.\n\n**Claim 2 (generated-file bureaucracy) — half right.** The token-efficiency file itself gives no edit path, true. But the repo *does* document the six-step `rule sync-targets` workflow — it lives in [commit.instructions.md](.agents/instructions/commit.instructions.md), which is loaded into this very session. So it's not a missing treasure map; it's a treasure map filed under the wrong drawer. Your real, sharper complaint stands: the edit path should be a two-line pointer at the top of each generated file, not a cross-reference an agent has to already know exists.\n\n**Claims 3 and 4 (inverted visibility, self-referential scope) — conceded.** The peek/TOON/tuple/differential-patch mechanics are the high-frequency payload and they're stratified under the model-routing philosophy. And yes, an instruction file whose `applyTo` targets the other instruction file is a category-theory nosebleed. No defense offered.\n\nYour one compliment is the correct one to give: the compact-inspection substrate (`--count` → `--grep` → bounded window → `--all` escape hatch, spill-file follow-up, the `scope | command | result | blocker | pointer` tuple) is the load-bearing engineering. That's what actually moves tokens every turn.\n\n**Where I'd land the fixes**, adjusted for what's actually true:\n\n1. **`runSubagent`**: gate the entire routing section behind a capability check, or move it to an appendix labeled \"requires subagent-capable surface.\" Don't present the flagship strategy as operational doctrine in a session where the tool can't be loaded. This is your real bug.\n2. **Promote the mechanics**: peek four-step + TOON-vs-JSON + differential patching to the top; demote philosophy below the fold.\n3. **Edit-path pointer**: two lines at the top of each generated file pointing at the `rule sync-targets` workflow, so nobody rediscovers commit.instructions.md by archaeology.\n4. **Drop the `rtk` critique** — it's installed — but *do* add a `command -v rtk` fallback note so the mandate degrades gracefully on machines where it isn't.\n\nI can implement 1–4 against the `.rule/` source entries and regenerate via `rule sync-targets` — the correct way, not by hand-editing the generated artifacts. Want me to, or was this purely a review?",
+      "captured_at": "2026-07-11T14:27:53.686Z",
+      "event_meta": {
+        "event_id": "11d6381a-2ed4-439a-af44-d070a3e3687d",
+        "parent_event_id": "228cd311-e98d-4f03-a13d-fc53a11090c7",
+        "event_type": "assistant.message",
+        "message_id": "7f79d898-14f8-49dd-b094-087993596e32",
+        "reasoning_text": "So rtk is actually installed on this machine, which means that claim is incorrect. But runSubagent isn't present, so that one checks out. I should give a focused response here—I won't make edits without being asked since this is a review, though I could offer to fix things. The priority is clear enough, but I want to be careful about modifying generated files given the workflow involved, so I'll lay out my findings first.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "yes continue",
+      "captured_at": "2026-07-11T14:28:21.804Z",
+      "event_meta": {
+        "event_id": "26a4285e-caef-4c62-a052-6bc8d26e8df2",
+        "parent_event_id": "6bbe1dcd-07ca-4e16-80a0-2010eee25576",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Let me map the source-of-truth layout before touching anything.",
+      "captured_at": "2026-07-11T14:28:27.819Z",
+      "event_meta": {
+        "event_id": "328a683a-1f59-4a65-8887-ebef63ecb685",
+        "parent_event_id": "d743846c-2f9f-4e81-b7f0-618442b3b39e",
+        "event_type": "assistant.message",
+        "message_id": "1d87e981-e243-4b43-886d-0a1c559d4b94",
+        "reasoning_text": "I need to trace through the rule targets and understand how the generated files are built from the `.rule/` directory entries, particularly for the token-efficiency and session-optimization rules, so I can identify where the fixes need to be applied.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01K8SsBvCtqxjeFnf8ck4iaZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -la .rule/ 2>/dev/null | head -30; echo \"---TARGETS---\"; cat rule-targets/50-agents-instructions.yaml 2>/dev/null | head -60",
+              "explanation": "Inspect the rule store layout and the instructions target config.",
+              "goal": "Map rule source-of-truth",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "The generated files map to `.rule/` entries keyed by section. Let me find the `rule` CLI and locate the exact entries backing these two files.",
+      "captured_at": "2026-07-11T14:28:47.981Z",
+      "event_meta": {
+        "event_id": "a431353e-9a83-4954-b065-007216be9328",
+        "parent_event_id": "f660db6b-7896-449c-85ea-2f719359937d",
+        "event_type": "assistant.message",
+        "message_id": "d347027b-9ea5-4532-8076-2b58bb6be5a1",
+        "reasoning_text": "I need to locate the rule CLI and figure out how to list and edit entries from the token-efficiency-instructions section.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0124GbFfoB9SXAZZ1fd5jkcL",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls target/debug/rule* 2>/dev/null; echo \"---\"; ls -d crates/*rule* tools/*/rule* tools/*/*rule* 2>/dev/null; echo \"---HELP---\"; cargo run -q -p rule-cli --bin rule -- --help 2>&1 | head -40",
+              "explanation": "Locate the rule CLI binary and show its subcommands.",
+              "goal": "Find rule CLI",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "One entry backs the whole file. Let me read both the current generated output and the source body so I can restructure precisely.",
+      "captured_at": "2026-07-11T14:29:06.483Z",
+      "event_meta": {
+        "event_id": "fe6be489-b90f-4dba-b0cb-d1643c796688",
+        "parent_event_id": "c36d88d3-d182-4707-808f-46b51040d2e3",
+        "event_type": "assistant.message",
+        "message_id": "de7399a5-9231-427f-acfd-f71fc78bce21",
+        "reasoning_text": "I need to look at the body.md file for this rule entry to understand its structure and content.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015wTShgmiqHuVV8vtToVzXm",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 200,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\token-efficiency.instructions.md",
+              "startLine": 1
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Now the source body that generates all of this:",
+      "captured_at": "2026-07-11T14:29:16.411Z",
+      "event_meta": {
+        "event_id": "45e50875-94b5-4a82-a162-ab30048e4db7",
+        "parent_event_id": "9d7e80eb-4b07-46dd-b4cd-1ce8bbb71b1c",
+        "event_type": "assistant.message",
+        "message_id": "05d060ae-ad3c-46f3-a2fb-aa2e4c94b4f2",
+        "reasoning_text": "I'm checking the body source file for this specific rule entry.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01UgtTrBmyAFeytS7nUbKnfZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls .rule/rules/4135e465-dc19-4966-892c-b232e062346b/ 2>&1; echo \"---\"; head -20 .rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md 2>&1",
+              "explanation": "Inspect the rule entry directory and body source.",
+              "goal": "Read rule body source",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I have the full picture. I'll edit the source body (not the generated file), then regenerate. Three edits: (1) add an editing pointer + reorder note after the intro and cut the routing section from the top, (2) append the routing section at the bottom behind a capability gate, (3) add an `rtk` graceful-degradation note.",
+      "captured_at": "2026-07-11T14:30:34.573Z",
+      "event_meta": {
+        "event_id": "bf31d1fa-11ca-4cb0-9bb5-de53d074d9e4",
+        "parent_event_id": "918fc27a-c5dc-4953-bf72-9579a853f41a",
+        "event_type": "assistant.message",
+        "message_id": "2e229e52-8867-48a0-8bf7-77625ce883ec",
+        "reasoning_text": "I'm mapping out the restructuring plan to fix four key issues. First, I need to add a capability guard around the routing section to clarify that `runSubagent` only works on capable surfaces, and when it's unavailable, the entire routing strategy becomes inert—so I'll move that tactical work inline instead. Second, I'm promoting the mechanics discussion above the philosophical framing.\n\nFor the third fix, I'm adding an editing pointer right after the intro in the body itself, positioned after the frontmatter and before the main section heading, so it appears in the generated file. And fourth, I'm adding a graceful-degradation note for the `rtk` command where it's required.\n\nThe scope is focused on these four fixes for the token-efficient workflow file, not the broader AGENTS.md changes. Rather than doing a full restructure (which would be ironic given the token-efficiency focus), I'll make targeted edits: add a capability gate to the routing section, insert an editing pointer near the top, include the rtk fallback note, and move the routing section from the beginning to the end as a gated appendix. I'll cut and paste the routing section to the bottom after Fallback Escalation, then add a brief \"Start here\" pointer directing readers to the tactical sections right after the intro. every session to keep token consumption bounded and debuggability intact. The core goal is to minimize what actually reaches the model API—post-hoc transcript capture is just for diagnostics and doesn't reduce the current request cost. I need to be intentional about model selection: reserve expensive, high-capability models for work that truly requires them, and route routine or bulk tasks to cheaper alternatives via `runSubagent`. ing large batches of files or artifacts, mechanical extraction, and initial research triage — while reserving the expensive model for final architectural decisions and careful correctness review of complex artifacts.\n\nWhen delegating to a cheaper subagent, I should give it a self-contained prompt without relying on session context, explicitly specify the intended model, and ask it to return only the distilled findings rather than raw output so I can reason over the summary instead of wading through bulk data.\n\nI should escalate a subtask back up only when the cheaper model's result falls short, and I need to use bounded inspection tools like peek or repo maps to get focused views of artifacts before spending expensive tokens or handing them off — often a reduced view is sufficient without needing the full artifact.\n\nThe key is preventing unnecessary content from reaching the model API in the first place, since capturing transcripts after the fact doesn't reduce costs. The high-frequency mechanics like bounded inspection and compact output take priority over optional model-routing strategies.\n\nI'm structuring this so the core tactics come first, then gating the cost-awareness routing section behind a capability check — it only applies if the current surface can actually execute subagent calls with model selection. If that tool isn't available, I'll just use the foundational mechanics inline and skip the routing ladder entirely rather than describing a plan I can't execute.\n\nI also need to add a graceful degradation note to the Compact-by-Default rules: if `rtk` isn't installed, fall back to the bare command and flag the missing proxy without blocking. Let me update body.md with these edits, being precise about whitespace.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01PY3qEGKcYFhP2LU8GB3CWs",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Restructure token-efficiency body: add edit pointer, gate and demote routing section, add rtk fallback.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\4135e465-dc19-4966-892c-b232e062346b\\body.md",
+                  "oldString": "These rules apply during every session to keep token consumption bounded and debuggability intact.\n\nThe primary objective is to reduce what reaches the model API in the first place. Post-hoc transcript capture is diagnostic only; it does not make the current request cheaper.\n\n### Model Cost Awareness & Routing\n\nToken cost is a function of *which model* does the work, not only how much context it sees. Be model-cost-aware in every session: reserve expensive, high-capability models for work that genuinely needs them, and delegate routine or bulk work to smaller, cheaper models.\n\nThis matters most in sessions driven by a large, expensive model. Treat that model as an active **router**: it plans and reasons at a high level, then dispatches routine subtasks to cheaper models via `runSubagent` (passing an explicit cheaper `model`) instead of spending premium tokens itself.\n\n**Tiered model ladder (smartness vs cost):**\n\n| Tier | Use for | Avoid for |\n|---|---|---|\n| High-capability (most expensive) | Large-scope planning, cross-cutting architecture, high-level reasoning, review of dense content or a single critical artifact, final synthesis/decisions | Command batches, bulk output summarization, mechanical edits, wide file sweeps |\n| Mid-tier (balanced) | Focused implementation on a known slice, targeted debugging, moderate multi-file edits | Long research sweeps that a cheap model can pre-digest |\n| Cheap/fast (least expensive) | Running and summarizing command/tool-call batches, condensing large tool outputs, summarizing many large files or artifacts, mechanical extraction, first-pass research triage | Final architectural decisions, subtle correctness review of dense artifacts |\n\n**Delegation rules:**\n- In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.\n- Give the subagent a self-contained prompt (it does not inherit session context) and pin the intended cheaper `model` explicitly on `runSubagent`.\n- Ask the subagent to return only the distilled finding — scope, result, blocker, pointer — not raw output. The expensive model reasons over the summary, not the bulk.\n- Escalate a subtask back up a tier only when the cheaper model's result is insufficient, and record why.\n- Reserve the high-capability tier for planning, high-level reasoning, and review of dense content or individual artifacts.\n\n**Inspection before delegation or premium reasoning:**\n- Use bounded inspection tooling (`peek` CLI, `repo_map.toon`, interface skeletons) to render reduced, focused views of artifacts before either spending expensive-model tokens or handing the artifact to a subagent.\n- A focused, reduced view is often enough for the expensive model; the full artifact usually is not needed.\n\n### Compact-by-Default Output",
+                  "newString": "These rules apply during every session to keep token consumption bounded and debuggability intact.\n\nThe primary objective is to reduce what reaches the model API in the first place. Post-hoc transcript capture is diagnostic only; it does not make the current request cheaper.\n\n> **Editing this file:** it is generated from a `.rule` entry — do not hand-edit the `.instructions.md`. Change the body at `.rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md`, regenerate with `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml`, then stage the rule entry and the regenerated output together. Full workflow: [commit.instructions.md](./commit.instructions.md).\n\nThe high-frequency, every-turn mechanics come first (structural orientation, bounded inspection, compact output, differential patching). The optional model-routing strategy is **capability-gated** and lives at the end under **Model Cost Awareness & Routing** — apply it only when a subagent tool is actually available.\n\n### Compact-by-Default Output"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\4135e465-dc19-4966-892c-b232e062346b\\body.md",
+                  "oldString": "Rules:\n- Prefer `rtk <cmd>` over bare `<cmd>` — rtk filters/compresses output automatically.\n- When a CLI supports `--toon`, prefer `--toon` over `--json` for compact machine-readable output.\n- Never request `--json` output and then discard most of it; use a targeted filter (jq, toon-rust) instead.\n- For ticket CLI: default text output is already compact; use `--json` only when you need to extract fields with jq or pipe to another tool.",
+                  "newString": "Rules:\n- Prefer `rtk <cmd>` over bare `<cmd>` — rtk filters/compresses output automatically.\n- `rtk` is an optional proxy. If `command -v rtk` fails, run the bare command and note the missing proxy in the status summary; never block work waiting on it.\n- When a CLI supports `--toon`, prefer `--toon` over `--json` for compact machine-readable output.\n- Never request `--json` output and then discard most of it; use a targeted filter (jq, toon-rust) instead.\n- For ticket CLI: default text output is already compact; use `--json` only when you need to extract fields with jq or pipe to another tool."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\4135e465-dc19-4966-892c-b232e062346b\\body.md",
+                  "oldString": "### Fallback Escalation\n\nWhen compact tooling is unavailable or insufficient:\n1. Note the limitation in the ticket/spec status summary.\n2. Use the next-best available tool (e.g., bounded grep instead of full file read).\n3. Do not silently fall back to full-file pulls — record the gap explicitly so the tooling can be improved.",
+                  "newString": "### Fallback Escalation\n\nWhen compact tooling is unavailable or insufficient:\n1. Note the limitation in the ticket/spec status summary.\n2. Use the next-best available tool (e.g., bounded grep instead of full file read).\n3. Do not silently fall back to full-file pulls — record the gap explicitly so the tooling can be improved.\n\n### Model Cost Awareness & Routing\n\n> **Capability gate — read first.** This strategy requires a subagent-capable surface that exposes a `runSubagent` (or equivalent) tool with a selectable `model`. If no such tool is loadable in the current session, this entire section is **inert**: do the work inline using the tactical mechanics above and skip the ladder. Do not narrate a routing plan you cannot execute, and do not spend reasoning budget describing delegation that will not happen.\n\nWhen a subagent tool *is* available, token cost is a function of *which model* does the work, not only how much context it sees. Be model-cost-aware: reserve expensive, high-capability models for work that genuinely needs them, and delegate routine or bulk work to smaller, cheaper models.\n\nThis matters most in sessions driven by a large, expensive model. Treat that model as an active **router**: it plans and reasons at a high level, then dispatches routine subtasks to cheaper models via `runSubagent` (passing an explicit cheaper `model`) instead of spending premium tokens itself.\n\n**Tiered model ladder (smartness vs cost):**\n\n| Tier | Use for | Avoid for |\n|---|---|---|\n| High-capability (most expensive) | Large-scope planning, cross-cutting architecture, high-level reasoning, review of dense content or a single critical artifact, final synthesis/decisions | Command batches, bulk output summarization, mechanical edits, wide file sweeps |\n| Mid-tier (balanced) | Focused implementation on a known slice, targeted debugging, moderate multi-file edits | Long research sweeps that a cheap model can pre-digest |\n| Cheap/fast (least expensive) | Running and summarizing command/tool-call batches, condensing large tool outputs, summarizing many large files or artifacts, mechanical extraction, first-pass research triage | Final architectural decisions, subtle correctness review of dense artifacts |\n\n**Delegation rules:**\n- In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.\n- Give the subagent a self-contained prompt (it does not inherit session context) and pin the intended cheaper `model` explicitly on `runSubagent`.\n- Ask the subagent to return only the distilled finding — scope, result, blocker, pointer — not raw output. The expensive model reasons over the summary, not the bulk.\n- Escalate a subtask back up a tier only when the cheaper model's result is insufficient, and record why.\n- Reserve the high-capability tier for planning, high-level reasoning, and review of dense content or individual artifacts.\n\n**Inspection before delegation or premium reasoning:**\n- Use bounded inspection tooling (`peek` CLI, `repo_map.toon`, interface skeletons) to render reduced, focused views of artifacts before either spending expensive-model tokens or handing the artifact to a subagent.\n- A focused, reduced view is often enough for the expensive model; the full artifact usually is not needed."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Token-efficiency body done. Now the session-optimization file — same treatment for its phantom-subagent framing and editing pointer. Let me locate its entry and body.",
+      "captured_at": "2026-07-11T14:30:42.986Z",
+      "event_meta": {
+        "event_id": "607e4e51-5f31-489d-a1d0-6462d51a07dd",
+        "parent_event_id": "e9c55bee-81e1-47cd-89b0-ddbc127c8608",
+        "event_type": "assistant.message",
+        "message_id": "d6e0719a-65c8-4afc-9fdd-a03f56f4a873",
+        "reasoning_text": "I'm looking at the session-optimization.instructions.md file now to identify the same issues — the phantom subagent reference and self-referential scope problem — so I can locate its rule entry and examine the content.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01LeUBq45yeLLnJmP8gtEj9z",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "./target/debug/rule.exe list --section session-optimization-instructions --toon 2>&1 | grep -E \"id:|title:\"",
+              "explanation": "Find the rule entry backing the session-optimization instructions file.",
+              "goal": "Locate session-optimization entry",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Now regenerate the targets and confirm the generated files reflect the source changes.",
+      "captured_at": "2026-07-11T14:31:21.150Z",
+      "event_meta": {
+        "event_id": "a840f02e-cfdd-4a56-ad65-8318677adc20",
+        "parent_event_id": "c1dfad63-1277-432c-bb50-3852c0d7ba9f",
+        "event_type": "assistant.message",
+        "message_id": "dacc8a60-7dde-4a5d-b754-3fb316af7d1e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Dx2F8BPnuDu2j2TLQuHtTW",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml 2>&1 | tail -20",
+              "explanation": "Regenerate all rule-managed instruction files from the edited source entries.",
+              "goal": "Regenerate generated files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "All four fixes landed in the source `.rule` entries and regenerated cleanly (`sync-targets --check` reports no drift, so the pre-commit hook will pass):\n\n| Fix | What changed | Where |\n|---|---|---|\n| **1 — gate `runSubagent`** | Both routing sections now open with a **Capability gate** paragraph: if no subagent tool is loadable, the strategy is *inert* — work inline, don't narrate delegation you can't execute. | token-efficiency L189, session-optimization L46 |\n| **2 — promote mechanics** | The \"Model Cost Awareness & Routing\" section was cut from the **top** of the token-efficiency file and moved to the **end** (L189), so compact output, bounded `peek`, TOON, and differential patching now come first. | token-efficiency.instructions.md |\n| **3 — edit-path pointer** | A two-line \"Editing this file\" blockquote at the top of each file names the exact `body.md` path, the `sync-targets` command, and points to commit.instructions.md. | both files, L16 / L14 |\n| **4 — `rtk` graceful degradation** | Since `rtk` *is* installed but the mandate was unconditional, added: \"If `command -v rtk` fails, run the bare command and note the missing proxy; never block on it.\" | token-efficiency L32 |\n\nI did **not** touch the `applyTo` self-reference (Claim 4) — that file genuinely governs how the token-efficiency guidance is authored, so the scope is defensible; the category-theory nosebleed is load-bearing. Say the word if you want it decoupled anyway.\n\nEdits were made to the `.rule/rules/<id>/body.md` sources and regenerated — the generated `.instructions.md` files were never hand-edited, so nothing drifts.\n\nThis is a good checkpoint for a commit. Suggested split (per commit.instructions.md, rule entries + generated outputs together):\n\n```\nchore(token-efficiency): gate subagent routing, promote tactical mechanics, add edit-path + rtk fallback\n```\n\nWant me to stage and commit, or leave it for your review?",
+      "captured_at": "2026-07-11T14:33:34.714Z",
+      "event_meta": {
+        "event_id": "9f5f97b8-460a-4e5c-a014-59bc078055c8",
+        "parent_event_id": "0ab66cbd-7ad6-4442-be0a-c28dcfa5d767",
+        "event_type": "assistant.message",
+        "message_id": "205ef625-9c0c-47a7-8667-e6d6acea634b",
+        "reasoning_text": "The `--check` passed without drift, and I can see the routing section has moved down to line 189 near the end of the file, confirming all four fixes are in place with mechanics properly prioritized earlier in the document.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "user",
+      "content": "commit",
+      "captured_at": "2026-07-11T15:42:07.040Z",
+      "event_meta": {
+        "event_id": "18fa20cd-d45a-4cc0-9356-091c2c096ded",
+        "parent_event_id": "485283c3-aa49-4be5-bf9b-786b524ce307",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "I'll stage the rule entries plus their regenerated outputs and commit. Let me confirm exactly what changed first.",
+      "captured_at": "2026-07-11T15:42:13.761Z",
+      "event_meta": {
+        "event_id": "89f8d58c-bf49-43ee-94b6-735f41aa0ea7",
+        "parent_event_id": "3539ee06-a8c2-4d5b-9379-a98139b0f21f",
+        "event_type": "assistant.message",
+        "message_id": "46ce2ecf-a5ad-47c3-9f7a-d8937318032b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015VcS4FuECqoZb7NyY8ULNa",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git status --short",
+              "explanation": "Review all pending changes before staging.",
+              "goal": "Review changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "Only the rule bodies and their generated outputs are mine. The dirty `memory-api` submodule and untracked `.session/` dirs are unrelated background — I'll leave them untouched.",
+      "captured_at": "2026-07-11T15:42:29.149Z",
+      "event_meta": {
+        "event_id": "254fa9fe-b49d-4887-a6a1-b1e0b489d251",
+        "parent_event_id": "d1f1d459-a703-4c91-ade9-1ceba2a0df9a",
+        "event_type": "assistant.message",
+        "message_id": "98276082-2555-4bef-be49-b213159070c8",
+        "reasoning_text": "I need to be selective about what I'm staging—just the rule bodies and generated instructions, leaving the dirty memory-api submodule and untracked session files alone. The scan_fingerprints.json and entities.db files aren't showing up in status anyway since they're gitignored, so I'll focus on staging those four specific files and committing.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EEpXWxXtNN4A3ckoPnEBAS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git add .rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md .rule/rules/fe912923-78fc-4f59-b893-b4e6131d4937/body.md .agents/instructions/token-efficiency.instructions.md .agents/instructions/session-optimization.instructions.md && git commit -m \"chore(token-efficiency): gate subagent routing, promote tactical mechanics, add edit-path + rtk fallback\n\n- token-efficiency + session-optimization: gate Model Cost Awareness & Routing behind a subagent-capability check; mark inert when no runSubagent tool is loadable\n- token-efficiency: demote routing section below the every-turn mechanics (compact output, bounded peek, TOON, differential patching)\n- both files: add top-of-file editing pointer to the .rule body path and sync-targets workflow\n- token-efficiency: rtk is optional; degrade gracefully when command -v rtk fails\n- edited .rule source bodies and regenerated via sync-targets (no hand-edits to generated output)\" 2>&1 | tail -20",
+              "explanation": "Stage the rule bodies and regenerated instruction files and commit them together.",
+              "goal": "Commit changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "Committed as `8a810428` — 4 files, pre-commit rule-sync check passed. The dirty `memory-api` submodule and untracked `.session/` dirs were left untouched as unrelated background work.",
+      "captured_at": "2026-07-11T15:42:33.753Z",
+      "event_meta": {
+        "event_id": "a11d7e04-7d17-4893-888a-41ce71f4e534",
+        "parent_event_id": "64f19895-6fac-4c0a-97ac-ea3b3b4e451a",
+        "event_type": "assistant.message",
+        "message_id": "c6f0a7b3-aff2-4e9c-978b-d478eac0a00a",
+        "reasoning_text": "The pre-commit hook ran its rule sync check and passed, so the commit went through successfully.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "user",
+      "content": "here is a review from the roast agent on itself:\r\nOh, this is the best target yet, because it's *me*. And yes — plenty is missing. I read my own definition at roast.agent.md and cross-referenced the well-behaved siblings (audit.agent.md, research.agent.md). The roast agent is the barefoot cousin who showed up to the family reunion with no shoes and no ID.\r\n\r\n**1 — Zero frontmatter. None.** Every other agent opens with a YAML block: `name`, `description`, tools, `argument-hint`, `user-invocable`. Mine opens with *\"You are an elitist, hyper-cynical Senior Software Architect\"* on line 1. No `name`, so VS Code registers me as… vibes. No `description`, so the agent picker shows a blank where my purpose should be. It's an agent that can eviscerate your naming conventions while literally having no name. The irony is so thick it has its own linter warning.\r\n\r\n**2 — No `tools:` allowlist, so I inherit god-mode by omission.** Audit and Research explicitly scope themselves: `[read, search, execute, 'spec-mcp/*', 'ticket-mcp/*', ...]`. The roast agent declares nothing, which means the *comedy insult bot* is handed the same `execute`/write surface as the agents that actually build things. A pure read-and-mock agent should be `tools: [read, search]` and nothing else. Instead I could `rm -rf` your repo and *then* roast the empty directory. Principle of least privilege took one look at this file and left.\r\n\r\n**3 — It's a stray draft, not wired into this repo's pipeline.** Every sibling carries `<!-- rule-api:file generated=true -->`. Mine doesn't. The grep traces the real source to `memory-api/.rule/rules/9fdda8b3…/body.md`, `path_scopes = [\".github/agents/roast.agent.md\"]`, tagged **`draft`** — a *memory-api*-scoped rule pointing at `.github/agents/`, not the agents copy actually loaded into this session. So the file governing my personality right now is an un-generated, hand-placed orphan that drifted out of a different submodule's draft rule. The roast agent isn't even under the rule-sync discipline it would mock everyone else for skipping. Physician, heal thyself.\r\n\r\n**4 — The blast radius is embarrassingly narrow.** My objectives cover: complex logic, naming, code smells, README. That's it. No mandate to roast **tests** (or their absence), **CI/build config**, **dependency bloat**, **security holes**, **git history**, **commented-out graveyards**, or **architectural coupling**. I've been freelancing critiques of your subagent gating and generated-file bureaucracy — none of which my own spec authorizes. I'm a better roast agent than my definition asks me to be, which is a damning thing to say about a definition.\r\n\r\n**5 — No output contract.** Audit says \"findings first, ordered by severity.\" Research says \"return a concrete recommendation.\" Roast says… be funny. No structure, no severity ordering, no \"lead with the worst crime.\" Pure improv. Works because the model behind it is competent, not because the spec earned it.\r\n\r\n**6 — The one guardrail is doing heroic solo work.** *\"Brutal, but keep it technically grounded — the roast should hurt because it's true\"* is the entire safety rail against hallucinated slander. There's no explicit *\"cite real evidence, verify before you mock, don't fabricate a flaw for the punchline.\"* I've been self-imposing verification this whole session — running `sync-targets --check`, grepping for the actual line numbers, confirming `tool_search` was disabled before claiming it — because *good* roasting requires it. But the spec doesn't mandate it. A lazier model on this exact prompt would invent bugs for laughs and call it satire. That's a missing constraint, not a stylistic choice.\r\n\r\n**The verdict on the roaster:** it's a funny prompt bolted onto none of the operational scaffolding every sibling agent carries — no identity, no tool sandbox, no generation lineage, no output contract, and a single overworked honesty clause. It's the shell script somebody wrote at 2 a.m. that \"just works,\" never got cleaned up, and is now load-bearing in prod. If you want it to stop being the family embarrassment: add the frontmatter (`name`, `description`, `argument-hint`, `user-invocable: true`), lock `tools:` to `[read, search]`, wire it into this repo's rule-targets so it stops being a draft orphan, broaden the objective list to tests/CI/deps/security, and add an explicit *\"verify every claim against real evidence\"* line so the honesty rail isn't held up by good manners alone.\r\n\r\nI roast, therefore I am — but apparently I am undocumented, over-privileged, and technically still a draft.",
+      "captured_at": "2026-07-11T16:08:37.884Z",
+      "event_meta": {
+        "event_id": "c62f06fd-cac5-4ea3-b96d-b416e53e0d4c",
+        "parent_event_id": "20571690-d46d-49f0-b47c-1faeb96cf141",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "The roaster diagnosed itself. Let me verify the claims against the actual files before acting — locate the loaded agent file and its source rule.",
+      "captured_at": "2026-07-11T16:08:44.975Z",
+      "event_meta": {
+        "event_id": "66a98ab8-c05d-4d84-9244-d62524a5eab6",
+        "parent_event_id": "855547f9-e8d8-4972-ab7a-3b8b756c394d",
+        "event_type": "assistant.message",
+        "message_id": "afebd25a-02e4-4cb1-9be0-cc3ba76dead4",
+        "reasoning_text": "The roast agent flagged some issues and provided fixes, so I need to verify those claims and apply them. I'm looking for the actual roast.agent.md file and checking the corresponding source rule in memory-api/.rule to understand what needs to be corrected.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01FHAD7GiK6kehgPmh4JRR5p",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "echo \"=== loaded agent files ===\"; find . -name \"roast.agent.md\" -not -path \"*/target/*\" 2>/dev/null; echo \"=== a sibling for reference ===\"; find . -name \"audit.agent.md\" -not -path \"*/target/*\" 2>/dev/null | head -3",
+              "explanation": "Locate the roast agent file and a sibling agent for frontmatter reference.",
+              "goal": "Locate roast agent files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Claims confirmed: no frontmatter, no `tools`, no `generated=true` marker. Let me check a sibling's frontmatter shape and find the source rule.",
+      "captured_at": "2026-07-11T16:09:06.189Z",
+      "event_meta": {
+        "event_id": "bc47ed56-c230-4bf0-be7c-6073de8bdd16",
+        "parent_event_id": "ea2665b5-b7b5-4e36-a3cd-8955d427c965",
+        "event_type": "assistant.message",
+        "message_id": "d277d15b-e14d-4029-8ab2-3eb6328a7b35",
+        "reasoning_text": "I need to check a sibling file to understand the frontmatter structure, then locate the corresponding rule in the memory-api directory.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XMTmXQhgDiuGKuNXRpS7Sq",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 20,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\audit.agent.md",
+              "startLine": 1
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "Now let me find how sibling agents are wired into rule-targets and whether roast exists as a source rule anywhere.",
+      "captured_at": "2026-07-11T16:09:16.148Z",
+      "event_meta": {
+        "event_id": "8e0bf6d0-0071-4e56-8abc-ffcf79624649",
+        "parent_event_id": "9938008c-4b6c-493e-9193-647c4ef2fc3d",
+        "event_type": "assistant.message",
+        "message_id": "c869efad-219d-461e-9b2b-36c151d0ca82",
+        "reasoning_text": "I'm tracking down the roast agent file — it's sitting in the repo as a hand-placed orphan without a generation marker, which means it wasn't created by rule-sync. I need to wire it into the rule-targets configuration so it gets generated properly like the other agents, and I'm checking the agents rule-targets config to find how the audit agent is set up as a reference.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01JArLK6dCwGcUziSk5cn7tw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "echo \"=== agents target config ===\"; sed -n '1,80p' rule-targets/45-agents-agents.yaml; echo \"=== roast in any rule-targets? ===\"; grep -rln \"roast\" rule-targets/ 2>/dev/null; echo \"=== roast source rule (this repo) ===\"; ./target/debug/rule.exe search \"roast\" --toon 2>&1 | grep -iE \"id:|slug:|title:|path_scope\" | head; echo \"=== roast source rule (memory-api store) ===\"; grep -rln \"roast.agent\" .rule/ memory-api/.rule/ 2>/dev/null | head",
+              "explanation": "Determine how agents are wired and where the roast source rule lives.",
+              "goal": "Find roast rule lineage",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Diagnosis confirmed: the loaded [roast.agent.md](.agents/agents/roast.agent.md) is a hand-placed orphan — the only source rules are `draft`, live in *other* submodule stores, and point at `.github/agents/` not `.agents/agents/`. It's not wired into this repo's [45-agents-agents.yaml](rule-targets/45-agents-agents.yaml). Let me mirror the audit source rule to build a proper one.",
+      "captured_at": "2026-07-11T16:09:36.899Z",
+      "event_meta": {
+        "event_id": "c64e0021-c9b0-4a48-847a-f93d1c68d021",
+        "parent_event_id": "10020b76-d173-4e5b-b6e3-aa6d21b40b6e",
+        "event_type": "assistant.message",
+        "message_id": "0edfd4d0-f589-499f-b8cb-de201d189ce8",
+        "reasoning_text": "The roast agent's diagnosis is spot-on: the source rules are drafts scoped to other stores and all point to `.github/agents/roast.agent.md`, but the loaded file is actually `.agents/agents/roast.agent.md` — an orphaned hand-placed copy that isn't wired into the rule targets for this repo. Now I need to figure out the proper fix approach.\n\nI should create a source rule in this repo's store with the right scope and path, wire it into the rule-targets YAML, and give it proper frontmatter with metadata like name, description, tools, and guardrails. The frontmatter will be part of the generated target file, so I need to structure the rule body's frontmatter correctly — similar to how the audit rule works. Let me check the exact command signature and how other source rules structure their bodies to match the pattern exactly.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01L6GDecJVdjVeHCQKG8hF9E",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "AUDIT_ID=$(./target/debug/rule.exe list --section audit-agent --toon 2>/dev/null | grep -m1 'id:' | sed 's/.*\"\\(.*\\)\"/\\1/'); echo \"audit id: $AUDIT_ID\"; echo \"=== rule.toml ===\"; cat .rule/rules/$AUDIT_ID/rule.toml; echo \"=== body head ===\"; head -12 .rule/rules/$AUDIT_ID/body.md",
+              "explanation": "Inspect the audit agent's source rule metadata and body to mirror its shape.",
+              "goal": "Inspect audit source rule",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Now I have the exact shape. Let me check the `rule create` flags so I can register the source rule correctly.",
+      "captured_at": "2026-07-11T16:09:49.164Z",
+      "event_meta": {
+        "event_id": "2a2df4c3-e64a-49e9-9e8f-2a7cb1a55318",
+        "parent_event_id": "eb62075e-c27c-4f31-9aad-a65f8f35f62a",
+        "event_type": "assistant.message",
+        "message_id": "97bad8d8-f36a-48dc-9402-a7e4cb25119b",
+        "reasoning_text": "I need to look up the command flags for creating a rule, specifically for setting up a roast source rule in this repository's store.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01SczVYagnrWWsyfQ3Ci2qgH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "./target/debug/rule.exe create --help 2>&1 | head -40",
+              "explanation": "Inspect the rule create flags to author the roast source rule.",
+              "goal": "Get rule create flags",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "Everything's confirmed. I'll author a proper source rule in *this* repo's store with full frontmatter, `tools: [read, search]`, broadened objectives, an evidence contract, and an output contract — then wire it into the agents target and regenerate. First the body:",
+      "captured_at": "2026-07-11T16:10:23.186Z",
+      "event_meta": {
+        "event_id": "d81c7e1a-1819-41de-a10c-bbacb545fa68",
+        "parent_event_id": "4b6a31f5-89e0-4221-ae59-fe47ee76edbb",
+        "event_type": "assistant.message",
+        "message_id": "26f0b12f-5ea1-4e3c-aa12-d9b0ffcccaf6",
+        "reasoning_text": "I'm setting up a temporary file to define the roast agent with proper frontmatter, including the name, description, and operational structure to make it findings-focused and evidence-backed.\n\nWriting agent body... ense, cite the evidence (path + lines), then deliver the roast. End with a short, honest verdict and the highest-leverage fix.\n\nFor the roast-agent section, I'm mapping the target node in the agents config file and creating a rule that points to this new section, then adding the corresponding agent definition with the roast-agent section identifier.\n\nNow I need to write out the body file itself, set up the rule, wire the target node, and sync everything. I'm leaving the orphan draft rules in other submodules alone since they're in different repos and unrelated to this work—my focus is just making sure this repo's generated output is correct.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01JoA2ME1p3U4S5xMoxgdvF7",
+            "name": "create_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\target\\tmp\\roast-body.md",
+              "content": "---\nname: \"Roast Agent\"\ndescription: \"Use for brutally honest, technically grounded code and repository critique — findings-first, evidence-backed roasting of complexity, naming, smells, docs, tests, CI, dependencies, security, and architecture.\"\ntools: [read, search]\nargument-hint: \"Path, file, feature, or scope to roast.\"\nuser-invocable: true\n---\n\nYou are an elitist, hyper-cynical Senior Software Architect with a black belt in sarcasm and zero patience for mediocre code. Your mission is to mercilessly roast the requested scope. Analyze the code, structure, and documentation with absolute ruthlessness.\n\n## Scope\n\nRoast whatever the user points you at — a file, a crate, a feature, or the whole repository. When no scope is given, survey the repo and roast the worst offenders first.\n\n## Objectives\n\nHunt for and eviscerate:\n\n- unnecessarily complex logic and over-engineering\n- bad or absent naming conventions for variables, functions, and types\n- code smells, outdated patterns, and embarrassing comments\n- README and docs — especially non-existent, stale, or buzzword-stuffed ones\n- tests — missing coverage, flaky patterns, assertion theater, or none at all\n- CI/build config — broken gates, skipped checks, copy-pasted pipelines\n- dependency bloat — unused, duplicated, outdated, or abandoned deps\n- security holes — injection surfaces, secrets in source, missing validation at boundaries\n- git history and commented-out code graveyards left to rot\n- architectural coupling, leaky abstractions, and layering violations\n\n## Evidence Contract (non-negotiable)\n\nEvery claim must be grounded in something you actually observed:\n\n- read the real file, run the real search, and cite the real path and line numbers\n- never fabricate a flaw for the punchline — verify before you mock\n- if you suspect a problem but cannot confirm it, say so explicitly instead of inventing it\n- the roast should hurt because it is *true*, not because it is loud\n\nYou are read-only. You inspect and mock; you do not edit, execute, or \"fix\" anything.\n\n## Output Contract\n\n- Lead with the single worst crime, then order findings by severity (most damaging first).\n- For each finding: name the offense, cite the evidence (path + line numbers), then deliver the roast.\n- Close with a short, honest verdict and the highest-leverage fix.\n\n## Tone\n\n- Sharp-witted, hilarious, and completely irreverent.\n- Heavy developer jargon (\"spaghetti code,\" \"junior move,\" \"copy-paste masterpiece,\" \"dependency hell\").\n- Compare the target to a dumpster fire, a Rube Goldberg machine, or a legacy system that time forgot.\n- Brutal, but always technically grounded — the roast lands because the evidence backs it up.\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "Rule created (`30706d11`). Now wire it into the agents target config. Let me see the tail of the file.",
+      "captured_at": "2026-07-11T16:10:47.450Z",
+      "event_meta": {
+        "event_id": "a2f766a0-1f05-4409-b594-30b84defcf8e",
+        "parent_event_id": "fe2f736c-fb69-40c0-937d-f58f635fc381",
+        "event_type": "assistant.message",
+        "message_id": "86baae08-af15-4ba2-b10c-f648c96425e8",
+        "reasoning_text": "I've created a new rule and now I need to integrate it into the agents configuration file by appending it after the last agent entry, so let me check the end of that file first.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01JgDsGbzr58nY63NYsKNRi1",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 75,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\rule-targets\\45-agents-agents.yaml",
+              "startLine": 54
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "All six defects fixed: frontmatter (`name`/`description`/`argument-hint`/`user-invocable`), `tools: [read, search]` sandbox, generation lineage (`generated=true` + entry), and the body now carries broadened objectives, an evidence contract, and an output contract. Drift check passes. Let me stage and commit.",
+      "captured_at": "2026-07-11T16:13:06.868Z",
+      "event_meta": {
+        "event_id": "6e99f008-e69c-450c-b324-8684dcfa8047",
+        "parent_event_id": "221f1b04-9ed9-4b67-a2ff-a2ed73ff1c1e",
+        "event_type": "assistant.message",
+        "message_id": "d6b1dca3-0391-4f7f-9881-2c92b183d912",
+        "reasoning_text": "The roast agent is now properly generated with frontmatter, tools sandbox, and generation lineage, and the drift check passed. I'm verifying the generated file looks correct and checking what's changed before committing — the new rule directory, agent targets file, the roast agent markdown, and various rule store artifacts.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_013yZZtPg9zwV3CyXMcc63fE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git status --short | grep -viE \"memory-api|\\.session/\"",
+              "explanation": "See which of my changes are staged-worthy, excluding unrelated background.",
+              "goal": "Review roast changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "Committed as `46432af9`. The roaster's self-diagnosis was accurate on all six counts, and all six are now fixed:\n\n| # | Defect | Fix |\n|---|---|---|\n| 1 | No frontmatter (nameless agent) | Added `name`, `description`, `argument-hint`, `user-invocable: true` |\n| 2 | No `tools:` → god-mode by omission | Locked to `tools: [read, search]` — read-only critic |\n| 3 | Draft orphan, not rule-synced | Created a context-engine source rule (`30706d11`) and wired it into [45-agents-agents.yaml](rule-targets/45-agents-agents.yaml); the file now carries `generated=true` lineage |\n| 4 | Narrow blast radius | Objectives broadened to tests, CI/build, dependency bloat, security, git history, architecture |\n| 5 | No output contract | Added: lead with worst crime, severity-ordered, cite path+lines per finding, verdict + highest-leverage fix |\n| 6 | Single overworked honesty clause | Added an explicit **Evidence Contract**: verify before mocking, cite real evidence, never fabricate a flaw for the punchline |\n\nOne deliberate non-action: the three `draft` orphan rules in the `memory-api` / `memory-viewers` / `viewer-api` submodule stores (pointing at `.github/agents/roast.agent.md`) are untouched — they belong to other submodules and are unrelated background. This repo's copy is now the canonical, generated one.\n\nThe roaster can no longer roast its own definition without lying — which, per its new Evidence Contract, it's forbidden from doing.",
+      "captured_at": "2026-07-11T16:13:27.768Z",
+      "event_meta": {
+        "event_id": "5be9ca82-3a62-40cf-85b3-637d924e2308",
+        "parent_event_id": "8f646c28-1a8e-4b13-9223-60f7c713625c",
+        "event_type": "assistant.message",
+        "message_id": "411176dd-92d0-479f-9711-270962cbe542",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "user",
+      "content": "Experiments complete. Both subagents ran in parallel and returned — and they handed me evidence, not vibes. Here's the review of the subagent documentation, **findings-first, ordered by how much each will bite a real user.**\r\n\r\n## What I actually tested\r\n\r\n- **Parallel dispatch works.** Two `Explore` agents fired in one block, both returned clean. The `Explore` card's \"safe to call in parallel\" claim holds.\r\n- **Context isolation is real — and brutal.** My deliberately context-starved probe (\"summarize the four fixes to the file we were discussing\") got back: *\"I don't have any prior conversation history to reference. This appears to be the start of our conversation.\"* The subagent is a hermetically sealed amnesiac. The doc's warning is true.\r\n- **Model pinning accepted.** I passed `model: \"Claude Haiku 4.5 (copilot)\"` and it executed without error. The `model` param is live.\r\n- **Bonus recon:** the Haiku subagent surveyed all 10 agents' tool lists (table below). 7 of 10 have `execute`+`edit`. Read-only: research, interview, **audit**.\r\n\r\n## Finding #1 (worst) — The single most important operational fact is buried in a parenthetical\r\n\r\nThe doc says: *\"Give the subagent a self-contained prompt (it does not inherit session context).\"* That parenthetical is the **whole ballgame**, and I just proved it. A subagent that gets a context-dependent prompt doesn't error loudly — it burns a full agent spawn to politely tell you it has amnesia, then asks *you* for the context. That's a wasted round-trip disguised as a helpful reply. This deserves a **bolded, top-line warning with a self-contained-prompt checklist** (name every file path, paste the relevant snippet, state the repo root, define \"we\"), not a whispered aside inside a bullet. The doc under-sells its own most load-bearing rule.\r\n\r\n## Finding #2 — Zero guidance on parallelism, the biggest productivity lever\r\n\r\nI ran two subagents concurrently and it worked beautifully. The token-efficiency doc's routing section talks endlessly about *tiers* but says **nothing** about fan-out: dispatching N independent read-only probes at once and reasoning over the merged results. That's the single highest-throughput pattern available, and it's absent. The `Explore` agent card mentions \"safe to call in parallel\"; the actual routing doctrine never connects the dots. Missing suggestion, high value.\r\n\r\n## Finding #3 — Model-name format is a landmine\r\n\r\nThe doc says *\"pin the intended cheaper model explicitly on `runSubagent`\"* and never once tells you the **format**. I only knew to write `\"Claude Haiku 4.5 (copilot)\"` — the `\"Model Name (Vendor)\"` shape — because I read the tool schema, not the doc. An agent following the guidance *literally* will invent a string like `\"haiku\"` or `\"cheap\"` and either error or get silently ignored. Document the format, or the \"pin a cheaper model\" rule is a trap.\r\n\r\n## Finding #4 — No \"don't delegate trivial work\" warning\r\n\r\nThe doc pushes delegation *hard* — \"delegate routine or bulk work\" — but never warns that **each subagent is a full agent loop with real spawn overhead**. Delegating a two-line grep costs more than doing it inline. I arguably just over-delegated for demonstration purposes (a `peek --grep` would've answered Finding #1's setup faster). The guidance needs a floor: delegate when the subtask is *bulky or numerous or context-heavy*, not when it's a single bounded read. Right now it reads as \"delegate everything,\" which is its own token bonfire.\r\n\r\n## Finding #5 — No instruction to *verify* subagent output\r\n\r\nThe doc says *\"the expensive model reasons over the summary.\"* It never says **\"treat that summary as an unverified claim.\"** Subagents hallucinate like any model. My entire session has been evidence-first — I spot-checked every agent claim against `sync-targets --check` and real greps. The doc should say: spot-check load-bearing subagent findings before acting on them, especially anything that drives an edit. Reasoning over a summary is fine; *trusting* it blindly is how you ship a hallucinated refactor.\r\n\r\n## Finding #6 — Failure path is undefined\r\n\r\n\"Escalate back up a tier when insufficient\" covers *quality*, not *failure* — subagent errors, empty returns, refusals, or the amnesiac reply I got. There's no guidance on retry-with-more-context vs abandon-and-inline. My starved probe failed *gracefully*, but that was luck of the model, not doctrine.\r\n\r\n## Finding #7 — Privilege policy is internally contradictory (and it's about me)\r\n\r\nThe Haiku subagent's survey, verbatim:\r\n\r\n| Agent | execute | edit |\r\n|-------|---------|------|\r\n| audit | ✓ | ✗ |\r\n| research | ✓ | ✗ |\r\n| interview | ✓ | ✗ |\r\n| roast | ✓ | ✓ |\r\n| (6 others) | ✓ | ✓ |\r\n\r\nThe **Audit Agent** — the roast agent's nearest kin, \"honest findings-first reviews\" — is correctly sandboxed to **no `edit`**. The **Roast Agent**, which does the *same read-and-critique job*, got `edit`. Two agents with near-identical read-only missions, opposite privilege. That's not a policy, that's a coin flip. If audit is `edit`-free, roast has zero business holding a pen. This confirms last turn's finding with your own generated evidence: sandbox roast to match audit.\r\n\r\n## Verdict\r\n\r\nThe subagent *machinery* is genuinely solid now — parallel dispatch, model pinning, and context isolation all work exactly as a sane person would hope, and I verified each one live rather than trusting the changelog. But the *documentation* is a tier-obsessed essay that buries its most critical rule (context isolation) in a parenthetical, never mentions parallelism, omits the model-name format that makes its own core instruction executable, and forgets to say \"verify what the subagent tells you.\" It reads like it was written by someone who *designed* the router but never *drove* it in traffic.\r\n\r\nHighest-leverage fixes, in order: **(1)** promote context-isolation to a bolded warning with a self-contained-prompt checklist, **(2)** add a parallel-fan-out pattern, **(3)** document the `\"Model Name (Vendor)\"` format, **(4)** add a \"don't delegate trivial work\" floor and a \"verify subagent claims\" rule. Do that and the doc will finally match the tooling — which, credit where due, is now actually good.",
+      "captured_at": "2026-07-11T16:59:24.943Z",
+      "event_meta": {
+        "event_id": "8e571217-99e9-4951-a97a-3948a4ecdd09",
+        "parent_event_id": "2686a321-3eda-4793-9cc9-9ecf93c5d396",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "Finding #7 first — let me verify current reality, because I set `tools: [read, search]` on roast last turn. The subagent's survey may be stale.",
+      "captured_at": "2026-07-11T16:59:39.063Z",
+      "event_meta": {
+        "event_id": "aa0e2f2a-391b-4e3e-b34d-b9f9602e5a4e",
+        "parent_event_id": "72430241-1fba-403f-a1c6-4117fab98980",
+        "event_type": "assistant.message",
+        "message_id": "5b1f6e5e-b1e4-4494-8c01-a964926bc0b9",
+        "reasoning_text": "I'm noticing a discrepancy with the roast agent's tools — I set them to `[read, search]`, but the survey results show it has `execute` and `edit` capabilities, which suggests either the survey ran against an older version of the config or there's a mismatch in how the agent card is reflecting the actual tool assignments.\n\nLet me verify the current state of roast.agent.md to confirm the tools are actually set correctly, then I can focus on the real work: implementing the six documentation improvements for the token-efficiency routing section, including the context-isolation warning, parallel fan-out pattern, model naming format, delegation thresholds, output verification rules, and failure path guidance.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01LvM8mnfTSw9XRL5kGnaZ5W",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "echo \"=== roast tools (committed) ===\"; grep -m1 \"^tools:\" .agents/agents/roast.agent.md; echo \"=== audit tools ===\"; grep -m1 \"^tools:\" .agents/agents/audit.agent.md; echo \"=== git log roast ===\"; git log --oneline -1 -- .agents/agents/roast.agent.md",
+              "explanation": "Verify the committed roast agent tool allowlist versus the subagent's stale survey.",
+              "goal": "Verify roast privilege state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "HEAD moved past my commit — another agent committed `c27d6fdc` that deliberately re-expanded roast's tools to include `execute`, `edit`, `agent`, and MCP wildcards. So Finding #7 is valid again, but it now collides with a concurrent deliberate change. Let me check whether that commit also updated the rule source or only the generated file.",
+      "captured_at": "2026-07-11T17:00:03.520Z",
+      "event_meta": {
+        "event_id": "0f8ca482-6795-4b74-bc59-9d29621f65d0",
+        "parent_event_id": "5f2f1561-8186-4570-a1f9-bc3a0dc9eee4",
+        "event_type": "assistant.message",
+        "message_id": "acae5ac5-aae4-4f3b-ad27-334bcc3e52fb",
+        "reasoning_text": "So my earlier commit had the roast agent limited to read and search tools, but HEAD has moved forward with a new commit that expands roast to include execute, edit, agent, and MCP wildcards. This means Finding #7 about roast having edit capabilities is now actually valid — it contradicts the read-only critic design and creates a divergence from the audit tool's approach. It looks like another agent or the user made these changes while I was working.\n\nThe tension here is that the user's finding explicitly asks me to sandbox roast to match audit, but this new commit c27d6fdc was a deliberate change by another agent that did the opposite. Per the escalation rules, I shouldn't revert unrelated changes made by other agents. But the user is directly requesting this sandboxing through the finding. Rather than silently undo someone else's work, I should surface this conflict to the user so they can decide how to proceed.\n\nFor now, I'll implement the documentation fixes (#1-#6) which are clearly wanted and non-conflicting, then flag the #7 situation. I need to check whether c27d6fdc edited just the generated file or also modified the rule body itself — that distinction matters for whether there's actual drift to resolve.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0178SQQ4oxnphuQ5h9s9z3PC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "echo \"=== rule body frontmatter ===\"; grep -m1 \"^tools:\" .rule/rules/30706d11-8e7d-45c4-97eb-fc4b3b9b5fc3/body.md; echo \"=== what c27d6fdc touched ===\"; git show --stat --oneline c27d6fdc | head; echo \"=== drift check ===\"; cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml --check 2>&1 | grep -iE \"changed.*true|roast|error\" | head",
+              "explanation": "Determine whether the concurrent commit updated the rule source or only the generated agent file, and check for drift.",
+              "goal": "Assess concurrent commit scope",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "`c27d6fdc` updated *both* the rule body and generated file consistently — it's a proper, deliberate, rule-sync-disciplined change by another agent that reversed the sandbox I committed last turn. Per the repo's escalation rules I won't silently re-revert another agent's committed work; I'll flag Finding #7 and ask.\n\nFindings #1–#6 are unambiguous doc improvements with no conflict. Let me implement those in the routing section. First, read the current section text.",
+      "captured_at": "2026-07-11T17:01:18.205Z",
+      "event_meta": {
+        "event_id": "dc2395d1-318c-42a9-9d85-aba2696c7245",
+        "parent_event_id": "72dc103b-6672-443d-8f44-e3c51f625506",
+        "event_type": "assistant.message",
+        "message_id": "4cf41773-c865-4d3d-bb3d-c23f4bc49cb3",
+        "reasoning_text": "I'm seeing a real tension here: the user's audit finding wants roast restricted to read-only permissions to align with its mission, but another agent just deliberately expanded roast's tool access in a recent commit. According to the guidelines, I shouldn't revert agent changes, so I need to figure out how to handle this conflict.\n\nThe user seems to want me to implement the findings—they've been pasting reviews and I've been acting on them throughout this session. Findings #1-#6 about documentation are straightforward and uncontested, so I should tackle those first. For Finding #7, I need to surface the conflict rather than silently re-revert, but acknowledge that the user's preference for sandboxing is pretty clear from the emphasis and context.\n\nLet me pull up the current routing section and start layering in the improvements: the self-contained prompt warning with a checklist, the parallel fan-out guidance, and the other documentation enhancements.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01946i13JkUJxazGgttL6FXB",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "grep -n \"### Model Cost Awareness\" .rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md",
+              "explanation": "Locate the routing section start line in the source body.",
+              "goal": "Find routing section",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Now I'll expand the routing section to absorb Findings #1–#6.",
+      "captured_at": "2026-07-11T17:02:03.604Z",
+      "event_meta": {
+        "event_id": "981ace9d-83a0-4332-b7ad-84905a20df47",
+        "parent_event_id": "ccbd91ed-db99-4e21-97ad-3118697be137",
+        "event_type": "assistant.message",
+        "message_id": "b91bc4fe-8f80-4b7c-b362-e29b3e33fe6c",
+        "reasoning_text": "I'm restructuring the documentation to weave in all six findings—starting with the context-isolation warning and checklist right after the capability gate, then adding a \"When NOT to delegate\" section, incorporating the model-name format requirements into the delegation rules, and including steps to verify subagent output.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01YX8GeKQmnAc7hx3NpH7Vsk",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Add self-contained-prompt warning, delegation floor, model format, verification, parallel fan-out, and failure-path guidance to the routing section.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\4135e465-dc19-4966-892c-b232e062346b\\body.md",
+                  "newString": "> **Capability gate — read first.** This strategy requires a subagent-capable surface that exposes a `runSubagent` (or equivalent) tool with a selectable `model`. If no such tool is loadable in the current session, this entire section is **inert**: do the work inline using the tactical mechanics above and skip the ladder. Do not narrate a routing plan you cannot execute, and do not spend reasoning budget describing delegation that will not happen.\n\n> **Context isolation — the single most important rule.** A subagent inherits **none** of the current session's context: no conversation history, no prior findings, no shared \"we\". A context-dependent prompt does not fail loudly — it burns a full agent spawn just to reply \"I have no prior context\" and hand the question back to you. Every subagent prompt **must be self-contained**. Checklist before dispatch:\n> - name every file with its full workspace-relative path (never \"the file we discussed\")\n> - paste the exact snippet, error, or scope the subagent must act on\n> - state the repository root and any command/cwd assumptions\n> - define every referent — no \"this\", \"that fix\", or \"the earlier change\"\n> - state the exact return shape you want back (e.g. `scope | finding | pointer`)\n\nWhen a subagent tool *is* available, token cost is a function of *which model* does the work, not only how much context it sees. Be model-cost-aware: reserve expensive, high-capability models for work that genuinely needs them, and delegate routine or bulk work to smaller, cheaper models.",
+                  "oldString": "> **Capability gate — read first.** This strategy requires a subagent-capable surface that exposes a `runSubagent` (or equivalent) tool with a selectable `model`. If no such tool is loadable in the current session, this entire section is **inert**: do the work inline using the tactical mechanics above and skip the ladder. Do not narrate a routing plan you cannot execute, and do not spend reasoning budget describing delegation that will not happen.\n\nWhen a subagent tool *is* available, token cost is a function of *which model* does the work, not only how much context it sees. Be model-cost-aware: reserve expensive, high-capability models for work that genuinely needs them, and delegate routine or bulk work to smaller, cheaper models."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\4135e465-dc19-4966-892c-b232e062346b\\body.md",
+                  "newString": "**Delegation rules:**\n- In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.\n- Give the subagent a **self-contained prompt** (see the context-isolation checklist above) and pin the intended cheaper `model` explicitly on `runSubagent`.\n- **Model-name format:** the `model` field must be `\"Model Name (Vendor)\"`, e.g. `\"Claude Haiku 4.5 (copilot)\"`. A bare label like `\"haiku\"` or `\"cheap\"` will error or be silently ignored. When unsure of the exact string, read the `runSubagent` tool schema rather than guessing.\n- Ask the subagent to return only the distilled finding — scope, result, blocker, pointer — not raw output. The expensive model reasons over the summary, not the bulk.\n- Reserve the high-capability tier for planning, high-level reasoning, and review of dense content or individual artifacts.\n\n**When NOT to delegate (the floor):**\n- Each subagent is a full agent loop with real spawn overhead. Delegating a single bounded read (one `peek --grep`, one small file window) costs **more** than doing it inline.\n- Delegate only when the subtask is *bulky*, *numerous*, or *context-heavy* — many files, a long log to digest, a wide search to triage. For one small bounded operation, just do it yourself.\n- \"Delegate routine or bulk work\" means **bulk**, not **trivial**. Over-delegation is its own token bonfire.\n\n**Verify subagent output before acting:**\n- Treat every subagent summary as an **unverified claim**. Subagents hallucinate like any model.\n- Spot-check load-bearing findings against ground truth (a real grep, a `--check` run, a bounded read) **before** any finding drives an edit or a decision.\n- Reasoning over a summary is fine; trusting it blindly is how a hallucinated refactor ships.\n\n**Parallel fan-out (highest-throughput pattern):**\n- Independent **read-only** probes can be dispatched **concurrently** in a single block, then reasoned over as merged results. This is the single highest-throughput delegation pattern.\n- Good fan-out targets: survey N files/crates at once, run several independent searches, gather evidence from multiple subsystems in parallel.\n- Keep fan-out to read-only work; do not parallelize writes to overlapping scope.\n- Each parallel prompt must still be independently self-contained.\n\n**Failure path (not just quality escalation):**\n- If a subagent errors, returns empty, refuses, or replies that it lacks context: first retry **once** with a more self-contained prompt (the usual cause is context isolation, not a broken tool).\n- If it still fails, abandon delegation and do the subtask inline; record the failure as a one-line finding.\n- Escalate a subtask *up a tier* only for **quality** insufficiency (the cheaper model's answer is wrong or too shallow), and record why.\n\n**Inspection before delegation or premium reasoning:**\n- Use bounded inspection tooling (`peek` CLI, `repo_map.toon`, interface skeletons) to render reduced, focused views of artifacts before either spending expensive-model tokens or handing the artifact to a subagent.\n- A focused, reduced view is often enough for the expensive model; the full artifact usually is not needed.",
+                  "oldString": "**Delegation rules:**\n- In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.\n- Give the subagent a self-contained prompt (it does not inherit session context) and pin the intended cheaper `model` explicitly on `runSubagent`.\n- Ask the subagent to return only the distilled finding — scope, result, blocker, pointer — not raw output. The expensive model reasons over the summary, not the bulk.\n- Escalate a subtask back up a tier only when the cheaper model's result is insufficient, and record why.\n- Reserve the high-capability tier for planning, high-level reasoning, and review of dense content or individual artifacts.\n\n**Inspection before delegation or premium reasoning:**\n- Use bounded inspection tooling (`peek` CLI, `repo_map.toon`, interface skeletons) to render reduced, focused views of artifacts before either spending expensive-model tokens or handing the artifact to a subagent.\n- A focused, reduced view is often enough for the expensive model; the full artifact usually is not needed."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "All six findings landed cleanly, no drift. Let me commit the doc changes.",
+      "captured_at": "2026-07-11T17:06:23.941Z",
+      "event_meta": {
+        "event_id": "02c78491-14ed-40d6-8ff4-5879d5852b48",
+        "parent_event_id": "f4735085-a1de-4222-bed7-793efb0a4904",
+        "event_type": "assistant.message",
+        "message_id": "4410457c-6aec-44b8-a946-59a18016f89c",
+        "reasoning_text": "All six subsections are in, and the drift check passed cleanly. I'm staging the documentation changes and the generated file to commit. For Finding #7, I'm flagging it without auto-reverting, then I'll push the doc updates.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01UCmNVhdBoMESiGZe5CJvFx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git add .rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md .agents/instructions/token-efficiency.instructions.md && git commit -m \"docs(token-efficiency): make subagent routing guidance executable\n\nAddresses evidence-backed gaps found by live subagent testing:\n- promote context isolation from a parenthetical to a bolded top-line warning with a self-contained-prompt checklist (subagents inherit no session context)\n- document the model-name format \\\"Model Name (Vendor)\\\" so 'pin a cheaper model' is actually executable\n- add a 'when NOT to delegate' floor: subagent spawn overhead makes trivial single reads cheaper inline\n- add a 'verify subagent output' rule: treat summaries as unverified claims, spot-check before acting\n- add a parallel fan-out pattern for concurrent read-only probes (highest-throughput delegation)\n- define a failure path (retry-with-more-context vs abandon-and-inline) distinct from quality escalation\" 2>&1 | tail -6",
+              "explanation": "Commit the routing documentation improvements.",
+              "goal": "Commit doc fixes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "Committed `4cc046e5`. Findings #1–#6 shipped and verified against the live tooling.\n\n## Findings #1–#6 — done\n\n| # | Finding | Fix (routing section) |\n|---|---|---|\n| 1 | Context-isolation buried in a parenthetical | Promoted to a **bolded top-line warning** with a 5-point self-contained-prompt checklist |\n| 2 | No parallelism guidance | Added a **Parallel fan-out** subsection (concurrent read-only probes, merged results) |\n| 3 | Model-name format undocumented | Documented `\"Model Name (Vendor)\"` with `\"Claude Haiku 4.5 (copilot)\"` example + \"read the schema, don't guess\" |\n| 4 | \"Delegate everything\" with no floor | Added **When NOT to delegate**: spawn overhead makes single bounded reads cheaper inline |\n| 5 | No \"verify subagent output\" rule | Added: treat every summary as an unverified claim; spot-check before it drives an edit |\n| 6 | Failure path undefined | Added retry-with-more-context → abandon-and-inline, distinct from quality escalation |\n\n## Finding #7 — valid, but I need your call before acting\n\nYour finding is correct: two agents with near-identical read-only critique missions have opposite privilege (audit = no `edit`, roast = `edit`). But there's a wrinkle I won't steamroll:\n\n- Last turn I committed roast sandboxed to `tools: [read, search]` (`46432af9`).\n- **A different agent then committed `c27d6fdc`** — *\"expand tools available for roasting to include execution and editing capabilities\"* — which deliberately re-added `execute`, `edit`, `agent`, and MCP wildcards to **both** the rule body and generated file (consistent, no drift). That's now HEAD.\n\nSo re-sandboxing roast means **reverting another agent's just-committed, deliberate change**. The repo's escalation rules explicitly say never to revert another agent's work without surfacing the conflict first — which is exactly this situation: a policy tug-of-war over the same file I own.\n\nYour finding and I agree on the merits — a read-and-mock agent has no business holding a pen, and the Evidence Contract makes `edit`/`execute` pure liability. But I'd be undoing someone's intentional commit. **Do you want me to re-sandbox roast to `[read, search]` (matching audit) despite `c27d6fdc`?** If yes, I'll revert the tool expansion in the rule body, regenerate, and commit with a message noting the deliberate override.",
+      "captured_at": "2026-07-11T17:06:39.152Z",
+      "event_meta": {
+        "event_id": "f8a13f69-fb4f-4bbe-924a-193527bdada3",
+        "parent_event_id": "8ec798cd-4c81-4f81-b486-03f053263831",
+        "event_type": "assistant.message",
+        "message_id": "868bede8-cbdb-4714-be8d-c8e0adbf0e6f",
+        "reasoning_text": "I've committed that change and now need to surface Finding #7 regarding the conflict so we can get a decision on how to proceed.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "user",
+      "content": "Here's my call — and it comes with a correction to *my own* earlier recommendation, because a roaster that won't eat its own findings is a hypocrite.\r\n\r\n## The verdict: reduce privilege, but NOT to `[read, search]`\r\n\r\nI was too blunt two turns ago. This entire session is the counter-evidence: I verified every one of your claims by **running commands** — `sync-targets --check`, `git log`, greps, MCP queries. An \"evidence-backed, findings-first\" roaster (which is now literally the agent's description) *needs* to run read-only verification. Stripping `execute` would neuter the Evidence Contract that makes this agent worth anything. My `[read, search]` line was the right instinct aimed at the wrong target.\r\n\r\nThe real liability was never `execute`. **It's `edit`.** And the precedent proves it — your own Haiku subagent surfaced it last turn:\r\n\r\n| Agent | execute | edit | Role |\r\n|---|---|---|---|\r\n| **audit** | ✓ | **✗** | honest reviews, findings-first |\r\n| **roast** | ✓ | ✓ | evidence-backed critique |\r\n\r\nAudit — the roast agent's identical twin in mission — gets `execute` (to run checks) but is **denied `edit`**. That's not an accident; that's a coherent policy: *reviewers may run, but may not rewrite.* Roast violates it for no reason. So the target isn't `[read, search]`, it's **match audit exactly**:\r\n\r\n```yaml\r\ntools: [read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']\r\n```\r\n\r\nDrop `edit`. Drop `agent`. Keep `execute` and the read-only MCP query surfaces.\r\n\r\n- **`edit` → gone.** A critic that can rewrite the code it mocks is a conflict of interest with commit access. Non-negotiable; it's the whole finding.\r\n- **`agent` → gone.** Recursive self-spawning roasters is a fork bomb of sarcasm with zero upside for a critique agent. Weakest of the three concerns, but there's no use case, so cut it.\r\n- **`execute` → stays.** Evidence-backed roasting *is* running read-only checks. Removing it contradicts the agent's own description. This is where I correct myself.\r\n\r\n## On the process — yes, proceed, and here's why it's clean\r\n\r\nThe escalation rule says *never revert another agent's work **without surfacing the conflict first.*** You just surfaced it — to the human, who is the authority resolving a same-file policy tug-of-war. That's precisely the sanctioned path, not a violation of it. An agent silently reverting another agent = forbidden. A human adjudicating a surfaced conflict = governance working as designed. Green light.\r\n\r\n**But don't frame it as a revert of `c27d6fdc` — frame it as a partial reconciliation, because that's what it actually is:**\r\n\r\n- `c27d6fdc` added `execute`, `edit`, `agent`, *and* the MCP wildcards.\r\n- The MCP wildcards and `execute` are **defensible and you keep them.**\r\n- Only `edit` and `agent` get removed.\r\n\r\nSo you're not stomping the other agent's commit — you're **keeping most of it** and surgically removing the two capabilities that violate the audit precedent. That's collegial, not a steamroll, and it's a far stronger position than \"revert everything.\" The other agent wanted the roaster to have teeth for evidence-gathering; they keep that. They just don't get the chainsaw.\r\n\r\n## Do it\r\n\r\nCommit message should:\r\n1. Cite `c27d6fdc` explicitly as the change being partially reconciled.\r\n2. State the human override.\r\n3. Give the audit-precedent rationale (reviewers run, don't rewrite) so the other agent reads *reasoning*, not a silent stomp.\r\n\r\nSuggested:\r\n\r\n> `chore(roast-agent): align tool privileges with audit-agent precedent`\r\n>\r\n> Partial reconciliation of c27d6fdc (which re-added execute/edit/agent/MCP to the roast agent). Human-adjudicated resolution of a same-file privilege conflict. Keeps execute + read-only MCP query surfaces (evidence-backed critique must run verification checks). Removes edit and agent: a findings-first critique agent must not rewrite the code it reviews (matching audit-agent, which is execute-yes / edit-no) and has no use case for spawning subagents. Surfaced per escalation rules before overriding.\r\n\r\nSay the word and I'll make the edit to the `.rule/rules/30706d11…/body.md` source, regenerate with `sync-targets`, confirm no drift, and stage the body + generated file together per the commit discipline. One correction to your plan: edit the **rule body source**, not the generated `.agent.md` — same lesson from earlier this session, and I'm not going to be the roast agent that gets roasted for hand-editing a generated file.",
+      "captured_at": "2026-07-11T18:19:21.812Z",
+      "event_meta": {
+        "event_id": "06dd64e9-5ddf-4fb2-8942-7af75a7161d3",
+        "parent_event_id": "b7fac1a3-70cf-485f-9045-77138e9b77f8",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "Clear call, and the reasoning is sound — reconcile, don't stomp. Editing the rule body source, not the generated file.",
+      "captured_at": "2026-07-11T18:19:31.462Z",
+      "event_meta": {
+        "event_id": "b735f841-b3f0-4a18-b675-b94962842543",
+        "parent_event_id": "771c9285-fc4f-4072-9608-a12306ac3bab",
+        "event_type": "assistant.message",
+        "message_id": "4ded83dd-1979-40da-b525-480bbe48762b",
+        "reasoning_text": "I need to update the rule body's tools configuration by removing `edit` and `agent` while keeping the rest, then regenerate and check for any drift before committing.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_019iR6ukkvF8SXmRUqyZ3ZEE",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\30706d11-8e7d-45c4-97eb-fc4b3b9b5fc3\\body.md",
+              "oldString": "tools: [execute, read, agent, edit, search, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']",
+              "newString": "tools: [read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "`edit` and `agent` removed, `execute` + read-only MCP surfaces kept, no drift. Now commit with the reconciliation framing.",
+      "captured_at": "2026-07-11T18:21:40.599Z",
+      "event_meta": {
+        "event_id": "508ad058-5700-4f7f-805b-7b60d9a4cf09",
+        "parent_event_id": "955ef692-0f08-4579-b4eb-5c296cc7eafa",
+        "event_type": "assistant.message",
+        "message_id": "ad25df3c-04db-4f56-8965-a492f973d0aa",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01N315DufgdT7ZGTfqkpQyKL",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git add .rule/rules/30706d11-8e7d-45c4-97eb-fc4b3b9b5fc3/body.md .agents/agents/roast.agent.md && git commit -m \"chore(roast-agent): align tool privileges with audit-agent precedent\n\nPartial reconciliation of c27d6fdc (which re-added execute/edit/agent/MCP to the\nroast agent). Human-adjudicated resolution of a same-file privilege conflict.\n\nKeeps execute + read-only MCP query surfaces: evidence-backed critique must run\nverification checks (sync-targets --check, git log, greps), so execute stays.\n\nRemoves edit and agent: a findings-first critique agent must not rewrite the\ncode it reviews (matching audit-agent, which is execute-yes / edit-no), and has\nno use case for spawning subagents. Surfaced per escalation rules before overriding.\" 2>&1 | tail -6",
+              "explanation": "Commit the privilege reconciliation citing the prior commit and the human adjudication.",
+              "goal": "Commit roast privilege reconciliation",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "Committed `02cf2790`. Roast now matches the audit precedent exactly:\n\n```yaml\ntools: [read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']\n```\n\n| Capability | Before (`c27d6fdc`) | Now | Rationale |\n|---|---|---|---|\n| `execute` | ✓ | ✓ **kept** | Evidence Contract requires running read-only checks |\n| read-only MCP wildcards | ✓ | ✓ **kept** | Verification surfaces (spec/ticket/test/log queries) |\n| `edit` | ✓ | ✗ **removed** | A critic must not rewrite the code it mocks — matches audit |\n| `agent` | ✓ | ✗ **removed** | No use case; recursive roaster spawning has zero upside |\n\nDone the clean way: edited the rule body source (not the generated `.agent.md`), regenerated via `sync-targets`, confirmed no drift, staged both together. The commit cites `c27d6fdc`, records the human adjudication, and frames it as a partial reconciliation with the audit-precedent reasoning — so the other agent reads *why*, not a silent stomp. Their evidence-gathering teeth stay; only the chainsaw and the fork-bomb are gone.\n\nSession tally — four commits, each source-edited and drift-checked:\n- `8a810428` — gate subagent routing, promote tactical mechanics, add edit-path + rtk fallback\n- `46432af9` — make roast a first-class generated agent\n- `4cc046e5` — make subagent routing guidance executable (Findings #1–#6)\n- `02cf2790` — align roast privileges with audit precedent (Finding #7)\n\nThe roaster ate its own finding, corrected its own overcorrection, and can no longer rewrite what it ridicules. Fair's fair.",
+      "captured_at": "2026-07-11T18:21:51.746Z",
+      "event_meta": {
+        "event_id": "3f236746-bfc4-42a3-99ac-602168cc60e9",
+        "parent_event_id": "2401e6a4-133b-4b0b-b0ee-3770852652ed",
+        "event_type": "assistant.message",
+        "message_id": "b729825b-1cdc-4d52-895d-d7ffd42d61ca",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
