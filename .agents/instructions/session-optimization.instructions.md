@@ -39,6 +39,14 @@ The highest-confidence ways to reduce model-bound context are:
 - keep long outputs as artifact pointers plus extracted findings
 - collapse retry chains into one-line outcomes rather than narrating each failed attempt
 
+### Model Routing Workflow
+
+Prefer a workflow where a large, smart model opens the session and acts as a router: it plans and reasons at a high level, then delegates routine subtasks — command batches, summarization of large tool outputs, and research/summarization across many large files or artifacts — to smaller, cheaper models via subagents. Reserve the expensive model for large-scope planning, high-level reasoning, and review of dense content or individual artifacts.
+
+See the token-efficiency instructions' "Model Cost Awareness & Routing" section for the tiered model ladder and delegation rules.
+
+To make routing observable, the `session-api` transcript records the active model responding to each turn (`SessionTurn.model`), inheriting the session-level model when a turn does not specify one. Use this per-turn model signal when analyzing whether expensive-model turns were spent on work that a cheaper model could have handled.
+
 ### Tool Result Guarding
 
 Before the model reasons over a tool result, reduce it to the smallest useful shape.

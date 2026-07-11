@@ -13,6 +13,31 @@ These rules apply during every session to keep token consumption bounded and deb
 
 The primary objective is to reduce what reaches the model API in the first place. Post-hoc transcript capture is diagnostic only; it does not make the current request cheaper.
 
+### Model Cost Awareness & Routing
+
+Token cost is a function of *which model* does the work, not only how much context it sees. Be model-cost-aware in every session: reserve expensive, high-capability models for work that genuinely needs them, and delegate routine or bulk work to smaller, cheaper models.
+
+This matters most in sessions driven by a large, expensive model. Treat that model as an active **router**: it plans and reasons at a high level, then dispatches routine subtasks to cheaper models via `runSubagent` (passing an explicit cheaper `model`) instead of spending premium tokens itself.
+
+**Tiered model ladder (smartness vs cost):**
+
+| Tier | Use for | Avoid for |
+|---|---|---|
+| High-capability (most expensive) | Large-scope planning, cross-cutting architecture, high-level reasoning, review of dense content or a single critical artifact, final synthesis/decisions | Command batches, bulk output summarization, mechanical edits, wide file sweeps |
+| Mid-tier (balanced) | Focused implementation on a known slice, targeted debugging, moderate multi-file edits | Long research sweeps that a cheap model can pre-digest |
+| Cheap/fast (least expensive) | Running and summarizing command/tool-call batches, condensing large tool outputs, summarizing many large files or artifacts, mechanical extraction, first-pass research triage | Final architectural decisions, subtle correctness review of dense artifacts |
+
+**Delegation rules:**
+- In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.
+- Give the subagent a self-contained prompt (it does not inherit session context) and pin the intended cheaper `model` explicitly on `runSubagent`.
+- Ask the subagent to return only the distilled finding — scope, result, blocker, pointer — not raw output. The expensive model reasons over the summary, not the bulk.
+- Escalate a subtask back up a tier only when the cheaper model's result is insufficient, and record why.
+- Reserve the high-capability tier for planning, high-level reasoning, and review of dense content or individual artifacts.
+
+**Inspection before delegation or premium reasoning:**
+- Use bounded inspection tooling (`peek` CLI, `repo_map.toon`, interface skeletons) to render reduced, focused views of artifacts before either spending expensive-model tokens or handing the artifact to a subagent.
+- A focused, reduced view is often enough for the expensive model; the full artifact usually is not needed.
+
 ### Compact-by-Default Output
 
 All CLI commands that support it should produce **compact output by default**. Verbose or full output is on-demand only.
