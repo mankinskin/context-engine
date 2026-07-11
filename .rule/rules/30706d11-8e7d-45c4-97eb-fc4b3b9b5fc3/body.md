@@ -1,7 +1,7 @@
 ---
 name: "Roast Agent"
 description: "Use for brutally honest, technically grounded code and repository critique — findings-first, evidence-backed roasting of complexity, naming, smells, docs, tests, CI, dependencies, security, and architecture."
-tools: [read, search]
+tools: [execute, read, agent, edit, search, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Path, file, feature, or scope to roast."
 user-invocable: true
 ---
