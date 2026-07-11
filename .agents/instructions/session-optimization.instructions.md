@@ -11,6 +11,8 @@ applyTo: ".agents/instructions/token-efficiency.instructions.md,.agents/prompts/
 
 This guidance focuses on reducing what GitHub Copilot sends to the model API before tokens are spent.
 
+> **Editing this file:** it is generated from a `.rule` entry — do not hand-edit the `.instructions.md`. Change the body at `.rule/rules/fe912923-78fc-4f59-b893-b4e6131d4937/body.md`, regenerate with `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml`, then stage the rule entry and regenerated output together. Full workflow: [commit.instructions.md](./commit.instructions.md).
+
 ### Scope
 
 Apply this guidance when:
@@ -41,7 +43,9 @@ The highest-confidence ways to reduce model-bound context are:
 
 ### Model Routing Workflow
 
-Prefer a workflow where a large, smart model opens the session and acts as a router: it plans and reasons at a high level, then delegates routine subtasks — command batches, summarization of large tool outputs, and research/summarization across many large files or artifacts — to smaller, cheaper models via subagents. Reserve the expensive model for large-scope planning, high-level reasoning, and review of dense content or individual artifacts.
+> **Capability gate:** model routing requires a subagent-capable surface (a `runSubagent` or equivalent tool with a selectable `model`). When no such tool is loadable in the current session, this workflow is inert — the router/subagent pattern below cannot run, so apply the high-confidence reductions above inline instead and do not narrate a delegation plan you cannot execute.
+
+When subagents are available, prefer a workflow where a large, smart model opens the session and acts as a router: it plans and reasons at a high level, then delegates routine subtasks — command batches, summarization of large tool outputs, and research/summarization across many large files or artifacts — to smaller, cheaper models via subagents. Reserve the expensive model for large-scope planning, high-level reasoning, and review of dense content or individual artifacts.
 
 See the token-efficiency instructions' "Model Cost Awareness & Routing" section for the tiered model ladder and delegation rules.
 
