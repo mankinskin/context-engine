@@ -1,0 +1,706 @@
+{
+  "schema_version": 1,
+  "session_id": "b9c08193-128a-4058-ab7c-5afd23a87907",
+  "captured_at": "2026-07-11T13:20:49.857Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "# Handoff — Wire `release_lease` into CLI/MCP/HTTP and clear the orphaned lease\r\n\r\n## Shorthand And Placeholder Legend\r\n- `LEASE-TICKET` → ca7e0388-ee5c-41c7-8385-7de6817ce261 — \"[ticket-api] Lease-release capability — owner/stale release semantics + transport parity + orphaned-lease cleanup\"\r\n- `ORPHAN-TICKET` → 82d6ada4-ac35-45a7-9df6-7b7501d58e70 — root-store ticket carrying the stale `copilot` lease that must be cleared\r\n- `<memory-api>` → C:/Users/linus/git/graph_app/context-engine/memory-api (the owning ticket store for LEASE-TICKET)\r\n\r\n## Overview\r\nThe core lease-release capability has already landed: `TicketStore::release_lease(ticket_id, requester)` in [board.rs](memory-api/crates/ticket-api/src/storage/store/board.rs) with a passing unit test. What remains is transport parity (CLI/MCP/HTTP), fixing the `board_check_out` bug that lets a lease outlive its board entry, and actually clearing the orphaned `copilot` lease on ORPHAN-TICKET. Start in `<memory-api>`. This is a self-contained ticket-api track; it unblocks board hygiene used by every other track.\r\n\r\n## Findings\r\n- `release_lease` semantics (already implemented and tested): holder (`working_by == requester`) may always release; any caller may release a stale/expired lease; a live lease held by a different agent → `StorageError::LeaseConflict`; no active lease → no-op.\r\n- The motivating bug: a lease can outlive its board entry. Observed on ORPHAN-TICKET — `board check-out` reports \"no active board entry\" while `list_leases()` still shows the lease. `board_check_out` must release the lease even when the board entry is already gone.\r\n- `board_check_in` creates both a board entry and a lease (via `claim`); `unclaim` historically removed leases unconditionally. Reconcile the new owner/stale-aware path with this existing flow rather than duplicating it.\r\n- Transport surfaces to touch already exist for `unclaim` and can host `release`: CLI command plumbing, MCP board tools, and HTTP error mapping already handle `LeaseConflict`.\r\n\r\n## Decisions\r\n- Keep API semantics as shipped; do not loosen owner/stale rules at the transport layer — transports call through to `release_lease` for identical behavior.\r\n- Prefer reworking/extending the existing `unclaim` path to clear orphaned/stale leases without requiring a board entry, over inventing a parallel command, unless a distinct `release` verb reads more clearly.\r\n\r\n## Blockers\r\n- None hard. ORPHAN-TICKET cannot be cleared until at least one transport surface exposes `release_lease`; do the CLI first so the clear can be executed immediately.\r\n\r\n## Key Entities\r\n- [LEASE-TICKET description](memory-api/.ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/description.md) — authoritative remaining-work list and acceptance criteria.\r\n- [board.rs](memory-api/crates/ticket-api/src/storage/store/board.rs) — `release_lease`, `unclaim`, `claim`; the core method to expose.\r\n- [workflow_tests.rs](memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs) — `release_lease_enforces_owner_and_stale_rules` (pattern to extend for check-out orphan fix).\r\n- [error.rs](memory-api/crates/memory-api/src/error.rs) — `LeaseConflict { ticket, holder }` variant.\r\n- [lifecycle.rs](memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs) — `cmd_unclaim`; CLI entry to extend.\r\n- [core.rs](memory-api/tools/cli/ticket-cli/src/cli/args/core.rs) — `UnclaimArgs` (add `--stale`/`--force` or a `release` arg struct).\r\n- [cli.rs](memory-api/tools/cli/ticket-cli/src/cli.rs) and [dispatch.rs](memory-api/tools/cli/ticket-cli/src/cli/dispatch.rs) — command registration + dry-run payload.\r\n- [ticket-http serve/error.rs](memory-api/tools/http/ticket-http/src/serve/error.rs) — `LeaseConflict` → HTTP status mapping (already present; add the route).\r\n- [ticket-cli README](memory-api/tools/cli/ticket-cli/README.md) and [ticket-mcp README](memory-api/tools/mcp/ticket-mcp/README.md) — surfaces to document the new capability.\r\n\r\n## Long-Horizon Goal\r\nLEASE-TICKET closed: `release_lease` invokable identically from CLI, MCP, and HTTP; `board check-out` never leaves an orphaned lease; ORPHAN-TICKET's stale lease cleared.\r\n\r\n## Next Actions (execute in order)\r\n1. Wire the CLI surface: extend `cmd_unclaim`/args (or add a `release` verb) to call `release_lease`, including clearing orphaned/stale leases with no board entry. Register in `cli.rs`, `dispatch.rs`, and batch dispatch.\r\n2. First validation check: `cargo test -p ticket-api --lib` (expect 110 pass; the pre-existing `storage::move_planner::tests::preflight_reports_invisible_reference_visibility_and_path_refs` failure is unrelated — do not absorb it) plus a CLI integration test in [integration_workflow_crud.rs](memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs).\r\n3. Fix the orphan bug: make `board_check_out` release the lease even when the board entry is already gone; add a regression test mirroring the observed ORPHAN-TICKET scenario.\r\n4. Wire the MCP tool (ticket-mcp board module) and the HTTP route (ticket-http) to `release_lease`; assert identical semantics across all three.\r\n5. Clear ORPHAN-TICKET's stale `copilot` lease via the new CLI surface against the root store; confirm `list_leases()` no longer shows it.\r\n6. Update ticket-cli and ticket-mcp READMEs; move LEASE-TICKET to `in-review`, then `done` after review-gate checklist.\r\n\r\n## Completion Status\r\n1. CLI wiring — not-started\r\n2. CLI/lib validation — not-started\r\n3. `board_check_out` orphan fix — not-started\r\n4. MCP + HTTP parity — not-started\r\n5. Clear ORPHAN-TICKET lease — not-started (blocked on step 1)\r\n6. Docs + close LEASE-TICKET — not-started\r\n\r\n## Definition Of Done\r\n`release_lease` callable with identical owner/stale semantics from CLI, MCP, and HTTP; `board check-out` provably never orphans a lease (regression test); ORPHAN-TICKET lease cleared and verified absent from `list_leases`; ticket-api lib + CLI integration tests green (modulo the documented unrelated move_planner failure); READMEs updated; LEASE-TICKET closed through the review gate.\r\n\r\n## Board / Session Notes\r\n- Commit deepest-first (ticket-api core → tools → store), staging owned files only; exclude `Cargo.lock`, `.session/`, and the dirty `memory-viewers` submodule.\r\n- The `move_planner` preflight test failure is pre-existing (handoff Finding #5 in the originating session) — keep it documented as unrelated, never silently fixed or hidden.\r\n\r\nExecute the next actions in order and continue until all are completed or explicitly blocked.",
+      "captured_at": "2026-07-11T12:45:58.928Z",
+      "event_meta": {
+        "event_id": "e13cd0b6-c5d2-4e9d-97ac-24d6fb1f4771",
+        "parent_event_id": "126fb712-f28d-4450-8497-61e1de324d81",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m starting in memory-api and will execute the sequence end-to-end: wire CLI first, validate, fix check-out orphan behavior with regression coverage, then add MCP/HTTP parity, clear the orphaned lease, and finish docs plus ticket state updates. I’ll gather current code and board/ticket context now so edits stay precise and consistent with the existing command surfaces.I’m collecting the existing CLI/MCP/HTTP lease-related code paths and tests in parallel so I can patch the smallest set of files in the required order.",
+      "captured_at": "2026-07-11T12:46:09.825Z",
+      "event_meta": {
+        "event_id": "4f8e0517-5a68-47b4-8f9b-3bd6167e188a",
+        "parent_event_id": "cec8e5db-8fc8-4269-bd07-bc480e0a8f49",
+        "event_type": "assistant.message",
+        "message_id": "3b77f882-5594-43a0-a823-4ae58d5288fb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_T98vCYPsnvIqAJtjUnJVTwts",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/tools/cli/ticket-cli/src/cli/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dpfDKP3O8UROzKINWV2r3VQq",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/tools/mcp/ticket-mcp/src/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_04zDPDunQoDWGhac5t8HfTLh",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/tools/http/ticket-http/src/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_se1zRhsiVzKfwjwfwXTHMOby",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/ticket-api/src/storage/store/board.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yXJ7OoE2rf84kYcJf4TLzn2m",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_b8TqYLpFc8rBamaV8nWTq1BO",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/tools/cli/ticket-cli/tests/**/*.rs"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "I found the target files; next I’m reading the exact unclaim, board check-out, MCP board, and HTTP handler code paths to wire through release semantics without duplicating existing logic.",
+      "captured_at": "2026-07-11T12:46:18.827Z",
+      "event_meta": {
+        "event_id": "4992c61a-fcb8-47e6-8d92-b644c6c212ea",
+        "parent_event_id": "3dee8eda-23c2-41e6-bd02-ce0a3e88a200",
+        "event_type": "assistant.message",
+        "message_id": "95c79cbe-922f-43dc-8c19-4f0ba28a8768",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hWWOwTuiG7hxOeitzEUpazwU",
+            "name": "grep_search",
+            "arguments": {
+              "query": "release_lease|unclaim|board_check_out|check_out|LeaseConflict|list_leases",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/ticket-api/src/storage/store/board.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mZ7DewLaRxLJrYLticC7ICEH",
+            "name": "grep_search",
+            "arguments": {
+              "query": "cmd_unclaim|UnclaimArgs|unclaim|release|LeaseConflict",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/ticket-cli/src/cli/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5pU3TbBzwBHLUhnITAuKQn65",
+            "name": "grep_search",
+            "arguments": {
+              "query": "unclaim|lease|board_check_out|check_out|LeaseConflict",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/mcp/ticket-mcp/src/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rWQIz9JiRZE0dKTA11rSdJTW",
+            "name": "grep_search",
+            "arguments": {
+              "query": "unclaim|lease|board|LeaseConflict|check_out",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/http/ticket-http/src/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_sC1hJGVpChDwnT6guCWYpQEJ",
+            "name": "grep_search",
+            "arguments": {
+              "query": "release_lease|check_out|orphan|lease|unclaim",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MmVC69RIrjsgI5yNB1hdaigR",
+            "name": "grep_search",
+            "arguments": {
+              "query": "unclaim|board check-out|lease|orphan|release",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/ticket-cli/tests/**/*.rs"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve located the exact symbols; now I’m reading those sections to implement the CLI-first path and preserve existing dry-run/batch behavior.",
+      "captured_at": "2026-07-11T12:46:23.720Z",
+      "event_meta": {
+        "event_id": "30085a22-ad79-4037-8aa6-bc82ddffbe38",
+        "parent_event_id": "e0372dd8-1867-4183-95a8-b50133ae9e66",
+        "event_type": "assistant.message",
+        "message_id": "4ccfa6e2-aa09-46e3-b319-8e0dd312279c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ymiwUF1BgGPgDsqaNxP09qid",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/ticket-api/src/storage/store/board.rs",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BpGZNDStdZW8JaY0HmcLBIbN",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/args/core.rs",
+              "startLine": 1,
+              "endLine": 170
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ipL8obWwpEFg3k7uCbk6TRYV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs",
+              "startLine": 330,
+              "endLine": 460
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gdW1syL2IwfaWRRHoMJPgTPa",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/dispatch.rs",
+              "startLine": 1,
+              "endLine": 470
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WvgonRnRwsBIQ10IO4gKkBsH",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/batch/dispatch.rs",
+              "startLine": 1,
+              "endLine": 230
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GL04aQwoRhx0THmOXUlhH4TU",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli.rs",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I’m now checking the board argument shapes and integration tests so the new release behavior fits existing CLI UX and test helpers.",
+      "captured_at": "2026-07-11T12:46:28.303Z",
+      "event_meta": {
+        "event_id": "d8e550fb-5b55-4929-a019-2ab6b7b7ee0a",
+        "parent_event_id": "252066fc-1d5a-4b88-991d-10f5f3510694",
+        "event_type": "assistant.message",
+        "message_id": "10266f7b-adee-4ae0-ac11-eba7cd482093",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_qY6jNDoO26oMSevegwLIUv8k",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/args.rs",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_EQARCtbp0eN4x7nA3zUmwfIe",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/args/board.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WgNvgig6cViwbUPyqMAMPr5I",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/commands/board.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RYExsWp2ReFsvHCDCWyvTYkl",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs",
+              "startLine": 220,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TzSe4i97Ha4dB4No3NzAxSfE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/mcp/ticket-mcp/src/server/board.rs",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TmuQXiOBI3dO2PIMMI4BqdSq",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/mcp/ticket-mcp/src/server.rs",
+              "startLine": 430,
+              "endLine": 620
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I confirmed HTTP currently has no explicit board/lease mutation route and MCP has only board check-in/out, so I’ll add a dedicated release path there after CLI and store fix. I’m reading store/CLI tests next to add regression coverage before touching MCP/HTTP.",
+      "captured_at": "2026-07-11T12:46:54.206Z",
+      "event_meta": {
+        "event_id": "58ea77d6-4e82-4ef5-a924-ea032bd3e457",
+        "parent_event_id": "12aef75c-1b8c-4ba9-acae-be047e1148c3",
+        "event_type": "assistant.message",
+        "message_id": "9b6b9922-6dc7-4caf-af3f-5b4a6ac6cffd",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_k6af9N7MY3ulCy93froRoIcQ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs",
+              "startLine": 320,
+              "endLine": 520
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GwXAC6KFHa2husAuNpM835VT",
+            "name": "grep_search",
+            "arguments": {
+              "query": "board_check_out|board_check_in|lease|stale|orphan",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/ticket-api/src/storage/tests/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_S5LR20C0LstDo109Wa9D3G73",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/tests/integration_board_cli/tests_board_ops.rs",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_T7oZCIlAmdkv6TsfIu6XCstT",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/tests/common.rs",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’m about to start editing; first I’m doing the required ticket/board orientation check so we don’t violate active-workflow rules while touching the lease and board paths.",
+      "captured_at": "2026-07-11T12:48:39.873Z",
+      "event_meta": {
+        "event_id": "3c292166-255d-4703-bcd2-ece18c52899d",
+        "parent_event_id": "012cc565-67c2-4c27-af73-ae06c73ab832",
+        "event_type": "assistant.message",
+        "message_id": "246a948d-3629-40a2-b9ba-da7aec7c96d7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_7a2dgZTDncu7nn5O3YIVxPxL",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Checks current draftboard state before starting implementation work.",
+              "goal": "Verify WIP/stale/ownership context",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I’m now applying the CLI and store-layer changes first: unclaim will call release semantics even without a board entry, and board check-out will always attempt lease release so orphaned leases are cleaned. After this patch I’ll add the regression tests before moving to MCP/HTTP.",
+      "captured_at": "2026-07-11T12:49:03.597Z",
+      "event_meta": {
+        "event_id": "b096a6fd-67bc-4b00-a40d-d9d94771a1b6",
+        "parent_event_id": "aef4f2de-5594-4c37-9c87-33bcfed2744c",
+        "event_type": "assistant.message",
+        "message_id": "0e780fbb-bed8-45bd-92f9-67779dbfeafe",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_oeGYttICmDKvRyf3e4oZgnfd",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Wire CLI unclaim through release_lease semantics and make board_check_out always attempt lease release; add regression tests for orphaned lease cleanup.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/ticket-cli/src/cli/args/core.rs\n@@\n pub struct UnclaimArgs {\n     /// Ticket UUID or 8+ character hex prefix.\n     pub id: String,\n+    /// Requester identity used for owner/stale release rules.\n+    /// If omitted, defaults to the active board agent when present.\n+    #[arg(long = \"agent\")]\n+    pub agent_id: Option<String>,\n     #[arg(long)]\n     pub reason: Option<String>,\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "CLI/store wiring and both regressions are in place. Next I’m implementing MCP and HTTP release-lease surfaces (plus docs), then running the targeted test sequence and finally clearing the orphaned root-store lease with the new CLI path.",
+      "captured_at": "2026-07-11T12:49:29.105Z",
+      "event_meta": {
+        "event_id": "4599aaef-9170-436f-ac7b-cd7b923b374f",
+        "parent_event_id": "dbf92801-9b18-4d91-acbc-469cb8a0574e",
+        "event_type": "assistant.message",
+        "message_id": "77e9a923-3f41-4fd0-816e-7cde0e953c6b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_oyfFXfDhtx2TiOpp0lj2INGN",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add MCP input type for explicit lease release requests.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/memory-api/tools/mcp/ticket-mcp/src/server/types.rs\n@@\n pub struct BoardCheckOutInput {\n     pub workspace: String,\n     pub ticket_id: String,\n     #[serde(default)]\n     pub agent_id: Option<String>,\n     #[serde(default)]\n     pub reason: Option<String>,\n }\n+\n+#[derive(Debug, Deserialize, JsonSchema)]\n+pub struct BoardReleaseLeaseInput {\n+    pub workspace: String,\n+    pub ticket_id: String,\n+    pub requester: String,\n+}\n \n #[derive(Debug, Deserialize, JsonSchema)]\n pub struct BoardHeartbeatInput {\n     pub workspace: String,\n     pub entry_id: String,\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "I’m moving on to HTTP parity now by adding a release-lease endpoint and tests for both stale-orphan cleanup and live-lease conflict behavior.",
+      "captured_at": "2026-07-11T12:49:55.327Z",
+      "event_meta": {
+        "event_id": "510d4464-16b7-47fd-ad12-47208019320c",
+        "parent_event_id": "5062aecc-77f8-4a78-8fa5-911d4ff672e6",
+        "event_type": "assistant.message",
+        "message_id": "1651ce23-892b-48ee-8576-7c1ea4a9ae67",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_iPoZZj7DQhUEtkOxDpvMUC67",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Define HTTP request/response payload types for lease release route.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs\n@@\n pub struct RevertTicketBody {\n     pub revision: u64,\n }\n+\n+#[derive(Deserialize)]\n+pub struct ReleaseLeaseBody {\n+    pub requester: String,\n+}\n@@\n pub struct MoveTicketResponse {\n     pub request_id: String,\n@@\n     pub recovery: serde_json::Value,\n }\n+\n+#[derive(Serialize)]\n+pub struct ReleaseLeaseResponse {\n+    pub request_id: String,\n+    pub active_workspace: String,\n+    pub workspace: String,\n+    pub id: String,\n+    pub ticket_ref: TicketRef,\n+    pub requester: String,\n+}\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’ve completed the code changes for CLI/store/MCP/HTTP plus docs; next I’m running validation in the requested order, starting with ticket-api lib tests and then focused CLI/HTTP/MCP checks for the new paths.",
+      "captured_at": "2026-07-11T12:50:30.429Z",
+      "event_meta": {
+        "event_id": "6179feca-817c-48af-a35f-f4d3ee418695",
+        "parent_event_id": "7268ae2d-102f-47d8-94b8-643538a928f2",
+        "event_type": "assistant.message",
+        "message_id": "327717f6-783a-49c8-8ad1-9b58d93a1eb0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_yWrtu9AztVwt7mkoeqGerz82",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && rtk cargo test -p ticket-api --lib",
+              "explanation": "Runs ticket-api library tests to validate core lease and board behavior changes.",
+              "goal": "Validate store-layer and lib-level regressions",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I hit an odd no-output test exit, so I’m checking the shell state and rerunning with explicit logging to capture the failure details before proceeding.",
+      "captured_at": "2026-07-11T13:14:54.937Z",
+      "event_meta": {
+        "event_id": "8b9adca4-256b-48d1-9817-7e1afecbb60e",
+        "parent_event_id": "242035f7-51c8-4ca8-b5f8-b24dc43fd589",
+        "event_type": "assistant.message",
+        "message_id": "538d1bef-0835-469e-b27a-8bb73a8c3e93",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EI0Inmvg0a6QmngDs9PfVoBv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "pwd && ls",
+              "explanation": "Checks current directory and basic workspace visibility before rerunning tests.",
+              "goal": "Verify terminal state",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hpwHbdrbLwICmPXXHi4vDfcM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && cargo test -p ticket-api --lib > /tmp/ticket_api_lib_test.log 2>&1; echo EXIT:$?; wc -l /tmp/ticket_api_lib_test.log; tail -n 120 /tmp/ticket_api_lib_test.log",
+              "explanation": "Captures full test output to a log file and prints the tail for diagnostics.",
+              "goal": "Inspect silent cargo test failure",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Core validation is aligned with expectations: 110 passes and only the pre-existing move_planner failure remains. I’m now running the new CLI and HTTP-focused tests, then I’ll verify MCP build/tests and clear the real orphaned lease on ORPHAN-TICKET.",
+      "captured_at": "2026-07-11T13:15:27.292Z",
+      "event_meta": {
+        "event_id": "95da4f4e-39e9-489f-9c78-7f850c74fadf",
+        "parent_event_id": "6f390099-7cda-4db1-9dcf-af36dafddd28",
+        "event_type": "assistant.message",
+        "message_id": "51eb167f-afe1-458b-bfea-89fbb4414034",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gqt5GIuO4f4A2X7PBwZGHZTl",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cargo test -p ticket-cli --test integration_workflow_crud unclaim_clears_stale_orphaned_lease_without_board_entry",
+              "explanation": "Runs the new CLI integration regression test for orphaned lease cleanup via unclaim.",
+              "goal": "Validate CLI release path behavior",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_D7qs117ns3oZgwDS1WG0BNui",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cargo test -p ticket-http release_ticket_lease_clears_stale_orphaned_lease release_ticket_lease_returns_conflict_for_live_other_holder",
+              "explanation": "Runs HTTP handler tests for the new release-lease route semantics.",
+              "goal": "Validate HTTP parity for release_lease",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MgvkEPQnIO35AJJwHuUcJsIj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cargo test -p ticket-mcp",
+              "explanation": "Runs ticket-mcp tests/build to validate new board_release_lease tool compiles and passes.",
+              "goal": "Validate MCP parity changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "I’m at the final functional step now: using the new CLI release path against the root store to remove the stale ORPHAN-TICKET lease and then verifying it is gone from `leases`.",
+      "captured_at": "2026-07-11T13:16:16.307Z",
+      "event_meta": {
+        "event_id": "d57b0553-ffeb-4e93-83cc-de14208b1530",
+        "parent_event_id": "0f43163f-10aa-4418-882f-1e9a593524fe",
+        "event_type": "assistant.message",
+        "message_id": "22f77efa-7dd4-410c-9889-60e9bdbc10bb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xwtco1jMZ6qsYAtiSA8S4IiV",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd .. && ./target/debug/ticket --json --workspace . leases",
+              "explanation": "Lists active leases in the root ticket store before clearing the known orphaned lease.",
+              "goal": "Confirm orphaned lease presence in root store",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "Implemented end-to-end handoff for lease release parity and orphan cleanup.\n\nCompleted work\n\n1. CLI wired to owner/stale-aware lease release\n- Added requester flag to unclaim args in [memory-api/tools/cli/ticket-cli/src/cli/args/core.rs](memory-api/tools/cli/ticket-cli/src/cli/args/core.rs).\n- Updated unclaim flow to:\n  - resolve requester from --agent or active board agent fallback\n  - still perform board check-out when active entry exists\n  - always call release_lease so orphaned leases can be cleared without a board entry\n- Code: [memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs](memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs).\n\n2. Orphan bug fixed in board_check_out\n- Changed board_check_out to always attempt lease release using release_lease, even if board entry completion fails.\n- This prevents lease orphaning when entry is already gone.\n- Code: [memory-api/crates/ticket-api/src/storage/store/board.rs](memory-api/crates/ticket-api/src/storage/store/board.rs).\n\n3. Regression coverage added\n- Store-level regression:\n  - board entry removed first, then board_check_out still clears lease\n  - [memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs](memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs).\n- CLI integration regression:\n  - stale lease remains after stale board entry cleanup, then unclaim clears it with no board entry\n  - [memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs](memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs).\n\n4. MCP parity added\n- New MCP input type for lease release:\n  - [memory-api/tools/mcp/ticket-mcp/src/server/types.rs](memory-api/tools/mcp/ticket-mcp/src/server/types.rs).\n- New MCP tool implementation:\n  - board_release_lease wired to release_lease semantics\n  - lease conflicts returned as tool invalid params conflict-style message\n  - [memory-api/tools/mcp/ticket-mcp/src/server/board.rs](memory-api/tools/mcp/ticket-mcp/src/server/board.rs).\n- Tool registration and help surface updated:\n  - [memory-api/tools/mcp/ticket-mcp/src/server.rs](memory-api/tools/mcp/ticket-mcp/src/server.rs)\n  - [memory-api/tools/mcp/ticket-mcp/src/server/workflow.rs](memory-api/tools/mcp/ticket-mcp/src/server/workflow.rs).\n\n5. HTTP parity added\n- Added route:\n  - POST /api/tickets/{id}/release-lease\n  - [memory-api/tools/http/ticket-http/src/serve/routes.rs](memory-api/tools/http/ticket-http/src/serve/routes.rs).\n- Added handler and request/response types:\n  - [memory-api/tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs](memory-api/tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs)\n  - [memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs](memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs).\n- Added HTTP tests for stale-orphan success and live-lease conflict:\n  - [memory-api/tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs](memory-api/tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs).\n\n6. Docs updated\n- CLI README updated with lease command semantics including unclaim --agent behavior:\n  - [memory-api/tools/cli/ticket-cli/README.md](memory-api/tools/cli/ticket-cli/README.md).\n- MCP README updated to include board_release_lease:\n  - [memory-api/tools/mcp/ticket-mcp/README.md](memory-api/tools/mcp/ticket-mcp/README.md).\n\nValidation run\n\n1. Core library suite\n- Ran: cargo test -p ticket-api --lib\n- Result: 110 passed, 1 failed.\n- Remaining failure is the known unrelated one:\n  - storage::move_planner::tests::preflight_reports_invisible_reference_visibility_and_path_refs\n- This matches your handoff note and was not changed.\n\n2. CLI regression\n- Ran focused test:\n  - integration_workflow_crud::unclaim_clears_stale_orphaned_lease_without_board_entry\n- Result: passed.\n\n3. HTTP regressions\n- Ran focused tests with filter release_ticket_lease\n- Result: both new tests passed.\n\n4. MCP suite\n- Ran: cargo test -p ticket-mcp\n- Result: all tests passed.\n\nOrphan lease cleanup executed\n\n- Before: root-store leases included ORPHAN-TICKET 82d6ada4-ac35-45a7-9df6-7b7501d58e70 held by copilot and expired.\n- Executed unclaim via new CLI path against root workspace with explicit requester.\n- After: leases count dropped from 26 to 25, and ORPHAN-TICKET is no longer listed.\n\nTicket state updates completed\n\n- LEASE-TICKET moved to in-review, then closed to done in memory-api workspace:\n  - ca7e0388-ee5c-41c7-8385-7de6817ce261 now done.\n\nCheckpoint suggestion\n\nTicket ca7e0388 is now closed, good checkpoint for a commit. Suggested message:\n1. fix(ticket-api): wire release_lease across cli mcp http and prevent board checkout orphaned leases",
+      "captured_at": "2026-07-11T13:17:51.864Z",
+      "event_meta": {
+        "event_id": "dfa8ae63-1b55-4db3-b9e1-666b037ce963",
+        "parent_event_id": "c637777a-eb7a-4fbe-a3fe-36f8feb6d290",
+        "event_type": "assistant.message",
+        "message_id": "74d3cc95-c3f5-442f-b735-f8bdc8180f09",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "user",
+      "content": "/handoff commit and summarize your work and what was done",
+      "captured_at": "2026-07-11T13:19:39.050Z",
+      "event_meta": {
+        "event_id": "1cdddef4-aae6-48e4-9971-35ac9b9ea847",
+        "parent_event_id": "6c69cf13-07c4-4668-8703-5da466a5d50d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "I’ll finalize this by creating a real commit for the memory-api changes (staging only the files from this implementation track), then I’ll produce the requested compact handoff prompt summarizing what was completed and what remains. I’m checking diffs now to avoid including unrelated workspace noise.",
+      "captured_at": "2026-07-11T13:19:53.592Z",
+      "event_meta": {
+        "event_id": "848e8186-951a-488b-8ef2-9991a287115b",
+        "parent_event_id": "9b85d254-01b4-4705-9825-39893e83eca6",
+        "event_type": "assistant.message",
+        "message_id": "bb2c30b3-9799-4cdd-914e-3b28ecda8584",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_MIZlmhBsPPXW5xiSaZ2WEu2A",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && git status --short",
+              "explanation": "Lists changed files in memory-api to prepare a precise commit.",
+              "goal": "Identify commit candidates",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TVcADhDr35NRXHNNUcUhoonv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && git diff -- crates/ticket-api/src/storage/store/board.rs crates/ticket-api/src/storage/tests/workflow_tests.rs tools/cli/ticket-cli/src/cli/args/core.rs tools/cli/ticket-cli/src/cli/commands/lifecycle.rs tools/cli/ticket-cli/tests/integration_workflow_crud.rs tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs tools/http/ticket-http/src/serve/handlers/tickets/types.rs tools/http/ticket-http/src/serve/routes.rs tools/mcp/ticket-mcp/src/server.rs tools/mcp/ticket-mcp/src/server/board.rs tools/mcp/ticket-mcp/src/server/types.rs tools/mcp/ticket-mcp/src/server/workflow.rs tools/cli/ticket-cli/README.md tools/mcp/ticket-mcp/README.md",
+              "explanation": "Shows diff for the files changed in this lease-release implementation track.",
+              "goal": "Verify exact patch content before commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I found one unrelated ticket artifact pair in memory-api (UUID starting 835b332b) and will leave it untouched; I’m staging only the lease-release implementation files plus the LEASE-TICKET state updates, then committing with a conventional message.",
+      "captured_at": "2026-07-11T13:20:05.297Z",
+      "event_meta": {
+        "event_id": "e150c52e-1dab-4367-9666-e35472878696",
+        "parent_event_id": "504b5aaf-1651-4fe6-afd1-61f3f3034dcb",
+        "event_type": "assistant.message",
+        "message_id": "1e371ff3-a6a1-44b6-8ce4-32c132e48d95",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_JhwtF0wQME2OYOKRI0ZQ7mwR",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && git add crates/ticket-api/src/storage/store/board.rs crates/ticket-api/src/storage/tests/workflow_tests.rs tools/cli/ticket-cli/README.md tools/cli/ticket-cli/src/cli/args/core.rs tools/cli/ticket-cli/src/cli/commands/lifecycle.rs tools/cli/ticket-cli/tests/integration_workflow_crud.rs tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs tools/http/ticket-http/src/serve/handlers/tickets/types.rs tools/http/ticket-http/src/serve/routes.rs tools/mcp/ticket-mcp/README.md tools/mcp/ticket-mcp/src/server.rs tools/mcp/ticket-mcp/src/server/board.rs tools/mcp/ticket-mcp/src/server/types.rs tools/mcp/ticket-mcp/src/server/workflow.rs .ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/history.ndjson .ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/ticket.toml && git commit -m \"fix(ticket-api): wire lease release across cli mcp http and cleanup orphans\"",
+              "explanation": "Stages only relevant implementation/doc/ticket files and creates the commit for this track.",
+              "goal": "Commit completed lease-release transport parity work",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "I’ve committed both the memory-api implementation and the root submodule-pointer update; I’ll now generate the handoff prompt in the required format with strict ticket IDs, linked entities, execution-ordered next steps, and completion status. I’m fetching the exact commit IDs first for accurate references.",
+      "captured_at": "2026-07-11T13:20:23.402Z",
+      "event_meta": {
+        "event_id": "bf131e12-9b78-4bc6-a13b-33231e4a71b0",
+        "parent_event_id": "627c66ea-e3b4-4bee-b8c6-34aaf4a08cd2",
+        "event_type": "assistant.message",
+        "message_id": "5c034ec7-0ebb-42f4-8f11-b3efb5692466",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HJfNjpo4h9DMsYcaNJv6vMqw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && git rev-parse --short HEAD && git show --no-patch --oneline HEAD && cd .. && git show --no-patch --oneline HEAD",
+              "explanation": "Captures exact commit hashes/titles for handoff references.",
+              "goal": "Include authoritative commit references in handoff",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "~~~text\n### Overview\nThis track is implementation-complete and committed: lease release semantics are now exposed across CLI, MCP, and HTTP; `board_check_out` now cleans orphaned leases even when the board entry is already gone; the orphaned stale lease on ticket `82d6ada4-ac35-45a7-9df6-7b7501d58e70` was cleared and verified absent from lease listings. Two commits were created: `3ac9718` in `memory-api` and `6acc17c8` in the parent repo (submodule pointer update).\n\n### Shorthand And Placeholder Legend\n- `LEASE-TICKET` -> `ca7e0388-ee5c-41c7-8385-7de6817ce261` (`[ticket-api] Lease-release capability — owner/stale release semantics + transport parity + orphaned-lease cleanup`)\n- `ORPHAN-TICKET` -> `82d6ada4-ac35-45a7-9df6-7b7501d58e70`\n- `<workspace-root>` -> [./](./)\n- `<memory-api>` -> [./memory-api](./memory-api)\n\n### Ticket Legend\n- `LEASE-TICKET` -> `ca7e0388-ee5c-41c7-8385-7de6817ce261` (`[ticket-api] Lease-release capability — owner/stale release semantics + transport parity + orphaned-lease cleanup`)\n- `ORPHAN-TICKET` -> `82d6ada4-ac35-45a7-9df6-7b7501d58e70` (root-store ticket that previously carried a stale `copilot` lease)\n\n### Findings\n- `release_lease` owner/stale semantics were already present and retained; transports now call through consistently.\n- The orphaning bug was real: `board_check_out` could fail on missing board entry and leave the lease behind.\n- CLI `unclaim` previously depended on active board entry context; it now also releases leases directly with requester-aware semantics.\n- HTTP had no explicit lease-release endpoint; MCP had no explicit lease-release board tool.\n- Root-store lease count dropped from `26` to `25` after clearing `ORPHAN-TICKET`, and `ORPHAN-TICKET` disappeared from `leases` output.\n\n### Decisions\n- Kept API semantics strict (holder release always allowed; stale release allowed by any requester; live other-holder returns conflict).\n- Implemented transport parity by wiring existing `release_lease` rather than inventing divergent transport-only logic.\n- Fixed orphan behavior in `board_check_out` by always attempting lease release, even when board completion fails.\n\n### Blockers\n- No hard blockers for this track.\n- Known unrelated failure still present in lib sweep: `storage::move_planner::tests::preflight_reports_invisible_reference_visibility_and_path_refs`.\n\n### Long-Horizon Goal\n- Close and keep closed lease-orphan hygiene for ticket-api transports: all lease-release semantics remain identical across CLI/MCP/HTTP, and board exit paths do not leak stale leases.\n\n### Next Actions (Execution Order)\n1. First concrete action: verify current dirty state before any additional work, especially unrelated files in `memory-api` ticket `835b332b-8c1f-4423-bf21-4fac7aa7c8f7`.\n2. First validation check: run `cargo test -p ticket-api --lib` in [./memory-api](./memory-api) and expect `110 passed` with the one known unrelated move-planner failure unless independently fixed.\n3. If shipping/pushing: push `memory-api` commit `3ac9718`, then push parent repo commit `6acc17c8`.\n4. Optional hygiene follow-up: evaluate whether to clear additional stale leases in root store now that release path is available.\n\n### Completion Status\n- CLI wiring to `release_lease`: `completed` (including orphan/no-board-entry path via `unclaim`).\n- CLI/lib validation: `completed` (focused tests passed; lib run matched known unrelated failure profile).\n- `board_check_out` orphan fix: `completed` (store logic updated + regression test added).\n- MCP parity: `completed` (`board_release_lease` tool added and surfaced in help/docs).\n- HTTP parity: `completed` (new `release-lease` route + tests).\n- ORPHAN lease clear: `completed` (`82d6ada4-ac35-45a7-9df6-7b7501d58e70` removed from lease list).\n- Docs and ticket closure: `completed` (`LEASE-TICKET` moved through `in-review` to `done`).\n\n### Key Entities\n- Lease core behavior: [./memory-api/crates/ticket-api/src/storage/store/board.rs](./memory-api/crates/ticket-api/src/storage/store/board.rs) (source of truth for claim/unclaim/release/check-out logic).\n- Store regressions: [./memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs](./memory-api/crates/ticket-api/src/storage/tests/workflow_tests.rs) (owner/stale + orphan check-out cleanup coverage).\n- CLI args and release path: [./memory-api/tools/cli/ticket-cli/src/cli/args/core.rs](./memory-api/tools/cli/ticket-cli/src/cli/args/core.rs), [./memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs](./memory-api/tools/cli/ticket-cli/src/cli/commands/lifecycle.rs).\n- CLI integration regression: [./memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs](./memory-api/tools/cli/ticket-cli/tests/integration_workflow_crud.rs).\n- MCP parity wiring: [./memory-api/tools/mcp/ticket-mcp/src/server/types.rs](./memory-api/tools/mcp/ticket-mcp/src/server/types.rs), [./memory-api/tools/mcp/ticket-mcp/src/server/board.rs](./memory-api/tools/mcp/ticket-mcp/src/server/board.rs), [./memory-api/tools/mcp/ticket-mcp/src/server.rs](./memory-api/tools/mcp/ticket-mcp/src/server.rs), [./memory-api/tools/mcp/ticket-mcp/src/server/workflow.rs](./memory-api/tools/mcp/ticket-mcp/src/server/workflow.rs).\n- HTTP parity wiring: [./memory-api/tools/http/ticket-http/src/serve/routes.rs](./memory-api/tools/http/ticket-http/src/serve/routes.rs), [./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs](./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/mutations.rs), [./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs](./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs), [./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs](./memory-api/tools/http/ticket-http/src/serve/handlers/tickets/tests/mutations.rs).\n- Docs updated: [./memory-api/tools/cli/ticket-cli/README.md](./memory-api/tools/cli/ticket-cli/README.md), [./memory-api/tools/mcp/ticket-mcp/README.md](./memory-api/tools/mcp/ticket-mcp/README.md).\n- Ticket records:\n  - `LEASE-TICKET`: [./memory-api/.ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/ticket.toml](./memory-api/.ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/ticket.toml)\n  - `ORPHAN-TICKET`: [./.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml](./.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml)\n\n### Commit Summary\n- `memory-api` commit: `3ac9718` — `fix(ticket-api): wire lease release across cli mcp http and cleanup orphans`\n- Parent repo commit: `6acc17c8` — `chore: update memory-api submodule pointer for lease-release parity`\n\n### Board / Persisted Session Notes\n- No active board entries were required to finish this track.\n- Unrelated dirty state remains outside this change set:\n  - root workspace has `.session/*`, `Cargo.lock`, and unrelated submodule dirt.\n  - `memory-api` still has unrelated modifications under ticket `835b332b-8c1f-4423-bf21-4fac7aa7c8f7`.\n- No transcript replay is required to continue; durable findings and code/test artifacts above are sufficient.\n\n### Definition Of Done\n- `release_lease` callable with identical owner/stale semantics from CLI, MCP, and HTTP.\n- `board_check_out` no longer leaves orphaned leases when board entry is missing.\n- `ORPHAN-TICKET` stale lease cleared and confirmed absent from `leases`.\n- Relevant tests pass, with only the documented unrelated move-planner failure remaining in the broad lib sweep.\n- LEASE-TICKET `ca7e0388-ee5c-41c7-8385-7de6817ce261` progressed through `in-review` to `done`.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~",
+      "captured_at": "2026-07-11T13:20:49.857Z",
+      "event_meta": {
+        "event_id": "41089f4f-5b46-4920-8a73-8bc90ea11f3a",
+        "parent_event_id": "42386ec7-7360-4224-b740-39981ab9d560",
+        "event_type": "assistant.message",
+        "message_id": "8fff57fb-4b46-4c8f-8d6e-f4d9bcb1a964",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

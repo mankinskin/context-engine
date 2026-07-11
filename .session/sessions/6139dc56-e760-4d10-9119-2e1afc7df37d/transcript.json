@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "session_id": "6139dc56-e760-4d10-9119-2e1afc7df37d",
+  "captured_at": "2026-07-10T12:37:30.189Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "we are having multiple issues with the rule-cli tool:\r\n- the sync-targets call is slow and probably inefficient. we should detect actually changed rules and only do work that is actually necessary\r\n- in the outputs of sync-targets, we see mixed path separators (windows and unix)\r\n\r\nHere is the handoff from the last session that aimed to improve the documentation aswell. Please work systematically and plan the implementation that should be done in the next session.\r\n\r\nOverview\r\nThis handoff covers a full review track for rule-system audit integration: the general manual exists but is only partially integrated, there is no explicit audit-cli surface to run rule-overlap as a targeted pass, and generated policy outputs still include many fine-grained snippets that make the guidance hard to use during operational triage.\r\n\r\nLong-Horizon Goal\r\nDeliver a usable, explicit, and operator-friendly rule-audit workflow where users can run a dedicated rule-overlap pass from audit-cli, understand what it measures from policy/manual docs, and act on reduced/noise policy guidance that avoids over-fragmented snippet output.\r\n\r\nFindings\r\n- High: audit-cli has no explicit user-facing command or selector for a rule-overlap-only pass; current surface is only run/summary and overlap appears as one metric line in run output.\r\n  - Evidence: [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L68), [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L595), [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L761)\r\n  - CLI confirmation: [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L68) plus observed help output listing only run/move/store-index/summary.\r\n- High: manual guidance is present but still thin on operational semantics (what lexical-overlap means, how thresholds are interpreted, and when to choose full run vs targeted review); this limits usability for rule cleanup sessions.\r\n  - Evidence: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md#L124)\r\n- Medium: manual integration is split across policy instruction output and README examples, but there is no explicit, first-class command contract for “rule audit pass” despite new overlap-trial behavior in audit-api.\r\n  - Evidence: [memory-api/tools/cli/audit-cli/README.md](./memory-api/tools/cli/audit-cli/README.md#L38), [memory-api/crates/audit-api/src/audit.rs](./memory-api/crates/audit-api/src/audit.rs#L24), [memory-api/crates/audit-api/src/trials/rule_overlap.rs](./memory-api/crates/audit-api/src/trials/rule_overlap.rs#L119)\r\n- Medium: generated policy files are structurally fragmented into many small rule snippets, which reduces readability for “single pass” operator docs and creates cognitive overhead.\r\n  - Evidence anchor for current generated instruction surface: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md)\r\n\r\nDecisions Already Made In This Session\r\n- Removed handoff-specific audit checkpoint language from handoff prompts and kept rule-audit guidance in general policy/manual surfaces.\r\n  - Files: [./.agents/prompts/handoff.prompt.md](./.agents/prompts/handoff.prompt.md), [./.agents/prompts/handoff-tickets.prompt.md](./.agents/prompts/handoff-tickets.prompt.md)\r\n- Added general Rule Audit Manual content into the audit policy rule source/output.\r\n  - Source rule entry: [./.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md](./.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md)\r\n  - Generated output: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md#L124)\r\n\r\nBlockers\r\n- Product/UX contract gap: no explicit audit-cli mode for a targeted rule-overlap pass, which is the core user complaint.\r\n- Documentation contract gap: manual text does not yet explain overlap semantics and action thresholds deeply enough to drive consistent operator behavior.\r\n- Policy readability gap: generated instruction segmentation still feels too granular for a practical “manual pass” workflow.\r\n\r\nKey Entities\r\n- [474eb962 session-audit policy update planning ticket](./.ticket/tickets/474eb962-b68f-4651-b980-c4c9233b2710/ticket.toml): most recent ticket that touched policy guidance rollout.\r\n- [2d8d0487 session_audit tracker](./.ticket/tickets/2d8d0487-1680-424c-816d-01925e187e62/ticket.toml): parent session-audit integration work already marked done.\r\n- [2663a981 audit-cli unified session_audit interface](./.ticket/tickets/2663a981-d279-45dc-abc0-42270491dca6/ticket.toml): done ticket proving current CLI work focused on session audits, not explicit rule-overlap mode.\r\n- [5e99cc3e session_audit spec contract](./.ticket/tickets/5e99cc3e-5b9e-4ca1-a54c-cbdf82444b50/ticket.toml): done contract definition ticket.\r\n- [627d4152 session_audit implementation ticket](./.ticket/tickets/627d4152-36a7-4b24-9a9c-5f047abcac60/ticket.toml): done implementation ticket.\r\n- [audit instruction output](./.agents/instructions/audit.instructions.md): current policy/manual text users read.\r\n- [audit-cli source](./memory-api/tools/cli/audit-cli/src/cli.rs): command-surface evidence and overlap rendering points.\r\n- [rule-overlap trial implementation](./memory-api/crates/audit-api/src/trials/rule_overlap.rs): lexical-overlap detection and finding generation behavior.\r\n\r\nBoard And Persisted-Session Notes\r\n- Board currently has one active unrelated entry owned by copilot-interop on log-api files; no stale entries and no ownership conflict with this rule/policy review path.\r\n- If resuming implementation, avoid touching owned files listed by board state and continue in policy/rule/audit-cli surfaces first.\r\n\r\nNext Actions (Execute In Order)\r\n1. Define explicit audit-cli rule-pass surface.\r\n- Add a dedicated selector (for example a run mode/flag) that lets operators run or focus on rule-overlap explicitly.\r\n- Keep compatibility with existing run output; document exact behavior in CLI help and README.\r\n2. Expand the manual from “what command to run” to “what result means.”\r\n- In audit policy docs, define lexical-overlap interpretation, expected threshold semantics, and concrete remediation playbook.\r\n- Include examples of triage outcomes: no-op, dedup, merge, and keep-separate with rationale.\r\n3. Reduce policy snippet fragmentation for operator-facing guidance.\r\n- Consolidate micro-snippets into a coherent section for rule-audit operations while preserving rule-system traceability.\r\n- Validate regenerated outputs remain readable and actionable.\r\n4. Validate end-to-end usability.\r\n- Run audit-cli help and representative runs, then confirm users can discover and execute the explicit rule pass without reading source.\r\n- Record before/after findings quality and operator actionability.\r\n5. Update ticket/spec traceability for this review track.\r\n- Link resulting implementation/doc changes to the active ticket set and capture validation evidence.\r\n\r\nFirst Concrete Action\r\n- Open [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs) and design the minimal explicit pass selector in the existing command model.\r\n\r\nFirst Validation Check\r\n- Re-run audit-cli help and confirm the explicit rule-pass surface is visible and understandable from CLI help alone.\r\n\r\nCompletion Status\r\n- Action 1: not-started — explicit rule-pass selector not implemented yet.\r\n- Action 2: in-progress — manual section added, but semantics/threshold depth is still insufficient.\r\n- Action 3: not-started — snippet consolidation not implemented.\r\n- Action 4: not-started — no end-to-end usability validation for explicit pass (feature missing).\r\n- Action 5: in-progress — baseline ticket linkage exists, but follow-up implementation tickets/spec links for explicit pass are still needed.\r\n\r\nDefinition Of Done\r\n- audit-cli exposes an explicit, documented rule-overlap pass surface.\r\n- Manual/policy docs explain what overlap measures and how to act on results.\r\n- Generated policy output presents a usable, consolidated operator section rather than fragmented micro-guidance.\r\n- Validation confirms operators can discover and run the pass directly from CLI help/docs.\r\n- Ticket/spec links and evidence are updated and resolvable.\r\n\r\nInstruction To Next Session\r\nExecute the next actions in order and continue until all are completed or explicitly blocked; if blocked, record the concrete blocker, evidence, and smallest viable follow-up slice.",
+      "captured_at": "2026-07-10T12:27:25.582Z",
+      "event_meta": {
+        "event_id": "bcf99f0e-21be-4b86-b903-8985e0864957",
+        "parent_event_id": "a6e7a437-0068-44fb-ab4a-b7bdf9dda6e0",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I'll investigate the rule-cli tool to understand the `sync-targets` implementation and diagnose both issues. Let me start by locating the relevant source.",
+      "captured_at": "2026-07-10T12:27:32.915Z",
+      "event_meta": {
+        "event_id": "d0016006-cff0-4b44-baf1-9d97704acb84",
+        "parent_event_id": "92656dd3-1993-4740-9781-3fbdd02bd38b",
+        "event_type": "assistant.message",
+        "message_id": "49d89585-86ff-45de-ae48-768a3fc1da50",
+        "reasoning_text": "The user is flagging two specific problems with rule-cli: the sync-targets command is inefficient because it doesn't detect which rules have actually changed, and it's producing inconsistent path separators across Windows and Unix systems. They want me to work through a systematic plan for addressing these issues in the next session.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01JQYJ3ZeNn56WppRUUjS8VP",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/rule-cli/**/*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01SKZkNVmvrMfB6YMs4M34M2",
+            "name": "grep_search",
+            "arguments": {
+              "query": "sync-targets|sync_targets|SyncTargets",
+              "isRegexp": true
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "The core logic is likely in a rule-api crate. Let me find the sync-targets implementation and the target generation code.",
+      "captured_at": "2026-07-10T12:27:40.417Z",
+      "event_meta": {
+        "event_id": "eff4bd3e-5f98-44ca-95fa-35c2127acf9d",
+        "parent_event_id": "4a49db52-d5f6-411b-8451-4435d4e4cbcf",
+        "event_type": "assistant.message",
+        "message_id": "569c0246-cc81-492a-b6ef-24a579e23f94",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015Fog8EZzQvsy73Tt53Xssx",
+            "name": "grep_search",
+            "arguments": {
+              "isRegexp": true,
+              "query": "fn sync_targets|fn generate_target|fn render_target|SyncTargets|pub fn sync",
+              "includePattern": "memory-api/**"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01VugUESA216ME28sMw2BeHM",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/rule-api/**/*.rs"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "Now let me find `sync_targets_payload` and the rendering/write logic where path separators appear.",
+      "captured_at": "2026-07-10T12:27:52.782Z",
+      "event_meta": {
+        "event_id": "f39a32c1-d68b-4b84-aa9e-0744ee26679a",
+        "parent_event_id": "a131285a-3360-44f8-be7b-063b18086799",
+        "event_type": "assistant.message",
+        "message_id": "200a3b10-2d16-4fa3-9829-e8d7db2434f0",
+        "reasoning_text": "I need to locate where `sync_targets_payload` is defined and trace back to the write function to understand where the path separators are being set.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_013t2RAk5ez9ZGKtn2ng8Eni",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": "memory-api/**",
+              "isRegexp": true,
+              "query": "fn sync_targets_payload|fn generate_target_payload|fn write_generated_output|fn ensure_generated_output_matches"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Let me examine how the store is opened/scanned per run and how the `output` field is serialized, to confirm both the efficiency and path-separator root causes.",
+      "captured_at": "2026-07-10T12:28:22.963Z",
+      "event_meta": {
+        "event_id": "46f67425-33f3-4dc6-b569-efde6a547b45",
+        "parent_event_id": "f54cd8ee-3d91-462a-b70f-042623940f15",
+        "event_type": "assistant.message",
+        "message_id": "880cfd15-b2af-4419-9457-ab859ffe3347",
+        "reasoning_text": "I see the sync mechanism now — every target gets regenerated and written to disk unconditionally on each run, with no change detection, which is why it's inefficient. The process scans the store first, then syncs generated artifacts for spec docs, and the `write_generated_output` function always upserts regardless of whether anything actually changed. The thinking cuts off mid-sentence about the \"output\" field in the JSON payload.\n\nLooking at the path separator issue: the `output` field is a `Path` that renders with backslashes on Windows, but `stable_output_key` normalizes everything to forward slashes. So when the JSON payload serializes, the `output` uses raw backslashes while `output_path` in records uses forward slashes — that's where the mixed separators come from. In `sync_targets_command`, generated entries include the raw `PathBuf` which serializes with platform-specific separators, while `removed` entries reference `record.output_path` which is already normalized, creating that inconsistency in the output the user is seeing.\n\nFor efficiency, I'm seeing several redundancies: `sync_targets_payload` re-renders and writes every target regardless of whether anything changed, with no change detection based on hashing or modification times. `collect_target_rules` runs twice per target — once in `ensure_no_zero_match_targets` and again in `generate_target_payload`. And opening a SpecStore per target (with its own scan operation) is expensive when processing multiple targets. Let me trace through the dispatch flow to see where these inefficiencies compound.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_016EwAKZWj4UhVZLgUvjrjki",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 120,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\dispatch.rs",
+              "startLine": 1
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_0137s77cFoYPzyjWEh39VHJZ",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 120,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\helpers.rs",
+              "startLine": 240
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I have a clear picture of both root causes. Let me check for existing tickets/specs on this before planning, and confirm the workspace.",
+      "captured_at": "2026-07-10T12:29:08.892Z",
+      "event_meta": {
+        "event_id": "d6571aa1-7bd9-47b4-9896-528e3183ab34",
+        "parent_event_id": "36e3a166-fa75-45d4-9883-c8668693fa6b",
+        "event_type": "assistant.message",
+        "message_id": "31373e70-50fb-4c71-b85b-9ac83980a121",
+        "reasoning_text": "I'm checking how the output gets serialized to the user and whether the mixed separator issue shows up in the CLI's TOON rendering. I need to verify the scan behavior too — specifically whether `store.scan(reindex)` runs on every sync and how expensive `discover_child_scan_roots` might be.\n\nLooking at the efficiency concerns: sync re-renders and writes every target unconditionally, even when content hasn't changed, which wastes disk I/O. For spec-doc targets, each one opens a SpecStore and scans it separately, which is costly. There's also redundant rule collection happening — `ensure_no_zero_match_targets` collects rules for all targets, then `generate_target_payload` collects them again per-target, doubling the work.\n\nI could optimize by hashing the rendered content and comparing it to the existing file to skip writes when nothing's changed, though that approach has its own tradeoffs.\n\nNow I'm noticing a path-separator inconsistency in the output: generated entries use OS-specific separators (backslashes on Windows) while removed entries use forward slashes, creating mixed separators in the same sync-targets output.\n\nThe fix is straightforward—normalize all path outputs to forward slashes with a helper function applied consistently across `output`, `config`, and other path fields. I've confirmed the JSON emission point where this happens, so I have a clear picture of what needs changing.\n\nFor the next session, the user wants a systematic implementation plan rather than just a diagnosis. I should create tracking tickets and a spec following the repo's protocol, then outline the concrete steps needed to resolve both the unnecessary re-renders and the path-separator issues. I see the mcp tools are already available in my function definitions, so I can call them directly without needing a separate tool_search. Let me search for existing tickets and specs related to rule-cli sync-targets.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_014uy9kUEikfi4MxNnAQxQc2",
+            "name": "mcp_rmcp5_list_tickets",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "query": "sync-targets rule-cli path separator performance"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01TqQsxz3cDzdQQgowArkbLR",
+            "name": "mcp_rmcp3_spec_search",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "query": "rule-cli sync-targets generated targets"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Let me quantify the target set to size the hotspots, and confirm the JSON `output` serialization is the mixed-separator source.",
+      "captured_at": "2026-07-10T12:29:35.876Z",
+      "event_meta": {
+        "event_id": "401fb12d-2542-4c4e-82d7-e220fb1aefe4",
+        "parent_event_id": "384b82dc-f0de-4d4a-966e-dc0039c0a2f4",
+        "event_type": "assistant.message",
+        "message_id": "6ee1fbf7-9e79-44c6-9e54-6536079a7f2f",
+        "reasoning_text": "I need to verify a few things about the store scan cost and whether `discover_child_scan_roots` is expensive, plus check the exact output serialization to confirm my findings. The JSON payload itself contains the mixed separators, so whatever renders it will display them correctly. I'm going to time the current sync-targets to get concrete numbers, though I might skip that for now.\n\nLooking at the actual implementation, `write_generated_output` doesn't skip when content is unchanged, `generate_target_payload` always renders, and `ensure_no_zero_match_targets` does double-collection. The real issue is that spec-doc targets open and scan a SpecStore per target — each call to `write_spec_generated_output` triggers `open_spec_store_for_artifact` which opens the store and scans it fresh. For rule-targets.yaml with multiple spec-doc targets, this means the spec store gets reopened and rescanned repeatedly, which is a significant bottleneck. I need to check how many targets and spec-doc targets actually exist in rule-targets.yaml to quantify the impact.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EY28548Pva886ccpfLXWqM",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": "rule-targets/**,rule-targets.yaml",
+              "isRegexp": true,
+              "query": "file_kind:\\s*spec-doc|name:|output:"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Let me confirm whether the store scan is already incremental, so the plan targets the right layer.",
+      "captured_at": "2026-07-10T12:29:58.458Z",
+      "event_meta": {
+        "event_id": "89256698-4509-4eeb-bb81-5f14f8bc10c5",
+        "parent_event_id": "7ecf3da0-f082-4101-b7d8-b25899379a5b",
+        "event_type": "assistant.message",
+        "message_id": "cb47538d-0cba-4681-b187-c87a2fe346c1",
+        "reasoning_text": "I'm looking at the structure of this configuration system with a root `rule-targets.yaml` that imports multiple subdirectories, each containing specialized target definitions. The 50-agents-instructions section is particularly substantial since each instruction file generates its own output, creating a large volume of generated files across the entire hierarchy.\n\nEvery run fully re-renders and rewrites all these outputs, and the spec-doc targets repeatedly reopen and scan the SpecStore. I have enough evidence now to write up a comprehensive plan. Since the user asked me to plan for the next session, I'll create a spec describing the desired behavior—incremental change-detecting sync-targets with normalized path separators—along with tracking tickets in the memory-api workspace following repo policy. I'm planning three tickets: a parent planning/design ticket, one for normalizing path separators in sync-targets output, and another for implementing skip-unchanged writes and incremental rendering.\n\nLet me verify the path separator issue by tracing the output flow to be certain, then create the artifacts. I'm confident the problem exists: `\"output\"` is a PathBuf serialized with OS separators, while `removed[].output` and `record.output_path` use forward slashes—inconsistent. The top-level `\"config\"` is also a PathBuf. I should also confirm whether the store scan is already doing incremental indexing based on modification times, or if it's doing a full reindex each time. The user's main complaint centers on the render and write side—detecting what actually changed.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01VT6qsgfteah26xqffzZ8cA",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": "memory-api/**",
+              "isRegexp": true,
+              "query": "fn scan\\(|fn discover_child_scan_roots|content_hash|mtime|modified"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I now have complete evidence for both problems and the layered inefficiency. Let me record the plan as a spec plus tracked tickets in the `memory-api` workspace (where `rule-api`/`rule-cli` live).",
+      "captured_at": "2026-07-10T12:30:59.322Z",
+      "event_meta": {
+        "event_id": "b4f66f06-1f41-4da6-9a87-e5f8544c013f",
+        "parent_event_id": "3ef42c5b-5a4f-428f-99aa-7024918192c1",
+        "event_type": "assistant.message",
+        "message_id": "9f52df75-032b-4268-9a17-547e826b9c0f",
+        "reasoning_text": "Every sync run reads and re-parses every rule entry from disk, then reintegrates it into the metadata index regardless of whether anything changed—the search index gets skipped unless explicitly reindexed, but the metadata insert happens unconditionally for every entity. With a large rule store, this linear cost per run adds up significantly, and I now have solid evidence for both the performance issues and where the inefficiency originates.\n\nI'm going to write up a spec with tickets for the memory-api workspace. The plan covers two main fixes: normalizing path separators across all payload fields by introducing a display path normalizer that converts backslashes to forward slashes consistently, and making the sync incremental by tracking content hashes or modification times per entity so we skip re-integration when nothing has actually changed. I'll organize this into a spec and a set of implementation tickets with dependencies: one for path normalization, another for skipping unchanged writes and consolidating the collection logic, and a third for incremental store scanning. Let me start by drafting the spec to establish the contract.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01LWK6VfgBjchix3Mtn87HMC",
+            "name": "mcp_rmcp3_spec_create",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "title": "rule-cli sync-targets: incremental work and normalized path output",
+              "slug": "rule-cli/sync-targets/incremental-and-normalized-paths",
+              "component": "rule-cli",
+              "body": "<!-- aligned-structure:v1 -->\n\n# Summary\n\n`rule sync-targets` is slow and emits inconsistent path separators. This spec\ndefines two contract changes: (1) sync must only perform work for rules/targets\nwhose inputs or outputs actually changed, and (2) every path field in the\ncommand output must use forward-slash separators regardless of host OS.\n\n# Problem / Current State\n\n## Inefficiency (redundant work every run)\n\nThree layers each re-do full work on every invocation, independent of whether\nany rule changed:\n\n1. Store scan is non-incremental. `EntityStore::scan_once` walks every rule\n   folder, reads+parses every manifest, and calls `integrate_entry` which\n   inserts every entity into the metadata index unconditionally — no mtime or\n   content-hash short-circuit.\n   - Evidence: `memory-api/crates/memory-api/src/storage/entity_store.rs` scan_once + integrate_entry.\n2. Target rules are collected twice. `sync_targets_payload` runs\n   `ensure_no_zero_match_targets` (a full `collect_target_rules` pass over all\n   targets) and then `generate_target_payload` collects the same rules again\n   per target.\n   - Evidence: `memory-api/tools/cli/rule-cli/src/cli/rendering.rs` sync_targets_payload / ensure_no_zero_match_targets / generate_target_payload.\n3. Outputs are re-written unconditionally. `write_generated_output` always\n   writes even when the prepared content equals the on-disk content, and each\n   spec-doc target reopens and re-scans a fresh `SpecStore`\n   (`open_spec_store_for_artifact` -> `SpecStore::open` + `scan`) per target.\n\n## Mixed path separators\n\nThe JSON/TOON payload mixes separators within a single run:\n- `generated[].output` and top-level `config` are emitted as raw `PathBuf`,\n  which serializes with OS separators (backslashes on Windows).\n- `removed[].output` uses `stable_output_key`, which normalizes to `/`.\n- Evidence: `memory-api/tools/cli/rule-cli/src/cli/rendering.rs`\n  sync_target_payload_entry (`\"output\": output`) vs `stable_output_key`.\n\n# Scope\n\n- `rule sync-targets` (and shared paths in `generate-target`, MCP `generate`)\n  command output and write behavior.\n- Store-level incremental scan for the rule entity store.\n\n# Non-Goals\n\n- Changing the rule authoring format or generated-file markup.\n- Changing which targets exist or their rendered content.\n- A filesystem watcher / daemon mode.\n\n# Acceptance Criteria\n\n1. Path normalization: every path field in `sync-targets` output (`config`,\n   `generated[].output`, `removed[].output`) uses `/` separators on all hosts.\n   A unit test asserts no `\\\\` appears in any emitted path on Windows-style\n   inputs. `generate-target` and MCP `generate` payloads are consistent.\n2. Skip-unchanged writes: when a target's prepared output byte-equals the\n   existing file, sync does not rewrite the file. Payload reports a per-target\n   `changed: bool` (or equivalent) so callers can see what was actually written.\n3. Single collection pass: target rules are collected at most once per target\n   per run (zero-match validation reuses the collected result).\n4. Spec-store reuse: a single `SpecStore` is opened once per sync run and reused\n   across all spec-doc targets instead of reopening per target.\n5. Incremental store scan: re-running sync with no changed rule files performs\n   no per-entity metadata re-integration for unchanged entities (verified by a\n   test that counts integrate/index writes, or by an mtime/hash guard).\n6. `sync-targets --check` behavior and the pre-commit drift gate remain\n   correct: unchanged inputs pass, drift still fails.\n\n# Traceability / Evidence\n\n- Tickets: linked in this spec's ticket set (tracker + implementation tickets).\n- Validation: `cargo test -p rule-cli`, `cargo test -p rule-api`,\n  `cargo test -p memory-api`; plus a timing before/after of\n  `rule sync-targets --config rule-targets.yaml` and a `--check` no-op run.\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Now the tracker and implementation tickets.",
+      "captured_at": "2026-07-10T12:31:43.530Z",
+      "event_meta": {
+        "event_id": "235bc2b6-5579-49c3-b433-307c99831fe9",
+        "parent_event_id": "09471094-19a2-4783-8280-07e74e56a644",
+        "event_type": "assistant.message",
+        "message_id": "66a11f31-2166-4011-9d62-abe3024a96ba",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01DHU9PwAUwPMpMmeHDVaAh1",
+            "name": "mcp_rmcp5_create_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "type": "tracker-improvement",
+              "title": "[rule-cli] sync-targets: incremental work + normalized path output",
+              "description": "Tracker for fixing two `rule sync-targets` defects.\n\nSpec: rule-cli/sync-targets/incremental-and-normalized-paths (9c7c0655-436c-4cd8-a3d3-2d893f1d865c)\n\nProblems:\n1. Slow/inefficient: full work every run (non-incremental store scan, double rule collection, unconditional writes, per-target SpecStore reopen).\n2. Mixed path separators in output (raw PathBuf backslashes vs normalized forward slashes).\n\nChildren:\n- Normalize path separators in sync-targets output.\n- Skip-unchanged writes + single collection pass + spec-store reuse.\n- Incremental rule store scan (mtime/hash short-circuit).\n\nDone when all children are done and spec acceptance criteria pass with before/after timing captured."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01UHkYJKYXQBrT7bSJ3JAPC1",
+            "name": "mcp_rmcp5_create_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "type": "tracker-improvement",
+              "title": "[rule-cli] Normalize path separators in sync-targets output",
+              "description": "Every path field in sync-targets output must use `/` separators on all hosts.\n\nRoot cause: `sync_target_payload_entry` emits `\"output\": output` as a raw `PathBuf` (OS separators; backslashes on Windows) and `sync_targets_command` emits `\"config\": args.config` the same way, while `removed[].output` uses `stable_output_key` (forward-slash normalized) -> mixed separators in one payload.\n\nFiles:\n- memory-api/tools/cli/rule-cli/src/cli/rendering.rs (sync_target_payload_entry `\"output\": output`, sync_targets_payload removed entries)\n- memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs (sync_targets_command `\"config\"`, generate_target_command `\"output\"`, explain_target_command `\"output\"`)\n- memory-api/tools/mcp/rule-mcp/src/server/generate.rs (mirror for MCP consistency)\n\nPlan:\n- Add a small `display_path(&Path) -> String` helper that canonicalizes display to forward slashes (reuse the existing `.to_string_lossy().replace('\\\\', \"/\")` pattern already in `stable_output_key`).\n- Apply it to all path fields emitted by generate-target / sync-targets / explain-target and MCP generate.\n\nAcceptance:\n- Unit test asserts no `\\\\` in any emitted path field given Windows-style input paths.\n- generate-target and MCP generate payloads consistent.\n\nValidation: cargo test -p rule-cli; cargo test -p rule-mcp."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01UJxk7dPUB28czcZ5x2tRuD",
+            "name": "mcp_rmcp5_create_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "type": "tracker-improvement",
+              "title": "[rule-cli] sync-targets: skip unchanged writes, single collection pass, reuse SpecStore",
+              "description": "Reduce redundant per-run work in sync_targets_payload without changing generated content.\n\nRoot causes (memory-api/tools/cli/rule-cli/src/cli/rendering.rs):\n1. Double collection: `ensure_no_zero_match_targets` runs `collect_target_rules` over every target, then `generate_target_payload` collects the same rules again per target.\n2. Unconditional writes: `write_generated_output` always writes even when prepared content byte-equals the existing file.\n3. Per-target SpecStore reopen: `write_spec_generated_output`/`ensure_spec_generated_output_matches` call `open_spec_store_for_artifact` -> `SpecStore::open` + `scan(false)` for every spec-doc target.\n\nPlan:\n- Collect target rules once per target; feed the collected Vec into both zero-match validation and rendering (remove the separate full pre-pass, or have it reuse cached results).\n- In write_generated_output, compare `prepared` to existing and skip `fs::write` when equal; surface a per-target `changed: bool` in the payload entry.\n- Open one SpecStore per sync run (keyed by workspace root) and reuse it across spec-doc targets.\n\nAcceptance (from spec 9c7c0655):\n- AC2 skip-unchanged writes with `changed` flag in payload.\n- AC3 single collection pass.\n- AC4 SpecStore opened once per run.\n- AC6 `--check` and pre-commit drift gate still correct.\n\nValidation: cargo test -p rule-cli; cargo test -p rule-api; before/after timing of `rule sync-targets --config rule-targets.yaml`."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_011oFjWP3WT2Wgku4nQb4AhM",
+            "name": "mcp_rmcp5_create_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "type": "tracker-improvement",
+              "title": "[memory-api] Incremental entity-store scan (mtime/hash short-circuit)",
+              "description": "Make `EntityStore::scan` skip re-integration for unchanged entities so sync-targets (and other store consumers) do not re-read+re-index every rule every run.\n\nRoot cause: memory-api/crates/memory-api/src/storage/entity_store.rs `scan_once` walks every entity, `entity_fs::scan_root` reads+parses every manifest, and `integrate_entry` inserts every entity into the metadata index unconditionally. No mtime/content-hash guard.\n\nPlan (design first — this is the highest-risk change):\n- Track a per-entity fingerprint (manifest mtime and/or content hash) in the index sidecar / metadata index.\n- During non-reindex scan, skip `integrate_entry` (and the manifest read where possible) when the fingerprint is unchanged.\n- Preserve correctness of forced reindex (`reindex=true`) and pruning of deleted entities.\n- Keep search-index invariants intact (search_needs_rebuild path unaffected).\n\nNotes:\n- This crate is shared across rule/ticket/spec/log/audit stores, so scope the change carefully and add a regression test that counts index writes across two consecutive no-change scans.\n\nAcceptance (spec 9c7c0655 AC5):\n- Re-running sync with no changed rule files performs no per-entity metadata re-integration for unchanged entities.\n\nValidation: cargo test -p memory-api; cargo test -p rule-api; cargo test -p rule-cli."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Let me record the concrete ticket links in the spec's traceability.",
+      "captured_at": "2026-07-10T12:32:08.611Z",
+      "event_meta": {
+        "event_id": "d3ef48aa-f660-4dfe-a389-e9b1c0aa5ca8",
+        "parent_event_id": "3747ed9c-62e3-4c41-b3be-44dfee0f57ab",
+        "event_type": "assistant.message",
+        "message_id": "d6c665e7-8cb8-47f7-96f9-2bd26b4e741d",
+        "reasoning_text": "I need to add concrete ticket paths to the spec to establish traceability between the specification and the actual tickets, rather than keeping the references abstract.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_016Fjxwb9PvJP88KGqccc82m",
+            "name": "mcp_rmcp3_spec_section_add",
+            "arguments": {
+              "content": "Tracker:\n- 6e7f9bd6 [rule-cli] sync-targets: incremental work + normalized path output\n  (.ticket/tickets/6e7f9bd6-80e8-4f0d-86d9-128eb257eb32/ticket.toml)\n\nImplementation (children):\n- 2dc02b9b Normalize path separators in sync-targets output\n  (.ticket/tickets/2dc02b9b-7e94-4cb4-82c4-83e4359792cb/ticket.toml) -> AC1\n- 69b38924 skip unchanged writes, single collection pass, reuse SpecStore\n  (.ticket/tickets/69b38924-485a-41fb-bdc8-1423b5d82cc2/ticket.toml) -> AC2, AC3, AC4, AC6\n- 45f5f58e Incremental entity-store scan (mtime/hash short-circuit)\n  (.ticket/tickets/45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d/ticket.toml) -> AC5\n\nValidation evidence (to capture in next session):\n- cargo test -p rule-cli, -p rule-api, -p memory-api, -p rule-mcp (planned)\n- before/after timing of `rule sync-targets --config rule-targets.yaml` (planned)\n- `rule sync-targets --check` no-op run remains passing (planned)",
+              "id": "9c7c0655-436c-4cd8-a3d3-2d893f1d865c",
+              "name": "Ticket Traceability",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I investigated the `rule-cli` `sync-targets` path and captured a full diagnosis plus a tracked implementation plan. Note: your handoff was about the audit-cli rule-overlap docs track; your actual request here is the two `sync-targets` defects — I focused on those.\n\n## Root causes (verified in source)\n\n### 1. Mixed path separators\nWithin a single `sync-targets` payload, path fields disagree:\n- `generated[].output` and top-level `config` are emitted as raw `PathBuf`, which serde serializes with OS separators (backslashes on Windows) — [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs#L397) (`\"output\": output`) and [dispatch_secondary.rs](memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs#L93).\n- `removed[].output` uses `stable_output_key`, which already normalizes to `/` — [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs#L459).\n\nSo the fix is to route every emitted path through one forward-slash normalizer.\n\n### 2. Slow / redundant work — three layers, none change-aware\n- **Store scan is fully non-incremental.** `EntityStore::scan_once` walks every rule folder, re-reads+parses every manifest, and `integrate_entry` inserts every entity into the metadata index unconditionally — no mtime/hash guard — [entity_store.rs](memory-api/crates/memory-api/src/storage/entity_store.rs#L254) and [entity_store.rs](memory-api/crates/memory-api/src/storage/entity_store.rs#L369).\n- **Rules collected twice per run.** `ensure_no_zero_match_targets` does a full `collect_target_rules` pass over all targets, then `generate_target_payload` collects the same rules again per target — [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs#L251).\n- **Unconditional writes + per-target SpecStore reopen.** `write_generated_output` always writes even when content is byte-identical, and each spec-doc target reopens+rescans a fresh `SpecStore` — [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs#L107) and [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs#L204).\n\n## Recorded plan (spec + tickets, `memory-api` workspace)\n\nSpec: [rule-cli/sync-targets/incremental-and-normalized-paths](memory-api/.spec/specs/9c7c0655-436c-4cd8-a3d3-2d893f1d865c) — contract + 6 acceptance criteria.\n\n- [6e7f9bd6 tracker](memory-api/.ticket/tickets/6e7f9bd6-80e8-4f0d-86d9-128eb257eb32/ticket.toml) — parent, depends on the three below.\n- [2dc02b9b path-separator normalization](memory-api/.ticket/tickets/2dc02b9b-7e94-4cb4-82c4-83e4359792cb/ticket.toml) — smallest, fully independent; `display_path` helper applied to all emitted paths (rule-cli + rule-mcp).\n- [69b38924 sync efficiency](memory-api/.ticket/tickets/69b38924-485a-41fb-bdc8-1423b5d82cc2/ticket.toml) — single collection pass, skip-unchanged writes with a `changed` flag, reuse one SpecStore per run.\n- [45f5f58e incremental store scan](memory-api/.ticket/tickets/45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d/ticket.toml) — highest-risk (shared crate across rule/ticket/spec/log/audit); mtime/hash fingerprint to skip re-integration of unchanged entities.\n\n## Suggested next-session order\n1. **2dc02b9b** first — small, isolated, immediate visible win (path output).\n2. **69b38924** — biggest sync-time reduction with contained risk (rule-cli only).\n3. **45f5f58e** — design the fingerprint guard carefully since it touches the shared entity store; add a regression test counting index writes across two no-change scans.\n\nEach ticket carries its own validation commands; capture a before/after timing of `rule sync-targets --config rule-targets.yaml` plus a `--check` no-op run as the efficiency evidence.\n\nWant me to start executing ticket **2dc02b9b** (path normalization) now, or leave all three staged for the next session?",
+      "captured_at": "2026-07-10T12:32:40.129Z",
+      "event_meta": {
+        "event_id": "28994f5b-9e50-4a81-84cb-4112baec87d1",
+        "parent_event_id": "974a02d8-1a40-4792-aa74-e74858cdf4a1",
+        "event_type": "assistant.message",
+        "message_id": "3b8c8a7f-2aab-4a18-bfd4-9ea39ff11e68",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "user",
+      "content": "/handoff the implementation",
+      "captured_at": "2026-07-10T12:36:30.311Z",
+      "event_meta": {
+        "event_id": "37dac8d9-8350-4c0b-92a1-ba3a448be163",
+        "parent_event_id": "bd7db156-0310-4ba0-bc54-e0571ec1f3fe",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "~~~text\n# Handoff — rule-cli sync-targets: incremental work + normalized path output\n\nThis session diagnosed two `rule sync-targets` defects reported by the user (slow/redundant work; mixed Windows/Unix path separators in output), verified the root causes in source, and recorded a full implementation plan as one spec plus a tracker and three implementation tickets in the `memory-api` ticket/spec store. No production code was changed yet — the next session executes the tickets in order. (Note: the prior handoff about audit-cli rule-overlap docs was set aside; the user's active request is the sync-targets defects.)\n\n## Shorthand And Placeholder Legend\n- `<MEM-WS>` = ticket/spec workspace selector: `c:/Users/linus/git/graph_app/context-engine/memory-api`\n- `SPEC` = spec `9c7c0655-436c-4cd8-a3d3-2d893f1d865c`\n- `TRACKER` = ticket `6e7f9bd6-80e8-4f0d-86d9-128eb257eb32`\n- `T-PATH` = ticket `2dc02b9b-7e94-4cb4-82c4-83e4359792cb`\n- `T-SYNC` = ticket `69b38924-485a-41fb-bdc8-1423b5d82cc2`\n- `T-SCAN` = ticket `45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d`\n\n## Ticket Legend\n- `TRACKER` → `6e7f9bd6-80e8-4f0d-86d9-128eb257eb32` — \"[rule-cli] sync-targets: incremental work + normalized path output\"\n- `T-PATH` → `2dc02b9b-7e94-4cb4-82c4-83e4359792cb` — \"[rule-cli] Normalize path separators in sync-targets output\"\n- `T-SYNC` → `69b38924-485a-41fb-bdc8-1423b5d82cc2` — \"[rule-cli] sync-targets: skip unchanged writes, single collection pass, reuse SpecStore\"\n- `T-SCAN` → `45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d` — \"[memory-api] Incremental entity-store scan (mtime/hash short-circuit)\"\n\n## Long-Horizon Goal\n`rule sync-targets` runs fast by doing work only for rules/targets that actually changed, and emits every path field with forward-slash separators on all hosts, without altering generated file content or the `--check` drift gate. Tracked by `TRACKER`.\n\n## Findings (root causes, verified in source)\n- Mixed separators: `generated[].output` and top-level `config` are emitted as raw `PathBuf` (OS separators; backslashes on Windows), while `removed[].output` is forward-slash-normalized via `stable_output_key` → mixed within one payload. See [./memory-api/tools/cli/rule-cli/src/cli/rendering.rs](./memory-api/tools/cli/rule-cli/src/cli/rendering.rs) (`\"output\": output`, `stable_output_key`) and [./memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs](./memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs) (`\"config\"`, `generate_target`/`explain_target` `\"output\"`).\n- Non-incremental store scan: `scan_once` walks every entity, re-reads+parses every manifest, and `integrate_entry` inserts every entity into the metadata index unconditionally — no mtime/hash guard. See [./memory-api/crates/memory-api/src/storage/entity_store.rs](./memory-api/crates/memory-api/src/storage/entity_store.rs) and [./memory-api/crates/memory-api/src/storage/entity_fs.rs](./memory-api/crates/memory-api/src/storage/entity_fs.rs).\n- Double rule collection: `ensure_no_zero_match_targets` collects all targets, then `generate_target_payload` re-collects the same rules per target. See `sync_targets_payload` in [./memory-api/tools/cli/rule-cli/src/cli/rendering.rs](./memory-api/tools/cli/rule-cli/src/cli/rendering.rs).\n- Unconditional writes + per-target SpecStore reopen: `write_generated_output` always writes even when byte-identical; each spec-doc target reopens+rescans a fresh `SpecStore` via `open_spec_store_for_artifact`. Same file as above.\n- MCP mirror: [./memory-api/tools/mcp/rule-mcp/src/server/generate.rs](./memory-api/tools/mcp/rule-mcp/src/server/generate.rs) has parallel `write_generated_output`/`generate_target_payload` to keep consistent.\n\n## Decisions Made This Session\n- Split work into three independent implementation tickets under one tracker; recorded the contract (6 acceptance criteria) in `SPEC`.\n- `T-PATH` is fully independent and lowest-risk; do it first.\n- `T-SCAN` is highest-risk because the entity store is shared across rule/ticket/spec/log/audit stores; design the fingerprint guard carefully and add a regression test counting index writes across two no-change scans.\n\n## Key Entities\n- [SPEC — sync-targets contract](./memory-api/.spec/specs/9c7c0655-436c-4cd8-a3d3-2d893f1d865c) — acceptance criteria AC1–AC6 and ticket traceability section; the source of truth for \"done\".\n- [TRACKER ticket](./memory-api/.ticket/tickets/6e7f9bd6-80e8-4f0d-86d9-128eb257eb32/ticket.toml) — parent; `depends_on` all three children.\n- [T-PATH ticket](./memory-api/.ticket/tickets/2dc02b9b-7e94-4cb4-82c4-83e4359792cb/ticket.toml) — path normalization (AC1).\n- [T-SYNC ticket](./memory-api/.ticket/tickets/69b38924-485a-41fb-bdc8-1423b5d82cc2/ticket.toml) — skip-unchanged writes, single collection pass, SpecStore reuse (AC2, AC3, AC4, AC6).\n- [T-SCAN ticket](./memory-api/.ticket/tickets/45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d/ticket.toml) — incremental entity-store scan (AC5).\n\n## Next Actions (execute in order)\n1. `T-PATH`: add a `display_path(&Path) -> String` helper (reuse the `to_string_lossy().replace('\\\\', \"/\")` pattern already in `stable_output_key`) and route every emitted path field (rule-cli `sync-targets`/`generate-target`/`explain-target` and rule-mcp `generate`) through it. Add a unit test asserting no `\\` in emitted path fields. Move `T-PATH` new → in-implementation → in-review before close.\n2. `T-SYNC`: collect target rules once per target and feed both zero-match validation and rendering; in `write_generated_output` skip `fs::write` when `prepared` byte-equals existing and surface a per-target `changed: bool`; open one `SpecStore` per sync run and reuse across spec-doc targets. Keep `--check` drift behavior correct.\n3. `T-SCAN`: design a per-entity fingerprint (manifest mtime and/or content hash) in the index sidecar; skip `integrate_entry` for unchanged entities on non-reindex scans; preserve forced-reindex and prune-deleted correctness; add the two-consecutive-scan regression test.\n4. After each ticket: run its validation; then re-run `rule sync-targets --config rule-targets.yaml` and a `rule sync-targets --check` no-op run; capture before/after timing as efficiency evidence in `SPEC`.\n5. Update `SPEC` traceability with validation results; close children then `TRACKER`.\n\n## First Concrete Action\nOpen [./memory-api/tools/cli/rule-cli/src/cli/rendering.rs](./memory-api/tools/cli/rule-cli/src/cli/rendering.rs), add the `display_path` helper, and replace `\"output\": output` (and the `config` field in [./memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs](./memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs)) with normalized values.\n\n## First Validation Check\n`cargo test -p rule-cli` passes, including a new test asserting emitted `sync-targets` path fields contain no `\\` separator.\n\n## Completion Status\n- `T-PATH` (AC1): not-started — normalization helper not written yet.\n- `T-SYNC` (AC2/AC3/AC4/AC6): not-started.\n- `T-SCAN` (AC5): not-started — design step required before coding.\n- Validation/timing evidence: not-started — capture after each ticket.\n- `SPEC`/`TRACKER` closure: not-started — pending children.\n\n## Definition Of Done\n- All `sync-targets` output path fields use `/` on all hosts; `generate-target` and MCP `generate` consistent (AC1).\n- Unchanged targets are not rewritten; payload reports `changed` per target (AC2).\n- Target rules collected at most once per target per run (AC3).\n- One `SpecStore` opened per sync run (AC4).\n- Re-running sync with no changed rule files does no per-entity re-integration for unchanged entities (AC5).\n- `--check` and the pre-commit drift gate still pass on unchanged inputs and fail on drift (AC6).\n- `SPEC` traceability updated with validation results and before/after timing; children and `TRACKER` closed.\n\n## Board / Session Notes\n- No board check-in was made this session (planning only). Before implementing, check in on `TRACKER` and claim the files listed in Findings so no overlap with other agents.\n- Prior board state showed one unrelated active entry (copilot-interop on log-api files) — no conflict with the rule-cli/entity-store paths above.\n- Ticket/spec workspace selector for all commands: `<MEM-WS>`.\n\n## Instruction To Next Session\nExecute the Next Actions in order and continue until all are completed or explicitly blocked. If blocked, record the concrete blocker, evidence, and the smallest viable follow-up slice on the relevant ticket and in `SPEC`.\n~~~",
+      "captured_at": "2026-07-10T12:37:30.189Z",
+      "event_meta": {
+        "event_id": "28387153-383f-42a1-b73d-bb34adb4cf6b",
+        "parent_event_id": "d38df6d1-2a87-4ae9-af0f-de824a5c961f",
+        "event_type": "assistant.message",
+        "message_id": "fd589160-0710-4b28-a12d-737c2807c536",
+        "reasoning_text": "I'm preparing the handoff document for the next session to continue with the rule-cli sync-targets implementation, gathering the relevant specs and ticket references to include in the formatted handoff. I need to set up the handoff documentation with proper shorthands and file paths, using markdown links and repo-root-relative references for the ticket and spec files.",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

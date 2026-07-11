@@ -1,0 +1,1239 @@
+{
+  "schema_version": 1,
+  "session_id": "f78683b9-a378-46de-b4f8-d1769c4297e9",
+  "captured_at": "2026-07-10T12:09:19.746Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "1. how can I sync a rule target after updating the target file to update source rules?\r\n2. rules generating a full file currently miss the tracibility rule header. even a full file generated from a rule needs this for tracibility\r\n3. the handoff prompt seems to be duplicated in multiple rules. We need to add audit endpoints to run audits on the rule database and detect large overlap or lexical similarity between rules\r\n4. we need to benchmark the rule-api calls for generating targets or syncing files and run them on various representative workspaces.",
+      "captured_at": "2026-07-10T01:58:52.067Z",
+      "event_meta": {
+        "event_id": "a70154bd-3072-42e2-a1b8-47e68956055d",
+        "parent_event_id": "e7ba8155-9643-4a6b-a01a-a9dbb2b6709e",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m going to inspect the existing rule tooling, prompt/rule entries, and any audit or benchmark scaffolding so I can implement concrete changes for sync guidance, traceability headers on full-file generation, overlap detection endpoints, and benchmarking coverage. I’ll gather that context first, then patch and validate.I’m now locating the rule sync pipeline, rule-api endpoint surface, and existing benchmark patterns so the edits land in the right crates and tests.",
+      "captured_at": "2026-07-10T01:59:00.212Z",
+      "event_meta": {
+        "event_id": "c232eb4d-d669-4b09-b6ac-f3ee0d979f70",
+        "parent_event_id": "8d286fb0-a9cb-4df9-9e67-27f9e64694c4",
+        "event_type": "assistant.message",
+        "message_id": "3f26e92e-4299-40a5-b89d-96f65cdbe354",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_iG7Rbfkywgsme7IsCkrRmIxk",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/*rule*",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_s91gNQoANReyDljqxIgpDfmA",
+            "name": "grep_search",
+            "arguments": {
+              "query": "sync-targets|rule-api|traceability|generated=true|rule target|sync targets",
+              "isRegexp": true,
+              "includePattern": "**/*.{rs,md,toml,yaml,yml}",
+              "maxResults": 300
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZorIHcxct9X6RmaivQFoYxAM",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/tools/cli"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AXc2U3rtolbAHNwtfY3vJkBj",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/crates"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "I found plenty of rule/sync references and confirmed generated marker usage, but the core Rust crates are under subfolders (for example memory-api/crates), not root crates. Next I’m drilling into rule-api, rule-cli, and audit crates to implement the four requested improvements directly.",
+      "captured_at": "2026-07-10T01:59:08.689Z",
+      "event_meta": {
+        "event_id": "428e12e3-ccab-4721-a3aa-51628b2ab8ba",
+        "parent_event_id": "878e47fc-76df-4856-9f13-2bcd258a8f5a",
+        "event_type": "assistant.message",
+        "message_id": "bb4d0524-334c-47e6-880e-ebfe7899d3a7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xydxZkpw0K8xHDETOUF5r1Qq",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zQ0xM4mEIWu4G6NURwQcX4xm",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IZ7fMZM1qo2pFR8gyQCuSx4A",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/rule-api/**"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DtTnJibYnmpU7JFV0rePRppC",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/tools/rule-cli/**"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_flAk3h4qtmRc5KXYudFLy2B2",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/audit-api/**"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I identified the exact crates: changes will likely span memory-api/crates/rule-api, memory-api/tools/cli/rule-cli, and memory-api/crates/audit-api. Next I’m reading the applicable instruction file and the key source files before patching.",
+      "captured_at": "2026-07-10T01:59:22.149Z",
+      "event_meta": {
+        "event_id": "2d2341c7-b73a-4092-b82c-2674f863f0b6",
+        "parent_event_id": "4a700eee-852f-4beb-8cfa-7e9e7c40f9f4",
+        "event_type": "assistant.message",
+        "message_id": "9fc57c99-f590-4006-8bdf-c1ae03ed88a1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0Tm4fiv2KVrjVRKunc4yYLGb",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.agents/instructions/audit.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_OUb3FNmsx064jEhB4hZOaysV",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pH09jLoN1PaDw4Osmz3d6IGc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/render.rs",
+              "startLine": 1,
+              "endLine": 280
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WaY7XRXzORXLgwEhRQjRa90I",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/rule-cli/src/cli/rendering.rs",
+              "startLine": 1,
+              "endLine": 420
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I’ve pinpointed the likely root cause for item 2: rule rendering currently intentionally omits provenance markers when a rule body starts with frontmatter. I’m now checking shared markdown generation internals and the rule target model to implement a safe traceability-preserving fix.",
+      "captured_at": "2026-07-10T01:59:32.599Z",
+      "event_meta": {
+        "event_id": "0fc5c89c-7c2e-4aa8-a07b-30a5ee2deb4c",
+        "parent_event_id": "c85f407c-e39a-45f8-832a-40ece4538792",
+        "event_type": "assistant.message",
+        "message_id": "dda1d71d-1c67-45e7-8c11-7e05020a3fc7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_oB8MS1gL2WB0QYCFQmuNrLGS",
+            "name": "grep_search",
+            "arguments": {
+              "query": "render_markdown_file|GeneratedMarkdownConfig|omits_provenance|frontmatter|generated=true",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/**",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QXl2irUhWqRAdKconz79kIti",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/memory-api/src/generated_markdown.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jQTSmIdAbWWznNQafxfKNV23",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/targets_model.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_3yHiTfLNqu8ab0YSzu44Uo6G",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/targets_loader.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cJ79k7nWfA1PxOFqPxTJG6y6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/rule-cli/README.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I now have enough context to start implementation. I’m going to add a new audit trial for rule overlap similarity, wire it through audit metrics/findings and CLI output, then add a rule-cli benchmark command for target generation/sync across multiple workspace roots.",
+      "captured_at": "2026-07-10T02:00:00.640Z",
+      "event_meta": {
+        "event_id": "04b420f9-d3df-41d2-b533-0a11e504359f",
+        "parent_event_id": "1092402a-8f48-464a-acda-f4838d666591",
+        "event_type": "assistant.message",
+        "message_id": "dcecbb80-ff99-4856-a678-70891127f304",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_M4lJsnvzIsjurm60s02t21us",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/audit-api/src/trials/file_length.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_aohIxq0TAYMWpSdOLv4J5yJd",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/audit-api/src/trials/static_metrics.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mb8Tnqouau1iOdaYZGE4rdnH",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/audit-api/src/trials/spec_fulfillment.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IfqTeKyp6niN0D0G1rQvDAdl",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/audit-cli/src/cli_tests.rs",
+              "startLine": 1,
+              "endLine": 280
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_aZNVrRkLm0rw9YhIr8haSFCD",
+            "name": "grep_search",
+            "arguments": {
+              "query": "render_human|render_summary_human|metrics\\.|spec_fulfillment|ticket_graph",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/audit-cli/src/cli.rs",
+              "maxResults": 120
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’m starting file edits now. First change is in shared markdown rendering so generated files with YAML frontmatter still carry provenance/traceability markers without breaking frontmatter position.",
+      "captured_at": "2026-07-10T02:01:12.575Z",
+      "event_meta": {
+        "event_id": "201b418f-4d36-487d-bd42-2812649cf3af",
+        "parent_event_id": "87e76db2-1ca1-4996-9805-1e1b71bfa7ad",
+        "event_type": "assistant.message",
+        "message_id": "98940cdf-c616-462b-8985-16e709ec5560",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_LewrVjaRS0hhysyfv3lQz8wJ",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Adjust generated markdown rendering so frontmatter files preserve frontmatter at top while still including provenance comments for traceability.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/memory-api/src/generated_markdown.rs\n@@\n pub fn render_markdown_file(\n     snippets: &[GeneratedMarkdownSnippet<'_>],\n     config: &GeneratedMarkdownConfig<'_>,\n ) -> String {\n-    let include_provenance_comments = !(config\n-        .skip_provenance_for_yaml_frontmatter\n-        && snippets\n-            .first()\n-            .is_some_and(|snippet| starts_with_yaml_frontmatter(&snippet.body)));\n     let mut rendered = String::new();\n+    let first_frontmatter = if config.skip_provenance_for_yaml_frontmatter {\n+        snippets\n+            .first()\n+            .and_then(|snippet| split_yaml_frontmatter(&snippet.body))\n+    } else {\n+        None\n+    };\n+\n+    if let Some((frontmatter, _)) = first_frontmatter {\n+        rendered.push_str(frontmatter.trim_end());\n+        rendered.push_str(\"\\n\\n\");\n+    }\n \n-    if include_provenance_comments {\n-        rendered.push_str(config.file_comment.as_ref());\n-    }\n+    rendered.push_str(config.file_comment.as_ref());\n \n     for (index, snippet) in snippets.iter().enumerate() {\n-        if include_provenance_comments {\n-            rendered.push_str(\"\\n\\n\");\n-            rendered.push_str(&format!(\n-                \"<!-- {} id={} slug={} -->\\n\",\n-                config.entry_prefix,\n-                snippet.id,\n-                snippet.slug.as_deref().unwrap_or_default(),\n-            ));\n-        } else if index > 0 {\n-            rendered.push_str(\"\\n\\n\");\n-        }\n-\n-        rendered.push_str(snippet.body.trim_end());\n+        rendered.push_str(\"\\n\\n\");\n+        rendered.push_str(&format!(\n+            \"<!-- {} id={} slug={} -->\\n\",\n+            config.entry_prefix,\n+            snippet.id,\n+            snippet.slug.as_deref().unwrap_or_default(),\n+        ));\n+\n+        let body = if index == 0 {\n+            first_frontmatter\n+                .map(|(_, remainder)| remainder)\n+                .unwrap_or(snippet.body.as_ref())\n+        } else {\n+            snippet.body.as_ref()\n+        };\n+\n+        rendered.push_str(body.trim_end());\n     }\n@@\n fn starts_with_yaml_frontmatter(body: &str) -> bool {\n-    body.lines()\n-        .next()\n-        .is_some_and(|line| line.trim_end_matches('\\r') == \"---\")\n+    split_yaml_frontmatter(body).is_some()\n+}\n+\n+fn split_yaml_frontmatter(body: &str) -> Option<(&str, &str)> {\n+    let normalized = body.replace(\"\\r\\n\", \"\\n\").replace('\\r', \"\\n\");\n+    if !normalized.starts_with(\"---\\n\") {\n+        return None;\n+    }\n+\n+    let closing_offset = normalized[4..].find(\"\\n---\\n\")?;\n+    let frontmatter_end = 4 + closing_offset + \"\\n---\\n\".len();\n+\n+    if frontmatter_end > body.len() {\n+        return None;\n+    }\n+\n+    Some((&body[..frontmatter_end], &body[frontmatter_end..]))\n }\n@@\n-    fn render_markdown_file_omits_provenance_when_body_starts_with_frontmatter() {\n+    fn render_markdown_file_keeps_frontmatter_first_and_emits_provenance() {\n         let rendered = render_markdown_file(\n             &[GeneratedMarkdownSnippet::new(\n                 \"prompt\",\n                 Some(\"context-engine/prompts/spec\"),\n                 \"---\\nname: spec\\n---\\nCreate a new spec entry.\\n\",\n             )],\n             &rule_like_config(),\n         );\n \n         assert_eq!(\n             rendered,\n-            \"---\\nname: spec\\n---\\nCreate a new spec entry.\\n\"\n+            \"---\\nname: spec\\n---\\n\\n<!-- generated:file true -->\\n\\n<!-- generated:entry id=prompt slug=context-engine/prompts/spec -->\\nCreate a new spec entry.\\n\"\n         );\n     }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Frontmatter traceability behavior is now changed at the shared renderer level and mirrored in rule-api tests. Next I’m wiring the new rule-overlap audit trial into audit-api and audit-cli so duplicate/near-duplicate rule content is reported in normal audit runs.",
+      "captured_at": "2026-07-10T02:01:34.689Z",
+      "event_meta": {
+        "event_id": "113e3fb2-27c7-48e8-b7f6-39d8b673d0ff",
+        "parent_event_id": "3185d131-d95c-4c65-bfff-960261f1397e",
+        "event_type": "assistant.message",
+        "message_id": "99f87905-be9d-40f6-aaa1-3053d1e83b70",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_JyaLbuZYWZ4sE07h24ViF5gJ",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add rule-overlap metric model and include it in audit metrics.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/audit-api/src/models.rs\n@@\n pub struct SpecFulfillmentSummary {\n@@\n }\n+\n+#[derive(Debug, Clone, Serialize, Deserialize)]\n+pub struct RuleOverlapSummary {\n+    pub status: TrialStatus,\n+    pub rules_considered: usize,\n+    pub compared_pairs: usize,\n+    pub high_overlap_pairs: usize,\n+    pub max_similarity: Option<f64>,\n+    pub details: Option<String>,\n+}\n+\n+impl RuleOverlapSummary {\n+    pub fn unavailable(details: impl Into<String>) -> Self {\n+        Self {\n+            status: TrialStatus::Unavailable,\n+            rules_considered: 0,\n+            compared_pairs: 0,\n+            high_overlap_pairs: 0,\n+            max_similarity: None,\n+            details: Some(details.into()),\n+        }\n+    }\n+\n+    pub fn not_applicable(details: impl Into<String>) -> Self {\n+        Self {\n+            status: TrialStatus::NotApplicable,\n+            rules_considered: 0,\n+            compared_pairs: 0,\n+            high_overlap_pairs: 0,\n+            max_similarity: None,\n+            details: Some(details.into()),\n+        }\n+    }\n+}\n@@\n pub struct AuditMetrics {\n@@\n     pub spec_fulfillment: SpecFulfillmentSummary,\n     pub ticket_graph: CountMetric,\n+    pub rule_overlap: RuleOverlapSummary,\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I’ve finished wiring the overlap audit into audit-api and audit-cli output. I’m now adding a rule-cli benchmarking command that measures target generation/sync across multiple workspace roots, including auto-discovery of representative workspaces.",
+      "captured_at": "2026-07-10T02:02:17.532Z",
+      "event_meta": {
+        "event_id": "d6eff5e3-03dc-41d9-b8e4-f301f09dc262",
+        "parent_event_id": "14685e3a-ccf9-4c24-aee7-922af34d1cc4",
+        "event_type": "assistant.message",
+        "message_id": "b3235f29-d97c-4c8c-8b46-4e7b70fc7726",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_2nhRo8eU2JnPjX3ecu7CiWUv",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add benchmark-targets CLI command and argument types.",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/rule-cli/src/cli/args.rs\n@@\n use clap::{\n     Args,\n     Parser,\n     Subcommand,\n+    ValueEnum,\n };\n@@\n     #[command(name = \"sync-targets\")]\n     SyncTargets(SyncTargetsArgs),\n+    #[command(name = \"benchmark-targets\")]\n+    BenchmarkTargets(BenchmarkTargetsArgs),\n     List(ListArgs),\n@@\n pub struct SyncTargetsArgs {\n@@\n     pub check: bool,\n }\n+\n+#[derive(Debug, Clone, Copy, ValueEnum)]\n+pub enum BenchmarkOperation {\n+    GenerateTarget,\n+    SyncTargets,\n+    Both,\n+}\n+\n+#[derive(Debug, Args)]\n+pub struct BenchmarkTargetsArgs {\n+    /// Target config path relative to each workspace root, or absolute.\n+    #[arg(long, default_value = \"rule-targets.yaml\")]\n+    pub config: PathBuf,\n+\n+    /// Target selector for generate-target benchmarks.\n+    #[arg(long)]\n+    pub target: Option<String>,\n+\n+    /// Operation to benchmark.\n+    #[arg(long, value_enum, default_value_t = BenchmarkOperation::Both)]\n+    pub operation: BenchmarkOperation,\n+\n+    /// Number of timed iterations per workspace/operation.\n+    #[arg(long, default_value_t = 5)]\n+    pub iterations: usize,\n+\n+    /// Repeat to benchmark multiple workspace roots explicitly.\n+    #[arg(long = \"workspace-root\")]\n+    pub workspace_roots: Vec<PathBuf>,\n+}\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "I’ve added the new CLI benchmark command plumbing. Next I’m running a targeted compile/tests pass because these model and enum changes can ripple into struct literals and exhaustive matches across audit and rule crates.",
+      "captured_at": "2026-07-10T02:03:59.780Z",
+      "event_meta": {
+        "event_id": "8ca9fd75-6566-4bec-8943-0a980b47518c",
+        "parent_event_id": "4a2313e6-37cb-4473-93c9-4be573c2bafc",
+        "event_type": "assistant.message",
+        "message_id": "f9efb07b-73df-448d-a050-db6191c69fe2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xbRngQl8yH3JKl0An3j17Qxa",
+            "name": "grep_search",
+            "arguments": {
+              "query": "AuditMetrics\\s*\\{|rule_overlap|RuleOverlapSummary",
+              "isRegexp": true,
+              "includePattern": "memory-api/**",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7vL4Zl8qbKAjv1Or5ud3TP8i",
+            "name": "grep_search",
+            "arguments": {
+              "query": "RuleCommandCli::[A-Za-z]+\\(|match cli\\.command|match command",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/rule-cli/src/**/*.rs",
+              "maxResults": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "All targeted tests are green. I’m doing one last scoped status check inside the memory-api submodule so I can report only the files touched for your four requests without mixing in unrelated workspace changes.",
+      "captured_at": "2026-07-10T02:07:57.005Z",
+      "event_meta": {
+        "event_id": "bdcb219c-88dd-46dc-b17e-79de3c771abd",
+        "parent_event_id": "a560739f-a405-4f79-a564-70940311ecc6",
+        "event_type": "assistant.message",
+        "message_id": "2747bcda-c0da-44b3-b5f2-66f8195f2b5a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_b3TScaomx8268YHLiip0ZxgE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short",
+              "explanation": "List modified files inside memory-api to capture the exact patch footprint.",
+              "goal": "Produce an accurate per-file summary of implemented changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I need your direction before I proceed: running `cargo fmt --all` in `memory-api` reformatted a very large set of files across the submodule, including many files outside the scope of your request. I can safely continue only after you choose one path:  \n1) I carefully revert formatting in non-target files (risk: could touch pre-existing edits if they overlap), or  \n2) I leave the broad formatting changes as-is and only report the functional changes I made.  \n\nIf you want option 1, I’ll do a guarded restore and stop if I detect overlap with your known in-progress files.I need your direction before I proceed: running `cargo fmt --all` in `memory-api` reformatted a very large set of files across the submodule, including many files outside the scope of your request. I can safely continue only after you choose one path:\n\n1. I carefully revert formatting in non-target files (risk: could touch pre-existing edits if they overlap).\n2. I leave the broad formatting changes as-is and only report the functional changes I made.\n\nIf you want option 1, I’ll do a guarded restore and stop if I detect overlap with your known in-progress files.",
+      "captured_at": "2026-07-10T02:08:20.059Z",
+      "event_meta": {
+        "event_id": "894a7f60-0c9e-4f73-a15d-47abfa051972",
+        "parent_event_id": "c05cdc67-9ca1-4e18-a82e-708c9e35a45a",
+        "event_type": "assistant.message",
+        "message_id": "9450ae38-5ffe-4eb5-95e2-50b3b24fd07d",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "user",
+      "content": "commit all the formatting changes and then your functional changes",
+      "captured_at": "2026-07-10T10:47:06.723Z",
+      "event_meta": {
+        "event_id": "cac294c4-0582-41cd-b9a8-5310449b4fe9",
+        "parent_event_id": "11fcd404-c0ce-461f-936f-5437e9fa5f4e",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "I’m going to split the current `memory-api` work into two commits by staging non-functional files first (formatting sweep), then committing the functional files in a second commit. I’ll verify the exact file set before each commit so nothing gets mixed.",
+      "captured_at": "2026-07-10T10:47:36.377Z",
+      "event_meta": {
+        "event_id": "d02f2c87-d578-4439-a81a-78c3412a2bbe",
+        "parent_event_id": "cc90766d-2521-47dd-801a-a3c45b336c25",
+        "event_type": "assistant.message",
+        "message_id": "482f8164-5f1a-4d4e-8d03-5467ee41d701",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_LwWLlw96vHq53ScoSjOTFazC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C memory-api status --short && echo '---' && rtk git -C memory-api diff --name-only",
+              "explanation": "Inspect the current memory-api working tree and list changed files to prepare a clean two-commit split.",
+              "goal": "Identify all changed files before staging formatting vs functional commits",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "I’ve identified a clean functional file list and will now create commit 1 by staging everything, then explicitly unstaging those functional files so the first commit is formatting-only. After that I’ll stage just the functional files for commit 2.",
+      "captured_at": "2026-07-10T10:47:53.924Z",
+      "event_meta": {
+        "event_id": "d8324669-29a7-424c-b4d7-026542825dcc",
+        "parent_event_id": "cac74732-5901-48df-9363-27d80bc1dbbe",
+        "event_type": "assistant.message",
+        "message_id": "27a31ec4-2fd0-43bd-ac35-3024f6ec2f4d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eVytbvF3W2ZmgxD6lUnEQNpz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && git add -A && git reset -- crates/memory-api/src/generated_markdown.rs crates/rule-api/src/render.rs crates/audit-api/Cargo.toml crates/audit-api/src/audit.rs crates/audit-api/src/models.rs crates/audit-api/src/store_index.rs crates/audit-api/src/trials/mod.rs crates/audit-api/src/trials/rule_overlap.rs tools/cli/audit-cli/src/cli.rs tools/cli/rule-cli/src/cli/args.rs tools/cli/rule-cli/src/cli/dispatch.rs tools/cli/rule-cli/src/cli/dispatch_secondary.rs tools/cli/rule-cli/src/cli/tests/tests_commands.rs tools/cli/rule-cli/src/cli/tests/tests_generate_targets.rs && rtk git status --short",
+              "explanation": "Stage all changes, then unstage known functional files to isolate formatting-only changes for the first commit.",
+              "goal": "Prepare a formatting-only commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I’ve got the split staged/unstaged; I’ll quickly verify the staged set is formatting-only, then make commit 1. After that I’ll stage the remaining functional files and commit 2.",
+      "captured_at": "2026-07-10T10:55:21.622Z",
+      "event_meta": {
+        "event_id": "f4eaf077-d293-4c53-97ab-349396df21e4",
+        "parent_event_id": "d46b02cf-b6d6-4d07-9926-4126069bb51f",
+        "event_type": "assistant.message",
+        "message_id": "81c2fa00-2bef-4e5f-b60c-86dd9a60aa85",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_AdwgVPiNTjOFRBm97bT0KcKb",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && echo 'STAGED:' && rtk git diff --cached --name-only && echo '---UNSTAGED:' && rtk git diff --name-only",
+              "explanation": "Verify staged vs unstaged file sets before creating the two commits.",
+              "goal": "Confirm commit 1 contains formatting-only files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "Both commits are created in `memory-api`. I’ll do a final status check and share the commit IDs so you can cherry-pick/push as needed.",
+      "captured_at": "2026-07-10T10:55:53.798Z",
+      "event_meta": {
+        "event_id": "cbee7df9-3892-4d43-84f7-39e4df9c031a",
+        "parent_event_id": "07ed38d6-70ac-4238-906b-168a71971d5e",
+        "event_type": "assistant.message",
+        "message_id": "7d54bdf6-fd72-4f95-a858-76cd89a0bbb9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_qhRzGmC5uC2QqEqx5lqzWWS0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk git status --short && rtk git --no-pager log --oneline -2",
+              "explanation": "Verify clean submodule state and show the two latest commits created.",
+              "goal": "Provide final commit confirmation",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "Completed. I created the two commits in the `memory-api` submodule in the order you requested:\n\n1. `c2536db`  \n   `chore(format): apply rustfmt across memory-api workspace`\n\n2. `aef1873`  \n   `feat(rule-api): add overlap auditing and target benchmark tooling`\n\nThe `memory-api` submodule working tree is clean after these commits.  \nIf you want, I can now update and commit the submodule pointer in the parent repo as a follow-up commit.",
+      "captured_at": "2026-07-10T10:55:59.291Z",
+      "event_meta": {
+        "event_id": "45cce0b4-b97a-4bc9-89af-b0545ef1a1ba",
+        "parent_event_id": "fbbcd5b9-d263-42f4-a776-6ef30b3d9db9",
+        "event_type": "assistant.message",
+        "message_id": "1cdc92d9-2efa-4df4-a867-09d0ed7c3ee6",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "user",
+      "content": "there are still formatting changes in memory-viewers and viewer-api",
+      "captured_at": "2026-07-10T11:38:23.829Z",
+      "event_meta": {
+        "event_id": "bcbc270d-cf4f-49f8-8140-0e3dcfd04133",
+        "parent_event_id": "f768fac2-238e-44a1-831d-5136dbbd8725",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "I’m checking `memory-viewers` and `viewer-api` directly now to confirm what formatting-only changes remain, then I’ll commit them in the proper nested order so the pointers stay consistent.",
+      "captured_at": "2026-07-10T11:38:35.336Z",
+      "event_meta": {
+        "event_id": "48cd501d-e6e5-4941-9e7c-b154d8943aca",
+        "parent_event_id": "357b704d-1298-4e5d-ae09-535acdba0d7d",
+        "event_type": "assistant.message",
+        "message_id": "84127688-657f-4ad7-bb0c-c889af2106c4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_s3TUswDUDE9SxK3qv8wqT3Nw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C /c/Users/linus/git/graph_app/context-engine/memory-viewers status --short",
+              "explanation": "Check pending changes in memory-viewers.",
+              "goal": "Identify remaining formatting changes in memory-viewers",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uK9PP0bgAnv5gphuhCrRsEJr",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C /c/Users/linus/git/graph_app/context-engine/viewer-api status --short",
+              "explanation": "Check pending changes in viewer-api.",
+              "goal": "Identify remaining formatting changes in viewer-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "I confirmed both repos still have unstaged edits; next I’ll commit `viewer-api` formatting first, then `memory-viewers`, then update submodule pointers in the root repo.",
+      "captured_at": "2026-07-10T11:38:49.142Z",
+      "event_meta": {
+        "event_id": "3b028bee-0388-4d1a-8e15-348df2b5e60d",
+        "parent_event_id": "895d87cf-9973-4376-9deb-b8d4b1994e1e",
+        "event_type": "assistant.message",
+        "message_id": "f7d7ebee-b9c8-4a0e-ad94-f3a3866952ac",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gm4xIWskt8KfCRDvCtDr9rY6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/viewer-api && git add -A && git commit -m \"chore(format): apply rustfmt for remaining viewer-api files\"",
+              "explanation": "Commit remaining formatting changes inside viewer-api submodule.",
+              "goal": "Create formatting commit in viewer-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Both formatting commits are in; I’m doing a final clean-state check for `viewer-api`, `memory-viewers`, and the root repo so we can confirm there are no leftover formatting edits.",
+      "captured_at": "2026-07-10T11:39:11.770Z",
+      "event_meta": {
+        "event_id": "1e4bbb9c-e292-4edf-afc5-703ac5d9f4f7",
+        "parent_event_id": "8035d362-0c97-46df-86d9-a3332f89e3c4",
+        "event_type": "assistant.message",
+        "message_id": "ef7b54d2-49e4-46d9-ae22-1fe42a8cd113",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Focy72HjG3fvpC9veBnWmufZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C /c/Users/linus/git/graph_app/context-engine/viewer-api status --short",
+              "explanation": "Verify viewer-api is clean after commit.",
+              "goal": "Confirm no remaining formatting edits in viewer-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_aVQvYhpAYtFOYlfeaK0aSfdb",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C /c/Users/linus/git/graph_app/context-engine/memory-viewers status --short",
+              "explanation": "Verify memory-viewers is clean after commit.",
+              "goal": "Confirm no remaining formatting edits in memory-viewers",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2hefOUwmG10NI60u4YYwUrHv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git -C /c/Users/linus/git/graph_app/context-engine status --short memory-viewers viewer-api",
+              "explanation": "Verify root pointer state after submodule pointer commit.",
+              "goal": "Confirm clean root state for related paths",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "Done. I committed the remaining formatting changes and updated root submodule pointers.\n\nNew commits:\n1. viewer-api: 668bf93\n   chore(format): apply rustfmt for remaining viewer-api files\n2. memory-viewers: 3cfd5bf\n   chore(format): apply rustfmt for remaining memory-viewers files\n3. context-engine root: ad948ad9\n   chore: update memory-viewers submodule pointer\n4. context-engine root: b980fb7d\n   chore: update viewer-api submodule pointer\n\nFinal check shows the related paths are clean in root for memory-viewers and viewer-api.",
+      "captured_at": "2026-07-10T11:39:28.577Z",
+      "event_meta": {
+        "event_id": "7e4b637a-b5ba-411b-b91f-71f98b8249b0",
+        "parent_event_id": "66895ce7-1dcb-46fb-be94-c9e3e3fdab45",
+        "event_type": "assistant.message",
+        "message_id": "bfe262ad-027a-4b6c-8d16-a8f96e62755d",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "user",
+      "content": "narayana",
+      "captured_at": "2026-07-10T11:42:52.632Z",
+      "event_meta": {
+        "event_id": "f93935af-87ab-4146-bca7-c70d0af1a616",
+        "parent_event_id": "1a693144-b4ac-4ffe-965c-f74e4942e726",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "Reading your message now and interpreting what you need from “narayana” so I can help immediately; I’ll handle it as a quick clarification unless you wanted something specific (name meaning, project/package, or command).“Narayana” can mean different things depending on context.\n\nIf you want, I can do any one of these right now:\n1. Explain the meaning/origin of the name “Narayana”.\n2. Help with Narayana as a software project/library (if that’s what you meant).\n3. Search this workspace for anything named “narayana” and summarize it.",
+      "captured_at": "2026-07-10T11:42:59.078Z",
+      "event_meta": {
+        "event_id": "31bec650-af79-474f-a55f-c2540475dac2",
+        "parent_event_id": "4d7dd580-235b-4fb7-a0dc-1c150bd505b9",
+        "event_type": "assistant.message",
+        "message_id": "b3590815-79e2-43c1-8f59-c248bac8f126",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "user",
+      "content": "document the new rule audit pass in the policy rules for new sessions",
+      "captured_at": "2026-07-10T11:47:23.893Z",
+      "event_meta": {
+        "event_id": "05e686bb-5a83-41b7-a438-5504773b7f4a",
+        "parent_event_id": "6ee7d014-d35a-47a4-9bd3-f7f3caf4109b",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "I’ll locate where session policy/rules are defined and then add concise guidance for the new rule-overlap audit pass so it becomes part of new-session expectations.",
+      "captured_at": "2026-07-10T11:47:30.766Z",
+      "event_meta": {
+        "event_id": "11a19f3a-a6c1-4dc5-af03-e6dceaaef261",
+        "parent_event_id": "9a43752e-eb3e-4abf-a618-451166cb0b15",
+        "event_type": "assistant.message",
+        "message_id": "bf111c9c-db70-44b3-ae9f-c5e72eb80e47",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Rbzsa8uPFdXTWv6473oDuxyy",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"new session|new sessions|policy rules|session policy|session bootstrap|audit pass|rule audit|handoff\" AGENTS.md .agents .rule rule-targets -S",
+              "explanation": "Find where policy rules for new sessions are defined so we can document the new rule audit pass in the correct source-of-truth file.",
+              "goal": "Locate the authoritative rule source to update"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "I found the likely source areas and will now inspect the session bootstrap and handoff policy prompt files to update the canonical rule text (not generated outputs directly).",
+      "captured_at": "2026-07-10T11:47:42.829Z",
+      "event_meta": {
+        "event_id": "e5ac1d53-d573-4644-b5f0-aed3683f26fb",
+        "parent_event_id": "96e61e09-64d1-4e2a-8837-3d30a8dfef6f",
+        "event_type": "assistant.message",
+        "message_id": "70d14e3b-e013-477a-9710-434b7aeee264",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XdtKvSKRBqTmiN2syTCpYcBe",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\prompts"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZOLmqutvII6eCsTHdq18SAZP",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_W2BYpKQeiYqIf3p3HGNhV7F4",
+            "name": "file_search",
+            "arguments": {
+              "query": ".rule/rules/*/body.md",
+              "maxResults": 400
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "I confirmed the canonical sources are the handoff rule entries. Next I’ll add a specific requirement there to include the new rule-overlap audit pass in new-session restart actions, using the exact audit-cli terminology already in the repo.",
+      "captured_at": "2026-07-10T11:48:08.297Z",
+      "event_meta": {
+        "event_id": "4f9da4e8-5067-4d59-9420-a2c1a91c5d1c",
+        "parent_event_id": "f3da69d5-4a6f-4a4c-af60-8f675701ca81",
+        "event_type": "assistant.message",
+        "message_id": "e7b6d7eb-b02b-4f32-a3f8-69a2ed50fa34",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_N57NUlUQfsNEN1cjIJGE3CVX",
+            "name": "grep_search",
+            "arguments": {
+              "query": "rule_overlap|rule-overlap|overlap",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/audit-cli/**"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZFtz3tBucdRFL4KNaaOgMlSS",
+            "name": "grep_search",
+            "arguments": {
+              "query": "audit.*trial|trial.*audit|audit run|overlap",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/audit-cli/README.md"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gGzGasVN3O3sMZyA5UWkrKZw",
+            "name": "grep_search",
+            "arguments": {
+              "query": "rule_overlap|rule overlap",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/audit-api/**"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "I’ve updated the primary handoff rule entry with a concrete new-session audit checkpoint. I’ll now mirror that policy in the handoff+ticket variant and regenerate rule targets so the generated prompt files stay in sync.",
+      "captured_at": "2026-07-10T11:48:35.111Z",
+      "event_meta": {
+        "event_id": "806a44ff-3b02-4eab-a4f8-ae610f73acf0",
+        "parent_event_id": "7d8d7f80-49ed-45ac-a774-d614088dd642",
+        "event_type": "assistant.message",
+        "message_id": "7b331b15-a9e3-47f6-9247-b827fea7c3df",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_GPzsJwSxkXrC8myw9BcNUNJE",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Mirror the new-session rule-overlap audit checkpoint in handoff-tickets policy rule entry.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\body.md\n@@\n 7. In the handoff paragraph, mention the ticket or tracker references that the next session should open first, plus any board check-in, check-out, or stale-entry issue that must be resolved before implementation resumes, and call out session-audit selector or schema-version guidance when it affects the restart path.\n 8. When persisted `session-api` history captured by the Stop hook materially improves the restart path, reference that history alongside the ticket and board pointers rather than restating the whole prior conversation.\n 9. Treat transcript history as diagnostic evidence for future prompt quality rather than as a prompt payload to replay:\n - prefer concise findings about repeated tool chatter, oversized outputs, and routine-action reasoning\n - keep the next-session handoff focused on the durable work state and the next concrete action\n-10. Ticket references are strict:\n+10. Include a rule-audit policy checkpoint for new sessions whenever the track touched prompt, instruction, or rule surfaces (or when overlap risk is suspected):\n+- run `audit run .` (or `rtk audit --toon run .` for compact structured output)\n+- carry forward the `Rule overlap` metric and any `rule_overlap` findings as durable findings or blockers\n+- if high-overlap pairs exist, add an explicit deduplication follow-up action with the target rule ids/files\n+11. Ticket references are strict:\n - use exact full ticket UUIDs for all ticket mentions in the handoff output\n - do not use shorthand-only ticket references unless they are resolved in a legend\n - if shorthand labels are used for readability, include an explicit ticket legend mapping shorthand label -> full UUID + canonical ticket title\n-11. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:\n+12. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:\n - include a `Shorthand And Placeholder Legend` section near the top\n - define every shorthand token and placeholder used later in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)\n - if none are used, explicitly say `None used.`\n-12. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.\n+13. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "I verified file deltas: the generated handoff prompts changed plus one canonical rule body changed. I’m quickly checking whether the handoff-tickets rule body already contained the same audit checkpoint text or if it needs an additional direct edit.",
+      "captured_at": "2026-07-10T11:54:02.034Z",
+      "event_meta": {
+        "event_id": "7389c9e9-f660-4b4c-8c49-0bd3b505ae86",
+        "parent_event_id": "e5d66358-a1d2-447c-9841-9d8f842d2ef7",
+        "event_type": "assistant.message",
+        "message_id": "73242e56-4d14-48a5-91fe-ca6cb101b00a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_OIIetaDI8md5wL3v0bzt7s12",
+            "name": "grep_search",
+            "arguments": {
+              "query": "Include a rule-audit policy checkpoint for new sessions",
+              "isRegexp": false,
+              "includePattern": ".rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mAhC8j5eyvCOh14fP0sJWzyv",
+            "name": "grep_search",
+            "arguments": {
+              "query": "Include a rule-audit policy checkpoint for new sessions",
+              "isRegexp": false,
+              "includePattern": ".rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_63WYagFsvlhuwh7TZZ2HnKlx",
+            "name": "grep_search",
+            "arguments": {
+              "query": "Rule overlap|rule_overlap",
+              "isRegexp": true,
+              "includePattern": ".agents/prompts/handoff*.prompt.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "user",
+      "content": "[Terminal 21fc56e8-cede-414e-a6f1-97b66b46ed3d notification: command completed. The terminal has been cleaned up.]\nTerminal output:\n1:{\"rev\":1,\"ts\":\"2026-05-08T11:28:25.369963500+00:00\",\"fields\":{\"body\":\"#### Stale-Entry Response\\n\\nAn entry becomes **stale** when its heartbeat TTL elapses. `board show`\\nlists stale entries under `warnings[]` and `stale_count`.\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":58,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/l260\",\"source_end_line\":263,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":260,\"state\":\"draft\",\"title\":\"Stale-Entry Response\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\84e1bcb4-ffc5-4f5f-980d-ccf2441ed1ad\\rule.toml\n14:section = \"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response\"\n16:slug = \"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/l265\"\n\n.rule\\rules\\f3f74596-5cae-46ed-a198-dfff567b1536\\body.md\n30:- the next blocker or handoff point\n\n.rule\\rules\\81f313ea-b942-4bf9-885c-70c1f04b987b\\rule.toml\n14:section = \"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership\"\n16:slug = \"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership/l271\"\n\n.rule\\rules\\84e1bcb4-ffc5-4f5f-980d-ccf2441ed1ad\\history.ndjson\n1:{\"rev\":1,\"ts\":\"2026-05-08T11:28:25.562973700+00:00\",\"fields\":{\"body\":\"Required responses:\\n1. Agent still active: run `board heartbeat <entry-id>` to renew.\\n2. Work abandoned: run `board check-out <ticket-id>` then clean.\\n3. Remove stale entries: `board clean preview --include-stale`, then\\n   `board clean apply --token <token> --include-stale`.\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":59,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/l265\",\"source_end_line\":269,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":265,\"state\":\"draft\",\"title\":\"Required responses:\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\81f313ea-b942-4bf9-885c-70c1f04b987b\\history.ndjson\n1:{\"rev\":1,\"ts\":\"2026-05-08T11:28:25.638614900+00:00\",\"fields\":{\"body\":\"#### File Ownership\\n\\nOwned files block other agents from checking in with overlapping paths.\\nKeep owned file lists narrow and release them (via check-out or update-files)\\nwhen no longer needed.\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":60,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership/l271\",\"source_end_line\":275,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":271,\"state\":\"draft\",\"title\":\"File Ownership\",\"type\":\"rule-entry\"}}\n2:{\"rev\":2,\"ts\":\"2026-05-26T10:16:22.585064400+00:00\",\"fields\":{\"body\":\"#### File Ownership\\n\\nOwned files block other agents from checking in with overlapping paths.\\nKeep owned file lists narrow and release them (via check-out or update-files)\\nwhen no longer needed.\\n\\nUse the short flag forms shown below as the canonical CLI shape. The board\\nparser keeps the older `--agent-id`, `--files`, `--old-path`, and `--new-path`\\nspellings as compatibility aliases, but help text and docs should use the same\\nflag names as the rest of `ticket-cli`.\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":60,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership/l271\",\"source_end_line\":275,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":271,\"state\":\"draft\",\"title\":\"File Ownership\",\"type\":\"rule-entry\"}}\n3:{\"rev\":3,\"ts\":\"2026-05-26T10:16:22.658149500+00:00\",\"fields\":{\"body\":\"#### File Ownership\\n\\nOwned files block other agents from checking in with overlapping paths.\\nKeep owned file lists narrow and release them (via check-out or update-files)\\nwhen no longer needed.\\n\\nUse the short flag forms shown below as the canonical CLI shape. The board\\nparser keeps the older `--agent-id`, `--files`, `--old-path`, and `--new-path`\\nspellings as compatibility aliases, but help text and docs should use the same\\nflag names as the rest of `ticket-cli`.\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":60,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/stale-entry-response/file-ownership/l271\",\"source_end_line\":275,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":271,\"state\":\"draft\",\"title\":\"File Ownership\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\rule.toml\n3:title = \"handoff-tickets\"\n12:path_scopes = [\".agents/prompts/handoff-tickets.prompt.md\"]\n14:section = \"handoff-tickets-prompt\"\n16:slug = \"context-engine/prompts/handoff-tickets/l1\"\n\n.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\history.ndjson\n1:{\"rev\":1,\"ts\":\"2026-06-05T22:15:32.700635900+00:00\",\"fields\":{\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".prompt\",\"order_key\":0,\"path_scopes\":[\".agents/prompts/handoff-tickets.prompt.md\"],\"repo_scopes\":[\"context-engine\"],\"section\":\"handoff-tickets-prompt\",\"sentence_anchors\":[],\"slug\":\"context-engine/prompts/handoff-tickets/l1\",\"state\":\"draft\",\"title\":\"handoff-tickets\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\body.md\n2:description: \"Create a short, reference-centric session handoff prompt and create or match the ticket or tracker follow-up items needed for the handoff track.\"\n3:name: \"handoff-tickets\"\n8:# Handoff Tickets\n10:Create a compact handoff prompt for a new session and formalize the handoff track through the ticket workflow when needed.\n16:1. Read the slash-command text and determine the handoff track, current implementation slice, and whether new ticketing is needed.\n17:2. Search existing tickets first so the handoff flow reuses or updates the authoritative ticket set instead of creating duplicates.\n19:4. Produce a short, paragraph-style, reference-centric handoff prompt for a new session.\n21:- create one actionable ticket when the handoff points to one concrete next slice\n22:- create a tracker ticket when the handoff needs a parent work package spanning multiple follow-up slices\n26:- keep titles scoped to the handoff track\n28:7. In the handoff paragraph, mention the ticket or tracker references that the next session should open first, plus any board check-in, check-out, or stale-entry issue that must be resolved before implementation resumes, and call out session-audit selector or schema-version guidance when it affects the restart path.\n32:- keep the next-session handoff focused on the durable work state and the next concrete action\n34:- use exact full ticket UUIDs for all ticket mentions in the handoff output\n37:11. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:\n39:- define every shorthand token and placeholder used later in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)\n41:12. Do not implement the work in this prompt; stop after producing the handoff and the ticketing setup.\n46:- the full handoff response inside a fenced plain-text block using `~~~text` and closing `~~~` so copied output preserves literal markdown links\n47:- the short handoff prompt in one paragraph\n53:- a `Shorthand And Placeholder Legend` section near the top that defines all shorthand/placeholders used later in the handoff, or `None used.` when none are introduced\n54:- a ticket legend section mapping any shorthand labels used in the handoff to exact full UUID + canonical ticket title\n57:- the ordered next-action list for the new session with the instruction to continue until all actions are completed or explicitly blocked\n59:- no unresolved references: every shorthand, ticket id, spec id, session id, rule id, or file mentioned in the handoff body is defined in the legend sections or linked in key entities\n\n.rule\\rules\\976d8f26-4664-479e-b1e4-6e198bba962d\\body.md\n32:- start from tickets, specs, handoffs, and validation summaries before reading transcripts\n\n.rule\\rules\\b0dcbf8b-6298-4121-a6e4-5947a5adab86\\rule.toml\n14:section = \"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit\"\n16:slug = \"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/l256\"\n\n.rule\\rules\\b0dcbf8b-6298-4121-a6e4-5947a5adab86\\history.ndjson\n1:{\"rev\":1,\"ts\":\"2026-05-08T11:28:25.293965+00:00\",\"fields\":{\"body\":\"```bash\\n./target/debug/ticket.exe board configure --max-wip 3 --json\\n```\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":57,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/l256\",\"source_end_line\":258,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":256,\"state\":\"draft\",\"title\":\"```bash\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\b5e0ebf0-20ef-4eec-b03e-7ddc987ad2c9\\history.ndjson\n5:{\"rev\":5,\"ts\":\"2026-05-17T11:40:34.601299400+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n6:{\"rev\":6,\"ts\":\"2026-05-17T11:40:34.712725200+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n7:{\"rev\":7,\"ts\":\"2026-05-17T13:59:05.304547600+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n8:{\"rev\":8,\"ts\":\"2026-05-17T13:59:05.374923200+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, reference each ticket by the exact ticket folder path returned by ticket-api output.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as links whose text and target are both that exact returned folder path, preserving nested workspace segments exactly as emitted by the tool output.\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n9:{\"rev\":9,\"ts\":\"2026-05-21T20:17:04.429853500+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the markdown link target.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target preserves the returned folder path exactly as emitted by the tool output.\\r\\n\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n10:{\"rev\":10,\"ts\":\"2026-05-21T20:17:04.487977600+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the ticket folder path(s), docs, and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the markdown link target.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target preserves the returned folder path exactly as emitted by the tool output.\\r\\n\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n11:{\"rev\":11,\"ts\":\"2026-05-22T22:22:49.186045300+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the related tickets with openable `ticket.toml` targets plus the updated docs and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the base path for the markdown link target.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>/ticket.toml)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target appends `/ticket.toml` to the exact returned folder path so editors can open the ticket file directly.\\r\\n\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n12:{\"rev\":12,\"ts\":\"2026-05-22T22:22:49.250146900+00:00\",\"fields\":{\"body\":\"## Workflow Expectations\\r\\n\\r\\n- Start implementation work by searching for existing tickets and creating or updating the required ticket set before code changes.\\r\\n- Update or create the relevant spec before implementation when requirements, goals, or behavior are new or changing.\\r\\n- For each ticket, implement the scoped change, run the required validation until it passes or repeatedly fails, update docs, verify the spec links the related tickets with openable `ticket.toml` targets plus the updated docs and validation results, then move the ticket to `in-review`.\\r\\n- When capturing validation or documentation evidence in this repository, prefer the repo-local `workflow` CLI so the resulting artifact can be linked from specs and tickets.\\r\\n- If validation repeatedly fails, do not silently skip it. Record the failing command or manual verification result and the blocker in the ticket/spec status summary.\\r\\n- Summaries and handoffs must report implementation, validation, and documentation status.\\r\\n- When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.\\r\\n- When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the base path for the markdown link target.\\r\\n- Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.\\r\\n- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>/ticket.toml)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target appends `/ticket.toml` to the exact returned folder path so editors can open the ticket file directly.\\r\\n\",\"feedback_helpful_count\":0,\"feedback_last_at\":\"2026-05-17T10:14:21.994116800+00:00\",\"feedback_mixed_count\":1,\"feedback_not_helpful_count\":0,\"feedback_note_count\":1,\"feedback_unresolved_count\":1,\"file_kind\":\".instructions\",\"order_key\":72,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"find-what-a-completed-ticket-blocks/workflow-expectations\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/find-what-a-completed-ticket-blocks/workflow-expectations/l322\",\"source_end_line\":326,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":322,\"state\":\"draft\",\"title\":\"Workflow Expectations\",\"type\":\"rule-entry\"}}\n\n.rule\\rules\\b5e0ebf0-20ef-4eec-b03e-7ddc987ad2c9\\body.md\n8:- Summaries and handoffs must report implementation, validation, and documentation status.\n\n.rule\\rules\\dfadc7f4-c524-4346-a2a4-5c1b1f15ddae\\rule.toml\n14:section = \"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit\"\n16:slug = \"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/l254\"\n\n.rule\\rules\\dfadc7f4-c524-4346-a2a4-5c1b1f15ddae\\history.ndjson\n1:{\"rev\":1,\"ts\":\"2026-05-08T11:28:25.220200+00:00\",\"fields\":{\"body\":\"Default limit: 5 simultaneous active entries. Configure:\",\"feedback_helpful_count\":0,\"feedback_mixed_count\":0,\"feedback_not_helpful_count\":0,\"feedback_note_count\":0,\"feedback_unresolved_count\":0,\"file_kind\":\".instructions\",\"order_key\":56,\"path_scopes\":[\".agents/instructions/ticket-system.instructions.md\"],\"repo_scopes\":[\"context-engine\",\"memory-viewers\",\"memory-api\"],\"section\":\"check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit\",\"sentence_anchors\":[],\"slug\":\"shared/instructions/ticket-system/check-out-when-done-records-handoff-reason-in-audit-trail/wip-limit/l254\",\"source_end_line\":254,\"source_path\":\".agents/instructions/ticket-system.instructions.md\",\"source_repo\":\"context-engine\",\"source_start_line\":254,\"state\":\"draft\",\"title\":\"Default limit: 5 simultaneous active entries. Configure:\",\"type\":\"rule-entry\"}}\nlinus@nordwind:~/git/graph_app/context-engine$  rtk git status --short .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md\noklinus@nordwind:~/git/graph_app/context-engine$  rtk cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml\n   Compiling spec-api v0.1.0 (C:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\spec-api)\n   Compiling rule-api v0.1.0 (C:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\rule-api)\n   Compiling rule-cli v0.1.0 (C:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.79s        \n     Running `target\\debug\\rule.exe sync-targets --config rule-targets.yaml`\n{\n  \"status\": \"ok\",\n  \"config\": \"rule-targets.yaml\",\n  \"generated\": [\n    {\n      \"target\": \"memory-viewers-readme\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\README.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-viewers-agents\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-viewer-theme-settings-body\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\.spec/specs/6cf1685d-dc05-4022-abbb-efdd8e94af22/body.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-viewer-theme-settings-body\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/body.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\README.md\",\n      \"count\": 3,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-agents\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"rule-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/rule-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/spec-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/ticket-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"audit-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/audit-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"rule-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/rule-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/spec-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/ticket-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"audit-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/audit-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-http-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/http/ticket-http/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-http-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/http/spec-http/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-api-generated-documents-body\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md\",\n      \"count\": 28,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-api-generated-documents-migration-workflow\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/sections/migration-workflow.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-body\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-workspace-identifiers\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/workspace-identifiers.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-typed-error-envelopes\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/typed-error-envelopes.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-json-machine-surface\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/json-machine-surface.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-api-crate-owns-model\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/api-crate-owns-model.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-shared-id-prefix-resolver\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/shared-id-prefix-resolver.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-depends-on-only-blocking-edge\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/depends-on-only-blocking-edge.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-append-only-history-materialized-index\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/append-only-history-materialized-index.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-nested-workspace-resolution\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/nested-workspace-resolution.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-required-states-one-way\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/required-states-one-way.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\README.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-agents\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-ctl-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-ctl/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-crate-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-api/README.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-dioxus-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-api/frontend/dioxus/README.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-body\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-public-surface-contracts\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/sections/public-surface-contracts.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-viewer-ctl-lifecycle-boundary\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/sections/viewer-ctl-lifecycle-boundary.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agents\",\n      \"output\": \"AGENTS.md\",\n      \"count\": 16,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-copilot-instructions\",\n      \"output\": \".github/copilot-instructions.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-source-of-truth\",\n      \"output\": \".clinerules/00-source-of-truth.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-core-rules\",\n      \"output\": \".clinerules/10-core-rules.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-workflows\",\n      \"output\": \".clinerules/20-workflows.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-path-scoped\",\n      \"output\": \".clinerules/30-path-scoped.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-reviews\",\n      \"output\": \".agents/prompts/reviews.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-spec\",\n      \"output\": \".agents/prompts/spec.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-rule\",\n      \"output\": \".agents/prompts/rule.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-rule-target\",\n      \"output\": \".agents/prompts/rule-target.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-ticket\",\n      \"output\": \".agents/prompts/ticket.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-tickets\",\n      \"output\": \".agents/prompts/tickets.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-memory-setup\",\n      \"output\": \".agents/prompts/memory-setup.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-interview\",\n      \"output\": \".agents/prompts/interview.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-user-training\",\n      \"output\": \".agents/prompts/user-training.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-ticket-next\",\n      \"output\": \".agents/prompts/ticket-next.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-next\",\n      \"output\": \".agents/prompts/next.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-audit\",\n      \"output\": \".agents/prompts/audit.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-tdd\",\n      \"output\": \".agents/prompts/tdd.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-commit\",\n      \"output\": \".agents/prompts/commit.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-implement\",\n      \"output\": \".agents/prompts/implement.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-handoff\",\n      \"output\": \".agents/prompts/handoff.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-handoff-tickets\",\n      \"output\": \".agents/prompts/handoff-tickets.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-skill-token-optimized-agentic-engineering\",\n      \"output\": \".agents/skills/token-optimized-agentic-engineering.SKILL.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-spec\",\n      \"output\": \".agents/agents/spec.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-testing\",\n      \"output\": \".agents/agents/testing.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-research\",\n      \"output\": \".agents/agents/research.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-interview\",\n      \"output\": \".agents/agents/interview.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-audit\",\n      \"output\": \".agents/agents/audit.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-implement\",\n      \"output\": \".agents/agents/implement.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-commit\",\n      \"output\": \".agents/agents/commit.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-spec-system\",\n      \"output\": \".agents/instructions/spec-system.instructions.md\",\n      \"count\": 12,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-audit\",\n      \"output\": \".agents/instructions/audit.instructions.md\",\n      \"count\": 23,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-context-http\",\n      \"output\": \".agents/instructions/context-http.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-core-crates\",\n      \"output\": \".agents/instructions/core-crates.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-frontend\",\n      \"output\": \".agents/instructions/frontend.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-tests\",\n      \"output\": \".agents/instructions/tests.instructions.md\",\n      \"count\": 32,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-ticket-system\",\n      \"output\": \".agents/instructions/ticket-system.instructions.md\",\n      \"count\": 92,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-viewer-api-tools\",\n      \"output\": \".agents/instructions/viewer-api-tools.instructions.md\",\n      \"count\": 15,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-commit\",\n      \"output\": \".agents/instructions/commit.instructions.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-token-efficiency\",\n      \"output\": \".agents/instructions/token-efficiency.instructions.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-session-optimization\",\n      \"output\": \".agents/instructions/session-optimization.instructions.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"workflow-validation-tool-body\",\n      \"output\": \".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"workflow-documentation-validation-tooling-body\",\n      \"output\": \".spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"cross-store-workflow-traceability-links-body\",\n      \"output\": \".spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-body\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-browser-validation\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/browser-validation.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-generated-file-markers\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-traceability-link-format\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/traceability-link-format.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-validation-evidence\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/validation-evidence.md\",\n      \"count\": 4,\n      \"content\": null\n    }\n  ],\n  \"removed\": [],\n  \"dry_run\": false,\n  \"check\": false\n}",
+      "captured_at": "2026-07-10T11:54:07.376Z",
+      "event_meta": {
+        "event_id": "73f21b3a-95b9-4089-87d4-df150ddb4ed7",
+        "parent_event_id": "b1c8d9e2-46bc-4a9e-a785-f2bcf0daefca",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "Implemented. The new-session policy now explicitly requires running the new rule overlap audit pass during handoff when prompt/instruction/rule surfaces were touched or overlap risk is suspected.\n\nUpdated:\n- [ .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md ](.rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md)\n- [ .agents/prompts/handoff.prompt.md ](.agents/prompts/handoff.prompt.md)\n- [ .agents/prompts/handoff-tickets.prompt.md ](.agents/prompts/handoff-tickets.prompt.md)\n\nWhat was added to policy:\n- Run audit run . (or rtk audit --toon run .)\n- Carry Rule overlap metric and rule_overlap findings forward as durable findings/blockers\n- If high-overlap pairs exist, add a concrete dedup follow-up action with target rule ids/files\n\nI also ran sync-targets so generated prompt files reflect the policy update.",
+      "captured_at": "2026-07-10T11:54:24.014Z",
+      "event_meta": {
+        "event_id": "8080c8f7-1890-450a-8d7f-a6ce9dbd98b7",
+        "parent_event_id": "02317b4c-fbe6-400e-bc92-5b16a2d7ca8a",
+        "event_type": "assistant.message",
+        "message_id": "03c254a2-b541-4ce9-a275-00e9078af0f2",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "user",
+      "content": "no, the handoff prompt should not have a rule audit checkpoint, we just need the general user manual for the rule audit in our policy files and rule system",
+      "captured_at": "2026-07-10T11:54:24.862Z",
+      "event_meta": {
+        "event_id": "e83c4a0b-6ed0-4a5d-962a-15030f0dbc85",
+        "parent_event_id": "de832a72-d0ad-457c-b881-9d1d0ac1f3af",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "You’re right; I’ll remove the handoff-specific checkpoint and instead place the rule-audit guidance in the general policy/manual surfaces in the rule system, then re-sync generated policy files.",
+      "captured_at": "2026-07-10T11:54:34.934Z",
+      "event_meta": {
+        "event_id": "14121a77-b864-427d-ba66-73b715aa2797",
+        "parent_event_id": "965542c9-6e99-4ece-86aa-339fbb30f72f",
+        "event_type": "assistant.message",
+        "message_id": "6b9491aa-2c71-495c-aa06-faec7a2bbd62",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BEqMoui5i4k2Xyfb4brBbFIX",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\084fd4e6-660b-4227-a13e-514edf44e393\\body.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SurbT79xWd41KEq8JPxeXRNx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\a634822a-0f7d-407f-b313-b6465b647d2f\\body.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MQjhMRpP2ssaRRGfsBfIZBML",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\audit.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8uFz3HQrnIdluCVVccVBc3X2",
+            "name": "grep_search",
+            "arguments": {
+              "query": "rule overlap|rule_overlap|audit run|summary --by metric",
+              "isRegexp": true,
+              "includePattern": ".rule/rules/**/body.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "I confirmed the exact source entry for audit policy is currently just a placeholder line, so I’ll move the rule-audit manual there and remove the handoff-only checkpoint text from both handoff rule entries.",
+      "captured_at": "2026-07-10T11:55:20.750Z",
+      "event_meta": {
+        "event_id": "49984c01-4cef-44db-8406-f61d0d0c3f6b",
+        "parent_event_id": "8b4c7a63-1762-4c50-a38a-a64a78b9fd41",
+        "event_type": "assistant.message",
+        "message_id": "7b69e82b-5ef2-480e-82bc-957eb8393f1f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_f2y4Bkf9Shy5MczqcpBEgEaO",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Remove handoff-specific rule-audit checkpoint from handoff policy entries and restore numbering.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.rule\\rules\\084fd4e6-660b-4227-a13e-514edf44e393\\body.md\n@@\n 4. Treat persisted session history as diagnostic evidence, not default prompt material:\n - prefer durable findings, blockers, and next actions over raw transcript replay\n - mention upstream request-shaping issues such as repeated state checks, oversized tool output, or routine-action reasoning when they matter to the restart path\n - keep large transcript or log artifacts as pointers with a short reason they matter\n 5. Keep reusable workflow noise out of the handoff paragraph. Do not restate ordinary ticket/spec workflow, tool manuals, or generic validation doctrine unless a specific exception, blocker, or required command from this session matters.\n-6. Include a rule-audit policy checkpoint for new sessions whenever the track touched prompt, instruction, or rule surfaces (or when overlap risk is suspected):\n-- run `audit run .` (or `rtk audit --toon run .` for compact structured output)\n-- carry forward the `Rule overlap` metric and any `rule_overlap` findings as durable findings or blockers\n-- if high-overlap pairs exist, add an explicit deduplication follow-up action with the target rule ids/files\n-7. Ticket references are strict:\n+6. Ticket references are strict:\n - use exact full ticket UUIDs for all ticket mentions in the handoff\n - do not invent shorthand-only identifiers without resolvable canonical ids\n - if shorthand labels are used for readability (for example `CH1`, `T2`, `epic`, `child-a`), include an explicit ticket legend that maps each shorthand label to the exact full UUID and canonical title\n-8. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:\n+7. Shorthand and placeholder declarations are mandatory and must appear at the top of the handoff output before the overview:\n - include a `Shorthand And Placeholder Legend` section immediately after the opening paragraph heading\n - list every shorthand token or placeholder used anywhere in the handoff (for example `T1`, `EPIC`, `SPEC-A`, `SESSION-X`, `<workspace>`)\n - map each shorthand to its authoritative entity id/title/path\n - if no shorthand or placeholders are used, explicitly say `None used.`\n-9. If the current track is unclear, abort the handoff and ask for clarifying questions.\n+8. If the current track is unclear, abort the handoff and ask for clarifying questions.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "I’ve moved the guidance to the audit policy source and removed it from handoff sources; I’m waiting for sync-targets to finish so I can verify the generated files reflect exactly that split.",
+      "captured_at": "2026-07-10T12:00:51.175Z",
+      "event_meta": {
+        "event_id": "f11c666c-c14c-4f4f-b53a-7a754aed5aa5",
+        "parent_event_id": "f6bb0934-40cf-4f09-b40e-566e59daa629",
+        "event_type": "assistant.message",
+        "message_id": "0d032b78-dd8f-4fa0-85da-e130dd7ea2f7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_vjtZoSo8dSHwUuWCA615U9rY",
+            "name": "get_terminal_output",
+            "arguments": {
+              "id": "8b071e4f-46de-4b34-8530-fe2cf3a67705"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "Done. I removed the handoff-specific audit checkpoint and moved the guidance into the general audit policy/manual surface in the rule system.\n\nWhat changed:\n- Removed rule-audit checkpoint language from handoff prompt policy source and regenerated prompts:\n  - [.agents/prompts/handoff.prompt.md](.agents/prompts/handoff.prompt.md)\n  - [.agents/prompts/handoff-tickets.prompt.md](.agents/prompts/handoff-tickets.prompt.md)\n- Added a general Rule Audit Manual section to audit policy output:\n  - [.agents/instructions/audit.instructions.md](.agents/instructions/audit.instructions.md#L124)\n- Canonical rule entry updated with the manual content:\n  - [.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md](.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md)\n\nValidation:\n- Confirmed no rule-overlap checkpoint text remains in handoff prompts.\n- Confirmed the audit manual now includes guidance for:\n  - running audit\n  - reading Rule overlap and rule_overlap findings\n  - dedup follow-up workflow and rerun verification\n\nSummary: the rule audit guidance is now in general policy/manual files, not embedded in handoff prompts.",
+      "captured_at": "2026-07-10T12:01:18.548Z",
+      "event_meta": {
+        "event_id": "35aa037c-b6d9-4f15-914a-0fb774db73a5",
+        "parent_event_id": "c736d15b-dd49-4737-8a1b-ae6cb28609e2",
+        "event_type": "assistant.message",
+        "message_id": "3a800686-1daa-4bb7-aa3b-5ba6a1fa2de3",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 38,
+      "role": "user",
+      "content": "[Terminal 8b071e4f-46de-4b34-8530-fe2cf3a67705 notification: command completed. The terminal has been cleaned up.]\nTerminal output:\nlinus@nordwind:~/git/graph_app/context-engine$  rtk git status --short .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff.prompt.md\n M .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md\n M .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.mdlinus@nordwind:~/git/graph_app/context-engine$  rtk git status --short .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff.prompt.md\n M .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md\n M .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.mdlinus@nordwind:~/git/graph_app/context-engine$  rtk rg -n \"source_path = \\\".agents/instructions/audit.instructions.md\\\"|slug = \\\"shared/instructions/audit\" .rule/rules/*/rule.toml -S\n.rule/rules/07d051e6-7fde-419c-a1fd-e83061b1ec4c/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l17\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/06e37556-0516-4c4f-91be-3ea19a20b86a/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l42\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/1c518839-e464-4fc0-b978-1cfda08a74dd/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/operating-notes/l175\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/1f5447d0-95ad-466d-a385-2ccd45ed3c27/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/human-output/l167\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/0570c8f5-1612-4c10-9c46-e2dd438472b9/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/metrics/l142\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/324a3b25-894d-48bc-8084-ad459e598ac9/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/findings/l153\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/184e9ac3-8b61-4d2b-a1ce-16def714557a/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/repo-config/l84\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/2fd1e51c-820b-49df-9e91-31b747818aac/rule.toml\n16:slug = \"shared/instructions/audit/audit-instructions/l1\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/2243078a-2ede-46dd-8268-62e3c97ebc1f/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l8\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/0bd78f0e-3320-4c2c-8c8f-26e03758630f/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/mcp-usage/l67\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/0748b876-0e7a-44dd-8307-3ca63a570631/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/findings/l149\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/547cdd51-6e81-4fc3-96f4-292f0a21e2e5/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l25\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/8803bc16-0915-4b83-9465-ac513718a481/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/metrics/l140\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/98c0628f-6588-4dc4-9fb9-d4be7bfb3c79/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l12\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/7b69751b-16cc-4097-8c8c-d84775f6508a/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/mcp-usage/l71\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/24592ca0-b55c-455c-b8ea-6ffe872fe9d7/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/sync/l123\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/37bfd2e9-b32d-4cc4-a17d-53a4ce52248b/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/mcp-usage/l63\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/491e6e1f-28c0-4cfc-ba7e-5357d5bca56d/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/top-level-fields/l108\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/774df5fd-6ea3-4ffc-87b9-03a4714888df/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/l101\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/f564a770-f16c-495d-b199-043d59dc9c37/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/metrics/l130\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/repo-config/l88\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/a1c73de2-525a-43ae-a04b-24ce9958fb4d/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/l99\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/2d083360-1fd8-4fbb-93f5-3b29064fdf04/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l44\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/cc2ed220-69be-4ac6-bfee-b78b212a2062/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l34\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/d053641c-d80d-44f7-9deb-0cdd4ebdf829/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l19\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/80fcf9d1-fbd7-4309-98f7-d55e5d356326/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/human-output/l173\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/e8f0616d-b639-4eb4-8acb-4b0eed13041e/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l32\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/ed960b95-dc41-4b6e-a803-99e70d76dcc9/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/purpose/l23\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/6a68252e-b548-4df6-863b-383bdb0233a4/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l50\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/87217626-a8f5-48b8-a603-fecce6b4126a/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/sync/l128\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/81883f05-fba1-444a-884a-02bc3731ea3b/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l57\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/cb5e9d61-0366-4257-aedf-b1aff275efec/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/l90\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/c94cae90-a606-4f6e-bc56-a2fc96cf7104/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l38\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/ad538eb8-7d2f-4129-b9ed-7e35ec7b01d2/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/metrics/l147\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/9513e68c-52d7-4b30-9d19-b1cc686b08a5/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/mcp-usage/l82\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/cfab5f22-a2e3-4cc2-b8bc-f1760c861f7b/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/metrics/l134\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/c9533ea4-69cf-4359-8551-c66074157f0f/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/human-output/l163\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/eadd5af7-2033-426b-ab51-c7d75d7eab52/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/mcp-usage/l73\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/7858bf60-8f1e-4f39-bafc-fabf338f4b36/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l59\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/c0b46907-1365-48a7-8a0a-faa7c48f5429/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/l104\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/d82a264a-e1b9-4d21-a334-116d00785676/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/findings/l161\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/ebcce8be-dab7-469c-adcc-60134c9c1d39/rule.toml\n16:slug = \"shared/instructions/audit/paths-are-relative-to-the-repository-root/output-contract/sync/l119\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\n\n.rule/rules/e0241e95-5a78-43c2-9cac-81f60c64e849/rule.toml\n16:slug = \"shared/instructions/audit/audit-guidance/cli-usage/l48\"\n18:source_path = \".agents/instructions/audit.instructions.md\"\nlinus@nordwind:~/git/graph_app/context-engine$  rtk wc -l .agents/instructions/audit.instructions.md && rtk sed -n '1,260p' .agents/instructions/audit.instructions.md\n113\n---\ndescription: \"Use when editing or operating the audit tool. Covers CLI and MCP usage, repo config, and how to interpret audit output.\"\napplyTo: \"crates/audit-api/**,tools/cli/audit-cli/**,tools/mcp/audit-mcp/**,.audit.toml\"\n---\n\n<!-- rule-api:file generated=true -->\n\n<!-- rule-api:entry id=2fd1e51c-820b-49df-9e91-31b747818aac slug=shared/instructions/audit/audit-instructions/l1 -->\n\n\n<!-- rule-api:entry id=2243078a-2ede-46dd-8268-62e3c97ebc1f slug=shared/instructions/audit/audit-guidance/purpose/l8 -->\n## Purpose\n\n`audit` is the repository quality audit tool for this workspace.\n\n<!-- rule-api:entry id=98c0628f-6588-4dc4-9fb9-d4be7bfb3c79 slug=shared/instructions/audit/audit-guidance/purpose/l12 -->\n- Core library crate: `audit-api`\n- CLI package: `audit-cli` with the `audit` binary\n- MCP package: `audit-mcp`\n- MCP tool: `audit`\n\n<!-- rule-api:entry id=07d051e6-7fde-419c-a1fd-e83061b1ec4c slug=shared/instructions/audit/audit-guidance/purpose/l17 -->\nKeep the layering thin and explicit:\n\n<!-- rule-api:entry id=d053641c-d80d-44f7-9deb-0cdd4ebdf829 slug=shared/instructions/audit/audit-guidance/purpose/l19 -->\n1. `audit-api` owns audit logic, models, config loading, indexing, and trials.\n2. `audit-cli` owns argument parsing and human/json rendering.\n3. `audit-mcp` only translates MCP inputs into `audit-api` calls and serializes the result.\n\n<!-- rule-api:entry id=ed960b95-dc41-4b6e-a803-99e70d76dcc9 slug=shared/instructions/audit/audit-guidance/purpose/l23 -->\nOne audit run:\n\n<!-- rule-api:entry id=547cdd51-6e81-4fc3-96f4-292f0a21e2e5 slug=shared/instructions/audit/audit-guidance/purpose/l25 -->\n1. resolves the repo root\n2. loads `.audit.toml`\n3. syncs source files into `.audit/audit.sqlite3`\n4. prunes stale index rows not seen in the latest scan\n5. collects file length, compiler warning, test success, coverage, and static complexity metrics\n6. returns raw metrics plus actionable findings and deduplicated fix instructions\n\n<!-- rule-api:entry id=e8f0616d-b639-4eb4-8acb-4b0eed13041e slug=shared/instructions/audit/audit-guidance/purpose/l32 -->\nPrefer JSON output for automation and agent workflows. Prefer text output for local inspection.\n\n<!-- rule-api:entry id=cc2ed220-69be-4ac6-bfee-b78b212a2062 slug=shared/instructions/audit/audit-guidance/cli-usage/l34 -->\n## CLI Usage\n\nBasic audit:\n\n<!-- rule-api:entry id=c94cae90-a606-4f6e-bc56-a2fc96cf7104 slug=shared/instructions/audit/audit-guidance/cli-usage/l38 -->\n```bash\ncargo run -p audit-cli --bin audit -- run .\n```\n\n<!-- rule-api:entry id=06e37556-0516-4c4f-91be-3ea19a20b86a slug=shared/instructions/audit/audit-guidance/cli-usage/l42 -->\nMachine-readable output:\n\n<!-- rule-api:entry id=2d083360-1fd8-4fbb-93f5-3b29064fdf04 slug=shared/instructions/audit/audit-guidance/cli-usage/l44 -->\n```bash\ncargo run -p audit-cli --bin audit -- --json run .\n```\n\n<!-- rule-api:entry id=e0241e95-5a78-43c2-9cac-81f60c64e849 slug=shared/instructions/audit/audit-guidance/cli-usage/l48 -->\nOverride thresholds for a stricter audit:\n\n<!-- rule-api:entry id=6a68252e-b548-4df6-863b-383bdb0233a4 slug=shared/instructions/audit/audit-guidance/cli-usage/l50 -->\n```bash\ncargo run -p audit-cli --bin audit -- run . \\\n  --max-file-lines 300 \\\n  --max-cyclomatic-complexity 10 \\\n  --coverage-warn-below 85\n```\n\n<!-- rule-api:entry id=81883f05-fba1-444a-884a-02bc3731ea3b slug=shared/instructions/audit/audit-guidance/cli-usage/l57 -->\nThe default thresholds are:\n\n<!-- rule-api:entry id=7858bf60-8f1e-4f39-bafc-fabf338f4b36 slug=shared/instructions/audit/audit-guidance/cli-usage/l59 -->\n- `max_file_lines = 400`\n- `max_cyclomatic_complexity = 12`\n- `coverage_warn_below = 80.0`\n\n<!-- rule-api:entry id=37bfd2e9-b32d-4cc4-a17d-53a4ce52248b slug=shared/instructions/audit/audit-guidance/mcp-usage/l63 -->\n## MCP Usage\n\nRun the server on stdio:\n\n<!-- rule-api:entry id=0bd78f0e-3320-4c2c-8c8f-26e03758630f slug=shared/instructions/audit/audit-guidance/mcp-usage/l67 -->\n```bash\ncargo run -p audit-mcp --bin audit-mcp\n```\n\n<!-- rule-api:entry id=7b69751b-16cc-4097-8c8c-d84775f6508a slug=shared/instructions/audit/audit-guidance/mcp-usage/l71 -->\nTool input example:\n\n<!-- rule-api:entry id=eadd5af7-2033-426b-ab51-c7d75d7eab52 slug=shared/instructions/audit/audit-guidance/mcp-usage/l73 -->\n```json\n{\n  \"repo_root\": \".\",\n  \"max_file_lines\": 350,\n  \"max_cyclomatic_complexity\": 10,\n  \"coverage_warn_below\": 85.0\n}\n```\n\n<!-- rule-api:entry id=9513e68c-52d7-4b30-9d19-b1cc686b08a5 slug=shared/instructions/audit/audit-guidance/mcp-usage/l82 -->\nThe MCP tool always returns the full structured `AuditReport` payload. Use it as the single synchronized read for repository quality state.\n\n<!-- rule-api:entry id=184e9ac3-8b61-4d2b-a1ce-16def714557a slug=shared/instructions/audit/audit-guidance/repo-config/l84 -->\n## Repo Config\n\n`audit` auto-loads a repo-root `.audit.toml` file.\n\n<!-- rule-api:entry id=a7c0f852-b754-436f-a09c-36395594fd50 slug=shared/instructions/audit/audit-guidance/repo-config/l88 -->\nExample:\nlinus@nordwind:~/git/graph_app/context-engine$  rtk git status --short .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md .agents/instructions/audit.instructions.md\n M .agents/instructions/audit.instructions.md\n M .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff.prompt.md\n M .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md\n M .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.mdlinus@nordwind:~/git/graph_app/context-engine$  rtk cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml && rtk git status --short .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md .agents/instructions/audit.instructions.md\n   Compiling rule-api v0.1.0 (C:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\rule-api)\n   Compiling rule-cli v0.1.0 (C:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.72s        \n     Running `target\\debug\\rule.exe sync-targets --config rule-targets.yaml`\n{\n  \"status\": \"ok\",\n  \"config\": \"rule-targets.yaml\",\n  \"generated\": [\n    {\n      \"target\": \"memory-viewers-readme\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\README.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-viewers-agents\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-viewer-theme-settings-body\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\.spec/specs/6cf1685d-dc05-4022-abbb-efdd8e94af22/body.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-viewer-theme-settings-body\",\n      \"output\": \"rule-targets\\\\../memory-viewers\\\\.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/body.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\README.md\",\n      \"count\": 3,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-agents\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"rule-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/rule-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/spec-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/ticket-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"audit-cli-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/cli/audit-cli/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"rule-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/rule-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/spec-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/ticket-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"audit-mcp-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/mcp/audit-mcp/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"ticket-http-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/http/ticket-http/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-http-readme\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\tools/http/spec-http/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-api-generated-documents-body\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md\",\n      \"count\": 28,\n      \"content\": null\n    },\n    {\n      \"target\": \"spec-api-generated-documents-migration-workflow\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/sections/migration-workflow.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-body\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-workspace-identifiers\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/workspace-identifiers.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-typed-error-envelopes\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/typed-error-envelopes.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-json-machine-surface\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/json-machine-surface.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-api-crate-owns-model\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/api-crate-owns-model.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-shared-id-prefix-resolver\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/shared-id-prefix-resolver.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-depends-on-only-blocking-edge\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/depends-on-only-blocking-edge.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-append-only-history-materialized-index\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/append-only-history-materialized-index.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-nested-workspace-resolution\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/nested-workspace-resolution.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"memory-api-recurring-principles-required-states-one-way\",\n      \"output\": \"rule-targets\\\\../memory-api\\\\.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/required-states-one-way.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\README.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-agents\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\AGENTS.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-ctl-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-ctl/README.md\",\n      \"count\": 2,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-crate-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-api/README.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-dioxus-readme\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\viewer-api/frontend/dioxus/README.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-body\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-public-surface-contracts\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/sections/public-surface-contracts.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"viewer-api-recurring-principles-viewer-ctl-lifecycle-boundary\",\n      \"output\": \"rule-targets\\\\../viewer-api\\\\.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/sections/viewer-ctl-lifecycle-boundary.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agents\",\n      \"output\": \"AGENTS.md\",\n      \"count\": 16,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-copilot-instructions\",\n      \"output\": \".github/copilot-instructions.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-source-of-truth\",\n      \"output\": \".clinerules/00-source-of-truth.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-core-rules\",\n      \"output\": \".clinerules/10-core-rules.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-workflows\",\n      \"output\": \".clinerules/20-workflows.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-cline-path-scoped\",\n      \"output\": \".clinerules/30-path-scoped.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-reviews\",\n      \"output\": \".agents/prompts/reviews.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-spec\",\n      \"output\": \".agents/prompts/spec.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-rule\",\n      \"output\": \".agents/prompts/rule.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-rule-target\",\n      \"output\": \".agents/prompts/rule-target.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-ticket\",\n      \"output\": \".agents/prompts/ticket.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-tickets\",\n      \"output\": \".agents/prompts/tickets.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-memory-setup\",\n      \"output\": \".agents/prompts/memory-setup.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-interview\",\n      \"output\": \".agents/prompts/interview.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-user-training\",\n      \"output\": \".agents/prompts/user-training.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-ticket-next\",\n      \"output\": \".agents/prompts/ticket-next.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-next\",\n      \"output\": \".agents/prompts/next.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-audit\",\n      \"output\": \".agents/prompts/audit.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-tdd\",\n      \"output\": \".agents/prompts/tdd.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-commit\",\n      \"output\": \".agents/prompts/commit.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-implement\",\n      \"output\": \".agents/prompts/implement.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-handoff\",\n      \"output\": \".agents/prompts/handoff.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-prompt-handoff-tickets\",\n      \"output\": \".agents/prompts/handoff-tickets.prompt.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-skill-token-optimized-agentic-engineering\",\n      \"output\": \".agents/skills/token-optimized-agentic-engineering.SKILL.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-spec\",\n      \"output\": \".agents/agents/spec.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-testing\",\n      \"output\": \".agents/agents/testing.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-research\",\n      \"output\": \".agents/agents/research.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-interview\",\n      \"output\": \".agents/agents/interview.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-audit\",\n      \"output\": \".agents/agents/audit.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-implement\",\n      \"output\": \".agents/agents/implement.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-agent-commit\",\n      \"output\": \".agents/agents/commit.agent.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-spec-system\",\n      \"output\": \".agents/instructions/spec-system.instructions.md\",\n      \"count\": 12,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-audit\",\n      \"output\": \".agents/instructions/audit.instructions.md\",\n      \"count\": 23,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-context-http\",\n      \"output\": \".agents/instructions/context-http.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-core-crates\",\n      \"output\": \".agents/instructions/core-crates.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-frontend\",\n      \"output\": \".agents/instructions/frontend.instructions.md\",\n      \"count\": 8,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-tests\",\n      \"output\": \".agents/instructions/tests.instructions.md\",\n      \"count\": 32,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-ticket-system\",\n      \"output\": \".agents/instructions/ticket-system.instructions.md\",\n      \"count\": 92,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-viewer-api-tools\",\n      \"output\": \".agents/instructions/viewer-api-tools.instructions.md\",\n      \"count\": 15,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-commit\",\n      \"output\": \".agents/instructions/commit.instructions.md\",\n      \"count\": 6,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-token-efficiency\",\n      \"output\": \".agents/instructions/token-efficiency.instructions.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-instruction-session-optimization\",\n      \"output\": \".agents/instructions/session-optimization.instructions.md\",\n      \"count\": 1,\n      \"content\": null\n    },\n    {\n      \"target\": \"workflow-validation-tool-body\",\n      \"output\": \".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"workflow-documentation-validation-tooling-body\",\n      \"output\": \".spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"cross-store-workflow-traceability-links-body\",\n      \"output\": \".spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/body.md\",\n      \"count\": 14,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-body\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/body.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-browser-validation\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/browser-validation.md\",\n      \"count\": 5,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-generated-file-markers\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/generated-file-markers.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-traceability-link-format\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/traceability-link-format.md\",\n      \"count\": 4,\n      \"content\": null\n    },\n    {\n      \"target\": \"context-engine-recurring-principles-validation-evidence\",\n      \"output\": \".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/sections/validation-evidence.md\",\n      \"count\": 4,\n      \"content\": null\n    }\n  ],\n  \"removed\": [],\n  \"dry_run\": false,\n  \"check\": false\n}\n M .agents/instructions/audit.instructions.md\n M .agents/prompts/handoff-tickets.prompt.md\n M .agents/prompts/handoff.prompt.md\n M .rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md",
+      "captured_at": "2026-07-10T12:02:20.508Z",
+      "event_meta": {
+        "event_id": "ebc32075-4373-4685-8e58-175c629920cd",
+        "parent_event_id": "2e672c8b-2cbf-4612-91d0-fdb84fb978e4",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 39,
+      "role": "assistant",
+      "content": "Confirmed from your latest terminal output: the changes are now in the correct place.\n\nCurrent modified files are:\n- [.agents/instructions/audit.instructions.md](.agents/instructions/audit.instructions.md)\n- [.agents/prompts/handoff.prompt.md](.agents/prompts/handoff.prompt.md)\n- [.agents/prompts/handoff-tickets.prompt.md](.agents/prompts/handoff-tickets.prompt.md)\n- [.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md](.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md)\n\nThis matches your intent:\n- Handoff prompts no longer carry the rule-audit checkpoint language.\n- The general rule-audit manual is in policy/manual surfaces via the audit instruction + canonical rule entry.\n\nIf you want, next step is a clean checkpoint commit for these four files.",
+      "captured_at": "2026-07-10T12:02:31.537Z",
+      "event_meta": {
+        "event_id": "70b73259-a3fa-42ef-9b42-9fddd6130989",
+        "parent_event_id": "b6656cf2-1fb0-41df-b07e-c14298d1f8cd",
+        "event_type": "assistant.message",
+        "message_id": "b292ba9e-227e-4855-9c3b-327fdf4e9dd7",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 40,
+      "role": "user",
+      "content": "/handoff for a full review of the manual and the rule system audit pass. I think it is not well integrated and there is no usable surface in the audit cli to run it explicitly. the manual also does not explain what it does at all and there are many small and unnecessary rule snippets in the generated policies.",
+      "captured_at": "2026-07-10T12:07:41.312Z",
+      "event_meta": {
+        "event_id": "dc1d0c87-9843-4315-a0a2-aa3a07b83879",
+        "parent_event_id": "7617cff9-0953-4060-a607-7e98bbcc252a",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 41,
+      "role": "assistant",
+      "content": "I’ll prepare a handoff packet per the handoff prompt format, focusing on your review track: audit-pass integration gaps, missing explicit CLI surface, weak manual clarity, and policy snippet fragmentation. I’m gathering the exact tickets/specs/files first so references are authoritative.",
+      "captured_at": "2026-07-10T12:07:51.935Z",
+      "event_meta": {
+        "event_id": "7313af53-68e2-402e-8da7-72212716dbdc",
+        "parent_event_id": "ad61a540-f111-4061-a1e5-a8f5dcdf6fec",
+        "event_type": "assistant.message",
+        "message_id": "4725d269-3075-4c36-8e55-82f11141784f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_d2rDLr8DLrvhyLITwttJGahZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short .agents/instructions/audit.instructions.md .agents/prompts/handoff.prompt.md .agents/prompts/handoff-tickets.prompt.md .rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md .rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md .rule/rules/a634822a-0f7d-407f-b313-b6465b647d2f/body.md .ticket/tickets/474eb962-b68f-4651-b980-c4c9233b2710/ticket.toml",
+              "explanation": "Collect current changed-file scope for the handoff track so the next session starts with exact file anchors.",
+              "goal": "Establish authoritative file set for handoff"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jFYGNH4Z71yPRvrnuD4b29Xs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk sed -n '1,220p' .ticket/tickets/474eb962-b68f-4651-b980-c4c9233b2710/ticket.toml",
+              "explanation": "Read the known ticket metadata to capture exact UUID/title/state for strict ticket references in handoff.",
+              "goal": "Get authoritative ticket identity/details"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0mVdNQrjDthvACwgXtUZzwaS",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"Rule overlap|rule_overlap|audit run|summary --by metric|benchmark-targets|overlap\" memory-api/tools/cli/audit-cli memory-api/crates/audit-api .agents/instructions/audit.instructions.md -S",
+              "explanation": "Gather evidence about current audit CLI/manual integration and overlap metric surfaces for findings and blockers.",
+              "goal": "Extract concrete implementation/manual signals for handoff"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 42,
+      "role": "assistant",
+      "content": "I have the key evidence and current file deltas; next I’m pulling related ticket/spec anchors so the handoff has strict, resolvable entities and an ordered execution path.",
+      "captured_at": "2026-07-10T12:08:04.821Z",
+      "event_meta": {
+        "event_id": "e3306402-766e-41b5-8c9b-09de7bd87ca0",
+        "parent_event_id": "8c01630d-af9b-491d-ad4a-425a3e8aaf9a",
+        "event_type": "assistant.message",
+        "message_id": "79706dfc-5e38-4b4b-a44d-a7f6c085ec9c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bqtWVSDdnWFn7Cocqazm3jQH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"title = \\\".*(audit|rule|overlap|policy|manual|session-api).*\\\"\" .ticket/tickets/*/ticket.toml -S",
+              "explanation": "Find related tickets by title keywords for authoritative cross-ticket references in handoff.",
+              "goal": "Collect relevant ticket IDs/titles for this review track"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7abrDDiz8S0iuh55sb50FWGh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"rule overlap|rule_overlap|audit-cli|session_audit|schema_version|policy|manual\" .spec/specs/*/body.md memory-api/.spec/specs/*/body.md -S",
+              "explanation": "Find related spec documents that define or discuss this audit/manual behavior.",
+              "goal": "Capture spec anchors for traceability in handoff"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wmRSNyCjP8N3spkj338NjEnD",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ticket board show --workspace default --toon",
+              "explanation": "Capture board/WIP state note for restart path requirements in handoff output.",
+              "goal": "Determine whether board coordination actions are needed at session start"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 43,
+      "role": "assistant",
+      "content": "I’m now verifying the CLI surface directly and pulling the exact related ticket metadata so the handoff can state precisely what is missing and what to do next.",
+      "captured_at": "2026-07-10T12:08:38.332Z",
+      "event_meta": {
+        "event_id": "a2af5b27-f6ba-4393-ae7d-e57c4172aa1d",
+        "parent_event_id": "9360b14c-619e-4ead-be55-567839373177",
+        "event_type": "assistant.message",
+        "message_id": "d185e4de-85c9-49f6-9261-b966b3d30ca6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_PFv2lUurYIUtgDKXH5sbHZGh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk cargo run -p audit-cli --bin audit -- --help",
+              "explanation": "Confirm whether audit-cli currently exposes an explicit rule-overlap pass selector in the public CLI surface.",
+              "goal": "Ground the handoff blocker in actual CLI behavior"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BYqEcBa5Kaw3RuUtqIIEUhO6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk sed -n '1,220p' .ticket/tickets/2d8d0487-1680-424c-816d-01925e187e62/ticket.toml && rtk sed -n '1,220p' .ticket/tickets/2663a981-d279-45dc-abc0-42270491dca6/ticket.toml && rtk sed -n '1,220p' .ticket/tickets/5e99cc3e-5b9e-4ca1-a54c-cbdf82444b50/ticket.toml && rtk sed -n '1,220p' .ticket/tickets/627d4152-36a7-4b24-9a9c-5f047abcac60/ticket.toml",
+              "explanation": "Read the directly related session-audit tickets to capture exact states and dependencies in handoff references.",
+              "goal": "Collect authoritative related ticket metadata"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JC6hk27PPNmuroP9az7ZVWW7",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n \"enum|subcommand|run|summary|latest-session|session-id|rule_overlap|Rule overlap\" memory-api/tools/cli/audit-cli/src/cli.rs -S",
+              "explanation": "Capture source-level evidence for available command surface and where overlap is currently only reported.",
+              "goal": "Provide concrete code anchors for integration gap findings"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 44,
+      "role": "assistant",
+      "content": "~~~text\nOverview\nThis handoff covers a full review track for rule-system audit integration: the general manual exists but is only partially integrated, there is no explicit audit-cli surface to run rule-overlap as a targeted pass, and generated policy outputs still include many fine-grained snippets that make the guidance hard to use during operational triage.\n\nShorthand And Placeholder Legend\nNone used.\n\nTicket Legend\nNone used.\n\nLong-Horizon Goal\nDeliver a usable, explicit, and operator-friendly rule-audit workflow where users can run a dedicated rule-overlap pass from audit-cli, understand what it measures from policy/manual docs, and act on reduced/noise policy guidance that avoids over-fragmented snippet output.\n\nFindings\n- High: audit-cli has no explicit user-facing command or selector for a rule-overlap-only pass; current surface is only run/summary and overlap appears as one metric line in run output.\n  - Evidence: [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L68), [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L595), [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L761)\n  - CLI confirmation: [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs#L68) plus observed help output listing only run/move/store-index/summary.\n- High: manual guidance is present but still thin on operational semantics (what lexical-overlap means, how thresholds are interpreted, and when to choose full run vs targeted review); this limits usability for rule cleanup sessions.\n  - Evidence: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md#L124)\n- Medium: manual integration is split across policy instruction output and README examples, but there is no explicit, first-class command contract for “rule audit pass” despite new overlap-trial behavior in audit-api.\n  - Evidence: [memory-api/tools/cli/audit-cli/README.md](./memory-api/tools/cli/audit-cli/README.md#L38), [memory-api/crates/audit-api/src/audit.rs](./memory-api/crates/audit-api/src/audit.rs#L24), [memory-api/crates/audit-api/src/trials/rule_overlap.rs](./memory-api/crates/audit-api/src/trials/rule_overlap.rs#L119)\n- Medium: generated policy files are structurally fragmented into many small rule snippets, which reduces readability for “single pass” operator docs and creates cognitive overhead.\n  - Evidence anchor for current generated instruction surface: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md)\n\nDecisions Already Made In This Session\n- Removed handoff-specific audit checkpoint language from handoff prompts and kept rule-audit guidance in general policy/manual surfaces.\n  - Files: [./.agents/prompts/handoff.prompt.md](./.agents/prompts/handoff.prompt.md), [./.agents/prompts/handoff-tickets.prompt.md](./.agents/prompts/handoff-tickets.prompt.md)\n- Added general Rule Audit Manual content into the audit policy rule source/output.\n  - Source rule entry: [./.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md](./.rule/rules/a7c0f852-b754-436f-a09c-36395594fd50/body.md)\n  - Generated output: [./.agents/instructions/audit.instructions.md](./.agents/instructions/audit.instructions.md#L124)\n\nBlockers\n- Product/UX contract gap: no explicit audit-cli mode for a targeted rule-overlap pass, which is the core user complaint.\n- Documentation contract gap: manual text does not yet explain overlap semantics and action thresholds deeply enough to drive consistent operator behavior.\n- Policy readability gap: generated instruction segmentation still feels too granular for a practical “manual pass” workflow.\n\nKey Entities\n- [474eb962 session-audit policy update planning ticket](./.ticket/tickets/474eb962-b68f-4651-b980-c4c9233b2710/ticket.toml): most recent ticket that touched policy guidance rollout.\n- [2d8d0487 session_audit tracker](./.ticket/tickets/2d8d0487-1680-424c-816d-01925e187e62/ticket.toml): parent session-audit integration work already marked done.\n- [2663a981 audit-cli unified session_audit interface](./.ticket/tickets/2663a981-d279-45dc-abc0-42270491dca6/ticket.toml): done ticket proving current CLI work focused on session audits, not explicit rule-overlap mode.\n- [5e99cc3e session_audit spec contract](./.ticket/tickets/5e99cc3e-5b9e-4ca1-a54c-cbdf82444b50/ticket.toml): done contract definition ticket.\n- [627d4152 session_audit implementation ticket](./.ticket/tickets/627d4152-36a7-4b24-9a9c-5f047abcac60/ticket.toml): done implementation ticket.\n- [audit instruction output](./.agents/instructions/audit.instructions.md): current policy/manual text users read.\n- [audit-cli source](./memory-api/tools/cli/audit-cli/src/cli.rs): command-surface evidence and overlap rendering points.\n- [rule-overlap trial implementation](./memory-api/crates/audit-api/src/trials/rule_overlap.rs): lexical-overlap detection and finding generation behavior.\n\nBoard And Persisted-Session Notes\n- Board currently has one active unrelated entry owned by copilot-interop on log-api files; no stale entries and no ownership conflict with this rule/policy review path.\n- If resuming implementation, avoid touching owned files listed by board state and continue in policy/rule/audit-cli surfaces first.\n\nNext Actions (Execute In Order)\n1. Define explicit audit-cli rule-pass surface.\n- Add a dedicated selector (for example a run mode/flag) that lets operators run or focus on rule-overlap explicitly.\n- Keep compatibility with existing run output; document exact behavior in CLI help and README.\n2. Expand the manual from “what command to run” to “what result means.”\n- In audit policy docs, define lexical-overlap interpretation, expected threshold semantics, and concrete remediation playbook.\n- Include examples of triage outcomes: no-op, dedup, merge, and keep-separate with rationale.\n3. Reduce policy snippet fragmentation for operator-facing guidance.\n- Consolidate micro-snippets into a coherent section for rule-audit operations while preserving rule-system traceability.\n- Validate regenerated outputs remain readable and actionable.\n4. Validate end-to-end usability.\n- Run audit-cli help and representative runs, then confirm users can discover and execute the explicit rule pass without reading source.\n- Record before/after findings quality and operator actionability.\n5. Update ticket/spec traceability for this review track.\n- Link resulting implementation/doc changes to the active ticket set and capture validation evidence.\n\nFirst Concrete Action\n- Open [memory-api/tools/cli/audit-cli/src/cli.rs](./memory-api/tools/cli/audit-cli/src/cli.rs) and design the minimal explicit pass selector in the existing command model.\n\nFirst Validation Check\n- Re-run audit-cli help and confirm the explicit rule-pass surface is visible and understandable from CLI help alone.\n\nCompletion Status\n- Action 1: not-started — explicit rule-pass selector not implemented yet.\n- Action 2: in-progress — manual section added, but semantics/threshold depth is still insufficient.\n- Action 3: not-started — snippet consolidation not implemented.\n- Action 4: not-started — no end-to-end usability validation for explicit pass (feature missing).\n- Action 5: in-progress — baseline ticket linkage exists, but follow-up implementation tickets/spec links for explicit pass are still needed.\n\nDefinition Of Done\n- audit-cli exposes an explicit, documented rule-overlap pass surface.\n- Manual/policy docs explain what overlap measures and how to act on results.\n- Generated policy output presents a usable, consolidated operator section rather than fragmented micro-guidance.\n- Validation confirms operators can discover and run the pass directly from CLI help/docs.\n- Ticket/spec links and evidence are updated and resolvable.\n\nInstruction To Next Session\nExecute the next actions in order and continue until all are completed or explicitly blocked; if blocked, record the concrete blocker, evidence, and smallest viable follow-up slice.\n~~~\n\nSummary prepared in the required handoff format with strict entity references, current blockers, and an execution-ordered plan focused on the audit manual and explicit rule-audit CLI surface integration.",
+      "captured_at": "2026-07-10T12:09:19.746Z",
+      "event_meta": {
+        "event_id": "025bc603-2ba8-4fc0-8ab5-62844eeedb3b",
+        "parent_event_id": "a8c8addf-f437-4f71-b9be-9bc51a3ff584",
+        "event_type": "assistant.message",
+        "message_id": "400f9e71-b69f-422e-b734-e4ad5b33f349",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
