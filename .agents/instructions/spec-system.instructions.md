@@ -151,17 +151,17 @@ Create a new spec when:
 - Avoid creating shallow duplicate siblings with overlapping goals.
 
 <!-- rule-api:entry id=aa5a2e2f-16dc-4abc-b0a5-4132e5b3f0b1 slug=shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52 -->
-### Structure the Spec
+### Structure the Spec (aligned-structure:v2)
 
-Each spec should make review straightforward. Capture, when relevant:
-- goal or intended behavior
-- problem or current-state gap
-- scope
-- non-goals
-- acceptance criteria
-- traceability or evidence expectations
+Each spec must act as a dependable, verifiable contract. Every spec must start with the `<!-- aligned-structure:v2 -->` template marker and define the following five required sections:
 
-Acceptance criteria should be concrete enough that a reviewer can tell what evidence proves the work is done.
+1. **Motivation ("why")** — The user requirement or behavior need this spec satisfies, with optional links to feedback explaining its origin.
+2. **Dependent expectation** — An explicit, clear contract clause: "If this spec is implemented, dependents can rely on behavior X."
+3. **Guards** — Declared test-api `ValidationSpec` ids that gate the spec. The spec's `verified` state is COMPUTED from guard execution outcomes, never hand-set.
+4. **Positions** — Current implementation/readiness status per referenced code symbol/path: `implemented`, `partial`, `not-implemented`, or `deprecated` with an explicit `code_ref`.
+5. **Governing-rule requirement** — Link to the PolicyRule(s) that must introduce/explain this spec in-session (governed by the rule-introduces-spec mechanism).
+
+Acceptance criteria and guards must be concrete enough that a reviewer or automated tool can tell exactly what evidence proves the contract is satisfied.
 
 <!-- rule-api:entry id=633ef4f2-37c4-4952-a293-494b8c44c947 slug=shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/link-tickets-tests-and-related-specs/l61 -->
 ### Link Tickets, Tests, and Related Specs
