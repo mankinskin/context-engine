@@ -2323,10 +2323,10 @@ Use static references as support:
 - tags: agent-rules, discovery-protocol-before-editing, draft, shared
 - ref: `C:/Users/linus/git/graph_app/context-engine/memory-api/.rule/rules/c8dfa4df-fd57-44e0-97f6-3368aa039ee0/rule.toml`
 
-<!-- rule-catalog:entry id=ce05ee88-e2e0-494c-846a-270aa07c6638 slug=shared/agent-rules/clickable-references/l90 digest=a097b59acb29 -->
+<!-- rule-catalog:entry id=ce05ee88-e2e0-494c-846a-270aa07c6638 slug=shared/agent-rules/clickable-references/l90 digest=e4260312cc8c -->
 ### Clickable Reference Policy
 
-Render every reference to a workspace entity (ticket, spec, doc, log, or one of their files) as a clickable markdown link in **all** responses. This policy is the single global switch: change the ref…
+Render every reference to a workspace entity (ticket, spec, doc, log, or one of their files) as a clickable markdown link in **all** agent and prompt responses. This entry is the single canonical own…
 
 - slug: `shared/agent-rules/clickable-references/l90`
 - section: `agent-rules/clickable-references`

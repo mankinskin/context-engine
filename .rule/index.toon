@@ -5837,12 +5837,12 @@ entries[597]:
     kind: rule
     source_path: "C:/Users/linus/git/graph_app/context-engine/.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/rule.toml"
     title: Clickable Reference Policy
-    summary: "Render every reference to a workspace entity (ticket, spec, doc, log, or one of their files) as a clickable markdown link in **all** responses. This policy is the single global switch: change the ref…"
+    summary: "Render every reference to a workspace entity (ticket, spec, doc, log, or one of their files) as a clickable markdown link in **all** agent and prompt responses. This entry is the single canonical own…"
     keywords[3]: clickable,policy,reference
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         "C:/Users/linus/git/graph_app/context-engine/.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/rule.toml","ce05ee88-e2e0-494c-846a-270aa07c6638",related,rule,"","shared/agent-rules/clickable-references/l90"
-    digest: a097b59acb29cf9832a1f99812502d8730df230778b04871825acbb7762e264d
+    digest: e4260312cc8c9b2a7a204f242103419292c9a9e1197331b375e8a4b84ee1c9fc
     tags[4]: "agent-rules","clickable-references",draft,shared
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ce272ac4-a185-4aa4-a9cd-194a4c42e4b2"

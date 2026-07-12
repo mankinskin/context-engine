@@ -18,8 +18,5 @@ Exception handling rules:
 - Never resolve conflicts by silently ignoring one side; capture the chosen precedence and rationale in the active ticket description.
 
 Formatting conflict policy (canonical):
-- When referencing workspace files, paths, or line citations in responses, use markdown links with forward slashes only.
-- For files in the current directory, use `./`-prefixed links (for example `[./AGENTS.md](./AGENTS.md#L1)`).
-- Do not use Windows-style backslashes in markdown links.
-- Do not wrap file references in backticks when the linkified-file policy is active.
-- If another instruction requests backtick-wrapped file references, the linkified-file policy takes precedence for file/path citations.
+- File, path, and entity references in responses are owned by the Clickable Reference Policy section below — it is the single definition of reference formatting (forward-slash markdown links, repo-root-relative, no backslashes, no backticks around the reference). Do not restate those rules here; follow that section.
+- If another instruction requests backtick-wrapped file references, the Clickable Reference Policy takes precedence for file/path citations.
