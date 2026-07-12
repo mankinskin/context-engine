@@ -4076,6 +4076,55 @@ dependencies = [
 ]
 
 [[package]]
+name = "feedback-api"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "uuid",
+]
+
+[[package]]
+name = "feedback-cli"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "feedback-api",
+ "serde_json",
+]
+
+[[package]]
+name = "feedback-http"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "feedback-api",
+ "memory-api",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "feedback-mcp"
+version = "0.1.0"
+dependencies = [
+ "feedback-api",
+ "memory-api",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "filetime"
 version = "0.2.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5949,6 +5998,7 @@ dependencies = [
  "sha2",
  "tantivy",
  "tempfile",
+ "test-api",
  "thiserror 2.0.18",
  "toml",
  "toon-format",
@@ -8062,6 +8112,7 @@ name = "rule-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "feedback-api",
  "memory-api",
  "pretty_assertions",
  "serde",
@@ -8079,12 +8130,14 @@ name = "rule-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "feedback-api",
  "memory-api",
  "rule-api",
  "serde_json",
  "spec-api",
  "tempfile",
  "thiserror 2.0.18",
+ "ticket-api",
  "toon-format",
  "uuid",
 ]
@@ -8568,6 +8621,7 @@ name = "session-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "feedback-api",
  "memory-api",
  "pretty_assertions",
  "serde",
@@ -9063,12 +9117,14 @@ name = "spec-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "feedback-api",
  "memory-api",
  "memory-fixtures",
  "pretty_assertions",
  "serde",
  "serde_json",
  "tempfile",
+ "test-api",
  "thiserror 2.0.18",
  "toml",
  "tracing",
@@ -9705,6 +9761,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "criterion",
+ "feedback-api",
  "fs4 0.11.1",
  "memory-api",
  "memory-fixtures",

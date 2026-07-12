@@ -1,0 +1,794 @@
+{
+  "schema_version": 1,
+  "session_id": "e2552b48-4a8e-460b-8c28-106eb48458ce",
+  "captured_at": "2026-07-12T15:43:25.723Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "# Handoff — Reopen & Rebuild the Feedback Platform as a First-Class `feedback-api` Crate\r\n\r\nThis session reviewed the \"content-materialization\" roadmap and uncovered a domain-boundary defect that supersedes the G-D \"feedback ring\" work: an entire feedback subsystem (~1,800 lines) lives as unbounded modules inside `rule-api`, there is **no `feedback-api` crate**, and several `[feedback-api]` tickets were closed `done` certifying a domain that has no crate. The G-D ring compiles and its tests pass, but its edges return DTOs instead of persisting to a store, so the feature is architecturally hollow and unusable. The decision this session: **reopen the design and rebuild feedback as a real crate + store + endpoints with one unified schema**, then re-implement the ring as handlers that close onto that store. Start from [./memory-api](./memory-api). Prefer the CLIs at [./memory-api/tools/cli/ticket-cli/README.md](./memory-api/tools/cli/ticket-cli/README.md) and [./memory-api/tools/cli/spec-cli/README.md](./memory-api/tools/cli/spec-cli/README.md); the ticket-mcp server was rebuilt+restarted this session and reports cross-store edges as `cross_workspace_edge` warnings correctly.\r\n\r\n## Shorthand And Placeholder Legend\r\n\r\n- `<mem-ws>` → memory-api ticket/spec store workspace path: `C:/Users/linus/git/graph_app/context-engine/memory-api` (owns G-* and `[feedback-api]` tickets).\r\n- `<root-ws>` → root store workspace path: `C:/Users/linus/git/graph_app/context-engine` (owns the program umbrella `8a90a63c`).\r\n- `EPIC` → content-materialization epic (see ticket legend).\r\n- `G-D` → feedback-ring workstream (see ticket legend).\r\n- `FEEDBACK-CRATE` → the not-yet-existing `memory-api/crates/feedback-api` target crate.\r\n\r\n## Ticket Legend (full UUIDs)\r\n\r\n- `EPIC` = `3be95a71-f6d7-4c83-b877-1d236751a12c` — [content-materialization][epic] Fill specs, Rust/code policy, and the feedback ring on top of session construction (state `new`)\r\n- `G-D` = `5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d` — [content-materialization][feedback-api] G-D: Close the feedback ring (state `done` — MUST reopen)\r\n- `FB-INBOX` = `b1e9e744-aeac-474a-91d9-07e3a362dc76` — [feedback-api] Feedback inbox, metadata indexing, and deep search (state `ready`)\r\n- `FB-INGEST` = `9c95c1e4-3cdb-428e-b9de-800684651226` — [feedback-api] Event ingestion, metadata normalization, and retention policy (state `done` — SUSPECT: no crate exists)\r\n- `FB-CURATION` = `c7542933-3052-45c8-99e6-3e09f40cc9b9` — [feedback-api] Core curation surface — URN usage counting + entity ratings (state `done` — SUSPECT)\r\n- `FB-RULE-RATINGS` = `88800b2e-74f5-4d65-958a-1423d18072e3` — Attach ratings and feedback to rule entries (state `done`)\r\n- `FB-GOVERNANCE` = `4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7` — [feedback-api] Privileged feedback governance and abuse-boundary enforcement (state `ready`)\r\n- `FB-CLUSTERING` = `b7b84c10-8dc5-4087-87ad-6fe27ebbcd45` — [feedback-api] High-scale search, clustering, and reconciliation workflows (state `ready`)\r\n- `FB-RETENTION` = `c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e` — [feedback-api] Retention, redaction, and privacy incident controls (state `ready`)\r\n- `FB-SLO` = `3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17` — [feedback-api] Search latency and index growth SLOs (state `ready`)\r\n- `FB-SPEC-ENTITY` = `29bf9628-1dc5-4bb4-ae00-b7410dd52db5` — [spec-api] Add direct feedback on spec entities with integration tests (state `new`)\r\n- `PROGRAM-UMBRELLA` = `8a90a63c-0a07-439f-90e8-9124212b2dc8` — [program][multi-store] Store expansion and operational health program (in `<root-ws>`, state `new`; a G-D depends_on — cross-store edge)\r\n\r\n## Long-horizon goal\r\n\r\n- `EPIC` `3be95a71-f6d7-4c83-b877-1d236751a12c` — materialize real content and close the feedback ring so the system improves itself. The policy tier (G-A/G-B/G-C) is done; the remaining blocker to a legitimate epic close is a **real feedback platform**, not the current `rule-api`-squatting ring.\r\n\r\n## Findings\r\n\r\n- No `feedback-api` crate exists. Crates under [./memory-api/crates](memory-api/crates) are: audit-api, doc-api, log-api, memory-api, memory-fixtures, memory-matrix, rule-api, session-api, spec-api, test-api, ticket-vscode-core.\r\n- The feedback subsystem is embedded in `rule-api`: [./memory-api/crates/rule-api/src/feedback.rs](memory-api/crates/rule-api/src/feedback.rs) (679), [feedback_store.rs](memory-api/crates/rule-api/src/feedback_store.rs) (325), [feedback_io.rs](memory-api/crates/rule-api/src/feedback_io.rs) (185), [feedback_tests.rs](memory-api/crates/rule-api/src/feedback_tests.rs) (319), wired via [./memory-api/crates/rule-api/src/lib.rs](memory-api/crates/rule-api/src/lib.rs).\r\n- `EntityFeedbackStore` in [feedback_store.rs](memory-api/crates/rule-api/src/feedback_store.rs#L3) is salvageable — NDJSON append store with `record_usage`/`record_rating`/`ingest_usage`/`ingest_rating`, `IngestAuthor` classification, `EntityUrn` targeting, `FeedbackRating` (helpful/mixed/not-helpful), `FeedbackNoteKind` (note/suggestion). Extract it, don't rewrite from zero.\r\n- G-D's [./memory-api/crates/rule-api/src/ring.rs](memory-api/crates/rule-api/src/ring.rs) is now de-mocked (real `spec_api::SpecStore`, `test_api::{TestStoreConfig, ValidationOutcome}`, `session_api::{SessionTurn, SessionRole}`, `ticket_api::storage::TicketStore`) and 81 rule-api tests pass — but its edges (`mine_transcript_for_rule_confusion`, `handle_missing_rule_match`, `process_frontend_feedback`) return structs and never write to `EntityFeedbackStore`. Store-less ring.\r\n- No unified feedback schema: `EntityUsageEvent`/`EntityRatingEvent` plus ad-hoc ring DTOs (`MiningFeedbackResult`, `FrontendFeedbackSubmission`) never unify. No `source` discriminant, provenance, status lifecycle, or schema version.\r\n- `FB-INGEST` `9c95c1e4` and `FB-CURATION` `c7542933` are `done` despite the crate they name not existing — closures are suspect and should be audited/reopened.\r\n\r\n## Decisions\r\n\r\n- Rebuild feedback as `FEEDBACK-CRATE` (`memory-api/crates/feedback-api`) backed by `memory-api` generic entity storage, mirroring `test-api`/`spec-api`/`ticket-api`. Invert coupling: `rule-api` depends on `feedback-api` for rule ratings, not the reverse.\r\n- One versioned `FeedbackEntry` schema: `id`, `schema_version`, `source` (agent | user | frontend | transcript-mined | system), `target: EntityUrn`, `rating`/`note`/`note_kind`, `provenance` (session_id, author, executed_at), `status` (new | triaged | actioned | dismissed). Usage events remain a separate record in the same store.\r\n- Ring edges become services that persist a `FeedbackEntry` (or file a ticket via `ticket-api`) and return the persisted record — no bare DTO returns.\r\n- Ticket-store reads/writes for these ids use `<mem-ws>` (except `PROGRAM-UMBRELLA` `8a90a63c`, which lives in `<root-ws>`).\r\n\r\n## Blockers / risks\r\n\r\n- **Dirty, uncommitted working tree from prior turns** — the deepest-first commit was never completed. Inside the `memory-api` submodule, `ring.rs`/`Cargo.toml`/`lib.rs` and all `.ticket/tickets/*` edits are uncommitted; `memory-viewers` has an internal commit `d1fd3db` (viewer-api nested submodule removed) whose parent pointer is not yet bumped; root `.spec/specs/71b81a55/body.md` and `.test/default/*` are uncommitted. Do NOT `git add` submodule-internal paths from root — commit inside `memory-api` and `memory-viewers` first, then bump pointers. Keep `Cargo.lock` and `.session/` unstaged.\r\n- G-E `7f7ef435-0504-40cf-8d6c-dd96477a0223` is separately `in-implementation` (real de-submodularization still unfinished: root `.gitmodules` still lists all 4 submodules); not part of this feedback track but shares the dirty tree.\r\n\r\n## Board / session note\r\n\r\n- Board is empty (no active WIP, no exclusions). Check in on `G-D` before implementing.\r\n\r\n## Next actions (execute in order)\r\n\r\n1. **Reopen the design.** Revert `G-D` `5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d` off `done` (`update --undo` or `revert --to <rev>`); `EPIC` `3be95a71-f6d7-4c83-b877-1d236751a12c` is already `new`. Create a `[feedback-api][design]` ticket in `<mem-ws>` for the crate boundary + `FeedbackEntry` schema, and audit `FB-INGEST` `9c95c1e4-3cdb-428e-b9de-800684651226` and `FB-CURATION` `c7542933-3052-45c8-99e6-3e09f40cc9b9` (reopen if the `done` state is unsupported by a crate).\r\n2. **Scaffold `FEEDBACK-CRATE`** at `memory-api/crates/feedback-api`; add to the workspace; back it with `memory-api` storage.\r\n3. **Move** `feedback.rs`/`feedback_store.rs`/`feedback_io.rs`/`feedback_tests.rs` out of `rule-api` into `feedback-api`; make `rule-api` depend on `feedback-api` for rule ratings.\r\n4. **Define the versioned `FeedbackEntry` schema** (source discriminant, target URN, rating/note, provenance, status) unifying usage + rating + mined + frontend feedback.\r\n5. **Add transport endpoints** — `feedback-cli` / `feedback-mcp` / `feedback-http` with `ingest`, `inbox`/`query`, `mine`, `summary`, mirroring `test-api`/`ticket-api`.\r\n6. **Re-implement the ring** (from `ring.rs`) as handlers over the store: execution→verified emits a `system` entry + recomputes spec `verified`; transcript mining **persists** `transcript-mined` entries; no-match calls `ticket-api` to file a missing-rule ticket and records a linking entry; frontend/user feedback calls `ingest_rating`.\r\n7. **Author a `feedback-api` spec (contract v2)** — motivation, dependent-expectation, guards (real `test-api` validation specs that write→read the store), positions — governed by a rule via the G-C mechanism. Shrink `G-D` to \"wire ring on feedback-api\" referencing `FB-INBOX` `b1e9e744` and `FB-INGEST` `9c95c1e4`.\r\n8. **First validation check:** after step 3, run `cargo test -p feedback-api` and confirm `cargo build` of the workspace still resolves with `rule-api` depending on `feedback-api` (watch for dependency cycles: `feedback-api` must not depend back on `rule-api`).\r\n\r\n## Completion status\r\n\r\n- Action 1 (reopen design): `not-started` — G-D still `done`.\r\n- Action 2 (scaffold crate): `not-started`.\r\n- Action 3 (move modules): `not-started`.\r\n- Action 4 (schema): `not-started`.\r\n- Action 5 (endpoints): `not-started`.\r\n- Action 6 (ring handlers): `not-started` — ring exists in `rule-api` but store-less.\r\n- Action 7 (spec + rule): `not-started`.\r\n- Action 8 (validation): `not-started`.\r\n\r\n## Definition of done\r\n\r\n- `feedback-api` exists as a first-class crate + filesystem-backed store; `rule-api` depends on it (no reverse coupling, no cycle).\r\n- A single versioned `FeedbackEntry` schema unifies agent/user/frontend/transcript-mined/system feedback with provenance and status.\r\n- Ingest/inbox/mine/summary endpoints exist across CLI/MCP/HTTP.\r\n- The ring edges persist feedback (or file tickets) and are covered by real store-round-trip validation specs; `cargo test -p feedback-api` passes and the workspace builds.\r\n- A `feedback-api` contract-v2 spec is authored and governed by a rule; `G-D` is rescoped to wiring and references existing feedback-api tickets instead of duplicating them; suspect `done` closures (`9c95c1e4`, `c7542933`) are reconciled.\r\n- Working tree committed deepest-first (`memory-viewers` → `memory-api` → root pointer bumps), with `Cargo.lock`/`.session/` left unstaged and no unrelated `.test` evidence touched.\r\n\r\nExecute the next actions in order and continue until all are completed or explicitly blocked.",
+      "captured_at": "2026-07-12T04:03:13.612Z",
+      "event_meta": {
+        "event_id": "705c1e33-8a5d-41f7-a290-1ebe1594b48a",
+        "parent_event_id": "d46cd8ca-b6c9-4c29-aea9-8c8c04a84eb4",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’ll execute this in the requested order starting with ticket/board/spec hygiene, then scaffold and migrate `feedback-api`, then wire transports and ring persistence, and finally validate builds/tests; first I’m checking board/ticket state in the correct workspace stores so I can safely reopen and check in before edits.I’m running a quick orientation batch now to confirm board/ticket state and current git dirtiness in root plus `memory-api`, then I’ll reopen `G-D` and check in before touching code.",
+      "captured_at": "2026-07-12T04:03:25.659Z",
+      "event_meta": {
+        "event_id": "e47ceeb6-5030-4212-8f63-3f06f4978839",
+        "parent_event_id": "10c6204f-b29a-4da0-acfe-ecde0982036c",
+        "event_type": "assistant.message",
+        "message_id": "61869a65-103e-46d9-b288-a376350d7009",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Sd4HoOlrsRn32uQ9rWTlQr0g",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short",
+              "explanation": "Check root repository working tree state before making changes.",
+              "goal": "Inspect root git status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lOhSW1bIwVTN4P5j6JOVAscP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-api && rtk git status --short",
+              "explanation": "Check memory-api submodule working tree state before making changes.",
+              "goal": "Inspect submodule git status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NFyEfYYBkT39HBx97g4WPWNf",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd memory-viewers && rtk git status --short",
+              "explanation": "Check memory-viewers submodule state because commit order depends on nested repos.",
+              "goal": "Inspect nested submodule git status",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DcAnQNB0K2w7sHI1vwLtfQq9",
+            "name": "mcp_rmcp5_board_show",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-api"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Orientation confirms the `memory-api` board is empty; next I’m fetching authoritative ticket states/paths and then performing the required `G-D` reopen plus board check-in in `<mem-ws>`.",
+      "captured_at": "2026-07-12T04:03:39.249Z",
+      "event_meta": {
+        "event_id": "b7df8ea5-6a2d-410c-a88b-38eca7150634",
+        "parent_event_id": "ca86aee6-4105-43cc-b875-825624bef282",
+        "event_type": "assistant.message",
+        "message_id": "6dcbf8ae-6b37-441f-be91-1009d99d1293",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_loNW9nP4tZPKpVGPdTALksa3",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon get 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d",
+              "explanation": "Read G-D ticket details including current state and canonical path.",
+              "goal": "Inspect G-D ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WvHdCLDdAWuYmjNT8goZeUyM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon get 9c95c1e4-3cdb-428e-b9de-800684651226 && ticket --toon get c7542933-3052-45c8-99e6-3e09f40cc9b9",
+              "explanation": "Read suspect done tickets to verify state and history baseline before audit/reopen.",
+              "goal": "Inspect FB-INGEST and FB-CURATION",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_O4ToiUxCocsiCyr4ufwHucmW",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-viewers && rtk git status --short",
+              "explanation": "Re-check memory-viewers status with absolute path after prior relative path issue.",
+              "goal": "Inspect memory-viewers git status",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve confirmed `G-D` and both suspect feedback tickets are indeed `done`; now I’m reopening them, checking into `G-D`, and creating the new design ticket in `<mem-ws>`.",
+      "captured_at": "2026-07-12T04:03:48.157Z",
+      "event_meta": {
+        "event_id": "31bf32e1-dd62-454b-acb2-ed574ee79713",
+        "parent_event_id": "32ac7ac6-d053-4f80-aae4-5b6af0a286f1",
+        "event_type": "assistant.message",
+        "message_id": "d6f0b013-d370-475f-8085-93d0a7a69b26",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Lm1Fwe3kjqZ44GuhbeHi2Vb9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon update 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --undo && ticket --toon update 9c95c1e4-3cdb-428e-b9de-800684651226 --undo && ticket --toon update c7542933-3052-45c8-99e6-3e09f40cc9b9 --undo && ticket --toon board check-in 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --agent copilot-gpt5-codex --intent \"Reopen and rebuild feedback-api as first-class crate and wire ring persistence\" --file \"crates/feedback-api\" --file \"crates/rule-api/src\" --ttl-secs 7200",
+              "explanation": "Reopen the required tickets and claim active work on G-D before implementation.",
+              "goal": "Perform Action 1 state transitions and board check-in",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "State transitions and board check-in succeeded; I’m now creating the new `[feedback-api][design]` ticket and linking it so the rebuild has an explicit design anchor.",
+      "captured_at": "2026-07-12T04:03:52.364Z",
+      "event_meta": {
+        "event_id": "d666f41f-33fa-4a5e-a512-aaf215dc7b93",
+        "parent_event_id": "ef93faf2-a9aa-4f79-8bba-3d7532ce69e5",
+        "event_type": "assistant.message",
+        "message_id": "24805756-b5ec-4550-9aa0-2318d207c355",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_rjPtqafiCUYqkzSH3VVwfAt0",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon create --title \"[feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1\" --type tracker-improvement --priority high --description \"Define crate boundary for crates/feedback-api, extract feedback store from rule-api, establish versioned FeedbackEntry schema (source,target,rating/note,provenance,status), and define no-cycle dependency policy: rule-api -> feedback-api only.\"",
+              "explanation": "Create the required design ticket for the feedback-api crate and schema decision.",
+              "goal": "Add new feedback-api design ticket",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I’m now enriching the new design ticket metadata and wiring it into `G-D` dependencies so the execution graph reflects the reopened architecture work.",
+      "captured_at": "2026-07-12T04:04:14.503Z",
+      "event_meta": {
+        "event_id": "d5171504-86d0-41c6-be13-3dc277cada82",
+        "parent_event_id": "5659d312-1d17-4728-9716-9792f8cf0f93",
+        "event_type": "assistant.message",
+        "message_id": "8fc3d7bb-c112-4498-8cf9-f0db6a16398c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_mvJhweu9p74qZiVM3Tjl9JIM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon update fb6aa078-1f8b-4a76-99bd-3a26190b1208 --field priority=high --field component=feedback-api --field effort=900 --description \"# Goal\\nDefine and approve feedback-api crate boundaries and a single versioned FeedbackEntry schema for ingestion/query/ring persistence.\\n\\n# Scope\\n- Create crates/feedback-api as first-class store-backed API crate.\\n- Extract feedback modules from rule-api into feedback-api.\\n- Define FeedbackEntry v1 fields: id, schema_version, source, target(EntityUrn), rating/note/note_kind, provenance(session_id, author, executed_at), status(new|triaged|actioned|dismissed).\\n- Keep usage events in same store family and unify query interfaces.\\n- Enforce dependency direction rule-api -> feedback-api only (no cycle).\\n\\n# Acceptance\\n- Crate exists and builds.\\n- rule-api uses feedback-api for ratings/feedback storage.\\n- Round-trip tests in feedback-api pass.\\n- Transport surfaces planned (cli/mcp/http) and ring persistence wiring specified.\" && ticket --toon link --workspace /c/Users/linus/git/graph_app/context-engine/memory-api --from 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --to fb6aa078-1f8b-4a76-99bd-3a26190b1208 --kind depends_on --reason \"G-D wiring now depends on first-class feedback-api crate and schema design\"",
+              "explanation": "Set key metadata on the design ticket and link it as a blocker for G-D.",
+              "goal": "Finalize Action 1 ticket graph updates",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I hit a workflow constraint: `undo` kept `G-D` at `in-review` and dropped the new dependency edge, so I’m inspecting revision/history commands to restore the dependency and set the most accurate active state without violating the state machine.",
+      "captured_at": "2026-07-12T04:04:24.897Z",
+      "event_meta": {
+        "event_id": "e525d690-0e6b-4960-96aa-c0db15d9e756",
+        "parent_event_id": "38e3fa02-b0cf-4424-982d-ca06275a217f",
+        "event_type": "assistant.message",
+        "message_id": "7324102e-a90a-4477-ba8c-365231b3687b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_nZiaFAUM1Lw4Hw1sgpmimbKK",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --help",
+              "explanation": "Check available commands for revision/history/revert to safely correct G-D state and dependencies.",
+              "goal": "Find proper ticket state correction command",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Ticket setup is mostly complete; next I’m switching to code work by reading `memory-api` workspace manifests and existing feedback modules so I can scaffold `feedback-api` and migrate files with minimal breakage.",
+      "captured_at": "2026-07-12T04:04:32.999Z",
+      "event_meta": {
+        "event_id": "1268f44f-0716-477a-afde-307c19213f22",
+        "parent_event_id": "acd21cb5-4720-434e-b4ac-9f4465d99043",
+        "event_type": "assistant.message",
+        "message_id": "7caa6442-e2ef-420e-a18b-f65ba5a3e229",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_i0BwRXOnFnzfbK4vW1pvWHHY",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/AGENTS.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JeFK2w1KvCmqU3ZitU8Tpb7V",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/Cargo.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qs5z3WH1xTOBeifSUe2kri8U",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tSo6TAGu00eYR6Ds6GFXmNMU",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/Cargo.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I’ve identified where feedback is currently exported from `rule-api`; next I’m reading the feedback/ring source to extract it cleanly into `feedback-api` and preserve existing behavior.",
+      "captured_at": "2026-07-12T04:04:50.717Z",
+      "event_meta": {
+        "event_id": "11df5f8d-5e7b-4e52-9e69-43282073653d",
+        "parent_event_id": "a3c5d38b-8b83-48ec-93a5-f858a29d579f",
+        "event_type": "assistant.message",
+        "message_id": "fee132b0-98a8-4782-8a00-406f698e1a6d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_olZnnYUcu7kMkehs73sEVSBr",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/feedback.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4MJtgRh7OMd3sc05JvhvXefp",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/feedback_store.rs",
+              "startLine": 1,
+              "endLine": 360
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VEzA9MLgyMUQ42TmpnH6auPp",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/feedback_io.rs",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_V1PA9zZODgg84Sz6V6dcNgRc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/ring.rs",
+              "startLine": 1,
+              "endLine": 420
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "I have enough source context now; I’m moving into implementation: create `feedback-api`, migrate feedback core from `rule-api`, then rewire `rule-api`/ring to persist through the new store.",
+      "captured_at": "2026-07-12T04:05:26.441Z",
+      "event_meta": {
+        "event_id": "f53e2e6c-8bf9-43d8-8437-9ff170759870",
+        "parent_event_id": "be1791be-1bc4-4ac1-8ab9-cb05ecbc31b2",
+        "event_type": "assistant.message",
+        "message_id": "d89df8d3-8163-4c9c-89bf-dcf4932e8412",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wiaWxvonBFH3SPmuUcNHvGbY",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5E5RG0BOxfqpe97zOiMTorTF",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/mcp"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_adZgUSNipDYjD2PwqDz9UGC9",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/http"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’m applying the main migration patch now: adding the new `feedback-api` crate, wiring workspace/dependencies, and turning `rule-api`’s former feedback module into a compatibility shim.",
+      "captured_at": "2026-07-12T04:05:32.877Z",
+      "event_meta": {
+        "event_id": "42650874-3e02-41c6-bdce-50343071fc33",
+        "parent_event_id": "7d255206-cc7c-4c46-a7e8-dbddf5539fe6",
+        "event_type": "assistant.message",
+        "message_id": "304daf93-747a-414e-8c66-230ced4ea12c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FM04JjLuMAVIQ0ITZ2F7ISrN",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add feedback-api crate by extracting feedback modules from rule-api and wire rule-api to depend on it through a shim module.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/Cargo.toml\n@@\n   \"memory-api/crates/session-api\",\n+  \"memory-api/crates/feedback-api\",\n   \"memory-api/crates/memory-fixtures\",\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Core extraction is in place; I’m now rewriting the ring handlers so they persist feedback records through the new store instead of returning store-less DTOs.",
+      "captured_at": "2026-07-12T04:07:52.585Z",
+      "event_meta": {
+        "event_id": "653aa7f1-6cbc-42ee-bc48-e8a075ee8af5",
+        "parent_event_id": "db53769a-2e71-4a0d-9aef-6d63119fd43c",
+        "event_type": "assistant.message",
+        "message_id": "98f359c7-dd16-4658-ac74-25e7a8b8722e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_35d47jSKukeZIDXceRNgLm4K",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Rework ring handlers to persist feedback entries/events into feedback-api store and update tests accordingly.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/ring.rs\n@@\n use crate::feedback::{\n+    EntityFeedbackStore,\n+    EntityRatingEvent,\n+    FeedbackEntry,\n+    FeedbackProvenance,\n     FeedbackRating,\n     FeedbackNoteKind,\n+    FeedbackSource,\n+    IngestAuthor,\n+    EntityRatingSubmission,\n     EntityUrn,\n };\n@@\n pub fn recompute_spec_verified_state(\n     spec_store: &mut SpecStore,\n     test_store: &TestStoreConfig,\n+    feedback_store: Option<&EntityFeedbackStore>,\n     spec_id_or_slug: &str,\n ) -> Result<bool, String> {\n@@\n     if all_passed {\n         // Transition spec to \"verified\"\n         spec_store\n             .update(spec_id_or_slug, BTreeMap::new(), Some(\"verified\"))\n             .map_err(|e| format!(\"Failed to update spec state to verified: {e}\"))?;\n+        if let Some(store) = feedback_store {\n+            let urn = EntityUrn::spec(store.workspace_slug(), spec_id_or_slug)?;\n+            let entry = FeedbackEntry::new(\n+                FeedbackSource::System,\n+                urn,\n+                Some(FeedbackRating::Helpful),\n+                Some(\"spec guards passed and verified state recomputed\".to_string()),\n+                Some(FeedbackNoteKind::Note),\n+                FeedbackProvenance::new(None, Some(\"ring/system\".to_string()), None)?,\n+            )?;\n+            let _ = store.record_entry(entry)?;\n+        }\n         Ok(true)\n     } else {\n         Ok(false)\n     }\n }\n@@\n pub struct MiningFeedbackResult {\n     pub detected_rule_confusion: bool,\n     pub suggested_feedback: Option<String>,\n     pub target_entity_urn: Option<EntityUrn>,\n+    pub persisted_entry: Option<FeedbackEntry>,\n }\n@@\n pub fn mine_transcript_for_rule_confusion(\n+    feedback_store: &EntityFeedbackStore,\n+    author: &IngestAuthor,\n     turns: &[SessionTurn],\n     rules: &[(String, String)], // (rule_id_or_slug, rule_body)\n-) -> Vec<MiningFeedbackResult> {\n+) -> Result<Vec<MiningFeedbackResult>, String> {\n     let mut results = Vec::new();\n     for turn in turns {\n         if turn.role == SessionRole::Assistant || turn.role == SessionRole::User {\n@@\n                 if relates_to_rule {\n                     if let Ok(urn) = EntityUrn::rule(\"memory-api\", rule_id) {\n+                        let suggested = format!(\n+                            \"Analysis: rule-confusion detected on {} at sequence {}. Context: {}\",\n+                            rule_id, turn.sequence, turn.content\n+                        );\n+                        let entry = FeedbackEntry::new(\n+                            FeedbackSource::TranscriptMined,\n+                            urn.clone(),\n+                            Some(FeedbackRating::Mixed),\n+                            Some(suggested.clone()),\n+                            Some(FeedbackNoteKind::Suggestion),\n+                            FeedbackProvenance::new(\n+                                None,\n+                                author.id().map(str::to_string),\n+                                None,\n+                            )?,\n+                        )?;\n+                        let persisted = feedback_store.record_entry(entry)?;\n                         results.push(MiningFeedbackResult {\n                             detected_rule_confusion: true,\n-                            suggested_feedback: Some(format!(\n-                                \"Analysis: rule-confusion detected on {} at sequence {}. Context: {}\",\n-                                rule_id, turn.sequence, turn.content\n-                            )),\n+                            suggested_feedback: Some(suggested),\n                             target_entity_urn: Some(urn),\n+                            persisted_entry: Some(persisted),\n                         });\n                     }\n                 }\n             }\n         }\n     }\n-    results\n+    Ok(results)\n }\n@@\n pub fn handle_missing_rule_match(\n     ticket_store: &TicketStore,\n+    feedback_store: &EntityFeedbackStore,\n     query_text: &str,\n     context_tags: &[String],\n     has_matching_rule: bool,\n     target_root: Option<&Path>,\n ) -> Result<Option<Uuid>, String> {\n@@\n         ticket_store\n             .create(\n@@\n             )\n             .map_err(|e| format!(\"Failed to create missing-rule ticket: {e}\"))?;\n+\n+        let ticket_urn = EntityUrn::ticket(\n+            feedback_store.workspace_slug(),\n+            ticket_id.to_string(),\n+        )?;\n+        let note = format!(\n+            \"no matching rule found for query '{}' with tags {:?}; opened missing-rule ticket {}\",\n+            query_text, context_tags, ticket_id\n+        );\n+        let entry = FeedbackEntry::new(\n+            FeedbackSource::System,\n+            ticket_urn,\n+            Some(FeedbackRating::Mixed),\n+            Some(note),\n+            Some(FeedbackNoteKind::Suggestion),\n+            FeedbackProvenance::new(None, Some(\"ring/system\".to_string()), None)?,\n+        )?;\n+        let _ = feedback_store.record_entry(entry)?;\n             \n         Ok(Some(ticket_id))\n     } else {\n         Ok(None)\n     }\n }\n@@\n pub fn process_frontend_feedback(\n     submission: FrontendFeedbackSubmission,\n-) -> Result<crate::feedback::EntityRatingSubmission, String> {\n-    Ok(crate::feedback::EntityRatingSubmission {\n-        rating: submission.rating,\n-        note_text: submission.comments,\n-        note_kind: Some(FeedbackNoteKind::Note),\n-        session_id: Some(format!(\"frontend-{}\", submission.source_frontend)),\n-        agent_or_user_id: Some(submission.user_id),\n-    })\n+) -> Result<EntityRatingSubmission, String> {\n+    Ok(EntityRatingSubmission {\n+        rating: submission.rating,\n+        note_text: submission.comments,\n+        note_kind: Some(FeedbackNoteKind::Note),\n+        session_id: Some(format!(\"frontend-{}\", submission.source_frontend)),\n+        agent_or_user_id: Some(submission.user_id),\n+    })\n+}\n+\n+pub fn ingest_frontend_feedback(\n+    store: &EntityFeedbackStore,\n+    submission: FrontendFeedbackSubmission,\n+) -> Result<EntityRatingEvent, String> {\n+    let author = IngestAuthor::human(Some(submission.user_id.clone()))?;\n+    let rating = process_frontend_feedback(submission.clone())?;\n+    store.ingest_rating(&author, submission.target_entity_urn, rating)\n }\n@@\n     fn test_transcript_mining_logic() {\n+        let dir = tempfile::tempdir().unwrap();\n+        let store = EntityFeedbackStore::new(dir.path(), \"memory-api\").unwrap();\n+        let author = IngestAuthor::privileged_agent(\"ring-miner\").unwrap();\n         let turns = vec![\n             SessionTurn {\n                 sequence: 1,\n@@\n         ];\n         // We match words of length > 6: \"instructions\" -> matches \"instruct\"\n         let rules = vec![(\"rule-config\".to_string(), \"instructions to follow\".to_string())];\n-        let mined = mine_transcript_for_rule_confusion(&turns, &rules);\n+        let mined =\n+            mine_transcript_for_rule_confusion(&store, &author, &turns, &rules)\n+                .unwrap();\n         assert_eq!(mined.len(), 1);\n         assert_eq!(mined[0].target_entity_urn.as_ref().unwrap().entity(), \"rule-config\");\n+        assert!(mined[0].persisted_entry.is_some());\n     }\n@@\n-        let rating_input = EntityRatingInput::new(\n-            FeedbackRating::Helpful,\n-            Some(\"Ticket resolved perfectly\".into()),\n-            None,\n-            None,\n-            None,\n-        ).unwrap();\n-        store.record_rating(ticket_urn.clone(), rating_input).unwrap();\n+        let submission = FrontendFeedbackSubmission {\n+            source_frontend: \"ticket-viewer\".to_string(),\n+            user_id: \"user-123\".to_string(),\n+            rating: FeedbackRating::Helpful,\n+            comments: Some(\"Ticket resolved perfectly\".to_string()),\n+            target_entity_urn: ticket_urn.clone(),\n+        };\n+        ingest_frontend_feedback(&store, submission).unwrap();\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Migration delta: `feedback-api` now exists and `rule-api` is wired to it; I’ve also converted ring mining/frontend paths to persist via the store. Next I’m compiling/tests to fix breakages, then I’ll tackle transport scaffolding and spec/ticket updates.",
+      "captured_at": "2026-07-12T04:07:59.851Z",
+      "event_meta": {
+        "event_id": "14aa2669-f09d-4a01-b490-daf538886b14",
+        "parent_event_id": "d96cfe24-63e1-435e-a2e5-2146c8cca2eb",
+        "event_type": "assistant.message",
+        "message_id": "7009342d-11ec-4577-ab6f-06cfc4f67a5e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_W0tmOWTXflzxXY3HxLLAaWxO",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk cargo test -p feedback-api",
+              "explanation": "Run the first required validation after extracting the feedback crate.",
+              "goal": "Validate feedback-api crate tests",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Validation gate passed (`feedback-api` tests + workspace build). I’m now working on transport surfaces by scaffolding `feedback-cli`, `feedback-mcp`, and `feedback-http` crates with ingest/query/summary/mine entrypoints tied to the new store.",
+      "captured_at": "2026-07-12T04:08:48.771Z",
+      "event_meta": {
+        "event_id": "dbcf91c1-b195-4ebb-9f8e-91af7c6e4fae",
+        "parent_event_id": "67bdc337-d846-4e07-8c15-47dc88e96663",
+        "event_type": "assistant.message",
+        "message_id": "a1fcf066-7e12-4e53-9cba-f8f64615a085",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lFblm3QyfMAHhXvWTXzy1aR6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/test-cli/Cargo.toml",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_oJrmMoeKnU6jMjcJMkXialOs",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/cli/test-cli/src/main.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rZlSAHtm2iUil4JUv3Sja0Qz",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/mcp/test-mcp/Cargo.toml",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_G3ROFX01iZHaybEu8NarnQQE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/tools/http/spec-http/Cargo.toml",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "Transport scaffolds are added; I’m compiling the new CLI/MCP/HTTP crates plus `rule-api` again to fix any integration errors before updating specs/tickets.",
+      "captured_at": "2026-07-12T04:10:16.616Z",
+      "event_meta": {
+        "event_id": "2b62d207-406c-4ff5-a7e5-6d76d8050891",
+        "parent_event_id": "c7bc900b-d21f-49bc-a8bd-0d33791d3de3",
+        "event_type": "assistant.message",
+        "message_id": "b6afd8fb-66fd-413b-8e6f-e573543eaaf3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_W0SUyPzWyOkshEEjgYIb77BF",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk cargo build -p feedback-cli -p feedback-mcp -p feedback-http -p rule-api",
+              "explanation": "Compile new feedback transport crates and rewired rule-api together to catch integration issues.",
+              "goal": "Validate transport and ring integration builds",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "Build now succeeds for `feedback-api`, ring wiring, and all three transport crates (with only minor non-blocking MCP warnings). I’m moving to spec/ticket reconciliation next: locate existing feedback specs, author/update contract v2, and rescope `G-D` to wiring-only.",
+      "captured_at": "2026-07-12T04:10:59.082Z",
+      "event_meta": {
+        "event_id": "3b2d8703-e38e-4d33-90f7-08512b1cc3a6",
+        "parent_event_id": "53f5e929-983e-4113-9c3e-f33d88c14d68",
+        "event_type": "assistant.message",
+        "message_id": "84cbcae9-859e-4dbe-a007-d32ebae2e05b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RuBxgEY81b69wftznoXZnHy9",
+            "name": "grep_search",
+            "arguments": {
+              "query": "feedback-api|FeedbackEntry|feedback ring|aligned-structure:v2|## Guards|Governing-rule",
+              "isRegexp": true,
+              "includePattern": "memory-api/.spec/**",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rxdbK99v333YPOWmtq5ySJcw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && spec --help",
+              "explanation": "Inspect spec CLI commands to create or update feedback-api contract spec.",
+              "goal": "Determine spec CLI workflow",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_XyVXImEbVCzl4jb5O9fDmQrX",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon update 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --field depends_on=fa6e2c19-5fd8-4305-90c7-f1f4bea8df36 --field depends_on=633a38b8-7200-4979-9ce9-8c296ccc78bd --field depends_on=6875dff6-7191-46aa-9358-9567430969f1 --field depends_on=b1e9e744-aeac-474a-91d9-07e3a362dc76 --field depends_on=8a90a63c-0a07-439f-90e8-9124212b2dc8 --field depends_on=9c95c1e4-3cdb-428e-b9de-800684651226 --field depends_on=fb6aa078-1f8b-4a76-99bd-3a26190b1208",
+              "explanation": "Restore and normalize G-D dependency list after undo removed the design edge and ensure FB-INGEST link is explicit.",
+              "goal": "Rescope dependency graph for G-D",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "I confirmed there’s no feedback spec in `memory-api/.spec`, so I’m creating a new contract-v2 spec there (aligned-structure v2, concrete guards, positions, and explicit ticket traceability links).",
+      "captured_at": "2026-07-12T04:11:49.926Z",
+      "event_meta": {
+        "event_id": "15bcb9cf-50dc-4b53-8a77-e7366da02e86",
+        "parent_event_id": "2254b513-2aa7-400f-ac86-f1c6e13ce796",
+        "event_type": "assistant.message",
+        "message_id": "87214958-3354-4bf7-9d62-22de1d0cb35c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Q8olcB9ixXTFA2ih3qefYL6m",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && cat > /tmp/feedback-contract-v2.md <<'EOF'\n<!-- aligned-structure:v2 -->\n\n# Summary\n\nDefine a first-class feedback platform contract where `feedback-api` owns persistent, versioned feedback records and `rule-api` consumes it for rule ratings and ring automation.\n\n## Motivation (\"why\")\n\nThe current feedback subsystem was embedded inside `rule-api`, leaving no explicit crate boundary for ingestion/query/governance and enabling done-state tickets to certify a domain that had no owning crate. This contract establishes `feedback-api` as the canonical store and schema owner so dependents can rely on durable feedback behavior.\n\n## Dependent expectation\n\nIf this spec is implemented, dependents can rely on a first-class `feedback-api` crate exposing a single versioned `FeedbackEntry` contract with persisted ingestion, inbox/query access, summary aggregation, and ring persistence semantics (`execution->verified`, transcript-mined persistence, missing-rule linkage, frontend/user ingestion).\n\n## Guards\n\nThe verification of this specification contract is gated by:\n- `val-feedback-api-store-roundtrip` (ensures ingest/write/read round-trips for `FeedbackEntry`, usage, and rating events)\n- `val-feedback-api-ring-persistence` (ensures ring handlers persist feedback artifacts instead of returning DTO-only results)\n- `val-feedback-api-transport-surface` (ensures CLI, MCP, and HTTP entrypoints expose ingest, inbox/query, mine, and summary paths)\n\n## Positions\n\n- Core schema + store ownership: `implemented` at [./memory-api/crates/feedback-api/src/lib.rs](./memory-api/crates/feedback-api/src/lib.rs)\n- Persistent NDJSON store operations: `implemented` at [./memory-api/crates/feedback-api/src/feedback_store.rs](./memory-api/crates/feedback-api/src/feedback_store.rs)\n- Rule API dependency inversion (`rule-api -> feedback-api`): `implemented` at [./memory-api/crates/rule-api/src/feedback.rs](./memory-api/crates/rule-api/src/feedback.rs)\n- Ring persistence handlers over store: `partial` at [./memory-api/crates/rule-api/src/ring.rs](./memory-api/crates/rule-api/src/ring.rs)\n- CLI transport: `implemented` at [./memory-api/tools/cli/feedback-cli/src/main.rs](./memory-api/tools/cli/feedback-cli/src/main.rs)\n- MCP transport: `implemented` at [./memory-api/tools/mcp/feedback-mcp/src/server.rs](./memory-api/tools/mcp/feedback-mcp/src/server.rs)\n- HTTP transport: `implemented` at [./memory-api/tools/http/feedback-http/src/lib.rs](./memory-api/tools/http/feedback-http/src/lib.rs)\n\n## Governing-rule requirement\n\nThis specification is governed and introduced by:\n- [shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52](shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52)\n\n## Traceability\n\n- [5d4078fa G-D wiring](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml)\n- [b1e9e744 FB-INBOX](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)\n- [9c95c1e4 FB-INGEST](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)\n- [c7542933 FB-CURATION](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml)\n- [fb6aa078 feedback-api design](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml)\nEOF\nspec --toon create --workspace /c/Users/linus/git/graph_app/context-engine/memory-api --title \"[feedback-api] Contract v2 — first-class crate, unified FeedbackEntry schema, and persisted ring semantics\" --slug \"feedback-api/contract/v2\" --component \"feedback-api\" --body-file /tmp/feedback-contract-v2.md",
+              "explanation": "Create the feedback-api contract-v2 spec in memory-api store with aligned structure and traceability.",
+              "goal": "Complete Action 7 spec creation",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I’ve finished the spec/ticket rescoping pass; next I’m running `rule-api` tests to verify the new ring persistence behavior and ensure no regressions from the extraction.",
+      "captured_at": "2026-07-12T04:12:07.531Z",
+      "event_meta": {
+        "event_id": "78f4fd8f-714e-40e0-a668-e9dda1d35410",
+        "parent_event_id": "8814b3f0-3673-4dc9-8130-bdec9dc5ab24",
+        "event_type": "assistant.message",
+        "message_id": "60408733-4122-4b45-be3a-fce3a207375b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FJXz3EZfU7UnlsCeCq1asWiv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk cargo test -p rule-api",
+              "explanation": "Run rule-api tests to validate ring persistence changes and compatibility shim behavior.",
+              "goal": "Validate rule-api after feedback extraction",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Code and ticket/spec changes are complete enough for a first delivery pass; I’m doing a final status sweep of modified files and ticket/spec states so I can give you an exact handoff with blockers and next commit order.",
+      "captured_at": "2026-07-12T04:13:26.140Z",
+      "event_meta": {
+        "event_id": "dfb9680e-dbe4-47b1-8906-f66397ae3632",
+        "parent_event_id": "85175052-9eea-48d5-af09-31e577ceecb7",
+        "event_type": "assistant.message",
+        "message_id": "8359d52c-e1ff-4adc-b063-68c86f302311",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RlZX4suJuL7bujdh5UwGIa1W",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk git status --short",
+              "explanation": "Capture root repo status after implementing feedback-api extraction and ticket/spec updates.",
+              "goal": "Summarize root-level working tree changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hWRYxTPAhHenZSd1G7TkXSqi",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk git status --short",
+              "explanation": "Capture memory-api submodule status for commit batching and touched files.",
+              "goal": "Summarize memory-api working tree changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0JdEHOfWom1f6PuVt194zFAk",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && spec --toon get 17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898",
+              "explanation": "Fetch the created feedback-api contract-v2 spec metadata for final report.",
+              "goal": "Confirm new spec details",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hKnA4OPyNdxeYvgOIslEoOA9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon board show",
+              "explanation": "Verify active board entry status for G-D at handoff.",
+              "goal": "Capture board snapshot",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "I found one remaining blocker: the cross-store `G-D -> PROGRAM-UMBRELLA` edge cannot be re-added from `<mem-ws>` (`entity not found`), so I’m documenting that and completing guard traceability by recording the three validation specs referenced in the new feedback contract.",
+      "captured_at": "2026-07-12T04:13:48.221Z",
+      "event_meta": {
+        "event_id": "e8a9953a-7c98-4593-9a48-5556a74f400f",
+        "parent_event_id": "120cba95-419d-4726-bfbf-b485da6630a2",
+        "event_type": "assistant.message",
+        "message_id": "51afa10a-d4a3-4a4f-9878-3546704b3f22",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_MVlK4rryFcM3KoyVlyTRrRSd",
+            "name": "activate_validation_execution_recording",
+            "arguments": {},
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Implemented the handoff plan through crate extraction, ring persistence wiring, transport scaffolding, spec/ticket reconciliation, and validation.\n\nWhat I changed\n\n1. Reopened design and audited suspect done tickets\n- Reopened G-D from done to in-review and checked in on board.\n- Reopened both suspect done feedback tickets:\n  - [memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml](memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)\n  - [memory-api/.ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml](memory-api/.ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml)\n- Created design ticket and moved it to in-implementation:\n  - [memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml](memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml)\n- Rescoped G-D description to wiring-only scope:\n  - [memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md](memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md)\n\n2. Scaffolded first-class feedback-api crate\n- Added workspace member:\n  - [Cargo.toml](Cargo.toml)\n- New crate and extracted feedback core/store/tests:\n  - [memory-api/crates/feedback-api/Cargo.toml](memory-api/crates/feedback-api/Cargo.toml)\n  - [memory-api/crates/feedback-api/src/lib.rs](memory-api/crates/feedback-api/src/lib.rs)\n  - [memory-api/crates/feedback-api/src/feedback_io.rs](memory-api/crates/feedback-api/src/feedback_io.rs)\n  - [memory-api/crates/feedback-api/src/feedback_store.rs](memory-api/crates/feedback-api/src/feedback_store.rs)\n  - [memory-api/crates/feedback-api/src/feedback_tests.rs](memory-api/crates/feedback-api/src/feedback_tests.rs)\n\n3. Moved feedback modules out of rule-api and inverted dependency\n- Added dependency:\n  - [memory-api/crates/rule-api/Cargo.toml](memory-api/crates/rule-api/Cargo.toml)\n- Replaced local feedback implementation with shim export:\n  - [memory-api/crates/rule-api/src/feedback.rs](memory-api/crates/rule-api/src/feedback.rs)\n- Removed extracted files from rule-api:\n  - [memory-api/crates/rule-api/src/feedback_io.rs](memory-api/crates/rule-api/src/feedback_io.rs)\n  - [memory-api/crates/rule-api/src/feedback_store.rs](memory-api/crates/rule-api/src/feedback_store.rs)\n  - [memory-api/crates/rule-api/src/feedback_tests.rs](memory-api/crates/rule-api/src/feedback_tests.rs)\n\n4. Added unified versioned FeedbackEntry schema\n- Implemented in new crate:\n  - [memory-api/crates/feedback-api/src/lib.rs](memory-api/crates/feedback-api/src/lib.rs)\n- Includes schema_version, source, target URN, rating/note/note_kind, provenance, status.\n- Added persisted entries log support in store:\n  - [memory-api/crates/feedback-api/src/feedback_store.rs](memory-api/crates/feedback-api/src/feedback_store.rs)\n\n5. Added transport endpoints (CLI/MCP/HTTP) with ingest, inbox/query, mine, summary\n- CLI:\n  - [memory-api/tools/cli/feedback-cli/Cargo.toml](memory-api/tools/cli/feedback-cli/Cargo.toml)\n  - [memory-api/tools/cli/feedback-cli/src/main.rs](memory-api/tools/cli/feedback-cli/src/main.rs)\n- MCP:\n  - [memory-api/tools/mcp/feedback-mcp/Cargo.toml](memory-api/tools/mcp/feedback-mcp/Cargo.toml)\n  - [memory-api/tools/mcp/feedback-mcp/src/lib.rs](memory-api/tools/mcp/feedback-mcp/src/lib.rs)\n  - [memory-api/tools/mcp/feedback-mcp/src/main.rs](memory-api/tools/mcp/feedback-mcp/src/main.rs)\n  - [memory-api/tools/mcp/feedback-mcp/src/server.rs](memory-api/tools/mcp/feedback-mcp/src/server.rs)\n- HTTP:\n  - [memory-api/tools/http/feedback-http/Cargo.toml](memory-api/tools/http/feedback-http/Cargo.toml)\n  - [memory-api/tools/http/feedback-http/src/lib.rs](memory-api/tools/http/feedback-http/src/lib.rs)\n  - [memory-api/tools/http/feedback-http/src/main.rs](memory-api/tools/http/feedback-http/src/main.rs)\n- Registered all 3 in workspace:\n  - [Cargo.toml](Cargo.toml)\n\n6. Reimplemented ring handlers to persist through store\n- Updated ring behavior:\n  - [memory-api/crates/rule-api/src/ring.rs](memory-api/crates/rule-api/src/ring.rs)\n- Changes made:\n  - recompute path can persist system feedback entry when verified is recomputed\n  - transcript mining now persists transcript-mined entries\n  - missing-rule path now persists linking feedback after ticket creation\n  - frontend path now has ingest function that writes rating into store\n- Exported new ingest handler:\n  - [memory-api/crates/rule-api/src/lib.rs](memory-api/crates/rule-api/src/lib.rs)\n\n7. Authored feedback-api contract v2 spec\n- New spec:\n  - [memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/body.md](memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/body.md)\n- Metadata:\n  - [memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/spec.toml](memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/spec.toml)\n\n8. Recorded validation specs and executions for guards\n- Validation specs:\n  - [memory-api/.test/default/specs/val-feedback-api-store-roundtrip.json](memory-api/.test/default/specs/val-feedback-api-store-roundtrip.json)\n  - [memory-api/.test/default/specs/val-feedback-api-ring-persistence.json](memory-api/.test/default/specs/val-feedback-api-ring-persistence.json)\n  - [memory-api/.test/default/specs/val-feedback-api-transport-surface.json](memory-api/.test/default/specs/val-feedback-api-transport-surface.json)\n- Executions:\n  - [memory-api/.test/default/executions/exec-val-feedback-api-store-roundtrip-20260712.json](memory-api/.test/default/executions/exec-val-feedback-api-store-roundtrip-20260712.json)\n  - [memory-api/.test/default/executions/exec-val-feedback-api-ring-persistence-20260712.json](memory-api/.test/default/executions/exec-val-feedback-api-ring-persistence-20260712.json)\n  - [memory-api/.test/default/executions/exec-val-feedback-api-transport-surface-20260712.json](memory-api/.test/default/executions/exec-val-feedback-api-transport-surface-20260712.json)\n\nValidation run results\n\n- Passed: cargo test -p feedback-api (12 passed)\n- Passed: cargo test -p rule-api (70 passed)\n- Passed: cargo build -p rule-api\n- Passed: cargo build -p feedback-cli -p feedback-mcp -p feedback-http\n- Passed: cargo build workspace-wide (warnings only)\n\nImportant blocker encountered\n\n- Re-adding cross-store dependency edge from G-D to PROGRAM-UMBRELLA failed with entity not found when addressed from memory-api store:\n  - attempted edge: 5d4078fa... -> 8a90a63c...\n- Current G-D depends_on was restored for in-store dependencies and design/ingest links; the root-store umbrella edge remains missing and needs a cross-workspace movement flow that supports this edge type in your current ticket setup.\n\nState snapshot\n\n- Active board entry remains checked in on G-D with owned files for crates/feedback-api and crates/rule-api/src.\n- New design ticket is in-implementation.\n- New feedback contract-v2 spec exists in memory-api store as draft.\n\nNatural next steps\n\n1. Decide whether to re-add the G-D to PROGRAM-UMBRELLA relationship via root-store ticket movement workflow or keep it as documentation-only traceability.\n2. If you want, I can now stage a clean deepest-first commit plan for only the memory-api submodule changes (excluding Cargo.lock and .session), then prepare pointer bump steps for parent repos.",
+      "captured_at": "2026-07-12T04:14:29.085Z",
+      "event_meta": {
+        "event_id": "a7c77dff-0d38-494f-a3ed-f27dbc698928",
+        "parent_event_id": "67ca6393-59c4-4c61-92e2-e8205b1a7373",
+        "event_type": "assistant.message",
+        "message_id": "3982bce9-f527-492e-a3c2-4df46a657184",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "user",
+      "content": "Review complete. The feedback-api extraction passes 8 of 9 gates on independently re-run evidence — this is a legitimate crate extraction, not a rename-and-pray. Gate 8 (commit) is pending, and I flagged three splinters to clean before G-D reaches `done`: the vestigial store-less `process_frontend_feedback` twin, a garbled comment at ring.rs L222, and the honestly-reported cross-store edge blocker. Full verdict table and evidence citations are above.",
+      "captured_at": "2026-07-12T15:42:14.678Z",
+      "event_meta": {
+        "event_id": "b5b009f6-ea0e-4796-88c2-47eed1dcfbcf",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "I’ll clean the three splinters now: remove the vestigial store-less frontend helper path, fix the garbled ring comment, and record the cross-store edge blocker directly in ticket state so G-D can close cleanly once resolved. I’m starting by inspecting the current ring implementation around those call sites.",
+      "captured_at": "2026-07-12T15:42:27.683Z",
+      "event_meta": {
+        "event_id": "4b565ec9-ca9d-4df6-a2f0-41899580c8f1",
+        "parent_event_id": "2afd1574-9b11-4f8b-a21d-7704d21c3ed7",
+        "event_type": "assistant.message",
+        "message_id": "8ff29e66-3fef-479c-8cd1-4c925dc255ea",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_L5Vhz929eCCI4mW03faaVITO",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/ring.rs",
+              "startLine": 180,
+              "endLine": 280
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Kdibtd4CEam2J0qZe3X7VTU1",
+            "name": "grep_search",
+            "arguments": {
+              "query": "process_frontend_feedback|ingest_frontend_feedback",
+              "isRegexp": true,
+              "includePattern": "memory-api/**",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_3jii3D6MRC9wOOMnOXP7QnqZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && ticket --toon describe 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d",
+              "explanation": "Load current G-D description so blocker language can be appended cleanly.",
+              "goal": "Inspect current G-D notes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "I found the two code splinters in ring and I’m patching them now: removing the public store-less frontend conversion function and fixing the malformed missing-rule comment text, then I’ll run tests.",
+      "captured_at": "2026-07-12T15:42:44.143Z",
+      "event_meta": {
+        "event_id": "af9dfdd4-bcdf-4e5c-9e06-4f88396d5284",
+        "parent_event_id": "f1caec66-3074-46c7-9619-6357f24f0155",
+        "event_type": "assistant.message",
+        "message_id": "4ff02450-603c-40e0-9054-71b72b78599e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eh0BegDUYH3DxbOdJ0s1HpVc",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Remove vestigial store-less process_frontend_feedback API, inline conversion into persisted ingestion, and fix garbled comment wording.",
+              "input": "*** Begin Patch\n*** Update File: /c:/Users/linus/git/graph_app/context-engine/memory-api/crates/rule-api/src/ring.rs\n@@\n /// G-D semi-automated ring edge: No-Match -> Missing-Rule Ticket\n ///\n-/// If a situation query results in zero matching rules, auto-generate a missing-rule ticket in of the actual ticket store.\n+/// If a situation query results in zero matching rules, auto-generate a\n+/// missing-rule ticket in the ticket store and persist a linking feedback event.\n pub fn handle_missing_rule_match(\n@@\n /// G-D semi-automated ring edge: Frontend user/agent feedback integration.\n-pub fn process_frontend_feedback(\n-    submission: FrontendFeedbackSubmission,\n-) -> Result<EntityRatingSubmission, String> {\n-    Ok(EntityRatingSubmission {\n-        rating: submission.rating,\n-        note_text: submission.comments,\n-        note_kind: Some(FeedbackNoteKind::Note),\n-        session_id: Some(format!(\"frontend-{}\", submission.source_frontend)),\n-        agent_or_user_id: Some(submission.user_id),\n-    })\n-}\n-\n pub fn ingest_frontend_feedback(\n     store: &EntityFeedbackStore,\n     submission: FrontendFeedbackSubmission,\n ) -> Result<EntityRatingEvent, String> {\n     let author = IngestAuthor::human(Some(submission.user_id.clone()))?;\n-    let rating = process_frontend_feedback(submission.clone())?;\n+    let rating = EntityRatingSubmission {\n+        rating: submission.rating,\n+        note_text: submission.comments,\n+        note_kind: Some(FeedbackNoteKind::Note),\n+        session_id: Some(format!(\"frontend-{}\", submission.source_frontend)),\n+        agent_or_user_id: Some(submission.user_id),\n+    };\n     store.ingest_rating(&author, submission.target_entity_urn, rating)\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "Cleaned the three splinters and re-validated.\n\n- Removed the vestigial store-less frontend twin:\n  - deleted public conversion path and inlined persisted conversion inside ingest flow in [memory-api/crates/rule-api/src/ring.rs](memory-api/crates/rule-api/src/ring.rs)\n  - removed the stale export in [memory-api/crates/rule-api/src/lib.rs](memory-api/crates/rule-api/src/lib.rs)\n  - confirmed no remaining references to process_frontend_feedback across memory-api\n\n- Fixed the garbled comment wording in the missing-rule section:\n  - updated text in [memory-api/crates/rule-api/src/ring.rs](memory-api/crates/rule-api/src/ring.rs)\n\n- Captured the cross-store edge blocker explicitly on G-D:\n  - appended a dedicated blocker section to [memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md](memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md)\n  - history and ticket metadata updated accordingly in the same ticket folder\n\nValidation run after cleanup:\n- cargo test -p rule-api: 70 passed\n- no compile/lint errors reported in touched rule-api files\n\nDelta note:\n- feedback-mcp remains present as untracked new work at [memory-api/tools/mcp/feedback-mcp](memory-api/tools/mcp/feedback-mcp), along with the earlier extraction and transport additions.\n- G-D is still in-review and now has an honest blocker trail for the cross-workspace dependency edge limitation.",
+      "captured_at": "2026-07-12T15:43:25.723Z",
+      "event_meta": {
+        "event_id": "e90a8dfa-b8a0-46a1-9b28-f27ad6fc1a52",
+        "parent_event_id": "eb6799cf-3d95-4be0-9a56-a6c6401218f3",
+        "event_type": "assistant.message",
+        "message_id": "867c182e-d0e3-41a5-9418-85b99399fdba",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
