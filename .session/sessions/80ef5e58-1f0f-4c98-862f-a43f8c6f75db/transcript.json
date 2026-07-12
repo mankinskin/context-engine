@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "80ef5e58-1f0f-4c98-862f-a43f8c6f75db",
-  "captured_at": "2026-07-11T18:23:41.961Z",
+  "captured_at": "2026-07-12T00:06:59.105Z",
   "turns": [
     {
       "sequence": 0,
@@ -685,6 +685,402 @@
             "type": "function"
           }
         ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "I’m now implementing the shared parser and CLI plumbing first, then I’ll add regression tests (including frontmatter real-target round-trip) and run the focused rule-cli test suite.",
+      "captured_at": "2026-07-11T18:25:32.376Z",
+      "event_meta": {
+        "event_id": "97afc29c-3539-4a88-8098-d1d4004884f6",
+        "parent_event_id": "fa8ae316-ea59-4e9e-97df-ec371dfe6613",
+        "event_type": "assistant.message",
+        "message_id": "b9a2b9ad-576f-4966-8921-887d31cad6f7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wckJs01642xkIFi5YgFBlf6y",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add generated artifact parser with frontmatter reattachment and entry parsing in shared generated_markdown module, including tests.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\memory-api\\src\\generated_markdown.rs\n@@\n pub struct GeneratedMarkdownConfig<'a> {\n@@\n }\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+pub struct ParsedGeneratedMarkdownEntry {\n+    pub id: String,\n+    pub slug: Option<String>,\n+    pub body: String,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+pub struct ParsedGeneratedMarkdownArtifact {\n+    pub entries: Vec<ParsedGeneratedMarkdownEntry>,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+pub enum ParseGeneratedMarkdownError {\n+    MissingGeneratedFileComment,\n+    MalformedEntryComment(String),\n+    NoEntriesFound,\n+}\n+\n+impl std::fmt::Display for ParseGeneratedMarkdownError {\n+    fn fmt(\n+        &self,\n+        f: &mut std::fmt::Formatter<'_>,\n+    ) -> std::fmt::Result {\n+        match self {\n+            Self::MissingGeneratedFileComment => write!(\n+                f,\n+                \"input is not a generated artifact (missing generated file comment)\"\n+            ),\n+            Self::MalformedEntryComment(line) =>\n+                write!(f, \"malformed generated entry comment: {line}\"),\n+            Self::NoEntriesFound =>\n+                write!(f, \"generated artifact contains no entry comments\"),\n+        }\n+    }\n+}\n+\n+impl std::error::Error for ParseGeneratedMarkdownError {}\n@@\n pub fn prepare_generated_output(\n@@\n }\n+\n+pub fn parse_generated_artifact(\n+    content: &str,\n+    config: &GeneratedMarkdownConfig<'_>,\n+) -> Result<ParsedGeneratedMarkdownArtifact, ParseGeneratedMarkdownError> {\n+    let normalized = normalize_newlines_to_lf(content);\n+    let mut remainder = normalized.as_str();\n+    let frontmatter = if config.skip_provenance_for_yaml_frontmatter {\n+        if let Some((frontmatter, rest)) = split_yaml_frontmatter(remainder) {\n+            remainder = rest;\n+            Some(frontmatter.trim_end().to_string())\n+        } else {\n+            None\n+        }\n+    } else {\n+        None\n+    };\n+\n+    remainder = remainder.trim_start_matches('\\n');\n+    if !remainder.starts_with(config.file_comment.as_ref()) {\n+        return Err(ParseGeneratedMarkdownError::MissingGeneratedFileComment);\n+    }\n+\n+    remainder = &remainder[config.file_comment.len()..];\n+    let markers = parse_entry_markers(remainder, &config.entry_prefix)?;\n+    if markers.is_empty() {\n+        return Err(ParseGeneratedMarkdownError::NoEntriesFound);\n+    }\n+\n+    let mut entries = Vec::with_capacity(markers.len());\n+    for (index, marker) in markers.iter().enumerate() {\n+        let body_end = markers\n+            .get(index + 1)\n+            .map(|next| next.line_start)\n+            .unwrap_or(remainder.len());\n+        let mut body = remainder[marker.body_start..body_end]\n+            .trim_end()\n+            .to_string();\n+        if index == 0 {\n+            if let Some(frontmatter) = frontmatter.as_deref() {\n+                body = reattach_frontmatter(frontmatter, &body);\n+            }\n+        }\n+\n+        entries.push(ParsedGeneratedMarkdownEntry {\n+            id: marker.id.clone(),\n+            slug: marker.slug.clone(),\n+            body,\n+        });\n+    }\n+\n+    Ok(ParsedGeneratedMarkdownArtifact { entries })\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+struct EntryMarker {\n+    line_start: usize,\n+    body_start: usize,\n+    id: String,\n+    slug: Option<String>,\n+}\n+\n+fn parse_entry_markers(\n+    content: &str,\n+    entry_prefix: &str,\n+) -> Result<Vec<EntryMarker>, ParseGeneratedMarkdownError> {\n+    let mut markers = Vec::new();\n+    let mut cursor = 0usize;\n+\n+    while cursor <= content.len() {\n+        let line_end_rel = content[cursor..]\n+            .find('\\n')\n+            .map(|offset| offset + cursor)\n+            .unwrap_or(content.len());\n+        let line = &content[cursor..line_end_rel];\n+        if let Some((id, slug)) = parse_entry_marker_line(line, entry_prefix)? {\n+            let body_start = if line_end_rel < content.len() {\n+                line_end_rel + 1\n+            } else {\n+                line_end_rel\n+            };\n+            markers.push(EntryMarker {\n+                line_start: cursor,\n+                body_start,\n+                id,\n+                slug,\n+            });\n+        }\n+\n+        if line_end_rel == content.len() {\n+            break;\n+        }\n+        cursor = line_end_rel + 1;\n+    }\n+\n+    Ok(markers)\n+}\n+\n+fn parse_entry_marker_line(\n+    line: &str,\n+    entry_prefix: &str,\n+) -> Result<Option<(String, Option<String>)>, ParseGeneratedMarkdownError> {\n+    let trimmed = line.trim();\n+    if !trimmed.starts_with(\"<!--\") || !trimmed.ends_with(\"-->\") {\n+        return Ok(None);\n+    }\n+\n+    let inner = trimmed\n+        .trim_start_matches(\"<!--\")\n+        .trim_end_matches(\"-->\")\n+        .trim();\n+    if !inner.starts_with(entry_prefix) {\n+        return Ok(None);\n+    }\n+\n+    let attrs = inner[entry_prefix.len()..].trim();\n+    if attrs.is_empty() {\n+        return Err(ParseGeneratedMarkdownError::MalformedEntryComment(\n+            line.to_string(),\n+        ));\n+    }\n+\n+    let mut id = None;\n+    let mut slug = None;\n+    for token in attrs.split_whitespace() {\n+        if let Some(value) = token.strip_prefix(\"id=\") {\n+            if value.is_empty() {\n+                return Err(ParseGeneratedMarkdownError::MalformedEntryComment(\n+                    line.to_string(),\n+                ));\n+            }\n+            id = Some(value.to_string());\n+        } else if let Some(value) = token.strip_prefix(\"slug=\") {\n+            if !value.is_empty() {\n+                slug = Some(value.to_string());\n+            }\n+        }\n+    }\n+\n+    let Some(id) = id else {\n+        return Err(ParseGeneratedMarkdownError::MalformedEntryComment(\n+            line.to_string(),\n+        ));\n+    };\n+    Ok(Some((id, slug)))\n+}\n+\n+fn reattach_frontmatter(\n+    frontmatter: &str,\n+    body: &str,\n+) -> String {\n+    if body.is_empty() {\n+        format!(\"{}\\n\", frontmatter.trim_end())\n+    } else {\n+        format!(\"{}\\n{}\", frontmatter.trim_end(), body)\n+    }\n+}\n@@\n mod tests {\n@@\n     use super::{\n+        ParseGeneratedMarkdownError,\n         GeneratedMarkdownConfig,\n         GeneratedMarkdownSnippet,\n+        parse_generated_artifact,\n         prepare_generated_output,\n         render_markdown_file,\n     };\n@@\n     fn prepare_generated_output_normalizes_new_files_to_lf() {\n         let prepared =\n             prepare_generated_output(\"first\\r\\nsecond\\r\\nthird\\n\", None);\n \n         assert_eq!(prepared, \"first\\nsecond\\nthird\\n\");\n     }\n+\n+    #[test]\n+    fn parse_generated_artifact_restores_frontmatter_to_first_entry() {\n+        let rendered = render_markdown_file(\n+            &[GeneratedMarkdownSnippet::new(\n+                \"prompt\",\n+                Some(\"context-engine/prompts/spec\"),\n+                \"---\\nname: spec\\n---\\nCreate a new spec entry.\\n\",\n+            )],\n+            &rule_like_config(),\n+        );\n+\n+        let parsed = parse_generated_artifact(&rendered, &rule_like_config())\n+            .expect(\"parse generated artifact\");\n+        assert_eq!(parsed.entries.len(), 1);\n+        assert_eq!(parsed.entries[0].id, \"prompt\");\n+        assert_eq!(\n+            parsed.entries[0].body,\n+            \"---\\nname: spec\\n---\\nCreate a new spec entry.\"\n+        );\n+    }\n+\n+    #[test]\n+    fn parse_generated_artifact_rejects_non_generated_file() {\n+        let error =\n+            parse_generated_artifact(\"# not generated\", &rule_like_config())\n+                .expect_err(\"must fail\");\n+        assert_eq!(\n+            error,\n+            ParseGeneratedMarkdownError::MissingGeneratedFileComment\n+        );\n+    }\n+\n+    #[test]\n+    fn parse_generated_artifact_handles_crlf_input_and_trimmed_bodies() {\n+        let input = concat!(\n+            \"<!-- generated:file true -->\\r\\n\\r\\n\",\n+            \"<!-- generated:entry id=one slug=shared/a -->\\r\\n\",\n+            \"alpha\\r\\n\\r\\n\",\n+            \"<!-- generated:entry id=two slug=shared/b -->\\r\\n\",\n+            \"beta\\r\\n\",\n+        );\n+\n+        let parsed = parse_generated_artifact(input, &rule_like_config())\n+            .expect(\"parse generated artifact\");\n+        assert_eq!(parsed.entries.len(), 2);\n+        assert_eq!(parsed.entries[0].body, \"alpha\");\n+        assert_eq!(parsed.entries[1].body, \"beta\");\n+    }\n }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "I hit a patch mis-merge in `dispatch.rs`; I’m fixing that section now to restore valid match syntax before proceeding.",
+      "captured_at": "2026-07-11T18:26:25.099Z",
+      "event_meta": {
+        "event_id": "063c8d33-7c1e-437d-8519-d0d5067eeaf4",
+        "parent_event_id": "4ffb1479-6e54-48fc-93d0-eb799a2f0780",
+        "event_type": "assistant.message",
+        "message_id": "b4dbb3c3-5305-4fb7-be1d-854bf43cf36f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_sNzuTaBfhtKYPCVDGWWnNYiH",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\dispatch.rs",
+              "startLine": 112,
+              "endLine": 190
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "Core command/parser wiring is added; I’m now adding focused tests for parse, unknown-id atomic preflight, slug non-authoritative behavior, and check-mode drift, then a frontmatter round-trip integration test.",
+      "captured_at": "2026-07-11T18:27:08.391Z",
+      "event_meta": {
+        "event_id": "dce99e8e-64e0-4830-8d5f-68731f62331f",
+        "parent_event_id": "b3bf2a99-a4b8-4c0b-90f1-40b953a064c0",
+        "event_type": "assistant.message",
+        "message_id": "329f6389-f5ea-42b8-a223-367175387dd6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_T7oZvAMwNeQtCwoEXdIj4WmS",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Add sync-rules command parsing and behavior tests: dry-run/check parse, guard failures, id-authoritative slug mismatch handling, check drift, and no-partial-write on unknown ids.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\tests\\tests_commands.rs\n@@\n fn parse_sync_targets_command() {\n@@\n }\n+\n+#[test]\n+fn parse_sync_rules_command() {\n+    let cli = parse_cli_from([\n+        \"rule\",\n+        \"sync-rules\",\n+        \"--file\",\n+        \".agents/agents/roast.agent.md\",\n+        \"--dry-run\",\n+    ])\n+    .unwrap();\n+\n+    match cli.command {\n+        RuleCommandCli::SyncRules(args) => {\n+            assert_eq!(\n+                args.file,\n+                PathBuf::from(\".agents/agents/roast.agent.md\")\n+            );\n+            assert!(args.dry_run);\n+            assert!(!args.check);\n+        },\n+        _ => panic!(\"expected sync-rules command\"),\n+    }\n+}\n+\n+#[test]\n+fn sync_rules_rejects_non_generated_file_input() {\n+    let dir = tempdir().unwrap();\n+    let index_root = dir.path().join(\".rule\");\n+    RuleStore::init(&index_root).unwrap();\n+\n+    let input = dir.path().join(\"notes.md\");\n+    fs::write(&input, \"# plain markdown\").unwrap();\n+\n+    let error = dispatch::dispatch(\n+        RuleCommandCli::SyncRules(SyncRulesArgs {\n+            file: input,\n+            dry_run: false,\n+            check: false,\n+        }),\n+        &index_root,\n+    )\n+    .expect_err(\"sync-rules should reject non-generated file\");\n+\n+    match error {\n+        CliRunError::BadRequest(message) => {\n+            assert!(message.contains(\"not a generated artifact\"));\n+        },\n+        other => panic!(\"unexpected error: {other:?}\"),\n+    }\n+}\n+\n+#[test]\n+fn sync_rules_uses_marker_id_as_authoritative_and_ignores_slug_edits() {\n+    let dir = tempdir().unwrap();\n+    let index_root = dir.path().join(\".rule\");\n+    let mut store = RuleStore::init(&index_root).unwrap();\n+    let rule = sample_rule(\n+        \"shared/agents/reverse-sync\",\n+        \"Reverse Sync\",\n+        \"reverse-sync\",\n+        \"Original body.\",\n+        10,\n+    );\n+    let id = store.create(&rule, None).unwrap();\n+\n+    let input = dir.path().join(\"generated.md\");\n+    fs::write(\n+        &input,\n+        format!(\n+            concat!(\n+                \"<!-- rule-api:file generated=true -->\\n\\n\",\n+                \"<!-- rule-api:entry id={} slug=edited/slug -->\\n\",\n+                \"Updated from generated artifact.\\n\",\n+            ),\n+            id\n+        ),\n+    )\n+    .unwrap();\n+\n+    let payload = dispatch::dispatch(\n+        RuleCommandCli::SyncRules(SyncRulesArgs {\n+            file: input,\n+            dry_run: false,\n+            check: false,\n+        }),\n+        &index_root,\n+    )\n+    .unwrap();\n+\n+    assert_eq!(payload[\"changed\"], 1);\n+    assert_eq!(payload[\"items\"][0][\"slug_mismatch\"], true);\n+\n+    let reopened = RuleStore::open(&index_root).unwrap();\n+    let updated = reopened.get(&id.to_string()).unwrap();\n+    assert_eq!(updated.body(), Some(\"Updated from generated artifact.\"));\n+}\n+\n+#[test]\n+fn sync_rules_check_reports_drift_without_writing() {\n+    let dir = tempdir().unwrap();\n+    let index_root = dir.path().join(\".rule\");\n+    let mut store = RuleStore::init(&index_root).unwrap();\n+    let rule = sample_rule(\n+        \"shared/agents/check-mode\",\n+        \"Check Mode\",\n+        \"check-mode\",\n+        \"Original body.\",\n+        10,\n+    );\n+    let id = store.create(&rule, None).unwrap();\n+\n+    let input = dir.path().join(\"generated.md\");\n+    fs::write(\n+        &input,\n+        format!(\n+            concat!(\n+                \"<!-- rule-api:file generated=true -->\\n\\n\",\n+                \"<!-- rule-api:entry id={} slug=shared/agents/check-mode -->\\n\",\n+                \"Changed body.\\n\",\n+            ),\n+            id\n+        ),\n+    )\n+    .unwrap();\n+\n+    let error = dispatch::dispatch(\n+        RuleCommandCli::SyncRules(SyncRulesArgs {\n+            file: input,\n+            dry_run: false,\n+            check: true,\n+        }),\n+        &index_root,\n+    )\n+    .expect_err(\"check mode should report drift\");\n+\n+    match error {\n+        CliRunError::BadRequest(message) => {\n+            assert!(message.contains(\"drift\"));\n+        },\n+        other => panic!(\"unexpected error: {other:?}\"),\n+    }\n+\n+    let reopened = RuleStore::open(&index_root).unwrap();\n+    let unchanged = reopened.get(&id.to_string()).unwrap();\n+    assert_eq!(unchanged.body(), Some(\"Original body.\"));\n+}\n+\n+#[test]\n+fn sync_rules_unknown_id_error_keeps_existing_entries_unchanged() {\n+    let dir = tempdir().unwrap();\n+    let index_root = dir.path().join(\".rule\");\n+    let mut store = RuleStore::init(&index_root).unwrap();\n+    let rule = sample_rule(\n+        \"shared/agents/atomicity\",\n+        \"Atomicity\",\n+        \"atomicity\",\n+        \"Original body.\",\n+        10,\n+    );\n+    let id = store.create(&rule, None).unwrap();\n+\n+    let input = dir.path().join(\"generated.md\");\n+    fs::write(\n+        &input,\n+        format!(\n+            concat!(\n+                \"<!-- rule-api:file generated=true -->\\n\\n\",\n+                \"<!-- rule-api:entry id={} slug=shared/agents/atomicity -->\\n\",\n+                \"Changed body.\\n\\n\",\n+                \"<!-- rule-api:entry id=00000000-0000-0000-0000-000000000999 slug=missing/rule -->\\n\",\n+                \"Missing body.\\n\",\n+            ),\n+            id\n+        ),\n+    )\n+    .unwrap();\n+\n+    let error = dispatch::dispatch(\n+        RuleCommandCli::SyncRules(SyncRulesArgs {\n+            file: input,\n+            dry_run: false,\n+            check: false,\n+        }),\n+        &index_root,\n+    )\n+    .expect_err(\"must fail with orphan ids\");\n+\n+    match error {\n+        CliRunError::BadRequest(message) => {\n+            assert!(message.contains(\"orphan generated entry ids\"));\n+        },\n+        other => panic!(\"unexpected error: {other:?}\"),\n+    }\n+\n+    let reopened = RuleStore::open(&index_root).unwrap();\n+    let unchanged = reopened.get(&id.to_string()).unwrap();\n+    assert_eq!(unchanged.body(), Some(\"Original body.\"));\n+}\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "I’m at the compile-hardening pass now: I found helper matching code that still needs `SyncRules` coverage, then I’ll run the focused tests and fix any breakage.",
+      "captured_at": "2026-07-11T18:33:02.705Z",
+      "event_meta": {
+        "event_id": "0bfc61ad-2728-4968-8afe-fe9dd069848a",
+        "parent_event_id": "d02d6728-daa9-44f0-a476-d0cc17c2b95e",
+        "event_type": "assistant.message",
+        "message_id": "26dd06f7-35dc-4e92-93ba-1e6f3cc82a0b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_4Nf2mt3Ya6VzOdpwHhug7jP5",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\helpers.rs",
+              "startLine": 240,
+              "endLine": 340
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "The compile surfaced two wiring misses in module scope imports; I’m patching those now, then rerunning the focused sync-rules tests.",
+      "captured_at": "2026-07-11T18:33:31.726Z",
+      "event_meta": {
+        "event_id": "bb87cbf3-940f-4101-a330-2ec0e95ff6a3",
+        "parent_event_id": "79d7191c-b5be-4191-985f-c3bb37566d59",
+        "event_type": "assistant.message",
+        "message_id": "6d9f1253-d9ae-4673-8ab7-2ef93d3ffd07",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_itMmMb666PR2WQStuqRsfhI0",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Expose SyncRulesArgs and sync_rules_file into dispatch module scope for dispatch_secondary usage.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\rule-cli\\src\\cli\\dispatch.rs\n@@\n     StoreIndexArgs,\n+    SyncRulesArgs,\n     SyncTargetsArgs,\n     UpdateArgs,\n@@\n-    importing::import_file,\n+    importing::{\n+        import_file,\n+        sync_rules_file,\n+    },\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Implemented v1 file-only reverse sync and validated it with focused tests.\n\nWhat I changed\n1. Added generated-artifact parsing with frontmatter reattachment support in shared markdown logic:\n- [memory-api/crates/memory-api/src/generated_markdown.rs](memory-api/crates/memory-api/src/generated_markdown.rs)\n\n2. Exposed parser through rule-api render surface:\n- [memory-api/crates/rule-api/src/render.rs](memory-api/crates/rule-api/src/render.rs)\n- [memory-api/crates/rule-api/src/lib.rs](memory-api/crates/rule-api/src/lib.rs)\n\n3. Added new CLI command and args:\n- [memory-api/tools/cli/rule-cli/src/cli/args.rs](memory-api/tools/cli/rule-cli/src/cli/args.rs)\n\n4. Wired command dispatch and workspace bootstrap:\n- [memory-api/tools/cli/rule-cli/src/cli/dispatch.rs](memory-api/tools/cli/rule-cli/src/cli/dispatch.rs)\n- [memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs](memory-api/tools/cli/rule-cli/src/cli/dispatch_secondary.rs)\n\n5. Implemented sync-rules behavior:\n- [memory-api/tools/cli/rule-cli/src/cli/importing.rs](memory-api/tools/cli/rule-cli/src/cli/importing.rs)\n\nBehavior now implemented\n1. Command shape: sync-rules --file <path> with --dry-run and --check.\n2. Non-generated input guard: rejects files missing generated marker contract.\n3. Unknown id handling: fails with orphan id error before mutation.\n4. Spec-doc handling: explicit unsupported error.\n5. Id/slug semantics: id is authoritative for lookup/update; marker slug is metadata and mismatch is reported.\n6. Drift/check mode: --check fails when any entry would change; no writes.\n7. Atomic apply semantics: updates are applied as one operation with rollback-on-failure for already-applied entries.\n8. Frontmatter inversion: leading frontmatter is restored to first entry body so round-trip regenerate checks stay clean.\n9. Normalization coverage: parser tests include CRLF input and trimmed body expectations.\n\nTests added\n1. Command tests:\n- [memory-api/tools/cli/rule-cli/src/cli/tests/tests_commands.rs](memory-api/tools/cli/rule-cli/src/cli/tests/tests_commands.rs)\n\n2. Frontmatter round-trip integration test on roast-style target:\n- [memory-api/tools/cli/rule-cli/src/cli/tests/tests_generate_targets.rs](memory-api/tools/cli/rule-cli/src/cli/tests/tests_generate_targets.rs)\n\n3. Shared parser unit tests:\n- [memory-api/crates/memory-api/src/generated_markdown.rs](memory-api/crates/memory-api/src/generated_markdown.rs)\n\nValidation run\n1. Passed: cargo test -p rule-cli sync_rules -- --nocapture\n2. Passed: cargo test -p memory-api generated_markdown -- --nocapture\n\nWorkflow updates performed\n1. Ticket moved to in-implementation:\n- [./.ticket/tickets/331f331d-b618-42db-9284-195c2e410a11/ticket.toml](./.ticket/tickets/331f331d-b618-42db-9284-195c2e410a11/ticket.toml)\n2. Board check-in created for this ticket and file ownership was registered.\n\nImportant note before next step\nI detected an unexpected pre-existing modification in the submodule worktree:\n- [memory-api/tools/mcp/ticket-mcp/README.md](memory-api/tools/mcp/ticket-mcp/README.md)\n\nPer workspace safety rules, I stopped before any commit/staging actions beyond implementation validation.  \nChoose one next action:\n1. Continue and ignore that unrelated change.\n2. Have me inspect it and confirm it is unrelated.\n3. Pause here and you handle that file first.",
+      "captured_at": "2026-07-11T18:34:23.194Z",
+      "event_meta": {
+        "event_id": "84bcfbac-35df-4447-a346-050ec222d557",
+        "parent_event_id": "cf856d0f-5a7c-4245-9514-c9f5eb08b064",
+        "event_type": "assistant.message",
+        "message_id": "af7d9a3a-79e5-46e2-a1eb-af3cf1d542c1",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "user",
+      "content": "i reverted the README change, I think it is due to a stale rule we need to sync with the new target content",
+      "captured_at": "2026-07-11T18:36:14.690Z",
+      "event_meta": {
+        "event_id": "06b5ee3e-f6b9-4208-af90-88f5b8101e33",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "I’ll verify that the README drift is gone and then run a rule-target sync check in the `memory-api` submodule to confirm whether there is any remaining stale generated output to reconcile.",
+      "captured_at": "2026-07-11T18:36:28.332Z",
+      "event_meta": {
+        "event_id": "3893f792-7f4c-416a-b411-f3fa5c7d4cff",
+        "parent_event_id": "445858d9-ff10-485e-b8de-940b3689fc46",
+        "event_type": "assistant.message",
+        "message_id": "e9f86925-93b5-41a7-b34e-319a5329b01c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_5HKomUEb5XjBvwn6m18XLFgl",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && git -C memory-api status --short",
+              "explanation": "Check current submodule working tree after the user reverted README changes.",
+              "goal": "Verify remaining memory-api changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Dvj5kyVKIDWUeco62EqPHISA",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD/memory-api\" && cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml --check 2>&1",
+              "explanation": "Run sync-targets check to detect stale generated outputs in memory-api rule targets.",
+              "goal": "Validate rule target generation drift in memory-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "The check confirms your suspicion: there is real generated drift in `memory-api` and it currently points at `tools/mcp/ticket-mcp/README.md`. I’ll run `sync-targets` in `memory-api` now to regenerate it cleanly and then re-check.",
+      "captured_at": "2026-07-11T18:36:56.340Z",
+      "event_meta": {
+        "event_id": "4bb59b3f-a613-4377-84b5-02fd205aca03",
+        "parent_event_id": "00021b5f-d3c3-4b28-9db2-c9d3e7f9be5f",
+        "event_type": "assistant.message",
+        "message_id": "45bf865c-a454-453f-af08-9b23ee2fe566",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xEb0pZA6FGlGex5knxJyT1to",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD/memory-api\" && cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml --toon",
+              "explanation": "Regenerate memory-api rule targets to resolve stale generated output drift.",
+              "goal": "Sync memory-api generated rule target outputs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "I hit a workspace-resolution edge when running from inside `memory-api`; I’m rerunning the same sync from the root context-engine shell context where the earlier check worked, so we can apply the fix path consistently.",
+      "captured_at": "2026-07-11T18:38:26.864Z",
+      "event_meta": {
+        "event_id": "a317756c-ae03-432b-abb1-7ead68866602",
+        "parent_event_id": "ea0c201e-4a4e-4567-bd52-56b613e2f766",
+        "event_type": "assistant.message",
+        "message_id": "4ca0c1bf-77e0-42d2-aa49-0e48ac1a78b4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_QoirIgnVYCZcrkNFpq8Zw3cd",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && cd memory-api && cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml --toon",
+              "explanation": "Run sync-targets from the same root-to-submodule path context where check mode succeeded.",
+              "goal": "Regenerate stale memory-api generated outputs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "I found something actionable: your `memory-api` rule store has suspicious registered scan roots (including a non-existent `memory-api/memory-api/.rule/rules`), which likely explains the write-mode `os error 3`; I’ll quickly check root-level sync health so we can separate real drift from store-root corruption.",
+      "captured_at": "2026-07-11T18:39:39.413Z",
+      "event_meta": {
+        "event_id": "a30b9e2a-4743-4f27-a1d5-664b1c3e27ce",
+        "parent_event_id": "400ac784-12c9-4678-8e4b-eb60f27e1372",
+        "event_type": "assistant.message",
+        "message_id": "749d78ce-1fa2-4ee6-9725-08ea3318c9e8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_C1alZuueyWJtZMAcc2N17aXC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && cargo run -q -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml --check 2>&1",
+              "explanation": "Verify whether root workspace sync-targets remains clean while memory-api submodule has write-mode issues.",
+              "goal": "Separate root drift from memory-api store path issue",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "Good news: root-level target generation is clean, including the `ticket-mcp` README target, so your revert plus current rules are consistent; I’m now marking the implementation ticket as in-review and checking out of the board with validation status.",
+      "captured_at": "2026-07-11T18:40:48.995Z",
+      "event_meta": {
+        "event_id": "1d476a42-07ce-4c50-9e7e-11175e227487",
+        "parent_event_id": "04c98341-abba-415b-a122-1d1d8c7af8b7",
+        "event_type": "assistant.message",
+        "message_id": "4d671155-e171-4cc9-a7ed-2dccbf92a5e0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_JXCVvfq1psqTc1I6uIVY6XTp",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && ./target/debug/ticket.exe update 331f331d-b618-42db-9284-195c2e410a11 --workspace \"$PWD\" --to-state in-review --toon",
+              "explanation": "Transition completed implementation ticket to in-review after code and tests passed.",
+              "goal": "Move ticket to in-review",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_FHDudfAzxnQo3UZMr4XEeh42",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && ./target/debug/ticket.exe board check-out 331f331d-b618-42db-9284-195c2e410a11 --agent copilot-gpt5 --reason \"Implemented sync-rules v1 and validated focused tests\" --workspace \"$PWD\" --toon",
+              "explanation": "Release board ownership now that implementation work is complete.",
+              "goal": "Check out from ticket board",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "Confirmed. Your intuition was right about target sync context, and current state is now coherent.\n\nWhat I verified\n1. Root workspace rule-target check is clean:\n- Ran `sync-targets --check` at repo root and got status ok.\n- `ticket-mcp` target reports unchanged:\n  - [memory-api/tools/mcp/ticket-mcp/README.md](memory-api/tools/mcp/ticket-mcp/README.md)\n2. The prior README drift in your submodule working view was not an active root-level generation mismatch after your revert.\n\nTrack status updates I applied\n1. Ticket moved to in-review:\n- [./.ticket/tickets/331f331d-b618-42db-9284-195c2e410a11/ticket.toml](./.ticket/tickets/331f331d-b618-42db-9284-195c2e410a11/ticket.toml)\n2. Board entry checked out as completed (ownership released).\n\nNote\nWhen running sync directly inside the memory-api submodule context, write-mode sync surfaced a storage path error, while root-level sync check was clean. Since your immediate concern was stale generated target content after revert, the root contract is currently healthy.\n\nIf you want, I can do one final pass next:\n1. Produce a commit-ready change summary for the implementation files only.\n2. Run a broader test slice beyond the focused sync-rules tests before you commit.",
+      "captured_at": "2026-07-11T18:40:56.207Z",
+      "event_meta": {
+        "event_id": "b3a8199f-3a58-44be-857d-b4b9fe755b1f",
+        "parent_event_id": "4c69b103-6c55-4c58-9b7f-18b4a332b2c8",
+        "event_type": "assistant.message",
+        "message_id": "91c0b9d8-dae0-436d-9020-9e624b71569d",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 38,
+      "role": "user",
+      "content": "use sync-rules to synchronize the rules with the target files",
+      "captured_at": "2026-07-12T00:06:13.087Z",
+      "event_meta": {
+        "event_id": "4109b8a6-d87f-4602-844a-4b040e84ba3f",
+        "parent_event_id": "041ecf38-7eaf-4557-baea-166d2cbf2c94",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 39,
+      "role": "assistant",
+      "content": "I’ll detect which modified generated target files are currently dirty, then run `sync-rules --file` on each one so the backing rule bodies are synchronized in place.",
+      "captured_at": "2026-07-12T00:06:24.360Z",
+      "event_meta": {
+        "event_id": "c5ab991a-9837-43fe-9040-17ad2c9ef171",
+        "parent_event_id": "7fc52455-5bce-4d93-b71a-58cfa7474781",
+        "event_type": "assistant.message",
+        "message_id": "e1dc6ded-35fc-4c1f-9e33-1fe4a26bee79",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_W1KxLLT4ePeXdbFCZzfFNN4b",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git status --short",
+              "explanation": "Inspect root repo changes to identify modified generated target files needing reverse sync.",
+              "goal": "Find dirty files in root workspace",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Gi5NSOkFXNyfPzXyGiI7tUd9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git -C memory-api status --short",
+              "explanation": "Inspect memory-api submodule changes to find modified generated targets there as well.",
+              "goal": "Find dirty files in memory-api submodule",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 40,
+      "role": "assistant",
+      "content": "I found one dirty generated target file (`memory-api/tools/mcp/ticket-mcp/README.md`), so I’m running `sync-rules` against it and then re-checking workspace status.",
+      "captured_at": "2026-07-12T00:06:34.101Z",
+      "event_meta": {
+        "event_id": "d5c39c83-96ee-4966-b127-337fc8572512",
+        "parent_event_id": "8e37e271-3974-4e63-a29c-ec62b693f0a6",
+        "event_type": "assistant.message",
+        "message_id": "77157c20-2560-4490-8f03-e73452c6d614",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_F1WsMD2TZGq2HfgTKIWszI2H",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && cargo run -q -p rule-cli --bin rule -- sync-rules --file tools/mcp/ticket-mcp/README.md --toon",
+              "explanation": "Reverse-sync edited generated target file back into canonical rule bodies using entry ids.",
+              "goal": "Synchronize rules from ticket-mcp README",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gVRCpwgeuneEQ9lzRT0b1o59",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && git status --short tools/mcp/ticket-mcp/README.md .rule/rules",
+              "explanation": "Verify target file and associated rule bodies after sync-rules operation.",
+              "goal": "Confirm sync-rules effects",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 41,
+      "role": "assistant",
+      "content": "Done. I ran `sync-rules` against the dirty generated target file and it synchronized the backing rule body.\n\nWhat was synced\n1. Target file: [memory-api/tools/mcp/ticket-mcp/README.md](memory-api/tools/mcp/ticket-mcp/README.md)\n2. `sync-rules` result:\n- `count: 2` entries parsed\n- `changed: 1` entry updated\n- updated rule id: `3525d8dd-0fd9-4af2-bd43-480fa58ea3cd`\n\nCurrent changed files from that sync\n1. [memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/body.md](memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/body.md)\n2. [memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/history.ndjson](memory-api/.rule/rules/3525d8dd-0fd9-4af2-bd43-480fa58ea3cd/history.ndjson)\n3. [memory-api/tools/mcp/ticket-mcp/README.md](memory-api/tools/mcp/ticket-mcp/README.md)\n\nValidation note\nI also ran `sync-targets --check` in `memory-api`, and it now reports a separate drift on:\n- [memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md](memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/body.md)\n\nIf you want, I can continue and reconcile that remaining drift path next (either by forward sync or by targeted reverse sync where supported).",
+      "captured_at": "2026-07-12T00:06:59.105Z",
+      "event_meta": {
+        "event_id": "38f4344d-b902-46a2-8082-4f770d2cee62",
+        "parent_event_id": "b32a3a35-e806-40c7-8134-2a50dccbe0bd",
+        "event_type": "assistant.message",
+        "message_id": "27ac90a4-c5e1-4e64-8e5b-9b7339825ceb",
+        "tool_requests_json": []
       }
     }
   ]
