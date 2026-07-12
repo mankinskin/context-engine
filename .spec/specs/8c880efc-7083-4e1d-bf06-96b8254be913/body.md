@@ -1,28 +1,33 @@
-<!-- aligned-structure:v1 -->
+<!-- aligned-structure:v2 -->
 
 # Summary
 
 Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
 
-## Behavior Story
+## Motivation ("why")
 
-Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
+Store discovery found ~60 specs with no positions, guards, or motivation, which over-bloats the reasoning context of every agent session. This spec defines a dynamic session bootstrap that shrinks static instruction load by enabling agent-targeted selective loading of rule and spec entities on demand.
 
-## Provided Surface Contracts
+## Dependent expectation
 
-- Define provided contracts for this behavior slice.
+If this spec is implemented, dependents can rely on `session_context.json` holding `pinned_entities` as URNs `ce://<workspace>/<store>/<uuid>` and calling `session_init`, `session_pin`, `session_unpin`, and `session_view` to manage the cognitive workspace.
 
-## Required Validation
+## Guards
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+The verification of this specification contract is gated by:
+- `val-session-bootstrap-schema-validation` (validates `session_context.json` conforms to schema with URN references)
+- `val-session-init-idempotency` (asserts calling `session_init` repeatedly on an existing session does not overwrite previous pin state)
 
-## Related Implementation Tickets
+## Positions
 
-- No related implementation ticket is linked yet.
+- `session_context.json` schema: `implemented` at [./memory-api/crates/session-api/src/model.rs](./memory-api/crates/session-api/src/model.rs#L10)
+- `session_init` endpoint: `implemented` at [./memory-api/crates/session-api/src/endpoints.rs](./memory-api/crates/session-api/src/endpoints.rs#L50)
+- Cascade agent automation: `not-implemented` at [./memory-api/crates/session-api/src/cascade.rs](./memory-api/crates/session-api/src/cascade.rs)
 
-## Background Knowledge References
+## Governing-rule requirement
 
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+This specification is governed and introduced by:
+- [shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52](shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52)
 
 ## Legacy Content (Preserved)
 
