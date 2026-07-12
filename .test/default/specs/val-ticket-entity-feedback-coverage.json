@@ -1,0 +1,7 @@
+{
+  "id": "val-ticket-entity-feedback-coverage",
+  "title": "Ticket Entity Direct Feedback Coverage Validation",
+  "command": "cargo test -p rule-api ring::tests::test_ticket_feedback_and_ratings_in_store",
+  "detail": "Validates that direct ratings, notes, and usage counts are fully functional on ticket entities in the generic feedback store.",
+  "links": {}
+}

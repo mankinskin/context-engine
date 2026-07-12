@@ -1,0 +1,17 @@
+total_executions: 12
+total_benchmarks: 0
+last_run: "2026-07-12T03:51:12.339142500Z"
+validation_groups[10]{validation_spec_id,total,passed,failed,blocked,latest_outcome,source_path,test_id,domain,operation,transport,run_id,last_duration_ms,min_duration_ms,median_duration_ms,max_duration_ms}:
+  "val-feedback-ring-recomputation-validation",1,1,0,0,passed,null,null,testing,recomputation,null,"run-gd-validation",null,null,null,null
+  "val-ticket-entity-feedback-coverage",1,1,0,0,passed,null,null,testing,"ticket-coverage",null,"run-gd-validation",null,null,null,null
+  "val-transcript-mining-validation",1,1,0,0,passed,null,null,testing,"transcript-mining",null,"run-gd-validation",null,null,null,null
+  "vt-move-kernel",1,1,0,0,passed,null,null,null,null,null,null,null,null,null,null
+  "vt-multistore-refs",1,1,0,0,passed,null,null,null,null,null,null,null,null,null,null
+  "vt-perf-move-health",1,1,0,0,passed,null,null,null,null,null,null,153190,153190,153190,153190
+  "vt-store-discovery",1,1,0,0,passed,null,null,null,null,null,null,null,null,null,null
+  "vt-store-reconcile",1,1,0,0,passed,null,null,null,null,null,null,null,null,null,null
+  "vt-ticket-viewer-wasm-build-regression",3,2,0,1,passed,null,null,null,null,cli,null,null,null,null,null
+  "vt-urn-model",1,1,0,0,passed,null,null,null,null,null,null,null,null,null,null
+benchmark_groups[0]:
+issues[0]:
+slow[0]:

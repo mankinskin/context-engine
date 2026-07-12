@@ -1,0 +1,7 @@
+{
+  "id": "val-feedback-ring-recomputation-validation",
+  "title": "Execution to Spec Verified Recomputation Feedback Ring Edge Validation",
+  "command": "cargo test -p rule-api ring::tests::test_recompute_spec_verified_state_latest_wins",
+  "detail": "Validates the Execution -> Spec Verified Recompute feedback ring edge correctly processes new executions to advance a spec to verified.",
+  "links": {}
+}

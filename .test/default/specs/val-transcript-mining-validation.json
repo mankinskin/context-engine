@@ -1,0 +1,7 @@
+{
+  "id": "val-transcript-mining-validation",
+  "title": "Transcript Mining Feedback Ring Edge Validation",
+  "command": "cargo test -p rule-api ring::tests::test_transcript_mining_logic",
+  "detail": "Validates that the transcript mining feedback ring edge accurately detects rule confusion in session logs.",
+  "links": {}
+}

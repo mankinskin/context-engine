@@ -1,68 +1,27 @@
-<!-- aligned-structure:v1 -->
+<!-- aligned-structure:v2 -->
 
-# Summary
+# Motivation ("why")
 
-Define the **bootstrap-facing curation surface** of the feedback-api program: a URN-addressed, entity-type-agnostic usage-counting and feedback-rating capability that session bootstrapping feeds. Each pin records a usage event, and agents can rate entities before responding. Specs and rules are covered now; tickets use the same model later.
+There was no unified feedback mechanism or usage-frequency metrics across different entity types (specs, rules, and tickets) in our system. Without these signals, the session bootstrapping orchestration cannot perform automated curation, obsolescence detection, or continuous quality refinement. Introducing a robust feedback loop closes this gap.
 
-## Behavior Story
+## Dependent expectation
 
-Define the **bootstrap-facing curation surface** of the feedback-api program: a URN-addressed, entity-type-agnostic usage-counting and feedback-rating capability that session bootstrapping feeds. Each pin records a usage event, and agents can rate entities before responding. Specs and rules are covered now; tickets use the same model later.
+If this spec is implemented, dependents can rely on a queryable, URN-addressed (`ce://<workspace>/<store>/<entity>`) usage tracking and rating store. Recording a usage event increments aggregate counts and updates timestamps. Attaching Ratings and Notes is fully generic and handles specs, rules, and ticket entities smoothly, with automatic ring edges for execution verified recomputation, transcript mining, and automated ticketing.
 
-## Provided Surface Contracts
+## Guards
 
-- Define provided contracts for this behavior slice.
+The verification of this specification contract is gated by:
+- `val-feedback-ring-recomputation-validation` (verifies that execution outcomes correctly recompute spec verified state)
+- `val-transcript-mining-validation` (verifies rule confusion detection in session transcripts)
+- `val-ticket-entity-feedback-coverage` (verifies that ticket-entity feedback is fully queryable and compliant with the generic store model)
 
-## Required Validation
+## Positions
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- Verification/recompute and other feedback loop edges: `implemented` at [./memory-api/crates/rule-api/src/ring.rs](./memory-api/crates/rule-api/src/ring.rs)
+- Core generic rating/usage store and ticket entity support: `implemented` at [./memory-api/crates/rule-api/src/feedback_store.rs](./memory-api/crates/rule-api/src/feedback_store.rs)
 
-## Related Implementation Tickets
+## Governing-rule requirement
 
-- No related implementation ticket is linked yet.
+This specification is governed and introduced by:
+- [shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52](shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52)
 
-## Background Knowledge References
-
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
-
-## Legacy Content (Preserved)
-
-# Goal
-Define the **bootstrap-facing curation surface** of the feedback-api program: a URN-addressed, entity-type-agnostic usage-counting and feedback-rating capability that session bootstrapping feeds. Each pin records a usage event, and agents can rate entities before responding. Specs and rules are covered now; tickets use the same model later.
-
-This surface is **owned by the feedback-api program** ([b1e9e744](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)). There is no separate or parallel "generic memory-api" model — the prior parallel ticket (f8b447b7) was cancelled and folded into the feedback-api program. The session-bootstrap epic depends on the full feedback-api program; this spec captures the consumer-facing contract that program must satisfy.
-
-# Problem
-There is no signal for which store entities are actually useful. Rule-entry feedback exists; direct spec feedback is planned; but there is **no usage-frequency counter** and **no single model** spanning entity types. Without this, the session-bootstrap curation loop (frequently-pinned = useful; never-pinned/low-rated = obsolete) cannot function.
-
-# Scope
-- A `EntityRef` (URN-addressed `ce://<workspace>/<store>/<entity>`) usage + feedback model delivered by the feedback-api program, independent of the concrete store.
-- **Usage counting:** record a usage event for an entity URN (emitted on each session pin). Expose an aggregate count and last-used timestamp per entity.
-- **Feedback ratings:** attach `helpful`/`mixed`/`not-helpful` plus optional note to an entity URN, with optional `session_id`/`agent_or_user_id`.
-- Query surface: list entities by usage frequency and by low rating / unresolved notes, to drive curation and obsolescence detection.
-- Wire spec and rule entities to this model; leave a clear extension point for ticket entities (no ticket wiring required now).
-
-# Non-goals
-- The feedback-api program's heavyweight ingestion-at-scale / search-clustering / SLO / abuse-governance slices (tracked separately under b1e9e744's other children).
-- UI/dashboards for curation.
-- Ticket-entity feedback wiring (extension point only).
-
-# Relationship to existing planning
-- Reuses the rule-entry feedback shape (rule feedback already done).
-- **Subsumes** direct spec feedback [29bf9628](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/29bf9628-1dc5-4bb4-ae00-b7410dd52db5/ticket.toml) (memory-api store) — spec feedback is delivered through this surface, not built in parallel.
-- Implemented by the feedback-api program: tracker [b1e9e744](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml), ingestion [9c95c1e4](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml).
-
-# Acceptance Criteria (test-validatable)
-1. Recording a usage event for an entity URN increments its aggregate count and updates last-used. *(unit test)*
-2. The same model records usage for both a spec URN and a rule URN without type-specific code paths. *(unit test over two entity types)*
-3. Attaching a rating + note to an entity URN persists and is queryable. *(unit test)*
-4. A query returns entities ordered by usage frequency, and a query returns low-rated / unresolved-note entities. *(unit test)*
-5. The ticket-entity extension point compiles against the generic model without a concrete ticket binding. *(type-level/compile test)*
-
-# Traceability
-- Owned by: feedback-api program ([b1e9e744](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml)); ingestion ([9c95c1e4](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml)).
-- Consumed by: session-bootstrap runtime ([412964a3](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)) — pins emit usage events; end-of-session ratings use this model.
-- Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-
-# Validation
-- ValidationSpec: generic usage + feedback unit tests across spec and rule entity types.
-- ValidationExecution (planned): `cargo test` for the owning feedback-api crate.
