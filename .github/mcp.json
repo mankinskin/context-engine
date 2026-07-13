@@ -44,6 +44,17 @@
         "test-mcp"
       ]
     },
+    "feedback-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "feedback-mcp"
+      ]
+    },
     "log-viewer-mcp": {
       "type": "stdio",
       "command": "cargo",
@@ -101,6 +112,17 @@
         "--release",
         "-p",
         "test-mcp"
+      ]
+    },
+    "feedback-mcp": {
+      "type": "stdio",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--quiet",
+        "--release",
+        "-p",
+        "feedback-mcp"
       ]
     },
     "log-viewer-mcp": {

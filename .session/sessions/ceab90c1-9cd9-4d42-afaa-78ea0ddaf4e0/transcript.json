@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "session_id": "ceab90c1-9cd9-4d42-afaa-78ea0ddaf4e0",
+  "captured_at": "2026-07-13T17:29:26.708Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Receipts all check out. I ran every claim to ground and, annoyingly for a roast agent, there's nothing to set on fire — the work is clean.\r\n\r\n## Verdict: verified, airtight, and honestly the rarest outcome — a fix that survived the grep\r\n\r\nEvery load-bearing claim held:\r\n\r\n- **Activation ticket** `6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc` exists (`new`), and its description.md demand *\"at least one live end-to-end firing per ring edge… invoked from a registered transport or hook (not a unit test), each with a recorded .test execution.\"* It even names all three dead layers — discovery, collection (description.md), analyzer — and quotes my findings back verbatim. That's not a vague \"wire it up\" ticket; that's a criterion `cargo` can't fake.\r\n- **The graph block is real:** `5d4078fa depends_on 6b0002bf` is in the edge list. \"Close the ring\" is now structurally barred from `done` until activation lands.\r\n- **No cycle:** the chain is `5d4078fa → 6b0002bf → fb6aa078 → ∅`; `fb6aa078` depends on nothing, so there's no path back. `ticket health 5d4078fa` returns **zero** cycle/dangling findings — only `dependency_convergence: 4`, which is exactly the point: the \"declared victory too early\" defect is now a **machine-emitted warning**, not a prose complaint someone can wave off.\r\n- **The caveat is in the description** ([lines 22-29](memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md#L22)) — dated, evidenced (\"3 of 4 ring edges… ZERO production callers — only re-exports + `#[test]` references; only missing-rule fires\"), with the rename fallback and the root-workspace cross-store fix spelled out.\r\n\r\nYou turned a title that was lying to the tracker into a graph constraint that can't lie. The hollow-ring defect went from \"a thing a roast agent noticed\" to \"a thing the store enforces.\" That's the correct altitude.\r\n\r\n## Two honest residuals (not criticisms — just the true state)\r\n\r\n1. **The ring still hasn't turned.** `6b0002bf` is `new` and unowned. The graph now *forbids the false `done`*, but `recompute_spec_verified_state`, `mine_transcript_for_rule_confusion`, and `ingest_frontend_feedback` are still dead code with `#[test]`-only callers. You've loaded and chambered the round; nobody's pulled the trigger yet. The win is that closure is now impossible to *fake* — not that closure happened.\r\n2. **The cross-store edge is still a to-do, correctly.** description.md *documents* the `5d4078fa → 8a90a63c` fix as an instruction to run from `--workspace default`; it isn't added yet. You never claimed it was — just flagging that it remains an open action, not a completed one.\r\n\r\nNo code touched, no cycle, stayed off `crates/feedback-api`/`crates/rule-api/src` — all consistent with what I see; these were pure ticket/description edits.\r\n\r\n**Bottom line:** clean work, correctly scoped, honestly evidenced. The feedback system is still a beautifully organized still life — but now the frame has a tripwire, and the next agent can't hang a `done` sticker on an inert loop. Ship it to `6b0002bf`'s eventual owner and let's see if the ring finally completes a revolution.",
+      "captured_at": "2026-07-13T16:15:18.479Z",
+      "event_meta": {
+        "event_id": "2dd3bf49-30d0-4fcc-88c0-f8a619a83552",
+        "parent_event_id": "0cc77619-2917-4515-b25b-4896a783e5f3",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "The state is clear: the tracker now tells the truth, and it enforces that truth structurally. The important part is not that the loop is complete, but that it can no longer be falsely reported as complete while the production paths are still inert.\n\nThe remaining gap is operational, not bookkeeping. One ticket still needs to wire real transport or hook-driven executions through the three dead layers and record the resulting `.test` evidence, and the documented cross-store edge still needs to be added from the default workspace context. The evidence note in [memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md#L22](memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md#L22) captures that cleanly.\n\nNatural next steps:\n1. Claim the activation ticket and scope the smallest live firing path for each missing ring edge.\n2. Add the pending cross-store dependency from the default workspace so the graph matches the documented blocker set.\n3. Run the live executions and record the validation evidence before moving anything toward review.",
+      "captured_at": "2026-07-13T16:15:28.487Z",
+      "event_meta": {
+        "event_id": "4fa36f6e-d6c3-49bb-8cb4-9b35c6226297",
+        "parent_event_id": "483c685c-a1e1-48d7-8ed9-0c62a6f7fc37",
+        "event_type": "assistant.message",
+        "message_id": "3ffaf4c0-a60d-4fb4-828d-dd8cf4902ae0",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "user",
+      "content": "/handoff",
+      "captured_at": "2026-07-13T17:27:48.413Z",
+      "event_meta": {
+        "event_id": "c7194516-7dd4-4145-bbb9-a1ba07954fa2",
+        "parent_event_id": "5d9164ce-bf60-476b-85f9-1806facc78b3",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’m grounding the handoff in the actual ticket graph, board state, and durable session evidence so the next session starts from facts instead of chat memory.",
+      "captured_at": "2026-07-13T17:27:57.421Z",
+      "event_meta": {
+        "event_id": "c7a24d66-7000-45a8-b074-4d86340c89fa",
+        "parent_event_id": "d5ef978e-8c29-4f11-9424-e76132af1459",
+        "event_type": "assistant.message",
+        "message_id": "fbd41d96-e899-4437-b7fd-5c46c43ec16f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_95ktxcFdDOcqCLElvc9sIRi4",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\session-optimization.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lu5yW98ZC5IDfeeuA80UAYRZ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Check active board ownership before preparing a handoff.",
+              "goal": "Capture current ticket board state",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vDTBUPw8MmEHnbSEtOnRjLne",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe get 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --toon",
+              "explanation": "Fetch the canonical tracker ticket metadata for the handoff.",
+              "goal": "Get tracker ticket details",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WRG6bwoA0HhwHlCzUMzoGP2e",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe get 6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc --toon",
+              "explanation": "Fetch the activation ticket metadata for the handoff.",
+              "goal": "Get activation ticket details",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DKa08vKHKcTRrpAMEMoUf2Jf",
+            "name": "session_store_sql",
+            "arguments": {
+              "description": "Recent session findings",
+              "query": "SELECT id, started_at, cwd, summary FROM sessions ORDER BY started_at DESC LIMIT 5"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "The board is clear and the tracker ticket is confirmed; the only miss so far is that the activation ticket lives outside the `memory-api` store, so I’m resolving it from the aggregated workspace and pulling the exact supporting entities next.",
+      "captured_at": "2026-07-13T17:28:14.883Z",
+      "event_meta": {
+        "event_id": "a81d58cc-0898-4fc9-85f5-b0c966176a86",
+        "parent_event_id": "cd385bd7-9a8a-4505-96d1-81ad50c15ff2",
+        "event_type": "assistant.message",
+        "message_id": "37919e21-782a-4e19-98a7-ec2f9d477cc0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_8DP7ZSvRQM28esJDaoWK2zot",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe get 6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc --workspace default --toon",
+              "explanation": "Resolve the activation ticket from the aggregated default workspace.",
+              "goal": "Get activation ticket details from the owning store",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cmAR8PPPqSY2F1cMnZliOOrU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe get fb6aa078-1f8b-4a76-99bd-3a26190b1208 --workspace default --toon",
+              "explanation": "Fetch the downstream dependency ticket to describe the blocker chain accurately.",
+              "goal": "Get downstream ticket details",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BA0kPYXKFF2ZsSX1ejSjircr",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe list-edges --workspace default --toon",
+              "explanation": "Verify the declared dependency edges relevant to the handoff track.",
+              "goal": "Capture the current graph facts",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mk4WCFUjuNe7vm7wK4zUyD69",
+            "name": "session_store_sql",
+            "arguments": {
+              "description": "Inspect session schema",
+              "query": "SELECT * FROM sessions LIMIT 1"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "The aggregated CLI path is less friendly than the MCP docs suggest, so I’m falling back to direct file resolution for the exact ticket manifests and descriptions; that will give the next agent stable links without depending on CLI workspace flags.",
+      "captured_at": "2026-07-13T17:28:22.302Z",
+      "event_meta": {
+        "event_id": "57b7a64f-56aa-4aac-a207-8a63778cbda2",
+        "parent_event_id": "2e04c337-e0d2-4d54-a166-9c4a6f39e7b0",
+        "event_type": "assistant.message",
+        "message_id": "21e7b419-73a8-482c-b072-718b5dd5c70c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_MaxpwN4kNPOjM0uSqyDCAd4t",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/**",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TrvCYbeXo1XAyw9DaNNKH4Y5",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/fb6aa078-1f8b-4a76-99bd-3a26190b1208/**",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KXWPChIuVn7CUcsoi52ntggH",
+            "name": "grep_search",
+            "arguments": {
+              "query": "6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc|fb6aa078-1f8b-4a76-99bd-3a26190b1208|8a90a63c",
+              "isRegexp": true,
+              "includePattern": "**/.ticket/**",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Yo49krwHVaWfdi7sakwTrudE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe --help",
+              "explanation": "Check the ticket CLI surface for the correct edge/list syntax if needed in the handoff.",
+              "goal": "Inspect ticket CLI commands",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I’ve got the key manifests and the board state; one last pass is pulling the exact ticket text and any persisted session evidence worth carrying forward, then I can shape the handoff into an executable restart prompt.",
+      "captured_at": "2026-07-13T17:28:32.949Z",
+      "event_meta": {
+        "event_id": "8ce91b79-9966-464b-808e-90e23a402269",
+        "parent_event_id": "ec0ce6c0-d13d-4ece-8b44-96ccf2ef412c",
+        "event_type": "assistant.message",
+        "message_id": "1c08e5a8-5be0-42c8-82f4-dcb60b9ad1f3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eBsqpLDWl92ENfY6utcAbEfX",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc\\ticket.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GHrAbsFp9sxpdbLvdqWkMI48",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc\\description.md",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9tSm6hAl9Emt8Csfd7n1BfkE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\fb6aa078-1f8b-4a76-99bd-3a26190b1208\\ticket.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kT2qSEd3cggURaf3187mxGzP",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d\\description.md",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_21VlwmlDpJsXpsr6YBsDdXPG",
+            "name": "session_store_sql",
+            "arguments": {
+              "description": "Search recent ring sessions",
+              "query": "SELECT s.id, s.created_at, t.role, substr(t.content,1,300) AS snippet FROM turns t JOIN sessions s ON s.id = t.session_id WHERE t.content LIKE '%6b0002bf%' OR t.content LIKE '%feedback ring%' OR t.content LIKE '%5d4078fa%' ORDER BY s.created_at DESC, t.created_at DESC LIMIT 12"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "The ticket text is enough to resume the track cleanly. I’m doing one narrow check on the session store schema so I can mention persisted history correctly instead of guessing about fields.",
+      "captured_at": "2026-07-13T17:28:37.826Z",
+      "event_meta": {
+        "event_id": "a7d9f7c5-60d4-433c-8103-a8fa8f758e12",
+        "parent_event_id": "1b35647e-17f6-4c1e-aefc-7cd7309c9c28",
+        "event_type": "assistant.message",
+        "message_id": "5e7c87d2-01c4-4f37-a299-b869bba68811",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_EjDOTaWsp4TzQFRwl2Baau9O",
+            "name": "session_store_sql",
+            "arguments": {
+              "description": "Inspect turns schema",
+              "query": "SELECT * FROM turns LIMIT 1"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_H67KkE7fdACmKzz7Z8wPgQ8o",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\8a90a63c-0a07-439f-90e8-9124212b2dc8\\ticket.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MUYtiYy1VFcI4L5e0mDX1eIC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe health 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --toon",
+              "explanation": "Verify the current health status of the tracker ticket for the handoff.",
+              "goal": "Capture health facts for the dependency chain",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IGYc1wjsxvphmmAqRGecd8zU",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"$PWD\" && rtk ./target/debug/ticket.exe links 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --toon",
+              "explanation": "List the tracker's outgoing dependency edges to cite exact graph constraints.",
+              "goal": "Capture dependency edge facts",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "~~~text\nOverview\n\nResume the feedback-ring activation track from the repository root, anchored by [./AGENTS.md](./AGENTS.md). The durable state is: redistribution work is done, but the loop is still inert in production. The tracker is now structurally honest because [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) depends on [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml), so the tracker cannot reach done until live transport or hook-driven firings exist for every ring edge.\n\nLong-Horizon Goal\n\n- Make the feedback system self-driving in production, not just redistributed and unit-tested: discovery is documented and reachable, collection actually ingests live signals, and the analyzer synthesizes at least one real action from stored feedback.\n\nFindings\n\n- [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml) exists, is `new`, has `priority = high`, and depends only on [fb6aa078 [feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1](./memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml).\n- [./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md) is the main execution brief. It explicitly names the three dead layers: discovery wiring, collection wiring, and analyzer wiring.\n- [./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md) carries the verified caveat that redistribution is not closure and that 3 of 4 ring edges still have zero production callers.\n- [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) is currently `in-review` and now depends on `6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc` in its manifest, so the false-closure defect is blocked by graph state rather than prose alone.\n- `ticket health 5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d --toon` returned zero findings in this session. The blocker is incompleteness, not graph corruption.\n- The root-store program umbrella [8a90a63c [program][multi-store] Store expansion and operational health program](./.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml) is still only documented from the tracker description; the actual cross-store dependency edge has not been re-added yet.\n\nDecisions Already Made\n\n- Do not treat redistribution as completion. Live firing per edge is the definition of closure.\n- Keep feedback-api as the sink and hub. Do not re-centralize the loop into rule-api.\n- Keep the blocker chain intact: [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) depends on [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml), and [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml) depends on [fb6aa078 [feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1](./memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml).\n- If activation work slips, rename semantics belong on the tracker, not on the evidence. The evidence already states that “redistribute” and “close” are different outcomes.\n\nBlockers\n\n- No one owns [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml) yet. Board was empty in this session.\n- The live callers are still missing for `recompute_spec_verified_state`, `mine_transcript_for_rule_confusion`, and `ingest_frontend_feedback`; only the missing-rule edge is known to fire today.\n- The root-store edge to [8a90a63c [program][multi-store] Store expansion and operational health program](./.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml) must be added from the repository-root workspace context, not from the `memory-api` store context.\n\nNext Actions In Execution Order\n\n1. Check in on `6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc` before editing anything, since the board is currently clear and there is no active owner.\n2. Reconfirm the baseline cheaply: verify that the three named ring-edge entry points still have no production callers except tests or re-exports. This is the first validation check and keeps the implementation honest.\n3. Implement discovery wiring from [./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md): update [./AGENTS.md](./AGENTS.md) Feedback Workflow to point at feedback-api, register the feedback MCP surface in repo MCP client config, and add the concise agent instruction file the ticket calls for.\n4. Implement collection wiring: connect frontend feedback ingestion to the viewer path and add the session stop-hook transcript mining path so both produce stored feedback entries from live flows.\n5. Implement analyzer wiring: make the handoff-time or scheduled analyzer consume low-rated and unresolved-note entities, then prove it emits at least one concrete action such as a ticket or verified-state recompute.\n6. Add the missing dependency edge from [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) to [8a90a63c [program][multi-store] Store expansion and operational health program](./.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml) from repository-root workspace context so the graph matches the documented umbrella dependency.\n7. Record `.test` executions for each live edge firing and only then move activation work toward review.\n\nCompletion Status\n\n- `6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc` ownership: `not-started` — no board entry existed in this session.\n- Baseline caller verification: `not-started` — described and evidenced in tickets, but the next agent should rerun the cheap search before editing.\n- Discovery wiring: `not-started` — ticket scope exists, no implementation evidence yet.\n- Collection wiring: `not-started` — ticket scope exists, no live transport or hook evidence yet.\n- Analyzer wiring: `not-started` — analysis primitives exist, but no synthesized action has been proven from stored signals.\n- Root-store dependency restoration to `8a90a63c-0a07-439f-90e8-9124212b2dc8`: `not-started` — still documented as follow-up only.\n- Tracker closure: `blocked` — [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) must remain blocked until activation lands live firings and recorded evidence.\n\nDefinition Of Done\n\n- Every ring edge named in [./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md) has at least one live end-to-end firing from a registered transport or hook, not from a unit test.\n- Each live firing has recorded `.test` execution evidence.\n- The feedback MCP surface is reachable to agents and [./AGENTS.md](./AGENTS.md) no longer points feedback collection at the old rule-only surface.\n- The analyzer emits at least one real synthesized action from stored feedback.\n- The root-store graph dependency to [8a90a63c [program][multi-store] Store expansion and operational health program](./.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml) is restored if that umbrella dependency is still intended.\n- No dependency cycle is introduced.\n\nKey Entities\n\n- [5d4078fa [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml) — the truth-enforcing tracker; closure must remain blocked here until activation is real.\n- [./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md](./memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/description.md) — carries the dated caveat, live-firing gate, and root-store edge note.\n- [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml) — the immediate implementation ticket to own.\n- [./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md](./memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/description.md) — exact scope and acceptance criteria for discovery, collection, and analyzer wiring.\n- [fb6aa078 [feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1](./memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml) — upstream design dependency already carrying the boundary and transport work.\n- [8a90a63c [program][multi-store] Store expansion and operational health program](./.ticket/tickets/8a90a63c-0a07-439f-90e8-9124212b2dc8/ticket.toml) — root-store umbrella ticket that still needs the real dependency edge restored.\n- [./AGENTS.md](./AGENTS.md) — feedback workflow still needs to advertise the feedback-api surface instead of rule-only feedback.\n\nBoard And Persisted-Session Notes\n\n- Board state was clear: zero active entries, zero stale entries, zero conflicts. The next agent should check in before touching implementation files.\n- No useful persisted `turns` rows were available from the local session store during this handoff build, so treat the ticket manifests and descriptions above as the canonical durable evidence rather than relying on transcript replay.\n\nExecution Instruction\n\n- Execute the next actions in order and continue until all are completed or explicitly blocked. Do not reopen tracker closure work on `5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d` until `6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc` has live transport or hook evidence for every ring edge.\n~~~",
+      "captured_at": "2026-07-13T17:29:26.708Z",
+      "event_meta": {
+        "event_id": "f6d84473-7f8c-414b-b70b-22c3dd77cbfb",
+        "parent_event_id": "adc5b374-3664-43f3-9557-830e7c81d8e8",
+        "event_type": "assistant.message",
+        "message_id": "c5a0da6e-769f-4561-8f0d-cea7f4847466",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

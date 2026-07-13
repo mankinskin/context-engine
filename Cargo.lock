@@ -8624,10 +8624,12 @@ dependencies = [
  "feedback-api",
  "memory-api",
  "pretty_assertions",
+ "rule-api",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+ "ticket-api",
  "uuid",
 ]
 
@@ -9684,6 +9686,7 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+ "spec-api",
  "tempfile",
  "test-api",
  "thiserror 2.0.18",
@@ -9845,6 +9848,7 @@ name = "ticket-viewer"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "feedback-http",
  "serde",
  "serde_json",
  "tempfile",
