@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "session_id": "9422771a-ffec-477d-80d5-3c1fd1aa2a0e",
+  "captured_at": "2026-07-13T23:46:07.684Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "# Handoff — Implement the remaining unblocking work for feedback-ring activation\r\n\r\n## Overview\r\n\r\nThe feedback-ring activation track is fully committed and in-review; the one piece of *remaining unblocking work* is a critical, already-triaged test-api data-loss bug that currently gates trustworthy evidence recording for the whole track. This session committed all feedback-ring source, stores, `.test` evidence, session history, and the `feedback-mcp` registration across three commits, folded the review decisions into the tickets (fix direction on the prune bug + two new tracker dependency edges), and reconciled the index. Start by implementing the prune-bug fix (ticket `1e8f6866`) using the already-decided per-spec scoping approach, validate it, and move it to `in-review`. Do **not** close any of the in-review tickets — closure is human-gated (8 tickets total).\r\n\r\n## Shorthand And Placeholder Legend\r\n\r\n- `<root>` = the repo root working directory `c:/Users/linus/git/graph_app/context-engine` (start here).\r\n- `<memory-api>` = the `memory-api` submodule at [memory-api](memory-api), which owns the ticket/spec/test stores and the `test-api` crate.\r\n- `BUG` = ticket `1e8f6866` (the remaining unblocking work).\r\n- `ROUTE` = ticket `905d05ae`. `ACT` = tracker `6b0002bf`. `DESIGN` = `fb6aa078`. `PROV` = `a7601cb7`. `INGEST` = `b4954d6c`. `MAP` = `16e112a7`. `BFS` = `3fa60398`. `SYNTH` = `3d4c4739`.\r\n\r\n## Ticket Legend (full UUIDs)\r\n\r\n- `ACT` → [6b0002bf [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)](memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml)\r\n- `BUG` → [1e8f6866 [test-api] prune_execution_runs silently deletes unrelated ticket-linked evidence (global keep-2-runs policy)](memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/ticket.toml)\r\n- `ROUTE` → [905d05ae [test-api][test-mcp] Fix record/list .test store routing split; aggregate discoverable stores on read](memory-api/.ticket/tickets/905d05ae-b367-44f8-9988-a671702d8a32/ticket.toml)\r\n- `DESIGN` → [fb6aa078 [feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1](memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml)\r\n- `PROV` → [a7601cb7 [feedback-api][provenance] Extend FeedbackProvenance with session/turn/tool-call backtrace refs](memory-api/.ticket/tickets/a7601cb7-6c92-4891-aa55-07ab46125bb8/ticket.toml)\r\n- `INGEST` → [b4954d6c [feedback-api][ingestion] Mine explicit feedback-ingestion tool calls from structured session metadata](memory-api/.ticket/tickets/b4954d6c-0451-49ed-8939-11f6568558f5/ticket.toml)\r\n- `MAP` → [16e112a7 [feedback-api][signals] Define failed-tool-call to entity mapping and recording policy](memory-api/.ticket/tickets/16e112a7-5ab0-45a5-87c8-7d89d07ffd16/ticket.toml)\r\n- `BFS` → [3fa60398 [feedback-api][signals] Deterministic BFS entity queue for structured feedback mining](memory-api/.ticket/tickets/3fa60398-3154-46ee-aca5-8d87541bac1e/ticket.toml)\r\n- `SYNTH` → [3d4c4739 [feedback-api][analyzer] Backtraceable, verifiable follow-up ticket format; re-enable synthesis behind it](memory-api/.ticket/tickets/3d4c4739-3138-40be-947d-556e5f7de53a/ticket.toml)\r\n\r\n## Long-Horizon Goal (epic)\r\n\r\nComplete `ACT` ([6b0002bf ring activation](memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml)): a trustworthy feedback ring where structured session signals are mined, mapped to entities, and synthesized into backtraceable follow-up tickets, with `.test` evidence that survives independent writes. `ACT` now `depends_on` all six feature tickets plus `ROUTE` and `BUG`; it cannot legitimately close until `BUG` is fixed.\r\n\r\n## Key Entities\r\n\r\n- [1e8f6866 BUG ticket](memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/description.md) — the work to do; its description now carries the chosen fix direction and rejected alternatives.\r\n- [memory-api/crates/test-api/src/store.rs](memory-api/crates/test-api/src/store.rs) — `prune_execution_runs` (~L470-L521) keys retention on `run_id` alone, globally; `record_execution` (~L133) calls it unconditionally. This is the fix site.\r\n- [memory-api/crates/test-api/src/store/tests.rs](memory-api/crates/test-api/src/store/tests.rs) — existing test `record_execution_keeps_only_newest_two_runs` (~L179-L215) uses a *single* spec `vt-a`, so per-spec scoping keeps it green unchanged; add the new 3-spec regression test alongside it.\r\n- [memory-api/crates/test-api/src/lib.rs](memory-api/crates/test-api/src/lib.rs) — `ValidationExecution` (`validation_spec_id`, `provenance.run_id`, `links.ticket_ids`) fields the fix keys on.\r\n- [17fc536c test-mcp aggregation spec](memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/spec.toml) — traceability for `ROUTE`; extend if BUG changes retention semantics.\r\n\r\n## Findings\r\n\r\n- The prune bug is confirmed by direct code read: retention key is `run_id` only, store-global, on every write — it deleted 6 git-tracked DESIGN executions live this session (recovered via `git restore`).\r\n- The existing keep-2 test locks in the buggy behavior but only exercises one spec, so it is compatible with the per-spec fix.\r\n- `ROUTE` (905d05ae) is already implemented and in-review (test-mcp reads now aggregate across discoverable `.test` stores when `workspace` is omitted).\r\n\r\n## Decisions (folded into tickets)\r\n\r\n- `BUG` fix direction = **Option 1: scope pruning by `validation_spec_id`** (change key to `(validation_spec_id, run_id)`, keep-N per spec). Rejected opt-in flag / keep-count bump / never-prune-linked. Recorded in the `BUG` description.\r\n- `ACT` now `depends_on` `ROUTE` and `BUG` (edges added this session) — the tracker is correctly blocked on the evidence-infra fixes.\r\n\r\n## Blockers\r\n\r\n- Closing any of the 8 in-review tickets (`DESIGN`, `PROV`, `INGEST`, `MAP`, `BFS`, `SYNTH`, `ROUTE`, and `BUG` once it reaches in-review) is **gated on explicit human approval**. Do not close without it.\r\n- Until `BUG` is fixed, do not record new `.test` executions with fresh `run_id`s across specs (silent-deletion risk; mitigated only by the shared-`run_id` workaround already applied).\r\n\r\n## Next Actions (execute in order)\r\n\r\n1. Implement `BUG`: in [store.rs](memory-api/crates/test-api/src/store.rs), change `prune_execution_runs` to key retention on `(validation_spec_id, run_id)` and apply the keep-window per spec; add a regression test in [store/tests.rs](memory-api/crates/test-api/src/store/tests.rs) recording 3 executions across 3 distinct `validation_spec_id`s with 3 distinct `run_id`s asserting all survive. Move `BUG` `new → in-implementation`.\r\n2. Validate: `cargo test -p test-api` (existing keep-2 test must stay green; new regression test must pass). `cargo build --workspace` clean. Fill `implementation_summary`/`validation_summary` on `BUG`, then move it to `in-review`.\r\n3. Commit the fix: inside `memory-api` (`feat(test-api): scope execution pruning by validation_spec_id`), then update the `memory-api` pointer at `<root>`.\r\n4. Human-gated: on approval, close the 8 in-review tickets to `done` (walk through `in-review` first — schema enforces required states).\r\n5. Verify the Stop hook fires end-to-end live (session history persists to `.session/`).\r\n\r\n## Completion Status\r\n\r\n- Action 1 (implement BUG fix): `not-started`\r\n- Action 2 (validate + summaries + in-review): `not-started`\r\n- Action 3 (commit fix + pointer): `not-started`\r\n- Action 4 (human-gated close of 8 tickets): `blocked` — awaiting explicit human approval\r\n- Action 5 (verify Stop hook live): `not-started`\r\n\r\n## Definition Of Done\r\n\r\n`prune_execution_runs` scopes retention per `validation_spec_id`; the new 3-spec regression test and the existing single-spec keep-2 test both pass; `cargo build --workspace` is clean; `BUG` is in-review with summaries filled; the fix is committed and the `memory-api` pointer updated; no silent cross-spec/cross-ticket deletion remains possible.\r\n\r\n## Board / Session Notes\r\n\r\n- Board is clean — no active check-in required; check in on `BUG` before editing `store.rs`.\r\n- This session's three commits: `10893b5` + `17f143b` (memory-api source + stores), `2b6b4cb0` (root pointer + `.github/mcp.json` feedback-mcp + `.session/` + `.feedback/`).\r\n- Deliberately left uncommitted (do NOT fold into this track): `memory-viewers` (ticket-viewer frontend + feedback-http — separate track), `.agents/agents/roast.agent.md` (rule-generated — regenerate via `rule sync-targets`, do not hand-commit), and `RESEARCH_VIEWER_ARCHITECTURE.md` (viewer research doc). The live session `ba2cc78a` capture files keep updating as this session runs — expected churn.\r\n- If ticket queries look stale after restart, run `./target/debug/ticket.exe scan --force --toon` from `<root>`.\r\n\r\nExecute the next actions in order and continue until all are completed or explicitly blocked.",
+      "captured_at": "2026-07-13T23:43:07.387Z",
+      "event_meta": {
+        "event_id": "8c454032-9ad7-4278-85b4-66c874ac930a",
+        "parent_event_id": "a4f5842e-fb92-4de9-8a7d-5c4764badecd",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m starting the unblocking `BUG` flow now: I’ll first do the required ticket/board orientation and claim `1e8f6866`, then implement the per-spec prune fix in `test-api`, add the regression test, run validations, update ticket state/summaries, and commit in `memory-api` plus the root pointer update.I’m running a quick ticket-board orientation and state check so we can safely claim the ticket and transition it before touching code.",
+      "captured_at": "2026-07-13T23:43:28.348Z",
+      "event_meta": {
+        "event_id": "f8441822-4ac2-42f4-bcc0-8c6499774f34",
+        "parent_event_id": "78bf1e29-a0cd-4f28-bb15-44ded7b8ade6",
+        "event_type": "assistant.message",
+        "message_id": "6d4c0fb2-fcec-4687-b89f-660b27d67877",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0aGf3SDjeQXnu0LqRGOdOjws",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Inspect draftboard state before claiming work",
+              "goal": "Verify board is clean and see active entries",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_daXIK6FKi6kfiw85j8WsHKes",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe list --where id=1e8f6866 --toon",
+              "explanation": "Check current BUG ticket state before transition",
+              "goal": "Confirm ticket 1e8f6866 current workflow state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Board is confirmed clean and the BUG ticket is still actionable; next I’ll check in on `1e8f6866` and advance it to `in-implementation` before editing.",
+      "captured_at": "2026-07-13T23:43:44.044Z",
+      "event_meta": {
+        "event_id": "9a1d1687-176a-4677-9573-8ba2abf52211",
+        "parent_event_id": "dd7d0cca-53fa-4621-b02b-bcda45708740",
+        "event_type": "assistant.message",
+        "message_id": "8e54e473-c145-47e5-86d7-4dbbae529ce9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bnNnc5ye3bhP6CHJusd6pnuf",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe board check-in 1e8f6866-9dda-4b2c-9f41-27ac83ee61d5 --agent copilot-gpt53-codex --intent \"Fix test-api prune retention to scope by validation_spec_id and add regression test\" --file \"memory-api/crates/test-api/src/store.rs\" --file \"memory-api/crates/test-api/src/store/tests.rs\" --ttl-secs 7200 --toon",
+              "explanation": "Claim BUG ticket and file ownership before implementation",
+              "goal": "Register active work and avoid file conflicts",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QpVXZzTYOti2obGMGUXliPvT",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe update 1e8f6866-9dda-4b2c-9f41-27ac83ee61d5 --to-state in-implementation --toon",
+              "explanation": "Transition BUG ticket to implementation state",
+              "goal": "Reflect active coding work in ticket lifecycle",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve claimed the ticket and moved it to implementation; now I’m reading the path-specific test guidance and current `test-api` code so the patch matches repository conventions.",
+      "captured_at": "2026-07-13T23:43:49.036Z",
+      "event_meta": {
+        "event_id": "918d7ced-bca2-4690-b897-73e08cb7f610",
+        "parent_event_id": "d1ab5072-f843-44d9-bc55-b2df02f5cf9c",
+        "event_type": "assistant.message",
+        "message_id": "36de1156-d025-46fd-b3dc-5789d62df21a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YR93Q34jaDsZHrjqo5ftAPSM",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\tests.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NQasfMcGwkJMfroD6tA8TMtR",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\test-api\\src\\store.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GxXkT8gHAyyPf8JHIUXlDIMV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\test-api\\src\\store.rs",
+              "startLine": 320,
+              "endLine": 620
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_fEO6SxikoQC91QFiFHPIijr5",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\test-api\\src\\store\\tests.rs",
+              "startLine": 1,
+              "endLine": 320
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I’ve confirmed the fix point and test layout; next I’m patching the prune key to per-spec run retention and adding the cross-spec regression test in the same module.",
+      "captured_at": "2026-07-13T23:44:00.218Z",
+      "event_meta": {
+        "event_id": "9eac6f65-e03e-43ce-b226-8747b33dc729",
+        "parent_event_id": "44009e38-cc6b-42d4-97a3-4de15c90edf0",
+        "event_type": "assistant.message",
+        "message_id": "f6d19f8c-7dee-4223-82e6-8ec7aa6f2bef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BzMMvHqNFGruUWxFStesaWhw",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Scope execution run pruning to validation_spec_id + run_id instead of global run_id only",
+              "input": "*** Begin Patch\n*** Update File: c:/Users/linus/git/graph_app/context-engine/memory-api/crates/test-api/src/store.rs\n@@\n     fn prune_execution_runs(\n         &self,\n         keep_runs: usize,\n     ) -> Result<(), TestError> {\n         let executions: Vec<ValidationExecution> =\n             self.read_dir_json(&self.executions_dir()?)?;\n \n-        let mut newest_by_run: BTreeMap<String, chrono::DateTime<chrono::Utc>> =\n-            BTreeMap::new();\n+        let mut newest_by_spec_run: BTreeMap<\n+            String,\n+            BTreeMap<String, chrono::DateTime<chrono::Utc>>,\n+        > = BTreeMap::new();\n         for execution in &executions {\n             let Some(run_id) = execution.provenance.run_id.as_ref() else {\n                 continue;\n             };\n-            match newest_by_run.get(run_id) {\n-                Some(existing) if *existing >= execution.executed_at => {},\n-                _ => {\n-                    newest_by_run.insert(run_id.clone(), execution.executed_at);\n-                },\n+            let newest_by_run = newest_by_spec_run\n+                .entry(execution.validation_spec_id.clone())\n+                .or_default();\n+            match newest_by_run.get(run_id) {\n+                Some(existing) if *existing >= execution.executed_at => {},\n+                _ => {\n+                    newest_by_run.insert(run_id.clone(), execution.executed_at);\n+                },\n             }\n         }\n \n-        if newest_by_run.len() <= keep_runs {\n-            return Ok(());\n-        }\n-\n-        let mut runs: Vec<(String, chrono::DateTime<chrono::Utc>)> =\n-            newest_by_run.into_iter().collect();\n-        runs.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));\n-        let stale_runs: HashSet<String> = runs\n-            .into_iter()\n-            .skip(keep_runs)\n-            .map(|(run, _)| run)\n-            .collect();\n+        let mut stale_spec_runs: HashSet<(String, String)> = HashSet::new();\n+        for (spec_id, newest_by_run) in newest_by_spec_run {\n+            if newest_by_run.len() <= keep_runs {\n+                continue;\n+            }\n+\n+            let mut runs: Vec<(String, chrono::DateTime<chrono::Utc>)> =\n+                newest_by_run.into_iter().collect();\n+            runs.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));\n+            stale_spec_runs.extend(\n+                runs.into_iter()\n+                    .skip(keep_runs)\n+                    .map(|(run_id, _)| (spec_id.clone(), run_id)),\n+            );\n+        }\n+\n+        if stale_spec_runs.is_empty() {\n+            return Ok(());\n+        }\n \n         for execution in executions {\n             let Some(run_id) = execution.provenance.run_id.as_ref() else {\n                 continue;\n             };\n-            if !stale_runs.contains(run_id) {\n+            if !stale_spec_runs\n+                .contains(&(execution.validation_spec_id.clone(), run_id.clone()))\n+            {\n                 continue;\n             }\n             let path = self.execution_path(&execution.id)?;\n             match fs::remove_file(&path) {\n                 Ok(()) => {},\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Code changes are in place; next I’m running the required validation commands in the `memory-api` workspace to confirm both pruning behaviors and overall build health.",
+      "captured_at": "2026-07-13T23:44:12.702Z",
+      "event_meta": {
+        "event_id": "48825a0f-c4b4-45a8-ac51-50a11b87bcf6",
+        "parent_event_id": "e32e78a5-f37a-4bc9-97d4-624dde808934",
+        "event_type": "assistant.message",
+        "message_id": "91e91e2f-ac07-431a-9f81-a22e74358d84",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9HnvqHFNTsJqcknVaIcoCtNY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk cargo test -p test-api",
+              "explanation": "Run test-api tests including new regression coverage",
+              "goal": "Validate prune behavior and avoid regressions",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1lqng8dMgaG2qdFaZATfkHwo",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk cargo build --workspace",
+              "explanation": "Build all crates in memory-api workspace after prune fix",
+              "goal": "Ensure workspace compiles cleanly",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Validation passed for both required commands; I’ll now capture the implementation and validation summaries on `1e8f6866`, then move it to `in-review` before committing.",
+      "captured_at": "2026-07-13T23:44:37.353Z",
+      "event_meta": {
+        "event_id": "3abbdb6c-c3aa-4e4b-b85c-cb7285451bd0",
+        "parent_event_id": "e5708bc5-1a18-4a51-a0fd-80d88a408c34",
+        "event_type": "assistant.message",
+        "message_id": "2eee9eb6-321f-4132-9a9d-3e82ec79dfb5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_NFpZuLTY8c00zQhjmuDlWeKS",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\1e8f6866-9dda-4b2c-9f41-27ac83ee61d5\\ticket.toml",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kGHptlFIRz7Bta4qzlDMoEHl",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.spec\\specs\\17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898\\body.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "The BUG ticket now has implementation and validation summaries and is in `in-review`; next I’ll commit only the intended `memory-api` changes, then commit the root submodule pointer update.",
+      "captured_at": "2026-07-13T23:44:52.217Z",
+      "event_meta": {
+        "event_id": "d1c46c46-baf9-40e0-b63d-90c37649e7f6",
+        "parent_event_id": "79208ed1-61d4-4cb3-8f28-ddf9ba074e29",
+        "event_type": "assistant.message",
+        "message_id": "4e0ecd55-a3bb-4b76-a8e4-ec12e106cfa6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_scOjU3t4DgpvHRYGfzb1Yx40",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk git status --short",
+              "explanation": "Inspect memory-api working tree before staging commit",
+              "goal": "Confirm exact files to commit for BUG fix",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_erXkzKaRSM2KehJzgcGnrwYH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk git status --short",
+              "explanation": "Inspect root repo status before submodule pointer commit",
+              "goal": "Identify pending submodule pointer update and unrelated changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "I confirmed the regression test is present and will now create the `memory-api` commit with only the BUG code and ticket-state files.",
+      "captured_at": "2026-07-13T23:45:05.805Z",
+      "event_meta": {
+        "event_id": "a9cab900-2ad9-40ad-96f8-26edc26507ff",
+        "parent_event_id": "5be3fb1e-d85c-4d42-913e-f8bc64f04ab6",
+        "event_type": "assistant.message",
+        "message_id": "58ae7241-78a0-47a9-8c2f-bdb2f4d90236",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_bFiDm32R3KWc3FZAZamW5W1u",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk git add crates/test-api/src/store.rs crates/test-api/src/store/tests.rs .ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/ticket.toml .ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/history.ndjson && rtk git commit -m \"feat(test-api): scope execution pruning by validation_spec_id\"",
+              "explanation": "Commit BUG fix and ticket updates inside memory-api submodule",
+              "goal": "Create implementation commit for ticket 1e8f6866",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "The code and pointer commits are complete; I’ll now verify ticket state and check out from the board entry so the work is cleanly handed off.",
+      "captured_at": "2026-07-13T23:45:18.073Z",
+      "event_meta": {
+        "event_id": "a0b3a396-1c2a-4409-806f-5e20042bdcf3",
+        "parent_event_id": "e18e127f-2641-4da8-a24b-02bf61af3f7b",
+        "event_type": "assistant.message",
+        "message_id": "555b029f-1c1d-4bac-b495-4426cf27d1f3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IthXkmrHIWSchJowCybJDJ7s",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe get 1e8f6866-9dda-4b2c-9f41-27ac83ee61d5 --toon",
+              "explanation": "Confirm BUG ticket final state and summary fields after update",
+              "goal": "Verify ticket is in-review with recorded evidence summary",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xi5A4cym1KGQddhbPZOVgCUR",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe board check-out 1e8f6866-9dda-4b2c-9f41-27ac83ee61d5 --agent copilot-gpt53-codex --reason \"implemented prune scoping fix, validated, moved to in-review\" --toon",
+              "explanation": "Release board ownership after completing implementation",
+              "goal": "Leave board clean and avoid stale ownership",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’ve finished Actions 1–3 and released board ownership; I’m now attempting Action 5 by checking whether this live session is persisting under `.session/sessions`, and I’ll mark it complete only if evidence is clear.",
+      "captured_at": "2026-07-13T23:45:31.383Z",
+      "event_meta": {
+        "event_id": "87bd1581-6a51-4e1d-9a4d-a3c2235ac37c",
+        "parent_event_id": "20d478c9-408d-4b18-8b3c-1fbb4f8c2a76",
+        "event_type": "assistant.message",
+        "message_id": "34738ae8-738d-41dd-ae65-2745944ff3a7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pRucR8fFSopk0aR4C3hah0PN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ls -la .session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e && rtk find .session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e -maxdepth 2 -type f -printf \"%p %TY-%Tm-%TdT%TH:%TM:%TS\\n\"",
+              "explanation": "Inspect current session capture artifacts for live persistence evidence",
+              "goal": "Verify .session history files are being written during this run",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I have enough evidence for Action 5 live persistence checks; I’m gathering exact changed-line references and final repo status so you get a precise handoff.",
+      "captured_at": "2026-07-13T23:45:44.458Z",
+      "event_meta": {
+        "event_id": "2bab945a-0cd1-4895-936b-df8cfadbf46e",
+        "parent_event_id": "47ffd332-5457-42e9-9636-da32e6404b33",
+        "event_type": "assistant.message",
+        "message_id": "c963aee5-2a63-4b35-bd47-ff5bf5ef6e08",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9R1gsuK3MLprpKKkP6QSqLvw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk nl -ba crates/test-api/src/store.rs | rtk rg \"prune_execution_runs|newest_by_spec_run|stale_spec_runs\"",
+              "explanation": "Get precise line numbers for prune logic changes",
+              "goal": "Reference modified implementation locations accurately",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PEvllXj5Q1EJYcTEFl1NQEpj",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk nl -ba crates/test-api/src/store/tests.rs | rtk rg \"record_execution_prunes_runs_per_spec_not_globally|record_execution_keeps_only_newest_two_runs\"",
+              "explanation": "Get line numbers for regression and existing tests",
+              "goal": "Reference validation coverage locations accurately",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZccQvlC0tKLZu63ztRFCvBH6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine/memory-api && rtk git status --short && rtk git log -1 --oneline",
+              "explanation": "Capture memory-api commit id and cleanliness",
+              "goal": "Verify submodule commit landed cleanly",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_nXg2XvB5w3lMiSOxqOqYPmsr",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk git status --short && rtk git log -1 --oneline",
+              "explanation": "Capture root pointer commit id and remaining unrelated changes",
+              "goal": "Verify root pointer update commit is present",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Implemented and validated the remaining unblocking work for BUG 1e8f6866, then moved it to in-review and committed both the submodule fix and root pointer update.\n\nCompleted actions:\n1. Action 1 complete\n- Claimed board ownership, transitioned BUG to in-implementation, implemented per-spec prune scoping, added regression test.\n- Code change in [memory-api/crates/test-api/src/store.rs](memory-api/crates/test-api/src/store.rs#L470): pruning now computes stale runs per (validation_spec_id, run_id), not globally by run_id.\n- Existing call site remains at [memory-api/crates/test-api/src/store.rs](memory-api/crates/test-api/src/store.rs#L133).\n- New regression test added at [memory-api/crates/test-api/src/store/tests.rs](memory-api/crates/test-api/src/store/tests.rs#L213).\n- Existing keep-2 single-spec test remains at [memory-api/crates/test-api/src/store/tests.rs](memory-api/crates/test-api/src/store/tests.rs#L179).\n\n2. Action 2 complete\n- Ran cargo test -p test-api in memory-api: passed (29 tests).\n- Ran cargo build --workspace in memory-api: passed with warnings only, 0 errors.\n- Updated implementation_summary and validation_summary on BUG.\n- Ticket now in-review at [memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/ticket.toml](memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/ticket.toml), with state history in [memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/history.ndjson](memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/history.ndjson).\n\n3. Action 3 complete\n- memory-api commit created: b47f982\n- Message: feat(test-api): scope execution pruning by validation_spec_id\n- Root pointer commit created: 57fc049a\n- Message: chore(memory-api): update submodule pointer for prune fix\n\n4. Action 4 blocked (as requested)\n- Did not close any in-review tickets.\n- Kept all human-gated closures untouched.\n\n5. Action 5 complete for live persistence check\n- Verified current live session artifacts exist and are updating in [ .session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/session.json ](.session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/session.json), [ .session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/events.json ](.session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/events.json), and [ .session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/transcript.json ](.session/sessions/9422771a-ffec-477d-80d5-3c1fd1aa2a0e/transcript.json).\n- Also checked out board entry for BUG, leaving ownership clean.\n\nNotes:\n- Left unrelated pre-existing changes untouched (including memory-viewers and other session/generated churn), per your constraints.\n- No in-review ticket was closed.",
+      "captured_at": "2026-07-13T23:46:07.684Z",
+      "event_meta": {
+        "event_id": "8607ce35-8574-4e5b-94f8-77482803dcad",
+        "parent_event_id": "b4d1cd7c-4e7b-4925-8a51-288c8e83cff3",
+        "event_type": "assistant.message",
+        "message_id": "cbc35d88-3209-4f54-9a35-6327b2103f8d",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
