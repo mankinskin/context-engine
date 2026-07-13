@@ -88,3 +88,4 @@ Return a concise review summary containing:
 - the candidate discovery method used
 - for each reviewed ticket: rank, ticket id, title, decision, evidence checked, and blockers or follow-up work
 - whether additional `in-review` tickets remain after the pass
+- all ticket/spec/code/log references rendered per the Clickable Reference Policy in `AGENTS.md`

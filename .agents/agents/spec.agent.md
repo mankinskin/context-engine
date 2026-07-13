@@ -40,7 +40,8 @@ Your job is to create or refine the smallest complete specification slice that c
    - explicit acceptance criteria
    - required traceability and evidence
 5. Link the spec to:
-   - exact related ticket folder paths returned by ticket tools
+   - exact related ticket folder paths returned by ticket tools; do not synthesize ticket paths
+   - ticket references rendered per the Clickable Reference Policy in `AGENTS.md`
    - validation commands, planned evidence, or completed results
    - related specs that define prerequisites, neighbors, or shared contracts
 6. Before finishing, verify the spec is reviewable: the acceptance criteria are testable, the evidence plan is concrete, and the linked tickets/specs are sufficient for implementation follow-through.

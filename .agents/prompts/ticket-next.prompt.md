@@ -33,6 +33,7 @@ Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-api/tools/cli/tic
 
 Return:
 - the chosen ticket and why it is the right next slice
+- all ticket/spec/code/log references rendered per the Clickable Reference Policy in `AGENTS.md`
 - the first implementation step
 - the first validation step
 - the evidence plan for tests, docs, and logs

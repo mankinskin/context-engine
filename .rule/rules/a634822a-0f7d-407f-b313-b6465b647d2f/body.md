@@ -44,6 +44,7 @@ Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../inst
 
 Return:
 - the full handoff response inside a fenced plain-text block using `~~~text` and closing `~~~` so copied output preserves literal markdown links
+- render all entity references per the Clickable Reference Policy in `AGENTS.md`
 - the short handoff prompt in one paragraph
 - created or matched tickets, rendered as canonical markdown links when available
 - all file references must use markdown links with forward slashes only

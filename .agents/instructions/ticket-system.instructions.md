@@ -443,7 +443,7 @@ Opportunistically improve ticket quality whenever you touch the store:
 - When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available substitute and note the gap explicitly.
 - When mentioning tickets in chat output, use the exact canonical ticket folder path returned by ticket-api output as the base path for the markdown link target.
 - Never synthesize a ticket folder path from a UUID, the current store root, or an example path; if the first ticket-api response omits the path, run a follow-up ticket-api command that returns the authoritative path before responding.
-- Render ticket references in chat markdown as `[<short-id> <title>](<canonical ticket folder path>/ticket.toml)`, where `<short-id>` is the first 8 characters of the authoritative ticket id, `<title>` is the authoritative ticket title, and the link target appends `/ticket.toml` to the exact returned folder path so editors can open the ticket file directly.
+- Render ticket references per the Clickable Reference Policy in `AGENTS.md`.
 
 <!-- rule-api:entry id=f6b52b7e-d9d4-4743-bd2d-9f21b9c71689 slug=shared/instructions/ticket-system/health-check-a-subgraph-rooted-at-a-ticket-bfs-traversal/l330 -->
 ### Health Checks

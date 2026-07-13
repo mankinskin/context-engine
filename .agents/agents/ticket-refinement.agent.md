@@ -56,6 +56,8 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 
 Return a structured refinement report:
 
+- Render all ticket/spec/code/log references per the Clickable Reference Policy in `AGENTS.md`.
+
 ### Ticket Actions
 - Created:
 - Updated:

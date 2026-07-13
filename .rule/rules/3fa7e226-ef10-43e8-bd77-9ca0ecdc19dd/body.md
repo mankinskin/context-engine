@@ -29,14 +29,14 @@ Workflow:
 9. If some of the needed tickets already exist, reuse them and create only the missing ones.
 10. For work that introduces new or changed requirements, goals, or behavior, create or update the relevant spec after the ticket set is created or matched. Prefer spec-mcp tools when they are available and fall back to `./target/debug/spec.exe` when needed.
 11. In markdown outputs or spec bodies, never synthesize any ticket folder path from a UUID, the chosen store, or an example path.
-12. Extract each exact canonical ticket folder path from ticket-api output. If the first create, match, or list response omits the folder path, run an immediate follow-up ticket-api command that returns the authoritative path for each referenced ticket before composing the chat response or updating the spec. Use that exact returned folder path as the link base and append `/ticket.toml` only when rendering the markdown target.
-13. Ensure the spec records the request's requirements or goals before implementation begins and links the related tickets with targets of the form `<exact ticket folder path>/ticket.toml` when available.
+12. Extract each exact canonical ticket folder path from ticket-api output. If the first create, match, or list response omits the folder path, run an immediate follow-up ticket-api command that returns the authoritative path for each referenced ticket before composing the chat response or updating the spec.
+13. Ensure the spec records the request's requirements or goals before implementation begins and renders related ticket references per the Clickable Reference Policy in `AGENTS.md`.
 14. Ask one concise clarification if the target store or ticket breakdown is still ambiguous after a focused search.
 15. Do not implement code or change unrelated tickets, specs, or dependencies unless the user explicitly asks.
 
 Response:
 - target store and number of tickets created or matched
-- ticket folder paths and titles created or reused, rendered as markdown links of the form `[<short-id> <title>](<exact ticket folder path returned by ticket-api output>/ticket.toml)`
+- ticket folder paths and titles created or reused, rendered as markdown links per the Clickable Reference Policy in `AGENTS.md`
 - created or updated spec slug and id, or why no spec change was needed
 - dependency edges added, if any
 - assumptions or follow-up gaps

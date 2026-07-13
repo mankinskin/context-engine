@@ -40,3 +40,4 @@ Return:
 - confirmed answers
 - open decisions
 - recommended ticket/spec update
+- all ticket/spec/code/log references rendered per the Clickable Reference Policy in `AGENTS.md`
