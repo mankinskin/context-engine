@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "300867c4-f5a2-4460-8e82-e1078358836f",
-  "captured_at": "2026-07-13T11:28:13.135Z",
+  "captured_at": "2026-07-13T11:48:46.504Z",
   "turns": [
     {
       "sequence": 0,
@@ -506,6 +506,78 @@
         "event_type": "assistant.message",
         "message_id": "ef9952db-99bb-46cb-b55d-5116142eeb30",
         "reasoning_text": "The rule bodies themselves have been properly updated with the new deferral text across all 12 instances, which is what matters for correctness. The old duplicated `ticket.toml` text only persists in the historical audit logs, not in the live rule definitions, so the implementation is actually clean.\n\nAll the pointer references check out too — Buckets B and C have them in place, and Bucket A kept the authoritative-path rule while dropping just the duplicated render form, exactly as intended. The real issue is the changelog report itself, which lists the same file twice multiple times — sloppy copy-paste work that contradicts the quality of the actual implementation. They disclosed the sync-targets limitation and worked around it with individual regeneration, which is acceptable given the known viewer-api drift, though it does leave the aggregated gate unverified.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "user",
+      "content": "/handoff",
+      "captured_at": "2026-07-13T11:46:57.806Z",
+      "event_meta": {
+        "event_id": "c1d8b4f4-d620-48bb-a406-49b0b801df7e",
+        "parent_event_id": "0fae8163-0d64-4fb6-b9d0-c68225e81f53",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "I'll build the handoff. First let me pull authoritative ticket data so references aren't synthesized, and confirm current state.",
+      "captured_at": "2026-07-13T11:47:10.939Z",
+      "event_meta": {
+        "event_id": "14a0faa3-af33-4014-a960-0a74d26502ec",
+        "parent_event_id": "bd30194a-f2e0-4b51-beea-0b55f0288d1e",
+        "event_type": "assistant.message",
+        "message_id": "95b557b0-cf5c-418f-994b-4e81af90205b",
+        "reasoning_text": "I'm preparing a handoff prompt to continue work on the clickable-reference policy propagation track in the next session, gathering the ticket UUID and current state to ensure continuity.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01YBZzUoPQ1DEBdSCJrsAXTX",
+            "name": "mcp_rmcp5_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Verifying the exact policy rule id (there was a `464a`/`846a` discrepancy earlier) so the handoff references are authoritative, not synthesized.",
+      "captured_at": "2026-07-13T11:47:53.748Z",
+      "event_meta": {
+        "event_id": "0b505707-b770-467a-8e8c-9c3e79c5a28e",
+        "parent_event_id": "0f97ca58-07fd-45e2-855e-1d142a02a59d",
+        "event_type": "assistant.message",
+        "message_id": "930c6341-f652-42e6-9a12-60e1c2d7943b",
+        "reasoning_text": "I'm looking at the ticket in review status and pulling up the associated spec on recurring cross-cutting principles, which includes the Clickable Reference Policy as a key rule entry. Now I'm rendering the references using the clickable reference policy with repo-root-relative paths, linking tickets and specs to their manifest files. I need to verify the rule ID for ce05ee88 since there was a potential typo earlier with \"464a\" in the middle segment. I need to verify the exact rule ID by searching the file system rather than relying on my recollection, since I want to be precise about which folder actually exists.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_013s61cF6k5Nf6FVFVwZ1inB",
+            "name": "file_search",
+            "arguments": {
+              "query": ".rule/rules/ce05ee88*/body.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Verified — the policy rule is `ce05ee88-e2e0-494c-846a-270aa07c6638` (the ticket's inline `464a` fragment is the typo I flagged). Here is the handoff.\n\n~~~text\n# Handoff — Global Clickable-Reference Policy: validation closeout\n\nThis session defined one canonical, format-switchable clickable-reference policy and propagated it across every reference-emitting agent target. The policy body, the AGENTS.md render surface, and 12 downstream rule bodies (prompts/agents/instructions) are all in place and byte-verified; the duplicated per-target `ticket.toml` render forms were removed in favor of a single deferral. The remaining work is validation hygiene and ticket closeout — the aggregated `rule sync-targets` gate is RED on a pre-existing, unrelated viewer-api artifact, so the edited targets were regenerated individually. The next agent should diagnose the aggregated gate, fix a known ticket-body typo, and drive ticket 15c39147 through review to done.\n\n## Shorthand And Placeholder Legend\n\n- POLICY-RULE → ce05ee88-e2e0-494c-846a-270aa07c6638, canonical \"Clickable Reference Policy\" rule body — [.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/body.md](.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/body.md)\n- PRECEDENCE-RULE → 7a21f7ef-b76b-4cef-8a7b-7727958088cd, \"Instruction Precedence and Exceptions\" rule body that defers to POLICY-RULE — [.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md)\n- SPEC-RP → 954d9807-f357-41e5-9fd4-b1da39e0933d, \"Recurring cross-cutting principles\" spec — [954d9807 Recurring cross-cutting principles](.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/spec.toml)\n- <workspace> → the ticket-api workspace selector, `default`\n\n## Ticket Legend\n\n- T1 → 15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e, \"Global clickable-reference policy rendered across agent targets\", state `in-review` — [15c39147 Global clickable-reference policy rendered across agent targets](.ticket/tickets/15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e/ticket.toml)\n\n## Key Entities\n\n- [15c39147 Global clickable-reference policy rendered across agent targets](.ticket/tickets/15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e/ticket.toml) — the tracking ticket to close; its description contains the `464a`/`494c` id typo to fix.\n- [.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/body.md](.rule/rules/ce05ee88-e2e0-494c-846a-270aa07c6638/body.md) — POLICY-RULE, single source of truth for reference formatting; edit here to change the format for the whole repo.\n- [.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md](.rule/rules/7a21f7ef-b76b-4cef-8a7b-7727958088cd/body.md) — PRECEDENCE-RULE; its \"Formatting conflict policy\" block defers to POLICY-RULE (bidirectional cross-link).\n- [AGENTS.md](./AGENTS.md) — global render surface generated from POLICY-RULE; must stay byte-stable under `generate-target`.\n- [rule-targets/10-agents.yaml](./rule-targets/10-agents.yaml) — wires the `agent-rules/clickable-references` node into AGENTS.md.\n- [954d9807 Recurring cross-cutting principles](.spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/spec.toml) — spec whose decorative clickable-references section was deleted and body reverted; confirm it stays reverted.\n- Downstream deferral bodies (12) under [.rule/rules/](./.rule/rules/): 016417ac, 0719f0c1, 084fd4e6, 3fa7e226, 5b9a1792, 62f3b15f, 633ef4f2, 8007eaed, a634822a, b5e0ebf0, c794a4a2, e1f26fb9 — each now renders \"per the Clickable Reference Policy in AGENTS.md\".\n\n## Findings\n\n- POLICY-RULE source-of-truth was updated (not just generated output); all 12 downstream rule bodies carry the deferral text — verified by grep of [.rule/rules/](./.rule/rules/).\n- The old duplicated form `[<short-id> <title>](.../ticket.toml)` now survives only in `history.ndjson` audit logs (append-only, correctly left untouched), not in any live `body.md`.\n- Bucket A kept the genuinely-local \"never synthesize the folder path; fetch authoritative path from ticket-api\" rule and dropped only the duplicated render form — see [.agents/prompts/ticket.prompt.md](./.agents/prompts/ticket.prompt.md) steps 10-12.\n- Authoritative POLICY-RULE id is ce05ee88-e2e0-494c-846a-270aa07c6638. The ticket description records it as `...464a...`, which is wrong.\n\n## Decisions\n\n- Single canonical owner is POLICY-RULE; PRECEDENCE-RULE defers rather than restating. One definition, cross-linked both ways.\n- Default reference mode is `manifest` (link to entity manifest file). `viewer` and `description` are the alternate modes.\n- doc-viewer has no per-entity deep-link route; docs fall back to manifest/description mode by design (stated, not a placeholder).\n\n## Blockers\n\n- Aggregated `rule sync-targets --config rule-targets.yaml --check` is RED on a pre-existing viewer-api submodule spec artifact (reported as `798c9a3c body.md`) that is unrelated to this track and untouched here. Because of this, edited generated targets were regenerated individually via `rule generate-target` / `generate-file`, so there is no single green aggregated proof across all targets.\n\n## Long-Horizon Goal\n\nOne switch changes reference formatting everywhere: every agent and prompt renders workspace-entity references identically, defined once in POLICY-RULE, with zero duplicated per-target render specs and a green aggregated regeneration gate.\n\n## Next Actions (execution order)\n\n1. Fix the id typo in the T1 description: change the POLICY-RULE fragment from `ce05ee88-e2e0-464a...` to `ce05ee88-e2e0-494c-846a-270aa07c6638` in [15c39147 Global clickable-reference policy rendered across agent targets](.ticket/tickets/15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e/ticket.toml). First validation: grep the ticket description for `464a` returns no matches.\n2. Diagnose why aggregated `rule sync-targets --config rule-targets.yaml --check` fails. Confirm whether `798c9a3c body.md` drift is truly pre-existing (stash this track's edits and re-run; it should stay red on the same file). First validation: the failing path in the sync error is inside the viewer-api submodule, not in this repo's `.rule/` or `.agents/`.\n3. Either fix the viewer-api submodule drift in its own store or record it explicitly as an out-of-scope pre-existing defect, then re-run the aggregated gate. First validation: `rule sync-targets --config rule-targets.yaml --check` exits 0, or the residual red is documented as unrelated with a linked follow-up.\n4. Re-verify AGENTS.md byte-stability: `rule generate-target --config rule-targets.yaml --target context-engine-agents --check` exits 0.\n5. Move T1 through the review gate to done: verify the code-review checklist and spec traceability, then `close 15c39147`. First validation: `ticket get 15c39147` reports state `done`.\n\n## Completion Status\n\n- Action 1 (fix id typo) — not-started — one-line description edit.\n- Action 2 (diagnose aggregated gate) — not-started — root-cause the pre-existing red.\n- Action 3 (resolve or document viewer-api drift) — blocked — depends on Action 2 outcome; may require a separate submodule ticket.\n- Action 4 (AGENTS.md byte-stable re-check) — not-started — expected to already pass; confirm.\n- Action 5 (close T1) — not-started — gated on Actions 1-4.\n\n## Definition Of Done\n\n- T1 description carries the correct POLICY-RULE id (no `464a`).\n- Aggregated `rule sync-targets --check` is either green, or its residual red is proven unrelated and tracked in its own ticket.\n- AGENTS.md `generate-target --check` exits 0.\n- POLICY-RULE remains the only reference-format definition; no live `body.md` restates the `ticket.toml` render form.\n- T1 is `done`.\n\n## Board / Session Notes\n\n- No board check-in was recorded for this track; check in on 15c39147 before editing if coordinating with other agents.\n- Do not touch unrelated memory-api / viewer-api submodule churn — treat it as background activity except where Action 3 explicitly scopes the viewer-api drift.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~\n\nHandoff covers the full track: canonical policy is in place and verified, the outstanding work is the typo fix, the aggregated-gate diagnosis, and driving 15c39147 to done. References are rendered in manifest mode per the Clickable Reference Policy, with full UUIDs and a legend so nothing is unresolved.",
+      "captured_at": "2026-07-13T11:48:46.504Z",
+      "event_meta": {
+        "event_id": "082e8a5c-163e-400b-8e1d-5475c45ea242",
+        "parent_event_id": "23d7112b-95cf-4c7a-81a8-2e39be14cd1a",
+        "event_type": "assistant.message",
+        "message_id": "0af0bf4e-4b7a-4a1f-a949-24483ea13469",
+        "reasoning_text": "I've confirmed the full ID is `ce05ee88-e2e0-494c-846a-270aa07c6638` with the short form being `ce05ee88`, and I'm pulling the precedence rule from the AGENTS.md marker. Now I'm ready to compose the handoff using manifest-mode references.\n\nWriting the handoff document...",
         "tool_requests_json": []
       }
     }

@@ -1,3 +1,3 @@
 ## Required form
 
-`[<short-id> <title>](<canonical ticket folder path>/ticket.toml)`
+Render references per the Clickable Reference Policy in `AGENTS.md`.

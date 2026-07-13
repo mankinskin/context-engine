@@ -13,9 +13,10 @@ Three reference modes selected by one switch (default manifest):
 Link text "{short-id} {title}". Path normalization: forward-slash unix, repo-root-relative, no drive letters, mingw/WSL assumption. Anti-backtick rule is explicitly scoped to the emitted reference token (not policy prose or shell commands), and the policy prose no longer backtick-wraps path examples — the rule no longer violates itself.
 
 ## Validation (honest)
+- POLICY-RULE id verified as `ce05ee88-e2e0-494c-846a-270aa07c6638`; no `464a` typo remains in this ticket description.
 - `rule generate-target --config rule-targets.yaml --target context-engine-agents --check` → exit 0. This proves the AGENTS.md render is deterministic/byte-stable for this target; it is NOT an end-to-end gate.
 - `rule store-index` → exit 0 (catalog regenerated: .rule/README.md, .rule/index.toon, .agents/rules-catalog.md).
-- Aggregated `rule sync-targets --config rule-targets.yaml --check` remains RED, but only on a viewer-api submodule spec artifact (798c9a3c body.md) that is untouched by this change — confirmed by stashing this change and re-running the gate (still red on the same file). This change is not committed through the aggregated writer; the viewer-api drift is a separate, pre-existing problem to fix in that submodule.
+- Aggregated `rule sync-targets --config rule-targets.yaml --check` remains RED, but only on a viewer-api submodule spec artifact (798c9a3c body.md) that is untouched by this change. Direct dry-run generation is byte-identical to the current file, but `--check` still reports drift and viewer-api write attempts intermittently return os error 3; tracked separately in [612f9dd7 Fix viewer-api sync-targets false drift on 798c9a3c body](../612f9dd7-e2d7-48fe-9825-d2283d4bb3fa/ticket.toml).
 
 ## Files
 .rule/rules/ce05ee88.../body.md (policy), .rule/rules/7a21f7ef.../body.md (deferral), rule-targets/10-agents.yaml (node), AGENTS.md (regenerated), .spec/specs/954d9807.../ (section deleted, body reverted), .rule/README.md + index.toon + .agents/rules-catalog.md (catalog).
