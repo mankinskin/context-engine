@@ -1,0 +1,29 @@
+{
+  "id": "exec-val-rule-selective-instruction-generation-20260714",
+  "validation_spec_id": "val-rule-selective-instruction-generation",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T16:25:25.673836800Z",
+  "duration_ms": 5500,
+  "detail": "cargo test -p rule-cli: 50 passed across 5 suites. Global generated-file scan found exactly one applyTo \"**\" instruction: session-bootstrap.instructions.md. Representative rule searches resolved ticket state-machine, commit-hook, spec-authoring, and token-efficiency entries; generated spec-system guidance has one nonduplicated body.",
+  "links": {
+    "spec_ids": [
+      "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    ],
+    "acceptance_criterion_ids": [
+      "1",
+      "2",
+      "3"
+    ],
+    "ticket_ids": [
+      "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    ]
+  },
+  "provenance": {
+    "source_path": "rule-targets/50-agents-instructions.yaml",
+    "test_id": "reduced-universal-instruction-surface",
+    "domain": "rule-cli",
+    "operation": "generate-and-discover-instructions",
+    "transport": "cli",
+    "run_id": "8782c98d-1489-4550-9ea5-c799cb87e6f1"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "val-session-selective-rule-render",
+  "title": "Session selective pinned-rule rendering",
+  "command": "cargo test -p session-api -p session-cli -p session-mcp",
+  "detail": "Verify deterministic rendering of only pinned rule bodies, explicit failure for unresolved rules, and consistent API, CLI, and MCP render surfaces.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    ],
+    "acceptance_criterion_ids": [
+      "5",
+      "6",
+      "7"
+    ],
+    "ticket_ids": [
+      "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    ]
+  }
+}

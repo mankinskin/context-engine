@@ -1,0 +1,20 @@
+{
+  "id": "val-rule-selective-instruction-generation",
+  "title": "Selective generated instruction surface and rule discovery",
+  "command": "cargo test -p rule-cli",
+  "detail": "Verify exactly one generated universal bootstrap instruction, no duplicate spec-system body, and representative ticket, commit, spec, and token-efficiency rules remain searchable.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    ],
+    "acceptance_criterion_ids": [
+      "1",
+      "2",
+      "3"
+    ],
+    "ticket_ids": [
+      "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "exec-val-rule-sync-targets-20260714",
+  "validation_spec_id": "val-rule-sync-targets",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T16:25:25.449102200Z",
+  "duration_ms": 300,
+  "detail": "rule sync-targets --config rule-targets.yaml --check returned status ok; all generated targets reported changed false.",
+  "links": {
+    "spec_ids": [
+      "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    ],
+    "acceptance_criterion_ids": [
+      "4"
+    ],
+    "ticket_ids": [
+      "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    ]
+  },
+  "provenance": {
+    "source_path": "rule-targets.yaml",
+    "test_id": "sync-targets-check",
+    "domain": "rule-cli",
+    "operation": "sync-targets",
+    "transport": "cli",
+    "run_id": "8782c98d-1489-4550-9ea5-c799cb87e6f1"
+  }
+}

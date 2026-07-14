@@ -1,18 +1,26 @@
 {
   "id": "val-session-workflow-finish",
-  "title": "Session workflow finish gates",
-  "command": "cargo test -p session-api workflow_finish",
-  "detail": "Validate finish rejection for incomplete required nodes or non-passing required validation, optional-node deferral rules, idempotency, and terminal success recording.",
+  "title": "Session workflow finish, locking, and terminal immutability",
+  "command": "cargo test -p session-api",
+  "detail": "Validate authoritative finish gates plus aged-live-lock exclusion, ownership-safe release, deterministic finish-versus-mutation/init/resume interleaving, finished-init byte stability, and Windows replacement-failure preservation.",
   "slow_threshold_ms": 120000,
   "links": {
     "spec_ids": [
-      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+      "8c880efc-7083-4e1d-bf06-96b8254be913",
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf",
+      "709f067a-21b6-41b6-8879-3cacef4bacaf"
     ],
     "acceptance_criterion_ids": [
-      "6"
+      "parent-1",
+      "parent-6",
+      "workflow-6",
+      "workflow-8",
+      "runtime-2",
+      "runtime-3"
     ],
     "ticket_ids": [
-      "0647a212-9d2e-4943-9627-f854ce3f14c4"
+      "0647a212-9d2e-4943-9627-f854ce3f14c4",
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f"
     ]
   }
 }

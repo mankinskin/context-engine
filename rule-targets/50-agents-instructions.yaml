@@ -5,6 +5,13 @@ folders:
   folders:
   - name: instructions
     files:
+    - name: session-bootstrap.instructions.md
+      target:
+        name: context-engine-instruction-session-bootstrap
+        path_scope: .agents/instructions/session-bootstrap.instructions.md
+        nodes:
+        - name: session-bootstrap-instructions
+          section: session-bootstrap-instructions
     - name: spec-system.instructions.md
       target:
         name: context-engine-instruction-spec-system

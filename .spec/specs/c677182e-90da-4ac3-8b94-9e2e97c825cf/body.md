@@ -27,7 +27,8 @@ If this spec is implemented, dependents can rely on one durable `workspace_sessi
 - Runtime session model: `partial` at `memory-api/crates/session-api/src/model.rs`.
 - Workflow persistence and mutation: `implemented` at `memory-api/crates/session-api/src/model.rs` and `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-workflow-persistence-20260714`.
 - Terminal and Mermaid rendering: `implemented` at `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-workflow-rendering-20260714`.
-- Structured handoff/resume and finish: `implemented` at `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-handoff-continuity-20260714` and `exec-val-session-workflow-finish-20260714`. Finish is authoritative: required validation outcomes come only from test-api executions (caller-supplied outcomes never certify), ticket-backed nodes require live terminal ticket state, missing/failed/misrouted ticket resolution fails closed, finished workspaces are immutable across pins, workflow mutations, and init/resume lineage updates, every runtime mutation (including lineage) serializes under a per-workspace mutation lock whose finished-check is evaluated while the lock is held so finish cannot race a concurrent mutation, and durable writes use a single atomic rename (`MoveFileExW` replace-existing on Windows, `rename(2)` on Unix) so no crash window can leave the destination absent.
+- Structured handoff/resume and finish: `implemented` at `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-handoff-continuity-20260714` and the latest `val-session-workflow-finish` execution. Finish is authoritative: required validation outcomes come only from test-api executions, ticket-backed nodes require live terminal ticket state, and unavailable ticket resolution fails closed. Finished workspaces reject mutations and new lineage; ordinary idempotent init is read-only. Runtime changes and finish serialize under an OS-held exclusive file lock with no age-only reclamation, and releasing an owner does not unlink the stable lock file used by successors.
+- Durable JSON writes: `implemented` at `memory-api/crates/session-api/src/store_helpers.rs`. The temp file is synced before `std::fs::rename`; replacement errors preserve the previous destination. Unix parent-directory sync errors are propagated. Windows replace-existing atomicity and directory-entry power-loss durability are not guaranteed by this contract beyond tested failure preservation.
 - CLI/MCP surfaces: `implemented` at `memory-api/tools/cli/session-cli/src/lib.rs` and `memory-api/tools/mcp/session-mcp/src/server.rs`; canonical nested `session workflow <subcommand>` hierarchy with flat `workflow-*` compatibility aliases; validated by `exec-session-cli-suite-20260714` and `exec-session-mcp-suite-20260714`.
 
 ## Governing-rule requirement
@@ -52,12 +53,16 @@ This contract is governed by `.agents/instructions/spec-system.instructions.md` 
 ## Persistence and rendering
 
 - Workflow state is stored separately from transcript capture and flushed per mutation.
+- A live runtime lock cannot be stolen solely because it is old, and lock release cannot remove a successor's lock instance.
+- JSON writes sync the temporary file before rename. Rename failure preserves the prior destination; Unix parent-directory sync is checked. No stronger Windows replace-existing or power-loss guarantee is implied.
 - Terminal and Mermaid renders are deterministic, equivalent, safely escaped, and read-only.
 
 ## Handoff and finish
 
 - Handoff persists before rendering and includes workspace ID, outgoing run, handoff ID, pins, roadmap state, blockers, validation state, and exact resume command.
 - Finish is explicit and idempotent; required nodes and validation must pass.
+- Finish and all mutation/init/resume paths serialize under the same runtime lock.
+- After finish, ordinary init returns persisted state without rewriting runtime files; init that creates a run, resume, and all other mutations reject.
 - Optional nodes may remain incomplete only when explicitly deferred with a reason.
 
 # Non-goals
@@ -65,6 +70,7 @@ This contract is governed by `.agents/instructions/spec-system.instructions.md` 
 - Copying ticket lifecycle state into the session store.
 - Requiring feedback-api for context or workflow persistence.
 - Semantic auto-pinning or replacing the ticket graph.
+- Claiming untested Windows replacement or crash/power-loss durability semantics.
 
 # Acceptance Criteria
 
@@ -75,6 +81,7 @@ This contract is governed by `.agents/instructions/spec-system.instructions.md` 
 5. Handoff persistence precedes rendering and always provides exact resume flow.
 6. Finish enforces required work and validation and records terminal success.
 7. Feedback emission is optional and non-blocking.
+8. Deterministic regressions prove aged live locks remain exclusive, release is ownership-safe, finished init is byte-stable, and finish excludes mutation/init/resume interleavings.
 
 # Traceability
 
@@ -86,4 +93,4 @@ This contract is governed by `.agents/instructions/spec-system.instructions.md` 
 - Core handoff ticket: `0647a212-9d2e-4943-9627-f854ce3f14c4`.
 - Transport ticket: `6b2dc497-188c-44f5-9106-bf35deecb7a1`.
 - Prompt update ticket: `9577b114-ec11-431b-8740-c488bef05fc9`.
-- Remediation ticket (authoritative finish, live ticket state, atomic durability, CLI contract): `6b1edff1-bc32-40c7-b3a9-fb1292b0213f`.
+- Remediation ticket: `6b1edff1-bc32-40c7-b3a9-fb1292b0213f`.

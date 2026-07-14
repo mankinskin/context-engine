@@ -1,70 +1,69 @@
-<!-- aligned-structure:v1 -->
+<!-- aligned-structure:v2 -->
 
 # Summary
 
-Remove the always-on generated instruction load and replace it with a minimal **bootstrapper** plus **discoverable, pinnable** rule entries that each agent renders into its own per-session instruction set.
+Replace the always-on generated instruction load with one minimal bootstrapper plus discoverable, pinnable rule entries that are rendered into a focused per-session instruction set.
 
-## Behavior Story
+## Motivation ("why")
 
-Remove the always-on generated instruction load and replace it with a minimal **bootstrapper** plus **discoverable, pinnable** rule entries that each agent renders into its own per-session instruction set.
+Universal `applyTo: "**"` instruction files inject unrelated ticket, spec, commit, and token-efficiency guidance into every task. The canonical rule store already makes those bodies searchable; sessions need a small discovery contract and an explicit render path instead of unconditional expansion.
 
-## Provided Surface Contracts
+## Dependent expectation
 
-- Define provided contracts for this behavior slice.
+If this spec is implemented, dependents can rely on only the minimal bootstrapper being universal, the large instruction bodies remaining searchable and available on demand, and a session rendering exactly its pinned rule entries without expanding unrelated rules.
 
-## Required Validation
+## Guards
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- `val-session-selective-rule-render`.
+- `val-rule-selective-instruction-generation`.
+- `val-rule-sync-targets`.
 
-## Related Implementation Tickets
+## Positions
 
-- No related implementation ticket is linked yet.
+- Canonical searchable rule entries: `implemented` at `.rule/rules/` and `memory-api/crates/rule-api/src/store/store_query.rs`.
+- Generated instruction target selection: `implemented` at `rule-targets/50-agents-instructions.yaml`; ticket/spec/commit are description-only generated artifacts and token-efficiency retains narrow path globs.
+- Minimal universal bootstrapper: `implemented` at `.agents/instructions/session-bootstrap.instructions.md` from canonical rule `89330b3b-4d28-4c48-80dd-203311dbe855`.
+- Session-side pinned-rule rendering: `implemented` at `memory-api/crates/session-api/src/store.rs`.
+- CLI render surface: `implemented` at `memory-api/tools/cli/session-cli/src/lib.rs`.
+- MCP render surface: `implemented` at `memory-api/tools/mcp/session-mcp/src/server.rs`.
 
-## Background Knowledge References
+## Governing-rule requirement
 
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+This contract is governed by `.agents/instructions/spec-system.instructions.md` and its aligned-structure v2 requirement.
 
-## Legacy Content (Preserved)
+# Contract
 
-# Goal
-Remove the always-on generated instruction load and replace it with a minimal **bootstrapper** plus **discoverable, pinnable** rule entries that each agent renders into its own per-session instruction set.
-
-# Problem
-Four `applyTo: "**"` instruction files plus `AGENTS.md` and copilot-instructions inject ~1,190 lines (~8-10k tokens) on every turn, regardless of task. The rendering pipeline (`rule sync-targets`) is all-or-nothing. This is the root cause of the context dilution the session-bootstrap epic exists to fix.
-
-# Decision (D7)
-Only a minimal bootstrapper instruction stays always-on. All other guidance becomes discoverable rule entries that an agent gathers (via `rule_search`), pins, and renders itself. Rule *filters/scopes* may be pinned; individual rule bodies are fetched on demand (headers-only by default, D6).
-
-# Scope
-- Author a minimal **bootstrapper instruction** (<500 tokens) that knows only the search + session tools and drives `session_init` → cascade → pin → agent-side render.
-- Stop generating the always-on `applyTo: "**"` instruction bodies as per-turn content. Convert their content into canonical rule entries that remain **discoverable** (indexed/searchable) but are **not** force-loaded. Target files:
-  - `ticket-system.instructions.md` (447 lines)
-  - `commit.instructions.md` (239 lines)
-  - `spec-system.instructions.md` (180 lines, currently duplicated)
-  - `token-efficiency.instructions.md` (132 lines)
-- Narrow remaining `applyTo` globs so only the bootstrapper is universal; path-scoped instructions may keep narrow globs.
-- **Fix the `spec-system.instructions.md` duplication** (rendered body repeats — `## Scope` at lines 6 and 94); trace it to the rule entry / `rule-targets/*.yaml` node that double-includes content.
-- Provide the agent-side render path: given pinned rule entries/filters, produce a focused session instruction set.
-- Keep `rule sync-targets` deterministic for whatever remains generated.
+- Exactly one generated bootstrapper instruction uses `applyTo: "**"`.
+- The bootstrapper stays below 500 tokens and directs an agent to initialize/resume session context, search rules, pin relevant rule URNs, and render the pinned instruction set.
+- `ticket-system.instructions.md`, `commit.instructions.md`, and `spec-system.instructions.md` remain deterministic generated artifacts with description-only discovery and no universal `applyTo`; `token-efficiency.instructions.md` retains only its narrow file globs.
+- Their canonical `.rule` entries remain indexed and discoverable through representative rule searches.
+- Session rendering accepts the current workspace session ID, resolves only pinned rule URNs from the sibling rule store, preserves canonical deterministic ordering, and returns generated markdown containing only those rule bodies.
+- Non-rule pins never enter the rendered instruction set. Missing, malformed, cross-workspace, or non-rule references fail explicitly rather than broadening the render.
+- Rule target generation remains deterministic and `rule sync-targets --check` passes.
 
 # Non-goals
-- Changing the canonical rule store format beyond discoverability metadata.
-- Implementing the session pin mechanism (owned by the runtime + CLI/MCP specs); this spec consumes it.
 
-# Dependencies
-- Consumes the pin/view surfaces: [6b2dc497 init/pin/unpin/view](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml).
+- Changing the canonical rule manifest or search index formats.
+- Automatically selecting rules from vague semantic matches.
+- Rendering ticket or spec bodies into the session instruction set.
+- Removing narrowly scoped instruction files for concrete code paths.
 
-# Acceptance Criteria (test-validatable)
-1. After the change, the always-on instruction surface is the bootstrapper only; a test asserts the generated always-on set excludes the four converted files' bodies. *(generation/output test)*
-2. The four converted instruction bodies are discoverable via `rule_search` by representative queries (e.g. "ticket state machine", "commit hooks"). *(search test)*
-3. `spec-system` content appears exactly once in any generated output (no `## Scope` duplication). *(output assertion)*
-4. `rule sync-targets --check` passes deterministically on the reduced target set. *(CI gate)*
-5. Given a set of pinned rule entries, the agent-side render produces a focused instruction set containing only those entries. *(unit test of the render function)*
+# Acceptance Criteria
+
+1. The generated always-on instruction set contains only the sub-500-token bootstrapper; the four large bodies are absent from that set.
+2. Representative searches find canonical ticket-state, commit-hook, spec-authoring, and token-efficiency rule entries.
+3. Spec-system guidance appears exactly once in its generated on-demand artifact.
+4. `rule sync-targets --check` is deterministic on the reduced universal set.
+5. Given pinned rule entries plus unrelated pins, session rendering emits exactly the pinned rule bodies in deterministic order.
+6. Missing or invalid pinned rule references fail explicitly without rendering unrelated content.
+7. Session CLI and MCP expose the focused render operation consistently.
 
 # Traceability
-- Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-- Ticket: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
 
-# Validation
-- ValidationSpec: rule-generation output tests + `rule_search` discoverability tests + agent-side render unit test.
-- ValidationExecution (planned): `cargo test -p rule-cli` / `rule sync-targets --check`.
+- Parent spec: `8c880efc-7083-4e1d-bf06-96b8254be913`.
+- Implementation ticket: [b4a8dc5e Minimal bootstrapper + selective instruction loading](memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml).
+- Pin/view dependency: `6b2dc497-188c-44f5-9106-bf35deecb7a1`.
+- Design dependency: `afa00b5c-c736-4d75-b157-d3e9ce90d819`.
+- Selective render evidence: [exec-val-session-selective-rule-render-20260714](.test/default/executions/exec-val-session-selective-rule-render-20260714.json).
+- Generation/discovery evidence: [exec-val-rule-selective-instruction-generation-20260714](.test/default/executions/exec-val-rule-selective-instruction-generation-20260714.json).
+- Deterministic sync evidence: [exec-val-rule-sync-targets-20260714](.test/default/executions/exec-val-rule-sync-targets-20260714.json).

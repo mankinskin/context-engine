@@ -1,0 +1,29 @@
+{
+  "id": "exec-val-session-selective-rule-render-20260714",
+  "validation_spec_id": "val-session-selective-rule-render",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T16:25:25.386664400Z",
+  "duration_ms": 4180,
+  "detail": "cargo test -p session-api -p session-cli -p session-mcp: 129 passed across 12 suites. Includes deterministic pinned-rule API rendering, missing-rule fail-closed behavior, CLI parsing and real dispatch, and MCP focused rendering.",
+  "links": {
+    "spec_ids": [
+      "a28a88db-2b41-49d2-897c-6dbcdb313255"
+    ],
+    "acceptance_criterion_ids": [
+      "5",
+      "6",
+      "7"
+    ],
+    "ticket_ids": [
+      "b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "test_id": "selective-pinned-rule-rendering",
+    "domain": "session-api",
+    "operation": "render-pinned-rule-instructions",
+    "transport": "in-process",
+    "run_id": "8782c98d-1489-4550-9ea5-c799cb87e6f1"
+  }
+}

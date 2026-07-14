@@ -1,0 +1,34 @@
+{
+  "id": "exec-val-session-workflow-finish-remediation-20260714",
+  "validation_spec_id": "val-session-workflow-finish",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T15:24:00Z",
+  "duration_ms": 5480,
+  "detail": "Windows remediation evidence: cargo test -p session-api passed 106 tests; cargo test -p session-api -p session-cli -p session-mcp passed 124 tests; cargo fmt --check -p session-api passed. Regressions cover aged live lock exclusion, stable ownership-safe release, deterministic finish versus mutation/init/resume, finished plain-init byte stability, and failed Windows replacement preserving previous bytes. Workspace-wide cargo fmt --check remains blocked by unrelated pre-existing formatting drift outside session-api.",
+  "links": {
+    "spec_ids": [
+      "8c880efc-7083-4e1d-bf06-96b8254be913",
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf",
+      "709f067a-21b6-41b6-8879-3cacef4bacaf"
+    ],
+    "acceptance_criterion_ids": [
+      "parent-1",
+      "parent-6",
+      "workflow-6",
+      "workflow-8",
+      "runtime-2",
+      "runtime-3"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "test_id": "session-runtime-remediation-regressions",
+    "domain": "session-api",
+    "operation": "workflow-finish",
+    "transport": "in-process",
+    "run_id": "8782c98d-1489-4550-9ea5-c799cb87e6f1"
+  }
+}
