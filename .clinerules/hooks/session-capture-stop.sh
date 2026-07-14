@@ -14,7 +14,14 @@ fi
 WORKSPACE_SLUG=$(basename "$PWD")
 MANIFEST_PATH="memory-api/crates/session-api/Cargo.toml"
 
-if ! cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook -- \
+# Prefer the installed binary so hooks do not rebuild per invocation.
+if command -v copilot-capture-hook >/dev/null 2>&1; then
+    CAPTURE_CMD=(copilot-capture-hook)
+else
+    CAPTURE_CMD=(cargo run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook --)
+fi
+
+if ! "${CAPTURE_CMD[@]}" \
     --transcript-path "$TRANSCRIPT_PATH" \
     --workspace-slug "$WORKSPACE_SLUG" \
     --trigger stop >/dev/null; then

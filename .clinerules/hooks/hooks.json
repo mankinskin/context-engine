@@ -31,7 +31,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "cargo run --quiet --manifest-path memory-api/crates/session-api/Cargo.toml --bin copilot-capture-hook -- --from-hook-stdin",
+        "command": "copilot-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }

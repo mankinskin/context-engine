@@ -19,6 +19,7 @@ tool_names=(
     log-viewer
     spec-viewer
     ticket-viewer
+    copilot-capture-hook
     ticket-cli
     spec-cli
     audit-cli
@@ -32,6 +33,7 @@ tool_path() {
         log-viewer) printf '%s\n' "tools/viewer/log-viewer" ;;
         spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
         ticket-viewer) printf '%s\n' "memory-viewers/ticket-viewer" ;;
+        copilot-capture-hook) printf '%s\n' "memory-api/crates/session-api" ;;
         ticket-cli) printf '%s\n' "memory-api/tools/cli/ticket-cli" ;;
         spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
         audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
@@ -50,6 +52,7 @@ tool_bin() {
         log-viewer) printf '%s\n' "log-viewer" ;;
         spec-viewer) printf '%s\n' "spec-viewer" ;;
         ticket-viewer) printf '%s\n' "ticket-viewer" ;;
+        copilot-capture-hook) printf '%s\n' "copilot-capture-hook" ;;
         ticket-cli) printf '%s\n' "ticket" ;;
         spec-cli) printf '%s\n' "spec" ;;
         audit-cli) printf '%s\n' "audit" ;;
@@ -85,6 +88,7 @@ Supported tools:
   log-viewer
   spec-viewer
   ticket-viewer
+    copilot-capture-hook
   ticket-cli
   spec-cli
   audit-cli
@@ -178,7 +182,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_tools=()
-            append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli"
+            append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli"
             shift
             ;;
         --list)
@@ -221,7 +225,7 @@ if [[ ${#selected_tools[@]} -eq 0 && -n "${INSTALL_TOOLS:-}" ]]; then
 fi
 
 if [[ ${#selected_tools[@]} -eq 0 ]]; then
-    append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,ticket-cli,spec-cli,audit-cli,rule-cli"
+    append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli"
 fi
 
 install_one() {

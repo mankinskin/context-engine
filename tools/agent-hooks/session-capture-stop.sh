@@ -10,6 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 MANIFEST_PATH="${SESSION_CAPTURE_MANIFEST_PATH:-$REPO_ROOT/memory-api/crates/session-api/Cargo.toml}"
 CARGO_BIN="${SESSION_CAPTURE_CARGO_BIN:-cargo}"
+HOOK_BIN="${SESSION_CAPTURE_HOOK_BIN:-copilot-capture-hook}"
 
 swap_drive_prefix_if_missing() {
     local p="$1"
@@ -70,4 +71,8 @@ if [[ -n "${SESSION_CAPTURE_STORE_ROOT:-}" ]]; then
     HOOK_ARGS=(--store-root "$SESSION_CAPTURE_STORE_ROOT" "${HOOK_ARGS[@]}")
 fi
 
-printf '%s' "$INPUT" | "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook -- "${HOOK_ARGS[@]}"
+if command -v "$HOOK_BIN" >/dev/null 2>&1; then
+    printf '%s' "$INPUT" | "$HOOK_BIN" "${HOOK_ARGS[@]}"
+else
+    printf '%s' "$INPUT" | "$CARGO_BIN" run --quiet --manifest-path "$MANIFEST_PATH" --bin copilot-capture-hook -- "${HOOK_ARGS[@]}"
+fi
